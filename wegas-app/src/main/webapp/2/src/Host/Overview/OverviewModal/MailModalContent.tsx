@@ -116,7 +116,9 @@ export function MailModalContent({ team, onExit }: MailModalContentProps) {
       All the user of this team or the game choosed to hide their e-mail adress
     </pre>
   ) : (
+
     <div className={cx(flex, flexColumn)}>
+      <h2>Send e-mail</h2>
       <JSONForm
         value={emails}
         schema={mailFormSchema}

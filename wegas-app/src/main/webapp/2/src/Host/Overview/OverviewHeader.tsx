@@ -10,6 +10,7 @@ import { firstScrollCellStyle, fixedCellStyle } from './OverviewCell';
 import { OverviewButton } from './OverviewButton';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { flex, itemCenter, justifyCenter } from '../../css/classes';
+import { themeVar } from '../../Components/Style/ThemeVars';
 
 const headerStyle = css({
   verticalAlign: 'middle',
@@ -18,7 +19,7 @@ const headerStyle = css({
 
 const fixedHeaderCellStyle = cx(
   css({
-    backgroundColor: '#F9f9f9',
+    backgroundColor: themeVar.Common.colors.BackgroundColor,
     height: '25px',
   }),
   fixedCellStyle,
@@ -75,7 +76,7 @@ export function OverviewHeader({
           <th colSpan={2}>Actions</th>
         </tr>
         <tr>
-          <th className={fixedHeaderCellStyle}>Team (to hide!!)</th>
+          <th className={fixedHeaderCellStyle}></th>
           {overviewState?.row.map((r, i) => {
             if (isDataItem(r)) {
               const { id, label } = r;

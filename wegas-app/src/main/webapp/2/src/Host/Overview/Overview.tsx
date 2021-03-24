@@ -33,6 +33,7 @@ const tableStyle = css({
     td: {
       minWidth: '60px',
       backgroundColor: '#f9f9f9',
+      whiteSpace: 'pre',
       '&> div': {
         backgroundColor: '#fff',
         boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
@@ -40,19 +41,21 @@ const tableStyle = css({
         textAlign: 'center',
         margin: '3px',
         height: '48px',
+        '&> p': {
+          margin: 0,
+        }
       },
     },
-    '.collapse td': {
-      position: 'absolute',
-      left: 0,
-      '&> div': {
-        height: 'auto',
-        boxShadow: 'none',
-        backgroundColor: 'transparent',
-        padding: 0,
-        textAlign: 'left',
+    '.collapse': {
+      height: '215px',
+      td: {
+        position: 'absolute',
         '&> div': {
-          marginRight: '15px',
+          height: 'auto',
+          boxShadow: 'none',
+          backgroundColor: 'transparent',
+          padding: 0,
+          textAlign: 'left',
         },
       },
     },
@@ -67,6 +70,34 @@ const tableStyle = css({
     },
   },
 });
+
+/*const trainerButtonsStyle = css({
+  button: {
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: trainerTheme.colors.PrimaryColor,
+    color: trainerTheme.colors.LightTextColor,
+    borderStyle: 'none',
+    padding: '10px',
+    cursor: 'pointer',
+    borderRadius: trainerTheme.borders.ButtonsBorderRadius,
+    ['&.iconOnly']: {
+      backgroundColor: 'transparent',
+      color: trainerTheme.colors.MainTextColor,
+      padding: 0,
+    },
+       .css-${modalCloseDivStyle.name}: {
+      color: trainerTheme.colors.PrimaryColor
+    }
+    ['&:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):not(.confirmBtn):not(.tox-tbtn):hover']: {
+      color: trainerTheme.colors.LightTextColor,
+      backgroundColor: trainerTheme.colors.DarkPrimaryColor,
+    },
+  },
+  'svg.fa-window-close': {
+    color: trainerTheme.colors.PrimaryColor
+  },
+}); */
 
 interface OverviewItem {
   id: string;

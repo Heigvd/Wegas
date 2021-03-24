@@ -1,31 +1,47 @@
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import * as React from 'react';
 import { Modal } from '../../../Components/Modal';
-import { themeVar } from '../../../Components/Style/ThemeVars';
 import '../../../Editor/Components/FormView';
 import { ActionItem } from '../Overview';
 import { STeam } from 'wegas-ts-api';
 import { ImpactModalContent } from './ImpactModalContent';
 import { MailModalContent } from './MailModalContent';
+import { trainerTheme } from '../HostTheme';
 
 const modalStyle = css({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  backgroundColor: 'rgba(0,0,0,0.2)',
+  backgroundColor: 'rgba(0,0,0,0.3)',
 });
 
 const modalContentStyle = css({
   position: 'relative',
-  padding: '22px',
+  padding: '40px',
   width: '700px',
+  boxShadow: "1px 2px 6px rgba(0,0,0,0.1)",
   '&>div': {
-    color: themeVar.Common.colors.ActiveColor,
+    color: trainerTheme.colors.MainTextColor,
+  },
+});
+
+const modalInputsStyle = css({
+  input: {
+    borderRadius: 0,
+    border: '1px solid' + trainerTheme.colors.ActiveColor,
+    lineHeight: '1.8em',
+    '&:focus': {
+      border: '1px solid' + trainerTheme.colors.PrimaryColor,
+    },
+    '&[readOnly]:focus': {
+      border: '1px solid' + trainerTheme.colors.InactiveColor,
+      outline: "none",
+    }
   },
 });
 
 export const modalButtonsContainer = css({
-  marginTop: '10px',
+  marginTop: '20px',
 });
 
 export type ModalState = 'Close' | 'Mail' | 'Impacts';
@@ -49,7 +65,7 @@ export function OverviewModal({
     <Modal
       onExit={onExit}
       className={modalStyle}
-      innerClassName={modalContentStyle}
+      innerClassName={cx(modalContentStyle, modalInputsStyle)}
     >
       {modalState === 'Impacts' ? (
         <ImpactModalContent

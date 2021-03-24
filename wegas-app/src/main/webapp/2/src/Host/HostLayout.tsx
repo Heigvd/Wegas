@@ -3,6 +3,7 @@ import { css } from 'emotion';
 import * as React from 'react';
 import { IPeerReviewDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 import { languagesCTX } from '../Components/Contexts/LanguagesProvider';
+import { themeVar } from '../Components/Style/ThemeVars';
 import { entityIs } from '../data/entities';
 import { State } from '../data/Reducer/reducers';
 import { useStore } from '../data/Stores/store';
@@ -12,7 +13,6 @@ import { PageLoader } from '../Editor/Components/Page/PageLoader';
 import { ReparentableRoot } from '../Editor/Components/Reparentable';
 import { visitIndex } from '../Helper/pages';
 import HostHeader from './HostHeader';
-import { trainerTheme } from './Overview/HostTheme';
 import { OverviewTab } from './Overview/OverviewTab';
 
 const Overview = React.lazy(() => import('./Overview/Overview'));
@@ -21,15 +21,14 @@ const PeerReviewPage = React.lazy(() => import('./PeerReviewPage'));
 const layoutStyle = css({
   display: 'flex',
   flexDirection: 'column',
-  height: '100vh',
+  minHeight: '100vh',
   padding: '50px 75px',
-  fontFamily: trainerTheme.text.TextFont1,
-  backgroundColor: trainerTheme.colors.BackgroundColor,
+  backgroundColor: themeVar.Common.colors.BackgroundColor,
 });
 
 export const tabsLineStyle = css({
-  borderBottom: '3px solid ' + trainerTheme.colors.PrimaryColor,
-  backgroundColor: trainerTheme.colors.BackgroundColor,
+  borderBottom: '3px solid ' + themeVar.Common.colors.PrimaryColor,
+  backgroundColor: themeVar.Common.colors.BackgroundColor,
 });
 
 export const trainerLayoutId = 'TrainerLayout';

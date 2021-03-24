@@ -14,13 +14,12 @@ import {
 } from '../css/classes';
 import { Title } from '../Components/Inputs/String/Title';
 import { Button } from '../Components/Inputs/Buttons/Button';
-import { trainerTheme } from './Overview/HostTheme';
+
 const headerStyle = css({
-  marginBottom: trainerTheme.spacing.LargePadding,
+  marginBottom: '30px',
 });
 const TitleStyle = css({
-  fontFamily: trainerTheme.text.TextFont1,
-  marginRight: trainerTheme.spacing.MediumPadding,
+  marginRight: '20px',
 });
 
 export default function HostHeader() {

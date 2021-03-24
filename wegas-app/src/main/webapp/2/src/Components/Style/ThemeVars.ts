@@ -75,6 +75,7 @@ export interface Mode {
     Common: ModeComponent<
       {
         PrimaryColor: ModeColor;
+        PrimaryColorShade: ModeColor;
         ActiveColor: ModeColor;
         BackgroundColor: ModeColor;
         SecondaryBackgroundColor:ModeColor;
@@ -134,6 +135,7 @@ export const defaultLightMode: Mode = {
     Common: {
       colors: {
         PrimaryColor: 'Primary color',
+        PrimaryColorShade: 'Primary color shade',
         ActiveColor: 'Secondary color shade',
         BackgroundColor: 'Background color',
         SecondaryBackgroundColor: 'Secondary background color',
@@ -200,6 +202,7 @@ export const defaultDarkMode: Mode = {
     Common: {
       colors: {
         PrimaryColor: 'Primary color',
+        PrimaryColorShade: 'Primary color shade',
         ActiveColor: 'Secondary color pastel',
         BackgroundColor: 'Dark background color',
         SecondaryBackgroundColor: 'Dark secondary background color',

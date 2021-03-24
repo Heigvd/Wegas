@@ -6,7 +6,9 @@
 export const trainerTheme = {
   colors: {
     PrimaryColor: '#8CB62E',
-    ActionsColor: '#F2994A',
+    DarkPrimaryColor: '#668422',
+    SecondaryColor: '#F2994A',
+    DarkSecondaryColor: '#C35C00',
     BackgroundColor: '#F9F9F9',
     SecondaryBackgroundColor: '#fff',
     InactiveColor: '#EAEAEA',
@@ -20,7 +22,8 @@ export const trainerTheme = {
     ErrorColor: '#FFCD1A',
   },
   borders: {
-    BorderRadius: '8px 8px 0 0',
+    TabsBorderRadius: '8px 8px 0 0',
+    ButtonsBorderRadius: '8px',
     BorderWidth: '1px',
   },
   spacing: {
@@ -30,7 +33,7 @@ export const trainerTheme = {
     SmallPadding: '5px',
   },
   text: {
-    TextFont1: 'Lato',
+    TextFont1: 'Raleway',
     TextFont2: 'Courier New',
     FontSize1: '30px',
     FontSize2: '18px',

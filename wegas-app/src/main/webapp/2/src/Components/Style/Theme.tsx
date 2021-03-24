@@ -143,7 +143,45 @@ export const defaultThemeValues: ThemeValues = {
   others: {
     'Font family 1': '"Courier New"',
     'Font family 2': '"Montserrat"',
-    'Font family 3': '"Lato"',
+    'Font family 3': '"Raleway"',
+  },
+};
+
+export const lobbyThemeValues: ThemeValues = {
+  colors: {
+    'Primary color': '#8CB62E',
+    'Primary color shade': '#668422',
+    'Primary color tint': '#AFDE45',
+    'Primary color pastel': '#DDFB9C',
+    'Secondary color': '#F2994A',
+    'Secondary color shade': '#C35C00',
+    'Secondary color tint': '#FFB778',
+    'Secondary color pastel': '#FFDFC2',
+    'Accent color': '#D4D4D4',
+    'Background color': '#F9F9F9',
+    'Secondary background color': '#FFF',
+    'Dark background color': '#212121',
+    'Dark secondary background color': '#111',
+    'Text color': '#232323',
+    'Secondary text color': '#fff',
+    'Disabled color': '#EAEAEA',
+    'Error color': '#DD1B1B',
+    'Warning color': '#FFCD1A',
+    'Success color': '#27AE60',
+  },
+  dimensions: {
+    'Border radius': '8px',
+    'Border width': '1px',
+    'Font size 1': '2em',
+    'Font size 2': '1.75em',
+    'Font size 3': '1.25em',
+    'Font size 4': '1em',
+    'Font size 5': '0.9em',
+  },
+  others: {
+    'Font family 1': '"Courier New"',
+    'Font family 2': '"Montserrat"',
+    'Font family 3': '"Raleway"',
   },
 };
 
@@ -156,9 +194,19 @@ const defaultTheme: Theme = {
   },
   baseMode: 'light',
 };
+const trainerTheme: Theme = {
+  values: lobbyThemeValues,
+  modes: { light: defaultLightMode, dark: defaultDarkMode },
+  modeClasses: {
+    light: modeClass(lobbyThemeValues, defaultLightMode),
+    dark: modeClass(lobbyThemeValues, defaultDarkMode),
+  },
+  baseMode: 'light',
+};
 
 const defaultThemes: Themes = {
   default: defaultTheme,
+  trainer: trainerTheme,
 };
 
 const defaultThemesState: ThemesState = {
@@ -166,7 +214,7 @@ const defaultThemesState: ThemesState = {
     editor: 'default',
     player: 'default',
     survey: 'default',
-    trainer: 'default',
+    trainer: 'trainer',
   },
   themes: defaultThemes,
 };

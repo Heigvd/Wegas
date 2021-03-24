@@ -230,7 +230,6 @@ export function ImpactModalContent({
   if (item?.do == null) {
     return <pre>Function and schema needed for impact</pre>;
   }
-
   try {
     const { actions, showAdvancedImpact } = JSON.parse(item?.do) as {
       type: string;

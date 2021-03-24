@@ -58,17 +58,19 @@ export function OverviewRow({
               onClick={() => setShowPlayers(sp => !sp)}
             />
             <div className={hideWithEllipsis}>
-              {team.getName()}kjkjdksholalala lala
+              {team.getName()}
             </div>
           </div>
         </td>
         {!structure && (
           <td className={firstScrollCellStyle}>
-            <Button
-              src={require('../../pictures/icon_edit.svg').default}
-              tooltip="Execute impact"
-              onClick={() => onClick('Impact')}
-            />
+            <div>
+              <Button
+                src={require('../../pictures/icon_edit.svg').default}
+                tooltip="Execute impact"
+                onClick={() => onClick('Impact')}
+              />
+            </div>
           </td>
         )}
         {structure != null &&
@@ -105,7 +107,7 @@ export function OverviewRow({
         <tr className={'collapse'}>
           <td colSpan={3 + (structure?.length || 1)}>
             <div className={cx(flex, flexRow)}>
-              <div className={css({ width: '180px' })}>
+              <div className={css({ width: '180px', height: '200px', overflow: 'auto' })}>
                 <ul>
                   {team.getPlayers().map(player => (
                     <li key={player.getId()}>{player.getName()}</li>

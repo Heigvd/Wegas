@@ -51,13 +51,15 @@ export function OverviewCell({
       case 'boolean':
         return (
           <td>
-            <img
-              src={
-                require(value === true
-                  ? '../../pictures/icon_ok.svg'
-                  : '../../pictures/icon_notok.svg').default
-              }
-            />
+            <div>
+              <img
+                src={
+                  require(value === true
+                    ? '../../pictures/icon_ok.svg'
+                    : '../../pictures/icon_notok.svg').default
+                }
+              />
+            </div>
           </td>
         );
       case 'number':
@@ -70,11 +72,13 @@ export function OverviewCell({
       case 'inbox':
         return (
           <td>
+            <div>
             <Button
               tooltip="Read mails"
               src={require('../../pictures/icon_mail.svg').default}
               onClick={() => setShowPopup(o => !o)}
             />
+            </div>
             {showPopup && (
               <div
                 style={{
@@ -93,11 +97,16 @@ export function OverviewCell({
       case 'text':
         return (
           <td>
-            <HTMLText text={String(value)} />
+              <HTMLText text={String(value)} />
           </td>
         );
       case 'object':
-        return <td className={className}>{JSON.stringify(String(value))}</td>;
+        return (
+        <td className={className}>
+          <div>
+            {JSON.stringify(String(value))}
+          </div>
+        </td>);
       case 'formatter': {
         const formatterFunction = `return (${formatter})(data)`;
         const formattedvalue = globals.Function(
@@ -107,7 +116,9 @@ export function OverviewCell({
 
         return (
           <td>
-            <HTMLText text={String(formattedvalue)} />
+            <div>
+              <HTMLText text={String(formattedvalue)} />
+            </div>
           </td>
         );
       }
