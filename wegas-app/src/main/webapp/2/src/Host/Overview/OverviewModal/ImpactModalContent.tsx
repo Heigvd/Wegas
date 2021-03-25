@@ -25,9 +25,9 @@ import { schemaProps } from '../../../Components/PageComponents/tools/schemaProp
 import { OverviewTab } from '../OverviewTab';
 
 const impactContainerStyle = css({
-  padding: '10px',
-  margin: '10px',
-  boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
+  //padding: '10px',
+  marginBottom: '20px',
+  //boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
 });
 
 function recurscript(
@@ -91,7 +91,7 @@ export function ImpactModalComputedContent({
 
   return (
     <div className={cx(flex, flexColumn, expandWidth)}>
-      <div className={cx(flex, flexRow, flexDistribute, grow, autoScroll)}>
+      <div className={cx(flex, flexColumn, grow, autoScroll)}>
         {actions.map(({ schemaFn }, index) => {
           const schema = globals.Function(`return (${schemaFn})()`)();
           return (
@@ -99,7 +99,7 @@ export function ImpactModalComputedContent({
               key={JSON.stringify(schemaFn) + index}
               className={cx(flex, flexColumn, impactContainerStyle)}
             >
-              <h3>{schema.description}</h3>
+              <h2>{schema.description}</h2>
               <JSONForm
                 value={payloads[index] || {}}
                 schema={schema}

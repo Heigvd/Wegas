@@ -24,12 +24,49 @@ const layoutStyle = css({
   minHeight: '100vh',
   padding: '50px 75px',
   backgroundColor: themeVar.Common.colors.BackgroundColor,
+  button: {
+    '&.iconOnly object svg': {
+      cursor: 'pointer',
+      color: '#ff4',
+      '&:hover': {
+        fill: '#ff4',
+      }
+    }
+  }
 });
 
 export const tabsLineStyle = css({
   borderBottom: '3px solid ' + themeVar.Common.colors.PrimaryColor,
   backgroundColor: themeVar.Common.colors.BackgroundColor,
 });
+
+/*const trainerButtonsStyle = css({
+  button: {
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: trainerTheme.colors.PrimaryColor,
+    color: trainerTheme.colors.LightTextColor,
+    borderStyle: 'none',
+    padding: '10px',
+    cursor: 'pointer',
+    borderRadius: trainerTheme.borders.ButtonsBorderRadius,
+    ['&.iconOnly']: {
+      backgroundColor: 'transparent',
+      color: trainerTheme.colors.MainTextColor,
+      padding: 0,
+    },
+       .css-${modalCloseDivStyle.name}: {
+      color: trainerTheme.colors.PrimaryColor
+    }
+    ['&:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):not(.confirmBtn):not(.tox-tbtn):hover']: {
+      color: trainerTheme.colors.LightTextColor,
+      backgroundColor: trainerTheme.colors.DarkPrimaryColor,
+    },
+  },
+  'svg.fa-window-close': {
+    color: trainerTheme.colors.PrimaryColor
+  },
+}); */
 
 export const trainerLayoutId = 'TrainerLayout';
 

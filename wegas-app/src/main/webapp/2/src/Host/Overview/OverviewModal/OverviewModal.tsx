@@ -6,7 +6,7 @@ import { ActionItem } from '../Overview';
 import { STeam } from 'wegas-ts-api';
 import { ImpactModalContent } from './ImpactModalContent';
 import { MailModalContent } from './MailModalContent';
-import { trainerTheme } from '../HostTheme';
+import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const modalStyle = css({
   display: 'flex',
@@ -18,23 +18,26 @@ const modalStyle = css({
 const modalContentStyle = css({
   position: 'relative',
   padding: '40px',
-  width: '700px',
+  minWidth: '400px',
+  maxWidth: '700px',
   boxShadow: "1px 2px 6px rgba(0,0,0,0.1)",
   '&>div': {
-    color: trainerTheme.colors.MainTextColor,
+    color: themeVar.Common.colors.DarkTextColor,
   },
 });
 
 const modalInputsStyle = css({
   input: {
+    fontFamily: themeVar.ComponentTitle.others.FontFamily2,
     borderRadius: 0,
-    border: '1px solid' + trainerTheme.colors.ActiveColor,
+    border: '1px solid ' + themeVar.Common.colors.HighlightColor,
     lineHeight: '1.8em',
+    backgroundColor: themeVar.Common.colors.SecondaryBackgroundColor,
+    marginLeft: '1px',
     '&:focus': {
-      border: '1px solid' + trainerTheme.colors.PrimaryColor,
+      border: '1px solid ' + themeVar.Common.colors.PrimaryColor,
     },
     '&[readOnly]:focus': {
-      border: '1px solid' + trainerTheme.colors.InactiveColor,
       outline: "none",
     }
   },

@@ -9,8 +9,9 @@ import {
 import { firstScrollCellStyle, fixedCellStyle } from './OverviewCell';
 import { OverviewButton } from './OverviewButton';
 import { Button } from '../../Components/Inputs/Buttons/Button';
-import { flex, itemCenter, justifyCenter } from '../../css/classes';
+import { flex, flexColumn, itemCenter, justifyCenter } from '../../css/classes';
 import { themeVar } from '../../Components/Style/ThemeVars';
+
 
 const headerStyle = css({
   verticalAlign: 'middle',
@@ -24,6 +25,10 @@ const fixedHeaderCellStyle = cx(
   }),
   fixedCellStyle,
 );
+
+const iconApplyToAll = <svg width="9" height="10" viewBox="0 0 9 10" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M8.5452 5.16815C8.87421 5.49117 8.87906 6.01975 8.55603 6.34876L5.2166 9.75003C5.05962 9.90992 4.84495 10 4.62088 10C4.39681 10 4.18214 9.90992 4.02515 9.75003L0.685727 6.34876C0.362699 6.01975 0.367549 5.49117 0.696558 5.16815C1.02557 4.84512 1.55415 4.84997 1.87717 5.17898L3.78602 7.12318L3.78602 1.77141C3.78602 1.31033 4.1598 0.936554 4.62088 0.936554C5.08196 0.936554 5.45574 1.31033 5.45574 1.77141L5.45574 7.12318L7.36458 5.17898C7.68761 4.84997 8.21619 4.84512 8.5452 5.16815Z"/>
+</svg>;
 
 interface OverviewHeaderProps {
   overviewState: OverviewState | undefined;
@@ -96,8 +101,9 @@ export function OverviewHeader({
                   className={cx({ [firstScrollCellStyle]: i === 0 })}
                 >
                   {hasGlobal ? (
-                    <div className={cx(flex, itemCenter, justifyCenter)}>
-                      <OverviewButton item={r} onClick={onClick} />
+                    <div className={cx(flex, flexColumn, itemCenter, justifyCenter)}>
+                      <OverviewButton item={r} className= {css({ paddingBottom: 0})} onClick={onClick} />
+                      {iconApplyToAll}
                     </div>
                   ) : (
                     label
@@ -107,12 +113,14 @@ export function OverviewHeader({
             }
           })}
           <th>
-            <div className={cx(flex, itemCenter, justifyCenter)}>
+            <div className={cx(flex, flexColumn, itemCenter, justifyCenter)}>
               <Button
-                src={require('../../pictures/icon_mail.svg').default}
+                icon="envelope"
                 tooltip="send mail"
+                className= {css({paddingBottom: 0})}
                 onClick={() => onClick('Mail')}
               />
+              {iconApplyToAll}
             </div>
           </th>
           <th />

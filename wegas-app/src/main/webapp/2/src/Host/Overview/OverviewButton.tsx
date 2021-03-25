@@ -6,9 +6,10 @@ import { ActionItem, OverviewClickType } from './Overview';
 interface OverviewButtonProps {
   onClick?: (type: OverviewClickType, item?: ActionItem) => void;
   item: ActionItem;
+  className?: string;
 }
 
-export function OverviewButton({  item, onClick }: OverviewButtonProps) {
+export function OverviewButton({ item, className, onClick }: OverviewButtonProps) {
   const { label, icon } = item;
 
   return (
@@ -20,6 +21,7 @@ export function OverviewButton({  item, onClick }: OverviewButtonProps) {
       onClick={() =>
         onClick && onClick('Impact', item)
       }
+      className= {className}
     />
   );
 }

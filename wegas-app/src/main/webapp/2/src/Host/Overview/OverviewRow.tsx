@@ -47,7 +47,6 @@ export function OverviewRow({
   );
 
   const debouncedEditTeam = useTimeout(editTeam, 1000);
-
   return (
     <>
       <tr>
@@ -66,7 +65,7 @@ export function OverviewRow({
           <td className={firstScrollCellStyle}>
             <div>
               <Button
-                src={require('../../pictures/icon_edit.svg').default}
+                icon="pen"
                 tooltip="Execute impact"
                 onClick={() => onClick('Impact')}
               />
@@ -87,7 +86,7 @@ export function OverviewRow({
         <td>
           <div className={cx(flex, itemCenter, justifyCenter)}>
             <Button
-              src={require('../../pictures/icon_mail.svg').default}
+              icon="envelope"
               tooltip="Send mail"
               onClick={() => onClick('Mail')}
             />
