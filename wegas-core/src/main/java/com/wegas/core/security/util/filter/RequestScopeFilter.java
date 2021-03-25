@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
-@WebFilter(filterName = "CacheControlFilter", urlPatterns = {"/*"}, dispatcherTypes = {DispatcherType.REQUEST})
+@WebFilter(filterName = "RequestScopeFilter", urlPatterns = {"/*"}, dispatcherTypes = {DispatcherType.REQUEST})
 public class RequestScopeFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(RequestScopeFilter.class);
