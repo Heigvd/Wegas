@@ -34,7 +34,7 @@ import {
   createTranslation,
   translate,
 } from '../../Editor/Components/FormView/translatable';
-import { wwarn } from '../../Helper/wegaslog';
+import { wlog, wwarn } from '../../Helper/wegaslog';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { replace, createLRU } from '../../Helper/tools';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
@@ -82,6 +82,7 @@ interface GlobalClasses {
   };
   APIMethods: APIMethodsClass;
   Helpers: GlobalHelpersClass;
+  wlog: (a: any) => void;
 }
 
 const globalDispatch = store.dispatch;
@@ -366,6 +367,8 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.Helpers = {
     cloneDeep: cloneDeep,
   };
+
+  globals.wlog = wlog;
 }
 
 export type ScriptReturnType = object | number | boolean | string | undefined;

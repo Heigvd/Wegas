@@ -177,5 +177,11 @@ public interface VariableDescriptorFacadeI {
         boolean resetNames,
         boolean resetRefIds
     );
-
+    
+    /**
+     * Remove variable
+     * 
+     * @param entity    the variableDescriptor to delete
+     */
+    void remove(VariableDescriptor entity);
 }
