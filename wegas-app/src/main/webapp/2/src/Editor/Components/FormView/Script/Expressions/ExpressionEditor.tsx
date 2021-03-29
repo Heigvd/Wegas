@@ -266,9 +266,6 @@ export function ExpressionEditor({
     [onChange],
   );
 
-  // const test = formState.attributes;
-  // debugger;
-
   return (
     <div id={id} className={expressionEditorStyle}>
       {newSrc === undefined && error === undefined && (

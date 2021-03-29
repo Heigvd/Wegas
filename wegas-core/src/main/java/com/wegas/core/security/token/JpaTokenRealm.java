@@ -13,7 +13,6 @@ import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.ejb.AccountFacade;
-import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Shadow;

@@ -46,15 +46,20 @@ function PlayerSelectInput({
   options,
   onVariableChange,
 }: PlayerSelectInputProps) {
-  const descriptor = useScript<SStringDescriptor | SNumberDescriptor>(
+  const descriptor = useScript<SStringDescriptor | SNumberDescriptor | string>(
     script,
     context,
   );
 
+  const value = useStore(
+    () =>
+      (descriptor != null && typeof descriptor === 'object'
+        ? descriptor.getValue(Player.self())
+        : descriptor) || '',
+  );
+
   const { lang } = React.useContext(languagesCTX);
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
-
-  const value = useStore(() => String(descriptor?.getValue(Player.self())));
 
   if (descriptor == null) {
     wwarn('Varialbe not found');
@@ -74,13 +79,13 @@ function PlayerSelectInput({
   return (
     <Selector
       id={id}
-      value={value}
+      value={String(value)}
       choices={computedChoices}
       onChange={v => {
         const newValue = v.target.value;
         if (handleOnChange) {
           handleOnChange(newValue);
-        } else {
+        } else if (typeof descriptor === 'object') {
           store.dispatch(
             runScript(
               `Variable.find(gameModel,"${descriptor.getName()}").setValue(self, ${
@@ -89,6 +94,10 @@ function PlayerSelectInput({
                   : `'${newValue}'`
               });`,
             ),
+          );
+        } else {
+          wwarn(
+            'You need to define an action when the given value is not a descriptor!',
           );
         }
       }}
@@ -110,7 +119,7 @@ registerComponent(
       script: schemaProps.scriptVariable({
         label: 'Variable',
         required: true,
-        returnType: ['SStringDescriptor', 'SNumberDescriptor'],
+        returnType: ['SStringDescriptor', 'SNumberDescriptor', 'string'],
       }),
       choices: schemaProps.array({
         label: 'Choices',

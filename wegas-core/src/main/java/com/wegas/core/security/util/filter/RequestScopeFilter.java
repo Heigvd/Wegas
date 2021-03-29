@@ -7,9 +7,7 @@
  */
 package com.wegas.core.security.util.filter;
 
-import com.wegas.core.security.util.*;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
@@ -30,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
-@WebFilter(filterName = "CacheControlFilter", urlPatterns = {"/*"}, dispatcherTypes = {DispatcherType.REQUEST})
+@WebFilter(filterName = "RequestScopeFilter", urlPatterns = {"/*"}, dispatcherTypes = {DispatcherType.REQUEST})
 public class RequestScopeFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(RequestScopeFilter.class);

@@ -22,13 +22,13 @@ import { wlog } from '../Helper/wegaslog';
 
 const prStateStyle = css({
   borderRadius: '10px',
-  backgroundColor: themeVar.Common.colors.HeaderColor,
-  boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
+  backgroundColor: themeVar.Common.colors.PrimaryColor,
+  color: themeVar.Common.colors.SecondaryBackgroundColor,
+  boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.2)',
   padding: '10px',
-  minWidth: '250px',
-  minHeight: '150px',
+  minWidth: '200px',
+  minHeight: '120px',
   textAlign: 'center',
-  border: 'solid 0.5px',
 });
 
 const prActiveStateStyle = css({

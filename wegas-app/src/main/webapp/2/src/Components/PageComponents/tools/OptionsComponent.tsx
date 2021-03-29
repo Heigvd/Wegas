@@ -137,19 +137,34 @@ export function useOptions(
     .map(item => item.className)
     .join(' ');
 
-  return {
-    tooltip,
-    themeModeClassName,
-    innerClassName,
-    outerClassName,
-    disabled:
-      disabled === undefined ? inheritedOptionsState.disabled : disabled,
-    hidden,
-    readOnly:
-      readOnly === undefined ? inheritedOptionsState.readOnly : readOnly,
-    locked,
-    infoBulletProps,
-  };
+  return React.useMemo(
+    () => ({
+      tooltip,
+      themeModeClassName,
+      innerClassName,
+      outerClassName,
+      disabled:
+        disabled === undefined ? inheritedOptionsState.disabled : disabled,
+      hidden,
+      readOnly:
+        readOnly === undefined ? inheritedOptionsState.readOnly : readOnly,
+      locked,
+      infoBulletProps,
+    }),
+    [
+      disabled,
+      hidden,
+      infoBulletProps,
+      inheritedOptionsState.disabled,
+      inheritedOptionsState.readOnly,
+      innerClassName,
+      locked,
+      outerClassName,
+      readOnly,
+      themeModeClassName,
+      tooltip,
+    ],
+  );
 }
 
 // export function ComponentOptionsManager({

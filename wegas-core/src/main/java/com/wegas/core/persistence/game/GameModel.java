@@ -664,6 +664,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * @return testPlayer
      */
     @JsonIgnore
+    @Override
     public Player getTestPlayer() {
         for (Game game : this.getGames()) {
             Player testPlayer = game.getTestPlayer();
@@ -1264,7 +1265,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     @JsonIgnore
     public boolean isScenarioBasedOnModel() {
-        return this.isScenario() && this.getBasedOn() != null;
+        return this.isScenario() && this.getBasedOnId() != null;
     }
 
     @Override

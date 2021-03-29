@@ -25,7 +25,7 @@ export const buttonStyle = css({
 
   ['&:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):not(.confirmBtn):hover']: {
     color: themeVar.Common.colors.HoverTextColor,
-    backgroundColor: themeVar.Common.colors.ActiveColor,
+    backgroundColor: themeVar.Common.colors.PrimaryColorShade,
     outline: 'none',
   },
   ['&:focus']: {

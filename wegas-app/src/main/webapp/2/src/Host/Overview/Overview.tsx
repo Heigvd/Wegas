@@ -12,10 +12,11 @@ import { OverviewRow } from './OverviewRow';
 import '../../Editor/Components/FormView';
 import { ModalState, OverviewModal } from './OverviewModal/OverviewModal';
 import { instantiate } from '../../data/scriptable';
+import { themeVar } from '../../Components/Style/ThemeVars';
 
 const tableStyle = css({
   display: 'flex',
-  color: '#828282',
+  color: themeVar.Common.colors.DarkTextColor,
   width: '100%',
   overflowX: 'auto',
   fontSize: '14px',
@@ -33,6 +34,7 @@ const tableStyle = css({
     td: {
       minWidth: '60px',
       backgroundColor: '#f9f9f9',
+      whiteSpace: 'pre',
       '&> div': {
         backgroundColor: '#fff',
         boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
@@ -40,19 +42,25 @@ const tableStyle = css({
         textAlign: 'center',
         margin: '3px',
         height: '48px',
+        '&> p': {
+          margin: 0,
+        },
+        '&> button': {
+          marginLeft: 'auto',
+          marginRight: 'auto',
+        },
       },
     },
-    '.collapse td': {
-      position: 'absolute',
-      left: 0,
-      '&> div': {
-        height: 'auto',
-        boxShadow: 'none',
-        backgroundColor: 'transparent',
-        padding: 0,
-        textAlign: 'left',
+    '.collapse': {
+      height: '215px',
+      td: {
+        position: 'absolute',
         '&> div': {
-          marginRight: '15px',
+          height: 'auto',
+          boxShadow: 'none',
+          backgroundColor: 'transparent',
+          padding: 0,
+          textAlign: 'left',
         },
       },
     },
@@ -64,11 +72,20 @@ const tableStyle = css({
       verticalAlign: 'top',
       padding: '0 10px',
       textAlign: 'center',
+      'svg, button': {
+        fill: themeVar.Common.colors.DarkTextColor,
+      },
+      'button:hover + svg': {
+        fill: themeVar.Common.colors.ActiveColor,
+      },
     },
   },
 });
 
-export interface OverviewItem {
+const flexAuto = css({
+  flex: '0 0 auto',
+});
+interface OverviewItem {
   id: string;
   label: string;
   order: number;
@@ -212,10 +229,10 @@ export default function Overview() {
 
   return (
     <Toolbar className={expandWidth}>
-      <Toolbar.Header>
+      <Toolbar.Header className={css({ justifyContent: 'flex-end' })}>
         <Button icon="undo" onClick={refreshOverview} />
       </Toolbar.Header>
-      <Toolbar.Content>
+      <Toolbar.Content className={flexAuto}>
         <div className={tableStyle}>
           <table key={JSON.stringify(Object.keys(teams))}>
             <OverviewHeader

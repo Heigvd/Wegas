@@ -446,6 +446,7 @@ angular.module('wegas.models.sessions', [])
                             deferred.resolve(Responses.success(message, data));
                         });
                     }).error(function(data) {
+                        console.error(data);
                         $translate('COMMONS-SESSIONS-CREATE-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });

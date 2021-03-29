@@ -7,8 +7,8 @@
  */
 package com.wegas.core.ejb.nashorn;
 
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *

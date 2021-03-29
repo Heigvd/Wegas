@@ -1,31 +1,50 @@
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import * as React from 'react';
 import { Modal } from '../../../Components/Modal';
-import { themeVar } from '../../../Components/Style/ThemeVars';
 import '../../../Editor/Components/FormView';
 import { ActionItem } from '../Overview';
 import { STeam } from 'wegas-ts-api';
 import { ImpactModalContent } from './ImpactModalContent';
 import { MailModalContent } from './MailModalContent';
+import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const modalStyle = css({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  backgroundColor: 'rgba(0,0,0,0.2)',
+  backgroundColor: 'rgba(0,0,0,0.3)',
 });
 
 const modalContentStyle = css({
   position: 'relative',
-  padding: '22px',
-  width: '700px',
+  padding: '40px',
+  minWidth: '400px',
+  maxWidth: '700px',
+  boxShadow: "1px 2px 6px rgba(0,0,0,0.1)",
   '&>div': {
-    color: themeVar.Common.colors.ActiveColor,
+    color: themeVar.Common.colors.DarkTextColor,
+  },
+});
+
+const modalInputsStyle = css({
+  input: {
+    fontFamily: themeVar.ComponentTitle.others.FontFamily2,
+    borderRadius: 0,
+    border: '1px solid ' + themeVar.Common.colors.HighlightColor,
+    lineHeight: '1.8em',
+    backgroundColor: themeVar.Common.colors.SecondaryBackgroundColor,
+    marginLeft: '1px',
+    '&:focus': {
+      border: '1px solid ' + themeVar.Common.colors.PrimaryColor,
+    },
+    '&[readOnly]:focus': {
+      outline: "none",
+    }
   },
 });
 
 export const modalButtonsContainer = css({
-  marginTop: '10px',
+  marginTop: '20px',
 });
 
 export type ModalState = 'Close' | 'Mail' | 'Impacts';
@@ -49,7 +68,7 @@ export function OverviewModal({
     <Modal
       onExit={onExit}
       className={modalStyle}
-      innerClassName={modalContentStyle}
+      innerClassName={cx(modalContentStyle, modalInputsStyle)}
     >
       {modalState === 'Impacts' ? (
         <ImpactModalContent

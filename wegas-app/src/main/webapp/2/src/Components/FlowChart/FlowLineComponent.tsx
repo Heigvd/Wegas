@@ -159,7 +159,6 @@ export function computeFlowlineValues(
   const startProcessBox = startProcessElement.getBoundingClientRect();
   const endProcessBox = endProcessElement.getBoundingClientRect();
 
-  debugger;
   const displayValues =
     startProcessBox.bottom +
     startProcessBox.height +

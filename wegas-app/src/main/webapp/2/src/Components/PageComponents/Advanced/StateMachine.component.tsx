@@ -8,17 +8,23 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import { useScript } from '../../Hooks/useScript';
 import { IScript, SFSMDescriptor } from 'wegas-ts-api';
 import { StateMachineEditor } from '../../../Editor/Components/StateMachineEditor';
-import { ComponentWithForm } from '../../../Editor/Components/FormView/ComponentWithForm';
+import {
+  ComponentWithForm,
+  ComponentWithFormFlexValues,
+  flexValuesSchema,
+} from '../../../Editor/Components/FormView/ComponentWithForm';
 import { Player } from '../../../data/selectors';
 
 interface PlayerStateMachineProps extends WegasComponentProps {
   stateMachine?: IScript;
   title?: IScript;
+  flexValues?: ComponentWithFormFlexValues;
 }
 
 export default function PlayerStateMachine({
   stateMachine,
   title,
+  flexValues,
   context,
   className,
   style,
@@ -36,6 +42,7 @@ export default function PlayerStateMachine({
     </pre>
   ) : (
     <ComponentWithForm
+      flexValues={flexValues}
       entityEditor
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
@@ -70,6 +77,7 @@ registerComponent(
         returnType: ['SFSMDescriptor', 'SDialogueDescriptor'],
       }),
       title: schemaProps.scriptString({ label: 'Title', richText: true }),
+      flexValues: flexValuesSchema,
     },
     allowedVariables: ['FSMDescriptor', 'DialogueDescriptor'],
   }),

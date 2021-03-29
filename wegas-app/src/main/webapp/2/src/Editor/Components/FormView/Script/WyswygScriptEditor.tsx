@@ -5,11 +5,11 @@ import { css } from 'emotion';
 import { emptyStatement } from '@babel/types';
 import Form from 'jsoninput';
 import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
+import { themeVar } from '../../../../Components/Style/ThemeVars';
 
 const scriptStyle = css({
-  borderWidth: '1px',
+  border: '1px solid ' + themeVar.Common.colors.DisabledColor,
   padding: '2px',
-  borderStyle: 'solid',
 });
 
 function createNewExpression(mode?: ScriptMode) {

@@ -1,6 +1,7 @@
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
+import { contentCenter, flex, flexColumn, justifyCenter } from '../css/classes';
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../Helper/className';
 import { themeCTX } from './Style/Theme';
@@ -17,7 +18,7 @@ const modalStyle = css({
   minWidth: '100%',
   height: '100%',
   padding: '1.5em',
-  backgroundColor: 'rgba(0,0,0,0.8)',
+  backgroundColor: 'rgba(0,0,0,0.2)',
   zIndex: 1000,
   cursor: 'pointer',
 });
@@ -29,6 +30,9 @@ const modalContentStyle = css({
   padding: '10px',
   cursor: 'initial',
   boxShadow: '0 0 1px 1px',
+  '&:focus': {
+    outline: 'none',
+  },
 });
 
 const modalCloseDivStyle = css({
@@ -123,7 +127,15 @@ export function Modal({
     container.current &&
     createPortal(
       <div
-        className={modalStyle + classNameOrEmpty(className)}
+        // ref={ref => {
+        //   if (ref != null) {
+        //     ref.focus();
+        //   }
+        // }}
+        className={
+          cx(modalStyle, flex, flexColumn, justifyCenter, contentCenter) +
+          classNameOrEmpty(className)
+        }
         style={style}
         id={id}
         onClick={bgClick}

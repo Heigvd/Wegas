@@ -143,7 +143,7 @@ export function TreeView({
           </>
         )}
       </Toolbar.Header>
-      <Toolbar.Content style={{ paddingTop: '1px' }}>
+      <Toolbar.Content>
         <Container
           onDropResult={({ source, target, id }) => {
             if (
@@ -364,12 +364,15 @@ export function CTree(
               entityIs(variable, 'QuestionDescriptor') ||
               entityIs(variable, 'WhQuestionDescriptor') ? (
                 <AddMenuParent
-                  label={props.noVisibleRoot ? 'Add' : ''}
+                  label={props.noVisibleRoot ? 'Add' : undefined}
                   prefixedLabel={!props.noVisibleRoot}
                   variable={variable}
                   localDispatch={props.localDispatch}
                   focusTab={tabId => focusTab(mainLayoutId, tabId)}
                   forceLocalDispatch={props.forceLocalDispatch}
+                  style={
+                    props.noVisibleRoot ? { marginBottom: '10px' } : undefined
+                  }
                 />
               ) : entityIs(variable, 'ChoiceDescriptor') ? (
                 <AddMenuChoice

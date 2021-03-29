@@ -83,6 +83,7 @@ public class SurveyToken extends Token {
         return "/survey.html?surveyIds=" + String.join(",", ids);
     }
 
+    @Override
     public void process(AccountFacade accountFacade, HttpServletRequest request) {
         accountFacade.processSurveyToken(this, request);
     }

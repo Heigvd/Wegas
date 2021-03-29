@@ -25,6 +25,10 @@ import {
   displayObsoleteComponentManager,
   ObsoleteComponentManager,
 } from './ObsoleteComponentManager';
+import { useDeepMemo } from '../../Hooks/useDeepMemo';
+
+const emptyPath: number[] = [];
+const emptyObject: any = {};
 
 export function getComponentFromPath(page: WegasComponent, path: number[]) {
   const newPath = [...path];
@@ -85,15 +89,22 @@ export function PageDeserializer({
   pageId,
   path,
   uneditable,
-  context,
+  context: oldContext,
   Container,
   containerPropsKeys,
   dropzones,
-  inheritedOptionsState,
+  inheritedOptionsState: newInheritedOptionsState,
 }: PageDeserializerProps): JSX.Element {
   // const [optionsState, setOptionsState] = React.useState<OptionsState>({});
 
-  const realPath = path ? path : [];
+  const newPath = path ? path : emptyPath;
+  const realPath = useDeepMemo(newPath);
+
+  const inheritedOptionsState = useDeepMemo(newInheritedOptionsState);
+
+  const context = useDeepMemo(oldContext);
+
+  // const dropzones = useDeepMemo(oldDropzones);
 
   const { editMode } = React.useContext(pageCTX);
 
@@ -116,7 +127,7 @@ export function PageDeserializer({
   const wegasComponent = useStore(wegasComponentSelector, deepDifferent);
 
   const { children, ...restProps } =
-    (wegasComponent && wegasComponent.props) || {};
+    (wegasComponent && wegasComponent.props) || emptyObject;
 
   const componentSeletor = React.useCallback(
     (s: PageComponentsState) =>
@@ -132,12 +143,12 @@ export function PageDeserializer({
 
   const optionsState = useOptions(
     pick(restProps, defaultOptionsKeys),
-    context || {},
+    context || emptyObject,
     inheritedOptionsState,
   );
 
   const { WegasComponent, container, componentName, obsoleteComponent } =
-    component || {};
+    component || emptyObject;
 
   if (!wegasComponent) {
     return <pre>JSON error in page</pre>;
