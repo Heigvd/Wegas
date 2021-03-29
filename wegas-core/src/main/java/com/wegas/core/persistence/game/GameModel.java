@@ -1265,7 +1265,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     @JsonIgnore
     public boolean isScenarioBasedOnModel() {
-        return this.isScenario() && this.getBasedOn() != null;
+        return this.isScenario() && this.getBasedOnId() != null;
     }
 
     @Override
