@@ -1,7 +1,6 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
-import { useTimeout } from '../../Components/Hooks/useDebounce';
 import HTMLEditor from '../../Components/HTMLEditor';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import {
@@ -46,7 +45,6 @@ export function OverviewRow({
     [team],
   );
 
-  const debouncedEditTeam = useTimeout(editTeam, 1000);
   return (
     <>
       <tr>
@@ -117,7 +115,6 @@ export function OverviewRow({
                 <HTMLEditor
                   value={team.getNotes() || ''}
                   noResize
-                  onChange={debouncedEditTeam}
                   onSave={editTeam}
                 />
               </div>

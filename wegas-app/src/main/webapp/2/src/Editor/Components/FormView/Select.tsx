@@ -131,7 +131,7 @@ function SelectView(props: ISelectProps) {
   const onChange = function onChange(
     event: React.ChangeEvent<{ value: string }>,
   ) {
-    let parsedValue = event.target.value;
+    let parsedValue: string | undefined = event.target.value;
     try {
       parsedValue = JSON.parse(parsedValue);
     } catch (_e) {
