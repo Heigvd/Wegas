@@ -132,10 +132,10 @@
         <jakarta.version>8.0.0</jakarta.version>
 
         <shiro.version>1.7.0</shiro.version>
-        <payara.version>5.2020.5</payara.version>
-        <payara.micro.version>5.2020.5</payara.micro.version>
+        <payara.version>5.2021.1</payara.version>
+        <payara.micro.version>5.2021.1</payara.micro.version>
         <!--<payara.micro.version>5.2020.5-albasim-p1</payara.micro.version>-->
-        <payara-api.version>5.2020.5</payara-api.version>
+        <payara-api.version>5.2021.1</payara-api.version>
         <junit.version>4.13.1</junit.version>
         <arquillian.version>1.6.0.Final</arquillian.version>
         <exec.plugin.version>1.2</exec.plugin.version>
@@ -188,6 +188,15 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Import dep from payara
+            <dependency>
+                <groupId>fish.payara.api</groupId>
+                <artifactId>payara-bom</artifactId>
+                <version>${payara.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>-->
+
             <!--<dependency>
                 <groupId>ch.albasim.wegas</groupId>
                 <artifactId>wegas-core</artifactId>
@@ -385,7 +394,7 @@
             <dependency>
                 <groupId>org.eclipse.microprofile.metrics</groupId>
                 <artifactId>microprofile-metrics-api</artifactId>
-                <version>2.3</version>
+                <version>3.0</version>
                 <type>jar</type>
                 <scope>provided</scope>
             </dependency>
@@ -401,7 +410,7 @@
             <dependency>
                 <groupId>org.eclipse.microprofile</groupId>
                 <artifactId>microprofile</artifactId>
-                <version>2.2</version>
+                <version>4.0.1</version>
                 <type>pom</type>
                 <scope>provided</scope>
             </dependency>
@@ -470,7 +479,7 @@
             <dependency>
                 <groupId>com.hazelcast</groupId>
                 <artifactId>hazelcast</artifactId>
-                <version>3.12.6</version>
+                <version>4.1</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>

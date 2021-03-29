@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -11,8 +10,8 @@ package com.wegas.core.ejb;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IAtomicLong;
-import com.hazelcast.core.ILock;
+import com.hazelcast.cp.IAtomicLong;
+import com.hazelcast.cp.lock.FencedLock;
 import com.pusher.rest.Pusher;
 import com.pusher.rest.data.PresenceUser;
 import com.pusher.rest.data.Result;
@@ -346,9 +345,8 @@ public class WebsocketFacade {
                 if (eventClass == EntityDestroyedEvent.class) {
                     List<DestroyedEntity> refreshed = new ArrayList<>();
                     /*
-                     * Not possible to find an already destroyed entity, so, in
-                     * this case (and since those informations are sufficient),
-                     * only id and class name are propagated
+                     * Not possible to find an already destroyed entity, so, in this case (and since
+                     * those informations are sufficient), only id and class name are propagated
                      */
                     for (AbstractEntity ae : toPropagate) {
                         refreshed.add(new DestroyedEntity(ae));
@@ -521,9 +519,9 @@ public class WebsocketFacade {
             User user = newPlayer.getUser();
             if (user != null) {
                 try {
-                    /*for (Entry<String, List<AbstractEntity>> entry : newPlayer.getGame().getEntities().entrySet()) {
-                        this.propagate(new EntityUpdatedEvent(entry.getValue()), entry.getKey(), null);
-                    }*/
+                    /* for (Entry<String, List<AbstractEntity>> entry :
+                     * newPlayer.getGame().getEntities().entrySet()) { this.propagate(new
+                     * EntityUpdatedEvent(entry.getValue()), entry.getKey(), null); } */
 
                     pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update",
                         parseJSON(
@@ -595,11 +593,11 @@ public class WebsocketFacade {
      * @param hook
      */
     public void pusherChannelExistenceWebhook(PusherChannelExistenceWebhook hook) {
-        ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
+        FencedLock onlineUsersLock = hazelcastInstance.getCPSubsystem().getLock(LOCKNAME);
         onlineUsersLock.lock();
         this.maintainLocalListUpToDate = true;
         try {
-            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getCPSubsystem().getAtomicLong(UPTODATE_KEY);
             if (onlineUsersUpToDate.get() == 0) {
                 initOnlineUsers();
             }
@@ -640,10 +638,10 @@ public class WebsocketFacade {
         requestManager.su();
         try {
             if (pusher != null) {
-                ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
+                FencedLock onlineUsersLock = hazelcastInstance.getCPSubsystem().getLock(LOCKNAME);
                 onlineUsersLock.lock();
                 try {
-                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getCPSubsystem().getAtomicLong(UPTODATE_KEY);
                     if (onlineUsersUpToDate.get() == 0) {
                         initOnlineUsers();
                     }
@@ -745,7 +743,7 @@ public class WebsocketFacade {
                 }
 
                 if (maintainLocalListUpToDate) {
-                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getCPSubsystem().getAtomicLong(UPTODATE_KEY);
                     onlineUsersUpToDate.set(1);
                 }
 
@@ -776,8 +774,7 @@ public class WebsocketFacade {
                 }
 
                 /*
-                 * Detect no longer online user still in the local list
-                 * and remove them
+                 * Detect no longer online user still in the local list and remove them
                  */
                 Iterator<Cache.Entry<Long, OnlineUser>> it = onlineUsers.iterator();
                 while (it.hasNext()) {
@@ -788,7 +785,7 @@ public class WebsocketFacade {
                 }
 
                 if (maintainLocalListUpToDate) {
-                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getCPSubsystem().getAtomicLong(UPTODATE_KEY);
                     onlineUsersUpToDate.set(1);
                 }
 
@@ -806,10 +803,10 @@ public class WebsocketFacade {
     }
 
     public void clearOnlineUsers() {
-        ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
+        FencedLock onlineUsersLock = hazelcastInstance.getCPSubsystem().getLock(LOCKNAME);
         onlineUsersLock.lock();
         try {
-            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getCPSubsystem().getAtomicLong(UPTODATE_KEY);
             onlineUsers.clear();
             onlineUsersUpToDate.set(0);
         } finally {

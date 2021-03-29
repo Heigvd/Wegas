@@ -11,8 +11,8 @@ package com.wegas.core.rest;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import com.hazelcast.cluster.Member;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.Member;
 import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
@@ -32,6 +32,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -306,7 +307,7 @@ public class UtilsController {
             .append("<h2>LocalList</h2>")
             .append("<ul>");
 
-        for (String m : applicationLifecycle.getMembers()) {
+        for (UUID m : applicationLifecycle.getMembers()) {
             sb.append("<li>").append(m).append("</li>");
         }
 

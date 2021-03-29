@@ -7,15 +7,15 @@
  */
 package com.wegas.core.ejb;
 
+import com.hazelcast.cluster.Member;
+import com.hazelcast.cluster.MembershipEvent;
+import com.hazelcast.cluster.MembershipListener;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.Member;
-import com.hazelcast.core.MemberAttributeEvent;
-import com.hazelcast.core.MembershipEvent;
-import com.hazelcast.core.MembershipListener;
 import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.enterprise.event.Event;
@@ -42,28 +42,28 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
     /*
      * local member list to make the list available when the local instance has been shutdown
      */
-    private Set<String> clusterMembers = new HashSet<>();
+    private Set<UUID> clusterMembers = new HashSet<>();
 
     /**
      * To inform other cluster member this instance id up
      */
     @Inject
     @Outbound(eventName = LIFECYCLE_UP)
-    private Event<String> eventsUp;
+    private Event<UUID> eventsUp;
 
     /**
      * To inform other cluster member this instance is up
      */
     @Inject
     @Outbound(eventName = LIFECYCLE_DOWN)
-    private Event<String> eventsDown;
+    private Event<UUID> eventsDown;
 
     /**
      * To inform other cluster member this instance id up
      */
     @Inject
     @Outbound(eventName = REQUEST_ALL, loopBack = true)
-    private Event<String> reqAll;
+    private Event<UUID> reqAll;
 
     @Inject
     private HazelcastInstance hzInstance;
@@ -74,13 +74,13 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
     @Inject
     private ConcurrentHelper concurrentHelper;
 
-    public void addMember(String member) {
+    public void addMember(UUID member) {
         if (!this.clusterMembers.contains(member)) {
             this.clusterMembers.add(member);
         }
     }
 
-    public void removeMember(String member) {
+    public void removeMember(UUID member) {
         this.clusterMembers.remove(member);
     }
 
@@ -93,7 +93,7 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
      *
      * @param memberUUID new instance uuid
      */
-    public void instanceUp(@Observes @Inbound(eventName = LIFECYCLE_UP) String memberUUID) {
+    public void instanceUp(@Observes @Inbound(eventName = LIFECYCLE_UP) UUID memberUUID) {
         logger.info("REGISTER MEMBER {}", memberUUID);
         this.addMember(memberUUID);
         //logger.error("EVENTRECEIVED: {} -> {} ", event.getMember(),  event.isUp());
@@ -105,7 +105,7 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
      *
      * @param memberUUID new instance uuid
      */
-    public void instanceDown(@Observes @Inbound(eventName = LIFECYCLE_DOWN) String memberUUID) {
+    public void instanceDown(@Observes @Inbound(eventName = LIFECYCLE_DOWN) UUID memberUUID) {
         logger.info("REMOVE MEMBER {}", memberUUID);
         this.removeMember(memberUUID);
         //logger.error("EVENTRECEIVED: {} -> {} ", event.getMember(), event.isUp());
@@ -117,7 +117,7 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
      *
      * @param fromMemberUUID
      */
-    public void announcemenetRequested(@Observes @Inbound(eventName = REQUEST_ALL) String fromMemberUUID) {
+    public void announcemenetRequested(@Observes @Inbound(eventName = REQUEST_ALL) UUID fromMemberUUID) {
         logger.info("MEMBER {} REQUESTS ANNOUNCE", fromMemberUUID);
         this.sendInstanceReadyEvent(hzInstance.getCluster().getLocalMember().getUuid());
         logClusterInfo(null);
@@ -137,7 +137,7 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
      *
      * @param uuid
      */
-    public void sendInstanceReadyEvent(String uuid) {
+    public void sendInstanceReadyEvent(UUID uuid) {
         eventsUp.fire(uuid);
     }
 
@@ -146,7 +146,7 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
      *
      * @param uuid
      */
-    public void sendInstanceDownEvent(String uuid) {
+    public void sendInstanceDownEvent(UUID uuid) {
         eventsDown.fire(uuid);
     }
 
@@ -163,13 +163,6 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
         logClusterInfo(null);
     }
 
-    @Override
-    public void memberAttributeChanged(MemberAttributeEvent mae) {
-        logger.info("MEMBER ATTR CHANGE: {}", mae.getMember().getUuid());
-        logClusterInfo(null);
-        // no need
-    }
-
     /**
      * remove a member from the local list
      *
@@ -182,7 +175,7 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
         logClusterInfo(null);
     }
 
-    public Set<String> getMembers() {
+    public Set<UUID> getMembers() {
         return clusterMembers;
     }
 
@@ -257,7 +250,7 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
 
         sb.append("** LocalList **\n");
 
-        for (String m : this.getMembers()) {
+        for (UUID m : this.getMembers()) {
             sb.append(" - ").append(m).append(System.lineSeparator());
         }
 
