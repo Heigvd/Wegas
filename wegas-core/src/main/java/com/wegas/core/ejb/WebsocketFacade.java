@@ -10,8 +10,8 @@ package com.wegas.core.ejb;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IAtomicLong;
-import com.hazelcast.core.ILock;
+import com.hazelcast.cp.IAtomicLong;
+import com.hazelcast.cp.lock.FencedLock;
 import com.pusher.rest.Pusher;
 import com.pusher.rest.data.PresenceUser;
 import com.pusher.rest.data.Result;
@@ -602,11 +602,11 @@ public class WebsocketFacade {
      * @param hook
      */
     public void pusherChannelExistenceWebhook(PusherChannelExistenceWebhook hook) {
-        ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
+        FencedLock onlineUsersLock = hazelcastInstance.getCPSubsystem().getLock(LOCKNAME);
         onlineUsersLock.lock();
         this.maintainLocalListUpToDate = true;
         try {
-            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getCPSubsystem().getAtomicLong(UPTODATE_KEY);
             if (onlineUsersUpToDate.get() == 0) {
                 initOnlineUsers();
             }
@@ -647,10 +647,10 @@ public class WebsocketFacade {
         requestManager.su();
         try {
             if (pusher != null) {
-                ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
+                FencedLock onlineUsersLock = hazelcastInstance.getCPSubsystem().getLock(LOCKNAME);
                 onlineUsersLock.lock();
                 try {
-                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getCPSubsystem().getAtomicLong(UPTODATE_KEY);
                     if (onlineUsersUpToDate.get() == 0) {
                         initOnlineUsers();
                     }
@@ -752,7 +752,7 @@ public class WebsocketFacade {
                 }
 
                 if (maintainLocalListUpToDate) {
-                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getCPSubsystem().getAtomicLong(UPTODATE_KEY);
                     onlineUsersUpToDate.set(1);
                 }
 
@@ -794,7 +794,7 @@ public class WebsocketFacade {
                 }
 
                 if (maintainLocalListUpToDate) {
-                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getCPSubsystem().getAtomicLong(UPTODATE_KEY);
                     onlineUsersUpToDate.set(1);
                 }
 
@@ -812,10 +812,10 @@ public class WebsocketFacade {
     }
 
     public void clearOnlineUsers() {
-        ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
+        FencedLock onlineUsersLock = hazelcastInstance.getCPSubsystem().getLock(LOCKNAME);
         onlineUsersLock.lock();
         try {
-            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getCPSubsystem().getAtomicLong(UPTODATE_KEY);
             onlineUsers.clear();
             onlineUsersUpToDate.set(0);
         } finally {

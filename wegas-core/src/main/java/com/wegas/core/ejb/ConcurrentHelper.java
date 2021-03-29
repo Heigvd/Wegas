@@ -8,7 +8,8 @@
 package com.wegas.core.ejb;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
+import com.hazelcast.cp.lock.FencedLock;
+import com.hazelcast.cp.lock.exception.LockOwnershipLostException;
 import com.wegas.core.Helper;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -108,10 +109,10 @@ public class ConcurrentHelper {
      *
      * @return
      */
-    private ILock getLock(RefCounterLock lock) {
+    private FencedLock getLock(RefCounterLock lock) {
         String effectiveToken = getEffectiveToken(lock.token, lock.audience);
         logger.info("GET HZ LOCK {}", effectiveToken);
-        return hzInstance.getLock(effectiveToken);
+        return hzInstance.getCPSubsystem().getLock(effectiveToken);
     }
 
     /**
@@ -119,14 +120,14 @@ public class ConcurrentHelper {
      * <p>
      */
     private void mainLock() {
-        hzInstance.getLock(MAIN_LOCK_NAME).lock();
+        hzInstance.getCPSubsystem().getLock(MAIN_LOCK_NAME).lock();
     }
 
     /**
      * Helper is a cluster wide singleton. Unlock it
      */
     private void mainUnlock() {
-        hzInstance.getLock(MAIN_LOCK_NAME).unlock();
+        hzInstance.getCPSubsystem().getLock(MAIN_LOCK_NAME).unlock();
     }
 
     /**
@@ -166,9 +167,8 @@ public class ConcurrentHelper {
                 if (audience != null && lock.counter == 1) { // just locked
                     websocketFacade.sendLock(audience, token);
                 }
-                /*} else if (lock.counter == 0) {
-                // since the lock is held by another process, the counter is always (thanks to sync(this)) >= 1)
-                locks.remove(token);*/
+                /* } else if (lock.counter == 0) { // since the lock is held by another process, the
+                 * counter is always (thanks to sync(this)) >= 1) locks.remove(token); */
             }
             //}
         } finally {
@@ -224,22 +224,35 @@ public class ConcurrentHelper {
     private void unlock(RefCounterLock lock, String token, String audience, boolean force) {
         String effectiveToken = getEffectiveToken(token, audience);
         logger.info("UNLOCK: {}", lock);
-        ILock theLock = this.getLock(lock);
-        if (force) {
-            theLock.forceUnlock();
-        } else {
-            theLock.unlock();
+        FencedLock theLock = this.getLock(lock);
+        try {
+            if (force) {
+                logger.info("UNLOCK FORCE (destroy): {}", lock);
+                theLock.unlock();
+            } else {
+                logger.info("UNLOCK: {}", lock);
+                theLock.unlock();
+            }
+        } catch (LockOwnershipLostException ex) {
+            logger.error("Ownership exception: ", ex);
+        } catch (IllegalMonitorStateException ex) {
+            logger.error("Illegal Monitoring: ", ex);
         }
+
         logger.info("UNLOCKED");
         lock.counter--;
         logger.info("MyLock unlock:" + effectiveToken);
         myLocks.remove(effectiveToken);
         if (lock.counter == 0) {
+            logger.info("UNLOCKED");
             if (!Helper.isNullOrEmpty(audience) && !audience.equals("internal")) {
                 websocketFacade.sendUnLock(audience, token);
             }
-            this.getLock(lock).destroy();
+
+            //this.getLock(lock).destroy();
+
             locks.remove(effectiveToken);
+
             logger.info("CLEAN LOCK LIST");
         } else {
             locks.put(effectiveToken, lock);

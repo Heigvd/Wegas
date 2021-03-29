@@ -9,7 +9,7 @@
 package com.wegas.core.ejb.cron;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
+import com.hazelcast.cp.lock.FencedLock;
 import com.wegas.admin.AdminFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.WegasAbstractFacade;
@@ -74,7 +74,7 @@ public class EjbTimerFacade extends WegasAbstractFacade {
      */
     @Schedule(hour = "1", minute = "30", dayOfWeek = "Sun", persistent = false)
     public void deleteGames() {
-        ILock lock = hzInstance.getLock("ScheduleGameGCLock");
+        FencedLock lock = hzInstance.getCPSubsystem().getLock("ScheduleGameGCLock");
         if (lock.tryLock()) {
             try {
                 logger.info("Scheduled games GC");
@@ -95,7 +95,7 @@ public class EjbTimerFacade extends WegasAbstractFacade {
      */
     //@Schedule(hour = "4", dayOfMonth = "Last Sat", persistence = false)
     public void removeGameModels() {
-        ILock lock = hzInstance.getLock("ScheduleGameModelGCLock");
+        FencedLock lock = hzInstance.getCPSubsystem().getLock("ScheduleGameModelGCLock");
         if (lock.tryLock()) {
             try {
                 requestManager.su();
@@ -127,7 +127,7 @@ public class EjbTimerFacade extends WegasAbstractFacade {
      */
     @Schedule(hour = "4", minute = "12", persistent = false)
     public void removeIdleGuests() {
-        ILock lock = hzInstance.getLock("ScheduleGuestGCLock");
+        FencedLock lock = hzInstance.getCPSubsystem().getLock("ScheduleGuestGCLock");
         if (lock.tryLock()) {
             try {
                 logger.info("Scheduled idle guests GC");
@@ -167,7 +167,7 @@ public class EjbTimerFacade extends WegasAbstractFacade {
      */
     //@Schedule(hour = "*", minute = "0", persistent = false)
     public void jcrGC() {
-        ILock lock = hzInstance.getLock("ScheduleJCRGCLock");
+        FencedLock lock = hzInstance.getCPSubsystem().getLock("ScheduleJCRGCLock");
         if (lock.tryLock()) {
             try {
                 logger.info("Scheduled JCR GC");
@@ -192,7 +192,7 @@ public class EjbTimerFacade extends WegasAbstractFacade {
      */
     @Schedule(hour = "*", minute = "48", persistent = false)
     public void deleteOutdatedTokens() {
-        ILock lock = hzInstance.getLock("ScheduleTokenGC");
+        FencedLock lock = hzInstance.getCPSubsystem().getLock("ScheduleTokenGC");
         if (lock.tryLock()) {
             try (Sudoer su = requestManager.sudoer()) {
                 logger.info("Scheduled token GC");
