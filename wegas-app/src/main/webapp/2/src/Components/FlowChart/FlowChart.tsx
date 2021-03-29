@@ -459,7 +459,6 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
             const parent = ref?.parentElement;
             if (ref != null && parent != null) {
               const parentBox = parent.getBoundingClientRect();
-              // debugger;
               ref.style.setProperty(
                 'width',
                 Math.max(parentBox.width, parent.scrollWidth) + 'px',

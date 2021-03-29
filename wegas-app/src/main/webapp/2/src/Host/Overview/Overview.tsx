@@ -1,4 +1,4 @@
-import { css } from 'emotion';
+import { css} from 'emotion';
 import * as React from 'react';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
@@ -82,6 +82,9 @@ const tableStyle = css({
   },
 });
 
+const flexAuto = css({
+  flex: '0 0 auto',
+});
 interface OverviewItem {
   id: string;
   label: string;
@@ -229,7 +232,7 @@ export default function Overview() {
       <Toolbar.Header className={css({justifyContent: 'flex-end'})}>
         <Button icon="undo" onClick={refreshOverview} />
       </Toolbar.Header>
-      <Toolbar.Content>
+      <Toolbar.Content className= {flexAuto}>
         <div className={tableStyle}>
           <table key={JSON.stringify(Object.keys(teams))}>
             <OverviewHeader

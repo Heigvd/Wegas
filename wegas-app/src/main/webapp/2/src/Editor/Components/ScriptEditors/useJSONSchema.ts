@@ -10,6 +10,8 @@ import {
   decorationsChoices,
 } from '../../../Components/PageComponents/tools/options';
 
+const emptySchema = {};
+
 /**
  * useJSONSchema - Creates the schema for the JSON of a page
  * @param enabled - If false, avoid calculation of the shema and return {}
@@ -18,7 +20,7 @@ export function useJSONSchema(enabled: boolean = true) {
   const components = usePageComponentStore(s => s);
 
   if (!enabled) {
-    return {};
+    return emptySchema;
   }
 
   const childrenSchemas = Object.values(components)

@@ -34,7 +34,7 @@ import {
   createTranslation,
   translate,
 } from '../../Editor/Components/FormView/translatable';
-import { wwarn } from '../../Helper/wegaslog';
+import { wlog, wwarn } from '../../Helper/wegaslog';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { replace, createLRU } from '../../Helper/tools';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
@@ -89,6 +89,7 @@ interface GlobalClasses {
   };
   APIMethods: APIMethodsClass;
   Helpers: GlobalHelpersClass;
+  wlog: (a: any) => void;
 }
 
 const globalDispatch = store.dispatch;
@@ -375,6 +376,8 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.Helpers = {
     cloneDeep: cloneDeep,
   };
+
+  globals.wlog = wlog;
 }
 
 export type ScriptReturnType = object | number | boolean | string | undefined;
@@ -510,6 +513,19 @@ export function useScript<T extends ScriptReturnType>(
   },
   catchCB?: (e: Error) => void,
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
+  const oldContext = React.useRef<{
+    [name: string]: unknown;
+  }>();
+
+  const newContext = React.useMemo(() => {
+    if (deepDifferent(context, oldContext.current)) {
+      oldContext.current = context;
+      return context;
+    } else {
+      return oldContext.current;
+    }
+  }, [context]);
+
   const globalContexts = useGlobalContexts();
 
   const state = usePagesContextStateStore(s => s);
@@ -517,12 +533,12 @@ export function useScript<T extends ScriptReturnType>(
   const fn = React.useCallback(() => {
     if (Array.isArray(script)) {
       return script.map(scriptItem =>
-        safeClientScriptEval<T>(scriptItem, context, catchCB, state),
+        safeClientScriptEval<T>(scriptItem, newContext, catchCB, state),
       );
     } else {
-      return safeClientScriptEval<T>(script, context, catchCB, state);
+      return safeClientScriptEval<T>(script, newContext, catchCB, state);
     }
-  }, [script, context, state, catchCB]);
+  }, [script, newContext, state, catchCB]);
 
   const returnValue = useStore(s => {
     setGlobals(globalContexts, s);

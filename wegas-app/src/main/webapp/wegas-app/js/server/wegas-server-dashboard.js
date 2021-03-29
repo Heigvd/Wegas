@@ -160,6 +160,7 @@ var WegasDashboard = (function() {
                 var sectionCfg = theCfg[sectionName];
 
                 var section = {
+                    id: sectionName,
                     title: sectionCfg.title || sectionName,
                     items: []
                 };

@@ -34,7 +34,7 @@ import { classesCTX } from './Contexts/ClassesProvider';
 import { flexColumn, flex } from '../css/classes';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { classNameOrEmpty } from '../Helper/className';
-import { inputStyleCSS } from './Inputs/inputStyles';
+import { inputDefaultCSS, inputStyleCSS } from './Inputs/inputStyles';
 import { debounce } from 'lodash-es';
 import { isActionAllowed } from './PageComponents/tools/options';
 
@@ -43,7 +43,12 @@ const toolbar = css({
 });
 
 const editorStyle = css({
-  '& .mce-content-body': inputStyleCSS,
+  minWidth: '25em',
+  minHeight: '200px',
+  '& .mce-content-body': {
+    ...inputDefaultCSS,
+    ...inputStyleCSS,
+  },
 });
 
 type CallbackFN = (url: string) => void;

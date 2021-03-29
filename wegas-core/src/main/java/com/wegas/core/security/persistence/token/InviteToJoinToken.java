@@ -51,6 +51,7 @@ public class InviteToJoinToken extends Token {
         this.team = team;
     }
 
+    @Override
     public String getRedirectTo() {
         if (game != null) {
             if (game.getProperties().getFreeForAll()) {

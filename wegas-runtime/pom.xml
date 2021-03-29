@@ -197,7 +197,7 @@
                         <!-- used in domain.xml -->
                         <payara.randomHttpPort>false</payara.randomHttpPort>
                         <payara.microJar>${project.basedir}/target/payara-micro.current.jar</payara.microJar>
-                        <payara.bindHttpPort>28080</payara.bindHttpPort>
+                        <!-- <payara.bindHttpPort>28080</payara.bindHttpPort> -->
                         <payara.clusterEnabled>true</payara.clusterEnabled>
                         <!-- want to debug ? add next line to cmdOptions and inpect the log to find
                         the HTTP port to connect to -->

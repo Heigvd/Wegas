@@ -40,8 +40,15 @@ export const stateBoxStyle = css({
   boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', //shadow theme var?
   color: '#fff', //LightText theme var?
   flexGrow: 0,
+  maxHeight: '100px',
   '&>*': {
     marginRight: '15px',
+  },
+  '& *': {
+    whiteSpace: 'nowrap',
+    maxHeight: '40px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
   '.StateLabelTextStyle': {
     fontSize: '16px',
