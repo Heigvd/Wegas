@@ -43,7 +43,12 @@ const toolbar = css({
 });
 
 const editorStyle = css({
-  '& .mce-content-body': { ...inputStyleCSS, ...inputDefaultCSS },
+  minWidth: '25em',
+  minHeight: '200px',
+  '& .mce-content-body': {
+    ...inputDefaultCSS,
+    ...inputStyleCSS,
+  },
 });
 
 type CallbackFN = (url: string) => void;
