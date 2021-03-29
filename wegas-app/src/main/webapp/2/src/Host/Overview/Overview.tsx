@@ -68,7 +68,7 @@ const tableStyle = css({
   },
 });
 
-interface OverviewItem {
+export interface OverviewItem {
   id: string;
   label: string;
   order: number;
@@ -105,7 +105,7 @@ export interface ActionItem extends OverviewItem {
   icon: string;
 }
 
-interface OverviewData {
+export interface OverviewData {
   data: { [teamId: string]: { [key: string]: DataType } };
   structure: {
     title: string;
