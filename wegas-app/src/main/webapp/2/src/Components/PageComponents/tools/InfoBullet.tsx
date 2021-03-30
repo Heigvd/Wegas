@@ -6,11 +6,17 @@ import { IScript } from 'wegas-ts-api';
 
 const infoBeamStyle = css({
   position: 'absolute',
+  padding: '3px',
   color: themeVar.Common.colors.LightTextColor,
   backgroundColor: themeVar.Common.colors.WarningColor,
   borderRadius: '50%',
-  padding: '0px 5px 0px 5px',
-  zIndex: 10000,
+  height: '21px',
+  width: '21px',
+  textAlign: 'center',
+  fontSize: '12px',
+  lineHeight: '15px',
+  fontWeight: 'normal',
+  zIndex: 10,
 });
 
 const blinkAnimation = keyframes(`
@@ -39,7 +45,7 @@ export interface InfoBulletProps {
 
 export function InfoBullet({ show, blink, message }: InfoBulletProps) {
   return show !== false ? (
-    <div
+    <span
       ref={container => {
         if (container) {
           const { width, height } = container.getBoundingClientRect();
@@ -52,7 +58,7 @@ export function InfoBullet({ show, blink, message }: InfoBulletProps) {
       className={cx(infoBeamStyle, { [blinkStyle]: blink })}
     >
       {message}
-    </div>
+    </span>
   ) : null;
 }
 

@@ -174,6 +174,10 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         final DescriptorListI<VariableDescriptor> list,
         final VariableDescriptor entity, boolean resetNames, boolean resetRefIds) {
 
+        if (resetRefIds) {
+            MergeHelper.resetRefIds(entity, null, true);
+        }
+
         List<String> usedNames = this.findDistinctNames(gameModel, entity.getRefId());
         List<TranslatableContent> usedLabels = this.findDistinctLabels(list);
 
@@ -193,12 +197,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             // still no name but a tag
             entity.setName(entity.getEditorTag());
         }
-
+ 
         Map<String, String> newNames = Helper.setUniqueName(entity, usedNames, gameModel, resetNames);
-
-        if (resetRefIds) {
-            MergeHelper.resetRefIds(entity, null, true);
-        }
 
         // some impacts may impact renamed variable. -> update them to impact the new variable name
         for (Entry<String, String> newName : newNames.entrySet()) {
