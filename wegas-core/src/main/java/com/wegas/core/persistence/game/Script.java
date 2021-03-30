@@ -135,6 +135,6 @@ public class Script implements Serializable, Mergeable {
 
     @Override
     public String toString() {
-        return "ScriptEntity(" + "language:" + this.language + ", content:{\n" + this.content + "\n})";
+        return "Script(" + "language:" + this.language + ", content:{\n" + this.content + "\n})";
     }
 }

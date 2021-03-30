@@ -9,6 +9,7 @@ package com.wegas.core.persistence.variable.primitive;
 
 import ch.albasim.wegas.annotations.CommonView;
 import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.IMergeable;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
@@ -170,7 +171,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      * @param value
      */
     @Override
-    @Scriptable(label = "set")
+    @Scriptable(label = "set", dependsOn = DependencyScope.NONE)
     public void setValue(Player p, Double value) {
         this.getInstance(p).setValue(value);
     }
@@ -211,7 +212,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      * @param p
      * @param value
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void add(Player p, double value) {
         this.getInstance(p).add(value);
     }
@@ -241,7 +242,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      *
      * @return value of player p instance
      */
-    @Scriptable(label = "value")
+    @Scriptable(label = "value", dependsOn = DependencyScope.SELF)
     @Override
     public Double getValue(Player p) {
         return this.getInstance(p).getValue();

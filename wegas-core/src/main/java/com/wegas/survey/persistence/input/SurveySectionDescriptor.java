@@ -7,6 +7,7 @@
  */
 package com.wegas.survey.persistence.input;
 
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
@@ -113,7 +114,7 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
      */
     @Override
     @JsonView(Views.ExportI.class)
-    @Scriptable(label = "getItems", wysiwyg = false)
+    @Scriptable(label = "getItems", wysiwyg = false, dependsOn = DependencyScope.CHILDREN)
     public List<SurveyInputDescriptor> getItems() {
         return Helper.copyAndSortModifiable(this.items, new EntityComparators.OrderComparator<>());
     }
@@ -245,7 +246,7 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void activate(Player p) {
         this.getInstance(p).setActive(true);
     }
@@ -254,7 +255,7 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void deactivate(Player p) {
         this.getInstance(p).setActive(false);
     }
@@ -265,7 +266,7 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
      *
      * @return true if the player's survey is active
      */
-    @Scriptable(label = "is active")
+    @Scriptable(label = "is active", dependsOn = DependencyScope.SELF)
     public boolean isActive(Player p) {
         return this.getInstance(p).getActive();
     }
@@ -277,7 +278,7 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
      *
      * @return true if the player's survey is not active
      */
-    @Scriptable(label = "is not active")
+    @Scriptable(label = "is not active", dependsOn = DependencyScope.SELF)
     public boolean isNotActive(Player p) {
         return this.getInstance(p).getActive() == false;
     }

@@ -9,6 +9,7 @@ package com.wegas.core.persistence.variable;
 
 import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
 import static ch.albasim.wegas.annotations.CommonView.LAYOUT.shortInline;
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.IMergeable;
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import ch.albasim.wegas.annotations.Scriptable;
@@ -659,7 +660,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
      *
      * @return variableInstance belonging to the player
      */
-    @Scriptable(wysiwyg = false)
+    @Scriptable(wysiwyg = false, dependsOn = DependencyScope.SELF)
     public T getInstance(Player player) {
         return (T) this.getScope().getVariableInstance(player);
     }
