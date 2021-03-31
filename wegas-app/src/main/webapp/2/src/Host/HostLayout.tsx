@@ -105,7 +105,7 @@ export default function HostLayout() {
   const peerReviewTabs = peerReviews.reduce(
     (o, peerReview) => ({
       ...o,
-      [`Peer review - ${translate(peerReview?.label, lang)}`]: (
+      [`Peer review ${translate(peerReview?.label, lang)}`]: (
         <PeerReviewPage peerReview={peerReview} />
       ),
     }),

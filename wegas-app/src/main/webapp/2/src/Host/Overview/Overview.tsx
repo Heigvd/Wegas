@@ -1,4 +1,4 @@
-import { css } from 'emotion';
+import { css, Interpolation } from 'emotion';
 import * as React from 'react';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
@@ -14,7 +14,17 @@ import { ModalState, OverviewModal } from './OverviewModal/OverviewModal';
 import { instantiate } from '../../data/scriptable';
 import { themeVar } from '../../Components/Style/ThemeVars';
 
-const tableStyle = css({
+
+export const trainerCellStyleI: Interpolation<undefined> = {
+  backgroundColor: '#fff',
+        boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
+        padding: '15px 20px',
+        textAlign: 'center',
+        margin: '3px',
+        height: '48px',
+}
+
+export const tableStyle = css({
   display: 'flex',
   color: themeVar.Common.colors.DarkTextColor,
   width: '100%',
@@ -23,10 +33,6 @@ const tableStyle = css({
   colgroup: {
     borderLeft: 'solid 15px transparent',
     borderRight: 'solid 15px transparent',
-    '.fixedColumn': {
-      backgroundColor: 'red',
-      zIndex: 111,
-    },
   },
   table: {
     borderCollapse: 'collapse',
@@ -36,12 +42,7 @@ const tableStyle = css({
       backgroundColor: '#f9f9f9',
       whiteSpace: 'pre',
       '&> div': {
-        backgroundColor: '#fff',
-        boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
-        padding: '15px 20px',
-        textAlign: 'center',
-        margin: '3px',
-        height: '48px',
+        ...trainerCellStyleI,
         '&> p': {
           margin: 0,
         },
@@ -81,6 +82,8 @@ const tableStyle = css({
     },
   },
 });
+
+
 
 const flexAuto = css({
   flex: '0 0 auto',

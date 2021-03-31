@@ -21,8 +21,8 @@ import { GameModel, Player } from '../data/selectors';
 import { store, useStore } from '../data/Stores/store';
 import { translate } from '../Editor/Components/FormView/translatable';
 import { createScript } from '../Helper/wegasEntites';
-import { wlog } from '../Helper/wegaslog';
 import { testPRData } from './Overview/PRinterfaceTests';
+import { InfoOverlay } from './InfoOverlay';
 
 const prStateStyle = css({
   borderRadius: '10px',
@@ -38,6 +38,35 @@ const prStateStyle = css({
 const prActiveStateStyle = css({
   backgroundColor: themeVar.Common.colors.ActiveColor,
   color: themeVar.Common.colors.LightTextColor,
+});
+// TODO use exported style from overview
+const PRTableStyle = css({
+  borderCollapse: 'separate',
+  borderSpacing: '10px',
+  margin: '40px 0',
+  fontSize: '14px',
+  colgroup: {
+    borderLeft: 'solid 15px transparent',
+    borderRight: 'solid 15px transparent',
+  },
+  td: {
+    minWidth: '60px',
+    backgroundColor: '#fff',
+    boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
+    padding: '10px 15px',
+    textAlign: 'center',
+    margin: '3px',
+    height: '48px',
+  },
+  'thead tr': {
+    height: '25px',
+    th: {
+      boxShadow: 'none',
+      verticalAlign: 'top',
+      padding: '0 10px',
+      textAlign: 'center',
+    },
+  },
 });
 
 function isOverviewItem(item: DataItem): item is DataOverviewItem {
@@ -59,13 +88,6 @@ interface DataReviewItem {
 
 type DataItem = DataOverviewItem | DataReviewItem;
 
-interface PRTableProps {
-  structures: TableStructure[];
-  data: {
-    [id: string]: DataItem;
-  };
-}
-
 interface OverviewTDProps {
   value: string | undefined;
   color: OverviewColor;
@@ -73,7 +95,35 @@ interface OverviewTDProps {
 
 function OverviewTD({ value, color }: OverviewTDProps) {
   // TODO : switch-case colors
-  return <td style={{ backgroundColor: color }}>{value}</td>;
+  let computedColors: React.CSSProperties = {
+    backgroundColor: undefined,
+    color: undefined,
+  };
+
+  switch (color) {
+    case 'green':
+      computedColors = {
+        backgroundColor: themeVar.Common.colors.PrimaryColor,
+        color: themeVar.Common.colors.SecondaryBackgroundColor,
+      };
+      break;
+    case 'red':
+      computedColors = {
+        backgroundColor: themeVar.Common.colors.ActiveColor,
+        color: themeVar.Common.colors.SecondaryBackgroundColor,
+      };
+      break;
+    case 'orange':
+      computedColors = { backgroundColor: themeVar.Common.colors.HeaderColor };
+      break;
+    case 'grey':
+      computedColors = {
+        backgroundColor: themeVar.Common.colors.DisabledColor,
+      };
+      break;
+  }
+
+  return <td style={computedColors}>{value}</td>;
 }
 
 function normalizeFormatterFunction(
@@ -94,11 +144,25 @@ function normalizeFormatterFunction(
 
 interface ReviewTDProps {
   value: ReviewsItemValue;
+  title: string;
   data: DataReviewItem;
   formatter: string | undefined;
+  onShowOverlay: (
+    title: string,
+    content: string,
+    button: React.RefObject<HTMLButtonElement>,
+  ) => void;
 }
 
-function ReviewTD({ value, data, formatter }: ReviewTDProps) {
+function ReviewTD({
+  value,
+  title,
+  data,
+  formatter,
+  onShowOverlay,
+}: ReviewTDProps) {
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+
   let buttonData: ReviewsItemValue | undefined = undefined;
   let formattedValue = value;
   if (formatter != null) {
@@ -117,6 +181,9 @@ function ReviewTD({ value, data, formatter }: ReviewTDProps) {
       const found = regex.exec(formattedValue);
       if (found != null) {
         buttonData = data[found[2] + found[3] + found[4]];
+        if (Array.isArray(buttonData)) {
+          buttonData = buttonData.join('\n');
+        }
       }
     }
   }
@@ -126,18 +193,82 @@ function ReviewTD({ value, data, formatter }: ReviewTDProps) {
       <div className={cx(flex, flexRow, itemCenter, justifyCenter)}>
         <div dangerouslySetInnerHTML={{ __html: String(formattedValue) }} />
         {buttonData && (
-          <Button icon="info-circle" onClick={() => wlog(buttonData)} />
+          <Button
+            ref={buttonRef}
+            icon="info-circle"
+            onClick={() => onShowOverlay(title, String(buttonData), buttonRef)}
+          />
         )}
       </div>
     </td>
   );
 }
 
-function PRTable({ structures, data }: PRTableProps) {
-  const items = structures.reduce((o, s) => [...o, ...s.items], []);
+interface TeamTDProps {
+  teamName: string | undefined | null;
+  value: string;
+  onShowOverlay: (
+    title: string,
+    content: string,
+    button: React.RefObject<HTMLButtonElement>,
+  ) => void;
+}
+
+function TeamTD({ teamName, value, onShowOverlay }: TeamTDProps) {
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+  return (
+    <td>
+      {teamName}
+      <Button
+        ref={buttonRef}
+        icon="info-circle"
+        onClick={() =>
+          onShowOverlay(
+            `Informations revues par les pairs pour l'équipe "${teamName}"`,
+            value,
+            buttonRef,
+          )
+        }
+      />
+    </td>
+  );
+}
+
+interface PRTableData {
+  structures: TableStructure[];
+  data: {
+    [id: string]: DataItem;
+  };
+}
+
+interface PRTableProps extends PRTableData {
+  onShowOverlay: (
+    title: string,
+    content: string,
+    button: React.RefObject<HTMLButtonElement>,
+  ) => void;
+}
+
+function PRTable({ structures, data, onShowOverlay }: PRTableProps) {
+  const items = structures.reduce(
+    (o, s) => [
+      ...o,
+      ...s.items.map<StructureItemWithTitle>(i => ({ ...i, title: s.title })),
+    ],
+    [],
+  );
 
   return (
-    <table>
+    <table className={PRTableStyle}>
+      <colgroup>
+        <col />
+      </colgroup>
+      {structures.map(s => (
+        <colgroup key={s.id + 'COLGROUP'}>
+          <col span={s.items.length} />
+        </colgroup>
+      ))}
+
       <thead>
         <tr>
           <th rowSpan={2}>Equipe</th>
@@ -156,10 +287,11 @@ function PRTable({ structures, data }: PRTableProps) {
       <tbody>
         {Object.entries(data).map(([key, value]) => (
           <tr key={key}>
-            <td>
-              {store.getState().teams[key]?.name}
-              <Button icon="info-circle" onClick={() => wlog(value.variable)} />
-            </td>
+            <TeamTD
+              teamName={store.getState().teams[key]?.name}
+              value={value.variable}
+              onShowOverlay={onShowOverlay}
+            />
             {isOverviewItem(value) ? (
               <>
                 <OverviewTD value={value.status} color={value.color} />
@@ -174,8 +306,10 @@ function PRTable({ structures, data }: PRTableProps) {
                 <ReviewTD
                   key={JSON.stringify(i) + i.id}
                   value={value[i.id]}
+                  title={i.title}
                   data={value}
                   formatter={i.formatter}
+                  onShowOverlay={onShowOverlay}
                 />
               ))
             )}
@@ -192,6 +326,10 @@ interface StructureItem {
   formatter: string;
   nodeFormatter?: string;
   allowHTML?: boolean;
+}
+
+interface StructureItemWithTitle extends StructureItem {
+  title: string;
 }
 
 type OverviewColor = 'green' | 'orange' | 'red' | 'grey' | undefined;
@@ -267,12 +405,31 @@ export interface PeerReviewData {
 }
 
 interface IData {
-  overview: PRTableProps;
-  reviews: PRTableProps;
-  comments: PRTableProps;
+  overview: PRTableData;
+  reviews: PRTableData;
+  comments: PRTableData;
 }
 
+//add content in the State
+interface LayoutState {
+  show: boolean;
+  title: string;
+  content: string;
+  button: React.RefObject<HTMLButtonElement>;
+}
+
+const defaultLayoutState: LayoutState = {
+  show: false,
+  title: 'No title',
+  content: 'No content',
+  button: React.createRef(),
+};
+
 export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
+  const [layoutState, setLayoutState] = React.useState<LayoutState>(
+    defaultLayoutState,
+  );
+
   const { lang } = React.useContext(languagesCTX);
   const [data, setData] = React.useState<IData>();
   const spr = useStore(() => instantiate(peerReview));
@@ -301,7 +458,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
         setData({
           overview: {
             structures: res.structure.overview,
-            data: Object.entries(res.variable).reduce<PRTableProps['data']>(
+            data: Object.entries(res.variable).reduce<PRTableData['data']>(
               (o, [key, value]) => ({
                 ...o,
                 [key]: {
@@ -314,7 +471,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
           },
           reviews: {
             structures: res.structure.reviews,
-            data: Object.entries(res.variable).reduce<PRTableProps['data']>(
+            data: Object.entries(res.variable).reduce<PRTableData['data']>(
               (o, [key, value]) => ({
                 ...o,
                 [key]: {
@@ -327,7 +484,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
           },
           comments: {
             structures: res.structure.reviews,
-            data: Object.entries(res.variable).reduce<PRTableProps['data']>(
+            data: Object.entries(res.variable).reduce<PRTableData['data']>(
               (o, [key, value]) => ({
                 ...o,
                 [key]: {
@@ -345,6 +502,19 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
       mounted = false;
     };
   }, [peerReview.name]);
+
+  const overlayButtonRef = React.useRef<HTMLButtonElement>(null);
+
+  const showOverlay = React.useCallback(
+    (
+      title: string,
+      content: string,
+      button: React.RefObject<HTMLButtonElement>,
+    ) => {
+      setLayoutState({ title, content, button, show: true });
+    },
+    [],
+  );
 
   return (
     <div className={expandWidth}>
@@ -390,16 +560,42 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
             </div>
           </div>
         </Toolbar.Header>
+        <Button
+          // TODO apply that to icons in TDs
+          ref={overlayButtonRef}
+          icon="undo"
+          onClick={e => {
+            e.stopPropagation();
+            setLayoutState(oldState => ({
+              ...oldState,
+              button: overlayButtonRef,
+              show: true,
+            }));
+          }}
+          className={css({ width: '200px', marginTop: '40px' })}
+        >
+          INFO OVERLAY TESTER
+        </Button>
         <Toolbar.Content className={cx(flex, flexColumn)}>
           {data != null && (
             <>
-              {/* <PRTable {...data.overview} /> */}
-              <PRTable {...data.reviews} />
-              <PRTable {...data.comments} />
+              <PRTable {...data.overview} onShowOverlay={showOverlay} />
+              <PRTable {...data.reviews} onShowOverlay={showOverlay} />
+              <PRTable {...data.comments} onShowOverlay={showOverlay} />
             </>
           )}
         </Toolbar.Content>
       </Toolbar>
+      {layoutState.show !== false && (
+        <InfoOverlay
+          title={layoutState.title}
+          content={layoutState.content}
+          onExit={() => {
+            setLayoutState(oldState => ({ ...oldState, show: false }));
+          }}
+          attachedToRef={layoutState.button}
+        />
+      )}
     </div>
   );
 }
