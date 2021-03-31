@@ -1,8 +1,10 @@
 import { css, cx } from 'emotion';
+import { set } from 'lodash';
 import * as React from 'react';
 import { IPeerReviewDescriptor } from 'wegas-ts-api';
 import { VariableDescriptorAPI } from '../API/variableDescriptor.api';
 import { languagesCTX } from '../Components/Contexts/LanguagesProvider';
+import { useOnClickOutside } from '../Components/Hooks/useOnClickOutside';
 import { Button } from '../Components/Inputs/Buttons/Button';
 import { themeVar } from '../Components/Style/ThemeVars';
 import { Toolbar } from '../Components/Toolbar';
@@ -19,6 +21,7 @@ import { useStore } from '../data/Stores/store';
 import { translate } from '../Editor/Components/FormView/translatable';
 import { createScript } from '../Helper/wegasEntites';
 import { wlog } from '../Helper/wegaslog';
+import { InfoOverlay } from './InfoOverlay';
 
 const prStateStyle = css({
   borderRadius: '10px',
@@ -1309,7 +1312,22 @@ const test: PeerReviewData = {
   },
 };
 
+//add content in the State
+interface LayoutState {
+  show: boolean;
+  content: string;
+}
+
+const defaultLayoutState: LayoutState = {
+  show: false,
+  content: "No content",
+};
+
 export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
+  const [layoutState, setLayoutState] = React.useState<LayoutState>(
+    defaultLayoutState,
+  );
+
   const { lang } = React.useContext(languagesCTX);
   const spr = useStore(() => instantiate(peerReview));
   const self = Player.self();
@@ -1321,6 +1339,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
     | 'DISPATCHED'
     | 'NOTIFIED'
     | 'COMPLETED';
+
 
   React.useEffect(() => {
     let mounted = true;
@@ -1384,9 +1403,22 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
             </div>
           </div>
         </Toolbar.Header>
-        <Toolbar.Content></Toolbar.Content>
+        <Toolbar.Content>
+            <Button icon="undo" onClick={(e)=>{
+              e.stopPropagation();
+              setLayoutState(oldState => ({...oldState, show: true}));
+              }}>INFO OVERLAY TESTER</Button>
+        </Toolbar.Content>
       </Toolbar>
       <div>{JSON.stringify(peerReview)}</div>
+      {layoutState.show !== false && (
+          <InfoOverlay
+            content = {'<div><h3>HOLAAAAAA</h3><p> This is the content of the Info overlay (no worry, just for test)!!!!</p></div>'}
+            onExit={() => {
+              setLayoutState(oldState => ({...oldState, show: false}));
+            }}
+          />
+        )}
     </div>
   );
 }
