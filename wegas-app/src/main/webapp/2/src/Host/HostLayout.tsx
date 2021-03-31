@@ -16,7 +16,7 @@ import HostHeader from './HostHeader';
 import { OverviewTab } from './Overview/OverviewTab';
 
 const Overview = React.lazy(() => import('./Overview/Overview'));
-const PeerReviewPage = React.lazy(() => import('./PeerReviewPage'));
+const PeerReviewPage = React.lazy(() => import('./PeerReview/PeerReviewPage'));
 
 const layoutStyle = css({
   display: 'flex',
@@ -30,9 +30,9 @@ const layoutStyle = css({
       color: '#ff4',
       '&:hover': {
         fill: '#ff4',
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 export const tabsLineStyle = css({

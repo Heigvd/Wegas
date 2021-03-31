@@ -1,4 +1,4 @@
-import { PeerReviewData } from '../PeerReviewPage';
+import { PeerReviewData } from './PeerReviewPage';
 
 export const testPRData: PeerReviewData = {
   structure: {
