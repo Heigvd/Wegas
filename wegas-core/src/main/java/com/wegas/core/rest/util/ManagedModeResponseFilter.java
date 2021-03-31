@@ -93,7 +93,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
         boolean rollbacked = false;
 
-        Map<String, List<AbstractEntity>> updatedEntitiesMap = requestManager.getMappedUpdatedEntities();
+        Map<String, List<AbstractEntity>> updatedEntitiesMap = requestManager.getAllMappedUpdatedEntities();
         Map<String, List<AbstractEntity>> destroyedEntitiesMap = requestManager.getMappedDestroyedEntities();
 
         boolean isManaged = managedMode != null && !managedMode.toLowerCase().equals("false");

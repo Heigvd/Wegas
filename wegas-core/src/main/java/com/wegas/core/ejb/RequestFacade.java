@@ -10,13 +10,11 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.ActAsPlayer;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.Set;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -128,7 +126,7 @@ public class RequestFacade {
 
                 requestManager.getEntityManager().flush();
 
-                if (requestManager.getUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
+                if (!requestManager.getJustUpdatedEntities().isEmpty() || scriptEvent.isEventFired()) {
                     stateMachineFacade.runStateMachines(player);
                     em.flush();
                 }
@@ -173,22 +171,6 @@ public class RequestFacade {
      */
     public ResourceBundle getBundle(String name) {
         return this.requestManager.getBundle(name);
-    }
-
-    /**
-     *
-     * @return all entities which were updated during the transaction
-     */
-    public Set<AbstractEntity> getUpdatedEntities() {
-        return requestManager.getUpdatedEntities();
-    }
-
-    /*
-     *
-     * @return all entities which were destroyed during the transaction
-     */
-    public Set<AbstractEntity> getDestroyedEntities() {
-        return requestManager.getDestroyedEntities();
     }
 
     /**
