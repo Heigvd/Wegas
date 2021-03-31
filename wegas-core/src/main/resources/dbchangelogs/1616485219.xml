@@ -1,0 +1,31 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet author="maxence" id="1616485232720-1">
+        <createTable tableName="transitiondependency">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="transitiondependency_pkey"/>
+            </column>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column defaultValue="SELF" name="scope" type="VARCHAR(10)"/>
+            <column name="transition_id" type="BIGINT"/>
+            <column name="variable_id" type="BIGINT"/>
+        </createTable>
+        <addColumn tableName="transition">
+            <column defaultValue="AUTO" name="dependsonstrategy" type="varchar(10)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="maxence" id="1616485232720-2">
+        <createIndex indexName="index_transitiondependency_transition_id" tableName="transitiondependency">
+            <column name="transition_id"/>
+        </createIndex>
+        <createIndex indexName="index_transitiondependency_variable_id" tableName="transitiondependency">
+            <column name="variable_id"/>
+        </createIndex>
+
+    </changeSet>
+    <changeSet author="maxence" id="1616485232720-3">
+        <addForeignKeyConstraint baseColumnNames="transition_id" baseTableName="transitiondependency" constraintName="fk_transitiondependency_transition_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="transition" />
+        <addForeignKeyConstraint baseColumnNames="variable_id" baseTableName="transitiondependency" constraintName="fk_transitiondependency_variable_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor"/>
+    </changeSet>
+</databaseChangeLog>

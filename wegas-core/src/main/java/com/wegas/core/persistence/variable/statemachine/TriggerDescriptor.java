@@ -15,13 +15,21 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.annotations.WegasEntity;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.statemachine.AbstractTransition.DependsOnStrategy;
+import com.wegas.core.persistence.variable.statemachine.AbstractTransition.IsManual;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyScript;
 import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.ValueGenerators.True;
+import com.wegas.editor.Visible;
+import com.wegas.editor.view.ArrayView;
+import com.wegas.editor.view.ManualOrAutoSelectView;
 import com.wegas.editor.view.ScriptView;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.PrePersist;
@@ -32,8 +40,8 @@ import javax.persistence.Transient;
  */
 @Entity
 @WegasEntity(
-        ignoreProperties = {"states"}, // no not merge states inherited from StateMachineDescriptor
-        callback = TriggerDescriptor.MergeTriggerHack.class // but ensure they exist one all transient fields have been set
+    ignoreProperties = {"states"}, // no not merge states inherited from StateMachineDescriptor
+    callback = TriggerDescriptor.MergeTriggerHack.class // but ensure they exist one all transient fields have been set
 )
 @JsonIgnoreProperties(value = {"states"})
 public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerState, Transition> {
@@ -44,12 +52,12 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
      */
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(
-            nullable = false, optional = false, proposal = False.class,
-            view = @View(
-                    index = 601,
-                    label = "Only once",
-                    description = "Allowed to trigger only once"
-            ))
+        nullable = false, optional = false, proposal = False.class,
+        view = @View(
+            index = 601,
+            label = "Only once",
+            description = "Allowed to trigger only once"
+        ))
     private Boolean oneShot = false;
 
     /**
@@ -58,25 +66,52 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
     @JsonView(Views.EditorI.class)
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
-            nullable = false, optional = false, proposal = True.class,
-            view = @View(
-                    index = 602,
-                    label = "Disable itself",
-                    description = "Disable once triggered. May be rearmed afterwards"
-            ))
+        nullable = false, optional = false, proposal = True.class,
+        view = @View(
+            index = 602,
+            label = "Disable itself",
+            description = "Disable once triggered. May be rearmed afterwards"
+        ))
     private Boolean disableSelf = true;
+
+    /**
+     * DependsOn strategy
+     */
+    @Transient
+    @WegasEntityProperty(
+        nullable = false,
+        view = @View(
+            label = "Depends on strategy",
+            value = ManualOrAutoSelectView.class,
+            index = -300
+        ))
+    private DependsOnStrategy dependsOnStrategy;
+
+    /**
+     * List of variable the condition depends on. Empty means the condition MUST be evaluated in all
+     * case
+     */
+    @Transient
+    @WegasEntityProperty(
+        optional = false, nullable = false,
+        proposal = EmptyArray.class,
+        view = @View(label = "Depends on", value = ArrayView.Highlight.class)
+    )
+    @Visible(IsManual.class)
+    private Set<TransitionDependency> dependencies;
+
     /**
      *
      */
     @Transient
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(
-            nullable = false, optional = false, proposal = EmptyScript.class,
-            view = @View(
-                    index = 603,
-                    label = "Condition",
-                    value = ScriptView.Condition.class
-            ))
+        nullable = false, optional = false, proposal = EmptyScript.class,
+        view = @View(
+            index = 603,
+            label = "Condition",
+            value = ScriptView.Condition.class
+        ))
     private Script triggerEvent;
     /**
      *
@@ -84,12 +119,12 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
     @Transient
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(
-            nullable = false, optional = false, proposal = EmptyScript.class,
-            view = @View(
-                    index = 604,
-                    label = "Impact",
-                    value = ScriptView.Impact.class
-            ))
+        nullable = false, optional = false, proposal = EmptyScript.class,
+        view = @View(
+            index = 604,
+            label = "Impact",
+            value = ScriptView.Impact.class
+        ))
     private Script postTriggerEvent;
 
     /**
@@ -163,22 +198,84 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
     }
 
     /**
+     * get dependsOn strategy
+     *
+     * @return manual or auto ?
+     */
+    public DependsOnStrategy getDependsOnStrategy() {
+        if (this.dependsOnStrategy == null) {
+            Transition t = this.getTransition();
+            if (t != null) {
+                return t.getDependsOnStrategy();
+            }
+        }
+        return this.dependsOnStrategy;
+    }
+
+    /**
+     * Set dependsOn strategy
+     *
+     * @param dependsOnStrategy the new strategy
+     */
+    public void setDependsOnStrategy(DependsOnStrategy dependsOnStrategy) {
+        this.dependsOnStrategy = dependsOnStrategy;
+    }
+
+    private Transition getTransition() {
+        if (this.getStates() != null && this.getStates().size() > 0
+            && this.getStates().get(1L).getTransitions() != null
+            && this.getStates().get(1L).getTransitions().size() > 0) {
+            return this.getStates().get(1L).getTransitions().get(0);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Trigger condition
      *
      * @return condition for trigger to triggers
      */
     public Script getTriggerEvent() {
         if (this.triggerEvent == null) {
-            if (this.getStates() != null && this.getStates().size() > 0
-                    && this.getStates().get(1L).getTransitions() != null
-                    && this.getStates().get(1L).getTransitions().size() > 0) {
-                this.triggerEvent = this.getStates().get(1L).getTransitions().get(0).getTriggerCondition();
+            Transition t = this.getTransition();
+            if (t != null) {
+                this.triggerEvent = t.getTriggerCondition();
             } else {
                 this.triggerEvent = null;
             }
         }
         this.touchTriggerEvent();
         return triggerEvent;
+    }
+
+    /**
+     * get all dependencies
+     *
+     * @return list of deps
+     */
+    public Set<TransitionDependency> getDependencies() {
+        if (this.dependencies == null) {
+            Transition t = this.getTransition();
+            if (t != null) {
+                if (t.getDependencies() != null) {
+                    return t.getDependencies();
+                }
+            }
+            // do never return null
+            return new HashSet<>();
+        } else {
+            return this.dependencies;
+        }
+    }
+
+    /**
+     * Set list of dependencies
+     *
+     * @param dependencies lsit of dependencies
+     */
+    public void setDependencies(Set<TransitionDependency> dependencies) {
+        this.dependencies = dependencies;
     }
 
     /**
@@ -248,6 +345,12 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
             this.getStates().get(1L).getTransitions().get(0).setTriggerCondition(this.triggerEvent);
             this.triggerEvent = null;
         }
+
+        Transition transition = this.getStates().get(1L).getTransitions().get(0);
+        transition.setDependsOnStrategy(this.dependsOnStrategy == null ? DependsOnStrategy.AUTO : this.dependsOnStrategy);
+        transition.setDependencies(this.dependencies == null ? new HashSet() : this.dependencies);
+        this.dependsOnStrategy = null;
+        this.dependencies = null;
 
         // Impact
         if (this.postTriggerEvent != null) {

@@ -7,15 +7,19 @@
  */
 package com.wegas.core.ejb.statemachine;
 
+import ch.albasim.wegas.annotations.DependencyScope;
+import ch.albasim.wegas.annotations.Scriptable;
 import com.wegas.core.api.StateMachineFacadeI;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.WegasAbstractFacade;
+import com.wegas.core.ejb.nashorn.ConditionAnalyser;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.GameModel;
@@ -30,12 +34,18 @@ import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
 import com.wegas.core.persistence.variable.statemachine.DialogueState;
 import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
+import com.wegas.core.persistence.variable.statemachine.TransitionDependency;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -154,6 +164,15 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
         Boolean validTransition;
         Boolean transitionPassed = false;
 
+        // flush to collect all updated entities
+        requestManager.flush();
+        Set<AbstractEntity> touched = requestManager.getJustUpdatedEntities();
+
+        Set<VariableDescriptor> desc = touched.stream()
+            .map(entity -> entity.findFirstOfType(VariableDescriptor.class))
+            .filter(entity -> entity != null)
+            .collect(Collectors.toSet());
+
         for (AbstractStateMachineDescriptor sm : stateMachineDescriptors) {
             logger.trace("Process FSM {}", sm);
             if (sm != null) {
@@ -163,8 +182,45 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                 if (!smi.getEnabled() || currentState == null) { // a state may not be defined : remove statemachine's state when a player is inside that state
                     continue;
                 }
+                // if the current state machine has just been modified, it has to be evaluated in
+                // all cases because:
+                // the state machine may have been just activated
+                // it may have changed its currentState
+                boolean forceEval = desc.contains(sm);
+
                 for (AbstractTransition transition : (List<AbstractTransition>) currentState.getSortedTransitions()) {
                     logger.trace("Process FSM Transition {}", transition);
+
+                    Set<TransitionDependency> deps = transition.getDependencies();
+                    if (!forceEval && !deps.isEmpty()) {
+                        boolean mustEval = false;
+                        for (TransitionDependency dep : deps) {
+                            VariableDescriptor variable = dep.getVariable();
+                            //VariableInstance instance = variableDescriptorFacade.getInstance(dep, player);
+                            if (dep.getScope() == DependencyScope.UNKNOWN) {
+                                mustEval = true;
+                                break;
+                            } else if (desc.contains(variable)) {
+                                mustEval = true;
+                                break;
+                            } else if (dep.getScope() == DependencyScope.CHILDREN) {
+                                List<VariableDescriptor> allChildren = variableDescriptorFacade.getAllChildren(variable);
+                                for (VariableDescriptor vd : allChildren) {
+                                    if (desc.contains(vd)) {
+                                        mustEval = true;
+                                        break;
+                                    }
+                                }
+                                if (mustEval) {
+                                    break;
+                                }
+                            }
+                        }
+                        if (!mustEval) {
+                            continue;
+                        }
+                    }
+                    logger.info("Eval {} transition", transition);
                     requestManager.getEventCounter().clearCurrents();
 
                     if (validTransition) {
@@ -235,12 +291,14 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                 }
             }
         }
+        // all statemachines have been evaluated: migrate just-updated entities to updatedEntities
+        // do it before appliing immpacts so impacts will populate brand new just-updated bag
+        requestManager.migrateUpdateEntities();
         if (transitionPassed) {
-            /* WHAT ? */
- /* @DIRTY, @TODO : find something else : Running scripts overrides previous
-             * state change Only for first Player (resetEvent). */
- /* Fixed by lib, currently
-             * commenting it @removeme */
+            /* WHAT ? @DIRTY, @TODO : find something else : Running scripts overrides previous state
+             * change Only for first Player (resetEvent). Fixed by lib, currently commenting it
+             * @removeme
+             */
             //            this.getAllStateMachines(player.getGameModel());
             logger.trace("Walk Selected Transitions");
 
@@ -370,4 +428,163 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
         }
         return valid;
     }
+
+    /**
+     * If dependOnMode is automatic, parse transition script and rebuild the list of dependencies.
+     *
+     * @param gameModel  the gameModel
+     * @param transition the transition to analyse
+     */
+    public void analyseTransition(GameModel gameModel, AbstractTransition transition) {
+        if (transition.getDependsOnStrategy() == AbstractTransition.DependsOnStrategy.AUTO) {
+            Script script = transition.getTriggerCondition();
+            String content = null;
+            if (script != null) {
+                content = script.getContent();
+            }
+            if (content == null) {
+                content = "";
+            }
+
+            // extract all Variable.find(gameModel, <VARIABLENAME>).<METHOD>(...)
+            List<ConditionAnalyser.VariableCall> calls = ConditionAnalyser.analyseCondition(content);
+
+            // contains current deps only
+            Set<TransitionDependency> currentDeps = new HashSet<>();
+            currentDeps.addAll(transition.getDependencies());
+            // contains deps to keep (pre-existing and new)
+            Set<TransitionDependency> updatedDeps = new HashSet<>();
+
+            calls.forEach(call -> {
+                try {
+                    VariableDescriptor vd = variableDescriptorFacade.find(gameModel, call.getVariableName());
+                    for (Method m : vd.getClass().getMethods()) {
+                        if (m.getName().equals(call.getMethodName())
+                            && m.getAnnotation(Scriptable.class) != null) {
+                            Scriptable annotation = m.getAnnotation(Scriptable.class);
+
+                            if (annotation.dependsOn() != DependencyScope.NONE) {
+                                TransitionDependency findDep = findDep = findDep(updatedDeps, vd);
+                                if (findDep == null) {
+                                    findDep(currentDeps, vd);
+                                }
+
+                                if (findDep != null) {
+                                    // mark dep as updated
+                                    updatedDeps.add(findDep);
+                                    setScope(findDep, annotation.dependsOn());
+                                } else {
+                                    // new dep
+                                    TransitionDependency newDep = new TransitionDependency();
+                                    newDep.setTransition(transition);
+                                    newDep.setVariable(vd);
+                                    newDep.setScope(annotation.dependsOn());
+
+                                    updatedDeps.add(newDep);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                } catch (WegasNoResultException ex) {
+                    // no-op ? what shall we do ?
+                }
+            });
+            // fitler out updated deps
+            transition.setDependencies(updatedDeps);
+
+            currentDeps.removeAll(updatedDeps);
+            // remaining deps are to be deleted
+            currentDeps.forEach(dep -> {
+                this.getEntityManager().remove(dep);
+            });
+        }
+    }
+
+    /**
+     * find dep to the given variable.
+     *
+     * @param set  dep containers
+     * @param desc needle
+     *
+     * @return the transition dependency which match the desc
+     */
+    private TransitionDependency findDep(Set<TransitionDependency> set, VariableDescriptor desc) {
+        Optional<TransitionDependency> opt = set.stream().filter(dep -> dep.getVariable().equals(desc)).findAny();
+        if (opt.isPresent()) {
+            return opt.get();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Register new dependency. If a dependency to the same variable already exists, it will update
+     * it scope to keep the mose wide-open (self &lt; children &lt; unknown).
+     *
+     * @param tDep
+     */
+    public void setScope(TransitionDependency dep, DependencyScope scope) {
+        DependencyScope currentScope = dep.getScope();
+        //if both scopes equal, there is nothing to do (s-s, c-c, u-u)
+        if (currentScope != scope) {
+            // s-c, s-u, c-s, c-u, u-s, u-c
+            // scopes differ
+            if (currentScope == DependencyScope.UNKNOWN || scope == DependencyScope.UNKNOWN) {
+                // at least one is unknown -> unknown
+                // s-u, c-u, u-s, u-c
+                dep.setScope(DependencyScope.UNKNOWN);
+            } else {
+                // c-s, s-c => children
+                dep.setScope(DependencyScope.CHILDREN);
+            }
+        }
+    }
+
+    public void reviveStateMachine(GameModel gameModel, AbstractStateMachineDescriptor vd) {
+        Collection<AbstractState> values = vd.getStates().values();
+        values.forEach(state -> {
+            List<AbstractTransition> transitions = state.getTransitions();
+            transitions.forEach(transition -> {
+                // In all case, revive exising dependencies
+                transition.getDependencies().forEach(tDep -> {
+                    try {
+                        VariableDescriptor dep = variableDescriptorFacade.find(gameModel, tDep.getImportedVariableName());
+                        if (dep != null) {
+                            tDep.setVariable(dep);
+                        } else {
+                            logger.error("What ????");
+                        }
+                    } catch (WegasNoResultException ex) {
+                        // no-op
+                    }
+
+                });
+
+                if (transition.getDependsOnStrategy() == AbstractTransition.DependsOnStrategy.AUTO) {
+                    // If auto, update dependencies
+                    this.analyseTransition(gameModel, transition);
+                }
+            });
+        });
+
+        if (vd instanceof DialogueDescriptor) {
+            this.reviveDialogue(gameModel, (DialogueDescriptor) vd);
+        }
+    }
+
+    public void reviveDialogue(GameModel gameModel, DialogueDescriptor dialogueDescriptor) {
+        for (DialogueState s : dialogueDescriptor.getInternalStates()) {
+            if (s.getText() != null) {
+                s.getText().setParentDescriptor(dialogueDescriptor);
+            }
+
+            for (DialogueTransition t : s.getTransitions()) {
+                if (t.getActionText() != null) {
+                    t.getActionText().setParentDescriptor(dialogueDescriptor);
+                }
+            }
+        }
+    }
+
 }

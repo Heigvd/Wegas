@@ -11,6 +11,7 @@ import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.wegas.core.AlphanumericComparator;
 import com.wegas.core.Helper;
 import com.wegas.core.api.VariableDescriptorFacadeI;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.ejb.I18nFacade;
@@ -47,11 +48,10 @@ import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
-import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
-import com.wegas.core.persistence.variable.statemachine.DialogueState;
-import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
+import com.wegas.core.persistence.variable.statemachine.AbstractStateMachineDescriptor;
 import com.wegas.core.tools.FindAndReplacePayload;
 import com.wegas.core.tools.FindAndReplaceVisitor;
+import com.wegas.core.tools.RenameVariableVisitor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.Result;
@@ -72,7 +72,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.regex.Pattern;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -103,6 +102,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
     @Inject
     private VariableInstanceFacade variableInstanceFacade;
+
+    @Inject
+    private StateMachineFacade stateMachineFacade;
 
     @Inject
     private ResourceFacade resourceFacade;
@@ -144,12 +146,11 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         vd.merge(entity);
 
         /*
-         * This flush is required by several EntityRevivedEvent listener,
-         * which opperate some SQL queries (which didn't return anything before
-         * entites have been flushed to database
+         * This flush is required by several EntityRevivedEvent listener, which opperate some SQL
+         * queries (which didn't return anything before entites have been flushed to database
          *
-         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
-         * it will not return any result if this flush not occurs
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name, it will not
+         * return any result if this flush not occurs
          */
         this.getEntityManager().flush();
 
@@ -197,32 +198,36 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             // still no name but a tag
             entity.setName(entity.getEditorTag());
         }
- 
+
         Map<String, String> newNames = Helper.setUniqueName(entity, usedNames, gameModel, resetNames);
 
-        // some impacts may impact renamed variable. -> update them to impact the new variable name
-        for (Entry<String, String> newName : newNames.entrySet()) {
-            FindAndReplacePayload payload = new FindAndReplacePayload();
-            payload.setRegex(true);
-            payload.setFind("Variable.find\\(gameModel, ([\"'])" + Pattern.quote(newName.getKey()) + "([\"'])\\)");
-            payload.setReplace("Variable.find(gameModel, $1" + newName.getValue() + "$2)");
-            payload.setPretend(false);
-
-            FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);
-            MergeHelper.visitMergeable(entity, true, replacer);
-        }
+//        for (Entry<String, String> newName : newNames.entrySet()) {
+//
+//            // some impacts may impact renamed variable. -> update them to impact the new variable name
+//            FindAndReplacePayload payload = new FindAndReplacePayload();
+//            payload.setRegex(true);
+//            payload.setFind("Variable.find\\(gameModel, ([\"'])" + Pattern.quote(newName.getKey()) + "([\"'])\\)");
+//            payload.setReplace("Variable.find(gameModel, $1" + newName.getValue() + "$2)");
+//            payload.setPretend(false);
+//
+//            FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);
+//            MergeHelper.visitMergeable(entity, true, replacer);
+//
+//            // some variable may references others by their name (eg. task pred, )
+//        }
+        RenameVariableVisitor visitor = new RenameVariableVisitor(newNames);
+        MergeHelper.visitMergeable(entity, true, visitor);
 
         Helper.setUniqueLabel(entity, usedLabels, gameModel);
 
         list.addItem(entity);
 
         /*
-         * This flush is required by several EntityRevivedEvent listener,
-         * which opperate some SQL queries (which didn't return anything before
-         * entites have been flushed to database
+         * This flush is required by several EntityRevivedEvent listener, which opperate some SQL
+         * queries (which didn't return anything before entites have been flushed to database
          *
-         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
-         * it will not return any result if this flush not occurs
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name, it will not
+         * return any result if this flush not occurs
          */
         this.getEntityManager().flush();
 
@@ -303,22 +308,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             reviewingFacade.revivePeerReviewDescriptor((PeerReviewDescriptor) vd);
         } else if (vd instanceof TaskDescriptor) {
             resourceFacade.reviveTaskDescriptor((TaskDescriptor) vd);
-        } else if (vd instanceof DialogueDescriptor) {
-            this.reviveDialogue(gm, (DialogueDescriptor) vd);
-        }
-    }
-
-    public void reviveDialogue(GameModel gameModel, DialogueDescriptor dialogueDescriptor) {
-        for (DialogueState s : dialogueDescriptor.getInternalStates()) {
-            if (s.getText() != null) {
-                s.getText().setParentDescriptor(dialogueDescriptor);
-            }
-
-            for (DialogueTransition t : s.getTransitions()) {
-                if (t.getActionText() != null) {
-                    t.getActionText().setParentDescriptor(dialogueDescriptor);
-                }
-            }
+        } else if (vd instanceof AbstractStateMachineDescriptor) {
+            stateMachineFacade.reviveStateMachine(gm, (AbstractStateMachineDescriptor) vd);
         }
     }
 
@@ -450,16 +441,16 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      */
     public void create(final Long gameModelId, final VariableDescriptor variableDescriptor) {
         GameModel find = this.gameModelFacade.find(gameModelId);
-        /*
-        for (Game g : find.getGames()) {
-            logger.error("Game {}",  g);
-            for (Team t : g.getTeams()) {
-                logger.error("  Team {} -> {}",  t, t.getStatus());
-                for (Player p : t.getPlayers()) {
-                    logger.error("    Player {} -> {}",  p, p.getStatus());
-                }
-            }
-        } // */
+
+//        for (Game g : find.getGames()) {
+//            logger.error("Game {}",  g);
+//            for (Team t : g.getTeams()) {
+//                logger.error("  Team {} -> {}",  t, t.getStatus());
+//                for (Player p : t.getPlayers()) {
+//                    logger.error("    Player {} -> {}",  p, p.getStatus());
+//                }
+//            }
+//        }
         this.createChild(find, find, variableDescriptor, false, false);
     }
 
@@ -538,6 +529,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                 staticText.setDefaultInstance(new StaticTextInstance());
                 staticText.setEditorTag(vd.getEditorTag());
                 String vdName = vd.getName();
+                Visibility vdVisib = vd.getVisibility();
                 staticText.setScope(new GameModelScope());
                 staticText.getScope().setBroadcastScope(AbstractScope.ScopeType.GameModelScope);
 
@@ -549,6 +541,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
                 staticText.setLabel(label);
                 staticText.setText(value);
+                staticText.setVisibility(vdVisib);
 
                 this.createChild(gameModel, parent, staticText, false, false);
 
@@ -575,6 +568,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                     text.setDefaultInstance(new TextInstance());
                     text.setEditorTag(vd.getEditorTag());
                     String vdName = vd.getName();
+                    Visibility vdVisibility = vd.getVisibility();
                     text.setScope(new TeamScope());
                     text.getScope().setBroadcastScope(AbstractScope.ScopeType.TeamScope);
 
@@ -588,6 +582,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
                     text.setName(vdName);
                     text.setLabel(label);
+                    text.setVisibility(vdVisibility);
 
                     this.createChild(gameModel, parent, text, false, false);
                 }
@@ -1188,6 +1183,25 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         }
 
         return results.values();
+    }
+
+    /**
+     * Starting from the fiven variable, get the variable and all its children recursively.
+     *
+     * @param root root vartiable
+     *
+     * @return
+     */
+    public List<VariableDescriptor> getAllChildren(VariableDescriptor root) {
+        List<VariableDescriptor> list = new ArrayList<>();
+        list.add(root);
+        if (root instanceof DescriptorListI) {
+            List<VariableDescriptor> items = ((DescriptorListI) root).getItems();
+            items.forEach((item) -> {
+                list.addAll(getAllChildren(item));
+            });
+        }
+        return list;
     }
 
     public static class VariableIndex {

@@ -55,6 +55,7 @@ import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
+import com.wegas.core.persistence.variable.statemachine.TransitionDependency;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
@@ -87,8 +88,10 @@ import com.wegas.survey.persistence.input.SurveyTextDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -104,6 +107,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.QueryHint;
 import javax.persistence.Table;
@@ -141,7 +145,7 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "dtype"),
     @Index(columnList = "scope_id"),
     @Index(columnList = "label_id"),
-    @Index(columnList = "gamemodel_id, refid", unique = true),
+    @Index(columnList = "gamemodel_id, refid", unique = true)
 })
 @NamedQuery(
     name = "VariableDescriptor.findAllNamesInModelAndItsScenarios",
@@ -151,17 +155,17 @@ import org.slf4j.LoggerFactory;
     + "JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
     + "WHERE model.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
 )
-/*@NamedQuery(
-            name = "VariableDescriptor.findAllNamesInScenarioAndItsModelCluster",
-            query = "SELECT DISTINCT(vd.name)"
-            + " FROM GameModel scen "
-            + " LEFT JOIN GameModel model ON (scen.basedOn = model)"
-            + " LEFT JOIN GameModel other ON (scen.basedOn IS NOT NULL "
-            + "                               AND other.basedOn = model "
-            + "                               AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
-            + " JOIN VariableDescriptor vd ON (vd.gameModel = other OR vd.gameModel = model)"
-            + " WHERE scen.id = :gameModelId"
-    )*/
+//@NamedQuery(
+//            name = "VariableDescriptor.findAllNamesInScenarioAndItsModelCluster",
+//            query = "SELECT DISTINCT(vd.name)"
+//            + " FROM GameModel scen "
+//            + " LEFT JOIN GameModel model ON (scen.basedOn = model)"
+//            + " LEFT JOIN GameModel other ON (scen.basedOn IS NOT NULL "
+//            + "                               AND other.basedOn = model "
+//            + "                               AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
+//            + " JOIN VariableDescriptor vd ON (vd.gameModel = other OR vd.gameModel = model)"
+//            + " WHERE scen.id = :gameModelId"
+//    )
 @NamedQuery(
     name = "VariableDescriptor.findAllNamesInScenarioAndItsModel",
     query = "SELECT DISTINCT(vd.name)"
@@ -340,7 +344,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     /**
      * Variable descriptor human readable name Player visible
      */
-    @OneToOne(cascade = CascadeType.ALL /*, orphanRemoval = true*/)
+    @OneToOne(cascade = CascadeType.ALL /* , orphanRemoval = true */)
     @WegasEntityProperty(searchable = true,
         nullable = false, optional = false, proposal = EmptyI18n.class,
         view = @View(
@@ -373,7 +377,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
 
     //@BatchFetch(BatchFetchType.JOIN)
     //@JsonManagedReference
-    @OneToOne(cascade = {CascadeType.ALL}/*, orphanRemoval = true*/, optional = false)
+    @OneToOne(cascade = {CascadeType.ALL}/* , orphanRemoval = true */, optional = false)
     @JoinFetch
     //@JsonView(value = Views.WithScopeI.class)
     //@WegasEntityProperty(callback = VdMergeCallback.class)
@@ -422,14 +426,9 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     )
     private Long version;
 
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
-    }
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "variable", cascade = CascadeType.ALL)
+    private Set<TransitionDependency> mayTrigger = new HashSet<>();
     /**
      *
      */
@@ -458,6 +457,42 @@ public abstract class VariableDescriptor<T extends VariableInstance>
      */
     public VariableDescriptor(T defaultInstance) {
         this.defaultInstance = defaultInstance;
+    }
+
+    /**
+     * get current version
+     *
+     * @return the version
+     */
+    public Long getVersion() {
+        return version;
+    }
+
+    /**
+     * Update descriptor version
+     *
+     * @param version new version
+     */
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    /**
+     * Get the list an update of an instance of this descriptor may trigger
+     *
+     * @return
+     */
+    public Set<TransitionDependency> getMayTrigger() {
+        return mayTrigger;
+    }
+
+    /**
+     * Set the list of transtions an update of an instance of this descriptor may trigger
+     *
+     * @param mayTrigger list of transitions
+     */
+    public void setMayTrigger(Set<TransitionDependency> mayTrigger) {
+        this.mayTrigger = mayTrigger;
     }
 
     /**
@@ -852,9 +887,9 @@ public abstract class VariableDescriptor<T extends VariableInstance>
      */
     //@PrePersist
     public void prePersist() {
-        /*if (this.getScope() == null) {
-            this.setScope(new TeamScope());
-        }*/
+//        if (this.getScope() == null) {
+//            this.setScope(new TeamScope());
+//        }
     }
 
     /**
