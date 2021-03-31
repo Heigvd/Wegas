@@ -5,7 +5,6 @@ import { Toolbar } from '../Components/Toolbar';
 import { flex } from '../css/classes';
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../Helper/className';
-import { wlog } from '../Helper/wegaslog';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // styles
@@ -22,6 +21,7 @@ const overlayStyle = css({
   cursor: 'pointer',
   backgroundColor: 'white',
   border: '3px',
+  boxShadow: '1px 2px 16px rgba(0, 0, 0, 0.2)',
 });
 
 const modalCloseDivStyle = css({
@@ -39,6 +39,16 @@ const modalCloseButtonStyle = css({
   margin: 'auto',
 });
 
+function placeOverlay(ref: HTMLDivElement, attachedToRef: React.RefObject<HTMLButtonElement>){
+    if (ref != null && attachedToRef.current != null)
+    {
+        const buttonBottom = attachedToRef.current.getBoundingClientRect().bottom;
+        const parentTop = ref.parentElement?.getBoundingClientRect().top || 0;
+        const buttonWidth = attachedToRef.current.getBoundingClientRect().width;
+        ref.style.setProperty('top', (buttonBottom - parentTop) + 'px');
+        ref.style.setProperty('left', buttonWidth + 'px');
+    }
+}
 // React element
 
 interface InfoOverlayProps extends ClassStyleId {
@@ -54,12 +64,17 @@ interface InfoOverlayProps extends ClassStyleId {
    * innerStyle- the style to apply on the inner component
    */
   innerStyle?: React.CSSProperties;
+  /**
+   * attachedToRef
+   */
+  attachedToRef:React.RefObject<HTMLButtonElement>;
 }
 
 export function InfoOverlay({
   onExit,
   content,
   innerStyle,
+  attachedToRef,
   className,
   style,
   id,
@@ -73,9 +88,7 @@ export function InfoOverlay({
       ref= {ref => {
           if (ref != null) {
             infoOverlayZone.current = ref;
-            ref.focus();
-             const refBoundaries = ref.getBoundingClientRect();
-             wlog("HOLAAAAAA" + refBoundaries.width);
+            placeOverlay(ref, attachedToRef);
            }
          }}
       className={cx(overlayStyle, flex) + classNameOrEmpty(className)}

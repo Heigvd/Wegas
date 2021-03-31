@@ -37,6 +37,35 @@ const prActiveStateStyle = css({
   backgroundColor: themeVar.Common.colors.ActiveColor,
   color: themeVar.Common.colors.LightTextColor,
 });
+// TODO use exported style from overview
+const PRTableStyle = css({
+  borderCollapse: 'separate',
+  borderSpacing: '10px',
+  margin: '40px 0',
+  fontSize: '14px',
+  colgroup: {
+    borderLeft: 'solid 15px transparent',
+    borderRight: 'solid 15px transparent',
+  },
+  td: {
+    minWidth: '60px',
+    backgroundColor: '#fff',
+    boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
+    padding: '10px 15px',
+    textAlign: 'center',
+    margin: '3px',
+    height: '48px',
+  },
+  'thead tr': {
+    height: '25px',
+    th: {
+      boxShadow: 'none',
+      verticalAlign: 'top',
+      padding: '0 10px',
+      textAlign: 'center',
+    },
+  },
+});
 
 function isOverviewItem(item: DataItem): item is DataOverviewItem {
   return true;
@@ -127,7 +156,7 @@ function PRTable({ structures, data }: PRTableProps) {
   const items = structures.reduce((o, s) => [...o, ...s.items], []);
 
   return (
-    <table>
+    <table className={PRTableStyle}>
       <thead>
         <tr>
           <th rowSpan={2}>Equipe</th>
@@ -264,7 +293,7 @@ interface LayoutState {
 
 const defaultLayoutState: LayoutState = {
   show: false,
-  content: "No content",
+  content: 'No content',
 };
 
 export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
@@ -284,7 +313,6 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
     | 'DISPATCHED'
     | 'NOTIFIED'
     | 'COMPLETED';
-
 
   React.useEffect(() => {
     let mounted = true;
@@ -343,6 +371,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
       mounted = false;
     };
   }, [peerReview.name]);
+  const overlayButtonRef = React.useRef<HTMLButtonElement>(null);
 
   return (
     <div className={expandWidth}>
@@ -388,6 +417,18 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
             </div>
           </div>
         </Toolbar.Header>
+        <Button
+        // TODO apply that to icons in TDs
+          icon="undo"
+          onClick={e => {
+            e.stopPropagation();
+            setLayoutState(oldState => ({ ...oldState, show: true }));
+          }}
+          className={css({ width: '200px', marginTop: '40px' })}
+          ref={overlayButtonRef}
+        >
+          INFO OVERLAY TESTER
+        </Button>
         <Toolbar.Content className={cx(flex, flexColumn)}>
           {data != null && (
             <>
@@ -398,18 +439,17 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
           )}
         </Toolbar.Content>
       </Toolbar>
-      <Button icon="undo" onClick={(e)=>{
-              e.stopPropagation();
-              setLayoutState(oldState => ({...oldState, show: true}));
-              }}>INFO OVERLAY TESTER</Button>
       {layoutState.show !== false && (
-          <InfoOverlay
-            content = {'<div><h3>HOLAAAAAA</h3><p> This is the content of the Info overlay (no worry, just for test)!!!!</p></div>'}
-            onExit={() => {
-              setLayoutState(oldState => ({...oldState, show: false}));
-            }}
-          />
-        )}
+        <InfoOverlay
+          content={
+            '<div><h3>HOLAAAAAA</h3><p> This is the content of the Info overlay (no worry, just for test)!!!!</p></div>'
+          }
+          onExit={() => {
+            setLayoutState(oldState => ({ ...oldState, show: false }));
+          }}
+          attachedToRef={overlayButtonRef}
+        />
+      )}
     </div>
   );
 }
