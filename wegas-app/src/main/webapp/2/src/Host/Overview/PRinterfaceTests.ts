@@ -1,7 +1,6 @@
 import { PeerReviewData } from '../PeerReviewPage';
 
-//@ts-ignore
-const test: PeerReviewData = {
+export const testPRData: PeerReviewData = {
   structure: {
     overview: [
       {

@@ -13,6 +13,8 @@ import {
   flexColumn,
   flexDistribute,
   flexRow,
+  itemCenter,
+  justifyCenter,
 } from '../css/classes';
 import { instantiate } from '../data/scriptable';
 import { GameModel, Player } from '../data/selectors';
@@ -20,6 +22,7 @@ import { store, useStore } from '../data/Stores/store';
 import { translate } from '../Editor/Components/FormView/translatable';
 import { createScript } from '../Helper/wegasEntites';
 import { wlog } from '../Helper/wegaslog';
+import { testPRData } from './Overview/PRinterfaceTests';
 
 const prStateStyle = css({
   borderRadius: '10px',
@@ -38,7 +41,7 @@ const prActiveStateStyle = css({
 });
 
 function isOverviewItem(item: DataItem): item is DataOverviewItem {
-  return true;
+  return 'status' in item && 'commented' in item;
 }
 
 interface PeerReviewPageProps {
@@ -64,7 +67,7 @@ interface PRTableProps {
 }
 
 interface OverviewTDProps {
-  value: string;
+  value: string | undefined;
   color: OverviewColor;
 }
 
@@ -73,53 +76,61 @@ function OverviewTD({ value, color }: OverviewTDProps) {
   return <td style={{ backgroundColor: color }}>{value}</td>;
 }
 
-interface OldStyleOverviewTDProps {
-  value: string | undefined;
-  data: DataOverviewItem;
-  nodeFormatter: string | undefined;
-  formatter: string;
+function normalizeFormatterFunction(
+  stringFn: string,
+): { found: true; fn: string } | { found: false; fn: string | null } {
+  const regex = new RegExp(/(function )([a-zA-Z0-9_]*)( *)(\([a-zA-Z0-9_]*\))/);
+  const found = regex.exec(stringFn);
+  if (found != null) {
+    return { found: true, fn: stringFn + 'return ' + found[2] + found[4] };
+  } else {
+    if (stringFn === 'null') {
+      return { found: false, fn: null };
+    } else {
+      return { found: false, fn: stringFn };
+    }
+  }
 }
 
-function OldStyleOverviewTD({
-  value,
-  data,
-  nodeFormatter,
-  formatter,
-}: OldStyleOverviewTDProps) {
-  let formattedvalue = value;
-  try {
-    //... at that point, it's just insanity.
-    // Why would anyone give such a complex and clunky object to do just that...
-    const maybenullvalue = globals.Function('o', formatter)({ value, data });
-    if (maybenullvalue != null) {
-      formattedvalue = maybenullvalue;
-    }
-    if (nodeFormatter) {
-      formattedvalue = globals.Function(
+interface ReviewTDProps {
+  value: ReviewsItemValue;
+  data: DataReviewItem;
+  formatter: string | undefined;
+}
+
+function ReviewTD({ value, data, formatter }: ReviewTDProps) {
+  let buttonData: ReviewsItemValue | undefined = undefined;
+  let formattedValue = value;
+  if (formatter != null) {
+    const normalizedFormatter = normalizeFormatterFunction(formatter);
+    if (normalizedFormatter.found) {
+      formattedValue = globals.Function(
         'o',
-        nodeFormatter,
-      )({ value: formattedvalue, data });
+        normalizedFormatter.fn,
+      )({ value, data });
+    } else if (normalizedFormatter.fn != null) {
+      formattedValue = normalizedFormatter.fn.replace('{value}', String(value));
+
+      // Parsing pattern like
+      // <span class="gradeeval-data">{value} <i data-ref="19666598-data" class="fa fa-info-circle"></i></span>
+      const regex = new RegExp(/(data-ref=")(\d*)(-)([a-zA-Z]*)(")/);
+      const found = regex.exec(formattedValue);
+      if (found != null) {
+        buttonData = data[found[2] + found[3] + found[4]];
+      }
     }
-  } catch (_e) {
-    // common... why would you do a function that is not a function?
-    // I guess it was still too easy...
-    formattedvalue = formatter;
   }
 
   return (
     <td>
-      <div dangerouslySetInnerHTML={{ __html: String(formattedvalue) }} />
+      <div className={cx(flex, flexRow, itemCenter, justifyCenter)}>
+        <div dangerouslySetInnerHTML={{ __html: String(formattedValue) }} />
+        {buttonData && (
+          <Button icon="info-circle" onClick={() => wlog(buttonData)} />
+        )}
+      </div>
     </td>
   );
-}
-
-interface ReviewTDProps {
-  value: string;
-  color: OverviewColor;
-}
-
-function ReviewTD({ value, color }: OverviewTDProps) {
-  return <td style={{ backgroundColor: color }}> {value}</td>;
 }
 
 function PRTable({ structures, data }: PRTableProps) {
@@ -146,21 +157,27 @@ function PRTable({ structures, data }: PRTableProps) {
         {Object.entries(data).map(([key, value]) => (
           <tr key={key}>
             <td>
-              {store.getState().teams[key].name}
+              {store.getState().teams[key]?.name}
               <Button icon="info-circle" onClick={() => wlog(value.variable)} />
             </td>
             {isOverviewItem(value) ? (
+              <>
+                <OverviewTD value={value.status} color={value.color} />
+                <OverviewTD
+                  value={value.commented}
+                  color={value.comments_color}
+                />
+                <OverviewTD value={value.done} color={value.done_color} />
+              </>
+            ) : (
               items.map(i => (
-                <OldStyleOverviewTD
-                  key={JSON.stringify(i)}
-                  value={value[i.id as keyof DataOverviewItem]}
+                <ReviewTD
+                  key={JSON.stringify(i) + i.id}
+                  value={value[i.id]}
                   data={value}
                   formatter={i.formatter}
-                  nodeFormatter={i.nodeFormatter}
                 />
               ))
-            ) : (
-              <td>{JSON.stringify(value)}</td>
             )}
           </tr>
         ))}
@@ -277,7 +294,9 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
       createScript(`ReviewHelper.summarize("${peerReview.name}")`),
       undefined,
       true,
-    ).then((res: PeerReviewData) => {
+    ).then((_res: PeerReviewData) => {
+      // Test purposes
+      const res = testPRData;
       if (mounted) {
         setData({
           overview: {
@@ -374,7 +393,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
         <Toolbar.Content className={cx(flex, flexColumn)}>
           {data != null && (
             <>
-              <PRTable {...data.overview} />
+              {/* <PRTable {...data.overview} /> */}
               <PRTable {...data.reviews} />
               <PRTable {...data.comments} />
             </>
