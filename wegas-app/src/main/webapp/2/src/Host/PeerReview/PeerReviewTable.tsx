@@ -16,6 +16,7 @@ const PRTableStyle = css({
   borderSpacing: '10px',
   fontSize: '14px',
   'td, th': {
+    //Do not understand why this is error. But works
     ...trainerCellStyleI,
   },
   'thead th, thead td': {

@@ -27,6 +27,7 @@ import { createScript } from '../../Helper/wegasEntites';
 import { InfoOverlay } from '../InfoOverlay';
 import { PRTable } from './PeerReviewTable';
 import { testPRData } from './PRinterfaceTests';
+import { PRChart } from './PeerReviewChart';
 
 const prStateStyle = css({
   borderRadius: '10px',
@@ -97,7 +98,6 @@ interface TableStructure {
   title: string;
   items: StructureItem[];
 }
-
 export interface PeerReviewData {
   structure: {
     overview: TableStructure[];
@@ -251,8 +251,6 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
     };
   }, [peerReview.name]);
 
-  const overlayButtonRef = React.useRef<HTMLButtonElement>(null);
-
   const showOverlay = React.useCallback(
     (
       title: string,
@@ -365,10 +363,13 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
               <PRTable {...data.reviews} onShowOverlay={showOverlay} />
               <h2>Comments</h2>
               <PRTable {...data.comments} onShowOverlay={showOverlay} />
+              <div className= {flex}>
+                <h2>Chart reviews</h2>
+                <PRChart data={testPRData.extra}/>
+                <h2>Chart comments</h2>
+              </div>
             </>
           )}
-          <h2>Chart reviews</h2>
-          <h2>Chart comments</h2>
         </Toolbar.Content>
       </Toolbar>
       {layoutState.show !== false && (

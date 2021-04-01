@@ -1,7 +1,6 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { useOnClickOutside } from '../Components/Hooks/useOnClickOutside';
-import { autoFlowValues } from '../Components/Layouts/Grid';
 import { themeVar } from '../Components/Style/ThemeVars';
 import { Toolbar } from '../Components/Toolbar';
 import { flex } from '../css/classes';
