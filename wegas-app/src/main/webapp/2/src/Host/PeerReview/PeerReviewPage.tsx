@@ -8,6 +8,7 @@ import { Button } from '../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import {
+  defaultMarginTop,
   expandWidth,
   flex,
   flexColumn,
@@ -264,7 +265,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
   );
 
   return (
-    <div className={expandWidth}>
+    <div className={cx(expandWidth, defaultMarginTop)}>
       <Toolbar>
         <Toolbar.Header className={cx(flex, flexColumn)}>
           <h2>Peer Review Process for "{translate(spr.getLabel(), lang)}"</h2>
@@ -337,23 +338,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
             </div>
           </div>
         </Toolbar.Header>
-        <Toolbar.Content className={cx(flex, flexColumn)}>
-          <h2>TEST</h2>
-          <Button
-            ref={overlayButtonRef}
-            icon="undo"
-            onClick={e => {
-              e.stopPropagation();
-              setLayoutState(oldState => ({
-                ...oldState,
-                button: overlayButtonRef,
-                show: true,
-              }));
-            }}
-            className={css({ width: '200px', marginTop: '40px' })}
-          >
-            INFO OVERLAY TESTER
-          </Button>
+        <Toolbar.Content className={cx(flex, flexColumn, css({marginTop: '40px'}))}>
           <h2>Properties</h2>
           <div className={cx(flex, flexRow)}>
             <CheckBox

@@ -1,6 +1,8 @@
 import { css } from 'emotion';
 import * as React from 'react';
+import { themeVar } from '../../Components/Style/ThemeVars';
 import { store } from '../../data/Stores/store';
+import { trainerCellStyleI } from '../Overview/Overview';
 import { TeamTD, OverviewTD, ReviewTD } from './PeerReviewCells';
 import {
   DataItem,
@@ -9,33 +11,16 @@ import {
   StructureItem,
 } from './PeerReviewPage';
 
-// TODO use exported style from overview
 const PRTableStyle = css({
   borderCollapse: 'separate',
   borderSpacing: '10px',
-  margin: '40px 0',
   fontSize: '14px',
-  colgroup: {
-    borderLeft: 'solid 15px transparent',
-    borderRight: 'solid 15px transparent',
+  'td, th': {
+    ...trainerCellStyleI,
   },
-  td: {
-    minWidth: '60px',
-    backgroundColor: '#fff',
-    boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
-    padding: '10px 15px',
-    textAlign: 'center',
-    margin: '3px',
-    height: '48px',
-  },
-  'thead tr': {
-    height: '25px',
-    th: {
-      boxShadow: 'none',
-      verticalAlign: 'top',
-      padding: '0 10px',
-      textAlign: 'center',
-    },
+  'thead th, thead td': {
+    backgroundColor: themeVar.Common.colors.HighlightColor,
+    fontSize: '16px',
   },
 });
 

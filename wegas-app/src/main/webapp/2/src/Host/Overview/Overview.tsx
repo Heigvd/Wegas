@@ -14,15 +14,21 @@ import { ModalState, OverviewModal } from './OverviewModal/OverviewModal';
 import { instantiate } from '../../data/scriptable';
 import { themeVar } from '../../Components/Style/ThemeVars';
 
-
 export const trainerCellStyleI: Interpolation<undefined> = {
   backgroundColor: '#fff',
-        boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
-        padding: '15px 20px',
-        textAlign: 'center',
-        margin: '3px',
-        height: '48px',
-}
+  boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
+  padding: '15px 20px',
+  textAlign: 'center',
+  margin: '3px',
+  height: '48px',
+  '&> p': {
+    margin: 0,
+  },
+  '&> button': {
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  },
+};
 
 export const tableStyle = css({
   display: 'flex',
@@ -36,20 +42,12 @@ export const tableStyle = css({
   },
   table: {
     borderCollapse: 'collapse',
-    //borderSpacing: '5px',
     td: {
       minWidth: '60px',
       backgroundColor: '#f9f9f9',
       whiteSpace: 'pre',
       '&> div': {
         ...trainerCellStyleI,
-        '&> p': {
-          margin: 0,
-        },
-        '&> button': {
-          marginLeft: 'auto',
-          marginRight: 'auto',
-        },
       },
     },
     '.collapse': {
@@ -82,8 +80,6 @@ export const tableStyle = css({
     },
   },
 });
-
-
 
 const flexAuto = css({
   flex: '0 0 auto',
