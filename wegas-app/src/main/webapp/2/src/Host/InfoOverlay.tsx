@@ -1,6 +1,7 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { useOnClickOutside } from '../Components/Hooks/useOnClickOutside';
+import { themeVar } from '../Components/Style/ThemeVars';
 import { Toolbar } from '../Components/Toolbar';
 import { flex } from '../css/classes';
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
@@ -13,26 +14,41 @@ const overlayStyle = css({
   position: 'absolute',
   top: 0,
   left: 0,
-  overflow: 'auto',
-  maxWidth: '400px',
-  height: '200px',
-  padding: '1.5em',
+  //overflow: 'auto',
+  maxWidth: '450px',
+  maxHeight: '300px',
+  padding: '2em',
   zIndex: 1000,
-  cursor: 'pointer',
   backgroundColor: 'white',
-  border: '3px',
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
   boxShadow: '1px 2px 16px rgba(0, 0, 0, 0.2)',
+  '&:before': {
+    content: "''",
+    width: 0,
+    height: 0,
+    borderRight: '15px solid ' + themeVar.Common.colors.SecondaryBackgroundColor,
+    borderTop: '15px solid transparent',
+    borderBottom: '15px solid transparent',
+    position: 'absolute',
+    zIndex: 1001,
+    left: '-13px',
+  },
+  h2: {
+    fontSize: themeVar.ComponentTitle.dimensions.FontSize4,
+  }
 });
-
+const overlayContentStyle = css({
+overflow: 'auto',
+});
 const modalCloseDivStyle = css({
   display: 'flex',
   position: 'absolute',
   top: 0,
-  left: 'calc(100% - 1.5em)',
-  width: '1.5em',
-  height: '1.5em',
+  left: 'calc(100% - 2em)',
+  width: '2em',
+  height: '2em',
   cursor: 'pointer',
-  color: 'black',
+  color: themeVar.Common.colors.DarkTextColor,
 });
 
 const modalCloseButtonStyle = css({
@@ -46,9 +62,10 @@ function placeOverlay(
   if (ref != null && attachedToRef.current != null) {
     const buttonBottom = attachedToRef.current.getBoundingClientRect().bottom;
     const parentTop = ref.parentElement?.getBoundingClientRect().top || 0;
-    const buttonWidth = attachedToRef.current.getBoundingClientRect().width;
-    ref.style.setProperty('top', buttonBottom - parentTop + 'px');
-    ref.style.setProperty('left', buttonWidth + 'px');
+    const buttonLeft = attachedToRef.current.getBoundingClientRect().right;
+    const parentLeft = ref.parentElement?.getBoundingClientRect().left || 0;
+    ref.style.setProperty('top', buttonBottom - parentTop - 60 + 'px');
+    ref.style.setProperty('left', (buttonLeft - parentLeft + 10) + 'px');
   }
 }
 // React element
@@ -103,7 +120,7 @@ export function InfoOverlay({
       id={id}
       //onClick={bgClick}
     >
-      <div style={innerStyle}>
+      <div className={overlayContentStyle} style={innerStyle}>
         <div className={modalCloseDivStyle} onClick={onExit}>
           <IconComp icon="window-close" className={modalCloseButtonStyle} />
         </div>

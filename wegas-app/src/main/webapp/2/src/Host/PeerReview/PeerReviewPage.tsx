@@ -8,6 +8,7 @@ import { Button } from '../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import {
+  defaultMarginTop,
   expandWidth,
   flex,
   flexColumn,
@@ -25,7 +26,8 @@ import { translate } from '../../Editor/Components/FormView/translatable';
 import { createScript } from '../../Helper/wegasEntites';
 import { InfoOverlay } from '../InfoOverlay';
 import { PRTable } from './PeerReviewTable';
-// import { testPRData } from './PRinterfaceTests';
+import { testPRData } from './PRinterfaceTests';
+import { PRChart } from './PeerReviewChart';
 
 const prStateStyle = css({
   borderRadius: '10px',
@@ -108,7 +110,6 @@ interface TableStructure {
   title: string;
   items: StructureItem[];
 }
-
 export interface PeerReviewData {
   structure: {
     overview: TableStructure[];
@@ -257,9 +258,9 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
       createScript(`ReviewHelper.summarize("${peerReview.name}")`),
       undefined,
       true,
-    ).then((res: PeerReviewData) => {
+    ).then((_res: PeerReviewData) => {
       // Test purposes
-      // const res = testPRData;
+      const res = testPRData;
 
       if (mounted) {
         setData({
@@ -318,8 +319,6 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
 
   const status = globalPRStatus(data?.overview.data);
 
-  const overlayButtonRef = React.useRef<HTMLButtonElement>(null);
-
   const showOverlay = React.useCallback(
     (
       title: string,
@@ -332,7 +331,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
   );
 
   return (
-    <div className={expandWidth}>
+    <div className={cx(expandWidth, defaultMarginTop)}>
       <Toolbar>
         <Toolbar.Header className={cx(flex, flexColumn)}>
           <h2>Peer Review Process for "{translate(spr.getLabel(), lang)}"</h2>
@@ -405,23 +404,9 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
             </div>
           </div>
         </Toolbar.Header>
-        <Toolbar.Content className={cx(flex, flexColumn)}>
-          <h2>TEST</h2>
-          <Button
-            ref={overlayButtonRef}
-            icon="undo"
-            onClick={e => {
-              e.stopPropagation();
-              setLayoutState(oldState => ({
-                ...oldState,
-                button: overlayButtonRef,
-                show: true,
-              }));
-            }}
-            className={css({ width: '200px', marginTop: '40px' })}
-          >
-            INFO OVERLAY TESTER
-          </Button>
+        <Toolbar.Content
+          className={cx(flex, flexColumn, css({ marginTop: '40px' }))}
+        >
           <h2>Properties</h2>
           <div className={cx(flex, flexRow)}>
             <CheckBox
@@ -448,10 +433,13 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
               <PRTable {...data.reviews} onShowOverlay={showOverlay} />
               <h2>Comments</h2>
               <PRTable {...data.comments} onShowOverlay={showOverlay} />
+              <div className={flex}>
+                <h2>Chart reviews</h2>
+                <PRChart data={testPRData.extra} />
+                <h2>Chart comments</h2>
+              </div>
             </>
           )}
-          <h2>Chart reviews</h2>
-          <h2>Chart comments</h2>
         </Toolbar.Content>
       </Toolbar>
       {layoutState.show !== false && (
