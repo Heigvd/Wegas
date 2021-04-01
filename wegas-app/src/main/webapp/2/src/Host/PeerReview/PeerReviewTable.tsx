@@ -47,7 +47,7 @@ interface StructureItemWithTitle extends StructureItem {
   title: string;
 }
 
-interface PRTableProps extends PRTableData {
+interface PRTableProps extends PRTableData<DataItem> {
   onShowOverlay: (
     title: string,
     content: string,
