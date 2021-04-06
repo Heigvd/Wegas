@@ -84,7 +84,7 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
         this.clusterMembers.remove(member);
     }
 
-    public int getHzSize(){
+    public int getHzSize() {
         return hzInstance.getCluster().getMembers().size();
     }
 
@@ -179,26 +179,25 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
         return clusterMembers;
     }
 
-    /*@Override
-    public void stateChanged(LifecycleEvent event) {
-        logger.error("LifecycleEvent: {}", event);
-        if (event.getState() == LifecycleEvent.LifecycleState.SHUTTING_DOWN) {
-            //this.hZshutdown();
-        }
-    }*/
+//    @Override
+//    public void stateChanged(LifecycleEvent event) {
+//        logger.error("LifecycleEvent: {}", event);
+//        if (event.getState() == LifecycleEvent.LifecycleState.SHUTTING_DOWN) {
+//            //this.hZshutdown();
+//        }
+//    }
 
     public void hZshutdown() {
-        try {
-            concurrentHelper.releaseLocalLocks();
-        } catch (Exception ex) {
-            logger.error("Error While Releasing locks: {}", ex);
-        }
+        //try {
+        //concurrentHelper.releaseLocalLocks();
+        //} catch (Exception ex) {
+        //    logger.error("Error While Releasing locks: {}", ex);
+        //}
 
         /*
-         * Inform other instance this instance is shutting down
-         * This mechanism has the same purpose as MembershipListener.memberRemoved,
-         * but occurs sooner.
-         * It's usefull when all instances are stopped at the exact same time.
+         * Inform other instance this instance is shutting down This mechanism has the same purpose
+         * as MembershipListener.memberRemoved, but occurs sooner. It's usefull when all instances
+         * are stopped at the exact same time.
          */
         try {
             this.sendInstanceDownEvent(this.hzInstance.getCluster().getLocalMember().getUuid());

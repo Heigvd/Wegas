@@ -36,6 +36,17 @@ public class JSTool {
     }
 
     /**
+     * Insert
+     *
+     * @param script
+     *
+     * @return
+     */
+    public static String makeScriptInterruptible(String script) {
+        return JSTool.sanitize(script, "RequestManager.isInterrupted();");
+    }
+
+    /**
      * Convert code in String form to it's AST from. Nashorn's AST
      *
      * @param code source
@@ -197,16 +208,6 @@ public class JSTool {
             block.accept(this, null);
             res.insert(Math.toIntExact(block.getEndPosition() + off), "}");
             off += 1;
-        }
-    }
-
-    /**
-     * To be injected as {@value #JS_TOOL_INSTANCE_NAME} in the scriptEngine
-     */
-    public static class JSToolInstance {
-
-        public String inject(String code, String injection) {
-            return JSTool.sanitize(code, injection);
         }
     }
 

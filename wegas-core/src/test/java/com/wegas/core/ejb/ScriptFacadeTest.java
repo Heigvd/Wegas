@@ -110,7 +110,6 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
 
         String script2 = "GameModelFacade.find(1);";
 
-
         int tick = 10_000;
 
         while (true) {
@@ -144,6 +143,15 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
         }
     }
 
+    @Test(expected = WegasScriptException.class)
+    public void testTimeoutEvalInterrupts3() throws Throwable {
+        try {
+            scriptFacade.eval(player.getId(), new Script("JavaScript", "while(1){}"), null);
+        } catch (EJBException e) {
+            throw e.getCause();
+        }
+    }
+
     @Test
     public void testTimeoutEval() {
         final double VALUE = 99;
@@ -152,10 +160,10 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), numberDescriptor);
 
         scriptFacade.timeoutEval(player.getId(),
-                new Script("JavaScript", "Variable.find(gameModel, 'testnum').setValue(self, " + VALUE + ");"));
+            new Script("JavaScript", "Variable.find(gameModel, 'testnum').setValue(self, " + VALUE + ");"));
         Assert.assertEquals(VALUE,
-                ((NumberInstance) variableInstanceFacade.find(numberDescriptor.getId(), player.getId())).getValue(),
-                0.0001);
+            ((NumberInstance) variableInstanceFacade.find(numberDescriptor.getId(), player.getId())).getValue(),
+            0.0001);
         // Parser doing hoisting this, test for a correct injection.
         scriptFacade.timeoutEval(player.getId(), new Script("JavaScript", "(function a(c){c(); while(0){}\nfunction b(){c();}})(function(){})"));
     }

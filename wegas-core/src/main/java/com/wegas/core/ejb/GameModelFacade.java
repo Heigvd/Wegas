@@ -211,12 +211,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         userFacade.addUserPermission(userFacade.getCurrentUser(), "GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
 
         /*
-         * This flush is required by several EntityRevivedEvent listener,
-         * which opperate some SQL queries (which didn't return anything before
-         * entites have been flushed to database
+         * This flush is required by several EntityRevivedEvent listener, which opperate some SQL
+         * queries (which didn't return anything before entites have been flushed to database
          *
-         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
-         * it will not return any result if this flush not occurs
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name, it will not
+         * return any result if this flush not occurs
          */
         variableDescriptorFacade.flush();
 
@@ -634,9 +633,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 throw WegasErrorMessage.error("Duplicating repository gm_" + srcGameModel.getId() + " failure: " + ex);
             }
         }
-        /* clear .user-uploads
-         * this special directory contains files uploaded by players.
-         * Hence, it has to be erase
+        /* clear .user-uploads this special directory contains files uploaded by players. Hence, it
+         * has to be erase
          */
         jcrFacade.deleteUserUploads(newGameModel);
     }
@@ -1029,9 +1027,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         this.propagateAndReviveDefaultInstances(gameModel, gameModel, false); // reset the whole gameModel
         stateMachineFacade.runStateMachines(gameModel);
 
-        /* clear .user-uploads
-         * this special directory contains files uploaded by players.
-         * Hence, it has to be erase on restart
+        /* clear .user-uploads this special directory contains files uploaded by players. Hence, it
+         * has to be erase on restart
          */
         jcrFacade.deleteUserUploads(gameModel);
     }

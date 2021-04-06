@@ -68,6 +68,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         // Todo find a way to access response from RequestManager.preDestroy (@Context HttpServletResponse?)  WHY ?
         RequestManager requestManager = requestFacade.getRequestManager();
 
+        // make sure to release all tokens
+        requestManager.releaseTokens();
+
         requestManager.markManagermentStartTime();
         requestManager.setStatus(response.getStatusInfo());
 

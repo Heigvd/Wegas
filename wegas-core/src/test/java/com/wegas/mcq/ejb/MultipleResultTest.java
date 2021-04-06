@@ -7,6 +7,9 @@
  */
 package com.wegas.mcq.ejb;
 
+import ch.qos.logback.classic.Level;
+import com.wegas.core.ejb.ConcurrentHelper;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionDescriptor;
@@ -34,9 +37,13 @@ public class MultipleResultTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MultipleResultTest.class);
 
+    private static final ch.qos.logback.classic.Logger rmLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(RequestManager.class);
+    private static final ch.qos.logback.classic.Logger chLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ConcurrentHelper.class);
 
     @Test
     public void testSelectAndValidateChoice() {
+        rmLogger.setLevel(Level.INFO);
+        chLogger.setLevel(Level.INFO);
         // Create a 1reply-question
         QuestionDescriptor question = new QuestionDescriptor();
         question.setDefaultInstance(new QuestionInstance());

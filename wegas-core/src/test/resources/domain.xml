@@ -43,7 +43,6 @@
     </jdbc-connection-pool>
     <connector-connection-pool resource-adapter-name="jmsra" max-pool-size="250" steady-pool-size="1" name="jms/__defaultConnectionFactory-Connection-Pool" connection-definition-name="javax.jms.ConnectionFactory"/>
     <connector-resource pool-name="jms/__defaultConnectionFactory-Connection-Pool" object-type="system-all-req" jndi-name="jms/__defaultConnectionFactory"/>
-    <managed-executor-service jndi-name="timeoutExecutorService" object-type="system-all" core-pool-size="1"/>
   </resources>
   <servers>
     <server config-ref="server-config" name="server">
@@ -51,7 +50,6 @@
       <resource-ref ref="jdbc/__TimerPool"/>
       <resource-ref ref="jdbc/__default"/>
       <resource-ref ref="jms/__defaultConnectionFactory"/>
-      <resource-ref ref="timeoutExecutorService"/>
     </server>
   </servers>
   <nodes>

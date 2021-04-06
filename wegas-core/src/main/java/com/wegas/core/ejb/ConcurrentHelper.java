@@ -341,7 +341,11 @@ public class ConcurrentHelper {
         Iterator<Cache.Entry<String, RefCounterLock>> iterator = this.locks.iterator();
         while (iterator.hasNext()) {
             Cache.Entry<String, RefCounterLock> entry = iterator.next();
-            tokens.add(entry.getValue());
+            RefCounterLock rLock = entry.getValue();
+            FencedLock lock = getLock(rLock);
+            if (lock.isLocked()) {
+                tokens.add(entry.getValue());
+            }
         }
         return tokens;
     }

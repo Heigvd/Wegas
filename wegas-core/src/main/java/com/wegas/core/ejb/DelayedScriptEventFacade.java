@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -74,8 +73,7 @@ public class DelayedScriptEventFacade implements DelayedScriptEventFacadeI {
 
                 rm.markManagermentStartTime();
                 /*
-             * ManagedModeResponseFilter mock-up.
-             * To propagate instances through websockets
+                 * ManagedModeResponseFilter mock-up. To propagate instances through websockets
                  */
                 Map<String, List<AbstractEntity>> updatedEntities = rm.getMappedUpdatedEntities();
                 Map<String, List<AbstractEntity>> destroyedEntities = rm.getMappedDestroyedEntities();

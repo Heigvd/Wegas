@@ -24,7 +24,6 @@
       <property name="ServerName" value="${wegas.db.host}"/>
     </jdbc-connection-pool>
     <jdbc-resource pool-name="jdbc/wegas_dev_pool" jndi-name="jdbc/wegas_dev"/>
-    <managed-executor-service core-pool-size="${wegas.http.threads}" maximum-pool-size="${wegas.http.threads}" object-type="system-all" jndi-name="timeoutExecutorService" />
     <!-- /Wegas-->
     <context-service object-type="system-all" description="context service" jndi-name="concurrent/__defaultContextService"/>
     <!-- Wegas-->
@@ -42,7 +41,6 @@
       <resource-ref ref="concurrent/__defaultManagedThreadFactory"/>
       <!-- Wegas-->
       <resource-ref ref="jdbc/wegas_dev"/>
-      <resource-ref ref="timeoutExecutorService"/>
       <!-- /Wegas-->
     </server>
   </servers>

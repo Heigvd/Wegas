@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -134,9 +133,9 @@ public class RequestManager implements RequestManagerI {
         INTERNAL
     }
 
-    /*
-    @Resource
-    private TransactionSynchronizationRegistry txReg;
+    // @Resource private TransactionSynchronizationRegistry txReg;
+    /**
+     * to manage locks
      */
     @Inject
     private ConcurrentHelper concurrentHelper;
@@ -262,6 +261,11 @@ public class RequestManager implements RequestManagerI {
      * start timestamp
      */
     private Long startTimestamp;
+
+    /**
+     * time-out timestamp
+     */
+    private Long deadline;
 
     /**
      * time entering ManagedMode filter
@@ -589,7 +593,8 @@ public class RequestManager implements RequestManagerI {
 
         /*
          * When running requests as a player, one should never have more permissions than it needs
-         * Hence, we have to degrade permission to keep only those that are relevant to the player context
+         * Hence, we have to degrade permission to keep only those that are relevant to the player
+         * context
          */
         if (currentPlayer != null) {
             if (wasAdmin || hasRole("Administrator")) {
@@ -1109,6 +1114,21 @@ public class RequestManager implements RequestManagerI {
         this.status = statusInfo;
     }
 
+    /**
+     * Set a deadline.
+     *
+     * @see #isInterrupted()
+     *
+     * @param duration
+     */
+    public void setDeadline(Long duration) {
+        if (duration != null && duration > 0) {
+            this.deadline = System.currentTimeMillis() + duration;
+        } else {
+            this.deadline = null;
+        }
+    }
+
     /*
      * Set {@link #startTimestamp} to now
      */
@@ -1277,12 +1297,7 @@ public class RequestManager implements RequestManagerI {
         this.clearCacheOnDestroy = true;
     }
 
-    /**
-     * Lifecycle callback. Release all locks after the request and log the request summary
-     */
-    @PreDestroy
-    public void preDestroy() {
-        this.clearPermissions();
+    public void releaseTokens() {
         for (Entry<String, List<String>> entry : lockedToken.entrySet()) {
             logger.debug("PreDestroy Unlock: key: {}", entry.getKey());
             for (String audience : entry.getValue()) {
@@ -1290,6 +1305,16 @@ public class RequestManager implements RequestManagerI {
                 concurrentHelper.unlockFull(entry.getKey(), audience, false);
             }
         }
+    }
+
+    /**
+     * Lifecycle callback. Release all locks after the request and log the request summary
+     */
+    @PreDestroy
+    public void preDestroy() {
+        this.clearPermissions();
+
+        this.releaseTokens();
 
         if (currentUser != null) {
             websocketFacade.touchOnlineUser(currentUser.getId(),
@@ -1341,9 +1366,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /*
-     ---------------------------------------------------------------------------
-     | Security
-     ---------------------------------------------------------------------------
+     * --------------------------------------------------------------------------- | Security
+     * ---------------------------------------------------------------------------
      */
     /**
      * Clear all granted wegas permissions and clear effective roles/DBPermissions
@@ -1801,8 +1825,8 @@ public class RequestManager implements RequestManagerI {
         // null means no permission required
         if (permissions != null) {
             /*
-             * not null value means at least one permission from the list.
-             * Hence, empty string "" means forbidden, even for admin
+             * not null value means at least one permission from the list. Hence, empty string ""
+             * means forbidden, even for admin
              */
             for (WegasPermission perm : permissions) {
                 if (this.hasPermission(perm)) {
@@ -2057,7 +2081,7 @@ public class RequestManager implements RequestManagerI {
 
     /*
      * Assert the current user have write right on the game
-
+     *
      * @throw WegasAccessDenied
      */
     public void assertGameTrainer(final Game game) {
@@ -2254,6 +2278,17 @@ public class RequestManager implements RequestManagerI {
             );
         } catch (NamingException ex) {
             return null;
+        }
+    }
+
+    @Override
+    public void isInterrupted() throws InterruptedException {
+        if (Thread.currentThread().isInterrupted()) {
+            logger.error("Request has been interrupted");
+            throw new InterruptedException();
+        } else if (this.deadline != null && System.currentTimeMillis() > this.deadline) {
+            logger.error("Request aborted: deadline reached");
+            throw new InterruptedException();
         }
     }
 }
