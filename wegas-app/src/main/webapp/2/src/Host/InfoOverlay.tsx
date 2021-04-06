@@ -32,6 +32,7 @@ const overlayStyle = css({
     position: 'absolute',
     zIndex: 1001,
     left: '-13px',
+    top: '43px',
   },
   h2: {
     fontSize: themeVar.ComponentTitle.dimensions.FontSize4,

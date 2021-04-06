@@ -12,7 +12,6 @@ import {
   expandWidth,
   flex,
   flexColumn,
-  flexDistribute,
   flexRow,
 } from '../../css/classes';
 import {
@@ -31,8 +30,8 @@ import { PRChart } from './PeerReviewChart';
 
 const prStateStyle = css({
   borderRadius: '10px',
-  backgroundColor: themeVar.Common.colors.PrimaryColor,
-  color: themeVar.Common.colors.SecondaryBackgroundColor,
+  backgroundColor: themeVar.Common.colors.SecondaryBackgroundColor,
+  color: themeVar.Common.colors.DarkTextColor,
   boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.2)',
   padding: '10px',
   minWidth: '200px',
@@ -41,8 +40,16 @@ const prStateStyle = css({
 });
 
 const prActiveStateStyle = css({
-  backgroundColor: themeVar.Common.colors.ActiveColor,
+  backgroundColor: themeVar.Common.colors.PrimaryColor,
   color: themeVar.Common.colors.LightTextColor,
+});
+
+const stateBarStyle = css({
+  overflowX: 'auto',
+  padding: '1em',
+  button: {
+    fontSize: '30px'
+  }
 });
 
 interface PeerReviewPageProps {
@@ -333,9 +340,9 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
   return (
     <div className={cx(expandWidth, defaultMarginTop)}>
       <Toolbar>
-        <Toolbar.Header className={cx(flex, flexColumn)}>
+        <Toolbar.Header className={cx(flex, flexColumn, stateBarStyle)}>
           <h2>Peer Review Process for "{translate(spr.getLabel(), lang)}"</h2>
-          <div className={cx(flex, flexRow, flexDistribute, expandWidth)}>
+          <div className={cx(flex, flexRow, expandWidth)}>
             <div
               className={cx(prStateStyle, {
                 [prActiveStateStyle]: status === 'NOT_STARTED',
@@ -433,10 +440,8 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
               <PRTable {...data.reviews} onShowOverlay={showOverlay} />
               <h2>Comments</h2>
               <PRTable {...data.comments} onShowOverlay={showOverlay} />
-              <div className={flex}>
-                <h2>Chart reviews</h2>
+              <div>
                 <PRChart data={testPRData.extra} />
-                <h2>Chart comments</h2>
               </div>
             </>
           )}
