@@ -37,6 +37,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
+ * Indicated the result of a {@link AbstractTransition} condition depends on a variable
  *
  * @author maxence
  */
@@ -52,21 +53,31 @@ public class TransitionDependency extends AbstractEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     *
+     * entity ID
      */
     @Id
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
 
+    /**
+     * The transition which depends on a variable
+     */
     @ManyToOne
     @JsonIgnore
     private AbstractTransition transition;
 
+    /**
+     * The variable the transition depends on
+     */
     @ManyToOne
     @JsonIgnore
     private VariableDescriptor variable;
 
+    /**
+     * Name of the variable. This field is set when deserializing entities from clients and when a
+     * WegasPatch is applied.
+     */
     @Transient
     @WegasEntityProperty(
         optional = false, nullable = false,
@@ -74,6 +85,9 @@ public class TransitionDependency extends AbstractEntity {
     )
     private String variableName;
 
+    /**
+     * Scope of the dependency.
+     */
     @WegasEntityProperty(
         optional = false, nullable = false, proposal = DefaultDependencyScope.class,
         view = @View(
@@ -90,22 +104,48 @@ public class TransitionDependency extends AbstractEntity {
         return id;
     }
 
+    /**
+     * Get the transition
+     *
+     * @return the transition
+     */
     public AbstractTransition getTransition() {
         return transition;
     }
 
+    /**
+     * Set the transition
+     *
+     * @param transition the new transition
+     */
     public void setTransition(AbstractTransition transition) {
         this.transition = transition;
     }
 
+    /**
+     * Get the variable
+     *
+     * @return the variable
+     */
     public VariableDescriptor getVariable() {
         return variable;
     }
 
+    /**
+     * Set the variable
+     *
+     * @param variable the new variable
+     */
     public void setVariable(VariableDescriptor variable) {
         this.variable = variable;
     }
 
+    /**
+     * Get the variable name. If variableName field is set, return its value, otherwhise, try to use
+     * the real variable name
+     *
+     * @return
+     */
     public String getVariableName() {
         if (variableName != null) {
             return variableName;
@@ -118,44 +158,85 @@ public class TransitionDependency extends AbstractEntity {
         }
     }
 
+    /**
+     * Get the imported variable name from the transient field.
+     *
+     * @return variable name
+     */
     @JsonIgnore
     public String getImportedVariableName() {
         return variableName;
     }
 
+    /**
+     * Set variableName field
+     *
+     * @param variableName new variable name
+     */
     public void setVariableName(String variableName) {
         this.variableName = variableName;
     }
 
+    /**
+     * Get dependency scope
+     *
+     * @return the scope
+     */
     public DependencyScope getScope() {
         return scope;
     }
 
+    /**
+     * Set the dependency scope
+     *
+     * @param scope new scope
+     */
     public void setScope(DependencyScope scope) {
         this.scope = scope;
     }
 
+    /**
+     * Get required update permission. (ie. the one from the transition)
+     *
+     * @return permsission required to update the dependency
+     */
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getTransition().getRequieredUpdatePermission();
     }
 
+    /**
+     * Get required read permission. (ie. the one from the transition)
+     *
+     * @return permsission required to read the dependency
+     */
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getTransition().getRequieredReadPermission();
     }
 
+    /**
+     * The parent, ie the transition.
+     *
+     * @return the transition
+     */
     @Override
     public WithPermission getMergeableParent() {
         return transition;
     }
 
+    /**
+     * Make sure the dependency is registered by the variable.
+     */
     public void registerInVariable() {
         if (this.getVariable() != null) {
             this.getVariable().getMayTrigger().add(this);
         }
     }
 
+    /**
+     * Form view for the scope.
+     */
     public static class DependencyScopeSelectView extends SelectView {
 
         public DependencyScopeSelectView() {
@@ -167,6 +248,9 @@ public class TransitionDependency extends AbstractEntity {
         }
     }
 
+    /**
+     * Form default scope value.
+     */
     public static class DefaultDependencyScope implements ValueGenerator {
 
         @Override
@@ -175,6 +259,11 @@ public class TransitionDependency extends AbstractEntity {
         }
     }
 
+    /**
+     * Make sure to clean references when deleting a dependency.
+     *
+     * @param beans some facades
+     */
     @Override
     public void updateCacheOnDelete(Beanjection beans) {
         if (this.getVariable() != null) {
