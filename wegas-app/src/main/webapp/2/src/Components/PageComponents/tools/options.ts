@@ -41,7 +41,8 @@ export interface OpenPageAction {
   context?: PageComponentContext;
 }
 interface OpenURLAction {
-  url: string;
+  url: IScript;
+  context?: PageComponentContext;
 }
 interface OpenFileAction {
   filePath: IScript;
@@ -116,14 +117,21 @@ export const wegasComponentActions: WegasComponentActions = {
     }
   },
   openUrl: props => {
-    window.open(props.url);
+    const path = clientScriptEval<string | false>(props.url, props.context);
+    if (path) {
+      const win = window.open(path);
+      win!.focus();
+    }
   },
   openFile: props => {
-    const win = window.open(
-      fileURL(clientScriptEval(props.filePath, props.context)),
-      '_blank',
+    const path = clientScriptEval<string | false>(
+      props.filePath,
+      props.context,
     );
-    win!.focus();
+    if (path) {
+      const win = window.open(fileURL(path), '_blank');
+      win!.focus();
+    }
   },
   impactVariable: props => {
     try {
@@ -177,7 +185,7 @@ export const actionsChoices: HashListChoices = [
       schema: schemaProps.object({
         label: 'Open Url',
         properties: {
-          url: schemaProps.string({ label: 'Url', required: true }),
+          url: schemaProps.scriptString({ label: 'Url', required: true }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
       }),
@@ -523,7 +531,7 @@ function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
           }
         }
       } else if (instance instanceof SWhQuestionInstance) {
-        return instance.getActive && !instance.isValidated() ? 1 : 0;
+        return instance.getActive() && !instance.isValidated() ? 1 : 0;
       } else if (instance instanceof SSurveyInstance) {
         return instance.getActive() &&
           (instance.getStatus() === 'REQUESTED' ||
