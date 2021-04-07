@@ -1,7 +1,8 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { flex, flexWrap } from '../../css/classes';
-
+import { PeerReviewData } from './PeerReviewPage';
+import { Bar } from 'react-chartjs-2';
 const chartStyle = css({
   width: '350px',
   padding: '1.5rem 3rem 1.5rem 0',
@@ -12,227 +13,216 @@ const chartLegendStyle = css({
   fontStyle: 'italic',
 });
 
+export interface ExtraProps {
+  [id: number]: ChartObjectProps ;
+  maxNumberOfValue: number;
+}
+
+export type ChartObjectProps = TextSummary | GradeSummary | CategorizationSummary;
+
+interface TextSummary {
+  type: 'TextSummary',
+  name: string,
+  label: string,
+  id: number,
+  numberOfValues: number,
+  averageNumberOfWords: number,
+  averageNumberOfCharacters: number,
+  data: [],
+}
+
+interface IHistogramValues {
+          min: number,
+          max: number,
+          maxValue: number | null,
+          minValue: number | null,
+          count: number,
+}
+
+interface GradeSummary {
+      numberOfValues: number,
+      mean: number,
+      min: number,
+      max: number,
+      median: number,
+      sd: number,
+      histogram: IHistogramValues[],
+      type: 'GradeSummary',
+      id: number,
+      name: string,
+      label: string,
+      data: [],
+}
+
+interface CategorizationSummary {
+      type: 'CategorizationSummary',
+      name: string,
+      id: number,
+      label: string,
+      numberOfValues: number,
+      histogram: {
+        inutile: number,
+        'peu utile': number,
+        moyenne: number,
+        utile: number,
+        excellente: number,
+      },
+      data: [],
+}
+
 interface PRChartProps {
-  data: {
-    [id: string]: ChartObjectProps | number;
-  };
+  completeData: PeerReviewData
 }
 
-interface ChartObjectProps {
-  numberOfValues: any;
-  mean?: number | null;
-  min?: number | null;
-  max?: number | null;
-  median?: number | null;
-  sd?: number | null;
-  histogram?:
-    | {
-        min: number;
-        max: number;
-        maxValue: number | null;
-        minValue: number | null;
-        count: number;
-      }[]
-    | {
-        [label: string]: number;
-      };
-  type: string;
-  id: number;
-  name: string;
-  label: string;
-  data: [];
-  averageNumberOfWords?: number;
-  averageNumberOfCharacters?: number;
+
+/* function isTextSummary(val: any): val is TextSummary {
+return val != null && typeof val === "object" && val.type === "TextSummary"
 }
-//TODO use lib (Chart.js)? to create charts
-export function PRChart({ data }: PRChartProps) {
-  const maxValues = data.maxNumberOfValue;
-
-  const evalJustifications = Object.entries(data).map(
-    ([key, value]) =>
-      typeof value === 'object' &&
-      value.id === 19666595 && (
-        <div key={key} className={chartStyle}>
-          <h3>{value.label}</h3>
-          <div>
-            <p>
-              {'Nombre moyen de mots: '}
-              <strong>
-              {value.averageNumberOfWords &&
-                Math.round(value.averageNumberOfWords * 100) / 100}
-              </strong>
-            </p>
-            <p>
-              {'Nombre moyen de caractères: '}
-              <strong>
-              {value.averageNumberOfCharacters &&
-                Math.round(value.averageNumberOfCharacters * 100) / 100}
-              </strong>
-            </p>
-          </div>
-          <p className={chartLegendStyle}>
-            Basé sur: {value.numberOfValues} / {maxValues}
-          </p>
-        </div>
-      ),
-  );
-
-  const noteFond = Object.entries(data).map(
-    ([key, value]) =>
-      typeof value === 'object' &&
-      value.id === 19666598 && (
-        <div key={key} className={chartStyle}>
-          <h3>{value.label}</h3>
-          <div>There will be a chart here</div>
-          <div className={chartLegendStyle}>
-            <p>Moy.: {value.mean && Math.round(value.mean * 100) / 100}</p>
-            <p>Med.: {value.median}</p>
-            <p>Sd.: {value.sd && Math.round(value.sd * 100) / 100}</p>
-            <p>
-              Basé sur: {value.numberOfValues} / {maxValues}
-            </p>
-          </div>
-        </div>
-      ),
-  );
-
-  const noteForme = Object.entries(data).map(
-    ([key, value]) =>
-      typeof value === 'object' &&
-      value.id === 19666601 && (
-        <div key={key} className={chartStyle}>
-          <h3>{value.label}</h3>
-          <div>There will be a chart here</div>
-          <div className={chartLegendStyle}>
-            <p>Moy.: {value.mean && Math.round(value.mean * 100) / 100}</p>
-            <p>Med.: {value.median}</p>
-            <p>Sd.: {value.sd && Math.round(value.sd * 100) / 100}</p>
-            <p>
-              Basé sur: {value.numberOfValues} / {maxValues}
-            </p>
-          </div>
-        </div>
-      ),
-  );
-
-  const note = Object.entries(data).map(
-    ([key, value]) =>
-      typeof value === 'object' &&
-      value.id === 19666575 && (
-        <div key={key} className={chartStyle}>
-          <h3>{value.label}</h3>
-          <div>There will be a chart here</div>
-          <div className={chartLegendStyle}>
-            <p>Moy.: {value.mean && Math.round(value.mean * 100) / 100}</p>
-            <p>Med.: {value.median}</p>
-            <p>Sd.: {value.sd && Math.round(value.sd * 100) / 100}</p>
-            <p>
-              Basé sur: {value.numberOfValues} / {maxValues}
-            </p>
-          </div>
-        </div>
-      ),
-  );
-
-
-  const justification = Object.entries(data).map(
-    ([key, value]) =>
-      typeof value === 'object' &&
-      value.id === 19666578 && (
-        <div key={key} className={chartStyle}>
-          <h3>{value.label}</h3>
-          <div>
-            <p>
-              {'Nombre moyen de mots: '}
-              <strong>
-              {value.averageNumberOfWords &&
-                Math.round(value.averageNumberOfWords * 100) / 100}
-              </strong>
-            </p>
-            <p>
-              {'Nombre moyen de caractères: '}
-              <strong>
-              {value.averageNumberOfCharacters &&
-                Math.round(value.averageNumberOfCharacters * 100) / 100}
-              </strong>
-            </p>
-          </div>
-          <p className={chartLegendStyle}>
-            Basé sur: {value.numberOfValues} / {maxValues}
-          </p>
-        </div>
-      ),
-  );
-
-  const pertinenceEval = Object.entries(data).map(
-    ([key, value]) =>
-      typeof value === 'object' &&
-      value.id === 19666581 && (
-        <div key={key} className={chartStyle}>
-          <h3>{value.label}</h3>
-          <div>There will be a chart here</div>
-          <p className={chartLegendStyle}>
-            Basé sur: {value.numberOfValues} / {maxValues}
-          </p>
-        </div>
-      ),
-  );
-
-  /*
-function CreateCharts(key: string, value: ChartObjectProps) {
-  if(value.label){
-    switch (value.label) {
-      case 'Note':
-         const noteChart =
-         <div key={key}>
-          <h2>{value.label}</h2>
-          <div>I'm the chart - from the future</div>
-          <div>Basé sur: {value.numberOfValues} / {maxValues}</div>
-          </div>
-          return noteChart;
-      case 'Note fond':
-        break;
-      case 'Note forme':
-        break;
-    }
-  }
+function isGradeSummary(val: any): val is GradeSummary {
+  return val != null && typeof val === "object" && val.type === "GradeSummary"
+}
+function isCategorizationSummary(val: any): val is CategorizationSummary {
+  return val != null && typeof val === "object" && val.type === "CategorizationSummary"
 } */
 
-  /* const reviewCharts = Object.entries(data).map(([key, value]) => (
-     typeof value === "object" && value.type === "GradeSummary" &&
-    <div key={key} className={chartStyle}>
-      <h2>{value.label}</h2>
-      <div>I'm the chart - from the future</div>
-      <div>Basé sur: {value.numberOfValues} / {maxValues}</div>
-    </div>
-  ))
+// TODO max numberof values to put in a global const!!!
+function TextSummary(prop : TextSummary){
+  return(
+    <div className={chartStyle}>
+          <h3>{prop.label}</h3>
+          <div>
+            <p>
+              {'Nombre moyen de mots: '}
+              <strong>
+              {prop.averageNumberOfWords &&
+                Math.round(prop.averageNumberOfWords * 100) / 100}
+              </strong>
+            </p>
+            <p>
+              {'Nombre moyen de caractères: '}
+              <strong>
+              {prop.averageNumberOfCharacters &&
+                Math.round(prop.averageNumberOfCharacters * 100) / 100}
+              </strong>
+            </p>
+          </div>
+          <p className={chartLegendStyle}>
+            Basé sur: {prop.numberOfValues}
+          </p>
+      </div>
+  )
+}
 
-  const commentsCharts = Object.entries(data).map(([key, value]) => (
-    typeof value === "object" && value.type === ("TextSummary" || "CategorizationSummary") &&
-    <div key={key} className={chartStyle}>
-      <h2>{value.label}</h2>
-      <div>I'm the chart - from the future</div>
-      <div>Basé sur: {value.numberOfValues} / {maxValues}</div>
-    </div>
-  ))
-  // y a un 3eme type......
-  // en fait le display suit pas les types retournés
+const dataTestForCharts = {
+    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+    datasets: [{
+        label: '# of Votes',
+        data: [12, 19, 3, 5, 2, 3],
+        backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+        ],
+        borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1
+    }]
+}
 
-  */
+function GradeSummary(prop: GradeSummary){
+  return(
+    <div className={chartStyle}>
+          <h3>{prop.label}</h3>
+          <div>
+            <Bar data={dataTestForCharts} />
+    </div>
+          <div className={chartLegendStyle}>
+            <p>Moy.: {prop.mean && Math.round(prop.mean * 100) / 100}</p>
+            <p>Med.: {prop.median}</p>
+            <p>Sd.: {prop.sd && Math.round(prop.sd * 100) / 100}</p>
+            <p>
+              Basé sur: {prop.numberOfValues}
+            </p>
+          </div>
+    </div>
+  )
+}
+
+function CategorizationSummary(prop: CategorizationSummary){
+  return(
+    <div className={chartStyle}>
+          <h3>{prop.label}</h3>
+          <div>There will be a chart here</div>
+          <p className={chartLegendStyle}>
+            Basé sur: {prop.numberOfValues}
+          </p>
+        </div>
+  )
+}
+
+export function CreateTypedChart(prop : ChartObjectProps){
+  switch(prop.type){
+    case 'TextSummary':
+      return <TextSummary {...prop}/>;
+    case 'GradeSummary':
+      return <GradeSummary {...prop} />
+    case 'CategorizationSummary':
+      return <CategorizationSummary {...prop} />
+    default:
+      return <div>Sorry, nothing to return.</div>
+  }
+}
+
+export function PRChart({completeData}: PRChartProps) {
+  //const maxValues = data.maxNumberOfValue;
+
+    let reviewSectionOrder:{i: number, value:ChartObjectProps}[] = [];
+    let commentsSectionOrder:{i: number, value:ChartObjectProps}[] = [];
+
+
+    function createOrderStructure() {
+      Object.entries(completeData.extra).forEach(([key, value]) => {
+        if(typeof value === "object"){
+          let chartID = value.id;
+
+          completeData.structure.reviews.forEach((obj, i)=> {
+            if(obj.id?.includes(chartID.toString())) {
+              reviewSectionOrder.push({i, value});
+            }
+          })
+          completeData.structure.comments.forEach((obj, i)=> {
+            if(obj.id?.includes(chartID.toString())) {
+              commentsSectionOrder.push({i, value});
+            }
+          })
+        }
+        }
+      );
+    }
+    createOrderStructure();
+
+// chart compo qui prend les extras (n importe lequel)
+// creer les compos selon interface (type)
+// branchez les compo (switch) dans le compo général
 
   return (
     <>
       <h2>Review Charts</h2>
       <div className={cx(flex, flexWrap)}>
-        {evalJustifications}
-        {noteFond}
-        {noteForme}
+        {reviewSectionOrder.sort((a, b)=>a.i - b.i).map((item)=><CreateTypedChart key={item.value.id} {...item.value} />)}
       </div>
       <h2>Comments charts</h2>
       <div className={cx(flex, flexWrap)}>
-        {note}
-        {justification}
-        {pertinenceEval}
+        {commentsSectionOrder.sort((a, b)=>a.i - b.i).map((item)=><CreateTypedChart key={item.value.id} {...item.value} />)}
       </div>
     </>
   );

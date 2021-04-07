@@ -26,7 +26,7 @@ import { createScript } from '../../Helper/wegasEntites';
 import { InfoOverlay } from '../InfoOverlay';
 import { PRTable } from './PeerReviewTable';
 import { testPRData } from './PRinterfaceTests';
-import { PRChart } from './PeerReviewChart';
+import { ExtraProps, PRChart } from './PeerReviewChart';
 
 const prStateStyle = css({
   borderRadius: '10px',
@@ -134,35 +134,7 @@ export interface PeerReviewData {
       };
     };
   };
-  extra: {
-    [id: number]: {
-      numberOfValues: number;
-      mean?: number | null;
-      min?: number | null;
-      max?: number | null;
-      median?: number | null;
-      sd?: number | null;
-      histogram?:
-        | {
-            min: number;
-            max: number;
-            maxValue: number | null;
-            minValue: number | null;
-            count: number;
-          }[]
-        | {
-            [label: string]: number;
-          };
-      type: string;
-      id: number;
-      name: string;
-      label: string;
-      data: [];
-      averageNumberOfWords?: number;
-      averageNumberOfCharacters?: number;
-    };
-    maxNumberOfValue: number;
-  };
+  extra: ExtraProps
   variable: {
     [id: string]: string;
   };
@@ -255,6 +227,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
 
   const { lang } = React.useContext(languagesCTX);
   const [data, setData] = React.useState<IData>();
+  //const [extra, setExtra] = React.useState<ExtraProps>();
   const spr = useStore(() => instantiate(peerReview));
 
   React.useEffect(() => {
@@ -323,6 +296,8 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
       mounted = false;
     };
   }, [peerReview.name]);
+
+  //wlog("TEST before extra " + JSON.stringify(data));
 
   const status = globalPRStatus(data?.overview.data);
 
@@ -441,7 +416,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
               <h2>Comments</h2>
               <PRTable {...data.comments} onShowOverlay={showOverlay} />
               <div>
-                <PRChart data={testPRData.extra} />
+                <PRChart completeData ={testPRData} />
               </div>
             </>
           )}
