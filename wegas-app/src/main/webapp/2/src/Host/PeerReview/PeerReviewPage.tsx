@@ -8,25 +8,31 @@ import { Button } from '../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import {
+  autoScroll,
   defaultMarginTop,
   expandWidth,
   flex,
   flexColumn,
   flexRow,
 } from '../../css/classes';
-import {
-  setPRState,
-  updateDescriptor,
-} from '../../data/Reducer/VariableDescriptorReducer';
+import { updateDescriptor } from '../../data/Reducer/VariableDescriptorReducer';
 import { instantiate } from '../../data/scriptable';
 import { Game, GameModel, Player } from '../../data/selectors';
 import { store, useStore } from '../../data/Stores/store';
-import { translate } from '../../Editor/Components/FormView/translatable';
+import {
+  createTranslatableContent,
+  translate,
+} from '../../Editor/Components/FormView/translatable';
 import { createScript } from '../../Helper/wegasEntites';
 import { InfoOverlay } from '../InfoOverlay';
 import { PRTable } from './PeerReviewTable';
 import { testPRData } from './PRinterfaceTests';
 import { ExtraProps, PRChart } from './PeerReviewChart';
+import {
+  PeerReviewDescriptorAPI,
+  PeerReviewStateSelector,
+} from '../../API/peerReview.api';
+import { addPopup, popupDispatch } from '../../Components/PopupManager';
 
 const prStateStyle = css({
   borderRadius: '10px',
@@ -48,8 +54,8 @@ const stateBarStyle = css({
   overflowX: 'auto',
   padding: '1em',
   button: {
-    fontSize: '30px'
-  }
+    fontSize: '30px',
+  },
 });
 
 interface PeerReviewPageProps {
@@ -230,7 +236,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
   //const [extra, setExtra] = React.useState<ExtraProps>();
   const spr = useStore(() => instantiate(peerReview));
 
-  React.useEffect(() => {
+  const getData = React.useCallback(() => {
     let mounted = true;
     VariableDescriptorAPI.runScript(
       GameModel.selectCurrent().id!,
@@ -238,9 +244,9 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
       createScript(`ReviewHelper.summarize("${peerReview.name}")`),
       undefined,
       true,
-    ).then((_res: PeerReviewData) => {
+    ).then((res: PeerReviewData) => {
       // Test purposes
-      const res = testPRData;
+      // const res = testPRData;
 
       if (mounted) {
         setData({
@@ -275,7 +281,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
             ),
           },
           comments: {
-            structures: res.structure.reviews,
+            structures: res.structure.comments,
             data: Object.entries(res.variable).reduce<
               PRTableData<DataReviewItem>['data']
             >(
@@ -283,7 +289,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
                 ...o,
                 [key]: {
                   variable: value,
-                  ...res.data[key].reviews,
+                  ...res.data[key].comments,
                 },
               }),
               {},
@@ -297,7 +303,33 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
     };
   }, [peerReview.name]);
 
-  //wlog("TEST before extra " + JSON.stringify(data));
+  const changeStatus = React.useCallback(
+    (prNewStatus: PeerReviewStateSelector) => {
+      PeerReviewDescriptorAPI.setStateUnmanaged(
+        GameModel.selectCurrent().id!,
+        peerReview.id!,
+        Game.selectCurrent().id!,
+        prNewStatus,
+      )
+        .catch(e => {
+          e.json().then((error: WegasErrorMessage) => {
+            popupDispatch(
+              addPopup(
+                error.message + new Date().getTime(),
+                createTranslatableContent(lang, error.message),
+                5000,
+              ),
+            );
+          });
+        })
+        .finally(getData);
+    },
+    [getData, lang, peerReview.id],
+  );
+
+  React.useEffect(() => {
+    getData();
+  }, [getData]);
 
   const status = globalPRStatus(data?.overview.data);
 
@@ -314,114 +346,120 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
 
   return (
     <div className={cx(expandWidth, defaultMarginTop)}>
-      <Toolbar>
-        <Toolbar.Header className={cx(flex, flexColumn, stateBarStyle)}>
-          <h2>Peer Review Process for "{translate(spr.getLabel(), lang)}"</h2>
-          <div className={cx(flex, flexRow, expandWidth)}>
-            <div
-              className={cx(prStateStyle, {
-                [prActiveStateStyle]: status === 'NOT_STARTED',
-              })}
-            >
-              <h3>Edition</h3>
-              <p>The authors are editing what will be reviewed</p>
-              <p style={{ fontStyle: 'italic' }}>
-                The process has not begun yet
-              </p>
-            </div>
-            <Button
-              icon="arrow-right"
-              disabled={status !== 'NOT_STARTED'}
-              onClick={() =>
-                store.dispatch(setPRState(peerReview.id!, 'Dispatch'))
-              }
-            />
-            <div
-              className={cx(prStateStyle, {
-                [prActiveStateStyle]: status === 'REVIEWING',
-              })}
-            >
-              <h3>Reviewing</h3>
-              <p>The authors are reviewing their peers</p>
-              <p style={{ fontStyle: 'italic' }}>
-                This is the first step of the process
-              </p>
-            </div>
-            <Button
-              icon="arrow-right"
-              disabled={status !== 'REVIEWING'}
-              onClick={() =>
-                store.dispatch(setPRState(peerReview.id!, 'Notify'))
-              }
-            />
-            <div
-              className={cx(prStateStyle, {
-                [prActiveStateStyle]: status === 'COMMENTING',
-              })}
-            >
-              <h3>Commenting</h3>
-              <p>The authors acquaint themselves with peer reviews</p>
-              <p style={{ fontStyle: 'italic' }}>
-                They comment on those reviews
-              </p>
-            </div>
-            <Button
-              icon="arrow-right"
-              disabled={status !== 'COMMENTING'}
-              onClick={() =>
-                store.dispatch(setPRState(peerReview.id!, 'Close'))
-              }
-            />
-            <div
-              className={cx(prStateStyle, {
-                [prActiveStateStyle]: status === 'CLOSED',
-              })}
-            >
-              <h3>Completed</h3>
-              <p>The reviewing process has been completed</p>
-              <p style={{ fontStyle: 'italic' }}>
-                The authors take acquaintance of comments on reviews they've
-                done
-              </p>
-            </div>
-          </div>
+      <Toolbar className={expandWidth}>
+        <Toolbar.Header className={css({ justifyContent: 'flex-end' })}>
+          <Button icon="undo" onClick={getData} />
         </Toolbar.Header>
-        <Toolbar.Content
-          className={cx(flex, flexColumn, css({ marginTop: '40px' }))}
-        >
-          <h2>Properties</h2>
-          <div className={cx(flex, flexRow)}>
-            <CheckBox
-              value={peerReview.includeEvicted}
-              onChange={value => {
-                const newPR: IPeerReviewDescriptor = {
-                  ...peerReview,
-                  includeEvicted: value,
-                };
-                store.dispatch(updateDescriptor(newPR));
-              }}
-              disabled={status !== 'NOT_STARTED'}
-            />
-            <div>
-              Authors who did not submit anything for review shall still receive
-              something to review
-            </div>
-          </div>
-          {data != null && (
-            <>
-              <h2>Overview</h2>
-              <PRTable {...data.overview} onShowOverlay={showOverlay} />
-              <h2>Reviews</h2>
-              <PRTable {...data.reviews} onShowOverlay={showOverlay} />
-              <h2>Comments</h2>
-              <PRTable {...data.comments} onShowOverlay={showOverlay} />
-              <div>
-                <PRChart completeData ={testPRData} />
+        <Toolbar.Content>
+          <Toolbar className={expandWidth}>
+            <Toolbar.Header
+              className={cx(expandWidth, flex, flexColumn, stateBarStyle)}
+            >
+              <h2>
+                Peer Review Process for "{translate(spr.getLabel(), lang)}"
+              </h2>
+              <div className={cx(flex, flexRow, expandWidth, autoScroll)}>
+                <div
+                  className={cx(prStateStyle, {
+                    [prActiveStateStyle]: status === 'NOT_STARTED',
+                  })}
+                >
+                  <h3>Edition</h3>
+                  <p>The authors are editing what will be reviewed</p>
+                  <p style={{ fontStyle: 'italic' }}>
+                    The process has not begun yet
+                  </p>
+                </div>
+                <Button
+                  icon="arrow-right"
+                  disabled={status !== 'NOT_STARTED'}
+                  onClick={() => changeStatus('Dispatch')}
+                />
+                <div
+                  className={cx(prStateStyle, {
+                    [prActiveStateStyle]: status === 'REVIEWING',
+                  })}
+                >
+                  <h3>Reviewing</h3>
+                  <p>The authors are reviewing their peers</p>
+                  <p style={{ fontStyle: 'italic' }}>
+                    This is the first step of the process
+                  </p>
+                </div>
+                <Button
+                  icon="arrow-right"
+                  disabled={status !== 'REVIEWING'}
+                  onClick={() => changeStatus('Notify')}
+                />
+                <div
+                  className={cx(prStateStyle, {
+                    [prActiveStateStyle]: status === 'COMMENTING',
+                  })}
+                >
+                  <h3>Commenting</h3>
+                  <p>The authors acquaint themselves with peer reviews</p>
+                  <p style={{ fontStyle: 'italic' }}>
+                    They comment on those reviews
+                  </p>
+                </div>
+                <Button
+                  icon="arrow-right"
+                  disabled={status !== 'COMMENTING'}
+                  onClick={() => changeStatus('Close')}
+                />
+                <div
+                  className={cx(prStateStyle, {
+                    [prActiveStateStyle]: status === 'CLOSED',
+                  })}
+                >
+                  <h3>Completed</h3>
+                  <p>The reviewing process has been completed</p>
+                  <p style={{ fontStyle: 'italic' }}>
+                    The authors take acquaintance of comments on reviews they've
+                    done
+                  </p>
+                </div>
               </div>
-            </>
-          )}
+            </Toolbar.Header>
+            <Toolbar.Content
+              className={cx(flex, flexColumn, css({ marginTop: '40px' }))}
+            >
+              <h2>Properties</h2>
+              <div className={cx(flex, flexRow)}>
+                <CheckBox
+                  value={peerReview.includeEvicted}
+                  onChange={value => {
+                    const newPR: IPeerReviewDescriptor = {
+                      ...peerReview,
+                      includeEvicted: value,
+                    };
+                    store.dispatch(updateDescriptor(newPR));
+                  }}
+                  disabled={status !== 'NOT_STARTED'}
+                />
+                <div>
+                  Authors who did not submit anything for review shall still
+                  receive something to review
+                </div>
+              </div>
+              {data != null && (
+                <>
+                  <h2>Overview</h2>
+                  <PRTable {...data.overview} onShowOverlay={showOverlay} />
+                  <h2>Reviews</h2>
+                  <PRTable {...data.reviews} onShowOverlay={showOverlay} />
+                  <h2>Comments</h2>
+                  <PRTable {...data.comments} onShowOverlay={showOverlay} />
+                  <div>
+                    <PRChart completeData={testPRData} />
+                  </div>
+                </>
+              )}
+            </Toolbar.Content>
+          </Toolbar>
         </Toolbar.Content>
       </Toolbar>
+
       {layoutState.show !== false && (
         <InfoOverlay
           title={layoutState.title}
