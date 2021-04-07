@@ -214,7 +214,7 @@ export function ImpactModalAdvancedContent({
   );
 }
 
-interface ImpactModalContentProps {
+export interface ImpactModalContentProps {
   team: STeam | STeam[] | undefined;
   item?: ActionItem;
   onExit: () => void;

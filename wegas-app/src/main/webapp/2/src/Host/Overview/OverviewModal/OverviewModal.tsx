@@ -2,11 +2,16 @@ import { css, cx } from 'emotion';
 import * as React from 'react';
 import { Modal } from '../../../Components/Modal';
 import '../../../Editor/Components/FormView';
-import { ActionItem } from '../Overview';
-import { STeam } from 'wegas-ts-api';
-import { ImpactModalContent } from './ImpactModalContent';
-import { MailModalContent } from './MailModalContent';
+import {
+  ImpactModalContent,
+  ImpactModalContentProps,
+} from './ImpactModalContent';
+import {
+  FilterModalContent,
+  FilterModalContentProps,
+} from './FilterModalContent';
 import { themeVar } from '../../../Components/Style/ThemeVars';
+import { MailModalContent } from './MailModalContent';
 
 const modalStyle = css({
   display: 'flex',
@@ -20,7 +25,7 @@ const modalContentStyle = css({
   padding: '40px',
   minWidth: '400px',
   maxWidth: '700px',
-  boxShadow: "1px 2px 6px rgba(0,0,0,0.1)",
+  boxShadow: '1px 2px 6px rgba(0,0,0,0.1)',
   '&>div': {
     color: themeVar.Common.colors.DarkTextColor,
   },
@@ -38,8 +43,8 @@ const modalInputsStyle = css({
       border: '1px solid ' + themeVar.Common.colors.PrimaryColor,
     },
     '&[readOnly]:focus': {
-      outline: "none",
-    }
+      outline: 'none',
+    },
   },
 });
 
@@ -47,14 +52,12 @@ export const modalButtonsContainer = css({
   marginTop: '20px',
 });
 
-export type ModalState = 'Close' | 'Mail' | 'Impacts';
+export type ModalState = 'Close' | 'Mail' | 'Impacts' | 'Filter';
 
-interface OverviewModalProps {
+interface OverviewModalProps
+  extends ImpactModalContentProps,
+    FilterModalContentProps {
   modalState: ModalState;
-  team: STeam | STeam[] | undefined;
-  item?: ActionItem;
-  onExit: () => void;
-  refreshOverview: () => void;
 }
 
 export function OverviewModal({
@@ -63,6 +66,9 @@ export function OverviewModal({
   item,
   onExit,
   refreshOverview,
+  overviewState,
+  filterState,
+  onNewFilterState,
 }: OverviewModalProps) {
   return (
     <Modal
@@ -77,9 +83,15 @@ export function OverviewModal({
           item={item}
           refreshOverview={refreshOverview}
         />
-      ) : (
+      ) : modalState === 'Mail' ? (
         <MailModalContent team={team} onExit={onExit} />
-      )}
+      ) : modalState === 'Filter' ? (
+        <FilterModalContent
+          overviewState={overviewState}
+          filterState={filterState}
+          onNewFilterState={onNewFilterState}
+        />
+      ) : null}
     </Modal>
   );
 }

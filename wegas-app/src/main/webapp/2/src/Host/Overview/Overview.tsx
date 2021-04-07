@@ -13,6 +13,8 @@ import '../../Editor/Components/FormView';
 import { ModalState, OverviewModal } from './OverviewModal/OverviewModal';
 import { instantiate } from '../../data/scriptable';
 import { themeVar } from '../../Components/Style/ThemeVars';
+import { sortFnFactory, SortState } from '../TableSorter';
+import { FilterState } from './OverviewModal/FilterModalContent';
 
 export const trainerCellStyleI: Interpolation<undefined> = {
   backgroundColor: '#fff',
@@ -134,7 +136,7 @@ export function isDataItem(item: DataItem | ActionItem): item is DataItem {
 }
 
 export interface OverviewState {
-  header: { title: string; span: number }[];
+  header: { title: string /*span: number*/; ids: string[] }[];
   row: (DataItem | ActionItem)[];
   data: OverviewData['data'];
 }
@@ -154,10 +156,12 @@ const defaultLayoutState: LayoutState = {
 };
 
 export default function Overview() {
+  const [filterState, setFilterState] = React.useState<FilterState>();
   const [layoutState, setLayoutState] = React.useState<LayoutState>(
     defaultLayoutState,
   );
   const [overviewState, setOverviewState] = React.useState<OverviewState>();
+  const [sortState, setSortState] = React.useState<SortState>();
 
   const mounted = React.useRef(true);
 
@@ -173,7 +177,7 @@ export default function Overview() {
         const { data, structure } = res;
         const header = structure.map(s => ({
           title: s.title,
-          span: s.items.length,
+          ids: (s.items as (DataItem | ActionItem)[]).map(i => i.id),
         }));
         const row = structure.reduce(
           (o, s) => [
@@ -185,6 +189,9 @@ export default function Overview() {
           [],
         );
         setOverviewState({ header, row, data });
+        setFilterState(o =>
+          o == null ? row.reduce((o, r) => ({ ...o, [r.id]: true }), {}) : o,
+        );
       }
     });
   }, []);
@@ -226,32 +233,77 @@ export default function Overview() {
     [],
   );
 
+  const sortFn = React.useCallback(
+    (a, b) => {
+      const valueA = (overviewState?.data[a[0]] || {})[
+        sortState?.sortedValue as keyof OverviewState['data'][string]
+      ];
+      const valueB = (overviewState?.data[b[0]] || {})[
+        sortState?.sortedValue as keyof OverviewState['data'][string]
+      ];
+
+      const newA =
+        sortState?.sortedValue === 'team'
+          ? a[1].name
+          : typeof valueA === 'object'
+          ? valueA.body
+          : valueA;
+      const newB =
+        sortState?.sortedValue === 'team'
+          ? b[1].name
+          : typeof valueB === 'object'
+          ? valueB.body
+          : valueB;
+
+      return sortFnFactory(sortState)(newA, newB);
+    },
+    [overviewState, sortState],
+  );
+
   return (
     <Toolbar className={expandWidth}>
       <Toolbar.Header className={css({ justifyContent: 'flex-end' })}>
+        <Button
+          icon="filter"
+          onClick={() =>
+            setLayoutState({
+              modalState: 'Filter',
+              team: undefined,
+              item: undefined,
+            })
+          }
+        />
         <Button icon="undo" onClick={refreshOverview} />
       </Toolbar.Header>
       <Toolbar.Content className={flexAuto}>
         <div className={tableStyle}>
           <table key={JSON.stringify(Object.keys(teams))}>
             <OverviewHeader
+              filterState={filterState}
               overviewState={overviewState}
               onClick={onRowClick(
                 Object.values(teams)
                   .filter(t => t['@class'] === 'Team')
                   .map(t => instantiate(t)),
               )}
+              sortState={sortState}
+              onClickSort={(sortedValue, sortMode) =>
+                setSortState({ sortedValue, sortMode })
+              }
             />
             <tbody>
               {Object.entries(teams)
                 .filter(([, t]) => t['@class'] === 'Team')
+                .sort(sortFn)
                 .map(([id, t]) => {
                   const team = instantiate(t);
                   return (
                     <OverviewRow
                       key={id}
                       team={team}
-                      structure={overviewState?.row}
+                      structure={overviewState?.row.filter(
+                        r => filterState == null || filterState[r.id],
+                      )}
                       data={overviewState?.data[id]}
                       onClick={onRowClick(team)}
                     />
@@ -271,6 +323,9 @@ export default function Overview() {
                 item: undefined,
               });
             }}
+            filterState={filterState}
+            onNewFilterState={setFilterState}
+            overviewState={overviewState}
           />
         )}
       </Toolbar.Content>
