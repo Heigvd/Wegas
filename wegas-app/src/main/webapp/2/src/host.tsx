@@ -21,13 +21,13 @@ function mount() {
       <LanguagesProvider>
         <ClassesProvider>
           <LibrariesLoader>
-            <PopupManager>
-              <ThemeProvider contextName="trainer">
+            <ThemeProvider contextName="trainer">
+              <PopupManager>
                 <DefaultDndProvider>
                   <HostLayout />
                 </DefaultDndProvider>
-              </ThemeProvider>
-            </PopupManager>
+              </PopupManager>
+            </ThemeProvider>
           </LibrariesLoader>
         </ClassesProvider>
       </LanguagesProvider>
