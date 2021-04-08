@@ -36,6 +36,8 @@ import {
   PeerReviewStateSelector,
 } from '../../API/peerReview.api';
 import { addPopup, popupDispatch } from '../../Components/PopupManager';
+import { internalTranslate } from '../../i18n/internalTranslator';
+import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
 
 const prStateStyle = css({
   borderRadius: '10px',
@@ -266,6 +268,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
   const [data, setData] = React.useState<IData>();
   const spr = useStore(() => instantiate(peerReview));
 
+  const i18nValues = internalTranslate(peerReviewTranslations, lang);
   const getData = React.useCallback(() => {
     let mounted = true;
     VariableDescriptorAPI.runScript(
@@ -386,7 +389,9 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
               className={cx(expandWidth, flex, flexColumn, stateBarStyle)}
             >
               <h2>
-                Peer Review Process for "{translate(spr.getLabel(), lang)}"
+                {i18nValues.orchestrator.mainTitle(
+                  translate(spr.getLabel(), lang),
+                )}
               </h2>
               <div className={cx(flex, expandWidth, autoScroll)}>
                 <div
@@ -403,10 +408,10 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
                       [prActiveStateStyle]: status === 'NOT_STARTED',
                     })}
                   >
-                    <h3>Edition</h3>
-                    <p>The authors are editing what will be reviewed</p>
+                    <h3>{i18nValues.orchestrator.state.edition.title}</h3>
+                    <p>{i18nValues.orchestrator.state.edition.description}</p>
                     <p style={{ fontStyle: 'italic' }}>
-                      The process has not begun yet
+                      {i18nValues.orchestrator.state.edition.subDescription}{' '}
                     </p>
                   </div>
                   <Button
@@ -419,10 +424,10 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
                       [prActiveStateStyle]: status === 'REVIEWING',
                     })}
                   >
-                    <h3>Reviewing</h3>
-                    <p>The authors are reviewing their peers</p>
+                    <h3>{i18nValues.orchestrator.state.reviewing.title}</h3>
+                    <p>{i18nValues.orchestrator.state.reviewing.description}</p>
                     <p style={{ fontStyle: 'italic' }}>
-                      This is the first step of the process
+                      {i18nValues.orchestrator.state.reviewing.subDescription}
                     </p>
                   </div>
                   <Button
@@ -435,10 +440,12 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
                       [prActiveStateStyle]: status === 'COMMENTING',
                     })}
                   >
-                    <h3>Commenting</h3>
-                    <p>The authors acquaint themselves with peer reviews</p>
+                    <h3>{i18nValues.orchestrator.state.commenting.title}</h3>
+                    <p>
+                      {i18nValues.orchestrator.state.commenting.description}
+                    </p>
                     <p style={{ fontStyle: 'italic' }}>
-                      They comment on those reviews
+                      {i18nValues.orchestrator.state.commenting.subDescription}
                     </p>
                   </div>
                   <Button
@@ -451,11 +458,10 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
                       [prActiveStateStyle]: status === 'CLOSED',
                     })}
                   >
-                    <h3>Completed</h3>
-                    <p>The reviewing process has been completed</p>
+                    <h3>{i18nValues.orchestrator.state.completed.title}</h3>
+                    <p>{i18nValues.orchestrator.state.completed.description}</p>
                     <p style={{ fontStyle: 'italic' }}>
-                      The authors take acquaintance of comments on reviews
-                      they've done
+                      {i18nValues.orchestrator.state.completed.subDescription}
                     </p>
                   </div>
                 </div>
@@ -464,7 +470,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
             <Toolbar.Content
               className={cx(flex, flexColumn, css({ marginTop: '40px' }))}
             >
-              <h2>Properties</h2>
+              <h2>{i18nValues.orchestrator.properties}</h2>
               <div className={cx(flex, flexRow, itemCenter)}>
                 <CheckBox
                   value={peerReview.includeEvicted}
@@ -477,18 +483,15 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
                   }}
                   disabled={status !== 'NOT_STARTED'}
                 />
-                <div>
-                  Authors who did not submit anything for review shall still
-                  receive something to review
-                </div>
+                <div>{i18nValues.orchestrator.includeEvicted} </div>
               </div>
               {data != null && (
                 <>
-                  <h2>Overview</h2>
+                  <h2>{i18nValues.orchestrator.overview}</h2>
                   <PRTable {...data.overview} onShowOverlay={showOverlay} />
-                  <h2>Reviews</h2>
+                  <h2>{i18nValues.orchestrator.reviews}</h2>
                   <PRTable {...data.reviews} onShowOverlay={showOverlay} />
-                  <h2>Comments</h2>
+                  <h2>{i18nValues.orchestrator.comments}</h2>
                   <PRTable {...data.comments} onShowOverlay={showOverlay} />
                   <div>
                     <PRChart data={testPRData.extra} />
