@@ -120,19 +120,22 @@ function TextSummary({
   numberOfValues,
   maxValue,
 }: TextSummary & { maxValue: number }) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(peerReviewTranslations, lang);
+
   return (
     <div className={chartStyle}>
       <h3>{label}</h3>
       <div>
         <p>
-          {'Nombre moyen de mots: '}
+          {`${i18nValues.orchestrator.stats.avgWc} : `}
           <strong>
             {averageNumberOfWords &&
               Math.round(averageNumberOfWords * 100) / 100}
           </strong>
         </p>
         <p>
-          {'Nombre moyen de caractères: '}
+          {`${i18nValues.orchestrator.stats.avgCc} : `}
           <strong>
             {averageNumberOfCharacters &&
               Math.round(averageNumberOfCharacters * 100) / 100}
@@ -140,7 +143,10 @@ function TextSummary({
         </p>
       </div>
       <p className={chartLegendStyle}>
-        Basé sur: {numberOfValues} / {maxValue}
+        {`${i18nValues.orchestrator.stats.basedOn(
+          String(numberOfValues),
+          String(maxValue),
+        )} : `}
       </p>
     </div>
   );
