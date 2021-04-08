@@ -29,8 +29,7 @@ import {
 import { createScript } from '../../Helper/wegasEntites';
 import { InfoOverlay } from '../InfoOverlay';
 import { PRTable } from './PeerReviewTable';
-import { testPRData } from './PRinterfaceTests';
-import { PRChart } from './PeerReviewChart';
+import { ExtraProps, PRChart } from './PeerReviewChart';
 import {
   PeerReviewDescriptorAPI,
   PeerReviewStateSelector,
@@ -57,7 +56,6 @@ const prActiveStateStyle = css({
 
 const stateBarStyle = css({
   overflowX: 'auto',
-  // padding: '1em',
   button: {
     fontSize: '30px',
   },
@@ -145,35 +143,7 @@ export interface PeerReviewData {
       };
     };
   };
-  extra: {
-    [id: number]: {
-      numberOfValues: number;
-      mean?: number | null;
-      min?: number | null;
-      max?: number | null;
-      median?: number | null;
-      sd?: number | null;
-      histogram?:
-        | {
-            min: number;
-            max: number;
-            maxValue: number | null;
-            minValue: number | null;
-            count: number;
-          }[]
-        | {
-            [label: string]: number;
-          };
-      type: string;
-      id: number;
-      name: string;
-      label: string;
-      data: [];
-      averageNumberOfWords?: number;
-      averageNumberOfCharacters?: number;
-    };
-    maxNumberOfValue: number;
-  };
+  extra: ExtraProps
   variable: {
     [id: string]: string;
   };
@@ -183,6 +153,7 @@ interface IData {
   overview: PRTableData<DataOverviewItem>;
   reviews: PRTableData<DataReviewItem>;
   comments: PRTableData<DataReviewItem>;
+  rawData: PeerReviewData;
 }
 
 //add content in the State
@@ -266,6 +237,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
 
   const { lang } = React.useContext(languagesCTX);
   const [data, setData] = React.useState<IData>();
+  //const [extra, setExtra] = React.useState<ExtraProps>();
   const spr = useStore(() => instantiate(peerReview));
 
   const i18nValues = internalTranslate(peerReviewTranslations, lang);
@@ -279,7 +251,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
       true,
     ).then((res: PeerReviewData) => {
       // Test purposes
-      // const res = testPRData;
+      //const res = testPRData;
 
       if (mounted) {
         setData({
@@ -328,6 +300,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
               {},
             ),
           },
+          rawData: res,
         });
       }
     });
@@ -494,7 +467,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
                   <h2>{i18nValues.orchestrator.comments}</h2>
                   <PRTable {...data.comments} onShowOverlay={showOverlay} />
                   <div>
-                    <PRChart data={testPRData.extra} />
+                    <PRChart completeData={data.rawData} />
                   </div>
                 </>
               )}

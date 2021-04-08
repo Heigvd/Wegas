@@ -1,9 +1,15 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { flex, flexWrap } from '../../css/classes';
+import { PeerReviewData } from './PeerReviewPage';
+import { Bar, defaults } from 'react-chartjs-2';
+import { wlog } from '../../Helper/wegaslog';
+
+defaults.global.legend.display = false;
 
 const chartStyle = css({
-  width: '350px',
+  minWidth: '350px',
+  width: '30%',
   padding: '1.5rem 3rem 1.5rem 0',
 });
 const chartLegendStyle = css({
@@ -12,227 +18,245 @@ const chartLegendStyle = css({
   fontStyle: 'italic',
 });
 
-interface PRChartProps {
-  data: {
-    [id: string]: ChartObjectProps | number;
-  };
+export interface ExtraProps {
+  [id: number]: ChartObjectProps;
+  maxNumberOfValue: number;
 }
 
-interface ChartObjectProps {
-  numberOfValues: any;
-  mean?: number | null;
-  min?: number | null;
-  max?: number | null;
-  median?: number | null;
-  sd?: number | null;
-  histogram?:
-    | {
-        min: number;
-        max: number;
-        maxValue: number | null;
-        minValue: number | null;
-        count: number;
-      }[]
-    | {
-        [label: string]: number;
-      };
-  type: string;
+export type ChartObjectProps =
+  | TextSummary
+  | GradeSummary
+  | CategorizationSummary;
+
+interface TextSummary {
+  type: 'TextSummary';
+  name: string;
+  label: string;
+  id: number;
+  numberOfValues: number;
+  averageNumberOfWords: number;
+  averageNumberOfCharacters: number;
+  data: [];
+}
+
+interface IHistogramValues {
+  min: number;
+  max: number;
+  maxValue: number | null;
+  minValue: number | null;
+  count: number;
+}
+
+interface GradeSummary {
+  numberOfValues: number;
+  mean: number;
+  min?: number;
+  max?: number;
+  median: number;
+  sd: number;
+  histogram: IHistogramValues[];
+  type: 'GradeSummary';
   id: number;
   name: string;
   label: string;
   data: [];
-  averageNumberOfWords?: number;
-  averageNumberOfCharacters?: number;
 }
-//TODO use lib (Chart.js)? to create charts
-export function PRChart({ data }: PRChartProps) {
-  const maxValues = data.maxNumberOfValue;
 
-  const evalJustifications = Object.entries(data).map(
-    ([key, value]) =>
-      typeof value === 'object' &&
-      value.id === 19666595 && (
-        <div key={key} className={chartStyle}>
-          <h3>{value.label}</h3>
-          <div>
-            <p>
-              {'Nombre moyen de mots: '}
-              <strong>
-              {value.averageNumberOfWords &&
-                Math.round(value.averageNumberOfWords * 100) / 100}
-              </strong>
-            </p>
-            <p>
-              {'Nombre moyen de caractères: '}
-              <strong>
-              {value.averageNumberOfCharacters &&
-                Math.round(value.averageNumberOfCharacters * 100) / 100}
-              </strong>
-            </p>
-          </div>
-          <p className={chartLegendStyle}>
-            Basé sur: {value.numberOfValues} / {maxValues}
-          </p>
-        </div>
-      ),
+interface CategorizationSummary {
+  type: 'CategorizationSummary';
+  name: string;
+  id: number;
+  label: string;
+  numberOfValues: number;
+  histogram: {
+    inutile: number;
+    'peu utile': number;
+    moyenne: number;
+    utile: number;
+    excellente: number;
+  };
+  data: [];
+}
+
+interface PRChartProps {
+  completeData: PeerReviewData;
+}
+
+const chartOptions = {
+  maintainAspectRatio: false,
+  scales: {
+    yAxes: [
+      {
+        ticks: {
+          beginAtZero: true,
+        },
+      },
+    ],
+  },
+};
+
+interface DataForCharts {
+  labels: string[];
+  datasets: [
+    {
+      label?: string;
+      data: number[];
+      backgroundColor?: string | string[];
+      borderColor?: string | string[];
+      borderWidth?: number;
+    },
+  ];
+}
+
+// TODO max numberof values to put in a global const!!!
+function TextSummary({label, averageNumberOfCharacters, averageNumberOfWords, numberOfValues, maxValue}: TextSummary & {maxValue: number}) {
+  return (
+    <div className={chartStyle}>
+      <h3>{label}</h3>
+      <div>
+        <p>
+          {'Nombre moyen de mots: '}
+          <strong>
+            {averageNumberOfWords &&
+              Math.round(averageNumberOfWords * 100) / 100}
+          </strong>
+        </p>
+        <p>
+          {'Nombre moyen de caractères: '}
+          <strong>
+            {averageNumberOfCharacters &&
+              Math.round(averageNumberOfCharacters * 100) / 100}
+          </strong>
+        </p>
+      </div>
+      <p className={chartLegendStyle}>Basé sur: {numberOfValues} / {maxValue}</p>
+    </div>
   );
+}
 
-  const noteFond = Object.entries(data).map(
-    ([key, value]) =>
-      typeof value === 'object' &&
-      value.id === 19666598 && (
-        <div key={key} className={chartStyle}>
-          <h3>{value.label}</h3>
-          <div>There will be a chart here</div>
-          <div className={chartLegendStyle}>
-            <p>Moy.: {value.mean && Math.round(value.mean * 100) / 100}</p>
-            <p>Med.: {value.median}</p>
-            <p>Sd.: {value.sd && Math.round(value.sd * 100) / 100}</p>
-            <p>
-              Basé sur: {value.numberOfValues} / {maxValues}
-            </p>
-          </div>
-        </div>
-      ),
-  );
-
-  const noteForme = Object.entries(data).map(
-    ([key, value]) =>
-      typeof value === 'object' &&
-      value.id === 19666601 && (
-        <div key={key} className={chartStyle}>
-          <h3>{value.label}</h3>
-          <div>There will be a chart here</div>
-          <div className={chartLegendStyle}>
-            <p>Moy.: {value.mean && Math.round(value.mean * 100) / 100}</p>
-            <p>Med.: {value.median}</p>
-            <p>Sd.: {value.sd && Math.round(value.sd * 100) / 100}</p>
-            <p>
-              Basé sur: {value.numberOfValues} / {maxValues}
-            </p>
-          </div>
-        </div>
-      ),
-  );
-
-  const note = Object.entries(data).map(
-    ([key, value]) =>
-      typeof value === 'object' &&
-      value.id === 19666575 && (
-        <div key={key} className={chartStyle}>
-          <h3>{value.label}</h3>
-          <div>There will be a chart here</div>
-          <div className={chartLegendStyle}>
-            <p>Moy.: {value.mean && Math.round(value.mean * 100) / 100}</p>
-            <p>Med.: {value.median}</p>
-            <p>Sd.: {value.sd && Math.round(value.sd * 100) / 100}</p>
-            <p>
-              Basé sur: {value.numberOfValues} / {maxValues}
-            </p>
-          </div>
-        </div>
-      ),
-  );
-
-
-  const justification = Object.entries(data).map(
-    ([key, value]) =>
-      typeof value === 'object' &&
-      value.id === 19666578 && (
-        <div key={key} className={chartStyle}>
-          <h3>{value.label}</h3>
-          <div>
-            <p>
-              {'Nombre moyen de mots: '}
-              <strong>
-              {value.averageNumberOfWords &&
-                Math.round(value.averageNumberOfWords * 100) / 100}
-              </strong>
-            </p>
-            <p>
-              {'Nombre moyen de caractères: '}
-              <strong>
-              {value.averageNumberOfCharacters &&
-                Math.round(value.averageNumberOfCharacters * 100) / 100}
-              </strong>
-            </p>
-          </div>
-          <p className={chartLegendStyle}>
-            Basé sur: {value.numberOfValues} / {maxValues}
-          </p>
-        </div>
-      ),
-  );
-
-  const pertinenceEval = Object.entries(data).map(
-    ([key, value]) =>
-      typeof value === 'object' &&
-      value.id === 19666581 && (
-        <div key={key} className={chartStyle}>
-          <h3>{value.label}</h3>
-          <div>There will be a chart here</div>
-          <p className={chartLegendStyle}>
-            Basé sur: {value.numberOfValues} / {maxValues}
-          </p>
-        </div>
-      ),
-  );
-
-  /*
-function CreateCharts(key: string, value: ChartObjectProps) {
-  if(value.label){
-    switch (value.label) {
-      case 'Note':
-         const noteChart =
-         <div key={key}>
-          <h2>{value.label}</h2>
-          <div>I'm the chart - from the future</div>
-          <div>Basé sur: {value.numberOfValues} / {maxValues}</div>
-          </div>
-          return noteChart;
-      case 'Note fond':
-        break;
-      case 'Note forme':
-        break;
-    }
+function GradeSummary({min,max, histogram, label, mean, median, sd, numberOfValues, maxValue }: GradeSummary & {maxValue: number}) {
+  let labels: string[] = [];
+  for (let i = min || 1; i <= (max || 6); i += 1) {
+    labels.push(i.toString());
   }
-} */
-
-  /* const reviewCharts = Object.entries(data).map(([key, value]) => (
-     typeof value === "object" && value.type === "GradeSummary" &&
-    <div key={key} className={chartStyle}>
-      <h2>{value.label}</h2>
-      <div>I'm the chart - from the future</div>
-      <div>Basé sur: {value.numberOfValues} / {maxValues}</div>
+  let data: number[] = [];
+  histogram.forEach(hist => {
+    data.push(hist.count);
+  });
+  let dataSet: DataForCharts = {
+    labels: labels,
+    datasets: [
+      {
+        data: data,
+        backgroundColor: 'rgba(140, 182, 46, 0.8)',
+      },
+    ],
+  };
+  return (
+    <div className={chartStyle}>
+      <h3>{label}</h3>
+      <div>
+        <Bar data={dataSet} options={chartOptions} height={230} />
+      </div>
+      <div className={chartLegendStyle}>
+        <p>Moy.: {mean && Math.round(mean * 100) / 100}</p>
+        <p>Med.: {median}</p>
+        <p>Sd.: {sd && Math.round(sd * 100) / 100}</p>
+        <p>Basé sur: {numberOfValues} / {maxValue}</p>
+      </div>
     </div>
-  ))
+  );
+}
 
-  const commentsCharts = Object.entries(data).map(([key, value]) => (
-    typeof value === "object" && value.type === ("TextSummary" || "CategorizationSummary") &&
-    <div key={key} className={chartStyle}>
-      <h2>{value.label}</h2>
-      <div>I'm the chart - from the future</div>
-      <div>Basé sur: {value.numberOfValues} / {maxValues}</div>
+function CategorizationSummary({histogram, label, numberOfValues, maxValue}: CategorizationSummary & {maxValue: number}) {
+  let labels: string[] = [];
+  let data: number[] = [];
+  Object.keys(histogram).forEach((key) =>{
+        labels.push(key.toString());
+  });
+  Object.values(histogram).forEach((val) =>{
+    data.push(val);
+  });
+  let dataSet: DataForCharts = {
+    labels: labels,
+    datasets: [
+      {
+        data: data,
+        backgroundColor: 'rgba(140, 182, 46, 0.8)',
+      },
+    ],
+  };
+  return (
+    <div className={chartStyle}>
+      <h3>{label}</h3>
+      <div>
+        <Bar data={dataSet} options={chartOptions} height={230} />
+      </div>
+      <p className={chartLegendStyle}>Basé sur: {numberOfValues} / {maxValue.toString()}</p>
     </div>
-  ))
-  // y a un 3eme type......
-  // en fait le display suit pas les types retournés
+  );
+}
 
-  */
+export function CreateTypedChart(prop: ChartObjectProps & {maxValue : number}) {
+  switch (prop.type) {
+    case 'TextSummary':
+      return <TextSummary {...prop} />;
+    case 'GradeSummary':
+      return <GradeSummary {...prop} />;
+    case 'CategorizationSummary':
+      return <CategorizationSummary {...prop} />;
+    default:
+      return <div>Sorry, nothing to return.</div>;
+  }
+}
+
+export function PRChart({ completeData }: PRChartProps) {
+  const maxValues = completeData.extra.maxNumberOfValue;
+  wlog("HOLA " + maxValues);
+
+  let reviewSectionOrder: { i: number; value: ChartObjectProps }[] = [];
+  let commentsSectionOrder: { i: number; value: ChartObjectProps }[] = [];
+
+  function createOrderStructure() {
+    Object.values(completeData.extra).forEach(value => {
+      if (typeof value === 'object') {
+        let chartID = value.id;
+
+        completeData.structure.reviews.forEach((obj, i) => {
+          if (obj.id?.includes(chartID.toString())) {
+            reviewSectionOrder.push({ i, value });
+          }
+        });
+        completeData.structure.comments.forEach((obj, i) => {
+          if (obj.id?.includes(chartID.toString())) {
+            commentsSectionOrder.push({ i, value });
+          }
+        });
+      }
+    });
+  }
+  createOrderStructure();
+
+
+  // chart compo qui prend les extras (n importe lequel)
+  // creer les compos selon interface (type)
+  // branchez les compo (switch) dans le compo général
 
   return (
     <>
       <h2>Review Charts</h2>
       <div className={cx(flex, flexWrap)}>
-        {evalJustifications}
-        {noteFond}
-        {noteForme}
+        {reviewSectionOrder.sort((a, b) => a.i - b.i).map(item => (
+            <CreateTypedChart key={item.value.id} {...item.value} maxValue={maxValues} />
+          ))}
       </div>
       <h2>Comments charts</h2>
       <div className={cx(flex, flexWrap)}>
-        {note}
-        {justification}
-        {pertinenceEval}
+        {commentsSectionOrder
+          .sort((a, b) => a.i - b.i)
+          .map(item => (
+            <CreateTypedChart key={item.value.id} {...item.value} maxValue={maxValues} />
+          ))}
       </div>
     </>
   );
