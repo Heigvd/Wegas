@@ -3,6 +3,7 @@ import * as React from 'react';
 import { flex, flexWrap } from '../../css/classes';
 import { PeerReviewData } from './PeerReviewPage';
 import { Bar, defaults } from 'react-chartjs-2';
+import { wlog } from '../../Helper/wegaslog';
 
 defaults.global.legend.display = false;
 
@@ -49,8 +50,8 @@ interface IHistogramValues {
 interface GradeSummary {
   numberOfValues: number;
   mean: number;
-  min: number;
-  max: number;
+  min?: number;
+  max?: number;
   median: number;
   sd: number;
   histogram: IHistogramValues[];
@@ -81,16 +82,6 @@ interface PRChartProps {
   completeData: PeerReviewData;
 }
 
-/* function isTextSummary(val: any): val is TextSummary {
-return val != null && typeof val === "object" && val.type === "TextSummary"
-}
-function isGradeSummary(val: any): val is GradeSummary {
-  return val != null && typeof val === "object" && val.type === "GradeSummary"
-}
-function isCategorizationSummary(val: any): val is CategorizationSummary {
-  return val != null && typeof val === "object" && val.type === "CategorizationSummary"
-} */
-
 const chartOptions = {
   maintainAspectRatio: false,
   scales: {
@@ -109,93 +100,104 @@ interface DataForCharts {
   datasets: [
     {
       label?: string;
-      data: [string | number];
+      data: number[];
       backgroundColor?: string | string[];
       borderColor?: string | string[];
       borderWidth?: number;
     },
   ];
 }
-const dataTestForCharts = {
-  labels: ['Red', 'Blue', 'Orange', 'Green', 'Purple', 'Orange'],
-  datasets: [
-    {
-      //label: '# of Votes',
-      data: [12, 19, 3, 5, 2, 3],
-      backgroundColor: [
-        'rgba(255, 99, 132, 0.2)',
-        'rgba(54, 162, 235, 0.2)',
-        'rgba(255, 206, 86, 0.2)',
-        'rgba(75, 192, 192, 0.2)',
-        'rgba(153, 102, 255, 0.2)',
-        'rgba(255, 159, 64, 0.2)',
-      ],
-      borderColor: [
-        'rgba(255, 99, 132, 1)',
-        'rgba(54, 162, 235, 1)',
-        'rgba(255, 206, 86, 1)',
-        'rgba(75, 192, 192, 1)',
-        'rgba(153, 102, 255, 1)',
-        'rgba(255, 159, 64, 1)',
-      ],
-      borderWidth: 1,
-    },
-  ],
-};
+
 // TODO max numberof values to put in a global const!!!
-function TextSummary(prop: TextSummary) {
+function TextSummary({label, averageNumberOfCharacters, averageNumberOfWords, numberOfValues, maxValue}: TextSummary & {maxValue: number}) {
   return (
     <div className={chartStyle}>
-      <h3>{prop.label}</h3>
+      <h3>{label}</h3>
       <div>
         <p>
           {'Nombre moyen de mots: '}
           <strong>
-            {prop.averageNumberOfWords &&
-              Math.round(prop.averageNumberOfWords * 100) / 100}
+            {averageNumberOfWords &&
+              Math.round(averageNumberOfWords * 100) / 100}
           </strong>
         </p>
         <p>
           {'Nombre moyen de caractères: '}
           <strong>
-            {prop.averageNumberOfCharacters &&
-              Math.round(prop.averageNumberOfCharacters * 100) / 100}
+            {averageNumberOfCharacters &&
+              Math.round(averageNumberOfCharacters * 100) / 100}
           </strong>
         </p>
       </div>
-      <p className={chartLegendStyle}>Basé sur: {prop.numberOfValues}</p>
+      <p className={chartLegendStyle}>Basé sur: {numberOfValues} / {maxValue}</p>
     </div>
   );
 }
 
-function GradeSummary(prop: GradeSummary) {
+function GradeSummary({min,max, histogram, label, mean, median, sd, numberOfValues, maxValue }: GradeSummary & {maxValue: number}) {
+  let labels: string[] = [];
+  for (let i = min || 1; i <= (max || 6); i += 1) {
+    labels.push(i.toString());
+  }
+  let data: number[] = [];
+  histogram.forEach(hist => {
+    data.push(hist.count);
+  });
+  let dataSet: DataForCharts = {
+    labels: labels,
+    datasets: [
+      {
+        data: data,
+        backgroundColor: 'rgba(140, 182, 46, 0.8)',
+      },
+    ],
+  };
   return (
     <div className={chartStyle}>
-      <h3>{prop.label}</h3>
+      <h3>{label}</h3>
       <div>
-        <Bar data={dataTestForCharts} options={chartOptions} height={200} />
+        <Bar data={dataSet} options={chartOptions} height={230} />
       </div>
       <div className={chartLegendStyle}>
-        <p>Moy.: {prop.mean && Math.round(prop.mean * 100) / 100}</p>
-        <p>Med.: {prop.median}</p>
-        <p>Sd.: {prop.sd && Math.round(prop.sd * 100) / 100}</p>
-        <p>Basé sur: {prop.numberOfValues}</p>
+        <p>Moy.: {mean && Math.round(mean * 100) / 100}</p>
+        <p>Med.: {median}</p>
+        <p>Sd.: {sd && Math.round(sd * 100) / 100}</p>
+        <p>Basé sur: {numberOfValues} / {maxValue}</p>
       </div>
     </div>
   );
 }
 
-function CategorizationSummary(prop: CategorizationSummary) {
+function CategorizationSummary({histogram, label, numberOfValues, maxValue}: CategorizationSummary & {maxValue: number}) {
+  let labels: string[] = [];
+  let data: number[] = [];
+  Object.keys(histogram).forEach((key) =>{
+        labels.push(key.toString());
+  });
+  Object.values(histogram).forEach((val) =>{
+    data.push(val);
+  });
+  let dataSet: DataForCharts = {
+    labels: labels,
+    datasets: [
+      {
+        data: data,
+        backgroundColor: 'rgba(140, 182, 46, 0.8)',
+      },
+    ],
+  };
   return (
     <div className={chartStyle}>
-      <h3>{prop.label}</h3>
-      <div>There will be a chart here</div>
-      <p className={chartLegendStyle}>Basé sur: {prop.numberOfValues}</p>
+      <h3>{label}</h3>
+      <div>
+        <Bar data={dataSet} options={chartOptions} height={230} />
+      </div>
+      <p className={chartLegendStyle}>Basé sur: {numberOfValues} / {maxValue.toString()}</p>
     </div>
   );
 }
 
-export function CreateTypedChart(prop: ChartObjectProps) {
+export function CreateTypedChart(prop: ChartObjectProps & {maxValue : number}) {
   switch (prop.type) {
     case 'TextSummary':
       return <TextSummary {...prop} />;
@@ -209,13 +211,14 @@ export function CreateTypedChart(prop: ChartObjectProps) {
 }
 
 export function PRChart({ completeData }: PRChartProps) {
-  //const maxValues = data.maxNumberOfValue;
+  const maxValues = completeData.extra.maxNumberOfValue;
+  wlog("HOLA " + maxValues);
 
   let reviewSectionOrder: { i: number; value: ChartObjectProps }[] = [];
   let commentsSectionOrder: { i: number; value: ChartObjectProps }[] = [];
 
   function createOrderStructure() {
-    Object.values(completeData.extra).forEach((value) => {
+    Object.values(completeData.extra).forEach(value => {
       if (typeof value === 'object') {
         let chartID = value.id;
 
@@ -234,6 +237,7 @@ export function PRChart({ completeData }: PRChartProps) {
   }
   createOrderStructure();
 
+
   // chart compo qui prend les extras (n importe lequel)
   // creer les compos selon interface (type)
   // branchez les compo (switch) dans le compo général
@@ -242,10 +246,8 @@ export function PRChart({ completeData }: PRChartProps) {
     <>
       <h2>Review Charts</h2>
       <div className={cx(flex, flexWrap)}>
-        {reviewSectionOrder
-          .sort((a, b) => a.i - b.i)
-          .map(item => (
-            <CreateTypedChart key={item.value.id} {...item.value} />
+        {reviewSectionOrder.sort((a, b) => a.i - b.i).map(item => (
+            <CreateTypedChart key={item.value.id} {...item.value} maxValue={maxValues} />
           ))}
       </div>
       <h2>Comments charts</h2>
@@ -253,7 +255,7 @@ export function PRChart({ completeData }: PRChartProps) {
         {commentsSectionOrder
           .sort((a, b) => a.i - b.i)
           .map(item => (
-            <CreateTypedChart key={item.value.id} {...item.value} />
+            <CreateTypedChart key={item.value.id} {...item.value} maxValue={maxValues} />
           ))}
       </div>
     </>

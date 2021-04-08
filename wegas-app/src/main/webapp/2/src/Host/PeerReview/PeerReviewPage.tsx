@@ -29,7 +29,6 @@ import {
 import { createScript } from '../../Helper/wegasEntites';
 import { InfoOverlay } from '../InfoOverlay';
 import { PRTable } from './PeerReviewTable';
-import { testPRData } from './PRinterfaceTests';
 import { ExtraProps, PRChart } from './PeerReviewChart';
 import {
   PeerReviewDescriptorAPI,
@@ -55,7 +54,6 @@ const prActiveStateStyle = css({
 
 const stateBarStyle = css({
   overflowX: 'auto',
-  // padding: '1em',
   button: {
     fontSize: '30px',
   },
@@ -153,6 +151,7 @@ interface IData {
   overview: PRTableData<DataOverviewItem>;
   reviews: PRTableData<DataReviewItem>;
   comments: PRTableData<DataReviewItem>;
+  rawData: PeerReviewData;
 }
 
 //add content in the State
@@ -249,7 +248,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
       true,
     ).then((res: PeerReviewData) => {
       // Test purposes
-      // const res = testPRData;
+      //const res = testPRData;
 
       if (mounted) {
         setData({
@@ -298,6 +297,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
               {},
             ),
           },
+          rawData: res,
         });
       }
     });
@@ -464,7 +464,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
                   <h2>Comments</h2>
                   <PRTable {...data.comments} onShowOverlay={showOverlay} />
                   <div>
-                    <PRChart completeData={testPRData} />
+                    <PRChart completeData={data.rawData} />
                   </div>
                 </>
               )}
