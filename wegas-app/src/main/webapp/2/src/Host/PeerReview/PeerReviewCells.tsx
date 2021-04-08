@@ -103,7 +103,7 @@ export function ReviewTD({
       if (found != null) {
         buttonData = data[found[2] + found[3] + found[4]];
         if (Array.isArray(buttonData)) {
-          buttonData = buttonData.join('\n');
+          buttonData = buttonData.join('<br>');
         }
       }
     }

@@ -130,11 +130,11 @@ export function PRTable({ structures, data, onShowOverlay }: PRTableProps) {
               {isOverviewItem(value) ? (
                 <>
                   <OverviewTD value={value.status} color={value.color} />
+                  <OverviewTD value={value.done} color={value.done_color} />
                   <OverviewTD
                     value={value.commented}
                     color={value.comments_color}
                   />
-                  <OverviewTD value={value.done} color={value.done_color} />
                 </>
               ) : (
                 items.map(i => (
