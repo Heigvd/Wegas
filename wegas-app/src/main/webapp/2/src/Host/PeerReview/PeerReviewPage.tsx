@@ -143,7 +143,7 @@ export interface PeerReviewData {
       };
     };
   };
-  extra: ExtraProps
+  extra: ExtraProps;
   variable: {
     [id: string]: string;
   };
@@ -237,7 +237,6 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
 
   const { lang } = React.useContext(languagesCTX);
   const [data, setData] = React.useState<IData>();
-  //const [extra, setExtra] = React.useState<ExtraProps>();
   const spr = useStore(() => instantiate(peerReview));
 
   const i18nValues = internalTranslate(peerReviewTranslations, lang);

@@ -3,9 +3,13 @@ import * as React from 'react';
 import { flex, flexWrap } from '../../css/classes';
 import { PeerReviewData } from './PeerReviewPage';
 import { Bar, defaults } from 'react-chartjs-2';
-import { wlog } from '../../Helper/wegaslog';
+import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../i18n/internalTranslator';
+import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
 
-defaults.global.legend.display = false;
+if (defaults.global.legend != null) {
+  defaults.global.legend.display = false;
+}
 
 const chartStyle = css({
   minWidth: '350px',
@@ -109,7 +113,13 @@ interface DataForCharts {
 }
 
 // TODO max numberof values to put in a global const!!!
-function TextSummary({label, averageNumberOfCharacters, averageNumberOfWords, numberOfValues, maxValue}: TextSummary & {maxValue: number}) {
+function TextSummary({
+  label,
+  averageNumberOfCharacters,
+  averageNumberOfWords,
+  numberOfValues,
+  maxValue,
+}: TextSummary & { maxValue: number }) {
   return (
     <div className={chartStyle}>
       <h3>{label}</h3>
@@ -129,21 +139,36 @@ function TextSummary({label, averageNumberOfCharacters, averageNumberOfWords, nu
           </strong>
         </p>
       </div>
-      <p className={chartLegendStyle}>Basé sur: {numberOfValues} / {maxValue}</p>
+      <p className={chartLegendStyle}>
+        Basé sur: {numberOfValues} / {maxValue}
+      </p>
     </div>
   );
 }
 
-function GradeSummary({min,max, histogram, label, mean, median, sd, numberOfValues, maxValue }: GradeSummary & {maxValue: number}) {
-  let labels: string[] = [];
+function GradeSummary({
+  min,
+  max,
+  histogram,
+  label,
+  mean,
+  median,
+  sd,
+  numberOfValues,
+  maxValue,
+}: GradeSummary & { maxValue: number }) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(peerReviewTranslations, lang);
+
+  const labels: string[] = [];
   for (let i = min || 1; i <= (max || 6); i += 1) {
     labels.push(i.toString());
   }
-  let data: number[] = [];
+  const data: number[] = [];
   histogram.forEach(hist => {
     data.push(hist.count);
   });
-  let dataSet: DataForCharts = {
+  const dataSet: DataForCharts = {
     labels: labels,
     datasets: [
       {
@@ -159,25 +184,47 @@ function GradeSummary({min,max, histogram, label, mean, median, sd, numberOfValu
         <Bar data={dataSet} options={chartOptions} height={230} />
       </div>
       <div className={chartLegendStyle}>
-        <p>Moy.: {mean && Math.round(mean * 100) / 100}</p>
-        <p>Med.: {median}</p>
-        <p>Sd.: {sd && Math.round(sd * 100) / 100}</p>
-        <p>Basé sur: {numberOfValues} / {maxValue}</p>
+        <p>
+          {`${i18nValues.orchestrator.stats.mean} : `}
+          {mean && Math.round(mean * 100) / 100}
+        </p>
+        <p>
+          {`${i18nValues.orchestrator.stats.median} : `}
+          {median}
+        </p>
+        <p>
+          {`${i18nValues.orchestrator.stats.sd} : `}
+          {sd && Math.round(sd * 100) / 100}
+        </p>
+        <p>
+          {`${i18nValues.orchestrator.stats.basedOn(
+            String(numberOfValues),
+            String(maxValue),
+          )} : `}
+        </p>
       </div>
     </div>
   );
 }
 
-function CategorizationSummary({histogram, label, numberOfValues, maxValue}: CategorizationSummary & {maxValue: number}) {
-  let labels: string[] = [];
-  let data: number[] = [];
-  Object.keys(histogram).forEach((key) =>{
-        labels.push(key.toString());
+function CategorizationSummary({
+  histogram,
+  label,
+  numberOfValues,
+  maxValue,
+}: CategorizationSummary & { maxValue: number }) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(peerReviewTranslations, lang);
+
+  const labels: string[] = [];
+  const data: number[] = [];
+  Object.keys(histogram).forEach(key => {
+    labels.push(key.toString());
   });
-  Object.values(histogram).forEach((val) =>{
+  Object.values(histogram).forEach(val => {
     data.push(val);
   });
-  let dataSet: DataForCharts = {
+  const dataSet: DataForCharts = {
     labels: labels,
     datasets: [
       {
@@ -192,12 +239,19 @@ function CategorizationSummary({histogram, label, numberOfValues, maxValue}: Cat
       <div>
         <Bar data={dataSet} options={chartOptions} height={230} />
       </div>
-      <p className={chartLegendStyle}>Basé sur: {numberOfValues} / {maxValue.toString()}</p>
+      <p className={chartLegendStyle}>
+        {`${i18nValues.orchestrator.stats.basedOn(
+          String(numberOfValues),
+          String(maxValue),
+        )} : `}
+      </p>
     </div>
   );
 }
 
-export function CreateTypedChart(prop: ChartObjectProps & {maxValue : number}) {
+export function CreateTypedChart(
+  prop: ChartObjectProps & { maxValue: number },
+) {
   switch (prop.type) {
     case 'TextSummary':
       return <TextSummary {...prop} />;
@@ -206,21 +260,20 @@ export function CreateTypedChart(prop: ChartObjectProps & {maxValue : number}) {
     case 'CategorizationSummary':
       return <CategorizationSummary {...prop} />;
     default:
-      return <div>Sorry, nothing to return.</div>;
+      return <div>Unknown type of data</div>;
   }
 }
 
 export function PRChart({ completeData }: PRChartProps) {
   const maxValues = completeData.extra.maxNumberOfValue;
-  wlog("HOLA " + maxValues);
 
-  let reviewSectionOrder: { i: number; value: ChartObjectProps }[] = [];
-  let commentsSectionOrder: { i: number; value: ChartObjectProps }[] = [];
+  const reviewSectionOrder: { i: number; value: ChartObjectProps }[] = [];
+  const commentsSectionOrder: { i: number; value: ChartObjectProps }[] = [];
 
   function createOrderStructure() {
     Object.values(completeData.extra).forEach(value => {
       if (typeof value === 'object') {
-        let chartID = value.id;
+        const chartID = value.id;
 
         completeData.structure.reviews.forEach((obj, i) => {
           if (obj.id?.includes(chartID.toString())) {
@@ -237,7 +290,6 @@ export function PRChart({ completeData }: PRChartProps) {
   }
   createOrderStructure();
 
-
   // chart compo qui prend les extras (n importe lequel)
   // creer les compos selon interface (type)
   // branchez les compo (switch) dans le compo général
@@ -246,8 +298,14 @@ export function PRChart({ completeData }: PRChartProps) {
     <>
       <h2>Review Charts</h2>
       <div className={cx(flex, flexWrap)}>
-        {reviewSectionOrder.sort((a, b) => a.i - b.i).map(item => (
-            <CreateTypedChart key={item.value.id} {...item.value} maxValue={maxValues} />
+        {reviewSectionOrder
+          .sort((a, b) => a.i - b.i)
+          .map(item => (
+            <CreateTypedChart
+              key={item.value.id}
+              {...item.value}
+              maxValue={maxValues}
+            />
           ))}
       </div>
       <h2>Comments charts</h2>
@@ -255,7 +313,11 @@ export function PRChart({ completeData }: PRChartProps) {
         {commentsSectionOrder
           .sort((a, b) => a.i - b.i)
           .map(item => (
-            <CreateTypedChart key={item.value.id} {...item.value} maxValue={maxValues} />
+            <CreateTypedChart
+              key={item.value.id}
+              {...item.value}
+              maxValue={maxValues}
+            />
           ))}
       </div>
     </>
