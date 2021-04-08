@@ -86,7 +86,8 @@ export const tableStyle = css({
 const flexAuto = css({
   flex: '0 0 auto',
 });
-interface OverviewItem {
+
+export interface OverviewItem {
   id: string;
   label: string;
   order: number;
@@ -99,11 +100,13 @@ export type ValueKind =
   | 'boolean'
   | 'object'
   | 'inbox';
+
 export interface DataObjectType {
   body: string;
   empty: boolean;
   title: string;
 }
+
 export type DataType = number | string | boolean | DataObjectType;
 
 export interface DataItem extends OverviewItem {
@@ -118,17 +121,20 @@ export interface DataItem extends OverviewItem {
 
 export interface ActionItem extends OverviewItem {
   do: string;
-  hasGlobal: boolean;
+  hasGlobal?: boolean;
   itemType: string;
   icon: string;
 }
 
+interface OverviewDataStructure {
+  id: string;
+  title: string;
+  items: DataItem[] | ActionItem[];
+}
+
 export interface OverviewData {
   data: { [teamId: string]: { [key: string]: DataType } };
-  structure: {
-    title: string;
-    items: DataItem[] | ActionItem[];
-  }[];
+  structure: OverviewDataStructure[];
 }
 
 export function isDataItem(item: DataItem | ActionItem): item is DataItem {
@@ -136,7 +142,7 @@ export function isDataItem(item: DataItem | ActionItem): item is DataItem {
 }
 
 export interface OverviewState {
-  header: { title: string /*span: number*/; ids: string[] }[];
+  header: OverviewDataStructure[];
   row: (DataItem | ActionItem)[];
   data: OverviewData['data'];
 }
@@ -175,10 +181,6 @@ export default function Overview() {
     ).then((res: OverviewData) => {
       if (mounted.current) {
         const { data, structure } = res;
-        const header = structure.map(s => ({
-          title: s.title,
-          ids: (s.items as (DataItem | ActionItem)[]).map(i => i.id),
-        }));
         const row = structure.reduce(
           (o, s) => [
             ...o,
@@ -188,9 +190,20 @@ export default function Overview() {
           ],
           [],
         );
-        setOverviewState({ header, row, data });
+        setOverviewState({ header: structure, row, data });
         setFilterState(o =>
-          o == null ? row.reduce((o, r) => ({ ...o, [r.id]: true }), {}) : o,
+          o == null
+            ? structure.reduce(
+                (o, r) => ({
+                  ...o,
+                  [r.id]: (r.items as OverviewItem[]).reduce(
+                    (o, i) => ({ ...o, [i.id]: true }),
+                    {},
+                  ),
+                }),
+                {},
+              )
+            : o,
         );
       }
     });
@@ -302,7 +315,12 @@ export default function Overview() {
                       key={id}
                       team={team}
                       structure={overviewState?.row.filter(
-                        r => filterState == null || filterState[r.id],
+                        r =>
+                          filterState == null ||
+                          Object.values(filterState).reduce(
+                            (o, i) => ({ ...o, ...i }),
+                            {},
+                          )[r.id],
                       )}
                       data={overviewState?.data[id]}
                       onClick={onRowClick(team)}

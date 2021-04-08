@@ -4,6 +4,7 @@ import {
   ActionItem,
   isDataItem,
   OverviewClickType,
+  OverviewItem,
   OverviewState,
 } from './Overview';
 import { firstScrollCellStyle, fixedCellStyle } from './OverviewCell';
@@ -42,6 +43,13 @@ const iconApplyToAll = (
   </svg>
 );
 
+function filterFn(item: OverviewItem, filterState: FilterState | undefined) {
+  return (
+    filterState == null ||
+    Object.values(filterState).reduce((o, i) => ({ ...o, ...i }), {})[item.id]
+  );
+}
+
 interface OverviewHeaderProps {
   overviewState: OverviewState | undefined;
   filterState: FilterState | undefined;
@@ -72,8 +80,9 @@ export function OverviewHeader({
           <colgroup key={h.title + i + 'col'}>
             <col
               span={
-                h.ids.filter(id => filterState == null || filterState[id])
-                  .length
+                (h.items as OverviewItem[]).filter(item =>
+                  filterFn(item, filterState),
+                ).length
               }
             />
           </colgroup>
@@ -105,8 +114,9 @@ export function OverviewHeader({
               <th
                 key={h.title + i}
                 colSpan={
-                  h.ids.filter(id => filterState == null || filterState[id])
-                    .length
+                  (h.items as OverviewItem[]).filter(item =>
+                    filterFn(item, filterState),
+                  ).length
                 }
                 className={cx({ [firstScrollCellStyle]: i === 0 })}
               >
@@ -118,7 +128,7 @@ export function OverviewHeader({
         <tr>
           <th className={fixedHeaderCellStyle}></th>
           {overviewState?.row
-            .filter(r => filterState == null || filterState[r.id])
+            .filter(item => filterFn(item, filterState))
             .map((r, i) => {
               if (isDataItem(r)) {
                 const { id, label, sortable } = r;

@@ -3,10 +3,10 @@ import * as React from 'react';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { flex, flexColumn } from '../../../css/classes';
 import JSONForm from 'jsoninput';
-import { OverviewState } from '../Overview';
+import { OverviewItem, OverviewState } from '../Overview';
 
 export interface FilterState {
-  [columnId: string]: boolean;
+  [subColumnId: string]: { [columnId: string]: boolean };
 }
 
 export interface FilterModalContentProps {
@@ -22,11 +22,28 @@ export function FilterModalContent({
 }: FilterModalContentProps) {
   const filterSchema = {
     description: 'Filter',
-    properties: overviewState?.row.reduce(
-      (o, r) => ({ ...o, [r.id]: schemaProps.boolean({ label: r.label }) }),
+    properties: overviewState?.header.reduce(
+      (o, r) => ({
+        ...o,
+        [r.id]: schemaProps.object({
+          label: r.title,
+          properties: (r.items as OverviewItem[]).reduce(
+            (o, i) => ({
+              ...o,
+              [i.id]: schemaProps.boolean({
+                label: i.label,
+                layout: 'flexInline',
+              }),
+            }),
+            {},
+          ),
+        }),
+      }),
       {},
     ),
   };
+
+  // schemaProps.boolean({ label: r.label })
 
   return (
     <div className={cx(flex, flexColumn)}>
@@ -34,7 +51,16 @@ export function FilterModalContent({
       <JSONForm
         value={
           filterState ||
-          overviewState?.row.reduce((o, r) => ({ ...o, [r.id]: true }), {})
+          overviewState?.header.reduce(
+            (o, r) => ({
+              ...o,
+              [r.id]: (r.items as OverviewItem[]).reduce(
+                (o, i) => ({ ...o, [i.id]: true }),
+                {},
+              ),
+            }),
+            {},
+          )
         }
         schema={filterSchema}
         onChange={onNewFilterState}
