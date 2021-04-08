@@ -54,9 +54,7 @@ export function OverviewRow({
               icon={showPlayers ? 'caret-down' : 'caret-right'}
               onClick={() => setShowPlayers(sp => !sp)}
             />
-            <div className={hideWithEllipsis}>
-              {team.getName()}
-            </div>
+            <div className={hideWithEllipsis}>{team.getName()}</div>
           </div>
         </td>
         {!structure && (
@@ -104,7 +102,13 @@ export function OverviewRow({
         <tr className={'collapse'}>
           <td colSpan={3 + (structure?.length || 1)}>
             <div className={cx(flex, flexRow)}>
-              <div className={css({ width: '180px', height: '200px', overflow: 'auto' })}>
+              <div
+                className={css({
+                  width: '180px',
+                  height: '200px',
+                  overflow: 'auto',
+                })}
+              >
                 <ul>
                   {team.getPlayers().map(player => (
                     <li key={player.getId()}>{player.getName()}</li>

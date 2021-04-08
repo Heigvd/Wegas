@@ -26,18 +26,19 @@ export const fixedCellStyle = css({
 export const firstScrollCellStyle = css({
   borderLeft: '180px solid transparent',
 });
-interface OverviewCellProps {
+interface OverviewCellProps extends ClassStyleId {
   structure: DataItem | ActionItem;
   data: DataType;
-  className?: string;
   onClick: (type: OverviewClickType, item?: ActionItem) => void;
 }
 
 export function OverviewCell({
   structure,
   data,
-  className,
   onClick,
+  className,
+  style,
+  id,
 }: OverviewCellProps) {
   const [showPopup, setShowPopup] = React.useState(false);
 
@@ -50,7 +51,7 @@ export function OverviewCell({
     switch (view) {
       case 'boolean':
         return (
-          <td>
+          <td className={className} style={style} id={id}>
             <div>
               <img
                 src={
@@ -65,19 +66,19 @@ export function OverviewCell({
       case 'number':
       case 'string':
         return (
-          <td className={className}>
+          <td className={className} style={style} id={id}>
             <div>{String(value)}</div>
           </td>
         );
       case 'inbox':
         return (
-          <td>
+          <td className={className} style={style} id={id}>
             <div>
-            <Button
-              tooltip="Read mails"
-              src={require('../../pictures/icon_mail.svg').default}
-              onClick={() => setShowPopup(o => !o)}
-            />
+              <Button
+                tooltip="Read mails"
+                src={require('../../pictures/icon_mail.svg').default}
+                onClick={() => setShowPopup(o => !o)}
+              />
             </div>
             {showPopup && (
               <div
@@ -96,17 +97,16 @@ export function OverviewCell({
         );
       case 'text':
         return (
-          <td>
-              <HTMLText text={String(value)} />
+          <td className={className} style={style} id={id}>
+            <HTMLText text={String(value)} />
           </td>
         );
       case 'object':
         return (
-        <td className={className}>
-          <div>
-            {JSON.stringify(String(value))}
-          </div>
-        </td>);
+          <td className={className} style={style} id={id}>
+            <div>{JSON.stringify(String(value))}</div>
+          </td>
+        );
       case 'formatter': {
         const formatterFunction = `return (${formatter})(data)`;
         const formattedvalue = globals.Function(
@@ -115,7 +115,7 @@ export function OverviewCell({
         )(data);
 
         return (
-          <td>
+          <td className={className} style={style} id={id}>
             <div>
               <HTMLText text={String(formattedvalue)} />
             </div>
@@ -128,9 +128,9 @@ export function OverviewCell({
     }
   } else {
     return (
-      <td className={className}>
+      <td className={className} style={style} id={id}>
         <div>
-          <OverviewButton  item={structure} onClick={onClick} />
+          <OverviewButton item={structure} onClick={onClick} />
         </div>
       </td>
     );
