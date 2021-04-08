@@ -47,7 +47,7 @@ export const peerReviewTranslationsFR: PeerReviewTranslations = {
     stats: {
       mean: 'moy.',
       median: 'med.',
-      sd: '&sigma;',
+      sd: 'σ',
       bounds: 'bornes',
       basedOn: function (available, expected) {
         return `basé sur ${available}/${expected} valeurs`;

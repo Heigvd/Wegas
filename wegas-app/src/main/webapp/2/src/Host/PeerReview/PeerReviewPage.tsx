@@ -37,6 +37,7 @@ import {
 import { addPopup, popupDispatch } from '../../Components/PopupManager';
 import { internalTranslate } from '../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
+import { testPRData } from './PRinterfaceTests';
 
 const prStateStyle = css({
   borderRadius: '10px',
@@ -248,9 +249,9 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
       createScript(`ReviewHelper.summarize("${peerReview.name}")`),
       undefined,
       true,
-    ).then((res: PeerReviewData) => {
+    ).then((_res: PeerReviewData) => {
       // Test purposes
-      //const res = testPRData;
+      const res = testPRData;
 
       if (mounted) {
         setData({

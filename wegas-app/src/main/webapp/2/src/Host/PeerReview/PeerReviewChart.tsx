@@ -143,10 +143,10 @@ function TextSummary({
         </p>
       </div>
       <p className={chartLegendStyle}>
-        {`${i18nValues.orchestrator.stats.basedOn(
+        {i18nValues.orchestrator.stats.basedOn(
           String(numberOfValues),
           String(maxValue),
-        )} : `}
+        )}
       </p>
     </div>
   );
@@ -203,10 +203,10 @@ function GradeSummary({
           {sd && Math.round(sd * 100) / 100}
         </p>
         <p>
-          {`${i18nValues.orchestrator.stats.basedOn(
+          {i18nValues.orchestrator.stats.basedOn(
             String(numberOfValues),
             String(maxValue),
-          )} : `}
+          )}
         </p>
       </div>
     </div>
@@ -246,10 +246,10 @@ function CategorizationSummary({
         <Bar data={dataSet} options={chartOptions} height={230} />
       </div>
       <p className={chartLegendStyle}>
-        {`${i18nValues.orchestrator.stats.basedOn(
+        {i18nValues.orchestrator.stats.basedOn(
           String(numberOfValues),
           String(maxValue),
-        )} : `}
+        )}
       </p>
     </div>
   );
