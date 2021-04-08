@@ -14,6 +14,9 @@ import {
   flex,
   flexColumn,
   flexRow,
+  grow,
+  itemCenter,
+  showOverflow,
 } from '../../css/classes';
 import { updateDescriptor } from '../../data/Reducer/VariableDescriptorReducer';
 import { instantiate } from '../../data/scriptable';
@@ -52,7 +55,7 @@ const prActiveStateStyle = css({
 
 const stateBarStyle = css({
   overflowX: 'auto',
-  padding: '1em',
+  // padding: '1em',
   button: {
     fontSize: '30px',
   },
@@ -358,66 +361,76 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
               <h2>
                 Peer Review Process for "{translate(spr.getLabel(), lang)}"
               </h2>
-              <div className={cx(flex, flexRow, expandWidth, autoScroll)}>
+              <div className={cx(flex, expandWidth, autoScroll)}>
                 <div
-                  className={cx(prStateStyle, {
-                    [prActiveStateStyle]: status === 'NOT_STARTED',
-                  })}
+                  className={cx(
+                    flex,
+                    grow,
+                    flexRow,
+                    showOverflow,
+                    css({ padding: '1em' }),
+                  )}
                 >
-                  <h3>Edition</h3>
-                  <p>The authors are editing what will be reviewed</p>
-                  <p style={{ fontStyle: 'italic' }}>
-                    The process has not begun yet
-                  </p>
-                </div>
-                <Button
-                  icon="arrow-right"
-                  disabled={status !== 'NOT_STARTED'}
-                  onClick={() => changeStatus('Dispatch')}
-                />
-                <div
-                  className={cx(prStateStyle, {
-                    [prActiveStateStyle]: status === 'REVIEWING',
-                  })}
-                >
-                  <h3>Reviewing</h3>
-                  <p>The authors are reviewing their peers</p>
-                  <p style={{ fontStyle: 'italic' }}>
-                    This is the first step of the process
-                  </p>
-                </div>
-                <Button
-                  icon="arrow-right"
-                  disabled={status !== 'REVIEWING'}
-                  onClick={() => changeStatus('Notify')}
-                />
-                <div
-                  className={cx(prStateStyle, {
-                    [prActiveStateStyle]: status === 'COMMENTING',
-                  })}
-                >
-                  <h3>Commenting</h3>
-                  <p>The authors acquaint themselves with peer reviews</p>
-                  <p style={{ fontStyle: 'italic' }}>
-                    They comment on those reviews
-                  </p>
-                </div>
-                <Button
-                  icon="arrow-right"
-                  disabled={status !== 'COMMENTING'}
-                  onClick={() => changeStatus('Close')}
-                />
-                <div
-                  className={cx(prStateStyle, {
-                    [prActiveStateStyle]: status === 'CLOSED',
-                  })}
-                >
-                  <h3>Completed</h3>
-                  <p>The reviewing process has been completed</p>
-                  <p style={{ fontStyle: 'italic' }}>
-                    The authors take acquaintance of comments on reviews they've
-                    done
-                  </p>
+                  <div
+                    className={cx(prStateStyle, {
+                      [prActiveStateStyle]: status === 'NOT_STARTED',
+                    })}
+                  >
+                    <h3>Edition</h3>
+                    <p>The authors are editing what will be reviewed</p>
+                    <p style={{ fontStyle: 'italic' }}>
+                      The process has not begun yet
+                    </p>
+                  </div>
+                  <Button
+                    icon="arrow-right"
+                    disabled={status !== 'NOT_STARTED'}
+                    onClick={() => changeStatus('Dispatch')}
+                  />
+                  <div
+                    className={cx(prStateStyle, {
+                      [prActiveStateStyle]: status === 'REVIEWING',
+                    })}
+                  >
+                    <h3>Reviewing</h3>
+                    <p>The authors are reviewing their peers</p>
+                    <p style={{ fontStyle: 'italic' }}>
+                      This is the first step of the process
+                    </p>
+                  </div>
+                  <Button
+                    icon="arrow-right"
+                    disabled={status !== 'REVIEWING'}
+                    onClick={() => changeStatus('Notify')}
+                  />
+                  <div
+                    className={cx(prStateStyle, {
+                      [prActiveStateStyle]: status === 'COMMENTING',
+                    })}
+                  >
+                    <h3>Commenting</h3>
+                    <p>The authors acquaint themselves with peer reviews</p>
+                    <p style={{ fontStyle: 'italic' }}>
+                      They comment on those reviews
+                    </p>
+                  </div>
+                  <Button
+                    icon="arrow-right"
+                    disabled={status !== 'COMMENTING'}
+                    onClick={() => changeStatus('Close')}
+                  />
+                  <div
+                    className={cx(prStateStyle, {
+                      [prActiveStateStyle]: status === 'CLOSED',
+                    })}
+                  >
+                    <h3>Completed</h3>
+                    <p>The reviewing process has been completed</p>
+                    <p style={{ fontStyle: 'italic' }}>
+                      The authors take acquaintance of comments on reviews
+                      they've done
+                    </p>
+                  </div>
                 </div>
               </div>
             </Toolbar.Header>
@@ -425,7 +438,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
               className={cx(flex, flexColumn, css({ marginTop: '40px' }))}
             >
               <h2>Properties</h2>
-              <div className={cx(flex, flexRow)}>
+              <div className={cx(flex, flexRow, itemCenter)}>
                 <CheckBox
                   value={peerReview.includeEvicted}
                   onChange={value => {

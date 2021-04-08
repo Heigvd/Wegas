@@ -2,7 +2,11 @@ type IAbstractContentDescriptor = import('wegas-ts-api').IAbstractContentDescrip
 
 type TYPESTRING = 'string' | 'number' | 'boolean' | 'object' | 'array' | 'null';
 
-type SchemaLayout = 'inline' | 'shortInline';
+type SchemaLayout =
+  | 'inline'
+  | 'shortInline'
+  | 'extraShortInline'
+  | 'flexInline';
 
 type WegasTypeString = TYPESTRING | 'identifier';
 

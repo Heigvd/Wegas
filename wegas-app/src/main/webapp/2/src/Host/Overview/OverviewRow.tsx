@@ -6,6 +6,7 @@ import { Button } from '../../Components/Inputs/Buttons/Button';
 import {
   flex,
   flexRow,
+  grow,
   hideWithEllipsis,
   itemCenter,
   justifyCenter,
@@ -54,7 +55,7 @@ export function OverviewRow({
               icon={showPlayers ? 'caret-down' : 'caret-right'}
               onClick={() => setShowPlayers(sp => !sp)}
             />
-            <div className={hideWithEllipsis}>
+            <div className={cx(flex, grow, justifyCenter, hideWithEllipsis)}>
               {team.getName()}
             </div>
           </div>
@@ -104,7 +105,13 @@ export function OverviewRow({
         <tr className={'collapse'}>
           <td colSpan={3 + (structure?.length || 1)}>
             <div className={cx(flex, flexRow)}>
-              <div className={css({ width: '180px', height: '200px', overflow: 'auto' })}>
+              <div
+                className={css({
+                  width: '180px',
+                  height: '200px',
+                  overflow: 'auto',
+                })}
+              >
                 <ul>
                   {team.getPlayers().map(player => (
                     <li key={player.getId()}>{player.getName()}</li>
