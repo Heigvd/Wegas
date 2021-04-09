@@ -427,7 +427,7 @@ const memoClientScriptEval = (() => {
     script?: string | IScript,
     context: PageComponentContext = {},
     state?: PageComponentContext,
-  ): T extends IMergeable ? unknown : T => {
+  ): T extends WegasScriptEditorReturnType ? T : unknown => {
     const currentState = addSetterToState(
       state || pagesContextStateStore.getState(),
     );
@@ -471,7 +471,7 @@ export function clientScriptEval<T extends ScriptReturnType>(
   state?: {
     [name: string]: unknown;
   },
-): T extends IMergeable ? unknown : T {
+): T extends WegasScriptEditorReturnType ? T : unknown {
   return memoClientScriptEval(script, context, state);
 }
 
@@ -484,7 +484,7 @@ export function safeClientScriptEval<T extends ScriptReturnType>(
   state?: {
     [name: string]: unknown;
   },
-): T extends IMergeable ? unknown : T {
+): T extends WegasScriptEditorReturnType ? T : unknown {
   try {
     return clientScriptEval<T>(script, context, state);
   } catch (e) {
@@ -558,7 +558,7 @@ export function useUnsafeScript<T extends ScriptReturnType>(
   context?: {
     [name: string]: unknown;
   },
-): T extends IMergeable ? unknown : T {
+): T extends WegasScriptEditorReturnType ? T : unknown {
   const globalContexts = useGlobalContexts();
 
   const fn = React.useCallback(() => clientScriptEval<T>(script, context), [

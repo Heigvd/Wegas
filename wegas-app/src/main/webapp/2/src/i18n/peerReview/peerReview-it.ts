@@ -41,8 +41,10 @@ export const peerReviewTranslationsIT: PeerReviewTranslations = {
     teamData: function (teamName) {
       return `Dati valutati da pari per la squadra "${teamName}"`;
     },
-    goNextConfirmation:
-      'Questa azione e irreversibile.<br />\nAvviare nonostante la fase successiva?',
+    goNextConfirmation: {
+      info: 'Questa azione e irreversibile.',
+      question: 'Avviare nonostante la fase successiva?',
+    },
     stats: {
       mean: 'media.',
       median: 'mediana.',
@@ -58,8 +60,10 @@ export const peerReviewTranslationsIT: PeerReviewTranslations = {
   },
   global: {
     submit: 'inviare',
-    confirmation:
-      'Una volta inviate, queste dati non sarano piu modificabile!<br /> Inviare nonostante ?',
+    confirmation: {
+      info: 'Una volta inviate, queste dati non sarano piu modificabile!',
+      question: 'Inviare nonostante ?',
+    },
     save: 'Salvare',
   },
   tabview: {

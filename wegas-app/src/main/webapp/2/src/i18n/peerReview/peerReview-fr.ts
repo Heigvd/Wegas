@@ -42,8 +42,10 @@ export const peerReviewTranslationsFR: PeerReviewTranslations = {
     teamData: function (teamName) {
       return `Informations revues par les pairs pour l'équipe "${teamName}"`;
     },
-    goNextConfirmation:
-      "Cette action est irréversible.<br />\nÊtes-vous sûr de vouloir passer à l'étape suivante ?",
+    goNextConfirmation: {
+      info: 'Cette action est irréversible.',
+      question: "Êtes-vous sûr de vouloir passer à l'étape suivante ?",
+    },
     stats: {
       mean: 'moy.',
       median: 'med.',
@@ -59,8 +61,11 @@ export const peerReviewTranslationsFR: PeerReviewTranslations = {
   },
   global: {
     submit: 'Valider',
-    confirmation:
-      'Une fois validées, vous ne pourrez plus modifier ces informations.<br />Êtes-vous sûr de vouloir continuer ?',
+    confirmation: {
+      info:
+        'Une fois validées, vous ne pourrez plus modifier ces informations.',
+      question: 'Êtes-vous sûr de vouloir continuer ?',
+    },
     save: 'Sauver',
   },
   tabview: {

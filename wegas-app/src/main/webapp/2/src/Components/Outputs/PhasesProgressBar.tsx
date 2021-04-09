@@ -28,7 +28,7 @@ const phaseDotStyle = css({
   borderColor: themeVar.Common.colors.PrimaryColor,
 });
 
-interface PhaseComponentProps {
+export interface PhaseComponentProps {
   /**
    * value - the current value of the progess bar
    */
@@ -39,7 +39,7 @@ interface PhaseComponentProps {
   phase: number;
 }
 
-function SimplePhaseComponent({ value, phase }: PhaseComponentProps) {
+export function SimplePhaseComponent({ value, phase }: PhaseComponentProps) {
   return (
     <div className={'phaseDotStyle ' + phaseDotStyle}>
       <IconComp
@@ -59,7 +59,7 @@ function SimplePhaseComponent({ value, phase }: PhaseComponentProps) {
   );
 }
 
-function SimpleInterPhaseComponent(_props: PhaseComponentProps) {
+export function SimpleInterPhaseComponent(_props: PhaseComponentProps) {
   return <div className={'phasePathStyle ' + phasePathStyle}></div>;
 }
 
@@ -133,7 +133,9 @@ export function CustomPhasesProgressBar({
     <div
       className={
         'wegas wegas-phaseProgessBar ' +
-        cx(flex, textCenter, justifyCenter, flexColumn, grow, {[halfOpacity]: disabled}) +
+        cx(flex, textCenter, justifyCenter, flexColumn, grow, {
+          [halfOpacity]: disabled,
+        }) +
         classNameOrEmpty(className)
       }
       style={style}

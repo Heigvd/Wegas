@@ -10,7 +10,7 @@ import {
   PeerReviewDescriptorAPI,
   PeerReviewStateSelector,
 } from '../../API/peerReview.api';
-import { Game, GameModel } from '../selectors';
+import { Game, GameModel, Player } from '../selectors';
 
 export interface VariableDescriptorState {
   [id: string]: Readonly<IVariableDescriptor> | undefined;
@@ -196,6 +196,18 @@ export function setPRState(
       peerReviewId,
       Game.selectCurrent().id!,
       state,
+    ).then(res =>
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
+
+export function submitPR(peerReviewId: number): ThunkResult {
+  return function (dispatch, getState) {
+    return PeerReviewDescriptorAPI.submitReview(
+      GameModel.selectCurrent().id!,
+      peerReviewId,
+      Player.selectCurrent().id!,
     ).then(res =>
       store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );

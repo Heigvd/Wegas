@@ -29,4 +29,10 @@ export const PeerReviewDescriptorAPI = {
       method: 'POST',
     });
   },
+  submitReview(gameModelId: number, peerReviewId: number, playerId: number) {
+    const path = `${PR_BASE(gameModelId)}${peerReviewId}/Submit/${playerId}`;
+    return managedModeRequest(path, {
+      method: 'POST',
+    });
+  },
 };

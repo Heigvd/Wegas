@@ -41,8 +41,11 @@ export const peerReviewTranslationsDE: PeerReviewTranslations = {
     teamData: function (teamName) {
       return `Peer-Review-Informationen fûr das "${teamName}" Team`;
     },
-    goNextConfirmation:
-      'Diese Aktion ist nicht umkehrbar.<br />Bist du sicher, dass du sie auf die nächste Stufe bringen willst?',
+    goNextConfirmation: {
+      info: 'Diese Aktion ist nicht umkehrbar.',
+      question:
+        'Bist du sicher, dass du sie auf die nächste Stufe bringen willst?',
+    },
     stats: {
       mean: 'Mittel..',
       median: 'Median',
@@ -58,8 +61,11 @@ export const peerReviewTranslationsDE: PeerReviewTranslations = {
   },
   global: {
     submit: 'einreichen',
-    confirmation:
-      'Einmal validiert, können Sie diese Informationen nicht mehr ändern.<br />Sind Sie sicher, dass Sie fortfahren wollen?',
+    confirmation: {
+      info:
+        'Einmal validiert, können Sie diese Informationen nicht mehr ändern.',
+      question: 'Sind Sie sicher, dass Sie fortfahren wollen?',
+    },
     save: 'Speichern',
   },
   tabview: {

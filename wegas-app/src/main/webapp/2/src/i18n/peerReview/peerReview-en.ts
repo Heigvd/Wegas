@@ -41,8 +41,10 @@ export const peerReviewTranslationsEN: PeerReviewTranslations = {
     teamData: function (teamName) {
       return `Data reviewed by peers for team "${teamName}"`;
     },
-    goNextConfirmation:
-      'This action cannot be undone.<br />\nDo you want to enter the next step of the reviewing process?',
+    goNextConfirmation: {
+      info: 'This action cannot be undone.',
+      question: 'Do you want to enter the next step of the reviewing process?',
+    },
     stats: {
       mean: 'avg.',
       median: 'med.',
@@ -58,8 +60,10 @@ export const peerReviewTranslationsEN: PeerReviewTranslations = {
   },
   global: {
     submit: 'submit',
-    confirmation:
-      'Once submitted, those data will be final!<br /> Do you really want to submit them ?',
+    confirmation: {
+      info: 'Once submitted, those data will be final!',
+      question: 'Do you really want to submit them ?',
+    },
     save: 'save',
   },
   tabview: {

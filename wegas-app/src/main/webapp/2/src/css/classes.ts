@@ -48,9 +48,9 @@ export const showOverflow = css({
 });
 
 export const hideWithEllipsis = css({
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
 });
 
 // Size
@@ -94,6 +94,9 @@ export const flexWrap = css({
 });
 export const flexDistribute = css({
   justifyContent: 'space-evenly',
+});
+export const flexBetween = css({
+  justifyContent: 'space-between',
 });
 
 // Position
@@ -274,4 +277,10 @@ export const unreadSpaceStyle = css({
   minWidth: '30px',
   display: 'flex',
   alignItems: 'center',
+});
+
+// Others
+
+export const pointer = css({
+  cursor: 'pointer',
 });

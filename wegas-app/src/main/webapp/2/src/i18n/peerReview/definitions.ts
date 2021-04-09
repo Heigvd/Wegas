@@ -31,7 +31,7 @@ export interface PeerReviewTranslations {
     charts: string;
     playerData: (variable: string) => string;
     teamData: (variable: string) => string;
-    goNextConfirmation: string;
+    goNextConfirmation: { info: string; question: string };
     stats: {
       mean: string;
       median: string;
@@ -45,7 +45,7 @@ export interface PeerReviewTranslations {
   };
   global: {
     submit: string;
-    confirmation: string;
+    confirmation: { info: string; question: string };
     save: string;
   };
   tabview: {
