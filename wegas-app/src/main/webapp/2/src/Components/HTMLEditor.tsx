@@ -35,7 +35,6 @@ import { flexColumn, flex } from '../css/classes';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { classNameOrEmpty } from '../Helper/className';
 import { inputDefaultCSS, inputStyleCSS } from './Inputs/inputStyles';
-import { debounce } from 'lodash-es';
 import { isActionAllowed } from './PageComponents/tools/options';
 
 const toolbar = css({
@@ -129,7 +128,6 @@ export default function HTMLEditor({
   className,
   style,
   id,
-  delay = 100,
   inline = false,
   placeholder,
   disabled,
@@ -307,13 +305,6 @@ export default function HTMLEditor({
     };
   }, []);
 
-  const debouncedOnChange = React.useCallback(
-    debounce((value: string) => {
-      onChange && onChange(value);
-    }, delay),
-    [onChange],
-  );
-
   const toolBarId = 'externalEditorToolbar' + String(HTMLEditorID++);
 
   return (
@@ -343,7 +334,7 @@ export default function HTMLEditor({
           onInit={editor => {
             HTMLEditor.current = editor.target;
           }}
-          onEditorChange={debouncedOnChange}
+          onEditorChange={onChange}
           onFocus={() => setEditorFocus(true)}
           onBlur={() => setEditorFocus(false)}
           disabled={disabled || readOnly}
