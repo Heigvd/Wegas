@@ -1,5 +1,6 @@
 // "/PeerReviewController/" + prd.get("id") + "/" + action + "/" + Y.Wegas.Facade.Game.cache.getCurrentGame()
 
+import { IReview } from 'wegas-ts-api';
 import { managedModeRequest, rest } from './rest';
 const PR_BASE = (gameModelId: number) =>
   `/GameModel/${gameModelId}/VariableDescriptor/PeerReviewController/`;
@@ -33,6 +34,13 @@ export const PeerReviewDescriptorAPI = {
     const path = `${PR_BASE(gameModelId)}${peerReviewId}/Submit/${playerId}`;
     return managedModeRequest(path, {
       method: 'POST',
+    });
+  },
+  saveReview(gameModelId: number, playerId: number, review: IReview) {
+    const path = `${PR_BASE(gameModelId)}SaveReview/${playerId}`;
+    return managedModeRequest(path, {
+      method: 'POST',
+      body: JSON.stringify(review),
     });
   },
 };
