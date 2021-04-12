@@ -15,6 +15,7 @@ import { instantiate } from '../../data/scriptable';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { sortFnFactory, SortState } from '../TableSorter';
 import { FilterState } from './OverviewModal/FilterModalContent';
+import { useWebsocket } from '../../API/websocket';
 
 export const trainerCellStyleI: Interpolation<undefined> = {
   backgroundColor: '#fff',
@@ -168,8 +169,17 @@ export default function Overview() {
   );
   const [overviewState, setOverviewState] = React.useState<OverviewState>();
   const [sortState, setSortState] = React.useState<SortState>();
+  const [newData, setNewData] = React.useState(false);
 
   const mounted = React.useRef(true);
+
+  useWebsocket('populateQueue-dec', () => {
+    setNewData(true);
+  });
+
+  useWebsocket('EntityUpdatedEvent', () => {
+    setNewData(true);
+  });
 
   const refreshOverview = React.useCallback(() => {
     VariableDescriptorAPI.runScript(
