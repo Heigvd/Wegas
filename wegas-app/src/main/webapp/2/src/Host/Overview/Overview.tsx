@@ -182,6 +182,7 @@ export default function Overview() {
   });
 
   const refreshOverview = React.useCallback(() => {
+    setNewData(false);
     VariableDescriptorAPI.runScript(
       GameModel.selectCurrent().id!,
       Player.selectCurrent().id!,
