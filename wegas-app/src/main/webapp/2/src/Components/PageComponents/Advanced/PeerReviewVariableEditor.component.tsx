@@ -8,7 +8,7 @@ import {
 } from 'wegas-ts-api';
 import { flex, flexColumn } from '../../../css/classes';
 import { scriptableEntityIs } from '../../../data/entities';
-import { submitReview } from '../../../data/Reducer/VariableDescriptorReducer';
+import { submitToReview } from '../../../data/Reducer/VariableDescriptorReducer';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
 import { GameModel, Player } from '../../../data/selectors';
@@ -24,7 +24,7 @@ import HTMLEditor from '../../HTMLEditor';
 import { Button } from '../../Inputs/Buttons/Button';
 import { NumberInput } from '../../Inputs/Number/NumberInput';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';
-import { OkCancelModal } from '../../Modal';
+import { useOkCancelModal } from '../../Modal';
 import { HTMLText } from '../../Outputs/HTMLText';
 import { popupDispatch, addPopup } from '../../PopupManager';
 import {
@@ -65,7 +65,6 @@ export default function PeerReviewVariableEditor({
     variableToReview?.getValue(Player.self()),
   );
 
-  const [modalState, setModalState] = React.useState(false);
   const [waitingState, setWaitingState] = React.useState(false);
 
   const sendValue = React.useCallback(
@@ -114,6 +113,8 @@ export default function PeerReviewVariableEditor({
     },
     [sendValue],
   );
+
+  const { showModal, OkCancelModal } = useOkCancelModal();
 
   if (sPR == null) {
     return (
@@ -189,22 +190,18 @@ export default function PeerReviewVariableEditor({
             {displaySubmit && (
               <Button
                 label={i18nValues.global.submit}
-                onClick={() => setModalState(true)}
-                disabled={waitingState}
+                onClick={showModal}
+                disabled={waitingState || options.disabled || options.locked}
               />
             )}
-            {modalState && (
-              <OkCancelModal
-                onOk={() => {
-                  store.dispatch(submitReview(sPR.getId()!));
-                  setModalState(false);
-                }}
-                onCancel={() => setModalState(false)}
-              >
-                <p>{i18nValues.global.confirmation.info}</p>
-                <p>{i18nValues.global.confirmation.question}</p>
-              </OkCancelModal>
-            )}
+            <OkCancelModal
+              onOk={() => {
+                store.dispatch(submitToReview(sPR.getId()!));
+              }}
+            >
+              <p>{i18nValues.global.confirmation.info}</p>
+              <p>{i18nValues.global.confirmation.question}</p>
+            </OkCancelModal>
           </div>
         );
       }

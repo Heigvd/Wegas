@@ -1,4 +1,5 @@
 import { css, cx } from 'emotion';
+import { omit } from 'lodash-es';
 import * as React from 'react';
 import {
   IEvaluationDescriptor,
@@ -21,9 +22,13 @@ import {
   justifyCenter,
 } from '../../../css/classes';
 import { scriptableEntityIs } from '../../../data/entities';
-import { saveReview } from '../../../data/Reducer/VariableDescriptorReducer';
+import { liveEdition } from '../../../data/Reducer/gameModel';
+import {
+  saveReview,
+  submitReview,
+} from '../../../data/Reducer/VariableDescriptorReducer';
 import { instantiate } from '../../../data/scriptable';
-import { Player } from '../../../data/selectors';
+import { Player, Team } from '../../../data/selectors';
 import { store, useStore } from '../../../data/Stores/store';
 import { Selector } from '../../../Editor/Components/FormView/Select';
 import { translate } from '../../../Editor/Components/FormView/translatable';
@@ -35,7 +40,8 @@ import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { useScript } from '../../Hooks/useScript';
 import HTMLEditor from '../../HTMLEditor';
 import { Button } from '../../Inputs/Buttons/Button';
-import { NumberInput } from '../../Inputs/Number/NumberInput';
+import { NumberSlider } from '../../Inputs/Number/NumberSlider';
+import { useOkCancelModal } from '../../Modal';
 import {
   CustomPhasesProgressBar,
   PhaseComponentProps,
@@ -164,7 +170,7 @@ function TreeViewReviewSelector({
   );
 }
 
-interface EvalutationEditorProps {
+interface EvalutationEditorProps extends DisabledReadonly {
   iEvaluation: ScriptableEntity<IEvaluationInstance>;
   value: string | number | undefined | null;
   onChange: (value: string | number) => void;
@@ -174,6 +180,8 @@ function EvalutationEditor({
   iEvaluation,
   value,
   onChange,
+  disabled,
+  readOnly,
 }: EvalutationEditorProps) {
   const { lang } = React.useContext(languagesCTX);
 
@@ -183,40 +191,83 @@ function EvalutationEditor({
     }).descriptor,
   );
 
+  const onChangeNotify = React.useCallback(
+    (val: string | number) => {
+      store.dispatch(
+        liveEdition(`private-Team-${Team.selectCurrent().id!}`, {
+          ...iEvaluation.getEntity(),
+          value: val,
+        }),
+      );
+      onChange(val);
+    },
+    [iEvaluation, onChange],
+  );
+
+  let min = 1;
+  let max = 5;
+  if (scriptableEntityIs(dEvaluation, 'GradeDescriptor')) {
+    min = dEvaluation.getMinValue() || 1;
+    max = dEvaluation.getMaxValue() || 5;
+  }
+  const numberValue =
+    value == null ? min : value < min ? min : value > max ? max : Number(value);
+
   return (
     <div className={cx(flex, flexColumn)}>
       <h3>{translate(dEvaluation?.getLabel(), lang)}</h3>
       {scriptableEntityIs(iEvaluation, 'TextEvaluationInstance') ? (
         <HTMLEditor
           value={value == null ? undefined : String(value)}
-          onChange={onChange}
+          onChange={onChangeNotify}
+          disabled={disabled}
+          readOnly={readOnly}
         />
       ) : scriptableEntityIs(iEvaluation, 'GradeInstance') ? (
-        <NumberInput
-          value={value == null ? undefined : Number(value)}
-          onChange={onChange}
+        <NumberSlider
+          value={numberValue}
+          onChange={onChangeNotify}
+          min={min}
+          max={max}
+          steps={max - min}
+          displayValues="NumberInput"
+          disabled={disabled}
+          readOnly={readOnly}
         />
       ) : scriptableEntityIs(dEvaluation, 'CategorizedEvaluationDescriptor') ? (
         <Selector
           value={String(value)}
+          onChange={e => onChangeNotify(e.target.value)}
           choices={dEvaluation.getCategories().map(c => ({
-            value: c.getId(),
+            value: translate(c.getLabel(), lang),
             label: translate(c.getLabel(), lang),
           }))}
+          disabled={disabled}
+          readOnly={readOnly}
         />
       ) : null}
     </div>
   );
 }
 
-interface EvalutationsEditorProps {
+interface EvalutationsEditorProps extends DisabledReadonly {
   review: IReview;
   phase: 'feedback' | 'comments';
+  displaySubmit?: boolean;
+  onRefresh: () => void;
 }
 
-function EvalutationsEditor({ review, phase }: EvalutationsEditorProps) {
+function EvalutationsEditor({
+  review,
+  phase,
+  displaySubmit,
+  onRefresh,
+  disabled,
+  readOnly,
+}: EvalutationsEditorProps) {
   const evaluations = review[phase];
   const timer = React.useRef<NodeJS.Timeout | null>();
+  const modifiedReview = React.useRef(review);
   const [waitingState, setWaitingState] = React.useState(false);
   const [values, setValues] = React.useState<{
     [id: string]: string | number | undefined | null;
@@ -230,6 +281,8 @@ function EvalutationsEditor({ review, phase }: EvalutationsEditorProps) {
   const { lang } = React.useContext(languagesCTX);
   const i18nValues = internalTranslate(peerReviewTranslations, lang);
 
+  const { showModal, OkCancelModal } = useOkCancelModal();
+
   const sendValue = React.useCallback(
     (id: number, val: string | number | undefined) => {
       if (timer.current != null) {
@@ -240,14 +293,20 @@ function EvalutationsEditor({ review, phase }: EvalutationsEditorProps) {
         e.id === id ? { ...e, value: val } : e,
       );
 
-      const newReview: IReview = { ...review, [phase]: newEvalutations };
+      modifiedReview.current = {
+        ...(omit(modifiedReview.current, [
+          'createdTime',
+          'initialReviewState',
+        ]) as IReview),
+        [phase]: newEvalutations,
+      };
 
       timer.current = setTimeout(() => {
-        store.dispatch(saveReview(newReview));
+        store.dispatch(saveReview(modifiedReview.current));
         setWaitingState(false);
       }, 500);
     },
-    [evaluations, phase, review],
+    [evaluations, phase],
   );
 
   const onChange = React.useCallback(
@@ -278,9 +337,29 @@ function EvalutationsEditor({ review, phase }: EvalutationsEditorProps) {
           iEvaluation={instantiate(e)}
           value={values[e.id!]}
           onChange={val => onChange(e.id!, val)}
+          disabled={disabled}
+          readOnly={readOnly}
         />
       ))}
-      <Button label={i18nValues.global.submit} disabled={waitingState} />
+      {displaySubmit && (
+        <Button
+          label={i18nValues.global.submit}
+          disabled={waitingState || disabled}
+          onClick={showModal}
+        />
+      )}
+      <OkCancelModal
+        onOk={() => {
+          store.dispatch(submitReview(modifiedReview.current, onRefresh));
+
+          // PeerReviewDescriptorAPI.submitReviewUnmanaged(GameModel.selectCurrent().id!,Player.selectCurrent().id!,modifiedReview.current).then(e=>{
+          //   const newReview =
+          // })
+        }}
+      >
+        <p>{i18nValues.global.confirmation.info}</p>
+        <p>{i18nValues.global.confirmation.question}</p>
+      </OkCancelModal>
     </div>
   );
 }
@@ -340,21 +419,37 @@ function EvalutationsDisplay({ evaluations }: EvalutationsDisplayProps) {
   );
 }
 
-interface ReviewEditorProps {
+interface ReviewEditorProps extends DisabledReadonly {
   label: string;
   review: ReviewPhase;
   reviewState: IPeerReviewInstance['reviewState'];
+  displaySubmit?: boolean;
+  onRefresh: () => void;
 }
 
-function ReviewEditor({ label, review, reviewState }: ReviewEditorProps) {
+function ReviewEditor({
+  label,
+  review,
+  reviewState,
+  displaySubmit,
+  disabled,
+  readOnly,
+  onRefresh,
+}: ReviewEditorProps) {
+  const rev = review.review.getEntity();
+
   return (
     <div className={cx(flex, flexColumn)}>
       <h2>{label}</h2>
       <div>
-        {reviewState == 'DISPATCHED' ? (
+        {reviewState === 'DISPATCHED' && rev.reviewState === 'DISPATCHED' ? (
           <EvalutationsEditor
-            review={review.review.getEntity()}
+            review={rev}
             phase="feedback"
+            displaySubmit={displaySubmit}
+            onRefresh={onRefresh}
+            disabled={disabled}
+            readOnly={readOnly}
           />
         ) : (
           <EvalutationsDisplay evaluations={review.review.getFeedback()} />
@@ -362,10 +457,14 @@ function ReviewEditor({ label, review, reviewState }: ReviewEditorProps) {
       </div>
       {review.phase === 'review' && (
         <div>
-          {reviewState == 'NOTIFIED' ? (
+          {reviewState === 'NOTIFIED' && rev.reviewState === 'NOTIFIED' ? (
             <EvalutationsEditor
-              review={review.review.getEntity()}
+              review={rev}
               phase="comments"
+              displaySubmit={displaySubmit}
+              onRefresh={onRefresh}
+              disabled={disabled}
+              readOnly={readOnly}
             />
           ) : (
             <EvalutationsDisplay evaluations={review.review.getComments()} />
@@ -506,6 +605,10 @@ export default function PeerReviewTreeViewDisplay({
                     label={`${i18nValues.tabview.toComment}`}
                     review={selectedReview}
                     reviewState={reviewState}
+                    displaySubmit={displaySubmit}
+                    onRefresh={() => setSelectedReview(undefined)}
+                    disabled={options.disabled || options.locked}
+                    readOnly={options.readOnly}
                   />
                 )}
               </div>

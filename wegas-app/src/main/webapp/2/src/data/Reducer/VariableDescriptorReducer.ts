@@ -202,9 +202,9 @@ export function setPRState(
   };
 }
 
-export function submitReview(peerReviewId: number): ThunkResult {
+export function submitToReview(peerReviewId: number): ThunkResult {
   return function (dispatch, getState) {
-    return PeerReviewDescriptorAPI.submitReview(
+    return PeerReviewDescriptorAPI.submitToReview(
       GameModel.selectCurrent().id!,
       peerReviewId,
       Player.selectCurrent().id!,
@@ -223,5 +223,18 @@ export function saveReview(review: IReview): ThunkResult {
     ).then(res =>
       store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
+  };
+}
+
+export function submitReview(review: IReview, cb?: () => void): ThunkResult {
+  return function (dispatch, getState) {
+    return PeerReviewDescriptorAPI.submitReview(
+      GameModel.selectCurrent().id!,
+      Player.selectCurrent().id!,
+      review,
+    ).then(res => {
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global));
+      cb && cb();
+    });
   };
 }

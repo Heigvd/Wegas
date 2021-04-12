@@ -168,8 +168,8 @@ export function Modal({
 }
 
 interface OkCancelModalProps {
-  onOk: () => void;
-  onCancel: () => void;
+  onOk?: () => void;
+  onCancel?: () => void;
 }
 
 export function OkCancelModal({
@@ -191,4 +191,32 @@ export function OkCancelModal({
       </div>
     </Modal>
   );
+}
+
+export function useOkCancelModal() {
+  const [show, setShow] = React.useState(false);
+  const showModal = function () {
+    setShow(true);
+  };
+  function Modal({
+    onCancel,
+    onOk,
+    children,
+  }: React.PropsWithChildren<OkCancelModalProps>) {
+    return show ? (
+      <OkCancelModal
+        onCancel={() => {
+          setShow(false);
+          onCancel && onCancel();
+        }}
+        onOk={() => {
+          setShow(false);
+          onOk && onOk();
+        }}
+      >
+        {children}
+      </OkCancelModal>
+    ) : null;
+  }
+  return { showModal, OkCancelModal: Modal };
 }
