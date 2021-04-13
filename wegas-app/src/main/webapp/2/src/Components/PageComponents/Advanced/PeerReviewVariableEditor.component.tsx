@@ -51,7 +51,6 @@ export default function PeerReviewVariableEditor({
   const timer = React.useRef<NodeJS.Timeout | null>();
   const { lang } = React.useContext(languagesCTX);
   const i18nValues = internalTranslate(peerReviewTranslations, lang);
-
   const sPR = useScript<SPeerReviewDescriptor | undefined>(peerReview, context);
   const reviewState = useStore(() =>
     sPR?.getInstance(Player.self()).getReviewState(),

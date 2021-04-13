@@ -8,6 +8,8 @@ import { flex, flexColumn } from '../../../css/classes';
 import { ListDescriptorChild } from '../../editionConfig';
 import { inputStyleCSS } from '../../../Components/Inputs/inputStyles';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 export interface Choice {
   value?: {};
@@ -59,29 +61,33 @@ const undefinedTitle: Choice = {
   disabled: false,
 };
 
-function genItems(o: string | Choice) {
-  if (typeof o !== 'object') {
+function genItems(selected: string | number | undefined) {
+  return function (o: string | Choice) {
+    if (typeof o !== 'object') {
+      return (
+        <option key={`k-${o}`} value={o} selected={o === selected}>
+          {o}
+        </option>
+      );
+    }
+    const { label = o.value, value, disabled: choiceDisabled } = o;
+    const strValue = typeof value === 'string' ? value : JSON.stringify(value);
     return (
-      <option key={`k-${o}`} value={o}>
-        {o}
+      <option
+        key={`k-${value}`}
+        value={strValue}
+        disabled={choiceDisabled}
+        selected={strValue === selected}
+      >
+        {label}
       </option>
     );
-  }
-  const { label = o.value, value, disabled: choiceDisabled } = o;
-  return (
-    <option
-      key={`k-${value}`}
-      value={typeof value === 'string' ? value : JSON.stringify(value)}
-      disabled={choiceDisabled}
-    >
-      {label}
-    </option>
-  );
+  };
 }
 
 interface SelectorProps extends ClassStyleId, DisabledReadonly {
   choices: Choices;
-  value: string;
+  value: string | number | undefined;
   onChange?: (
     event: React.ChangeEvent<{
       value: string;
@@ -99,6 +105,8 @@ export function Selector({
   readOnly,
   disabled,
 }: SelectorProps) {
+  const i18nValues = useInternalTranslate(commonTranslations);
+
   return choices.length > 1 ? (
     <select
       id={id}
@@ -108,7 +116,10 @@ export function Selector({
       onChange={onChange}
       disabled={disabled || readOnly}
     >
-      {choices.map(genItems)}
+      <option value="" selected={value == null} disabled hidden>
+        - {i18nValues.plzChooseValue} -
+      </option>
+      {choices.map(genItems(value))}
     </select>
   ) : choices.length === 1 ? (
     <span className={selectStyle + classNameOrEmpty(className)} style={style}>

@@ -11,6 +11,7 @@ import {
   SPeerReviewDescriptor,
   SReview,
 } from 'wegas-ts-api';
+import { PeerReviewDescriptorAPI } from '../../../API/peerReview.api';
 import {
   autoScroll,
   expandWidth,
@@ -21,19 +22,23 @@ import {
   itemCenter,
   justifyCenter,
 } from '../../../css/classes';
-import { scriptableEntityIs } from '../../../data/entities';
+import { entityIs, scriptableEntityIs } from '../../../data/entities';
 import { liveEdition } from '../../../data/Reducer/gameModel';
 import {
   saveReview,
   submitReview,
 } from '../../../data/Reducer/VariableDescriptorReducer';
 import { instantiate } from '../../../data/scriptable';
-import { Player, Team } from '../../../data/selectors';
+import { GameModel, Player, Team } from '../../../data/selectors';
 import { store, useStore } from '../../../data/Stores/store';
 import { Selector } from '../../../Editor/Components/FormView/Select';
 import { translate } from '../../../Editor/Components/FormView/translatable';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { wlog } from '../../../Helper/wegaslog';
+import {
+  internalTranslate,
+  useInternalTranslate,
+} from '../../../i18n/internalTranslator';
 import { PeerReviewTranslations } from '../../../i18n/peerReview/definitions';
 import { peerReviewTranslations } from '../../../i18n/peerReview/peerReview';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
@@ -42,6 +47,7 @@ import HTMLEditor from '../../HTMLEditor';
 import { Button } from '../../Inputs/Buttons/Button';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';
 import { useOkCancelModal } from '../../Modal';
+import { HTMLText } from '../../Outputs/HTMLText';
 import {
   CustomPhasesProgressBar,
   PhaseComponentProps,
@@ -76,12 +82,17 @@ const prActivePhaseComponentStyle = css({
   color: themeVar.Common.colors.LightTextColor,
 });
 
+const reviewContainerStyle = css({
+  border: 'solid',
+  margin: '1em',
+  padding: '1em',
+  overflowX: 'auto',
+});
+
 const phases = ['edition', 'reviewing', 'commenting', 'completed'];
 
 function PRPHaseComponent({ value, phase }: PhaseComponentProps) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(peerReviewTranslations, lang);
-
+  const i18nValues = useInternalTranslate(peerReviewTranslations);
   return (
     <div
       className={cx(flex, flexColumn, justifyCenter, prPhaseComponentStyle, {
@@ -134,7 +145,7 @@ interface TreeViewReviewSelectorProps {
   reviews: SReview[];
   open: boolean;
   onCarretClick: () => void;
-  onReviewClick: (review: SReview) => void;
+  onReviewClick: (review: SReview, index: number) => void;
 }
 
 function TreeViewReviewSelector({
@@ -163,7 +174,7 @@ function TreeViewReviewSelector({
           <TreeViewReviewItem
             key={r.getId()}
             label={itemLabel + (i + 1)}
-            onClick={() => onReviewClick(r)}
+            onClick={() => onReviewClick(r, i)}
           />
         ))}
     </div>
@@ -193,12 +204,14 @@ function EvalutationEditor({
 
   const onChangeNotify = React.useCallback(
     (val: string | number) => {
-      store.dispatch(
-        liveEdition(`private-Team-${Team.selectCurrent().id!}`, {
-          ...iEvaluation.getEntity(),
-          value: val,
-        }),
-      );
+      if (iEvaluation.getJSONClassName() === 'TextEvaluationInstance') {
+        store.dispatch(
+          liveEdition(`private-Team-${Team.selectCurrent().id!}`, {
+            ...iEvaluation.getEntity(),
+            value: val,
+          }),
+        );
+      }
       onChange(val);
     },
     [iEvaluation, onChange],
@@ -236,7 +249,7 @@ function EvalutationEditor({
         />
       ) : scriptableEntityIs(dEvaluation, 'CategorizedEvaluationDescriptor') ? (
         <Selector
-          value={String(value)}
+          value={value == null ? undefined : value}
           onChange={e => onChangeNotify(e.target.value)}
           choices={dEvaluation.getCategories().map(c => ({
             value: translate(c.getLabel(), lang),
@@ -267,7 +280,12 @@ function EvalutationsEditor({
 }: EvalutationsEditorProps) {
   const evaluations = review[phase];
   const timer = React.useRef<NodeJS.Timeout | null>();
-  const modifiedReview = React.useRef(review);
+  const modifiedReview = React.useRef({
+    ...review,
+    [phase]: review[phase].map(f =>
+      f['@class'] === 'GradeInstance' ? { ...f, value: 1 } : f,
+    ),
+  });
   const [waitingState, setWaitingState] = React.useState(false);
   const [values, setValues] = React.useState<{
     [id: string]: string | number | undefined | null;
@@ -278,9 +296,7 @@ function EvalutationsEditor({
     ),
   );
 
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(peerReviewTranslations, lang);
-
+  const i18nValues = useInternalTranslate(peerReviewTranslations);
   const { showModal, OkCancelModal } = useOkCancelModal();
 
   const sendValue = React.useCallback(
@@ -289,7 +305,7 @@ function EvalutationsEditor({
         clearTimeout(timer.current);
       }
 
-      const newEvalutations = evaluations.map(e =>
+      const newEvalutations = modifiedReview.current[phase].map(e =>
         e.id === id ? { ...e, value: val } : e,
       );
 
@@ -306,7 +322,7 @@ function EvalutationsEditor({
         setWaitingState(false);
       }, 500);
     },
-    [evaluations, phase],
+    [phase],
   );
 
   const onChange = React.useCallback(
@@ -319,18 +335,7 @@ function EvalutationsEditor({
   );
 
   return (
-    <div
-      className={cx(
-        flex,
-        flexColumn,
-        css({
-          border: 'solid',
-          margin: '1em',
-          padding: '1em',
-          overflowX: 'auto',
-        }),
-      )}
-    >
+    <div className={cx(flex, flexColumn)}>
       {evaluations.map(e => (
         <EvalutationEditor
           key={e.id}
@@ -350,11 +355,27 @@ function EvalutationsEditor({
       )}
       <OkCancelModal
         onOk={() => {
-          store.dispatch(submitReview(modifiedReview.current, onRefresh));
-
-          // PeerReviewDescriptorAPI.submitReviewUnmanaged(GameModel.selectCurrent().id!,Player.selectCurrent().id!,modifiedReview.current).then(e=>{
-          //   const newReview =
-          // })
+          const newFeedback = modifiedReview.current.feedback.map(f =>
+            f['@class'] === 'CategorizedEvaluationInstance'
+              ? { ...f, value: null }
+              : f,
+          );
+          const newComments = modifiedReview.current.comments.map(c =>
+            c['@class'] === 'CategorizedEvaluationInstance'
+              ? { ...c, value: null }
+              : c,
+          );
+          store.dispatch(
+            submitReview(
+              modifiedReview.current,
+              // {
+              //   ...modifiedReview.current,
+              //   feedback: newFeedback,
+              //   comments: newComments,
+              // },
+              onRefresh,
+            ),
+          );
         }}
       >
         <p>{i18nValues.global.confirmation.info}</p>
@@ -366,10 +387,9 @@ function EvalutationsEditor({
 
 interface EvalutationDisplayProps {
   iEvaluation: ScriptableEntity<IEvaluationInstance>;
-  value: string | number | undefined | null;
 }
 
-function EvalutationDisplay({ iEvaluation, value }: EvalutationDisplayProps) {
+function EvalutationDisplay({ iEvaluation }: EvalutationDisplayProps) {
   const { lang } = React.useContext(languagesCTX);
 
   const dEvaluation = instantiate(
@@ -377,11 +397,10 @@ function EvalutationDisplay({ iEvaluation, value }: EvalutationDisplayProps) {
       descriptor: IEvaluationDescriptor;
     }).descriptor,
   );
-
   return (
     <div className={cx(flex, flexColumn)}>
       <h3>{translate(dEvaluation?.getLabel(), lang)}</h3>
-      {value}
+      <HTMLText text={String(iEvaluation.getEntity()['value'])} />
     </div>
   );
 }
@@ -391,58 +410,80 @@ interface EvalutationsDisplayProps {
 }
 
 function EvalutationsDisplay({ evaluations }: EvalutationsDisplayProps) {
-  const values: {
-    [id: string]: string | number | undefined | null;
-  } = evaluations.reduce((o, e) => ({ ...o, [e.getId()!]: e.getValue() }), {});
-
   return (
-    <div
-      className={cx(
-        flex,
-        flexColumn,
-        css({
-          border: 'solid',
-          margin: '1em',
-          padding: '1em',
-          overflowX: 'auto',
-        }),
-      )}
-    >
+    <div className={cx(flex, flexColumn)}>
       {evaluations.map(e => (
-        <EvalutationDisplay
-          key={e.getId()}
-          iEvaluation={e}
-          value={values[e.getId()!]}
-        />
+        <EvalutationDisplay key={e.getId()} iEvaluation={e} />
       ))}
     </div>
   );
 }
 
 interface ReviewEditorProps extends DisabledReadonly {
-  label: string;
-  review: ReviewPhase;
-  reviewState: IPeerReviewInstance['reviewState'];
+  reviewState: ReviewState;
+  reviewStatus: IPeerReviewInstance['reviewState'];
   displaySubmit?: boolean;
   onRefresh: () => void;
 }
 
 function ReviewEditor({
-  label,
-  review,
   reviewState,
+  reviewStatus,
   displaySubmit,
   disabled,
   readOnly,
   onRefresh,
 }: ReviewEditorProps) {
-  const rev = review.review.getEntity();
+  const [given, setGiven] = React.useState<string | number>();
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(peerReviewTranslations, lang);
+
+  React.useEffect(() => {
+    let mounted = true;
+
+    PeerReviewDescriptorAPI.getToReviewUnmanaged(
+      GameModel.selectCurrent().id!,
+      rev.parentId!,
+      rev.id!,
+      Player.selectCurrent().id!,
+    ).then(toReview => {
+      if (mounted) {
+        setGiven(
+          entityIs(toReview, 'NumberInstance')
+            ? toReview.value
+            : translate(toReview.trValue, lang),
+        );
+      }
+    });
+
+    return () => {
+      mounted = false;
+    };
+  });
+
+  const rev = reviewState.review.getEntity();
 
   return (
     <div className={cx(flex, flexColumn)}>
-      <h2>{label}</h2>
-      <div>
-        {reviewState === 'DISPATCHED' && rev.reviewState === 'DISPATCHED' ? (
+      <h2>
+        {`${
+          reviewState.phase === 'reviews'
+            ? i18nValues.tabview.toReview
+            : i18nValues.tabview.toComment
+        } ${i18nValues.editor.number}${reviewState.index + 1}`}
+      </h2>
+      <div className={reviewContainerStyle}>
+        <h3>{i18nValues.editor.given}</h3>
+        <div
+          className={css({
+            backgroundColor: themeVar.Common.colors.HeaderColor,
+          })}
+        >
+          <HTMLText text={String(given)} />
+        </div>
+      </div>
+      <div className={reviewContainerStyle}>
+        {reviewStatus === 'DISPATCHED' && rev.reviewState === 'DISPATCHED' ? (
           <EvalutationsEditor
             review={rev}
             phase="feedback"
@@ -452,12 +493,15 @@ function ReviewEditor({
             readOnly={readOnly}
           />
         ) : (
-          <EvalutationsDisplay evaluations={review.review.getFeedback()} />
+          <EvalutationsDisplay evaluations={reviewState.review.getFeedback()} />
         )}
       </div>
-      {review.phase === 'review' && (
-        <div>
-          {reviewState === 'NOTIFIED' && rev.reviewState === 'NOTIFIED' ? (
+      {(reviewStatus === 'COMPLETED' ||
+        (reviewState.phase === 'comments' && reviewStatus === 'NOTIFIED')) && (
+        <div className={reviewContainerStyle}>
+          {reviewState.phase === 'comments' &&
+          reviewStatus === 'NOTIFIED' &&
+          rev.reviewState === 'NOTIFIED' ? (
             <EvalutationsEditor
               review={rev}
               phase="comments"
@@ -467,7 +511,9 @@ function ReviewEditor({
               readOnly={readOnly}
             />
           ) : (
-            <EvalutationsDisplay evaluations={review.review.getComments()} />
+            <EvalutationsDisplay
+              evaluations={reviewState.review.getComments()}
+            />
           )}
         </div>
       )}
@@ -475,9 +521,15 @@ function ReviewEditor({
   );
 }
 
-interface ReviewPhase {
+interface ReviewState {
   review: SReview;
-  phase: 'submission' | 'review';
+  phase: 'reviews' | 'comments';
+  index: number;
+}
+
+interface CarretState {
+  reviews: boolean;
+  comments: boolean;
 }
 
 interface PeerReviewTreeViewDisplayProps extends WegasComponentProps {
@@ -494,19 +546,36 @@ export default function PeerReviewTreeViewDisplay({
   id,
   options,
 }: PeerReviewTreeViewDisplayProps) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(peerReviewTranslations, lang);
-
+  const i18nValues = useInternalTranslate(peerReviewTranslations);
   const sPR = useScript<SPeerReviewDescriptor | undefined>(peerReview, context);
   const sPRinstance = useStore(() => sPR?.getInstance(Player.self()));
 
-  const [carretState, setCarretState] = React.useState({
+  const [carretState, setCarretState] = React.useState<CarretState>({
     reviews: false,
     comments: false,
   });
   const [selectedReview, setSelectedReview] = React.useState<
-    ReviewPhase | undefined
+    ReviewState | undefined
   >();
+
+  const onCarretClick = React.useCallback(
+    (type: keyof CarretState) => () =>
+      setCarretState(o => ({
+        ...o,
+        [type]: !o[type],
+      })),
+    [],
+  );
+
+  const onReviewClick = React.useCallback(
+    (phase: ReviewState['phase']) => (review: SReview, index: number) =>
+      setSelectedReview(o =>
+        o?.review.getId() !== review.getId()
+          ? { review, index, phase }
+          : undefined,
+      ),
+    [],
+  );
 
   if (sPR == null || sPRinstance == null) {
     return (
@@ -561,19 +630,8 @@ export default function PeerReviewTreeViewDisplay({
                     itemLabel={`${i18nValues.tabview.toReview} ${i18nValues.editor.number}`}
                     reviews={sPRinstance.getToReview()}
                     open={carretState.reviews}
-                    onCarretClick={() =>
-                      setCarretState(o => ({
-                        ...o,
-                        reviews: !o.reviews,
-                      }))
-                    }
-                    onReviewClick={r =>
-                      setSelectedReview(o =>
-                        o?.review.getId() !== r.getId()
-                          ? { review: r, phase: 'submission' }
-                          : undefined,
-                      )
-                    }
+                    onCarretClick={onCarretClick('reviews')}
+                    onReviewClick={onReviewClick('reviews')}
                   />
                 )}
                 {(reviewState === 'NOTIFIED' ||
@@ -582,29 +640,17 @@ export default function PeerReviewTreeViewDisplay({
                     label={i18nValues.tabview.toCommentTitle}
                     itemLabel={`${i18nValues.tabview.toComment} ${i18nValues.editor.number}`}
                     reviews={sPRinstance.getReviewed()}
-                    open={carretState.reviews}
-                    onCarretClick={() =>
-                      setCarretState(o => ({
-                        ...o,
-                        reviews: !o.reviews,
-                      }))
-                    }
-                    onReviewClick={r =>
-                      setSelectedReview(o =>
-                        o?.review.getId() !== r.getId()
-                          ? { review: r, phase: 'review' }
-                          : undefined,
-                      )
-                    }
+                    open={carretState.comments}
+                    onCarretClick={onCarretClick('comments')}
+                    onReviewClick={onReviewClick('comments')}
                   />
                 )}
               </div>
               <div className={cx(/*reviewContainerStyle,*/ autoScroll)}>
                 {selectedReview && (
                   <ReviewEditor
-                    label={`${i18nValues.tabview.toComment}`}
-                    review={selectedReview}
-                    reviewState={reviewState}
+                    reviewState={selectedReview}
+                    reviewStatus={reviewState}
                     displaySubmit={displaySubmit}
                     onRefresh={() => setSelectedReview(undefined)}
                     disabled={options.disabled || options.locked}
