@@ -249,9 +249,9 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
       createScript(`ReviewHelper.summarize("${peerReview.name}")`),
       undefined,
       true,
-    ).then((_res: PeerReviewData) => {
+    ).then((res: PeerReviewData) => {
       // Test purposes
-      const res = testPRData;
+      //const res = testPRData;
 
       if (mounted) {
         setData({

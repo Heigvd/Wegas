@@ -2,6 +2,9 @@ import { css } from 'emotion';
 import * as React from 'react';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { store } from '../../data/Stores/store';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
+import { trainerTranslations } from '../../i18n/trainer/trainer';
 import { trainerCellStyleI } from '../Overview/Overview';
 import { sortFnFactory, SortState, TableSorter } from '../TableSorter';
 import { TeamTD, OverviewTD, ReviewTD } from './PeerReviewCells';
@@ -41,6 +44,7 @@ interface PRTableProps extends PRTableData<DataItem> {
 
 export function PRTable({ structures, data, onShowOverlay }: PRTableProps) {
   const [sortState, setSortState] = React.useState<SortState>();
+  const i18nValues = useInternalTranslate(trainerTranslations);
 
   const sortFn = React.useCallback(
     (a: [string, DataItem], b: [string, DataItem]) => {
@@ -87,7 +91,7 @@ export function PRTable({ structures, data, onShowOverlay }: PRTableProps) {
                 setSortState({ sortedValue: 'team', sortMode: newMode })
               }
             >
-              Equipe
+              {i18nValues.teams}
             </TableSorter>
           </th>
           {structures.map(s => (

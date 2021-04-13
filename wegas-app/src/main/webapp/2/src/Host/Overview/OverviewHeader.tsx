@@ -14,6 +14,9 @@ import { flex, flexColumn, itemCenter, justifyCenter } from '../../css/classes';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { SortMode, SortState, TableSorter } from '../TableSorter';
 import { FilterState } from './OverviewModal/FilterModalContent';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
+import { trainerTranslations } from '../../i18n/trainer/trainer';
 
 const headerStyle = css({
   verticalAlign: 'middle',
@@ -65,6 +68,7 @@ export function OverviewHeader({
   sortState,
   onClickSort,
 }: OverviewHeaderProps) {
+  const i18nValues = useInternalTranslate(trainerTranslations);
   return (
     <>
       <colgroup className="fixedColumn">
@@ -101,12 +105,12 @@ export function OverviewHeader({
               }
               onClickSort={newMode => onClickSort('team', newMode)}
             >
-              Team
+              {i18nValues.teams}
             </TableSorter>
           </th>
           {!overviewState && (
             <th rowSpan={2} className={firstScrollCellStyle}>
-              Impact
+              {i18nValues.impact}
             </th>
           )}
           {overviewState?.header &&
@@ -123,7 +127,7 @@ export function OverviewHeader({
                 {h.title}
               </th>
             ))}
-          <th colSpan={2}>Actions</th>
+          <th colSpan={2}>{i18nValues.actions}</th>
         </tr>
         <tr>
           <th className={fixedHeaderCellStyle}></th>
@@ -200,3 +204,4 @@ export function OverviewHeader({
     </>
   );
 }
+

@@ -16,6 +16,8 @@ import { themeVar } from '../../Components/Style/ThemeVars';
 import { sortFnFactory, SortState } from '../TableSorter';
 import { FilterState } from './OverviewModal/FilterModalContent';
 import { useWebsocket } from '../../API/websocket';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { commonTranslations } from '../../i18n/common/common';
 
 export const trainerCellStyleI: Interpolation<undefined> = {
   backgroundColor: '#fff',
@@ -185,6 +187,7 @@ export default function Overview() {
     setNewData(true);
   });
 
+  const i18nValues = useInternalTranslate(commonTranslations);
   const refreshOverview = React.useCallback(() => {
     setNewData(false);
     VariableDescriptorAPI.runScript(
@@ -301,7 +304,7 @@ export default function Overview() {
             })
           }
         />
-        {newData && <span className={cx(css({fontSize: '14px', margin: '5px -5px 5px 0'}), newDataStyle)}>New changes!</span>}
+        {newData && <span className={cx(css({fontSize: '14px', margin: '5px -5px 5px 0'}), newDataStyle)}>{i18nValues.newChanges}</span>}
         <Button icon="undo" onClick={refreshOverview} className={cx({ [newDataStyle]: newData })} />
       </Toolbar.Header>
       <Toolbar.Content className={flexAuto}>
