@@ -251,7 +251,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
       true,
     ).then((res: PeerReviewData) => {
       // Test purposes
-      // const res = testPRData;
+      //const res = testPRData;
 
       if (mounted) {
         setData({

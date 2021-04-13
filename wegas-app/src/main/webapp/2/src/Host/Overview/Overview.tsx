@@ -16,6 +16,8 @@ import { themeVar } from '../../Components/Style/ThemeVars';
 import { sortFnFactory, SortState } from '../TableSorter';
 import { FilterState } from './OverviewModal/FilterModalContent';
 import { useWebsocket } from '../../API/websocket';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { commonTranslations } from '../../i18n/common/common';
 
 export const trainerCellStyleI: Interpolation<undefined> = {
   backgroundColor: '#fff',
@@ -185,6 +187,7 @@ export default function Overview() {
     setNewData(true);
   });
 
+  const i18nValues = useInternalTranslate(commonTranslations);
   const refreshOverview = React.useCallback(() => {
     setNewData(false);
     VariableDescriptorAPI.runScript(
@@ -308,7 +311,7 @@ export default function Overview() {
               newDataStyle,
             )}
           >
-            New changes!
+            {i18nValues.newChanges}
           </span>
         )}
         <Button
