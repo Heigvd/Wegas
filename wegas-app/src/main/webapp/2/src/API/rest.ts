@@ -43,7 +43,7 @@ export interface IManagedResponse {
 export function rest(
   url: string,
   options: RequestInit = {},
-  view: View = API_VIEW,
+  view: View | false = API_VIEW,
   contentType: ContentType = 'application/json',
 ) {
   let type: ContentType = contentType;
@@ -71,7 +71,7 @@ export function rest(
 export function managedModeRequest(
   url: string,
   options: RequestInit = {},
-  view?: View,
+  view?: View | false,
   contentType: ContentType = 'application/json',
 ) {
   return rest(

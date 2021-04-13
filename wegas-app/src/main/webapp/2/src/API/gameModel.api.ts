@@ -6,4 +6,14 @@ export const GameModelApi = {
       res => res.updatedEntities[0],
     );
   },
+  liveEdition<T extends IMergeable>(channel: string, entity: T) {
+    return managedModeRequest(
+      '/GameModel/LiveEdition/' + channel,
+      {
+        method: 'POST',
+        body: JSON.stringify(entity),
+      },
+      false,
+    );
+  },
 };

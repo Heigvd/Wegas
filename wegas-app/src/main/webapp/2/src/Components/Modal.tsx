@@ -1,9 +1,20 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { contentCenter, flex, flexColumn, justifyCenter } from '../css/classes';
+import {
+  contentCenter,
+  flex,
+  flexColumn,
+  flexRow,
+  justifyCenter,
+  pointer,
+} from '../css/classes';
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../Helper/className';
+import { internalTranslate } from '../i18n/internalTranslator';
+import { modalTranslations } from '../i18n/modal/peerReview';
+import { languagesCTX } from './Contexts/LanguagesProvider';
+import { Button } from './Inputs/Buttons/Button';
 import { themeCTX } from './Style/Theme';
 import { themeVar } from './Style/ThemeVars';
 
@@ -20,7 +31,6 @@ const modalStyle = css({
   padding: '1.5em',
   backgroundColor: 'rgba(0,0,0,0.2)',
   zIndex: 1000,
-  cursor: 'pointer',
 });
 
 const modalContentStyle = css({
@@ -127,14 +137,10 @@ export function Modal({
     container.current &&
     createPortal(
       <div
-        // ref={ref => {
-        //   if (ref != null) {
-        //     ref.focus();
-        //   }
-        // }}
         className={
-          cx(modalStyle, flex, flexColumn, justifyCenter, contentCenter) +
-          classNameOrEmpty(className)
+          cx(modalStyle, flex, flexColumn, justifyCenter, contentCenter, {
+            [pointer]: onExit != null,
+          }) + classNameOrEmpty(className)
         }
         style={style}
         id={id}
@@ -148,13 +154,69 @@ export function Modal({
           style={innerStyle}
           className={modalContentStyle + classNameOrEmpty(innerClassName)}
         >
-          <div className={modalCloseDivStyle} onClick={onExit}>
-            <IconComp icon="window-close" className={modalCloseButtonStyle} />
-          </div>
+          {onExit && (
+            <div className={modalCloseDivStyle} onClick={onExit}>
+              <IconComp icon="window-close" className={modalCloseButtonStyle} />
+            </div>
+          )}
           {children}
         </div>
       </div>,
       container.current,
     )
   );
+}
+
+interface OkCancelModalProps {
+  onOk?: () => void;
+  onCancel?: () => void;
+}
+
+export function OkCancelModal({
+  onOk,
+  onCancel,
+  children,
+}: React.PropsWithChildren<OkCancelModalProps>) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(modalTranslations, lang);
+
+  return (
+    <Modal>
+      <div className={cx(flex, flexColumn)}>
+        {children}
+        <div className={cx(flex, flexRow)}>
+          <Button label={i18nValues.ok} onClick={onOk} />
+          <Button label={i18nValues.cancel} onClick={onCancel} />
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+export function useOkCancelModal() {
+  const [show, setShow] = React.useState(false);
+  const showModal = function () {
+    setShow(true);
+  };
+  function Modal({
+    onCancel,
+    onOk,
+    children,
+  }: React.PropsWithChildren<OkCancelModalProps>) {
+    return show ? (
+      <OkCancelModal
+        onCancel={() => {
+          setShow(false);
+          onCancel && onCancel();
+        }}
+        onOk={() => {
+          setShow(false);
+          onOk && onOk();
+        }}
+      >
+        {children}
+      </OkCancelModal>
+    ) : null;
+  }
+  return { showModal, OkCancelModal: Modal };
 }

@@ -16,7 +16,10 @@ import { themeVar } from '../../Components/Style/ThemeVars';
 import { sortFnFactory, SortState } from '../TableSorter';
 import { FilterState } from './OverviewModal/FilterModalContent';
 import { useWebsocket } from '../../API/websocket';
+<<<<<<< HEAD
 import { wlog } from '../../Helper/wegaslog';
+=======
+>>>>>>> efe2db1fa8ba62b5e226a99e4867cac4463b644d
 
 export const trainerCellStyleI: Interpolation<undefined> = {
   backgroundColor: '#fff',
@@ -170,10 +173,20 @@ export default function Overview() {
   );
   const [overviewState, setOverviewState] = React.useState<OverviewState>();
   const [sortState, setSortState] = React.useState<SortState>();
+  const [newData, setNewData] = React.useState(false);
 
   const mounted = React.useRef(true);
 
+  useWebsocket('populateQueue-dec', () => {
+    setNewData(true);
+  });
+
+  useWebsocket('EntityUpdatedEvent', () => {
+    setNewData(true);
+  });
+
   const refreshOverview = React.useCallback(() => {
+    setNewData(false);
     VariableDescriptorAPI.runScript(
       GameModel.selectCurrent().id!,
       Player.selectCurrent().id!,

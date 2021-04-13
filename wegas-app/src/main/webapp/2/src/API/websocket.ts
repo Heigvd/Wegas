@@ -100,6 +100,7 @@ const webSocketEvents = [
   'LibraryUpdate-ServerScript',
   'LockEvent',
   'OutdatedEntitiesEvent',
+  'populateQueue-dec',
 ] as const;
 
 export type WebSocketEvent = ValueOf<typeof webSocketEvents>;

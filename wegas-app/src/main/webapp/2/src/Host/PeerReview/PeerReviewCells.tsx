@@ -1,9 +1,13 @@
 import { cx } from 'emotion';
 import * as React from 'react';
+import { ITeam } from 'wegas-ts-api';
+import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { globals } from '../../Components/Hooks/useScript';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { flex, flexRow, itemCenter, justifyCenter } from '../../css/classes';
+import { internalTranslate } from '../../i18n/internalTranslator';
+import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
 import {
   DataReviewItem,
   OverviewColor,
@@ -103,7 +107,7 @@ export function ReviewTD({
       if (found != null) {
         buttonData = data[found[2] + found[3] + found[4]];
         if (Array.isArray(buttonData)) {
-          buttonData = buttonData.join('\n');
+          buttonData = buttonData.join('<br>');
         }
       }
     }
@@ -126,7 +130,7 @@ export function ReviewTD({
 }
 
 interface TeamTDProps {
-  teamName: string | undefined | null;
+  team: ITeam | undefined | null;
   value: string;
   onShowOverlay: (
     title: string,
@@ -135,17 +139,25 @@ interface TeamTDProps {
   ) => void;
 }
 
-export function TeamTD({ teamName, value, onShowOverlay }: TeamTDProps) {
+export function TeamTD({ team, value, onShowOverlay }: TeamTDProps) {
   const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(peerReviewTranslations, lang);
+  const playerTeam = team?.players.length === 1;
+  const name =
+    (team?.players.length === 1 ? team.players[0].name : team?.name) || '';
+
   return (
     <td>
-      {teamName}
+      {name}
       <Button
         ref={buttonRef}
         icon="info-circle"
         onClick={() =>
           onShowOverlay(
-            `Informations revues par les pairs pour l'équipe "${teamName}"`,
+            playerTeam
+              ? i18nValues.orchestrator.playerData(name)
+              : i18nValues.orchestrator.teamData(name),
             value,
             buttonRef,
           )

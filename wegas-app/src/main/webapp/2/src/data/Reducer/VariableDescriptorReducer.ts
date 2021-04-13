@@ -5,12 +5,12 @@ import { Actions as Act } from '..';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { deepRemove } from '../updateUtils';
 import { ThunkResult, store } from '../Stores/store';
-import { IVariableDescriptor } from 'wegas-ts-api';
+import { IReview, IVariableDescriptor } from 'wegas-ts-api';
 import {
   PeerReviewDescriptorAPI,
   PeerReviewStateSelector,
 } from '../../API/peerReview.api';
-import { Game, GameModel } from '../selectors';
+import { Game, GameModel, Player } from '../selectors';
 
 export interface VariableDescriptorState {
   [id: string]: Readonly<IVariableDescriptor> | undefined;
@@ -199,5 +199,42 @@ export function setPRState(
     ).then(res =>
       store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
+  };
+}
+
+export function submitToReview(peerReviewId: number): ThunkResult {
+  return function (dispatch, getState) {
+    return PeerReviewDescriptorAPI.submitToReview(
+      GameModel.selectCurrent().id!,
+      peerReviewId,
+      Player.selectCurrent().id!,
+    ).then(res =>
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
+
+export function saveReview(review: IReview): ThunkResult {
+  return function (dispatch, getState) {
+    return PeerReviewDescriptorAPI.saveReview(
+      GameModel.selectCurrent().id!,
+      Player.selectCurrent().id!,
+      review,
+    ).then(res =>
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
+
+export function submitReview(review: IReview, cb?: () => void): ThunkResult {
+  return function (dispatch, getState) {
+    return PeerReviewDescriptorAPI.submitReview(
+      GameModel.selectCurrent().id!,
+      Player.selectCurrent().id!,
+      review,
+    ).then(res => {
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global));
+      cb && cb();
+    });
   };
 }
