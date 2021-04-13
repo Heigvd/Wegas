@@ -34,7 +34,6 @@ import { store, useStore } from '../../../data/Stores/store';
 import { Selector } from '../../../Editor/Components/FormView/Select';
 import { translate } from '../../../Editor/Components/FormView/translatable';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { wlog } from '../../../Helper/wegaslog';
 import {
   internalTranslate,
   useInternalTranslate,
@@ -310,10 +309,7 @@ function EvalutationsEditor({
       );
 
       modifiedReview.current = {
-        ...(omit(modifiedReview.current, [
-          'createdTime',
-          'initialReviewState',
-        ]) as IReview),
+        ...modifiedReview.current,
         [phase]: newEvalutations,
       };
 
