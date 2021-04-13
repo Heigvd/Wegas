@@ -15,6 +15,8 @@ import { instantiate } from '../../data/scriptable';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { sortFnFactory, SortState } from '../TableSorter';
 import { FilterState } from './OverviewModal/FilterModalContent';
+import { useWebsocket } from '../../API/websocket';
+import { wlog } from '../../Helper/wegaslog';
 
 export const trainerCellStyleI: Interpolation<undefined> = {
   backgroundColor: '#fff',
