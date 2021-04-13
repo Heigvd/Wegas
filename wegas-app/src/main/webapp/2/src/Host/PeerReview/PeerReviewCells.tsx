@@ -1,12 +1,11 @@
 import { cx } from 'emotion';
 import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
-import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { globals } from '../../Components/Hooks/useScript';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { flex, flexRow, itemCenter, justifyCenter } from '../../css/classes';
-import { internalTranslate } from '../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
 import {
   DataReviewItem,
@@ -141,8 +140,7 @@ interface TeamTDProps {
 
 export function TeamTD({ team, value, onShowOverlay }: TeamTDProps) {
   const buttonRef = React.useRef<HTMLButtonElement>(null);
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(peerReviewTranslations, lang);
+  const i18nValues = useInternalTranslate(peerReviewTranslations);
   const playerTeam = team?.players.length === 1;
   const name =
     (team?.players.length === 1 ? team.players[0].name : team?.name) || '';

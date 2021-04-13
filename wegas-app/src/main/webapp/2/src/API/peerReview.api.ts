@@ -1,6 +1,6 @@
 // "/PeerReviewController/" + prd.get("id") + "/" + action + "/" + Y.Wegas.Facade.Game.cache.getCurrentGame()
 
-import { IReview } from 'wegas-ts-api';
+import { INumberInstance, IReview, ITextInstance } from 'wegas-ts-api';
 import { managedModeRequest, rest } from './rest';
 const PR_BASE = (gameModelId: number) =>
   `/GameModel/${gameModelId}/VariableDescriptor/PeerReviewController/`;
@@ -72,5 +72,22 @@ export const PeerReviewDescriptorAPI = {
       },
       false,
     );
+  },
+  getToReviewUnmanaged(
+    gameModelId: number,
+    peerReviewId: number,
+    reviewId: number,
+    playerId: number,
+  ): Promise<ITextInstance | INumberInstance> {
+    const path = `${PR_BASE(
+      gameModelId,
+    )}${peerReviewId}/ToReview/${reviewId}/${playerId}`;
+    return rest(
+      path,
+      {
+        method: 'GET',
+      },
+      false,
+    ).then(res => res.json());
   },
 };

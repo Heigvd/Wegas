@@ -11,9 +11,8 @@ import {
 } from '../css/classes';
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../Helper/className';
-import { internalTranslate } from '../i18n/internalTranslator';
+import { useInternalTranslate } from '../i18n/internalTranslator';
 import { modalTranslations } from '../i18n/modal/peerReview';
-import { languagesCTX } from './Contexts/LanguagesProvider';
 import { Button } from './Inputs/Buttons/Button';
 import { themeCTX } from './Style/Theme';
 import { themeVar } from './Style/ThemeVars';
@@ -177,8 +176,7 @@ export function OkCancelModal({
   onCancel,
   children,
 }: React.PropsWithChildren<OkCancelModalProps>) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(modalTranslations, lang);
+  const i18nValues = useInternalTranslate(modalTranslations);
 
   return (
     <Modal>

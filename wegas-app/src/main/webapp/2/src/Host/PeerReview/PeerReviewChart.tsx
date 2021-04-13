@@ -3,8 +3,7 @@ import * as React from 'react';
 import { flex, flexWrap } from '../../css/classes';
 import { PeerReviewData } from './PeerReviewPage';
 import { Bar, defaults } from 'react-chartjs-2';
-import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
 
 if (defaults.global.legend != null) {
@@ -120,9 +119,7 @@ function TextSummary({
   numberOfValues,
   maxValue,
 }: TextSummary & { maxValue: number }) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(peerReviewTranslations, lang);
-
+  const i18nValues = useInternalTranslate(peerReviewTranslations);
   return (
     <div className={chartStyle}>
       <h3>{label}</h3>
@@ -163,9 +160,7 @@ function GradeSummary({
   numberOfValues,
   maxValue,
 }: GradeSummary & { maxValue: number }) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(peerReviewTranslations, lang);
-
+  const i18nValues = useInternalTranslate(peerReviewTranslations);
   const labels: string[] = [];
   for (let i = min || 1; i <= (max || 6); i += 1) {
     labels.push(i.toString());
@@ -219,9 +214,7 @@ function CategorizationSummary({
   numberOfValues,
   maxValue,
 }: CategorizationSummary & { maxValue: number }) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(peerReviewTranslations, lang);
-
+  const i18nValues = useInternalTranslate(peerReviewTranslations);
   const labels: string[] = [];
   const data: number[] = [];
   Object.keys(histogram).forEach(key => {
