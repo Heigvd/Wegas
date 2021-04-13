@@ -1,4 +1,4 @@
-import { css, Interpolation } from 'emotion';
+import { css, cx, Interpolation } from 'emotion';
 import * as React from 'react';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
@@ -16,10 +16,6 @@ import { themeVar } from '../../Components/Style/ThemeVars';
 import { sortFnFactory, SortState } from '../TableSorter';
 import { FilterState } from './OverviewModal/FilterModalContent';
 import { useWebsocket } from '../../API/websocket';
-<<<<<<< HEAD
-import { wlog } from '../../Helper/wegaslog';
-=======
->>>>>>> efe2db1fa8ba62b5e226a99e4867cac4463b644d
 
 export const trainerCellStyleI: Interpolation<undefined> = {
   backgroundColor: '#fff',
@@ -90,6 +86,10 @@ export const tableStyle = css({
 
 const flexAuto = css({
   flex: '0 0 auto',
+});
+
+const newDataStyle = css({
+ color: themeVar.Common.colors.PrimaryColor + " !important",
 });
 
 export interface OverviewItem {
@@ -301,7 +301,8 @@ export default function Overview() {
             })
           }
         />
-        <Button icon="undo" onClick={refreshOverview} />
+        {newData && <span className={cx(css({fontSize: '14px', margin: '5px -5px 5px 0'}), newDataStyle)}>New changes!</span>}
+        <Button icon="undo" onClick={refreshOverview} className={cx({ [newDataStyle]: newData })} />
       </Toolbar.Header>
       <Toolbar.Content className={flexAuto}>
         <div className={tableStyle}>
