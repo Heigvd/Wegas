@@ -3,10 +3,15 @@ import * as React from 'react';
 import { createPortal } from 'react-dom';
 import {
   contentCenter,
+  defaultMarginLeft,
+  defaultMarginTop,
   flex,
+  flexBetween,
   flexColumn,
   flexRow,
+  itemBottom,
   justifyCenter,
+  justifyEnd,
   pointer,
 } from '../css/classes';
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
@@ -36,9 +41,10 @@ const modalContentStyle = css({
   margin: '0 auto',
   maxWidth: '100%',
   backgroundColor: themeVar.Common.colors.BackgroundColor,
-  padding: '10px',
+  padding: '30px',
   cursor: 'initial',
-  boxShadow: '0 0 1px 1px',
+  boxShadow: '4px 4px 8px rgba(0,0,0,0.2)',
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
   '&:focus': {
     outline: 'none',
   },
@@ -59,6 +65,11 @@ const modalCloseButtonStyle = css({
   margin: 'auto',
 });
 
+const secondaryButtonStyle = css({
+  backgroundColor: 'transparent',
+  color: themeVar.Common.colors.PrimaryColor,
+  border:'1px solid ' + themeVar.Common.colors.PrimaryColor
+});
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
 // React element
@@ -182,9 +193,9 @@ export function OkCancelModal({
     <Modal>
       <div className={cx(flex, flexColumn)}>
         {children}
-        <div className={cx(flex, flexRow)}>
-          <Button label={i18nValues.ok} onClick={onOk} />
-          <Button label={i18nValues.cancel} onClick={onCancel} />
+        <div className={cx(flex, flexRow, justifyEnd, defaultMarginTop)}>
+          <Button label={i18nValues.cancel} onClick={onCancel} className={secondaryButtonStyle}/>
+          <Button label={i18nValues.ok} onClick={onOk} className={defaultMarginLeft}/>
         </div>
       </div>
     </Modal>

@@ -115,6 +115,9 @@ export const contentCenter = css({
 export const justifyCenter = css({
   justifyContent: 'center',
 });
+export const justifyEnd = css({
+  justifyContent: 'flex-end',
+});
 export const foregroundContent = css({
   zIndex: 1000,
 });

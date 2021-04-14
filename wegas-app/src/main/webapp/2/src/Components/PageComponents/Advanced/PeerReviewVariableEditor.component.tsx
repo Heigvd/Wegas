@@ -6,7 +6,7 @@ import {
   ITextDescriptor,
   SPeerReviewDescriptor,
 } from 'wegas-ts-api';
-import { flex, flexColumn } from '../../../css/classes';
+import { defaultMarginTop, flex, flexColumn, itemBottom } from '../../../css/classes';
 import { scriptableEntityIs } from '../../../data/entities';
 import { submitToReview } from '../../../data/Reducer/VariableDescriptorReducer';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
@@ -130,7 +130,11 @@ export default function PeerReviewVariableEditor({
       );
     } else {
       if (reviewState !== 'NOT_STARTED') {
-        return <HTMLText text={String(value)} />;
+        return (
+        <div>
+          <h3>Your submission:</h3>
+          <HTMLText text={String(value)} />
+        </div>);
       } else {
         let inputComponent = null;
         if (scriptableEntityIs(variableToReview, 'TextDescriptor')) {
@@ -184,10 +188,11 @@ export default function PeerReviewVariableEditor({
         }
 
         return (
-          <div className={cx(flex, flexColumn)}>
+          <div className={cx(flex, flexColumn, itemBottom)}>
             {inputComponent}
             {displaySubmit && (
               <Button
+                className= {defaultMarginTop}
                 label={i18nValues.global.submit}
                 onClick={showModal}
                 disabled={waitingState || options.disabled || options.locked}
