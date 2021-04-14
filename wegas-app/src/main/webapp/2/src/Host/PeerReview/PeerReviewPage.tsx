@@ -37,7 +37,7 @@ import {
 import { addPopup, popupDispatch } from '../../Components/PopupManager';
 import { internalTranslate } from '../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
-import { testPRData } from './PRinterfaceTests';
+// import { testPRData } from './PRinterfaceTests';
 
 const prStateStyle = css({
   borderRadius: '10px',

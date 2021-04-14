@@ -91,7 +91,7 @@ const flexAuto = css({
 });
 
 const newDataStyle = css({
- color: themeVar.Common.colors.PrimaryColor + " !important",
+  color: themeVar.Common.colors.PrimaryColor + ' !important',
 });
 
 export interface OverviewItem {
@@ -304,8 +304,21 @@ export default function Overview() {
             })
           }
         />
-        {newData && <span className={cx(css({fontSize: '14px', margin: '5px -5px 5px 0'}), newDataStyle)}>{i18nValues.newChanges}</span>}
-        <Button icon="undo" onClick={refreshOverview} className={cx({ [newDataStyle]: newData })} />
+        {newData && (
+          <span
+            className={cx(
+              css({ fontSize: '14px', margin: '5px -5px 5px 0' }),
+              newDataStyle,
+            )}
+          >
+            {i18nValues.newChanges}
+          </span>
+        )}
+        <Button
+          icon="undo"
+          onClick={refreshOverview}
+          className={cx({ [newDataStyle]: newData })}
+        />
       </Toolbar.Header>
       <Toolbar.Content className={flexAuto}>
         <div className={tableStyle}>

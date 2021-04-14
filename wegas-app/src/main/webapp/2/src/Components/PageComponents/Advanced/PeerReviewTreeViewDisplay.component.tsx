@@ -1,7 +1,8 @@
 import { css, cx } from 'emotion';
-import { omit } from 'lodash-es';
 import * as React from 'react';
 import {
+  ICategorizedEvaluationDescriptor,
+  ICategorizedEvaluationInstance,
   IEvaluationDescriptor,
   IEvaluationInstance,
   IPeerReviewInstance,
@@ -34,7 +35,6 @@ import { store, useStore } from '../../../data/Stores/store';
 import { Selector } from '../../../Editor/Components/FormView/Select';
 import { translate } from '../../../Editor/Components/FormView/translatable';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { wlog } from '../../../Helper/wegaslog';
 import {
   internalTranslate,
   useInternalTranslate,
@@ -253,7 +253,7 @@ function EvalutationEditor({
           onChange={e => onChangeNotify(e.target.value)}
           choices={dEvaluation.getCategories().map(c => ({
             value: translate(c.getLabel(), lang),
-            label: translate(c.getLabel(), lang),
+            label: c.getName(),
           }))}
           disabled={disabled}
           readOnly={readOnly}
@@ -310,10 +310,7 @@ function EvalutationsEditor({
       );
 
       modifiedReview.current = {
-        ...(omit(modifiedReview.current, [
-          'createdTime',
-          'initialReviewState',
-        ]) as IReview),
+        ...modifiedReview.current,
         [phase]: newEvalutations,
       };
 
@@ -355,27 +352,7 @@ function EvalutationsEditor({
       )}
       <OkCancelModal
         onOk={() => {
-          const newFeedback = modifiedReview.current.feedback.map(f =>
-            f['@class'] === 'CategorizedEvaluationInstance'
-              ? { ...f, value: null }
-              : f,
-          );
-          const newComments = modifiedReview.current.comments.map(c =>
-            c['@class'] === 'CategorizedEvaluationInstance'
-              ? { ...c, value: null }
-              : c,
-          );
-          store.dispatch(
-            submitReview(
-              modifiedReview.current,
-              // {
-              //   ...modifiedReview.current,
-              //   feedback: newFeedback,
-              //   comments: newComments,
-              // },
-              onRefresh,
-            ),
-          );
+          store.dispatch(submitReview(modifiedReview.current, onRefresh));
         }}
       >
         <p>{i18nValues.global.confirmation.info}</p>
@@ -400,7 +377,20 @@ function EvalutationDisplay({ iEvaluation }: EvalutationDisplayProps) {
   return (
     <div className={cx(flex, flexColumn)}>
       <h3>{translate(dEvaluation?.getLabel(), lang)}</h3>
-      <HTMLText text={String(iEvaluation.getEntity()['value'])} />
+      <HTMLText
+        text={
+          entityIs(iEvaluation, 'CategorizedEvaluationInstance')
+            ? translate(
+                (iEvaluation.getEntity() as ICategorizedEvaluationInstance & {
+                  descriptor: ICategorizedEvaluationDescriptor;
+                }).descriptor.categories.find(
+                  i => i.name === iEvaluation.getValue(),
+                )?.label,
+                lang,
+              )
+            : String(iEvaluation.getEntity()['value'])
+        }
+      />
     </div>
   );
 }

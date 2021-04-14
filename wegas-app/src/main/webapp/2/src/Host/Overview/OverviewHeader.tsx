@@ -15,7 +15,6 @@ import { themeVar } from '../../Components/Style/ThemeVars';
 import { SortMode, SortState, TableSorter } from '../TableSorter';
 import { FilterState } from './OverviewModal/FilterModalContent';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
-import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
 import { trainerTranslations } from '../../i18n/trainer/trainer';
 
 const headerStyle = css({
@@ -204,4 +203,3 @@ export function OverviewHeader({
     </>
   );
 }
-

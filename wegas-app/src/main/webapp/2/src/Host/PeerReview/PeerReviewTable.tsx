@@ -3,7 +3,6 @@ import * as React from 'react';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { store } from '../../data/Stores/store';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
-import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
 import { trainerTranslations } from '../../i18n/trainer/trainer';
 import { trainerCellStyleI } from '../Overview/Overview';
 import { sortFnFactory, SortState, TableSorter } from '../TableSorter';
