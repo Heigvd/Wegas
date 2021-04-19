@@ -109,6 +109,9 @@ export const itemCenter = css({
 export const itemBottom = css({
   alignItems: 'flex-end',
 });
+export const itemStretch = css({
+  alignItems: 'stretch',
+});
 export const contentCenter = css({
   alignContent: 'center',
 });
@@ -117,6 +120,9 @@ export const justifyCenter = css({
 });
 export const justifyEnd = css({
   justifyContent: 'flex-end',
+});
+export const justifyStart = css({
+  justifyContent: 'flex-start',
 });
 export const foregroundContent = css({
   zIndex: 1000,

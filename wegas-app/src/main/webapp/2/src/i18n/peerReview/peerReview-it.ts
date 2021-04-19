@@ -74,7 +74,7 @@ export const peerReviewTranslationsIT: PeerReviewTranslations = {
     toComment: 'Revisioni',
   },
   editor: {
-    given: 'Considerato: ',
+    given: 'Incarico da rivedere: ',
     number: 'nº',
     ask_your_feedback: 'Dare un feedback',
     your_feedback: 'Vostro feedback:',
