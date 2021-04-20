@@ -10,6 +10,7 @@ import { inputStyleCSS } from '../../../Components/Inputs/inputStyles';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
+import { wlog } from '../../../Helper/wegaslog';
 
 export interface Choice {
   value?: {};
@@ -61,28 +62,22 @@ const undefinedTitle: Choice = {
   disabled: false,
 };
 
-function genItems(selected: string | number | undefined) {
-  return function (o: string | Choice) {
-    if (typeof o !== 'object') {
-      return (
-        <option key={`k-${o}`} value={o} selected={o === selected}>
-          {o}
-        </option>
-      );
-    }
-    const { label = o.value, value, disabled: choiceDisabled } = o;
-    const strValue = typeof value === 'string' ? value : JSON.stringify(value);
+function genItems(o: string | Choice) {
+  wlog(`k-${o}`);
+  if (typeof o !== 'object') {
     return (
-      <option
-        key={`k-${value}`}
-        value={strValue}
-        disabled={choiceDisabled}
-        selected={strValue === selected}
-      >
-        {label}
+      <option key={`k-${o}`} value={o}>
+        {o}
       </option>
     );
-  };
+  }
+  const { label = o.value, value, disabled: choiceDisabled } = o;
+  const strValue = typeof value === 'string' ? value : JSON.stringify(value);
+  return (
+    <option key={`k-${value}`} value={strValue} disabled={choiceDisabled}>
+      {label}
+    </option>
+  );
 }
 
 interface SelectorProps extends ClassStyleId, DisabledReadonly {
@@ -100,13 +95,12 @@ export function Selector({
   id,
   className,
   style,
-  value,
+  value = '',
   onChange,
   readOnly,
   disabled,
 }: SelectorProps) {
   const i18nValues = useInternalTranslate(commonTranslations);
-
   return choices.length > 1 ? (
     <select
       id={id}
@@ -116,10 +110,10 @@ export function Selector({
       onChange={onChange}
       disabled={disabled || readOnly}
     >
-      <option value="" selected={value == null} disabled hidden>
+      <option value="" disabled hidden>
         - {i18nValues.plzChooseValue} -
       </option>
-      {choices.map(genItems(value))}
+      {choices.map(genItems)}
     </select>
   ) : choices.length === 1 ? (
     <span className={selectStyle + classNameOrEmpty(className)} style={style}>

@@ -8,7 +8,7 @@ import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
 import { ThemeProvider } from './Components/Style/Theme';
 import { PageAPI } from './API/pages.api';
 import 'emotion';
-import { useWebsocket } from './API/websocket';
+import { useWebsocketEvent } from './API/websocket';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
 import { PageLoader } from './Editor/Components/Page/PageLoader';
 import { pageCTX, defaultPageCTX } from './Editor/Components/Page/PageEditor';
@@ -33,7 +33,7 @@ function PlayerPageLoader() {
     });
   }, []);
 
-  useWebsocket('PageUpdate', () =>
+  useWebsocketEvent('PageUpdate', () =>
     PageAPI.getIndex().then(index => {
       setSelectedPageId(index.defaultPageId);
     }),

@@ -2,23 +2,36 @@ import { css, cx } from 'emotion';
 import * as React from 'react';
 import {
   INumberDescriptor,
+  INumberInstance,
   IScript,
   ITextDescriptor,
+  ITextInstance,
   SPeerReviewDescriptor,
 } from 'wegas-ts-api';
-import { defaultMarginTop, flex, flexColumn, grow, itemBottom } from '../../../css/classes';
-import { scriptableEntityIs } from '../../../data/entities';
+import {
+  defaultMarginTop,
+  flex,
+  flexColumn,
+  grow,
+  itemBottom,
+} from '../../../css/classes';
+import { entityIs, scriptableEntityIs } from '../../../data/entities';
+import { liveEdition } from '../../../data/Reducer/gameModel';
 import { submitToReview } from '../../../data/Reducer/VariableDescriptorReducer';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
-import { GameModel, Player } from '../../../data/selectors';
+import { GameModel, Player, Team } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { store, useStore } from '../../../data/Stores/store';
-import { createTranslatableContent } from '../../../Editor/Components/FormView/translatable';
+import {
+  createTranslatableContent,
+  createTranslation,
+} from '../../../Editor/Components/FormView/translatable';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { internalTranslate } from '../../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../../i18n/peerReview/peerReview';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { useScript } from '../../Hooks/useScript';
 import HTMLEditor from '../../HTMLEditor';
 import { Button } from '../../Inputs/Buttons/Button';
@@ -34,11 +47,13 @@ import {
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
+import u from 'immer';
+import { useWebsocketEvent } from '../../../API/websocket';
 
 const submissionStyle = css({
- border: '1px solid '+ themeVar.Common.colors.DisabledColor,
- borderRadius: themeVar.Common.dimensions.BorderRadius,
- padding: '1em',
+  border: '1px solid ' + themeVar.Common.colors.DisabledColor,
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  padding: '1em',
 });
 interface PeerReviewVariableEditorProps extends WegasComponentProps {
   peerReview?: IScript;
@@ -55,19 +70,35 @@ export default function PeerReviewVariableEditor({
   options,
 }: PeerReviewVariableEditorProps) {
   const timer = React.useRef<NodeJS.Timeout | null>();
+  const waitTimer = React.useRef<NodeJS.Timeout | null>();
   const { lang } = React.useContext(languagesCTX);
   const i18nValues = internalTranslate(peerReviewTranslations, lang);
   const sPR = useScript<SPeerReviewDescriptor | undefined>(peerReview, context);
   const reviewState = useStore(() =>
     sPR?.getInstance(Player.self()).getReviewState(),
   );
-
   const variableToReview = instantiate(
     findByName<ITextDescriptor | INumberDescriptor>(sPR?.getToReviewName()),
   );
 
-  const [value, setValue] = React.useState<number | string | undefined>(
-    variableToReview?.getValue(Player.self()),
+  useWebsocketEvent(
+    'CustomEvent',
+    ({ payload }: { payload: INumberInstance | ITextInstance }) => {
+      if (payload.id === variableToReview?.getInstance(Player.self()).getId()) {
+        setWaitingState(true);
+        if (waitTimer.current != null) {
+          clearTimeout(waitTimer.current);
+        }
+        waitTimer.current = setTimeout(() => {
+          setWaitingState(false);
+        }, 500);
+      }
+    },
+  );
+
+  const value = useStore(
+    () => variableToReview?.getValue(Player.self()),
+    deepDifferent,
   );
 
   const [waitingState, setWaitingState] = React.useState(false);
@@ -102,7 +133,7 @@ export default function PeerReviewVariableEditor({
             });
           })
           .finally(() => {
-            setWaitingState(false);
+            // setWaitingState(false);
             timer.current = null;
           });
       }, 500);
@@ -112,11 +143,29 @@ export default function PeerReviewVariableEditor({
 
   const onChange = React.useCallback(
     (val: string | number | undefined) => {
-      setWaitingState(true);
-      setValue(val);
+      if (variableToReview != null && val != null) {
+        store.dispatch(
+          liveEdition(
+            `private-Team-${Team.selectCurrent().id!}`,
+            u((variable: INumberInstance | ITextInstance) => {
+              if (entityIs(variable, 'NumberInstance')) {
+                variable.value = Number(val);
+              } else if (variable.trValue != null) {
+                variable.trValue.translations[lang] = createTranslation(
+                  lang,
+                  String(val),
+                );
+              }
+              return variable;
+            })(variableToReview.getInstance(Player.self()).getEntity()),
+          ),
+        );
+      }
+
+      // setWaitingState(true);
       sendValue(val);
     },
-    [sendValue],
+    [lang, sendValue, variableToReview],
   );
 
   const { showModal, OkCancelModal } = useOkCancelModal();
@@ -137,10 +186,11 @@ export default function PeerReviewVariableEditor({
     } else {
       if (reviewState !== 'NOT_STARTED') {
         return (
-        <div className={grow}>
-          <h3>Your submission:</h3>
-          <HTMLText text={String(value)} className={submissionStyle} />
-        </div>);
+          <div className={grow}>
+            <h3>Your submission:</h3>
+            <HTMLText text={String(value)} className={submissionStyle} />
+          </div>
+        );
       } else {
         let inputComponent = null;
         if (scriptableEntityIs(variableToReview, 'TextDescriptor')) {
@@ -149,7 +199,7 @@ export default function PeerReviewVariableEditor({
               id={id}
               value={String(value)}
               onChange={onChange}
-              disabled={options.disabled || options.locked}
+              disabled={options.disabled || options.locked || waitingState}
               readOnly={options.readOnly}
               className={className}
               style={style}
@@ -198,7 +248,7 @@ export default function PeerReviewVariableEditor({
             {inputComponent}
             {displaySubmit && (
               <Button
-                className= {defaultMarginTop}
+                className={defaultMarginTop}
                 label={i18nValues.global.submit}
                 onClick={showModal}
                 disabled={waitingState || options.disabled || options.locked}

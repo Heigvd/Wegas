@@ -334,10 +334,14 @@ export default function HTMLEditor({
           onInit={editor => {
             HTMLEditor.current = editor.target;
           }}
-          onEditorChange={onChange}
+          onEditorChange={v => {
+            if (value !== v) {
+              onChange && onChange(v);
+            }
+          }}
           onFocus={() => setEditorFocus(true)}
           onBlur={() => setEditorFocus(false)}
-          disabled={disabled || readOnly}
+          disabled={disabled}
         />
       </div>
       {fileBrowsing.fn && (

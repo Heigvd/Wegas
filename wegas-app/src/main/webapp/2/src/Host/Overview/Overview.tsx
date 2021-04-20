@@ -15,7 +15,7 @@ import { instantiate } from '../../data/scriptable';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { sortFnFactory, SortState } from '../TableSorter';
 import { FilterState } from './OverviewModal/FilterModalContent';
-import { useWebsocket } from '../../API/websocket';
+import { useWebsocketEvent } from '../../API/websocket';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
 
@@ -179,11 +179,11 @@ export default function Overview() {
 
   const mounted = React.useRef(true);
 
-  useWebsocket('populateQueue-dec', () => {
+  useWebsocketEvent('populateQueue-dec', () => {
     setNewData(true);
   });
 
-  useWebsocket('EntityUpdatedEvent', () => {
+  useWebsocketEvent('EntityUpdatedEvent', () => {
     setNewData(true);
   });
 
