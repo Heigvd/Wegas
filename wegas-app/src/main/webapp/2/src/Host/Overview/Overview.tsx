@@ -5,7 +5,7 @@ import { Button } from '../../Components/Inputs/Buttons/Button';
 import { Toolbar } from '../../Components/Toolbar';
 import { expandWidth } from '../../css/classes';
 import { GameModel, Player } from '../../data/selectors';
-import { useStore } from '../../data/Stores/store';
+import { store } from '../../data/Stores/store';
 import { createScript } from '../../Helper/wegasEntites';
 import { OverviewHeader } from './OverviewHeader';
 import { OverviewRow } from './OverviewRow';
@@ -235,7 +235,7 @@ export default function Overview() {
     };
   }, [refreshOverview]);
 
-  const teams = useStore(s => s.teams);
+  const teams = store.getState().teams;
 
   const onRowClick = React.useCallback(
     (team?: STeam | STeam[]) => (

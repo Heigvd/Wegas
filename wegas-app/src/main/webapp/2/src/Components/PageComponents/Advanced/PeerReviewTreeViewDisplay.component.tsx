@@ -226,6 +226,18 @@ function EvalutationEditor({
   const numberValue =
     value == null ? min : value < min ? min : value > max ? max : Number(value);
 
+  try {
+    dEvaluation.getCategories()?.map(c => {
+      const test = c.getName();
+      const test2 = translate(c.getLabel(), lang);
+      debugger;
+      return {
+        value: c.getName(),
+        label: translate(c.getLabel(), lang),
+      };
+    });
+  } catch (e) {}
+
   return (
     <div className={cx(flex, flexColumn)}>
       <h3>{translate(dEvaluation?.getLabel(), lang)}</h3>
