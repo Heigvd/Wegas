@@ -92,9 +92,9 @@ const ToBeReviewedStyle = css({
   overflow: 'auto',
   backgroundColor: themeVar.Common.colors.BackgroundColor,
   marginTop: '1em',
+  color: 'initial',
   //boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.25)',
 });
-
 
 const reviewContainerStyle = css({
   borderRadius: themeVar.Common.dimensions.BorderRadius,
@@ -119,7 +119,7 @@ const reviewContainerUserStyle = css({
   'button.wegas-btn': {
     backgroundColor: themeVar.Common.colors.HeaderColor,
     color: themeVar.Common.colors.PrimaryColor,
-  }
+  },
 });
 
 const selectedTreeviewItemStyle = css({
@@ -129,7 +129,7 @@ const selectedTreeviewItemStyle = css({
 const prPhasesJustifyStyle = css({
   div: {
     justifyContent: 'flex-start',
-  }
+  },
 });
 
 const phases = ['edition', 'reviewing', 'commenting', 'completed'];
@@ -153,10 +153,7 @@ function PRPHaseComponent({ value, phase }: PhaseComponentProps) {
 }
 
 function PRInterPhasesComponent(_props: PhaseComponentProps) {
-  return <Button
-      icon="arrow-right"
-      disabled
-      className={'phasePathStyle '} />;
+  return <Button icon="arrow-right" disabled className={'phasePathStyle '} />;
 }
 
 const prTreeViewStyle = css({
@@ -215,7 +212,7 @@ function TreeViewReviewSelector({
           onClick={onCarretClick}
         />
         <div className={cx(flex, flexRow)}>
-          <Button icon="users" className={css({ paddingTop: 0})} />
+          <Button icon="users" className={css({ paddingTop: 0 })} />
           <strong>{label}</strong>
         </div>
       </div>
@@ -277,18 +274,6 @@ function EvalutationEditor({
   const numberValue =
     value == null ? min : value < min ? min : value > max ? max : Number(value);
 
-  try {
-    dEvaluation.getCategories()?.map(c => {
-      const test = c.getName();
-      const test2 = translate(c.getLabel(), lang);
-      debugger;
-      return {
-        value: c.getName(),
-        label: translate(c.getLabel(), lang),
-      };
-    });
-  } catch (e) {}
-
   return (
     <div className={cx(flex, flexColumn)}>
       <h3>{translate(dEvaluation?.getLabel(), lang)}</h3>
@@ -315,8 +300,8 @@ function EvalutationEditor({
           value={value == null ? undefined : value}
           onChange={e => onChangeNotify(e.target.value)}
           choices={dEvaluation.getCategories().map(c => ({
-            value: translate(c.getLabel(), lang),
-            label: c.getName(),
+            value: c.getName(),
+            label: translate(c.getLabel(), lang),
           }))}
           disabled={disabled}
           readOnly={readOnly}
@@ -411,7 +396,7 @@ function EvalutationsEditor({
           label={i18nValues.global.submit}
           disabled={waitingState || disabled}
           onClick={showModal}
-          className={cx(defaultMarginTop, css({alignSelf: 'flex-end'}))}
+          className={cx(defaultMarginTop, css({ alignSelf: 'flex-end' }))}
         />
       )}
       <OkCancelModal
@@ -516,28 +501,63 @@ function ReviewEditor({
   });
 
   const rev = reviewState.review.getEntity();
+  const isReviewDispatched =
+    reviewStatus === 'DISPATCHED' && rev.reviewState === 'DISPATCHED';
+  const isReviewNotified =
+    reviewStatus === 'NOTIFIED' && rev.reviewState === 'NOTIFIED';
+
+  const feedbackLabel =
+    reviewState.phase === 'reviews'
+      ? isReviewDispatched
+        ? i18nValues.editor.ask_your_feedback
+        : i18nValues.editor.your_feedback
+      : i18nValues.editor.reviewer_feedback;
+
+  const commentLabel =
+    reviewState.phase === 'comments'
+      ? isReviewNotified
+        ? i18nValues.editor.ask_comment
+        : i18nValues.editor.comment
+      : i18nValues.editor.author_comment;
 
   return (
-    <div className={cx(flex, flexColumn, css({padding: "1em"}))}>
-      <h2 className={css({
-        borderTop: '1px solid ' + themeVar.Common.colors.DisabledColor,
-        marginTop: 0,
-        paddingTop: '1em',
-        })}>
+    <div className={cx(flex, flexColumn, css({ padding: '1em' }))}>
+      <h2
+        className={css({
+          borderTop: '1px solid ' + themeVar.Common.colors.DisabledColor,
+          marginTop: 0,
+          paddingTop: '1em',
+        })}
+      >
         {`${
           reviewState.phase === 'reviews'
             ? i18nValues.tabview.toReview
             : i18nValues.tabview.toComment
         } ${i18nValues.editor.number}${reviewState.index + 1}`}
       </h2>
-      <div className={reviewContainerStyle}>
-        <h3>{i18nValues.editor.given}</h3>
+      <div
+        className={cx({
+          [reviewContainerStyle]: reviewState.phase === 'reviews',
+          [reviewContainerUserStyle]: reviewState.phase === 'comments',
+        })}
+      >
+        <h3>
+          {reviewState.phase === 'reviews'
+            ? i18nValues.editor.given_author
+            : i18nValues.editor.given}
+        </h3>
         <div className={ToBeReviewedStyle}>
           <HTMLText text={String(given)} />
         </div>
       </div>
-      <div className={cx(reviewContainerUserStyle)}>
-        {reviewStatus === 'DISPATCHED' && rev.reviewState === 'DISPATCHED' ? (
+      <div
+        className={cx({
+          [reviewContainerStyle]: reviewState.phase === 'comments',
+          [reviewContainerUserStyle]: reviewState.phase === 'reviews',
+        })}
+      >
+        <h3>{feedbackLabel}</h3>
+        {isReviewDispatched ? (
           <EvalutationsEditor
             review={rev}
             phase="feedback"
@@ -552,7 +572,14 @@ function ReviewEditor({
       </div>
       {(reviewStatus === 'COMPLETED' ||
         (reviewState.phase === 'comments' && reviewStatus === 'NOTIFIED')) && (
-        <div className={reviewContainerStyle}>
+        <div
+          className={cx({
+            [reviewContainerStyle]: reviewState.phase === 'reviews',
+            [reviewContainerUserStyle]: reviewState.phase === 'comments',
+          })}
+        >
+          <h3>{commentLabel}</h3>
+
           {reviewState.phase === 'comments' &&
           reviewStatus === 'NOTIFIED' &&
           rev.reviewState === 'NOTIFIED' ? (

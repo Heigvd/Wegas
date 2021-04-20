@@ -57,6 +57,7 @@ export interface PeerReviewTranslations {
   };
   editor: {
     given: string;
+    given_author: string;
     number: string;
     ask_your_feedback: string;
     your_feedback: string;

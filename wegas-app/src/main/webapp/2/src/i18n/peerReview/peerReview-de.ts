@@ -76,7 +76,8 @@ export const peerReviewTranslationsDE: PeerReviewTranslations = {
     toComment: 'Hinweis',
   },
   editor: {
-    given: 'Aufgabe zur Überprüfung: ',
+    given: 'Ihre überprüfte Zuweisung: ',
+    given_author: 'Peer-Zuweisung zur Überprüfung: ',
     number: 'Nr. ',
     ask_your_feedback: 'Geben Sie Ihr Feedback',
     your_feedback: 'Ihr Feedback',

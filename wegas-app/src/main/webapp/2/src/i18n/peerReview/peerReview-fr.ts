@@ -76,7 +76,8 @@ export const peerReviewTranslationsFR: PeerReviewTranslations = {
     toComment: 'Avis',
   },
   editor: {
-    given: 'Travail à évaluer: ',
+    given: 'Votre travail évalué: ',
+    given_author:"Travail d'un pair à évaluer",
     number: 'n°',
     ask_your_feedback: 'Donnez votre feedback',
     your_feedback: 'Votre feedback',
