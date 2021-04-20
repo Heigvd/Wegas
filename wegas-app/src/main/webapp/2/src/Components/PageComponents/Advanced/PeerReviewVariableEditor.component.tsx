@@ -1,4 +1,4 @@
-import { cx } from 'emotion';
+import { css, cx } from 'emotion';
 import * as React from 'react';
 import {
   INumberDescriptor,
@@ -6,7 +6,7 @@ import {
   ITextDescriptor,
   SPeerReviewDescriptor,
 } from 'wegas-ts-api';
-import { defaultMarginTop, flex, flexColumn, itemBottom } from '../../../css/classes';
+import { defaultMarginTop, flex, flexColumn, grow, itemBottom } from '../../../css/classes';
 import { scriptableEntityIs } from '../../../data/entities';
 import { submitToReview } from '../../../data/Reducer/VariableDescriptorReducer';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
@@ -27,6 +27,7 @@ import { NumberSlider } from '../../Inputs/Number/NumberSlider';
 import { useOkCancelModal } from '../../Modal';
 import { HTMLText } from '../../Outputs/HTMLText';
 import { popupDispatch, addPopup } from '../../PopupManager';
+import { themeVar } from '../../Style/ThemeVars';
 import {
   pageComponentFactory,
   registerComponent,
@@ -34,6 +35,11 @@ import {
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
 
+const submissionStyle = css({
+ border: '1px solid '+ themeVar.Common.colors.DisabledColor,
+ borderRadius: themeVar.Common.dimensions.BorderRadius,
+ padding: '1em',
+});
 interface PeerReviewVariableEditorProps extends WegasComponentProps {
   peerReview?: IScript;
   displaySubmit?: boolean;
@@ -131,9 +137,9 @@ export default function PeerReviewVariableEditor({
     } else {
       if (reviewState !== 'NOT_STARTED') {
         return (
-        <div>
+        <div className={grow}>
           <h3>Your submission:</h3>
-          <HTMLText text={String(value)} />
+          <HTMLText text={String(value)} className={submissionStyle} />
         </div>);
       } else {
         let inputComponent = null;

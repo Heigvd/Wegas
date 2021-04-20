@@ -15,12 +15,16 @@ import {
 import { PeerReviewDescriptorAPI } from '../../../API/peerReview.api';
 import {
   autoScroll,
+  defaultMarginBottom,
+  defaultMarginLeft,
+  defaultMarginTop,
   expandWidth,
   flex,
   flexColumn,
   flexRow,
   grow,
   itemCenter,
+  itemStretch,
   justifyCenter,
 } from '../../../css/classes';
 import { entityIs, scriptableEntityIs } from '../../../data/entities';
@@ -51,7 +55,6 @@ import { HTMLText } from '../../Outputs/HTMLText';
 import {
   CustomPhasesProgressBar,
   PhaseComponentProps,
-  SimpleInterPhaseComponent,
 } from '../../Outputs/PhasesProgressBar';
 import { themeVar } from '../../Style/ThemeVars';
 import { Toolbar } from '../../Toolbar';
@@ -64,29 +67,69 @@ import { schemaProps } from '../tools/schemaProps';
 
 const prPhaseComponentStyle = css({
   minWidth: '120px',
-  minHeight: '120px',
-  borderRadius: '50%',
+  padding: '10px',
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
   borderStyle: 'solid',
-  borderWidth: '5px',
+  borderWidth: '3px',
   borderColor: themeVar.Common.colors.PrimaryColor,
   backgroundColor: themeVar.Common.colors.BackgroundColor,
-  color: themeVar.Common.colors.DarkTextColor,
+  color: themeVar.Common.colors.PrimaryColor,
+  fontWeight: 500,
 });
 
 const prFinishedPhaseComponentStyle = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  borderColor: themeVar.Common.colors.DisabledColor,
+  color: themeVar.Common.colors.DisabledColor,
 });
 
 const prActivePhaseComponentStyle = css({
-  backgroundColor: themeVar.Common.colors.ActiveColor,
+  backgroundColor: themeVar.Common.colors.PrimaryColor,
   color: themeVar.Common.colors.LightTextColor,
 });
+const ToBeReviewedStyle = css({
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  padding: '1em',
+  overflow: 'auto',
+  backgroundColor: themeVar.Common.colors.BackgroundColor,
+  marginTop: '1em',
+  //boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.25)',
+});
+
 
 const reviewContainerStyle = css({
-  border: 'solid',
-  margin: '1em',
-  padding: '1em',
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  padding: '1.5em',
   overflowX: 'auto',
+  backgroundColor: themeVar.Common.colors.HeaderColor,
+  width: '80%',
+  alignSelf: 'flex-start',
+  marginTop: '1em',
+  boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.25)',
+});
+const reviewContainerUserStyle = css({
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  padding: '1.5em',
+  overflowX: 'auto',
+  backgroundColor: themeVar.Common.colors.PrimaryColor,
+  color: themeVar.Common.colors.LightTextColor,
+  width: '80%',
+  alignSelf: 'flex-end',
+  marginTop: '1em',
+  boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.25)',
+  'button.wegas-btn': {
+    backgroundColor: themeVar.Common.colors.HeaderColor,
+    color: themeVar.Common.colors.PrimaryColor,
+  }
+});
+
+const selectedTreeviewItemStyle = css({
+  backgroundColor: themeVar.Common.colors.HeaderColor,
+});
+
+const prPhasesJustifyStyle = css({
+  div: {
+    justifyContent: 'flex-start',
+  }
 });
 
 const phases = ['edition', 'reviewing', 'commenting', 'completed'];
@@ -109,9 +152,17 @@ function PRPHaseComponent({ value, phase }: PhaseComponentProps) {
   );
 }
 
+function PRInterPhasesComponent(_props: PhaseComponentProps) {
+  return <Button
+      icon="arrow-right"
+      disabled
+      className={'phasePathStyle '} />;
+}
+
 const prTreeViewStyle = css({
-  borderRight: 'solid 1px',
-  paddingRight: '1em',
+  padding: '1.5em',
+  boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+  marginTop: '1em',
 });
 
 const reviewItemStyle = css({
@@ -163,10 +214,10 @@ function TreeViewReviewSelector({
           icon={open ? 'caret-down' : 'caret-right'}
           onClick={onCarretClick}
         />
-        <h3 className={cx(flex, flexRow)}>
-          <Button icon="users" />
-          {label}
-        </h3>
+        <div className={cx(flex, flexRow)}>
+          <Button icon="users" className={css({ paddingTop: 0})} />
+          <strong>{label}</strong>
+        </div>
       </div>
 
       {open &&
@@ -360,6 +411,7 @@ function EvalutationsEditor({
           label={i18nValues.global.submit}
           disabled={waitingState || disabled}
           onClick={showModal}
+          className={cx(defaultMarginTop, css({alignSelf: 'flex-end'}))}
         />
       )}
       <OkCancelModal
@@ -466,8 +518,12 @@ function ReviewEditor({
   const rev = reviewState.review.getEntity();
 
   return (
-    <div className={cx(flex, flexColumn)}>
-      <h2>
+    <div className={cx(flex, flexColumn, css({padding: "1em"}))}>
+      <h2 className={css({
+        borderTop: '1px solid ' + themeVar.Common.colors.DisabledColor,
+        marginTop: 0,
+        paddingTop: '1em',
+        })}>
         {`${
           reviewState.phase === 'reviews'
             ? i18nValues.tabview.toReview
@@ -476,15 +532,11 @@ function ReviewEditor({
       </h2>
       <div className={reviewContainerStyle}>
         <h3>{i18nValues.editor.given}</h3>
-        <div
-          className={css({
-            backgroundColor: themeVar.Common.colors.HeaderColor,
-          })}
-        >
+        <div className={ToBeReviewedStyle}>
           <HTMLText text={String(given)} />
         </div>
       </div>
-      <div className={reviewContainerStyle}>
+      <div className={cx(reviewContainerUserStyle)}>
         {reviewStatus === 'DISPATCHED' && rev.reviewState === 'DISPATCHED' ? (
           <EvalutationsEditor
             review={rev}
@@ -608,21 +660,23 @@ export default function PeerReviewTreeViewDisplay({
     const reviewState = sPRinstance.getReviewState();
 
     return (
-      <Toolbar className={grow}>
-        <Toolbar.Content className={cx(flex, flexColumn)}>
+      <Toolbar>
+        <Toolbar.Header className={cx(flex, flexColumn, defaultMarginLeft)}>
+          <h1>{i18nValues.orchestrator.state.reviewing.title}</h1>
           <CustomPhasesProgressBar
             value={currentPhase}
             phaseMin={0}
             phaseMax={3}
             PhaseComponent={PRPHaseComponent}
-            InterPhaseComponent={SimpleInterPhaseComponent}
+            InterPhaseComponent={PRInterPhasesComponent}
+            className={cx(prPhasesJustifyStyle, defaultMarginBottom)}
           />
-        </Toolbar.Content>
+        </Toolbar.Header>
         {currentPhase === 0 ? (
           <h2>{i18nValues.tabview.emptyness_message}</h2>
         ) : (
-          <Toolbar.Header>
-            <div className={cx(flex, flexRow, expandWidth)}>
+          <Toolbar.Content>
+            <div className={cx(flex, flexRow, expandWidth, itemStretch)}>
               <div className={prTreeViewStyle}>
                 {(reviewState === 'DISPATCHED' ||
                   reviewState === 'NOTIFIED' ||
@@ -648,7 +702,7 @@ export default function PeerReviewTreeViewDisplay({
                   />
                 )}
               </div>
-              <div className={cx(/*reviewContainerStyle,*/ autoScroll)}>
+              <div className={cx(grow, autoScroll)}>
                 {selectedReview && (
                   <ReviewEditor
                     reviewState={selectedReview}
@@ -661,7 +715,7 @@ export default function PeerReviewTreeViewDisplay({
                 )}
               </div>
             </div>
-          </Toolbar.Header>
+          </Toolbar.Content>
         )}
       </Toolbar>
     );
