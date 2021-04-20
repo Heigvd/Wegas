@@ -176,12 +176,13 @@ const reviewItemStyle = css({
 interface TreeViewReviewItemProps {
   label: string;
   onClick: () => void;
+  selected: boolean | undefined;
 }
 
-function TreeViewReviewItem({ label, onClick }: TreeViewReviewItemProps) {
+function TreeViewReviewItem({ label, onClick, selected }: TreeViewReviewItemProps) {
   return (
     <div
-      className={cx(flex, flexRow, itemCenter, reviewItemStyle)}
+      className={cx(flex, flexRow, itemCenter, reviewItemStyle, {[selectedTreeviewItemStyle]: selected})}
       onClick={onClick}
     >
       <Button icon="user-circle" />
@@ -195,6 +196,7 @@ interface TreeViewReviewSelectorProps {
   itemLabel: string;
   reviews: SReview[];
   open: boolean;
+  selectedReview: ReviewState | undefined;
   onCarretClick: () => void;
   onReviewClick: (review: SReview, index: number) => void;
 }
@@ -204,12 +206,13 @@ function TreeViewReviewSelector({
   itemLabel,
   reviews,
   open,
+  selectedReview,
   onCarretClick,
   onReviewClick,
 }: TreeViewReviewSelectorProps) {
   return (
     <div className={cx(flex, flexColumn)}>
-      <div className={cx(flex, flexRow)}>
+      <div className={cx(flex, flexRow, defaultMarginTop)}>
         <Button
           icon={open ? 'caret-down' : 'caret-right'}
           onClick={onCarretClick}
@@ -219,13 +222,13 @@ function TreeViewReviewSelector({
           <strong>{label}</strong>
         </div>
       </div>
-
       {open &&
         reviews.map((r, i) => (
           <TreeViewReviewItem
             key={r.getId()}
             label={itemLabel + (i + 1)}
             onClick={() => onReviewClick(r, i)}
+            selected={selectedReview?.review.getId() === r.getId()}
           />
         ))}
     </div>
@@ -674,6 +677,7 @@ export default function PeerReviewTreeViewDisplay({
                     itemLabel={`${i18nValues.tabview.toReview} ${i18nValues.editor.number}`}
                     reviews={sPRinstance.getToReview()}
                     open={carretState.reviews}
+                    selectedReview = {selectedReview}
                     onCarretClick={onCarretClick('reviews')}
                     onReviewClick={onReviewClick('reviews')}
                   />
@@ -685,6 +689,7 @@ export default function PeerReviewTreeViewDisplay({
                     itemLabel={`${i18nValues.tabview.toComment} ${i18nValues.editor.number}`}
                     reviews={sPRinstance.getReviewed()}
                     open={carretState.comments}
+                    selectedReview = {selectedReview}
                     onCarretClick={onCarretClick('comments')}
                     onReviewClick={onReviewClick('comments')}
                   />
