@@ -17,7 +17,7 @@ import {
   autoScroll,
   defaultMarginBottom,
   defaultMarginLeft,
-  defaultPaddingLeft,
+  defaultMarginTop,
   expandWidth,
   flex,
   flexColumn,
@@ -103,7 +103,7 @@ const reviewContainerStyle = css({
   backgroundColor: themeVar.Common.colors.HeaderColor,
   width: '80%',
   alignSelf: 'flex-start',
-  marginTop: '2em',
+  marginTop: '1em',
   boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.25)',
 });
 const reviewContainerUserStyle = css({
@@ -114,14 +114,16 @@ const reviewContainerUserStyle = css({
   color: themeVar.Common.colors.LightTextColor,
   width: '80%',
   alignSelf: 'flex-end',
-  marginTop: '2em',
+  marginTop: '1em',
   boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.25)',
   'button.wegas-btn': {
     backgroundColor: themeVar.Common.colors.HeaderColor,
     color: themeVar.Common.colors.PrimaryColor,
-    alignSelf: 'flex-end',
-    marginTop: '10px',
   }
+});
+
+const selectedTreeviewItemStyle = css({
+  backgroundColor: themeVar.Common.colors.HeaderColor,
 });
 
 const prPhasesJustifyStyle = css({
@@ -397,6 +399,7 @@ function EvalutationsEditor({
           label={i18nValues.global.submit}
           disabled={waitingState || disabled}
           onClick={showModal}
+          className={cx(defaultMarginTop, css({alignSelf: 'flex-end'}))}
         />
       )}
       <OkCancelModal
@@ -504,7 +507,11 @@ function ReviewEditor({
 
   return (
     <div className={cx(flex, flexColumn, css({padding: "1em"}))}>
-      <h2 className={defaultPaddingLeft}>
+      <h2 className={css({
+        borderTop: '1px solid ' + themeVar.Common.colors.DisabledColor,
+        marginTop: 0,
+        paddingTop: '1em',
+        })}>
         {`${
           reviewState.phase === 'reviews'
             ? i18nValues.tabview.toReview
