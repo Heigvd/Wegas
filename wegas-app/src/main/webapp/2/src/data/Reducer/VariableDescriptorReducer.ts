@@ -214,13 +214,17 @@ export function submitToReview(peerReviewId: number): ThunkResult {
   };
 }
 
+export function asynchSaveReview(review: IReview) {
+  return PeerReviewDescriptorAPI.saveReview(
+    GameModel.selectCurrent().id!,
+    Player.selectCurrent().id!,
+    review,
+  );
+}
+
 export function saveReview(review: IReview): ThunkResult {
   return function (dispatch, getState) {
-    return PeerReviewDescriptorAPI.saveReview(
-      GameModel.selectCurrent().id!,
-      Player.selectCurrent().id!,
-      review,
-    ).then(res =>
+    return asynchSaveReview(review).then(res =>
       store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };

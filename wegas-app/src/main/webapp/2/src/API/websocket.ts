@@ -343,3 +343,27 @@ export const useWebsocket = (
   useWebsocketChannel(channel);
   return useWebsocketEvent(event, cb);
 };
+
+export function useLiveUpdate(
+  variableIdToWatch: number | undefined,
+  delay: number = 500,
+) {
+  const waitTimer = React.useRef<NodeJS.Timeout | null>();
+  const [waitingState, setWaitingState] = React.useState(false);
+
+  useWebsocketEvent(
+    'CustomEvent',
+    ({ payload }: { payload: IAbstractEntity }) => {
+      if (variableIdToWatch != null && payload.id === variableIdToWatch) {
+        setWaitingState(true);
+        if (waitTimer.current != null) {
+          clearTimeout(waitTimer.current);
+        }
+        waitTimer.current = setTimeout(() => {
+          setWaitingState(false);
+        }, delay);
+      }
+    },
+  );
+  return waitingState;
+}

@@ -5,14 +5,20 @@ import {
   ICategorizedEvaluationInstance,
   IEvaluationDescriptor,
   IEvaluationInstance,
+  IGradeInstance,
+  INumberDescriptor,
+  IPeerReviewDescriptor,
   IPeerReviewInstance,
   IReview,
   IScript,
+  ITextDescriptor,
+  ITextEvaluationInstance,
   ScriptableEntity,
   SPeerReviewDescriptor,
+  SPeerReviewInstance,
   SReview,
 } from 'wegas-ts-api';
-import { PeerReviewDescriptorAPI } from '../../../API/peerReview.api';
+import { useLiveUpdate } from '../../../API/websocket';
 import {
   autoScroll,
   defaultMarginBottom,
@@ -30,11 +36,13 @@ import {
 import { entityIs, scriptableEntityIs } from '../../../data/entities';
 import { liveEdition } from '../../../data/Reducer/gameModel';
 import {
+  asynchSaveReview,
   saveReview,
   submitReview,
 } from '../../../data/Reducer/VariableDescriptorReducer';
 import { instantiate } from '../../../data/scriptable';
-import { GameModel, Player, Team } from '../../../data/selectors';
+import { Player, Team } from '../../../data/selectors';
+import * as VariableDescriptorSelector from '../../../data/selectors/VariableDescriptorSelector';
 import { store, useStore } from '../../../data/Stores/store';
 import { Selector } from '../../../Editor/Components/FormView/Select';
 import { translate } from '../../../Editor/Components/FormView/translatable';
@@ -172,13 +180,20 @@ const reviewItemStyle = css({
 
 interface TreeViewReviewItemProps {
   label: string;
+  isSelected: boolean;
   onClick: () => void;
 }
 
-function TreeViewReviewItem({ label, onClick }: TreeViewReviewItemProps) {
+function TreeViewReviewItem({
+  label,
+  isSelected,
+  onClick,
+}: TreeViewReviewItemProps) {
   return (
     <div
-      className={cx(flex, flexRow, itemCenter, reviewItemStyle)}
+      className={cx(flex, flexRow, itemCenter, reviewItemStyle, {
+        [selectedTreeviewItemStyle]: isSelected,
+      })}
       onClick={onClick}
     >
       <Button icon="user-circle" />
@@ -191,7 +206,8 @@ interface TreeViewReviewSelectorProps {
   label: string;
   itemLabel: string;
   reviews: SReview[];
-  open: boolean;
+  isOpen: boolean;
+  selectedReviewId: number | undefined;
   onCarretClick: () => void;
   onReviewClick: (review: SReview, index: number) => void;
 }
@@ -200,7 +216,8 @@ function TreeViewReviewSelector({
   label,
   itemLabel,
   reviews,
-  open,
+  isOpen,
+  selectedReviewId,
   onCarretClick,
   onReviewClick,
 }: TreeViewReviewSelectorProps) {
@@ -208,7 +225,7 @@ function TreeViewReviewSelector({
     <div className={cx(flex, flexColumn)}>
       <div className={cx(flex, flexRow)}>
         <Button
-          icon={open ? 'caret-down' : 'caret-right'}
+          icon={isOpen ? 'caret-down' : 'caret-right'}
           onClick={onCarretClick}
         />
         <div className={cx(flex, flexRow)}>
@@ -217,11 +234,12 @@ function TreeViewReviewSelector({
         </div>
       </div>
 
-      {open &&
+      {isOpen &&
         reviews.map((r, i) => (
           <TreeViewReviewItem
             key={r.getId()}
             label={itemLabel + (i + 1)}
+            isSelected={r.getId() === selectedReviewId}
             onClick={() => onReviewClick(r, i)}
           />
         ))}
@@ -231,24 +249,35 @@ function TreeViewReviewSelector({
 
 interface EvalutationEditorProps extends DisabledReadonly {
   iEvaluation: ScriptableEntity<IEvaluationInstance>;
-  value: string | number | undefined | null;
-  onChange: (value: string | number) => void;
+  onChange: (
+    value: string | number,
+    type: IEvaluationInstance['@class'],
+  ) => void;
+  onWaiting: (waitingState: boolean) => void;
 }
 
 function EvalutationEditor({
   iEvaluation,
-  value,
   onChange,
+  onWaiting,
   disabled,
   readOnly,
 }: EvalutationEditorProps) {
   const { lang } = React.useContext(languagesCTX);
+
+  const value = iEvaluation.getValue();
 
   const dEvaluation = instantiate(
     ((iEvaluation.getEntity() as unknown) as {
       descriptor: IEvaluationDescriptor;
     }).descriptor,
   );
+
+  const waitingState = useLiveUpdate(iEvaluation.getId());
+
+  React.useEffect(() => {
+    onWaiting(waitingState);
+  }, [onWaiting, waitingState]);
 
   const onChangeNotify = React.useCallback(
     (val: string | number) => {
@@ -260,7 +289,7 @@ function EvalutationEditor({
           }),
         );
       }
-      onChange(val);
+      onChange(val, iEvaluation.getJSONClassName());
     },
     [iEvaluation, onChange],
   );
@@ -281,7 +310,7 @@ function EvalutationEditor({
         <HTMLEditor
           value={value == null ? undefined : String(value)}
           onChange={onChangeNotify}
-          disabled={disabled}
+          disabled={disabled || waitingState}
           readOnly={readOnly}
         />
       ) : scriptableEntityIs(iEvaluation, 'GradeInstance') ? (
@@ -292,7 +321,7 @@ function EvalutationEditor({
           max={max}
           steps={max - min}
           displayValues="NumberInput"
-          disabled={disabled}
+          disabled={disabled || waitingState}
           readOnly={readOnly}
         />
       ) : scriptableEntityIs(dEvaluation, 'CategorizedEvaluationDescriptor') ? (
@@ -303,7 +332,7 @@ function EvalutationEditor({
             value: c.getName(),
             label: translate(c.getLabel(), lang),
           }))}
-          disabled={disabled}
+          disabled={disabled || waitingState}
           readOnly={readOnly}
         />
       ) : null}
@@ -315,14 +344,12 @@ interface EvalutationsEditorProps extends DisabledReadonly {
   review: IReview;
   phase: 'feedback' | 'comments';
   displaySubmit?: boolean;
-  onRefresh: () => void;
 }
 
 function EvalutationsEditor({
   review,
   phase,
   displaySubmit,
-  onRefresh,
   disabled,
   readOnly,
 }: EvalutationsEditorProps) {
@@ -336,20 +363,25 @@ function EvalutationsEditor({
     ),
   });
   const [waitingState, setWaitingState] = React.useState(false);
-  const [values, setValues] = React.useState<{
-    [id: string]: string | number | undefined | null;
-  }>(
-    evaluations.reduce(
-      (o, e) => ({ ...o, [e.id!]: instantiate(e).getValue() }),
-      {},
-    ),
-  );
 
   const i18nValues = useInternalTranslate(peerReviewTranslations);
   const { showModal, OkCancelModal } = useOkCancelModal();
 
+  React.useEffect(() => {
+    modifiedReview.current = {
+      ...review,
+      [phase]: review[phase].map(f =>
+        f['@class'] === 'GradeInstance' ? { ...f, value: 1 } : f,
+      ),
+    };
+  }, [phase, review]);
+
   const sendValue = React.useCallback(
-    (id: number, val: string | number | undefined) => {
+    (
+      id: number,
+      val: string | number | undefined,
+      type: IEvaluationInstance['@class'],
+    ) => {
       if (timer.current != null) {
         clearTimeout(timer.current);
       }
@@ -364,20 +396,14 @@ function EvalutationsEditor({
       };
 
       timer.current = setTimeout(() => {
-        store.dispatch(saveReview(modifiedReview.current));
-        setWaitingState(false);
+        if (type === 'TextEvaluationInstance') {
+          asynchSaveReview(modifiedReview.current);
+        } else {
+          store.dispatch(saveReview(modifiedReview.current));
+        }
       }, 500);
     },
     [phase],
-  );
-
-  const onChange = React.useCallback(
-    (id: number, val: string | number | undefined) => {
-      setWaitingState(true);
-      setValues(o => ({ ...o, [id]: val }));
-      sendValue(id, val);
-    },
-    [sendValue],
   );
 
   return (
@@ -386,8 +412,8 @@ function EvalutationsEditor({
         <EvalutationEditor
           key={e.id}
           iEvaluation={instantiate(e)}
-          value={values[e.id!]}
-          onChange={val => onChange(e.id!, val)}
+          onChange={(val, type) => sendValue(e.id!, val, type)}
+          onWaiting={setWaitingState}
           disabled={disabled}
           readOnly={readOnly}
         />
@@ -402,7 +428,7 @@ function EvalutationsEditor({
       )}
       <OkCancelModal
         onOk={() => {
-          store.dispatch(submitReview(modifiedReview.current, onRefresh));
+          store.dispatch(submitReview(modifiedReview.current));
         }}
       >
         <p>{i18nValues.global.confirmation.info}</p>
@@ -413,14 +439,14 @@ function EvalutationsEditor({
 }
 
 interface EvalutationDisplayProps {
-  iEvaluation: ScriptableEntity<IEvaluationInstance>;
+  iEvaluation: IEvaluationInstance;
 }
 
 function EvalutationDisplay({ iEvaluation }: EvalutationDisplayProps) {
   const { lang } = React.useContext(languagesCTX);
 
   const dEvaluation = instantiate(
-    ((iEvaluation.getEntity() as unknown) as {
+    ((iEvaluation as unknown) as {
       descriptor: IEvaluationDescriptor;
     }).descriptor,
   );
@@ -431,14 +457,15 @@ function EvalutationDisplay({ iEvaluation }: EvalutationDisplayProps) {
         text={
           entityIs(iEvaluation, 'CategorizedEvaluationInstance')
             ? translate(
-                (iEvaluation.getEntity() as ICategorizedEvaluationInstance & {
+                (iEvaluation as ICategorizedEvaluationInstance & {
                   descriptor: ICategorizedEvaluationDescriptor;
-                }).descriptor.categories.find(
-                  i => i.name === iEvaluation.getValue(),
-                )?.label,
+                }).descriptor.categories.find(i => i.name === iEvaluation.value)
+                  ?.label,
                 lang,
               )
-            : String(iEvaluation.getEntity()['value'])
+            : String(
+                (iEvaluation as ITextEvaluationInstance | IGradeInstance).value,
+              )
         }
       />
     </div>
@@ -446,62 +473,62 @@ function EvalutationDisplay({ iEvaluation }: EvalutationDisplayProps) {
 }
 
 interface EvalutationsDisplayProps {
-  evaluations: ScriptableEntity<IEvaluationInstance>[];
+  evaluations: IEvaluationInstance[];
 }
 
 function EvalutationsDisplay({ evaluations }: EvalutationsDisplayProps) {
   return (
     <div className={cx(flex, flexColumn)}>
       {evaluations.map(e => (
-        <EvalutationDisplay key={e.getId()} iEvaluation={e} />
+        <EvalutationDisplay key={e.id} iEvaluation={e} />
       ))}
     </div>
   );
 }
 
 interface ReviewEditorProps extends DisabledReadonly {
+  peerReview: Readonly<SPeerReviewInstance>;
   reviewState: ReviewState;
   reviewStatus: IPeerReviewInstance['reviewState'];
   displaySubmit?: boolean;
-  onRefresh: () => void;
 }
 
 function ReviewEditor({
+  peerReview,
   reviewState,
   reviewStatus,
   displaySubmit,
   disabled,
   readOnly,
-  onRefresh,
 }: ReviewEditorProps) {
-  const [given, setGiven] = React.useState<string | number>();
   const { lang } = React.useContext(languagesCTX);
   const i18nValues = internalTranslate(peerReviewTranslations, lang);
 
-  const rev = reviewState.review.getEntity();
+  const rev = useStore(() => {
+    const reviewed = peerReview
+      .getReviewed()
+      .find(r => r.getId() === reviewState.review.getId());
+    const toReview = peerReview
+      .getToReview()
+      .find(r => r.getId() === reviewState.review.getId());
+    return (
+      reviewed?.getEntity() ||
+      toReview?.getEntity() ||
+      reviewState.review.getEntity()
+    );
+  });
 
-  React.useEffect(() => {
-    let mounted = true;
-
-    PeerReviewDescriptorAPI.getToReviewUnmanaged(
-      GameModel.selectCurrent().id!,
-      rev.parentId!,
-      rev.id!,
-      Player.selectCurrent().id!,
-    ).then(toReview => {
-      if (mounted) {
-        setGiven(
-          entityIs(toReview, 'NumberInstance')
-            ? toReview.value
-            : translate(toReview.trValue, lang),
-        );
-      }
-    });
-
-    return () => {
-      mounted = false;
-    };
-  }, [lang, rev.id, rev.parentId]);
+  const given = useStore(() =>
+    instantiate(
+      VariableDescriptorSelector.findByName<
+        ITextDescriptor | INumberDescriptor
+      >(
+        VariableDescriptorSelector.select<IPeerReviewDescriptor>(
+          peerReview.getParentId(),
+        )?.toReviewName,
+      ),
+    ),
+  )?.getValue(Player.self());
 
   const isReviewDispatched =
     reviewStatus === 'DISPATCHED' && rev.reviewState === 'DISPATCHED';
@@ -524,9 +551,7 @@ function ReviewEditor({
 
   return (
     <div className={cx(flex, flexColumn, css({ padding: '1em' }))}>
-      <div style={{ margin: '20px', border: 'solid 2px' }}>
-        <i>{reviewState.review.getFeedback()[0].getValue()}</i>
-      </div>
+      <h3>{rev.id}</h3>
       <h2
         className={css({
           borderTop: '1px solid ' + themeVar.Common.colors.DisabledColor,
@@ -567,12 +592,11 @@ function ReviewEditor({
             review={rev}
             phase="feedback"
             displaySubmit={displaySubmit}
-            onRefresh={onRefresh}
             disabled={disabled}
             readOnly={readOnly}
           />
         ) : (
-          <EvalutationsDisplay evaluations={reviewState.review.getFeedback()} />
+          <EvalutationsDisplay evaluations={rev.feedback} />
         )}
       </div>
       {(reviewStatus === 'COMPLETED' ||
@@ -592,14 +616,11 @@ function ReviewEditor({
               review={rev}
               phase="comments"
               displaySubmit={displaySubmit}
-              onRefresh={onRefresh}
               disabled={disabled}
               readOnly={readOnly}
             />
           ) : (
-            <EvalutationsDisplay
-              evaluations={reviewState.review.getComments()}
-            />
+            <EvalutationsDisplay evaluations={rev.comments} />
           )}
         </div>
       )}
@@ -717,7 +738,8 @@ export default function PeerReviewTreeViewDisplay({
                     label={i18nValues.tabview.toReviewTitle}
                     itemLabel={`${i18nValues.tabview.toReview} ${i18nValues.editor.number}`}
                     reviews={sPRinstance.getToReview()}
-                    open={carretState.reviews}
+                    isOpen={carretState.reviews}
+                    selectedReviewId={selectedReview?.review.getId()}
                     onCarretClick={onCarretClick('reviews')}
                     onReviewClick={onReviewClick('reviews')}
                   />
@@ -728,7 +750,8 @@ export default function PeerReviewTreeViewDisplay({
                     label={i18nValues.tabview.toCommentTitle}
                     itemLabel={`${i18nValues.tabview.toComment} ${i18nValues.editor.number}`}
                     reviews={sPRinstance.getReviewed()}
-                    open={carretState.comments}
+                    isOpen={carretState.comments}
+                    selectedReviewId={selectedReview?.review.getId()}
                     onCarretClick={onCarretClick('comments')}
                     onReviewClick={onReviewClick('comments')}
                   />
@@ -737,10 +760,10 @@ export default function PeerReviewTreeViewDisplay({
               <div className={cx(grow, autoScroll)}>
                 {selectedReview && (
                   <ReviewEditor
+                    peerReview={sPRinstance}
                     reviewState={selectedReview}
                     reviewStatus={reviewState}
                     displaySubmit={displaySubmit}
-                    onRefresh={() => setSelectedReview(undefined)}
                     disabled={options.disabled || options.locked}
                     readOnly={options.readOnly}
                   />

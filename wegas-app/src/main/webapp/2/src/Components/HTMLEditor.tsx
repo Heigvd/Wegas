@@ -36,6 +36,7 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { classNameOrEmpty } from '../Helper/className';
 import { inputDefaultCSS, inputStyleCSS } from './Inputs/inputStyles';
 import { isActionAllowed } from './PageComponents/tools/options';
+import { RawEditorSettings } from 'tinymce/tinymce';
 
 const toolbar = css({
   width: '300px',
@@ -167,7 +168,10 @@ export default function HTMLEditor({
         },
       ];
 
-      return {
+      const config: RawEditorSettings & {
+        selector?: undefined;
+        target?: undefined;
+      } = {
         theme: 'silver',
         inline: inline,
         readonly: readOnly,
@@ -285,6 +289,7 @@ export default function HTMLEditor({
           });
         },
       };
+      return config;
     },
     [inline, readOnly, placeholder, onSave, disabled, noResize, classes],
   );

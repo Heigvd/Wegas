@@ -51,7 +51,7 @@ import {
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
 import u from 'immer';
-import { useWebsocketEvent } from '../../../API/websocket';
+import { useLiveUpdate } from '../../../API/websocket';
 
 const submissionStyle = css({
   border: '1px solid ' + themeVar.Common.colors.DisabledColor,
@@ -72,8 +72,8 @@ export default function PeerReviewVariableEditor({
   id,
   options,
 }: PeerReviewVariableEditorProps) {
+  const lastVal = React.useRef<string | number | undefined>();
   const timer = React.useRef<NodeJS.Timeout | null>();
-  const waitTimer = React.useRef<NodeJS.Timeout | null>();
   const { lang } = React.useContext(languagesCTX);
   const i18nValues = internalTranslate(peerReviewTranslations, lang);
   const sPR = useScript<SPeerReviewDescriptor | undefined>(peerReview, context);
@@ -84,30 +84,26 @@ export default function PeerReviewVariableEditor({
     findByName<ITextDescriptor | INumberDescriptor>(sPR?.getToReviewName()),
   );
 
-  useWebsocketEvent(
-    'CustomEvent',
-    ({ payload }: { payload: INumberInstance | ITextInstance }) => {
-      if (payload.id === variableToReview?.getInstance(Player.self()).getId()) {
-        setWaitingState(true);
-        if (waitTimer.current != null) {
-          clearTimeout(waitTimer.current);
-        }
-        waitTimer.current = setTimeout(() => {
-          setWaitingState(false);
-        }, 500);
-      }
-    },
+  const waitingState = useLiveUpdate(
+    variableToReview?.getInstance(Player.self()).getId(),
   );
 
-  const value = useStore(
+  const storeValue = useStore(
     () => variableToReview?.getValue(Player.self()),
     deepDifferent,
   );
 
-  const [waitingState, setWaitingState] = React.useState(false);
+  const [value, setValue] = React.useState<string | number | undefined>(
+    storeValue,
+  );
+
+  React.useEffect(() => {
+    setValue(storeValue);
+  }, [storeValue]);
 
   const sendValue = React.useCallback(
     (val: string | number | undefined) => {
+      lastVal.current = val;
       if (timer.current != null) {
         clearTimeout(timer.current);
       }
@@ -145,6 +141,7 @@ export default function PeerReviewVariableEditor({
 
   const onChange = React.useCallback(
     (val: string | number | undefined) => {
+      setValue(val);
       if (variableToReview != null && val != null) {
         store.dispatch(
           liveEdition(
