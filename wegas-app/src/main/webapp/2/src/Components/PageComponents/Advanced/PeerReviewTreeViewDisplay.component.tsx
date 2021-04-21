@@ -223,7 +223,7 @@ function TreeViewReviewSelector({
 }: TreeViewReviewSelectorProps) {
   return (
     <div className={cx(flex, flexColumn)}>
-      <div className={cx(flex, flexRow)}>
+      <div className={cx(flex, flexRow, defaultMarginTop)}>
         <Button
           icon={isOpen ? 'caret-down' : 'caret-right'}
           onClick={onCarretClick}
