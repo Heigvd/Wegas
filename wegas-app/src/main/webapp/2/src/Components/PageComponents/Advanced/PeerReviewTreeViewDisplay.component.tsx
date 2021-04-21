@@ -39,7 +39,6 @@ import { store, useStore } from '../../../data/Stores/store';
 import { Selector } from '../../../Editor/Components/FormView/Select';
 import { translate } from '../../../Editor/Components/FormView/translatable';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { wlog } from '../../../Helper/wegaslog';
 import {
   internalTranslate,
   useInternalTranslate,
@@ -275,22 +274,6 @@ function EvalutationEditor({
   const numberValue =
     value == null ? min : value < min ? min : value > max ? max : Number(value);
 
-  if (scriptableEntityIs(dEvaluation, 'CategorizedEvaluationDescriptor')) {
-    wlog(dEvaluation.getCategories());
-    wlog(
-      dEvaluation.getCategories().map(c => ({
-        value: c.getName(),
-        label: translate(c.getLabel(), lang),
-      })),
-    );
-    wlog(
-      dEvaluation.getCategories().map(c => ({
-        value: c.getEntity(),
-        label: translate(c.getLabel(), lang),
-      })),
-    );
-    debugger;
-  }
   return (
     <div className={cx(flex, flexColumn)}>
       <h3>{translate(dEvaluation?.getLabel(), lang)}</h3>
@@ -344,7 +327,6 @@ function EvalutationsEditor({
   readOnly,
 }: EvalutationsEditorProps) {
   const evaluations = review[phase];
-  wlog(evaluations);
 
   const timer = React.useRef<NodeJS.Timeout | null>();
   const modifiedReview = React.useRef({
@@ -496,6 +478,8 @@ function ReviewEditor({
   const { lang } = React.useContext(languagesCTX);
   const i18nValues = internalTranslate(peerReviewTranslations, lang);
 
+  const rev = reviewState.review.getEntity();
+
   React.useEffect(() => {
     let mounted = true;
 
@@ -517,9 +501,8 @@ function ReviewEditor({
     return () => {
       mounted = false;
     };
-  });
+  }, [lang, rev.id, rev.parentId]);
 
-  const rev = reviewState.review.getEntity();
   const isReviewDispatched =
     reviewStatus === 'DISPATCHED' && rev.reviewState === 'DISPATCHED';
   const isReviewNotified =
@@ -541,6 +524,9 @@ function ReviewEditor({
 
   return (
     <div className={cx(flex, flexColumn, css({ padding: '1em' }))}>
+      <div style={{ margin: '20px', border: 'solid 2px' }}>
+        <i>{reviewState.review.getFeedback()[0].getValue()}</i>
+      </div>
       <h2
         className={css({
           borderTop: '1px solid ' + themeVar.Common.colors.DisabledColor,

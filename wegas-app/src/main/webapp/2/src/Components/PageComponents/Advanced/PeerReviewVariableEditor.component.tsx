@@ -18,7 +18,10 @@ import {
 import { entityIs, scriptableEntityIs } from '../../../data/entities';
 import { liveEdition } from '../../../data/Reducer/gameModel';
 import { submitToReview } from '../../../data/Reducer/VariableDescriptorReducer';
-import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
+import {
+  asyncRunLoadedScript,
+  getAll,
+} from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
 import { GameModel, Player, Team } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
@@ -133,7 +136,6 @@ export default function PeerReviewVariableEditor({
             });
           })
           .finally(() => {
-            // setWaitingState(false);
             timer.current = null;
           });
       }, 500);
@@ -257,6 +259,7 @@ export default function PeerReviewVariableEditor({
             <OkCancelModal
               onOk={() => {
                 store.dispatch(submitToReview(sPR.getId()!));
+                store.dispatch(getAll());
               }}
             >
               <p>{i18nValues.global.confirmation.info}</p>

@@ -10,7 +10,6 @@ import { inputStyleCSS } from '../../../Components/Inputs/inputStyles';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
-import { wlog } from '../../../Helper/wegaslog';
 
 export interface Choice {
   value?: {};
@@ -63,7 +62,6 @@ const undefinedTitle: Choice = {
 };
 
 function genItems(o: string | Choice) {
-  wlog(`k-${o}`);
   if (typeof o !== 'object') {
     return (
       <option key={`k-${o}`} value={o}>
