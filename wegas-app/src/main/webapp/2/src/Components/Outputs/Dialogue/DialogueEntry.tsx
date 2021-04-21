@@ -10,7 +10,6 @@ import {
   grow,
 } from '../../../css/classes';
 import { Global } from '../../../data/selectors';
-import { StoreConsumer } from '../../../data/Stores/store';
 import { useTranslate } from '../../../Editor/Components/FormView/translatable';
 import { themeVar } from '../../Style/ThemeVars';
 import { WaitingLoader } from './WaitingLoader';
@@ -66,18 +65,12 @@ function UserPortrait({
   style,
   id,
 }: UserPortraitProps) {
+  const user = Global.selectCurrentUser();
   return (
     <div className={className} style={style} id={id}>
       {player ? (
         <div className={cx(portraitPlayerStyle)}>
-          <StoreConsumer
-            selector={() => ({
-              user: Global.selectCurrentUser(),
-            })}
-          >
-            {({ state: { user }}) => <p
-              className={css({ lineHeight: '34px'})} >{user.name?.charAt(0)}</p>}
-          </StoreConsumer>
+           <p className={css({ lineHeight: '34px'})} >{user.name?.charAt(0)}</p>
         </div>
       ) : (
       <svg
