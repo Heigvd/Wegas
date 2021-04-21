@@ -54,6 +54,7 @@ function tumbleLoaderStyle(containerSize: number, color: string = '#fff') {
   const margin = size / 8 + 'px';
   const border = (size / 32) * 3 + 'px';
   return css({
+    zIndex: 10000,
     display: 'inline-block',
     width: sideSize,
     height: sideSize,
@@ -85,7 +86,7 @@ export function TumbleLoader({
   React.useEffect(() => {
     const parentBox = container.current?.parentElement?.getBoundingClientRect();
     if (parentBox) {
-      setComputedSize(Math.min(parentBox.height, parentBox.width));
+      setComputedSize(Math.min(parentBox.height - 25, parentBox.width - 25));
     }
   }, []);
 

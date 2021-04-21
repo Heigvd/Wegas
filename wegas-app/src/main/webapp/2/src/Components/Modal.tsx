@@ -1,9 +1,22 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { contentCenter, flex, flexColumn, justifyCenter } from '../css/classes';
+import {
+  contentCenter,
+  defaultMarginLeft,
+  defaultMarginTop,
+  flex,
+  flexColumn,
+  flexRow,
+  justifyCenter,
+  justifyEnd,
+  pointer,
+} from '../css/classes';
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../Helper/className';
+import { useInternalTranslate } from '../i18n/internalTranslator';
+import { modalTranslations } from '../i18n/modal/peerReview';
+import { Button } from './Inputs/Buttons/Button';
 import { themeCTX } from './Style/Theme';
 import { themeVar } from './Style/ThemeVars';
 
@@ -20,18 +33,16 @@ const modalStyle = css({
   padding: '1.5em',
   backgroundColor: 'rgba(0,0,0,0.2)',
   zIndex: 1000,
-  cursor: 'pointer',
-  '&>div': {
-    margin: '0 auto',
-    maxWidth: '100%',
-  },
 });
 
 const modalContentStyle = css({
+  margin: '0 auto',
+  maxWidth: '100%',
   backgroundColor: themeVar.Common.colors.BackgroundColor,
-  padding: '10px',
+  padding: '30px',
   cursor: 'initial',
-  boxShadow: '0 0 1px 1px',
+  boxShadow: '4px 4px 8px rgba(0,0,0,0.2)',
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
   '&:focus': {
     outline: 'none',
   },
@@ -52,6 +63,11 @@ const modalCloseButtonStyle = css({
   margin: 'auto',
 });
 
+const secondaryButtonStyle = css({
+  backgroundColor: 'transparent',
+  color: themeVar.Common.colors.PrimaryColor,
+  border:'1px solid ' + themeVar.Common.colors.PrimaryColor
+});
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
 // React element
@@ -129,14 +145,10 @@ export function Modal({
     container.current &&
     createPortal(
       <div
-        // ref={ref => {
-        //   if (ref != null) {
-        //     ref.focus();
-        //   }
-        // }}
         className={
-          cx(modalStyle, flex, flexColumn, justifyCenter, contentCenter) +
-          classNameOrEmpty(className)
+          cx(modalStyle, flex, flexColumn, justifyCenter, contentCenter, {
+            [pointer]: onExit != null,
+          }) + classNameOrEmpty(className)
         }
         style={style}
         id={id}
@@ -150,13 +162,68 @@ export function Modal({
           style={innerStyle}
           className={modalContentStyle + classNameOrEmpty(innerClassName)}
         >
-          <div className={modalCloseDivStyle} onClick={onExit}>
-            <IconComp icon="window-close" className={modalCloseButtonStyle} />
-          </div>
+          {onExit && (
+            <div className={modalCloseDivStyle} onClick={onExit}>
+              <IconComp icon="window-close" className={modalCloseButtonStyle} />
+            </div>
+          )}
           {children}
         </div>
       </div>,
       container.current,
     )
   );
+}
+
+interface OkCancelModalProps {
+  onOk?: () => void;
+  onCancel?: () => void;
+}
+
+export function OkCancelModal({
+  onOk,
+  onCancel,
+  children,
+}: React.PropsWithChildren<OkCancelModalProps>) {
+  const i18nValues = useInternalTranslate(modalTranslations);
+
+  return (
+    <Modal>
+      <div className={cx(flex, flexColumn)}>
+        {children}
+        <div className={cx(flex, flexRow, justifyEnd, defaultMarginTop)}>
+          <Button label={i18nValues.cancel} onClick={onCancel} className={secondaryButtonStyle}/>
+          <Button label={i18nValues.ok} onClick={onOk} className={defaultMarginLeft}/>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+export function useOkCancelModal() {
+  const [show, setShow] = React.useState(false);
+  const showModal = function () {
+    setShow(true);
+  };
+  function Modal({
+    onCancel,
+    onOk,
+    children,
+  }: React.PropsWithChildren<OkCancelModalProps>) {
+    return show ? (
+      <OkCancelModal
+        onCancel={() => {
+          setShow(false);
+          onCancel && onCancel();
+        }}
+        onOk={() => {
+          setShow(false);
+          onOk && onOk();
+        }}
+      >
+        {children}
+      </OkCancelModal>
+    ) : null;
+  }
+  return { showModal, OkCancelModal: Modal };
 }

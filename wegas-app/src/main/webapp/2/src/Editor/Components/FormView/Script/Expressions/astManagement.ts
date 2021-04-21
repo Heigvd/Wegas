@@ -55,13 +55,9 @@ import {
   PartialAttributes,
   PartialSchemaAttributes,
 } from './expressionEditorHelpers';
-import {
-  WegasTypeString,
-  WegasMethodReturnType,
-  isWegasMethodReturnType,
-} from '../../../../editionConfig';
+import { isWegasMethodReturnType } from '../../../../editionConfig';
 import { wlog } from '../../../../../Helper/wegaslog';
-import { ScriptMode, isScriptCondition } from '../Script';
+import { isScriptCondition } from '../Script';
 import { isEmptyStatement } from '@babel/types';
 import generate from '@babel/generator';
 import { parse } from '@babel/parser';

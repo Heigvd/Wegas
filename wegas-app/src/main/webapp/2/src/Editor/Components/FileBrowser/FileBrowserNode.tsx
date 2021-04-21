@@ -40,7 +40,6 @@ import {
   formatFileSize,
   getIconForFile,
 } from '../../../Helper/fileTools';
-import { FilePickingType, FileFilter } from './FileBrowser';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

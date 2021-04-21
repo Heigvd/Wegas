@@ -83,8 +83,8 @@ function PlayerNumberSlider({
           }
         }
       }}
-      min={descriptor?.getMinValue() || 0}
-      max={descriptor?.getMaxValue() || 1}
+      min={descriptor?.getMinValue() || -100}
+      max={descriptor?.getMaxValue() || 100}
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
     />

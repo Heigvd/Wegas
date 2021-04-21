@@ -45,17 +45,22 @@ public class CategorizedEvaluationInstance extends EvaluationInstance {
     /**
      * Set the category
      *
-     * @param categoryName name of the category to set. If category does not match any
-     *                     category from the descriptor, category is set as NULL.
+     * @param categoryName name of the category to set. If category does not match any category from
+     *                     the descriptor, category is set as NULL.
      */
     public void setValue(String categoryName) {
-        if (this.getDescriptor() instanceof CategorizedEvaluationDescriptor) {
-            CategorizedEvaluationDescriptor descriptor = (CategorizedEvaluationDescriptor) this.getDescriptor();
-            EnumItem category = descriptor.findItem(categoryName);
-            this.value = (category != null ? category.getName() : null);
+        EvaluationDescriptor descriptor = this.getDescriptor();
+        if (descriptor != null) {
+            if (descriptor instanceof CategorizedEvaluationDescriptor) {
+                CategorizedEvaluationDescriptor catDescriptor = (CategorizedEvaluationDescriptor) this.getDescriptor();
+                EnumItem category = catDescriptor.findItem(categoryName);
+                this.value = (category != null ? category.getName() : null);
+            } else {
+                this.value = null;
+            }
         } else {
-            this.value = null;
+            // description not available yet, use category name as-is
+            this.value = categoryName;
         }
     }
-
 }

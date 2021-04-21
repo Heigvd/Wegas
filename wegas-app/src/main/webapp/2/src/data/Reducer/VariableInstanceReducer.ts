@@ -113,8 +113,10 @@ export function runScript(
 ): ThunkResult {
   return function (dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
-    return asyncRunScript(gameModelId, script, player, context).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    return asyncRunScript(gameModelId, script, player, context).then(
+      res =>
+        res != null &&
+        dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
 }

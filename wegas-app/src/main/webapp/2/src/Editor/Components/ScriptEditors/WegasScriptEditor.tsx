@@ -1,9 +1,6 @@
 import * as React from 'react';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
-import {
-  ScriptContext,
-  useGlobalLibs,
-} from '../../../Components/Hooks/useGlobalLibs';
+import { useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
 
 // @ts-ignore
 import libes5 from '!!raw-loader!typescript/lib/lib.es5.d.ts';

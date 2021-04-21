@@ -48,6 +48,11 @@ import {
   usePagesContextStateStore,
 } from '../../data/Stores/pageContextStore';
 import { PageComponentContext } from '../PageComponents/tools/options';
+import { IGame } from 'wegas-ts-api';
+import {
+  schemaProps,
+  SchemaPropsType,
+} from '../PageComponents/tools/schemaProps';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -67,6 +72,8 @@ interface GlobalClasses {
   Function: typeof globalThis['Function'];
   gameModel?: Readonly<SGameModel>;
   self?: Readonly<SPlayer>;
+  schemaProps: SchemaPropsType;
+  CurrentGame: IGame;
   API_VIEW: View;
   Variable: GlobalVariableClass;
   Editor: GlobalEditorClass;
@@ -128,7 +135,9 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   // Global variables
   globals.gameModel = instantiate(gameModel);
   globals.self = instantiate(player);
+  globals.schemaProps = schemaProps;
   globals.API_VIEW = API_VIEW;
+  globals.CurrentGame = CurrentGame;
   // Variable class
   globals.Variable = {
     find: <T extends IVariableDescriptor>(_gm: unknown, name: string) => {
@@ -418,7 +427,7 @@ const memoClientScriptEval = (() => {
     script?: string | IScript,
     context: PageComponentContext = {},
     state?: PageComponentContext,
-  ): T extends IMergeable ? unknown : T => {
+  ): T extends WegasScriptEditorReturnType ? T : unknown => {
     const currentState = addSetterToState(
       state || pagesContextStateStore.getState(),
     );
@@ -462,7 +471,7 @@ export function clientScriptEval<T extends ScriptReturnType>(
   state?: {
     [name: string]: unknown;
   },
-): T extends IMergeable ? unknown : T {
+): T extends WegasScriptEditorReturnType ? T : unknown {
   return memoClientScriptEval(script, context, state);
 }
 
@@ -475,7 +484,7 @@ export function safeClientScriptEval<T extends ScriptReturnType>(
   state?: {
     [name: string]: unknown;
   },
-): T extends IMergeable ? unknown : T {
+): T extends WegasScriptEditorReturnType ? T : unknown {
   try {
     return clientScriptEval<T>(script, context, state);
   } catch (e) {
@@ -549,7 +558,7 @@ export function useUnsafeScript<T extends ScriptReturnType>(
   context?: {
     [name: string]: unknown;
   },
-): T extends IMergeable ? unknown : T {
+): T extends WegasScriptEditorReturnType ? T : unknown {
   const globalContexts = useGlobalContexts();
 
   const fn = React.useCallback(() => clientScriptEval<T>(script, context), [

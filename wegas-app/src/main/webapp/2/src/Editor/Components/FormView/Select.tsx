@@ -8,6 +8,8 @@ import { flex, flexColumn } from '../../../css/classes';
 import { ListDescriptorChild } from '../../editionConfig';
 import { inputStyleCSS } from '../../../Components/Inputs/inputStyles';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 export interface Choice {
   value?: {};
@@ -68,12 +70,9 @@ function genItems(o: string | Choice) {
     );
   }
   const { label = o.value, value, disabled: choiceDisabled } = o;
+  const strValue = typeof value === 'string' ? value : JSON.stringify(value);
   return (
-    <option
-      key={`k-${value}`}
-      value={typeof value === 'string' ? value : JSON.stringify(value)}
-      disabled={choiceDisabled}
-    >
+    <option key={`k-${value}`} value={strValue} disabled={choiceDisabled}>
       {label}
     </option>
   );
@@ -81,7 +80,7 @@ function genItems(o: string | Choice) {
 
 interface SelectorProps extends ClassStyleId, DisabledReadonly {
   choices: Choices;
-  value: string;
+  value: string | number | undefined;
   onChange?: (
     event: React.ChangeEvent<{
       value: string;
@@ -94,11 +93,12 @@ export function Selector({
   id,
   className,
   style,
-  value,
+  value = '',
   onChange,
   readOnly,
   disabled,
 }: SelectorProps) {
+  const i18nValues = useInternalTranslate(commonTranslations);
   return choices.length > 1 ? (
     <select
       id={id}
@@ -108,6 +108,9 @@ export function Selector({
       onChange={onChange}
       disabled={disabled || readOnly}
     >
+      <option value="" disabled hidden>
+        - {i18nValues.plzChooseValue} -
+      </option>
       {choices.map(genItems)}
     </select>
   ) : choices.length === 1 ? (
@@ -131,9 +134,16 @@ function SelectView(props: ISelectProps) {
   const onChange = function onChange(
     event: React.ChangeEvent<{ value: string }>,
   ) {
-    let parsedValue = event.target.value;
+    let parsedValue: string | undefined = event.target.value;
     try {
-      parsedValue = JSON.parse(event.target.value);
+      parsedValue = JSON.parse(parsedValue);
+    } catch (_e) {
+      parsedValue =
+        typeof parsedValue === 'string' ||
+        typeof parsedValue === 'number' ||
+        typeof parsedValue === 'boolean'
+          ? String(parsedValue)
+          : undefined;
     } finally {
       props.onChange(parsedValue);
     }

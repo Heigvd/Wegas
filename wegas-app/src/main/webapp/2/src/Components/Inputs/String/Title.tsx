@@ -19,10 +19,6 @@ const levelStyle = (level: TitleLevels) =>
       themeVar.ComponentTitle.dimensions[
         `FontSize${level}` as keyof typeof themeVar.ComponentTitle.dimensions
       ],
-    fontFamily:
-      themeVar.ComponentTitle.others[
-        `FontFamily${level}` as keyof typeof themeVar.ComponentTitle.others
-      ],
   });
 
 interface TitleProps extends React.PropsWithChildren<ClassStyleId> {
