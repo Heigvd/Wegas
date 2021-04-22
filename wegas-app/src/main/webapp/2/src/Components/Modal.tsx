@@ -66,7 +66,7 @@ const modalCloseButtonStyle = css({
 const secondaryButtonStyle = css({
   backgroundColor: 'transparent',
   color: themeVar.Common.colors.PrimaryColor,
-  border:'1px solid ' + themeVar.Common.colors.PrimaryColor
+  border: '1px solid ' + themeVar.Common.colors.PrimaryColor,
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
@@ -192,8 +192,16 @@ export function OkCancelModal({
       <div className={cx(flex, flexColumn)}>
         {children}
         <div className={cx(flex, flexRow, justifyEnd, defaultMarginTop)}>
-          <Button label={i18nValues.cancel} onClick={onCancel} className={secondaryButtonStyle}/>
-          <Button label={i18nValues.ok} onClick={onOk} className={defaultMarginLeft}/>
+          <Button
+            label={i18nValues.cancel}
+            onClick={onCancel}
+            className={secondaryButtonStyle}
+          />
+          <Button
+            label={i18nValues.ok}
+            onClick={onOk}
+            className={defaultMarginLeft}
+          />
         </div>
       </div>
     </Modal>
@@ -202,9 +210,27 @@ export function OkCancelModal({
 
 export function useOkCancelModal() {
   const [show, setShow] = React.useState(false);
+  const oldHtmlOverflowProperty = React.useRef<string | null>(null);
+
+  const setHTMLScroll = React.useCallback((scroll: boolean) => {
+    const htmlTag = document.getElementsByTagName('html')[0];
+    if (scroll) {
+      htmlTag.style.setProperty('overflow', oldHtmlOverflowProperty.current);
+    } else {
+      oldHtmlOverflowProperty.current =
+        htmlTag.style.overflow === '' ? null : htmlTag.style.overflow;
+      htmlTag.style.setProperty('overflow', 'hidden');
+    }
+    return () => {
+      htmlTag.style.setProperty('overflow', oldHtmlOverflowProperty.current);
+    };
+  }, []);
+
   const showModal = function () {
     setShow(true);
+    setHTMLScroll(false);
   };
+
   function Modal({
     onCancel,
     onOk,
@@ -217,6 +243,7 @@ export function useOkCancelModal() {
           onCancel && onCancel();
         }}
         onOk={() => {
+          setHTMLScroll(true);
           setShow(false);
           onOk && onOk();
         }}
