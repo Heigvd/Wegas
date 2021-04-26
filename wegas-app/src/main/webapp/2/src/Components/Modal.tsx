@@ -23,17 +23,18 @@ import { themeVar } from './Style/ThemeVars';
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // styles
 
-const modalStyle = css({
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  overflow: 'auto',
-  minWidth: '100%',
-  height: '100%',
-  padding: '1.5em',
-  backgroundColor: 'rgba(0,0,0,0.2)',
-  zIndex: 1000,
-});
+const modalStyle = (fixed: boolean) =>
+  css({
+    position: fixed ? 'fixed' : 'absolute',
+    top: 0,
+    left: 0,
+    overflow: 'auto',
+    minWidth: '100%',
+    height: '100%',
+    padding: '1.5em',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    zIndex: 1000,
+  });
 
 const modalContentStyle = css({
   margin: '0 auto',
@@ -146,9 +147,16 @@ export function Modal({
     createPortal(
       <div
         className={
-          cx(modalStyle, flex, flexColumn, justifyCenter, contentCenter, {
-            [pointer]: onExit != null,
-          }) + classNameOrEmpty(className)
+          cx(
+            modalStyle(attachedToId == null),
+            flex,
+            flexColumn,
+            justifyCenter,
+            contentCenter,
+            {
+              [pointer]: onExit != null,
+            },
+          ) + classNameOrEmpty(className)
         }
         style={style}
         id={id}
@@ -210,25 +218,8 @@ export function OkCancelModal({
 
 export function useOkCancelModal() {
   const [show, setShow] = React.useState(false);
-  const oldHtmlOverflowProperty = React.useRef<string | null>(null);
-
-  const setHTMLScroll = React.useCallback((scroll: boolean) => {
-    const htmlTag = document.getElementsByTagName('html')[0];
-    if (scroll) {
-      htmlTag.style.setProperty('overflow', oldHtmlOverflowProperty.current);
-    } else {
-      oldHtmlOverflowProperty.current =
-        htmlTag.style.overflow === '' ? null : htmlTag.style.overflow;
-      htmlTag.style.setProperty('overflow', 'hidden');
-    }
-    return () => {
-      htmlTag.style.setProperty('overflow', oldHtmlOverflowProperty.current);
-    };
-  }, []);
-
   const showModal = function () {
     setShow(true);
-    setHTMLScroll(false);
   };
 
   function Modal({
@@ -243,7 +234,6 @@ export function useOkCancelModal() {
           onCancel && onCancel();
         }}
         onOk={() => {
-          setHTMLScroll(true);
           setShow(false);
           onOk && onOk();
         }}
