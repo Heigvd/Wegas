@@ -9,6 +9,8 @@ import {
   expandHeight,
   grow,
 } from '../../../css/classes';
+import { Global } from '../../../data/selectors';
+import { StoreConsumer } from '../../../data/Stores/store';
 import { useTranslate } from '../../../Editor/Components/FormView/translatable';
 import { themeVar } from '../../Style/ThemeVars';
 import { WaitingLoader } from './WaitingLoader';
@@ -42,18 +44,42 @@ const portraitStyle = css({
   margin: '5px',
 });
 
+const portraitPlayerStyle = css({
+  backgroundColor: themeVar.Common.colors.ActiveColor,
+  borderRadius: '50%',
+  fontSize: '1.3em',
+  textAlign: 'center',
+  color: themeVar.Common.colors.LightTextColor,
+  width: '35px',
+  height: '35px',
+});
+
 interface UserPortraitProps extends ClassStyleId {
   color?: string;
+  player?: boolean;
 }
 
 function UserPortrait({
   color = '#00BFCE',
+  player,
   className,
   style,
   id,
 }: UserPortraitProps) {
   return (
     <div className={className} style={style} id={id}>
+      {player ? (
+        <div className={cx(portraitPlayerStyle)}>
+          <StoreConsumer
+            selector={() => ({
+              user: Global.selectCurrentUser(),
+            })}
+          >
+            {({ state: { user }}) => <p
+              className={css({ lineHeight: '34px'})} >{user.name?.charAt(0)}</p>}
+          </StoreConsumer>
+        </div>
+      ) : (
       <svg
         width="35"
         height="35"
@@ -69,6 +95,7 @@ function UserPortrait({
           fill="white"
         />
       </svg>
+      )}
     </div>
   );
 }
@@ -102,6 +129,7 @@ export function DialogueEntry({ text, player, waiting }: DialogueEntryProps) {
                   ? themeVar.Common.colors.ActiveColor
                   : themeVar.Common.colors.HeaderColor
               }
+              player={player}
             />
             <div className={cx(expandHeight, grow, textContainerStyle(player))}>
               <div dangerouslySetInnerHTML={{ __html: translation }} />
