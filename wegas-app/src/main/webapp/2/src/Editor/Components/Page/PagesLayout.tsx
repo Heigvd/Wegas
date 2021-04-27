@@ -887,6 +887,7 @@ export function PagesLayout(props: PagesLayoutProps) {
             const computedTargetParent = target.parent
               ? target.parent
               : { pagePath: [] };
+            // debugger;
 
             if (
               id == null &&
@@ -907,8 +908,8 @@ export function PagesLayout(props: PagesLayoutProps) {
                 );
               } else {
                 onNew(
-                  selectedPageId,
-                  selectedPage,
+                  computedTargetParent.pageId,
+                  computedTargetParent.page,
                   computedTargetParent.componentPath,
                   item.componentName,
                 );
