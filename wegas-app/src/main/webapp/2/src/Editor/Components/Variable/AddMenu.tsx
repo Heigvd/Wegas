@@ -3,11 +3,7 @@ import produce from 'immer';
 import { Actions } from '../../../data';
 import { getIcon, getLabel, getChildren } from '../../editionConfig';
 import { StoreDispatch, store } from '../../../data/Stores/store';
-import {
-  DropMenu,
-  DropMenuProps,
-  DropMenuItem,
-} from '../../../Components/DropMenu';
+import { DropMenu, DropMenuProps } from '../../../Components/DropMenu';
 import { withDefault, IconComp } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { VariableDescriptor } from '../../../data/selectors';

@@ -15,7 +15,6 @@ import {
   IVariableDescriptor,
   WegasClassNameAndScriptableTypes,
 } from 'wegas-ts-api';
-import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 import { ChildrenDeserializerProps } from './PageDeserializer';
 import { classStyleIdShema } from './options';
 

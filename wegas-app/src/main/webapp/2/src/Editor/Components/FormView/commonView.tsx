@@ -4,6 +4,7 @@ import {
   featuresCTX,
   isFeatureEnabled,
 } from '../../../Components/Contexts/FeaturesProvider';
+import { flex, flexRow, itemCenter } from '../../../css/classes';
 
 const containerStyle = css({
   position: 'relative',
@@ -37,6 +38,7 @@ const LAYOUTS = {
   extraShortInline: css(shortInline, {
     maxWidth: '5em',
   }),
+  flexInline: cx(flex, flexRow, itemCenter),
 };
 
 export interface CommonView {

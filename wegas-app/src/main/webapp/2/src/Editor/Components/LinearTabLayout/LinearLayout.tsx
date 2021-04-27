@@ -5,12 +5,13 @@ import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvi
 import { omit } from 'lodash';
 import u from 'immer';
 import { ReparentableRoot } from '../Reparentable';
-import { DnDTabLayout, ComponentMap, filterMap } from './DnDTabLayout';
+import { DnDTabLayout, ComponentMap, filterMap, ClassNames } from './DnDTabLayout';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
 
 import 'react-reflex/styles.css';
 import { flex, noOverflow, grow, expandHeight } from '../../../css/classes';
 import { themeVar } from '../../../Components/Style/ThemeVars';
+import { TabComponent } from './DnDTabs';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
@@ -822,6 +823,14 @@ interface LinearLayoutProps<T extends ComponentMap> {
    * onFocusTab - Allows to pass back the focusTab function without using a context
    */
   onFocusTab?: (focusTab: (tabId: string, layoutId: string) => void) => void;
+  /**
+   * The tab component to use in this layout
+   */
+  CustomTab?: TabComponent;
+  /**
+   * The className for general styling
+   */
+  classNames?: ClassNames
 }
 
 /**
@@ -832,6 +841,8 @@ export function MainLinearLayout<T extends ComponentMap>({
   initialLayout,
   tabs,
   onFocusTab,
+  CustomTab,
+  classNames = {},
 }: LinearLayoutProps<T>) {
   // const tabs = React.useRef<ComponentMap>(tabs ? tabs : {});
   const savedLayoutJSON = window.localStorage.getItem(
@@ -924,6 +935,8 @@ export function MainLinearLayout<T extends ComponentMap>({
               defaultActiveLabel={currentLayout.defaultActive}
               onSelect={onSelect}
               layoutId={layoutId}
+              CustomTab={CustomTab}
+              classNames={classNames}
             />
           );
         }
@@ -987,6 +1000,8 @@ export function MainLinearLayout<T extends ComponentMap>({
               onNewTab={onNewTab(currentLayoutKey)}
               onSelect={onSelect}
               layoutId={layoutId}
+              CustomTab={CustomTab}
+              classNames={classNames}
             />
           </ReflexElement>
         </ReflexContainer>

@@ -1,16 +1,16 @@
 /* global module*/
 import * as React from 'react';
 import { render } from 'react-dom';
-import { LanguagesProvider } from '../Components/Contexts/LanguagesProvider';
-import '../css/global.css';
-import Layout from './Components/Layout';
-import { LibrariesLoader } from './Components/LibrariesLoader';
-import { ClassesProvider } from '../Components/Contexts/ClassesProvider';
-import { FeaturesProvider } from '../Components/Contexts/FeaturesProvider';
-import { ThemeProvider } from '../Components/Style/Theme';
-import '../data/Stores/store';
-import { importPageComponents } from '../Components/PageComponents/tools/componentFactory';
-import { PopupManager } from '../Components/PopupManager';
+import { ClassesProvider } from './Components/Contexts/ClassesProvider';
+import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
+import { LanguagesProvider } from './Components/Contexts/LanguagesProvider';
+import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
+import { PopupManager } from './Components/PopupManager';
+import { ThemeProvider } from './Components/Style/Theme';
+import './css/global.css';
+import './data/Stores/store';
+import Layout from './Editor/Components/Layout';
+import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
 // import * as less from 'less';
 // import { wlog } from '../Helper/wegaslog';
 
@@ -71,7 +71,7 @@ function mount() {
 mount();
 
 if (module.hot) {
-  module.hot.accept('./Components/Layout', () => {
+  module.hot.accept('./Editor/Components/Layout', () => {
     mount();
   });
 }

@@ -7,7 +7,7 @@ import {
 import { entityIs } from '../../data/entities';
 import { translate } from '../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
-import { Text } from '../Outputs/Text';
+import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import {
   CustomFlowLineComponent,
@@ -120,7 +120,7 @@ export function TransitionBox({
         )} */}
         <div>
           <p className="StateLabelTextStyle">
-            <Text
+            <HTMLText
               text={
                 (entityIs(transition.transition, 'Transition')
                   ? transition.transition.label

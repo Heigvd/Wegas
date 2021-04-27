@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
-import { Item } from './TreeSelect';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { flexRow, flex, flexColumn } from '../../../css/classes';
 

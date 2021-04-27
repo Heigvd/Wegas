@@ -1,5 +1,5 @@
 import { Schema } from 'jsoninput';
-import { TYPESTRING } from 'jsoninput/typings/types';
+// import { TYPESTRING } from 'jsoninput/typings/types';
 import {
   IAbstractEntity,
   SAbstractEntity,
@@ -9,19 +9,16 @@ import {
 import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/globalState';
 import { ThunkResult } from '../data/Stores/store';
+import { wwarn } from '../Helper/wegaslog';
 import { AvailableViews } from './Components/FormView';
 import { Icons } from './Components/Views/FontAwesome';
 import { formValidation } from './formValidation';
-
-export type WegasTypeString = TYPESTRING | 'identifier';
 
 export type WegasMethodParameter = {
   type: WegasTypeString;
 } & Schema<AvailableViews>;
 
 export const wegasMethodReturnValues = ['number', 'string', 'boolean'] as const;
-
-export type WegasMethodReturnType = ValueOf<typeof wegasMethodReturnValues>;
 
 export interface WegasMethod {
   label: string;
@@ -156,7 +153,12 @@ async function injectRef(schema: { $wref?: string }): Promise<Schema> {
   if (typeof $wref === 'string') {
     const refSchema = await import(
       'wegas-ts-api/src/generated/schemas/' + $wref
-    ).then(res => res.schema);
+    )
+      .then(res => res.schema)
+      .catch(e => {
+        wwarn(e);
+        return {};
+      });
     return { ...refSchema, ...restSchema };
   }
   return restSchema;
@@ -165,14 +167,19 @@ async function injectRef(schema: { $wref?: string }): Promise<Schema> {
 export default async function getEditionConfig<T extends IMergeable>(
   entity: T,
 ): Promise<Schema> {
-  return fetchConfig(entity['@class'] + '.json').then(res => {
-    return schemaUpdater(
-      res.schema,
-      injectRef,
-      updateVisibility,
-      updatedErrored,
-    );
-  });
+  return fetchConfig(entity['@class'] + '.json')
+    .then(res => {
+      return schemaUpdater(
+        res.schema,
+        injectRef,
+        updateVisibility,
+        updatedErrored,
+      );
+    })
+    .catch(e => {
+      wwarn(e);
+      return {};
+    });
 }
 
 export interface EActions {

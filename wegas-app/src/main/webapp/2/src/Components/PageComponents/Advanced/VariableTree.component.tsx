@@ -15,7 +15,7 @@ import {
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
 
-interface PlayerFileBrowserProps extends WegasComponentProps {
+interface PlayerVariableTreeProps extends WegasComponentProps {
   list?: IScript;
   flexValues?: ComponentWithFormFlexValues;
 }
@@ -28,7 +28,7 @@ export default function PlayerVariableTree({
   style,
   id,
   options,
-}: PlayerFileBrowserProps) {
+}: PlayerVariableTreeProps) {
   const rootDirectory = useScript<SListDescriptor>(list, context);
   const rootDirectoryId = rootDirectory?.getId();
 

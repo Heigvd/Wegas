@@ -11,7 +11,6 @@ import {
 } from '../../css/classes';
 import { themeVar } from '../Style/ThemeVars';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
-import { HashListChoices } from '../../Editor/Components/FormView/HashList';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 
 const MENU_ITEM_SELECTOR = 'menu-item';

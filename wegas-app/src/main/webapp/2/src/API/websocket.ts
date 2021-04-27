@@ -5,7 +5,7 @@ import { editorEvent, updatePusherStatus } from '../data/Reducer/globalState';
 import { manageResponseHandler } from '../data/actions';
 import { Actions } from '../data';
 import * as React from 'react';
-import { wlog } from '../Helper/wegaslog';
+import { wwarn } from '../Helper/wegaslog';
 import { IAbstractEntity } from 'wegas-ts-api';
 import { entityIs } from '../data/entities';
 
@@ -100,6 +100,7 @@ const webSocketEvents = [
   'LibraryUpdate-ServerScript',
   'LockEvent',
   'OutdatedEntitiesEvent',
+  'populateQueue-dec',
 ] as const;
 
 export type WebSocketEvent = ValueOf<typeof webSocketEvents>;
@@ -165,44 +166,46 @@ class WebSocketListener {
         CHANNEL_PREFIX.Player + CurrentPlayerId,
         CHANNEL_PREFIX.Team + CurrentTeamId,
         CHANNEL_PREFIX.User + CurrentUser.id,
+        'global-channel',
       ];
-
-      channels.forEach(chan =>
-        this.socket!.subscribe(chan).bind_global(
-          async (event: string, data: {}) => {
-            const processed = await processEvent(event, data);
-            if (processed.event.startsWith('pusher:')) {
-              //pusher events
-              return;
-            }
-            this.eventReveived(
-              processed.event as WebSocketEvent,
-              processed.data,
-            );
-          },
-        ),
-      );
+      channels.forEach(c => this.bindChannel(c, this.socket));
     });
   }
-  public bindCallback(
-    eventId: WebSocketEvent,
-    callback: (data: unknown) => void,
+
+  public bindChannel(
+    channelId: string,
+    socket: import('pusher-js').Pusher.PusherSocket | null = this.socket,
   ) {
+    socket!
+      .subscribe(channelId)
+      .bind_global(async (event: string, data: {}) => {
+        const processed = await processEvent(event, data);
+        if (processed.event.startsWith('pusher:')) {
+          //pusher events
+          return;
+        }
+        this.eventReveived(processed.event as WebSocketEvent, processed.data);
+      });
+    this.socket?.channels;
+  }
+
+  public unbindChannel(channelId: string) {
+    this.socket!.unsubscribe(channelId);
+  }
+
+  public bindEvent(eventId: string, callback: (data: unknown) => void) {
     if (this.events[eventId]) {
       this.events[eventId].push(callback);
     } else {
-      wlog('Unknown event');
+      this.events[eventId] = [callback];
     }
   }
 
-  public unbindCallback(
-    eventId: WebSocketEvent,
-    callback: (data: unknown) => void,
-  ) {
+  public unbindCallback(eventId: string, callback: (data: unknown) => void) {
     if (this.events[eventId]) {
       this.events[eventId] = this.events[eventId].filter(el => el !== callback);
     } else {
-      wlog('Unknown event');
+      wwarn(`Unknown event ${eventId}`);
     }
   }
 
@@ -313,11 +316,54 @@ const SingletonWebSocket = new WebSocketListener(
   PusherApp.cluster,
 );
 
-export const useWebsocket = (
-  event: WebSocketEvent,
+export const useWebsocketEvent = (
+  event: WebSocketEvent | string,
   cb: (data: unknown) => void,
-) =>
+) => {
   React.useEffect(() => {
-    SingletonWebSocket.bindCallback(event, cb);
+    SingletonWebSocket.bindEvent(event, cb);
     return () => SingletonWebSocket.unbindCallback(event, cb);
   }, [event, cb]);
+  return SingletonWebSocket;
+};
+
+export const useWebsocketChannel = (channel: string) => {
+  React.useEffect(() => {
+    SingletonWebSocket.bindChannel(channel);
+    return () => SingletonWebSocket.unbindChannel(channel);
+  }, [channel]);
+  return SingletonWebSocket;
+};
+
+export const useWebsocket = (
+  channel: string,
+  event: string,
+  cb: (data: unknown) => void,
+) => {
+  useWebsocketChannel(channel);
+  return useWebsocketEvent(event, cb);
+};
+
+export function useLiveUpdate(
+  variableIdToWatch: number | undefined,
+  delay: number = 500,
+) {
+  const waitTimer = React.useRef<NodeJS.Timeout | null>();
+  const [waitingState, setWaitingState] = React.useState(false);
+
+  useWebsocketEvent(
+    'CustomEvent',
+    ({ payload }: { payload: IAbstractEntity }) => {
+      if (variableIdToWatch != null && payload.id === variableIdToWatch) {
+        setWaitingState(true);
+        if (waitTimer.current != null) {
+          clearTimeout(waitTimer.current);
+        }
+        waitTimer.current = setTimeout(() => {
+          setWaitingState(false);
+        }, delay);
+      }
+    },
+  );
+  return waitingState;
+}

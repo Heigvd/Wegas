@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text } from '../../Outputs/Text';
+import { HTMLText } from '../../Outputs/HTMLText';
 import {
   registerComponent,
   pageComponentFactory,
@@ -29,7 +29,7 @@ function PlayerText({
       No text
     </span>
   ) : (
-    <Text
+    <HTMLText
       id={id}
       text={content}
       style={style}

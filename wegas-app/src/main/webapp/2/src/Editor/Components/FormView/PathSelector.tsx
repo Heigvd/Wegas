@@ -2,7 +2,6 @@ import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonView } from './commonView';
 import { LabeledView } from './labeled';
-import { FileFilter, FilePickingType } from '../FileBrowser/FileBrowser';
 import {
   CommonFileSelectProps,
   LabeledCustomFileSelector,

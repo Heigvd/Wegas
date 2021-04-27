@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useDrop, DropTargetMonitor } from 'react-dnd';
-import { Tab, DragTab, DropTab } from './DnDTabs';
+import { Tab, DragTab, DropTab, TabComponent } from './DnDTabs';
 import { Toolbar } from '../../../Components/Toolbar';
 import { DropMenu } from '../../../Components/DropMenu';
 import { Reparentable } from '../Reparentable';
@@ -98,6 +98,11 @@ export const dropSpecsFactory = (action: DropAction, layoutAccept: string) => {
     }),
   };
 };
+export interface ClassNames {
+  general?:string,
+  header?: string,
+  content?: string
+}
 
 interface TabLayoutProps {
   /**
@@ -113,7 +118,7 @@ interface TabLayoutProps {
    */
   selectItems?: ComponentMap;
   /**
-   * activeId - the selected tab
+   * defaultActiveLabel - the selected tab at startup
    */
   defaultActiveLabel?: string;
   /**
@@ -140,6 +145,14 @@ interface TabLayoutProps {
    * layoutId - The token that filter the drop actions
    */
   layoutId: string;
+  /**
+   * The tab component to use in this layout
+   */
+  CustomTab?: TabComponent;
+  /**
+   * The className for general styling
+   */
+  classNames?: ClassNames
 }
 
 /**
@@ -156,7 +169,10 @@ export function DnDTabLayout({
   onDeleteTab,
   onNewTab,
   layoutId,
+  CustomTab = Tab,
+  classNames = {},
 }: TabLayoutProps) {
+  const {general, header, content} = classNames;
   React.useEffect(() => {
     if (
       defaultActiveLabel === undefined ||
@@ -210,6 +226,7 @@ export function DnDTabLayout({
             overviewNode: <div className={dropTabZone}></div>,
           }}
           layoutId={layoutId}
+          CustomTab={CustomTab}
         >
           <DragTab
             key={label}
@@ -219,6 +236,7 @@ export function DnDTabLayout({
               onSelect && onSelect(label);
             }}
             layoutId={layoutId}
+            CustomTab={CustomTab}
           >
             {label}
             <Button
@@ -235,7 +253,7 @@ export function DnDTabLayout({
       // At the end, don't forget to add a dropTab on the right of the last tab
       if (Number(i) === componentsKeys.length - 1) {
         tabs.push(
-          <Tab
+          <CustomTab
             key={label + 'RIGHTDROP'}
             className={
               dropTabsProps.isShallowOver
@@ -250,12 +268,12 @@ export function DnDTabLayout({
   };
 
   return (
-    <Toolbar vertical={vertical} className={relative}>
-      <Toolbar.Header className={headerStyle}>
+    <Toolbar vertical={vertical} className={cx(relative, general)}>
+      <Toolbar.Header className={cx(headerStyle, header)}>
         <div ref={dropTabs} className={cx(flex, grow, autoScroll)}>
           {renderTabs()}
           {selectItems && Object.keys(selectItems).length > 0 && (
-            <Tab key={'-1'}>
+            <CustomTab key={'-1'}>
               <DropMenu
                 items={Object.keys(selectItems).map(label => ({
                   label: label,
@@ -269,11 +287,11 @@ export function DnDTabLayout({
                 buttonClassName={tabButton}
                 noBackground
               />
-            </Tab>
+            </CustomTab>
           )}
         </div>
       </Toolbar.Header>
-      <Toolbar.Content className={cx(relative, contentStyle)}>
+      <Toolbar.Content className={cx(relative, contentStyle, content)}>
         <div className={cx(expandBoth, hideOverflow)}>
           <div className={cx(autoScroll, absoute, expandBoth, flex)}>
             {defaultActiveLabel && components[defaultActiveLabel] && (

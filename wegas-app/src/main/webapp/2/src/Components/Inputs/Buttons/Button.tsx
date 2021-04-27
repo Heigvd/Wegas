@@ -25,7 +25,7 @@ export const buttonStyle = css({
 
   ['&:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):not(.confirmBtn):hover']: {
     color: themeVar.Common.colors.HoverTextColor,
-    backgroundColor: themeVar.Common.colors.ActiveColor,
+    backgroundColor: themeVar.Common.colors.PrimaryColorShade,
     outline: 'none',
   },
   ['&:focus']: {
@@ -169,6 +169,7 @@ export interface ButtonProps extends ClassStyleId, DisabledReadonly {
   id?: string;
   disableBorders?: DisableBorders;
   icon?: Icons;
+  src?: string;
   pressed?: boolean;
   prefixedLabel?: boolean;
   noBackground?: boolean;
@@ -196,6 +197,7 @@ export const Button = React.forwardRef<
       type,
       id,
       icon,
+      src,
       pressed,
       prefixedLabel,
       noBackground,
@@ -249,6 +251,7 @@ export const Button = React.forwardRef<
       >
         {prefixedLabel && computedLabel}
         {icon && <IconComp icon={icon} />}
+        {src && <img alt={tooltip} src={src} />}
         {!prefixedLabel && computedLabel}
       </button>
     );

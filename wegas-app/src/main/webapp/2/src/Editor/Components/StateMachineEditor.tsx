@@ -355,7 +355,7 @@ export function StateMachineEditor<
         localDispatch != null;
       const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
       dispatch(
-        Actions.EditorActions.editVariable(
+        Actions.EditorActions.editStateMachine(
           stateMachine,
           ['states', startProcess.id, 'transitions', flowline.id],
           undefined,
