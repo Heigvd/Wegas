@@ -333,7 +333,9 @@ function ComponentAdder({ className, tooltip, onSelect }: ComponentAdderProps) {
           label: v.componentName,
           id: v.componentName,
         }))}
-        onSelect={({ id }) => onSelect(id)}
+        onSelect={({ id }) => {
+          onSelect(id);
+        }}
       />
     </div>
   );
@@ -472,9 +474,9 @@ function WegasComponentTitle({
       {component.props?.children && (
         <ComponentAdder
           tooltip="Add a component"
-          onSelect={componentType =>
-            onNew(pageId, page, componentPath, componentType, 0)
-          }
+          onSelect={componentType => {
+            onNew(pageId, page, componentPath, componentType, 0);
+          }}
           className={CONTROLS_CLASSNAME}
         />
       )}

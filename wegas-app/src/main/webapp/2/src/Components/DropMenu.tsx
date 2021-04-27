@@ -134,8 +134,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
   return (
     <Downshift
       onStateChange={onStateChange}
-      onSelect={(i: MItem) =>
-        i.value != null &&
+      onSelect={(i: MItem) => {
         onSelect(
           {
             ...i,
@@ -143,8 +142,8 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
             path: path || [],
           },
           lastKeyboardEvents,
-        )
-      }
+        );
+      }}
       itemToString={emtpyStr}
     >
       {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
