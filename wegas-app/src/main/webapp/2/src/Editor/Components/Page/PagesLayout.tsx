@@ -473,7 +473,7 @@ function WegasComponentTitle({
         <ComponentAdder
           tooltip="Add a component"
           onSelect={componentType =>
-            onNew(pageId, page, componentPath, componentType)
+            onNew(pageId, page, componentPath, componentType, 0)
           }
           className={CONTROLS_CLASSNAME}
         />
@@ -577,7 +577,8 @@ function WegasComponentNode({
       noDrop={
         computedComponent.props?.children == null ||
         (computedComponent.props.children.length === 1 &&
-          computedComponent.type === 'For each')
+          computedComponent.type === 'For each') ||
+        computedComponent.type === 'If Else'
       }
     >
       {computedComponent.props?.children
@@ -839,6 +840,7 @@ interface ComponentControls {
     page: WegasComponent,
     componentPath: number[],
     componentType: string,
+    index: number,
   ) => void;
   onDuplicate: (
     pageId: string,
@@ -911,6 +913,7 @@ export function PagesLayout(props: PagesLayoutProps) {
                   computedTargetParent.page,
                   computedTargetParent.componentPath,
                   item.componentName,
+                  target.index || 0,
                 );
               }
             } else {

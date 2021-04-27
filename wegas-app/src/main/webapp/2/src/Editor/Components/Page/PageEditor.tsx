@@ -302,6 +302,7 @@ interface LayoutProps {
     page: WegasComponent,
     path: number[],
     type: string,
+    index: number,
   ) => void;
   onDuplicateLayoutComponent: (
     pageId: string,
@@ -584,12 +585,13 @@ export default function PageEditor() {
   );
 
   const onNewLayoutComponent = React.useCallback(
-    (pageId, page, path, componentTypeName) => {
+    (pageId, page, path, componentTypeName, index) => {
       const newComponent = createComponent(
         page,
         path,
         componentTypeName,
         computeProps(components[componentTypeName], undefined, undefined),
+        index,
       );
       if (newComponent) {
         patchPage(pageId, newComponent.newPage);
