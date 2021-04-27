@@ -60,6 +60,7 @@ export const transitionBoxActionStyle = css({
 const selectedTransitionBoxStyle = css({
   background: themeVar.Common.colors.BackgroundColor,
   border: '4px solid '+ themeVar.Common.colors.ActiveColor,
+  color: themeVar.Common.colors.ActiveColor,
 });
 
 const transitionMoreInfosStyle = css({
