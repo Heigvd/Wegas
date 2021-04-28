@@ -8,6 +8,7 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.Helper.EmailAttributes;
 import com.wegas.core.XlsxSpreadsheet;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
@@ -22,7 +23,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
-import com.wegas.core.Helper.EmailAttributes;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;

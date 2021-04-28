@@ -7,6 +7,7 @@ import {
   flex,
   flexDistribute,
   itemCenter,
+  halfOpacity,
 } from '../../css/classes';
 import { Value } from './Value';
 import { cx, css } from 'emotion';
@@ -27,7 +28,7 @@ const phaseDotStyle = css({
   borderColor: themeVar.Common.colors.PrimaryColor,
 });
 
-interface PhaseComponentProps {
+export interface PhaseComponentProps {
   /**
    * value - the current value of the progess bar
    */
@@ -38,7 +39,7 @@ interface PhaseComponentProps {
   phase: number;
 }
 
-function SimplePhaseComponent({ value, phase }: PhaseComponentProps) {
+export function SimplePhaseComponent({ value, phase }: PhaseComponentProps) {
   return (
     <div className={'phaseDotStyle ' + phaseDotStyle}>
       <IconComp
@@ -58,7 +59,7 @@ function SimplePhaseComponent({ value, phase }: PhaseComponentProps) {
   );
 }
 
-function SimpleInterPhaseComponent(_props: PhaseComponentProps) {
+export function SimpleInterPhaseComponent(_props: PhaseComponentProps) {
   return <div className={'phasePathStyle ' + phasePathStyle}></div>;
 }
 
@@ -105,6 +106,10 @@ export interface PhasesProgressBarProps extends ClassStyleId {
    * displayValue - should the current value be displayed with the gauge
    */
   displayValue?: boolean;
+  /**
+   * disabled - if true, displayed as disabled
+   */
+  disabled?: boolean;
 }
 
 interface CustomPhasesProgressBarProps extends PhasesProgressBarProps {
@@ -122,12 +127,15 @@ export function CustomPhasesProgressBar({
   style,
   PhaseComponent,
   InterPhaseComponent,
+  disabled,
 }: CustomPhasesProgressBarProps) {
   return (
     <div
       className={
         'wegas wegas-phaseProgessBar ' +
-        cx(flex, textCenter, justifyCenter, flexColumn, grow) +
+        cx(flex, textCenter, justifyCenter, flexColumn, grow, {
+          [halfOpacity]: disabled,
+        }) +
         classNameOrEmpty(className)
       }
       style={style}

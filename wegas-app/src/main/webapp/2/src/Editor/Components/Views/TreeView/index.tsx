@@ -119,6 +119,7 @@ interface NodeProps extends DragDropProps {
   index?: number;
   header: React.ReactNode;
   children: (passProps: { nodeProps: () => any }) => React.ReactChild[] | null;
+  disabled?: boolean;
 }
 const childrenContainer = css({
   marginLeft: '1em',
@@ -210,6 +211,7 @@ class TreeNode extends React.Component<
       index,
       header,
       noToggle,
+      disabled,
     } = this.props;
     const { expanded } = this.state;
     const children = this.props.children({
@@ -255,7 +257,8 @@ class TreeNode extends React.Component<
                     )}
                     {separator(
                       <div className={cx(flex, grow, flexRow, itemCenter)}>
-                        {!noToggle &&
+                        {!disabled &&
+                          !noToggle &&
                           (isNode ? (
                             <div
                               className={toggleStyle}
@@ -342,7 +345,13 @@ export function Node(props: NodeProps) {
   return (
     <DropContext.Consumer>
       {({ onDropResult }) => {
-        return <DSNode {...props} onDropResult={onDropResult} />;
+        return (
+          <DSNode
+            {...props}
+            onDropResult={onDropResult}
+            disabled={props.disabled}
+          />
+        );
       }}
     </DropContext.Consumer>
   );

@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -563,12 +564,14 @@ public class RequestManager implements RequestManagerI {
             }
         } else {
             this.actAsPlayer = new ActAsPlayer(this, player);
-            websocketFacade.touchOnlineUser(currentUser.getId(), player.getId());
+            if (player != null) {
+                websocketFacade.touchOnlineUser(currentUser.getId(), player.getId());
+            }
         }
         return actAsPlayer;
     }
 
-    public void releaseActAsPlayer(){
+    public void releaseActAsPlayer() {
         this.actAsPlayer = null;
     }
 
@@ -1002,6 +1005,7 @@ public class RequestManager implements RequestManagerI {
     /**
      * {@inheritDoc }
      */
+    @Override
     public boolean tryLock(String token, InstanceOwner target) {
         String audience = getAudienceToLock(target);
         logger.debug("TryLock \"{}\" for \"{}\"", token, audience);
@@ -1822,7 +1826,7 @@ public class RequestManager implements RequestManagerI {
      * @throws WegasAccessDenied permissions is not null and no permission in permissions is
      *                           permitted
      */
-    private void assertUserHasPermission(Collection<WegasPermission> permissions, String type, WithPermission entity) throws WegasAccessDenied {
+    public void assertUserHasPermission(Collection<WegasPermission> permissions, String type, WithPermission entity) throws WegasAccessDenied {
         log("HAS  PERMISSION: {} / {} / {}", type, permissions, entity);
         logIndent++;
         if (!hasAnyPermission(permissions)) {

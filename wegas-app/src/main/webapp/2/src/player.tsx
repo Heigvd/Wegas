@@ -8,10 +8,19 @@ import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
 import { ThemeProvider } from './Components/Style/Theme';
 import { PageAPI } from './API/pages.api';
 import 'emotion';
-import { useWebsocket } from './API/websocket';
+import { useWebsocketEvent } from './API/websocket';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
 import { PageLoader } from './Editor/Components/Page/PageLoader';
 import { pageCTX, defaultPageCTX } from './Editor/Components/Page/PageEditor';
+import {
+  expandBoth,
+  flex,
+  flexColumn,
+  itemCenter,
+  justifyCenter,
+} from './css/classes';
+import { cx } from 'emotion';
+import { TumbleLoader } from './Components/Loader';
 
 importPageComponents();
 
@@ -24,14 +33,21 @@ function PlayerPageLoader() {
     });
   }, []);
 
-  useWebsocket('PageUpdate', () =>
+  useWebsocketEvent('PageUpdate', () =>
     PageAPI.getIndex().then(index => {
       setSelectedPageId(index.defaultPageId);
     }),
   );
 
   if (selectedPageId == null) {
-    return <pre>No page selected</pre>;
+    return (
+      <div
+        className={cx(flex, flexColumn, justifyCenter, itemCenter, expandBoth)}
+      >
+        <h2>The game is loading</h2>
+        <TumbleLoader />
+      </div>
+    );
   }
 
   return (

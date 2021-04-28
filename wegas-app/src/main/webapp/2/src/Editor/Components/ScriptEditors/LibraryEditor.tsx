@@ -10,7 +10,7 @@ import {
 import { GameModel } from '../../../data/selectors';
 import { omit } from 'lodash-es';
 import u from 'immer';
-import { WebSocketEvent, useWebsocket } from '../../../API/websocket';
+import { WebSocketEvent, useWebsocketEvent } from '../../../API/websocket';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
 import MergeEditor from './MergeEditor';
 import { TextPrompt } from '../TextPrompt';
@@ -423,7 +423,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
   /**
    * A new pusher event is registered in order to catch external updates on libraries
    */
-  useWebsocket(
+  useWebsocketEvent(
     ('LibraryUpdate-' + scriptType) as WebSocketEvent,
     websocketEventHandler,
   );

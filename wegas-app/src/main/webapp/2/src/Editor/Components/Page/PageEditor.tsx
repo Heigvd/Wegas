@@ -29,6 +29,7 @@ import {
   IVariableDescriptor,
 } from 'wegas-ts-api';
 import { State } from '../../../data/Reducer/reducers';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 
 const toggleButtonStyle = css({
   display: 'flex',
@@ -90,28 +91,29 @@ export const pageEditorCTX = React.createContext<PageEditorContext>({
   loading: false,
 });
 
-const returnPages = (pages: Pages, item?: PageIndexItem): PagesWithName => {
-  if (item == null) {
-    return {};
-  }
-  if (item['@class'] === 'Folder') {
-    return {
-      ...item.items.reduce((o, i) => ({ ...o, ...returnPages(pages, i) }), {}),
-    };
-  }
-  return { [item.id!]: { name: item.name, page: pages[item.id!] } };
-};
+// const returnPages = (pages: Pages, item?: PageIndexItem): PagesWithName => {
+//   if (item == null) {
+//     return {};
+//   }
+//   if (item['@class'] === 'Folder') {
+//     return {
+//       ...item.items.reduce((o, i) => ({ ...o, ...returnPages(pages, i) }), {}),
+//     };
+//   }
+//   return { [item.id!]: { name: item.name, page: pages[item.id!] } };
+// }
 
-const patchPage = (selectedPageId: string, page: WegasComponent) =>
+export function patchPage(selectedPageId: string, page: WegasComponent) {
   store.dispatch(Actions.PageActions.patch(selectedPageId, page));
+}
 
-export const createComponent = (
+export function createComponent(
   page: WegasComponent,
   path: number[],
   componentType: string,
   componentProps?: WegasComponent['props'],
   index?: number,
-) => {
+) {
   const newPath = [...path];
   const { newPage, component } = findComponent(page, newPath);
   if (component) {
@@ -136,9 +138,9 @@ export const createComponent = (
     }
     return { newPage, newPath };
   }
-};
+}
 
-export const deleteComponent = (page: WegasComponent, path: number[]) => {
+export function deleteComponent(page: WegasComponent, path: number[]) {
   const newPage = deepClone(page) as WegasComponent;
   let parent: WegasComponent = newPage;
   const browsePath = [...path];
@@ -152,14 +154,14 @@ export const deleteComponent = (page: WegasComponent, path: number[]) => {
     }
     browsePath.splice(0, 1);
   }
-};
+}
 
-const updateComponent = (
+export function updateComponent(
   page: WegasComponent,
   value: WegasComponent,
   path: number[],
   patch?: boolean,
-) => {
+) {
   const { newPage, parent } = findComponent(page, path);
   if (parent) {
     if (parent.props.children && path) {
@@ -168,6 +170,7 @@ const updateComponent = (
         const oldComp = parent.props.children[path[path.length - 1]];
         comp = {
           ...oldComp,
+          ...value,
           props: {
             ...oldComp.props,
             ...value.props,
@@ -180,7 +183,7 @@ const updateComponent = (
   } else {
     return value;
   }
-};
+}
 
 function SourceEditor() {
   return (
@@ -299,6 +302,7 @@ interface LayoutProps {
     page: WegasComponent,
     path: number[],
     type: string,
+    index: number,
   ) => void;
   onDuplicateLayoutComponent: (
     pageId: string,
@@ -402,47 +406,51 @@ export default function PageEditor() {
       destIndex: number,
       props?: WegasComponent['props'],
     ) => {
-      const moveInsideItself = destPath.join().indexOf(sourcePath.join()) === 0;
-      const samePage = sourcePageId === destPageId;
-      const sameContainerPath =
-        JSON.stringify(sourcePath.slice(0, -1)) === JSON.stringify(destPath);
       const sourceIndex: number | undefined = sourcePath.slice(-1)[0];
+      const samePages = sourcePageId === destPageId;
+      const samePath = !deepDifferent(sourcePath.slice(0, -1), destPath);
+      const deleteIndex =
+        samePages && samePath && sourceIndex > destIndex
+          ? sourceIndex + 1
+          : sourceIndex;
+      const deletePath =
+        samePages && // If same pages
+        destPath.length + 1 < sourcePath.length && // If component is dragged out of its container
+        destIndex <= sourcePath[destPath.length] // If component new path is before its old container
+          ? // Add 1 to the container path current path
+            [
+              ...sourcePath.slice(0, destPath.length),
+              sourcePath[destPath.length] + 1,
+              ...sourcePath.slice(destPath.length + 1),
+            ]
+          : // Set the new index of the component in case it is moved inside the same container
+            [...sourcePath.slice(0, -1), deleteIndex];
 
-      const computedDestIndex =
-        sameContainerPath && destIndex > sourceIndex
-          ? destIndex - 1
-          : destIndex;
+      const { component } = findComponent(sourcePage, sourcePath);
+      if (component != null) {
+        const newDest = createComponent(
+          destPage,
+          destPath,
+          component.type,
+          props ? mergeDeep(component.props, props) : component.props,
+          destIndex,
+        );
+        let newDestPage = newDest?.newPage;
+        let newSourcePage: WegasComponent | undefined = undefined;
+        const newDestPath = newDest?.newPath;
 
-      const samePosition = sourceIndex === computedDestIndex;
+        if (samePages && newDestPage) {
+          newDestPage = deleteComponent(newDestPage, deletePath);
+        } else {
+          newSourcePage = deleteComponent(sourcePage, sourcePath);
+        }
 
-      // Don't do anything if the result is the same than before or if the user tries to put a container in itself
-      if (
-        !(
-          moveInsideItself ||
-          (samePage && sameContainerPath && samePosition && props == null)
-        )
-      ) {
-        const { component } = findComponent(sourcePage, sourcePath);
-        if (component) {
-          const newSourcePage = deleteComponent(sourcePage, sourcePath);
-          // Don't do anything if the path to the source element points to nothing (should never happen)
-          if (newSourcePage != null) {
-            const newDestPage = createComponent(
-              samePage ? newSourcePage : destPage,
-              destPath,
-              component.type,
-              props ? mergeDeep(component.props, props) : component.props,
-              computedDestIndex,
-            );
-            // Don't modify the source page if it's the same than the destination page
-            if (newDestPage != null) {
-              if (sourcePageId !== destPageId) {
-                patchPage(sourcePageId, newSourcePage);
-              }
-              patchPage(destPageId, newDestPage.newPage);
-              onEdit(destPageId, newDestPage.newPath);
-            }
+        if (newDestPage) {
+          patchPage(destPageId, newDestPage);
+          if (!samePages && newSourcePage) {
+            patchPage(sourcePageId, newSourcePage);
           }
+          onEdit(destPageId, newDestPath);
         }
       }
     },
@@ -577,12 +585,13 @@ export default function PageEditor() {
   );
 
   const onNewLayoutComponent = React.useCallback(
-    (pageId, page, path, componentTypeName) => {
+    (pageId, page, path, componentTypeName, index) => {
       const newComponent = createComponent(
         page,
         path,
         componentTypeName,
         computeProps(components[componentTypeName], undefined, undefined),
+        index,
       );
       if (newComponent) {
         patchPage(pageId, newComponent.newPage);

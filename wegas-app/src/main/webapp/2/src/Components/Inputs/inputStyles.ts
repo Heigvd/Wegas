@@ -17,8 +17,8 @@ export const inputStyleCSS: ObjectInterpolation<undefined> = {
     fontStyle: 'italic',
   },
   '&[readonly]': {
-    color: themeVar.Common.colors.HoverTextColor,
-    backgroundColor: themeVar.Common.colors.HoverColor,
+    color: themeVar.Common.colors.DarkTextColor,
+    backgroundColor: themeVar.Common.colors.DisabledColor,
   },
 };
 

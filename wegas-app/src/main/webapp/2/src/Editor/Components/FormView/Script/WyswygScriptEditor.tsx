@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { ScriptView, isScriptCondition, ScriptMode } from './Script';
+import { ScriptView, isScriptCondition } from './Script';
 import { Statement, expressionStatement, booleanLiteral } from '@babel/types';
 import { css } from 'emotion';
 import { emptyStatement } from '@babel/types';
 import Form from 'jsoninput';
 import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
+import { themeVar } from '../../../../Components/Style/ThemeVars';
 
 const scriptStyle = css({
-  borderWidth: '1px',
+  border: '1px solid ' + themeVar.Common.colors.DisabledColor,
   padding: '2px',
-  borderStyle: 'solid',
 });
 
 function createNewExpression(mode?: ScriptMode) {

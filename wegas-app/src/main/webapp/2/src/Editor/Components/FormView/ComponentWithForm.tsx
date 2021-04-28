@@ -14,13 +14,14 @@ import { css, cx } from 'emotion';
 import { Edition, closeEditor } from '../../../data/Reducer/globalState';
 import { StoreDispatch } from '../../../data/Stores/store';
 import { createStoreConnector } from '../../../data/connectStore';
-import { flex, grow, autoScroll } from '../../../css/classes';
+import { flex, grow, autoScroll, halfOpacity } from '../../../css/classes';
 import { InstancePropertiesProps } from '../Variable/InstanceProperties';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { Toolbar } from '../../../Components/Toolbar';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
+import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 
 const growBig = css({
   flex: '30 1 auto',
@@ -31,12 +32,53 @@ export interface ComponentWithFormChildrenProps {
   localDispatch: StoreDispatch;
 }
 
-interface ComponentWithFormProps {
-  children: (
-    props: ComponentWithFormChildrenProps,
-  ) => React.ReactElement | null;
-  entityEditor?: boolean;
+export interface ComponentWithFormFlexValues {
+  main?: number;
+  descriptor?: number;
+  instance?: number;
 }
+
+const defaultFlexValues: ComponentWithFormFlexValues = {
+  main: 4,
+  descriptor: 2,
+  instance: 2,
+};
+
+export const flexValuesSchema = schemaProps.hashlist({
+  label: 'Flex values',
+  choices: [
+    {
+      label: 'Main pannel flex number',
+      value: {
+        prop: 'main',
+        schema: schemaProps.number({
+          label: 'Main pannel flex number',
+          value: defaultFlexValues.main,
+        }),
+      },
+    },
+    {
+      label: 'Second pannel flex number',
+      value: {
+        prop: 'descriptor',
+        schema: schemaProps.number({
+          label: 'Second pannel flex number',
+          value: defaultFlexValues.descriptor,
+        }),
+      },
+    },
+    {
+      label: 'Third pannel flex number',
+      value: {
+        prop: 'instance',
+        schema: schemaProps.number({
+          label: 'Third pannel flex number',
+          value: defaultFlexValues.instance,
+        }),
+      },
+    },
+  ],
+});
 
 const AsyncInstancesEditor = asyncSFC<InstancePropertiesProps>(
   async (props: InstancePropertiesProps) => {
@@ -47,9 +89,20 @@ const AsyncInstancesEditor = asyncSFC<InstancePropertiesProps>(
   },
 );
 
+interface ComponentWithFormProps extends DisabledReadonly {
+  children: (
+    props: ComponentWithFormChildrenProps,
+  ) => React.ReactElement | null;
+  entityEditor?: boolean;
+  flexValues?: ComponentWithFormFlexValues;
+}
+
 export function ComponentWithForm({
   children,
   entityEditor,
+  readOnly,
+  disabled,
+  flexValues = defaultFlexValues,
 }: ComponentWithFormProps) {
   const {
     useStore: useLocalStore,
@@ -80,8 +133,16 @@ export function ComponentWithForm({
   }
 
   return (
-    <ReflexContainer className={cx(flex, grow)} orientation="vertical">
-      <ReflexElement flex={4} className={cx(flex, growBig, autoScroll)}>
+    <ReflexContainer
+      className={cx(flex, grow, { [halfOpacity]: disabled })}
+      orientation="vertical"
+    >
+      <ReflexElement
+        flex={
+          flexValues.main == null ? defaultFlexValues.main : flexValues.main
+        }
+        className={cx(flex, growBig, autoScroll)}
+      >
         {children({
           localState: localState.editing,
           localDispatch,
@@ -89,7 +150,14 @@ export function ComponentWithForm({
       </ReflexElement>
       {localState.editing && localEntity && <ReflexSplitter />}
       {localState.editing && localEntity && (
-        <ReflexElement flex={1} className={cx(flex)}>
+        <ReflexElement
+          flex={
+            flexValues.descriptor == null
+              ? defaultFlexValues.descriptor
+              : flexValues.descriptor
+          }
+          className={cx(flex)}
+        >
           <AsyncVariableForm
             {...localState.editing}
             getConfig={getConfig(localState.editing)}
@@ -97,12 +165,21 @@ export function ComponentWithForm({
             actions={actions}
             entity={localEntity}
             error={parseEventFromIndex(localState.events, localDispatch)}
+            disabled={disabled}
+            readOnly={readOnly}
           />
         </ReflexElement>
       )}
       {instanceView && entityEditor && <ReflexSplitter />}
       {instanceView && entityEditor && (
-        <ReflexElement flex={1} className={cx(flex)}>
+        <ReflexElement
+          flex={
+            flexValues.instance == null
+              ? defaultFlexValues.instance
+              : flexValues.instance
+          }
+          className={cx(flex)}
+        >
           <Toolbar>
             <Toolbar.Header>
               <Button
@@ -114,6 +191,8 @@ export function ComponentWithForm({
               <AsyncInstancesEditor
                 state={{ global: localState }}
                 dispatch={localDispatch}
+                disabled={disabled}
+                readOnly={readOnly}
               />
             </Toolbar.Content>
           </Toolbar>

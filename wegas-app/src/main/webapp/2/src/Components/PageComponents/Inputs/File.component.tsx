@@ -2,8 +2,6 @@ import * as React from 'react';
 import {
   FileBrowser,
   FileBrowserProps,
-  FileType,
-  FilterType,
 } from '../../../Editor/Components/FileBrowser/FileBrowser';
 import { useScript } from '../../Hooks/useScript';
 import {
@@ -31,14 +29,13 @@ function PlayerFileInput({
   context,
   pathScript,
   pickType,
-  // filter,
   fileType,
   filterType,
-  readOnly,
-  // options,
+  pickOnly,
   className,
   style,
   id,
+  options,
 }: PlayerFileInputProps) {
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
   const path = useScript<string>(pathScript, context);
@@ -47,13 +44,15 @@ function PlayerFileInput({
     <FileBrowser
       defaultFilePath={path}
       noDelete
-      readOnly={readOnly}
+      pickOnly={pickOnly}
       onFileClick={file => handleOnChange && handleOnChange(file)}
       pickType={pickType}
       filter={{ fileType: fileType, filterType: filterType }}
       className={className}
       style={style}
       id={id}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
     />
   );
 }
@@ -85,11 +84,21 @@ registerComponent(
         values: ['show', 'hide', 'grey'], // Must be exactly FileBrowser.FilterType // TODO see how extract it automatically
         value: 'grey',
       }),
-      readOnly: schemaProps.boolean({
-        label: 'Read only',
+      pickOnly: schemaProps.boolean({
+        label: 'Pick only',
         value: true,
       }),
       ...classStyleIdShema,
+    },
+    obsoleteComponent: {
+      keepDisplayingToPlayer: true,
+      isObsolete: oldComponent => 'readOnly' in oldComponent.props,
+      sanitizer: oldComponent => {
+        const newComponent = { ...oldComponent };
+        newComponent.props.pickOnly = newComponent.props.readOnly;
+        delete newComponent.props.readOnly;
+        return newComponent;
+      },
     },
   }),
 );

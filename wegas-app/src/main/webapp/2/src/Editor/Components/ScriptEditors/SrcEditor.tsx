@@ -167,13 +167,15 @@ function SrcEditor({
     () => {
       if (reactMonaco) {
         if (editor) {
-          editor.setModel(
-            reactMonaco.editor.createModel(
-              value || '',
-              language || 'plaintext',
-              defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
-            ),
+          const newModel = reactMonaco.editor.createModel(
+            value || '',
+            language || 'plaintext',
+            defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
           );
+
+          newModel.updateOptions({ tabSize: 2 });
+
+          editor.setModel(newModel);
 
           // Unmount effect to dispose editor and model
           return () => {

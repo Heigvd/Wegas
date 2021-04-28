@@ -61,15 +61,19 @@ export const Toolbar = Object.assign(
         </div>
       );
     },
-    Content(props: { children?: React.ReactNode } & ClassStyleId) {
+    Content: React.forwardRef<
+      HTMLDivElement,
+      { children?: React.ReactNode } & ClassStyleId
+    >((props, ref) => {
       return (
         <div
           className={cx(flex, content) + classNameOrEmpty(props.className)}
           style={props.style}
+          ref={ref}
         >
           {props.children}
         </div>
       );
-    },
+    }),
   },
 );

@@ -5,23 +5,11 @@ import {
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { EntityChooser } from '../../EntityChooser';
-import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
-import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
-import { safeClientScriptEval } from '../../Hooks/useScript';
-import { useStore } from '../../../data/Stores/store';
-import { ConnectedQuestionDisplay } from '../../Outputs/Question/Question';
-import {
-  IScript,
-  IQuestionDescriptor,
-  SListDescriptor,
-  IWhQuestionDescriptor,
-  IQuestionInstance,
-  IWhQuestionInstance,
-} from 'wegas-ts-api';
+import { IScript, SListDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { Player } from '../../../data/selectors';
-import { QuestionLabel } from '../../Outputs/Question/QuestionList';
+import QuestionList from '../../Outputs/Question/QuestionList';
+import { entityIs } from '../../../data/entities';
+import { useScript } from '../../Hooks/useScript';
 
 interface QuestionListDisplayProps extends WegasComponentProps {
   questionList?: IScript;
@@ -32,51 +20,23 @@ export default function QuestionListDisplay({
   questionList,
   autoOpenFirst,
   context,
+  options,
 }: QuestionListDisplayProps) {
-  const entitiesSelector = React.useCallback(() => {
-    // TODO add support for arrays of list/question
-    const descriptor = safeClientScriptEval<SListDescriptor>(
-      questionList,
-      context,
-    );
-
-    const player = Player.selectCurrent();
-
-    if (descriptor == null || descriptor.getName() == null) {
-      return { questions: [], player };
-    }
-    return {
-      questions: flatten<IQuestionDescriptor | IWhQuestionDescriptor>(
-        descriptor.getEntity(),
-        'QuestionDescriptor',
-        'WhQuestionDescriptor',
-      ).filter(q => {
-        const instance = getInstance<IQuestionInstance | IWhQuestionInstance>(
-          q,
-        );
-        if (instance != null) {
-          return instance.active;
-        }
-        return false;
-      }),
-      player,
-    };
-  }, [context, questionList]);
-
-  const entities = useStore(entitiesSelector);
+  const descriptor = useScript<SListDescriptor>(questionList, context);
 
   if (questionList === undefined) {
     return <pre>No selected list</pre>;
+  } else if (descriptor == null || !entityIs(descriptor, 'ListDescriptor')) {
+    return <pre>Descriptor not returned as SListDescriptor</pre>;
   }
 
   return (
-    <EntityChooser
-      entities={entities.questions}
-      entityLabel={e => <QuestionLabel questionD={e} />}
+    <QuestionList
+      questionList={descriptor}
       autoOpenFirst={autoOpenFirst}
-    >
-      {ConnectedQuestionDisplay}
-    </EntityChooser>
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
+    />
   );
 }
 

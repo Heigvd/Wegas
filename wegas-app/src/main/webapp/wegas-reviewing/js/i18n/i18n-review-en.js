@@ -75,7 +75,7 @@ YUI.add("wegas-i18n-review-en", function(Y) {
                 reviewer_feedback: "Reviewer feedback",
                 ask_reviewer_feedback: "",
                 ask_comment: "What do you think about your reviewer's feedback?",
-                comment: "Your thoughts about feedback your reviewer's feedback",
+                comment: "Your thoughts about your reviewer's feedback",
                 author_comment: "What this author thinks about your feedback:",
                 noValueProvided: "No evaluation provided",
                 didNotProvide: "did not provide any evaluation",

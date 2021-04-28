@@ -4,7 +4,7 @@ import { LabeledView, Labeled } from './labeled';
 import { CommonView, CommonViewContainer } from './commonView';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { toLower } from 'lodash';
-import { CodeLanguage, scriptEditStyle } from './Script/Script';
+import { scriptEditStyle } from './Script/Script';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 import { IScript } from 'wegas-ts-api';
 import { createScript } from '../../../Helper/wegasEntites';

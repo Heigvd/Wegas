@@ -11,6 +11,7 @@ import {
 import { cx, css } from 'emotion';
 import { FontAwesome, IconComp, Icon, Icons } from '../Views/FontAwesome';
 import {
+  actionNodeContentStyle,
   nodeContentStyle,
   TREEVIEW_ITEM_TYPE as TREEVIEW_INDEX_ITEM_TYPE,
 } from '../Variable/VariableTree';
@@ -332,7 +333,9 @@ function ComponentAdder({ className, tooltip, onSelect }: ComponentAdderProps) {
           label: v.componentName,
           id: v.componentName,
         }))}
-        onSelect={({ id }) => onSelect(id)}
+        onSelect={({ id }) => {
+          onSelect(id);
+        }}
       />
     </div>
   );
@@ -380,6 +383,7 @@ function LayoutNodeTitle({
       onMouseUp={onMouseUp}
       className={cx(
         nodeContentStyle,
+        actionNodeContentStyle,
         titleStyle,
         flex,
         grow,
@@ -470,9 +474,9 @@ function WegasComponentTitle({
       {component.props?.children && (
         <ComponentAdder
           tooltip="Add a component"
-          onSelect={componentType =>
-            onNew(pageId, page, componentPath, componentType)
-          }
+          onSelect={componentType => {
+            onNew(pageId, page, componentPath, componentType, 0);
+          }}
           className={CONTROLS_CLASSNAME}
         />
       )}
@@ -575,7 +579,8 @@ function WegasComponentNode({
       noDrop={
         computedComponent.props?.children == null ||
         (computedComponent.props.children.length === 1 &&
-          computedComponent.type === 'For each')
+          computedComponent.type === 'For each') ||
+        computedComponent.type === 'If Else'
       }
     >
       {computedComponent.props?.children
@@ -837,6 +842,7 @@ interface ComponentControls {
     page: WegasComponent,
     componentPath: number[],
     componentType: string,
+    index: number,
   ) => void;
   onDuplicate: (
     pageId: string,
@@ -905,10 +911,11 @@ export function PagesLayout(props: PagesLayoutProps) {
                 );
               } else {
                 onNew(
-                  selectedPageId,
-                  selectedPage,
+                  computedTargetParent.pageId,
+                  computedTargetParent.page,
                   computedTargetParent.componentPath,
                   item.componentName,
+                  target.index || 0,
                 );
               }
             } else {

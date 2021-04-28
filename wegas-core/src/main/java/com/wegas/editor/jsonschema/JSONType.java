@@ -80,6 +80,7 @@ public abstract class JSONType extends JSONExtendedSchema {
     /**
      * @return the value
      */
+    @Override
     public Object getValue() {
         return value;
     }
@@ -87,6 +88,7 @@ public abstract class JSONType extends JSONExtendedSchema {
     /**
      * @param value the value to set
      */
+    @Override
     public void setValue(Object value) {
         this.value = value;
     }

@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
 import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
@@ -9,15 +10,7 @@ import { assembleStateAndContext } from '../tools/EditableComponent';
 import { clientAndServerScriptChoices } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
-/**
- * OnFileClick - the script to execute when a file is clicked.
- * The file is added in the context as an IAbstractContentDescriptor
- */
-export interface OnVariableChange {
-  /**
-   * exposeVariableAs - the id of the stored file in Context
-   */
-  exposeVariableAs?: IScript;
+export interface ClientAndServerAction {
   /**
    * client - the client script
    */
@@ -26,6 +19,17 @@ export interface OnVariableChange {
    * server - the server script
    */
   server?: IScript;
+}
+
+/**
+ * OnFileClick - the script to execute when a file is clicked.
+ * The file is added in the context as an IAbstractContentDescriptor
+ */
+export interface OnVariableChange extends ClientAndServerAction {
+  /**
+   * exposeVariableAs - the id of the stored file in Context
+   */
+  exposeVariableAs?: IScript;
 }
 
 export const onVariableChangeSchema = (label: string) =>
@@ -56,34 +60,39 @@ export function useOnVariableChange(
   const {
     client,
     server,
-    exposeVariableAs: exposeFileAs = createScript('"file"'),
+    exposeVariableAs: exposeFileAs = createScript('"value"'),
   } = onVariableChange || {};
 
-  const exposeAs = useScript<string>(exposeFileAs, context) || 'file';
+  const exposeAs = useScript<string>(exposeFileAs, context) || 'value';
 
   const state = usePagesContextStateStore(s => s);
 
-  function handleOnChange(variable: any) {
-    const newContext = { ...context, [exposeAs]: variable };
+  const handleOnChange = React.useCallback(
+    (variable: any) => {
+      const newContext = { ...context, [exposeAs]: variable };
 
-    if (client) {
-      safeClientScriptEval(client, newContext, undefined, state);
-    }
-    if (server) {
-      store.dispatch(
-        runLoadedScript(
-          server,
-          Player.selectCurrent(),
-          undefined,
-          assembleStateAndContext(newContext, state),
-        ),
-      );
-    }
-  }
+      if (client) {
+        safeClientScriptEval(client, newContext, undefined, state);
+      }
+      if (server) {
+        store.dispatch(
+          runLoadedScript(
+            server,
+            Player.selectCurrent(),
+            undefined,
+            assembleStateAndContext(newContext, state),
+          ),
+        );
+      }
+    },
+    [client, context, exposeAs, server, state],
+  );
 
-  if (!onVariableChange || Object.keys(onVariableChange).length === 0) {
-    return {};
-  } else {
-    return { client, server, exposeAs, handleOnChange };
-  }
+  return React.useMemo(() => {
+    if (!onVariableChange || Object.keys(onVariableChange).length === 0) {
+      return {};
+    } else {
+      return { client, server, exposeAs, handleOnChange };
+    }
+  }, [client, exposeAs, handleOnChange, onVariableChange, server]);
 }

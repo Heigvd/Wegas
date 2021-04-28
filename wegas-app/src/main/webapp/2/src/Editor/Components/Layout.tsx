@@ -18,16 +18,15 @@ const FileBrowserWithMeta = React.lazy(
 );
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
 const LanguageEditor = React.lazy(() => import('./LanguageEditor'));
-// const PlayLocal = React.lazy(() => import('./PlayLocal'));
-// const PlayServer = React.lazy(() => import('./PlayServer'));
+const PlayLocal = React.lazy(() => import('./PlayLocal'));
+const PlayServer = React.lazy(() => import('./PlayServer'));
 const InstancesEditor = React.lazy(
   () => import('./Variable/InstanceProperties'),
 );
 const ThemeEditor = React.lazy(
   () => import('../../Components/Style/ThemeEditor'),
 );
-
-// const Tester = React.lazy(() => import('../../Testers/SchemaPropsTester'));
+//const Tester = React.lazy(() => import('../../Testers/Components/InfoBulletTester'));
 
 const layout = css({
   display: 'flex',
@@ -36,16 +35,16 @@ const layout = css({
 });
 
 export const availableLayoutTabs = {
+  //Tester: <Tester />,
   Variables: <TreeView />,
   'State Machine': <StateMachineEditor />,
   'Variable Properties': <EntityEditor />,
   Files: <FileBrowserWithMeta />,
   Scripts: <LibraryEditor />,
   'Language Editor': <LanguageEditor />,
-  // 'Play Local': <PlayLocal />,
-  // 'Play Server': <PlayServer />,
+  'Client Console': <PlayLocal />,
+  'Server Console': <PlayServer />,
   'Instances Editor': <InstancesEditor />,
-  // Tester: <Tester />,
   'Theme Editor': <ThemeEditor />,
   'Page Editor': <PageEditor />,
 } as const;

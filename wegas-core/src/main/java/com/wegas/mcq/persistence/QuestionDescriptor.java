@@ -12,9 +12,12 @@ import static ch.albasim.wegas.annotations.CommonView.LAYOUT.shortInline;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.annotations.WegasConditions.And;
@@ -34,10 +37,10 @@ import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.ValueGenerators.One;
 import com.wegas.editor.ValueGenerators.True;
+import com.wegas.editor.Visible;
 import com.wegas.editor.view.Hidden;
 import com.wegas.editor.view.I18nHtmlView;
 import com.wegas.editor.view.NumberView;
-import com.wegas.editor.Visible;
 import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -51,7 +54,6 @@ import javax.persistence.Index;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
 /**
@@ -61,9 +63,9 @@ import javax.persistence.Table;
 @Entity
 @NamedQuery(name = "QuestionDescriptor.findDistinctChildrenLabels", query = "SELECT DISTINCT(cd.label) FROM ChoiceDescriptor cd WHERE cd.question.id = :containerId")
 @Table(
-        indexes = {
-            @Index(columnList = "description_id")
-        }
+    indexes = {
+        @Index(columnList = "description_id")
+    }
 )
 public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> implements DescriptorListI<ChoiceDescriptor> {
 
@@ -73,67 +75,67 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @OneToOne(cascade = CascadeType.ALL)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(
-                    index = 1,
-                    label = "Description",
-                    value = I18nHtmlView.class
-            ))
+        optional = false, nullable = false, proposal = EmptyI18n.class,
+        view = @View(
+            index = 1,
+            label = "Description",
+            value = I18nHtmlView.class
+        ))
     private TranslatableContent description;
 
     /**
-     * Set this to true when the choice is to be self
-     * radio/checkbox
+     * Set this to true when the choice is to be self radio/checkbox
      */
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = False.class,
-            view = @View(
-                    index = 10,
-                    label = "Checkbox answer",
-                    description = "For standard multiple-choice questions"
-            ))
+        optional = false, nullable = false, proposal = False.class,
+        view = @View(
+            index = 10,
+            label = "Checkbox answer",
+            description = "For standard multiple-choice questions"
+        ))
     private Boolean cbx = FALSE;
     /**
      * Determines if choices are presented horizontally in a tabular fashion
      */
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = False.class,
-            view = @View(
-                    index = 11,
-                    label = "Tabular layout",
-                    description = "Replies are presented horizontally"
-            ))
+        optional = false, nullable = false, proposal = False.class,
+        view = @View(
+            index = 11,
+            label = "Tabular layout",
+            description = "Replies are presented horizontally"
+        ))
     @Visible(IsCbx.class)
     private Boolean tabular = FALSE;
     /**
      * Total number of replies allowed. No default value (means infinity).
      */
     @WegasEntityProperty(
-            proposal = One.class,
-            view = @View(
-                    index = 21,
-                    label = "Max. number replies",
-                    description = "Optional value",
-                    value = NumberView.WithInfinityPlaceholder.class,
-                    layout = shortInline
-            ))
+        proposal = One.class,
+        view = @View(
+            index = 21,
+            label = "Max. number replies",
+            description = "Optional value",
+            value = NumberView.WithInfinityPlaceholder.class,
+            layout = shortInline
+        ))
     @Errored(CheckMinMaxBounds.class)
     @Errored(CheckPositiveness.class)
     private Integer maxReplies = null;
     /**
-     * Minimal number of replies required. Makes sense only with CBX-type questions. No default value.
+     * Minimal number of replies required. Makes sense only with CBX-type questions. No default
+     * value.
      */
     @WegasEntityProperty(
-            proposal = One.class,
-            view = @View(
-                    index = 20,
-                    label = "Min. number replies",
-                    description = "Optional value",
-                    value = NumberView.WithOnePlaceholder.class,
-                    layout = shortInline
-            ))
+        proposal = One.class,
+        view = @View(
+            index = 20,
+            label = "Min. number replies",
+            description = "Optional value",
+            value = NumberView.WithOnePlaceholder.class,
+            layout = shortInline
+        ))
     @Visible(IsCbx.class)
     @Errored(CheckPositiveness.class)
     @Errored(CheckMinMaxBounds.class)
@@ -144,9 +146,9 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @OneToMany(mappedBy = "question", cascade = {CascadeType.ALL}/*, orphanRemoval = true*/)
     //@BatchFetch(BatchFetchType.IN)
     @JsonManagedReference
-    @OrderColumn(name = "qd_items_order")
+    //@OrderColumn(name = "qd_items_order")
     @WegasEntityProperty(includeByDefault = false,
-            view = @View(label = "Items", value = Hidden.class), notSerialized = true)
+        view = @View(label = "Items", value = Hidden.class), notSerialized = true)
     private List<ChoiceDescriptor> items = new ArrayList<>();
     /**
      *
@@ -155,12 +157,12 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     //@JsonView(Views.ExtendedI.class)
     //@JsonView(Views.EditorI.class)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(
-                    index = 30,
-                    label = "Pictures",
-                    featureLevel = ADVANCED
-            ))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(
+            index = 30,
+            label = "Pictures",
+            featureLevel = ADVANCED
+        ))
     private Set<String> pictures = new HashSet<>();
 
 // ~~~ Sugar for scripts ~~~
@@ -209,8 +211,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     /**
-     * Validate the question.
-     * One can no longer answer such a validated question.
+     * Validate the question. One can no longer answer such a validated question.
      *
      * @param p
      * @param value
@@ -221,8 +222,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     /**
-     * Is the question validated.
-     * One can no longer answer such a validated question.
+     * Is the question validated. One can no longer answer such a validated question.
      *
      * @param p
      *
@@ -344,8 +344,14 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Override
     @JsonView(Views.ExportI.class)
-    @Scriptable(label = "getItems",wysiwyg = false)
+    @Scriptable(label = "getItems", wysiwyg = false)
     public List<ChoiceDescriptor> getItems() {
+        return Helper.copyAndSortModifiable(this.items, new EntityComparators.OrderComparator<>());
+    }
+
+    @JsonIgnore
+    @Override
+    public List<ChoiceDescriptor> getRawItems() {
         return items;
     }
 
@@ -430,9 +436,9 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
 
         public CheckMinMaxBounds() {
             super(
-                    new IsDefined(new Field(null, "minReplies")),
-                    new IsDefined(new Field(null, "maxReplies")),
-                    new LessThan(new Field(null, "maxReplies"), new Field(null, "minReplies"))
+                new IsDefined(new Field(null, "minReplies")),
+                new IsDefined(new Field(null, "maxReplies")),
+                new LessThan(new Field(null, "maxReplies"), new Field(null, "minReplies"))
             );
         }
     }
@@ -441,8 +447,8 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
 
         public CheckPositiveness() {
             super(
-                    new IsDefined(new Self()),
-                    new LessThan(new Self(), new Const(1))
+                new IsDefined(new Self()),
+                new LessThan(new Self(), new Const(1))
             );
         }
     }

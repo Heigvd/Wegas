@@ -43,6 +43,7 @@ export const GAMEMODEL_EDIT = 'GAMEMODEL/EDIT';
 export const LANGUAGE_EDIT = 'LANGUAGE/EDIT';
 
 export const TEAM_FETCH_ALL = 'TEAM/FETCH/ALL';
+export const TEAM_UPDATE = 'TEAM/UPDATE';
 
 export const GAME_FETCH = 'GAME/FETCH';
 

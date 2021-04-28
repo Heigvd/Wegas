@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -69,7 +68,6 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
 import javax.persistence.PostPersist;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
@@ -254,7 +252,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * VariableDescriptor can be placed inside of a ListDescriptor's items List).
      */
     @OneToMany(mappedBy = "root", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-    @OrderColumn(name = "gm_items_order")
+    //@OrderColumn(name = "gm_items_order")
     //@JsonManagedReference
     @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<VariableDescriptor> items = new ArrayList<>();
@@ -635,6 +633,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * @return testPlayer
      */
     @JsonIgnore
+    @Override
     public Player getTestPlayer() {
         for (Game game : this.getGames()) {
             Player testPlayer = game.getTestPlayer();
@@ -878,7 +877,13 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Override
     @JsonView(Views.ExportI.class)
     public List<VariableDescriptor> getItems() {
-        return this.items;
+        return Helper.copyAndSortModifiable(this.items, new EntityComparators.OrderComparator<>());
+    }
+
+    @JsonIgnore
+    @Override
+    public List<VariableDescriptor> getRawItems() {
+        return items;
     }
 
     @Override
@@ -1206,7 +1211,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     @JsonIgnore
     public boolean isScenarioBasedOnModel() {
-        return this.isScenario() && this.getBasedOn() != null;
+        return this.isScenario() && this.getBasedOnId() != null;
     }
 
     @Override

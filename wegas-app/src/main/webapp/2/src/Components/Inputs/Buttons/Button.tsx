@@ -15,17 +15,17 @@ export const buttonStyle = css({
     color: themeVar.Common.colors.PrimaryColor,
   },
   borderStyle: 'none',
-  paddingLeft: '5px',
-  paddingRight: '5px',
-  paddingTop: '2px',
-  paddingBottom: '2px',
+  paddingLeft: '10px',
+  paddingRight: '10px',
+  paddingTop: '5px',
+  paddingBottom: '5px',
   cursor: 'pointer',
   fontFamily: themeVar.Common.others.TextFont2,
   borderRadius: themeVar.Common.dimensions.BorderRadius,
 
   ['&:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):not(.confirmBtn):hover']: {
     color: themeVar.Common.colors.HoverTextColor,
-    backgroundColor: themeVar.Common.colors.ActiveColor,
+    backgroundColor: themeVar.Common.colors.PrimaryColorShade,
     outline: 'none',
   },
   ['&:focus']: {
@@ -50,10 +50,8 @@ export const buttonStyle = css({
   ['&.iconOnly']: {
     color: themeVar.Common.colors.DarkTextColor,
     backgroundColor: 'transparent',
-    ['&:not(.disabled),&:not(.readOnly)']: {
-      [':hover']: {
-        color: themeVar.Common.colors.ActiveColor,
-      },
+    ['&:not(.disabled):not(.readOnly):hover']: {
+      color: themeVar.Common.colors.ActiveColor,
     },
     ['&:disabled']: {
       color: themeVar.Common.colors.DisabledColor,
@@ -161,11 +159,9 @@ export function disableBorderToSelector(disableBorders?: DisableBorders) {
     : '';
 }
 
-export interface ButtonProps extends ClassStyleId {
+export interface ButtonProps extends ClassStyleId, DisabledReadonly {
   label?: React.ReactNode;
   onClick?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
-  disabled?: boolean;
-  readOnly?: boolean;
   tabIndex?: number;
   tooltip?: string;
   noHover?: boolean;
@@ -173,6 +169,7 @@ export interface ButtonProps extends ClassStyleId {
   id?: string;
   disableBorders?: DisableBorders;
   icon?: Icons;
+  src?: string;
   pressed?: boolean;
   prefixedLabel?: boolean;
   noBackground?: boolean;
@@ -200,6 +197,7 @@ export const Button = React.forwardRef<
       type,
       id,
       icon,
+      src,
       pressed,
       prefixedLabel,
       noBackground,
@@ -243,7 +241,7 @@ export const Button = React.forwardRef<
           classNameOrEmpty(className)
         }
         style={style}
-        onClick={onClick}
+        onClick={e => !readOnly && onClick && onClick(e)}
         disabled={disabled}
         tabIndex={tabIndex}
         title={tooltip}
@@ -253,6 +251,7 @@ export const Button = React.forwardRef<
       >
         {prefixedLabel && computedLabel}
         {icon && <IconComp icon={icon} />}
+        {src && <img alt={tooltip} src={src} />}
         {!prefixedLabel && computedLabel}
       </button>
     );

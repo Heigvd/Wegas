@@ -3,7 +3,7 @@ import * as React from 'react';
 interface Context {
     lang: string;
     toggleLang: (lang: string) => void;
-    availableLang: { code: string; label: string }[];
+    availableLang: { code: string; label: string ; visibility: string}[];
 }
 const LangContext = React.createContext<Context>({
     lang: (window as any).I18n.getCode(),
@@ -14,7 +14,7 @@ export const LangConsumer = LangContext.Consumer;
 
 interface LangProviderProps {
     lang: string;
-    availableLang: { code: string; label: string }[];
+    availableLang: { code: string; label: string, visibility: string }[];
 }
 export class LangHandler extends React.Component<LangProviderProps, Context> {
     static getDerivedStateFromProps(props: LangProviderProps, state: Context) {

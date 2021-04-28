@@ -14,15 +14,23 @@ import { useStore } from '../../../data/Stores/store';
 import { cloneDeep, pick } from 'lodash-es';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import {
-  // ComponentOptionsManager,
-  defaultOptions,
-  // OptionsState,
+  defaultOptionsKeys,
+  HeritableOptionsState,
+  heritableOptionsStateKeys,
   useOptions,
 } from './OptionsComponent';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { State } from '../../../data/Reducer/reducers';
+import {
+  displayObsoleteComponentManager,
+  ObsoleteComponentManager,
+} from './ObsoleteComponentManager';
+import { useDeepMemo } from '../../Hooks/useDeepMemo';
 
-function getComponentFromPath(page: WegasComponent, path: number[]) {
+const emptyPath: number[] = [];
+const emptyObject: any = {};
+
+export function getComponentFromPath(page: WegasComponent, path: number[]) {
   const newPath = [...path];
   let component = page;
   while (newPath.length > 0) {
@@ -51,6 +59,8 @@ export type ChildrenDeserializerProps<P = {}> = P & {
   // the content of context can be any because it's set at runtime by the user
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context?: { [exposeAs: string]: any };
+  /**  Options' state inherited from the parent */
+  inheritedOptionsState: HeritableOptionsState;
 };
 
 function DefaultChildren(_: ChildrenDeserializerProps) {
@@ -71,20 +81,30 @@ interface PageDeserializerProps {
     center?: boolean;
     empty?: boolean;
   };
+  /**  Options' state inherited from the parent */
+  inheritedOptionsState: HeritableOptionsState;
 }
 
 export function PageDeserializer({
   pageId,
   path,
   uneditable,
-  context,
+  context: oldContext,
   Container,
   containerPropsKeys,
   dropzones,
+  inheritedOptionsState: newInheritedOptionsState,
 }: PageDeserializerProps): JSX.Element {
   // const [optionsState, setOptionsState] = React.useState<OptionsState>({});
 
-  const realPath = path ? path : [];
+  const newPath = path ? path : emptyPath;
+  const realPath = useDeepMemo(newPath);
+
+  const inheritedOptionsState = useDeepMemo(newInheritedOptionsState);
+
+  const context = useDeepMemo(oldContext);
+
+  // const dropzones = useDeepMemo(oldDropzones);
 
   const { editMode } = React.useContext(pageCTX);
 
@@ -107,7 +127,7 @@ export function PageDeserializer({
   const wegasComponent = useStore(wegasComponentSelector, deepDifferent);
 
   const { children, ...restProps } =
-    (wegasComponent && wegasComponent.props) || {};
+    (wegasComponent && wegasComponent.props) || emptyObject;
 
   const componentSeletor = React.useCallback(
     (s: PageComponentsState) =>
@@ -122,11 +142,13 @@ export function PageDeserializer({
   // const options = pick(restProps, defaultOptions);
 
   const optionsState = useOptions(
-    pick(restProps, defaultOptions),
-    context || {},
+    pick(restProps, defaultOptionsKeys),
+    context || emptyObject,
+    inheritedOptionsState,
   );
 
-  const { WegasComponent, container, componentName } = component || {};
+  const { WegasComponent, container, componentName, obsoleteComponent } =
+    component || emptyObject;
 
   if (!wegasComponent) {
     return <pre>JSON error in page</pre>;
@@ -160,6 +182,7 @@ export function PageDeserializer({
           context={context}
           editMode={editMode}
           containerPropsKeys={containerPropsKeys}
+          inheritedOptionsState={pick(optionsState, heritableOptionsStateKeys)}
         />
       ) : (
         <ComponentContainer
@@ -167,6 +190,7 @@ export function PageDeserializer({
           //(if not, if an error occures and the page's strucutre is the same it won't render the new component)
           key={pageId}
           path={realPath}
+          pageId={pageId}
           componentType={componentName}
           isContainer={container != null}
           context={context}
@@ -182,32 +206,49 @@ export function PageDeserializer({
           onClickManaged={component.manageOnClick === true}
           className={optionsState.outerClassName}
         >
-          <WegasComponent
-            path={realPath}
-            context={context}
-            componentType={componentName}
-            Container={Container}
-            containerPropsKeys={containerPropsKeys}
-            {...restProps}
-            className={
-              classNameOrEmpty(restProps.className) +
-              classNameOrEmpty(optionsState.innerClassName)
-            }
-            dropzones={{ ...component.dropzones, ...dropzones }}
-            options={optionsState}
-            editMode={editMode}
-          >
-            <Children
-              {...wegasComponent?.props}
-              wegasChildren={children}
+          {displayObsoleteComponentManager(
+            obsoleteComponent,
+            wegasComponent,
+          ) ? (
+            <ObsoleteComponentManager
+              componentType={componentName}
+              pageId={pageId}
+              path={realPath}
+              sanitizer={obsoleteComponent.sanitizer}
+            />
+          ) : (
+            <WegasComponent
               path={realPath}
               pageId={pageId}
-              uneditable={uneditable}
               context={context}
+              componentType={componentName}
+              Container={Container}
+              containerPropsKeys={containerPropsKeys}
+              {...restProps}
+              className={
+                classNameOrEmpty(restProps.className) +
+                classNameOrEmpty(optionsState.innerClassName)
+              }
+              dropzones={{ ...component.dropzones, ...dropzones }}
+              options={optionsState}
               editMode={editMode}
-              containerPropsKeys={container?.childrenLayoutKeys}
-            />
-          </WegasComponent>
+            >
+              <Children
+                {...wegasComponent?.props}
+                wegasChildren={children}
+                path={realPath}
+                pageId={pageId}
+                uneditable={uneditable}
+                context={context}
+                editMode={editMode}
+                containerPropsKeys={container?.childrenLayoutKeys}
+                inheritedOptionsState={pick(
+                  optionsState,
+                  heritableOptionsStateKeys,
+                )}
+              />
+            </WegasComponent>
+          )}
         </ComponentContainer>
       )}
     </>

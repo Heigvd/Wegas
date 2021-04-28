@@ -4,12 +4,12 @@ import {
   pageComponentFactory,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { store } from '../../../data/Stores/store';
+import { store, useStore } from '../../../data/Stores/store';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, SStringDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { SimpleInput } from '../../Inputs/SimpleInput';
-import { safeClientScriptEval, useScript } from '../../Hooks/useScript';
+import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import {
@@ -17,13 +17,14 @@ import {
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
-import { useCurrentPlayer } from '../../../data/selectors/Player';
 import {
+  useOnCancelAction,
   Validate,
   ValidatorComponentProps,
   validatorSchema,
 } from '../../Inputs/Validate';
 import { TumbleLoader } from '../../Loader';
+import { Player } from '../../../data/selectors';
 
 interface PlayerStringInput
   extends WegasComponentProps,
@@ -52,12 +53,18 @@ function PlayerStringInput({
   onCancel,
 }: PlayerStringInput) {
   const placeholderText = useScript<string>(placeholder, context);
+
   const text = useScript<SStringDescriptor | string>(script, context);
-  const player = useCurrentPlayer();
+
+  const value = useStore(
+    () =>
+      (typeof text === 'object' ? text.getValue(Player.self()) : text) || '',
+  );
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
+  const { handleOnCancel } = useOnCancelAction(onCancel, context);
 
-  const { disabled, readOnly } = options;
+  const { disabled, readOnly, locked } = options;
 
   const onChange = React.useCallback(
     (v: React.ReactText) => {
@@ -77,17 +84,13 @@ function PlayerStringInput({
   return text == null ? (
     <TumbleLoader />
   ) : validator ? (
-    <Validate
-      value={typeof text === 'object' ? text.getValue(player) : text}
-      onValidate={onChange}
-      onCancel={() => safeClientScriptEval(onCancel, context)}
-    >
+    <Validate value={value} onValidate={onChange} onCancel={handleOnCancel}>
       {(value, onChange) => {
         return (
           <SimpleInput
             value={value}
             onChange={onChange}
-            disabled={disabled}
+            disabled={disabled || locked}
             readOnly={readOnly}
             placeholder={placeholderText}
             className={className}
@@ -99,9 +102,9 @@ function PlayerStringInput({
     </Validate>
   ) : (
     <SimpleInput
-      value={typeof text === 'object' ? text.getValue(player) : text}
+      value={value}
       onChange={onChange}
-      disabled={disabled}
+      disabled={disabled || locked}
       readOnly={readOnly}
       placeholder={placeholderText}
       className={className}

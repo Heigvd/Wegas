@@ -13,7 +13,7 @@ function undefToEmpty(val?: string | number) {
   return val;
 }
 
-export interface InputProps<T> extends ClassStyleId {
+export interface InputProps<T> extends ClassStyleId, DisabledReadonly {
   /**
    * value - the value to input
    */
@@ -26,14 +26,6 @@ export interface InputProps<T> extends ClassStyleId {
    * label - the current label of the input
    */
   label?: React.ReactNode;
-  /**
-   * disabled - disable the component
-   */
-  disabled?: boolean;
-  /**
-   * readOnly - disable the click on the component
-   */
-  readOnly?: boolean;
   /**
    * id - the id of the input
    */
@@ -59,6 +51,10 @@ export interface SimpleInputProps extends InputProps<string | number> {
   onFocus?: (
     event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
+  /**
+   * set width 100%
+   */
+  fullWidth?: boolean;
 }
 
 export function SimpleInput({
@@ -73,6 +69,7 @@ export function SimpleInput({
   className,
   style,
   onFocus,
+  fullWidth,
 }: SimpleInputProps) {
   const [currentValue, setCurrentValue] = React.useState(value);
 
@@ -105,7 +102,7 @@ export function SimpleInput({
     return (
       <textarea
         className={inputStyle + classNameOrEmpty(className)}
-        style={style}
+        style={{ ...(fullWidth ? { width: '100%' } : {}), ...style }}
         id={id}
         value={undefToEmpty(currentValue)}
         rows={rows}
@@ -123,6 +120,7 @@ export function SimpleInput({
     <input
       type="text"
       className={inputStyle + classNameOrEmpty(className)}
+      style={{ ...(fullWidth ? { width: '100%' } : {}), ...style }}
       id={id}
       value={undefToEmpty(currentValue)}
       onChange={onInputChange}

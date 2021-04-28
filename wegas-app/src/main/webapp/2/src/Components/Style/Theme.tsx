@@ -20,7 +20,6 @@ import {
 } from './ThemeVars';
 import { expandBoth } from '../../css/classes';
 
-
 export type ColorType = Exclude<React.CSSProperties['color'], undefined>;
 
 interface ThemeColors extends DefaultThemeColors {
@@ -69,6 +68,7 @@ interface SelectedThemes {
   editor: string;
   player: string;
   survey: string;
+  trainer: string;
 }
 
 export interface ThemeComponent {
@@ -112,11 +112,11 @@ interface ThemeContextValues {
 export const defaultThemeValues: ThemeValues = {
   colors: {
     'Primary color': '#1565C0',
-    'Primary color shade' : '#0B4F9D',
-    'Primary color tint' : '#4D96EA',
-    'Primary color pastel' : '#CFE5FF',
+    'Primary color shade': '#0B4F9D',
+    'Primary color tint': '#4D96EA',
+    'Primary color pastel': '#CFE5FF',
     'Secondary color': '#00499c',
-    'Secondary color shade': '#03346C',
+    'Secondary color shade': '#003A7C',
     'Secondary color tint': '#1D67BB',
     'Secondary color pastel': '#ADD3FF',
     'Accent color': 'hotpink',
@@ -143,7 +143,45 @@ export const defaultThemeValues: ThemeValues = {
   others: {
     'Font family 1': '"Courier New"',
     'Font family 2': '"Montserrat"',
-    'Font family 3': '"Arial"',
+    'Font family 3': '"Raleway"',
+  },
+};
+
+export const lobbyThemeValues: ThemeValues = {
+  colors: {
+    'Primary color': '#8CB62E',
+    'Primary color shade': '#668422',
+    'Primary color tint': '#AFDE45',
+    'Primary color pastel': '#F1FFD0',
+    'Secondary color': '#F2994A',
+    'Secondary color shade': '#C35C00',
+    'Secondary color tint': '#FFB778',
+    'Secondary color pastel': '#FFDFC2',
+    'Accent color': '#D4D4D4',
+    'Background color': '#F9F9F9',
+    'Secondary background color': '#FFF',
+    'Dark background color': '#212121',
+    'Dark secondary background color': '#111',
+    'Text color': '#626262',
+    'Secondary text color': '#fff',
+    'Disabled color': '#EAEAEA',
+    'Error color': '#DD1B1B',
+    'Warning color': '#FFCD1A',
+    'Success color': '#27AE60',
+  },
+  dimensions: {
+    'Border radius': '8px',
+    'Border width': '1px',
+    'Font size 1': '2em',
+    'Font size 2': '1.75em',
+    'Font size 3': '1.25em',
+    'Font size 4': '1em',
+    'Font size 5': '0.9em',
+  },
+  others: {
+    'Font family 1': '"Courier New"',
+    'Font family 2': '"Montserrat"',
+    'Font family 3': '"Raleway"',
   },
 };
 
@@ -156,9 +194,19 @@ const defaultTheme: Theme = {
   },
   baseMode: 'light',
 };
+const trainerTheme: Theme = {
+  values: lobbyThemeValues,
+  modes: { light: defaultLightMode, dark: defaultDarkMode },
+  modeClasses: {
+    light: modeClass(lobbyThemeValues, defaultLightMode),
+    dark: modeClass(lobbyThemeValues, defaultDarkMode),
+  },
+  baseMode: 'light',
+};
 
-const defaultThemes = {
+const defaultThemes: Themes = {
   default: defaultTheme,
+  trainer: trainerTheme,
 };
 
 const defaultThemesState: ThemesState = {
@@ -166,6 +214,7 @@ const defaultThemesState: ThemesState = {
     editor: 'default',
     player: 'default',
     survey: 'default',
+    trainer: 'trainer',
   },
   themes: defaultThemes,
 };

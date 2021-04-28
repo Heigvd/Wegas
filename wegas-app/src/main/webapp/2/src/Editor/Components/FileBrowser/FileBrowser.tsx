@@ -1,47 +1,29 @@
 import * as React from 'react';
 
-import { css } from 'emotion';
-import { grow } from '../../../css/classes';
+import { css, cx } from 'emotion';
+import { grow, halfOpacity } from '../../../css/classes';
 import { classNameOrEmpty } from '../../../Helper/className';
-// import { themeVar } from '../../../Components/Style/ThemeVars';
-
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
-
 import { StoreDispatch, useStore } from '../../../data/Stores/store';
 import { State } from '../../../data/Reducer/reducers';
-
 import { mainLayoutId } from '../Layout';
 import { focusTab } from '../LinearTabLayout/LinearLayout';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { MessageString } from '../MessageString';
-
 import { generateAbsolutePath, FileAPI } from '../../../API/files.api';
 import { FileBrowserNode, FileBrowserNodeProps } from './FileBrowserNode';
 
 const fileBrowserStyle = css({
-  // backgroundColor: themeVar.Common.colors.HeaderColor,
   paddingRight: '5px',
-  // borderColor: themeVar.Common.colors.BorderColor,
-  // borderRadius: themeVar.Common.dimensions.BorderRadius,
-  // borderWidth: '2px',
-  // borderStyle: 'inset',
 });
 
-export type FilePickingType = 'FILE' | 'FOLDER' | 'BOTH' | undefined;
-export type FileType = 'directory' | 'audio' | 'video' | 'image';
-export type FilterType = 'show' | 'hide' | 'grey';
-export interface FileFilter {
-  filterType: FilterType;
-  fileType: FileType;
-}
-
-export interface FileBrowserProps extends ClassStyleId {
+export interface FileBrowserProps extends ClassStyleId, DisabledReadonly {
   defaultFilePath?: string;
   selectedLocalPaths?: string[];
   selectedGlobalPaths?: string[];
   noDelete?: boolean;
-  readOnly?: boolean;
+  pickOnly?: boolean;
   onFileClick?: FileBrowserNodeProps['onFileClick'];
   onDeleteFile?: FileBrowserNodeProps['onDeleteFile'];
   pickType?: FilePickingType;
@@ -54,7 +36,7 @@ export function FileBrowser({
   selectedLocalPaths,
   selectedGlobalPaths,
   noDelete,
-  readOnly,
+  pickOnly,
   onFileClick,
   onDeleteFile,
   pickType,
@@ -63,6 +45,7 @@ export function FileBrowser({
   className,
   style,
   id,
+  ...options
 }: FileBrowserProps) {
   const [rootFile, setRootFile] = React.useState<IAbstractContentDescriptor>();
   const [error, setError] = React.useState<string>('');
@@ -72,7 +55,11 @@ export function FileBrowser({
     // Allows to cancel the state update in case the component is unmounted before promise finishes
     let run = true;
     FileAPI.getFileMeta(defaultFilePath ? defaultFilePath : undefined)
-      .then(file => setRootFile(file))
+      .then(file => {
+        if (run) {
+          setRootFile(file);
+        }
+      })
       .catch(({ statusText }: Response) => {
         if (run && comp.current) {
           setRootFile(undefined);
@@ -87,7 +74,11 @@ export function FileBrowser({
   return rootFile ? (
     <DefaultDndProvider>
       <div
-        className={grow + classNameOrEmpty(className)}
+        className={
+          cx(grow, {
+            [halfOpacity]: options.disabled,
+          }) + classNameOrEmpty(className)
+        }
         style={style}
         ref={comp.current}
         id={id}
@@ -99,13 +90,14 @@ export function FileBrowser({
           selectedLocalPaths={selectedLocalPaths}
           selectedGlobalPaths={selectedGlobalPaths}
           noDelete={noDelete}
-          readOnly={readOnly}
+          pickOnly={pickOnly}
           onFileClick={onFileClick}
           onDeleteFile={onDeleteFile}
           pickType={pickType}
           filter={filter}
           localDispatch={localDispatch}
           className={fileBrowserStyle}
+          {...options}
         />
       </div>
     </DefaultDndProvider>
@@ -122,11 +114,14 @@ function globalFileSelector(state: State) {
   );
 }
 
-export default function FileBrowserWithMeta() {
+export default function FileBrowserWithMeta({
+  disabled,
+  readOnly,
+}: DisabledReadonly) {
   const globalFile = useStore(globalFileSelector);
 
   return (
-    <ComponentWithForm>
+    <ComponentWithForm disabled={disabled} readOnly={readOnly}>
       {({ localState, localDispatch }) => {
         return (
           <FileBrowser
@@ -140,6 +135,8 @@ export default function FileBrowserWithMeta() {
             }
             localDispatch={localDispatch}
             onFileClick={() => focusTab(mainLayoutId, 'Variable Properties')}
+            disabled={disabled}
+            readOnly={readOnly}
           />
         );
       }}

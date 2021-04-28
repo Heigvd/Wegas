@@ -4,12 +4,13 @@ import { SchemaPropsSchemas } from '../../../Components/PageComponents/tools/sch
 import { wegasComponentCommonSchema } from '../Page/ComponentProperties';
 import { hashListChoicesToSchema } from '../FormView/HashList';
 import {
-  // layoutChoices,
   layoutCommonChoices,
   layoutConditionnalChoices,
   actionsChoices,
   decorationsChoices,
 } from '../../../Components/PageComponents/tools/options';
+
+const emptySchema = {};
 
 /**
  * useJSONSchema - Creates the schema for the JSON of a page
@@ -19,7 +20,7 @@ export function useJSONSchema(enabled: boolean = true) {
   const components = usePageComponentStore(s => s);
 
   if (!enabled) {
-    return {};
+    return emptySchema;
   }
 
   const childrenSchemas = Object.values(components)

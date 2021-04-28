@@ -10,18 +10,30 @@ import { useComponentScript } from '../../Hooks/useComponentScript';
 import { IScript, IInboxDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { TumbleLoader } from '../../Loader';
+import { wwarn } from '../../../Helper/wegaslog';
 
 interface PlayerInboxProps extends WegasComponentProps {
   inbox?: IScript;
 }
 
-export default function PlayerInbox({ inbox }: PlayerInboxProps) {
+export default function PlayerInbox({
+  inbox,
+  name,
+  options,
+}: PlayerInboxProps) {
   const { descriptor } = useComponentScript<IInboxDescriptor>(inbox);
   if (descriptor === undefined) {
+    wwarn(`No descriptor found for inbox ${name}`);
     return <TumbleLoader />;
   }
 
-  return <InboxDisplay inbox={descriptor.getEntity()} />;
+  return (
+    <InboxDisplay
+      inbox={descriptor.getEntity()}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
+    />
+  );
 }
 
 registerComponent(

@@ -28,6 +28,7 @@ export function ConfirmButton({
   onBlur,
   defaultConfirm,
   dontResetOnBlur,
+  readOnly,
   disabled,
   noHover,
   disableBorders,
@@ -81,6 +82,7 @@ export function ConfirmButton({
         disableBorders={disableBorders}
         tooltip={tooltip}
         disabled={disabled}
+        readOnly={readOnly}
         noHover={noHover}
         className={buttonClassName}
       />
@@ -102,6 +104,7 @@ export function ConfirmButton({
         disableBorders={{ right: true }}
         onClick={onConfirm(true)}
         disabled={disabled}
+        readOnly={readOnly}
         noHover={noHover != null ? noHover : true}
         type={type}
       />
@@ -110,6 +113,7 @@ export function ConfirmButton({
         disableBorders={{ left: true }}
         onClick={onConfirm(false)}
         disabled={disabled}
+        readOnly={readOnly}
         noHover={noHover != null ? noHover : true}
       />
     </div>

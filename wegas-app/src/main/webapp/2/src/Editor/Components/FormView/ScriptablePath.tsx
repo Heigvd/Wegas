@@ -26,7 +26,6 @@ import {
   isPropertyAccessExpression,
 } from 'typescript';
 import { CustomFileSelector } from './FileSelector';
-import { FilePickingType, FileFilter } from '../FileBrowser/FileBrowser';
 
 const labelStyle = css({
   marginBottom: '5px',

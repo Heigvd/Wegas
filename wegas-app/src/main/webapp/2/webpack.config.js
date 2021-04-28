@@ -42,8 +42,9 @@ const modules = {
   // stats: 'verbose',
   devtool: PROD || PREPROD ? 'source-map' : 'inline-source-map',
   entry: {
-    editor: ['./src/Editor/index.tsx'],
+    editor: ['./src/index.tsx'],
     player: ['./src/player.tsx'],
+    host: ['./src/host.tsx'],
   },
   output: {
     path: path.join(__dirname, 'dist'),
@@ -115,6 +116,19 @@ const modules = {
             options: {
               limit: 8000, // Convert images < 8kb to base64 strings
               name: 'src/pictures/[hash]-[name].[ext]',
+            },
+          },
+        ],
+      },
+
+      {
+        test: /\.(ttf)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8000,
+              name: 'src/fonts/[hash]-[name].[ext]',
             },
           },
         ],

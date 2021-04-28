@@ -91,11 +91,6 @@ const handleControlStyle = css({
   },
 });
 
-const disabledStyle = css({
-  opacity: 0.5,
-  backgroundColor: themeVar.Common.colors.DisabledColor,
-});
-
 const showBordersStyle = css({
   borderStyle: 'solid',
   borderColor: themeVar.Common.colors.HighlightColor,
@@ -367,6 +362,17 @@ export function ComponentDropZone({
   );
 }
 
+const lockedOverlayStyle = css({
+  width: '100%',
+  height: '100%',
+  left: 0,
+  top: 0,
+  position: 'absolute',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+});
+
 interface LockedOverlayProps {
   locked?: boolean;
   // confirmClick: boolean;
@@ -378,20 +384,7 @@ interface LockedOverlayProps {
 
 function LockedOverlay({ locked }: LockedOverlayProps) {
   return (
-    <div
-      onClick={e => e.stopPropagation()}
-      style={{
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        left: 0,
-        top: 0,
-        backgroundColor: 'rgba(100,100,100,.5)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
+    <div onClick={e => e.stopPropagation()} className={lockedOverlayStyle}>
       {locked && <TumbleLoader />}
       {/* {confirmClick && <ConfirmButton onAction={onConfirmClick} />} */}
     </div>
@@ -471,6 +464,10 @@ export interface PageComponentProps extends EmptyPageComponentProps {
    * dropzones - the dropzone to enable when a component is dragged over
    */
   dropzones: DropZones;
+  /**
+   * pageId - the id of the page
+   */
+  pageId: string | undefined;
   /**
    * path - the path of the current component
    */
@@ -647,13 +644,16 @@ export function ComponentContainer({
           [cx(foregroundContent, thinHoverColorInsetShadow)]: isFocused,
           [childDropzoneHorizontalStyle]: !vertical,
           [childDropzoneVerticalStyle]: vertical,
-          [disabledStyle]: options.disabled,
         }) +
         classNameOrEmpty(layoutClassName) +
         classNameOrEmpty(options.outerClassName)
       }
       style={layoutStyle}
-      onClick={onClickManaged ? undefined : onClick}
+      onClick={
+        onClickManaged || options.disabled || options.readOnly || options.locked
+          ? undefined
+          : onClick
+      }
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
       {...dropFunctions}
@@ -704,18 +704,7 @@ export function ComponentContainer({
           dropPosition="AFTER"
         />
       )}
-      {(options.disabled || options.locked) === true && (
-        <LockedOverlay
-          locked={options.locked}
-          // confirmClick={waitConfirmation}
-          // onConfirmClick={(confirmed, event) => {
-          //   if (confirmed) {
-          //     onClick(event);
-          //   }
-          //   setWaitConfirmation(false);
-          // }}
-        />
-      )}
+      {options.locked === true && <LockedOverlay locked={options.locked} />}
     </Container>
   ) : null;
 }

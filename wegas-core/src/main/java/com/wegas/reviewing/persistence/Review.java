@@ -184,6 +184,7 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
         return reviewState;
     }
 
+    @JsonIgnore
     public ReviewState getInitialReviewState() {
         return initialState != null ? initialState : getReviewState();
     }

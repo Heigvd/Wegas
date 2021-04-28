@@ -5,12 +5,13 @@ import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvi
 import { omit } from 'lodash';
 import u from 'immer';
 import { ReparentableRoot } from '../Reparentable';
-import { DnDTabLayout, ComponentMap, filterMap } from './DnDTabLayout';
+import { DnDTabLayout, ComponentMap, filterMap, ClassNames } from './DnDTabLayout';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
 
 import 'react-reflex/styles.css';
 import { flex, noOverflow, grow, expandHeight } from '../../../css/classes';
 import { themeVar } from '../../../Components/Style/ThemeVars';
+import { TabComponent } from './DnDTabs';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
@@ -420,12 +421,30 @@ const insertChildren = <T extends LayoutMap>(
   index?: number,
   active?: boolean,
 ) => {
-  const newLayouts = layouts;
-  const newIndex =
-    index !== undefined ? index : newLayouts[destLayoutKey].children.length;
-  newLayouts[destLayoutKey].children.splice(newIndex, 0, key);
-  if (active) {
-    newLayouts[destLayoutKey].defaultActive = key;
+  let newLayouts = layouts;
+  if (Object.keys(newLayouts).length === 0) {
+    newLayouts = ({
+      '0': {
+        type: 'ReflexLayoutNode',
+        children: ['1'],
+        vertical: false,
+        flexValues: [],
+      },
+      '1': {
+        type: 'TabLayoutNode',
+        vertical: false,
+        children: [key],
+        flexValues: [],
+        defaultActive: key,
+      },
+    } as unknown) as T;
+  } else {
+    const newIndex =
+      index !== undefined ? index : newLayouts[destLayoutKey].children.length;
+    newLayouts[destLayoutKey].children.splice(newIndex, 0, key);
+    if (active) {
+      newLayouts[destLayoutKey].defaultActive = key;
+    }
   }
   return newLayouts;
 };
@@ -804,6 +823,14 @@ interface LinearLayoutProps<T extends ComponentMap> {
    * onFocusTab - Allows to pass back the focusTab function without using a context
    */
   onFocusTab?: (focusTab: (tabId: string, layoutId: string) => void) => void;
+  /**
+   * The tab component to use in this layout
+   */
+  CustomTab?: TabComponent;
+  /**
+   * The className for general styling
+   */
+  classNames?: ClassNames
 }
 
 /**
@@ -814,6 +841,8 @@ export function MainLinearLayout<T extends ComponentMap>({
   initialLayout,
   tabs,
   onFocusTab,
+  CustomTab,
+  classNames = {},
 }: LinearLayoutProps<T>) {
   // const tabs = React.useRef<ComponentMap>(tabs ? tabs : {});
   const savedLayoutJSON = window.localStorage.getItem(
@@ -857,13 +886,13 @@ export function MainLinearLayout<T extends ComponentMap>({
       tabKey: tabkey,
     });
 
-  const onNewTab = (layoutKey: string) => (tabKey: string) =>
+  const onNewTab = (layoutKey: string) => (tabKey: string) => {
     dispatchLayout({
       type: 'NEW',
       tabKey: tabKey,
       destTabLayoutKey: layoutKey,
     });
-
+  };
   const onSelect = (tabKey: string) =>
     dispatchLayout({
       type: 'SELECT',
@@ -906,6 +935,8 @@ export function MainLinearLayout<T extends ComponentMap>({
               defaultActiveLabel={currentLayout.defaultActive}
               onSelect={onSelect}
               layoutId={layoutId}
+              CustomTab={CustomTab}
+              classNames={classNames}
             />
           );
         }
@@ -917,7 +948,7 @@ export function MainLinearLayout<T extends ComponentMap>({
               <ReflexElement
                 key={childKey}
                 flex={
-                  layout.layoutMap[childKey].flex
+                  layout.layoutMap[childKey]?.flex
                     ? layout.layoutMap[childKey].flex
                     : 1000
                 }
@@ -959,7 +990,19 @@ export function MainLinearLayout<T extends ComponentMap>({
       return (
         <ReflexContainer>
           <ReflexElement>
-            <div>Nothing inside</div>
+            <DnDTabLayout
+              key={currentLayoutKey}
+              components={makeTabMap([], tabs)}
+              selectItems={getUnusedTabs(layout.layoutMap, tabs)}
+              onDrop={onDrop(currentLayoutKey)}
+              onDropTab={onDropTab(currentLayoutKey)}
+              onDeleteTab={onDeleteTab}
+              onNewTab={onNewTab(currentLayoutKey)}
+              onSelect={onSelect}
+              layoutId={layoutId}
+              CustomTab={CustomTab}
+              classNames={classNames}
+            />
           </ReflexElement>
         </ReflexContainer>
       );
@@ -967,11 +1010,9 @@ export function MainLinearLayout<T extends ComponentMap>({
   };
 
   return (
-    // <focusTabContext.Provider value={focusTab}>
     <ReparentableRoot>
       <div className={cx(flex, grow, expandHeight)}>{renderLayouts()}</div>
     </ReparentableRoot>
-    // </focusTabContext.Provider>
   );
 }
 

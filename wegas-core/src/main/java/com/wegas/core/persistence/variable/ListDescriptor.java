@@ -12,16 +12,18 @@ import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasCallback;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.annotations.WegasEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
-import com.wegas.editor.jsonschema.JSONArray;
-import com.wegas.editor.jsonschema.JSONString;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.jsonschema.JSONArray;
+import com.wegas.editor.jsonschema.JSONString;
 import com.wegas.editor.view.ListChildrenTypeNullView;
 import com.wegas.editor.view.ListChildrenTypeView;
 import java.util.ArrayList;
@@ -34,7 +36,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
 
 /**
  *
@@ -42,7 +43,7 @@ import javax.persistence.OrderColumn;
  */
 @Entity
 @NamedQuery(name = "ListDescriptor.findDistinctChildrenLabels",
-        query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList.id = :containerId")
+    query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList.id = :containerId")
 @WegasEntity(callback = ListDescriptor.ValidateAllowedItemsCallback.class)
 public class ListDescriptor extends VariableDescriptor<ListInstance> implements DescriptorListI<VariableDescriptor> {
 
@@ -52,7 +53,6 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
      */
     //@BatchFetch(BatchFetchType.IN)
     @OneToMany(mappedBy = "parentList", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-    @OrderColumn(name = "ld_items_order")
     @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<VariableDescriptor> items = new ArrayList<>();
 
@@ -61,16 +61,16 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
      */
     @ElementCollection
     @WegasEntityProperty(view = @View(label = "Allowed types"),
-            schema = JSONArrayOfChildrenType.class,
-            optional = false, nullable = false, proposal = EmptyArray.class)
+        schema = JSONArrayOfChildrenType.class,
+        optional = false, nullable = false, proposal = EmptyArray.class)
     private Set<String> allowedTypes = new HashSet<>();
 
     /**
      * shortcut to show within (+) treeview button, must match allowedTypes
      */
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyString.class,
-            view = @View(label = "Default child type", value=ListChildrenTypeNullView.class))
+        optional = false, nullable = false, proposal = EmptyString.class,
+        view = @View(label = "Default child type", value = ListChildrenTypeNullView.class))
     private String addShortcut = "";
 
     /**
@@ -118,9 +118,15 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
      */
     @Override
     @JsonView(Views.ExportI.class)
-    @Scriptable(label = "getItems",wysiwyg = false)
+    @Scriptable(label = "getItems", wysiwyg = false)
     public List<VariableDescriptor> getItems() {
-        return this.items;
+        return Helper.copyAndSortModifiable(this.items, new EntityComparators.OrderComparator<>());
+    }
+
+    @Override
+    @JsonIgnore
+    public List<VariableDescriptor> getRawItems() {
+        return items;
     }
 
     @Override
@@ -190,7 +196,7 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
         }
         return acc;
     }
-    
+
     public static class JSONArrayOfChildrenType extends JSONArray {
 
         public JSONArrayOfChildrenType() {

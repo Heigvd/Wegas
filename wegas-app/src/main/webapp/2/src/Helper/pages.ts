@@ -1,4 +1,3 @@
-import { Item } from '../Editor/Components/Tree/TreeSelect';
 import { css } from 'emotion';
 import { cloneDeep } from 'lodash-es';
 import { themeVar } from '../Components/Style/ThemeVars';

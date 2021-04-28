@@ -34,6 +34,7 @@ function PlayerPageLoader({
   style,
   id,
   loadTimer,
+  options,
 }: PlayerPageLoaderProps) {
   const pageScriptSelector = React.useCallback(
     (s: State) => {
@@ -75,6 +76,8 @@ function PlayerPageLoader({
         selectedPageId={pageId}
         loadTimer={loadTimer}
         context={context}
+        disabled={options.disabled}
+        readOnly={options.readOnly}
       />
     </pageCTX.Provider>
   );

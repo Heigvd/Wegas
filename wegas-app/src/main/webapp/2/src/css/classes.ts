@@ -12,6 +12,9 @@ export const grid = css({
 export const block = css({
   display: 'block',
 });
+export const inlineBlock = css({
+  display: 'inline-block',
+});
 export const hidden = css({
   display: 'none',
 });
@@ -42,6 +45,12 @@ export const hideOverflow = css({
 });
 export const showOverflow = css({
   overflow: 'visible',
+});
+
+export const hideWithEllipsis = css({
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
 });
 
 // Size
@@ -86,6 +95,9 @@ export const flexWrap = css({
 export const flexDistribute = css({
   justifyContent: 'space-evenly',
 });
+export const flexBetween = css({
+  justifyContent: 'space-between',
+});
 
 // Position
 export const textCenter = css({
@@ -94,11 +106,23 @@ export const textCenter = css({
 export const itemCenter = css({
   alignItems: 'center',
 });
+export const itemBottom = css({
+  alignItems: 'flex-end',
+});
+export const itemStretch = css({
+  alignItems: 'stretch',
+});
 export const contentCenter = css({
   alignContent: 'center',
 });
 export const justifyCenter = css({
   justifyContent: 'center',
+});
+export const justifyEnd = css({
+  justifyContent: 'flex-end',
+});
+export const justifyStart = css({
+  justifyContent: 'flex-start',
 });
 export const foregroundContent = css({
   zIndex: 1000,
@@ -202,6 +226,9 @@ export const contentStyle = css({
 export const disabledColorStyle = css({
   color: themeVar.Common.colors.DisabledColor,
 });
+export const halfOpacity = css({
+  opacity: 0.5,
+});
 
 export const infoShortTextStyle = css({
   color: '#AAAAAA', // TODO add in Theme
@@ -246,11 +273,12 @@ export const dropZoneStyle = css({
 
 export const unreadSignalStyle = css({
   '::before': {
-    content: '"new"',
-    transform: 'rotate(-45deg)',
+    content: '"New"',
+    transform: 'rotate(-90deg)',
     position: 'absolute',
-    fontSize: '7pt',
-    color: 'green',
+    fontSize: '10pt',
+    fontWeight: 'bold',
+    color: 'orange',
   },
 });
 
@@ -258,4 +286,10 @@ export const unreadSpaceStyle = css({
   minWidth: '30px',
   display: 'flex',
   alignItems: 'center',
+});
+
+// Others
+
+export const pointer = css({
+  cursor: 'pointer',
 });

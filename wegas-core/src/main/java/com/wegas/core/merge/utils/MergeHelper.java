@@ -35,7 +35,7 @@ public class MergeHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(MergeHelper.class);
 
-    private MergeHelper(){
+    private MergeHelper() {
         // empty private constructor to prevent class initialisation
     }
 
@@ -44,7 +44,7 @@ public class MergeHelper {
         /**
          * Is target protected ? to be protected, the target must belongs to a protectedGameModel
          * (i.e. a scenario which depends on a model) and must stand in a protected scope according
-         * to the current protection level and its inherited visibility
+         * to the current protection level and its inherited visibility.
          *
          * @param target          current mergeable object
          * @param protectionLevel current protection level
@@ -57,7 +57,7 @@ public class MergeHelper {
         }
 
         /**
-         * visit a mergeable object
+         * visit a mergeable object.
          *
          * @param target          the mergeable target to visit
          * @param protectionLevel current protection level
@@ -68,10 +68,11 @@ public class MergeHelper {
          *
          * @return return false to stop visiting this branch, true to continue
          */
-        boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references);
+        boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level,
+            WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references);
 
         /**
-         * Visit ea property
+         * Visit a property.
          *
          * @param target          the property to visit
          * @param protectionLevel current protection level
@@ -83,21 +84,25 @@ public class MergeHelper {
          *                        cases
          * @param references      others properties visited in parallel
          */
-        default void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references) {
+        default void visitProperty(Object target, ProtectionLevel protectionLevel, int level,
+            WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references) {
             // default behaviour is noop
         }
     }
 
     /**
-     * Start the visit of the given mergeable target:
+     * Start the visit of the given mergeable target.
      *
      * @param target         object to visit
      * @param forceRecursion should visit non includedByDefault properties ?
      * @param visitor        the visitor
      * @param references     try to visit those ones in parallel
      */
-    public static void visitMergeable(Mergeable target, Boolean forceRecursion, MergeableVisitor visitor, Mergeable... references) {
-        visitMergeable(target, ProtectionLevel.PROTECTED, forceRecursion, visitor, 0, null, null, references);
+    public static void visitMergeable(Mergeable target, Boolean forceRecursion,
+        MergeableVisitor visitor, Mergeable... references
+    ) {
+        visitMergeable(target, ProtectionLevel.PROTECTED,
+            forceRecursion, visitor, 0, null, null, references);
     }
 
     /**
@@ -113,23 +118,29 @@ public class MergeHelper {
      * @param f               WegasFieldProperties about current target
      * @param ancestors       list of all mergeables passed through to get to this place
      */
-    private static void visitMergeable(Mergeable target, ProtectionLevel protectionLevel, Boolean forceRecursion, MergeableVisitor visitor, int level, WegasFieldProperties f, Deque<Mergeable> ancestors, Mergeable... references) {
+    private static void visitMergeable(Mergeable target, ProtectionLevel protectionLevel,
+        Boolean forceRecursion, MergeableVisitor visitor, int level, WegasFieldProperties f,
+        Deque<Mergeable> ancestors, Mergeable... references
+    ) {
 
         if (target != null) {
 
             if (ancestors == null) {
                 ancestors = new LinkedList<>();
             }
-            boolean shouldContinue = visitor.visit(target, protectionLevel, level, f, ancestors, references);
+            boolean shouldContinue = visitor
+                .visit(target, protectionLevel, level, f, ancestors, references);
 
             if (shouldContinue) {
                 ancestors.addFirst(target);
 
-                WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(target.getClass());
+                WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(target
+                    .getClass());
 
                 for (WegasFieldProperties field : entityIterator.getFields()) {
                     try {
-                        ProtectionLevel fieldProtectionLevel = field.getAnnotation().protectionLevel();
+                        ProtectionLevel fieldProtectionLevel = field.getAnnotation()
+                            .protectionLevel();
                         if (fieldProtectionLevel.equals(ProtectionLevel.CASCADED)) {
                             fieldProtectionLevel = protectionLevel;
                         }
@@ -144,14 +155,19 @@ public class MergeHelper {
                                         referencesChildren = new Mergeable[references.length];
                                         for (int i = 0; i < references.length; i++) {
                                             if (references[i] != null) {
-                                                referencesChildren[i] = (Mergeable) readMethod.invoke(references[i]);
+                                                referencesChildren[i] = (Mergeable) readMethod
+                                                    .invoke(references[i]);
                                             } else {
                                                 referencesChildren[i] = null;
                                             }
                                         }
                                     }
 
-                                    MergeHelper.visitMergeable(targetChild, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors, (Mergeable[]) referencesChildren);
+                                    MergeHelper
+                                        .visitMergeable(targetChild,
+                                            fieldProtectionLevel, forceRecursion,
+                                            visitor, level + 1, field,
+                                            ancestors, (Mergeable[]) referencesChildren);
                                     break;
                                 case CHILDREN:
                                     Object children = readMethod.invoke(target);
@@ -160,7 +176,8 @@ public class MergeHelper {
                                         referencesChildren = new Object[references.length];
                                         for (int i = 0; i < references.length; i++) {
                                             if (references[i] != null) {
-                                                referencesChildren[i] = readMethod.invoke(references[i]);
+                                                referencesChildren[i] = readMethod
+                                                    .invoke(references[i]);
                                             } else {
                                                 referencesChildren[i] = null;
                                             }
@@ -175,7 +192,8 @@ public class MergeHelper {
 
                                         if (!childrenList.isEmpty()) {
 
-                                            for (Integer childIndex = 0; childIndex < childrenList.size(); childIndex++) {
+                                            for (Integer childIndex = 0; childIndex < childrenList
+                                                .size(); childIndex++) {
 
                                                 // for each child
                                                 Object get = childrenList.get(childIndex);
@@ -188,12 +206,15 @@ public class MergeHelper {
 
                                                         List refChildren = new ArrayList<>();
                                                         if (referencesChildren[refIndex] instanceof List) {
-                                                            refChildren.addAll((List) referencesChildren[refIndex]);
+                                                            refChildren
+                                                                .addAll((List) referencesChildren[refIndex]);
                                                         }
 
                                                         // first try to fetch item with same refId
                                                         for (Object other : refChildren) {
-                                                            if (other instanceof Mergeable && ((Mergeable) other).getRefId().equals(((Mergeable) get).getRefId())) {
+                                                            if (other instanceof Mergeable && ((Mergeable) other)
+                                                                .getRefId().equals(((Mergeable) get)
+                                                                    .getRefId())) {
                                                                 refGet = (Mergeable) other;
                                                                 break;
                                                             }
@@ -201,7 +222,10 @@ public class MergeHelper {
                                                         if (refGet == null && get instanceof NamedEntity) {
                                                             // no reference with same refId, try to fetch by name
                                                             for (Object other : refChildren) {
-                                                                if (other instanceof NamedEntity && ((NamedEntity) other).getName().equals(((NamedEntity) get).getName())) {
+                                                                if (other instanceof NamedEntity && ((NamedEntity) other)
+                                                                    .getName()
+                                                                    .equals(((NamedEntity) get)
+                                                                        .getName())) {
                                                                     refGet = (Mergeable) other;
                                                                     break;
                                                                 }
@@ -214,9 +238,27 @@ public class MergeHelper {
                                                         refList[refIndex] = refGet;
 
                                                     }
-                                                    MergeHelper.visitMergeable((Mergeable) get, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors, refList);
+                                                    MergeHelper
+                                                        .visitMergeable(
+                                                            (Mergeable) get,
+                                                            fieldProtectionLevel,
+                                                            forceRecursion,
+                                                            visitor,
+                                                            level + 1,
+                                                            field,
+                                                            ancestors,
+                                                            refList
+                                                        );
                                                 } else {
-                                                    visitor.visitProperty(get, protectionLevel, level, field, ancestors, childIndex);
+                                                    visitor
+                                                        .visitProperty(
+                                                            get,
+                                                            protectionLevel,
+                                                            level,
+                                                            field,
+                                                            ancestors,
+                                                            childIndex
+                                                        );
                                                 }
                                             }
                                         }
@@ -233,11 +275,14 @@ public class MergeHelper {
 
                                                         Set refChildren = new HashSet<>();
                                                         if (referencesChildren[refIndex] instanceof Set) {
-                                                            refChildren.addAll((Set) referencesChildren[refIndex]);
+                                                            refChildren
+                                                                .addAll((Set) referencesChildren[refIndex]);
                                                         }
                                                         // first try to fetch item with same refId
                                                         for (Object other : refChildren) {
-                                                            if (other instanceof Mergeable && ((Mergeable) other).getRefId().equals(((Mergeable) get).getRefId())) {
+                                                            if (other instanceof Mergeable && ((Mergeable) other)
+                                                                .getRefId().equals(((Mergeable) get)
+                                                                    .getRefId())) {
                                                                 refGet = (Mergeable) other;
                                                                 break;
                                                             }
@@ -245,7 +290,10 @@ public class MergeHelper {
                                                         if (refGet == null && get instanceof NamedEntity) {
                                                             // no reference with same refId, try to fetch by name
                                                             for (Object other : refChildren) {
-                                                                if (other instanceof NamedEntity && ((NamedEntity) other).getName().equals(((NamedEntity) get).getName())) {
+                                                                if (other instanceof NamedEntity && ((NamedEntity) other)
+                                                                    .getName()
+                                                                    .equals(((NamedEntity) get)
+                                                                        .getName())) {
                                                                     refGet = (Mergeable) other;
                                                                     break;
                                                                 }
@@ -259,9 +307,27 @@ public class MergeHelper {
                                                         refSet[refIndex] = refGet;
                                                     }
 
-                                                    MergeHelper.visitMergeable((Mergeable) get, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors, refSet);
+                                                    MergeHelper
+                                                        .visitMergeable(
+                                                            (Mergeable) get,
+                                                            fieldProtectionLevel,
+                                                            forceRecursion,
+                                                            visitor,
+                                                            level + 1,
+                                                            field,
+                                                            ancestors,
+                                                            refSet
+                                                        );
                                                 } else {
-                                                    visitor.visitProperty(get, protectionLevel, level, field, ancestors, null);
+                                                    visitor
+                                                        .visitProperty(
+                                                            get,
+                                                            protectionLevel,
+                                                            level,
+                                                            field,
+                                                            ancestors,
+                                                            null
+                                                        );
                                                 }
                                             }
                                         }
@@ -288,7 +354,17 @@ public class MergeHelper {
                                                     }
                                                 }
 
-                                                MergeHelper.visitMergeable((Mergeable) child, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors, mRefs);
+                                                MergeHelper
+                                                    .visitMergeable(
+                                                        (Mergeable) child,
+                                                        fieldProtectionLevel,
+                                                        forceRecursion,
+                                                        visitor,
+                                                        level + 1,
+                                                        field,
+                                                        ancestors,
+                                                        mRefs
+                                                    );
                                             } else {
                                                 Object[] refs = new Object[references.length];
                                                 for (int refIndex = 0; refIndex < references.length; refIndex++) {
@@ -302,7 +378,16 @@ public class MergeHelper {
 
                                                 }
 
-                                                visitor.visitProperty(child, protectionLevel, level, field, ancestors, entry.getKey(), refs);
+                                                visitor
+                                                    .visitProperty(
+                                                        child,
+                                                        protectionLevel,
+                                                        level,
+                                                        field,
+                                                        ancestors,
+                                                        entry.getKey(),
+                                                        refs
+                                                    );
                                             }
                                         }
                                     }
@@ -317,13 +402,23 @@ public class MergeHelper {
 
                                     for (int i = 0; i < references.length; i++) {
                                         if (references[i] != null) {
-                                            referencesProperties[i] = readMethod.invoke(references[i]);
+                                            referencesProperties[i] = readMethod
+                                                .invoke(references[i]);
                                         } else {
                                             referencesProperties[i] = null;
                                         }
                                     }
 
-                                    visitor.visitProperty(targetProperty, protectionLevel, level, field, ancestors, null, referencesProperties);
+                                    visitor
+                                        .visitProperty(
+                                            targetProperty,
+                                            protectionLevel,
+                                            level,
+                                            field,
+                                            ancestors,
+                                            null,
+                                            referencesProperties
+                                        );
                                     break;
                             }
                         }

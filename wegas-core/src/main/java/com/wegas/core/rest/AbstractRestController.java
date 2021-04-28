@@ -68,6 +68,7 @@ public abstract class AbstractRestController<T extends AbstractFacade<U>, U exte
      */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
+    @Override
     public U get(@PathParam("entityId") Long entityId) {
         return getFacade().find(entityId);
     }

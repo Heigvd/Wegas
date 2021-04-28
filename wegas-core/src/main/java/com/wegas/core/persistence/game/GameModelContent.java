@@ -247,6 +247,7 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     /**
      * @return the id
      */
+    @Override
     public Long getId() {
         return id;
     }

@@ -166,6 +166,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
         final Assignment assignment = this.findAssignment(assignmentId);
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(assignment.getResourceInstance().getId());
         resourceInstance.moveAssignment(assignment, index);
+        requestManager.addUpdatedEntity(resourceInstance);
         return resourceInstance;
     }
 
