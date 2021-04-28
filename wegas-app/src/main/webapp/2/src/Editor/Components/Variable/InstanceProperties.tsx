@@ -22,7 +22,11 @@ import { themeVar } from '../../../Components/Style/ThemeVars';
 import { themeCTX, ThemeComponent } from '../../../Components/Style/Theme';
 import { IVariableInstance } from 'wegas-ts-api';
 import { VariableDescriptor, VariableInstance } from '../../../data/selectors';
-import { Edition, VariableEdition } from '../../../data/Reducer/globalState';
+import {
+  Edition,
+  setUnsavedChanges,
+  VariableEdition,
+} from '../../../data/Reducer/globalState';
 import { VariableTreeTitle } from './VariableTree';
 import { State } from '../../../data/Reducer/reducers';
 
@@ -154,6 +158,7 @@ export function InstanceProperties({
             entity={selectedInstance}
             error={parseEventFromIndex(events)}
             actions={actions}
+            onChange={() => dispatch(setUnsavedChanges(true))}
             {...options}
           />
         )}

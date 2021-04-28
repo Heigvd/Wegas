@@ -66,7 +66,7 @@ const modalCloseButtonStyle = css({
 const secondaryButtonStyle = css({
   backgroundColor: 'transparent',
   color: themeVar.Common.colors.PrimaryColor,
-  border:'1px solid ' + themeVar.Common.colors.PrimaryColor
+  border: '1px solid ' + themeVar.Common.colors.PrimaryColor,
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
@@ -178,52 +178,70 @@ export function Modal({
 interface OkCancelModalProps {
   onOk?: () => void;
   onCancel?: () => void;
+  /**
+   * attachedTo - the ID of the element to insert the modal (will cover the whole element). By default, gets the last themeCTX provider
+   */
+  attachedToId?: string;
 }
 
 export function OkCancelModal({
   onOk,
   onCancel,
+  attachedToId,
   children,
 }: React.PropsWithChildren<OkCancelModalProps>) {
   const i18nValues = useInternalTranslate(modalTranslations);
 
   return (
-    <Modal>
+    <Modal attachedToId={attachedToId}>
       <div className={cx(flex, flexColumn)}>
         {children}
         <div className={cx(flex, flexRow, justifyEnd, defaultMarginTop)}>
-          <Button label={i18nValues.cancel} onClick={onCancel} className={secondaryButtonStyle}/>
-          <Button label={i18nValues.ok} onClick={onOk} className={defaultMarginLeft}/>
+          <Button
+            label={i18nValues.cancel}
+            onClick={onCancel}
+            className={secondaryButtonStyle}
+          />
+          <Button
+            label={i18nValues.ok}
+            onClick={onOk}
+            className={defaultMarginLeft}
+          />
         </div>
       </div>
     </Modal>
   );
 }
 
-export function useOkCancelModal() {
+export function useOkCancelModal(attachedToId?: string) {
   const [show, setShow] = React.useState(false);
   const showModal = function () {
     setShow(true);
   };
-  function Modal({
-    onCancel,
-    onOk,
-    children,
-  }: React.PropsWithChildren<OkCancelModalProps>) {
-    return show ? (
-      <OkCancelModal
-        onCancel={() => {
-          setShow(false);
-          onCancel && onCancel();
-        }}
-        onOk={() => {
-          setShow(false);
-          onOk && onOk();
-        }}
-      >
-        {children}
-      </OkCancelModal>
-    ) : null;
-  }
+  const Modal = React.useCallback(
+    ({
+      onCancel,
+      onOk,
+      children,
+    }: React.PropsWithChildren<OkCancelModalProps>) => {
+      debugger;
+      return show ? (
+        <OkCancelModal
+          // attachedToId={attachedToId}
+          onCancel={() => {
+            setShow(false);
+            onCancel && onCancel();
+          }}
+          onOk={() => {
+            setShow(false);
+            onOk && onOk();
+          }}
+        >
+          {children}
+        </OkCancelModal>
+      ) : null;
+    },
+    [attachedToId, show],
+  );
   return { showModal, OkCancelModal: Modal };
 }

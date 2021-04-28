@@ -19,6 +19,7 @@ interface EditorProps<T> extends DisabledReadonly {
   }[];
   path?: (string | number)[];
   config?: Schema;
+  onChange?: (newEntity: T) => void;
 }
 
 interface FormProps<T> extends EditorProps<T> {
@@ -140,6 +141,7 @@ export class Form<T> extends React.Component<
               value={this.state.val}
               schema={this.props.schema}
               onChange={val => {
+                this.props.onChange && this.props.onChange(val);
                 this.setState({ val });
               }}
             />

@@ -11,7 +11,11 @@ import {
   getEntity,
 } from '../EntityEditor';
 import { css, cx } from 'emotion';
-import { Edition, closeEditor } from '../../../data/Reducer/globalState';
+import {
+  Edition,
+  closeEditor,
+  setUnsavedChanges,
+} from '../../../data/Reducer/globalState';
 import { StoreDispatch } from '../../../data/Stores/store';
 import { createStoreConnector } from '../../../data/connectStore';
 import { flex, grow, autoScroll, halfOpacity } from '../../../css/classes';
@@ -167,6 +171,9 @@ export function ComponentWithForm({
             error={parseEventFromIndex(localState.events, localDispatch)}
             disabled={disabled}
             readOnly={readOnly}
+            onChange={() => {
+              localDispatch(setUnsavedChanges(true));
+            }}
           />
         </ReflexElement>
       )}
