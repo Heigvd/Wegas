@@ -11,7 +11,6 @@ import {
   hideOverflow,
   autoScroll,
   headerStyle,
-  contentStyle,
 } from '../../../css/classes';
 import { ClassNames, ComponentMap } from './DnDTabLayout';
 
@@ -73,7 +72,7 @@ export function TabLayout({
           </CustomTab>)}
         </div>
       </Toolbar.Header>
-      <Toolbar.Content className={cx(relative, contentStyle, content)}>
+      <Toolbar.Content className={cx(relative, content)}>
         <div className={cx(expandBoth, hideOverflow, flex)}>
             {activeLabel && (
               <Reparentable

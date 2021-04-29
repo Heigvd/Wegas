@@ -48,7 +48,7 @@ export const buttonStyle = css({
     cursor: 'inherit',
   },
   ['&.iconOnly']: {
-    color: themeVar.Common.colors.DarkTextColor,
+    color: themeVar.Common.colors.PrimaryColor,
     backgroundColor: 'transparent',
     ['&:not(.disabled):not(.readOnly):hover']: {
       color: themeVar.Common.colors.ActiveColor,

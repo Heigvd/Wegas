@@ -109,6 +109,9 @@ export const itemCenter = css({
 export const itemBottom = css({
   alignItems: 'flex-end',
 });
+export const itemsTop = css({
+  alignItems: 'flex-start',
+});
 export const itemStretch = css({
   alignItems: 'stretch',
 });
@@ -161,7 +164,12 @@ export const defaultMargin = cx(
 );
 
 export const autoMargin = css({ margin: 'auto' });
-
+export const XLPadding = css({
+  padding: '2.5em',
+});
+export const MediumPadding = css({
+  padding: '2em',
+});
 export const defaultPaddingLeft = css({
   paddingLeft: '10px',
 });
@@ -216,11 +224,13 @@ export const layoutStyle = css({
   fontFamily: themeVar.Common.others.TextFont1,
 });
 export const headerStyle = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  backgroundColor: themeVar.Common.colors.SecondaryBackgroundColor,
+  paddingTop: '1em',
 });
-export const contentStyle = css({
-  margin: '5px',
-  // backgroundColor: themeVar.Common.colors.BackgroundColor,
+
+export const childrenHeaderStyle = css({
+  backgroundColor: themeVar.Common.colors.ActiveColor,
+  padding: '1em 1em 0 1em',
 });
 
 export const disabledColorStyle = css({

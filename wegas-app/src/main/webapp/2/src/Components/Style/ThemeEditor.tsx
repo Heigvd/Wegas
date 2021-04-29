@@ -14,9 +14,9 @@ import {
   itemCenter,
   defaultPadding,
   headerStyle,
-  contentStyle,
   justifyCenter,
   componentMarginLeft,
+  defaultMargin,
 } from '../../css/classes';
 import { ChromePicker, RGBColor } from 'react-color';
 import { useOnClickOutside } from '../Hooks/useOnClickOutside';
@@ -387,7 +387,7 @@ function ThemeEdition() {
           }
         />
       </Toolbar.Header>
-      <Toolbar.Content className={contentStyle}>
+      <Toolbar.Content className={defaultMargin}>
         <ReflexContainer className={expandBoth} orientation="vertical">
           {selectedSection.colors && (
             <ReflexElement>
@@ -620,7 +620,7 @@ function ModeEdition() {
           }
         />
       </Toolbar.Header>
-      <Toolbar.Content className={contentStyle}>
+      <Toolbar.Content className={defaultMargin}>
         <ReflexContainer className={expandBoth} orientation="vertical">
           <ReflexElement>
             <ReflexContainer className={expandBoth} orientation="horizontal">

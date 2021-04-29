@@ -831,6 +831,10 @@ interface LinearLayoutProps<T extends ComponentMap> {
    * The className for general styling
    */
   classNames?: ClassNames
+  /**
+   * If tabs are children of other tabs (styling purpose mainly).
+   */
+  areChildren?: boolean;
 }
 
 /**
@@ -843,6 +847,7 @@ export function MainLinearLayout<T extends ComponentMap>({
   onFocusTab,
   CustomTab,
   classNames = {},
+  areChildren,
 }: LinearLayoutProps<T>) {
   // const tabs = React.useRef<ComponentMap>(tabs ? tabs : {});
   const savedLayoutJSON = window.localStorage.getItem(
@@ -937,6 +942,7 @@ export function MainLinearLayout<T extends ComponentMap>({
               layoutId={layoutId}
               CustomTab={CustomTab}
               classNames={classNames}
+              areChildren={areChildren}
             />
           );
         }
@@ -1002,6 +1008,7 @@ export function MainLinearLayout<T extends ComponentMap>({
               layoutId={layoutId}
               CustomTab={CustomTab}
               classNames={classNames}
+              areChildren={areChildren}
             />
           </ReflexElement>
         </ReflexContainer>

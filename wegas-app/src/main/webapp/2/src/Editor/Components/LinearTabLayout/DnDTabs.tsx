@@ -7,6 +7,7 @@ import { dropZoneFocus } from '../../../Components/Contexts/DefaultDndProvider';
 import {
   activeTabStyle,
   inactiveTabStyle,
+  tabsStyle,
   tabStyle,
 } from '../../../Components/Tabs';
 
@@ -31,6 +32,10 @@ interface TabInternalProps {
    * className - the className to apply on the component
    */
   className?: string;
+  /**
+   * If tab is child of other tabs (styling purpose mainly).
+   */
+  isChild?: boolean;
 }
 
 export type TabProps = React.PropsWithChildren<TabInternalProps>;
@@ -39,13 +44,10 @@ export const Tab = React.forwardRef<HTMLDivElement, TabProps>(
   (props: TabProps, ref: React.RefObject<HTMLDivElement>) => (
     <div
       ref={ref}
-      className={
+      className={cx(
         props.className
-          ? props.className
-          : cx(tabStyle, {
-              [activeTabStyle]: props.active !== undefined && props.active,
-              [inactiveTabStyle]: !props.active,
-            })
+        ? props.className
+        : cx(tabStyle, tabsStyle(props.isChild, props.active)))
       }
       onClick={props.onClick}
     >
@@ -77,6 +79,10 @@ interface DragTabProps extends TabProps {
    * The tab component to use in this component
    */
   CustomTab?: TabComponent;
+  /**
+   * If tab is child of other tabs (styling purpose mainly).
+   */
+  isChild?: boolean;
 }
 
 interface DnDItem {
@@ -94,6 +100,7 @@ export function DragTab({
   onClick,
   onDrag,
   CustomTab = Tab,
+  isChild,
 }: DragTabProps) {
   const [, drag] = useDrag<DnDItem, unknown, unknown>({
     item: {
@@ -113,6 +120,7 @@ export function DragTab({
       active={active}
       className={className}
       onClick={onClick}
+      isChild={isChild}
     >
       {children}
     </CustomTab>

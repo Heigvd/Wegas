@@ -705,6 +705,7 @@ export default function PageEditor() {
             onFocusTab={ft => {
               focusTab.current = ft;
             }}
+            areChildren
           />
         </pageCTX.Provider>
       </pageEditorCTX.Provider>
