@@ -2,7 +2,12 @@ import { rest } from './rest';
 import { GameModel } from '../data/selectors';
 import { IGameModelContent, IAbstractContentDescriptor } from 'wegas-ts-api';
 
-export type LibType = 'CSS' | 'ClientScript' | 'ServerScript';
+export type LibType =
+  | 'CSS'
+  | 'ClientScript'
+  | 'ServerScript'
+  | 'Theme'
+  | 'SelectedThemes';
 export type NewLibErrors = 'NOTNEW' | 'UNKNOWN';
 export interface ILibraries {
   [key: string]: IGameModelContent;

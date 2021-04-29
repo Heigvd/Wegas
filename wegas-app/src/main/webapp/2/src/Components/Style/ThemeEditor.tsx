@@ -37,13 +37,14 @@ import { MainLinearLayout } from '../../Editor/Components/LinearTabLayout/Linear
 // } from '../Layouts/FonkyFlex';
 import { SimpleInput } from '../Inputs/SimpleInput';
 // import { PageExamples } from './PageExample';
-import { wlog } from '../../Helper/wegaslog';
+import { wlog, wwarn } from '../../Helper/wegaslog';
 import { ConfirmStringAdder } from '../Inputs/String/ConfirmStringAdder';
 import { Title } from '../Inputs/String/Title';
 import { ConfirmAdder } from '../Inputs/String/ConfirmAdder';
 import { Button } from '../Inputs/Buttons/Button';
 import * as Color from 'color';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
+import { LibraryAPI, ILibraries } from '../../API/library.api';
 
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
 
@@ -294,6 +295,17 @@ function ThemeEdition() {
       {},
     ),
   );
+
+  React.useEffect(() => {
+    LibraryAPI.getAllLibraries('Theme')
+      .then((libs: ILibraries) => {
+        wlog(libs);
+        debugger;
+      })
+      .catch(e => {
+        wwarn(e);
+      });
+  }, []);
 
   return (
     <Toolbar>

@@ -19,6 +19,7 @@ import {
   ModeComponent,
 } from './ThemeVars';
 import { expandBoth } from '../../css/classes';
+import { useThemeStore } from '../../data/Stores/themeStore';
 
 export type ColorType = Exclude<React.CSSProperties['color'], undefined>;
 
@@ -185,7 +186,7 @@ export const lobbyThemeValues: ThemeValues = {
   },
 };
 
-const defaultTheme: Theme = {
+export const defaultTheme: Theme = {
   values: defaultThemeValues,
   modes: { light: defaultLightMode, dark: defaultDarkMode },
   modeClasses: {
@@ -194,7 +195,7 @@ const defaultTheme: Theme = {
   },
   baseMode: 'light',
 };
-const trainerTheme: Theme = {
+export const trainerTheme: Theme = {
   values: lobbyThemeValues,
   modes: { light: defaultLightMode, dark: defaultDarkMode },
   modeClasses: {
@@ -429,6 +430,9 @@ export function ThemeProvider({
   modeName,
 }: React.PropsWithChildren<{ contextName: ThemeContext } & ThemeComponent>) {
   const themeRoot = React.useRef<HTMLDivElement>(null);
+
+  const themes = useThemeStore(s => s);
+
   const [themesState, dispatcher] = useDispatch<{ themesState: ThemesState }>(
     themeStateReducer,
     'themesState',
