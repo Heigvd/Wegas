@@ -67,6 +67,7 @@ export const Toolbar = Object.assign(
     >((props, ref) => {
       return (
         <div
+          id={props.id}
           className={cx(flex, content) + classNameOrEmpty(props.className)}
           style={props.style}
           ref={ref}

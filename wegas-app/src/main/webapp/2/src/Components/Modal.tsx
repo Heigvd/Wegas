@@ -224,10 +224,9 @@ export function useOkCancelModal(attachedToId?: string) {
       onOk,
       children,
     }: React.PropsWithChildren<OkCancelModalProps>) => {
-      debugger;
       return show ? (
         <OkCancelModal
-          // attachedToId={attachedToId}
+          attachedToId={attachedToId}
           onCancel={() => {
             setShow(false);
             onCancel && onCancel();

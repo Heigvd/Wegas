@@ -170,12 +170,7 @@ async function WindowedEditor<T extends IMergeable>({
     pathEntity = get(entity, path);
   }
 
-  // const customSchemas = useStore(s => {
-  //   return s.global.schemas;
-  // }, shallowDifferent);
-
   if (pathEntity === undefined) {
-    // return <span>There is nothing to edit</span>;
     return null;
   }
 
@@ -227,7 +222,7 @@ async function WindowedEditor<T extends IMergeable>({
           },
         }))}
         path={path}
-        schema={overrideSchema(
+        config={overrideSchema(
           entity,
           customSchema !== undefined ? customSchema : schema,
         )}
@@ -388,27 +383,40 @@ function editingGotPath(
 
 export default function VariableForm() {
   const editing = useStore((s: State) => s.global.editing, deepDifferent);
-
   const entity = useStore(
     (s: State) => s.global.editing && getEntity(s.global.editing),
     deepDifferent,
   );
   const events = useStore((s: State) => s.global.events, deepDifferent);
+  const path = React.useMemo(
+    () => (editingGotPath(editing) ? editing.path : undefined),
+    [editing],
+  );
+  const config = React.useMemo(() => editing && getConfig(editing), [editing]);
+  const update = React.useMemo(
+    () => editing && getUpdate(editing, store.dispatch),
+    [editing],
+  );
+  const actions = React.useMemo(
+    () =>
+      Object.values(
+        editing && 'actions' in editing && editing.actions.more
+          ? editing.actions.more
+          : {},
+      ),
+    [editing],
+  );
 
-  if (!editing || !editing) {
+  if (!editing || !editing || !config || !update) {
     return null;
   }
 
   return (
     <AsyncVariableForm
-      path={editingGotPath(editing) ? editing.path : undefined}
-      getConfig={getConfig(editing)}
-      update={getUpdate(editing, store.dispatch)}
-      actions={Object.values(
-        'actions' in editing && editing.actions.more
-          ? editing.actions.more
-          : {},
-      )}
+      path={path}
+      getConfig={config}
+      update={update}
+      actions={actions}
       entity={entity}
       onChange={() => {
         store.dispatch(setUnsavedChanges(true));

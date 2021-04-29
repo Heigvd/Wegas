@@ -147,7 +147,7 @@ export default function LanguageEditor() {
                             },
                           },
                         ]}
-                        schema={overrideSchema(language, schema)}
+                        config={overrideSchema(language, schema)}
                       />
                     );
                   };

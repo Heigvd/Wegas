@@ -22,132 +22,110 @@ interface EditorProps<T> extends DisabledReadonly {
   onChange?: (newEntity: T) => void;
 }
 
-interface FormProps<T> extends EditorProps<T> {
-  schema: Schema;
-}
-
 export type IForm = typeof Form;
 
-export class Form<T> extends React.Component<
-  FormProps<T>,
-  {
-    val: any;
-    oldProps: FormProps<T>;
-    // Used to reset Form (for default values)
-    id: number;
-  }
-> {
-  form?: JSONForm;
-  static getDerivedStateFromProps(
-    nextProps: FormProps<any>,
-    state: { oldProps: FormProps<any>; id: number; val: any },
+export function Form<T>({
+  actions,
+  config,
+  entity,
+  onChange,
+  path,
+  update,
+  disabled,
+  readOnly,
+}: EditorProps<T>) {
+  const oldReceivedEntity = React.useRef(entity);
+  const form = React.useRef<JSONForm>(null);
+  const [val, setVal] = React.useState(entity);
+
+  if (
+    deepDifferent(entity, oldReceivedEntity.current) &&
+    deepDifferent(entity, val)
   ) {
-    if (state.oldProps === nextProps) {
-      return null;
-    }
-    return {
-      val: nextProps.entity,
-      oldProps: nextProps,
-      id: (state.id + 1) % 100,
-    };
+    oldReceivedEntity.current = entity;
+    setVal(entity);
   }
-  static defaultProps = {
-    actions: [],
-  };
-  constructor(props: FormProps<T>) {
-    super(props);
-    this.state = { oldProps: props, val: props.entity, id: 0 };
-  }
-  render() {
-    return (
-      <Toolbar>
-        <Toolbar.Header>
-          {isActionAllowed({
-            disabled: this.props.disabled,
-            readOnly: this.props.readOnly,
-          }) && (
-            <>
-              {this.props.update && (
-                <Button
-                  label="Save"
-                  disabled={!deepDifferent(this.state.val, this.props.entity)}
-                  onClick={() => {
-                    if (this.state.val !== this.props.entity && this.form) {
-                      const validation = this.form.validate();
-                      if (validation.length) {
-                        wwarn(
-                          this.state.val,
-                          JSON.stringify(validation, null, 2),
-                        );
-                      } else {
-                        this.props.update!(this.state.val);
-                      }
+
+  return (
+    <Toolbar>
+      <Toolbar.Header>
+        {isActionAllowed({
+          disabled,
+          readOnly,
+        }) && (
+          <>
+            {update && (
+              <Button
+                label="Save"
+                disabled={!deepDifferent(val, entity)}
+                onClick={() => {
+                  if (form.current != null) {
+                    const validation = form.current.validate();
+                    if (validation.length) {
+                      wwarn(val, JSON.stringify(validation, null, 2));
+                    } else if (val != null) {
+                      update(val);
                     }
-                  }}
-                  className={expandHeight}
-                  disableBorders={{ right: true }}
-                />
-              )}
-              <ConfirmButton
-                label="Reset"
-                onAction={accept => {
-                  accept && this.setState({ val: this.props.entity });
+                  }
                 }}
-                disableBorders={{
-                  left: this.props.update !== undefined,
-                  right: this.props.actions.length > 0,
-                }}
-                buttonClassName={expandHeight}
+                className={expandHeight}
+                disableBorders={{ right: true }}
               />
-              {this.props.actions.map((a, i) => {
-                const btnProps: ButtonProps = {
-                  label: a.label,
-                  tabIndex: 1,
-                  disableBorders: {
-                    left: true,
-                    right: i !== this.props.actions.length - 1,
-                  },
-                };
-                return a.confirm ? (
-                  <ConfirmButton
-                    {...btnProps}
-                    key={i}
-                    onAction={succes =>
-                      succes && a.action(this.state.val, this.props.path)
-                    }
-                    buttonClassName={expandHeight}
-                  />
-                ) : (
-                  <Button
-                    {...btnProps}
-                    key={i}
-                    onClick={() => a.action(this.state.val, this.props.path)}
-                    className={expandHeight}
-                  />
-                );
-              })}
-            </>
-          )}
-        </Toolbar.Header>
-        <Toolbar.Content className={noOverflow}>
-          <div className={defaultMargin}>
-            <JSONForm
-              ref={n => {
-                if (n != null) {
-                  this.form = n;
-                }
+            )}
+            <ConfirmButton
+              label="Reset"
+              onAction={accept => {
+                accept && setVal(entity);
               }}
-              key={this.state.id}
-              value={this.state.val}
-              schema={this.props.schema}
-              onChange={val => {
-                this.props.onChange && this.props.onChange(val);
-                this.setState({ val });
+              disableBorders={{
+                left: update !== undefined,
+                right: actions.length > 0,
               }}
+              buttonClassName={expandHeight}
             />
-          </div>
-        </Toolbar.Content>
-      </Toolbar>
-    );
-  }
+            {actions.map((a, i) => {
+              const btnProps: ButtonProps = {
+                label: a.label,
+                tabIndex: 1,
+                disableBorders: {
+                  left: true,
+                  right: i !== actions.length - 1,
+                },
+              };
+              return a.confirm ? (
+                <ConfirmButton
+                  {...btnProps}
+                  key={i}
+                  onAction={succes =>
+                    succes && val != null && a.action(val, path)
+                  }
+                  buttonClassName={expandHeight}
+                />
+              ) : (
+                <Button
+                  {...btnProps}
+                  key={i}
+                  onClick={() => val != null && a.action(val, path)}
+                  className={expandHeight}
+                />
+              );
+            })}
+          </>
+        )}
+      </Toolbar.Header>
+      <Toolbar.Content className={noOverflow}>
+        <div className={defaultMargin}>
+          <JSONForm
+            ref={form}
+            value={val}
+            schema={config}
+            onChange={val => {
+              setVal(val);
+              onChange && onChange(val);
+            }}
+          />
+        </div>
+      </Toolbar.Content>
+    </Toolbar>
+  );
 }

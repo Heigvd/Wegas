@@ -3,7 +3,7 @@ import { VariableDescriptor } from '../../../data/selectors';
 import { Actions } from '../../../data';
 import { Toolbar } from '../../../Components/Toolbar';
 import { varIsList, entityIs } from '../../../data/entities';
-import { get, noop } from 'lodash-es';
+import { get } from 'lodash-es';
 
 import { Container, Node } from '../Views/TreeView';
 import { moveDescriptor } from '../../../data/Reducer/VariableDescriptorReducer';
@@ -46,6 +46,8 @@ import { focusTab } from '../LinearTabLayout/LinearLayout';
 import { State } from '../../../data/Reducer/reducers';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 import { useOkCancelModal } from '../../../Components/Modal';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 const TREECONTENTID = 'TREECONTENT';
 
@@ -111,11 +113,14 @@ export function TreeView({
   ...options
 }: TreeProps) {
   const [search, setSearch] = React.useState('');
+  const [onAccept, setOnAccept] = React.useState(() => () => {});
+
   const { data } = useAsync(itemsPromise);
+  const { showModal, OkCancelModal } = useOkCancelModal(TREECONTENTID);
+  const i18nValues = useInternalTranslate(commonTranslations);
+
   const globalDispatch = store.dispatch;
   const actionAllowed = isActionAllowed(options);
-  const { showModal, OkCancelModal } = useOkCancelModal(TREECONTENTID);
-  const [onAccept, setOnAccept] = React.useState(() => () => {});
 
   return (
     <Toolbar>
@@ -148,11 +153,10 @@ export function TreeView({
         )}
       </Toolbar.Header>
       <Toolbar.Content id={TREECONTENTID}>
-        <OkCancelModal
-          /*attachedToId={TREECONTENTID}*/ onOk={
-            () => alert('pouet pouet') /*onAccept*/
-          }
-        />
+        <OkCancelModal onOk={onAccept}>
+          <p>{i18nValues.changesWillBeLost}</p>
+          <p>{i18nValues.areYouSure}</p>
+        </OkCancelModal>
         <Container
           onDropResult={({ source, target, id }) => {
             if (
@@ -179,8 +183,7 @@ export function TreeView({
                 variables.map(id => (
                   <CTree
                     onShowWarning={onOk => {
-                      debugger;
-                      setOnAccept(onOk);
+                      setOnAccept(() => onOk);
                       showModal();
                     }}
                     nodeProps={nodeProps}
@@ -195,7 +198,7 @@ export function TreeView({
                   />
                 ))
               ) : (
-                <span>Loading ...</span>
+                <span>{`${i18nValues.loading} ...`}</span>
               )}
             </div>
           )}
@@ -375,7 +378,6 @@ export function CTree(
                   props.forceLocalDispatch || e.ctrlKey
                     ? props?.localState?.unsaved
                     : store.getState().global.editing?.unsaved;
-                debugger;
                 if (unsaved && props.onShowWarning) {
                   props.onShowWarning(() => onClickAction(e));
                 } else {
