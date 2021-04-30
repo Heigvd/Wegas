@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Toolbar } from '../Toolbar';
-import { themeCTX, Theme, ThemeValues, defaultThemeValues } from './Theme';
 import { cx, css } from 'emotion';
 import {
   flex,
@@ -28,23 +27,36 @@ import {
   ModeColor,
   ModeDimension,
   ModeOther,
+  Theme,
+  defaultThemeValues,
+  ThemeValues,
+  ModeValues,
 } from './ThemeVars';
 import { MainLinearLayout } from '../../Editor/Components/LinearTabLayout/LinearLayout';
-// import {
-//   FonkyFlexContainer,
-//   FonkyFlexContent,
-//   FonkyFlexSplitter,
-// } from '../Layouts/FonkyFlex';
 import { SimpleInput } from '../Inputs/SimpleInput';
-// import { PageExamples } from './PageExample';
-import { wlog, wwarn } from '../../Helper/wegaslog';
 import { ConfirmStringAdder } from '../Inputs/String/ConfirmStringAdder';
 import { Title } from '../Inputs/String/Title';
 import { ConfirmAdder } from '../Inputs/String/ConfirmAdder';
 import { Button } from '../Inputs/Buttons/Button';
 import * as Color from 'color';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
-import { LibraryAPI, ILibraries } from '../../API/library.api';
+import {
+  addNewMode,
+  addNewLib,
+  deleteMode,
+  deleteTheme,
+  getThemeDispatch,
+  resetTheme,
+  setBaseMode,
+  setEditedMode,
+  setEditedTheme,
+  setModeValue,
+  setNextMode,
+  setThemeValue,
+  useThemeStore,
+  setSelectedTheme,
+} from '../../data/Stores/themeStore';
+import { ConfirmButton } from '../Inputs/Buttons/ConfirmButton';
 
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
 
@@ -86,15 +98,15 @@ const modeColorSelectorSample = cx(
   componentMarginLeft,
 );
 
-interface ThemeEditorContextValues {
-  editedThemeName: string;
-  setEditedThemeName: React.Dispatch<React.SetStateAction<string>>;
-}
+// interface ThemeEditorContextValues {
+//   editedThemeName: string;
+//   setEditedThemeName: React.Dispatch<React.SetStateAction<string>>;
+// }
 
-export const themeEditorCTX = React.createContext<ThemeEditorContextValues>({
-  editedThemeName: 'default',
-  setEditedThemeName: () => wlog('Not implemented yet'),
-});
+// export const themeEditorCTX = React.createContext<ThemeEditorContextValues>({
+//   editedThemeName: 'default',
+//   setEditedThemeName: () => wlog('Not implemented yet'),
+// });
 
 function stringToRGBA(color?: string): RGBColor {
   const colorObject = Color(color);
@@ -164,17 +176,21 @@ function MyColorPicker({ initColor = 'black', onChange }: MyColorPickerProps) {
   );
 }
 
-interface ThemeValueModifierProps {
-  theme: Theme;
-  section: keyof ThemeValues;
-  onChange: (entry: string, value: string | null) => void;
+interface ThemeValueModifierProps<
+  T extends keyof ThemeValues,
+  K extends keyof ThemeValues[T],
+  V extends ThemeValues[T][K]
+> {
+  theme: Theme | undefined;
+  section: T;
+  onChange: (entry: K, value: V | null) => void;
 }
 
-function ThemeValueModifier({
-  theme,
-  section,
-  onChange,
-}: ThemeValueModifierProps) {
+function ThemeValueModifier<
+  T extends keyof ThemeValues,
+  K extends keyof ThemeValues[T],
+  V extends ThemeValues[T][K]
+>({ theme, section, onChange }: ThemeValueModifierProps<T, K, V>) {
   const accept: (value?: {
     name?: string;
     value: string;
@@ -191,7 +207,7 @@ function ThemeValueModifier({
         }
       | undefined,
   ) => string | undefined = value => {
-    if (Object.keys(theme.values[section]).includes(value?.name || '')) {
+    if (Object.keys(theme?.values[section] || {}).includes(value?.name || '')) {
       return `The ${section} value already exists`;
     }
   };
@@ -206,7 +222,7 @@ function ThemeValueModifier({
           onAccept={value =>
             accept(value) &&
             validator(value) &&
-            onChange(value!.name!, value!.value)
+            onChange(value!.name! as K, value!.value as V)
           }
         >
           {onNewValue => (
@@ -240,7 +256,7 @@ function ThemeValueModifier({
         </ConfirmAdder>
       </div>
       <div className={cx(flex, grow, flexColumn, defaultPadding, autoScroll)}>
-        {Object.entries(theme.values[section]).map(([k, v]) => (
+        {Object.entries(theme?.values[section] || {}).map(([k, v]) => (
           <div key={k} className={cx(flex, flexColumn, valueEntryStyle)}>
             <div className={cx(flex, flexRow)}>
               <label
@@ -251,21 +267,21 @@ function ThemeValueModifier({
                 {k} :
               </label>
               {!Object.keys(defaultThemeValues[section]).includes(k) && (
-                <Button icon="trash" onClick={() => onChange(k, null)} />
+                <Button icon="trash" onClick={() => onChange(k as K, null)} />
               )}
             </div>
             {section === 'colors' ? (
               <MyColorPicker
                 initColor={(v as string) || 'black'}
                 onChange={color => {
-                  onChange(k, rgbaToString(color));
+                  onChange(k as K, rgbaToString(color) as V);
                 }}
               />
             ) : (
               <SimpleInput
                 className={valueStyle}
                 value={v}
-                onChange={v => onChange(k, String(v))}
+                onChange={v => onChange(k as K, String(v) as V)}
               />
             )}
           </div>
@@ -276,97 +292,87 @@ function ThemeValueModifier({
 }
 
 function ThemeEdition() {
-  const {
-    themesState,
-    addNewTheme,
-    deleteTheme,
-    setSelectedTheme,
-    setThemeValue,
-  } = React.useContext(themeCTX);
-  const { editedThemeName, setEditedThemeName } = React.useContext(
-    themeEditorCTX,
-  );
+  const { themes, editedThemeName, selectedThemes } = useThemeStore(s => s);
+  const dispatch = getThemeDispatch();
+
+  const currentTheme = themes[editedThemeName];
+  const editedValues = currentTheme?.values || {};
 
   const [selectedSection, setSelectedSection] = React.useState<
     { [key in keyof Theme['values']]?: boolean }
   >(
-    Object.keys(themesState.themes[editedThemeName].values).reduce(
+    Object.keys(editedValues).reduce(
       (o, k: keyof Theme['values']) => ({ ...o, [k]: true }),
       {},
     ),
   );
-
-  React.useEffect(() => {
-    LibraryAPI.getAllLibraries('Theme')
-      .then((libs: ILibraries) => {
-        wlog(libs);
-        debugger;
-      })
-      .catch(e => {
-        wwarn(e);
-      });
-  }, []);
 
   return (
     <Toolbar>
       <Toolbar.Header className={cx(flex, flexDistribute, headerStyle)}>
         <DropMenu
           label={`Theme : ${editedThemeName}`}
-          items={Object.keys(themesState.themes).map(k => ({
+          selected={editedThemeName}
+          items={Object.keys(themes).map(k => ({
             value: k,
-            label: k,
+            label: (
+              <>
+                {k}
+                {k === 'default' || k === 'trainer' ? (
+                  <ConfirmButton
+                    icon="recycle"
+                    tooltip="Reset"
+                    onAction={success => success && dispatch(resetTheme(k))}
+                  />
+                ) : (
+                  <ConfirmButton
+                    icon="trash"
+                    tooltip="Delete"
+                    onAction={success => success && dispatch(deleteTheme(k))}
+                  />
+                )}
+              </>
+            ),
           }))}
-          onSelect={({ value }) => setEditedThemeName(value)}
+          onSelect={({ value }) => {
+            dispatch(setEditedTheme(value));
+          }}
           adder={
             <ConfirmStringAdder
               label="Add a new theme"
               validator={value => {
                 if (!value || value === '') {
                   return 'The theme must have a name';
-                } else if (Object.keys(themesState.themes).includes(value)) {
+                } else if (Object.keys(themes).includes(value)) {
                   return 'The theme allready exists';
                 }
               }}
               forceInputValue
               onAccept={value => {
                 if (value != null) {
-                  addNewTheme(value);
-                  setEditedThemeName(value);
+                  dispatch(addNewLib(value));
                 }
               }}
             />
           }
-          deleter={{
-            filter: item => item.value !== 'default',
-            onDelete: item => {
-              deleteTheme(item.value);
-              setEditedThemeName(() => {
-                const newThemes = Object.keys(themesState.themes).filter(
-                  k => k !== item.value,
-                );
-                if (newThemes.length === 0) {
-                  return 'default';
-                }
-                return newThemes[0];
-              });
-            },
-          }}
         />
         <DropMenu
           label={'Contexts'}
-          items={Object.keys(themesState.selectedThemes).map(
-            (k: keyof typeof themesState.selectedThemes) => ({
+          items={Object.keys(selectedThemes).map(
+            (k: keyof typeof selectedThemes) => ({
               value: k,
               label: (
                 <>
                   <span style={{ minWidth: '100px' }}>{`${k}'s theme :`}</span>
                   <DropMenu
-                    label={themesState.selectedThemes[k]}
-                    items={Object.keys(themesState.themes).map(k => ({
+                    label={selectedThemes[k]}
+                    items={Object.keys(themes).map(k => ({
                       value: k,
                       label: k,
                     }))}
-                    onSelect={({ value }) => setSelectedTheme(value, k)}
+                    onSelect={({ value }) => {
+                      dispatch(setSelectedTheme(value, k));
+                    }}
                   />
                 </>
               ),
@@ -376,24 +382,22 @@ function ThemeEdition() {
         />
         <DropMenu
           label={'Sections'}
-          items={Object.keys(themesState.themes[editedThemeName].values).map(
-            (k: keyof Theme['values']) => ({
-              value: k,
-              label: (
-                <>
-                  <input
-                    type="checkbox"
-                    defaultChecked={selectedSection[k]}
-                    onChange={() =>
-                      setSelectedSection(o => ({ ...o, [k]: !o[k] }))
-                    }
-                    onClick={e => e.stopPropagation()}
-                  />
-                  {k}
-                </>
-              ),
-            }),
-          )}
+          items={Object.keys(editedValues).map((k: keyof Theme['values']) => ({
+            value: k,
+            label: (
+              <>
+                <input
+                  type="checkbox"
+                  defaultChecked={selectedSection[k]}
+                  onChange={() =>
+                    setSelectedSection(o => ({ ...o, [k]: !o[k] }))
+                  }
+                  onClick={e => e.stopPropagation()}
+                />
+                {k}
+              </>
+            ),
+          }))}
           onSelect={({ value: k }) =>
             setSelectedSection(o => ({ ...o, [k]: !o[k] }))
           }
@@ -404,11 +408,9 @@ function ThemeEdition() {
           {selectedSection.colors && (
             <ReflexElement>
               <ThemeValueModifier
-                theme={themesState.themes[editedThemeName]}
+                theme={currentTheme}
                 section="colors"
-                onChange={(k, v) =>
-                  setThemeValue(editedThemeName, 'colors', k, v)
-                }
+                onChange={(k, v) => dispatch(setThemeValue('colors', k, v))}
               />
             </ReflexElement>
           )}
@@ -419,11 +421,9 @@ function ThemeEdition() {
           {selectedSection.dimensions && (
             <ReflexElement>
               <ThemeValueModifier
-                theme={themesState.themes[editedThemeName]}
+                theme={currentTheme}
                 section="dimensions"
-                onChange={(k, v) =>
-                  setThemeValue(editedThemeName, 'dimensions', k, v)
-                }
+                onChange={(k, v) => dispatch(setThemeValue('dimensions', k, v))}
               />
             </ReflexElement>
           )}
@@ -433,11 +433,9 @@ function ThemeEdition() {
           {selectedSection.others && (
             <ReflexElement>
               <ThemeValueModifier
-                theme={themesState.themes[editedThemeName]}
+                theme={currentTheme}
                 section="others"
-                onChange={(k, v) =>
-                  setThemeValue(editedThemeName, 'others', k, v)
-                }
+                onChange={(k, v) => dispatch(setThemeValue('others', k, v))}
               />
             </ReflexElement>
           )}
@@ -467,7 +465,7 @@ function ModeColorValue({ label, theme }: ModeColorValueProps) {
 }
 
 interface ModeValueModifierProps {
-  theme: Theme;
+  theme: Theme | undefined;
   component: ModeComponents;
   section: keyof ThemeValues;
   onChange: (entry: string, value: string) => void;
@@ -479,6 +477,10 @@ function ModeValueModifier({
   section,
   onChange,
 }: ModeValueModifierProps) {
+  if (theme == null) {
+    return null;
+  }
+
   const themeValuesWithUndefined = [
     'undefined',
     ...Object.keys(theme.values[section]),
@@ -530,38 +532,90 @@ function ModeValueModifier({
 }
 
 function ModeEdition() {
-  const {
-    themesState,
-    addNewMode,
-    deleteMode,
-    setModeValue,
-  } = React.useContext(themeCTX);
-
-  const { editedThemeName } = React.useContext(themeEditorCTX);
-
-  const [editedMode, setEditedMode] = React.useState<string>('light');
+  const { themes, editedThemeName, editedModeName } = useThemeStore(s => s);
+  const dispatch = getThemeDispatch();
 
   const [
     editedComponent,
     setEditedComponent,
   ] = React.useState<ModeComponentNames>('Common');
   const [selectedSection, setSelectedSection] = React.useState<
-    { [key in keyof Theme['values']]?: boolean }
+    { [key in keyof ThemeValues]?: boolean }
   >({ colors: true, dimensions: true, others: true });
 
-  const currentModes = themesState.themes[editedThemeName].modes;
-  const currentComponents = currentModes[editedMode].values;
+  const currentTheme = themes[editedThemeName];
+  const editedValues = currentTheme?.values || {};
+  const currentModes = currentTheme?.modes || {};
+  const currentMode = currentModes[editedModeName];
+  const currentComponents = currentMode?.values || {};
+
+  const modeValueReducer = React.useCallback(
+    (
+      old: JSX.Element[],
+      [section]: [keyof ValueOf<ModeValues>, boolean],
+      i: number,
+      a: [keyof ValueOf<ModeValues>, boolean][],
+    ) => {
+      const component = currentComponents[editedComponent] || {};
+      // const entries = Object.keys(component[section] || {});
+
+      const content = (
+        <ReflexElement key={section} /*flex={entries.length + 1}*/>
+          <ModeValueModifier
+            theme={currentTheme}
+            component={component}
+            section={section}
+            onChange={(k, v) =>
+              dispatch(
+                // Type are becomming too complex here. We just have to rely on dev to send good values
+                setModeValue(editedComponent, section, k as never, v as never),
+              )
+            }
+          />
+        </ReflexElement>
+      );
+
+      if (i < a.length - 1) {
+        return [
+          ...old,
+          content,
+          <ReflexSplitter key={`splitter_${section}`} />,
+        ];
+      } else {
+        return [...old, content];
+      }
+    },
+    [currentComponents, currentTheme, dispatch, editedComponent],
+  );
 
   return (
     <Toolbar>
       <Toolbar.Header className={cx(flex, flexDistribute, headerStyle)}>
         <DropMenu
-          label={`Mode : ${editedMode}`}
+          label={`Mode : ${editedModeName}`}
+          selected={editedModeName}
           items={Object.keys(currentModes).map(k => ({
             value: k,
-            label: k,
+            label: (
+              <>
+                {k}
+                <Button
+                  icon={{
+                    icon: 'star',
+                    color:
+                      currentTheme.baseMode === k
+                        ? themeVar.Common.colors.SuccessColor
+                        : undefined,
+                  }}
+                  onClick={e => {
+                    e.stopPropagation();
+                    dispatch(setBaseMode(k));
+                  }}
+                />
+              </>
+            ),
           }))}
-          onSelect={({ value }) => setEditedMode(value)}
+          onSelect={({ value }) => dispatch(setEditedMode(value))}
           adder={
             <ConfirmStringAdder
               label="Add a new mode"
@@ -575,30 +629,29 @@ function ModeEdition() {
               forceInputValue
               onAccept={value => {
                 if (value != null) {
-                  addNewMode(editedThemeName, value);
-                  setEditedMode(value);
+                  dispatch(addNewMode(value));
                 }
               }}
             />
           }
           deleter={{
-            filter: item => item.value !== 'dark' && item.value !== 'light',
+            filter: item => item.value !== currentTheme.baseMode,
             onDelete: item => {
-              deleteMode(editedThemeName, item.value);
-              setEditedMode(() => {
-                const newModes = Object.keys(currentModes).filter(
-                  k => k !== item.value,
-                );
-                if (newModes.length === 0) {
-                  return 'light';
-                }
-                return newModes[0];
-              });
+              dispatch(deleteMode(item.value));
             },
           }}
         />
         <DropMenu
+          label={`Next mode : ${currentMode?.nextModeName}`}
+          items={Object.keys(currentModes).map(k => ({
+            value: k,
+            label: k,
+          }))}
+          onSelect={({ value }) => dispatch(setNextMode(value))}
+        />
+        <DropMenu
           label={`Component : ${editedComponent}`}
+          selected={editedComponent as string}
           items={Object.keys(currentComponents).map(k => ({
             value: k,
             label: k,
@@ -609,90 +662,32 @@ function ModeEdition() {
         />
         <DropMenu
           label={'Sections'}
-          items={Object.keys(themesState.themes[editedThemeName].values).map(
-            (k: keyof Theme['values']) => ({
-              value: k,
-              label: (
-                <>
-                  <input
-                    type="checkbox"
-                    defaultChecked={selectedSection[k]}
-                    onChange={() =>
-                      setSelectedSection(o => ({ ...o, [k]: !o[k] }))
-                    }
-                    onClick={e => e.stopPropagation()}
-                  />
-                  {k}
-                </>
-              ),
-            }),
-          )}
+          items={Object.keys(editedValues).map((k: keyof Theme['values']) => ({
+            value: k,
+            label: (
+              <>
+                <input
+                  type="checkbox"
+                  defaultChecked={selectedSection[k]}
+                  onChange={() =>
+                    setSelectedSection(o => ({ ...o, [k]: !o[k] }))
+                  }
+                  onClick={e => e.stopPropagation()}
+                />
+                {k}
+              </>
+            ),
+          }))}
           onSelect={({ value: k }) =>
             setSelectedSection(o => ({ ...o, [k]: !o[k] }))
           }
         />
       </Toolbar.Header>
       <Toolbar.Content className={contentStyle}>
-        <ReflexContainer className={expandBoth} orientation="vertical">
-          <ReflexElement>
-            <ReflexContainer className={expandBoth} orientation="horizontal">
-              {Object.entries(selectedSection)
-                .filter(([v]) => v)
-                .reduce<JSX.Element[]>((old, [section], i, a) => {
-                  const component = currentComponents[editedComponent];
-                  const entries = Object.keys(
-                    component[section as keyof typeof component] || {},
-                  );
-
-                  const content = (
-                    <ReflexElement key={section} flex={entries.length + 1}>
-                      <ModeValueModifier
-                        theme={themesState.themes[editedThemeName]}
-                        component={component}
-                        section={section as keyof ThemeValues}
-                        onChange={(k, v) =>
-                          setModeValue(
-                            editedThemeName,
-                            editedMode,
-                            editedComponent,
-                            section as keyof ThemeValues,
-                            k,
-                            v,
-                          )
-                        }
-                      />
-                    </ReflexElement>
-                  );
-
-                  const splitter = <ReflexSplitter />;
-
-                  if (i < a.length - 1) {
-                    return [...old, content, splitter];
-                  } else {
-                    return [...old, content];
-                  }
-                }, [])}
-            </ReflexContainer>
-            {/* <ModeValueModifier
-              theme={themesState.themes[editedThemeName]}
-              component={currentComponents[editedComponent]}
-              section={editedSection}
-              onChange={(k, v) =>
-                setModeValue(
-                  editedThemeName,
-                  editedMode,
-                  editedComponent,
-                  editedSection,
-                  k,
-                  v,
-                )
-              }
-            /> */}
-          </ReflexElement>
-          <ReflexSplitter />
-          <ReflexElement>
-            {/* <PageExamples modeName={editedMode} /> */}
-          </ReflexElement>
+        <ReflexContainer orientation="vertical">
+          {Object.entries(selectedSection)
+            .filter(([, v]) => v)
+            .reduce<JSX.Element[]>(modeValueReducer, [])}
         </ReflexContainer>
       </Toolbar.Content>
     </Toolbar>
@@ -700,25 +695,14 @@ function ModeEdition() {
 }
 
 export default function ThemeEditor() {
-  const { themesState } = React.useContext(themeCTX);
-  const [editedTheme, setEditedTheme] = React.useState<string>(
-    themesState.selectedThemes['editor'],
-  );
   return (
-    <themeEditorCTX.Provider
-      value={{
-        editedThemeName: editedTheme,
-        setEditedThemeName: setEditedTheme,
+    <MainLinearLayout
+      tabs={{
+        Themes: <ThemeEdition />,
+        Modes: <ModeEdition />,
       }}
-    >
-      <MainLinearLayout
-        tabs={{
-          Themes: <ThemeEdition />,
-          Modes: <ModeEdition />,
-        }}
-        initialLayout={['Themes', 'Modes']}
-        layoutId={THEME_EDITOR_LAYOUT_ID}
-      />
-    </themeEditorCTX.Provider>
+      initialLayout={['Themes', 'Modes']}
+      layoutId={THEME_EDITOR_LAYOUT_ID}
+    />
   );
 }

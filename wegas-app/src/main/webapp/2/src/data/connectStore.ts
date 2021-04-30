@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Action, AnyAction, Store } from 'redux';
+import { AnyAction } from 'redux';
 import {
   useAnyStore,
   refDifferent,

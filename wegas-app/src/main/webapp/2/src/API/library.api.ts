@@ -2,6 +2,8 @@ import { rest } from './rest';
 import { GameModel } from '../data/selectors';
 import { IGameModelContent, IAbstractContentDescriptor } from 'wegas-ts-api';
 
+export const NOCONTENTMESSAGE = 'No content';
+
 export type LibType =
   | 'CSS'
   | 'ClientScript'
@@ -27,7 +29,10 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
     },
     getLibrary(libType: LibType, name: string): Promise<IGameModelContent> {
       return rest(LIBRARY_BASE(libType, gameModelId) + '/' + name).then(
-        async (res: Response) => {
+        (res: Response) => {
+          if (res.status === 204) {
+            throw Error(NOCONTENTMESSAGE);
+          }
           return res.json();
         },
       );
@@ -61,7 +66,11 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
           }
         });
     },
-    saveLibrary(libType: LibType, name: string, library: IGameModelContent) {
+    saveLibrary(
+      libType: LibType,
+      name: string,
+      library: IGameModelContent,
+    ): Promise<IGameModelContent> {
       return rest(
         LIBRARY_BASE(libType, gameModelId) + '/' + name,
         {
@@ -70,7 +79,9 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
         },
         'Editor',
         'application/json',
-      );
+      ).then((res: Response) => {
+        return res.json();
+      });
     },
     deleteLibrary(libType: LibType, name: string) {
       return rest(LIBRARY_BASE(libType, gameModelId) + '/' + name, {
