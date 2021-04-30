@@ -441,7 +441,21 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
       visibility: IVisibility = 'PRIVATE',
     ) => {
       if (name !== null) {
-        return LibraryAPI.addLibrary(scriptType, name, content, visibility)
+        const mimeType =
+          scriptType === 'CSS'
+            ? 'text/css'
+            : scriptType === 'ServerScript'
+            ? 'application/javascript'
+            : scriptType === 'ClientScript'
+            ? 'application/typescript'
+            : '';
+        return LibraryAPI.addLibrary(
+          scriptType,
+          mimeType,
+          name,
+          content,
+          visibility,
+        )
           .then((res: IGameModelContent) => {
             dispatchStateAction({
               type: 'InsertLibrary',
