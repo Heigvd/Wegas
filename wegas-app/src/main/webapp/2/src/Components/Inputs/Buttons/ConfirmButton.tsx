@@ -7,6 +7,31 @@ import {
   disableBorderToSelector,
 } from './Button';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { css, cx } from 'emotion';
+import { flex, hidden, inlineBlock, inlineFlex } from '../../../css/classes';
+import { themeVar } from '../../Style/ThemeVars';
+
+const confirmButtonsContainerStyle = css({
+display: 'flex',
+backgroundColor: themeVar.Common.colors.BackgroundColor,
+button: {
+  margin: '4px'
+},
+borderRadius: themeVar.Common.dimensions.BorderRadius,
+boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.15)',
+'&:before': {
+  content: "''",
+  width: 0,
+  height: 0,
+  borderRight: '15px solid ' + themeVar.Common.colors.BackgroundColor,
+  borderTop: '10px solid transparent',
+  borderBottom: '10px solid transparent',
+  position: 'relative',
+  left: '-13px',
+  top: '25%',
+  marginRight: '-13px',
+}
+})
 
 interface ConfirmButtonProps extends ButtonProps {
   onAction?: (
@@ -72,8 +97,8 @@ export function ConfirmButton({
     [defaultConfirm, onAction, onClick],
   );
 
-  return !confirmation ? (
-    <div tabIndex={tabIndex} ref={confirmButton} id={id} className={className}>
+  return (
+    <div tabIndex={tabIndex} ref={confirmButton} id={id} className={cx(className, inlineFlex)}>
       <Button
         label={label}
         prefixedLabel={prefixedLabel}
@@ -81,41 +106,40 @@ export function ConfirmButton({
         onClick={onClickVerify}
         disableBorders={disableBorders}
         tooltip={tooltip}
-        disabled={disabled}
+        disabled={confirmation || disabled}
         readOnly={readOnly}
         noHover={noHover}
         className={buttonClassName}
       />
-    </div>
-  ) : (
-    <div
-      ref={confirmButton}
-      tabIndex={tabIndex}
-      id={id}
-      className={
-        `wegas wegas-btn confirmBtn ${buttonStyle} ` +
-        disableBorderToSelector(disableBorders) +
-        classNameOrEmpty(className)
-      }
-    >
-      <Button
-        label="Accept"
-        mode="warning"
-        disableBorders={{ right: true }}
-        onClick={onConfirm(true)}
-        disabled={disabled}
-        readOnly={readOnly}
-        noHover={noHover != null ? noHover : true}
-        type={type}
-      />
-      <Button
-        label="Cancel"
-        disableBorders={{ left: true }}
-        onClick={onConfirm(false)}
-        disabled={disabled}
-        readOnly={readOnly}
-        noHover={noHover != null ? noHover : true}
-      />
+      {confirmation &&
+        <div
+        ref={confirmButton}
+        tabIndex={tabIndex}
+        id={id}
+        className={
+          `wegas wegas-btn confirmBtn ${confirmButtonsContainerStyle}` +
+          disableBorderToSelector(disableBorders) +
+          classNameOrEmpty(className)
+        }
+      >
+        <Button
+          label="Cancel"
+          onClick={onConfirm(false)}
+          disabled={disabled}
+          readOnly={readOnly}
+          noHover={noHover != null ? noHover : true}
+          dark
+          className={css({border: '1px solid ' + themeVar.Common.colors.PrimaryColor})}
+        />
+        <Button
+          label="Accept"
+          onClick={onConfirm(true)}
+          disabled={disabled}
+          readOnly={readOnly}
+          noHover={noHover != null ? noHover : true}
+          type={type}
+        />
+      </div>}
     </div>
   );
 }

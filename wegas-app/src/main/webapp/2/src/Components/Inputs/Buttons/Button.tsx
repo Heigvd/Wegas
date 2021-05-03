@@ -74,13 +74,6 @@ export const buttonStyle = css({
       borderBottomRightRadius: 'unset',
     },
   },
-  ['&.confirmBtn']: {
-    display: 'flex',
-    padding: '5px',
-    backgroundColor: themeVar.Common.colors.HeaderColor,
-    textAlign: 'center',
-    width: 'max-content',
-  },
   ['&.active']: {
     ['&:not(.iconOnly),&:not(noBackground)']: {
       backgroundColor: themeVar.Common.colors.ActiveColor,
@@ -114,6 +107,18 @@ export const buttonStyle = css({
       color: themeVar.Common.colors.ErrorColor,
     },
   },
+});
+
+export const iconButtonStyle = css({
+
+});
+
+export const outlineButtonStyle = css({
+border: '1px solid ' + themeVar.Common.colors.DisabledColor,
+borderRadius: '50%',
+padding: '10px',
+height: '40px',
+width: '40px',
 });
 
 export interface DisableBorders {

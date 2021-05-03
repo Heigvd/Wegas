@@ -27,9 +27,10 @@ import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
 import { DropMenu } from '../../Components/DropMenu';
 import { parseEvent } from './EntityEditor';
 import { editorEventRemove } from '../../data/Reducer/globalState';
-import { Button } from '../../Components/Inputs/Buttons/Button';
+import { Button, outlineButtonStyle } from '../../Components/Inputs/Buttons/Button';
 import { State } from '../../data/Reducer/reducers';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
+import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 
 function wegasEventSelector(s: State) {
   return s.global.events;
@@ -128,7 +129,7 @@ export default function Header() {
               <NotificationMenu className={componentMarginRight} />
             )}
             <ConfirmButton
-              icon="undo"
+              icon="fast-backward"
               tooltip="Restart the game (applied to every scenarist)"
               onAction={success => {
                 if (success) {
@@ -136,10 +137,11 @@ export default function Header() {
                   dispatch(Actions.EditorActions.resetPageLoader());
                 }
               }}
-              className={cx(componentMarginLeft, inlineBlock)}
+              className={cx(componentMarginLeft)}
+              buttonClassName= {outlineButtonStyle}
             />
-            <Button
-              icon={[{ icon: 'undo' }, { icon: 'window-restore', size: 'xs' }]}
+            <IconButton
+              icon='redo'
               tooltip="Reset layout"
               onClick={() => {
                 window.localStorage.removeItem(
@@ -147,7 +149,7 @@ export default function Header() {
                 );
                 window.location.reload();
               }}
-              className={cx(componentMarginLeft, inlineBlock)}
+              className={cx(componentMarginLeft, inlineBlock, outlineButtonStyle)}
             />
           </div>
         </div>

@@ -6,6 +6,9 @@ import { themeVar } from '../Components/Style/ThemeVars';
 export const flex = css({
   display: 'flex',
 });
+export const inlineFlex = css({
+  display: 'inline-flex',
+});
 export const grid = css({
   display: 'grid',
 });
