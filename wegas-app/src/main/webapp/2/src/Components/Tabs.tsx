@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Toolbar } from './Toolbar';
 import { css, cx } from 'emotion';
 import { themeVar } from './Style/ThemeVars';
-import { layoutStyle } from '../css/classes';
+import { childrenHeaderStyle, headerStyle } from '../css/classes';
 
 export function tabsStyle(isChild: boolean | undefined, isActive: boolean | undefined){
     if (isChild) {
@@ -34,13 +34,14 @@ export const tabStyle = css({
   fontWeight: 600,
   lineHeight: '120%',
   button: {
-    paddingRight: 0,
+    padding: '0 0 0 10px',
   },
 
 });
 export const inactiveTabStyle = css({
   backgroundColor: themeVar.Common.colors.BackgroundColor,
   color: themeVar.Common.colors.ActiveColor,
+  height: '52px',
   button: {
     color: themeVar.Common.colors.DisabledColor,
     '&:hover': {
@@ -54,6 +55,7 @@ export const inactiveTabStyle = css({
 export const activeTabStyle = css({
   color: themeVar.Common.colors.LightTextColor,
   backgroundColor: themeVar.Common.colors.ActiveColor,
+  height: '52px',
   button: {
     color: themeVar.Common.colors.LightTextColor,
     '&.wegas.wegas-iconbtn:hover': {
@@ -67,7 +69,7 @@ export const childInactiveTabStyle = css({
   borderBottom: '1px solid transparent',
   color: themeVar.Common.colors.LightTextColor,
   textTransform: 'none',
-  padding: '2px 10px',
+  padding: '6px 10px',
   button: {
     color: themeVar.Common.colors.LightTextColor,
   },
@@ -80,7 +82,7 @@ export const childActiveTabStyle = css({
   color: themeVar.Common.colors.ActiveColor,
   backgroundColor: themeVar.Common.colors.BackgroundColor,
   textTransform: 'none',
-  padding: '2px 10px',
+  padding: '6px 10px',
   button: {
     color: themeVar.Common.colors.DisabledColor,
   },
@@ -111,6 +113,7 @@ interface TabLayoutProps {
   active?: number;
   vertical: boolean;
   tabs: (React.ReactChild | null)[];
+  areChildren?: boolean;
 }
 export class TabLayout extends React.Component<
   TabLayoutProps,
@@ -127,7 +130,10 @@ export class TabLayout extends React.Component<
   render() {
     return (
       <Toolbar vertical={this.props.vertical}>
-        <Toolbar.Header className={layoutStyle}>
+        <Toolbar.Header className={cx({
+        [childrenHeaderStyle]: this.props.areChildren !== undefined && this.props.areChildren,
+        [headerStyle]: !this.props.areChildren
+        })}>
           {this.props.tabs.map((t, i) => {
             return (
               <Tab
@@ -141,6 +147,7 @@ export class TabLayout extends React.Component<
                     };
                   })
                 }
+                isChild={this.props.areChildren}
               >
                 {t}
               </Tab>
@@ -174,21 +181,20 @@ function Tab({
   onClick,
   children,
   className,
+  isChild
 }: {
   active: boolean;
   children: React.ReactChild | null;
   onClick: () => void;
   className?: string;
+  isChild?: boolean;
 }) {
   if (children === null) {
     return null;
   }
   return (
     <div
-      className={cx(tabStyle, className, {
-        [activeTabStyle]: active,
-        [inactiveTabStyle]: !active,
-      })}
+      className={cx(tabStyle, className, tabsStyle(isChild, active))}
       onClick={onClick}
     >
       {children}

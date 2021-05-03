@@ -3,12 +3,11 @@ import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import {
   Button,
   ButtonProps,
-  buttonStyle,
   disableBorderToSelector,
 } from './Button';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { css, cx } from 'emotion';
-import { flex, hidden, inlineBlock, inlineFlex } from '../../../css/classes';
+import { inlineFlex } from '../../../css/classes';
 import { themeVar } from '../../Style/ThemeVars';
 
 const confirmButtonsContainerStyle = css({

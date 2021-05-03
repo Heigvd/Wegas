@@ -706,6 +706,7 @@ export default function ThemeEditor() {
         }}
         initialLayout={['Themes', 'Modes']}
         layoutId={THEME_EDITOR_LAYOUT_ID}
+        areChildren
       />
     </themeEditorCTX.Provider>
   );

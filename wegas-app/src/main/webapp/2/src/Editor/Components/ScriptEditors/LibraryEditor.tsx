@@ -721,7 +721,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
 
 export default function LibraryEditor() {
   return (
-    <TabLayout tabs={['Styles', 'Client', 'Server']}>
+    <TabLayout tabs={['Styles', 'Client', 'Server']} areChildren>
       <ScriptEditor scriptType="CSS" />
       <ScriptEditor scriptType="ClientScript" />
       <ScriptEditor scriptType="ServerScript" />
