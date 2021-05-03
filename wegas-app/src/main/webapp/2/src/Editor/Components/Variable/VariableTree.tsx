@@ -36,6 +36,7 @@ import {
   flex,
   grow,
   flexColumn,
+  toolboxHeaderStyle,
 } from '../../../css/classes';
 import {
   IVariableDescriptor,
@@ -45,6 +46,7 @@ import {
 import { focusTab } from '../LinearTabLayout/LinearLayout';
 import { State } from '../../../data/Reducer/reducers';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
+import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -114,17 +116,16 @@ export function TreeView({
   const actionAllowed = isActionAllowed(options);
 
   return (
-    <Toolbar>
-      <Toolbar.Header>
+    <Toolbar className={css({ padding: '1.5em'})}>
+      <Toolbar.Header className={toolboxHeaderStyle}>
         {!noHeader && actionAllowed && (
           <>
-            <input
-              type="string"
+            <SimpleInput
               value={search}
               placeholder="Filter"
               aria-label="Filter"
               onChange={ev => {
-                setSearch(ev.target.value);
+                setSearch(ev.toString());
               }}
             />
             <DropMenu
@@ -221,12 +222,6 @@ function isEditing(
     shallowIs(subPath || [], editing.path)
   );
 }
-
-//const SELECTED_STYLE_WIDTH = 4;
-const headerStyle = css({
-  //  borderLeft: `${SELECTED_STYLE_WIDTH}px solid transparent`,
-});
-
 export const nodeContentStyle = cx(
   css({
     marginRight: '5px',
@@ -317,7 +312,7 @@ export function CTree(
         {...props.nodeProps()}
         header={
           <div
-            className={cx(headerStyle, flex, {
+            className={cx(flex, {
               [globalSelection]: editing,
               [localSelection]: localEditing,
               [searchSelection]: searching,

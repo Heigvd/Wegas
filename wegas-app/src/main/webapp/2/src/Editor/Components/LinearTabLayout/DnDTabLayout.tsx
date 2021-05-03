@@ -18,6 +18,7 @@ import {
   headerStyle,
   hatchedBackground,
   childrenHeaderStyle,
+  MediumPadding,
 } from '../../../css/classes';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { childrenPlusTabStyle, plusTabStyle } from '../../../Components/Tabs';
@@ -290,7 +291,7 @@ export function DnDTabLayout({
           )}
         </div>
       </Toolbar.Header>
-      <Toolbar.Content className={cx(relative, content)}>
+      <Toolbar.Content className={cx(relative, content, {[MediumPadding]: areChildren})}>
         <div className={cx(expandBoth, hideOverflow)}>
           <div className={cx(autoScroll, absoute, expandBoth, flex)}>
             {defaultActiveLabel && components[defaultActiveLabel] && (

@@ -171,7 +171,7 @@ export const XLPadding = css({
   padding: '2.5em',
 });
 export const MediumPadding = css({
-  padding: '2em',
+  padding: '1.5em',
 });
 export const defaultPaddingLeft = css({
   paddingLeft: '10px',
@@ -210,11 +210,8 @@ export const localSelection = css({
   backgroundColor: themeVar.Common.colors.HeaderColor,
 });
 export const globalSelection = css({
-  //  borderStyle: 'solid',
-  //  borderWidth: '2px',
-  //  borderColor: themeVar.Common.colors.BorderColor,
+  border: '1px solid ' + themeVar.Common.colors.PrimaryColor,
   borderRadius: themeVar.Common.dimensions.BorderRadius,
-  boxShadow: `0px 0px 0px 1px ${themeVar.Common.colors.PrimaryColor}`,
 });
 export const searchSelection = css({
   backgroundColor: themeVar.Common.colors.HighlightColor,
@@ -229,11 +226,18 @@ export const layoutStyle = css({
 export const headerStyle = css({
   backgroundColor: themeVar.Common.colors.SecondaryBackgroundColor,
   paddingTop: '1em',
+  borderBottom: '15px solid ' + themeVar.Common.colors.ActiveColor,
 });
 
 export const childrenHeaderStyle = css({
   backgroundColor: themeVar.Common.colors.ActiveColor,
-  padding: '1em 1em 0 1em',
+  padding: '0 1em',
+});
+
+export const toolboxHeaderStyle = css({
+ marginBottom: '10px',
+ paddingBottom: '10px',
+ borderBottom: '1px solid ' + themeVar.Common.colors.DisabledColor,
 });
 
 export const disabledColorStyle = css({
