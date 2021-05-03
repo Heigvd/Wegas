@@ -20,19 +20,8 @@ import {
   childrenHeaderStyle,
 } from '../../../css/classes';
 import { themeVar } from '../../../Components/Style/ThemeVars';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { wlog } from '../../../Helper/wegaslog';
 import { childrenPlusTabStyle, plusTabStyle } from '../../../Components/Tabs';
-
-const tabButton = css({
-  color: themeVar.Common.colors.LightTextColor,
-  ':hover': {
-    color: themeVar.Common.colors.HoverTextColor,
-  },
-  ':focus': {
-    outline: 'none',
-  },
-});
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 
 const dropZoneFocus = hatchedBackground;
 
@@ -247,11 +236,10 @@ export function DnDTabLayout({
             isChild={areChildren}
           >
             {label}
-            <Button
+            <IconButton
               icon="times"
               tooltip="Remove tab"
               onClick={() => onDeleteTab(label)}
-              className={tabButton}
             />
           </DragTab>
         </DropTab>,
@@ -297,7 +285,6 @@ export function DnDTabLayout({
                   onSelect && onSelect(i.value);
                   onNewTab(String(i.value));
                 }}
-                buttonClassName={tabButton}
               />
             </CustomTab>
           )}

@@ -5,8 +5,6 @@ import { DropAction } from './DnDTabLayout';
 import { hidden, flex } from '../../../css/classes';
 import { dropZoneFocus } from '../../../Components/Contexts/DefaultDndProvider';
 import {
-  activeTabStyle,
-  inactiveTabStyle,
   tabsStyle,
   tabStyle,
 } from '../../../Components/Tabs';

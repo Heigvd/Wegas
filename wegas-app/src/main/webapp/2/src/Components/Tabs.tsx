@@ -38,31 +38,28 @@ export const tabStyle = css({
   },
 
 });
-//TODO delete if never used, left for now in case something added afterward
 export const inactiveTabStyle = css({
   backgroundColor: themeVar.Common.colors.BackgroundColor,
   color: themeVar.Common.colors.ActiveColor,
   button: {
     color: themeVar.Common.colors.DisabledColor,
+    '&:hover': {
+      color: themeVar.Common.colors.ActiveColor,
+    }
   },
   '&:hover': {
     backgroundColor: themeVar.Common.colors.HeaderColor,
-    button: {
-      '&:hover': {
-        color: themeVar.Common.colors.ActiveColor,
-      }
-    },
   }
  });
 export const activeTabStyle = css({
   color: themeVar.Common.colors.LightTextColor,
   backgroundColor: themeVar.Common.colors.ActiveColor,
-  '&:hover': {
-    backgroundColor: themeVar.Common.colors.ActiveColor,
-    'button.wegas-btn.iconOnly:hover': {
-        color: themeVar.Common.colors.LightTextColor,
-      }
+  button: {
+    color: themeVar.Common.colors.LightTextColor,
+    '&.wegas.wegas-iconbtn:hover': {
+      color: themeVar.Common.colors.DisabledColor,
     },
+  },
 });
 export const childInactiveTabStyle = css({
   backgroundColor: themeVar.Common.colors.ActiveColor,
@@ -77,9 +74,6 @@ export const childInactiveTabStyle = css({
   '&:hover': {
     backgroundColor: themeVar.Common.colors.PrimaryColor,
     border: '1px solid transparent',
-    'button:hover': {
-        color: themeVar.Common.colors.ActiveColor,
-      }
     },
  });
 export const childActiveTabStyle = css({
@@ -90,31 +84,21 @@ export const childActiveTabStyle = css({
   button: {
     color: themeVar.Common.colors.DisabledColor,
   },
-  '&:hover': {
-    backgroundColor: themeVar.Common.colors.BackgroundColor,
-    'button.wegas-btn.iconOnly': {
-      '&:hover': {
-        color: themeVar.Common.colors.ActiveColor,
-      }
-    },
-  }
 });
 
 export const plusTabStyle = css({
   backgroundColor: 'transparent',
-  color: themeVar.Common.colors.DisabledColor,
   display: 'flex',
   alignItems: 'center',
-  button: {
+  'button.iconOnly': {
     color: themeVar.Common.colors.DisabledColor,
   }
 })
 export const childrenPlusTabStyle = css({
   backgroundColor: 'transparent',
-  color: themeVar.Common.colors.LightTextColor,
   display: 'flex',
   alignItems: 'center',
-  button: {
+  'button.wegas.wegas-btn.iconOnly': {
     color: themeVar.Common.colors.LightTextColor,
     '&:hover': {
       color: themeVar.Common.colors.DisabledColor,
