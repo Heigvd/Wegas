@@ -207,15 +207,53 @@ export function StateMachineEditor<
     [createTransition, dispatch, stateMachine],
   );
 
+  const onStateClick = React.useCallback(
+    (e: ModifierKeysEvent, state: StateProcess) => {
+      const actions: EditorAction<
+        IFSMDescriptor | IDialogueDescriptor
+      >['more'] = {};
+      if (state.state.id !== stateMachine.defaultInstance.currentStateId) {
+        actions.delete = {
+          label: 'Delete',
+          confirm: true,
+          action: (
+            sm: IFSMDescriptor | IDialogueDescriptor,
+            path?: (string | number)[],
+          ) => {
+            if (path != null && path.length === 2) {
+              deleteState(sm, Number(path[1]));
+            }
+          },
+        };
+      }
+
+      const dispatchLocal =
+        (e.ctrlKey === true || forceLocalDispatch === true) &&
+        localDispatch != null;
+
+      const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
+      dispatch(
+        Actions.EditorActions.editStateMachine(stateMachine, [
+          'states',
+          state.id,
+        ]),
+      );
+      if (!dispatchLocal) {
+        focusTab(mainLayoutId, 'Variable Properties');
+      }
+    },
+    [forceLocalDispatch, localDispatch, stateMachine],
+  );
+
   const updateStatePosition = React.useCallback(
-    (sourceState: StateProcess, position: XYPosition) => {
+    (sourceState: StateProcess, position: XYPosition, e: MouseEvent) => {
       const newStateMachine = produce((stateMachine: IFSM) => {
         stateMachine.states[Number(sourceState.id)].x =
           position.x >= 10 ? position.x : 10;
         stateMachine.states[Number(sourceState.id)].y =
           position.y >= 10 ? position.y : 10;
       })(stateMachine);
-
+      onStateClick(e, sourceState);
       dispatch(
         Actions.VariableDescriptorActions.updateDescriptor(
           newStateMachine,
@@ -223,7 +261,7 @@ export function StateMachineEditor<
         ),
       );
     },
-    [dispatch, stateMachine],
+    [dispatch, onStateClick, stateMachine],
   );
 
   const createState = React.useCallback(
@@ -289,44 +327,6 @@ export function StateMachineEditor<
       );
     },
     [createTransition, dispatch, lang, stateMachine],
-  );
-
-  const onStateClick = React.useCallback(
-    (e: ModifierKeysEvent, state: StateProcess) => {
-      const actions: EditorAction<
-        IFSMDescriptor | IDialogueDescriptor
-      >['more'] = {};
-      if (state.state.id !== stateMachine.defaultInstance.currentStateId) {
-        actions.delete = {
-          label: 'Delete',
-          confirm: true,
-          action: (
-            sm: IFSMDescriptor | IDialogueDescriptor,
-            path?: (string | number)[],
-          ) => {
-            if (path != null && path.length === 2) {
-              deleteState(sm, Number(path[1]));
-            }
-          },
-        };
-      }
-
-      const dispatchLocal =
-        (e.ctrlKey === true || forceLocalDispatch === true) &&
-        localDispatch != null;
-
-      const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
-      dispatch(
-        Actions.EditorActions.editStateMachine(stateMachine, [
-          'states',
-          state.id,
-        ]),
-      );
-      if (!dispatchLocal) {
-        focusTab(mainLayoutId, 'Variable Properties');
-      }
-    },
-    [forceLocalDispatch, localDispatch, stateMachine],
   );
 
   const onFlowlineClick = React.useCallback(
