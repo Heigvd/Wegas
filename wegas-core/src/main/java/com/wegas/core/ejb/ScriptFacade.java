@@ -295,7 +295,7 @@ public class ScriptFacade extends WegasAbstractFacade {
          * Then inject soft ones. It means a soft script may override methods defined in a hard
          * coded one
          */
-        for (GameModelContent script : player.getGameModel().getScriptLibraryList()) {
+        for (GameModelContent script : player.getGameModel().getLibrariesAsList(GameModelContent.SERVER_SCRIPT)) {
             ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + script.getContentKey(), ScriptContext.ENGINE_SCOPE);
 
             String cacheFileName = "soft:" + player.getGameModel().getId() + ":" + script.getContentKey();
