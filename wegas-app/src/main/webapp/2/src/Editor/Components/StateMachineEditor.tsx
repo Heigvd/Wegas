@@ -315,7 +315,8 @@ export function StateMachineEditor<
         (e.ctrlKey === true || forceLocalDispatch === true) &&
         localDispatch != null;
 
-      (dispatchLocal ? dispatch! : store.dispatch)(
+      const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
+      dispatch(
         Actions.EditorActions.editStateMachine(stateMachine, [
           'states',
           state.id,
@@ -325,7 +326,7 @@ export function StateMachineEditor<
         focusTab(mainLayoutId, 'Variable Properties');
       }
     },
-    [dispatch, forceLocalDispatch, localDispatch, stateMachine],
+    [forceLocalDispatch, localDispatch, stateMachine],
   );
 
   const onFlowlineClick = React.useCallback(

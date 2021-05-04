@@ -16,7 +16,6 @@ import {
   Edition,
   closeEditor,
   setUnsavedChanges,
-  EditorAction,
   EditingState,
 } from '../../../data/Reducer/globalState';
 import { StoreDispatch } from '../../../data/Stores/store';
