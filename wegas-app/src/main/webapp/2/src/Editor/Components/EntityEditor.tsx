@@ -371,7 +371,7 @@ export function getEntity(state?: Readonly<Edition>) {
   }
 }
 
-function editingGotPath(
+export function editingGotPath(
   editing: Edition | undefined,
 ): editing is VariableEdition | ComponentEdition {
   return (
@@ -407,7 +407,7 @@ export default function VariableForm() {
     [editing],
   );
 
-  if (!editing || !editing || !config || !update) {
+  if (!editing || !config || !update) {
     return null;
   }
 
