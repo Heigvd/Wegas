@@ -63,18 +63,17 @@ export function updateDescriptor(
 ): ThunkResult<Promise<StateActions | void>> {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
-    return VariableDescriptorAPI.update(
-      gameModelId,
-      variableDescriptor,
-    ).then(res =>
-      store.dispatch(
-        manageResponseHandler(
-          res,
-          dispatch,
-          getState().global,
-          selectUpdatedEntity,
-        ),
-      ),
+    return VariableDescriptorAPI.update(gameModelId, variableDescriptor).then(
+      res => {
+        store.dispatch(
+          manageResponseHandler(
+            res,
+            dispatch,
+            getState().global,
+            selectUpdatedEntity,
+          ),
+        );
+      },
     );
   };
 }
