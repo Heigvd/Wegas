@@ -37,6 +37,7 @@ import {
   grow,
   flexColumn,
   toolboxHeaderStyle,
+  defaultMargin,
 } from '../../../css/classes';
 import {
   IVariableDescriptor,
@@ -79,7 +80,7 @@ export function VariableTreeTitle({
   style,
 }: VariableTreeTitleProps) {
   return (
-    <div className={className} style={style}>
+    <div className={cx(className, css({margin: '3px 0'}))} style={style}>
       <IconComp icon={withDefault(getIcon(variable!), 'question')} />
       {entityIs(variable, 'EvaluationDescriptorContainer')
         ? subPath && subPath.length === 1

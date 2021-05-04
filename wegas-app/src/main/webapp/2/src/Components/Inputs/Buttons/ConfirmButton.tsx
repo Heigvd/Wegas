@@ -9,6 +9,7 @@ import { classNameOrEmpty } from '../../../Helper/className';
 import { css, cx } from 'emotion';
 import { inlineFlex } from '../../../css/classes';
 import { themeVar } from '../../Style/ThemeVars';
+import { IconButton } from './IconButton';
 
 const confirmButtonsContainerStyle = css({
 display: 'flex',
@@ -31,7 +32,6 @@ boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.15)',
   marginRight: '-13px',
 }
 })
-
 interface ConfirmButtonProps extends ButtonProps {
   onAction?: (
     success: boolean,
@@ -41,6 +41,9 @@ interface ConfirmButtonProps extends ButtonProps {
   defaultConfirm?: boolean;
   dontResetOnBlur?: boolean;
   buttonClassName?: string;
+  //TODO TO ASK add iconButton props with icon?
+  chipStyle?: boolean;
+  shadow?: boolean;
 }
 
 export function ConfirmButton({
@@ -58,6 +61,8 @@ export function ConfirmButton({
   disableBorders,
   className,
   buttonClassName,
+  chipStyle,
+  shadow,
   tabIndex,
   tooltip,
   type,
@@ -98,18 +103,32 @@ export function ConfirmButton({
 
   return (
     <div tabIndex={tabIndex} ref={confirmButton} id={id} className={cx(className, inlineFlex)}>
-      <Button
-        label={label}
-        prefixedLabel={prefixedLabel}
+      {icon && !label ? (
+        <IconButton
         icon={icon}
         onClick={onClickVerify}
-        disableBorders={disableBorders}
         tooltip={tooltip}
         disabled={confirmation || disabled}
         readOnly={readOnly}
         noHover={noHover}
         className={buttonClassName}
-      />
+        chipStyle={chipStyle && chipStyle}
+        shadow={shadow && shadow}
+        />
+      ) : (
+        <Button
+          label={label}
+          prefixedLabel={prefixedLabel}
+          icon={icon}
+          onClick={onClickVerify}
+          disableBorders={disableBorders}
+          tooltip={tooltip}
+          disabled={confirmation || disabled}
+          readOnly={readOnly}
+          noHover={noHover}
+          className={buttonClassName}
+        />
+      )}
       {confirmation &&
         <div
         ref={confirmButton}

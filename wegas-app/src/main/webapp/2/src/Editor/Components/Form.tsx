@@ -1,13 +1,30 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
-import { defaultMargin, noOverflow, expandHeight } from '../../css/classes';
+import { noOverflow, expandHeight, MediumPadding, toolboxHeaderStyle, defaultMarginTop } from '../../css/classes';
 import './FormView';
-import { Button, ButtonProps } from '../../Components/Inputs/Buttons/Button';
 import { wwarn } from '../../Helper/wegaslog';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { isActionAllowed } from '../../Components/PageComponents/tools/options';
+import { IconButton, IconButtonProps } from '../../Components/Inputs/Buttons/IconButton';
+import { DropMenu } from '../../Components/DropMenu';
+
+function IconAction(label:string|undefined){
+  switch (label) {
+    case 'Duplicate':
+      return "copy";
+    case 'Delete':
+      return "trash";
+    case 'Find usage':
+      return 'dog';
+    case 'Close':
+      return 'times';
+    case 'Instance':
+      return 'columns';
+    default:
+      return 'cat';
+}}
 
 interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
@@ -59,16 +76,17 @@ export class Form<T> extends React.Component<
   }
   render() {
     return (
-      <Toolbar>
-        <Toolbar.Header>
+      <Toolbar className={MediumPadding}>
+        <Toolbar.Header className={toolboxHeaderStyle}>
           {isActionAllowed({
             disabled: this.props.disabled,
             readOnly: this.props.readOnly,
           }) && (
             <>
               {this.props.update && (
-                <Button
-                  label="Save"
+                <IconButton
+                  icon="save"
+                  chipStyle
                   disabled={!deepDifferent(this.state.val, this.props.entity)}
                   onClick={() => {
                     if (this.state.val !== this.props.entity && this.form) {
@@ -84,11 +102,10 @@ export class Form<T> extends React.Component<
                     }
                   }}
                   className={expandHeight}
-                  disableBorders={{ right: true }}
                 />
               )}
               <ConfirmButton
-                label="Reset"
+                icon="redo"
                 onAction={accept => {
                   accept && this.setState({ val: this.props.entity });
                 }}
@@ -97,39 +114,44 @@ export class Form<T> extends React.Component<
                   right: this.props.actions.length > 0,
                 }}
                 buttonClassName={expandHeight}
+                tooltip="Reset"
+                chipStyle
               />
               {this.props.actions.map((a, i) => {
-                const btnProps: ButtonProps = {
-                  label: a.label,
-                  tabIndex: 1,
-                  disableBorders: {
-                    left: true,
-                    right: i !== this.props.actions.length - 1,
-                  },
-                };
-                return a.confirm ? (
-                  <ConfirmButton
-                    {...btnProps}
-                    key={i}
-                    onAction={succes =>
-                      succes && a.action(this.state.val, this.props.path)
-                    }
-                    buttonClassName={expandHeight}
-                  />
-                ) : (
-                  <Button
-                    {...btnProps}
-                    key={i}
-                    onClick={() => a.action(this.state.val, this.props.path)}
-                    className={expandHeight}
-                  />
-                );
-              })}
+                  const btnProps: IconButtonProps = {
+                    tabIndex: 1,
+                    chipStyle: true,
+                    tooltip: a.label?.toString(),
+                    icon:IconAction(a.label?.toString()),
+                  };
+                  return a.confirm ? (
+                      <ConfirmButton
+                        {...btnProps}
+                        key={i}
+                        onAction={succes =>
+                          succes && a.action(this.state.val, this.props.path)
+                        }
+                        buttonClassName={expandHeight}
+                      />
+                    ) : (
+                      <IconButton
+                        {...btnProps}
+                        key={i}
+                        onClick={() => a.action(this.state.val, this.props.path)}
+                        className={expandHeight}
+                      />
+                    );
+                })
+                //AdvancedToolBoxItem()
+              }
             </>
           )}
         </Toolbar.Header>
         <Toolbar.Content className={noOverflow}>
-          <div className={defaultMargin}>
+          <div>
+            <h2 className={defaultMarginTop}>{//how to take the same label than in treeview?
+            this.state.val.name
+            }</h2>
             <JSONForm
               ref={n => {
                 if (n != null) {
@@ -149,3 +171,65 @@ export class Form<T> extends React.Component<
     );
   }
 }
+/* function AdvancedToolBoxItem(){
+  this.props.actions.map((a, i) => {
+    const btnProps: IconButtonProps = {
+      tabIndex: 1,
+      chipStyle: true,
+      tooltip: a.label?.toString(),
+      icon:IconAction(a.label?.toString()),
+    };
+    //switch: fill the table, create buttons if necessary, create close tag if exist
+    // if table.length > 0, create dropdownmenu with elements
+      switch (a.label) {
+        case 'Duplicate':
+          dropMenuOtherActions.push(a);
+          break;
+        case 'Delete':
+          return (
+            <ConfirmButton
+              {...btnProps}
+              key={i}
+              onAction={succes =>
+                succes && a.action(this.state.val, this.props.path)
+              }
+              buttonClassName={expandHeight}
+            />)
+        case 'Find usage':
+          dropMenuOtherActions.push(a);
+          break;
+        case 'Close':
+          <IconButton
+            {...btnProps}
+            key={i}
+            onClick={() => a.action(this.state.val, this.props.path)}
+            className={expandHeight}
+          />
+          break;
+        case 'Instance':
+          dropMenuOtherActions.push(a);
+          break;
+        default:
+          return (
+            <IconButton
+            tabIndex= {1}
+            chipStyle
+            tooltip= {a.label?.toString()}
+            icon="cat"
+            key={i}
+            onClick={() => a.action(this.state.val, this.props.path)}
+            className={expandHeight}
+          />
+          );
+    };
+  }
+  )
+  if (dropMenuOtherActions.length > 0){
+    <DropMenu
+      items={dropMenuOtherActions || []}
+      icon="cog"
+      onSelect={(i, e) => {i.action(this.state.val, this.props.path)
+      }}
+    />
+  }
+} */

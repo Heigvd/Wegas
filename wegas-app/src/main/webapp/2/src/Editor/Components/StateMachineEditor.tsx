@@ -9,7 +9,7 @@ import {
 } from '../../data/methods/VariableDescriptorMethods';
 import { State as RState } from '../../data/Reducer/reducers';
 import { ComponentWithForm } from './FormView/ComponentWithForm';
-import { grow, flex, flexRow, flexColumn } from '../../css/classes';
+import { grow, flex, flexRow, flexColumn, MediumPadding } from '../../css/classes';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import {
   IDialogueDescriptor,
@@ -467,10 +467,10 @@ export function ConnectedStateMachineEditor({
 
   if ('variable' in globalState) {
     if (globalState.variable == null) {
-      return <span>Select a variable to display</span>;
+      return <span className={MediumPadding}>Select a variable to display</span>;
     } else {
       return (
-        <span>The selected variable is not some kind of state machine</span>
+        <span className={MediumPadding}>The selected variable is not some kind of state machine</span>
       );
     }
   } else {

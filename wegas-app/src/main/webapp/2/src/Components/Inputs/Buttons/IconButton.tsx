@@ -13,9 +13,29 @@ export const iconButtonStyle = css({
     backgroundColor: themeVar.Common.colors.LightTextColor,
     color: themeVar.Common.colors.PrimaryColor,
   },
+  ['&.chip']: {
+    margin: '0 3px',
+    height: '35px',
+    width: '35px',
+    justifyContent: 'center',
+    backgroundColor: themeVar.Common.colors.PrimaryColor,
+    color: themeVar.Common.colors.LightTextColor,
+    borderRadius: '50%',
+    ['&.disabled']: {
+      backgroundColor: themeVar.Common.colors.DisabledColor,
+      color: themeVar.Common.colors.LightTextColor,
+    },
+    ['&:not(.disabled):not(.readOnly):hover']: {
+      backgroundColor: themeVar.Common.colors.ActiveColor,
+      color: themeVar.Common.colors.LightTextColor,
+    },
+    ['&.shadow']: {
+      boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.15)',
+    }
+  },
   borderStyle: 'none',
-  paddingLeft: '10px',
-  paddingRight: '10px',
+  paddingLeft: '5px',
+  paddingRight: '5px',
   paddingTop: '5px',
   paddingBottom: '5px',
   cursor: 'pointer',
@@ -32,7 +52,6 @@ export const iconButtonStyle = css({
   },
   ['&.disabled']: {
     cursor: 'initial',
-    backgroundColor: themeVar.Common.colors.DisabledColor,
     color: themeVar.Common.colors.DisabledColor,
   },
   ['&.noClick']: {
@@ -68,6 +87,8 @@ export interface IconButtonProps extends ClassStyleId, DisabledReadonly {
   pressed?: boolean;
   mode?: 'active' | 'success' | 'warning' | 'error';
   dark?: boolean;
+  chipStyle?: boolean;
+  shadow?: boolean;
 }
 
 export const IconButton = React.forwardRef<
@@ -91,6 +112,8 @@ export const IconButton = React.forwardRef<
       pressed,
       mode: buttonModes,
       dark,
+      chipStyle,
+      shadow,
     },
     ref,
   ) => {
@@ -107,6 +130,8 @@ export const IconButton = React.forwardRef<
           classOrNothing('noHover', noHover) +
           classOrNothing('noClick', onClick == null) +
           classOrNothing('dark', dark) +
+          classOrNothing('chip', chipStyle) +
+          classOrNothing('shadow', shadow) +
           classNameOrEmpty(buttonModes) +
           classNameOrEmpty(className)
         }
