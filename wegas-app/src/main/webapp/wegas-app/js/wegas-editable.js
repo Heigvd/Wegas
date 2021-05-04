@@ -44,7 +44,7 @@ YUI.add('wegas-editable', function(Y) {
                 object = {},
                 attrCfgs = this.getAttrCfgs();
             for (k in attrCfgs) {
-                // do not even read transient attrs 
+                // do not even read transient attrs
                 if (attrCfgs.hasOwnProperty(k) && !attrCfgs[k]["transient"]) {
                     object[k] = this.get(k);
                 }
