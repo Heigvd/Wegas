@@ -43,12 +43,13 @@ export default function PlayerVariableTree({
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
     >
-      {({ localDispatch }) => {
+      {({ localDispatch, localState }) => {
         return (
           <TreeView
             variables={[rootDirectoryId]}
             noHeader
             noVisibleRoot
+            localState={localState}
             localDispatch={localDispatch}
             forceLocalDispatch
             disabled={options.disabled || options.locked}

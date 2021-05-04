@@ -7,11 +7,16 @@ import getEditionConfig from '../editionConfig';
 import { Actions } from '../../data';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
-import { StoreConsumer, StoreDispatch, store } from '../../data/Stores/store';
+import { StoreDispatch, store, useStore } from '../../data/Stores/store';
 import { AvailableViews } from './FormView';
 import { cx } from 'emotion';
 import { flex, grow, flexColumn } from '../../css/classes';
-import { Edition } from '../../data/Reducer/globalState';
+import {
+  ComponentEdition,
+  Edition,
+  setUnsavedChanges,
+  VariableEdition,
+} from '../../data/Reducer/globalState';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { MessageString } from './MessageString';
 import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
@@ -30,6 +35,7 @@ export interface EditorProps<T> extends DisabledReadonly {
     message: string;
     onRead: () => void;
   };
+  onChange?: (newEntity: T) => void;
 }
 
 type VISIBILITY = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE';
@@ -156,6 +162,7 @@ async function WindowedEditor<T extends IMergeable>({
   getConfig,
   path,
   error,
+  onChange,
   ...options
 }: EditorProps<T>) {
   let pathEntity = entity;
@@ -163,12 +170,7 @@ async function WindowedEditor<T extends IMergeable>({
     pathEntity = get(entity, path);
   }
 
-  // const customSchemas = useStore(s => {
-  //   return s.global.schemas;
-  // }, shallowDifferent);
-
   if (pathEntity === undefined) {
-    // return <span>There is nothing to edit</span>;
     return null;
   }
 
@@ -220,10 +222,11 @@ async function WindowedEditor<T extends IMergeable>({
           },
         }))}
         path={path}
-        schema={overrideSchema(
+        config={overrideSchema(
           entity,
           customSchema !== undefined ? customSchema : schema,
         )}
+        onChange={onChange}
         {...options}
       />
     </div>
@@ -368,49 +371,57 @@ export function getEntity(state?: Readonly<Edition>) {
   }
 }
 
-export default function VariableForm(props: {
-  entity?: Readonly<IVariableDescriptor>;
-  path?: (string | number)[];
-  config?: Schema;
-}) {
+function editingGotPath(
+  editing: Edition | undefined,
+): editing is VariableEdition | ComponentEdition {
   return (
-    <StoreConsumer
-      selector={(s: State) => {
-        const editing = s.global.editing;
-        if (!editing) {
-          return null;
-        } else {
-          const entity = getEntity(editing);
-          if (entity == null) {
-            return null;
-          } else {
-            return { editing, entity, events: s.global.events };
-          }
-        }
-      }}
-      shouldUpdate={deepDifferent}
-    >
-      {({ state, dispatch }) => {
-        if (state == null || state.entity == null) {
-          return null;
-        }
+    editing?.type === 'Variable' ||
+    editing?.type === 'VariableFSM' ||
+    editing?.type === 'Component'
+  );
+}
 
-        return (
-          <AsyncVariableForm
-            {...props}
-            {...state.editing}
-            getConfig={getConfig(state.editing)}
-            update={getUpdate(state.editing, dispatch)}
-            actions={Object.values(
-              'actions' in state.editing && state.editing.actions.more
-                ? state.editing.actions.more
-                : {},
-            )}
-            entity={state.entity}
-            error={parseEventFromIndex(state.events)}
-          />
-        );
+export default function VariableForm() {
+  const editing = useStore((s: State) => s.global.editing, deepDifferent);
+  const entity = useStore(
+    (s: State) => s.global.editing && getEntity(s.global.editing),
+    deepDifferent,
+  );
+  const events = useStore((s: State) => s.global.events, deepDifferent);
+  const path = React.useMemo(
+    () => (editingGotPath(editing) ? editing.path : undefined),
+    [editing],
+  );
+  const config = React.useMemo(() => editing && getConfig(editing), [editing]);
+  const update = React.useMemo(
+    () => editing && getUpdate(editing, store.dispatch),
+    [editing],
+  );
+  const actions = React.useMemo(
+    () =>
+      Object.values(
+        editing && 'actions' in editing && editing.actions.more
+          ? editing.actions.more
+          : {},
+      ),
+    [editing],
+  );
+
+  if (!editing || !editing || !config || !update) {
+    return null;
+  }
+
+  return (
+    <AsyncVariableForm
+      path={path}
+      getConfig={config}
+      update={update}
+      actions={actions}
+      entity={entity}
+      onChange={() => {
+        store.dispatch(setUnsavedChanges(true));
       }}
-    </StoreConsumer>
+      error={parseEventFromIndex(events)}
+    />
   );
 }

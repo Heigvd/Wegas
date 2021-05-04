@@ -45,6 +45,11 @@ import {
 import { focusTab } from '../LinearTabLayout/LinearLayout';
 import { State } from '../../../data/Reducer/reducers';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
+import { useOkCancelModal } from '../../../Components/Modal';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
+
+const TREECONTENTID = 'TREECONTENT';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -108,9 +113,13 @@ export function TreeView({
   ...options
 }: TreeProps) {
   const [search, setSearch] = React.useState('');
-  const { data } = useAsync(itemsPromise);
-  const globalDispatch = store.dispatch;
+  const [onAccept, setOnAccept] = React.useState(() => () => {});
 
+  const { data } = useAsync(itemsPromise);
+  const { showModal, OkCancelModal } = useOkCancelModal(TREECONTENTID);
+  const i18nValues = useInternalTranslate(commonTranslations);
+
+  const globalDispatch = store.dispatch;
   const actionAllowed = isActionAllowed(options);
 
   return (
@@ -143,7 +152,11 @@ export function TreeView({
           </>
         )}
       </Toolbar.Header>
-      <Toolbar.Content>
+      <Toolbar.Content id={TREECONTENTID}>
+        <OkCancelModal onOk={onAccept}>
+          <p>{i18nValues.changesWillBeLost}</p>
+          <p>{i18nValues.areYouSure}</p>
+        </OkCancelModal>
         <Container
           onDropResult={({ source, target, id }) => {
             if (
@@ -169,6 +182,10 @@ export function TreeView({
               {variables ? (
                 variables.map(id => (
                   <CTree
+                    onShowWarning={onOk => {
+                      setOnAccept(() => onOk);
+                      showModal();
+                    }}
                     nodeProps={nodeProps}
                     key={id}
                     search={search}
@@ -181,7 +198,7 @@ export function TreeView({
                   />
                 ))
               ) : (
-                <span>Loading ...</span>
+                <span>{`${i18nValues.loading} ...`}</span>
               )}
             </div>
           )}
@@ -250,11 +267,15 @@ interface CTreeProps {
   subPath?: string[];
   search?: string;
   nodeProps: () => {};
+  onShowWarning?: (onAccept: () => void) => void;
 }
 
 export function CTree(
   props: Omit<CTreeProps & TreeProps, 'variables'>,
 ): JSX.Element | null {
+  // const unsaved = useStore(() => props?.localState?.unsaved);
+  // props.localState
+  // const unsaved = useStore(s => s.global.editing?.unsaved);
   const actionAllowed = isActionAllowed({
     disabled: props.disabled,
     readOnly: props.readOnly,
@@ -303,6 +324,35 @@ export function CTree(
     props.localState,
   );
 
+  const onClickAction = React.useCallback(
+    (e: ModifierKeysEvent) => {
+      let dispatch = store.dispatch;
+      if ((props.forceLocalDispatch || e.ctrlKey) && props.localDispatch) {
+        dispatch = props.localDispatch;
+      } else {
+        if (
+          entityIs(variable, 'FSMDescriptor') ||
+          entityIs(variable, 'DialogueDescriptor')
+        ) {
+          focusTab(mainLayoutId, 'State Machine');
+        }
+        focusTab(mainLayoutId, 'Variable Properties');
+      }
+      getEntityActions(variable!).then(({ edit }) =>
+        dispatch(
+          edit(VariableDescriptor.select(props.variableId)!, props.subPath),
+        ),
+      );
+    },
+    [
+      props.forceLocalDispatch,
+      props.localDispatch,
+      props.subPath,
+      props.variableId,
+      variable,
+    ],
+  );
+
   if (variable) {
     if (!match) {
       return null;
@@ -324,29 +374,15 @@ export function CTree(
             })}
             onClick={(e: ModifierKeysEvent) => {
               if (actionAllowed) {
-                let dispatch = store.dispatch;
-                if (
-                  (props.forceLocalDispatch || e.ctrlKey) &&
-                  props.localDispatch
-                ) {
-                  dispatch = props.localDispatch;
+                const unsaved =
+                  props.forceLocalDispatch || e.ctrlKey
+                    ? props?.localState?.unsaved
+                    : store.getState().global.editing?.unsaved;
+                if (unsaved && props.onShowWarning) {
+                  props.onShowWarning(() => onClickAction(e));
                 } else {
-                  if (
-                    entityIs(variable, 'FSMDescriptor') ||
-                    entityIs(variable, 'DialogueDescriptor')
-                  ) {
-                    focusTab(mainLayoutId, 'State Machine');
-                  }
-                  focusTab(mainLayoutId, 'Variable Properties');
+                  onClickAction(e);
                 }
-                getEntityActions(variable!).then(({ edit }) =>
-                  dispatch(
-                    edit(
-                      VariableDescriptor.select(props.variableId)!,
-                      props.subPath,
-                    ),
-                  ),
-                );
               }
             }}
           >
@@ -407,6 +443,7 @@ export function CTree(
                   forceLocalDispatch={props.forceLocalDispatch}
                   disabled={props.disabled}
                   readOnly={props.readOnly}
+                  onShowWarning={props.onShowWarning}
                 />
               ))
             : entityIs(variable, 'ChoiceDescriptor')
@@ -422,6 +459,7 @@ export function CTree(
                   forceLocalDispatch={props.forceLocalDispatch}
                   disabled={props.disabled}
                   readOnly={props.readOnly}
+                  onShowWarning={props.onShowWarning}
                 />
               ))
             : entityIs(variable, 'PeerReviewDescriptor')
@@ -437,6 +475,7 @@ export function CTree(
                   forceLocalDispatch={props.forceLocalDispatch}
                   disabled={props.disabled}
                   readOnly={props.readOnly}
+                  onShowWarning={props.onShowWarning}
                 />,
                 <CTree
                   nodeProps={nodeProps}
@@ -449,6 +488,7 @@ export function CTree(
                   forceLocalDispatch={props.forceLocalDispatch}
                   disabled={props.disabled}
                   readOnly={props.readOnly}
+                  onShowWarning={props.onShowWarning}
                 />,
               ]
             : entityIs(variable, 'EvaluationDescriptorContainer')
@@ -468,6 +508,7 @@ export function CTree(
                   forceLocalDispatch={props.forceLocalDispatch}
                   disabled={props.disabled}
                   readOnly={props.readOnly}
+                  onShowWarning={props.onShowWarning}
                 />
               ))
             : null
