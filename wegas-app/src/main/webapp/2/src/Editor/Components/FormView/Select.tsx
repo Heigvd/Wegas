@@ -6,10 +6,10 @@ import { Labeled, LabeledView } from './labeled';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { flex, flexColumn } from '../../../css/classes';
 import { ListDescriptorChild } from '../../editionConfig';
-import { inputStyleCSS } from '../../../Components/Inputs/inputStyles';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
+import { inputStyleCSS } from '../../../Components/Inputs/SimpleInput';
 
 export interface Choice {
   value?: {};
@@ -39,10 +39,7 @@ export interface IAsyncSelectProps extends WidgetProps.BaseProps {
 }
 const selectStyle = css({
   ...inputStyleCSS,
-  // display: 'inline-block',
   padding: '2px 4px',
-  // border: '1px solid lightgray',
-  // backgroundColor: 'lightgray',
   textAlign: 'center',
   alignItems: 'center',
 });
@@ -179,7 +176,7 @@ function SelectView(props: ISelectProps) {
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>
         {({ inputId, labelNode }) => (
-          <div className={cx(flex, flexColumn)}>
+          <div className={cx(flex, flexColumn, css({ maxWidth: '50%'}))}>
             {labelNode}
             <Selector
               id={inputId}

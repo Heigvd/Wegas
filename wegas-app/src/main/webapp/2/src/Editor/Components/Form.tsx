@@ -1,14 +1,13 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
-import { noOverflow, expandHeight, MediumPadding, toolboxHeaderStyle, defaultMarginTop } from '../../css/classes';
+import { noOverflow, expandHeight, MediumPadding, toolboxHeaderStyle, defaultMarginTop, expandWidth } from '../../css/classes';
 import './FormView';
 import { wwarn } from '../../Helper/wegaslog';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { isActionAllowed } from '../../Components/PageComponents/tools/options';
 import { IconButton, IconButtonProps } from '../../Components/Inputs/Buttons/IconButton';
-import { DropMenu } from '../../Components/DropMenu';
 
 function IconAction(label:string|undefined){
   switch (label) {
@@ -17,15 +16,14 @@ function IconAction(label:string|undefined){
     case 'Delete':
       return "trash";
     case 'Find usage':
-      return 'dog';
+      return 'user-secret';
     case 'Close':
       return 'times';
     case 'Instance':
       return 'columns';
     default:
-      return 'cat';
+      return 'poo';
 }}
-
 interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
   update?: (variable: T) => void;
@@ -117,7 +115,7 @@ export class Form<T> extends React.Component<
                 tooltip="Reset"
                 chipStyle
               />
-              {this.props.actions.map((a, i) => {
+               {this.props.actions.map((a, i) => {
                   const btnProps: IconButtonProps = {
                     tabIndex: 1,
                     chipStyle: true,
@@ -143,12 +141,12 @@ export class Form<T> extends React.Component<
                     );
                 })
                 //AdvancedToolBoxItem()
-              }
+                }
             </>
           )}
         </Toolbar.Header>
         <Toolbar.Content className={noOverflow}>
-          <div>
+          <div className={expandWidth}>
             <h2 className={defaultMarginTop}>{//how to take the same label than in treeview?
             this.state.val.name
             }</h2>
@@ -171,19 +169,24 @@ export class Form<T> extends React.Component<
     );
   }
 }
-/* function AdvancedToolBoxItem(){
-  this.props.actions.map((a, i) => {
+
+
+
+/*  function AdvancedToolBoxItem(actions:any) {
+  const dropMenuOtherActions: any[] = [];
+
+  actions.map((action:any, i:string) => {
     const btnProps: IconButtonProps = {
       tabIndex: 1,
       chipStyle: true,
-      tooltip: a.label?.toString(),
-      icon:IconAction(a.label?.toString()),
+      tooltip: action.label?.toString(),
+      icon:IconAction(action.label?.toString()),
     };
     //switch: fill the table, create buttons if necessary, create close tag if exist
     // if table.length > 0, create dropdownmenu with elements
-      switch (a.label) {
+      switch (action.label) {
         case 'Duplicate':
-          dropMenuOtherActions.push(a);
+          dropMenuOtherActions.push(action);
           break;
         case 'Delete':
           return (
@@ -191,33 +194,33 @@ export class Form<T> extends React.Component<
               {...btnProps}
               key={i}
               onAction={succes =>
-                succes && a.action(this.state.val, this.props.path)
+                succes && action.action(this.state.val, this.props.path)
               }
               buttonClassName={expandHeight}
             />)
         case 'Find usage':
-          dropMenuOtherActions.push(a);
+          dropMenuOtherActions.push(action);
           break;
         case 'Close':
           <IconButton
             {...btnProps}
             key={i}
-            onClick={() => a.action(this.state.val, this.props.path)}
+            onClick={() => action.action(this.state.val, this.props.path)}
             className={expandHeight}
           />
           break;
         case 'Instance':
-          dropMenuOtherActions.push(a);
+          dropMenuOtherActions.push(action);
           break;
         default:
           return (
             <IconButton
             tabIndex= {1}
             chipStyle
-            tooltip= {a.label?.toString()}
+            tooltip= {action.label?.toString()}
             icon="cat"
             key={i}
-            onClick={() => a.action(this.state.val, this.props.path)}
+            onClick={() => action.action(this.state.val, this.props.path)}
             className={expandHeight}
           />
           );

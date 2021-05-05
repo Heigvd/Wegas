@@ -34,9 +34,9 @@ import { classesCTX } from './Contexts/ClassesProvider';
 import { flexColumn, flex } from '../css/classes';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { classNameOrEmpty } from '../Helper/className';
-import { inputDefaultCSS, inputStyleCSS } from './Inputs/inputStyles';
 import { isActionAllowed } from './PageComponents/tools/options';
 import { RawEditorSettings } from 'tinymce/tinymce';
+import { inputDefaultCSS, inputStyleCSS } from './Inputs/SimpleInput';
 
 const toolbar = css({
   width: '300px',

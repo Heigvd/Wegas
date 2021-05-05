@@ -37,7 +37,6 @@ import {
   grow,
   flexColumn,
   toolboxHeaderStyle,
-  defaultMargin,
 } from '../../../css/classes';
 import {
   IVariableDescriptor,
