@@ -160,10 +160,15 @@ export function getAllThemes(): ThemeThunkResult {
           themeActionCreator.GET_ALL_THEMES({
             default: defaultTheme,
             trainer: trainerTheme,
-            ...Object.entries(libs).reduce(
-              (o, l) => ({ ...o, [l[0]]: JSON.parse(l[1].content) }),
-              {},
-            ),
+            ...Object.entries(libs).reduce((o, l) => {
+              const theme: Theme = JSON.parse(l[1].content);
+              // Updating css classes in browser
+              theme.modeClasses = Object.entries(theme.modes).reduce(
+                (o, [k, v]) => ({ ...o, [k]: modeClass(theme.values, v) }),
+                {},
+              );
+              return { ...o, [l[0]]: theme };
+            }, {}),
           }),
         );
       })

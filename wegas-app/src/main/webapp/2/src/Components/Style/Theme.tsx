@@ -3,7 +3,6 @@ import { css, cx } from 'emotion';
 import { defaultThemesState, SelectedThemes, ThemesState } from './ThemeVars';
 import { expandBoth } from '../../css/classes';
 import { useThemeStore } from '../../data/Stores/themeStore';
-import { wlog } from '../../Helper/wegaslog';
 
 export interface ThemeComponent {
   modeName?: string;
@@ -36,7 +35,7 @@ export function ThemeProvider({
 
   const className = themeModeClass(themesState, contextName, modeName);
 
-  wlog(className);
+  useModeClass(modeName);
 
   return (
     <div ref={themeRoot} className={cx(className, expandBoth)}>
