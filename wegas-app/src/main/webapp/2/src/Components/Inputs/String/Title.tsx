@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css } from 'emotion';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { classNameOrEmpty } from '../../../Helper/className';
 
 type TitleLevels = '1' | '2' | '3' | '4' | '5';

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { State } from '../../../data/Reducer/reducers';
 import { useStore } from '../../../data/Stores/store';
 import { useScript } from '../../Hooks/useScript';
-import { themeCTX } from '../../Style/Theme';
+import { themeCTX } from '../../Theme/Theme';
 import { WegasComponentOptions } from './EditableComponent';
 import { PlayerInfoBulletProps } from './InfoBullet';
 import { PageComponentContext, useComputeUnreadCount } from './options';

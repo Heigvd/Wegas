@@ -12,7 +12,7 @@ import { OverviewRow } from './OverviewRow';
 import '../../Editor/Components/FormView';
 import { ModalState, OverviewModal } from './OverviewModal/OverviewModal';
 import { instantiate } from '../../data/scriptable';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import { sortFnFactory, SortState } from '../TableSorter';
 import { FilterState } from './OverviewModal/FilterModalContent';
 import { useWebsocketEvent } from '../../API/websocket';

@@ -26,7 +26,7 @@ import { store, StoreDispatch } from '../../../data/Stores/store';
 import { GameModel } from '../../../data/selectors';
 import { editFile } from '../../../data/Reducer/globalState';
 
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import { TextPrompt } from '../TextPrompt';

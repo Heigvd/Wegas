@@ -19,7 +19,7 @@ import {
   contentStyle,
   hatchedBackground,
 } from '../../../css/classes';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 const tabButton = css({
@@ -99,9 +99,9 @@ export const dropSpecsFactory = (action: DropAction, layoutAccept: string) => {
   };
 };
 export interface ClassNames {
-  general?:string,
-  header?: string,
-  content?: string
+  general?: string;
+  header?: string;
+  content?: string;
 }
 
 interface TabLayoutProps {
@@ -152,7 +152,7 @@ interface TabLayoutProps {
   /**
    * The className for general styling
    */
-  classNames?: ClassNames
+  classNames?: ClassNames;
 }
 
 /**
@@ -172,7 +172,7 @@ export function DnDTabLayout({
   CustomTab = Tab,
   classNames = {},
 }: TabLayoutProps) {
-  const {general, header, content} = classNames;
+  const { general, header, content } = classNames;
   React.useEffect(() => {
     if (
       defaultActiveLabel === undefined ||

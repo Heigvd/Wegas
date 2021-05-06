@@ -10,7 +10,7 @@ import {
   FilterModalContent,
   FilterModalContentProps,
 } from './FilterModalContent';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { MailModalContent } from './MailModalContent';
 
 const modalStyle = css({

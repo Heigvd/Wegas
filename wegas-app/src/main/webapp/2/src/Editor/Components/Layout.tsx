@@ -6,7 +6,7 @@ import { useStore } from '../../data/Stores/store';
 import { visitIndex } from '../../Helper/pages';
 import { PageLoader } from './Page/PageLoader';
 import { ComponentMap } from './LinearTabLayout/DnDTabLayout';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import { State } from '../../data/Reducer/reducers';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
@@ -24,7 +24,7 @@ const InstancesEditor = React.lazy(
   () => import('./Variable/InstanceProperties'),
 );
 const ThemeEditor = React.lazy(
-  () => import('../../Components/Style/ThemeEditor'),
+  () => import('../../Components/Theme/Components/ThemeEditor'),
 );
 //const Tester = React.lazy(() => import('../../Testers/Components/InfoBulletTester'));
 

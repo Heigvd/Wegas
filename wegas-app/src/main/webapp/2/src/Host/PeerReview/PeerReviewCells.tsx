@@ -3,7 +3,7 @@ import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import { globals } from '../../Components/Hooks/useScript';
 import { Button } from '../../Components/Inputs/Buttons/Button';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import { flex, flexRow, itemCenter, justifyCenter } from '../../css/classes';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';

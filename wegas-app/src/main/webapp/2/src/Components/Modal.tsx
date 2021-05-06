@@ -17,8 +17,8 @@ import { classNameOrEmpty } from '../Helper/className';
 import { useInternalTranslate } from '../i18n/internalTranslator';
 import { modalTranslations } from '../i18n/modal/peerReview';
 import { Button } from './Inputs/Buttons/Button';
-import { themeCTX } from './Style/Theme';
-import { themeVar } from './Style/ThemeVars';
+import { themeCTX } from './Theme/Theme';
+import { themeVar } from './Theme/ThemeVars';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // styles

@@ -1,6 +1,6 @@
 import { css } from 'emotion';
 import * as React from 'react';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import { store } from '../../data/Stores/store';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { trainerTranslations } from '../../i18n/trainer/trainer';

@@ -1,6 +1,6 @@
 //import * as Color from 'color';
 import { css, cx } from 'emotion';
-import { themeVar } from '../Components/Style/ThemeVars';
+import { themeVar } from '../Components/Theme/ThemeVars';
 
 // Display
 export const flex = css({

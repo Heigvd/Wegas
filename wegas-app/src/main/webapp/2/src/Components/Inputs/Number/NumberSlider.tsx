@@ -12,7 +12,7 @@ import { Value } from '../../Outputs/Value';
 import { InputProps } from '../SimpleInput';
 import { NumberInput } from './NumberInput';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 
 const valueDisplayStyle = css({

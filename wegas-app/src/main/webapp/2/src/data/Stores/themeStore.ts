@@ -26,7 +26,7 @@ import {
   ModeValues,
   defaultThemes,
   modeClass,
-} from '../../Components/Style/ThemeVars';
+} from '../../Components/Theme/ThemeVars';
 import { cloneDeep } from 'lodash';
 
 const themeActionsTypes = {

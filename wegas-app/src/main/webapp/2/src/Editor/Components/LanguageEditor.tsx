@@ -12,7 +12,7 @@ import getEditionConfig from '../editionConfig';
 import { overrideSchema } from './EntityEditor';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { flex, grow, justifyCenter, flexColumn } from '../../css/classes';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import { IGameModelLanguage } from 'wegas-ts-api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 

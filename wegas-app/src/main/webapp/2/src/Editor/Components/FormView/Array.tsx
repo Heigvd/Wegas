@@ -10,7 +10,7 @@ import { array_move } from '../../../Helper/tools';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { typeCleaner } from './Script/Expressions/expressionEditorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 
 const transparentStyle = css({
   opacity: 0,

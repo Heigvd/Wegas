@@ -10,7 +10,7 @@ import {
   itemCenter,
 } from '../../../css/classes';
 import { classOrNothing, classNameOrEmpty } from '../../../Helper/className';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 
 const togglerStyle = css({
   display: 'flex',

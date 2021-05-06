@@ -10,7 +10,7 @@ import {
   grow,
 } from '../../../css/classes';
 import { useTranslate } from '../../../Editor/Components/FormView/translatable';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { WaitingLoader } from './WaitingLoader';
 
 const dialogueEntryStyle = (player?: boolean) =>

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { css, cx } from 'emotion';
 import { Centered } from './Centered';
 import { classNameOrEmpty } from '../../Helper/className';
-import { themeVar } from '../Style/ThemeVars';
+import { themeVar } from '../Theme/ThemeVars';
 
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',

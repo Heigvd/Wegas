@@ -9,7 +9,7 @@ import {
   stateBoxActionStyle,
   stateBoxStyle,
 } from './StateProcessComponent';
-import { themeVar } from '../Style/ThemeVars';
+import { themeVar } from '../Theme/ThemeVars';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { classNameOrEmpty } from '../../Helper/className';
 

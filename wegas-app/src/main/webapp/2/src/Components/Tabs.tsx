@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Toolbar } from './Toolbar';
 import { css, cx } from 'emotion';
-import { themeVar } from './Style/ThemeVars';
+import { themeVar } from './Theme/ThemeVars';
 import { contentStyle, layoutStyle } from '../css/classes';
 
 interface TabLayoutProps {

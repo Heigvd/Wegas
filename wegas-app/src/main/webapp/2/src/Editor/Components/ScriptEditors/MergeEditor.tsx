@@ -6,7 +6,7 @@ import WegasDiffEditor, {
   DiffEditorLineChanges,
 } from './WegasDiffEditor';
 import { MessageString } from '../MessageString';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { arrayToText, textToArray } from './editorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 

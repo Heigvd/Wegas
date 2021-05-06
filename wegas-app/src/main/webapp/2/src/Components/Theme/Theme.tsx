@@ -35,8 +35,6 @@ export function ThemeProvider({
 
   const className = themeModeClass(themesState, contextName, modeName);
 
-  useModeClass(modeName);
-
   return (
     <div ref={themeRoot} className={cx(className, expandBoth)}>
       <Provider

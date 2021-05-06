@@ -3,7 +3,7 @@ import { css } from 'emotion';
 import * as React from 'react';
 import { IPeerReviewDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 import { languagesCTX } from '../Components/Contexts/LanguagesProvider';
-import { themeVar } from '../Components/Style/ThemeVars';
+import { themeVar } from '../Components/Theme/ThemeVars';
 import { entityIs } from '../data/entities';
 import { State } from '../data/Reducer/reducers';
 import { useStore } from '../data/Stores/store';

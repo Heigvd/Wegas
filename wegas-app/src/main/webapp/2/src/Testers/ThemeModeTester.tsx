@@ -4,8 +4,8 @@ import {
   ThemeComponent,
   themeCTX,
   useModeSwitch,
-} from '../Components/Style/Theme';
-import { themeVar } from '../Components/Style/ThemeVars';
+} from '../Components/Theme/Theme';
+import { themeVar } from '../Components/Theme/ThemeVars';
 import { css } from 'emotion';
 import { classNameOrEmpty } from '../Helper/className';
 

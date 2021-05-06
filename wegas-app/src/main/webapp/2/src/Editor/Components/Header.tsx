@@ -25,7 +25,7 @@ import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
 import { DropMenu } from '../../Components/DropMenu';
 import { parseEvent } from './EntityEditor';
 import { editorEventRemove } from '../../data/Reducer/globalState';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { State } from '../../data/Reducer/reducers';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';

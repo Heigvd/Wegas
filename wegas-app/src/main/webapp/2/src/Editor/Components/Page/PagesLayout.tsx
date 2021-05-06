@@ -43,7 +43,7 @@ import {
   PageStateAction,
 } from '../../../data/Stores/pageStore';
 import { PAGEEDITOR_COMPONENT_TYPE, isDnDComponent } from './ComponentPalette';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { State } from '../../../data/Reducer/reducers';

@@ -39,7 +39,7 @@ import { EditHandle } from './EditHandle';
 import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
 import { OptionsState } from './OptionsComponent';
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
 import { TumbleLoader } from '../../Loader';
 import { ThunkResult, store } from '../../../data/Stores/store';

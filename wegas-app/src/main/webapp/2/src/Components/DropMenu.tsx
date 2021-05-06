@@ -3,7 +3,7 @@ import Downshift, { StateChangeOptions } from 'downshift';
 import { css, cx } from 'emotion';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
-import { themeVar } from './Style/ThemeVars';
+import { themeVar } from './Theme/ThemeVars';
 import { classNameOrEmpty } from '../Helper/className';
 import { ConfirmButton } from './Inputs/Buttons/ConfirmButton';
 import { flexRow, flex, itemCenter } from '../css/classes';

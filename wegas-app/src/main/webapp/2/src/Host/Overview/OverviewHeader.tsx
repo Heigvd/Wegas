@@ -11,7 +11,7 @@ import { firstScrollCellStyle, fixedCellStyle } from './OverviewCell';
 import { OverviewButton } from './OverviewButton';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { flex, flexColumn, itemCenter, justifyCenter } from '../../css/classes';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import { SortMode, SortState, TableSorter } from '../TableSorter';
 import { FilterState } from './OverviewModal/FilterModalContent';
 import { useInternalTranslate } from '../../i18n/internalTranslator';

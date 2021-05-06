@@ -18,8 +18,8 @@ import { AvailableViews } from '../FormView';
 import { LocalGlobalState } from '../../../data/Stores/storeFactory';
 import { updateInstance } from '../../../data/Reducer/VariableInstanceReducer';
 import { flex, flexColumn, grow, localSelection } from '../../../css/classes';
-import { themeVar } from '../../../Components/Style/ThemeVars';
-import { themeCTX, ThemeComponent } from '../../../Components/Style/Theme';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { themeCTX, ThemeComponent } from '../../../Components/Theme/Theme';
 import { IVariableInstance } from 'wegas-ts-api';
 import { VariableDescriptor, VariableInstance } from '../../../data/selectors';
 import {

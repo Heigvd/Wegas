@@ -10,7 +10,7 @@ import { ClientAndServerAction } from '../PageComponents/Inputs/tools';
 import { assembleStateAndContext } from '../PageComponents/tools/EditableComponent';
 import { clientAndServerScriptChoices } from '../PageComponents/tools/options';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
-import { themeVar } from '../Style/ThemeVars';
+import { themeVar } from '../Theme/ThemeVars';
 import { Button } from './Buttons/Button';
 
 const validatorStyle = css({
