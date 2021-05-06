@@ -25,6 +25,7 @@ import {
   defaultLightMode,
   ModeValues,
   defaultThemes,
+  modeClass,
 } from '../../Components/Style/ThemeVars';
 import { cloneDeep } from 'lodash';
 
@@ -292,7 +293,7 @@ export function setEditedMode(modeName: string): ThemeThunkResult {
 
 function isTheme(test: Theme | SelectedThemes): test is Theme {
   return (
-    Object.keys(test).some(el => Object.keys(defaultThemes).includes(el)) &&
+    Object.keys(test).some(el => Object.keys(defaultTheme).includes(el)) &&
     !Object.keys(test).some(el =>
       Object.keys(defaulSelectedThemes).includes(el),
     )
@@ -362,6 +363,16 @@ export function setThemeValue<
     } else {
       newTheme.values[themeValueName][valueKey] = value;
     }
+
+    // Recreating modes
+    newTheme.modeClasses = Object.entries(newTheme.modes).reduce(
+      (o, [k, m]) => ({
+        ...o,
+        [k]: modeClass(newTheme.values, m),
+      }),
+      newTheme.modeClasses,
+    );
+
     return dispatch(saveLib(state.editedThemeName, newTheme));
   };
 }
@@ -461,6 +472,12 @@ export function setModeValue<
     newTheme.modes[state.editedModeName].values[componentName][modeValueName][
       valueKey
     ] = value;
+
+    newTheme.modeClasses[state.editedModeName] = modeClass(
+      newTheme.values,
+      newTheme.modes[state.editedModeName],
+    );
+
     return dispatch(saveLib(state.editedThemeName, newTheme));
   };
 }

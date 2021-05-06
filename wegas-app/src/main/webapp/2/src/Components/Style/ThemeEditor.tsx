@@ -98,16 +98,6 @@ const modeColorSelectorSample = cx(
   componentMarginLeft,
 );
 
-// interface ThemeEditorContextValues {
-//   editedThemeName: string;
-//   setEditedThemeName: React.Dispatch<React.SetStateAction<string>>;
-// }
-
-// export const themeEditorCTX = React.createContext<ThemeEditorContextValues>({
-//   editedThemeName: 'default',
-//   setEditedThemeName: () => wlog('Not implemented yet'),
-// });
-
 function stringToRGBA(color?: string): RGBColor {
   const colorObject = Color(color);
   return {
@@ -197,6 +187,8 @@ function ThemeValueModifier<
   }) => string | undefined = value =>
     value?.name == null || value.name === ''
       ? 'You have to enter a name'
+      : Object.keys(theme?.values[section] || {}).includes(value?.name || '')
+      ? `The ${section} value already exists`
       : undefined;
 
   const validator: (
@@ -219,11 +211,7 @@ function ThemeValueModifier<
           label={`Add new ${section} value`}
           accept={accept}
           validator={validator}
-          onAccept={value =>
-            accept(value) &&
-            validator(value) &&
-            onChange(value!.name! as K, value!.value as V)
-          }
+          onAccept={value => onChange(value!.name! as K, value!.value as V)}
         >
           {onNewValue => (
             <>
@@ -267,7 +255,10 @@ function ThemeValueModifier<
                 {k} :
               </label>
               {!Object.keys(defaultThemeValues[section]).includes(k) && (
-                <Button icon="trash" onClick={() => onChange(k as K, null)} />
+                <ConfirmButton
+                  icon="trash"
+                  onAction={success => success && onChange(k as K, null)}
+                />
               )}
             </div>
             {section === 'colors' ? (
@@ -410,7 +401,9 @@ function ThemeEdition() {
               <ThemeValueModifier
                 theme={currentTheme}
                 section="colors"
-                onChange={(k, v) => dispatch(setThemeValue('colors', k, v))}
+                onChange={(k, v) => {
+                  dispatch(setThemeValue('colors', k, v));
+                }}
               />
             </ReflexElement>
           )}
