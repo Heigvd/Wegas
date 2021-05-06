@@ -43,11 +43,11 @@ export interface ProcessProps<F extends FlowLine, P extends Process<F>>
   /**
    * a callback triggered when a component has been moved
    */
-  onMove: (postion: XYPosition) => void;
+  onMove: (postion: XYPosition, e: MouseEvent) => void;
   /**
    * a callback triggered when a component movement ended
    */
-  onMoveEnd: (postion: XYPosition) => void;
+  onMoveEnd: (postion: XYPosition, e: MouseEvent) => void;
   /**
    * a callback triggered when a handle is dropped on the process component
    */
@@ -85,16 +85,19 @@ export function CustomProcessComponent<
   }, []);
 
   const onDrag = React.useCallback(
-    (_e: MouseEvent, position: XYPosition) => onMove(position),
+    (e: MouseEvent, position: XYPosition) => onMove(position, e),
     [onMove],
   );
 
   const onDragEnd = React.useCallback(
-    (_e: MouseEvent, position: XYPosition) => {
-      onMoveEnd({
-        x: Math.max(position.x, 0),
-        y: Math.max(position.y, 0),
-      });
+    (e: MouseEvent, position: XYPosition) => {
+      onMoveEnd(
+        {
+          x: Math.max(position.x, 0),
+          y: Math.max(position.y, 0),
+        },
+        e,
+      );
     },
     [onMoveEnd],
   );
