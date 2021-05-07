@@ -2,7 +2,7 @@ import { css, cx } from 'emotion';
 import * as React from 'react';
 import { componentMarginLeft, flex, itemCenter } from '../../../../css/classes';
 import { Theme } from '../../ThemeVars';
-import { borderStyle } from '../ThemeEditor';
+import { borderStyle } from '../Theme/ColorPicker';
 
 const modeColorSelectorSample = cx(
   css({

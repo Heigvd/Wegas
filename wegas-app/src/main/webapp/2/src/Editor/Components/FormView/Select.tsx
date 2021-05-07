@@ -99,13 +99,18 @@ export function Selector({
   disabled,
 }: SelectorProps) {
   const i18nValues = useInternalTranslate(commonTranslations);
-  return choices.length > 1 ? (
+  return choices.length > 1 && !readOnly ? (
     <select
       id={id}
       className={selectStyle + classNameOrEmpty(className)}
       style={style}
       value={value}
-      onChange={onChange}
+      onChange={event => {
+        event.persist();
+        if (onChange) {
+          onChange(event);
+        }
+      }}
       disabled={disabled || readOnly}
     >
       <option value="" disabled hidden>

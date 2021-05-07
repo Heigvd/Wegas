@@ -48,8 +48,8 @@ export const defaultOptionsKeys: (keyof OptionProps)[] = [
 
 // options that can be passed from a parent to its children
 export interface HeritableOptionsState {
-  disabled: boolean | undefined;
-  readOnly: boolean | undefined;
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 
 export const heritableOptionsStateKeys: (keyof HeritableOptionsState)[] = [

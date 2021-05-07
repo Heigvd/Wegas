@@ -12,7 +12,13 @@ import {
 import { useOnClickOutside } from '../../../Hooks/useOnClickOutside';
 import { Button } from '../../../Inputs/Buttons/Button';
 import { themeVar } from '../../ThemeVars';
-import { borderStyle } from '../ThemeEditor';
+
+export const borderStyle = {
+  borderStyle: 'solid',
+  borderColor: themeVar.Common.colors.HeaderColor,
+  borderWidth: themeVar.Common.dimensions.BorderWidth,
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
+};
 
 export const valueStyle = css({
   marginTop: '1px',

@@ -4,7 +4,7 @@ import { Toolbar } from '../../Components/Toolbar';
 import { defaultMargin, noOverflow, expandHeight } from '../../css/classes';
 import './FormView';
 import { Button, ButtonProps } from '../../Components/Inputs/Buttons/Button';
-import { wlog, wwarn } from '../../Helper/wegaslog';
+import { wwarn } from '../../Helper/wegaslog';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { isActionAllowed } from '../../Components/PageComponents/tools/options';
@@ -45,8 +45,6 @@ export function Form<T>({
     oldReceivedEntity.current = entity;
     setVal(entity);
   }
-
-  wlog({ val, config });
 
   return (
     <Toolbar>

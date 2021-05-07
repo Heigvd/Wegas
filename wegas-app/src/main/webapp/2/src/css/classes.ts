@@ -92,12 +92,6 @@ export const flexRowReverse = css({
 export const flexWrap = css({
   flexWrap: 'wrap',
 });
-export const flexDistribute = css({
-  justifyContent: 'space-evenly',
-});
-export const flexBetween = css({
-  justifyContent: 'space-between',
-});
 
 // Position
 export const textCenter = css({
@@ -123,6 +117,12 @@ export const justifyEnd = css({
 });
 export const justifyStart = css({
   justifyContent: 'flex-start',
+});
+export const flexDistribute = css({
+  justifyContent: 'space-evenly',
+});
+export const flexBetween = css({
+  justifyContent: 'space-between',
 });
 export const foregroundContent = css({
   zIndex: 1000,
