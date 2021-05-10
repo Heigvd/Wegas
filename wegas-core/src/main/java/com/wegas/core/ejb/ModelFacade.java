@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -285,11 +286,11 @@ public class ModelFacade {
                  * Filter gameModelContents
                  */
                 logger.info("Filter Libraries");
-                Map<String, Map<String, GameModelContent>> libraries = model.getLibraries();
+                Map<String, Map<String, GameModelContent>> libraries = model.getLibrariesAsMap();
                 List<Map<String, Map<String, GameModelContent>>> otherLibraries = new ArrayList<>();
 
                 for (GameModel other : allScenarios) {
-                    otherLibraries.add(other.getLibraries());
+                    otherLibraries.add(other.getLibrariesAsMap());
                 }
 
                 for (Entry<String, Map<String, GameModelContent>> libEntry : libraries.entrySet()) {
@@ -328,7 +329,7 @@ public class ModelFacade {
                         }
                     }
                 }
-                model.setLibraries(libraries);
+                model.setLibrariesFromMap(libraries);
 
                 List<VariableDescriptor> vdQueue = new ArrayList<>();
                 vdQueue.addAll(model.getChildVariableDescriptors());
@@ -572,11 +573,9 @@ public class ModelFacade {
             vd.setVisibility(ModelScoped.Visibility.PRIVATE);
         }
 
-        Map<String, Map<String, GameModelContent>> libraries = scenario.getLibraries();
-        for (Map<String, GameModelContent> contents : libraries.values()) {
-            for (GameModelContent content : contents.values()) {
-                content.setVisibility(ModelScoped.Visibility.PRIVATE);
-            }
+        List<GameModelContent> library = scenario.getLibraries();
+        for (GameModelContent content : library) {
+            content.setVisibility(ModelScoped.Visibility.PRIVATE);
         }
 
         for (GameModelLanguage lang : scenario.getRawLanguages()) {
@@ -771,28 +770,28 @@ public class ModelFacade {
                 String name = modelVd.getName();
                 if (!ignorePrivate || modelVd.getVisibility() != ModelScoped.Visibility.PRIVATE) {
 
-                    for (GameModel scenario : scenarios) {
-                        try {
-                            // get corresponding descriptor in the scenrio
-                            VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
+                for (GameModel scenario : scenarios) {
+                    try {
+                        // get corresponding descriptor in the scenrio
+                        VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
 
-                            String parentRef = this.getParentRef(vd);
-                            if (!parentRef.equals(modelParentRef)) {
-                                logger.info("Descriptor {} will be moved from {} to {}", vd, buildPath(vd.getParent()), buildPath(modelVd.getParent()));
-                                // Parents differs
-                                toMove.put(vd, modelVd);  //key : the descriptor to move; value: corresponding descriptor within the model
-                            }
-                        } catch (WegasNoResultException ex) {
-                            // corresponding descriptor not found -> it has to be created
-                            // but, in this step we only care about directories
-                            logger.info("Descriptor {} will be created in {} at {}", modelVd, scenario, buildPath(modelVd.getParent()));
-                            if (modelVd instanceof DescriptorListI) {
-                                toCreate.putIfAbsent(scenario, new ArrayList<>());
-                                toCreate.get(scenario).add(modelVd);
-                            }
+                        String parentRef = this.getParentRef(vd);
+                        if (!parentRef.equals(modelParentRef)) {
+                            logger.info("Descriptor {} will be moved from {} to {}", vd, buildPath(vd.getParent()), buildPath(modelVd.getParent()));
+                            // Parents differs
+                            toMove.put(vd, modelVd);  //key : the descriptor to move; value: corresponding descriptor within the model
+                        }
+                    } catch (WegasNoResultException ex) {
+                        // corresponding descriptor not found -> it has to be created
+                        // but, in this step we only care about directories
+                        logger.info("Descriptor {} will be created in {} at {}", modelVd, scenario, buildPath(modelVd.getParent()));
+                        if (modelVd instanceof DescriptorListI) {
+                            toCreate.putIfAbsent(scenario, new ArrayList<>());
+                            toCreate.get(scenario).add(modelVd);
                         }
                     }
                 }
+            }
             }
 
             // Create missing descriptors (DescriptorListI) to ensure all scenarios have the correct struct

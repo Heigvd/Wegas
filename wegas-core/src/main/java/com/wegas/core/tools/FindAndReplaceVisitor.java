@@ -338,12 +338,12 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
     }
 
     public void processStyles(GameModel gameModel) {
-        this.processLibrary(gameModel.getCssLibraryList(), "Stylesheet");
+        this.processLibrary(gameModel.getLibrariesAsList(GameModelContent.CSS), "Stylesheet");
     }
 
     public void processScripts(GameModel gameModel) {
-        this.processLibrary(gameModel.getClientScriptLibraryList(), "Client Script");
-        this.processLibrary(gameModel.getScriptLibraryList(), "Server Script");
+        this.processLibrary(gameModel.getLibrariesAsList(GameModelContent.CLIENT_SCRIPT), "Client Script");
+        this.processLibrary(gameModel.getLibrariesAsList(GameModelContent.SERVER_SCRIPT), "Server Script");
     }
 
     public void propagate(GameModel gameModel, WebsocketFacade websocketFacade) {

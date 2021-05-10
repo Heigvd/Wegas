@@ -1,13 +1,13 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
-import { noOverflow, expandHeight, MediumPadding, toolboxHeaderStyle, defaultMarginTop, expandWidth } from '../../css/classes';
+import { noOverflow, expandHeight, defaultMargin } from '../../css/classes';
 import './FormView';
+import { Button, ButtonProps } from '../../Components/Inputs/Buttons/Button';
 import { wwarn } from '../../Helper/wegaslog';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { isActionAllowed } from '../../Components/PageComponents/tools/options';
-import { IconButton, IconButtonProps } from '../../Components/Inputs/Buttons/IconButton';
 
 function IconAction(label:string|undefined){
   switch (label) {
@@ -34,140 +34,115 @@ interface EditorProps<T> extends DisabledReadonly {
   }[];
   path?: (string | number)[];
   config?: Schema;
-}
-
-interface FormProps<T> extends EditorProps<T> {
-  schema: Schema;
+  onChange?: (newEntity: T) => void;
 }
 
 export type IForm = typeof Form;
 
-export class Form<T> extends React.Component<
-  FormProps<T>,
-  {
-    val: any;
-    oldProps: FormProps<T>;
-    // Used to reset Form (for default values)
-    id: number;
-  }
-> {
-  form?: JSONForm;
-  static getDerivedStateFromProps(
-    nextProps: FormProps<any>,
-    state: { oldProps: FormProps<any>; id: number; val: any },
+export function Form<T>({
+  actions,
+  config,
+  entity,
+  onChange,
+  path,
+  update,
+  disabled,
+  readOnly,
+}: EditorProps<T>) {
+  const oldReceivedEntity = React.useRef(entity);
+  const form = React.useRef<JSONForm>(null);
+  const [val, setVal] = React.useState(entity);
+
+  if (
+    deepDifferent(entity, oldReceivedEntity.current) &&
+    deepDifferent(entity, val)
   ) {
-    if (state.oldProps === nextProps) {
-      return null;
-    }
-    return {
-      val: nextProps.entity,
-      oldProps: nextProps,
-      id: (state.id + 1) % 100,
-    };
+    oldReceivedEntity.current = entity;
+    setVal(entity);
   }
-  static defaultProps = {
-    actions: [],
-  };
-  constructor(props: FormProps<T>) {
-    super(props);
-    this.state = { oldProps: props, val: props.entity, id: 0 };
-  }
-  render() {
-    return (
-      <Toolbar className={MediumPadding}>
-        <Toolbar.Header className={toolboxHeaderStyle}>
-          {isActionAllowed({
-            disabled: this.props.disabled,
-            readOnly: this.props.readOnly,
-          }) && (
-            <>
-              {this.props.update && (
-                <IconButton
-                  icon="save"
-                  chipStyle
-                  disabled={!deepDifferent(this.state.val, this.props.entity)}
-                  onClick={() => {
-                    if (this.state.val !== this.props.entity && this.form) {
-                      const validation = this.form.validate();
-                      if (validation.length) {
-                        wwarn(
-                          this.state.val,
-                          JSON.stringify(validation, null, 2),
-                        );
-                      } else {
-                        this.props.update!(this.state.val);
-                      }
+
+  return (
+    <Toolbar>
+      <Toolbar.Header>
+        {isActionAllowed({
+          disabled,
+          readOnly,
+        }) && (
+          <>
+            {update && (
+              <Button
+                label="Save"
+                disabled={!deepDifferent(val, entity)}
+                onClick={() => {
+                  if (form.current != null) {
+                    const validation = form.current.validate();
+                    if (validation.length) {
+                      wwarn(val, JSON.stringify(validation, null, 2));
+                    } else if (val != null) {
+                      update(val);
                     }
-                  }}
+                  }
+                }}
+                className={expandHeight}
+                disableBorders={{ right: true }}
+              />
+            )}
+            <ConfirmButton
+              label="Reset"
+              onAction={accept => {
+                accept && setVal(entity);
+              }}
+              disableBorders={{
+                left: update !== undefined,
+                right: actions.length > 0,
+              }}
+              buttonClassName={expandHeight}
+            />
+            {actions.map((a, i) => {
+              const btnProps: ButtonProps = {
+                label: a.label,
+                tabIndex: 1,
+                disableBorders: {
+                  left: true,
+                  right: i !== actions.length - 1,
+                },
+              };
+              return a.confirm ? (
+                <ConfirmButton
+                  {...btnProps}
+                  key={i}
+                  onAction={succes =>
+                    succes && val != null && a.action(val, path)
+                  }
+                  buttonClassName={expandHeight}
+                />
+              ) : (
+                <Button
+                  {...btnProps}
+                  key={i}
+                  onClick={() => val != null && a.action(val, path)}
                   className={expandHeight}
                 />
-              )}
-              <ConfirmButton
-                icon="redo"
-                onAction={accept => {
-                  accept && this.setState({ val: this.props.entity });
-                }}
-                disableBorders={{
-                  left: this.props.update !== undefined,
-                  right: this.props.actions.length > 0,
-                }}
-                buttonClassName={expandHeight}
-                tooltip="Reset"
-                chipStyle
-              />
-               {this.props.actions.map((a, i) => {
-                  const btnProps: IconButtonProps = {
-                    tabIndex: 1,
-                    chipStyle: true,
-                    tooltip: a.label?.toString(),
-                    icon:IconAction(a.label?.toString()),
-                  };
-                  return a.confirm ? (
-                      <ConfirmButton
-                        {...btnProps}
-                        key={i}
-                        onAction={succes =>
-                          succes && a.action(this.state.val, this.props.path)
-                        }
-                        buttonClassName={expandHeight}
-                      />
-                    ) : (
-                      <IconButton
-                        {...btnProps}
-                        key={i}
-                        onClick={() => a.action(this.state.val, this.props.path)}
-                        className={expandHeight}
-                      />
-                    );
-                })
-                //AdvancedToolBoxItem()
-                }
-            </>
-          )}
-        </Toolbar.Header>
-        <Toolbar.Content className={noOverflow}>
-          <div className={expandWidth}>
-            <h2 className={defaultMarginTop}>{//how to take the same label than in treeview?
-            this.state.val.name
-            }</h2>
-            <JSONForm
-              ref={n => {
-                if (n != null) {
-                  this.form = n;
-                }
-              }}
-              key={this.state.id}
-              value={this.state.val}
-              schema={this.props.schema}
-              onChange={val => {
-                this.setState({ val });
-              }}
-            />
-          </div>
-        </Toolbar.Content>
-      </Toolbar>
-    );
-  }
+              );
+            })}
+          </>
+        )}
+      </Toolbar.Header>
+      <Toolbar.Content className={noOverflow}>
+        <div className={defaultMargin}>
+          <JSONForm
+            ref={form}
+            value={val}
+            schema={config}
+            onChange={val => {
+              setVal(val);
+              onChange && onChange(val);
+            }}
+          />
+        </div>
+      </Toolbar.Content>
+    </Toolbar>
+  );
 }
 
 /*

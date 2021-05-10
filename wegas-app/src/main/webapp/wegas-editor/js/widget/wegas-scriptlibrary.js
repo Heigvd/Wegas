@@ -246,7 +246,8 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                     method: 'POST',
                                     updateCache: false,
                                     data: {
-                                        '@class': 'GameModelContent'
+                                        '@class': 'GameModelContent',
+                                        contentType: this.get('library') === 'CSS' ? 'text/css' : 'application/javascript'
                                     }
                                 },
                                 on: Wegas.superbind({
@@ -360,7 +361,8 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                             '@class': 'GameModelContent',
                             content: this.aceField.getValue(),
                             visibility: this.visibilityField.getValue(),
-                            version: this.scripts[this.currentScriptName].version
+                            version: this.scripts[this.currentScriptName].version,
+                            contentType: this.get('library') === 'CSS' ? 'text/css' : 'application/javascript'
                         }
                     },
                     on: Wegas.superbind({
