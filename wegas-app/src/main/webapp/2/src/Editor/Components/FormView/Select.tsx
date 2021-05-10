@@ -10,6 +10,7 @@ import { classNameOrEmpty } from '../../../Helper/className';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { inputStyleCSS } from '../../../Components/Inputs/SimpleInput';
+import { themeVar } from '../../../Components/Style/ThemeVars';
 
 export interface Choice {
   value?: {};
@@ -39,11 +40,21 @@ export interface IAsyncSelectProps extends WidgetProps.BaseProps {
 }
 const selectStyle = css({
   ...inputStyleCSS,
-  padding: '2px 4px',
+  padding: '2px 30px 2px 4px',
   textAlign: 'center',
   alignItems: 'center',
 });
 
+const selectArrowStyle = css({
+  select: {
+    appearance: "none",
+    background: "transparent",
+    backgroundImage: "linear-gradient(45deg, transparent 50%, " + themeVar.Common.colors.PrimaryColor +" 50%), linear-gradient(135deg, " + themeVar.Common.colors.PrimaryColor +" 50%, transparent 50%)",
+    backgroundSize:"8px 8px, 8px 8px",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "calc(100% - 15px) calc(1em - 5px), calc(100% - 7px) calc(1em - 5px)",
+  }
+});
 const defaultTitle: Choice = {
   value: '[[[default]]]',
   label: '- please select -',
@@ -176,7 +187,7 @@ function SelectView(props: ISelectProps) {
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>
         {({ inputId, labelNode }) => (
-          <div className={cx(flex, flexColumn, css({ maxWidth: '50%'}))}>
+          <div className={cx(flex, flexColumn, selectArrowStyle)}>
             {labelNode}
             <Selector
               id={inputId}
