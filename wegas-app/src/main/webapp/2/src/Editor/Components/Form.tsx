@@ -170,7 +170,12 @@ export class Form<T> extends React.Component<
   }
 }
 
+/*
 
+deux compos, fonction de filtrage
+Peux modifier l'interface  actions (et en crééer une exprès)
+
+*/
 
 /*  function AdvancedToolBoxItem(actions:any) {
   const dropMenuOtherActions: any[] = [];
