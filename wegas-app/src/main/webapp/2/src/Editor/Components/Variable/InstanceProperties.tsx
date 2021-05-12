@@ -34,7 +34,7 @@ const listBox = css({
   width: '100%',
   maxHeight: '100px',
   overflowY: 'auto',
-  borderColor: themeVar.Common.colors.PrimaryColor,
+  borderColor: themeVar.colors.PrimaryColor,
   borderWidth: '2px',
   borderStyle: 'solid',
 });
@@ -44,14 +44,14 @@ const listItem = css({
   width: '100%',
   cursor: 'pointer',
   ':hover': {
-    backgroundColor: themeVar.Common.colors.HoverColor,
+    backgroundColor: themeVar.colors.HoverColor,
   },
 });
 
 const titleStyle = css({
   textAlign: 'center',
   margin: '5px',
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  backgroundColor: themeVar.colors.HeaderColor,
 });
 
 function isEditingVariable(editing?: Edition): editing is VariableEdition {
@@ -86,9 +86,8 @@ export function InstanceProperties({
   const editing = state.global.editing;
   const events = state.global.events;
 
-  const [selectedInstanceId, setSelectedInstanceId] = React.useState<
-    number | undefined
-  >();
+  const [selectedInstanceId, setSelectedInstanceId] =
+    React.useState<number | undefined>();
 
   const instances = useStore(instancesSelector);
 

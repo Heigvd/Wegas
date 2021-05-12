@@ -20,14 +20,13 @@ const overlayStyle = css({
   padding: '2em',
   zIndex: 1000,
   backgroundColor: 'white',
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  borderRadius: themeVar.dimensions.BorderRadius,
   boxShadow: '1px 2px 16px rgba(0, 0, 0, 0.2)',
   '&:before': {
     content: "''",
     width: 0,
     height: 0,
-    borderRight:
-      '15px solid ' + themeVar.Common.colors.SecondaryBackgroundColor,
+    borderRight: '15px solid ' + themeVar.colors.SecondaryBackgroundColor,
     borderTop: '15px solid transparent',
     borderBottom: '15px solid transparent',
     position: 'absolute',
@@ -36,7 +35,7 @@ const overlayStyle = css({
     top: '43px',
   },
   h2: {
-    fontSize: themeVar.ComponentTitle.dimensions.FontSize4,
+    fontSize: '2em',
   },
 });
 const overlayContentStyle = css({
@@ -50,7 +49,7 @@ const modalCloseDivStyle = css({
   width: '2em',
   height: '2em',
   cursor: 'pointer',
-  color: themeVar.Common.colors.DarkTextColor,
+  color: themeVar.colors.DarkTextColor,
 });
 
 const modalCloseButtonStyle = css({

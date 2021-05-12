@@ -14,8 +14,8 @@ import { themeVar } from '../Theme/ThemeVars';
 import { Button } from './Buttons/Button';
 
 const validatorStyle = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  backgroundColor: themeVar.colors.HeaderColor,
+  borderRadius: themeVar.dimensions.BorderRadius,
   padding: '5px',
 });
 

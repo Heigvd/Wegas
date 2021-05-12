@@ -24,7 +24,7 @@ const headerStyle = css({
 
 const fixedHeaderCellStyle = cx(
   css({
-    backgroundColor: themeVar.Common.colors.BackgroundColor,
+    backgroundColor: themeVar.colors.BackgroundColor,
     height: '25px',
   }),
   fixedCellStyle,

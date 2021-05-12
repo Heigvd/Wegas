@@ -6,7 +6,6 @@ import {
   expandHeight,
   itemCenter,
   flexDistribute,
-  headerStyle,
   grow,
   defaultPadding,
   autoScroll,
@@ -14,91 +13,36 @@ import {
 } from '../../../../css/classes';
 import { ConfirmButton } from '../../../Inputs/Buttons/ConfirmButton';
 import { SimpleInput } from '../../../Inputs/SimpleInput';
-import { ConfirmAdder } from '../../../Inputs/String/ConfirmAdder';
 import { defaultThemeValues, Theme, ThemeValues } from '../../ThemeVars';
 import { ColorPicker, rgbaToString, valueStyle } from './ColorPicker';
+import { ThemeValueInput } from './ThemeValueInput';
 
 const valueEntryStyle = css({
   marginBottom: '7px',
 });
 
-interface ThemeValueModifierProps<
+const THEME_VALUE_MODIFIER_ID = 'THEME_VALUE_MODIFIER_ID';
+
+export interface ThemeValueModifierProps<
   T extends keyof ThemeValues,
   K extends keyof ThemeValues[T],
-  V extends ThemeValues[T][K]
+  V extends ThemeValues[T][K],
 > {
   theme: Theme | undefined;
   section: T;
   onChange: (entry: K, value: V | null) => void;
+  attachedToId?: string;
 }
 
 export function ThemeValueModifier<
   T extends keyof ThemeValues,
   K extends keyof ThemeValues[T],
-  V extends ThemeValues[T][K]
+  V extends ThemeValues[T][K],
 >({ theme, section, onChange }: ThemeValueModifierProps<T, K, V>) {
-  const accept: (value?: {
-    name?: string;
-    value: string;
-  }) => string | undefined = value =>
-    value?.name == null || value.name === ''
-      ? 'You have to enter a name'
-      : Object.keys(theme?.values[section] || {}).includes(value?.name || '')
-      ? `The ${section} value already exists`
-      : undefined;
-
-  const validator: (
-    value?:
-      | {
-          name?: string;
-          value: string;
-        }
-      | undefined,
-  ) => string | undefined = value => {
-    if (Object.keys(theme?.values[section] || {}).includes(value?.name || '')) {
-      return `The ${section} value already exists`;
-    }
-  };
+  const componentId = THEME_VALUE_MODIFIER_ID + section;
 
   return (
-    <div className={cx(flex, flexColumn, expandHeight)}>
-      <div className={cx(flex, itemCenter, flexDistribute, headerStyle)}>
-        <ConfirmAdder
-          label={`Add new ${section} value`}
-          accept={accept}
-          validator={validator}
-          onAccept={value => onChange(value!.name! as K, value!.value as V)}
-        >
-          {onNewValue => (
-            <>
-              <SimpleInput
-                placeholder="value name"
-                onChange={v =>
-                  onNewValue(ov => ({
-                    ...(ov || { value: 'black' }),
-                    name: String(v),
-                  }))
-                }
-              />
-              {section === 'colors' ? (
-                <ColorPicker
-                  onChange={color => {
-                    onNewValue(ov => ({ ...ov, value: rgbaToString(color) }));
-                  }}
-                />
-              ) : (
-                <SimpleInput
-                  placeholder="Theme value"
-                  className={valueStyle}
-                  onChange={v =>
-                    onNewValue(ov => ({ ...ov, value: String(v) }))
-                  }
-                />
-              )}
-            </>
-          )}
-        </ConfirmAdder>
-      </div>
+    <div className={cx(flex, flexColumn, expandHeight)} id={componentId}>
       <div className={cx(flex, grow, flexColumn, defaultPadding, autoScroll)}>
         {Object.entries(theme?.values[section] || {}).map(([k, v]) => (
           <div key={k} className={cx(flex, flexColumn, valueEntryStyle)}>
@@ -133,6 +77,14 @@ export function ThemeValueModifier<
             )}
           </div>
         ))}
+        <div className={cx(flex, itemCenter, flexDistribute)}>
+          <ThemeValueInput
+            onChange={(entry, value) => onChange(entry as K, value as V)}
+            theme={theme}
+            section={section}
+            attachedToId={componentId}
+          />
+        </div>
       </div>
     </div>
   );

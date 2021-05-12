@@ -27,22 +27,22 @@ export function OverviewTD({ value, color }: OverviewTDProps) {
   switch (color) {
     case 'green':
       computedColors = {
-        backgroundColor: themeVar.Common.colors.PrimaryColor,
-        color: themeVar.Common.colors.SecondaryBackgroundColor,
+        backgroundColor: themeVar.colors.PrimaryColor,
+        color: themeVar.colors.SecondaryBackgroundColor,
       };
       break;
     case 'red':
       computedColors = {
-        backgroundColor: themeVar.Common.colors.ActiveColor,
-        color: themeVar.Common.colors.SecondaryBackgroundColor,
+        backgroundColor: themeVar.colors.ActiveColor,
+        color: themeVar.colors.SecondaryBackgroundColor,
       };
       break;
     case 'orange':
-      computedColors = { backgroundColor: themeVar.Common.colors.HeaderColor };
+      computedColors = { backgroundColor: themeVar.colors.HeaderColor };
       break;
     case 'grey':
       computedColors = {
-        backgroundColor: themeVar.Common.colors.DisabledColor,
+        backgroundColor: themeVar.colors.DisabledColor,
       };
       break;
   }

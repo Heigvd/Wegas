@@ -41,8 +41,8 @@ import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
 
 const prStateStyle = css({
   borderRadius: '10px',
-  backgroundColor: themeVar.Common.colors.SecondaryBackgroundColor,
-  color: themeVar.Common.colors.DarkTextColor,
+  backgroundColor: themeVar.colors.SecondaryBackgroundColor,
+  color: themeVar.colors.DarkTextColor,
   boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.2)',
   padding: '10px',
   minWidth: '200px',
@@ -51,8 +51,8 @@ const prStateStyle = css({
 });
 
 const prActiveStateStyle = css({
-  backgroundColor: themeVar.Common.colors.PrimaryColor,
-  color: themeVar.Common.colors.LightTextColor,
+  backgroundColor: themeVar.colors.PrimaryColor,
+  color: themeVar.colors.LightTextColor,
 });
 
 const stateBarStyle = css({
@@ -84,7 +84,7 @@ export interface DataReviewItem {
 export type DataItem = DataOverviewItem | DataReviewItem;
 
 export interface PRTableData<
-  DataItem extends DataOverviewItem | DataReviewItem
+  DataItem extends DataOverviewItem | DataReviewItem,
 > {
   structures: TableStructure[];
   data: {
@@ -232,9 +232,8 @@ function globalPRStatus(
 }
 
 export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
-  const [layoutState, setLayoutState] = React.useState<LayoutState>(
-    defaultLayoutState,
-  );
+  const [layoutState, setLayoutState] =
+    React.useState<LayoutState>(defaultLayoutState);
 
   const { lang } = React.useContext(languagesCTX);
   const [data, setData] = React.useState<IData>();

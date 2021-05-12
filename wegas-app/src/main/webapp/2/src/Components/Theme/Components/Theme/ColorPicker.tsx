@@ -15,9 +15,9 @@ import { themeVar } from '../../ThemeVars';
 
 export const borderStyle = {
   borderStyle: 'solid',
-  borderColor: themeVar.Common.colors.HeaderColor,
-  borderWidth: themeVar.Common.dimensions.BorderWidth,
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  borderColor: themeVar.colors.HeaderColor,
+  borderWidth: themeVar.dimensions.BorderWidth,
+  borderRadius: themeVar.dimensions.BorderRadius,
 };
 
 export const valueStyle = css({
@@ -93,7 +93,7 @@ export function ColorPicker({
               setColor(newColor.rgb);
             }}
           />
-          <div style={{ margin: themeVar.Common.dimensions.BorderWidth }}>
+          <div style={{ margin: themeVar.dimensions.BorderWidth }}>
             <Button
               label="Accept"
               onClick={() => {

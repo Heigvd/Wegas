@@ -24,12 +24,12 @@ const textContainerStyle = (player?: boolean) =>
   css({
     position: 'relative',
     backgroundColor: player
-      ? themeVar.Common.colors.PrimaryColor
-      : themeVar.Common.colors.HeaderColor,
+      ? themeVar.colors.PrimaryColor
+      : themeVar.colors.HeaderColor,
     color: player
-      ? themeVar.Common.colors.LightTextColor
-      : themeVar.Common.colors.DarkTextColor,
-    borderRadius: themeVar.Common.dimensions.BorderRadius,
+      ? themeVar.colors.LightTextColor
+      : themeVar.colors.DarkTextColor,
+    borderRadius: themeVar.dimensions.BorderRadius,
     padding: '5px 10px',
     overflow: 'hidden',
     fontSize: 'initial',
@@ -99,16 +99,16 @@ export function DialogueEntry({ text, player, waiting }: DialogueEntryProps) {
               className={portraitStyle}
               color={
                 player
-                  ? themeVar.Common.colors.ActiveColor
-                  : themeVar.Common.colors.HeaderColor
+                  ? themeVar.colors.ActiveColor
+                  : themeVar.colors.HeaderColor
               }
             />
             <div className={cx(expandHeight, grow, textContainerStyle(player))}>
               <div dangerouslySetInnerHTML={{ __html: translation }} />
               {waiting && (
                 <WaitingLoader
-                  color={themeVar.Common.colors.HeaderColor}
-                  background={themeVar.Common.colors.DisabledColor}
+                  color={themeVar.colors.HeaderColor}
+                  background={themeVar.colors.DisabledColor}
                 />
               )}
             </div>

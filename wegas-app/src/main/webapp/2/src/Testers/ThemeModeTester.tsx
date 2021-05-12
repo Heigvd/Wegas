@@ -10,15 +10,15 @@ import { css } from 'emotion';
 import { classNameOrEmpty } from '../Helper/className';
 
 const divStyle = css({
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
-  color: themeVar.Common.colors.DarkTextColor,
+  backgroundColor: themeVar.colors.BackgroundColor,
+  color: themeVar.colors.DarkTextColor,
   paddingLeft: '5px',
   paddingRight: '5px',
   paddingTop: '2px',
   paddingBottom: '2px',
   ':hover': {
-    color: themeVar.Common.colors.HoverTextColor,
-    backgroundColor: themeVar.Common.colors.HoverColor,
+    color: themeVar.colors.HoverTextColor,
+    backgroundColor: themeVar.colors.HoverColor,
     outline: 'none',
   },
   ':focus': {
@@ -39,15 +39,13 @@ function ThemeDiv({
   const currentTheme =
     themesState.themes[themesState.selectedThemes[currentContext]];
 
-  const [
-    { currentModeName, nextModeName },
-    setCurrentModeNames,
-  ] = React.useState<{
-    currentModeName?: string;
-    nextModeName?: string;
-  }>({
-    /* currentModeName: modeName, nextModeName: computedNextModeName */
-  });
+  const [{ currentModeName, nextModeName }, setCurrentModeNames] =
+    React.useState<{
+      currentModeName?: string;
+      nextModeName?: string;
+    }>({
+      /* currentModeName: modeName, nextModeName: computedNextModeName */
+    });
 
   const [finalClassName, childrenNode] = React.useMemo(() => {
     const modeClassName = modeName
@@ -98,9 +96,8 @@ function ThemeDiv({
           const newCurrentModeName = getComputedStyle(ref).getPropertyValue(
             '--current-mode-name',
           );
-          const newNextModeName = getComputedStyle(ref).getPropertyValue(
-            '--next-mode-name',
-          );
+          const newNextModeName =
+            getComputedStyle(ref).getPropertyValue('--next-mode-name');
 
           if (
             newCurrentModeName !== currentModeName ||

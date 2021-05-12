@@ -10,15 +10,15 @@ export const inputStyleCSS: ObjectInterpolation<undefined> = {
   ...inputDefaultCSS,
   resize: 'vertical',
   borderStyle: 'inset',
-  borderColor: themeVar.Common.colors.PrimaryColor,
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
+  borderColor: themeVar.colors.PrimaryColor,
+  borderRadius: themeVar.dimensions.BorderRadius,
+  backgroundColor: themeVar.colors.BackgroundColor,
   '::placeholder': {
     fontStyle: 'italic',
   },
   '&[readonly]': {
-    color: themeVar.Common.colors.DarkTextColor,
-    backgroundColor: themeVar.Common.colors.DisabledColor,
+    color: themeVar.colors.DarkTextColor,
+    backgroundColor: themeVar.colors.DisabledColor,
   },
 };
 

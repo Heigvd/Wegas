@@ -10,18 +10,18 @@ const tabStyle = css({
   margin: '0 3px',
   padding: '10px 20px',
   borderRadius:
-    themeVar.Common.dimensions.BorderRadius +
+    themeVar.dimensions.BorderRadius +
     ' ' +
-    themeVar.Common.dimensions.BorderRadius +
+    themeVar.dimensions.BorderRadius +
     ' 0 0',
-  fontSize: themeVar.ComponentTitle.dimensions.FontSize4,
+  fontSize: '4em',
 });
 
 const inactiveTabStyle = css({
-  backgroundColor: themeVar.Common.colors.DisabledColor,
+  backgroundColor: themeVar.colors.DisabledColor,
 });
 const activeTabStyle = css({
-  backgroundColor: themeVar.Common.colors.HighlightColor,
+  backgroundColor: themeVar.colors.HighlightColor,
   fontWeight: 600,
 });
 

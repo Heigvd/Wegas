@@ -13,10 +13,10 @@ import { themeVar } from '../../Theme/ThemeVars';
 import { Button } from '../../Inputs/Buttons/Button';
 
 const handleContentStyle = css({
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  borderRadius: themeVar.dimensions.BorderRadius,
   borderStyle: 'solid',
-  borderColor: themeVar.Common.colors.PrimaryColor,
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
+  borderColor: themeVar.colors.PrimaryColor,
+  backgroundColor: themeVar.colors.BackgroundColor,
 });
 
 //TODO : Find a way to hide all the handles when dragging
@@ -62,13 +62,8 @@ export function EditHandle({
   isSelected,
 }: EditorHandleProps) {
   const handleRef = React.createRef<HTMLDivElement>();
-  const {
-    onEdit,
-    onDelete,
-    handles,
-    editMode,
-    showControls,
-  } = React.useContext(pageCTX);
+  const { onEdit, onDelete, handles, editMode, showControls } =
+    React.useContext(pageCTX);
 
   const HandleContent = React.forwardRef<HTMLDivElement>((_, ref) => {
     const [{ isDragging }, drag] = useComponentDrag(componentType, path);

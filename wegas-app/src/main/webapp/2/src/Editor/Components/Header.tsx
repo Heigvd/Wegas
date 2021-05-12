@@ -102,7 +102,7 @@ function NotificationMenu({ className, style }: ClassStyleId) {
 }
 
 const headerStyle = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  backgroundColor: themeVar.colors.HeaderColor,
 });
 
 export default function Header() {

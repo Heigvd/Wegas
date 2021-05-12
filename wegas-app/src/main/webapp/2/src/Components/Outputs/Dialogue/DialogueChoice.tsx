@@ -22,7 +22,7 @@ const choiceButtonIcon = css({
   display: 'flex',
   alignContent: 'center',
   justifyContent: 'center',
-  backgroundColor: themeVar.Common.colors.ActiveColor,
+  backgroundColor: themeVar.colors.ActiveColor,
   padding: '10px',
   height: '100%',
 });

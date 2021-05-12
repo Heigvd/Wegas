@@ -33,13 +33,13 @@ const dialogEntryStyle = css({
   overflow: 'auto',
   '&>.player': {
     alignSelf: 'flex-end',
-    backgroundColor: themeVar.Common.colors.PrimaryColor,
+    backgroundColor: themeVar.colors.PrimaryColor,
   },
 });
 
 const choicePannelStyle = css({
   position: 'relative',
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  backgroundColor: themeVar.colors.HeaderColor,
   padding: '5px',
   minHeight: '4em',
   flexShrink: 0,
@@ -48,7 +48,7 @@ const choicePannelStyle = css({
 const dialogueDisplayStyle = css({
   border: 'none',
   boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.1)',
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  borderRadius: themeVar.dimensions.BorderRadius,
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -151,9 +151,8 @@ export function DialogueDisplay({
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // next input choices
 
-  const choices = dialogueStates[
-    dialogueInstance.getCurrentStateId()
-  ].getTransitions();
+  const choices =
+    dialogueStates[dialogueInstance.getCurrentStateId()].getTransitions();
 
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // render
@@ -207,8 +206,8 @@ export function DialogueDisplay({
           {/* ---------- waiting for the next answer to be revealed ------------------------ */}
           {waiting && choices.length > 0 && (
             <WaitingLoader
-              color={themeVar.Common.colors.HeaderColor}
-              background={themeVar.Common.colors.HeaderColor}
+              color={themeVar.colors.HeaderColor}
+              background={themeVar.colors.HeaderColor}
             />
           )}
         </div>

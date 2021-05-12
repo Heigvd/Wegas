@@ -23,7 +23,7 @@ const layoutStyle = css({
   flexDirection: 'column',
   minHeight: '100vh',
   padding: '50px 75px',
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
+  backgroundColor: themeVar.colors.BackgroundColor,
   button: {
     '&.iconOnly object svg': {
       cursor: 'pointer',
@@ -36,8 +36,8 @@ const layoutStyle = css({
 });
 
 export const tabsLineStyle = css({
-  borderBottom: '3px solid ' + themeVar.Common.colors.PrimaryColor,
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
+  borderBottom: '3px solid ' + themeVar.colors.PrimaryColor,
+  backgroundColor: themeVar.colors.BackgroundColor,
 });
 
 /*const trainerButtonsStyle = css({
@@ -95,9 +95,8 @@ const availableLayoutTabs = {
 export default function HostLayout() {
   const { lang } = React.useContext(languagesCTX);
 
-  const { trainerPages, peerReviews } = useStore<TrainerPagesSelector>(
-    trainerPagesSelector,
-  );
+  const { trainerPages, peerReviews } =
+    useStore<TrainerPagesSelector>(trainerPagesSelector);
   const trainerTabs = trainerPages.reduce(
     (o, i) => ({ ...o, [i.name]: <PageLoader selectedPageId={i.id} /> }),
     {},

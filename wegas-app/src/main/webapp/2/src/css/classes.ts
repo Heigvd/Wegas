@@ -187,44 +187,44 @@ export const defaultPadding = cx(
 
 // Components
 export const button = css({
-  color: themeVar.Common.colors.DarkTextColor,
+  color: themeVar.colors.DarkTextColor,
   ':hover,:focus': {
-    color: themeVar.Common.colors.HoverColor,
+    color: themeVar.colors.HoverColor,
     outline: 'none',
   },
 });
 
 // Editor
 export const localSelection = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  backgroundColor: themeVar.colors.HeaderColor,
 });
 export const globalSelection = css({
   //  borderStyle: 'solid',
   //  borderWidth: '2px',
-  //  borderColor: themeVar.Common.colors.BorderColor,
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
-  boxShadow: `0px 0px 0px 1px ${themeVar.Common.colors.PrimaryColor}`,
+  //  borderColor: themeVar.colors.BorderColor,
+  borderRadius: themeVar.dimensions.BorderRadius,
+  boxShadow: `0px 0px 0px 1px ${themeVar.colors.PrimaryColor}`,
 });
 export const searchSelection = css({
-  backgroundColor: themeVar.Common.colors.HighlightColor,
+  backgroundColor: themeVar.colors.HighlightColor,
 });
 
 // Layout base styles
 export const layoutStyle = css({
-  color: themeVar.Common.colors.DarkTextColor,
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
-  fontFamily: themeVar.Common.others.TextFont1,
+  color: themeVar.colors.DarkTextColor,
+  backgroundColor: themeVar.colors.BackgroundColor,
+  fontFamily: themeVar.others.TextFont1,
 });
 export const headerStyle = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  backgroundColor: themeVar.colors.HeaderColor,
 });
 export const contentStyle = css({
   margin: '5px',
-  // backgroundColor: themeVar.Common.colors.BackgroundColor,
+  // backgroundColor: themeVar.colors.BackgroundColor,
 });
 
 export const disabledColorStyle = css({
-  color: themeVar.Common.colors.DisabledColor,
+  color: themeVar.colors.DisabledColor,
 });
 export const halfOpacity = css({
   opacity: 0.5,
@@ -260,7 +260,7 @@ export const thinHatchedBackground = css({
 
 export const highlightedHatchedBackground = css({
   background:
-    //`repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, ${Color(themeVar.Common.colors.HoverColor).darken(0.5).toString()} 10px, ${Color(themeVar.Common.colors.HoverColor).darken(0.5).toString()} 20px);`,
+    //`repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, ${Color(themeVar.colors.HoverColor).darken(0.5).toString()} 10px, ${Color(themeVar.colors.HoverColor).darken(0.5).toString()} 20px);`,
     `repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, var(--common-colors-highlightcolor) 10px, var(--common-colors-highlightcolor) 20px);`,
   zIndex: 1000,
 });
@@ -268,7 +268,7 @@ export const highlightedHatchedBackground = css({
 export const dropZoneStyle = css({
   borderStyle: 'solid',
   borderWidth: '2px',
-  borderColor: themeVar.Common.colors.HighlightColor,
+  borderColor: themeVar.colors.HighlightColor,
 });
 
 export const unreadSignalStyle = css({

@@ -35,7 +35,7 @@ const flowChartStyle = css({
 
 const flowChartDisabledStyle = css({
   opacity: 0.5,
-  backgroundColor: themeVar.Common.colors.DisabledColor,
+  backgroundColor: themeVar.colors.DisabledColor,
 });
 
 export interface Processes<F extends FlowLine, P extends Process<F>> {
@@ -267,11 +267,12 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   }, [processes]);
 
   // Tricking the rendering to build flowline after the first render (onReady like move)
-  const [flows, setFlows] = React.useState<{
-    flowlines: React.ReactNode;
-    handles: React.ReactNode;
-    labels: React.ReactNode;
-  }>(emptyFlows);
+  const [flows, setFlows] =
+    React.useState<{
+      flowlines: React.ReactNode;
+      handles: React.ReactNode;
+      labels: React.ReactNode;
+    }>(emptyFlows);
 
   const drawFlows = React.useCallback(() => {
     try {

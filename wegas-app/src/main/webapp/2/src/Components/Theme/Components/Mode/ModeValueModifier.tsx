@@ -4,25 +4,25 @@ import { flex, flexColumn } from '../../../../css/classes';
 import { DropMenu } from '../../../DropMenu';
 import { Title } from '../../../Inputs/String/Title';
 import {
-  ModeComponents,
   ThemeValues,
   ModeColor,
   ModeDimension,
   ModeOther,
   Theme,
+  ModeValues,
 } from '../../ThemeVars';
 import { ModeColorValue } from './ModeColorValue';
 
 export interface ModeValueModifierProps {
   theme: Theme | undefined;
-  component: ModeComponents;
+  values: ModeValues;
   section: keyof ThemeValues;
   onChange: (entry: string, value: string) => void;
 }
 
 export function ModeValueModifier({
   theme,
-  component,
+  values,
   section,
   onChange,
 }: ModeValueModifierProps) {
@@ -47,7 +47,7 @@ export function ModeValueModifier({
       <Title level="2" style={{ gridColumnStart: 1, gridColumnEnd: 3 }}>
         {section}
       </Title>
-      {Object.entries(component[section as keyof typeof component] || []).map(
+      {Object.entries(values[section as keyof typeof values] || []).map(
         ([k, v]: [string, ModeColor | ModeDimension | ModeOther]) => {
           const sectionValue = v == null ? 'undefined' : v;
           return (

@@ -11,8 +11,8 @@ import { wwarn } from '../../../Helper/wegaslog';
 import { TumbleLoader } from '../../Loader';
 
 const boxStyle = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
-  color: themeVar.Common.colors.DarkTextColor,
+  backgroundColor: themeVar.colors.HeaderColor,
+  color: themeVar.colors.DarkTextColor,
   display: 'inline-block',
   width: '1ex',
   height: '1ex',

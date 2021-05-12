@@ -38,11 +38,11 @@ const modalStyle = css({
 const modalContentStyle = css({
   margin: '0 auto',
   maxWidth: '100%',
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
+  backgroundColor: themeVar.colors.BackgroundColor,
   padding: '30px',
   cursor: 'initial',
   boxShadow: '4px 4px 8px rgba(0,0,0,0.2)',
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  borderRadius: themeVar.dimensions.BorderRadius,
   '&:focus': {
     outline: 'none',
   },
@@ -65,8 +65,8 @@ const modalCloseButtonStyle = css({
 
 const secondaryButtonStyle = css({
   backgroundColor: 'transparent',
-  color: themeVar.Common.colors.PrimaryColor,
-  border: '1px solid ' + themeVar.Common.colors.PrimaryColor,
+  color: themeVar.colors.PrimaryColor,
+  border: '1px solid ' + themeVar.colors.PrimaryColor,
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//

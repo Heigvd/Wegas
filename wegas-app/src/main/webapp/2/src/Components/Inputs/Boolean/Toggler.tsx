@@ -20,23 +20,23 @@ const togglerStyle = css({
   borderRadius: '24px',
   borderStyle: 'solid',
   borderWidth: '2px',
-  color: themeVar.Common.colors.LightTextColor,
-  borderColor: themeVar.Common.colors.PrimaryColor,
-  backgroundColor: themeVar.Common.colors.ErrorColor,
+  color: themeVar.colors.LightTextColor,
+  borderColor: themeVar.colors.PrimaryColor,
+  backgroundColor: themeVar.colors.ErrorColor,
   cursor: 'pointer',
   margin: 'auto',
   flexDirection: 'row',
   ['&.disabled']: {
     opacity: '50%',
-    borderColor: themeVar.Common.colors.DisabledColor,
+    borderColor: themeVar.colors.DisabledColor,
     cursor: 'default',
   },
   ['&.readOnly']: {
-    borderColor: themeVar.Common.colors.DisabledColor,
+    borderColor: themeVar.colors.DisabledColor,
     cursor: 'default',
   },
   ['&.checked']: {
-    backgroundColor: themeVar.Common.colors.SuccessColor,
+    backgroundColor: themeVar.colors.SuccessColor,
     flexDirection: 'row-reverse',
   },
 });
@@ -45,13 +45,13 @@ const togglerHandleStyle = css({
   borderRadius: '20px',
   width: '20px',
   height: '20px',
-  backgroundColor: themeVar.Common.colors.PrimaryColor,
+  backgroundColor: themeVar.colors.PrimaryColor,
   ['&.disabled']: {
     opacity: '50%',
-    backgroundColor: themeVar.Common.colors.DisabledColor,
+    backgroundColor: themeVar.colors.DisabledColor,
   },
   ['&.readOnly']: {
-    backgroundColor: themeVar.Common.colors.DisabledColor,
+    backgroundColor: themeVar.colors.DisabledColor,
   },
 });
 

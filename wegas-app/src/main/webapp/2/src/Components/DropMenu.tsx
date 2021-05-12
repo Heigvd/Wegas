@@ -11,9 +11,19 @@ import { lastKeyboardEvents } from '../Helper/keyboardEvents';
 import { Button } from './Inputs/Buttons/Button';
 import { deepDifferent } from './Hooks/storeHookFactory';
 
+const childDropMenuButtonStyle = css({
+  backgroundColor: 'inherit',
+  color: 'inherit',
+  '&:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):not(.confirmBtn):hover':
+    {
+      backgroundColor: 'inherit',
+      color: 'inherit',
+    },
+});
+
 export type SelecteDropdMenuItem<
   T,
-  MItem extends DropMenuItem<T> = DropMenuItem<T>
+  MItem extends DropMenuItem<T> = DropMenuItem<T>,
 > = MItem & {
   path: number[];
   value: Exclude<MItem['value'], undefined>;
@@ -21,7 +31,7 @@ export type SelecteDropdMenuItem<
 
 export interface DropMenuProps<
   T,
-  MItem extends DropMenuItem<T> = DropMenuItem<T>
+  MItem extends DropMenuItem<T> = DropMenuItem<T>,
 > {
   id?: string;
   onSelect: (
@@ -65,13 +75,13 @@ const containerStyle = css({
   position: 'relative',
 });
 const subMenuContainer = css({
-  color: themeVar.Common.colors.DarkTextColor,
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
+  color: themeVar.colors.DarkTextColor,
+  backgroundColor: themeVar.colors.BackgroundColor,
   position: 'absolute',
   zIndex: 10000,
   whiteSpace: 'nowrap',
   margin: '2px',
-  boxShadow: `0px 0px 4px 1px ${themeVar.Common.colors.PrimaryColor}`,
+  boxShadow: `0px 0px 4px 1px ${themeVar.colors.PrimaryColor}`,
   '>div': {
     padding: '1px',
     borderRadius: '3px',
@@ -90,13 +100,11 @@ const subMenuItemContainer = (isSelected: boolean) =>
       userSelect: 'none',
       marginLeft: '5px',
       marginRight: '5px',
-      backgroundColor: isSelected
-        ? themeVar.Common.colors.ActiveColor
-        : undefined,
-      color: isSelected ? themeVar.Common.colors.LightTextColor : undefined,
+      backgroundColor: isSelected ? themeVar.colors.ActiveColor : undefined,
+      color: isSelected ? themeVar.colors.LightTextColor : undefined,
       ':hover': {
-        backgroundColor: themeVar.Common.colors.HoverColor,
-        color: themeVar.Common.colors.HoverTextColor,
+        backgroundColor: themeVar.colors.HoverColor,
+        color: themeVar.colors.HoverTextColor,
       },
     }),
   );
@@ -321,6 +329,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                             : undefined
                         }
                         path={newPath}
+                        buttonClassName={childDropMenuButtonStyle}
                       />
                       {trasher}
                     </div>

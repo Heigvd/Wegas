@@ -23,9 +23,9 @@ import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 const tabButton = css({
-  color: themeVar.Common.colors.LightTextColor,
+  color: themeVar.colors.LightTextColor,
   ':hover': {
-    color: themeVar.Common.colors.HoverTextColor,
+    color: themeVar.colors.HoverTextColor,
   },
   ':focus': {
     outline: 'none',

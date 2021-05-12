@@ -3,50 +3,33 @@ import * as React from 'react';
 import { ReflexElement, ReflexSplitter, ReflexContainer } from 'react-reflex';
 import {
   flex,
-  flexDistribute,
-  headerStyle,
   contentStyle,
+  justifyEnd,
+  highlightColorInsetShadow,
 } from '../../../../css/classes';
 import {
   useThemeStore,
   getThemeDispatch,
   setModeValue,
-  setBaseMode,
-  setEditedMode,
-  addNewMode,
-  deleteMode,
   setNextMode,
 } from '../../../../data/Stores/themeStore';
 import { DropMenu } from '../../../DropMenu';
-import { Button } from '../../../Inputs/Buttons/Button';
-import { ConfirmStringAdder } from '../../../Inputs/String/ConfirmStringAdder';
 import { Toolbar } from '../../../Toolbar';
-import {
-  ModeComponentNames,
-  ThemeValues,
-  ModeValues,
-  themeVar,
-  Theme,
-} from '../../ThemeVars';
+import { ThemeValues, ModeValues, Theme } from '../../ThemeVars';
 import { ModeValueModifier } from './ModeValueModifier';
 
 export function ModeEdition() {
   const { themes, editedThemeName, editedModeName } = useThemeStore(s => s);
   const dispatch = getThemeDispatch();
 
-  const [
-    editedComponent,
-    setEditedComponent,
-  ] = React.useState<ModeComponentNames>('Common');
   const [selectedSection, setSelectedSection] = React.useState<
     { [key in keyof ThemeValues]?: boolean }
-  >({ colors: true, dimensions: true, others: true });
+  >({ colors: true, dimensions: false, others: false });
 
   const currentTheme = themes[editedThemeName];
   const editedValues = currentTheme?.values || {};
   const currentModes = currentTheme?.modes || {};
   const currentMode = currentModes[editedModeName];
-  const currentComponents = currentMode?.values || {};
 
   const modeValueReducer = React.useCallback(
     (
@@ -55,19 +38,19 @@ export function ModeEdition() {
       i: number,
       a: [keyof ValueOf<ModeValues>, boolean][],
     ) => {
-      const component = currentComponents[editedComponent] || {};
+      const values = currentMode?.values || {};
       // const entries = Object.keys(component[section] || {});
 
       const content = (
         <ReflexElement key={section} /*flex={entries.length + 1}*/>
           <ModeValueModifier
             theme={currentTheme}
-            component={component}
             section={section}
+            values={values}
             onChange={(k, v) =>
               dispatch(
                 // Type are becomming too complex here. We just have to rely on dev to send good values
-                setModeValue(editedComponent, section, k as never, v as never),
+                setModeValue(section, k as never, v as never),
               )
             }
           />
@@ -84,102 +67,68 @@ export function ModeEdition() {
         return [...old, content];
       }
     },
-    [currentComponents, currentTheme, dispatch, editedComponent],
+    [currentMode, currentTheme, dispatch],
   );
 
   return (
     <Toolbar>
-      <Toolbar.Header className={cx(flex, flexDistribute, headerStyle)}>
+      <Toolbar.Header className={cx(flex, justifyEnd)}>
         <DropMenu
-          label={`Mode : ${editedModeName}`}
-          selected={editedModeName}
-          items={Object.keys(currentModes).map(k => ({
-            value: k,
-            label: (
-              <>
-                {k}
-                <Button
-                  icon={{
-                    icon: 'star',
-                    color:
-                      currentTheme.baseMode === k
-                        ? themeVar.Common.colors.SuccessColor
-                        : undefined,
-                  }}
-                  onClick={e => {
-                    e.stopPropagation();
-                    dispatch(setBaseMode(k));
-                  }}
-                />
-              </>
-            ),
-          }))}
-          onSelect={({ value }) => dispatch(setEditedMode(value))}
-          adder={
-            <ConfirmStringAdder
-              label="Add a new mode"
-              validator={value => {
-                if (!value || value === '') {
-                  return 'The mode must have a name';
-                } else if (Object.keys(currentModes).includes(value)) {
-                  return 'The mode allready exists';
-                }
-              }}
-              forceInputValue
-              onAccept={value => {
-                if (value != null) {
-                  dispatch(addNewMode(value));
-                }
-              }}
-            />
-          }
-          deleter={{
-            filter: item => item.value !== currentTheme.baseMode,
-            onDelete: item => {
-              dispatch(deleteMode(item.value));
+          icon="cog"
+          items={[
+            {
+              label: `Next mode : ${currentMode?.nextModeName}`,
+              value: 'nextMode',
+              items: Object.keys(currentModes).map(k => ({
+                value: k,
+                label: (
+                  <div
+                    onClick={e => {
+                      e.stopPropagation();
+                      dispatch(setNextMode(k));
+                    }}
+                    className={cx({
+                      [highlightColorInsetShadow]:
+                        k === currentMode?.nextModeName,
+                    })}
+                  >
+                    {k}
+                  </div>
+                ),
+              })),
             },
-          }}
-        />
-        <DropMenu
-          label={`Next mode : ${currentMode?.nextModeName}`}
-          items={Object.keys(currentModes).map(k => ({
-            value: k,
-            label: k,
-          }))}
-          onSelect={({ value }) => dispatch(setNextMode(value))}
-        />
-        <DropMenu
-          label={`Component : ${editedComponent}`}
-          selected={editedComponent as string}
-          items={Object.keys(currentComponents).map(k => ({
-            value: k,
-            label: k,
-          }))}
-          onSelect={({ value }) =>
-            setEditedComponent(value as ModeComponentNames)
-          }
-        />
-        <DropMenu
-          label={'Sections'}
-          items={Object.keys(editedValues).map((k: keyof Theme['values']) => ({
-            value: k,
-            label: (
-              <>
-                <input
-                  type="checkbox"
-                  defaultChecked={selectedSection[k]}
-                  onChange={() =>
-                    setSelectedSection(o => ({ ...o, [k]: !o[k] }))
-                  }
-                  onClick={e => e.stopPropagation()}
-                />
-                {k}
-              </>
-            ),
-          }))}
-          onSelect={({ value: k }) =>
-            setSelectedSection(o => ({ ...o, [k]: !o[k] }))
-          }
+            {
+              label: 'Show section',
+              value: 'showSection',
+              items: Object.keys(editedValues).map(
+                (k: keyof Theme['values']) => ({
+                  value: `view-${k}`,
+                  label: (
+                    <div
+                      onClick={e => {
+                        e.stopPropagation();
+                        setSelectedSection(o => ({
+                          ...o,
+                          [k]: !o[k],
+                        }));
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedSection[k]}
+                        onChange={() =>
+                          setSelectedSection(o => ({ ...o, [k]: !o[k] }))
+                        }
+                        onClick={e => e.stopPropagation()}
+                      />
+                      {k}
+                    </div>
+                  ),
+                }),
+              ),
+            },
+          ]}
+          onSelect={() => {}}
         />
       </Toolbar.Header>
       <Toolbar.Content className={contentStyle}>

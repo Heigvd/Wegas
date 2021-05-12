@@ -69,9 +69,7 @@ export default function Layout() {
 
   return (
     <div
-      className={
-        layout + ' ' + css({ fontFamily: themeVar.Common.others.TextFont2 })
-      }
+      className={layout + ' ' + css({ fontFamily: themeVar.others.TextFont2 })}
       id="WegasLayout"
     >
       <Header />
