@@ -226,7 +226,6 @@ export function useOkCancelModal(attachedToId?: string) {
   const showModal = function () {
     setShow(true);
   };
-<<<<<<< HEAD
 
   function Modal({
     onCancel,
@@ -248,31 +247,5 @@ export function useOkCancelModal(attachedToId?: string) {
       </OkCancelModal>
     ) : null;
   }
-=======
-  const Modal = React.useCallback(
-    ({
-      onCancel,
-      onOk,
-      children,
-    }: React.PropsWithChildren<OkCancelModalProps>) => {
-      return show ? (
-        <OkCancelModal
-          attachedToId={attachedToId}
-          onCancel={() => {
-            setShow(false);
-            onCancel && onCancel();
-          }}
-          onOk={() => {
-            setShow(false);
-            onOk && onOk();
-          }}
-        >
-          {children}
-        </OkCancelModal>
-      ) : null;
-    },
-    [attachedToId, show],
-  );
->>>>>>> origin
   return { showModal, OkCancelModal: Modal };
 }
