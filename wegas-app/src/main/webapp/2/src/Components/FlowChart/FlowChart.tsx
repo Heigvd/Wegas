@@ -110,7 +110,7 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
   /**
    * a callback triggered when a component has been moved
    */
-  onMove: (process: P, newPosition: XYPosition) => void;
+  onMove: (process: P, newPosition: XYPosition, e: MouseEvent) => void;
   /**
    * a callback triggered when a new process is requested
    * @example dropping a handle on the main board
@@ -493,7 +493,9 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
                 [process.id]: { ...op[process.id], position },
               }))
             }
-            onMoveEnd={position => actionsAllowed && onMove(process, position)}
+            onMoveEnd={(position, e) =>
+              actionsAllowed && onMove(process, position, e)
+            }
             onConnect={(processes, flowline) => {
               setTempFlow(undefined);
               if (actionsAllowed) {

@@ -109,6 +109,8 @@ export const ActionCreator = {
     };
   }) => createAction(ActionType.VARIABLE_CREATE, data),
   CLOSE_EDITOR: () => createAction(ActionType.CLOSE_EDITOR, {}),
+  USAVED_CHANGES: (unsaved: boolean) =>
+    createAction(ActionType.UNSAVED_CHANGES, { unsaved }),
   MANAGED_RESPONSE_ACTION: (data: {
     // Nearly empty shells
     deletedEntities: {

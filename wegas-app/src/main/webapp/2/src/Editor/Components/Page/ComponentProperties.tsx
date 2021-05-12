@@ -82,7 +82,7 @@ async function WindowedEditor({
         entity={entity}
         update={value => update && update(value)}
         actions={actions}
-        schema={schema}
+        config={schema}
       />
     </div>
   );

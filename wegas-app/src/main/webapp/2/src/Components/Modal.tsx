@@ -186,17 +186,22 @@ export function Modal({
 interface OkCancelModalProps {
   onOk?: () => void;
   onCancel?: () => void;
+  /**
+   * attachedTo - the ID of the element to insert the modal (will cover the whole element). By default, gets the last themeCTX provider
+   */
+  attachedToId?: string;
 }
 
 export function OkCancelModal({
   onOk,
   onCancel,
+  attachedToId,
   children,
 }: React.PropsWithChildren<OkCancelModalProps>) {
   const i18nValues = useInternalTranslate(modalTranslations);
 
   return (
-    <Modal>
+    <Modal attachedToId={attachedToId}>
       <div className={cx(flex, flexColumn)}>
         {children}
         <div className={cx(flex, flexRow, justifyEnd, defaultMarginTop)}>
@@ -216,11 +221,12 @@ export function OkCancelModal({
   );
 }
 
-export function useOkCancelModal() {
+export function useOkCancelModal(attachedToId?: string) {
   const [show, setShow] = React.useState(false);
   const showModal = function () {
     setShow(true);
   };
+<<<<<<< HEAD
 
   function Modal({
     onCancel,
@@ -242,5 +248,31 @@ export function useOkCancelModal() {
       </OkCancelModal>
     ) : null;
   }
+=======
+  const Modal = React.useCallback(
+    ({
+      onCancel,
+      onOk,
+      children,
+    }: React.PropsWithChildren<OkCancelModalProps>) => {
+      return show ? (
+        <OkCancelModal
+          attachedToId={attachedToId}
+          onCancel={() => {
+            setShow(false);
+            onCancel && onCancel();
+          }}
+          onOk={() => {
+            setShow(false);
+            onOk && onOk();
+          }}
+        >
+          {children}
+        </OkCancelModal>
+      ) : null;
+    },
+    [attachedToId, show],
+  );
+>>>>>>> origin
   return { showModal, OkCancelModal: Modal };
 }
