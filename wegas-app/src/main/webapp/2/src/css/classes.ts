@@ -79,6 +79,9 @@ export const shrinkHeight = css({
 export const grow = css({
   flex: '1 1 auto',
 });
+export const stretch = css({
+ alignItems: 'stretch',
+});
 export const flexColumn = css({
   flexDirection: 'column',
 });

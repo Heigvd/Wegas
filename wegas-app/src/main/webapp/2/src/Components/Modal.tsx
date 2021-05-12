@@ -23,17 +23,18 @@ import { themeVar } from './Style/ThemeVars';
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // styles
 
-const modalStyle = css({
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  overflow: 'auto',
-  minWidth: '100%',
-  height: '100%',
-  padding: '1.5em',
-  backgroundColor: 'rgba(0,0,0,0.2)',
-  zIndex: 1000,
-});
+const modalStyle = (fixed: boolean) =>
+  css({
+    position: fixed ? 'fixed' : 'absolute',
+    top: 0,
+    left: 0,
+    overflow: 'auto',
+    minWidth: '100%',
+    height: '100%',
+    padding: '1.5em',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    zIndex: 1000,
+  });
 
 const modalContentStyle = css({
   margin: '0 auto',
@@ -146,9 +147,16 @@ export function Modal({
     createPortal(
       <div
         className={
-          cx(modalStyle, flex, flexColumn, justifyCenter, contentCenter, {
-            [pointer]: onExit != null,
-          }) + classNameOrEmpty(className)
+          cx(
+            modalStyle(attachedToId == null),
+            flex,
+            flexColumn,
+            justifyCenter,
+            contentCenter,
+            {
+              [pointer]: onExit != null,
+            },
+          ) + classNameOrEmpty(className)
         }
         style={style}
         id={id}

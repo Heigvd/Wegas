@@ -13,6 +13,7 @@ import {
   CustomFlowLineComponent,
   FlowLineComponentProps,
 } from './FlowLineComponent';
+import { themeVar } from '../Style/ThemeVars';
 
 const transitionContainerStyle = css({
   display: 'inline-flex',
@@ -25,11 +26,11 @@ export const transitionBoxStyle = css({
   alignItems: 'center',
   padding: '20px 10px 20px 10px',
   boxSizing: 'border-box',
-  background: '#E7F4FF',
-  border: '1px solid #2097F7',
+  background: themeVar.Common.colors.PrimaryColor,
+  border: '1px solid transparent',
   borderRadius: '8px',
-  boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-  color: '#2097F7',
+  boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.25)',
+  color: themeVar.Common.colors.LightTextColor,
   flexGrow: 0,
   '&>*': {
     margin: '0 7px',
@@ -50,20 +51,21 @@ export const transitionBoxStyle = css({
 export const transitionBoxActionStyle = css({
   cursor: 'pointer',
   '&:hover': {
-    background: '#FFF',
-    color: '#0D71C1',
-    borderColor: '#0D71C1',
+    background: themeVar.Common.colors.BackgroundColor,
+    color: themeVar.Common.colors.ActiveColor,
+    borderColor: themeVar.Common.colors.ActiveColor,
   },
 });
 
 const selectedTransitionBoxStyle = css({
-  background: '#FFFFFF',
-  border: '4px solid #0D71C1',
+  background: themeVar.Common.colors.BackgroundColor,
+  border: '4px solid '+ themeVar.Common.colors.ActiveColor,
+  color: themeVar.Common.colors.ActiveColor,
 });
 
 const transitionMoreInfosStyle = css({
   position: 'relative',
-  backgroundColor: '#fff',
+  backgroundColor: themeVar.Common.colors.BackgroundColor,
   color: '#807F7F',
   padding: '10px',
   fontSize: '12px',
