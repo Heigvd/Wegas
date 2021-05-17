@@ -7,6 +7,8 @@ import {
   expandBoth,
   flexColumn,
   justifyEnd,
+  flexRow,
+  itemCenter,
 } from '../../../../css/classes';
 import {
   useThemeStore,
@@ -14,6 +16,7 @@ import {
   setThemeValue,
 } from '../../../../data/Stores/themeStore';
 import { DropMenu } from '../../../DropMenu';
+import { CheckBox } from '../../../Inputs/Boolean/CheckBox';
 import { Toolbar } from '../../../Toolbar';
 import { Theme } from '../../ThemeVars';
 import { ThemeValueModifier } from './ThemeValueModifier';
@@ -50,14 +53,13 @@ export function ThemeEdition() {
                           [k]: !o[k],
                         }));
                       }}
+                      className={cx(flex, flexRow, itemCenter)}
                     >
-                      <input
-                        type="checkbox"
-                        checked={selectedSection[k]}
+                      <CheckBox
+                        value={selectedSection[k]}
                         onChange={() =>
                           setSelectedSection(o => ({ ...o, [k]: !o[k] }))
                         }
-                        onClick={e => e.stopPropagation()}
                       />
                       {k}
                     </div>

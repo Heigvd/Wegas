@@ -5,7 +5,8 @@ import {
   flex,
   contentStyle,
   justifyEnd,
-  highlightColorInsetShadow,
+  flexRow,
+  itemCenter,
 } from '../../../../css/classes';
 import {
   useThemeStore,
@@ -14,6 +15,7 @@ import {
   setNextMode,
 } from '../../../../data/Stores/themeStore';
 import { DropMenu } from '../../../DropMenu';
+import { CheckBox } from '../../../Inputs/Boolean/CheckBox';
 import { Toolbar } from '../../../Toolbar';
 import { ThemeValues, ModeValues, Theme } from '../../ThemeVars';
 import { ModeValueModifier } from './ModeValueModifier';
@@ -87,11 +89,15 @@ export function ModeEdition() {
                       e.stopPropagation();
                       dispatch(setNextMode(k));
                     }}
-                    className={cx({
-                      [highlightColorInsetShadow]:
-                        k === currentMode?.nextModeName,
-                    })}
+                    className={cx(flex, flexRow, itemCenter)}
                   >
+                    <CheckBox
+                      radio
+                      value={k === currentMode?.nextModeName}
+                      onChange={() => {
+                        dispatch(setNextMode(k));
+                      }}
+                    />
                     {k}
                   </div>
                 ),
@@ -112,14 +118,13 @@ export function ModeEdition() {
                           [k]: !o[k],
                         }));
                       }}
+                      className={cx(flex, flexRow, itemCenter)}
                     >
-                      <input
-                        type="checkbox"
-                        checked={selectedSection[k]}
+                      <CheckBox
+                        value={selectedSection[k]}
                         onChange={() =>
                           setSelectedSection(o => ({ ...o, [k]: !o[k] }))
                         }
-                        onClick={e => e.stopPropagation()}
                       />
                       {k}
                     </div>

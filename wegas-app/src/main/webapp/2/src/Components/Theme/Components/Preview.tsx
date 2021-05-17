@@ -6,10 +6,10 @@ import {
   expandBoth,
   flex,
   flexColumn,
-  flexDistribute,
   flexRow,
   itemCenter,
   justifyCenter,
+  justifyEnd,
 } from '../../../css/classes';
 import { useThemeStore } from '../../../data/Stores/themeStore';
 import FileBrowser from '../../../Editor/Components/FileBrowser/FileBrowser';
@@ -27,7 +27,7 @@ import { SimpleInput } from '../../Inputs/SimpleInput';
 import { HTMLText } from '../../Outputs/HTMLText';
 import { StandardGauge } from '../../Outputs/StandardGauge';
 import { Toolbar } from '../../Toolbar';
-import { defaulSelectedThemes, SelectedThemes, themeVar } from '../ThemeVars';
+import { SelectedThemes, themeVar } from '../ThemeVars';
 
 const MIN_VALUE = 0;
 const MAX_VALUE = 10;
@@ -68,15 +68,8 @@ export default function Preview() {
     context: 'editor',
   });
 
-  const {
-    numericVar,
-    textVar,
-    booleanVar,
-    iconVar,
-    disabled,
-    readOnly,
-    context,
-  } = previewState;
+  const { numericVar, textVar, booleanVar, iconVar, disabled, readOnly } =
+    previewState;
 
   const previewClassName = useThemeStore(
     s => s.themes[s.editedThemeName].modeClasses[s.editedModeName],
@@ -84,39 +77,39 @@ export default function Preview() {
 
   return (
     <Toolbar>
-      <Toolbar.Header className={cx(flex, flexRow, flexDistribute, itemCenter)}>
+      <Toolbar.Header className={cx(flex, justifyEnd)}>
         <DropMenu
-          label="Components state"
-          items={COMPONENT_STATES.map(feature => ({
-            value: feature,
-            label: (
-              <div className={cx(flex, flexRow)}>
-                {feature}
-                <CheckBox
-                  value={previewState[feature]}
-                  onChange={() =>
-                    setPreviewState(o => ({ ...o, [feature]: !o[feature] }))
-                  }
-                />
-              </div>
-            ),
-          }))}
-          onSelect={({ value: feature }) =>
-            setPreviewState(o => ({ ...o, [feature]: !o[feature] }))
-          }
-        />
-        <DropMenu
-          label={`Context : ${context}`}
-          items={Object.keys(defaulSelectedThemes).map(v => ({
-            value: v,
-            label: v,
-          }))}
-          onSelect={({ value }) =>
-            setPreviewState(o => ({
-              ...o,
-              context: value as keyof SelectedThemes,
-            }))
-          }
+          icon="cog"
+          items={[
+            {
+              label: 'Components state',
+              value: 'componentState',
+              items: COMPONENT_STATES.map(feature => ({
+                value: feature,
+                label: (
+                  <div
+                    onClick={e => {
+                      e.stopPropagation();
+                      setPreviewState(o => ({
+                        ...o,
+                        [feature]: !o[feature],
+                      }));
+                    }}
+                    className={cx(flex, flexRow, itemCenter)}
+                  >
+                    <CheckBox
+                      value={previewState[feature]}
+                      onChange={() =>
+                        setPreviewState(o => ({ ...o, [feature]: !o[feature] }))
+                      }
+                    />
+                    {feature}
+                  </div>
+                ),
+              })),
+            },
+          ]}
+          onSelect={() => {}}
         />
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, flexColumn)}>

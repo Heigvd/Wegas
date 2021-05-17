@@ -179,7 +179,6 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                 !adder && items.length === 0
                   ? { icon: 'circle', size: 'sm' }
                   : { icon: `caret-${realDirection}` as IconName },
-                // : (`caret-${realDirection}` as IconName)) as Icon,
               )}
               onClick={ev => {
                 ev.stopPropagation();
