@@ -1,6 +1,6 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
-import { DropdownSelect, DropMenuDirection } from '../../Components/DropMenu2';
+import { DropMenu, DropMenuDirection } from '../../Components/DropMenu';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { Toolbar } from '../../Components/Toolbar';
 import { flex, flexRow, expandBoth, justifyCenter } from '../../css/classes';
@@ -75,7 +75,7 @@ export default function DropMenuTester() {
       <Toolbar.Content style={{ position: 'relative' }}>
         <div className={cx(flex, flexRow)} key={direction}>
           <div className={css({ position: 'absolute', left: 0, top: 0 })}>
-            <DropdownSelect
+            <DropMenu
               direction={direction}
               items={testItems.map(i =>
                 i === 'items'
@@ -94,12 +94,11 @@ export default function DropMenuTester() {
               selected={'1234'}
               onSelect={e => {
                 wlog(e);
-                debugger;
               }}
             />
           </div>
           <div className={css({ position: 'absolute', right: 0, top: 0 })}>
-            <DropdownSelect
+            <DropMenu
               direction={direction}
               items={testItems.map(i => ({ label: i, value: i }))}
               selected={'1234'}
@@ -108,21 +107,21 @@ export default function DropMenuTester() {
           <div
             className={css({ position: 'absolute', right: '50%', top: '50%' })}
           >
-            <DropdownSelect
+            <DropMenu
               direction={direction}
               items={testItems.map(i => ({ label: i, value: i }))}
               selected={'1234'}
             />
           </div>
           <div className={css({ position: 'absolute', left: 0, bottom: 0 })}>
-            <DropdownSelect
+            <DropMenu
               direction={direction}
               items={testItems.map(i => ({ label: i, value: i }))}
               selected={'1234'}
             />
           </div>
           <div className={css({ position: 'absolute', right: 0, bottom: 0 })}>
-            <DropdownSelect
+            <DropMenu
               direction={direction}
               items={testItems.map(i => ({ label: i, value: i }))}
               selected={'1234'}

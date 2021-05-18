@@ -21,6 +21,238 @@ const childDropMenuButtonStyle = css({
     },
 });
 
+interface ContainerValues {
+  left: number;
+  width: number;
+  top: number;
+  height: number;
+}
+
+function overflowLeft(values: ContainerValues) {
+  return values.left < 0;
+}
+function overflowRight(values: ContainerValues) {
+  return values.left + values.width > window.innerWidth;
+}
+
+function ajustHorizontally(values: ContainerValues) {
+  const newValues = values;
+
+  // Check left
+  if (overflowLeft(newValues)) {
+    // Move right
+    newValues.left = 0;
+  }
+  // Check right
+  if (overflowRight(newValues)) {
+    // Move left
+    newValues.left = window.innerWidth - newValues.width;
+  }
+  // Check left again
+  if (overflowLeft(newValues)) {
+    // Move right
+    newValues.left = 0;
+    // Element too big, shrink width
+    newValues.width = window.innerWidth;
+  }
+  return newValues;
+}
+
+function overflowTop(values: ContainerValues) {
+  return values.top < 0;
+}
+function overflowBottom(values: ContainerValues) {
+  return values.top + values.height > window.innerHeight;
+}
+
+function ajustVertically(values: ContainerValues) {
+  const newValues = values;
+
+  // Check top
+  if (overflowTop(newValues)) {
+    // Move bottom
+    newValues.top = 0;
+  }
+  // Check bottom
+  if (overflowBottom(newValues)) {
+    // Move top
+    newValues.top = window.innerHeight - newValues.height;
+  }
+  // Check top again
+  if (overflowTop(newValues)) {
+    // Move bottom
+    newValues.top = 0;
+    // Element too big, shrink height
+    newValues.height = window.innerHeight;
+  }
+  return newValues;
+}
+
+function ajustVerticalOverlap(values: ContainerValues, parent: HTMLElement) {
+  let newTopUp = parent.getBoundingClientRect().top - values.height;
+  const newTopDown =
+    parent.getBoundingClientRect().top + parent.getBoundingClientRect().height;
+  let newHeightUp = values.height;
+  let newHeightDown = values.height;
+
+  if (newTopUp < 0) {
+    newTopUp = 0;
+    newHeightUp = parent.getBoundingClientRect().top;
+  }
+  if (newTopDown + newHeightDown > window.innerHeight) {
+    newHeightDown = window.innerHeight - newTopDown;
+  }
+
+  if (newHeightUp > newHeightDown) {
+    return {
+      ...values,
+      top: newTopUp,
+      height: newHeightUp,
+    };
+  } else {
+    return {
+      ...values,
+      top: newTopDown,
+      height: newHeightDown,
+    };
+  }
+}
+
+function ajustHorizontalOverlap(values: ContainerValues, parent: HTMLElement) {
+  let newLeftUp = parent.getBoundingClientRect().left - values.width;
+  const newLeftDown =
+    parent.getBoundingClientRect().left + parent.getBoundingClientRect().width;
+  let newWidthUp = values.width;
+  let newWidthDown = values.width;
+
+  if (newLeftUp < 0) {
+    newLeftUp = 0;
+    newWidthUp = parent.getBoundingClientRect().left;
+  }
+  if (newLeftDown + newWidthDown > window.innerWidth) {
+    newWidthDown = window.innerWidth - newLeftDown;
+  }
+
+  if (newWidthUp > newWidthDown) {
+    return {
+      ...values,
+      left: newLeftUp,
+      width: newWidthUp,
+    };
+  } else {
+    return {
+      ...values,
+      left: newLeftDown,
+      width: newWidthDown,
+    };
+  }
+}
+
+interface ParentAndChildrenRectangles {
+  childrenTop: number;
+  childrenLeft: number;
+  childrenBottom: number;
+  childrenRight: number;
+  parentTop: number;
+  parentLeft: number;
+  parentBottom: number;
+  parentRight: number;
+}
+
+export type DropMenuDirection = 'left' | 'down' | 'right' | 'up';
+
+function valuesToSides(
+  values: ContainerValues,
+  parent: HTMLElement,
+): ParentAndChildrenRectangles {
+  const { top: childrenTop, left: childrenLeft } = values;
+  const childrenBottom = childrenTop + values.height;
+  const childrenRight = childrenLeft + values.width;
+
+  const { top: parentTop, left: parentLeft } = parent.getBoundingClientRect();
+  const parentBottom = parentTop + parent.getBoundingClientRect().height;
+  const parentRight = parentLeft + parent.getBoundingClientRect().width;
+
+  return {
+    childrenTop,
+    childrenLeft,
+    childrenBottom,
+    childrenRight,
+    parentTop,
+    parentLeft,
+    parentBottom,
+    parentRight,
+  };
+}
+
+function isOverlappingHorizontally(
+  values: ContainerValues,
+  parent: HTMLElement,
+) {
+  const { childrenRight, parentLeft, childrenLeft, parentRight } =
+    valuesToSides(values, parent);
+  if (childrenRight <= parentLeft || childrenLeft >= parentRight) {
+    return false;
+  }
+
+  return true;
+}
+
+function isOverlappingVertically(values: ContainerValues, parent: HTMLElement) {
+  const { childrenBottom, parentTop, childrenTop, parentBottom } =
+    valuesToSides(values, parent);
+  if (childrenBottom <= parentTop || childrenTop >= parentBottom) {
+    return false;
+  }
+
+  return true;
+}
+
+export function justifyDropMenu(
+  menu: HTMLElement | null,
+  direction: DropMenuDirection,
+) {
+  const vertical = direction === 'down' || direction === 'up';
+
+  const selector = menu?.parentElement;
+  if (menu != null && selector != null) {
+    const { width: containerWidth, height: containerHeight } =
+      menu.getBoundingClientRect();
+
+    let values: ContainerValues = {
+      left: vertical
+        ? selector.getBoundingClientRect().left
+        : direction === 'left'
+        ? selector.getBoundingClientRect().left - containerWidth
+        : selector.getBoundingClientRect().left +
+          selector.getBoundingClientRect().width,
+      width: containerWidth,
+      top: !vertical
+        ? selector.getBoundingClientRect().top
+        : direction === 'up'
+        ? selector.getBoundingClientRect().top - containerHeight
+        : selector.getBoundingClientRect().top +
+          selector.getBoundingClientRect().height,
+      height: containerHeight,
+    };
+
+    // moving menu list into the visible window
+    values = ajustHorizontally(values);
+    values = ajustVertically(values);
+
+    if (vertical && isOverlappingVertically(values, selector)) {
+      values = ajustVerticalOverlap(values, selector);
+    } else if (!vertical && isOverlappingHorizontally(values, selector)) {
+      values = ajustHorizontalOverlap(values, selector);
+    }
+
+    menu.style.setProperty('left', values.left + 'px');
+    menu.style.setProperty('width', values.width + 'px');
+    menu.style.setProperty('top', values.top + 'px');
+    menu.style.setProperty('height', values.height + 'px');
+  }
+}
+
 export type SelecteDropdMenuItem<
   T,
   MItem extends DropMenuItem<T> = DropMenuItem<T>,
@@ -34,7 +266,7 @@ export interface DropMenuProps<
   MItem extends DropMenuItem<T> = DropMenuItem<T>,
 > {
   id?: string;
-  onSelect: (
+  onSelect?: (
     item: SelecteDropdMenuItem<T, MItem>,
     keyEvent: ModifierKeysEvent,
   ) => void;
@@ -44,7 +276,7 @@ export interface DropMenuProps<
   prefixedLabel?: boolean;
   path?: number[];
   icon?: IconName;
-  direction?: 'left' | 'down' | 'right' | 'top';
+  direction?: DropMenuDirection;
   containerClassName?: string;
   buttonClassName?: string;
   listClassName?: string;
@@ -77,7 +309,10 @@ const containerStyle = css({
 const subMenuContainer = css({
   color: themeVar.colors.DarkTextColor,
   backgroundColor: themeVar.colors.BackgroundColor,
-  position: 'absolute',
+  position: 'fixed',
+  overflow: 'auto',
+  maxHeight: '500px',
+  maxWidth: '500px',
   zIndex: 10000,
   whiteSpace: 'nowrap',
   margin: '2px',
@@ -109,21 +344,20 @@ const subMenuItemContainer = (isSelected: boolean) =>
     }),
   );
 
-const DIR = {
-  right: css(subMenuContainer, { left: '100%', top: 0 }),
-  left: css(subMenuContainer, { right: '100%', top: 0 }),
-  down: css(subMenuContainer),
-  top: css(subMenuContainer, { top: '100%' }),
-};
 function stopPropagation(ev: React.MouseEvent<HTMLElement>) {
   ev.stopPropagation();
 }
+
+// function listenOnScroll(event: Event) {
+//   wlog(event);
+//   debugger;
+// }
 
 export function DropMenu<T, MItem extends DropMenuItem<T>>({
   id,
   onOpen,
   onSelect,
-  direction,
+  direction = 'down',
   label,
   prefixedLabel = true,
   path,
@@ -138,7 +372,6 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
   style,
   selected,
 }: DropMenuProps<T, MItem>) {
-  const realDirection = direction ? direction : 'down';
   const onStateChange = React.useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (changes: StateChangeOptions<any>) => {
@@ -149,27 +382,30 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
     [onOpen],
   );
 
+  // React.useEffect(() => {
+  //   window.addEventListener('scroll', listenOnScroll, true);
+  //   return window.removeEventListener('scroll', listenOnScroll);
+  // }, []);
+
   return (
     <Downshift
       onStateChange={onStateChange}
       onSelect={(i: MItem) => {
-        onSelect(
-          {
-            ...i,
-            value: i.value as Exclude<MItem['value'], undefined>,
-            path: path || [],
-          },
-          lastKeyboardEvents,
-        );
+        if (onSelect) {
+          onSelect(
+            {
+              ...i,
+              value: i.value as Exclude<MItem['value'], undefined>,
+              path: path || [],
+            },
+            lastKeyboardEvents,
+          );
+        }
       }}
       itemToString={emtpyStr}
     >
       {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
-        <div
-          id={id}
-          className={containerStyle + classNameOrEmpty(containerClassName)}
-          style={style}
-        >
+        <div id={id} className={containerClassName} style={style}>
           <div className={itemStyle} onClick={() => toggleMenu()}>
             <Button
               label={label}
@@ -178,7 +414,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                 icon,
                 !adder && items.length === 0
                   ? { icon: 'circle', size: 'sm' }
-                  : { icon: `caret-${realDirection}` as IconName },
+                  : { icon: `caret-${direction}` as IconName },
               )}
               onClick={ev => {
                 ev.stopPropagation();
@@ -191,86 +427,9 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
 
           {isOpen && (
             <div
-              className={DIR[realDirection] + classNameOrEmpty(listClassName)}
+              className={subMenuContainer + classNameOrEmpty(listClassName)}
               ref={n => {
-                if (
-                  n != null &&
-                  n.style.getPropertyValue('position') !== 'fixed'
-                ) {
-                  const {
-                    left,
-                    top,
-                    width: preWidth,
-                    height: preHeight,
-                  } = n.getBoundingClientRect();
-                  const { innerWidth, innerHeight } = window;
-                  const {
-                    width: pWidth,
-                    height: pHeight,
-                    top: pTop,
-                    left: pLeft,
-                    bottom: pBottom,
-                    right: pRight,
-                  } = n.parentElement!.getBoundingClientRect();
-
-                  const allowedWitdh =
-                    realDirection === 'down' || realDirection === 'top'
-                      ? innerWidth
-                      : realDirection === 'left'
-                      ? pLeft
-                      : innerWidth - pLeft - pWidth;
-                  const allowedHeight =
-                    realDirection === 'left' || realDirection === 'right'
-                      ? innerHeight
-                      : realDirection === 'top'
-                      ? pTop
-                      : innerHeight - pTop - pHeight;
-
-                  const width =
-                    preWidth > allowedWitdh
-                      ? allowedWitdh
-                      : preWidth < pWidth
-                      ? pWidth
-                      : preWidth;
-
-                  const height =
-                    preHeight > allowedHeight ? allowedHeight : preHeight;
-
-                  let finalTop = top;
-                  let finalLeft = left;
-
-                  if (left + width > allowedWitdh) {
-                    finalLeft -= left + width - allowedWitdh;
-                  }
-                  if (top + height > allowedHeight) {
-                    finalTop -= top + height - allowedHeight;
-                  }
-
-                  // Out of window check (right and bottom)
-                  switch (realDirection) {
-                    case 'top':
-                      n.style.setProperty('top', `${pTop}px`);
-                      n.style.setProperty('left', `${finalLeft}px`);
-                      break;
-                    case 'left':
-                      n.style.setProperty('top', `${finalTop}px`);
-                      n.style.setProperty('right', `${pRight}px`);
-                      break;
-                    case 'down':
-                      n.style.setProperty('top', `${pBottom}px`);
-                      n.style.setProperty('left', `${finalLeft}px`);
-                      break;
-                    case 'right':
-                      n.style.setProperty('top', `${finalTop}px`);
-                      n.style.setProperty('left', `${pLeft}px`);
-                      break;
-                  }
-
-                  n.style.setProperty('overflow', 'auto');
-                  n.style.setProperty('max-width', `${allowedWitdh}px`);
-                  n.style.setProperty('max-height', `${allowedHeight}px`);
-                  n.style.setProperty('position', 'fixed');
-                }
+                justifyDropMenu(n, direction);
               }}
             >
               {adder && (
@@ -312,15 +471,12 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                       <DropMenu
                         onSelect={(v, e) => {
                           closeMenu();
-                          onSelect(
-                            v as Parameters<
-                              DropMenuProps<T, MItem>['onSelect']
-                            >[0],
-                            e,
-                          );
+                          if (onSelect) {
+                            onSelect(v as SelecteDropdMenuItem<T, MItem>, e);
+                          }
                         }}
                         items={item.items}
-                        direction={realDirection === 'right' ? 'left' : 'right'}
+                        direction={direction === 'right' ? 'left' : 'right'}
                         label={item.label}
                         selected={
                           Array.isArray(selected)
