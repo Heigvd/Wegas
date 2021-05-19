@@ -49,6 +49,7 @@ export function AdderSelector({
         <div className={cx(flex, flexColumn, justifyCenter, itemCenter)}>
           {error && <MessageString type="warning" value={error} />}
           <SimpleInput
+            autoFocus
             placeholder={placeholder}
             onChange={v => setValue(String(v))}
           />

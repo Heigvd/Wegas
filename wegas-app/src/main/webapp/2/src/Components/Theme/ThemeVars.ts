@@ -57,6 +57,30 @@ export interface DefaultThemeColors {
   'Success color': ColorType;
 }
 
+// Not the best but allows to split colors into logical groups without modifying the theme's structure
+export const primaryColorsSection = {
+  'Primary color': 'Main',
+  'Primary color shade': 'Shade',
+  'Primary color tint': 'Tint',
+  'Primary color pastel': 'Pastel',
+};
+export const secondaryColorsSection = {
+  'Secondary color': 'Main',
+  'Secondary color shade': 'Shade',
+  'Secondary color tint': 'Tint',
+  'Secondary color pastel': 'Pastel',
+};
+export const backgroundColorsSection = {
+  'Background color': 'Main',
+  'Secondary background color': 'Secondary',
+  'Dark background color': 'Dark',
+  'Dark secondary background color': 'Dark secondary',
+};
+export const textColorsSection = {
+  'Text color': 'Main',
+  'Secondary text color': 'Scondary',
+};
+
 export interface DefaultThemeDimensions {
   'Border radius': React.CSSProperties['borderRadius'];
   'Border width': React.CSSProperties['borderWidth'];

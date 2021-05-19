@@ -1,11 +1,35 @@
+import { cx, css } from 'emotion';
 import * as React from 'react';
+import {
+  flex,
+  flexColumn,
+  flexRow,
+  itemCenter,
+  justifyCenter,
+} from '../../../../css/classes';
 import { MessageString } from '../../../../Editor/Components/MessageString';
-import { Button } from '../../../Inputs/Buttons/Button';
+import { IconComp } from '../../../../Editor/Components/Views/FontAwesome';
+import { inputStyleCSS } from '../../../Inputs/inputStyles';
 import { SimpleInput } from '../../../Inputs/SimpleInput';
 import { useOkCancelModal } from '../../../Modal';
 import { ThemeValues } from '../../ThemeVars';
 import { ColorPicker, rgbaToString, valueStyle } from './ColorPicker';
-import { ThemeValueModifierProps } from './ThemeValueModifier';
+import { ThemeValueModifierProps, valueEntryStyle } from './ThemeValueModifier';
+
+const newInputStyle = css({
+  cursor: 'pointer',
+  overflow: 'hidden',
+  border: '1px dashed #C5C5C5',
+  boxSizing: 'border-box',
+  boxShadow: 'inset 0px 0px 3px rgba(0, 0, 0, 0.1)',
+  borderRadius: '8px',
+});
+
+const newColorStyle = css({
+  height: '4em',
+});
+
+const newValueStyle = css({ ...inputStyleCSS, resize: 'none' });
 
 interface ThemeInputValue {
   name?: string;
@@ -64,9 +88,36 @@ export function ThemeValueInput<
     setValue({});
   }
 
+  const isColorInput = section === 'colors';
+  const label = isColorInput ? 'Add new color' : 'Add new value';
+
   return (
     <>
-      <Button icon="plus" onClick={showModal} />
+      {/* {section === 'colors' ? ( */}
+      <div className={cx(flex, flexColumn, valueEntryStyle)}>
+        <div className={cx(flex, flexRow)}>
+          <label
+            className={cx(css({ display: 'flex', alignItems: 'center' }))}
+            htmlFor={label}
+            title={label}
+          >
+            {label}
+          </label>
+        </div>
+        <div
+          className={cx(
+            flex,
+            newInputStyle,
+            justifyCenter,
+            itemCenter,
+            valueStyle,
+            isColorInput ? newColorStyle : newValueStyle,
+          )}
+          onClick={showModal}
+        >
+          <IconComp icon="plus" />
+        </div>
+      </div>
       <OkCancelModal
         onOk={() => onChange(value!.name! as K, value!.value as V)}
         onCancel={onCancel}
