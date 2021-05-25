@@ -44,11 +44,11 @@ const portraitStyle = css({
 });
 
 const portraitPlayerStyle = css({
-  backgroundColor: themeVar.Common.colors.ActiveColor,
+  backgroundColor: themeVar.colors.ActiveColor,
   borderRadius: '50%',
   fontSize: '1.3em',
   textAlign: 'center',
-  color: themeVar.Common.colors.LightTextColor,
+  color: themeVar.colors.LightTextColor,
   width: '35px',
   height: '35px',
 });
@@ -70,24 +70,24 @@ function UserPortrait({
     <div className={className} style={style} id={id}>
       {player ? (
         <div className={cx(portraitPlayerStyle)}>
-           <p className={css({ lineHeight: '34px'})} >{user.name?.charAt(0)}</p>
+          <p className={css({ lineHeight: '34px' })}>{user.name?.charAt(0)}</p>
         </div>
       ) : (
-      <svg
-        width="35"
-        height="35"
-        viewBox="0 0 50 50"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle cx="25" cy="25" r="25" fill={color} />
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M8.33331 43.6373C8.49419 36.4296 14.2332 30.6369 21.2928 30.6287H28.7002C35.7599 30.6369 41.4989 36.4296 41.6597 43.6373C37.2372 47.5941 31.3978 50 24.9965 50C18.5952 50 12.7559 47.5941 8.33331 43.6373ZM24.9965 28.7281C19.8828 28.7281 15.7373 24.4735 15.7373 19.2251C15.7373 13.9768 19.8828 9.72222 24.9965 9.72222C30.1103 9.72222 34.2558 13.9768 34.2558 19.2251C34.2497 24.4709 30.1077 28.7218 24.9965 28.7281Z"
-          fill="white"
-        />
-      </svg>
+        <svg
+          width="35"
+          height="35"
+          viewBox="0 0 50 50"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle cx="25" cy="25" r="25" fill={color} />
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M8.33331 43.6373C8.49419 36.4296 14.2332 30.6369 21.2928 30.6287H28.7002C35.7599 30.6369 41.4989 36.4296 41.6597 43.6373C37.2372 47.5941 31.3978 50 24.9965 50C18.5952 50 12.7559 47.5941 8.33331 43.6373ZM24.9965 28.7281C19.8828 28.7281 15.7373 24.4735 15.7373 19.2251C15.7373 13.9768 19.8828 9.72222 24.9965 9.72222C30.1103 9.72222 34.2558 13.9768 34.2558 19.2251C34.2497 24.4709 30.1077 28.7218 24.9965 28.7281Z"
+            fill="white"
+          />
+        </svg>
       )}
     </div>
   );
