@@ -39,7 +39,7 @@ const dialogEntryStyle = css({
 
 const choicePannelStyle = css({
   position: 'relative',
-  backgroundColor: themeVar.colors.HeaderColor,
+  backgroundColor: themeVar.colors.DisabledColor,
   padding: '5px',
   minHeight: '4em',
   flexShrink: 0,
@@ -206,8 +206,8 @@ export function DialogueDisplay({
           {/* ---------- waiting for the next answer to be revealed ------------------------ */}
           {waiting && choices.length > 0 && (
             <WaitingLoader
-              color={themeVar.colors.HeaderColor}
-              background={themeVar.colors.HeaderColor}
+              color={themeVar.colors.DisabledColor}
+              background={themeVar.colors.DisabledColor}
             />
           )}
         </div>

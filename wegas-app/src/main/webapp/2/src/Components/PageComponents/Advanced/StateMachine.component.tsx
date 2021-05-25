@@ -47,13 +47,16 @@ export default function PlayerStateMachine({
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
     >
-      {({ localDispatch }) => {
+      {({ localDispatch, localState }) => {
         return (
           <StateMachineEditor
             title={titleText}
             stateMachine={descriptor}
             stateMachineInstance={instance}
             localDispatch={localDispatch}
+            editPath={
+              localState?.type === 'VariableFSM' ? localState.path : undefined
+            }
             forceLocalDispatch
             disabled={options.disabled || options.locked}
             readOnly={options.readOnly}
