@@ -3,7 +3,6 @@ import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
 import { noOverflow, expandHeight, defaultMargin } from '../../css/classes';
 import './FormView';
-import { buttonStyle } from '../../Components/Inputs/Buttons/Button';
 import { wwarn } from '../../Helper/wegaslog';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
@@ -12,9 +11,16 @@ import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { DropMenu } from '../../Components/DropMenu';
 import { css } from 'emotion';
 import { ActionsProps } from '../../data/Reducer/globalState';
+import { IconComp } from './Views/FontAwesome';
 
 const closeButtonStyle = css({
 color: "black",
+});
+
+const toolboxButtonStyle = css({
+margin: '0 5px',
+height: '35px',
+padding: '0 6px'
 });
 
 interface EditorProps<T> extends DisabledReadonly {
@@ -129,9 +135,9 @@ export function Form<T>({
             {(toolbox.length > 0) &&
                 <DropMenu
                   items={toolbox || []}
-                  icon="cog"
+                  label={<IconComp icon='cog'/>}
                   onSelect={(i) => {val != null && i.action(val, path)}}
-                  buttonClassName = {buttonStyle}
+                  buttonClassName={toolboxButtonStyle}
                 />
             }
 
