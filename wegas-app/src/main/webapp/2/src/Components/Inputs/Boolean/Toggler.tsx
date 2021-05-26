@@ -14,14 +14,11 @@ import { themeVar } from '../../Theme/ThemeVars';
 
 const togglerStyle = css({
   display: 'flex',
-  minWidth: '50px',
+  minWidth: '45px',
   height: '24px',
   boxSizing: 'border-box',
   borderRadius: '24px',
-  borderStyle: 'solid',
-  borderWidth: '2px',
   color: themeVar.colors.LightTextColor,
-  borderColor: themeVar.colors.PrimaryColor,
   backgroundColor: themeVar.colors.ErrorColor,
   cursor: 'pointer',
   margin: 'auto',
@@ -43,9 +40,11 @@ const togglerStyle = css({
 
 const togglerHandleStyle = css({
   borderRadius: '20px',
-  width: '20px',
-  height: '20px',
-  backgroundColor: themeVar.colors.PrimaryColor,
+  width: '17px',
+  height: '17px',
+  margin: '3px',
+  backgroundColor: themeVar.colors.BackgroundColor,
+  alignSelf: 'center',
   ['&.disabled']: {
     opacity: '50%',
     backgroundColor: themeVar.colors.DisabledColor,

@@ -318,8 +318,7 @@ const subMenuContainer = css({
   margin: '2px',
   border: '1px solid ' + themeVar.colors.DisabledColor,
   '>div': {
-    padding: '1px',
-    borderRadius: '3px',
+    padding: '5px 10px',
   },
   [`& .${containerStyle}`]: {
     width: '100%',
@@ -333,13 +332,11 @@ const subMenuItemContainer = (isSelected: boolean) =>
     css({
       cursor: 'pointer',
       userSelect: 'none',
-      marginLeft: '5px',
-      marginRight: '5px',
       backgroundColor: isSelected ? themeVar.colors.ActiveColor : undefined,
       color: isSelected ? themeVar.colors.LightTextColor : undefined,
       ':hover': {
-        backgroundColor: themeVar.colors.HoverColor,
-        color: themeVar.colors.HoverTextColor,
+        backgroundColor: themeVar.colors.ActiveColor,
+        color: themeVar.colors.LightTextColor,
       },
     }),
   );
