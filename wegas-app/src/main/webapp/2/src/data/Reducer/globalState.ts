@@ -76,15 +76,18 @@ export function buildGlobalServerMethods(
     }, '');
 }
 
+export interface ActionsProps<T> {
+  action: (entity: T, path?: (string | number)[]) => void;
+  label: React.ReactNode;
+  confirm?: boolean;
+  sorting: 'button' | 'toolbox' | 'close';
+}
+
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
   save?: (entity: T) => void;
   more?: {
-    [id: string]: {
-      label: React.ReactNode;
-      action: actionFn<T>;
-      confirm?: boolean;
-    };
+    [id: string]: ActionsProps<T>;
   };
 }
 
@@ -467,6 +470,7 @@ export function editVariable(
             more: {
               duplicate: {
                 label: 'Duplicate',
+                sorting: 'toolbox',
                 action: (entity: IVariableDescriptor) => {
                   dispatch(
                     Actions.VariableDescriptorActions.duplicateDescriptor(
@@ -477,6 +481,7 @@ export function editVariable(
               },
               delete: {
                 label: 'Delete',
+                sorting: 'button',
                 action: (entity: IVariableDescriptor, path?: string[]) => {
                   dispatch(
                     Actions.VariableDescriptorActions.deleteDescriptor(
@@ -489,6 +494,7 @@ export function editVariable(
               },
               findUsage: {
                 label: 'Find usage',
+                sorting: 'toolbox',
                 action: (entity: IVariableDescriptor) => {
                   if (entityIsPersisted(entity)) {
                     dispatch(Actions.EditorActions.searchUsage(entity));
@@ -541,24 +547,6 @@ export function editStateMachine(
   config?: Schema<AvailableViews>,
 ): ThunkResult {
   return function (dispatch) {
-    const deleteAction = {
-      label: 'Delete',
-      confirm: true,
-      action: (entity: IFSMDescriptor, path?: string[]) => {
-        if (
-          path != null &&
-          Number(path.length) === 2 &&
-          Number(path.length) !== entity.defaultInstance.currentStateId
-        ) {
-          deleteState(entity, Number(path[1]));
-        } else {
-          dispatch(
-            Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
-          );
-        }
-      },
-    };
-
     dispatch(
       ActionCreator.FSM_EDIT({
         entity,
@@ -566,21 +554,27 @@ export function editStateMachine(
         path,
         actions: {
           more: {
-            delete: deleteAction,
-            // {
-            //   label: 'Delete',
-            //   confirm: true,
-            //   action: (entity: IFSMDescriptor, path?: string[]) => {
-            //     dispatch(
-            //       Actions.VariableDescriptorActions.deleteDescriptor(
-            //         entity,
-            //         path,
-            //       ),
-            //     );
-            //   },
-            // },
+            delete: {
+                label: 'Delete',
+                sorting: 'button',
+                confirm: true,
+                action: (entity: IFSMDescriptor, path?: string[]) => {
+                  if (
+                    path != null &&
+                    Number(path.length) === 2 &&
+                    Number(path.length) !== entity.defaultInstance.currentStateId
+                  ) {
+                    deleteState(entity, Number(path[1]));
+                  } else {
+                    dispatch(
+                      Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
+                    );
+                  }
+                },
+            },
             findUsage: {
               label: 'Find usage',
+              sorting: 'toolbox',
               action: (entity: IFSMDescriptor) => {
                 if (entityIsPersisted(entity)) {
                   dispatch(Actions.EditorActions.searchUsage(entity));

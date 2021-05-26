@@ -17,6 +17,7 @@ import {
   closeEditor,
   setUnsavedChanges,
   EditingState,
+  ActionsProps,
 } from '../../../data/Reducer/globalState';
 import { StoreDispatch } from '../../../data/Stores/store';
 import { createStoreConnector } from '../../../data/connectStore';
@@ -119,17 +120,18 @@ function EmbeddedForm({
   );
   const entity = React.useMemo(() => getEntity(editing), [editing]);
 
-  const actions = [
+  const actions: ActionsProps<IMergeable>[] = [
     ...Object.values(
       editing && 'actions' in editing && editing.actions.more
         ? editing.actions.more
         : {},
     ),
-    { label: 'Close', action: () => localDispatch(closeEditor()) },
+    { label: 'Close', sorting:'close', action: () => localDispatch(closeEditor()) },
   ];
   if (onInstanceEditorAction) {
     actions.push({
       label: 'Instance',
+      sorting: 'toolbox',
       action: onInstanceEditorAction,
     });
   }
@@ -187,11 +189,12 @@ export function ComponentWithForm({
         ? localState.editing.actions.more
         : {},
     ),
-    { label: 'Close', action: () => localDispatch(closeEditor()) },
+    { label: 'Close', sorting: 'close', action: () => localDispatch(closeEditor()) },
   ];
   if (entityEditor) {
     actions.push({
       label: 'Instance',
+      sorting: 'toolbox',
       action: () => setInstanceView(show => !show),
     });
   }

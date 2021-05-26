@@ -33,6 +33,7 @@ import {
   defaultAbsoluteLayoutPropsKeys,
 } from '../../../Components/Layouts/Absolute';
 import { pick, omit } from 'lodash-es';
+import { ActionsProps } from '../../../data/Reducer/globalState';
 
 /**
  * wegasComponentCommonSchema - defines the minimum schema for every WegasComponent
@@ -48,11 +49,7 @@ interface EditorProps<T = WegasComponentForm> {
   entity: T;
   schema: Schema<BaseView>;
   update?: (variable: T) => void;
-  actions?: {
-    label: React.ReactNode;
-    action: (entity: T, path?: (string | number)[]) => void;
-    confirm?: boolean;
-  }[];
+  actions?: ActionsProps<T>[];
   path?: (string | number)[];
   error?: {
     message: string;
@@ -294,10 +291,12 @@ export default function ConnectedComponentProperties() {
           label: 'Delete',
           action: () => onDelete(editedPath),
           confirm: true,
+          sorting: 'button',
         },
         {
           label: 'Deselect',
           action: () => onEdit(undefined),
+          sorting: 'toolbox',
         },
       ]}
     />

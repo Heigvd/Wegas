@@ -3,35 +3,24 @@ import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
 import { noOverflow, expandHeight, defaultMargin } from '../../css/classes';
 import './FormView';
-import { Button, ButtonProps } from '../../Components/Inputs/Buttons/Button';
+import { buttonStyle } from '../../Components/Inputs/Buttons/Button';
 import { wwarn } from '../../Helper/wegaslog';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { isActionAllowed } from '../../Components/PageComponents/tools/options';
+import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
+import { DropMenu } from '../../Components/DropMenu';
+import { css } from 'emotion';
+import { ActionsProps } from '../../data/Reducer/globalState';
 
-function IconAction(label:string|undefined){
-  switch (label) {
-    case 'Duplicate':
-      return "copy";
-    case 'Delete':
-      return "trash";
-    case 'Find usage':
-      return 'user-secret';
-    case 'Close':
-      return 'times';
-    case 'Instance':
-      return 'columns';
-    default:
-      return 'poo';
-}}
+const closeButtonStyle = css({
+color: "black",
+});
+
 interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
   update?: (variable: T) => void;
-  actions: {
-    action: (entity: T, path?: (string | number)[]) => void;
-    label: React.ReactNode;
-    confirm?: boolean;
-  }[];
+  actions: ActionsProps<T>[];
   path?: (string | number)[];
   config?: Schema;
   onChange?: (newEntity: T) => void;
@@ -52,6 +41,7 @@ export function Form<T>({
   const oldReceivedEntity = React.useRef(entity);
   const form = React.useRef<JSONForm>(null);
   const [val, setVal] = React.useState(entity);
+  const toolbox : ActionsProps<T>[] = [];
 
   if (
     deepDifferent(entity, oldReceivedEntity.current) &&
@@ -61,17 +51,20 @@ export function Form<T>({
     setVal(entity);
   }
 
+
+
   return (
     <Toolbar>
-      <Toolbar.Header>
+      <Toolbar.Header className={defaultMargin}>
         {isActionAllowed({
           disabled,
           readOnly,
         }) && (
           <>
             {update && (
-              <Button
-                label="Save"
+              <IconButton
+                icon="save"
+                chipStyle
                 disabled={!deepDifferent(val, entity)}
                 onClick={() => {
                   if (form.current != null) {
@@ -84,11 +77,11 @@ export function Form<T>({
                   }
                 }}
                 className={expandHeight}
-                disableBorders={{ right: true }}
               />
             )}
             <ConfirmButton
-              label="Reset"
+              icon="undo"
+              chipStyle
               onAction={accept => {
                 accept && setVal(entity);
               }}
@@ -99,32 +92,51 @@ export function Form<T>({
               buttonClassName={expandHeight}
             />
             {actions.map((a, i) => {
-              const btnProps: ButtonProps = {
-                label: a.label,
-                tabIndex: 1,
-                disableBorders: {
-                  left: true,
-                  right: i !== actions.length - 1,
-                },
-              };
-              return a.confirm ? (
-                <ConfirmButton
-                  {...btnProps}
-                  key={i}
-                  onAction={succes =>
-                    succes && val != null && a.action(val, path)
-                  }
-                  buttonClassName={expandHeight}
-                />
-              ) : (
-                <Button
-                  {...btnProps}
-                  key={i}
-                  onClick={() => val != null && a.action(val, path)}
-                  className={expandHeight}
-                />
-              );
+              switch (a.sorting){
+                  case 'toolbox':
+                    toolbox.push(a);
+                    break;
+                  case 'button':
+                    return a.confirm ? (
+                      <ConfirmButton
+                        key={i}
+                        icon="trash"
+                        chipStyle
+                        onAction={succes =>
+                          succes && val != null && a.action(val, path)
+                        }
+                        buttonClassName={expandHeight}
+                      />) : (
+                        <IconButton
+                          icon= "trash"
+                          chipStyle
+                          key={i}
+                          onClick={() => val != null && a.action(val, path)}
+                          className={expandHeight}
+                        />
+                      )
+                  case 'close':
+                    <IconButton
+                      icon= 'times'
+                      key={i}
+                      onClick={() => val != null && a.action(val, path)}
+                      className={closeButtonStyle}
+                    />
+                    break;
+                  default:
+                  toolbox.push(a);
+                  break;
+              }
             })}
+            {(toolbox.length > 0) &&
+                <DropMenu
+                  items={toolbox || []}
+                  icon="cog"
+                  onSelect={(i) => {val != null && i.action(val, path)}}
+                  buttonClassName = {buttonStyle}
+                />
+            }
+
           </>
         )}
       </Toolbar.Header>
@@ -144,6 +156,7 @@ export function Form<T>({
     </Toolbar>
   );
 }
+
 
 /*
 

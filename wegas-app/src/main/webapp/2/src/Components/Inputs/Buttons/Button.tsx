@@ -109,10 +109,6 @@ export const buttonStyle = css({
   },
 });
 
-export const iconButtonStyle = css({
-
-});
-
 export const outlineButtonStyle = css({
 border: '1px solid ' + themeVar.Common.colors.DisabledColor,
 borderRadius: '50%',

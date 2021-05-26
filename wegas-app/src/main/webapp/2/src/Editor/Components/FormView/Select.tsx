@@ -38,21 +38,20 @@ export interface IAsyncSelectProps extends WidgetProps.BaseProps {
   } & CommonView &
     LabeledView;
 }
-const selectStyle = css({
+export const selectStyle = css({
   ...inputStyleCSS,
   padding: '2px 30px 2px 4px',
-  textAlign: 'center',
   alignItems: 'center',
 });
 
-const selectArrowStyle = css({
+export const selectArrowStyle = css({
   select: {
     appearance: "none",
     background: "transparent",
     backgroundImage: "linear-gradient(45deg, transparent 50%, " + themeVar.Common.colors.PrimaryColor +" 50%), linear-gradient(135deg, " + themeVar.Common.colors.PrimaryColor +" 50%, transparent 50%)",
-    backgroundSize:"8px 8px, 8px 8px",
+    backgroundSize:"6px 6px, 6px 6px",
     backgroundRepeat: "no-repeat",
-    backgroundPosition: "calc(100% - 15px) calc(1em - 5px), calc(100% - 7px) calc(1em - 5px)",
+    backgroundPosition: "calc(100% - 14px) calc(1em - 5px), calc(100% - 8px) calc(1em - 5px)",
   }
 });
 const defaultTitle: Choice = {

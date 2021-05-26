@@ -133,6 +133,7 @@ export default function LanguageEditor() {
                         actions={[
                           {
                             label: 'Save',
+                            sorting: 'button',
                             action: function (e: IGameModelLanguage) {
                               LanguagesAPI.updateLanguage(e).then(
                                 gameModelLanguage => {

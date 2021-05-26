@@ -12,6 +12,7 @@ import { AvailableViews } from './FormView';
 import { cx } from 'emotion';
 import { flex, grow, flexColumn } from '../../css/classes';
 import {
+  ActionsProps,
   ComponentEdition,
   Edition,
   setUnsavedChanges,
@@ -24,11 +25,7 @@ import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
 export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
   update?: (variable: T) => void;
-  actions?: {
-    label: React.ReactNode;
-    action: (entity: T, path?: (string | number)[]) => void;
-    confirm?: boolean;
-  }[];
+  actions?: ActionsProps<T>[];
   path?: (string | number)[];
   getConfig(entity: T): Promise<Schema<AvailableViews>>;
   error?: {
