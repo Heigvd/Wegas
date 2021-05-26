@@ -2,32 +2,32 @@ import * as React from 'react';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
 import { css } from 'emotion';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 
 export const iconButtonStyle = css({
   display: 'flex',
   alignItems: 'center',
-  color: themeVar.Common.colors.PrimaryColor,
+  color: themeVar.colors.PrimaryColor,
   backgroundColor: 'transparent',
   ['&.dark']: {
-    backgroundColor: themeVar.Common.colors.LightTextColor,
-    color: themeVar.Common.colors.PrimaryColor,
+    backgroundColor: themeVar.colors.LightTextColor,
+    color: themeVar.colors.PrimaryColor,
   },
   ['&.chip']: {
     margin: '0 3px',
     height: '35px',
     width: '35px',
     justifyContent: 'center',
-    backgroundColor: themeVar.Common.colors.PrimaryColor,
-    color: themeVar.Common.colors.LightTextColor,
+    backgroundColor: themeVar.colors.PrimaryColor,
+    color: themeVar.colors.LightTextColor,
     borderRadius: '50%',
     ['&.disabled']: {
-      backgroundColor: themeVar.Common.colors.DisabledColor,
-      color: themeVar.Common.colors.LightTextColor,
+      backgroundColor: themeVar.colors.DisabledColor,
+      color: themeVar.colors.LightTextColor,
     },
     ['&:not(.disabled):not(.readOnly):hover']: {
-      backgroundColor: themeVar.Common.colors.ActiveColor,
-      color: themeVar.Common.colors.LightTextColor,
+      backgroundColor: themeVar.colors.ActiveColor,
+      color: themeVar.colors.LightTextColor,
     },
     ['&.shadow']: {
       boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.15)',
@@ -39,10 +39,10 @@ export const iconButtonStyle = css({
   paddingTop: '5px',
   paddingBottom: '5px',
   cursor: 'pointer',
-  fontFamily: themeVar.Common.others.TextFont2,
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  fontFamily: themeVar.others.TextFont2,
+  borderRadius: themeVar.dimensions.BorderRadius,
   ['&:not(.disabled):not(.readOnly):hover']: {
-    color: themeVar.Common.colors.ActiveColor,
+    color: themeVar.colors.ActiveColor,
   },
   ['&:focus']: {
     outline: 'none',
@@ -52,24 +52,24 @@ export const iconButtonStyle = css({
   },
   ['&.disabled']: {
     cursor: 'initial',
-    color: themeVar.Common.colors.DisabledColor,
+    color: themeVar.colors.DisabledColor,
   },
   ['&.noClick']: {
     cursor: 'inherit',
   },
   ['&.success']: {
     ['&.iconOnly']: {
-      color: themeVar.Common.colors.SuccessColor,
+      color: themeVar.colors.SuccessColor,
     },
   },
   ['&.warning']: {
     ['&.iconOnly']: {
-      color: themeVar.Common.colors.WarningColor,
+      color: themeVar.colors.WarningColor,
     },
   },
   ['&.error']: {
     ['&.iconOnly']: {
-      color: themeVar.Common.colors.ErrorColor,
+      color: themeVar.colors.ErrorColor,
     },
   },
 });

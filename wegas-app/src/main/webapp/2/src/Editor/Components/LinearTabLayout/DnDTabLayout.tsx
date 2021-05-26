@@ -19,10 +19,9 @@ import {
   hatchedBackground,
   childrenHeaderStyle,
 } from '../../../css/classes';
-import { themeVar } from '../../../Components/Style/ThemeVars';
 import { childrenPlusTabStyle, plusTabStyle } from '../../../Components/Tabs';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
-
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 
 const dropZoneFocus = hatchedBackground;
 
@@ -264,7 +263,7 @@ export function DnDTabLayout({
   };
 
   return (
-    <Toolbar vertical={vertical} className={cx(relative, general, css({backgroundColor: themeVar.Common.colors.BackgroundColor}))}>
+    <Toolbar vertical={vertical} className={cx(relative, general, css({backgroundColor: themeVar.colors.BackgroundColor}))}>
       <Toolbar.Header className={cx(header, {
         [childrenHeaderStyle]: areChildren !== undefined && areChildren,
         [headerStyle]: !areChildren

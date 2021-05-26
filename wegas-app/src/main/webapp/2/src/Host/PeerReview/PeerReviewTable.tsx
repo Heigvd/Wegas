@@ -20,7 +20,7 @@ const PRTableStyle = css({
   fontSize: '14px',
   'td, th': trainerCellStyleI,
   'thead th, thead td': {
-    backgroundColor: themeVar.Common.colors.HighlightColor,
+    backgroundColor: themeVar.colors.HighlightColor,
     fontSize: '16px',
   },
 });

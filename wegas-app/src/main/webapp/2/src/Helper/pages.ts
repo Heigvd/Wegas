@@ -114,7 +114,7 @@ export function pageItemsToTreeItem(
 export function indexToTree(index: PageIndex): Item<PageIndexItem>[] {
   return pageItemsToTreeItem(index.root.items, item =>
     isPageItem(item) && item.id === index.defaultPageId
-      ? css({ color: themeVar.Common.colors.SuccessColor })
+      ? css({ color: themeVar.colors.SuccessColor })
       : undefined,
   );
 }

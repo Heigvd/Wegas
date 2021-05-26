@@ -35,7 +35,7 @@ const loaderStyle = css({
 const editStyle = css({
   borderStyle: 'solid',
   borderWidth: '5px',
-  borderColor: themeVar.Common.colors.PrimaryColor,
+  borderColor: themeVar.colors.PrimaryColor,
   overflow: 'auto',
 });
 
@@ -68,9 +68,8 @@ export function PageLoader({
     [selectedPageId],
   );
   const selectedPage = useStore(selectedPageSelector, deepDifferent);
-  const { currentContext, currentMode = themeMode } = React.useContext(
-    themeCTX,
-  );
+  const { currentContext, currentMode = themeMode } =
+    React.useContext(themeCTX);
 
   const [waiting, setWaiting] = React.useState(false);
 

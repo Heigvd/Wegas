@@ -37,12 +37,13 @@ import {
 import { addPopup, popupDispatch } from '../../Components/PopupManager';
 import { internalTranslate } from '../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
+import { useOkCancelModal } from '../../Components/Modal';
 // import { testPRData } from './PRinterfaceTests';
 
 const prStateStyle = css({
   borderRadius: '10px',
-  backgroundColor: themeVar.Common.colors.SecondaryBackgroundColor,
-  color: themeVar.Common.colors.DarkTextColor,
+  backgroundColor: themeVar.colors.SecondaryBackgroundColor,
+  color: themeVar.colors.DarkTextColor,
   boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.2)',
   padding: '10px',
   minWidth: '200px',
@@ -51,8 +52,8 @@ const prStateStyle = css({
 });
 
 const prActiveStateStyle = css({
-  backgroundColor: themeVar.Common.colors.PrimaryColor,
-  color: themeVar.Common.colors.LightTextColor,
+  backgroundColor: themeVar.colors.PrimaryColor,
+  color: themeVar.colors.LightTextColor,
 });
 
 const stateBarStyle = css({
@@ -84,7 +85,7 @@ export interface DataReviewItem {
 export type DataItem = DataOverviewItem | DataReviewItem;
 
 export interface PRTableData<
-  DataItem extends DataOverviewItem | DataReviewItem
+  DataItem extends DataOverviewItem | DataReviewItem,
 > {
   structures: TableStructure[];
   data: {
@@ -232,13 +233,16 @@ function globalPRStatus(
 }
 
 export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
-  const [layoutState, setLayoutState] = React.useState<LayoutState>(
-    defaultLayoutState,
-  );
+  const [layoutState, setLayoutState] =
+    React.useState<LayoutState>(defaultLayoutState);
 
   const { lang } = React.useContext(languagesCTX);
   const [data, setData] = React.useState<IData>();
+  const [nextStep, setNextStep] = React.useState<PeerReviewStateSelector>(
+    'Dispatch',
+  );
   const spr = useStore(() => instantiate(peerReview));
+  const { showModal, OkCancelModal } = useOkCancelModal();
 
   const i18nValues = internalTranslate(peerReviewTranslations, lang);
   const getData = React.useCallback(() => {
@@ -308,6 +312,14 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
       mounted = false;
     };
   }, [peerReview.name]);
+
+  const askStatusChange = React.useCallback(
+    (prNewStatus: PeerReviewStateSelector) => {
+      setNextStep(prNewStatus);
+      showModal();
+    },
+    [showModal],
+  );
 
   const changeStatus = React.useCallback(
     (prNewStatus: PeerReviewStateSelector) => {
@@ -390,7 +402,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
                   <Button
                     icon="arrow-right"
                     disabled={status !== 'NOT_STARTED'}
-                    onClick={() => changeStatus('Dispatch')}
+                    onClick={() => askStatusChange('Dispatch')}
                   />
                   <div
                     className={cx(prStateStyle, {
@@ -406,7 +418,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
                   <Button
                     icon="arrow-right"
                     disabled={status !== 'REVIEWING'}
-                    onClick={() => changeStatus('Notify')}
+                    onClick={() => askStatusChange('Notify')}
                   />
                   <div
                     className={cx(prStateStyle, {
@@ -424,7 +436,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
                   <Button
                     icon="arrow-right"
                     disabled={status !== 'COMMENTING'}
-                    onClick={() => changeStatus('Close')}
+                    onClick={() => askStatusChange('Close')}
                   />
                   <div
                     className={cx(prStateStyle, {
@@ -486,6 +498,14 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
           attachedToRef={layoutState.button}
         />
       )}
+      <OkCancelModal
+        onOk={() => {
+          changeStatus(nextStep);
+        }}
+      >
+        <p>{i18nValues.orchestrator.goNextConfirmation.info}</p>
+        <p>{i18nValues.orchestrator.goNextConfirmation.question}</p>
+      </OkCancelModal>
     </div>
   );
 }

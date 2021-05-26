@@ -120,7 +120,7 @@ export default function Header() {
             <span className={componentMarginLeft}>{user.name}</span>
           </div>
           <Title className={css({margin: 0})}>{gameModel.name}</Title>
-          <div>
+          <div className={flex}>
             <LangToggler />
             <FeatureToggler
               className={cx(componentMarginLeft, componentMarginRight)}

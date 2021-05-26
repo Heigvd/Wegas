@@ -10,7 +10,7 @@ import { classNameOrEmpty } from '../../../Helper/className';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { inputStyleCSS } from '../../../Components/Inputs/SimpleInput';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 
 export interface Choice {
   value?: {};
@@ -48,7 +48,7 @@ export const selectArrowStyle = css({
   select: {
     appearance: "none",
     background: "transparent",
-    backgroundImage: "linear-gradient(45deg, transparent 50%, " + themeVar.Common.colors.PrimaryColor +" 50%), linear-gradient(135deg, " + themeVar.Common.colors.PrimaryColor +" 50%, transparent 50%)",
+    backgroundImage: "linear-gradient(45deg, transparent 50%, " + themeVar.colors.PrimaryColor +" 50%), linear-gradient(135deg, " + themeVar.colors.PrimaryColor +" 50%, transparent 50%)",
     backgroundSize:"6px 6px, 6px 6px",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "calc(100% - 14px) calc(1em - 5px), calc(100% - 8px) calc(1em - 5px)",

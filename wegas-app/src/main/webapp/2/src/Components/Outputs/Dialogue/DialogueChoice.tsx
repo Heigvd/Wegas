@@ -1,6 +1,6 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
-import { flexRow } from '../../../css/classes';
+import { expandWidth, flexRow, stretch } from '../../../css/classes';
 import { useTranslate } from '../../../Editor/Components/FormView/translatable';
 import { Button } from '../../Inputs/Buttons/Button';
 import { themeVar } from '../../Theme/ThemeVars';
@@ -8,7 +8,6 @@ import { themeVar } from '../../Theme/ThemeVars';
 const choiceButtonStyle = css({
   backgroundColor: 'white',
   color: 'black',
-  width: 'fit-content',
   padding: 0,
   overflow: 'hidden',
   margin: '5px',
@@ -16,15 +15,16 @@ const choiceButtonStyle = css({
 
 const choiceButtonText = css({
   padding: '5px',
+  textAlign: 'left',
+  flex: '1 1 auto',
 });
 
 const choiceButtonIcon = css({
   display: 'flex',
   alignContent: 'center',
   justifyContent: 'center',
-  backgroundColor: themeVar.Common.colors.ActiveColor,
+  backgroundColor: themeVar.colors.ActiveColor,
   padding: '10px',
-  height: '100%',
 });
 
 interface DialogueChoiceProps extends DisabledReadonly {
@@ -42,7 +42,7 @@ export function DialogueChoice({
   return (
     <Button
       onClick={onClick}
-      className={cx(flexRow, choiceButtonStyle)}
+      className={cx(flexRow, expandWidth, choiceButtonStyle, stretch)}
       disabled={disabled}
       readOnly={readOnly}
     >

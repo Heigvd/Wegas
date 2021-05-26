@@ -71,7 +71,7 @@ const themeActionCreator = {
 };
 
 type ThemeActions<
-  A extends keyof typeof themeActionCreator = keyof typeof themeActionCreator
+  A extends keyof typeof themeActionCreator = keyof typeof themeActionCreator,
 > = ReturnType<typeof themeActionCreator[A]>;
 
 const themeStateReducer: Reducer<Readonly<ThemesState>, ThemeActions> = u(
@@ -140,10 +140,8 @@ export const themeStore = createStore(
   ),
 );
 
-export const {
-  useStore: useThemeStore,
-  getDispatch: getThemeDispatch,
-} = createStoreConnector(themeStore);
+export const { useStore: useThemeStore, getDispatch: getThemeDispatch } =
+  createStoreConnector(themeStore);
 
 export type ThemeThunkResult<R = void> = ThunkAction<
   R,
@@ -156,6 +154,28 @@ export function getAllThemes(): ThemeThunkResult {
   return function (dispatch) {
     return LibraryAPI.getAllLibraries('Theme')
       .then((libs: ILibraries) => {
+        try {
+          Object.entries(libs).reduce((o, l) => {
+            const theme: Theme = JSON.parse(l[1].content);
+            // Updating css classes in browser
+            theme.modeClasses = Object.entries(theme.modes).reduce(
+              (o, [k, v]) => {
+                try {
+                  modeClass(theme.values, v);
+                } catch (e) {
+                  debugger;
+                }
+
+                return { ...o, [k]: modeClass(theme.values, v) };
+              },
+              {},
+            );
+            return { ...o, [l[0]]: theme };
+          }, {});
+        } catch (e) {
+          debugger;
+        }
+
         return dispatch(
           themeActionCreator.GET_ALL_THEMES({
             default: defaultTheme,
@@ -358,7 +378,7 @@ function saveLib(
 export function setThemeValue<
   T extends keyof ThemeValues,
   K extends keyof ThemeValues[T],
-  V extends ThemeValues[T][K]
+  V extends ThemeValues[T][K],
 >(themeValueName: T, valueKey: K, value: V | null): ThemeThunkResult {
   return function (dispatch, getState) {
     const state = getState();
@@ -466,17 +486,15 @@ export function deleteMode(modeName: string): ThemeThunkResult {
 }
 
 export function setModeValue<
-  C extends keyof ModeValues,
-  T extends keyof ModeValues[C],
-  K extends keyof ModeValues[C][T],
-  V extends ModeValues[C][T][K]
->(componentName: C, modeValueName: T, valueKey: K, value: V): ThemeThunkResult {
+  T extends keyof ModeValues,
+  K extends keyof ModeValues[T],
+  V extends ModeValues[T][K],
+>(modeValueName: T, valueKey: K, value: V): ThemeThunkResult {
   return function (dispatch, getState) {
     const state = getState();
     const newTheme = cloneDeep(state.themes[state.editedThemeName]);
-    newTheme.modes[state.editedModeName].values[componentName][modeValueName][
-      valueKey
-    ] = value;
+    newTheme.modes[state.editedModeName].values[modeValueName][valueKey] =
+      value;
 
     newTheme.modeClasses[state.editedModeName] = modeClass(
       newTheme.values,

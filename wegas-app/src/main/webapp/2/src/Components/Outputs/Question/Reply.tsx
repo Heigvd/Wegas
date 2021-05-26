@@ -14,9 +14,9 @@ import {
 
 const repliesContainer = css({
   marginTop: '5px',
-  borderTop: '1px solid ' + themeVar.Common.colors.DisabledColor,
+  borderTop: '1px solid ' + themeVar.colors.DisabledColor,
   fontWeight: 'bold',
-  fontSize: themeVar.ComponentTitle.others.FontFamily5,
+  fontSize: themeVar.others.TextFont2,
 });
 
 interface ReplyDisplayProps {

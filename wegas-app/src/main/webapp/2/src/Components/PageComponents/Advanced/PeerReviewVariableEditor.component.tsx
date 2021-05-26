@@ -54,8 +54,8 @@ import u from 'immer';
 import { useLiveUpdate } from '../../../API/websocket';
 
 const submissionStyle = css({
-  border: '1px solid ' + themeVar.Common.colors.DisabledColor,
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  border: '1px solid ' + themeVar.colors.DisabledColor,
+  borderRadius: themeVar.dimensions.BorderRadius,
   padding: '1em',
 });
 interface PeerReviewVariableEditorProps extends WegasComponentProps {
@@ -93,9 +93,8 @@ export default function PeerReviewVariableEditor({
     deepDifferent,
   );
 
-  const [value, setValue] = React.useState<string | number | undefined>(
-    storeValue,
-  );
+  const [value, setValue] =
+    React.useState<string | number | undefined>(storeValue);
 
   React.useEffect(() => {
     setValue(storeValue);

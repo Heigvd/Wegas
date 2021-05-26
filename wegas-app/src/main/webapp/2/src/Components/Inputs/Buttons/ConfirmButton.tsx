@@ -8,22 +8,22 @@ import {
 import { classNameOrEmpty } from '../../../Helper/className';
 import { css, cx } from 'emotion';
 import { inlineFlex } from '../../../css/classes';
-import { themeVar } from '../../Style/ThemeVars';
 import { IconButton } from './IconButton';
+import { themeVar } from '../../Theme/ThemeVars';
 
 const confirmButtonsContainerStyle = css({
 display: 'flex',
-backgroundColor: themeVar.Common.colors.BackgroundColor,
+backgroundColor: themeVar.colors.BackgroundColor,
 button: {
   margin: '4px'
 },
-borderRadius: themeVar.Common.dimensions.BorderRadius,
+borderRadius: themeVar.dimensions.BorderRadius,
 boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.15)',
 '&:before': {
   content: "''",
   width: 0,
   height: 0,
-  borderRight: '15px solid ' + themeVar.Common.colors.BackgroundColor,
+  borderRight: '15px solid ' + themeVar.colors.BackgroundColor,
   borderTop: '10px solid transparent',
   borderBottom: '10px solid transparent',
   position: 'relative',
@@ -147,7 +147,7 @@ export function ConfirmButton({
           readOnly={readOnly}
           noHover={noHover != null ? noHover : true}
           dark
-          className={css({border: '1px solid ' + themeVar.Common.colors.PrimaryColor})}
+          className={css({border: '1px solid ' + themeVar.colors.PrimaryColor})}
         />
         <Button
           label="Accept"

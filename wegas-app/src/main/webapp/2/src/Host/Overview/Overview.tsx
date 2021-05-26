@@ -37,7 +37,7 @@ export const trainerCellStyleI: Interpolation<undefined> = {
 
 export const tableStyle = css({
   display: 'flex',
-  color: themeVar.Common.colors.DarkTextColor,
+  color: themeVar.colors.DarkTextColor,
   width: '100%',
   overflowX: 'auto',
   fontSize: '14px',
@@ -77,10 +77,10 @@ export const tableStyle = css({
       padding: '0 10px',
       textAlign: 'center',
       'svg, button': {
-        fill: themeVar.Common.colors.DarkTextColor,
+        fill: themeVar.colors.DarkTextColor,
       },
       'button:hover + svg': {
-        fill: themeVar.Common.colors.ActiveColor,
+        fill: themeVar.colors.ActiveColor,
       },
     },
   },
@@ -91,7 +91,7 @@ const flexAuto = css({
 });
 
 const newDataStyle = css({
-  color: themeVar.Common.colors.PrimaryColor + ' !important',
+  color: themeVar.colors.PrimaryColor + ' !important',
 });
 
 export interface OverviewItem {
@@ -170,9 +170,8 @@ const defaultLayoutState: LayoutState = {
 
 export default function Overview() {
   const [filterState, setFilterState] = React.useState<FilterState>();
-  const [layoutState, setLayoutState] = React.useState<LayoutState>(
-    defaultLayoutState,
-  );
+  const [layoutState, setLayoutState] =
+    React.useState<LayoutState>(defaultLayoutState);
   const [overviewState, setOverviewState] = React.useState<OverviewState>();
   const [sortState, setSortState] = React.useState<SortState>();
   const [newData, setNewData] = React.useState(false);
@@ -238,10 +237,7 @@ export default function Overview() {
   const teams = store.getState().teams;
 
   const onRowClick = React.useCallback(
-    (team?: STeam | STeam[]) => (
-      type: OverviewClickType,
-      item?: ActionItem,
-    ) => {
+    (team?: STeam | STeam[]) => (type: OverviewClickType, item?: ActionItem) => {
       switch (type) {
         case 'Impact': {
           setLayoutState({ modalState: 'Impacts', team, item });

@@ -6,11 +6,12 @@ import {
   expandBoth,
   flex,
   flexColumn,
-  flexDistribute,
   flexRow,
   itemCenter,
   justifyCenter,
+  justifyEnd,
 } from '../../../css/classes';
+import { useThemeStore } from '../../../data/Stores/themeStore';
 import FileBrowser from '../../../Editor/Components/FileBrowser/FileBrowser';
 import { Selector } from '../../../Editor/Components/FormView/Select';
 import { IconComp, icons } from '../../../Editor/Components/Views/FontAwesome';
@@ -26,8 +27,7 @@ import { SimpleInput } from '../../Inputs/SimpleInput';
 import { HTMLText } from '../../Outputs/HTMLText';
 import { StandardGauge } from '../../Outputs/StandardGauge';
 import { Toolbar } from '../../Toolbar';
-import { ThemeProvider } from '../Theme';
-import { defaulSelectedThemes, SelectedThemes, themeVar } from '../ThemeVars';
+import { SelectedThemes, themeVar } from '../ThemeVars';
 
 const MIN_VALUE = 0;
 const MAX_VALUE = 10;
@@ -36,12 +36,12 @@ const COMPONENT_STATES = ['disabled', 'readOnly'] as const;
 const reflexElementStyle = cx(flex, justifyCenter, itemCenter);
 
 const previewPageHeaderStyle = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  backgroundColor: themeVar.colors.HeaderColor,
   paddingLeft: '3em',
 });
 
 const previewPageStyle = css({
-  borderColor: themeVar.Common.colors.HeaderColor,
+  borderColor: themeVar.colors.HeaderColor,
   borderStyle: 'solid',
   borderWidth: '3em',
   borderTop: 'none',
@@ -68,51 +68,48 @@ export default function Preview() {
     context: 'editor',
   });
 
-  const {
-    numericVar,
-    textVar,
-    booleanVar,
-    iconVar,
-    disabled,
-    readOnly,
-    context,
-  } = previewState;
+  const { numericVar, textVar, booleanVar, iconVar, disabled, readOnly } =
+    previewState;
+
+  const previewClassName = useThemeStore(
+    s => s.themes[s.editedThemeName].modeClasses[s.editedModeName],
+  );
 
   return (
     <Toolbar>
-      <Toolbar.Header className={cx(flex, flexRow, flexDistribute, itemCenter)}>
+      <Toolbar.Header className={cx(flex, justifyEnd)}>
         <DropMenu
-          label="Components state"
-          items={COMPONENT_STATES.map(feature => ({
-            value: feature,
-            label: (
-              <div className={cx(flex, flexRow)}>
-                {feature}
-                <CheckBox
-                  value={previewState[feature]}
-                  onChange={() =>
-                    setPreviewState(o => ({ ...o, [feature]: !o[feature] }))
-                  }
-                />
-              </div>
-            ),
-          }))}
-          onSelect={({ value: feature }) =>
-            setPreviewState(o => ({ ...o, [feature]: !o[feature] }))
-          }
-        />
-        <DropMenu
-          label={`Context : ${context}`}
-          items={Object.keys(defaulSelectedThemes).map(v => ({
-            value: v,
-            label: v,
-          }))}
-          onSelect={({ value }) =>
-            setPreviewState(o => ({
-              ...o,
-              context: value as keyof SelectedThemes,
-            }))
-          }
+          icon="cog"
+          items={[
+            {
+              label: 'Components state',
+              value: 'componentState',
+              items: COMPONENT_STATES.map(feature => ({
+                value: feature,
+                label: (
+                  <div
+                    onClick={e => {
+                      e.stopPropagation();
+                      setPreviewState(o => ({
+                        ...o,
+                        [feature]: !o[feature],
+                      }));
+                    }}
+                    className={cx(flex, flexRow, itemCenter)}
+                  >
+                    <CheckBox
+                      value={previewState[feature]}
+                      onChange={() =>
+                        setPreviewState(o => ({ ...o, [feature]: !o[feature] }))
+                      }
+                    />
+                    {feature}
+                  </div>
+                ),
+              })),
+            },
+          ]}
+          onSelect={() => {}}
         />
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, flexColumn)}>
@@ -120,158 +117,156 @@ export default function Preview() {
           <h3>Preview page</h3>
         </div>
         <div className={cx(previewPageStyle, expandBoth)}>
-          <ThemeProvider contextName={context}>
-            <ReflexContainer orientation="vertical">
-              <ReflexElement>
-                <ReflexContainer orientation="horizontal">
-                  <ReflexElement className={reflexElementStyle}>
-                    <StandardGauge
-                      value={numericVar}
-                      min={MIN_VALUE}
-                      max={MAX_VALUE}
-                      disabled={disabled}
-                    />
-                  </ReflexElement>
-                  <ReflexSplitter />
-                  <ReflexElement className={reflexElementStyle}>
-                    <NumberBox
-                      value={numericVar}
-                      minValue={MIN_VALUE}
-                      maxValue={MAX_VALUE}
-                      onChange={v =>
-                        setPreviewState(o => ({ ...o, numericVar: v }))
-                      }
-                      showLabelValue
-                      disabled={disabled}
-                    />
-                  </ReflexElement>
-                  <ReflexSplitter />
-                  <ReflexElement className={reflexElementStyle}>
-                    <NumberInput
-                      value={numericVar}
-                      onChange={v =>
-                        setPreviewState(o => ({ ...o, numericVar: v }))
-                      }
-                      disabled={disabled}
-                      readOnly={readOnly}
-                    />
-                  </ReflexElement>
-                  <ReflexSplitter />
-                  <ReflexElement className={reflexElementStyle}>
-                    <NumberSlider
-                      value={numericVar}
-                      min={MIN_VALUE}
-                      max={MAX_VALUE}
-                      steps={MAX_VALUE - MIN_VALUE}
-                      onChange={v =>
-                        setPreviewState(o => ({ ...o, numericVar: v }))
-                      }
-                      disabled={disabled}
-                      readOnly={readOnly}
-                    />
-                  </ReflexElement>
-                </ReflexContainer>
-              </ReflexElement>
-              <ReflexSplitter />
-              <ReflexElement>
-                <ReflexContainer orientation="horizontal">
-                  <ReflexElement className={reflexElementStyle}>
-                    <HTMLText text={textVar} disabled={disabled} />
-                  </ReflexElement>
-                  <ReflexSplitter />
-                  <ReflexElement className={reflexElementStyle}>
-                    <SimpleInput
-                      value={textVar}
-                      onChange={v =>
-                        setPreviewState(o => ({ ...o, textVar: String(v) }))
-                      }
-                      disabled={disabled}
-                      readOnly={readOnly}
-                    />
-                  </ReflexElement>
-                  <ReflexSplitter />
-                  <ReflexElement className={reflexElementStyle}>
-                    <HTMLEditor
-                      value={textVar}
-                      onChange={v =>
-                        setPreviewState(o => ({ ...o, textVar: String(v) }))
-                      }
-                      disabled={disabled}
-                      readOnly={readOnly}
-                      noRootBlock
-                    />
-                  </ReflexElement>
-                </ReflexContainer>
-              </ReflexElement>
-              <ReflexSplitter />
-              <ReflexElement>
-                <ReflexContainer orientation="horizontal">
-                  <ReflexElement>
-                    <ReflexContainer orientation="vertical">
-                      <ReflexElement className={reflexElementStyle}>
-                        <IconComp
-                          icon={{ icon: iconVar, size: '5x' }}
-                          disabled={disabled}
-                        />
-                      </ReflexElement>
-                      <ReflexSplitter />
-                      <ReflexElement className={reflexElementStyle}>
-                        <Selector
-                          value={iconVar}
-                          choices={Object.keys(icons).map(v => ({
-                            value: v,
-                            label: v,
-                          }))}
-                          onChange={v =>
-                            setPreviewState(o => ({
-                              ...o,
-                              iconVar: v.target.value as IconName,
-                            }))
-                          }
-                          disabled={disabled}
-                          readOnly={readOnly}
-                        />
-                      </ReflexElement>
-                    </ReflexContainer>
-                  </ReflexElement>
-                  <ReflexSplitter />
-                  <ReflexElement>
-                    <ReflexContainer orientation="vertical">
-                      <ReflexElement className={reflexElementStyle}>
-                        <Toggler
-                          value={booleanVar}
-                          onChange={v =>
-                            setPreviewState(o => ({ ...o, booleanVar: v }))
-                          }
-                          disabled={disabled}
-                          readOnly={readOnly}
-                        />
-                      </ReflexElement>
-                      <ReflexSplitter />
-                      <ReflexElement className={reflexElementStyle}>
-                        <CheckBox
-                          value={booleanVar}
-                          onChange={v =>
-                            setPreviewState(o => ({ ...o, booleanVar: v }))
-                          }
-                          disabled={disabled}
-                          readOnly={readOnly}
-                        />
-                      </ReflexElement>
-                    </ReflexContainer>
-                  </ReflexElement>
-                  <ReflexSplitter />
-                  <ReflexElement className={reflexElementStyle}>
-                    <FileBrowser disabled={disabled} readOnly={readOnly} />
-                  </ReflexElement>
-                  <ReflexSplitter />
-                  <ReflexElement className={reflexElementStyle}>
-                    <ConfirmButton label="Click me" />
-                  </ReflexElement>
-                </ReflexContainer>
-              </ReflexElement>
-            </ReflexContainer>
-          </ThemeProvider>
+          <ReflexContainer orientation="vertical" className={previewClassName}>
+            <ReflexElement>
+              <ReflexContainer orientation="horizontal">
+                <ReflexElement className={reflexElementStyle}>
+                  <StandardGauge
+                    value={numericVar}
+                    min={MIN_VALUE}
+                    max={MAX_VALUE}
+                    disabled={disabled}
+                  />
+                </ReflexElement>
+                <ReflexSplitter />
+                <ReflexElement className={reflexElementStyle}>
+                  <NumberBox
+                    value={numericVar}
+                    minValue={MIN_VALUE}
+                    maxValue={MAX_VALUE}
+                    onChange={v =>
+                      setPreviewState(o => ({ ...o, numericVar: v }))
+                    }
+                    showLabelValue
+                    disabled={disabled}
+                  />
+                </ReflexElement>
+                <ReflexSplitter />
+                <ReflexElement className={reflexElementStyle}>
+                  <NumberInput
+                    value={numericVar}
+                    onChange={v =>
+                      setPreviewState(o => ({ ...o, numericVar: v }))
+                    }
+                    disabled={disabled}
+                    readOnly={readOnly}
+                  />
+                </ReflexElement>
+                <ReflexSplitter />
+                <ReflexElement className={reflexElementStyle}>
+                  <NumberSlider
+                    value={numericVar}
+                    min={MIN_VALUE}
+                    max={MAX_VALUE}
+                    steps={MAX_VALUE - MIN_VALUE}
+                    onChange={v =>
+                      setPreviewState(o => ({ ...o, numericVar: v }))
+                    }
+                    disabled={disabled}
+                    readOnly={readOnly}
+                  />
+                </ReflexElement>
+              </ReflexContainer>
+            </ReflexElement>
+            <ReflexSplitter />
+            <ReflexElement>
+              <ReflexContainer orientation="horizontal">
+                <ReflexElement className={reflexElementStyle}>
+                  <HTMLText text={textVar} disabled={disabled} />
+                </ReflexElement>
+                <ReflexSplitter />
+                <ReflexElement className={reflexElementStyle}>
+                  <SimpleInput
+                    value={textVar}
+                    onChange={v =>
+                      setPreviewState(o => ({ ...o, textVar: String(v) }))
+                    }
+                    disabled={disabled}
+                    readOnly={readOnly}
+                  />
+                </ReflexElement>
+                <ReflexSplitter />
+                <ReflexElement className={reflexElementStyle}>
+                  <HTMLEditor
+                    value={textVar}
+                    onChange={v =>
+                      setPreviewState(o => ({ ...o, textVar: String(v) }))
+                    }
+                    disabled={disabled}
+                    readOnly={readOnly}
+                    noRootBlock
+                  />
+                </ReflexElement>
+              </ReflexContainer>
+            </ReflexElement>
+            <ReflexSplitter />
+            <ReflexElement>
+              <ReflexContainer orientation="horizontal">
+                <ReflexElement>
+                  <ReflexContainer orientation="vertical">
+                    <ReflexElement className={reflexElementStyle}>
+                      <IconComp
+                        icon={{ icon: iconVar, size: '5x' }}
+                        disabled={disabled}
+                      />
+                    </ReflexElement>
+                    <ReflexSplitter />
+                    <ReflexElement className={reflexElementStyle}>
+                      <Selector
+                        value={iconVar}
+                        choices={Object.keys(icons).map(v => ({
+                          value: v,
+                          label: v,
+                        }))}
+                        onChange={v =>
+                          setPreviewState(o => ({
+                            ...o,
+                            iconVar: v.target.value as IconName,
+                          }))
+                        }
+                        disabled={disabled}
+                        readOnly={readOnly}
+                      />
+                    </ReflexElement>
+                  </ReflexContainer>
+                </ReflexElement>
+                <ReflexSplitter />
+                <ReflexElement>
+                  <ReflexContainer orientation="vertical">
+                    <ReflexElement className={reflexElementStyle}>
+                      <Toggler
+                        value={booleanVar}
+                        onChange={v =>
+                          setPreviewState(o => ({ ...o, booleanVar: v }))
+                        }
+                        disabled={disabled}
+                        readOnly={readOnly}
+                      />
+                    </ReflexElement>
+                    <ReflexSplitter />
+                    <ReflexElement className={reflexElementStyle}>
+                      <CheckBox
+                        value={booleanVar}
+                        onChange={v =>
+                          setPreviewState(o => ({ ...o, booleanVar: v }))
+                        }
+                        disabled={disabled}
+                        readOnly={readOnly}
+                      />
+                    </ReflexElement>
+                  </ReflexContainer>
+                </ReflexElement>
+                <ReflexSplitter />
+                <ReflexElement className={reflexElementStyle}>
+                  <FileBrowser disabled={disabled} readOnly={readOnly} />
+                </ReflexElement>
+                <ReflexSplitter />
+                <ReflexElement className={reflexElementStyle}>
+                  <ConfirmButton label="Click me" />
+                </ReflexElement>
+              </ReflexContainer>
+            </ReflexElement>
+          </ReflexContainer>
         </div>
       </Toolbar.Content>
     </Toolbar>

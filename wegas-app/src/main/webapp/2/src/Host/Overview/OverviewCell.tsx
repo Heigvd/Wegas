@@ -84,7 +84,7 @@ export function OverviewCell({
               <div
                 style={{
                   position: 'fixed',
-                  backgroundColor: themeVar.Common.colors.BackgroundColor,
+                  backgroundColor: themeVar.colors.BackgroundColor,
                   boxShadow: '2px 2px 2px rgba(0, 0, 0, 0.3)',
                   padding: '10px',
                 }}

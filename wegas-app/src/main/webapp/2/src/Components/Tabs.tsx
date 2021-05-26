@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Toolbar } from './Toolbar';
 import { css, cx } from 'emotion';
-import { themeVar } from './Style/ThemeVars';
 import { childrenHeaderStyle, headerStyle } from '../css/classes';
+import { themeVar } from './Theme/ThemeVars';
 
 export function tabsStyle(isChild: boolean | undefined, isActive: boolean | undefined){
     if (isChild) {
@@ -28,7 +28,7 @@ export const tabStyle = css({
   cursor: 'pointer',
   marginLeft: '6px',
   padding: '10px 10px',
-  borderRadius: themeVar.Common.dimensions.BorderRadius + ' ' + themeVar.Common.dimensions.BorderRadius + ' 0 0' ,
+  borderRadius: themeVar.dimensions.BorderRadius + ' ' + themeVar.dimensions.BorderRadius + ' 0 0' ,
   textTransform: 'uppercase',
   fontSize: '13px',
   fontWeight: 600,
@@ -39,52 +39,52 @@ export const tabStyle = css({
 
 });
 export const inactiveTabStyle = css({
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
-  color: themeVar.Common.colors.ActiveColor,
+  backgroundColor: themeVar.colors.BackgroundColor,
+  color: themeVar.colors.ActiveColor,
   height: '52px',
   button: {
-    color: themeVar.Common.colors.DisabledColor,
+    color: themeVar.colors.DisabledColor,
     '&:hover': {
-      color: themeVar.Common.colors.ActiveColor,
+      color: themeVar.colors.ActiveColor,
     }
   },
   '&:hover': {
-    backgroundColor: themeVar.Common.colors.HeaderColor,
+    backgroundColor: themeVar.colors.HeaderColor,
   }
  });
 export const activeTabStyle = css({
-  color: themeVar.Common.colors.LightTextColor,
-  backgroundColor: themeVar.Common.colors.ActiveColor,
+  color: themeVar.colors.LightTextColor,
+  backgroundColor: themeVar.colors.ActiveColor,
   height: '52px',
   button: {
-    color: themeVar.Common.colors.LightTextColor,
+    color: themeVar.colors.LightTextColor,
     '&.wegas.wegas-iconbtn:hover': {
-      color: themeVar.Common.colors.DisabledColor,
+      color: themeVar.colors.DisabledColor,
     },
   },
 });
 export const childInactiveTabStyle = css({
-  backgroundColor: themeVar.Common.colors.ActiveColor,
-  border: '1px solid ' + themeVar.Common.colors.LightTextColor,
+  backgroundColor: themeVar.colors.ActiveColor,
+  border: '1px solid ' + themeVar.colors.LightTextColor,
   borderBottom: '1px solid transparent',
-  color: themeVar.Common.colors.LightTextColor,
+  color: themeVar.colors.LightTextColor,
   textTransform: 'none',
   padding: '6px 10px',
   button: {
-    color: themeVar.Common.colors.LightTextColor,
+    color: themeVar.colors.LightTextColor,
   },
   '&:hover': {
-    backgroundColor: themeVar.Common.colors.PrimaryColor,
+    backgroundColor: themeVar.colors.PrimaryColor,
     border: '1px solid transparent',
     },
  });
 export const childActiveTabStyle = css({
-  color: themeVar.Common.colors.ActiveColor,
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
+  color: themeVar.colors.ActiveColor,
+  backgroundColor: themeVar.colors.BackgroundColor,
   textTransform: 'none',
   padding: '6px 10px',
   button: {
-    color: themeVar.Common.colors.DisabledColor,
+    color: themeVar.colors.DisabledColor,
   },
 });
 
@@ -93,7 +93,7 @@ export const plusTabStyle = css({
   display: 'flex',
   alignItems: 'center',
   'button.iconOnly': {
-    color: themeVar.Common.colors.DisabledColor,
+    color: themeVar.colors.DisabledColor,
   }
 })
 export const childrenPlusTabStyle = css({
@@ -101,9 +101,9 @@ export const childrenPlusTabStyle = css({
   display: 'flex',
   alignItems: 'center',
   'button.wegas.wegas-btn.iconOnly': {
-    color: themeVar.Common.colors.LightTextColor,
+    color: themeVar.colors.LightTextColor,
     '&:hover': {
-      color: themeVar.Common.colors.DisabledColor,
+      color: themeVar.colors.DisabledColor,
     }
   }
 })
@@ -174,7 +174,6 @@ export class TabLayout extends React.Component<
     );
   }
 }
-
 function Tab({
   active,
   onClick,

@@ -7,8 +7,8 @@ import { IScript } from 'wegas-ts-api';
 const infoBeamStyle = css({
   position: 'absolute',
   padding: '3px',
-  color: themeVar.Common.colors.LightTextColor,
-  backgroundColor: themeVar.Common.colors.WarningColor,
+  color: themeVar.colors.LightTextColor,
+  backgroundColor: themeVar.colors.WarningColor,
   borderRadius: '50%',
   height: '21px',
   width: '21px',

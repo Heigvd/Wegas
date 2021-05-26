@@ -545,6 +545,7 @@ export function editStateMachine(
   entity: Immutable<IAbstractStateMachineDescriptor>,
   path: string[] = [],
   config?: Schema<AvailableViews>,
+  actions?: EditorAction<IVariableDescriptor>,
 ): ThunkResult {
   return function (dispatch) {
     dispatch(
@@ -552,7 +553,7 @@ export function editStateMachine(
         entity,
         config,
         path,
-        actions: {
+        actions: actions || {
           more: {
             delete: {
                 label: 'Delete',

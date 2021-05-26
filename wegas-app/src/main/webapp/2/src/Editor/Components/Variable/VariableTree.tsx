@@ -250,7 +250,7 @@ export const actionNodeContentStyle = cx(
   css({
     cursor: 'pointer',
     ':hover': {
-      backgroundColor: themeVar.Common.colors.HoverColor,
+      backgroundColor: themeVar.colors.HoverColor,
     },
   }),
 );

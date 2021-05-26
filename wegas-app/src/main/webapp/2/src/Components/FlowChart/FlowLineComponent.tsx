@@ -2,6 +2,7 @@ import { css, cx } from 'emotion';
 import * as React from 'react';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
 import { isActionAllowed } from '../PageComponents/tools/options';
+import { themeVar } from '../Theme/ThemeVars';
 import { FlowLine, Process } from './FlowChart';
 import { FlowLineHandle, FLOW_HANDLE_SIDE } from './Handles';
 import {
@@ -44,7 +45,7 @@ export function ArrowDefs() {
         refX="6"
         refY="5"
         orient="auto"
-        fill={'#FFA462'}
+        fill={themeVar.colors.HighlightColor}
         stroke="transparent"
       >
         <polygon points="0 0, 6 5, 0 10" />
@@ -68,7 +69,7 @@ export function ArrowDefs() {
         refX="5"
         refY="10"
         orient="auto"
-        fill={'#FFA462'}
+        fill={themeVar.colors.HighlightColor}
       >
         <circle cx="10" cy="10" r="5" />
       </marker>
@@ -555,7 +556,8 @@ export function TempFlowLine({ processElements, position }: TempFlowLineProps) {
   let endY = position.y + parent!.scrollTop;
 
   if (isStartProcessElement(processElements)) {
-    const startProcessBox = processElements.startProcessElement.getBoundingClientRect();
+    const startProcessBox =
+      processElements.startProcessElement.getBoundingClientRect();
     startX =
       startProcessBox.x +
       startProcessBox.width / 2 -
@@ -567,7 +569,8 @@ export function TempFlowLine({ processElements, position }: TempFlowLineProps) {
       parentBox.y +
       parent!.scrollTop;
   } else {
-    const endProcessBox = processElements.endProcessElement.getBoundingClientRect();
+    const endProcessBox =
+      processElements.endProcessElement.getBoundingClientRect();
     endX =
       endProcessBox.x +
       endProcessBox.width / 2 -
@@ -624,7 +627,7 @@ export function CustomFlowLineComponent({
 
 export interface FlowLineComponentProps<
   F extends FlowLine,
-  P extends Process<F>
+  P extends Process<F>,
 > extends FlowLineLabelProps,
     DisabledReadonly {
   /**
@@ -644,7 +647,7 @@ export interface FlowLineComponentProps<
 
 export function DefaultFlowLineComponent<
   F extends FlowLine,
-  P extends Process<F>
+  P extends Process<F>,
 >({
   onClick,
   startProcess,

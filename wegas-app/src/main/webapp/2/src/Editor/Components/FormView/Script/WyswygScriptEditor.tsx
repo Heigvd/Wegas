@@ -8,7 +8,7 @@ import { schemaProps } from '../../../../Components/PageComponents/tools/schemaP
 import { themeVar } from '../../../../Components/Theme/ThemeVars';
 
 const scriptStyle = css({
-  border: '1px solid ' + themeVar.Common.colors.DisabledColor,
+  border: '1px solid ' + themeVar.colors.DisabledColor,
   padding: '2px',
 });
 

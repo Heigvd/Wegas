@@ -27,20 +27,20 @@ const modalContentStyle = css({
   maxWidth: '700px',
   boxShadow: '1px 2px 6px rgba(0,0,0,0.1)',
   '&>div': {
-    color: themeVar.Common.colors.DarkTextColor,
+    color: themeVar.colors.DarkTextColor,
   },
 });
 
 const modalInputsStyle = css({
   input: {
-    fontFamily: themeVar.ComponentTitle.others.FontFamily2,
+    fontFamily: themeVar.others.TextFont2,
     borderRadius: 0,
-    border: '1px solid ' + themeVar.Common.colors.HighlightColor,
+    border: '1px solid ' + themeVar.colors.HighlightColor,
     lineHeight: '1.8em',
-    backgroundColor: themeVar.Common.colors.SecondaryBackgroundColor,
+    backgroundColor: themeVar.colors.SecondaryBackgroundColor,
     marginLeft: '1px',
     '&:focus': {
-      border: '1px solid ' + themeVar.Common.colors.PrimaryColor,
+      border: '1px solid ' + themeVar.colors.PrimaryColor,
     },
     '&[readOnly]:focus': {
       outline: 'none',

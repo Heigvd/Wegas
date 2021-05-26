@@ -82,6 +82,9 @@ export const shrinkHeight = css({
 export const grow = css({
   flex: '1 1 auto',
 });
+export const stretch = css({
+ alignItems: 'stretch',
+});
 export const flexColumn = css({
   flexDirection: 'column',
 });
@@ -198,35 +201,38 @@ export const defaultPadding = cx(
 
 // Components
 export const button = css({
-  color: themeVar.Common.colors.DarkTextColor,
+  color: themeVar.colors.DarkTextColor,
   ':hover,:focus': {
-    color: themeVar.Common.colors.HoverColor,
+    color: themeVar.colors.HoverColor,
     outline: 'none',
   },
 });
 
 // Editor
 export const localSelection = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  backgroundColor: themeVar.colors.HeaderColor,
 });
 export const globalSelection = css({
-  border: '1px solid ' + themeVar.Common.colors.PrimaryColor,
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  //  borderStyle: 'solid',
+  //  borderWidth: '2px',
+  //  borderColor: themeVar.colors.BorderColor,
+  borderRadius: themeVar.dimensions.BorderRadius,
+  boxShadow: `0px 0px 0px 1px ${themeVar.colors.PrimaryColor}`,
 });
 export const searchSelection = css({
-  backgroundColor: themeVar.Common.colors.HighlightColor,
+  backgroundColor: themeVar.colors.HighlightColor,
 });
 
 // Layout base styles
 export const layoutStyle = css({
-  color: themeVar.Common.colors.DarkTextColor,
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
-  fontFamily: themeVar.Common.others.TextFont1,
+  color: themeVar.colors.DarkTextColor,
+  backgroundColor: themeVar.colors.BackgroundColor,
+  fontFamily: themeVar.others.TextFont1,
 });
 export const headerStyle = css({
-  backgroundColor: themeVar.Common.colors.SecondaryBackgroundColor,
+  backgroundColor: themeVar.colors.SecondaryBackgroundColor,
   paddingTop: '1em',
-  borderBottom: '15px solid ' + themeVar.Common.colors.ActiveColor,
+  borderBottom: '15px solid ' + themeVar.colors.ActiveColor,
 });
 
 export const contentStyle = css({
@@ -235,18 +241,18 @@ export const contentStyle = css({
 });
 
 export const childrenHeaderStyle = css({
-  backgroundColor: themeVar.Common.colors.ActiveColor,
+  backgroundColor: themeVar.colors.ActiveColor,
   padding: '0 1em',
 });
 
 export const toolboxHeaderStyle = css({
  marginBottom: '10px',
  paddingBottom: '10px',
- borderBottom: '1px solid ' + themeVar.Common.colors.DisabledColor,
+ borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
 });
 
 export const disabledColorStyle = css({
-  color: themeVar.Common.colors.DisabledColor,
+  color: themeVar.colors.DisabledColor,
 });
 export const halfOpacity = css({
   opacity: 0.5,
@@ -282,7 +288,7 @@ export const thinHatchedBackground = css({
 
 export const highlightedHatchedBackground = css({
   background:
-    //`repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, ${Color(themeVar.Common.colors.HoverColor).darken(0.5).toString()} 10px, ${Color(themeVar.Common.colors.HoverColor).darken(0.5).toString()} 20px);`,
+    //`repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, ${Color(themeVar.colors.HoverColor).darken(0.5).toString()} 10px, ${Color(themeVar.colors.HoverColor).darken(0.5).toString()} 20px);`,
     `repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, var(--common-colors-highlightcolor) 10px, var(--common-colors-highlightcolor) 20px);`,
   zIndex: 1000,
 });
@@ -290,7 +296,7 @@ export const highlightedHatchedBackground = css({
 export const dropZoneStyle = css({
   borderStyle: 'solid',
   borderWidth: '2px',
-  borderColor: themeVar.Common.colors.HighlightColor,
+  borderColor: themeVar.colors.HighlightColor,
 });
 
 export const unreadSignalStyle = css({

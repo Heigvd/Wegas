@@ -8,11 +8,11 @@ import { themeVar } from '../../Theme/ThemeVars';
 export const buttonStyle = css({
   display: 'flex',
   alignItems: 'center',
-  backgroundColor: themeVar.Common.colors.PrimaryColor,
-  color: themeVar.Common.colors.LightTextColor,
+  backgroundColor: themeVar.colors.PrimaryColor,
+  color: themeVar.colors.LightTextColor,
   ['&.dark']: {
-    backgroundColor: themeVar.Common.colors.LightTextColor,
-    color: themeVar.Common.colors.PrimaryColor,
+    backgroundColor: themeVar.colors.LightTextColor,
+    color: themeVar.colors.PrimaryColor,
   },
   borderStyle: 'none',
   paddingLeft: '10px',
@@ -20,14 +20,15 @@ export const buttonStyle = css({
   paddingTop: '5px',
   paddingBottom: '5px',
   cursor: 'pointer',
-  fontFamily: themeVar.Common.others.TextFont2,
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  fontFamily: themeVar.others.TextFont2,
+  borderRadius: themeVar.dimensions.BorderRadius,
 
-  ['&:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):not(.confirmBtn):hover']: {
-    color: themeVar.Common.colors.HoverTextColor,
-    backgroundColor: themeVar.Common.colors.PrimaryColorShade,
-    outline: 'none',
-  },
+  ['&:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):not(.confirmBtn):hover']:
+    {
+      color: themeVar.colors.HoverTextColor,
+      backgroundColor: themeVar.colors.PrimaryColorShade,
+      outline: 'none',
+    },
   ['&:focus']: {
     outline: 'none',
   },
@@ -36,11 +37,11 @@ export const buttonStyle = css({
   },
   ['&.disabled']: {
     cursor: 'initial',
-    backgroundColor: themeVar.Common.colors.DisabledColor,
+    backgroundColor: themeVar.colors.DisabledColor,
   },
   ['&.noBackground']: {
     ['&:not(.disabled):not(.readOnly):hover']: {
-      color: themeVar.Common.colors.HoverColor,
+      color: themeVar.colors.HoverColor,
     },
     backgroundColor: 'transparent',
   },
@@ -48,15 +49,15 @@ export const buttonStyle = css({
     cursor: 'inherit',
   },
   ['&.iconOnly']: {
-    color: themeVar.Common.colors.PrimaryColor,
+    color: themeVar.colors.PrimaryColor,
     backgroundColor: 'transparent',
     ['&:not(.disabled):not(.readOnly):hover']: {
-      color: themeVar.Common.colors.ActiveColor,
+      color: themeVar.colors.ActiveColor,
     },
     ['&:disabled']: {
-      color: themeVar.Common.colors.DisabledColor,
+      color: themeVar.colors.DisabledColor,
       [':hover']: {
-        color: themeVar.Common.colors.DisabledColor,
+        color: themeVar.colors.DisabledColor,
       },
     },
   },
@@ -76,41 +77,41 @@ export const buttonStyle = css({
   },
   ['&.active']: {
     ['&:not(.iconOnly),&:not(noBackground)']: {
-      backgroundColor: themeVar.Common.colors.ActiveColor,
+      backgroundColor: themeVar.colors.ActiveColor,
     },
     ['&.iconOnly,&.noBackground']: {
-      color: themeVar.Common.colors.ActiveColor,
+      color: themeVar.colors.ActiveColor,
     },
   },
   ['&.success']: {
     ['&:not(.iconOnly),&:not(.noBackground)']: {
-      backgroundColor: themeVar.Common.colors.SuccessColor,
+      backgroundColor: themeVar.colors.SuccessColor,
     },
     ['&.iconOnly,&.noBackground']: {
-      color: themeVar.Common.colors.SuccessColor,
+      color: themeVar.colors.SuccessColor,
     },
   },
   ['&.warning']: {
-    // backgroundColor: themeVar.Common.colors.WarningColor,
+    // backgroundColor: themeVar.colors.WarningColor,
     ['&:not(.iconOnly),&:not(.noBackground)']: {
-      backgroundColor: themeVar.Common.colors.WarningColor,
+      backgroundColor: themeVar.colors.WarningColor,
     },
     ['&.iconOnly,&.noBackground']: {
-      color: themeVar.Common.colors.WarningColor,
+      color: themeVar.colors.WarningColor,
     },
   },
   ['&.error']: {
     ['&:not(.iconOnly),&:not(.noBackground)']: {
-      backgroundColor: themeVar.Common.colors.ErrorColor,
+      backgroundColor: themeVar.colors.ErrorColor,
     },
     ['&.iconOnly,&.noBackground']: {
-      color: themeVar.Common.colors.ErrorColor,
+      color: themeVar.colors.ErrorColor,
     },
   },
 });
 
 export const outlineButtonStyle = css({
-border: '1px solid ' + themeVar.Common.colors.DisabledColor,
+border: '1px solid ' + themeVar.colors.DisabledColor,
 borderRadius: '50%',
 padding: '10px',
 height: '40px',

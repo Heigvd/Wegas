@@ -4,7 +4,8 @@ import { debounce } from 'lodash-es';
 import { classNameOrEmpty } from '../../Helper/className';
 
 import { css, ObjectInterpolation } from 'emotion';
-import { themeVar } from '../Style/ThemeVars';
+import { themeVar } from '../Theme/ThemeVars';
+
 
 export const inputDefaultCSS = {
   minWidth: '4em',
@@ -15,18 +16,18 @@ export const inputStyleCSS: ObjectInterpolation<undefined> = {
   ...inputDefaultCSS,
   width: '100%',
   resize: 'vertical',
-  border: '2px solid ' + themeVar.Common.colors.PrimaryColor,
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
+  border: '2px solid ' + themeVar.colors.PrimaryColor,
+  borderRadius: themeVar.dimensions.BorderRadius,
+  backgroundColor: themeVar.colors.BackgroundColor,
   outline: 'none',
   '::placeholder': {
     opacity: '0.5',
   },
   ':focus': {
-    border: '2px solid ' + themeVar.Common.colors.ActiveColor,
+    border: '2px solid ' + themeVar.colors.ActiveColor,
   },
   '&[readonly]': {
-    color: themeVar.Common.colors.DisabledColor,
+    color: themeVar.colors.DisabledColor,
   },
 };
 
@@ -74,6 +75,11 @@ export interface SimpleInputProps extends InputProps<string | number> {
    */
   autoComplete?: boolean;
   /**
+   * autoFocus - focus when rendered
+   */
+  autoFocus?: boolean;
+
+  /**
    * onFocus - event that fires when te input is focused
    */
   onFocus?: (
@@ -93,17 +99,27 @@ export function SimpleInput({
   readOnly,
   placeholder,
   autoComplete,
+  autoFocus,
   id,
   className,
   style,
   onFocus,
   fullWidth,
 }: SimpleInputProps) {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const textAeraRef = React.useRef<HTMLTextAreaElement>(null);
   const [currentValue, setCurrentValue] = React.useState(value);
 
   React.useEffect(() => {
     setCurrentValue(value);
   }, [value]);
+
+  React.useEffect(() => {
+    if (autoFocus) {
+      inputRef.current?.focus();
+      textAeraRef.current?.focus();
+    }
+  }, [autoFocus]);
 
   const debouncedOnChange = React.useCallback(
     debounce((value: string) => {
@@ -129,6 +145,7 @@ export function SimpleInput({
   if (typeof rows === 'number') {
     return (
       <textarea
+        ref={textAeraRef}
         className={inputStyle + classNameOrEmpty(className)}
         style={{ ...(fullWidth ? { width: '100%' } : {}), ...style }}
         id={id}
@@ -146,6 +163,7 @@ export function SimpleInput({
   }
   return (
     <input
+      ref={inputRef}
       type="text"
       className={inputStyle + classNameOrEmpty(className)}
       style={{ ...(fullWidth ? { width: '100%' } : {}), ...style }}

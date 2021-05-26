@@ -14,26 +14,27 @@ import { Button } from '../../../Inputs/Buttons/Button';
 import { themeVar } from '../../ThemeVars';
 
 export const borderStyle = {
-  borderStyle: 'solid',
-  borderColor: themeVar.Common.colors.HeaderColor,
-  borderWidth: themeVar.Common.dimensions.BorderWidth,
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  boxShadow: 'inset 0px 0px 3px rgba(0, 0, 0, 0.1)',
+  borderRadius: '8px',
 };
 
 export const valueStyle = css({
   marginTop: '1px',
+  width: '120px',
 });
 
 const colorButton = css({
-  width: '100%',
+  // width: '100%',
+  // width: '120px',
   ...borderStyle,
   cursor: 'pointer',
-  padding: '2px',
+  // padding: '2px',
+  overflow: 'hidden',
 });
 
 const colorInnerButton = (color: string) =>
   css({
-    height: '1.6em',
+    height: '4em',
     backgroundColor: color,
   });
 
@@ -93,7 +94,7 @@ export function ColorPicker({
               setColor(newColor.rgb);
             }}
           />
-          <div style={{ margin: themeVar.Common.dimensions.BorderWidth }}>
+          <div style={{ margin: themeVar.dimensions.BorderWidth }}>
             <Button
               label="Accept"
               onClick={() => {

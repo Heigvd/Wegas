@@ -5,7 +5,7 @@ import { DotLoader } from '../../Loader';
 import { themeVar } from '../../Theme/ThemeVars';
 
 const loaderStyle = (
-  background: string | undefined = themeVar.Common.colors.BackgroundColor,
+  background: string | undefined = themeVar.colors.BackgroundColor,
 ) =>
   css({
     position: 'absolute',

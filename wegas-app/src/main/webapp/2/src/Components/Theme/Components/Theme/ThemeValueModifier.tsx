@@ -4,135 +4,272 @@ import {
   flex,
   flexColumn,
   expandHeight,
-  itemCenter,
   flexDistribute,
-  headerStyle,
   grow,
   defaultPadding,
   autoScroll,
   flexRow,
+  flexWrap,
 } from '../../../../css/classes';
 import { ConfirmButton } from '../../../Inputs/Buttons/ConfirmButton';
 import { SimpleInput } from '../../../Inputs/SimpleInput';
-import { ConfirmAdder } from '../../../Inputs/String/ConfirmAdder';
-import { defaultThemeValues, Theme, ThemeValues } from '../../ThemeVars';
+import {
+  backgroundColorsSection,
+  defaultThemeValues,
+  primaryColorsSection,
+  secondaryColorsSection,
+  textColorsSection,
+  Theme,
+  ThemeValues,
+} from '../../ThemeVars';
 import { ColorPicker, rgbaToString, valueStyle } from './ColorPicker';
+import { ThemeValueInput } from './ThemeValueInput';
 
-const valueEntryStyle = css({
+export const valueEntryStyle = css({
   marginBottom: '7px',
 });
 
-interface ThemeValueModifierProps<
+const paletteStyle = cx(flex, flexRow, flexWrap, flexDistribute);
+
+const THEME_VALUE_MODIFIER_ID = 'THEME_VALUE_MODIFIER_ID';
+
+interface ThemeValueProps<
   T extends keyof ThemeValues,
   K extends keyof ThemeValues[T],
-  V extends ThemeValues[T][K]
+  V extends ThemeValues[T][K],
 > {
-  theme: Theme | undefined;
   section: T;
   onChange: (entry: K, value: V | null) => void;
+}
+
+interface ThemeValueEntryProps<
+  T extends keyof ThemeValues,
+  K extends keyof ThemeValues[T],
+  V extends ThemeValues[T][K],
+> extends ThemeValueProps<T, K, V> {
+  label: K;
+  labelModifer?: (label: K) => string;
+  value: V;
+}
+
+function ThemeValueEntry<
+  T extends keyof ThemeValues,
+  K extends keyof ThemeValues[T],
+  V extends ThemeValues[T][K],
+>({
+  label,
+  labelModifer,
+  value,
+  section,
+  onChange,
+}: ThemeValueEntryProps<T, K, V>) {
+  const computedLabel = labelModifer ? labelModifer(label) : String(label);
+
+  return (
+    <div className={cx(flex, flexColumn, valueEntryStyle)}>
+      <div className={cx(flex, flexRow)}>
+        <label
+          className={cx(css({ display: 'flex', alignItems: 'center' }))}
+          htmlFor={String(computedLabel)}
+          title={String(computedLabel)}
+        >
+          {computedLabel}
+        </label>
+        {!Object.keys(defaultThemeValues[section]).includes(String(label)) && (
+          <ConfirmButton
+            icon="trash"
+            onAction={success => success && onChange(label as K, null)}
+          />
+        )}
+      </div>
+      {section === 'colors' ? (
+        <ColorPicker
+          initColor={String(value) || 'black'}
+          onChange={color => {
+            onChange(label as K, rgbaToString(color) as V);
+          }}
+        />
+      ) : (
+        <SimpleInput
+          className={valueStyle}
+          value={value}
+          onChange={v => onChange(label as K, String(v) as V)}
+        />
+      )}
+    </div>
+  );
+}
+
+export interface ThemeValueModifierProps<
+  T extends keyof ThemeValues,
+  K extends keyof ThemeValues[T],
+  V extends ThemeValues[T][K],
+> extends ThemeValueProps<T, K, V> {
+  theme: Theme | undefined;
+  attachedToId?: string;
 }
 
 export function ThemeValueModifier<
   T extends keyof ThemeValues,
   K extends keyof ThemeValues[T],
-  V extends ThemeValues[T][K]
+  V extends ThemeValues[T][K],
 >({ theme, section, onChange }: ThemeValueModifierProps<T, K, V>) {
-  const accept: (value?: {
-    name?: string;
-    value: string;
-  }) => string | undefined = value =>
-    value?.name == null || value.name === ''
-      ? 'You have to enter a name'
-      : Object.keys(theme?.values[section] || {}).includes(value?.name || '')
-      ? `The ${section} value already exists`
-      : undefined;
+  const componentId = THEME_VALUE_MODIFIER_ID + section;
 
-  const validator: (
-    value?:
-      | {
-          name?: string;
-          value: string;
-        }
-      | undefined,
-  ) => string | undefined = value => {
-    if (Object.keys(theme?.values[section] || {}).includes(value?.name || '')) {
-      return `The ${section} value already exists`;
+  const values = React.useMemo(() => {
+    const themeValues = theme?.values[section];
+
+    if (themeValues == null) {
+      return null;
     }
-  };
+    if (section === 'colors') {
+      const primaryColors = Object.entries(themeValues).filter(([k]) =>
+        Object.keys(primaryColorsSection).includes(k),
+      );
+      const secondaryColors = Object.entries(themeValues).filter(([k]) =>
+        Object.keys(secondaryColorsSection).includes(k),
+      );
+      const backgroundColors = Object.entries(themeValues).filter(([k]) =>
+        Object.keys(backgroundColorsSection).includes(k),
+      );
+      const textColors = Object.entries(themeValues).filter(([k]) =>
+        Object.keys(textColorsSection).includes(k),
+      );
+      const otherColors = Object.entries(themeValues).filter(
+        ([k]) =>
+          !Object.keys({
+            ...primaryColorsSection,
+            ...secondaryColorsSection,
+            ...backgroundColorsSection,
+            ...textColorsSection,
+          }).includes(k),
+      );
+
+      return (
+        <>
+          <div className={cx(flex, flexColumn)}>
+            <h3>Primary colors</h3>
+            <div className={paletteStyle}>
+              {primaryColors.map(([k, v]) => (
+                <ThemeValueEntry
+                  key={k}
+                  label={k as K}
+                  labelModifer={label =>
+                    primaryColorsSection[
+                      label as keyof typeof primaryColorsSection
+                    ]
+                  }
+                  value={v as V}
+                  section={section}
+                  onChange={onChange}
+                />
+              ))}
+            </div>
+          </div>
+          <div className={cx(flex, flexColumn)}>
+            <h3>Secondary colors</h3>
+            <div className={paletteStyle}>
+              {secondaryColors.map(([k, v]) => (
+                <ThemeValueEntry
+                  key={k}
+                  label={k as K}
+                  labelModifer={label =>
+                    secondaryColorsSection[
+                      label as keyof typeof secondaryColorsSection
+                    ]
+                  }
+                  value={v as V}
+                  section={section}
+                  onChange={onChange}
+                />
+              ))}
+            </div>
+          </div>
+          <div className={cx(flex, flexColumn)}>
+            <h3>Background colors</h3>
+            <div className={paletteStyle}>
+              {backgroundColors.map(([k, v]) => (
+                <ThemeValueEntry
+                  key={k}
+                  label={k as K}
+                  labelModifer={label =>
+                    backgroundColorsSection[
+                      label as keyof typeof backgroundColorsSection
+                    ]
+                  }
+                  value={v as V}
+                  section={section}
+                  onChange={onChange}
+                />
+              ))}
+            </div>
+          </div>
+          <div className={cx(flex, flexColumn)}>
+            <h3>Text colors</h3>
+            <div className={paletteStyle}>
+              {textColors.map(([k, v]) => (
+                <ThemeValueEntry
+                  key={k}
+                  label={k as K}
+                  labelModifer={label =>
+                    textColorsSection[label as keyof typeof textColorsSection]
+                  }
+                  value={v as V}
+                  section={section}
+                  onChange={onChange}
+                />
+              ))}
+            </div>
+          </div>
+          <div className={cx(flex, flexColumn)}>
+            <h3>Other colors</h3>
+            <div className={paletteStyle}>
+              {otherColors.map(([k, v]) => (
+                <ThemeValueEntry
+                  key={k}
+                  label={k as K}
+                  value={v as V}
+                  section={section}
+                  onChange={onChange}
+                />
+              ))}
+              <ThemeValueInput
+                onChange={(entry, value) => onChange(entry as K, value as V)}
+                theme={theme}
+                section={section}
+                attachedToId={componentId}
+              />
+            </div>
+          </div>
+        </>
+      );
+    } else {
+      return (
+        <>
+          {Object.entries(themeValues).map(([k, v]) => (
+            <ThemeValueEntry
+              key={k}
+              label={k as K}
+              value={v as V}
+              section={section}
+              onChange={onChange}
+            />
+          ))}
+          <ThemeValueInput
+            onChange={(entry, value) => onChange(entry as K, value as V)}
+            theme={theme}
+            section={section}
+            attachedToId={componentId}
+          />
+        </>
+      );
+    }
+  }, [componentId, onChange, section, theme]);
 
   return (
-    <div className={cx(flex, flexColumn, expandHeight)}>
-      <div className={cx(flex, itemCenter, flexDistribute, headerStyle)}>
-        <ConfirmAdder
-          label={`Add new ${section} value`}
-          accept={accept}
-          validator={validator}
-          onAccept={value => onChange(value!.name! as K, value!.value as V)}
-        >
-          {onNewValue => (
-            <>
-              <SimpleInput
-                placeholder="value name"
-                onChange={v =>
-                  onNewValue(ov => ({
-                    ...(ov || { value: 'black' }),
-                    name: String(v),
-                  }))
-                }
-              />
-              {section === 'colors' ? (
-                <ColorPicker
-                  onChange={color => {
-                    onNewValue(ov => ({ ...ov, value: rgbaToString(color) }));
-                  }}
-                />
-              ) : (
-                <SimpleInput
-                  placeholder="Theme value"
-                  className={valueStyle}
-                  onChange={v =>
-                    onNewValue(ov => ({ ...ov, value: String(v) }))
-                  }
-                />
-              )}
-            </>
-          )}
-        </ConfirmAdder>
-      </div>
+    <div className={cx(flex, flexColumn, expandHeight)} id={componentId}>
       <div className={cx(flex, grow, flexColumn, defaultPadding, autoScroll)}>
-        {Object.entries(theme?.values[section] || {}).map(([k, v]) => (
-          <div key={k} className={cx(flex, flexColumn, valueEntryStyle)}>
-            <div className={cx(flex, flexRow)}>
-              <label
-                className={cx(css({ display: 'flex', alignItems: 'center' }))}
-                htmlFor={k}
-                title={k}
-              >
-                {k} :
-              </label>
-              {!Object.keys(defaultThemeValues[section]).includes(k) && (
-                <ConfirmButton
-                  icon="trash"
-                  onAction={success => success && onChange(k as K, null)}
-                />
-              )}
-            </div>
-            {section === 'colors' ? (
-              <ColorPicker
-                initColor={(v as string) || 'black'}
-                onChange={color => {
-                  onChange(k as K, rgbaToString(color) as V);
-                }}
-              />
-            ) : (
-              <SimpleInput
-                className={valueStyle}
-                value={v}
-                onChange={v => onChange(k as K, String(v) as V)}
-              />
-            )}
-          </div>
-        ))}
+        {values}
       </div>
     </div>
   );

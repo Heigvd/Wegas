@@ -57,6 +57,30 @@ export interface DefaultThemeColors {
   'Success color': ColorType;
 }
 
+// Not the best but allows to split colors into logical groups without modifying the theme's structure
+export const primaryColorsSection = {
+  'Primary color': 'Main',
+  'Primary color shade': 'Shade',
+  'Primary color tint': 'Tint',
+  'Primary color pastel': 'Pastel',
+};
+export const secondaryColorsSection = {
+  'Secondary color': 'Main',
+  'Secondary color shade': 'Shade',
+  'Secondary color tint': 'Tint',
+  'Secondary color pastel': 'Pastel',
+};
+export const backgroundColorsSection = {
+  'Background color': 'Main',
+  'Secondary background color': 'Secondary',
+  'Dark background color': 'Dark',
+  'Dark secondary background color': 'Dark secondary',
+};
+export const textColorsSection = {
+  'Text color': 'Main',
+  'Secondary text color': 'Scondary',
+};
+
 export interface DefaultThemeDimensions {
   'Border radius': React.CSSProperties['borderRadius'];
   'Border width': React.CSSProperties['borderWidth'];
@@ -80,7 +104,7 @@ export type ModeOther = keyof DefaultThemeOthers | undefined;
 export type ModeComponent<
   C extends { [entry: string]: ModeColor } | undefined = undefined,
   D extends { [entry: string]: ModeDimension } | undefined = undefined,
-  O extends { [entry: string]: ModeOther } | undefined = undefined
+  O extends { [entry: string]: ModeOther } | undefined = undefined,
 > = {} & (C extends undefined
   ? {}
   : {
@@ -103,58 +127,27 @@ export type FullModeComponent = ModeComponent<
   { [entry: string]: ModeOther }
 >;
 
-export interface ModeValues {
-  Common: ModeComponent<
-    {
-      PrimaryColor: ModeColor;
-      PrimaryColorShade: ModeColor;
-      ActiveColor: ModeColor;
-      BackgroundColor: ModeColor;
-      SecondaryBackgroundColor: ModeColor;
-      DarkTextColor: ModeColor;
-      LightTextColor: ModeColor;
-      DisabledColor: ModeColor;
-      HighlightColor: ModeColor;
-      HeaderColor: ModeColor;
-      HoverColor: ModeColor;
-      HoverTextColor: ModeColor;
-      WarningColor: ModeColor;
-      SuccessColor: ModeColor;
-      ErrorColor: ModeColor;
-    },
-    { BorderWidth: ModeDimension; BorderRadius: ModeDimension },
-    { TextFont1: ModeOther; TextFont2: ModeOther }
-  >;
-  Splitter: ModeComponent<undefined, { SplitterSize: ModeDimension }>;
-  ComponentTitle: ModeComponent<
-    {
-      TextColor1: ModeColor;
-      TextBackground1: ModeColor;
-      TextColor2: ModeColor;
-      TextBackground2: ModeColor;
-      TextColor3: ModeColor;
-      TextBackground3: ModeColor;
-      TextColor4: ModeColor;
-      TextBackground4: ModeColor;
-      TextColor5: ModeColor;
-      TextBackground5: ModeColor;
-    },
-    {
-      FontSize1: ModeDimension;
-      FontSize2: ModeDimension;
-      FontSize3: ModeDimension;
-      FontSize4: ModeDimension;
-      FontSize5: ModeDimension;
-    },
-    {
-      FontFamily1: ModeOther;
-      FontFamily2: ModeOther;
-      FontFamily3: ModeOther;
-      FontFamily4: ModeOther;
-      FontFamily5: ModeOther;
-    }
-  >;
-}
+export type ModeValues = ModeComponent<
+  {
+    PrimaryColor: ModeColor;
+    PrimaryColorShade: ModeColor;
+    ActiveColor: ModeColor;
+    BackgroundColor: ModeColor;
+    SecondaryBackgroundColor: ModeColor;
+    DarkTextColor: ModeColor;
+    LightTextColor: ModeColor;
+    DisabledColor: ModeColor;
+    HighlightColor: ModeColor;
+    HeaderColor: ModeColor;
+    HoverColor: ModeColor;
+    HoverTextColor: ModeColor;
+    WarningColor: ModeColor;
+    SuccessColor: ModeColor;
+    ErrorColor: ModeColor;
+  },
+  { BorderWidth: ModeDimension; BorderRadius: ModeDimension },
+  { TextFont1: ModeOther; TextFont2: ModeOther }
+>;
 
 export interface Mode {
   modeName: string;
@@ -162,8 +155,7 @@ export interface Mode {
   values: ModeValues;
 }
 
-export type ModeComponentNames = keyof Mode['values'];
-export type ModeComponents = Mode['values'][ModeComponentNames];
+export type ModeValuesNames = keyof ModeValues;
 
 export interface Themes {
   default: Theme;
@@ -189,65 +181,30 @@ export const defaultLightMode: Mode = {
   modeName: 'light',
   nextModeName: 'dark',
   values: {
-    Common: {
-      colors: {
-        PrimaryColor: 'Primary color',
-        PrimaryColorShade: 'Primary color shade',
-        ActiveColor: 'Secondary color shade',
-        BackgroundColor: 'Background color',
-        SecondaryBackgroundColor: 'Secondary background color',
-        DisabledColor: 'Disabled color',
-        HeaderColor: 'Primary color pastel',
-        HighlightColor: 'Accent color',
-        HoverColor: 'Primary color pastel',
-        HoverTextColor: 'Secondary text color',
-        DarkTextColor: 'Text color',
-        LightTextColor: 'Secondary text color',
-        WarningColor: 'Warning color',
-        SuccessColor: 'Success color',
-        ErrorColor: 'Error color',
-      },
-      dimensions: {
-        BorderRadius: 'Border radius',
-        BorderWidth: 'Border width',
-      },
-      others: {
-        TextFont1: 'Font family 1',
-        TextFont2: 'Font family 3',
-      },
+    colors: {
+      PrimaryColor: 'Primary color',
+      PrimaryColorShade: 'Primary color shade',
+      ActiveColor: 'Secondary color shade',
+      BackgroundColor: 'Background color',
+      SecondaryBackgroundColor: 'Secondary background color',
+      DisabledColor: 'Disabled color',
+      HeaderColor: 'Primary color pastel',
+      HighlightColor: 'Accent color',
+      HoverColor: 'Primary color pastel',
+      HoverTextColor: 'Secondary text color',
+      DarkTextColor: 'Text color',
+      LightTextColor: 'Secondary text color',
+      WarningColor: 'Warning color',
+      SuccessColor: 'Success color',
+      ErrorColor: 'Error color',
     },
-    Splitter: {
-      dimensions: {
-        SplitterSize: 'Border width',
-      },
+    dimensions: {
+      BorderRadius: 'Border radius',
+      BorderWidth: 'Border width',
     },
-    ComponentTitle: {
-      colors: {
-        TextColor1: 'Text color',
-        TextBackground1: undefined,
-        TextColor2: 'Text color',
-        TextBackground2: undefined,
-        TextColor3: 'Text color',
-        TextBackground3: undefined,
-        TextColor4: 'Text color',
-        TextBackground4: 'Secondary color pastel',
-        TextColor5: 'Secondary text color',
-        TextBackground5: 'Secondary color pastel',
-      },
-      dimensions: {
-        FontSize1: 'Font size 1',
-        FontSize2: 'Font size 2',
-        FontSize3: 'Font size 3',
-        FontSize4: 'Font size 4',
-        FontSize5: 'Font size 5',
-      },
-      others: {
-        FontFamily1: 'Font family 2',
-        FontFamily2: 'Font family 2',
-        FontFamily3: 'Font family 2',
-        FontFamily4: 'Font family 2',
-        FontFamily5: 'Font family 2',
-      },
+    others: {
+      TextFont1: 'Font family 1',
+      TextFont2: 'Font family 3',
     },
   },
 };
@@ -256,82 +213,41 @@ export const defaultDarkMode: Mode = {
   modeName: 'dark',
   nextModeName: 'light',
   values: {
-    Common: {
-      colors: {
-        PrimaryColor: 'Primary color',
-        PrimaryColorShade: 'Primary color shade',
-        ActiveColor: 'Secondary color pastel',
-        BackgroundColor: 'Dark background color',
-        SecondaryBackgroundColor: 'Dark secondary background color',
-        DisabledColor: 'Disabled color',
-        HeaderColor: 'Secondary color',
-        HighlightColor: 'Accent color',
-        HoverColor: 'Secondary color',
-        HoverTextColor: 'Secondary text color',
-        DarkTextColor: 'Secondary text color',
-        LightTextColor: 'Text color',
-        WarningColor: 'Warning color',
-        SuccessColor: 'Success color',
-        ErrorColor: 'Error color',
-      },
-      dimensions: {
-        BorderRadius: 'Border radius',
-        BorderWidth: 'Border width',
-      },
-      others: {
-        TextFont1: 'Font family 1',
-        TextFont2: 'Font family 3',
-      },
+    colors: {
+      PrimaryColor: 'Primary color',
+      PrimaryColorShade: 'Primary color shade',
+      ActiveColor: 'Secondary color pastel',
+      BackgroundColor: 'Dark background color',
+      SecondaryBackgroundColor: 'Dark secondary background color',
+      DisabledColor: 'Disabled color',
+      HeaderColor: 'Secondary color',
+      HighlightColor: 'Accent color',
+      HoverColor: 'Secondary color',
+      HoverTextColor: 'Secondary text color',
+      DarkTextColor: 'Secondary text color',
+      LightTextColor: 'Text color',
+      WarningColor: 'Warning color',
+      SuccessColor: 'Success color',
+      ErrorColor: 'Error color',
     },
-    Splitter: {
-      dimensions: {
-        SplitterSize: 'Border width',
-      },
+    dimensions: {
+      BorderRadius: 'Border radius',
+      BorderWidth: 'Border width',
     },
-    ComponentTitle: {
-      colors: {
-        TextColor1: 'Background color',
-        TextBackground1: undefined,
-        TextColor2: 'Background color',
-        TextBackground2: undefined,
-        TextColor3: 'Background color',
-        TextBackground3: undefined,
-        TextColor4: 'Background color',
-        TextBackground4: 'Secondary color pastel',
-        TextColor5: 'Secondary text color',
-        TextBackground5: 'Secondary color pastel',
-      },
-      dimensions: {
-        FontSize1: 'Font size 1',
-        FontSize2: 'Font size 2',
-        FontSize3: 'Font size 3',
-        FontSize4: 'Font size 4',
-        FontSize5: 'Font size 5',
-      },
-      others: {
-        FontFamily1: 'Font family 2',
-        FontFamily2: 'Font family 2',
-        FontFamily3: 'Font family 2',
-        FontFamily4: 'Font family 2',
-        FontFamily5: 'Font family 2',
-      },
+    others: {
+      TextFont1: 'Font family 1',
+      TextFont2: 'Font family 3',
     },
   },
 };
 
 export const themeVar = Object.entries(defaultLightMode.values).reduce(
-  (o, [ck, c]) => ({
+  (o, [sk, s]) => ({
     ...o,
-    [ck]: Object.entries(c).reduce(
-      (o, [sk, s]) => ({
+    [sk]: Object.keys((s as {}) || {}).reduce(
+      (o, ek) => ({
         ...o,
-        [sk]: Object.keys((s as {}) || {}).reduce(
-          (o, ek) => ({
-            ...o,
-            [ek]: `var(--${ck}-${sk}-${ek})`.toLowerCase(),
-          }),
-          {},
-        ),
+        [ek]: `var(--${sk}-${ek})`.toLowerCase(),
       }),
       {},
     ),
@@ -344,24 +260,16 @@ export function modeClass(themeValues: ThemeValues, mode: Mode): string {
     '--current-mode-name': mode.modeName,
     '--next-mode-name': mode.nextModeName,
     ...Object.entries(mode.values).reduce(
-      (o, [ck, c]) => ({
+      (o, [sk, s]) => ({
         ...o,
-        ...Object.entries(c).reduce(
-          (o, [sk, s]) => ({
+        ...Object.entries((s as {}) || {}).reduce(
+          (o, [ek, e]) => ({
             ...o,
-            ...Object.entries((s as {}) || {}).reduce(
-              (o, [ek, e]) => ({
-                ...o,
-                [`--${ck}-${sk}-${ek}`.toLowerCase()]:
-                  themeValues[sk as keyof ThemeValues][e as string] ||
-                  themeValues[sk as keyof ThemeValues][
-                    defaultLightMode.values[ck as ModeComponentNames][
-                      sk as keyof ModeComponent
-                    ][ek] as string
-                  ],
-              }),
-              {},
-            ),
+            [`--${sk}-${ek}`.toLowerCase()]:
+              themeValues[sk as keyof ThemeValues][e as string] ||
+              themeValues[sk as keyof ThemeValues][
+                defaultLightMode.values[sk as keyof ModeComponent][ek] as string
+              ],
           }),
           {},
         ),
