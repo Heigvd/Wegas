@@ -9,7 +9,7 @@ import {
 } from '../../../css/classes';
 import { cx, css } from 'emotion';
 import { MessageString } from '../../../Editor/Components/MessageString';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import { Button } from '../Buttons/Button';
 

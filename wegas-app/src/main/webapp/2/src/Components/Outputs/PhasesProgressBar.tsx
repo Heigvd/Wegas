@@ -13,7 +13,7 @@ import { Value } from './Value';
 import { cx, css } from 'emotion';
 import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../../Helper/className';
-import { themeVar } from '../Style/ThemeVars';
+import { themeVar } from '../Theme/ThemeVars';
 
 const phasePathStyle = css({
   height: '0.5em',

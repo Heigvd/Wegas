@@ -5,12 +5,17 @@ import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvi
 import { omit } from 'lodash';
 import u from 'immer';
 import { ReparentableRoot } from '../Reparentable';
-import { DnDTabLayout, ComponentMap, filterMap, ClassNames } from './DnDTabLayout';
+import {
+  DnDTabLayout,
+  ComponentMap,
+  filterMap,
+  ClassNames,
+} from './DnDTabLayout';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
 
 import 'react-reflex/styles.css';
 import { flex, noOverflow, grow, expandHeight } from '../../../css/classes';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { TabComponent } from './DnDTabs';
 
 export const splitter = css({

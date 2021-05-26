@@ -5,7 +5,7 @@ import {
   useVariableDescriptor,
   useVariableInstance,
 } from '../../Hooks/useVariable';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { INumberDescriptor } from 'wegas-ts-api';
 import { wwarn } from '../../../Helper/wegaslog';
 import { TumbleLoader } from '../../Loader';

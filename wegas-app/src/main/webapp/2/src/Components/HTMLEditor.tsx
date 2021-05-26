@@ -118,6 +118,10 @@ interface HTMLEditorProps extends ClassStyleId, DisabledReadonly {
    * avoid resizing of the editor
    */
   noResize?: boolean;
+  /**
+   * avoid forcing <p> block
+   */
+  noRootBlock?: boolean;
 }
 
 let HTMLEditorID = 0;
@@ -134,6 +138,7 @@ export default function HTMLEditor({
   disabled,
   readOnly,
   noResize,
+  noRootBlock,
 }: HTMLEditorProps) {
   const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>(
     {},
@@ -198,6 +203,7 @@ export default function HTMLEditor({
         branding: false,
         relative_urls: false,
         toolbar_items_size: 'small',
+        ...(noRootBlock ? { forced_root_block: '' } : {}),
         file_picker_callback: (callback: CallbackFN) =>
           setFileBrowsing({ fn: callback }),
         save_onsavecallback: () =>
@@ -291,7 +297,16 @@ export default function HTMLEditor({
       };
       return config;
     },
-    [inline, readOnly, placeholder, onSave, disabled, noResize, classes],
+    [
+      inline,
+      readOnly,
+      placeholder,
+      onSave,
+      disabled,
+      noResize,
+      noRootBlock,
+      classes,
+    ],
   );
 
   React.useEffect(() => {

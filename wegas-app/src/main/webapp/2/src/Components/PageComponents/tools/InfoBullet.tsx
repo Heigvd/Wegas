@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css, keyframes, cx } from 'emotion';
 import { useScript } from '../../Hooks/useScript';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { IScript } from 'wegas-ts-api';
 
 const infoBeamStyle = css({

@@ -32,7 +32,7 @@ import {
   emptyStatement,
   isEmptyStatement,
 } from '@babel/types';
-import { themeVar } from '../../../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../../../Components/Theme/ThemeVars';
 import { Button } from '../../../../../Components/Inputs/Buttons/Button';
 import { EmbeddedSrcEditor } from '../../../ScriptEditors/EmbeddedSrcEditor';
 import { State } from '../../../../../data/Reducer/reducers';

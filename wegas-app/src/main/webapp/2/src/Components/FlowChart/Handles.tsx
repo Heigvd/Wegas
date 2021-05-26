@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css } from 'emotion';
-import { themeVar } from '../Style/ThemeVars';
+import { themeVar } from '../Theme/ThemeVars';
 import { useDrag } from 'react-dnd';
 import { FlowLine, Process, Processes } from './FlowChart';
 import { XYPosition } from '../Hooks/useMouseEventDnd';

@@ -108,7 +108,6 @@ export const childrenPlusTabStyle = css({
   }
 })
 
-
 interface TabLayoutProps {
   active?: number;
   vertical: boolean;

@@ -9,7 +9,7 @@ import {
   halfOpacity,
   justifyCenter,
 } from '../css/classes';
-import { themeVar } from './Style/ThemeVars';
+import { themeVar } from './Theme/ThemeVars';
 import { classNameOrEmpty } from '../Helper/className';
 
 const entityChooser = css({

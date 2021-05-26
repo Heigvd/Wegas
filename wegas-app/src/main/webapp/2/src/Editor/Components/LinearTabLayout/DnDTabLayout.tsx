@@ -23,6 +23,7 @@ import { themeVar } from '../../../Components/Style/ThemeVars';
 import { childrenPlusTabStyle, plusTabStyle } from '../../../Components/Tabs';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 
+
 const dropZoneFocus = hatchedBackground;
 
 const dropLeftZone = css({
@@ -90,9 +91,9 @@ export const dropSpecsFactory = (action: DropAction, layoutAccept: string) => {
   };
 };
 export interface ClassNames {
-  general?:string,
-  header?: string,
-  content?: string
+  general?: string;
+  header?: string;
+  content?: string;
 }
 
 interface TabLayoutProps {
@@ -168,7 +169,7 @@ export function DnDTabLayout({
   classNames = {},
   areChildren,
 }: TabLayoutProps) {
-  const {general, header, content} = classNames;
+  const { general, header, content } = classNames;
   React.useEffect(() => {
     if (
       defaultActiveLabel === undefined ||

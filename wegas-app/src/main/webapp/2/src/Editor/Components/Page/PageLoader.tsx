@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
-import { ThemeProvider, themeCTX } from '../../../Components/Style/Theme';
+import { ThemeProvider, themeCTX } from '../../../Components/Theme/Theme';
 import { TextLoader, TumbleLoader } from '../../../Components/Loader';
 import { PageDeserializer } from '../../../Components/PageComponents/tools/PageDeserializer';
 import { useStore } from '../../../data/Stores/store';
 import { css, cx } from 'emotion';
 import { flex, expandHeight } from '../../../css/classes';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { FlexItem } from '../../../Components/Layouts/FlexList';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { State } from '../../../data/Reducer/reducers';

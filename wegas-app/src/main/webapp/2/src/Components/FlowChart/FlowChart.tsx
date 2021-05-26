@@ -25,7 +25,7 @@ import {
   ArrowDefs,
   FlowLineComponentProps,
 } from './FlowLineComponent';
-import { themeVar } from '../Style/ThemeVars';
+import { themeVar } from '../Theme/ThemeVars';
 
 const flowChartStyle = css({
   width: '100%',

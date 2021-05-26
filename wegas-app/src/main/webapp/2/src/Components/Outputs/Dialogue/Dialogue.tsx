@@ -18,7 +18,7 @@ import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReduce
 import { Player } from '../../../data/selectors';
 import { store } from '../../../data/Stores/store';
 import { isActionAllowed } from '../../PageComponents/tools/options';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { DialogueChoice } from './DialogueChoice';
 import { DialogueEntry } from './DialogueEntry';
 import { WaitingLoader } from './WaitingLoader';

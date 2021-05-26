@@ -5,7 +5,7 @@ import { editorEvent, updatePusherStatus } from '../data/Reducer/globalState';
 import { manageResponseHandler } from '../data/actions';
 import { Actions } from '../data';
 import * as React from 'react';
-import { wwarn } from '../Helper/wegaslog';
+import { werror, wwarn } from '../Helper/wegaslog';
 import { IAbstractEntity } from 'wegas-ts-api';
 import { entityIs } from '../data/entities';
 
@@ -95,6 +95,8 @@ const webSocketEvents = [
   'EntityDestroyedEvent',
   'CustomEvent',
   'PageUpdate',
+  'LibraryUpdate-Theme',
+  'LibraryUpdate-SelectedThemes',
   'LibraryUpdate-CSS',
   'LibraryUpdate-ClientScript',
   'LibraryUpdate-ServerScript',
@@ -301,7 +303,7 @@ class WebSocketListener {
         return;
       default:
         if (!eventFound) {
-          throw Error(`Event [${event}] unchecked`);
+          werror(`Event [${event}] unchecked`);
         }
     }
   }

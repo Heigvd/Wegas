@@ -3,12 +3,13 @@ import Downshift, { StateChangeOptions } from 'downshift';
 import { css, cx } from 'emotion';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
-import { themeVar } from './Style/ThemeVars';
+import { themeVar } from './Theme/ThemeVars';
 import { classNameOrEmpty } from '../Helper/className';
 import { ConfirmButton } from './Inputs/Buttons/ConfirmButton';
 import { flexRow, flex, itemCenter } from '../css/classes';
 import { lastKeyboardEvents } from '../Helper/keyboardEvents';
 import { Button } from './Inputs/Buttons/Button';
+import { deepDifferent } from './Hooks/storeHookFactory';
 
 export type SelecteDropdMenuItem<
   T,
@@ -44,6 +45,7 @@ export interface DropMenuProps<
   };
   noBackground?: boolean;
   style?: React.CSSProperties;
+  selected?: T | T[];
 }
 /**
  * returns an empty string
@@ -78,19 +80,26 @@ const subMenuContainer = css({
     width: '100%',
   },
 });
-const subMenuItemContainer = cx(
-  flex,
-  flexRow,
-  itemCenter,
-  css({
-    marginLeft: '5px',
-    marginRight: '5px',
-    ':hover': {
-      backgroundColor: themeVar.Common.colors.HoverColor,
-      color: themeVar.Common.colors.HoverTextColor,
-    },
-  }),
-);
+const subMenuItemContainer = (isSelected: boolean) =>
+  cx(
+    flex,
+    flexRow,
+    itemCenter,
+    css({
+      cursor: 'pointer',
+      userSelect: 'none',
+      marginLeft: '5px',
+      marginRight: '5px',
+      backgroundColor: isSelected
+        ? themeVar.Common.colors.ActiveColor
+        : undefined,
+      color: isSelected ? themeVar.Common.colors.LightTextColor : undefined,
+      ':hover': {
+        backgroundColor: themeVar.Common.colors.HoverColor,
+        color: themeVar.Common.colors.HoverTextColor,
+      },
+    }),
+  );
 
 const DIR = {
   right: css(subMenuContainer, { left: '100%', top: 0 }),
@@ -119,6 +128,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
   deleter,
   noBackground,
   style,
+  selected,
 }: DropMenuProps<T, MItem>) {
   const realDirection = direction ? direction : 'down';
   const onStateChange = React.useCallback(
@@ -256,7 +266,9 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                 }
               }}
             >
-              {adder && <div className={subMenuItemContainer}>{adder}</div>}
+              {adder && (
+                <div className={subMenuItemContainer(false)}>{adder}</div>
+              )}
               {items.map((item: MItem, index: number) => {
                 const newPath = [...(path ? path : []), index];
                 const trasher =
@@ -266,6 +278,13 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                       onAction={() => deleter.onDelete(item)}
                     />
                   ) : null;
+
+                const isSelected =
+                  selected == null
+                    ? false
+                    : Array.isArray(selected)
+                    ? !deepDifferent(selected[0], item.value)
+                    : !deepDifferent(selected, item.value);
 
                 if (Array.isArray(item.items)) {
                   return (
@@ -278,7 +297,8 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                           })
                         : undefined)}
                       className={
-                        subMenuItemContainer + classNameOrEmpty(item.className)
+                        subMenuItemContainer(isSelected) +
+                        classNameOrEmpty(item.className)
                       }
                       style={item.style}
                     >
@@ -295,6 +315,11 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                         items={item.items}
                         direction={realDirection === 'right' ? 'left' : 'right'}
                         label={item.label}
+                        selected={
+                          Array.isArray(selected)
+                            ? selected.slice(1)
+                            : undefined
+                        }
                         path={newPath}
                       />
                       {trasher}
@@ -312,7 +337,8 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                         })
                       : undefined)}
                     className={
-                      subMenuItemContainer + classNameOrEmpty(item.className)
+                      subMenuItemContainer(isSelected) +
+                      classNameOrEmpty(item.className)
                     }
                   >
                     {item.label}

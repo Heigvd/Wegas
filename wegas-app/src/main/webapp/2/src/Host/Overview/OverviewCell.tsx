@@ -3,7 +3,7 @@ import * as React from 'react';
 import { globals } from '../../Components/Hooks/useScript';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { HTMLText } from '../../Components/Outputs/HTMLText';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import {
   ActionItem,
   DataItem,

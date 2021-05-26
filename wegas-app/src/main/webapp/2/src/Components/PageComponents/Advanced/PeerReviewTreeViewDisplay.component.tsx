@@ -64,7 +64,7 @@ import {
   CustomPhasesProgressBar,
   PhaseComponentProps,
 } from '../../Outputs/PhasesProgressBar';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { Toolbar } from '../../Toolbar';
 import {
   pageComponentFactory,

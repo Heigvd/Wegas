@@ -1,6 +1,6 @@
 //import * as Color from 'color';
 import { css, cx } from 'emotion';
-import { themeVar } from '../Components/Style/ThemeVars';
+import { themeVar } from '../Components/Theme/ThemeVars';
 
 // Display
 export const flex = css({
@@ -95,12 +95,6 @@ export const flexRowReverse = css({
 export const flexWrap = css({
   flexWrap: 'wrap',
 });
-export const flexDistribute = css({
-  justifyContent: 'space-evenly',
-});
-export const flexBetween = css({
-  justifyContent: 'space-between',
-});
 
 // Position
 export const textCenter = css({
@@ -129,6 +123,12 @@ export const justifyEnd = css({
 });
 export const justifyStart = css({
   justifyContent: 'flex-start',
+});
+export const flexDistribute = css({
+  justifyContent: 'space-evenly',
+});
+export const flexBetween = css({
+  justifyContent: 'space-between',
 });
 export const foregroundContent = css({
   zIndex: 1000,
@@ -227,6 +227,11 @@ export const headerStyle = css({
   backgroundColor: themeVar.Common.colors.SecondaryBackgroundColor,
   paddingTop: '1em',
   borderBottom: '15px solid ' + themeVar.Common.colors.ActiveColor,
+});
+
+export const contentStyle = css({
+  margin: '5px',
+  // backgroundColor: themeVar.colors.BackgroundColor,
 });
 
 export const childrenHeaderStyle = css({

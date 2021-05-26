@@ -21,7 +21,7 @@ import { Player } from '../../../data/selectors';
 import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
 import { useStore, store } from '../../../data/Stores/store';
 import { EntityChooser } from '../../EntityChooser';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { ConnectedQuestionDisplay } from './Question';
 
 const repliedLabelStyle = css({

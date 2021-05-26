@@ -2,7 +2,7 @@ import * as React from 'react';
 import { State } from '../../../data/Reducer/reducers';
 import { useStore } from '../../../data/Stores/store';
 import { useScript } from '../../Hooks/useScript';
-import { themeCTX } from '../../Style/Theme';
+import { themeCTX } from '../../Theme/Theme';
 import { WegasComponentOptions } from './EditableComponent';
 import { PlayerInfoBulletProps } from './InfoBullet';
 import { PageComponentContext, useComputeUnreadCount } from './options';
@@ -48,8 +48,8 @@ export const defaultOptionsKeys: (keyof OptionProps)[] = [
 
 // options that can be passed from a parent to its children
 export interface HeritableOptionsState {
-  disabled: boolean | undefined;
-  readOnly: boolean | undefined;
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 
 export const heritableOptionsStateKeys: (keyof HeritableOptionsState)[] = [

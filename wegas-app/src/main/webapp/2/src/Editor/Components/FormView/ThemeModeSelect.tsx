@@ -4,7 +4,7 @@ import { LabeledView, Labeled } from './labeled';
 import { DropMenu } from '../../../Components/DropMenu';
 import { cx } from 'emotion';
 import { flex, flexRow, grow } from '../../../css/classes';
-import { themeCTX } from '../../../Components/Style/Theme';
+import { themeCTX } from '../../../Components/Theme/Theme';
 import { WidgetProps } from 'jsoninput/typings/types';
 
 export interface ThemeModeSelectProps extends WidgetProps.BaseProps {

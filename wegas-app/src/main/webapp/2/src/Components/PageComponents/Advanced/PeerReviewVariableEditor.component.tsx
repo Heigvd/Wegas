@@ -43,7 +43,7 @@ import { NumberSlider } from '../../Inputs/Number/NumberSlider';
 import { useOkCancelModal } from '../../Modal';
 import { HTMLText } from '../../Outputs/HTMLText';
 import { popupDispatch, addPopup } from '../../PopupManager';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import {
   pageComponentFactory,
   registerComponent,

@@ -51,8 +51,6 @@ export function Form<T>({
     setVal(entity);
   }
 
-
-
   return (
     <Toolbar>
       <Toolbar.Header className={defaultMargin}>

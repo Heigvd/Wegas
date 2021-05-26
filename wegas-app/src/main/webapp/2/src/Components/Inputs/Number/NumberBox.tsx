@@ -14,7 +14,7 @@ import { CheckMinMax } from './numberComponentHelper';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 
 const numberBoxStyle = css({
   padding: '10px',

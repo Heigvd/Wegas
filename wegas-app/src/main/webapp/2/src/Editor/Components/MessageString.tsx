@@ -1,6 +1,6 @@
 import { css } from 'emotion';
 import * as React from 'react';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 
 const messageStyle = (color?: string) =>
   css({

@@ -25,7 +25,7 @@ import {
   DragPreviewOptions,
 } from 'react-dnd';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { IconComp } from '../Views/FontAwesome';
 import { pageCTX } from './PageEditor';
 import { Button } from '../../../Components/Inputs/Buttons/Button';

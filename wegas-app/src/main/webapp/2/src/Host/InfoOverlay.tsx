@@ -1,7 +1,7 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { useOnClickOutside } from '../Components/Hooks/useOnClickOutside';
-import { themeVar } from '../Components/Style/ThemeVars';
+import { themeVar } from '../Components/Theme/ThemeVars';
 import { Toolbar } from '../Components/Toolbar';
 import { flex } from '../css/classes';
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
@@ -26,7 +26,8 @@ const overlayStyle = css({
     content: "''",
     width: 0,
     height: 0,
-    borderRight: '15px solid ' + themeVar.Common.colors.SecondaryBackgroundColor,
+    borderRight:
+      '15px solid ' + themeVar.Common.colors.SecondaryBackgroundColor,
     borderTop: '15px solid transparent',
     borderBottom: '15px solid transparent',
     position: 'absolute',
@@ -36,10 +37,10 @@ const overlayStyle = css({
   },
   h2: {
     fontSize: themeVar.ComponentTitle.dimensions.FontSize4,
-  }
+  },
 });
 const overlayContentStyle = css({
-overflow: 'auto',
+  overflow: 'auto',
 });
 const modalCloseDivStyle = css({
   display: 'flex',
@@ -66,7 +67,7 @@ function placeOverlay(
     const buttonLeft = attachedToRef.current.getBoundingClientRect().right;
     const parentLeft = ref.parentElement?.getBoundingClientRect().left || 0;
     ref.style.setProperty('top', buttonBottom - parentTop - 60 + 'px');
-    ref.style.setProperty('left', (buttonLeft - parentLeft + 10) + 'px');
+    ref.style.setProperty('left', buttonLeft - parentLeft + 10 + 'px');
   }
 }
 // React element

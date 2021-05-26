@@ -9,7 +9,7 @@ import { cx, css } from 'emotion';
 import { flex, flexColumn, flexRow, textCenter } from '../../../css/classes';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 import { MessageString } from '../../../Editor/Components/MessageString';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { Button } from '../../Inputs/Buttons/Button';
 
 const handleContentStyle = css({

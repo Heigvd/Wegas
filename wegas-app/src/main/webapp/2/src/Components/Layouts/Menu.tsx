@@ -9,7 +9,7 @@ import {
   contentCenter,
   flexDistribute,
 } from '../../css/classes';
-import { themeVar } from '../Style/ThemeVars';
+import { themeVar } from '../Theme/ThemeVars';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 

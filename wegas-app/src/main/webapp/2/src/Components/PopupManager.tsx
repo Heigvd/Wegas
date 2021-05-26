@@ -10,7 +10,7 @@ import { omit } from 'lodash-es';
 import { ITranslatableContent } from 'wegas-ts-api';
 import { translate } from '../Editor/Components/FormView/translatable';
 import { languagesCTX } from './Contexts/LanguagesProvider';
-import { themeVar } from './Style/ThemeVars';
+import { themeVar } from './Theme/ThemeVars';
 import { Button } from './Inputs/Buttons/Button';
 
 const popupBackgroundStyle = css({

@@ -1,7 +1,7 @@
 import { css } from 'emotion';
 import * as React from 'react';
 import { TranslatableContent } from '../../../data/i18n';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 
 export const choiceContainerStyle = css({
   margin: '1em 0',

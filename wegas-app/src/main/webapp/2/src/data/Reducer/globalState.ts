@@ -83,7 +83,7 @@ export interface ActionsProps<T> {
   sorting: 'button' | 'toolbox' | 'close';
 }
 
-type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
+//type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
   save?: (entity: T) => void;
   more?: {

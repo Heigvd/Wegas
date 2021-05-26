@@ -5,7 +5,7 @@ import { css } from 'emotion';
 import { emptyStatement } from '@babel/types';
 import Form from 'jsoninput';
 import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
-import { themeVar } from '../../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../../Components/Theme/ThemeVars';
 
 const scriptStyle = css({
   border: '1px solid ' + themeVar.Common.colors.DisabledColor,

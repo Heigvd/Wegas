@@ -1,6 +1,6 @@
 import { css } from 'emotion';
 import { cloneDeep } from 'lodash-es';
-import { themeVar } from '../Components/Style/ThemeVars';
+import { themeVar } from '../Components/Theme/ThemeVars';
 import { IScript } from 'wegas-ts-api';
 
 export function isPageItem(

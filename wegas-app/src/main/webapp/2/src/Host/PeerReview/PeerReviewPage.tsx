@@ -5,7 +5,7 @@ import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { CheckBox } from '../../Components/Inputs/Boolean/CheckBox';
 import { Button } from '../../Components/Inputs/Buttons/Button';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import {
   autoScroll,
