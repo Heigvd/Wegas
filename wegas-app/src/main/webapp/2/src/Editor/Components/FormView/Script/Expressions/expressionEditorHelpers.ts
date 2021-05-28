@@ -50,6 +50,10 @@ export interface IInitAttributes extends IParameterAttributes {
   variableName?: string;
 }
 
+export const defaultBooleanAttributes: Partial<IInitAttributes> = {
+  initExpression: undefined,
+};
+
 export const defaultInitAttributes: Partial<IInitAttributes> = {
   variableName: undefined,
   initExpression: undefined,
@@ -116,6 +120,12 @@ export const isFilledObject = (
     Object.values(filtererdObject).every(v => v !== undefined)
   );
 };
+
+export const isBooleanExpression = (
+  scriptAttributes: PartialAttributes,
+): scriptAttributes is IInitAttributes =>
+  isFilledObject(defaultBooleanAttributes, scriptAttributes) &&
+  scriptAttributes.initExpression?.type === 'boolean';
 
 export const isInitAttributes = (
   scriptAttributes: PartialAttributes,
