@@ -54,6 +54,7 @@ import {
   isAttributes,
   PartialAttributes,
   PartialSchemaAttributes,
+  isBooleanExpression,
 } from './expressionEditorHelpers';
 import { isWegasMethodReturnType } from '../../../../editionConfig';
 import { wlog } from '../../../../../Helper/wegaslog';
@@ -451,6 +452,21 @@ export const generateImpactExpression = (
     tolerateTypeVariation,
   );
 
+export const generateBooleanLiteralExpression = (
+  scriptAttributes: IAttributes,
+  schemaAttributes: PartialSchemaAttributes,
+  tolerateTypeVariation?: boolean,
+) =>
+  generateCallExpression(
+    memberExpression(
+      generateExpressionWithInitValue(scriptAttributes.initExpression.script),
+      identifier(scriptAttributes.methodName),
+    ),
+    scriptAttributes,
+    schemaAttributes,
+    tolerateTypeVariation,
+  );
+
 export const generateConditionStatement = (
   scriptAttributes: IConditionAttributes,
   schemaAttributes: PartialSchemaAttributes,
@@ -608,6 +624,13 @@ export const generateStatement = (
             newStatement = expressionStatement(
               generateImpactExpression(attributes, properties, true),
             );
+          } else {
+            if (isBooleanExpression(attributes)) {
+              newStatement = expressionStatement(
+                booleanLiteral(Boolean(attributes.initExpression.script)),
+                // generateBooleanLiteralExpression(attributes, properties, true),
+              );
+            }
           }
         }
       }
