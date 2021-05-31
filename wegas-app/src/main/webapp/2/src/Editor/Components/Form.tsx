@@ -147,6 +147,13 @@ export function Form<T>({
       <Toolbar.Content className={noOverflow}>
         <div className={defaultMargin}>
           <JSONForm
+            // Ugly workaround to force update JSONForm when config changes or entity changes
+            key={JSON.stringify({
+              description: config
+                ? (config as { description?: string }).description
+                : undefined,
+              id: val ? (val as { id?: number }).id : undefined,
+            })}
             ref={form}
             value={val}
             schema={config}
