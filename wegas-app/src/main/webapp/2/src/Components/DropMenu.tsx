@@ -247,7 +247,9 @@ export function justifyDropMenu(
     }
 
     menu.style.setProperty('left', values.left + 'px');
-    menu.style.setProperty('width', values.width + 'px');
+    if (values.width !== containerWidth) {
+      menu.style.setProperty('width', values.width + 'px');
+    }
     menu.style.setProperty('top', values.top + 'px');
     menu.style.setProperty('height', values.height + 'px');
   }
