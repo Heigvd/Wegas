@@ -137,8 +137,7 @@ export default function Header() {
                   dispatch(Actions.EditorActions.resetPageLoader());
                 }
               }}
-              className={cx(componentMarginLeft)}
-              buttonClassName= {outlineButtonStyle}
+              className={cx(componentMarginLeft, outlineButtonStyle)}
             />
             <IconButton
               icon='redo'
