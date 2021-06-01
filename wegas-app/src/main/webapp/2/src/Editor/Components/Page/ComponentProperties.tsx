@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { flex, flexColumn, grow } from '../../../css/classes';
+import { defaultPadding, flex, flexColumn, grow } from '../../../css/classes';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import {
   ContainerComponent,
@@ -270,15 +270,15 @@ export default function ConnectedComponentProperties() {
   const { onUpdate, onDelete, onEdit } = React.useContext(pageCTX);
 
   if (!editedPath) {
-    return <pre>No component selected yet</pre>;
+    return <pre className={defaultPadding}>No component selected yet</pre>;
   }
   if (!selectedPage) {
-    return <pre>No page selected yet</pre>;
+    return <pre className={defaultPadding}>No page selected yet</pre>;
   }
   const { component, parent } = findComponent(selectedPage, editedPath);
 
   if (!component) {
-    return <pre>Edited component not found in page</pre>;
+    return <pre className={defaultPadding}>Edited component not found in page</pre>;
   }
 
   return (

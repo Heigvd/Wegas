@@ -123,9 +123,14 @@ export const buttonStyle = css({
 export const outlineButtonStyle = css({
 border: '1px solid ' + themeVar.colors.DisabledColor,
 borderRadius: '50%',
-padding: '10px',
 height: '40px',
 width: '40px',
+justifyContent: 'center',
+button: {
+  padding: 0,
+  width:'100%',
+  justifyContent: 'center',
+}
 });
 
 export interface DisableBorders {
