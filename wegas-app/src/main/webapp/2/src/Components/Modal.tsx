@@ -68,6 +68,9 @@ const secondaryButtonStyle = css({
   backgroundColor: 'transparent',
   color: themeVar.colors.PrimaryColor,
   border: '1px solid ' + themeVar.colors.PrimaryColor,
+  ['&:hover']:{
+    color: themeVar.colors.LightTextColor,
+  }
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//

@@ -11,10 +11,11 @@ import { AvailableViews } from './FormView';
 import getEditionConfig from '../editionConfig';
 import { overrideSchema } from './EntityEditor';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
-import { flex, grow, justifyCenter, flexColumn } from '../../css/classes';
+import { flex, grow, justifyCenter, flexColumn, defaultPadding } from '../../css/classes';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { IGameModelLanguage } from 'wegas-ts-api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { borderBottom } from './FormView/commonView';
 
 const edition = { color: themeVar.colors.ActiveColor };
 const simple = { color: themeVar.colors.DarkTextColor };
@@ -51,8 +52,8 @@ export default function LanguageEditor() {
 
   return (
     <div className={cx(flex, grow)}>
-      <Toolbar>
-        <Toolbar.Header>
+      <Toolbar className={defaultPadding}>
+        <Toolbar.Header className={borderBottom}>
           <div className={cx(flex, grow)}>{title}</div>
           <Button
             icon={{

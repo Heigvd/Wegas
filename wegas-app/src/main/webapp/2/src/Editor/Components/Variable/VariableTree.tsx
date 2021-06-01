@@ -153,7 +153,7 @@ export function TreeView({
           </>
         )}
       </Toolbar.Header>
-      <Toolbar.Content id={TREECONTENTID}>
+      <Toolbar.Content id={TREECONTENTID} className={css({padding: '1px'})}>
         <OkCancelModal onOk={onAccept}>
           <p>{i18nValues.changesWillBeLost}</p>
           <p>{i18nValues.areYouSure}</p>

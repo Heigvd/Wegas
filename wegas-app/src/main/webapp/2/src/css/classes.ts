@@ -189,7 +189,7 @@ export const defaultPaddingTop = css({
 });
 
 export const defaultPaddingBottom = css({
-  paddingTop: '10px',
+  paddingBottom: '10px',
 });
 
 export const defaultPadding = cx(

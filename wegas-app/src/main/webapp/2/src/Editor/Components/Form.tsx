@@ -1,7 +1,7 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
-import { noOverflow, expandHeight, defaultMargin } from '../../css/classes';
+import { noOverflow, expandHeight, defaultMargin, MediumPadding } from '../../css/classes';
 import './FormView';
 import { wwarn } from '../../Helper/wegaslog';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
@@ -58,8 +58,8 @@ export function Form<T>({
   }
 
   return (
-    <Toolbar>
-      <Toolbar.Header className={defaultMargin}>
+    <Toolbar className={MediumPadding}>
+      <Toolbar.Header>
         {isActionAllowed({
           disabled,
           readOnly,
@@ -69,6 +69,7 @@ export function Form<T>({
               <IconButton
                 icon="save"
                 chipStyle
+                tooltip="Save"
                 disabled={!deepDifferent(val, entity)}
                 onClick={() => {
                   if (form.current != null) {
@@ -86,6 +87,7 @@ export function Form<T>({
             <ConfirmButton
               icon="undo"
               chipStyle
+              tooltip="Reset"
               onAction={accept => {
                 accept && setVal(entity);
               }}
@@ -106,6 +108,7 @@ export function Form<T>({
                         key={i}
                         icon="trash"
                         chipStyle
+                        tooltip="Delete"
                         onAction={succes =>
                           succes && val != null && a.action(val, path)
                         }
@@ -114,6 +117,7 @@ export function Form<T>({
                         <IconButton
                           icon= "trash"
                           chipStyle
+                          tooltip="Delete"
                           key={i}
                           onClick={() => val != null && a.action(val, path)}
                           className={expandHeight}
@@ -122,6 +126,7 @@ export function Form<T>({
                   case 'close':
                     <IconButton
                       icon= 'times'
+                      tooltip="Close"
                       key={i}
                       onClick={() => val != null && a.action(val, path)}
                       className={closeButtonStyle}

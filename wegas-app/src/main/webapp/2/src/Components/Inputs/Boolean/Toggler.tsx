@@ -22,6 +22,7 @@ const togglerStyle = css({
   backgroundColor: themeVar.colors.ErrorColor,
   cursor: 'pointer',
   margin: 'auto',
+  marginTop: '5px',
   flexDirection: 'row',
   ['&.disabled']: {
     opacity: '50%',
