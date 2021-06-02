@@ -4,7 +4,6 @@ import {
   flex,
   flexColumn,
   expandHeight,
-  flexDistribute,
   grow,
   defaultPadding,
   autoScroll,
@@ -22,14 +21,24 @@ import {
   Theme,
   ThemeValues,
 } from '../../ThemeVars';
-import { ColorPicker, rgbaToString, valueStyle } from './ColorPicker';
+import { ColorPicker, rgbaToString } from './ColorPicker';
 import { ThemeValueInput } from './ThemeValueInput';
 
 export const valueEntryStyle = css({
-  marginBottom: '7px',
+  margin: '3px',
+  minWidth: '120px',
+  flex: '0 1 24%',
+});
+const colorSectionTitleStyle = css({
+  marginBottom: '5px',
 });
 
-const paletteStyle = cx(flex, flexRow, flexWrap, flexDistribute);
+const paletteStyle = cx(flex, flexRow, flexWrap);
+
+export const colorLabelStyle = css({
+  fontSize: '14px',
+  opacity: 0.5,
+});
 
 const THEME_VALUE_MODIFIER_ID = 'THEME_VALUE_MODIFIER_ID';
 
@@ -69,7 +78,7 @@ function ThemeValueEntry<
     <div className={cx(flex, flexColumn, valueEntryStyle)}>
       <div className={cx(flex, flexRow)}>
         <label
-          className={cx(css({ display: 'flex', alignItems: 'center' }))}
+          className={cx(flex, colorLabelStyle)}
           htmlFor={String(computedLabel)}
           title={String(computedLabel)}
         >
@@ -91,7 +100,7 @@ function ThemeValueEntry<
         />
       ) : (
         <SimpleInput
-          className={valueStyle}
+          //className={valueStyle}
           value={value}
           onChange={v => onChange(label as K, String(v) as V)}
         />
@@ -148,7 +157,7 @@ export function ThemeValueModifier<
       return (
         <>
           <div className={cx(flex, flexColumn)}>
-            <h3>Primary colors</h3>
+            <h3 className={colorSectionTitleStyle}>Primary colors</h3>
             <div className={paletteStyle}>
               {primaryColors.map(([k, v]) => (
                 <ThemeValueEntry
@@ -167,7 +176,7 @@ export function ThemeValueModifier<
             </div>
           </div>
           <div className={cx(flex, flexColumn)}>
-            <h3>Secondary colors</h3>
+            <h3 className={colorSectionTitleStyle}>Secondary colors</h3>
             <div className={paletteStyle}>
               {secondaryColors.map(([k, v]) => (
                 <ThemeValueEntry
@@ -186,7 +195,7 @@ export function ThemeValueModifier<
             </div>
           </div>
           <div className={cx(flex, flexColumn)}>
-            <h3>Background colors</h3>
+            <h3 className={colorSectionTitleStyle}>Background colors</h3>
             <div className={paletteStyle}>
               {backgroundColors.map(([k, v]) => (
                 <ThemeValueEntry
@@ -205,7 +214,7 @@ export function ThemeValueModifier<
             </div>
           </div>
           <div className={cx(flex, flexColumn)}>
-            <h3>Text colors</h3>
+            <h3 className={colorSectionTitleStyle}>Text colors</h3>
             <div className={paletteStyle}>
               {textColors.map(([k, v]) => (
                 <ThemeValueEntry
@@ -222,7 +231,7 @@ export function ThemeValueModifier<
             </div>
           </div>
           <div className={cx(flex, flexColumn)}>
-            <h3>Other colors</h3>
+            <h3 className={colorSectionTitleStyle}>Other colors</h3>
             <div className={paletteStyle}>
               {otherColors.map(([k, v]) => (
                 <ThemeValueEntry

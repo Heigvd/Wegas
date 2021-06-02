@@ -20,7 +20,7 @@ export const borderStyle = {
 
 export const valueStyle = css({
   marginTop: '1px',
-  width: '120px',
+  boxShadow: 'inset 0px 0px 4px rgba(0, 0, 0, 0.15)',
 });
 
 const colorButton = css({
