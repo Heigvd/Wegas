@@ -120,7 +120,7 @@ export const buttonStyle = css({
   },
 });
 
-export const outlineButtonStyle = css({
+export const headerOutlineButtonStyle = css({
 border: '1px solid ' + themeVar.colors.DisabledColor,
 borderRadius: '50%',
 height: '40px',
@@ -132,6 +132,10 @@ button: {
   justifyContent: 'center',
 }
 });
+export const outlineButtonStyle = {
+  border: '1px solid ' + themeVar.colors.LightTextColor,
+  backgroundColor: 'transparent',
+  };
 
 export interface DisableBorders {
   top?: boolean;

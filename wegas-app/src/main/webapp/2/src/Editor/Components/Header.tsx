@@ -27,7 +27,7 @@ import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
 import { DropMenu } from '../../Components/DropMenu';
 import { parseEvent } from './EntityEditor';
 import { editorEventRemove } from '../../data/Reducer/globalState';
-import { Button, outlineButtonStyle } from '../../Components/Inputs/Buttons/Button';
+import { Button, headerOutlineButtonStyle } from '../../Components/Inputs/Buttons/Button';
 import { State } from '../../data/Reducer/reducers';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
@@ -137,7 +137,7 @@ export default function Header() {
                   dispatch(Actions.EditorActions.resetPageLoader());
                 }
               }}
-              buttonClassName={cx(componentMarginLeft, outlineButtonStyle)}
+              buttonClassName={cx(componentMarginLeft, headerOutlineButtonStyle)}
             />
             <IconButton
               icon='redo'
@@ -148,7 +148,7 @@ export default function Header() {
                 );
                 window.location.reload();
               }}
-              className={cx(componentMarginLeft, inlineBlock, outlineButtonStyle)}
+              className={cx(componentMarginLeft, inlineBlock, headerOutlineButtonStyle)}
             />
           </div>
         </div>
