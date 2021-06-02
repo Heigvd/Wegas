@@ -171,7 +171,7 @@ export const defaultMargin = cx(
 
 export const autoMargin = css({ margin: 'auto' });
 export const XLPadding = css({
-  padding: '2.5em',
+  padding: '2em',
 });
 export const MediumPadding = css({
   padding: '1.5em',
@@ -231,13 +231,11 @@ export const layoutStyle = css({
 });
 export const headerStyle = css({
   backgroundColor: themeVar.colors.SecondaryBackgroundColor,
-  paddingTop: '1em',
   borderBottom: '15px solid ' + themeVar.colors.ActiveColor,
 });
 
 export const contentStyle = css({
   margin: '5px',
-  // backgroundColor: themeVar.colors.BackgroundColor,
 });
 
 export const childrenHeaderStyle = css({

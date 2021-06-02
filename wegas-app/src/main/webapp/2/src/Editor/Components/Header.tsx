@@ -114,7 +114,7 @@ export default function Header() {
       })}
     >
       {({ state: { gameModel, user }, dispatch }) => (
-        <div className={cx(flex, itemsTop, flexBetween, foregroundContent, css({paddingBottom: '2em'}))}>
+        <div className={cx(flex, itemsTop, flexBetween, foregroundContent, css({paddingBottom: '1em'}))}>
           <div>
             <FontAwesome icon="user" />
             <span className={componentMarginLeft}>{user.name}</span>
