@@ -26,14 +26,19 @@ import { InstancePropertiesProps } from '../Variable/InstanceProperties';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { Toolbar } from '../../../Components/Toolbar';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { Dispatch } from 'redux';
 import { StateActions } from '../../../data/actions';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 
 const growBig = css({
   flex: '30 1 auto',
+});
+const closeButtonStyle = css({
+  color: themeVar.colors.DisabledColor,
+  marginLeft: 'auto',
 });
 
 export interface ComponentWithFormChildrenProps {
@@ -246,8 +251,10 @@ export function ComponentWithForm({
         >
           <Toolbar>
             <Toolbar.Header>
-              <Button
-                label="Close instance editor"
+              <IconButton
+                icon="times"
+                tooltip="Close instance editor"
+                className={closeButtonStyle}
                 onClick={() => setInstanceView(false)}
               />
             </Toolbar.Header>

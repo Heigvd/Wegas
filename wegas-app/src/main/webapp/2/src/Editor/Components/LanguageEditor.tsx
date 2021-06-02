@@ -11,7 +11,7 @@ import { AvailableViews } from './FormView';
 import getEditionConfig from '../editionConfig';
 import { overrideSchema } from './EntityEditor';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
-import { flex, grow, justifyCenter, flexColumn, defaultPadding } from '../../css/classes';
+import { flex, grow, flexColumn, defaultPadding, defaultPaddingLeft } from '../../css/classes';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { IGameModelLanguage } from 'wegas-ts-api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
@@ -71,7 +71,7 @@ export default function LanguageEditor() {
                 return (
                   <React.Fragment key={language.code}>
                     {index > 0 && (
-                      <div className={cx(flex, grow, justifyCenter)}>
+                      <div className={cx(flex, grow)}>
                         <Button
                           icon="arrows-alt-h"
                           tooltip="Priorize language on the right"
@@ -90,7 +90,7 @@ export default function LanguageEditor() {
                         />
                       </div>
                     )}
-                    <div className={cx(flex, grow, justifyCenter)}>
+                    <div className={cx(flex, grow, defaultPaddingLeft)}>
                       {language.code}
                       <input
                         type="checkbox"
@@ -159,10 +159,10 @@ export default function LanguageEditor() {
                   return (
                     <div
                       key={language.code}
-                      className={cx(flex, grow, justifyCenter)}
+                      className={cx(flex, grow)}
                     >
-                      <div className={flexColumn}>
-                        <div>{`${language.lang} (${language.code})`}</div>
+                      <div className={cx(flex, flexColumn)}>
+                        <div className={defaultPaddingLeft}>{`${language.lang} (${language.code})`}</div>
                         {editMode && <LanguageForm />}
                       </div>
                     </div>
