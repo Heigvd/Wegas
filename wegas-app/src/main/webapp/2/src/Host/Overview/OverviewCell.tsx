@@ -5,6 +5,11 @@ import { Button } from '../../Components/Inputs/Buttons/Button';
 import { HTMLText } from '../../Components/Outputs/HTMLText';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import {
+  components,
+  ReactTransformer,
+  transformerIsReact,
+} from './Components/components';
+import {
   ActionItem,
   DataItem,
   DataType,
@@ -43,9 +48,9 @@ export function OverviewCell({
   const [showPopup, setShowPopup] = React.useState(false);
 
   if (isDataItem(structure)) {
-    const { kind, formatter } = structure;
+    const { kind, formatter, transformer } = structure;
 
-    const view = formatter ? 'formatter' : kind;
+    const view = formatter ? 'formatter' : transformer ? 'transformer' : kind;
     const value = typeof data === 'object' ? data.body : data;
 
     switch (view) {
@@ -121,6 +126,34 @@ export function OverviewCell({
             </div>
           </td>
         );
+      }
+      case 'transformer': {
+        const transformerFunction = `return (${transformer})(data)`;
+        const transformedvalue:
+          | string
+          | ReactTransformer<keyof typeof components> = globals.Function(
+          'data',
+          transformerFunction,
+        )(data);
+
+        if (transformerIsReact(transformedvalue)) {
+          const Comp = components[transformedvalue.component];
+          return (
+            <td className={className} style={style} id={id}>
+              <div>
+                <Comp {...transformedvalue.props} />
+              </div>
+            </td>
+          );
+        } else {
+          return (
+            <td className={className} style={style} id={id}>
+              <div>
+                <HTMLText text={String(transformedvalue)} />
+              </div>
+            </td>
+          );
+        }
       }
 
       default:

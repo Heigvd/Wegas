@@ -100,14 +100,6 @@ export interface OverviewItem {
   order: number;
 }
 
-export type ValueKind =
-  | 'number'
-  | 'string'
-  | 'text'
-  | 'boolean'
-  | 'object'
-  | 'inbox';
-
 export interface DataObjectType {
   body: string;
   empty: boolean;
@@ -170,9 +162,8 @@ const defaultLayoutState: LayoutState = {
 
 export default function Overview() {
   const [filterState, setFilterState] = React.useState<FilterState>();
-  const [layoutState, setLayoutState] = React.useState<LayoutState>(
-    defaultLayoutState,
-  );
+  const [layoutState, setLayoutState] =
+    React.useState<LayoutState>(defaultLayoutState);
   const [overviewState, setOverviewState] = React.useState<OverviewState>();
   const [sortState, setSortState] = React.useState<SortState>();
   const [newData, setNewData] = React.useState(false);
@@ -238,10 +229,7 @@ export default function Overview() {
   const teams = store.getState().teams;
 
   const onRowClick = React.useCallback(
-    (team?: STeam | STeam[]) => (
-      type: OverviewClickType,
-      item?: ActionItem,
-    ) => {
+    (team?: STeam | STeam[]) => (type: OverviewClickType, item?: ActionItem) => {
       switch (type) {
         case 'Impact': {
           setLayoutState({ modalState: 'Impacts', team, item });
