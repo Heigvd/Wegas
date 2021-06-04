@@ -6,7 +6,7 @@ import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
 import { LanguagesProvider } from './Components/Contexts/LanguagesProvider';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
 import { PopupManager } from './Components/PopupManager';
-import { ThemeProvider } from './Components/Style/Theme';
+import { ThemeProvider } from './Components/Theme/Theme';
 import './css/global.css';
 import './data/Stores/store';
 import Layout from './Editor/Components/Layout';

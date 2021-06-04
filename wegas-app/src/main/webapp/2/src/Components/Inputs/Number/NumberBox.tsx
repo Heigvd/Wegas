@@ -14,7 +14,7 @@ import { CheckMinMax } from './numberComponentHelper';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 
 const numberBoxStyle = css({
   padding: '10px',
@@ -33,17 +33,17 @@ const numberBoxSquareStyle = css({
     opacity: '0.5',
   },
   [':not(.disabled)']: {
-    borderColor: themeVar.Common.colors.PrimaryColor,
-    color: themeVar.Common.colors.DarkTextColor,
+    borderColor: themeVar.colors.PrimaryColor,
+    color: themeVar.colors.DarkTextColor,
     ['&.active']: {
-      backgroundColor: themeVar.Common.colors.PrimaryColor,
-      color: themeVar.Common.colors.LightTextColor,
+      backgroundColor: themeVar.colors.PrimaryColor,
+      color: themeVar.colors.LightTextColor,
     },
 
     ['&.clickable']: {
       cursor: 'pointer',
       ['&:not(.disabled):hover']: {
-        borderColor: themeVar.Common.colors.PrimaryColor,
+        borderColor: themeVar.colors.PrimaryColor,
       },
     },
   },

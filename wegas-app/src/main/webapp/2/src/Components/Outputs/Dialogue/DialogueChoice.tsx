@@ -3,7 +3,7 @@ import * as React from 'react';
 import { expandWidth, flexRow, stretch } from '../../../css/classes';
 import { useTranslate } from '../../../Editor/Components/FormView/translatable';
 import { Button } from '../../Inputs/Buttons/Button';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 
 const choiceButtonStyle = css({
   backgroundColor: 'white',
@@ -23,7 +23,7 @@ const choiceButtonIcon = css({
   display: 'flex',
   alignContent: 'center',
   justifyContent: 'center',
-  backgroundColor: themeVar.Common.colors.ActiveColor,
+  backgroundColor: themeVar.colors.ActiveColor,
   padding: '10px',
 });
 

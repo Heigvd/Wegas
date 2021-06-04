@@ -25,7 +25,7 @@ import {
   DragPreviewOptions,
 } from 'react-dnd';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { IconComp } from '../Views/FontAwesome';
 import { pageCTX } from './PageEditor';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
@@ -33,15 +33,15 @@ import { Button } from '../../../Components/Inputs/Buttons/Button';
 const headerStyle = css({
   padding: '20px',
   width: 'auto',
-  backgroundColor: themeVar.Common.colors.HeaderColor,
-  color: themeVar.Common.colors.WarningColor,
+  backgroundColor: themeVar.colors.HeaderColor,
+  color: themeVar.colors.WarningColor,
 });
 
 const paletteStyle = (editMode: boolean) =>
   css({
     backgroundColor: editMode
-      ? themeVar.Common.colors.BackgroundColor
-      : themeVar.Common.colors.DisabledColor,
+      ? themeVar.colors.BackgroundColor
+      : themeVar.colors.DisabledColor,
     opacity: editMode ? 1 : 0.5,
   });
 
@@ -60,11 +60,11 @@ const componentTypeStyle = (
     width: show ? 'auto' : 0,
     overflow: 'hidden',
     backgroundColor: selected
-      ? themeVar.Common.colors.PrimaryColor
-      : themeVar.Common.colors.HeaderColor,
+      ? themeVar.colors.PrimaryColor
+      : themeVar.colors.HeaderColor,
     color: selected
-      ? themeVar.Common.colors.HeaderColor
-      : themeVar.Common.colors.PrimaryColor,
+      ? themeVar.colors.HeaderColor
+      : themeVar.colors.PrimaryColor,
     margin: show ? '5px' : 0,
     cursor: enabled ? 'pointer' : 'initial',
     '&::after': {
@@ -83,13 +83,13 @@ const componentStyle = (show: boolean) =>
     maxHeight: show ? 'fit-content' : 0,
     maxWidth: show ? 'fit-content' : 0,
     overflow: 'hidden',
-    backgroundColor: themeVar.Common.colors.HeaderColor,
-    color: themeVar.Common.colors.PrimaryColor,
+    backgroundColor: themeVar.colors.HeaderColor,
+    color: themeVar.colors.PrimaryColor,
     margin: show ? '5px' : 0,
     cursor: 'pointer',
     ':hover': {
-      backgroundColor: themeVar.Common.colors.PrimaryColor,
-      color: themeVar.Common.colors.HeaderColor,
+      backgroundColor: themeVar.colors.PrimaryColor,
+      color: themeVar.colors.HeaderColor,
     },
   });
 

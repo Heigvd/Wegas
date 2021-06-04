@@ -2,10 +2,10 @@ import { css, cx } from 'emotion';
 import * as React from 'react';
 import { flex, itemCenter, justifyCenter } from '../../../css/classes';
 import { DotLoader } from '../../Loader';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 
 const loaderStyle = (
-  background: string | undefined = themeVar.Common.colors.BackgroundColor,
+  background: string | undefined = themeVar.colors.BackgroundColor,
 ) =>
   css({
     position: 'absolute',

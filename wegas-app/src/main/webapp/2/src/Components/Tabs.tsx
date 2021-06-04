@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Toolbar } from './Toolbar';
 import { css, cx } from 'emotion';
-import { themeVar } from './Style/ThemeVars';
+import { themeVar } from './Theme/ThemeVars';
 import { contentStyle, layoutStyle } from '../css/classes';
 
 interface TabLayoutProps {
@@ -73,12 +73,12 @@ export const tabStyle = css({
   padding: '5px',
 });
 export const inactiveTabStyle = css({
-  color: themeVar.Common.colors.LightTextColor,
-  backgroundColor: themeVar.Common.colors.PrimaryColor,
+  color: themeVar.colors.LightTextColor,
+  backgroundColor: themeVar.colors.PrimaryColor,
 });
 export const activeTabStyle = css({
-  color: themeVar.Common.colors.LightTextColor,
-  backgroundColor: themeVar.Common.colors.ActiveColor,
+  color: themeVar.colors.LightTextColor,
+  backgroundColor: themeVar.colors.ActiveColor,
 });
 function Tab({
   active,

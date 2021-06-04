@@ -9,7 +9,7 @@ import {
   contentCenter,
   flexDistribute,
 } from '../../css/classes';
-import { themeVar } from '../Style/ThemeVars';
+import { themeVar } from '../Theme/ThemeVars';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 
@@ -22,17 +22,17 @@ const UNSELECTABLE_SELECTOR = 'menu-unselectable';
 const menuItemStyle = css({
   cursor: 'pointer',
   borderStyle: 'solid',
-  borderWidth: themeVar.Common.dimensions.BorderWidth,
-  borderColor: themeVar.Common.colors.PrimaryColor,
+  borderWidth: themeVar.dimensions.BorderWidth,
+  borderColor: themeVar.colors.PrimaryColor,
   margin: '2px',
   ':hover': {
-    backgroundColor: themeVar.Common.colors.HoverColor,
+    backgroundColor: themeVar.colors.HoverColor,
   },
 });
 
 const menuItemSelectStyle = css({
   [`&>.${MENU_ITEM_SELECTOR}.${SELECTED_SELECTOR}`]: {
-    borderColor: themeVar.Common.colors.ActiveColor,
+    borderColor: themeVar.colors.ActiveColor,
   },
 });
 
@@ -66,9 +66,8 @@ export function Menu({
   id,
 }: MenuProps) {
   const childrenItems = React.useRef<HTMLElement[]>([]);
-  const [selectedItem, setSelectedItem] = React.useState<number | undefined>(
-    selectItem,
-  );
+  const [selectedItem, setSelectedItem] =
+    React.useState<number | undefined>(selectItem);
 
   React.useEffect(() => {
     setSelectedItem(selectItem);

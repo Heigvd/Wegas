@@ -12,7 +12,7 @@ import { OverviewRow } from './OverviewRow';
 import '../../Editor/Components/FormView';
 import { ModalState, OverviewModal } from './OverviewModal/OverviewModal';
 import { instantiate } from '../../data/scriptable';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import { sortFnFactory, SortState } from '../TableSorter';
 import { FilterState } from './OverviewModal/FilterModalContent';
 import { useWebsocketEvent } from '../../API/websocket';
@@ -37,7 +37,7 @@ export const trainerCellStyleI: Interpolation<undefined> = {
 
 export const tableStyle = css({
   display: 'flex',
-  color: themeVar.Common.colors.DarkTextColor,
+  color: themeVar.colors.DarkTextColor,
   width: '100%',
   overflowX: 'auto',
   fontSize: '14px',
@@ -77,10 +77,10 @@ export const tableStyle = css({
       padding: '0 10px',
       textAlign: 'center',
       'svg, button': {
-        fill: themeVar.Common.colors.DarkTextColor,
+        fill: themeVar.colors.DarkTextColor,
       },
       'button:hover + svg': {
-        fill: themeVar.Common.colors.ActiveColor,
+        fill: themeVar.colors.ActiveColor,
       },
     },
   },
@@ -91,7 +91,7 @@ const flexAuto = css({
 });
 
 const newDataStyle = css({
-  color: themeVar.Common.colors.PrimaryColor + ' !important',
+  color: themeVar.colors.PrimaryColor + ' !important',
 });
 
 export interface OverviewItem {

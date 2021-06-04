@@ -9,7 +9,7 @@ import {
   stateBoxActionStyle,
   stateBoxStyle,
 } from './StateProcessComponent';
-import { themeVar } from '../Style/ThemeVars';
+import { themeVar } from '../Theme/ThemeVars';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { classNameOrEmpty } from '../../Helper/className';
 
@@ -21,7 +21,7 @@ const processStyle = css({
 });
 
 export const disabledStyle = css({
-  backgroundColor: themeVar.Common.colors.DisabledColor,
+  backgroundColor: themeVar.colors.DisabledColor,
   cursor: 'initial',
 });
 
@@ -56,7 +56,7 @@ export interface ProcessProps<F extends FlowLine, P extends Process<F>>
 
 export function CustomProcessComponent<
   F extends FlowLine,
-  P extends Process<F>
+  P extends Process<F>,
 >({
   process,
   onReady,
@@ -145,7 +145,7 @@ export interface ProcessComponentProps<F extends FlowLine, P extends Process<F>>
 
 export function DefaultProcessComponent<
   F extends FlowLine,
-  P extends Process<F>
+  P extends Process<F>,
 >({
   isProcessSelected,
   onClick,

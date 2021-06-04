@@ -12,7 +12,7 @@ import { Value } from '../../Outputs/Value';
 import { InputProps } from '../SimpleInput';
 import { NumberInput } from './NumberInput';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 
 const valueDisplayStyle = css({
@@ -190,7 +190,7 @@ export function NumberSlider({
           active: leftPartStyle
             ? desinterpolate(leftPartStyle)
             : desinterpolate({
-                backgroundColor: themeVar.Common.colors.PrimaryColor,
+                backgroundColor: themeVar.colors.PrimaryColor,
               }),
           thumb: handleStyle
             ? desinterpolate(handleStyle)

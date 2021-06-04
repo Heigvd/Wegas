@@ -38,7 +38,9 @@ export function createTranslatableContent(
     '@class': 'TranslatableContent',
     translations:
       lang === undefined
-        ? {}
+        ? {
+            DEF: createTranslation('DEF', value),
+          }
         : {
             [lang]: createTranslation(lang, value),
           },
@@ -96,7 +98,7 @@ export default function translatable<P extends EndProps>(
     const [currentLanguage, setCurrentLanguage] = React.useState<string>(lang);
 
     React.useEffect(() => {
-        setCurrentLanguage(lang);
+      setCurrentLanguage(lang);
     }, [lang]);
 
     const view = React.useMemo(
@@ -137,7 +139,6 @@ export default function translatable<P extends EndProps>(
         }
       }
     }
-
 
     return (
       <Comp

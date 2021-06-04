@@ -64,7 +64,7 @@ import {
   CustomPhasesProgressBar,
   PhaseComponentProps,
 } from '../../Outputs/PhasesProgressBar';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { Toolbar } from '../../Toolbar';
 import {
   pageComponentFactory,
@@ -76,62 +76,62 @@ import { schemaProps } from '../tools/schemaProps';
 const prPhaseComponentStyle = css({
   minWidth: '120px',
   padding: '10px',
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  borderRadius: themeVar.dimensions.BorderRadius,
   borderStyle: 'solid',
   borderWidth: '3px',
-  borderColor: themeVar.Common.colors.PrimaryColor,
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
-  color: themeVar.Common.colors.PrimaryColor,
+  borderColor: themeVar.colors.PrimaryColor,
+  backgroundColor: themeVar.colors.BackgroundColor,
+  color: themeVar.colors.PrimaryColor,
   fontWeight: 500,
 });
 
 const prFinishedPhaseComponentStyle = css({
-  borderColor: themeVar.Common.colors.DisabledColor,
-  color: themeVar.Common.colors.DisabledColor,
+  borderColor: themeVar.colors.DisabledColor,
+  color: themeVar.colors.DisabledColor,
 });
 
 const prActivePhaseComponentStyle = css({
-  backgroundColor: themeVar.Common.colors.PrimaryColor,
-  color: themeVar.Common.colors.LightTextColor,
+  backgroundColor: themeVar.colors.PrimaryColor,
+  color: themeVar.colors.LightTextColor,
 });
 const ToBeReviewedStyle = css({
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  borderRadius: themeVar.dimensions.BorderRadius,
   padding: '1em',
   overflow: 'auto',
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
+  backgroundColor: themeVar.colors.BackgroundColor,
   marginTop: '1em',
   color: 'initial',
   //boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.25)',
 });
 
 const reviewContainerStyle = css({
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  borderRadius: themeVar.dimensions.BorderRadius,
   padding: '1.5em',
   overflowX: 'auto',
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  backgroundColor: themeVar.colors.HeaderColor,
   width: '80%',
   alignSelf: 'flex-start',
   marginTop: '1em',
   boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.25)',
 });
 const reviewContainerUserStyle = css({
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  borderRadius: themeVar.dimensions.BorderRadius,
   padding: '1.5em',
   overflowX: 'auto',
-  backgroundColor: themeVar.Common.colors.PrimaryColor,
-  color: themeVar.Common.colors.LightTextColor,
+  backgroundColor: themeVar.colors.PrimaryColor,
+  color: themeVar.colors.LightTextColor,
   width: '80%',
   alignSelf: 'flex-end',
   marginTop: '1em',
   boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.25)',
   'button.wegas-btn': {
-    backgroundColor: themeVar.Common.colors.HeaderColor,
-    color: themeVar.Common.colors.PrimaryColor,
+    backgroundColor: themeVar.colors.HeaderColor,
+    color: themeVar.colors.PrimaryColor,
   },
 });
 
 const selectedTreeviewItemStyle = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  backgroundColor: themeVar.colors.HeaderColor,
 });
 
 const prPhasesJustifyStyle = css({
@@ -174,7 +174,7 @@ const reviewItemStyle = css({
   marginLeft: '40px',
   cursor: 'pointer',
   ':hover': {
-    backgroundColor: themeVar.Common.colors.HoverColor,
+    backgroundColor: themeVar.colors.HoverColor,
   },
 });
 
@@ -268,9 +268,11 @@ function EvalutationEditor({
   const value = iEvaluation.getValue();
 
   const dEvaluation = instantiate(
-    ((iEvaluation.getEntity() as unknown) as {
-      descriptor: IEvaluationDescriptor;
-    }).descriptor,
+    (
+      iEvaluation.getEntity() as unknown as {
+        descriptor: IEvaluationDescriptor;
+      }
+    ).descriptor,
   );
 
   const waitingState = useLiveUpdate(iEvaluation.getId());
@@ -446,9 +448,11 @@ function EvalutationDisplay({ iEvaluation }: EvalutationDisplayProps) {
   const { lang } = React.useContext(languagesCTX);
 
   const dEvaluation = instantiate(
-    ((iEvaluation as unknown) as {
-      descriptor: IEvaluationDescriptor;
-    }).descriptor,
+    (
+      iEvaluation as unknown as {
+        descriptor: IEvaluationDescriptor;
+      }
+    ).descriptor,
   );
   return (
     <div className={cx(flex, flexColumn)}>
@@ -457,9 +461,11 @@ function EvalutationDisplay({ iEvaluation }: EvalutationDisplayProps) {
         text={
           entityIs(iEvaluation, 'CategorizedEvaluationInstance')
             ? translate(
-                (iEvaluation as ICategorizedEvaluationInstance & {
-                  descriptor: ICategorizedEvaluationDescriptor;
-                }).descriptor.categories.find(i => i.name === iEvaluation.value)
+                (
+                  iEvaluation as ICategorizedEvaluationInstance & {
+                    descriptor: ICategorizedEvaluationDescriptor;
+                  }
+                ).descriptor.categories.find(i => i.name === iEvaluation.value)
                   ?.label,
                 lang,
               )
@@ -554,7 +560,7 @@ function ReviewEditor({
       <h3>{rev.id}</h3>
       <h2
         className={css({
-          borderTop: '1px solid ' + themeVar.Common.colors.DisabledColor,
+          borderTop: '1px solid ' + themeVar.colors.DisabledColor,
           marginTop: 0,
           paddingTop: '1em',
         })}
@@ -661,9 +667,8 @@ export default function PeerReviewTreeViewDisplay({
     reviews: false,
     comments: false,
   });
-  const [selectedReview, setSelectedReview] = React.useState<
-    ReviewState | undefined
-  >();
+  const [selectedReview, setSelectedReview] =
+    React.useState<ReviewState | undefined>();
 
   const onCarretClick = React.useCallback(
     (type: keyof CarretState) => () =>

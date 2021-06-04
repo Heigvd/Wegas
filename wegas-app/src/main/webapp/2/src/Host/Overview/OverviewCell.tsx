@@ -3,7 +3,7 @@ import * as React from 'react';
 import { globals } from '../../Components/Hooks/useScript';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { HTMLText } from '../../Components/Outputs/HTMLText';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import {
   componentOrRawHTML,
   components,
@@ -89,7 +89,7 @@ export function OverviewCell({
               <div
                 style={{
                   position: 'fixed',
-                  backgroundColor: themeVar.Common.colors.BackgroundColor,
+                  backgroundColor: themeVar.colors.BackgroundColor,
                   boxShadow: '2px 2px 2px rgba(0, 0, 0, 0.3)',
                   padding: '10px',
                 }}

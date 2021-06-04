@@ -3,7 +3,7 @@ import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import { globals } from '../../Components/Hooks/useScript';
 import { Button } from '../../Components/Inputs/Buttons/Button';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import { flex, flexRow, itemCenter, justifyCenter } from '../../css/classes';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
@@ -27,22 +27,22 @@ export function OverviewTD({ value, color }: OverviewTDProps) {
   switch (color) {
     case 'green':
       computedColors = {
-        backgroundColor: themeVar.Common.colors.PrimaryColor,
-        color: themeVar.Common.colors.SecondaryBackgroundColor,
+        backgroundColor: themeVar.colors.PrimaryColor,
+        color: themeVar.colors.SecondaryBackgroundColor,
       };
       break;
     case 'red':
       computedColors = {
-        backgroundColor: themeVar.Common.colors.ActiveColor,
-        color: themeVar.Common.colors.SecondaryBackgroundColor,
+        backgroundColor: themeVar.colors.ActiveColor,
+        color: themeVar.colors.SecondaryBackgroundColor,
       };
       break;
     case 'orange':
-      computedColors = { backgroundColor: themeVar.Common.colors.HeaderColor };
+      computedColors = { backgroundColor: themeVar.colors.HeaderColor };
       break;
     case 'grey':
       computedColors = {
-        backgroundColor: themeVar.Common.colors.DisabledColor,
+        backgroundColor: themeVar.colors.DisabledColor,
       };
       break;
   }

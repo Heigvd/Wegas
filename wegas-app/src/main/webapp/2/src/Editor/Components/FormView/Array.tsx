@@ -10,7 +10,7 @@ import { array_move } from '../../../Helper/tools';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { typeCleaner } from './Script/Expressions/expressionEditorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 
 const transparentStyle = css({
   opacity: 0,
@@ -22,7 +22,7 @@ const transparentStyle = css({
 
 const listElementContainerStyle = css({
   display: 'flex',
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  backgroundColor: themeVar.colors.HeaderColor,
   padding: '4px',
   marginTop: '4px',
 });

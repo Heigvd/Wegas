@@ -26,7 +26,7 @@ import { store, StoreDispatch } from '../../../data/Stores/store';
 import { GameModel } from '../../../data/selectors';
 import { editFile } from '../../../data/Reducer/globalState';
 
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import { TextPrompt } from '../TextPrompt';
@@ -48,24 +48,24 @@ import { isActionAllowed } from '../../../Components/PageComponents/tools/option
 const clickableStyle = css({
   cursor: 'pointer',
   ':hover': {
-    backgroundColor: themeVar.Common.colors.HoverColor,
+    backgroundColor: themeVar.colors.HoverColor,
   },
 });
 
 const noToggleStyle = css({
   margin: '0 0.8em',
-  color: themeVar.Common.colors.DarkTextColor,
+  color: themeVar.colors.DarkTextColor,
 });
 
 const previewStyle = css(
   {
     position: 'absolute',
-    backgroundColor: themeVar.Common.colors.BackgroundColor,
+    backgroundColor: themeVar.colors.BackgroundColor,
     maxWidth: '220px',
     margin: '3px 2em 10px',
     padding: '10px',
     borderWidth: '1px',
-    borderRadius: themeVar.Common.dimensions.BorderRadius,
+    borderRadius: themeVar.dimensions.BorderRadius,
     fontSize: '75%',
     zIndex: 10000,
   },
@@ -286,20 +286,16 @@ export function FileBrowserNode({
     type: 'close',
   });
 
-  const [hoveringImageFile, setHoveringImageFile] = React.useState<boolean>(
-    false,
-  );
+  const [hoveringImageFile, setHoveringImageFile] =
+    React.useState<boolean>(false);
 
   const [displayPreview, setDisplayPreview] = React.useState<boolean>(false);
 
-  const [children, setChildren] = React.useState<
-    IAbstractContentDescriptor[]
-  >();
+  const [children, setChildren] =
+    React.useState<IAbstractContentDescriptor[]>();
 
-  const [
-    currentFile,
-    setCurrentFile,
-  ] = React.useState<IAbstractContentDescriptor>(item);
+  const [currentFile, setCurrentFile] =
+    React.useState<IAbstractContentDescriptor>(item);
 
   const [nbUploadingFiles, dispatchUploadingFiles] = React.useReducer(
     (uploadCount: number, action: { type: 'increment' | 'decrement' }) => {
@@ -484,7 +480,7 @@ export function FileBrowserNode({
 
   const [dropZoneProps, dropZone] = useDrop(
     dropSpecs(item => {
-      const { files } = (item as unknown) as {
+      const { files } = item as unknown as {
         files: FileList;
         items: DataTransferItemList;
       };
@@ -504,10 +500,10 @@ export function FileBrowserNode({
     let openTimeout: number | undefined;
     if (isDirectory(currentFile)) {
       if (dropZoneProps.isShallowOver && dropZoneProps.canDrop) {
-        openTimeout = (setTimeout(
+        openTimeout = setTimeout(
           () => setOpened(true),
           timeoutBeforeExpand,
-        ) as unknown) as number;
+        ) as unknown as number;
       }
       return () => {
         clearTimeout(openTimeout);
@@ -520,10 +516,10 @@ export function FileBrowserNode({
   React.useEffect(() => {
     let previewTimeout: number | undefined;
     if (!disabled && hoveringImageFile) {
-      previewTimeout = (setTimeout(
+      previewTimeout = setTimeout(
         () => setDisplayPreview(true),
         timeoutBeforePreview,
-      ) as unknown) as number;
+      ) as unknown as number;
       return () => {
         setDisplayPreview(false);
         clearTimeout(previewTimeout);

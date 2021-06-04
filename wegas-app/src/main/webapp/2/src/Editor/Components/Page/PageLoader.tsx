@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
-import { ThemeProvider, themeCTX } from '../../../Components/Style/Theme';
+import { ThemeProvider, themeCTX } from '../../../Components/Theme/Theme';
 import { TextLoader, TumbleLoader } from '../../../Components/Loader';
 import { PageDeserializer } from '../../../Components/PageComponents/tools/PageDeserializer';
 import { useStore } from '../../../data/Stores/store';
 import { css, cx } from 'emotion';
 import { flex, expandHeight } from '../../../css/classes';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { FlexItem } from '../../../Components/Layouts/FlexList';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { State } from '../../../data/Reducer/reducers';
@@ -35,7 +35,7 @@ const loaderStyle = css({
 const editStyle = css({
   borderStyle: 'solid',
   borderWidth: '5px',
-  borderColor: themeVar.Common.colors.PrimaryColor,
+  borderColor: themeVar.colors.PrimaryColor,
   overflow: 'auto',
 });
 
@@ -68,9 +68,8 @@ export function PageLoader({
     [selectedPageId],
   );
   const selectedPage = useStore(selectedPageSelector, deepDifferent);
-  const { currentContext, currentMode = themeMode } = React.useContext(
-    themeCTX,
-  );
+  const { currentContext, currentMode = themeMode } =
+    React.useContext(themeCTX);
 
   const [waiting, setWaiting] = React.useState(false);
 

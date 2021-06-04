@@ -1,6 +1,6 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import { TabProps, Tab } from '../../Editor/Components/LinearTabLayout/DnDTabs';
 
 const tabStyle = css({
@@ -9,15 +9,19 @@ const tabStyle = css({
   cursor: 'pointer',
   margin: '0 3px',
   padding: '10px 20px',
-  borderRadius: themeVar.Common.dimensions.BorderRadius + ' ' + themeVar.Common.dimensions.BorderRadius + ' 0 0',
-  fontSize: themeVar.ComponentTitle.dimensions.FontSize4,
+  borderRadius:
+    themeVar.dimensions.BorderRadius +
+    ' ' +
+    themeVar.dimensions.BorderRadius +
+    ' 0 0',
+  fontSize: '4em',
 });
 
 const inactiveTabStyle = css({
-  backgroundColor: themeVar.Common.colors.DisabledColor,
+  backgroundColor: themeVar.colors.DisabledColor,
 });
 const activeTabStyle = css({
-  backgroundColor: themeVar.Common.colors.HighlightColor,
+  backgroundColor: themeVar.colors.HighlightColor,
   fontWeight: 600,
 });
 

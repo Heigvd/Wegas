@@ -21,18 +21,18 @@ import { Player } from '../../../data/selectors';
 import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
 import { useStore, store } from '../../../data/Stores/store';
 import { EntityChooser } from '../../EntityChooser';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { ConnectedQuestionDisplay } from './Question';
 
 const repliedLabelStyle = css({
-  backgroundColor: themeVar.Common.colors.LightTextColor,
-  color: themeVar.Common.colors.PrimaryColor,
-  border: '2px solid ' + themeVar.Common.colors.PrimaryColor,
+  backgroundColor: themeVar.colors.LightTextColor,
+  color: themeVar.colors.PrimaryColor,
+  border: '2px solid ' + themeVar.colors.PrimaryColor,
   boxShadow: 'none',
   '&:hover': {
-    backgroundColor: themeVar.Common.colors.LightTextColor,
-    color: themeVar.Common.colors.ActiveColor,
-    border: '2px solid ' + themeVar.Common.colors.ActiveColor,
+    backgroundColor: themeVar.colors.LightTextColor,
+    color: themeVar.colors.ActiveColor,
+    border: '2px solid ' + themeVar.colors.ActiveColor,
   },
 });
 
@@ -98,9 +98,8 @@ export default function QuestionList({
         'QuestionDescriptor',
         'WhQuestionDescriptor',
       ).filter(q => {
-        const instance = getInstance<IQuestionInstance | IWhQuestionInstance>(
-          q,
-        );
+        const instance =
+          getInstance<IQuestionInstance | IWhQuestionInstance>(q);
         if (instance != null) {
           return instance.active;
         }

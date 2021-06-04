@@ -10,7 +10,7 @@ import { omit } from 'lodash-es';
 import { ITranslatableContent } from 'wegas-ts-api';
 import { translate } from '../Editor/Components/FormView/translatable';
 import { languagesCTX } from './Contexts/LanguagesProvider';
-import { themeVar } from './Style/ThemeVars';
+import { themeVar } from './Theme/ThemeVars';
 import { Button } from './Inputs/Buttons/Button';
 
 const popupBackgroundStyle = css({
@@ -26,12 +26,12 @@ const popupStyle = css({
   whiteSpace: 'nowrap',
   margin: '5px',
   padding: '2px',
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  backgroundColor: themeVar.colors.HeaderColor,
   visibility: 'visible',
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
-  borderWidth: themeVar.Common.dimensions.BorderWidth,
+  borderRadius: themeVar.dimensions.BorderRadius,
+  borderWidth: themeVar.dimensions.BorderWidth,
   borderStyle: 'solid',
-  borderColor: themeVar.Common.colors.PrimaryColor,
+  borderColor: themeVar.colors.PrimaryColor,
 });
 
 interface Popup {
@@ -76,7 +76,7 @@ export const PopupActionCreator = {
 };
 
 type PopupActions<
-  A extends keyof typeof PopupActionCreator = keyof typeof PopupActionCreator
+  A extends keyof typeof PopupActionCreator = keyof typeof PopupActionCreator,
 > = ReturnType<typeof PopupActionCreator[A]>;
 
 const popupsReducer: Reducer<Readonly<PopupState>, PopupActions> = u(

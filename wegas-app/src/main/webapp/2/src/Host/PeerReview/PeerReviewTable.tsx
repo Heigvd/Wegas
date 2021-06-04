@@ -1,6 +1,6 @@
 import { css } from 'emotion';
 import * as React from 'react';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import { store } from '../../data/Stores/store';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { trainerTranslations } from '../../i18n/trainer/trainer';
@@ -20,7 +20,7 @@ const PRTableStyle = css({
   fontSize: '14px',
   'td, th': trainerCellStyleI,
   'thead th, thead td': {
-    backgroundColor: themeVar.Common.colors.HighlightColor,
+    backgroundColor: themeVar.colors.HighlightColor,
     fontSize: '16px',
   },
 });
