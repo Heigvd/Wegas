@@ -5,9 +5,9 @@ import { Button } from '../../Components/Inputs/Buttons/Button';
 import { HTMLText } from '../../Components/Outputs/HTMLText';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import {
+  componentOrRawHTML,
   components,
   ReactTransformer,
-  transformerIsReact,
 } from './Components/components';
 import {
   ActionItem,
@@ -136,24 +136,11 @@ export function OverviewCell({
           transformerFunction,
         )(data);
 
-        if (transformerIsReact(transformedvalue)) {
-          const Comp = components[transformedvalue.component];
-          return (
-            <td className={className} style={style} id={id}>
-              <div>
-                <Comp {...transformedvalue.props} />
-              </div>
-            </td>
-          );
-        } else {
-          return (
-            <td className={className} style={style} id={id}>
-              <div>
-                <HTMLText text={String(transformedvalue)} />
-              </div>
-            </td>
-          );
-        }
+        return (
+          <td className={className} style={style} id={id}>
+            <div>{componentOrRawHTML(transformedvalue)}</div>
+          </td>
+        );
       }
 
       default:

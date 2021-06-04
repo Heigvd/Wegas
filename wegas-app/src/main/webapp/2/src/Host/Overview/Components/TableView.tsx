@@ -1,21 +1,29 @@
 import * as React from 'react';
+import {
+  componentOrRawHTML,
+  ReactTransformer,
+  TrainerComponentKey,
+} from './components';
 
-interface TableViewProps {
-  header: React.ReactNode[];
-  content: React.ReactNode[];
+interface TableViewProps<K extends TrainerComponentKey> {
+  header: (string | ReactTransformer<K>)[];
+  content: (string | ReactTransformer<K>)[];
 }
 
-export function TableView({ header, content }: TableViewProps) {
+export function TableView<K extends TrainerComponentKey>({
+  header,
+  content,
+}: TableViewProps<K>) {
   return (
     <table>
       <thead>
         {header.map((item, i) => (
-          <th key={i}>{item}</th>
+          <th key={i}>{componentOrRawHTML(item)}</th>
         ))}
       </thead>
       <tbody>
         {content.map((item, i) => (
-          <td key={i}>{item}</td>
+          <td key={i}>{componentOrRawHTML(item)}</td>
         ))}
       </tbody>
     </table>
@@ -23,5 +31,5 @@ export function TableView({ header, content }: TableViewProps) {
 }
 
 export function TestTableView() {
-  return <TableView header={[1, 2, 3]} content={['A', 'B', 'C']} />;
+  return <TableView header={['1', '2', '3']} content={['A', 'B', 'C']} />;
 }
