@@ -70,10 +70,13 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
   const libsSelector = React.useCallback(
     (s: State) => {
       const variableClasses = Object.values(s.variableDescriptors).reduce<{
-        [variable: string]: string;
+        [variable: string]: { class: string; id: number };
       }>((newObject, variable) => {
         if (variable !== undefined && variable.name !== undefined) {
-          newObject[variable.name] = variable['@class'];
+          newObject[variable.name] = {
+            class: variable['@class'],
+            id: variable.id!,
+          };
         }
         return newObject;
       }, {});
@@ -85,7 +88,7 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
       const currentLanguages = Object.values(
         GameModel.selectCurrent().languages,
       )
-        .map(l => l.code)
+        .map(l => `"${l.code}"`)
         .join(' | ');
 
       const allowedPageLoadersType = Object.keys(s.global.pageLoaders)
@@ -96,27 +99,35 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         return `
         declare const gameModel: SGameModel;
         declare const self: SPlayer;
-        declare const typeFactory: (types: WegasScriptEditorReturnTypeName[]) => GlobalMethodReturnTypesName;
         declare const schemaProps: SchemaPropsDefinedType;
 
         interface VariableClasses {
           ${Object.keys(variableClasses)
-            .map(k => `${k}: S${variableClasses[k]};`)
+            .map(k => `${k}: S${variableClasses[k].class};`)
             .join('\n')}
         }
 
-        class Variable {
-          static find: <T extends keyof VariableClasses>(
-            gameModel: SGameModel,
-            name: T
-          ) => VariableClasses[T];
+        interface VariableIds {
+          ${Object.keys(variableClasses)
+            .map(k => `${variableClasses[k].id}: S${variableClasses[k].class};`)
+            .join('\n')}
+        }
+
+        type FindFN = 
+          | (<T extends keyof VariableClasses>(
+          gameModel: SGameModel,
+          name: T
+        ) => VariableClasses[T]) 
+
+        declare class Variable {
+          static find: FindFN;
           ${
             scriptContext === 'Client'
               ? `static select: <T extends SVariableDescriptor>(
             _gm: unknown,
             id: number,
           ) => T | undefined;        
-          static getItems: <T = SVariableDescriptor<SVariableInstance>>(
+          static getItems: <T = SVariableDescriptor>(
             itemsIds: number[],
           ) => Readonly<T[]>;`
               : ''
@@ -194,31 +205,18 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         `
             : `${buildGlobalServerMethods(globalServerMethods)}
         
-        interface DashboardVariableClasses {
-          ${Object.keys(variableClasses)
-            .filter(k => {
-              const variableClass = variableClasses[k];
-              return (
-                variableClass === 'NumberDescriptor' ||
-                variableClass === 'StringDescriptor' ||
-                variableClass === 'TextDescriptor' ||
-                variableClass === 'BooleanDescriptor' ||
-                variableClass === 'ObjectDescriptor' ||
-                variableClass === 'InboxDescriptor'
-              );
-            })
-            .map(k => `${k}: S${variableClasses[k]};`)
-            .join('\n')}
-        }
-
-        class WegasDashboard {
+        declare class WegasDashboard {
           static registerVariable:
-            <T extends keyof DashboardVariableClasses> (
+            <T extends keyof VariableClasses> (
               variableName: T,
-              config?: WegasDashboardVariableConfig<DashboardVariableClasses[T]>
+              config?: WegasDashboardVariableConfig<VariableClasses[T]>
             ) => void;
           static registerAction: WegasDashboardRegisterAction;
-        }        
+        }   
+
+        declare class Team {
+          static find(id:numnber): STeam;
+        }
 
         `
         }

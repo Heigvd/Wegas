@@ -101,7 +101,7 @@ export function createSandbox<T = unknown>() {
   sandbox.setAttribute('sandbox', 'allow-same-origin');
   sandbox.style.display = 'none';
   document.body.appendChild(sandbox);
-  return { sandbox, globals: (sandbox.contentWindow as unknown) as T };
+  return { sandbox, globals: sandbox.contentWindow as unknown as T };
 }
 
 export const { sandbox, globals } = createSandbox<GlobalClasses>();
@@ -149,7 +149,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     select: <T extends SVariableDescriptor>(_gm: unknown, id: number) => {
       const iDesc = VDSelect.select<IVariableDescriptor>(id);
       if (iDesc) {
-        return (instantiate(iDesc) as unknown) as T | undefined;
+        return instantiate(iDesc) as unknown as T | undefined;
       }
     },
     getItems,
@@ -314,7 +314,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
             ActionCreator.EDITOR_ADD_EVENT_HANDLER({
               id,
               type,
-              cb: (cb as unknown) as WegasEventHandler,
+              cb: cb as unknown as WegasEventHandler,
             }),
           );
         }
@@ -513,9 +513,10 @@ export function useScript<T extends ScriptReturnType>(
   },
   catchCB?: (e: Error) => void,
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
-  const oldContext = React.useRef<{
-    [name: string]: unknown;
-  }>();
+  const oldContext =
+    React.useRef<{
+      [name: string]: unknown;
+    }>();
 
   const newContext = React.useMemo(() => {
     if (deepDifferent(context, oldContext.current)) {
@@ -561,10 +562,10 @@ export function useUnsafeScript<T extends ScriptReturnType>(
 ): T extends WegasScriptEditorReturnType ? T : unknown {
   const globalContexts = useGlobalContexts();
 
-  const fn = React.useCallback(() => clientScriptEval<T>(script, context), [
-    script,
-    context,
-  ]);
+  const fn = React.useCallback(
+    () => clientScriptEval<T>(script, context),
+    [script, context],
+  );
   const returnValue = useStore(s => {
     setGlobals(globalContexts, s);
     return fn();

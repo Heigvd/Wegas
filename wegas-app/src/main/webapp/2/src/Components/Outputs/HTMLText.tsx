@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useTranslate } from '../../Editor/Components/FormView/translatable';
 import { ITranslatableContent } from 'wegas-ts-api';
-import { classOrNothing } from '../../Helper/className';
+import { classNameOrEmpty, classOrNothing } from '../../Helper/className';
 import { halfOpacity } from '../../css/classes';
 
 interface TextProps extends ClassStyleId {
@@ -13,7 +13,9 @@ export function HTMLText({ text, style, className, id, disabled }: TextProps) {
   return (
     <div
       id={id}
-      className={className + classOrNothing(halfOpacity, disabled)}
+      className={
+        classNameOrEmpty(className) + classOrNothing(halfOpacity, disabled)
+      }
       style={style}
       dangerouslySetInnerHTML={{
         __html: text || '',
