@@ -7,7 +7,7 @@ import {
 
 interface TableViewProps<K extends TrainerComponentKey> {
   header: (string | ReactTransformer<K>)[];
-  content: (string | ReactTransformer<K>)[];
+  content: (string | ReactTransformer<K>)[][];
 }
 
 export function TableView<K extends TrainerComponentKey>({
@@ -22,14 +22,14 @@ export function TableView<K extends TrainerComponentKey>({
         ))}
       </thead>
       <tbody>
-        {content.map((item, i) => (
-          <td key={i}>{componentOrRawHTML(item)}</td>
+        {content.map((row, i) => (
+          <tr key={'row' + i}>
+            {row.map((item, i) => (
+              <td key={'item' + i}>{componentOrRawHTML(item)}</td>
+            ))}
+          </tr>
         ))}
       </tbody>
     </table>
   );
-}
-
-export function TestTableView() {
-  return <TableView header={['1', '2', '3']} content={['A', 'B', 'C']} />;
 }

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DropMenu } from '../../../Components/DropMenu';
+import { DropDown } from '../../../Components/DropDown';
 import {
   TrainerComponentKey,
   ReactTransformer,
@@ -8,18 +8,17 @@ import {
 
 interface TrainerDropMenuProps<K extends TrainerComponentKey> {
   label: string | ReactTransformer<K>;
-  content: (string | ReactTransformer<K>)[];
+  content: string | ReactTransformer<K>;
 }
 
-export function TrainerDropMenu<K extends TrainerComponentKey>({
+export function TrainerDropDown<K extends TrainerComponentKey>({
   label,
   content,
 }: TrainerDropMenuProps<K>) {
   return (
-    <DropMenu
+    <DropDown
       label={componentOrRawHTML(label)}
-      items={content.map(c => ({ label: componentOrRawHTML(c) }))}
-      onSelect={() => {}}
+      content={componentOrRawHTML(content)}
     />
   );
 }

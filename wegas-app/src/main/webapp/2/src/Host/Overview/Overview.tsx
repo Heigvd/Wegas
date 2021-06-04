@@ -20,6 +20,9 @@ import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
 
 export const trainerCellStyleI: Interpolation<undefined> = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
   backgroundColor: '#fff',
   boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
   padding: '15px 20px',

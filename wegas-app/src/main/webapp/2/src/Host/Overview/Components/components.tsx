@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { HTMLText } from '../../../Components/Outputs/HTMLText';
-import { TrainerDropMenu } from './DropMenu';
+import { TrainerDropDown } from './DropDown';
 import { TableView } from './TableView';
 
 export const components = {
   TableView: TableView,
-  DropMenu: TrainerDropMenu,
+  DropDown: TrainerDropDown,
 } as const;
 
 export type TrainerComponent = typeof components;
