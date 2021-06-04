@@ -39,7 +39,7 @@ import { EditHandle } from './EditHandle';
 import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
 import { OptionsState } from './OptionsComponent';
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
 import { TumbleLoader } from '../../Loader';
 import { ThunkResult, store } from '../../../data/Stores/store';
@@ -93,7 +93,7 @@ const handleControlStyle = css({
 
 const showBordersStyle = css({
   borderStyle: 'solid',
-  borderColor: themeVar.Common.colors.HighlightColor,
+  borderColor: themeVar.colors.HighlightColor,
 });
 
 // Helper functions
@@ -533,13 +533,8 @@ export function ComponentContainer({
   const [dragHoverState, setDragHoverState] = React.useState<boolean>(false);
   const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
 
-  const {
-    onDrop,
-    editMode,
-    handles,
-    pageIdPath,
-    showBorders,
-  } = React.useContext(pageCTX);
+  const { onDrop, editMode, handles, pageIdPath, showBorders } =
+    React.useContext(pageCTX);
 
   const { editedPath } = React.useContext(pageEditorCTX);
 
@@ -611,13 +606,11 @@ export function ComponentContainer({
           x: 0,
           y: 0,
         };
-        const {
-          left: srcX,
-          top: srcY,
-        } = container.current.getBoundingClientRect() || {
-          x: 0,
-          y: 0,
-        };
+        const { left: srcX, top: srcY } =
+          container.current.getBoundingClientRect() || {
+            x: 0,
+            y: 0,
+          };
 
         const [relX, relY] = [absX - srcX, absY - srcY];
 

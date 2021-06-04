@@ -8,20 +8,22 @@ import {
   layoutStyle,
 } from '../../../css/classes';
 import { cx, css } from 'emotion';
-import { MessageString } from '../../../Editor/Components/MessageString';
-import { themeVar } from '../../Style/ThemeVars';
+// import { MessageString } from '../../../Editor/Components/MessageString';
+import { themeVar } from '../../Theme/ThemeVars';
 import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import { Button } from '../Buttons/Button';
+import { ConfirmInput } from './ConfirmInput';
 
 const newModeStyle = css({
-  borderColor: themeVar.Common.colors.PrimaryColor,
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
-  borderWidth: themeVar.Common.dimensions.BorderWidth,
+  borderColor: themeVar.colors.PrimaryColor,
+  borderRadius: themeVar.dimensions.BorderRadius,
+  borderWidth: themeVar.dimensions.BorderWidth,
   borderStyle: 'solid',
-  padding: themeVar.Common.dimensions.BorderWidth,
+  padding: themeVar.dimensions.BorderWidth,
 });
 
 type InputModes = 'close' | 'new';
+export type ButtonsOrientation = 'vertical' | 'horizontal';
 
 export interface ConfrimAdderProps<T> {
   label?: string;
@@ -31,6 +33,7 @@ export interface ConfrimAdderProps<T> {
   children: (
     onNewValue: (setter: (oldValue?: T) => T | undefined) => void,
   ) => JSX.Element;
+  orientation?: ButtonsOrientation;
 }
 
 export function ConfirmAdder<T>({
@@ -39,6 +42,7 @@ export function ConfirmAdder<T>({
   accept,
   onAccept,
   children,
+  orientation = 'vertical',
 }: ConfrimAdderProps<T>) {
   const container = React.useRef<HTMLDivElement>(null);
 
@@ -83,35 +87,25 @@ export function ConfirmAdder<T>({
         <div
           className={cx(
             flex,
-            flexColumn,
+            orientation === 'vertical' ? flexColumn : flexRow,
             newModeStyle,
             justifyCenter,
             itemCenter,
             layoutStyle,
           )}
         >
-          {error && (
-            <MessageString
-              type="warning"
-              value={error}
-              duration={5000}
-              onLabelVanish={() => setError(undefined)}
-            />
-          )}
-          {children(setValue)}
-          <div className={cx(flex, flexRow)}>
-            <Button
-              icon="save"
-              disabled={error != null || !accept || accept(inputValue) != null}
-              tooltip={(accept && accept(inputValue)) || error}
-              onClick={() => {
-                onAccept(inputValue);
-                setInputValue(undefined);
-                setModalState('close');
-              }}
-            />
-            <Button icon="times" tooltip={'cancel'} onClick={onCancel} />
-          </div>
+          <ConfirmInput
+            onAccept={() => {
+              onAccept(inputValue);
+              setInputValue(undefined);
+              setModalState('close');
+            }}
+            onCancel={onCancel}
+            disabled={error != null || !accept || accept(inputValue) != null}
+            tooltip={(accept && accept(inputValue)) || error}
+          >
+            {children(setValue)}
+          </ConfirmInput>
         </div>
       )}
     </div>

@@ -43,7 +43,7 @@ import {
   PageStateAction,
 } from '../../../data/Stores/pageStore';
 import { PAGEEDITOR_COMPONENT_TYPE, isDnDComponent } from './ComponentPalette';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { State } from '../../../data/Reducer/reducers';
@@ -60,7 +60,7 @@ export const PAGE_LAYOUT_COMPONENT = 'PAGE_LAYOUT_COMPONENT';
 const titleStyle = css({
   borderStyle: 'solid',
   borderColor: 'transparent',
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  borderRadius: themeVar.dimensions.BorderRadius,
   [`&>.${CONTROLS_CLASSNAME}`]: {
     visibility: 'hidden',
   },
@@ -70,15 +70,15 @@ const titleStyle = css({
 });
 
 // const selectedIndexItemStyle = css({
-//   borderColor: themeVar.Common.colors.BorderColor,
+//   borderColor: themeVar.colors.BorderColor,
 // });
 
 // const selectedComponentStyle = css({
-//   borderColor: themeVar.Common.colors.BorderColor,
+//   borderColor: themeVar.colors.BorderColor,
 // });
 
 const focusedComponentStyle = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  backgroundColor: themeVar.colors.HeaderColor,
 });
 
 const defaultPage = {
@@ -527,9 +527,10 @@ function WegasComponentNode({
   selectedComponentPath,
   componentControls,
 }: WegasComponentNodeProps) {
-  const pageSelector = React.useCallback((s: State) => s.pages[pageId], [
-    pageId,
-  ]);
+  const pageSelector = React.useCallback(
+    (s: State) => s.pages[pageId],
+    [pageId],
+  );
   const page = useStore(pageSelector);
   const id: ComponentNodeId = { pageId, page, componentPath };
   const parentProps = getParentProps();
@@ -648,7 +649,7 @@ function PageIndexTitle({
               indexItem.id === defaultPageId
                 ? {
                     icon: 'star',
-                    color: themeVar.Common.colors.SuccessColor,
+                    color: themeVar.colors.SuccessColor,
                   }
                 : 'star'
             }
@@ -665,7 +666,7 @@ function PageIndexTitle({
               indexItem.scenaristPage
                 ? {
                     icon: 'magic',
-                    color: themeVar.Common.colors.SuccessColor,
+                    color: themeVar.colors.SuccessColor,
                   }
                 : 'magic'
             }
@@ -685,7 +686,7 @@ function PageIndexTitle({
               indexItem.trainerPage
                 ? {
                     icon: 'chalkboard-teacher',
-                    color: themeVar.Common.colors.SuccessColor,
+                    color: themeVar.colors.SuccessColor,
                   }
                 : 'chalkboard-teacher'
             }

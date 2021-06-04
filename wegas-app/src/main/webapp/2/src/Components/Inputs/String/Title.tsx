@@ -1,24 +1,15 @@
 import * as React from 'react';
 import { css } from 'emotion';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { classNameOrEmpty } from '../../../Helper/className';
 
 type TitleLevels = '1' | '2' | '3' | '4' | '5';
 
 const levelStyle = (level: TitleLevels) =>
   css({
-    color:
-      themeVar.ComponentTitle.colors[
-        `DarkTextColor${level}` as keyof typeof themeVar.ComponentTitle.colors
-      ],
-    background:
-      themeVar.ComponentTitle.colors[
-        `TextBackground${level}` as keyof typeof themeVar.ComponentTitle.colors
-      ],
-    fontSize:
-      themeVar.ComponentTitle.dimensions[
-        `FontSize${level}` as keyof typeof themeVar.ComponentTitle.dimensions
-      ],
+    color: themeVar.colors.DarkTextColor,
+    // background: themeVar.colors.BackgroundColor,
+    fontSize: `${3 - Number(level) / 2}em`,
   });
 
 interface TitleProps extends React.PropsWithChildren<ClassStyleId> {

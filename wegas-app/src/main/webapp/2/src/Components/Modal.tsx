@@ -17,8 +17,8 @@ import { classNameOrEmpty } from '../Helper/className';
 import { useInternalTranslate } from '../i18n/internalTranslator';
 import { modalTranslations } from '../i18n/modal/peerReview';
 import { Button } from './Inputs/Buttons/Button';
-import { themeCTX } from './Style/Theme';
-import { themeVar } from './Style/ThemeVars';
+import { themeCTX } from './Theme/Theme';
+import { themeVar } from './Theme/ThemeVars';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // styles
@@ -39,11 +39,11 @@ const modalStyle = (fixed: boolean) =>
 const modalContentStyle = css({
   margin: '0 auto',
   maxWidth: '100%',
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
+  backgroundColor: themeVar.colors.BackgroundColor,
   padding: '30px',
   cursor: 'initial',
   boxShadow: '4px 4px 8px rgba(0,0,0,0.2)',
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  borderRadius: themeVar.dimensions.BorderRadius,
   '&:focus': {
     outline: 'none',
   },
@@ -66,8 +66,8 @@ const modalCloseButtonStyle = css({
 
 const secondaryButtonStyle = css({
   backgroundColor: 'transparent',
-  color: themeVar.Common.colors.PrimaryColor,
-  border: '1px solid ' + themeVar.Common.colors.PrimaryColor,
+  color: themeVar.colors.PrimaryColor,
+  border: '1px solid ' + themeVar.colors.PrimaryColor,
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//

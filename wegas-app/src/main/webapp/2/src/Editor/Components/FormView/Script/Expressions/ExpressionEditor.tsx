@@ -32,13 +32,13 @@ import {
   emptyStatement,
   isEmptyStatement,
 } from '@babel/types';
-import { themeVar } from '../../../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../../../Components/Theme/ThemeVars';
 import { Button } from '../../../../../Components/Inputs/Buttons/Button';
 import { EmbeddedSrcEditor } from '../../../ScriptEditors/EmbeddedSrcEditor';
 import { State } from '../../../../../data/Reducer/reducers';
 
 const expressionEditorStyle = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  backgroundColor: themeVar.colors.HeaderColor,
   marginTop: '0.8em',
   padding: '2px',
   div: {
@@ -182,10 +182,14 @@ export function ExpressionEditor({
             newAttributes.initExpression &&
             newAttributes.initExpression.type === 'variable'
           ) {
-            const variableName = (((parse(newAttributes.initExpression.script)
-              .program.body[0] as ExpressionStatement)
-              .expression as CallExpression).arguments[1] as StringLiteral)
-              .value;
+            const variableName = (
+              (
+                (
+                  parse(newAttributes.initExpression.script).program
+                    .body[0] as ExpressionStatement
+                ).expression as CallExpression
+              ).arguments[1] as StringLiteral
+            ).value;
             newAttributes = {
               ...newAttributes,
               variableName,

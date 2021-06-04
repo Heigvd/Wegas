@@ -12,12 +12,12 @@ import getEditionConfig from '../editionConfig';
 import { overrideSchema } from './EntityEditor';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { flex, grow, justifyCenter, flexColumn } from '../../css/classes';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import { IGameModelLanguage } from 'wegas-ts-api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 
-const edition = { color: themeVar.Common.colors.ActiveColor };
-const simple = { color: themeVar.Common.colors.DarkTextColor };
+const edition = { color: themeVar.colors.ActiveColor };
+const simple = { color: themeVar.colors.DarkTextColor };
 
 const title = 'Translation Manager';
 

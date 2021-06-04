@@ -1,22 +1,22 @@
 import { css, keyframes } from 'emotion';
 import * as React from 'react';
-import { themeVar } from './Style/ThemeVars';
+import { themeVar } from './Theme/ThemeVars';
 
 const anim = keyframes({
   '0%': {
     width: '0%',
     left: 0,
-    borderBottomColor: themeVar.Common.colors.PrimaryColor,
+    borderBottomColor: themeVar.colors.PrimaryColor,
   },
   '50%': {
     width: '50%',
     left: '25%',
-    borderBottomColor: themeVar.Common.colors.PrimaryColor,
+    borderBottomColor: themeVar.colors.PrimaryColor,
   },
   '100%': {
     width: '0%',
     left: '100%',
-    borderBottomColor: themeVar.Common.colors.PrimaryColor,
+    borderBottomColor: themeVar.colors.PrimaryColor,
   },
 });
 const loaderStyle = css({
@@ -77,7 +77,7 @@ interface TumblerLoaderProps {
 }
 
 export function TumbleLoader({
-  color = themeVar.Common.colors.ActiveColor,
+  color = themeVar.colors.ActiveColor,
   size,
 }: TumblerLoaderProps) {
   const container = React.useRef<HTMLDivElement>(null);
@@ -163,7 +163,7 @@ interface DotLoaderProps {
 }
 
 export function DotLoader({
-  color = themeVar.Common.colors.ActiveColor,
+  color = themeVar.colors.ActiveColor,
 }: DotLoaderProps) {
   return (
     <div className={dotLoaderStyle(color)}>

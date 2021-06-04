@@ -6,7 +6,7 @@ import {
 import { TranslatableContent } from '../../../data/i18n';
 import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
 import { css } from 'emotion';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { INumberDescriptor } from 'wegas-ts-api';
 import { TumbleLoader } from '../../Loader';
 import { wwarn } from '../../../Helper/wegaslog';
@@ -74,14 +74,14 @@ export default function Gauge(props: {
   const {
     min = descriptor.minValue,
     max = descriptor.maxValue,
-    positiveColor = themeVar.Common.colors.SuccessColor,
-    negativeColor = themeVar.Common.colors.ErrorColor,
+    positiveColor = themeVar.colors.SuccessColor,
+    negativeColor = themeVar.colors.ErrorColor,
   } = props;
   if (min == undefined || max == undefined) {
     return (
       <span>
         <FontAwesome
-          style={{ color: themeVar.Common.colors.WarningColor }}
+          style={{ color: themeVar.colors.WarningColor }}
           icon="exclamation-triangle"
         />
         Missing min or max value
@@ -102,7 +102,7 @@ export default function Gauge(props: {
         <path
           strokeWidth="75"
           fill="none"
-          stroke={themeVar.Common.colors.DisabledColor}
+          stroke={themeVar.colors.DisabledColor}
           d="M 50 500 A 450 450 0 0 1 950 500"
         />
         <path
@@ -118,8 +118,8 @@ export default function Gauge(props: {
           cy={end[1]}
           r="37"
           strokeWidth="20"
-          stroke={themeVar.Common.colors.PrimaryColor}
-          fill={themeVar.Common.colors.HeaderColor}
+          stroke={themeVar.colors.PrimaryColor}
+          fill={themeVar.colors.HeaderColor}
         />
       </svg>
       <div className={textStyle}>

@@ -1,7 +1,7 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { useOnClickOutside } from '../Components/Hooks/useOnClickOutside';
-import { themeVar } from '../Components/Style/ThemeVars';
+import { themeVar } from '../Components/Theme/ThemeVars';
 import { Toolbar } from '../Components/Toolbar';
 import { flex } from '../css/classes';
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
@@ -20,13 +20,13 @@ const overlayStyle = css({
   padding: '2em',
   zIndex: 1000,
   backgroundColor: 'white',
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  borderRadius: themeVar.dimensions.BorderRadius,
   boxShadow: '1px 2px 16px rgba(0, 0, 0, 0.2)',
   '&:before': {
     content: "''",
     width: 0,
     height: 0,
-    borderRight: '15px solid ' + themeVar.Common.colors.SecondaryBackgroundColor,
+    borderRight: '15px solid ' + themeVar.colors.SecondaryBackgroundColor,
     borderTop: '15px solid transparent',
     borderBottom: '15px solid transparent',
     position: 'absolute',
@@ -35,11 +35,11 @@ const overlayStyle = css({
     top: '43px',
   },
   h2: {
-    fontSize: themeVar.ComponentTitle.dimensions.FontSize4,
-  }
+    fontSize: '2em',
+  },
 });
 const overlayContentStyle = css({
-overflow: 'auto',
+  overflow: 'auto',
 });
 const modalCloseDivStyle = css({
   display: 'flex',
@@ -49,7 +49,7 @@ const modalCloseDivStyle = css({
   width: '2em',
   height: '2em',
   cursor: 'pointer',
-  color: themeVar.Common.colors.DarkTextColor,
+  color: themeVar.colors.DarkTextColor,
 });
 
 const modalCloseButtonStyle = css({
@@ -66,7 +66,7 @@ function placeOverlay(
     const buttonLeft = attachedToRef.current.getBoundingClientRect().right;
     const parentLeft = ref.parentElement?.getBoundingClientRect().left || 0;
     ref.style.setProperty('top', buttonBottom - parentTop - 60 + 'px');
-    ref.style.setProperty('left', (buttonLeft - parentLeft + 10) + 'px');
+    ref.style.setProperty('left', buttonLeft - parentLeft + 10 + 'px');
   }
 }
 // React element

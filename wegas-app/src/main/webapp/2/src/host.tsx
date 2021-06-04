@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { render } from 'react-dom';
 import { LanguagesProvider } from './Components/Contexts/LanguagesProvider';
-import { ThemeProvider } from './Components/Style/Theme';
+import { ThemeProvider } from './Components/Theme/Theme';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
 import './css/global.css';
 import './data/Stores/store';
