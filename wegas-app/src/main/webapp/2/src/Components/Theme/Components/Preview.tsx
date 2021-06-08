@@ -3,6 +3,7 @@ import { css, cx } from 'emotion';
 import * as React from 'react';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import {
+  defaultPadding,
   expandBoth,
   flex,
   flexColumn,
@@ -13,6 +14,7 @@ import {
 } from '../../../css/classes';
 import { useThemeStore } from '../../../data/Stores/themeStore';
 import FileBrowser from '../../../Editor/Components/FileBrowser/FileBrowser';
+import { borderBottom } from '../../../Editor/Components/FormView/commonView';
 import { Selector } from '../../../Editor/Components/FormView/Select';
 import { IconComp, icons } from '../../../Editor/Components/Views/FontAwesome';
 import { DropMenu } from '../../DropMenu';
@@ -36,15 +38,12 @@ const COMPONENT_STATES = ['disabled', 'readOnly'] as const;
 const reflexElementStyle = cx(flex, justifyCenter, itemCenter);
 
 const previewPageHeaderStyle = css({
-  backgroundColor: themeVar.colors.HeaderColor,
-  paddingLeft: '3em',
+  paddingLeft: '1em',
 });
 
 const previewPageStyle = css({
-  borderColor: themeVar.colors.HeaderColor,
-  borderStyle: 'solid',
-  borderWidth: '3em',
-  borderTop: 'none',
+  padding: '1em',
+  border: '2px solid ' + themeVar.colors.PrimaryColor,
 });
 
 interface PreviewState {
@@ -76,8 +75,8 @@ export default function Preview() {
   );
 
   return (
-    <Toolbar>
-      <Toolbar.Header className={cx(flex, justifyEnd)}>
+    <Toolbar className={defaultPadding}>
+      <Toolbar.Header className={cx(flex, justifyEnd, borderBottom)}>
         <DropMenu
           icon="cog"
           items={[
@@ -114,7 +113,7 @@ export default function Preview() {
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, flexColumn)}>
         <div className={previewPageHeaderStyle}>
-          <h3>Preview page</h3>
+          <h2>Preview page</h2>
         </div>
         <div className={cx(previewPageStyle, expandBoth)}>
           <ReflexContainer orientation="vertical" className={previewClassName}>
