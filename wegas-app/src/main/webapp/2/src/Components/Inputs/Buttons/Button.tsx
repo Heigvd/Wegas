@@ -137,6 +137,14 @@ export const outlineButtonStyle = {
   backgroundColor: 'transparent',
   };
 
+  export const outlinePrimaryButtonStyle = css({
+    border: '1px solid ' + themeVar.colors.PrimaryColor,
+    backgroundColor: 'transparent',
+    color: themeVar.colors.PrimaryColor,
+    ['&:hover']: {
+      backgroundColor: themeVar.colors.SecondaryBackgroundColor,
+    }
+    });
 export interface DisableBorders {
   top?: boolean;
   right?: boolean;

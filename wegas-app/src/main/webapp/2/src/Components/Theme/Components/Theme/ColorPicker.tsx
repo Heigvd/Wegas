@@ -8,19 +8,27 @@ import {
   grow,
   flexColumn,
   itemCenter,
+  defaultMargin,
+  MediumPadding,
 } from '../../../../css/classes';
 import { useOnClickOutside } from '../../../Hooks/useOnClickOutside';
-import { Button } from '../../../Inputs/Buttons/Button';
+import { Button, outlinePrimaryButtonStyle } from '../../../Inputs/Buttons/Button';
 import { themeVar } from '../../ThemeVars';
 
 export const borderStyle = {
   boxShadow: 'inset 0px 0px 3px rgba(0, 0, 0, 0.1)',
-  borderRadius: '8px',
+  borderRadius: themeVar.dimensions.BorderRadius,
 };
 
 export const valueStyle = css({
   marginTop: '1px',
   boxShadow: 'inset 0px 0px 4px rgba(0, 0, 0, 0.15)',
+});
+
+const colorPickerContainerStyle = css({
+backgroundColor: themeVar.colors.BackgroundColor,
+boxShadow: '0 0 6px rgba(0, 0, 0, 0.2)',
+zIndex: 1,
 });
 
 const colorButton = css({
@@ -76,27 +84,36 @@ export function ColorPicker({
   });
 
   return (
-    <div className={cx(flex, colorButton, justifyCenter)} ref={pickerZone}>
+    <div className={cx(flex, justifyCenter)} ref={pickerZone}>
       {!displayed ? (
         <div
           className={cx(
             colorInnerButton(rgbaToString(color)),
             valueStyle,
             grow,
+            colorButton,
           )}
           onClick={() => setDisplayed(old => !old)}
         />
       ) : (
-        <div className={cx(flex, flexColumn, itemCenter)}>
+        <div className={cx(flex, flexColumn, itemCenter, MediumPadding, colorPickerContainerStyle)}>
           <ChromePicker
             color={color}
             onChangeComplete={newColor => {
               setColor(newColor.rgb);
             }}
           />
-          <div style={{ margin: themeVar.dimensions.BorderWidth }}>
+          <div className={flex} style={{ margin: themeVar.dimensions.BorderWidth }}>
+            <Button
+              label="Cancel"
+              className={cx(outlinePrimaryButtonStyle, defaultMargin)}
+              onClick={() => {
+                setDisplayed(false);
+              }}
+            />
             <Button
               label="Accept"
+              className={defaultMargin}
               onClick={() => {
                 setDisplayed(false);
                 onChange && onChange(color);
