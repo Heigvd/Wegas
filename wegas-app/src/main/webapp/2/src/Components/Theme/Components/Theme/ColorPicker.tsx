@@ -10,6 +10,7 @@ import {
   itemCenter,
   defaultMargin,
   MediumPadding,
+  expandWidth,
 } from '../../../../css/classes';
 import { useOnClickOutside } from '../../../Hooks/useOnClickOutside';
 import { Button, outlinePrimaryButtonStyle } from '../../../Inputs/Buttons/Button';
@@ -46,14 +47,45 @@ const colorInnerButton = (color: string) =>
     backgroundColor: color,
   });
 
-function stringToRGBA(color?: string): RGBColor {
-  const colorObject = Color(color);
+function colorToRGBA(color: Color): RGBColor {
   return {
-    r: colorObject.red(),
-    g: colorObject.green(),
-    b: colorObject.blue(),
-    a: colorObject.alpha(),
+    r: Number(color.red().toFixed(0)),
+    g: Number(color.green().toFixed(0)),
+    b: Number(color.blue().toFixed(0)),
+    a: Number(color.alpha().toFixed(0)),
   };
+}
+
+function stringToRGBA(color?: string): RGBColor {
+  let colorObject;
+  try {colorObject = Color(color);}
+  catch (e) {colorObject = Color();}
+  return colorToRGBA(colorObject);
+}
+
+function autoShader(mainColor: string | number | undefined, shadeNumber: number): RGBColor {
+  let newColor = Color(mainColor);
+  switch (shadeNumber) {
+    case 1: {
+      //return shaded color (darken)
+      newColor = newColor.blacken(0.5);
+      return colorToRGBA(newColor);
+    }
+    case 2: {
+      //return tint color (lighten + staturated)
+      newColor = newColor.blacken(0.5);
+      return colorToRGBA(newColor);
+    }
+    case 3: {
+      //return pastel color (very light)
+      newColor = newColor.blacken(0.5);
+      return colorToRGBA(newColor);
+    }
+    default: {
+      return colorToRGBA(newColor);
+    }
+
+  }
 }
 
 export function rgbaToString(color?: RGBColor): string {
@@ -65,11 +97,16 @@ export function rgbaToString(color?: RGBColor): string {
 interface ColorPickerProps {
   initColor?: string;
   onChange?: (newColor: RGBColor) => void;
+  autoColor?: {
+    mainColor: string | number | undefined;
+    shadeNumber: number;
+  }
 }
 
 export function ColorPicker({
   initColor = 'black',
   onChange,
+  autoColor
 }: ColorPickerProps) {
   const [displayed, setDisplayed] = React.useState(false);
   const [color, setColor] = React.useState<RGBColor>(stringToRGBA(initColor));
@@ -104,6 +141,16 @@ export function ColorPicker({
               setColor(newColor.rgb);
             }}
           />
+          {autoColor &&
+            <div className={cx(flex, expandWidth, justifyCenter)}>
+              <Button
+                label="Auto color"
+                onClick={() => {
+                  setColor(autoShader(autoColor.mainColor, autoColor.shadeNumber));
+                }}
+              />
+            </div>
+          }
           <div className={flex} style={{ margin: themeVar.dimensions.BorderWidth }}>
             <Button
               label="Cancel"

@@ -59,6 +59,10 @@ interface ThemeValueEntryProps<
   label: K;
   labelModifer?: (label: K) => string;
   value: V;
+  autoColor?: {
+    mainColor: string | number | undefined;
+    shadeNumber: number;
+  }
 }
 
 function ThemeValueEntry<
@@ -71,6 +75,7 @@ function ThemeValueEntry<
   value,
   section,
   onChange,
+  autoColor,
 }: ThemeValueEntryProps<T, K, V>) {
   const computedLabel = labelModifer ? labelModifer(label) : String(label);
 
@@ -97,6 +102,7 @@ function ThemeValueEntry<
           onChange={color => {
             onChange(label as K, rgbaToString(color) as V);
           }}
+          autoColor={autoColor}
         />
       ) : (
         <SimpleInput
@@ -124,7 +130,7 @@ export function ThemeValueModifier<
   V extends ThemeValues[T][K],
 >({ theme, section, onChange }: ThemeValueModifierProps<T, K, V>) {
   const componentId = THEME_VALUE_MODIFIER_ID + section;
-
+  let primaryColor: string | number | undefined = 'black';
   const values = React.useMemo(() => {
     const themeValues = theme?.values[section];
 
@@ -159,20 +165,26 @@ export function ThemeValueModifier<
           <div className={cx(flex, flexColumn)}>
             <h3 className={colorSectionTitleStyle}>Primary colors</h3>
             <div className={paletteStyle}>
-              {primaryColors.map(([k, v]) => (
-                <ThemeValueEntry
-                  key={k}
-                  label={k as K}
-                  labelModifer={label =>
-                    primaryColorsSection[
-                      label as keyof typeof primaryColorsSection
-                    ]
-                  }
-                  value={v as V}
-                  section={section}
-                  onChange={onChange}
-                />
-              ))}
+              {primaryColors.map(([k, v], i) => {
+                if(i === 0) {
+                  primaryColor = v;
+                }
+                return (
+                  <ThemeValueEntry
+                    key={k}
+                    label={k as K}
+                    labelModifer={label =>
+                      primaryColorsSection[
+                        label as keyof typeof primaryColorsSection
+                      ]
+                    }
+                    value={v as V}
+                    section={section}
+                    onChange={onChange}
+                    autoColor={i>0 ? {mainColor: primaryColor, shadeNumber: i} : undefined}
+                  />
+              )
+              })}
             </div>
           </div>
           <div className={cx(flex, flexColumn)}>
