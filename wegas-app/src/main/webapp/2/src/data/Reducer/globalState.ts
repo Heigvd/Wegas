@@ -523,10 +523,9 @@ export function deleteState<T extends IFSMDescriptor | IDialogueDescriptor>(
     delete states[id];
     // delete transitions pointing to deleted state
     for (const s in states) {
-      (states[s] as IAbstractState).transitions = (states[s]
-        .transitions as IAbstractTransition[]).filter(
-        t => t.nextStateId !== id,
-      );
+      (states[s] as IAbstractState).transitions = (
+        states[s].transitions as IAbstractTransition[]
+      ).filter(t => t.nextStateId !== id);
     }
   })(stateMachine);
 

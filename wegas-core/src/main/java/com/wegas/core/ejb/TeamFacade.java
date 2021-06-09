@@ -8,6 +8,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.api.TeamFacadeI;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.game.Game;
@@ -30,7 +31,7 @@ import javax.persistence.TypedQuery;
  */
 @Stateless
 @LocalBean
-public class TeamFacade extends BaseFacade<Team> {
+public class TeamFacade extends BaseFacade<Team> implements TeamFacadeI {
 
     @Inject
     private PopulatorScheduler populatorScheduler;

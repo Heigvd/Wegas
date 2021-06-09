@@ -28,7 +28,7 @@ const ThemeEditor = React.lazy(
   () => import('../../Components/Theme/Components/ThemeEditor'),
 );
 const Tester = React.lazy(
-  () => import('../../Testers/Components/DropMenuTester'),
+  () => import('../../Testers/Components/DropDownTester'),
 );
 
 const layout = css({

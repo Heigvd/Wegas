@@ -14,7 +14,7 @@ const tabStyle = css({
     ' ' +
     themeVar.dimensions.BorderRadius +
     ' 0 0',
-  fontSize: '4em',
+  fontSize: '1em',
 });
 
 const inactiveTabStyle = css({

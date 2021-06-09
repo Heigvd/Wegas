@@ -58,19 +58,20 @@ var WegasDashboard = (function() {
         var order = Object.keys(section.items).length;
 
         section.items[id] = {
-            order: order,
-            varName: varName,
-            itemType: 'variable',
-            formatter: cfg.formatter,
-            transformer: cfg.transformer,
-            label: cfg.label,
-            index: cfg.index || Object.keys(section).length,
-            active: (cfg.active !== undefined) ? cfg.active : true,
-            sortable: cfg.sortable,
-            preventClick: cfg.preventClick,
-            sortFn: cfg.sortFn,
-            mapFn: cfg.mapFn,
-            mapFnExtraArgs: cfg.mapFnExtraArgs
+          order: order,
+          varName: varName,
+          itemType: "variable",
+          formatter: cfg.formatter,
+          transformer: cfg.transformer,
+          label: cfg.label,
+          index: cfg.index || Object.keys(section).length,
+          active: cfg.active !== undefined ? cfg.active : true,
+          sortable: cfg.sortable,
+          preventClick: cfg.preventClick,
+          sortFn: cfg.sortFn,
+          mapFn: cfg.mapFn,
+          mapFnExtraArgs: cfg.mapFnExtraArgs,
+          kind: cfg.kind,
         };
     }
 
@@ -239,8 +240,13 @@ var WegasDashboard = (function() {
                             item.preventClick = itemCfg.preventClick;
                             item.sortable = itemCfg.sortable;
                             item.sortFn = itemCfg.sortFn;
-                            item.kind = variables[varName].descriptor.getJSONClassName()
-                                .replaceAll("Descriptor", "").toLowerCase();
+                            if(itemCfg.kind != null){
+                                item.kind = itemCfg.kind;
+                            }
+                            else{
+                                item.kind = variables[varName].descriptor.getJSONClassName()
+                                .replaceAll("Descriptor", "").toLowerCase();                            
+                            }
                             break;
                         default:
                     }
@@ -266,7 +272,7 @@ var WegasDashboard = (function() {
                         var item = items[id];
                         if (item.itemType === "variable") {
                             var variable = variables[item.varName];
-
+                                                        
                             if (item.mapFn) {
                                 var args = [teamId, variable.instances[teamId]];
                                 for (var i in item.mapFnExtraArgs) {
