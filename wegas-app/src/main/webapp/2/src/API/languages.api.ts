@@ -70,6 +70,18 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
         return res.json() as Promise<IGameModelLanguage>;
       });
     },
+    /**
+     * Update language value
+     * @param language The language to update
+     */
+    addLanguage(language: IGameModelLanguage) {
+      return rest(LANGUAGES_BASE(gameModelId) + 'Lang', {
+        method: 'POST',
+        body: JSON.stringify(language),
+      }).then((res: Response) => {
+        return res.json() as Promise<IGameModel>;
+      });
+    },
 
     //   /**
     //    * Delete a specific file
