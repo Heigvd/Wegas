@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
 import { css } from 'emotion';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { MessageString, MessageStringStyle } from '../MessageString';
 import { EmbeddedSrcEditor } from './EmbeddedSrcEditor';
 import { WegasScriptEditor } from './WegasScriptEditor';
+import { defaultPadding } from '../../../css/classes';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 
 const infoDuration = 5000;
 
@@ -42,8 +43,8 @@ export function JSONandJSEditor({
 
   return (
     <Toolbar className={fullHeight}>
-      <Toolbar.Header>
-        <Button label="Save" onClick={trySave} />
+      <Toolbar.Header className={defaultPadding}>
+        <IconButton icon="save" tooltip="Save" chipStyle onClick={trySave} />
         {error !== undefined && (
           <MessageString
             type={error.status}

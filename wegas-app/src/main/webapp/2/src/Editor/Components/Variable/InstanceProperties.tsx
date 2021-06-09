@@ -17,7 +17,7 @@ import { Schema } from 'jsoninput';
 import { AvailableViews } from '../FormView';
 import { LocalGlobalState } from '../../../data/Stores/storeFactory';
 import { updateInstance } from '../../../data/Reducer/VariableInstanceReducer';
-import { flex, flexColumn, grow, localSelection } from '../../../css/classes';
+import { flex, flexColumn, grow, localSelection, MediumPadding } from '../../../css/classes';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { themeCTX, ThemeComponent } from '../../../Components/Theme/Theme';
 import { IVariableInstance } from 'wegas-ts-api';
@@ -34,9 +34,8 @@ const listBox = css({
   width: '100%',
   maxHeight: '100px',
   overflowY: 'auto',
-  borderColor: themeVar.colors.PrimaryColor,
-  borderWidth: '2px',
-  borderStyle: 'solid',
+  border: '1px solid ' +themeVar.colors.PrimaryColor,
+  borderRadius: themeVar.dimensions.BorderRadius,
 });
 
 const listItem = css({
@@ -49,9 +48,8 @@ const listItem = css({
 });
 
 const titleStyle = css({
-  textAlign: 'center',
   margin: '5px',
-  backgroundColor: themeVar.colors.HeaderColor,
+  fontWeight: 700,
 });
 
 function isEditingVariable(editing?: Edition): editing is VariableEdition {
@@ -112,7 +110,7 @@ export function InstanceProperties({
   );
 
   return (
-    <Toolbar>
+    <Toolbar className={MediumPadding}>
       <Toolbar.Header>
         <div className={cx(flex, flexColumn)}>
           <div>{title}</div>

@@ -5,23 +5,25 @@ import {
   isFeatureEnabled,
 } from '../../../Components/Contexts/FeaturesProvider';
 import { flex, flexRow, itemCenter } from '../../../css/classes';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 
 const containerStyle = css({
   position: 'relative',
-  marginTop: '0.8em',
+  marginTop: '1em',
 });
 const errorStyle = css({
-  color: 'darkorange',
+  color: themeVar.colors.WarningColor,
   fontSize: '75%',
   fontStyle: 'italic',
 });
-const borderTop = css({
-  borderTop: '4px solid',
-  paddingTop: '2px',
+export const borderTop = css({
+  borderTop: '1px solid '  + themeVar.colors.DisabledColor,
+  paddingTop: '10px',
 });
-const borderBottom = css({
-  borderBottom: '4px solid',
-  marginBottom: '2px',
+export const borderBottom = css({
+  borderBottom: '1px solid '  + themeVar.colors.DisabledColor,
+  paddingBottom: '5px',
+  marginBottom: '5px',
 });
 const shortInline = css({
   display: 'inline-block',

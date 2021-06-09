@@ -33,9 +33,7 @@ const loaderStyle = css({
 });
 
 const editStyle = css({
-  borderStyle: 'solid',
-  borderWidth: '5px',
-  borderColor: themeVar.colors.PrimaryColor,
+  borderTop: '2px solid ' + themeVar.colors.ActiveColor,
   overflow: 'auto',
 });
 

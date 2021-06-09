@@ -7,6 +7,7 @@ import {
   itemCenter,
   expandBoth,
   globalSelection,
+  defaultPadding,
 } from '../../../css/classes';
 import { cx, css } from 'emotion';
 import { FontAwesome, IconComp, Icon, Icons } from '../Views/FontAwesome';
@@ -881,7 +882,7 @@ export function PagesLayout(props: PagesLayoutProps) {
 
   return (
     <Toolbar className={expandBoth}>
-      <Toolbar.Header>
+      <Toolbar.Header className={defaultPadding}>
         <IndexItemAdder path={[]} />
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, grow)}>

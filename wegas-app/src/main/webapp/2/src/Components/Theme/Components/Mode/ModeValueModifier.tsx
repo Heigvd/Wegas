@@ -1,6 +1,6 @@
-import { cx } from 'emotion';
+import { css, cx } from 'emotion';
 import * as React from 'react';
-import { flex, flexColumn } from '../../../../css/classes';
+import { defaultPadding, flex, flexColumn } from '../../../../css/classes';
 import { DropMenu } from '../../../DropMenu';
 import { Title } from '../../../Inputs/String/Title';
 import {
@@ -37,14 +37,14 @@ export function ModeValueModifier({
 
   return (
     <div
-      className={cx(flex, flexColumn)}
+      className={cx(flex, flexColumn, defaultPadding)}
       style={{
         display: 'grid',
         gridTemplateColumns: 'max-content auto',
         alignItems: 'center',
       }}
     >
-      <Title level="2" style={{ gridColumnStart: 1, gridColumnEnd: 3 }}>
+      <Title level="3" style={{ gridColumnStart: 1, gridColumnEnd: 3, marginTop: 0 }}>
         {section}
       </Title>
       {Object.entries(values[section as keyof typeof values] || []).map(
@@ -52,7 +52,7 @@ export function ModeValueModifier({
           const sectionValue = v == null ? 'undefined' : v;
           return (
             <React.Fragment key={k}>
-              <div title={k}>{k} :</div>
+              <div title={k} className={css({margin: '3px'})}>{k} :</div>
               <DropMenu
                 label={
                   section === 'colors' && v != null ? (
@@ -71,6 +71,7 @@ export function ModeValueModifier({
                     ),
                 }))}
                 onSelect={({ value: themeValue }) => onChange(k, themeValue)}
+                containerClassName={css({margin: '3px'})}
               />
             </React.Fragment>
           );

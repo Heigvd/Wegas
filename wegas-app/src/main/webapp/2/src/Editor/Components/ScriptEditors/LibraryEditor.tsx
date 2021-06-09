@@ -27,6 +27,7 @@ import { IAbstractContentDescriptor, IGameModelContent } from 'wegas-ts-api';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { librariesCTX } from '../LibrariesLoader';
 import { store } from '../../../data/Stores/store';
+import { defaultMarginRight, defaultPadding } from '../../../css/classes';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [
@@ -586,7 +587,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
 
   return (
     <Toolbar>
-      <Toolbar.Header>
+      <Toolbar.Header className={defaultPadding}>
         {modalState.type === 'libname' ? (
           <TextPrompt
             placeholder="Library name"
@@ -619,6 +620,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
         {librariesState.selected && (
           <>
             <DropMenu
+              containerClassName={defaultMarginRight}
               label={
                 librariesState.selected
                   ? librariesState.selected
@@ -735,7 +737,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
 
 export default function LibraryEditor() {
   return (
-    <TabLayout tabs={['Styles', 'Client', 'Server']}>
+    <TabLayout tabs={['Styles', 'Client', 'Server']} areChildren>
       <ScriptEditor scriptType="CSS" />
       <ScriptEditor scriptType="ClientScript" />
       <ScriptEditor scriptType="ServerScript" />

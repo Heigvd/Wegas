@@ -6,4 +6,7 @@ export const commonTranslationsFR: CommonTranslations = {
   changesWillBeLost: 'Les modifications vont être perdues.',
   areYouSure: 'Êtes-vous sûr de vouloir continuer?',
   loading: 'Chargement',
+  accept: 'Accepter',
+  cancel: 'Annuler',
+  filter: 'Filtrer',
 };

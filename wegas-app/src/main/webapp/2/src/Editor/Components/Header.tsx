@@ -13,11 +13,13 @@ import { LangToggler } from '../../Components/Contexts/LanguagesProvider';
 import {
   flex,
   itemCenter,
-  grow,
   foregroundContent,
   flexRow,
   componentMarginLeft,
   componentMarginRight,
+  flexBetween,
+  itemsTop,
+  inlineBlock,
 } from '../../css/classes';
 import { Title } from '../../Components/Inputs/String/Title';
 import { mainLayoutId } from './Layout';
@@ -25,10 +27,10 @@ import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
 import { DropMenu } from '../../Components/DropMenu';
 import { parseEvent } from './EntityEditor';
 import { editorEventRemove } from '../../data/Reducer/globalState';
-import { themeVar } from '../../Components/Theme/ThemeVars';
-import { Button } from '../../Components/Inputs/Buttons/Button';
+import { Button, headerOutlineButtonStyle } from '../../Components/Inputs/Buttons/Button';
 import { State } from '../../data/Reducer/reducers';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
+import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 
 function wegasEventSelector(s: State) {
   return s.global.events;
@@ -101,10 +103,6 @@ function NotificationMenu({ className, style }: ClassStyleId) {
   );
 }
 
-const headerStyle = css({
-  backgroundColor: themeVar.colors.HeaderColor,
-});
-
 export default function Header() {
   const { currentFeatures } = React.useContext(featuresCTX);
 
@@ -116,39 +114,43 @@ export default function Header() {
       })}
     >
       {({ state: { gameModel, user }, dispatch }) => (
-        <div className={cx(flex, itemCenter, foregroundContent, headerStyle)}>
-          <Title className={grow}>{gameModel.name}</Title>
-          <LangToggler />
-          <FeatureToggler
-            className={cx(componentMarginLeft, componentMarginRight)}
-          />
-          {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
-            <NotificationMenu className={componentMarginRight} />
-          )}
-          <FontAwesome icon="user" />
-          <span className={componentMarginLeft}>{user.name}</span>
-          <ConfirmButton
-            icon="undo"
-            tooltip="Restart the game (applied to every scenarist)"
-            onAction={success => {
-              if (success) {
-                dispatch(Actions.VariableDescriptorActions.reset());
-                dispatch(Actions.EditorActions.resetPageLoader());
-              }
-            }}
-            className={componentMarginLeft}
-          />
-          <Button
-            icon={[{ icon: 'undo' }, { icon: 'window-restore', size: 'xs' }]}
-            tooltip="Reset layout"
-            onClick={() => {
-              window.localStorage.removeItem(
-                'DnDGridLayoutData.' + mainLayoutId,
-              );
-              window.location.reload();
-            }}
-            className={componentMarginLeft}
-          />
+        <div className={cx(flex, itemsTop, flexBetween, foregroundContent, css({paddingBottom: '1em'}))}>
+          <div>
+            <FontAwesome icon="user" />
+            <span className={componentMarginLeft}>{user.name}</span>
+          </div>
+          <Title className={css({margin: 0})}>{gameModel.name}</Title>
+          <div className={flex}>
+            <LangToggler />
+            <FeatureToggler
+              className={cx(componentMarginLeft, componentMarginRight)}
+            />
+            {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
+              <NotificationMenu className={componentMarginRight} />
+            )}
+            <ConfirmButton
+              icon="fast-backward"
+              tooltip="Restart the game (applied to every scenarist)"
+              onAction={success => {
+                if (success) {
+                  dispatch(Actions.VariableDescriptorActions.reset());
+                  dispatch(Actions.EditorActions.resetPageLoader());
+                }
+              }}
+              buttonClassName={cx(componentMarginLeft, headerOutlineButtonStyle)}
+            />
+            <IconButton
+              icon='redo'
+              tooltip="Reset layout"
+              onClick={() => {
+                window.localStorage.removeItem(
+                  'DnDGridLayoutData.' + mainLayoutId,
+                );
+                window.location.reload();
+              }}
+              className={cx(componentMarginLeft, inlineBlock, headerOutlineButtonStyle)}
+            />
+          </div>
         </div>
       )}
     </StoreConsumer>

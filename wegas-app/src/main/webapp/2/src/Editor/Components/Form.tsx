@@ -1,22 +1,32 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
-import { defaultMargin, noOverflow, expandHeight } from '../../css/classes';
+import { noOverflow, expandHeight, defaultMargin, MediumPadding } from '../../css/classes';
 import './FormView';
-import { Button, ButtonProps } from '../../Components/Inputs/Buttons/Button';
 import { wwarn } from '../../Helper/wegaslog';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { isActionAllowed } from '../../Components/PageComponents/tools/options';
+import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
+import { DropMenu } from '../../Components/DropMenu';
+import { css } from 'emotion';
+import { ActionsProps } from '../../data/Reducer/globalState';
+import { IconComp } from './Views/FontAwesome';
+
+const closeButtonStyle = css({
+color: "black",
+});
+
+const toolboxButtonStyle = css({
+margin: '0 5px',
+height: '35px',
+padding: '0 6px'
+});
 
 interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
   update?: (variable: T) => void;
-  actions: {
-    action: (entity: T, path?: (string | number)[]) => void;
-    label: React.ReactNode;
-    confirm?: boolean;
-  }[];
+  actions: ActionsProps<T>[];
   path?: (string | number)[];
   config?: Schema;
   onChange?: (newEntity: T) => void;
@@ -37,6 +47,7 @@ export function Form<T>({
   const oldReceivedEntity = React.useRef(entity);
   const form = React.useRef<JSONForm>(null);
   const [val, setVal] = React.useState(entity);
+  const toolbox : ActionsProps<T>[] = [];
 
   if (
     deepDifferent(entity, oldReceivedEntity.current) &&
@@ -47,7 +58,7 @@ export function Form<T>({
   }
 
   return (
-    <Toolbar>
+    <Toolbar className={MediumPadding}>
       <Toolbar.Header>
         {isActionAllowed({
           disabled,
@@ -55,8 +66,10 @@ export function Form<T>({
         }) && (
           <>
             {update && (
-              <Button
-                label="Save"
+              <IconButton
+                icon="save"
+                chipStyle
+                tooltip="Save"
                 disabled={!deepDifferent(val, entity)}
                 onClick={() => {
                   if (form.current != null) {
@@ -69,11 +82,12 @@ export function Form<T>({
                   }
                 }}
                 className={expandHeight}
-                disableBorders={{ right: true }}
               />
             )}
             <ConfirmButton
-              label="Reset"
+              icon="undo"
+              chipStyle
+              tooltip="Reset"
               onAction={accept => {
                 accept && setVal(entity);
               }}
@@ -84,32 +98,54 @@ export function Form<T>({
               buttonClassName={expandHeight}
             />
             {actions.map((a, i) => {
-              const btnProps: ButtonProps = {
-                label: a.label,
-                tabIndex: 1,
-                disableBorders: {
-                  left: true,
-                  right: i !== actions.length - 1,
-                },
-              };
-              return a.confirm ? (
-                <ConfirmButton
-                  {...btnProps}
-                  key={i}
-                  onAction={succes =>
-                    succes && val != null && a.action(val, path)
-                  }
-                  buttonClassName={expandHeight}
-                />
-              ) : (
-                <Button
-                  {...btnProps}
-                  key={i}
-                  onClick={() => val != null && a.action(val, path)}
-                  className={expandHeight}
-                />
-              );
+              switch (a.sorting){
+                  case 'toolbox':
+                    toolbox.push(a);
+                    break;
+                  case 'button':
+                    return a.confirm ? (
+                      <ConfirmButton
+                        key={i}
+                        icon="trash"
+                        chipStyle
+                        tooltip="Delete"
+                        onAction={succes =>
+                          succes && val != null && a.action(val, path)
+                        }
+                        buttonClassName={expandHeight}
+                      />) : (
+                        <IconButton
+                          icon= "trash"
+                          chipStyle
+                          tooltip="Delete"
+                          key={i}
+                          onClick={() => val != null && a.action(val, path)}
+                          className={expandHeight}
+                        />
+                      )
+                  case 'close':
+                    <IconButton
+                      icon= 'times'
+                      tooltip="Close"
+                      key={i}
+                      onClick={() => val != null && a.action(val, path)}
+                      className={closeButtonStyle}
+                    />
+                    break;
+                  default:
+                  toolbox.push(a);
+                  break;
+              }
             })}
+            {(toolbox.length > 0) &&
+                <DropMenu
+                  items={toolbox || []}
+                  label={<IconComp icon='cog'/>}
+                  onSelect={(i) => {val != null && i.action(val, path)}}
+                  buttonClassName={toolboxButtonStyle}
+                />
+            }
+
           </>
         )}
       </Toolbar.Header>
@@ -136,3 +172,76 @@ export function Form<T>({
     </Toolbar>
   );
 }
+
+
+/*
+
+deux compos, fonction de filtrage
+Peux modifier l'interface  actions (et en crééer une exprès)
+
+*/
+
+/*  function AdvancedToolBoxItem(actions:any) {
+  const dropMenuOtherActions: any[] = [];
+
+  actions.map((action:any, i:string) => {
+    const btnProps: IconButtonProps = {
+      tabIndex: 1,
+      chipStyle: true,
+      tooltip: action.label?.toString(),
+      icon:IconAction(action.label?.toString()),
+    };
+    //switch: fill the table, create buttons if necessary, create close tag if exist
+    // if table.length > 0, create dropdownmenu with elements
+      switch (action.label) {
+        case 'Duplicate':
+          dropMenuOtherActions.push(action);
+          break;
+        case 'Delete':
+          return (
+            <ConfirmButton
+              {...btnProps}
+              key={i}
+              onAction={succes =>
+                succes && action.action(this.state.val, this.props.path)
+              }
+              buttonClassName={expandHeight}
+            />)
+        case 'Find usage':
+          dropMenuOtherActions.push(action);
+          break;
+        case 'Close':
+          <IconButton
+            {...btnProps}
+            key={i}
+            onClick={() => action.action(this.state.val, this.props.path)}
+            className={expandHeight}
+          />
+          break;
+        case 'Instance':
+          dropMenuOtherActions.push(action);
+          break;
+        default:
+          return (
+            <IconButton
+            tabIndex= {1}
+            chipStyle
+            tooltip= {action.label?.toString()}
+            icon="cat"
+            key={i}
+            onClick={() => action.action(this.state.val, this.props.path)}
+            className={expandHeight}
+          />
+          );
+    };
+  }
+  )
+  if (dropMenuOtherActions.length > 0){
+    <DropMenu
+      items={dropMenuOtherActions || []}
+      icon="cog"
+      onSelect={(i, e) => {i.action(this.state.val, this.props.path)
+      }}
+    />
+  }
+} */

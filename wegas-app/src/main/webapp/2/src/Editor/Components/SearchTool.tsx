@@ -177,7 +177,7 @@ class SearchPanel extends React.Component<
     return (
       <>
         <Button
-          icon={{ icon: 'search', mask: 'cloud' }}
+          icon='cloud'
           tooltip="Cloud search"
           onClick={this.togglePanel}
         />

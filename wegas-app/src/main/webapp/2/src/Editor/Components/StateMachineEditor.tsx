@@ -9,7 +9,7 @@ import {
 } from '../../data/methods/VariableDescriptorMethods';
 import { State as RState } from '../../data/Reducer/reducers';
 import { ComponentWithForm } from './FormView/ComponentWithForm';
-import { grow, flex, flexRow, flexColumn } from '../../css/classes';
+import { grow, flex, flexRow, flexColumn, MediumPadding } from '../../css/classes';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import {
   IDialogueDescriptor,
@@ -40,6 +40,9 @@ import { focusTab } from './LinearTabLayout/LinearLayout';
 import produce, { Immutable } from 'immer';
 import { StateProcessComponent } from '../../Components/FlowChart/StateProcessComponent';
 import { TransitionFlowLineComponent } from '../../Components/FlowChart/TransitionFlowLineComponent';
+//import { internalTranslate } from '../../i18n/internalTranslator';
+//import { commonTranslations } from '../../i18n/common/common';
+
 
 const emptyPath: (string | number)[] = [];
 
@@ -110,6 +113,7 @@ export function StateMachineEditor<
   type TTransition = TState['transitions'][0];
 
   const { lang } = React.useContext(languagesCTX);
+  //const i18nValues = internalTranslate(commonTranslations, lang);
 
   const dispatch = React.useMemo(
     () =>
@@ -118,6 +122,7 @@ export function StateMachineEditor<
         : store.dispatch,
     [forceLocalDispatch, localDispatch],
   );
+
 
   const processes: StateProcess[] = React.useMemo(
     () =>
@@ -216,6 +221,7 @@ export function StateMachineEditor<
         actions.delete = {
           label: 'Delete',
           confirm: true,
+          sorting: 'button',
           action: (
             sm: IFSMDescriptor | IDialogueDescriptor,
             path?: (string | number)[],
@@ -341,6 +347,7 @@ export function StateMachineEditor<
       actions.delete = {
         label: 'Delete',
         confirm: true,
+        sorting: 'button',
         action: (
           sm: IFSMDescriptor | IDialogueDescriptor,
           path?: (string | number)[],
@@ -468,10 +475,10 @@ export function ConnectedStateMachineEditor({
 
   if ('variable' in globalState) {
     if (globalState.variable == null) {
-      return <span>Select a variable to display</span>;
+      return <span className={MediumPadding}>Select a variable to display</span>;
     } else {
       return (
-        <span>The selected variable is not some kind of state machine</span>
+        <span className={MediumPadding}>The selected variable is not some kind of state machine</span>
       );
     }
   } else {

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { flex, flexColumn, grow } from '../../../css/classes';
+import { defaultPadding, flex, flexColumn, grow } from '../../../css/classes';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import {
   ContainerComponent,
@@ -33,6 +33,7 @@ import {
   defaultAbsoluteLayoutPropsKeys,
 } from '../../../Components/Layouts/Absolute';
 import { pick, omit } from 'lodash-es';
+import { ActionsProps } from '../../../data/Reducer/globalState';
 
 /**
  * wegasComponentCommonSchema - defines the minimum schema for every WegasComponent
@@ -48,11 +49,7 @@ interface EditorProps<T = WegasComponentForm> {
   entity: T;
   schema: Schema<BaseView>;
   update?: (variable: T) => void;
-  actions?: {
-    label: React.ReactNode;
-    action: (entity: T, path?: (string | number)[]) => void;
-    confirm?: boolean;
-  }[];
+  actions?: ActionsProps<T>[];
   path?: (string | number)[];
   error?: {
     message: string;
@@ -273,15 +270,15 @@ export default function ConnectedComponentProperties() {
   const { onUpdate, onDelete, onEdit } = React.useContext(pageCTX);
 
   if (!editedPath) {
-    return <pre>No component selected yet</pre>;
+    return <pre className={defaultPadding}>No component selected yet</pre>;
   }
   if (!selectedPage) {
-    return <pre>No page selected yet</pre>;
+    return <pre className={defaultPadding}>No page selected yet</pre>;
   }
   const { component, parent } = findComponent(selectedPage, editedPath);
 
   if (!component) {
-    return <pre>Edited component not found in page</pre>;
+    return <pre className={defaultPadding}>Edited component not found in page</pre>;
   }
 
   return (
@@ -294,10 +291,12 @@ export default function ConnectedComponentProperties() {
           label: 'Delete',
           action: () => onDelete(editedPath),
           confirm: true,
+          sorting: 'button',
         },
         {
           label: 'Deselect',
           action: () => onEdit(undefined),
+          sorting: 'toolbox',
         },
       ]}
     />
