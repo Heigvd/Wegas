@@ -131,7 +131,7 @@ export function TreeView({
           <>
             <SimpleInput
               value={search}
-              placeholder="Filter"
+              placeholder={i18nValues.filter}
               aria-label="Filter"
               onChange={ev => {
                 setSearch(ev.toString());

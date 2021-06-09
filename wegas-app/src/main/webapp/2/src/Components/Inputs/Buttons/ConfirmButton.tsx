@@ -10,6 +10,9 @@ import { css, cx } from 'emotion';
 import { inlineFlex } from '../../../css/classes';
 import { IconButton } from './IconButton';
 import { themeVar } from '../../Theme/ThemeVars';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { commonTranslations } from '../../../i18n/common/common';
 
 const confirmButtonsContainerStyle = css({
 display: 'flex',
@@ -70,6 +73,8 @@ export function ConfirmButton({
 }: ConfirmButtonProps) {
   const [confirmation, setConfirmation] = React.useState(defaultConfirm);
   const confirmButton = React.useRef(null);
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
 
   useOnClickOutside(confirmButton, () => {
     if (!dontResetOnBlur) {
@@ -141,7 +146,7 @@ export function ConfirmButton({
         }
       >
         <Button
-          label="Cancel"
+          label= {i18nValues.cancel}
           onClick={onConfirm(false)}
           disabled={disabled}
           readOnly={readOnly}
@@ -150,7 +155,7 @@ export function ConfirmButton({
           className={css({border: '1px solid ' + themeVar.colors.PrimaryColor})}
         />
         <Button
-          label="Accept"
+          label={i18nValues.accept}
           onClick={onConfirm(true)}
           disabled={disabled}
           readOnly={readOnly}

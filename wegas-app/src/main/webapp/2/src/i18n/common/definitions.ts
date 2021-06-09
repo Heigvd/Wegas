@@ -4,4 +4,7 @@ export interface CommonTranslations {
   changesWillBeLost: string;
   areYouSure: string;
   loading: string;
+  accept: string;
+  cancel: string;
+  filter: string;
 }

@@ -81,6 +81,7 @@ export function ColorPicker({
 
   useOnClickOutside(pickerZone, () => {
     setDisplayed(false);
+    setColor(stringToRGBA(initColor));
   });
 
   return (
@@ -109,6 +110,7 @@ export function ColorPicker({
               className={cx(outlinePrimaryButtonStyle, defaultMargin)}
               onClick={() => {
                 setDisplayed(false);
+                setColor(stringToRGBA(initColor));
               }}
             />
             <Button

@@ -40,6 +40,9 @@ import { focusTab } from './LinearTabLayout/LinearLayout';
 import produce, { Immutable } from 'immer';
 import { StateProcessComponent } from '../../Components/FlowChart/StateProcessComponent';
 import { TransitionFlowLineComponent } from '../../Components/FlowChart/TransitionFlowLineComponent';
+//import { internalTranslate } from '../../i18n/internalTranslator';
+//import { commonTranslations } from '../../i18n/common/common';
+
 
 const emptyPath: (string | number)[] = [];
 
@@ -110,6 +113,7 @@ export function StateMachineEditor<
   type TTransition = TState['transitions'][0];
 
   const { lang } = React.useContext(languagesCTX);
+  //const i18nValues = internalTranslate(commonTranslations, lang);
 
   const dispatch = React.useMemo(
     () =>
@@ -118,6 +122,7 @@ export function StateMachineEditor<
         : store.dispatch,
     [forceLocalDispatch, localDispatch],
   );
+
 
   const processes: StateProcess[] = React.useMemo(
     () =>
