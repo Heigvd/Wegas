@@ -11,9 +11,14 @@ import {
   defaultMargin,
   MediumPadding,
   expandWidth,
+  relative,
 } from '../../../../css/classes';
+import { justifyDropMenu } from '../../../DropDown';
 import { useOnClickOutside } from '../../../Hooks/useOnClickOutside';
-import { Button, outlinePrimaryButtonStyle } from '../../../Inputs/Buttons/Button';
+import {
+  Button,
+  outlinePrimaryButtonStyle,
+} from '../../../Inputs/Buttons/Button';
 import { themeVar } from '../../ThemeVars';
 
 export const borderStyle = {
@@ -27,9 +32,10 @@ export const valueStyle = css({
 });
 
 const colorPickerContainerStyle = css({
-backgroundColor: themeVar.colors.BackgroundColor,
-boxShadow: '0 0 6px rgba(0, 0, 0, 0.2)',
-zIndex: 1,
+  position: 'relative',
+  backgroundColor: themeVar.colors.BackgroundColor,
+  boxShadow: '0 0 6px rgba(0, 0, 0, 0.2)',
+  zIndex: 1,
 });
 
 const colorButton = css({
@@ -58,12 +64,18 @@ function colorToRGBA(color: Color): RGBColor {
 
 function stringToRGBA(color?: string): RGBColor {
   let colorObject;
-  try {colorObject = Color(color);}
-  catch (e) {colorObject = Color();}
+  try {
+    colorObject = Color(color);
+  } catch (e) {
+    colorObject = Color();
+  }
   return colorToRGBA(colorObject);
 }
 
-function autoShader(mainColor: string | number | undefined, shadeNumber: number): RGBColor {
+function autoShader(
+  mainColor: string | number | undefined,
+  shadeNumber: number,
+): RGBColor {
   let newColor = Color(mainColor);
   switch (shadeNumber) {
     case 1: {
@@ -84,7 +96,6 @@ function autoShader(mainColor: string | number | undefined, shadeNumber: number)
     default: {
       return colorToRGBA(newColor);
     }
-
   }
 }
 
@@ -100,63 +111,79 @@ interface ColorPickerProps {
   autoColor?: {
     mainColor: string | number | undefined;
     shadeNumber: number;
-  }
+  };
 }
 
 export function ColorPicker({
   initColor = 'black',
   onChange,
-  autoColor
+  autoColor,
 }: ColorPickerProps) {
-  const [displayed, setDisplayed] = React.useState(false);
+  const mainContainer = React.useRef<HTMLDivElement>(null);
+  const colorContainer = React.useRef<HTMLDivElement>(null);
   const [color, setColor] = React.useState<RGBColor>(stringToRGBA(initColor));
-  const pickerZone = React.useRef(null);
+  const [isOpen, setOpen] = React.useState(false);
 
   React.useEffect(() => {
     setColor(stringToRGBA(initColor));
   }, [initColor]);
 
-  useOnClickOutside(pickerZone, () => {
-    setDisplayed(false);
+  useOnClickOutside(mainContainer, () => {
+    setOpen(false);
     setColor(stringToRGBA(initColor));
   });
 
   return (
-    <div className={cx(flex, justifyCenter)} ref={pickerZone}>
-      {!displayed ? (
+    <div className={cx(flex, relative)} ref={mainContainer}>
+      <div
+        ref={colorContainer}
+        className={cx(
+          colorInnerButton(rgbaToString(color)),
+          valueStyle,
+          grow,
+          colorButton,
+        )}
+        onClick={() => setOpen(old => !old)}
+      />
+
+      {isOpen && (
         <div
           className={cx(
-            colorInnerButton(rgbaToString(color)),
-            valueStyle,
-            grow,
-            colorButton,
+            flex,
+            flexColumn,
+            itemCenter,
+            MediumPadding,
+            colorPickerContainerStyle,
           )}
-          onClick={() => setDisplayed(old => !old)}
-        />
-      ) : (
-        <div className={cx(flex, flexColumn, itemCenter, MediumPadding, colorPickerContainerStyle)}>
+          ref={n => justifyDropMenu(n, colorContainer.current, 'down')}
+        >
           <ChromePicker
             color={color}
             onChangeComplete={newColor => {
               setColor(newColor.rgb);
             }}
           />
-          {autoColor &&
+          {autoColor && (
             <div className={cx(flex, expandWidth, justifyCenter)}>
               <Button
                 label="Auto color"
                 onClick={() => {
-                  setColor(autoShader(autoColor.mainColor, autoColor.shadeNumber));
+                  setColor(
+                    autoShader(autoColor.mainColor, autoColor.shadeNumber),
+                  );
                 }}
               />
             </div>
-          }
-          <div className={flex} style={{ margin: themeVar.dimensions.BorderWidth }}>
+          )}
+          <div
+            className={flex}
+            style={{ margin: themeVar.dimensions.BorderWidth }}
+          >
             <Button
               label="Cancel"
               className={cx(outlinePrimaryButtonStyle, defaultMargin)}
               onClick={() => {
-                setDisplayed(false);
+                setOpen(false);
                 setColor(stringToRGBA(initColor));
               }}
             />
@@ -164,7 +191,7 @@ export function ColorPicker({
               label="Accept"
               className={defaultMargin}
               onClick={() => {
-                setDisplayed(false);
+                setOpen(false);
                 onChange && onChange(color);
               }}
             />
