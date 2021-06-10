@@ -164,7 +164,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                 contentContainerStyle + classNameOrEmpty(listClassName)
               }
               ref={n => {
-                justifyDropMenu(n, direction);
+                justifyDropMenu(n, n?.parentElement, direction);
               }}
             >
               {adder && (

@@ -3,6 +3,7 @@ import { css } from 'emotion';
 import { themeVar } from './Theme/ThemeVars';
 import { classNameOrEmpty } from '../Helper/className';
 import { useOnClickOutside } from './Hooks/useOnClickOutside';
+import { wlog } from '../Helper/wegaslog';
 
 export const itemStyle = css({
   width: '100%',
@@ -224,11 +225,11 @@ function isOverlappingVertically(values: ContainerValues, parent: HTMLElement) {
 
 export function justifyDropMenu(
   menu: HTMLElement | null,
+  selector: HTMLElement | undefined | null,
   direction: DropDownDirection,
 ) {
   const vertical = direction === 'down' || direction === 'up';
 
-  const selector = menu?.parentElement;
   if (menu != null && selector != null) {
     const { width: containerWidth, height: containerHeight } =
       menu.getBoundingClientRect();
@@ -250,6 +251,10 @@ export function justifyDropMenu(
       height: containerHeight,
     };
 
+    wlog(selector.getBoundingClientRect());
+
+    // debugger;
+
     // moving menu list into the visible window
     values = ajustHorizontally(values);
     values = ajustVertically(values);
@@ -266,6 +271,7 @@ export function justifyDropMenu(
     }
     menu.style.setProperty('top', values.top + 'px');
     menu.style.setProperty('height', values.height + 'px');
+    menu.style.setProperty('position', 'fixed');
   }
 }
 
@@ -288,7 +294,7 @@ export function DropDown({
   listClassName,
   style,
 }: DropDownProps) {
-  const mainContainer = React.useRef(null);
+  const mainContainer = React.useRef<HTMLDivElement>(null);
   const [isOpen, setOpen] = React.useState(false);
 
   useOnClickOutside(mainContainer, () => setOpen(false));
@@ -308,7 +314,7 @@ export function DropDown({
         <div
           className={contentContainerStyle + classNameOrEmpty(listClassName)}
           ref={n => {
-            justifyDropMenu(n, direction);
+            justifyDropMenu(n, n?.parentElement, direction);
           }}
         >
           {content}

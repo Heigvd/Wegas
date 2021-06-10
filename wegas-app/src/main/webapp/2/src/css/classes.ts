@@ -83,7 +83,7 @@ export const grow = css({
   flex: '1 1 auto',
 });
 export const stretch = css({
- alignItems: 'stretch',
+  alignItems: 'stretch',
 });
 export const flexColumn = css({
   flexDirection: 'column',
@@ -244,9 +244,9 @@ export const childrenHeaderStyle = css({
 });
 
 export const toolboxHeaderStyle = css({
- marginBottom: '10px',
- paddingBottom: '10px',
- borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
+  marginBottom: '10px',
+  paddingBottom: '10px',
+  borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
 });
 
 export const disabledColorStyle = css({
@@ -261,33 +261,33 @@ export const infoShortTextStyle = css({
 });
 
 export const hoverColorInsetShadow = css({
-  boxShadow: 'inset 0 0 0 2px var(--common-colors-hovercolor)',
+  boxShadow: 'inset 0 0 0 2px var(--colors-hovercolor)',
 });
 
 export const thinHoverColorInsetShadow = css({
-  boxShadow: 'inset 0 0 0 1px var(--common-colors-hovercolor)',
+  boxShadow: 'inset 0 0 0 1px var(--colors-hovercolor)',
 });
 
 export const highlightColorInsetShadow = css({
-  boxShadow: 'inset 0 0 0 2px var(--common-colors-highlightcolor)',
+  boxShadow: 'inset 0 0 0 2px var(--colors-highlightcolor)',
 });
 
 export const hatchedBackground = css({
   background:
-    'repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, var(--common-colors-hovercolor) 10px,  var(--common-colors-hovercolor) 20px);',
+    'repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, var(--colors-hovercolor) 10px,  var(--colors-hovercolor) 20px);',
   zIndex: 1000,
 });
 
 export const thinHatchedBackground = css({
   background:
-    'repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 5px, var(--common-colors-hovercolor) 5px,  var(--common-colors-hovercolor) 10px);',
+    'repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 5px, var(--colors-hovercolor) 5px,  var(--colors-hovercolor) 10px);',
   zIndex: 1000,
 });
 
 export const highlightedHatchedBackground = css({
   background:
     //`repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, ${Color(themeVar.colors.HoverColor).darken(0.5).toString()} 10px, ${Color(themeVar.colors.HoverColor).darken(0.5).toString()} 20px);`,
-    `repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, var(--common-colors-highlightcolor) 10px, var(--common-colors-highlightcolor) 20px);`,
+    `repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, var(--colors-highlightcolor) 10px, var(--colors-highlightcolor) 20px);`,
   zIndex: 1000,
 });
 
