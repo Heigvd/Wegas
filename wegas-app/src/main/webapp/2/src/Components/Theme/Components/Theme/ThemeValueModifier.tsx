@@ -130,7 +130,6 @@ export function ThemeValueModifier<
   V extends ThemeValues[T][K],
 >({ theme, section, onChange }: ThemeValueModifierProps<T, K, V>) {
   const componentId = THEME_VALUE_MODIFIER_ID + section;
-  let primaryColor: string | number | undefined = 'black';
   const values = React.useMemo(() => {
     const themeValues = theme?.values[section];
 
@@ -165,11 +164,7 @@ export function ThemeValueModifier<
           <div className={cx(flex, flexColumn)}>
             <h3 className={colorSectionTitleStyle}>Primary colors</h3>
             <div className={paletteStyle}>
-              {primaryColors.map(([k, v], i) => {
-                if(i === 0) {
-                  primaryColor = v;
-                }
-                return (
+              {primaryColors.map(([k, v], i, colorArray) => (
                   <ThemeValueEntry
                     key={k}
                     label={k as K}
@@ -181,16 +176,15 @@ export function ThemeValueModifier<
                     value={v as V}
                     section={section}
                     onChange={onChange}
-                    autoColor={i>0 ? {mainColor: primaryColor, shadeNumber: i} : undefined}
+                    autoColor={i>0 ? {mainColor: colorArray[0][1], shadeNumber: i} : undefined}
                   />
-              )
-              })}
+              ))}
             </div>
           </div>
           <div className={cx(flex, flexColumn)}>
             <h3 className={colorSectionTitleStyle}>Secondary colors</h3>
             <div className={paletteStyle}>
-              {secondaryColors.map(([k, v]) => (
+              {secondaryColors.map(([k, v], i, colorArray) => (
                 <ThemeValueEntry
                   key={k}
                   label={k as K}
@@ -202,6 +196,7 @@ export function ThemeValueModifier<
                   value={v as V}
                   section={section}
                   onChange={onChange}
+                  autoColor={i>0 ? {mainColor: colorArray[0][1], shadeNumber: i} : undefined}
                 />
               ))}
             </div>

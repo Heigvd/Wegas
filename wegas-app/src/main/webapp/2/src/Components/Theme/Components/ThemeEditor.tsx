@@ -32,7 +32,7 @@ const themeEditorHeaderStyle = css({
     ...outlineButtonStyle,
     marginLeft: '15px',
   },
-  ['button.noOutline']: {
+  ['button.noOutline, .confirmBtn button:not(.dark)']: {
     backgroundColor: themeVar.colors.PrimaryColor,
     border: 'none',
     marginLeft: '5px',
