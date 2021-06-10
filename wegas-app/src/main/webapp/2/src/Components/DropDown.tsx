@@ -3,7 +3,6 @@ import { css } from 'emotion';
 import { themeVar } from './Theme/ThemeVars';
 import { classNameOrEmpty } from '../Helper/className';
 import { useOnClickOutside } from './Hooks/useOnClickOutside';
-import { wlog } from '../Helper/wegaslog';
 
 export const itemStyle = css({
   width: '100%',
