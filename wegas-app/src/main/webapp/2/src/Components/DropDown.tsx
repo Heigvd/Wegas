@@ -251,10 +251,6 @@ export function justifyDropMenu(
       height: containerHeight,
     };
 
-    wlog(selector.getBoundingClientRect());
-
-    // debugger;
-
     // moving menu list into the visible window
     values = ajustHorizontally(values);
     values = ajustVertically(values);

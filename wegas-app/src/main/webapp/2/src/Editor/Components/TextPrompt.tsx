@@ -55,7 +55,9 @@ export function TextPrompt({
     }
   }, [defaultFocus]);
 
-  useOnClickOutside(textPrompt, () => onBlur && onBlur());
+  useOnClickOutside(textPrompt, () => {
+    onBlur && onBlur();
+  });
 
   return (
     <div

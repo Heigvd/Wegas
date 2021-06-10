@@ -255,18 +255,17 @@ const setLibraryState = (oldState: ILibrariesState, action: StateAction) =>
  * getScriptLanguage that gives a language type from a libType
  * @param scriptType - the type of library
  */
-const getScriptLanguage: (
-  scriptType: LibType,
-) => 'css' | 'typescript' = scriptType => {
-  switch (scriptType) {
-    case 'CSS':
-      return 'css';
-    case 'ClientScript':
-    case 'ServerScript':
-    default:
-      return 'typescript';
-  }
-};
+const getScriptLanguage: (scriptType: LibType) => 'css' | 'typescript' =
+  scriptType => {
+    switch (scriptType) {
+      case 'CSS':
+        return 'css';
+      case 'ClientScript':
+      case 'ServerScript':
+      default:
+        return 'typescript';
+    }
+  };
 
 /**
  * getScriptOutdatedState is a function that looks for a lastestVersionLibrary.
@@ -609,92 +608,103 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             applyOnEnter
           />
         ) : (
-          <Button
-            icon="plus"
-            tooltip="Add a new script"
-            onClick={() => {
-              setModalState({ type: 'libname' });
-            }}
-          />
-        )}
-        {librariesState.selected && (
           <>
-            <DropMenu
-              containerClassName={defaultMarginRight}
-              label={
-                librariesState.selected
-                  ? librariesState.selected
-                  : 'No library selected'
-              }
-              items={Object.keys(librariesState.libraries).map(
-                (name: string) => ({
-                  value: name,
-                  label: name,
-                }),
-              )}
-              onSelect={({ value }) =>
-                dispatchStateAction({
-                  type: 'SelectLibrary',
-                  name: value,
-                })
-              }
+            <Button
+              icon="plus"
+              tooltip="Add a new script"
+              onClick={() => {
+                setModalState({ type: 'libname' });
+              }}
             />
-            <DropMenu
-              label={getLibraryVisibility(librariesState)}
-              items={visibilities
-                .filter(v => isVisibilityAllowed(librariesState, v))
-                .map(v => ({
-                  value: v,
-                  label: v,
-                }))}
-              onSelect={({ value }) =>
-                dispatchStateAction({
-                  type: 'SetLibraryVisibility',
-                  visibility: value as IVisibility,
-                })
-              }
-            />
-            {!isLibraryOutdated(libEntry) && (
+            {librariesState.selected && (
               <>
-                {isEditAllowed(librariesState) && (
-                  <Button
-                    icon="save"
-                    tooltip="Save the script"
-                    onClick={onSaveLibrary}
-                  />
+                <DropMenu
+                  containerClassName={defaultMarginRight}
+                  label={
+                    librariesState.selected
+                      ? librariesState.selected
+                      : 'No library selected'
+                  }
+                  items={Object.keys(librariesState.libraries).map(
+                    (name: string) => ({
+                      value: name,
+                      label: name,
+                    }),
+                  )}
+                  onSelect={({ value }) =>
+                    dispatchStateAction({
+                      type: 'SelectLibrary',
+                      name: value,
+                    })
+                  }
+                />
+                <DropMenu
+                  label={getLibraryVisibility(librariesState)}
+                  items={visibilities
+                    .filter(v => isVisibilityAllowed(librariesState, v))
+                    .map(v => ({
+                      value: v,
+                      label: v,
+                    }))}
+                  onSelect={({ value }) =>
+                    dispatchStateAction({
+                      type: 'SetLibraryVisibility',
+                      visibility: value as IVisibility,
+                    })
+                  }
+                />
+                {!isLibraryOutdated(libEntry) && (
+                  <>
+                    {isEditAllowed(librariesState) && (
+                      <Button
+                        icon="save"
+                        tooltip="Save the script"
+                        onClick={onSaveLibrary}
+                      />
+                    )}
+                    {isDeleteAllowed(librariesState) && (
+                      <ConfirmButton
+                        icon="trash"
+                        tooltip="Delete the script"
+                        onAction={success => success && onDeleteLibrary()}
+                        onBlur={() => {
+                          setModalState({ type: 'close' });
+                        }}
+                      />
+                    )}
+                  </>
                 )}
-                {isDeleteAllowed(librariesState) && (
-                  <ConfirmButton
-                    icon="trash"
-                    tooltip="Delete the script"
-                    onAction={success => success && onDeleteLibrary()}
-                    onBlur={() => setModalState({ type: 'close' })}
+                {modalState.type === 'error' ||
+                modalState.type === 'warning' ? (
+                  <MessageString
+                    type={modalState.type}
+                    value={modalState.label}
+                    duration={3000}
+                    onLabelVanish={() => {
+                      setModalState({ type: 'close' });
+                    }}
                   />
+                ) : (
+                  libEntry &&
+                  (isLibraryOutdated(libEntry) ? (
+                    <MessageString
+                      type="error"
+                      value="The script is dangeroulsy outdated!"
+                    />
+                  ) : libEntry.status.isEdited ? (
+                    <MessageString
+                      type="warning"
+                      value="The script is not saved"
+                    />
+                  ) : (
+                    <MessageString
+                      type="succes"
+                      value="The script is saved"
+                      duration={3000}
+                    />
+                  ))
                 )}
               </>
-            )}
-            {libEntry &&
-              (isLibraryOutdated(libEntry) ? (
-                <MessageString
-                  type="error"
-                  value="The script is dangeroulsy outdated!"
-                />
-              ) : libEntry.status.isEdited ? (
-                <MessageString type="warning" value="The script is not saved" />
-              ) : (
-                <MessageString
-                  type="succes"
-                  value="The script is saved"
-                  duration={3000}
-                />
-              ))}
-            {(modalState.type === 'error' || modalState.type === 'warning') && (
-              <MessageString
-                type={modalState.type}
-                value={modalState.label}
-                duration={3000}
-                onLabelVanish={() => setModalState({ type: 'close' })}
-              />
             )}
           </>
         )}
