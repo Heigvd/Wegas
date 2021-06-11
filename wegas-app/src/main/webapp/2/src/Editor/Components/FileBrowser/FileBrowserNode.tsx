@@ -41,6 +41,9 @@ import {
   getIconForFile,
 } from '../../../Helper/fileTools';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // styles
@@ -271,6 +274,8 @@ export function FileBrowserNode({
   readOnly,
 }: FileBrowserNodeProps) {
   const actionAllowed = isActionAllowed({ disabled, readOnly });
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
 
   //const isDisplayPreviewAllowed = !disabled;
 
@@ -873,7 +878,7 @@ export function FileBrowserNode({
               )
             ) : (
               <div className={cx(noToggleStyle, infoShortTextStyle)}>
-                Loading...
+                {i18nValues.loading}...
               </div>
             ))}
         </div>

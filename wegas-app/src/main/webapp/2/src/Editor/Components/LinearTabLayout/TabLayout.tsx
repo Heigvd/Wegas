@@ -13,6 +13,9 @@ import {
   headerStyle,
 } from '../../../css/classes';
 import { ClassNames, ComponentMap } from './DnDTabLayout';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 interface TabLayoutProps {
   /**
@@ -54,6 +57,8 @@ export function TabLayout({
 }: TabLayoutProps) {
   const {general, header, content} = classNames;
   const[activeLabel, setActiveLabel] = React.useState(defaultActiveLabel);
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
 
   return (
     <Toolbar vertical={vertical} className={cx(relative, general)}>
@@ -80,7 +85,7 @@ export function TabLayout({
                 innerClassName={cx(flex, expandBoth)}
                 outerClassName={expandBoth}
               >
-                <React.Suspense fallback={<div>Loading...</div>}>
+                <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
                   {components[activeLabel]}
                 </React.Suspense>
               </Reparentable>

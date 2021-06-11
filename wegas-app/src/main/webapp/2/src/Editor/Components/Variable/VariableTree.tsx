@@ -48,8 +48,9 @@ import { State } from '../../../data/Reducer/reducers';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { useOkCancelModal } from '../../../Components/Modal';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { internalTranslate, useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
 
 const TREECONTENTID = 'TREECONTENT';
 
@@ -271,6 +272,8 @@ export function CTree(
   // const unsaved = useStore(() => props?.localState?.unsaved);
   // props.localState
   // const unsaved = useStore(s => s.global.editing?.unsaved);
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
   const actionAllowed = isActionAllowed({
     disabled: props.disabled,
     readOnly: props.readOnly,
@@ -511,7 +514,7 @@ export function CTree(
       </Node>
     );
   }
-  return <div>Loading...</div>;
+  return <div>{i18nValues.loading}...</div>;
 }
 export function Tree() {
   const entities = useGameModel().itemsIds;

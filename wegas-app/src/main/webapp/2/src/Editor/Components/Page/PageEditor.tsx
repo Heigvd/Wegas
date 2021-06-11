@@ -30,6 +30,9 @@ import {
 } from 'wegas-ts-api';
 import { State } from '../../../data/Reducer/reducers';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 const toggleButtonStyle = css({
   display: 'flex',
@@ -187,11 +190,13 @@ export function updateComponent(
 }
 
 function SourceEditor() {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
   return (
     <pageEditorCTX.Consumer>
       {({ selectedPageId, selectedPage, loading }) =>
         loading ? (
-          <pre>Loading the pages</pre>
+          <pre>{i18nValues.loadingPages}</pre>
         ) : (
           <JSONandJSEditor
             content={JSON.stringify(selectedPage, null, 2)}
@@ -262,9 +267,11 @@ function PageDisplay({
   setShowControls,
 }: PageDisplayProps) {
   const { selectedPageId, loading } = React.useContext(pageEditorCTX);
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
 
   if (loading) {
-    return <pre>Loading the pages</pre>;
+    return <pre>{i18nValues.loadingPages}</pre>;
   }
   return (
     <Toolbar className={expandBoth + ' PAGE-DISPLAY'}>
@@ -345,6 +352,8 @@ function Layout({
 export const PAGE_EDITOR_LAYOUT_ID = 'PageEditorLayout';
 
 export default function PageEditor() {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
   const handles = React.useRef({});
   const focusTab = React.useRef<(tabId: string, layoutId: string) => void>();
   const [
@@ -671,7 +680,7 @@ export default function PageEditor() {
   // useComparator({selectedPageId,editedPath})
 
   return Object.keys(availableLayoutTabs).length === 0 ? (
-    <pre>Loading...</pre>
+    <pre>{i18nValues.loading}...</pre>
   ) : (
     <div className={cx(flex, grow) + ' PAGE-EDITOR'}>
       <pageEditorCTX.Provider

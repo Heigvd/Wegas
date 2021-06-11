@@ -22,6 +22,9 @@ import {
 import { childrenPlusTabStyle, plusTabStyle } from '../../../Components/Tabs';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 const dropZoneFocus = hatchedBackground;
 
@@ -169,6 +172,8 @@ export function DnDTabLayout({
   areChildren,
 }: TabLayoutProps) {
   const { general, header, content } = classNames;
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
   React.useEffect(() => {
     if (
       defaultActiveLabel === undefined ||
@@ -299,7 +304,7 @@ export function DnDTabLayout({
                 innerClassName={cx(flex, expandBoth)}
                 outerClassName={expandBoth}
               >
-                <React.Suspense fallback={<div>Loading...</div>}>
+                <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
                   {components[defaultActiveLabel]}
                 </React.Suspense>
               </Reparentable>

@@ -4,6 +4,8 @@ export interface CommonTranslations {
   changesWillBeLost: string;
   areYouSure: string;
   loading: string;
+  loadingFiles: string;
+  loadingPages: string;
   accept: string;
   cancel: string;
   filter: string;

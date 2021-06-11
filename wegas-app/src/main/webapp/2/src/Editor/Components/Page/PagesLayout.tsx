@@ -48,6 +48,9 @@ import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { State } from '../../../data/Reducer/reducers';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 const bulletCSS = {
   width: '1em',
@@ -757,6 +760,8 @@ function PageIndexItemNode({
   onPageClick,
   componentControls,
 }: PagesLayoutNodeProps): JSX.Element | null {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
   const { selectedPageId, editedPath } = React.useContext(pageEditorCTX);
   const pageSelector = React.useCallback(
     (s: State) => {
@@ -805,7 +810,7 @@ function PageIndexItemNode({
         )}
       </TreeNode>
     ) : (
-      <span>Loading ...</span>
+      <span>{i18nValues.loading}...</span>
     )
   ) : (
     <TreeNode
@@ -879,6 +884,8 @@ export function PagesLayout(props: PagesLayoutProps) {
   const { dispatch } = store;
   const { componentControls } = props;
   const { onMove, onNew } = componentControls;
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
 
   return (
     <Toolbar className={expandBoth}>
@@ -963,7 +970,7 @@ export function PagesLayout(props: PagesLayoutProps) {
                   />
                 ))
               ) : (
-                <span>Loading ...</span>
+                <span>{i18nValues.loading}...</span>
               )}
             </div>
           )}
