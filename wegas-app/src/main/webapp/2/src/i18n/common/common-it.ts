@@ -10,5 +10,8 @@ export const commonTranslationsIT: CommonTranslations = {
   loadingPages: 'Caricare le pagine',
   accept: 'Accettare',
   cancel: 'Cancellare',
+  delete: 'Cancellare',
   filter: 'Filtro',
+  empty: 'Vuoto',
+  forceDelete: 'Forzare la cancellazione',
 };

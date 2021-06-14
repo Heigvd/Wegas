@@ -8,5 +8,8 @@ export interface CommonTranslations {
   loadingPages: string;
   accept: string;
   cancel: string;
+  delete: string;
   filter: string;
+  empty: string;
+  forceDelete: string;
 }

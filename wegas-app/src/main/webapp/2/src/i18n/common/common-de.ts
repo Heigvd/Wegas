@@ -10,5 +10,8 @@ export const commonTranslationsDE: CommonTranslations = {
   loadingPages: 'Laden der Seiten',
   accept: 'Akzeptieren',
   cancel: 'Abbrechen',
+  delete: 'Löschen',
   filter: 'Filter',
+  empty: 'Leer',
+  forceDelete: 'Löschen erzwingen',
 };
