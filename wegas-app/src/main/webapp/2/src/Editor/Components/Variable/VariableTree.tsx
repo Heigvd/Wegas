@@ -36,6 +36,7 @@ import {
   flex,
   grow,
   flexColumn,
+  toolboxHeaderStyle,
 } from '../../../css/classes';
 import {
   IVariableDescriptor,
@@ -45,6 +46,7 @@ import {
 import { focusTab } from '../LinearTabLayout/LinearLayout';
 import { State } from '../../../data/Reducer/reducers';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
+import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { useOkCancelModal } from '../../../Components/Modal';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -82,7 +84,7 @@ export function VariableTreeTitle({
   style,
 }: VariableTreeTitleProps) {
   return (
-    <div className={className} style={style}>
+    <div className={cx(className, css({margin: '3px 0'}))} style={style}>
       <IconComp icon={withDefault(getIcon(variable!), 'question')} />
       {entityIs(variable, 'EvaluationDescriptorContainer')
         ? subPath && subPath.length === 1
@@ -123,17 +125,16 @@ export function TreeView({
   const actionAllowed = isActionAllowed(options);
 
   return (
-    <Toolbar>
-      <Toolbar.Header>
+    <Toolbar className={css({ padding: '1.5em'})}>
+      <Toolbar.Header className={toolboxHeaderStyle}>
         {!noHeader && actionAllowed && (
           <>
-            <input
-              type="string"
+            <SimpleInput
               value={search}
-              placeholder="Filter"
+              placeholder={i18nValues.filter}
               aria-label="Filter"
               onChange={ev => {
-                setSearch(ev.target.value);
+                setSearch(ev.toString());
               }}
             />
             <DropMenu
@@ -152,7 +153,7 @@ export function TreeView({
           </>
         )}
       </Toolbar.Header>
-      <Toolbar.Content id={TREECONTENTID}>
+      <Toolbar.Content id={TREECONTENTID} className={css({padding: '1px'})}>
         <OkCancelModal onOk={onAccept}>
           <p>{i18nValues.changesWillBeLost}</p>
           <p>{i18nValues.areYouSure}</p>
@@ -238,12 +239,6 @@ function isEditing(
     shallowIs(subPath || [], editing.path)
   );
 }
-
-//const SELECTED_STYLE_WIDTH = 4;
-const headerStyle = css({
-  //  borderLeft: `${SELECTED_STYLE_WIDTH}px solid transparent`,
-});
-
 export const nodeContentStyle = cx(
   css({
     marginRight: '5px',
@@ -367,7 +362,7 @@ export function CTree(
         {...props.nodeProps()}
         header={
           <div
-            className={cx(headerStyle, flex, {
+            className={cx(flex, {
               [globalSelection]: editing,
               [localSelection]: localEditing,
               [searchSelection]: searching,

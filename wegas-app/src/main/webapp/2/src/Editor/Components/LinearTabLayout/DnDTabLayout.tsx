@@ -16,21 +16,12 @@ import {
   hideOverflow,
   autoScroll,
   headerStyle,
-  contentStyle,
   hatchedBackground,
+  childrenHeaderStyle,
 } from '../../../css/classes';
+import { childrenPlusTabStyle, plusTabStyle } from '../../../Components/Tabs';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
-
-const tabButton = css({
-  color: themeVar.colors.LightTextColor,
-  ':hover': {
-    color: themeVar.colors.HoverTextColor,
-  },
-  ':focus': {
-    outline: 'none',
-  },
-});
 
 const dropZoneFocus = hatchedBackground;
 
@@ -152,7 +143,11 @@ interface TabLayoutProps {
   /**
    * The className for general styling
    */
-  classNames?: ClassNames;
+  classNames?: ClassNames
+  /**
+   * If tabs are children of other tabs (styling purpose mainly).
+   */
+   areChildren?: boolean;
 }
 
 /**
@@ -171,6 +166,7 @@ export function DnDTabLayout({
   layoutId,
   CustomTab = Tab,
   classNames = {},
+  areChildren,
 }: TabLayoutProps) {
   const { general, header, content } = classNames;
   React.useEffect(() => {
@@ -237,14 +233,13 @@ export function DnDTabLayout({
             }}
             layoutId={layoutId}
             CustomTab={CustomTab}
+            isChild={areChildren}
           >
             {label}
-            <Button
+            <IconButton
               icon="times"
               tooltip="Remove tab"
               onClick={() => onDeleteTab(label)}
-              className={tabButton}
-              noBackground
             />
           </DragTab>
         </DropTab>,
@@ -268,12 +263,18 @@ export function DnDTabLayout({
   };
 
   return (
-    <Toolbar vertical={vertical} className={cx(relative, general)}>
-      <Toolbar.Header className={cx(headerStyle, header)}>
+    <Toolbar vertical={vertical} className={cx(relative, general, css({backgroundColor: themeVar.colors.BackgroundColor}))}>
+      <Toolbar.Header className={cx(header, {
+        [childrenHeaderStyle]: areChildren !== undefined && areChildren,
+        [headerStyle]: !areChildren
+      })}>
         <div ref={dropTabs} className={cx(flex, grow, autoScroll)}>
           {renderTabs()}
           {selectItems && Object.keys(selectItems).length > 0 && (
-            <CustomTab key={'-1'}>
+            <CustomTab key={'-1'} className={cx({
+              [childrenPlusTabStyle]: areChildren !== undefined && areChildren,
+              [plusTabStyle]: !areChildren
+            })}>
               <DropMenu
                 items={Object.keys(selectItems).map(label => ({
                   label: label,
@@ -284,14 +285,12 @@ export function DnDTabLayout({
                   onSelect && onSelect(i.value);
                   onNewTab(String(i.value));
                 }}
-                buttonClassName={tabButton}
-                noBackground
               />
             </CustomTab>
           )}
         </div>
       </Toolbar.Header>
-      <Toolbar.Content className={cx(relative, contentStyle, content)}>
+      <Toolbar.Content className={cx(relative, content)}>
         <div className={cx(expandBoth, hideOverflow)}>
           <div className={cx(autoScroll, absoute, expandBoth, flex)}>
             {defaultActiveLabel && components[defaultActiveLabel] && (

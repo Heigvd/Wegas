@@ -21,28 +21,24 @@ import { TabComponent } from './DnDTabs';
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
     backgroundColor: themeVar.colors.PrimaryColor,
-    zIndex: 0,
+    zIndex: 1,
   },
   '&.reflex-container > .reflex-splitter:hover': {
-    backgroundColor: themeVar.colors.PrimaryColor,
+    backgroundColor: themeVar.colors.ActiveColor,
   },
   '&.reflex-container.vertical > .reflex-splitter': {
-    width: '5px',
-    borderLeft: `solid 2px ${themeVar.colors.BackgroundColor}`,
-    borderRight: `solid 2px ${themeVar.colors.BackgroundColor}`,
+    width: '3px',
+    border: 'none',
+    boxShadow: '2px 0 2px rgba(0, 0, 0, 0.25)',
   },
   '&.reflex-container.horizontal > .reflex-splitter': {
-    height: '5px',
-    borderTop: `solid 2px ${themeVar.colors.BackgroundColor}`,
-    borderBottom: `solid 2px ${themeVar.colors.BackgroundColor}`,
+    height: '3px',
+    border: 'none',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25)',
   },
-  '&.reflex-container.vertical > .reflex-splitter:hover': {
-    borderLeft: `solid 2px ${themeVar.colors.BackgroundColor}`,
-    borderRight: `solid 2px ${themeVar.colors.BackgroundColor}`,
-  },
-  '&.reflex-container.horizontal > .reflex-splitter:hover': {
-    borderTop: `solid 2px ${themeVar.colors.BackgroundColor}`,
-    borderBottom: `solid 2px ${themeVar.colors.BackgroundColor}`,
+  '&.reflex-container.vertical > .reflex-splitter:hover, &.reflex-container.horizontal > .reflex-splitter:hover' : {
+    border: 'none',
+    backgroundColor: themeVar.colors.ActiveColor,
   },
 });
 
@@ -836,7 +832,11 @@ interface LinearLayoutProps<T extends ComponentMap> {
   /**
    * The className for general styling
    */
-  classNames?: ClassNames;
+  classNames?: ClassNames
+  /**
+   * If tabs are children of other tabs (styling purpose mainly).
+   */
+  areChildren?: boolean;
 }
 
 /**
@@ -849,6 +849,7 @@ export function MainLinearLayout<T extends ComponentMap>({
   onFocusTab,
   CustomTab,
   classNames = {},
+  areChildren,
 }: LinearLayoutProps<T>) {
   // const tabs = React.useRef<ComponentMap>(tabs ? tabs : {});
   const savedLayoutJSON = window.localStorage.getItem(
@@ -943,6 +944,7 @@ export function MainLinearLayout<T extends ComponentMap>({
               layoutId={layoutId}
               CustomTab={CustomTab}
               classNames={classNames}
+              areChildren={areChildren}
             />
           );
         }
@@ -1008,6 +1010,7 @@ export function MainLinearLayout<T extends ComponentMap>({
               layoutId={layoutId}
               CustomTab={CustomTab}
               classNames={classNames}
+              areChildren={areChildren}
             />
           </ReflexElement>
         </ReflexContainer>

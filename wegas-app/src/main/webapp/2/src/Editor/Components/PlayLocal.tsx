@@ -1,7 +1,9 @@
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import * as React from 'react';
 import { useDebounce } from '../../Components/Hooks/useDebounce';
 import { useUnsafeScript } from '../../Components/Hooks/useScript';
+import { themeVar } from '../../Components/Theme/ThemeVars';
+import { defaultPadding } from '../../css/classes';
 import { shallowIs } from '../../Helper/shallowIs';
 import { WegasScriptEditor } from './ScriptEditors/WegasScriptEditor';
 
@@ -20,7 +22,7 @@ class ErrorBoundary extends React.Component<Record<string, unknown>> {
   }
   render() {
     if (this.state.error) {
-      return <div>{this.state.error.message}</div>;
+      return <div className={cx(defaultPadding, css({color: themeVar.colors.ErrorColor}))}>{this.state.error.message}</div>;
     }
     return this.props.children;
   }

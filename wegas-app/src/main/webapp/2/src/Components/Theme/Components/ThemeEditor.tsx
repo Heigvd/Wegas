@@ -6,10 +6,9 @@ import Preview from './Preview';
 import { Toolbar } from '../../Toolbar';
 import { css, cx } from 'emotion';
 import {
+  defaultPaddingBottom,
+  defaultPaddingLeft,
   flex,
-  flexColumn,
-  flexDistribute,
-  itemCenter,
 } from '../../../css/classes';
 import {
   setSelectedTheme,
@@ -17,15 +16,34 @@ import {
   useThemeStore,
 } from '../../../data/Stores/themeStore';
 import { DropMenu } from '../../DropMenu';
-import { themeVar } from '../ThemeVars';
 import { ThemeSelector } from './Theme/ThemeSelector';
 import { ModeSelector } from './Mode/ModeSelector';
-
-const headerStyle = css({
-  backgroundColor: themeVar.colors.HeaderColor,
-});
+import { themeVar } from '../ThemeVars';
+import { outlineButtonStyle } from '../../Inputs/Buttons/Button';
 
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
+
+const themeEditorHeaderStyle = css({
+  backgroundColor: themeVar.colors.ActiveColor,
+  button: {
+    fontSize: '13px',
+  },
+  ['button:not(.iconOnly)']: {
+    ...outlineButtonStyle,
+    marginLeft: '15px',
+  },
+  ['button.noOutline']: {
+    backgroundColor: themeVar.colors.PrimaryColor,
+    border: 'none',
+    marginLeft: '5px',
+  },
+  ['button.iconOnly']: {
+    color: themeVar.colors.HeaderColor,
+    ['&:hover']: {
+      color:themeVar.colors.PrimaryColor + "!important",
+    }
+  }
+});
 
 export default function ThemeEditor() {
   const { themes, selectedThemes } = useThemeStore(s => s);
@@ -34,9 +52,8 @@ export default function ThemeEditor() {
   return (
     <Toolbar>
       <Toolbar.Header
-        className={cx(flex, flexDistribute, itemCenter, headerStyle)}
+        className={cx(flex, defaultPaddingBottom, defaultPaddingLeft, themeEditorHeaderStyle)}
       >
-        <div className={cx(flex, flexColumn)}>{}</div>
         <ThemeSelector />
         <ModeSelector />
         <DropMenu
@@ -48,6 +65,7 @@ export default function ThemeEditor() {
                 <>
                   <span style={{ minWidth: '100px' }}>{`${k}'s theme :`}</span>
                   <DropMenu
+                    buttonClassName="noOutline"
                     label={selectedThemes[k]}
                     items={Object.keys(themes).map(k => ({
                       value: k,
@@ -73,6 +91,7 @@ export default function ThemeEditor() {
           }}
           initialLayout={[['Theme'], ['Preview']]}
           layoutId={THEME_EDITOR_LAYOUT_ID}
+          areChildren
         />
       </Toolbar.Content>
     </Toolbar>

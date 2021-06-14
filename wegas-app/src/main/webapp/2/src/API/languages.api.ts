@@ -83,6 +83,18 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
       });
     },
 
+    /**
+     * Delete language value
+     * @param code The code of the language to delete (FR/EN/DE/etc...)
+     */
+    deleteLanguage(code: string) {
+      return rest(LANGUAGES_BASE(gameModelId) + 'Lang/' + code, {
+        method: 'DELETE',
+      }).then((res: Response) => {
+        return res.json() as Promise<IGameModel>;
+      });
+    },
+
     //   /**
     //    * Delete a specific file
     //    * @param absolutePath file to delete

@@ -8,19 +8,34 @@ import {
   grow,
   flexColumn,
   itemCenter,
+  defaultMargin,
+  MediumPadding,
+  expandWidth,
+  relative,
 } from '../../../../css/classes';
+import { justifyDropMenu } from '../../../DropDown';
 import { useOnClickOutside } from '../../../Hooks/useOnClickOutside';
-import { Button } from '../../../Inputs/Buttons/Button';
+import {
+  Button,
+  outlinePrimaryButtonStyle,
+} from '../../../Inputs/Buttons/Button';
 import { themeVar } from '../../ThemeVars';
 
 export const borderStyle = {
   boxShadow: 'inset 0px 0px 3px rgba(0, 0, 0, 0.1)',
-  borderRadius: '8px',
+  borderRadius: themeVar.dimensions.BorderRadius,
 };
 
 export const valueStyle = css({
   marginTop: '1px',
-  width: '120px',
+  boxShadow: 'inset 0px 0px 4px rgba(0, 0, 0, 0.15)',
+});
+
+const colorPickerContainerStyle = css({
+  position: 'relative',
+  backgroundColor: themeVar.colors.BackgroundColor,
+  boxShadow: '0 0 6px rgba(0, 0, 0, 0.2)',
+  zIndex: 1,
 });
 
 const colorButton = css({
@@ -38,14 +53,50 @@ const colorInnerButton = (color: string) =>
     backgroundColor: color,
   });
 
-function stringToRGBA(color?: string): RGBColor {
-  const colorObject = Color(color);
+function colorToRGBA(color: Color): RGBColor {
   return {
-    r: colorObject.red(),
-    g: colorObject.green(),
-    b: colorObject.blue(),
-    a: colorObject.alpha(),
+    r: Number(color.red().toFixed(0)),
+    g: Number(color.green().toFixed(0)),
+    b: Number(color.blue().toFixed(0)),
+    a: Number(color.alpha().toFixed(0)),
   };
+}
+
+function stringToRGBA(color?: string): RGBColor {
+  let colorObject;
+  try {
+    colorObject = Color(color);
+  } catch (e) {
+    colorObject = Color();
+  }
+  return colorToRGBA(colorObject);
+}
+
+function autoShader(
+  mainColor: string | number | undefined,
+  shadeNumber: number,
+): RGBColor {
+  let newColor = Color(mainColor);
+  switch (shadeNumber) {
+    case 1: {
+      //return shaded color (darken)
+      newColor = newColor.blacken(0.5);
+      return colorToRGBA(newColor);
+    }
+    case 2: {
+      //return tint color (lighten + staturated)
+      newColor = newColor.blacken(0.5);
+      return colorToRGBA(newColor);
+    }
+    case 3: {
+      //return pastel color (very light)
+      newColor = newColor.blacken(0.5);
+      return colorToRGBA(newColor);
+    }
+    default: {
+      return colorToRGBA(newColor);
+    }
+  }
 }
 
 export function rgbaToString(color?: RGBColor): string {
@@ -57,48 +108,90 @@ export function rgbaToString(color?: RGBColor): string {
 interface ColorPickerProps {
   initColor?: string;
   onChange?: (newColor: RGBColor) => void;
+  autoColor?: {
+    mainColor: string | number | undefined;
+    shadeNumber: number;
+  };
 }
 
 export function ColorPicker({
   initColor = 'black',
   onChange,
+  autoColor,
 }: ColorPickerProps) {
-  const [displayed, setDisplayed] = React.useState(false);
+  const mainContainer = React.useRef<HTMLDivElement>(null);
+  const colorContainer = React.useRef<HTMLDivElement>(null);
   const [color, setColor] = React.useState<RGBColor>(stringToRGBA(initColor));
-  const pickerZone = React.useRef(null);
+  const [isOpen, setOpen] = React.useState(false);
 
   React.useEffect(() => {
     setColor(stringToRGBA(initColor));
   }, [initColor]);
 
-  useOnClickOutside(pickerZone, () => {
-    setDisplayed(false);
+  useOnClickOutside(mainContainer, () => {
+    setOpen(false);
+    setColor(stringToRGBA(initColor));
   });
 
   return (
-    <div className={cx(flex, colorButton, justifyCenter)} ref={pickerZone}>
-      {!displayed ? (
+    <div className={cx(flex, relative)} ref={mainContainer}>
+      <div
+        ref={colorContainer}
+        className={cx(
+          colorInnerButton(rgbaToString(color)),
+          valueStyle,
+          grow,
+          colorButton,
+        )}
+        onClick={() => setOpen(old => !old)}
+      />
+
+      {isOpen && (
         <div
           className={cx(
-            colorInnerButton(rgbaToString(color)),
-            valueStyle,
-            grow,
+            flex,
+            flexColumn,
+            itemCenter,
+            MediumPadding,
+            colorPickerContainerStyle,
           )}
-          onClick={() => setDisplayed(old => !old)}
-        />
-      ) : (
-        <div className={cx(flex, flexColumn, itemCenter)}>
+          ref={n => justifyDropMenu(n, colorContainer.current, 'down')}
+        >
           <ChromePicker
             color={color}
             onChangeComplete={newColor => {
               setColor(newColor.rgb);
             }}
           />
-          <div style={{ margin: themeVar.dimensions.BorderWidth }}>
+          {autoColor && (
+            <div className={cx(flex, expandWidth, justifyCenter)}>
+              <Button
+                label="Auto color"
+                onClick={() => {
+                  setColor(
+                    autoShader(autoColor.mainColor, autoColor.shadeNumber),
+                  );
+                }}
+              />
+            </div>
+          )}
+          <div
+            className={flex}
+            style={{ margin: themeVar.dimensions.BorderWidth }}
+          >
+            <Button
+              label="Cancel"
+              className={cx(outlinePrimaryButtonStyle, defaultMargin)}
+              onClick={() => {
+                setOpen(false);
+                setColor(stringToRGBA(initColor));
+              }}
+            />
             <Button
               label="Accept"
+              className={defaultMargin}
               onClick={() => {
-                setDisplayed(false);
+                setOpen(false);
                 onChange && onChange(color);
               }}
             />

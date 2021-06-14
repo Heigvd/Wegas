@@ -3,11 +3,38 @@ import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import {
   Button,
   ButtonProps,
-  buttonStyle,
   disableBorderToSelector,
 } from './Button';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { css, cx } from 'emotion';
+import { inlineFlex } from '../../../css/classes';
+import { IconButton } from './IconButton';
+import { themeVar } from '../../Theme/ThemeVars';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { commonTranslations } from '../../../i18n/common/common';
 
+const confirmButtonsContainerStyle = css({
+display: 'flex',
+backgroundColor: themeVar.colors.BackgroundColor,
+button: {
+  margin: '4px'
+},
+borderRadius: themeVar.dimensions.BorderRadius,
+boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.15)',
+'&:before': {
+  content: "''",
+  width: 0,
+  height: 0,
+  borderRight: '15px solid ' + themeVar.colors.BackgroundColor,
+  borderTop: '10px solid transparent',
+  borderBottom: '10px solid transparent',
+  position: 'relative',
+  left: '-13px',
+  top: '25%',
+  marginRight: '-13px',
+}
+})
 interface ConfirmButtonProps extends ButtonProps {
   onAction?: (
     success: boolean,
@@ -17,6 +44,9 @@ interface ConfirmButtonProps extends ButtonProps {
   defaultConfirm?: boolean;
   dontResetOnBlur?: boolean;
   buttonClassName?: string;
+  //TODO TO ASK add iconButton props with icon?
+  chipStyle?: boolean;
+  shadow?: boolean;
 }
 
 export function ConfirmButton({
@@ -34,6 +64,8 @@ export function ConfirmButton({
   disableBorders,
   className,
   buttonClassName,
+  chipStyle,
+  shadow,
   tabIndex,
   tooltip,
   type,
@@ -41,6 +73,8 @@ export function ConfirmButton({
 }: ConfirmButtonProps) {
   const [confirmation, setConfirmation] = React.useState(defaultConfirm);
   const confirmButton = React.useRef(null);
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
 
   useOnClickOutside(confirmButton, () => {
     if (!dontResetOnBlur) {
@@ -72,50 +106,63 @@ export function ConfirmButton({
     [defaultConfirm, onAction, onClick],
   );
 
-  return !confirmation ? (
-    <div tabIndex={tabIndex} ref={confirmButton} id={id} className={className}>
-      <Button
-        label={label}
-        prefixedLabel={prefixedLabel}
+  return (
+    <div tabIndex={tabIndex} ref={confirmButton} id={id} className={cx(className, inlineFlex)}>
+      {icon && !label ? (
+        <IconButton
         icon={icon}
         onClick={onClickVerify}
-        disableBorders={disableBorders}
         tooltip={tooltip}
-        disabled={disabled}
+        disabled={confirmation || disabled}
         readOnly={readOnly}
         noHover={noHover}
         className={buttonClassName}
-      />
-    </div>
-  ) : (
-    <div
-      ref={confirmButton}
-      tabIndex={tabIndex}
-      id={id}
-      className={
-        `wegas wegas-btn confirmBtn ${buttonStyle} ` +
-        disableBorderToSelector(disableBorders) +
-        classNameOrEmpty(className)
-      }
-    >
-      <Button
-        label="Accept"
-        mode="warning"
-        disableBorders={{ right: true }}
-        onClick={onConfirm(true)}
-        disabled={disabled}
-        readOnly={readOnly}
-        noHover={noHover != null ? noHover : true}
-        type={type}
-      />
-      <Button
-        label="Cancel"
-        disableBorders={{ left: true }}
-        onClick={onConfirm(false)}
-        disabled={disabled}
-        readOnly={readOnly}
-        noHover={noHover != null ? noHover : true}
-      />
+        chipStyle={chipStyle && chipStyle}
+        shadow={shadow && shadow}
+        />
+      ) : (
+        <Button
+          label={label}
+          prefixedLabel={prefixedLabel}
+          icon={icon}
+          onClick={onClickVerify}
+          disableBorders={disableBorders}
+          tooltip={tooltip}
+          disabled={confirmation || disabled}
+          readOnly={readOnly}
+          noHover={noHover}
+          className={buttonClassName}
+        />
+      )}
+      {confirmation &&
+        <div
+        ref={confirmButton}
+        tabIndex={tabIndex}
+        id={id}
+        className={
+          `wegas wegas-btn confirmBtn ${confirmButtonsContainerStyle}` +
+          disableBorderToSelector(disableBorders) +
+          classNameOrEmpty(className)
+        }
+      >
+        <Button
+          label= {i18nValues.cancel}
+          onClick={onConfirm(false)}
+          disabled={disabled}
+          readOnly={readOnly}
+          noHover={noHover != null ? noHover : true}
+          dark
+          className={css({border: '1px solid ' + themeVar.colors.PrimaryColor})}
+        />
+        <Button
+          label={i18nValues.accept}
+          onClick={onConfirm(true)}
+          disabled={disabled}
+          readOnly={readOnly}
+          noHover={noHover != null ? noHover : true}
+          type={type}
+        />
+      </div>}
     </div>
   );
 }

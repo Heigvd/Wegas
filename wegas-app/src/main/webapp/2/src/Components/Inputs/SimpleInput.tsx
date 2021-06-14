@@ -1,8 +1,37 @@
 import * as React from 'react';
 import { debounce } from 'lodash-es';
 
-import { inputStyle } from './inputStyles';
 import { classNameOrEmpty } from '../../Helper/className';
+
+import { css, ObjectInterpolation } from 'emotion';
+import { themeVar } from '../Theme/ThemeVars';
+
+
+export const inputDefaultCSS = {
+  minWidth: '4em',
+  minHeight: '1.9em',
+};
+
+export const inputStyleCSS: ObjectInterpolation<undefined> = {
+  ...inputDefaultCSS,
+  width: '100%',
+  resize: 'vertical',
+  border: '2px solid ' + themeVar.colors.PrimaryColor,
+  borderRadius: themeVar.dimensions.BorderRadius,
+  backgroundColor: themeVar.colors.BackgroundColor,
+  outline: 'none',
+  '::placeholder': {
+    opacity: '0.5',
+  },
+  ':focus': {
+    border: '2px solid ' + themeVar.colors.ActiveColor,
+  },
+  '&[readonly]': {
+    color: themeVar.colors.DisabledColor,
+  },
+};
+
+export const inputStyle = css(inputStyleCSS);
 
 function undefToEmpty(val?: string | number) {
   if (val == null) {

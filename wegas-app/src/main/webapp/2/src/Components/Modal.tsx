@@ -15,7 +15,7 @@ import {
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../Helper/className';
 import { useInternalTranslate } from '../i18n/internalTranslator';
-import { modalTranslations } from '../i18n/modal/peerReview';
+import { modalTranslations } from '../i18n/modal/modal';
 import { Button } from './Inputs/Buttons/Button';
 import { themeCTX } from './Theme/Theme';
 import { themeVar } from './Theme/ThemeVars';
@@ -68,6 +68,9 @@ const secondaryButtonStyle = css({
   backgroundColor: 'transparent',
   color: themeVar.colors.PrimaryColor,
   border: '1px solid ' + themeVar.colors.PrimaryColor,
+  ['&:hover']:{
+    color: themeVar.colors.LightTextColor,
+  }
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//

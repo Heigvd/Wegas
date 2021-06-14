@@ -10,7 +10,7 @@ import {
 } from '../../../css/classes';
 import { MessageString } from '../../../Editor/Components/MessageString';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { modalTranslations } from '../../../i18n/modal/peerReview';
+import { modalTranslations } from '../../../i18n/modal/modal';
 import { DropMenu } from '../../DropMenu';
 import { Button } from '../../Inputs/Buttons/Button';
 import { SimpleInput } from '../../Inputs/SimpleInput';

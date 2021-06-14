@@ -15,7 +15,7 @@ import {
   createScript,
 } from '../../../Helper/wegasEntites';
 import { scriptEditStyle } from './Script/Script';
-import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
+import { inputStyle, SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { IVariableDescriptor, IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
@@ -26,7 +26,6 @@ import {
   grow,
   flexColumn,
 } from '../../../css/classes';
-import { inputStyle } from '../../../Components/Inputs/inputStyles';
 import { VariableScriptPath } from '../Variable/VariableScriptPath';
 
 const treeCss = css({

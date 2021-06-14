@@ -7,6 +7,7 @@ import {
   justifyEnd,
   flexRow,
   itemCenter,
+  defaultPadding,
 } from '../../../../css/classes';
 import {
   useThemeStore,
@@ -14,6 +15,7 @@ import {
   setModeValue,
   setNextMode,
 } from '../../../../data/Stores/themeStore';
+import { borderBottom } from '../../../../Editor/Components/FormView/commonView';
 import { DropMenu } from '../../../DropMenu';
 import { CheckBox } from '../../../Inputs/Boolean/CheckBox';
 import { Toolbar } from '../../../Toolbar';
@@ -73,8 +75,8 @@ export function ModeEdition() {
   );
 
   return (
-    <Toolbar>
-      <Toolbar.Header className={cx(flex, justifyEnd)}>
+    <Toolbar className={defaultPadding}>
+      <Toolbar.Header className={cx(flex, justifyEnd, borderBottom)}>
         <DropMenu
           icon="cog"
           items={[

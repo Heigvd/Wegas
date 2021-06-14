@@ -17,6 +17,7 @@ import {
   closeEditor,
   setUnsavedChanges,
   EditingState,
+  ActionsProps,
 } from '../../../data/Reducer/globalState';
 import { StoreDispatch } from '../../../data/Stores/store';
 import { createStoreConnector } from '../../../data/connectStore';
@@ -25,14 +26,19 @@ import { InstancePropertiesProps } from '../Variable/InstanceProperties';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { Toolbar } from '../../../Components/Toolbar';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { Dispatch } from 'redux';
 import { StateActions } from '../../../data/actions';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 
 const growBig = css({
   flex: '30 1 auto',
+});
+const closeButtonStyle = css({
+  color: themeVar.colors.DisabledColor,
+  marginLeft: 'auto',
 });
 
 export interface ComponentWithFormChildrenProps {
@@ -119,17 +125,18 @@ function EmbeddedForm({
   );
   const entity = React.useMemo(() => getEntity(editing), [editing]);
 
-  const actions = [
+  const actions: ActionsProps<IMergeable>[] = [
     ...Object.values(
       editing && 'actions' in editing && editing.actions.more
         ? editing.actions.more
         : {},
     ),
-    { label: 'Close', action: () => localDispatch(closeEditor()) },
+    { label: 'Close', sorting:'close', action: () => localDispatch(closeEditor()) },
   ];
   if (onInstanceEditorAction) {
     actions.push({
       label: 'Instance',
+      sorting: 'toolbox',
       action: onInstanceEditorAction,
     });
   }
@@ -187,11 +194,12 @@ export function ComponentWithForm({
         ? localState.editing.actions.more
         : {},
     ),
-    { label: 'Close', action: () => localDispatch(closeEditor()) },
+    { label: 'Close', sorting: 'close', action: () => localDispatch(closeEditor()) },
   ];
   if (entityEditor) {
     actions.push({
       label: 'Instance',
+      sorting: 'toolbox',
       action: () => setInstanceView(show => !show),
     });
   }
@@ -243,8 +251,10 @@ export function ComponentWithForm({
         >
           <Toolbar>
             <Toolbar.Header>
-              <Button
-                label="Close instance editor"
+              <IconButton
+                icon="times"
+                tooltip="Close instance editor"
+                className={closeButtonStyle}
                 onClick={() => setInstanceView(false)}
               />
             </Toolbar.Header>

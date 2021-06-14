@@ -6,10 +6,11 @@ import { Labeled, LabeledView } from './labeled';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { flex, flexColumn } from '../../../css/classes';
 import { ListDescriptorChild } from '../../editionConfig';
-import { inputStyleCSS } from '../../../Components/Inputs/inputStyles';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
+import { inputStyleCSS } from '../../../Components/Inputs/SimpleInput';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 
 export interface Choice {
   value?: {};
@@ -37,16 +38,22 @@ export interface IAsyncSelectProps extends WidgetProps.BaseProps {
   } & CommonView &
     LabeledView;
 }
-const selectStyle = css({
+export const selectStyle = css({
   ...inputStyleCSS,
-  // display: 'inline-block',
-  padding: '2px 4px',
-  // border: '1px solid lightgray',
-  // backgroundColor: 'lightgray',
-  textAlign: 'center',
+  padding: '2px 30px 2px 4px',
   alignItems: 'center',
 });
 
+export const selectArrowStyle = css({
+  select: {
+    appearance: "none",
+    background: "transparent",
+    backgroundImage: "linear-gradient(45deg, transparent 50%, " + themeVar.colors.PrimaryColor +" 50%), linear-gradient(135deg, " + themeVar.colors.PrimaryColor +" 50%, transparent 50%)",
+    backgroundSize:"6px 6px, 6px 6px",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "calc(100% - 14px) calc(1em - 5px), calc(100% - 8px) calc(1em - 5px)",
+  }
+});
 const defaultTitle: Choice = {
   value: '[[[default]]]',
   label: '- please select -',
@@ -184,7 +191,7 @@ function SelectView(props: ISelectProps) {
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>
         {({ inputId, labelNode }) => (
-          <div className={cx(flex, flexColumn)}>
+          <div className={cx(flex, flexColumn, selectArrowStyle)}>
             {labelNode}
             <Selector
               id={inputId}

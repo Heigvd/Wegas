@@ -9,7 +9,6 @@ export const inputDefaultCSS = {
 export const inputStyleCSS: ObjectInterpolation<undefined> = {
   ...inputDefaultCSS,
   resize: 'vertical',
-  borderStyle: 'inset',
   borderColor: themeVar.colors.PrimaryColor,
   borderRadius: themeVar.dimensions.BorderRadius,
   backgroundColor: themeVar.colors.BackgroundColor,

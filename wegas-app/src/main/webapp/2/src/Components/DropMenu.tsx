@@ -78,13 +78,11 @@ const subMenuItemContainer = (isSelected: boolean) =>
     css({
       cursor: 'pointer',
       userSelect: 'none',
-      marginLeft: '5px',
-      marginRight: '5px',
       backgroundColor: isSelected ? themeVar.colors.ActiveColor : undefined,
       color: isSelected ? themeVar.colors.LightTextColor : undefined,
       ':hover': {
-        backgroundColor: themeVar.colors.HoverColor,
-        color: themeVar.colors.HoverTextColor,
+        backgroundColor: themeVar.colors.ActiveColor,
+        color: themeVar.colors.LightTextColor,
       },
     }),
   );
@@ -166,7 +164,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                 contentContainerStyle + classNameOrEmpty(listClassName)
               }
               ref={n => {
-                justifyDropMenu(n, direction);
+                justifyDropMenu(n, n?.parentElement, direction);
               }}
             >
               {adder && (

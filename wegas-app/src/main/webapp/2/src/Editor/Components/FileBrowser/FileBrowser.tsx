@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { css, cx } from 'emotion';
-import { grow, halfOpacity } from '../../../css/classes';
+import { grow, halfOpacity, MediumPadding } from '../../../css/classes';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
 import { StoreDispatch, useStore } from '../../../data/Stores/store';
@@ -137,6 +137,7 @@ export default function FileBrowserWithMeta({
             onFileClick={() => focusTab(mainLayoutId, 'Variable Properties')}
             disabled={disabled}
             readOnly={readOnly}
+            className={MediumPadding}
           />
         );
       }}

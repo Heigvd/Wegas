@@ -20,7 +20,7 @@ import {
 } from './PagesLayout';
 import { store, useStore } from '../../../data/Stores/store';
 import { Actions } from '../../../data';
-import { flex, grow, expandBoth } from '../../../css/classes';
+import { flex, grow, expandBoth, defaultPadding } from '../../../css/classes';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { mergeDeep } from '../../../Helper/tools';
 import { findComponent } from '../../../Helper/pages';
@@ -33,6 +33,7 @@ import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 
 const toggleButtonStyle = css({
   display: 'flex',
+  padding: '0 15px 0 15px',
 });
 
 export interface Handles {
@@ -218,10 +219,6 @@ interface PageDisplayProps {
   setShowBorders: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const toolbarStyle = css({
-  display: flex,
-});
-
 function PageEditionToolbar({
   setShowBorders,
   setEditMode,
@@ -229,7 +226,7 @@ function PageEditionToolbar({
 }: Partial<PageDisplayProps>) {
   const { editMode, showControls, showBorders } = React.useContext(pageCTX);
   return (
-    <div className={toolbarStyle}>
+    <div className={flex}>
       {setShowControls && editMode && (
         <Toggler
           className={toggleButtonStyle}
@@ -271,7 +268,7 @@ function PageDisplay({
   }
   return (
     <Toolbar className={expandBoth + ' PAGE-DISPLAY'}>
-      <Toolbar.Header>
+      <Toolbar.Header className={defaultPadding}>
         <PageEditionToolbar
           setShowBorders={setShowBorders}
           setShowControls={setShowControls}
@@ -712,6 +709,7 @@ export default function PageEditor() {
             onFocusTab={ft => {
               focusTab.current = ft;
             }}
+            areChildren
           />
         </pageCTX.Provider>
       </pageEditorCTX.Provider>

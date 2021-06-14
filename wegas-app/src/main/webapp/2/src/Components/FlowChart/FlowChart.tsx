@@ -30,7 +30,12 @@ import { themeVar } from '../Theme/ThemeVars';
 const flowChartStyle = css({
   width: '100%',
   height: '100%',
-  borderStyle: 'solid',
+  border: '2px solid ' + themeVar.colors.ActiveColor,
+});
+
+const flowChartHeaderStyle = css({
+paddingLeft: '1.5em',
+boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
 });
 
 const flowChartDisabledStyle = css({
@@ -436,7 +441,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
       style={style}
       id={id}
     >
-      <Toolbar.Header>
+      <Toolbar.Header className={flowChartHeaderStyle}>
         {typeof title === 'string' ? <HTMLText text={title} /> : title}
       </Toolbar.Header>
       <Toolbar.Content
