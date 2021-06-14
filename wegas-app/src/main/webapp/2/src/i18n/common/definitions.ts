@@ -9,6 +9,7 @@ export interface CommonTranslations {
   accept: string;
   cancel: string;
   delete: string;
+  reset: string;
   filter: string;
   empty: string;
   forceDelete: string;

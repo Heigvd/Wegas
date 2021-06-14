@@ -20,6 +20,9 @@ import { ThemeSelector } from './Theme/ThemeSelector';
 import { ModeSelector } from './Mode/ModeSelector';
 import { themeVar } from '../ThemeVars';
 import { outlineButtonStyle } from '../../Inputs/Buttons/Button';
+import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
 
@@ -48,6 +51,8 @@ const themeEditorHeaderStyle = css({
 export default function ThemeEditor() {
   const { themes, selectedThemes } = useThemeStore(s => s);
   const dispatch = getThemeDispatch();
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
 
   return (
     <Toolbar>
@@ -57,13 +62,13 @@ export default function ThemeEditor() {
         <ThemeSelector />
         <ModeSelector />
         <DropMenu
-          label={'Contexts'}
+          label={i18nValues.themeEditor.contexts}
           items={Object.keys(selectedThemes).map(
             (k: keyof typeof selectedThemes) => ({
               value: k,
               label: (
                 <>
-                  <span style={{ minWidth: '100px' }}>{`${k}'s theme :`}</span>
+                  <span style={{ minWidth: '100px' }}>{i18nValues.themeEditor.themeNameVal(k)}</span>
                   <DropMenu
                     buttonClassName="noOutline"
                     label={selectedThemes[k]}

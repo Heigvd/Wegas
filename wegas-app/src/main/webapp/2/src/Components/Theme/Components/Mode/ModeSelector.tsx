@@ -9,6 +9,9 @@ import {
   setEditedMode,
   deleteMode,
 } from '../../../../data/Stores/themeStore';
+import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
+import { internalTranslate } from '../../../../i18n/internalTranslator';
+import { languagesCTX } from '../../../Contexts/LanguagesProvider';
 import { Button } from '../../../Inputs/Buttons/Button';
 import { ConfirmButton } from '../../../Inputs/Buttons/ConfirmButton';
 import { themeVar } from '../../ThemeVars';
@@ -21,10 +24,13 @@ export function ModeSelector() {
   const currentTheme = themes[editedThemeName];
   const currentModes = currentTheme?.modes || {};
 
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+
   const onError = React.useCallback(
     (value: string | undefined) => {
       if (value != null && Object.keys(currentModes).includes(value)) {
-        return 'The mode allready exists';
+        return i18nValues.themeEditor.modeAlreadyExists;
       }
     },
     [currentModes],
@@ -66,8 +72,8 @@ export function ModeSelector() {
         ),
       }))}
       selectedItem={editedModeName}
-      menuLabel={`Mode : ${editedModeName}`}
-      placeholder="Mode name"
+      menuLabel={i18nValues.themeEditor.mode(editedModeName)}
+      placeholder={i18nValues.themeEditor.modeName}
       onSelect={value => {
         dispatch(setEditedMode(value));
       }}
