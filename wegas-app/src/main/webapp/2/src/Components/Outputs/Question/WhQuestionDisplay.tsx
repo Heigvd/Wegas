@@ -139,6 +139,7 @@ function WhChoiceDisplay({
           disabled={questionI.validated || disabled}
           readOnly={readOnly}
           inline={false}
+          keepInternalValue
         />
       )}
     </ChoiceContainer>
@@ -158,9 +159,8 @@ export function WhQuestionDisplay({
   disabled,
   readOnly,
 }: WhQuestionDisplayProps) {
-  const [choicesValues, setChoicesValues] = React.useState<
-    (IWhChoiceInstance | undefined)[]
-  >(choicesI);
+  const [choicesValues, setChoicesValues] =
+    React.useState<(IWhChoiceInstance | undefined)[]>(choicesI);
 
   if (questionI == null || !questionI.active) {
     return null;
