@@ -25,6 +25,8 @@ import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
 import { internalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { EditorTabsTranslations } from '../../../i18n/editorTabs/definitions';
 
 const dropZoneFocus = hatchedBackground;
 
@@ -174,6 +176,7 @@ export function DnDTabLayout({
   const { general, header, content } = classNames;
   const { lang } = React.useContext(languagesCTX);
   const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nTabsNames = internalTranslate(editorTabsTranslations, lang);
   React.useEffect(() => {
     if (
       defaultActiveLabel === undefined ||
@@ -215,6 +218,8 @@ export function DnDTabLayout({
     const componentsKeys = Object.keys(components);
     for (let i = 0; i < componentsKeys.length; i += 1) {
       const label = componentsKeys[i];
+      const translatedLabel = i18nTabsNames.tabsNames[label as keyof EditorTabsTranslations['tabsNames']] ?
+      i18nTabsNames.tabsNames[label as keyof EditorTabsTranslations['tabsNames']] : label;
 
       // Always put a dropTab on the left of a tab
       tabs.push(
@@ -240,7 +245,7 @@ export function DnDTabLayout({
             CustomTab={CustomTab}
             isChild={areChildren}
           >
-            {label}
+            {translatedLabel}
             <IconButton
               icon="times"
               tooltip="Remove tab"

@@ -33,7 +33,7 @@ export function ModeSelector() {
         return i18nValues.themeEditor.modeAlreadyExists;
       }
     },
-    [currentModes],
+    [currentModes, i18nValues.themeEditor.modeAlreadyExists],
   );
 
   return (
@@ -74,6 +74,7 @@ export function ModeSelector() {
       selectedItem={editedModeName}
       menuLabel={i18nValues.themeEditor.mode(editedModeName)}
       placeholder={i18nValues.themeEditor.modeName}
+      tooltip={i18nValues.themeEditor.addMode}
       onSelect={value => {
         dispatch(setEditedMode(value));
       }}

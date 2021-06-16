@@ -17,6 +17,9 @@ import {
   setThemeValue,
 } from '../../../../data/Stores/themeStore';
 import { borderBottom } from '../../../../Editor/Components/FormView/commonView';
+import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
+import { internalTranslate } from '../../../../i18n/internalTranslator';
+import { languagesCTX } from '../../../Contexts/LanguagesProvider';
 import { DropMenu } from '../../../DropMenu';
 import { CheckBox } from '../../../Inputs/Boolean/CheckBox';
 import { Toolbar } from '../../../Toolbar';
@@ -24,6 +27,8 @@ import { Theme } from '../../ThemeVars';
 import { ThemeValueModifier } from './ThemeValueModifier';
 
 export function ThemeEdition() {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
   const { themes, editedThemeName } = useThemeStore(s => s);
   const dispatch = getThemeDispatch();
 
@@ -41,7 +46,7 @@ export function ThemeEdition() {
           icon="cog"
           items={[
             {
-              label: 'Show section',
+              label: i18nValues.themeEditor.showSection,
               value: 'showSection',
               items: Object.keys(editedValues).map(
                 (k: keyof Theme['values']) => ({
@@ -63,7 +68,7 @@ export function ThemeEdition() {
                           setSelectedSection(o => ({ ...o, [k]: !o[k] }))
                         }
                       />
-                      {k}
+                      {i18nValues.themeEditor.sections(k)}
                     </div>
                   ),
                 }),

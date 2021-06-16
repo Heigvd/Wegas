@@ -59,26 +59,26 @@ export interface DefaultThemeColors {
 
 // Not the best but allows to split colors into logical groups without modifying the theme's structure
 export const primaryColorsSection = {
-  'Primary color': 'Main',
-  'Primary color shade': 'Shade',
-  'Primary color tint': 'Tint',
-  'Primary color pastel': 'Pastel',
+  'Primary color': 'main',
+  'Primary color shade': 'shade',
+  'Primary color tint': 'tint',
+  'Primary color pastel': 'pastel',
 };
 export const secondaryColorsSection = {
-  'Secondary color': 'Main',
-  'Secondary color shade': 'Shade',
-  'Secondary color tint': 'Tint',
-  'Secondary color pastel': 'Pastel',
+  'Secondary color': 'main',
+  'Secondary color shade': 'shade',
+  'Secondary color tint': 'tint',
+  'Secondary color pastel': 'pastel',
 };
 export const backgroundColorsSection = {
-  'Background color': 'Main',
-  'Secondary background color': 'Secondary',
-  'Dark background color': 'Dark',
-  'Dark secondary background color': 'Dark secondary',
+  'Background color': 'main',
+  'Secondary background color': 'secondary',
+  'Dark background color': 'dark',
+  'Dark secondary background color': 'dark secondary',
 };
 export const textColorsSection = {
-  'Text color': 'Main',
-  'Secondary text color': 'Scondary',
+  'Text color': 'main',
+  'Secondary text color': 'secondary',
 };
 
 export interface DefaultThemeDimensions {

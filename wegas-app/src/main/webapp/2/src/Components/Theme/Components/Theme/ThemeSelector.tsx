@@ -29,7 +29,7 @@ export function ThemeSelector() {
         return i18nValuesEditor.themeEditor.themeAlreadyExists;
       }
     },
-    [themes],
+    [i18nValuesEditor.themeEditor.themeAlreadyExists, themes],
   );
 
   return (
@@ -58,6 +58,7 @@ export function ThemeSelector() {
       selectedItem={editedThemeName}
       menuLabel={i18nValuesEditor.themeEditor.theme(editedThemeName)}
       placeholder={i18nValuesEditor.themeEditor.themeName}
+      tooltip={i18nValuesEditor.themeEditor.addTheme}
       onSelect={value => {
         dispatch(setEditedTheme(value));
       }}

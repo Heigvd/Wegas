@@ -10,6 +10,10 @@ import {
   flexRow,
   flexWrap,
 } from '../../../../css/classes';
+import { EditorTabsTranslations } from '../../../../i18n/editorTabs/definitions';
+import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
+import { internalTranslate } from '../../../../i18n/internalTranslator';
+import { languagesCTX } from '../../../Contexts/LanguagesProvider';
 import { ConfirmButton } from '../../../Inputs/Buttons/ConfirmButton';
 import { SimpleInput } from '../../../Inputs/SimpleInput';
 import {
@@ -62,7 +66,7 @@ interface ThemeValueEntryProps<
   autoColor?: {
     mainColor: string | number | undefined;
     shadeNumber: number;
-  }
+  };
 }
 
 function ThemeValueEntry<
@@ -129,6 +133,8 @@ export function ThemeValueModifier<
   K extends keyof ThemeValues[T],
   V extends ThemeValues[T][K],
 >({ theme, section, onChange }: ThemeValueModifierProps<T, K, V>) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
   const componentId = THEME_VALUE_MODIFIER_ID + section;
   const values = React.useMemo(() => {
     const themeValues = theme?.values[section];
@@ -162,55 +168,75 @@ export function ThemeValueModifier<
       return (
         <>
           <div className={cx(flex, flexColumn)}>
-            <h3 className={colorSectionTitleStyle}>Primary colors</h3>
+            <h3 className={colorSectionTitleStyle}>
+              {i18nValues.themeEditor.primaryColors}
+            </h3>
             <div className={paletteStyle}>
               {primaryColors.map(([k, v], i, colorArray) => (
-                  <ThemeValueEntry
-                    key={k}
-                    label={k as K}
-                    labelModifer={label =>
+                <ThemeValueEntry
+                  key={k}
+                  label={k as K}
+                  labelModifer={label =>
+                    i18nValues.themeEditor.themeColorShades[
                       primaryColorsSection[
                         label as keyof typeof primaryColorsSection
-                      ]
-                    }
-                    value={v as V}
-                    section={section}
-                    onChange={onChange}
-                    autoColor={i>0 ? {mainColor: colorArray[0][1], shadeNumber: i} : undefined}
-                  />
+                      ] as keyof EditorTabsTranslations['themeEditor']['themeColorShades']
+                    ]
+                  }
+                  value={v as V}
+                  section={section}
+                  onChange={onChange}
+                  autoColor={
+                    i > 0
+                      ? { mainColor: colorArray[0][1], shadeNumber: i }
+                      : undefined
+                  }
+                />
               ))}
             </div>
           </div>
           <div className={cx(flex, flexColumn)}>
-            <h3 className={colorSectionTitleStyle}>Secondary colors</h3>
+            <h3 className={colorSectionTitleStyle}>
+              {i18nValues.themeEditor.secondaryColors}
+            </h3>
             <div className={paletteStyle}>
               {secondaryColors.map(([k, v], i, colorArray) => (
                 <ThemeValueEntry
                   key={k}
                   label={k as K}
                   labelModifer={label =>
-                    secondaryColorsSection[
-                      label as keyof typeof secondaryColorsSection
+                    i18nValues.themeEditor.themeColorShades[
+                      secondaryColorsSection[
+                        label as keyof typeof secondaryColorsSection
+                      ] as keyof EditorTabsTranslations['themeEditor']['themeColorShades']
                     ]
                   }
                   value={v as V}
                   section={section}
                   onChange={onChange}
-                  autoColor={i>0 ? {mainColor: colorArray[0][1], shadeNumber: i} : undefined}
+                  autoColor={
+                    i > 0
+                      ? { mainColor: colorArray[0][1], shadeNumber: i }
+                      : undefined
+                  }
                 />
               ))}
             </div>
           </div>
           <div className={cx(flex, flexColumn)}>
-            <h3 className={colorSectionTitleStyle}>Background colors</h3>
+            <h3 className={colorSectionTitleStyle}>
+              {i18nValues.themeEditor.backgroundColors}
+            </h3>
             <div className={paletteStyle}>
               {backgroundColors.map(([k, v]) => (
                 <ThemeValueEntry
                   key={k}
                   label={k as K}
                   labelModifer={label =>
-                    backgroundColorsSection[
-                      label as keyof typeof backgroundColorsSection
+                    i18nValues.themeEditor.themeColorShades[
+                      backgroundColorsSection[
+                        label as keyof typeof backgroundColorsSection
+                      ] as keyof EditorTabsTranslations['themeEditor']['themeColorShades']
                     ]
                   }
                   value={v as V}
@@ -221,14 +247,20 @@ export function ThemeValueModifier<
             </div>
           </div>
           <div className={cx(flex, flexColumn)}>
-            <h3 className={colorSectionTitleStyle}>Text colors</h3>
+            <h3 className={colorSectionTitleStyle}>
+              {i18nValues.themeEditor.textColors}
+            </h3>
             <div className={paletteStyle}>
               {textColors.map(([k, v]) => (
                 <ThemeValueEntry
                   key={k}
                   label={k as K}
                   labelModifer={label =>
-                    textColorsSection[label as keyof typeof textColorsSection]
+                    i18nValues.themeEditor.themeColorShades[
+                      textColorsSection[
+                        label as keyof typeof textColorsSection
+                      ] as keyof EditorTabsTranslations['themeEditor']['themeColorShades']
+                    ]
                   }
                   value={v as V}
                   section={section}
@@ -238,12 +270,21 @@ export function ThemeValueModifier<
             </div>
           </div>
           <div className={cx(flex, flexColumn)}>
-            <h3 className={colorSectionTitleStyle}>Other colors</h3>
+            <h3 className={colorSectionTitleStyle}>
+              {i18nValues.themeEditor.otherColors}
+            </h3>
             <div className={paletteStyle}>
               {otherColors.map(([k, v]) => (
                 <ThemeValueEntry
                   key={k}
                   label={k as K}
+                  labelModifer={label => {
+                    if (i18nValues.themeEditor.themeColorShades[label as keyof EditorTabsTranslations['themeEditor']['themeColorShades']])
+                      return i18nValues.themeEditor.themeColorShades[label as keyof EditorTabsTranslations['themeEditor']['themeColorShades']];
+                    else {
+                      return String(label);
+                    }
+                  }}
                   value={v as V}
                   section={section}
                   onChange={onChange}
@@ -280,7 +321,18 @@ export function ThemeValueModifier<
         </>
       );
     }
-  }, [componentId, onChange, section, theme]);
+  }, [
+    componentId,
+    i18nValues.themeEditor.backgroundColors,
+    i18nValues.themeEditor.otherColors,
+    i18nValues.themeEditor.primaryColors,
+    i18nValues.themeEditor.secondaryColors,
+    i18nValues.themeEditor.textColors,
+    i18nValues.themeEditor.themeColorShades,
+    onChange,
+    section,
+    theme,
+  ]);
 
   return (
     <div className={cx(flex, flexColumn, expandHeight)} id={componentId}>
