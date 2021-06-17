@@ -6,6 +6,9 @@ import { EmbeddedSrcEditor } from './EmbeddedSrcEditor';
 import { WegasScriptEditor } from './WegasScriptEditor';
 import { defaultPadding } from '../../../css/classes';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 const infoDuration = 5000;
 
@@ -29,6 +32,8 @@ export function JSONandJSEditor({
   onSave,
   status,
 }: JSONandJSEditorProps) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
   const editorContent = React.useRef<string>(content);
   const [error, setError] = React.useState<OnSaveStatus | undefined | void>(
     status,
@@ -44,7 +49,7 @@ export function JSONandJSEditor({
   return (
     <Toolbar className={fullHeight}>
       <Toolbar.Header className={defaultPadding}>
-        <IconButton icon="save" tooltip="Save" chipStyle onClick={trySave} />
+        <IconButton icon="save" tooltip={i18nValues.save} chipStyle onClick={trySave} />
         {error !== undefined && (
           <MessageString
             type={error.status}

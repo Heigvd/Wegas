@@ -8,11 +8,22 @@ export const commonTranslationsDE: CommonTranslations = {
   loading: 'Laden',
   loadingFiles: 'Dateien laden',
   loadingPages: 'Laden der Seiten',
+  noSelectedPage: 'Keine gewählte Seite',
   accept: 'Akzeptieren',
   cancel: 'Abbrechen',
   delete: 'Löschen',
-  reset: 'zurücksetzen',
+  reset: 'Zurücksetzen',
+  save: 'Speichern ',
+  edit: 'Bearbeiten',
   filter: 'Filter',
   empty: 'Leer',
   forceDelete: 'Löschen erzwingen',
+  buildingWorld: 'Die Welt wird gebaut!',
+  pageUndefined: 'Die Seite ist undefiniert',
+  features: 'Funktionen',
+  header: {
+    restartGame: 'Neustart des Spiels (gilt für jeden Szenaristen)',
+    resetLayout: 'Layout zurücksetzen',
+    notifications: 'Benachrichtigungen',
+  }
 };

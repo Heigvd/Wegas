@@ -33,6 +33,7 @@ import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
 import { internalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 const toggleButtonStyle = css({
   display: 'flex',
@@ -205,7 +206,7 @@ function SourceEditor() {
                 if (selectedPageId) {
                   patchPage(selectedPageId, JSON.parse(content));
                 } else {
-                  throw Error('No selected page');
+                  throw Error(i18nValues.noSelectedPage);
                 }
               } catch (e) {
                 return { status: 'error', text: (e as Error).message };
@@ -229,13 +230,15 @@ function PageEditionToolbar({
   setEditMode,
   setShowControls,
 }: Partial<PageDisplayProps>) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
   const { editMode, showControls, showBorders } = React.useContext(pageCTX);
   return (
     <div className={flex}>
       {setShowControls && editMode && (
         <Toggler
           className={toggleButtonStyle}
-          label="Show controls: "
+          label={i18nValues.pageEditor.showControls}
           value={showControls}
           onChange={() => setShowControls(c => !c)}
         />
@@ -244,7 +247,7 @@ function PageEditionToolbar({
       {setEditMode && (
         <Toggler
           className={toggleButtonStyle}
-          label="Edit mode:"
+          label={i18nValues.pageEditor.editMode}
           value={editMode}
           onChange={() => setEditMode(!editMode)}
         />
@@ -252,7 +255,7 @@ function PageEditionToolbar({
       {setShowBorders && editMode && (
         <Toggler
           className={toggleButtonStyle}
-          label="Toggle borders: "
+          label={i18nValues.pageEditor.toggleBorders}
           value={showBorders}
           onChange={() => setShowBorders(b => !b)}
         />

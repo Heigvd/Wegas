@@ -286,10 +286,14 @@ export function DnDTabLayout({
               [plusTabStyle]: !areChildren
             })}>
               <DropMenu
-                items={Object.keys(selectItems).map(label => ({
-                  label: label,
+                items={Object.keys(selectItems).map(label => {
+                  const translatedLabel = i18nTabsNames.tabsNames[label as keyof EditorTabsTranslations['tabsNames']] ?
+                  i18nTabsNames.tabsNames[label as keyof EditorTabsTranslations['tabsNames']] : label;
+                  return {
+                  label: translatedLabel,
                   value: label,
-                }))}
+                  }
+                })}
                 icon="plus"
                 onSelect={i => {
                   onSelect && onSelect(i.value);

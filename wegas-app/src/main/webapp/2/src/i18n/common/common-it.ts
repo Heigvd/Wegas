@@ -8,11 +8,22 @@ export const commonTranslationsIT: CommonTranslations = {
   loading: 'Caricamento',
   loadingFiles: 'Caricare i file',
   loadingPages: 'Caricare le pagine',
+  noSelectedPage: 'Nessuna pagina selezionata',
   accept: 'Accettare',
   cancel: 'Cancellare',
   delete: 'Cancellare',
   reset: 'resettare',
+  save: 'Salva',
+  edit: 'Modifica',
   filter: 'Filtro',
   empty: 'Vuoto',
   forceDelete: 'Forzare la cancellazione',
+  buildingWorld: 'Il mondo è in costruzione!',
+  pageUndefined: 'La pagina non è definita',
+  features: 'Caratteristiche',
+  header: {
+    restartGame: 'Riavviare il gioco (applicato ad ogni scenarista)',
+    resetLayout: 'Ripristinare il layout',
+    notifications: 'Notifiche',
+  }
 };

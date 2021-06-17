@@ -37,6 +37,12 @@ export interface EditorTabsTranslations {
     uploadFileFolder: string;
     addNewFolder: string;
     newFolder: string;
+    newPage: string;
+    pageName: string;
+    folderName: string;
+    itemMustName: (item?:string) => string;
+    page: string;
+    folder: string;
     openFile: string;
     changeType: (fromFileType: string, toFileType: string) => string;
     directoryName: string;
@@ -103,6 +109,33 @@ export interface EditorTabsTranslations {
       'Error color': string;
       'Warning color': string;
       'Success color': string;
+    }
+  },
+  pageEditor: {
+    showControls: string;
+    editMode: string;
+    toggleBorders: string;
+    unknownComponent: string;
+    addComponent: string;
+    firstCompoNotDeleted: string;
+    deleteComponent: string;
+    copyComponent: string;
+    adddNewPageFolder: string;
+    defaultPage: string;
+    scenaristPage: string;
+    trainerPage: string;
+    folderMustEmpty: string;
+    deletePageOrFolder: (item: string) => string;
+    editorMustEnabled: string;
+    enableEditMode: string;
+    back: string;
+    componentTypes: {
+      Other: string;
+      Layout: string;
+      Input: string;
+      Output: string;
+      Advanced: string;
+      Programmatic: string;
     }
   }
 }

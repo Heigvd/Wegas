@@ -51,6 +51,7 @@ import { State } from '../../../data/Reducer/reducers';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
 import { internalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 const bulletCSS = {
   width: '1em',
@@ -170,6 +171,8 @@ function IndexItemAdder({
 }: IndexItemAdderProps) {
   const [modalState, setModalState] = React.useState<LayoutModalStates>();
   const { dispatch } = store;
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
 
   return (
     <div className={className} style={style} title={tooltip}>
@@ -180,7 +183,7 @@ function IndexItemAdder({
             label: (
               <div>
                 <FontAwesome icon="file" style={bulletCSS} />
-                New page
+                {i18nValues.fileBrowser.newPage}
               </div>
             ),
             value: 'newpage' as LayoutModalStates['type'],
@@ -189,7 +192,7 @@ function IndexItemAdder({
             label: (
               <div>
                 <FontAwesome icon="folder" style={bulletCSS} />
-                New folder
+                {i18nValues.fileBrowser.newFolder}
               </div>
             ),
             value: 'newfolder' as LayoutModalStates['type'],
@@ -204,14 +207,14 @@ function IndexItemAdder({
           <>
             <TextPrompt
               placeholder={
-                modalState.type === 'newpage' ? 'Page name' : 'Folder name'
+                modalState.type === 'newpage' ? i18nValues.fileBrowser.pageName : i18nValues.fileBrowser.folderName
               }
               defaultFocus
               onAction={(success, value) => {
                 if (value === '') {
                   setModalState({
                     type: 'error',
-                    label: 'The item must have a name',
+                    label: i18nValues.fileBrowser.itemMustName(),
                   });
                 } else {
                   if (success) {
@@ -271,12 +274,15 @@ function IndexItemModifer({
 }: IndexItemModiferProps) {
   const [modalState, setModalState] = React.useState<LayoutModalStates>();
   const { dispatch } = store;
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nEditorValues = internalTranslate(editorTabsTranslations, lang);
 
   return (
     <div className={className} title={tooltip}>
       <Button
         icon="edit"
-        tooltip={`Edit ${isPageItem(indexItem) ? 'page' : 'folder'} name`}
+        tooltip={`${i18nValues.edit} ${isPageItem(indexItem) ? i18nEditorValues.fileBrowser.pageName :  i18nEditorValues.fileBrowser.folderName}`}
         onClick={() => {
           setModalState({ type: 'editpage' });
         }}
@@ -284,15 +290,14 @@ function IndexItemModifer({
       {modalState && modalState.type === 'editpage' && (
         <>
           <TextPrompt
-            placeholder={`${isPageItem(indexItem) ? 'Page' : 'Folder'} name`}
+            placeholder={`${isPageItem(indexItem) ? i18nEditorValues.fileBrowser.pageName :  i18nEditorValues.fileBrowser.folderName}`}
             defaultFocus
             onAction={(success, value) => {
               if (value === '') {
                 setModalState({
                   type: 'error',
-                  label: `The ${
-                    isPageItem(indexItem) ? 'page' : 'folder'
-                  } must have a name`,
+                  label: i18nEditorValues.fileBrowser.itemMustName(
+                    isPageItem(indexItem) ? i18nEditorValues.fileBrowser.page : i18nEditorValues.fileBrowser.folder)
                 });
               } else {
                 if (success) {
@@ -427,6 +432,8 @@ function WegasComponentTitle({
   selectedComponentPath,
   componentControls,
 }: WegasComponentTitleProps) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
   const registeredComponent = usePageComponentStore(s => s[component.type]);
   const { editMode } = React.useContext(pageCTX);
 
@@ -456,7 +463,7 @@ function WegasComponentTitle({
       icon={icon}
       title={title}
       advancedTitle={title + ' ' + JSON.stringify(componentPath)}
-      tooltip={registeredComponent == null ? 'Unknown component' : undefined}
+      tooltip={registeredComponent == null ? i18nValues.pageEditor.unknownComponent : undefined}
       onMouseUp={() => onEdit(pageId, componentPath)}
       onMouseOver={e => {
         if (editMode /*&& !isDragging*/) {
@@ -477,7 +484,7 @@ function WegasComponentTitle({
     >
       {component.props?.children && (
         <ComponentAdder
-          tooltip="Add a component"
+          tooltip={i18nValues.pageEditor.addComponent}
           onSelect={componentType => {
             onNew(pageId, page, componentPath, componentType, 0);
           }}
@@ -494,8 +501,8 @@ function WegasComponentTitle({
             disabled={componentPath.length === 0}
             tooltip={
               componentPath.length === 0
-                ? 'The first component of a page connot be deleted'
-                : 'Delete the component'
+                ? i18nValues.pageEditor.firstCompoNotDeleted
+                : i18nValues.pageEditor.deleteComponent
             }
             className={CONTROLS_CLASSNAME}
           />
@@ -503,7 +510,7 @@ function WegasComponentTitle({
             icon="copy"
             onClick={() => onDuplicate(pageId, page, componentPath)}
             disabled={componentPath.length === 0}
-            tooltip={'Copy the component'}
+            tooltip={i18nValues.pageEditor.copyComponent}
             className={CONTROLS_CLASSNAME}
           />
         </>
@@ -531,6 +538,8 @@ function WegasComponentNode({
   selectedComponentPath,
   componentControls,
 }: WegasComponentNodeProps) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
   const pageSelector = React.useCallback(
     (s: State) => s.pages[pageId],
     [pageId],
@@ -553,7 +562,7 @@ function WegasComponentNode({
     return (
       <LayoutNodeTitle
         icon="exclamation-circle"
-        title="The component is unknown"
+        title={i18nValues.pageEditor.unknownComponent}
       />
     );
   }
@@ -620,6 +629,8 @@ function PageIndexTitle({
   onPageClick,
   defaultPageId,
 }: PageIndexTitleProps) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
   const { selectedPageId } = React.useContext(pageEditorCTX);
   const { dispatch } = store;
   const folderIsNotEmpty =
@@ -643,7 +654,7 @@ function PageIndexTitle({
         <IndexItemAdder
           path={newPath}
           className={CONTROLS_CLASSNAME}
-          tooltip="Add new page or folder"
+          tooltip={i18nValues.pageEditor.adddNewPageFolder}
         />
       )}
       {isPageItem(indexItem) && (
@@ -660,7 +671,7 @@ function PageIndexTitle({
             onClick={() => {
               dispatch(Actions.PageActions.setDefault(indexItem.id!));
             }}
-            tooltip="Default page"
+            tooltip={i18nValues.pageEditor.defaultPage}
             className={cx({
               [CONTROLS_CLASSNAME]: indexItem.id !== defaultPageId,
             })}
@@ -682,7 +693,7 @@ function PageIndexTitle({
                 }),
               );
             }}
-            tooltip="Scenarist page"
+            tooltip={i18nValues.pageEditor.scenaristPage}
             className={CONTROLS_CLASSNAME}
           />
           <Button
@@ -702,7 +713,7 @@ function PageIndexTitle({
                 }),
               );
             }}
-            tooltip="Trainer page"
+            tooltip={i18nValues.pageEditor.trainerPage}
             className={CONTROLS_CLASSNAME}
           />
         </>
@@ -720,8 +731,8 @@ function PageIndexTitle({
         disabled={folderIsNotEmpty}
         tooltip={
           folderIsNotEmpty
-            ? 'The folder must be empty to delete it'
-            : `Delete the ${isPageItem(indexItem) ? 'page' : 'folder'}`
+            ? i18nValues.pageEditor.folderMustEmpty
+            : i18nValues.pageEditor.deletePageOrFolder(isPageItem(indexItem) ? i18nValues.fileBrowser.page : i18nValues.fileBrowser.folder)
         }
         className={CONTROLS_CLASSNAME}
       />
