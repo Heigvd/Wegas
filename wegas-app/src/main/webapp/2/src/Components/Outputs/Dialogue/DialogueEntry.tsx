@@ -128,7 +128,7 @@ export function DialogueEntry({ text, player, waiting }: DialogueEntryProps) {
               <div dangerouslySetInnerHTML={{ __html: translation }} />
               {waiting && (
                 <WaitingLoader
-                  color={themeVar.colors.HeaderColor}
+                  color={themeVar.colors.LightTextColor}
                   background={themeVar.colors.DisabledColor}
                 />
               )}
