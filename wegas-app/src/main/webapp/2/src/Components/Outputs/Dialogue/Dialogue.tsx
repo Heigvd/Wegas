@@ -75,16 +75,6 @@ export function DialogueDisplay({
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // dialogue state
 
-  const wait = React.useCallback(() => {
-    setWaiting(true);
-    const timer = setTimeout(() => {
-      setWaiting(false);
-    }, 2000);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, []);
-
   let currentState = Object.values(dialogueStates)
     .sort((stateA, stateB) => {
       const A = stateA.getIndex();
@@ -190,11 +180,12 @@ export function DialogueDisplay({
               key={`CHOICE${transition.getId()}`}
               label={transition.getActionText()}
               onClick={() => {
-                wait();
+                setWaiting(true);
                 store.dispatch(
                   applyFSMTransition(
                     dialogue.getEntity(),
                     transition.getEntity(),
+                    () => setWaiting(false),
                   ),
                 );
               }}
@@ -202,11 +193,10 @@ export function DialogueDisplay({
               readOnly={readOnly}
             />
           ))}
-
           {/* ---------- waiting for the next answer to be revealed ------------------------ */}
           {waiting && choices.length > 0 && (
             <WaitingLoader
-              color={themeVar.colors.DisabledColor}
+              color={themeVar.colors.LightTextColor}
               background={themeVar.colors.DisabledColor}
             />
           )}

@@ -122,6 +122,10 @@ interface HTMLEditorProps extends ClassStyleId, DisabledReadonly {
    * avoid forcing <p> block
    */
   noRootBlock?: boolean;
+  /**
+   * displays the internal value while the input value is not changed
+   */
+  keepInternalValue?: boolean;
 }
 
 let HTMLEditorID = 0;
@@ -139,6 +143,7 @@ export default function HTMLEditor({
   readOnly,
   noResize,
   noRootBlock,
+  keepInternalValue,
 }: HTMLEditorProps) {
   const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>(
     {},
@@ -147,6 +152,12 @@ export default function HTMLEditor({
   const HTMLContent = React.useRef('');
   const HTMLEditor = React.useRef<{ focus: () => void; destroy: () => void }>();
   const { classes } = React.useContext(classesCTX);
+
+  //Internal value management
+  const [internalValue, setInternalValue] = React.useState(value);
+  React.useEffect(() => {
+    setInternalValue(value);
+  }, [value]);
 
   const config = React.useMemo(
     () => (toolBarContainerId: string) => {
@@ -349,7 +360,7 @@ export default function HTMLEditor({
           </div>
         )}
         <TinyEditor
-          value={value}
+          value={keepInternalValue ? internalValue : value}
           init={config(toolBarId)}
           onInit={editor => {
             HTMLEditor.current = editor.target;
@@ -358,6 +369,7 @@ export default function HTMLEditor({
             if (value !== v) {
               onChange && onChange(v);
             }
+            setInternalValue(v);
           }}
           onFocus={() => setEditorFocus(true)}
           onBlur={() => setEditorFocus(false)}

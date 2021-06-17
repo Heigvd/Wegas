@@ -27,9 +27,9 @@ const InstancesEditor = React.lazy(
 const ThemeEditor = React.lazy(
   () => import('../../Components/Theme/Components/ThemeEditor'),
 );
-const Tester = React.lazy(
-  () => import('../../Testers/Components/DropDownTester'),
-);
+// const Tester = React.lazy(
+//   () => import('../../Testers/Components/DropDownTester'),
+// );
 
 const layout = css({
   display: 'flex',
@@ -39,7 +39,7 @@ const layout = css({
 });
 
 export const availableLayoutTabs = {
-  Tester: <Tester />,
+  // Tester: <Tester />,
   Variables: <TreeView />,
   'State Machine': <StateMachineEditor />,
   'Variable Properties': <EntityEditor />,
@@ -73,7 +73,11 @@ export default function Layout() {
 
   return (
     <div
-      className={ cx(layout, XLPadding, css({ fontFamily: themeVar.others.TextFont2, paddingBottom: '1em' }))}
+      className={cx(
+        layout,
+        XLPadding,
+        css({ fontFamily: themeVar.others.TextFont2, paddingBottom: '1em' }),
+      )}
       id="WegasLayout"
     >
       <Header />

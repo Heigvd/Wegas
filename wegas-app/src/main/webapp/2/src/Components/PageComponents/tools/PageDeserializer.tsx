@@ -26,6 +26,8 @@ import {
   ObsoleteComponentManager,
 } from './ObsoleteComponentManager';
 import { useDeepMemo } from '../../Hooks/useDeepMemo';
+import { grow } from '../../../css/classes';
+import { TumbleLoader } from '../../Loader';
 
 const emptyPath: number[] = [];
 const emptyObject: any = {};
@@ -95,16 +97,12 @@ export function PageDeserializer({
   dropzones,
   inheritedOptionsState: newInheritedOptionsState,
 }: PageDeserializerProps): JSX.Element {
-  // const [optionsState, setOptionsState] = React.useState<OptionsState>({});
-
   const newPath = path ? path : emptyPath;
   const realPath = useDeepMemo(newPath);
 
   const inheritedOptionsState = useDeepMemo(newInheritedOptionsState);
 
   const context = useDeepMemo(oldContext);
-
-  // const dropzones = useDeepMemo(oldDropzones);
 
   const { editMode } = React.useContext(pageCTX);
 
@@ -139,13 +137,16 @@ export function PageDeserializer({
     shallowDifferent,
   ) as PageComponent;
 
-  // const options = pick(restProps, defaultOptions);
-
   const optionsState = useOptions(
     pick(restProps, defaultOptionsKeys),
     context || emptyObject,
     inheritedOptionsState,
   );
+
+  const nbRendering = React.useRef(0);
+  React.useEffect(() => {
+    nbRendering.current += 1;
+  }, []);
 
   const { WegasComponent, container, componentName, obsoleteComponent } =
     component || emptyObject;
@@ -154,6 +155,13 @@ export function PageDeserializer({
     return <pre>JSON error in page</pre>;
   }
   if (!component) {
+    if (nbRendering.current === 1) {
+      return (
+        <div className={grow}>
+          <TumbleLoader />
+        </div>
+      );
+    }
     return <div>{`Unknown component : ${wegasComponent.type}`}</div>;
   }
 
@@ -163,13 +171,6 @@ export function PageDeserializer({
 
   return (
     <>
-      {/* {Object.keys(options).length > 0 && (
-        <ComponentOptionsManager
-          options={options}
-          context={context}
-          setUpgradesState={setOptionsState}
-        />
-      )} */}
       {Container == null ||
       (container?.noContainer &&
         container?.noContainer(wegasComponent.props as WegasComponentProps)) ? (

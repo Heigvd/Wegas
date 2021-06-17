@@ -28,6 +28,7 @@ import {
   modeClass,
 } from '../../Components/Theme/ThemeVars';
 import { cloneDeep } from 'lodash';
+import { wwarn } from '../../Helper/wegaslog';
 
 const themeActionsTypes = {
   GET_ALL_THEMES: 'GET_ALL_THEMES',
@@ -163,7 +164,7 @@ export function getAllThemes(): ThemeThunkResult {
                 try {
                   modeClass(theme.values, v);
                 } catch (e) {
-                  debugger;
+                  wwarn(e);
                 }
 
                 return { ...o, [k]: modeClass(theme.values, v) };
@@ -173,7 +174,7 @@ export function getAllThemes(): ThemeThunkResult {
             return { ...o, [l[0]]: theme };
           }, {});
         } catch (e) {
-          debugger;
+          wwarn(e);
         }
 
         return dispatch(
