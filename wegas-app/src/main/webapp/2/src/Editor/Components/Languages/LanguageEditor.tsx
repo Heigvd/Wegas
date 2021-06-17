@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
-import { LanguagesAPI } from '../../API/languages.api';
-import { useGameModel } from '../../Components/Hooks/useGameModel';
-import { GameModel } from '../../data/selectors';
-import { getDispatch } from '../../data/Stores/store';
-import { Actions } from '../../data';
+import { LanguagesAPI } from '../../../API/languages.api';
+import { useGameModel } from '../../../Components/Hooks/useGameModel';
+import { GameModel } from '../../../data/selectors';
+import { getDispatch } from '../../../data/Stores/store';
+import { Actions } from '../../../data';
 import { Schema } from 'jsoninput';
-import { AvailableViews } from './FormView';
-import { overrideSchema } from './EntityEditor';
+import { AvailableViews } from '../FormView';
+import { overrideSchema } from '../EntityEditor';
 import {
   flex,
   grow,
@@ -15,19 +15,17 @@ import {
   flexRow,
   itemCenter,
   flexDistribute,
-} from '../../css/classes';
+} from '../../../css/classes';
 import { IGameModel, IGameModelLanguage } from 'wegas-ts-api';
-import { Button } from '../../Components/Inputs/Buttons/Button';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 import JSONForm from 'jsoninput';
-import './FormView';
+import '../FormView';
 import * as gameModelLanguageSchema from 'wegas-ts-api/src/generated/schemas/GameModelLanguage.json';
 import { cloneDeep } from 'lodash';
-import { ListView } from '../../Components/ListView';
-import { useInternalTranslate } from '../../i18n/internalTranslator';
-import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
-import { commonTranslations } from '../../i18n/common/common';
-import { EditorTabsTranslations } from '../../i18n/editorTabs/definitions';
-import { CommonTranslations } from '../../i18n/common/definitions';
+import { ListView } from '../../../Components/ListView';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { commonTranslations } from '../../../i18n/common/common';
 
 const languagePanelStyle = css({ width: '50%' });
 const languageInnerPanelStyle = css({ width: '80%' });
@@ -84,10 +82,8 @@ export default function LanguageEditor() {
     React.useState<IGameModelLanguage | null | undefined>();
 
   const languages = useGameModel().languages;
-  const i18nValues = useInternalTranslate({
-    ...editorTabsTranslations,
-    ...commonTranslations,
-  }) as EditorTabsTranslations & CommonTranslations;
+  const i18nEditorTabValues = useInternalTranslate(editorTabsTranslations);
+  const i18nCommonValues = useInternalTranslate(commonTranslations);
 
   React.useEffect(() => {
     setSelectedLanguage(
@@ -104,7 +100,7 @@ export default function LanguageEditor() {
       <div
         className={cx(flex, grow, itemCenter, flexColumn, languagePanelStyle)}
       >
-        <h2>{i18nValues.languageEditor.languages}</h2>
+        <h2>{i18nEditorTabValues.languageEditor.languages}</h2>
         <ListView
           selectedId={selectedLanguageId}
           className={languageInnerPanelStyle}
@@ -179,7 +175,7 @@ export default function LanguageEditor() {
               )}
             >
               <Button
-                label={i18nValues.accept}
+                label={i18nCommonValues.accept}
                 onClick={() => {
                   LanguagesAPI.updateLanguage(selectedLanguage).then(
                     gameModelLanguage => {
@@ -194,7 +190,7 @@ export default function LanguageEditor() {
                 }}
               />
               <Button
-                label={i18nValues.cancel}
+                label={i18nCommonValues.cancel}
                 onClick={() => {
                   setSelectedLanguageId(undefined);
                 }}

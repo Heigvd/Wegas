@@ -91,48 +91,43 @@ export function useModeSwitch(
   const { themesState, currentContext } = React.useContext(themeCTX);
   const currentTheme =
     themesState.themes[themesState.selectedThemes[currentContext]];
-  const [
-    { currentModeName, nextModeName },
-    setCurrentModeNames,
-  ] = React.useState<{
-    currentModeName?: string;
-    nextModeName?: string;
-  }>({});
+  const [{ currentModeName, nextModeName }, setCurrentModeNames] =
+    React.useState<{
+      currentModeName?: string;
+      nextModeName?: string;
+    }>({});
 
-  const [
-    currentModeClassName,
-    childrenModeClassName,
-    childrenNode,
-  ] = React.useMemo(() => {
-    const modeClassName = modeName
-      ? currentTheme.modeClasses[modeName]
-      : currentModeName
-      ? currentTheme.modeClasses[currentModeName]
-      : undefined;
-    const nextModeClassName = modeName
-      ? currentTheme.modeClasses[currentTheme.modes[modeName].nextModeName]
-      : nextModeName
-      ? currentTheme.modeClasses[nextModeName]
-      : undefined;
+  const [currentModeClassName, childrenModeClassName, childrenNode] =
+    React.useMemo(() => {
+      const modeClassName = modeName
+        ? currentTheme.modeClasses[modeName]
+        : currentModeName
+        ? currentTheme.modeClasses[currentModeName]
+        : undefined;
+      const nextModeClassName = modeName
+        ? currentTheme.modeClasses[currentTheme.modes[modeName].nextModeName]
+        : nextModeName
+        ? currentTheme.modeClasses[nextModeName]
+        : undefined;
 
-    const currentClassName = modeClassName
-      ? css({
-          '&&': modeClassName,
-        })
-      : undefined;
-    const childrenClassName = nextModeClassName
-      ? css({
-          '& *': nextModeClassName,
-        })
-      : undefined;
-    return [
-      currentClassName,
-      childrenClassName,
-      React.Children.map(children, (c, i) => (
-        <React.Fragment key={childrenClassName || '' + i}>{c}</React.Fragment>
-      )),
-    ];
-  }, [currentModeName, nextModeName, currentTheme, modeName, children]);
+      const currentClassName = modeClassName
+        ? css({
+            '&&': modeClassName,
+          })
+        : undefined;
+      const childrenClassName = nextModeClassName
+        ? css({
+            '& *': nextModeClassName,
+          })
+        : undefined;
+      return [
+        currentClassName,
+        childrenClassName,
+        React.Children.map(children, (c, i) => (
+          <React.Fragment key={childrenClassName || '' + i}>{c}</React.Fragment>
+        )),
+      ];
+    }, [currentModeName, nextModeName, currentTheme, modeName, children]);
 
   const switcher = React.useCallback(
     (ref: HTMLElement | null) => {
@@ -140,9 +135,8 @@ export function useModeSwitch(
         const newCurrentModeName = getComputedStyle(ref).getPropertyValue(
           '--current-mode-name',
         );
-        const newNextModeName = getComputedStyle(ref).getPropertyValue(
-          '--next-mode-name',
-        );
+        const newNextModeName =
+          getComputedStyle(ref).getPropertyValue('--next-mode-name');
 
         if (
           newCurrentModeName !== currentModeName ||

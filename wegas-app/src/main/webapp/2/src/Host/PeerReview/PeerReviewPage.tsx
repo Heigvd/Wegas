@@ -238,9 +238,8 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
 
   const { lang } = React.useContext(languagesCTX);
   const [data, setData] = React.useState<IData>();
-  const [nextStep, setNextStep] = React.useState<PeerReviewStateSelector>(
-    'Dispatch',
-  );
+  const [nextStep, setNextStep] =
+    React.useState<PeerReviewStateSelector>('Dispatch');
   const spr = useStore(() => instantiate(peerReview));
   const { showModal, OkCancelModal } = useOkCancelModal();
 

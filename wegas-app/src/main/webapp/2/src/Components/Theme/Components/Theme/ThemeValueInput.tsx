@@ -14,7 +14,11 @@ import { SimpleInput } from '../../../Inputs/SimpleInput';
 import { useOkCancelModal } from '../../../Modal';
 import { ThemeValues, themeVar } from '../../ThemeVars';
 import { ColorPicker, rgbaToString, valueStyle } from './ColorPicker';
-import { colorLabelStyle, ThemeValueModifierProps, valueEntryStyle } from './ThemeValueModifier';
+import {
+  colorLabelStyle,
+  ThemeValueModifierProps,
+  valueEntryStyle,
+} from './ThemeValueModifier';
 
 const newInputStyle = css({
   cursor: 'pointer',
@@ -32,10 +36,8 @@ const newColorStyle = css({
 const newValueStyle = css({
   ...inputStyleCSS,
   resize: 'none',
-  borderColor:themeVar.colors.DisabledColor,
+  borderColor: themeVar.colors.DisabledColor,
 });
-
-
 
 interface ThemeInputValue {
   name?: string;
@@ -120,7 +122,10 @@ export function ThemeValueInput<
           )}
           onClick={showModal}
         >
-          <IconComp icon="plus" className={css({ color: themeVar.colors.DisabledColor })} />
+          <IconComp
+            icon="plus"
+            className={css({ color: themeVar.colors.DisabledColor })}
+          />
         </div>
       </div>
       <OkCancelModal

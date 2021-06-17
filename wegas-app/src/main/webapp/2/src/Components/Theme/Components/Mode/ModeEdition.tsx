@@ -86,7 +86,8 @@ export function ModeEdition() {
           icon="cog"
           items={[
             {
-              label: i18nValues.themeEditor.nextMode + currentMode?.nextModeName,
+              label:
+                i18nValues.themeEditor.nextMode + currentMode?.nextModeName,
               value: 'nextMode',
               items: Object.keys(currentModes).map(k => ({
                 value: k,

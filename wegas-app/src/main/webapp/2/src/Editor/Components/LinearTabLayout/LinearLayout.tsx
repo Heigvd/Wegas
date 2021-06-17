@@ -39,10 +39,11 @@ export const splitter = css({
     border: 'none',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25)',
   },
-  '&.reflex-container.vertical > .reflex-splitter:hover, &.reflex-container.horizontal > .reflex-splitter:hover' : {
-    border: 'none',
-    backgroundColor: themeVar.colors.ActiveColor,
-  },
+  '&.reflex-container.vertical > .reflex-splitter:hover, &.reflex-container.horizontal > .reflex-splitter:hover':
+    {
+      border: 'none',
+      backgroundColor: themeVar.colors.ActiveColor,
+    },
 });
 
 /**
@@ -835,7 +836,7 @@ interface LinearLayoutProps<T extends ComponentMap> {
   /**
    * The className for general styling
    */
-  classNames?: ClassNames
+  classNames?: ClassNames;
   /**
    * If tabs are children of other tabs (styling purpose mainly).
    */

@@ -158,7 +158,9 @@ function ComponentTypeElement({
   const show = currentType == null || selected;
   const { lang } = React.useContext(languagesCTX);
   const i18nValues = internalTranslate(editorTabsTranslations, lang);
-  const translatedType = i18nValues.pageEditor.componentTypes[componentType] ? i18nValues.pageEditor.componentTypes[componentType] : componentType;
+  const translatedType = i18nValues.pageEditor.componentTypes[componentType]
+    ? i18nValues.pageEditor.componentTypes[componentType]
+    : componentType;
   return (
     <div
       className={componentTypeStyle(selected, show, enabled)}
@@ -219,7 +221,9 @@ export function ComponentPalette({
           <p className={textCenter}>
             {i18nValues.pageEditor.editorMustEnabled}
           </p>
-          <Button onClick={() => setEditMode(true)}>{i18nValues.pageEditor.enableEditMode}</Button>
+          <Button onClick={() => setEditMode(true)}>
+            {i18nValues.pageEditor.enableEditMode}
+          </Button>
         </div>
       )}
       <div className={cx(flex, flexColumn, grow, paletteStyle(editMode))}>

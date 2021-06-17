@@ -48,7 +48,10 @@ import { State } from '../../../data/Reducer/reducers';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { useOkCancelModal } from '../../../Components/Modal';
-import { internalTranslate, useInternalTranslate } from '../../../i18n/internalTranslator';
+import {
+  internalTranslate,
+  useInternalTranslate,
+} from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
 
@@ -85,7 +88,7 @@ export function VariableTreeTitle({
   style,
 }: VariableTreeTitleProps) {
   return (
-    <div className={cx(className, css({margin: '3px 0'}))} style={style}>
+    <div className={cx(className, css({ margin: '3px 0' }))} style={style}>
       <IconComp icon={withDefault(getIcon(variable!), 'question')} />
       {entityIs(variable, 'EvaluationDescriptorContainer')
         ? subPath && subPath.length === 1
@@ -126,7 +129,7 @@ export function TreeView({
   const actionAllowed = isActionAllowed(options);
 
   return (
-    <Toolbar className={css({ padding: '1.5em'})}>
+    <Toolbar className={css({ padding: '1.5em' })}>
       <Toolbar.Header className={toolboxHeaderStyle}>
         {!noHeader && actionAllowed && (
           <>
@@ -154,7 +157,7 @@ export function TreeView({
           </>
         )}
       </Toolbar.Header>
-      <Toolbar.Content id={TREECONTENTID} className={css({padding: '1px'})}>
+      <Toolbar.Content id={TREECONTENTID} className={css({ padding: '1px' })}>
         <OkCancelModal onOk={onAccept}>
           <p>{i18nValues.changesWillBeLost}</p>
           <p>{i18nValues.areYouSure}</p>

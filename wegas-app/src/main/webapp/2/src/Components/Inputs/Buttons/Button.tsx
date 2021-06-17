@@ -26,9 +26,9 @@ export const buttonStyle = css({
   },
   ['&.readOnly']: {
     cursor: 'initial',
-    ['&:hover']:{
+    ['&:hover']: {
       backgroundColor: themeVar.colors.PrimaryColor,
-    }
+    },
   },
   ['&.disabled']: {
     cursor: 'initial',
@@ -46,7 +46,7 @@ export const buttonStyle = css({
     ['&.disabled']: {
       color: themeVar.colors.DisabledColor,
     },
-    ['&.readOnly:hover']:{
+    ['&.readOnly:hover']: {
       color: themeVar.colors.PrimaryColor,
       backgroundColor: 'transparent',
     },
@@ -77,30 +77,30 @@ export const buttonStyle = css({
   },
   ['&.success']: {
     backgroundColor: themeVar.colors.SuccessColor,
-    ['&:hover']:{
+    ['&:hover']: {
       backgroundColor: themeVar.colors.PrimaryColorShade,
     },
     ['&.iconOnly,&.noBackground']: {
       color: themeVar.colors.SuccessColor,
       backgroundColor: 'transparent',
-      ['&:hover']:{
-        color:themeVar.colors.ActiveColor,
+      ['&:hover']: {
+        color: themeVar.colors.ActiveColor,
       },
-      ['&.disabled']:{
+      ['&.disabled']: {
         color: themeVar.colors.DisabledColor,
         backgroundColor: 'transparent',
       },
-      ['&.readOnly:hover']:{
+      ['&.readOnly:hover']: {
         color: themeVar.colors.SuccessColor,
         backgroundColor: 'transparent',
       },
     },
-    ['&.readOnly:hover']:{
+    ['&.readOnly:hover']: {
       backgroundColor: themeVar.colors.SuccessColor,
     },
-    ['&.disabled']:{
+    ['&.disabled']: {
       backgroundColor: themeVar.colors.DisabledColor,
-    }
+    },
   },
   ['&.warning']: {
     ['&:not(.iconOnly),&:not(.noBackground)']: {
@@ -121,30 +121,30 @@ export const buttonStyle = css({
 });
 
 export const headerOutlineButtonStyle = css({
-border: '1px solid ' + themeVar.colors.DisabledColor,
-borderRadius: '50%',
-height: '40px',
-width: '40px',
-justifyContent: 'center',
-button: {
-  padding: 0,
-  width:'100%',
+  border: '1px solid ' + themeVar.colors.DisabledColor,
+  borderRadius: '50%',
+  height: '40px',
+  width: '40px',
   justifyContent: 'center',
-}
+  button: {
+    padding: 0,
+    width: '100%',
+    justifyContent: 'center',
+  },
 });
 export const outlineButtonStyle = {
   border: '1px solid ' + themeVar.colors.LightTextColor,
   backgroundColor: 'transparent',
-  };
+};
 
-  export const outlinePrimaryButtonStyle = css({
-    border: '1px solid ' + themeVar.colors.PrimaryColor,
-    backgroundColor: 'transparent',
-    color: themeVar.colors.PrimaryColor,
-    ['&:hover']: {
-      backgroundColor: themeVar.colors.HeaderColor,
-    }
-    });
+export const outlinePrimaryButtonStyle = css({
+  border: '1px solid ' + themeVar.colors.PrimaryColor,
+  backgroundColor: 'transparent',
+  color: themeVar.colors.PrimaryColor,
+  ['&:hover']: {
+    backgroundColor: themeVar.colors.HeaderColor,
+  },
+});
 export interface DisableBorders {
   top?: boolean;
   right?: boolean;

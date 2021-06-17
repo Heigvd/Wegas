@@ -164,8 +164,16 @@ export function ColorPicker({
               setColor(newColor.rgb);
             }}
           />
-          {autoColor &&
-            <div className={cx(flex, expandWidth, justifyCenter, defaultMargin, borderBottom)}>
+          {autoColor && (
+            <div
+              className={cx(
+                flex,
+                expandWidth,
+                justifyCenter,
+                defaultMargin,
+                borderBottom,
+              )}
+            >
               <Button
                 icon="magic"
                 tooltip="Create a suitable shade from main color"
@@ -177,7 +185,7 @@ export function ColorPicker({
                 }}
               />
             </div>
-          }
+          )}
           <div
             className={flex}
             style={{ margin: themeVar.dimensions.BorderWidth }}

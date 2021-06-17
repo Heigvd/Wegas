@@ -87,7 +87,11 @@ export function AdderSelector({
             items={items}
             onSelect={({ value }) => onSelect(value)}
           />
-          <Button icon="plus" tooltip={tooltip} onClick={() => setEditing(true)} />
+          <Button
+            icon="plus"
+            tooltip={tooltip}
+            onClick={() => setEditing(true)}
+          />
         </>
       )}
     </div>

@@ -17,7 +17,13 @@ import { Schema } from 'jsoninput';
 import { AvailableViews } from '../FormView';
 import { LocalGlobalState } from '../../../data/Stores/storeFactory';
 import { updateInstance } from '../../../data/Reducer/VariableInstanceReducer';
-import { flex, flexColumn, grow, localSelection, MediumPadding } from '../../../css/classes';
+import {
+  flex,
+  flexColumn,
+  grow,
+  localSelection,
+  MediumPadding,
+} from '../../../css/classes';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { themeCTX, ThemeComponent } from '../../../Components/Theme/Theme';
 import { IVariableInstance } from 'wegas-ts-api';
@@ -37,7 +43,7 @@ const listBox = css({
   width: '100%',
   maxHeight: '100px',
   overflowY: 'auto',
-  border: '1px solid ' +themeVar.colors.PrimaryColor,
+  border: '1px solid ' + themeVar.colors.PrimaryColor,
   borderRadius: themeVar.dimensions.BorderRadius,
 });
 

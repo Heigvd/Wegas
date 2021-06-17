@@ -92,7 +92,9 @@ export function PageLoader({
   return (
     <DefaultDndProvider>
       <ThemeProvider contextName={currentContext} modeName={currentMode}>
-        <React.Suspense fallback={<TextLoader text={i18nValues.buildingWorld} />}>
+        <React.Suspense
+          fallback={<TextLoader text={i18nValues.buildingWorld} />}
+        >
           <div
             className={
               cx(flex, { [editStyle]: displayFrame }, expandHeight) +

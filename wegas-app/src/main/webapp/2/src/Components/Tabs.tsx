@@ -4,23 +4,21 @@ import { css, cx } from 'emotion';
 import { childrenHeaderStyle, headerStyle } from '../css/classes';
 import { themeVar } from './Theme/ThemeVars';
 
-export function tabsStyle(isChild: boolean | undefined, isActive: boolean | undefined){
-    if (isChild) {
-     return(
-      cx({
-        [childActiveTabStyle]: isActive,
-        [childInactiveTabStyle]: !isActive,
-      })
-     );
-    }
-    else {
-      return (
-        cx({
-          [activeTabStyle]: isActive,
-          [inactiveTabStyle]: !isActive,
-        })
-      );
-    }
+export function tabsStyle(
+  isChild: boolean | undefined,
+  isActive: boolean | undefined,
+) {
+  if (isChild) {
+    return cx({
+      [childActiveTabStyle]: isActive,
+      [childInactiveTabStyle]: !isActive,
+    });
+  } else {
+    return cx({
+      [activeTabStyle]: isActive,
+      [inactiveTabStyle]: !isActive,
+    });
+  }
 }
 export const tabStyle = css({
   display: 'flex',
@@ -28,7 +26,11 @@ export const tabStyle = css({
   cursor: 'pointer',
   marginLeft: '6px',
   padding: '10px 10px',
-  borderRadius: themeVar.dimensions.BorderRadius + ' ' + themeVar.dimensions.BorderRadius + ' 0 0' ,
+  borderRadius:
+    themeVar.dimensions.BorderRadius +
+    ' ' +
+    themeVar.dimensions.BorderRadius +
+    ' 0 0',
   textTransform: 'uppercase',
   fontSize: '13px',
   fontWeight: 600,
@@ -36,7 +38,6 @@ export const tabStyle = css({
   button: {
     padding: '0 0 0 10px',
   },
-
 });
 export const inactiveTabStyle = css({
   backgroundColor: themeVar.colors.BackgroundColor,
@@ -46,12 +47,12 @@ export const inactiveTabStyle = css({
     color: themeVar.colors.DisabledColor,
     '&:hover': {
       color: themeVar.colors.ActiveColor,
-    }
+    },
   },
   '&:hover': {
     backgroundColor: themeVar.colors.HeaderColor,
-  }
- });
+  },
+});
 export const activeTabStyle = css({
   color: themeVar.colors.LightTextColor,
   backgroundColor: themeVar.colors.ActiveColor,
@@ -76,8 +77,8 @@ export const childInactiveTabStyle = css({
   '&:hover': {
     backgroundColor: themeVar.colors.PrimaryColor,
     border: '1px solid transparent',
-    },
- });
+  },
+});
 export const childActiveTabStyle = css({
   color: themeVar.colors.ActiveColor,
   backgroundColor: themeVar.colors.BackgroundColor,
@@ -94,8 +95,8 @@ export const plusTabStyle = css({
   alignItems: 'center',
   'button.iconOnly': {
     color: themeVar.colors.DisabledColor,
-  }
-})
+  },
+});
 export const childrenPlusTabStyle = css({
   backgroundColor: 'transparent',
   display: 'flex',
@@ -104,9 +105,9 @@ export const childrenPlusTabStyle = css({
     color: themeVar.colors.LightTextColor,
     '&:hover': {
       color: themeVar.colors.DisabledColor,
-    }
-  }
-})
+    },
+  },
+});
 
 interface TabLayoutProps {
   active?: number;
@@ -129,10 +130,13 @@ export class TabLayout extends React.Component<
   render() {
     return (
       <Toolbar vertical={this.props.vertical}>
-        <Toolbar.Header className={cx({
-        [childrenHeaderStyle]: this.props.areChildren !== undefined && this.props.areChildren,
-        [headerStyle]: !this.props.areChildren
-        })}>
+        <Toolbar.Header
+          className={cx({
+            [childrenHeaderStyle]:
+              this.props.areChildren !== undefined && this.props.areChildren,
+            [headerStyle]: !this.props.areChildren,
+          })}
+        >
           {this.props.tabs.map((t, i) => {
             return (
               <Tab
@@ -179,7 +183,7 @@ function Tab({
   onClick,
   children,
   className,
-  isChild
+  isChild,
 }: {
   active: boolean;
   children: React.ReactChild | null;

@@ -279,8 +279,14 @@ export function ThemeValueModifier<
                   key={k}
                   label={k as K}
                   labelModifer={label => {
-                    if (i18nValues.themeEditor.themeColorShades[label as keyof EditorTabsTranslations['themeEditor']['themeColorShades']])
-                      return i18nValues.themeEditor.themeColorShades[label as keyof EditorTabsTranslations['themeEditor']['themeColorShades']];
+                    if (
+                      i18nValues.themeEditor.themeColorShades[
+                        label as keyof EditorTabsTranslations['themeEditor']['themeColorShades']
+                      ]
+                    )
+                      return i18nValues.themeEditor.themeColorShades[
+                        label as keyof EditorTabsTranslations['themeEditor']['themeColorShades']
+                      ];
                     else {
                       return String(label);
                     }

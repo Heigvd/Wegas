@@ -43,9 +43,9 @@ const themeEditorHeaderStyle = css({
   ['button.iconOnly']: {
     color: themeVar.colors.HeaderColor,
     ['&:hover']: {
-      color:themeVar.colors.PrimaryColor + "!important",
-    }
-  }
+      color: themeVar.colors.PrimaryColor + '!important',
+    },
+  },
 });
 
 export default function ThemeEditor() {
@@ -57,7 +57,12 @@ export default function ThemeEditor() {
   return (
     <Toolbar>
       <Toolbar.Header
-        className={cx(flex, defaultPaddingBottom, defaultPaddingLeft, themeEditorHeaderStyle)}
+        className={cx(
+          flex,
+          defaultPaddingBottom,
+          defaultPaddingLeft,
+          themeEditorHeaderStyle,
+        )}
       >
         <ThemeSelector />
         <ModeSelector />
@@ -68,7 +73,9 @@ export default function ThemeEditor() {
               value: k,
               label: (
                 <>
-                  <span style={{ minWidth: '100px' }}>{i18nValues.themeEditor.themeNameVal(k)}</span>
+                  <span style={{ minWidth: '100px' }}>
+                    {i18nValues.themeEditor.themeNameVal(k)}
+                  </span>
                   <DropMenu
                     buttonClassName="noOutline"
                     label={selectedThemes[k]}

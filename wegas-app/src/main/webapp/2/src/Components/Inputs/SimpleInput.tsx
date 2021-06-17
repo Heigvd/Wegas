@@ -6,7 +6,6 @@ import { classNameOrEmpty } from '../../Helper/className';
 import { css, ObjectInterpolation } from 'emotion';
 import { themeVar } from '../Theme/ThemeVars';
 
-
 export const inputDefaultCSS = {
   minWidth: '4em',
   minHeight: '1.9em',

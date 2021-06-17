@@ -1,4 +1,4 @@
-import { rest } from './rest';
+import { managedModeRequest, rest } from './rest';
 import { GameModel } from '../data/selectors';
 import { IGameModelLanguage, IGameModel } from 'wegas-ts-api';
 
@@ -71,7 +71,7 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
       });
     },
     /**
-     * Update language value
+     * Add new language
      * @param language The language to update
      */
     addLanguage(language: IGameModelLanguage) {
@@ -93,6 +93,41 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
       }).then((res: Response) => {
         return res.json() as Promise<IGameModel>;
       });
+    },
+
+    /**
+     * Copy translations from another language
+     * @param language The language to update
+     * @param source The source language
+     */
+    copyTranslations(language: IGameModelLanguage, source: IGameModelLanguage) {
+      return managedModeRequest(
+        LANGUAGES_BASE(gameModelId) +
+          'CopyLanguage/' +
+          language.code +
+          '/' +
+          source.code,
+        {
+          method: 'PUT',
+        },
+      );
+    },
+
+    /**
+     * Clear translations
+     * @param language The language to update
+     * @param outdated if true, only clear outdated translations
+     */
+    clearTranslations(language: IGameModelLanguage, outdated: boolean) {
+      return managedModeRequest(
+        LANGUAGES_BASE(gameModelId) +
+          'Clear/' +
+          language.code +
+          (outdated ? '/Outdated' : '/All'),
+        {
+          method: 'PUT',
+        },
+      );
     },
 
     //   /**

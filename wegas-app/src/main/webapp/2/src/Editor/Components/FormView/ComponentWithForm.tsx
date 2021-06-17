@@ -131,7 +131,11 @@ function EmbeddedForm({
         ? editing.actions.more
         : {},
     ),
-    { label: 'Close', sorting:'close', action: () => localDispatch(closeEditor()) },
+    {
+      label: 'Close',
+      sorting: 'close',
+      action: () => localDispatch(closeEditor()),
+    },
   ];
   if (onInstanceEditorAction) {
     actions.push({
@@ -175,10 +179,8 @@ export function ComponentWithForm({
   disabled,
   flexValues = defaultFlexValues,
 }: ComponentWithFormProps) {
-  const {
-    useStore: useLocalStore,
-    getDispatch: getLocalDispatch,
-  } = React.useMemo(() => createStoreConnector(storeFactory()), []);
+  const { useStore: useLocalStore, getDispatch: getLocalDispatch } =
+    React.useMemo(() => createStoreConnector(storeFactory()), []);
   const localState = useLocalStore(
     (state: LocalGlobalState) => state.global,
     shallowDifferent,
@@ -194,7 +196,11 @@ export function ComponentWithForm({
         ? localState.editing.actions.more
         : {},
     ),
-    { label: 'Close', sorting: 'close', action: () => localDispatch(closeEditor()) },
+    {
+      label: 'Close',
+      sorting: 'close',
+      action: () => localDispatch(closeEditor()),
+    },
   ];
   if (entityEditor) {
     actions.push({

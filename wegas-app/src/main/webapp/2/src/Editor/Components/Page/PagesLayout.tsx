@@ -207,7 +207,9 @@ function IndexItemAdder({
           <>
             <TextPrompt
               placeholder={
-                modalState.type === 'newpage' ? i18nValues.fileBrowser.pageName : i18nValues.fileBrowser.folderName
+                modalState.type === 'newpage'
+                  ? i18nValues.fileBrowser.pageName
+                  : i18nValues.fileBrowser.folderName
               }
               defaultFocus
               onAction={(success, value) => {
@@ -282,7 +284,11 @@ function IndexItemModifer({
     <div className={className} title={tooltip}>
       <Button
         icon="edit"
-        tooltip={`${i18nValues.edit} ${isPageItem(indexItem) ? i18nEditorValues.fileBrowser.pageName :  i18nEditorValues.fileBrowser.folderName}`}
+        tooltip={`${i18nValues.edit} ${
+          isPageItem(indexItem)
+            ? i18nEditorValues.fileBrowser.pageName
+            : i18nEditorValues.fileBrowser.folderName
+        }`}
         onClick={() => {
           setModalState({ type: 'editpage' });
         }}
@@ -290,14 +296,21 @@ function IndexItemModifer({
       {modalState && modalState.type === 'editpage' && (
         <>
           <TextPrompt
-            placeholder={`${isPageItem(indexItem) ? i18nEditorValues.fileBrowser.pageName :  i18nEditorValues.fileBrowser.folderName}`}
+            placeholder={`${
+              isPageItem(indexItem)
+                ? i18nEditorValues.fileBrowser.pageName
+                : i18nEditorValues.fileBrowser.folderName
+            }`}
             defaultFocus
             onAction={(success, value) => {
               if (value === '') {
                 setModalState({
                   type: 'error',
                   label: i18nEditorValues.fileBrowser.itemMustName(
-                    isPageItem(indexItem) ? i18nEditorValues.fileBrowser.page : i18nEditorValues.fileBrowser.folder)
+                    isPageItem(indexItem)
+                      ? i18nEditorValues.fileBrowser.page
+                      : i18nEditorValues.fileBrowser.folder,
+                  ),
                 });
               } else {
                 if (success) {
@@ -463,7 +476,11 @@ function WegasComponentTitle({
       icon={icon}
       title={title}
       advancedTitle={title + ' ' + JSON.stringify(componentPath)}
-      tooltip={registeredComponent == null ? i18nValues.pageEditor.unknownComponent : undefined}
+      tooltip={
+        registeredComponent == null
+          ? i18nValues.pageEditor.unknownComponent
+          : undefined
+      }
       onMouseUp={() => onEdit(pageId, componentPath)}
       onMouseOver={e => {
         if (editMode /*&& !isDragging*/) {
@@ -732,7 +749,11 @@ function PageIndexTitle({
         tooltip={
           folderIsNotEmpty
             ? i18nValues.pageEditor.folderMustEmpty
-            : i18nValues.pageEditor.deletePageOrFolder(isPageItem(indexItem) ? i18nValues.fileBrowser.page : i18nValues.fileBrowser.folder)
+            : i18nValues.pageEditor.deletePageOrFolder(
+                isPageItem(indexItem)
+                  ? i18nValues.fileBrowser.page
+                  : i18nValues.fileBrowser.folder,
+              )
         }
         className={CONTROLS_CLASSNAME}
       />
