@@ -29,6 +29,9 @@ import {
 } from '../../../data/Reducer/globalState';
 import { VariableTreeTitle } from './VariableTree';
 import { State } from '../../../data/Reducer/reducers';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 const listBox = css({
   width: '100%',
@@ -81,6 +84,8 @@ export function InstanceProperties({
   actions,
   ...options
 }: InstancePropertiesProps) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
   const editing = state.global.editing;
   const events = state.global.events;
 
@@ -106,7 +111,7 @@ export function InstanceProperties({
       className={cx(grow, titleStyle)}
     />
   ) : (
-    'No descriptor is beeing edited'
+    i18nValues.instanceProps.noDescriptorEdited
   );
 
   return (
@@ -134,7 +139,7 @@ export function InstanceProperties({
                     {`#${i.id} - ${
                       scope
                         ? `${scope.name} (#${scope.id})`
-                        : 'Current game model'
+                        : i18nValues.instanceProps.currentGameModel
                     }`}
                   </div>
                 );

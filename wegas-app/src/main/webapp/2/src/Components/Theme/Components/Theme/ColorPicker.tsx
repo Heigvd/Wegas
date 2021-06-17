@@ -13,6 +13,7 @@ import {
   expandWidth,
   relative,
 } from '../../../../css/classes';
+import { borderBottom } from '../../../../Editor/Components/FormView/commonView';
 import { justifyDropMenu } from '../../../DropDown';
 import { useOnClickOutside } from '../../../Hooks/useOnClickOutside';
 import {
@@ -80,17 +81,17 @@ function autoShader(
   switch (shadeNumber) {
     case 1: {
       //return shaded color (darken)
-      newColor = newColor.blacken(0.5);
+      newColor = newColor.lightness(25);
       return colorToRGBA(newColor);
     }
     case 2: {
       //return tint color (lighten + staturated)
-      newColor = newColor.blacken(0.5);
+      newColor = newColor.saturate(0.4);
       return colorToRGBA(newColor);
     }
     case 3: {
       //return pastel color (very light)
-      newColor = newColor.blacken(0.5);
+      newColor = newColor.desaturate(0.3).lightness(90);
       return colorToRGBA(newColor);
     }
     default: {
@@ -163,9 +164,11 @@ export function ColorPicker({
               setColor(newColor.rgb);
             }}
           />
-          {autoColor && (
-            <div className={cx(flex, expandWidth, justifyCenter)}>
+          {autoColor &&
+            <div className={cx(flex, expandWidth, justifyCenter, defaultMargin, borderBottom)}>
               <Button
+                icon="magic"
+                tooltip="Create a suitable shade from main color"
                 label="Auto color"
                 onClick={() => {
                   setColor(
@@ -174,7 +177,7 @@ export function ColorPicker({
                 }}
               />
             </div>
-          )}
+          }
           <div
             className={flex}
             style={{ margin: themeVar.dimensions.BorderWidth }}

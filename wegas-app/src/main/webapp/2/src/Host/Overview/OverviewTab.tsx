@@ -1,7 +1,10 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
+import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { TabProps, Tab } from '../../Editor/Components/LinearTabLayout/DnDTabs';
+import { commonTranslations } from '../../i18n/common/common';
+import { internalTranslate } from '../../i18n/internalTranslator';
 
 const tabStyle = css({
   display: 'flex',
@@ -26,24 +29,28 @@ const activeTabStyle = css({
 });
 
 export const OverviewTab = React.forwardRef<HTMLDivElement, TabProps>(
-  (props: TabProps, ref: React.RefObject<HTMLDivElement>) => (
-    <div
-      ref={ref}
-      className={
-        props.className
-          ? props.className
-          : cx(tabStyle, {
-              [activeTabStyle]: props.active !== undefined && props.active,
-              [inactiveTabStyle]: !props.active,
-            })
-      }
-      onClick={props.onClick}
-    >
-      <React.Suspense fallback={<div>Loading...</div>}>
-        {props.children}
-      </React.Suspense>
-    </div>
-  ),
+  (props: TabProps, ref: React.RefObject<HTMLDivElement>) => {
+    const { lang } = React.useContext(languagesCTX);
+    const i18nValues = internalTranslate(commonTranslations, lang);
+    return (
+      <div
+        ref={ref}
+        className={
+          props.className
+            ? props.className
+            : cx(tabStyle, {
+                [activeTabStyle]: props.active !== undefined && props.active,
+                [inactiveTabStyle]: !props.active,
+              })
+        }
+        onClick={props.onClick}
+      >
+        <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
+          {props.children}
+        </React.Suspense>
+      </div>
+    );
+  },
 );
 
 Tab.displayName = 'Tab';

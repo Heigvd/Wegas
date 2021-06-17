@@ -35,6 +35,7 @@ const loaderStyle = css({
     animation: `${anim} 3s infinite`,
   },
 });
+
 export function TextLoader({ text = 'Loading...' }: { text?: string }) {
   return <span className={loaderStyle}>{text}</span>;
 }

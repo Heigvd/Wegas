@@ -23,6 +23,11 @@ import './FormView';
 import * as gameModelLanguageSchema from 'wegas-ts-api/src/generated/schemas/GameModelLanguage.json';
 import { cloneDeep } from 'lodash';
 import { ListView } from '../../Components/ListView';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
+import { commonTranslations } from '../../i18n/common/common';
+import { EditorTabsTranslations } from '../../i18n/editorTabs/definitions';
+import { CommonTranslations } from '../../i18n/common/definitions';
 
 const languagePanelStyle = css({ width: '50%' });
 const languageInnerPanelStyle = css({ width: '80%' });
@@ -79,6 +84,10 @@ export default function LanguageEditor() {
     React.useState<IGameModelLanguage | null | undefined>();
 
   const languages = useGameModel().languages;
+  const i18nValues = useInternalTranslate({
+    ...editorTabsTranslations,
+    ...commonTranslations,
+  }) as EditorTabsTranslations & CommonTranslations;
 
   React.useEffect(() => {
     setSelectedLanguage(
@@ -95,7 +104,7 @@ export default function LanguageEditor() {
       <div
         className={cx(flex, grow, itemCenter, flexColumn, languagePanelStyle)}
       >
-        <h2>Languages</h2>
+        <h2>{i18nValues.languageEditor.languages}</h2>
         <ListView
           selectedId={selectedLanguageId}
           className={languageInnerPanelStyle}
@@ -170,7 +179,7 @@ export default function LanguageEditor() {
               )}
             >
               <Button
-                label={'accept'}
+                label={i18nValues.accept}
                 onClick={() => {
                   LanguagesAPI.updateLanguage(selectedLanguage).then(
                     gameModelLanguage => {
@@ -185,7 +194,7 @@ export default function LanguageEditor() {
                 }}
               />
               <Button
-                label={'cancel'}
+                label={i18nValues.cancel}
                 onClick={() => {
                   setSelectedLanguageId(undefined);
                 }}

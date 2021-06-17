@@ -10,6 +10,9 @@ import {
 import { gutter, addExtraLib } from './SrcEditor';
 import { MonacoEditorProperties } from './editorHelpers';
 import { useJSONSchema } from './useJSONSchema';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 const overflowHide = css({
   overflow: 'hidden',
@@ -132,6 +135,8 @@ function WegasDiffEditor({
   const [reactMonaco, setReactMonaco] = React.useState<Monaco>();
   const getOriginalValue = React.useRef<() => string>();
   const getModifiedValue = React.useRef<() => string>();
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
 
   monaco.init().then(setReactMonaco);
 
@@ -330,7 +335,7 @@ function WegasDiffEditor({
           original={originalValue}
           modified={modifiedValue}
           editorDidMount={handleEditorDidMount}
-          loading={'Loading...'}
+          loading={i18nValues.loading + '...'}
           options={{
             readOnly,
             minimap: { enabled: minimap },

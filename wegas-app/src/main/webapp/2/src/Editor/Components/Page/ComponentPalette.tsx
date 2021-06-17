@@ -29,6 +29,9 @@ import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { IconComp } from '../Views/FontAwesome';
 import { pageCTX } from './PageEditor';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 const headerStyle = css({
   padding: '20px',
@@ -46,12 +49,10 @@ const paletteStyle = (editMode: boolean) =>
   });
 
 const componentTypeStyle = (
-  type: ComponentType,
-  currentType: ComponentType | undefined,
+  selected: boolean,
+  show: boolean,
   enabled: boolean,
 ) => {
-  const selected = type === currentType;
-  const show = currentType == null || selected;
   return css({
     transition: show ? 'all 0.5s' : undefined,
     textAlign: 'center',
@@ -67,9 +68,6 @@ const componentTypeStyle = (
       : themeVar.colors.PrimaryColor,
     margin: show ? '5px' : 0,
     cursor: enabled ? 'pointer' : 'initial',
-    '&::after': {
-      content: `'${selected ? 'Back' : type}'`,
-    },
   });
 };
 
@@ -156,11 +154,18 @@ function ComponentTypeElement({
   currentType,
   enabled,
 }: ComponentTypeElementProps) {
+  const selected = componentType === currentType;
+  const show = currentType == null || selected;
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const translatedType = i18nValues.pageEditor.componentTypes[componentType] ? i18nValues.pageEditor.componentTypes[componentType] : componentType;
   return (
     <div
-      className={componentTypeStyle(componentType, currentType, enabled)}
+      className={componentTypeStyle(selected, show, enabled)}
       onClick={() => enabled && onClick(componentType)}
-    />
+    >
+      {`${selected ? i18nValues.pageEditor.back : translatedType}`}
+    </div>
   );
 }
 
@@ -173,6 +178,8 @@ function ComponentElement({
   componentName,
   currentType,
 }: ComponentElementProps) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
   const component = usePageComponentStore(s => s[componentName]);
   const [, drag] = useComponentDrag(componentName);
   return (
@@ -184,7 +191,7 @@ function ComponentElement({
       {component ? (
         <IconComp icon={component.icon} />
       ) : (
-        <span>{`Unknown component "${componentName}"`}</span>
+        <span>{`${i18nValues.pageEditor.unknownComponent} "${componentName}"`}</span>
       )}
     </div>
   );
@@ -195,6 +202,8 @@ export function ComponentPalette({
 }: {
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
   const [currentType, setCurrentType] = React.useState<ComponentType>();
 
   const { editMode } = React.useContext(pageCTX);
@@ -208,9 +217,9 @@ export function ComponentPalette({
       {!editMode && (
         <div className={cx(headerStyle, flex, itemCenter, flexColumn)}>
           <p className={textCenter}>
-            Edit mode must be enabled to use the palette.
+            {i18nValues.pageEditor.editorMustEnabled}
           </p>
-          <Button onClick={() => setEditMode(true)}>Enable edit mode</Button>
+          <Button onClick={() => setEditMode(true)}>{i18nValues.pageEditor.enableEditMode}</Button>
         </div>
       )}
       <div className={cx(flex, flexColumn, grow, paletteStyle(editMode))}>

@@ -9,20 +9,27 @@ import {
   setEditedTheme,
   addNewLib,
 } from '../../../../data/Stores/themeStore';
+import { commonTranslations } from '../../../../i18n/common/common';
+import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
+import { internalTranslate } from '../../../../i18n/internalTranslator';
+import { languagesCTX } from '../../../Contexts/LanguagesProvider';
 import { ConfirmButton } from '../../../Inputs/Buttons/ConfirmButton';
 import { AdderSelector } from '../AdderSelector';
 
 export function ThemeSelector() {
   const { themes, editedThemeName } = useThemeStore(s => s);
   const dispatch = getThemeDispatch();
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValuesEditor = internalTranslate(editorTabsTranslations, lang);
 
   const onError = React.useCallback(
     (value: string | undefined) => {
       if (value != null && Object.keys(themes).includes(value)) {
-        return 'The theme allready exists';
+        return i18nValuesEditor.themeEditor.themeAlreadyExists;
       }
     },
-    [themes],
+    [i18nValuesEditor.themeEditor.themeAlreadyExists, themes],
   );
 
   return (
@@ -35,13 +42,13 @@ export function ThemeSelector() {
             {k === 'default' || k === 'trainer' ? (
               <ConfirmButton
                 icon="recycle"
-                tooltip="Reset"
+                tooltip={i18nValues.reset}
                 onAction={success => success && dispatch(resetTheme(k))}
               />
             ) : (
               <ConfirmButton
                 icon="trash"
-                tooltip="Delete"
+                tooltip={i18nValues.delete}
                 onAction={success => success && dispatch(deleteTheme(k))}
               />
             )}
@@ -49,8 +56,9 @@ export function ThemeSelector() {
         ),
       }))}
       selectedItem={editedThemeName}
-      menuLabel={`Theme : ${editedThemeName}`}
-      placeholder="Theme name"
+      menuLabel={i18nValuesEditor.themeEditor.theme(editedThemeName)}
+      placeholder={i18nValuesEditor.themeEditor.themeName}
+      tooltip={i18nValuesEditor.themeEditor.addTheme}
       onSelect={value => {
         dispatch(setEditedTheme(value));
       }}

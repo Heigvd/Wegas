@@ -9,7 +9,7 @@ import {
   featuresCTX,
   isFeatureEnabled,
 } from '../../Components/Contexts/FeaturesProvider';
-import { LangToggler } from '../../Components/Contexts/LanguagesProvider';
+import { LangToggler, languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import {
   flex,
   itemCenter,
@@ -31,6 +31,8 @@ import { Button, headerOutlineButtonStyle } from '../../Components/Inputs/Button
 import { State } from '../../data/Reducer/reducers';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
+import { internalTranslate } from '../../i18n/internalTranslator';
+import { commonTranslations } from '../../i18n/common/common';
 
 function wegasEventSelector(s: State) {
   return s.global.events;
@@ -38,6 +40,8 @@ function wegasEventSelector(s: State) {
 // May be moved in a proper file to allow wider usage
 // interface NotificationMenuProps {}
 function NotificationMenu({ className, style }: ClassStyleId) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
   const wegasEvents = useStore(wegasEventSelector);
   const [recievedEvents, setRecievedEvents] = React.useState<number[]>([]);
 
@@ -52,7 +56,7 @@ function NotificationMenu({ className, style }: ClassStyleId) {
       onOpen={() => setRecievedEvents(wegasEvents.map(e => e.timestamp))}
       label={
         <div>
-          Notifications
+          {i18nValues.header.notifications}
           <InfoBullet
             show={show}
             blink={blink}
@@ -105,6 +109,8 @@ function NotificationMenu({ className, style }: ClassStyleId) {
 
 export default function Header() {
   const { currentFeatures } = React.useContext(featuresCTX);
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
 
   return (
     <StoreConsumer
@@ -120,7 +126,7 @@ export default function Header() {
             <span className={componentMarginLeft}>{user.name}</span>
           </div>
           <Title className={css({margin: 0})}>{gameModel.name}</Title>
-          <div className={flex}>
+          <div className={cx(flex, itemCenter)}>
             <LangToggler />
             <FeatureToggler
               className={cx(componentMarginLeft, componentMarginRight)}
@@ -130,7 +136,7 @@ export default function Header() {
             )}
             <ConfirmButton
               icon="fast-backward"
-              tooltip="Restart the game (applied to every scenarist)"
+              tooltip={i18nValues.header.restartGame}
               onAction={success => {
                 if (success) {
                   dispatch(Actions.VariableDescriptorActions.reset());
@@ -141,7 +147,7 @@ export default function Header() {
             />
             <IconButton
               icon='redo'
-              tooltip="Reset layout"
+              tooltip={i18nValues.header.resetLayout}
               onClick={() => {
                 window.localStorage.removeItem(
                   'DnDGridLayoutData.' + mainLayoutId,
