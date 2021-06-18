@@ -34,8 +34,8 @@ const flowChartStyle = css({
 });
 
 const flowChartHeaderStyle = css({
-paddingLeft: '1.5em',
-boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  paddingLeft: '1.5em',
+  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
 });
 
 const flowChartDisabledStyle = css({

@@ -16,6 +16,9 @@ import {
   setNextMode,
 } from '../../../../data/Stores/themeStore';
 import { borderBottom } from '../../../../Editor/Components/FormView/commonView';
+import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
+import { internalTranslate } from '../../../../i18n/internalTranslator';
+import { languagesCTX } from '../../../Contexts/LanguagesProvider';
 import { DropMenu } from '../../../DropMenu';
 import { CheckBox } from '../../../Inputs/Boolean/CheckBox';
 import { Toolbar } from '../../../Toolbar';
@@ -23,6 +26,8 @@ import { ThemeValues, ModeValues, Theme } from '../../ThemeVars';
 import { ModeValueModifier } from './ModeValueModifier';
 
 export function ModeEdition() {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
   const { themes, editedThemeName, editedModeName } = useThemeStore(s => s);
   const dispatch = getThemeDispatch();
 
@@ -81,7 +86,8 @@ export function ModeEdition() {
           icon="cog"
           items={[
             {
-              label: `Next mode : ${currentMode?.nextModeName}`,
+              label:
+                i18nValues.themeEditor.nextMode + currentMode?.nextModeName,
               value: 'nextMode',
               items: Object.keys(currentModes).map(k => ({
                 value: k,
@@ -106,7 +112,7 @@ export function ModeEdition() {
               })),
             },
             {
-              label: 'Show section',
+              label: i18nValues.themeEditor.showSection,
               value: 'showSection',
               items: Object.keys(editedValues).map(
                 (k: keyof Theme['values']) => ({
@@ -128,7 +134,7 @@ export function ModeEdition() {
                           setSelectedSection(o => ({ ...o, [k]: !o[k] }))
                         }
                       />
-                      {k}
+                      {i18nValues.themeEditor.sections(k)}
                     </div>
                   ),
                 }),

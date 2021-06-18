@@ -28,6 +28,9 @@ import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { librariesCTX } from '../LibrariesLoader';
 import { store } from '../../../data/Stores/store';
 import { defaultMarginRight, defaultPadding } from '../../../css/classes';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [
@@ -385,6 +388,8 @@ interface ScriptEditorProps {
  * ScriptEditor is a component for wegas library management
  */
 function ScriptEditor({ scriptType }: ScriptEditorProps) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
   const [librariesState, dispatchStateAction] = React.useReducer(
     setLibraryState,
     {
@@ -469,21 +474,24 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
               case 'NOTNEW':
                 setModalState({
                   type: 'error',
-                  label:
-                    'Script name not available (script already exists or the name contains bad characters)',
+                  label: i18nValues.scripts.scriptNameNotAvailable,
                 });
                 break;
               case 'UNKNOWN':
               default:
                 setModalState({
                   type: 'error',
-                  label: 'Cannot create the script',
+                  label: i18nValues.scripts.cannotCreateScript,
                 });
             }
           });
       }
     },
-    [scriptType],
+    [
+      i18nValues.scripts.cannotCreateScript,
+      i18nValues.scripts.scriptNameNotAvailable,
+      scriptType,
+    ],
   );
 
   /**
@@ -509,8 +517,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             } catch (e) {
               setModalState({
                 type: 'warning',
-                label:
-                  'The library has been saved but the script contains errors',
+                label: i18nValues.scripts.librarySavedErrors,
               });
             }
           } else if (scriptType === 'CSS') {
@@ -520,15 +527,17 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
         .catch(() => {
           setModalState({
             type: 'error',
-            label: 'The library cannot be saved',
+            label: i18nValues.scripts.libraryCannotSave,
           });
         });
     }
   }, [
     librariesState,
-    scriptType,
     libEntry,
+    scriptType,
     globalContexts,
+    i18nValues.scripts.librarySavedErrors,
+    i18nValues.scripts.libraryCannotSave,
     updateCSSLibraries,
   ]);
 
@@ -545,13 +554,18 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
         }
       })
       .catch(() => {
-        'The library cannot be deleted';
+        i18nValues.scripts.libraryCannotDelete;
         setModalState({
           type: 'error',
-          label: 'Cannot delete the script',
+          label: i18nValues.scripts.cannotDeleteScript,
         });
       });
-  }, [librariesState.selected, scriptType]);
+  }, [
+    i18nValues.scripts.cannotDeleteScript,
+    i18nValues.scripts.libraryCannotDelete,
+    librariesState.selected,
+    scriptType,
+  ]);
 
   /**
    * When scriptType changes, gets all libraries of this type and refresh the librariesState
@@ -564,10 +578,10 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
       .catch(() => {
         setModalState({
           type: 'error',
-          label: 'Cannot get the scripts',
+          label: i18nValues.scripts.cannotGetScripts,
         });
       });
-  }, [scriptType]);
+  }, [i18nValues.scripts.cannotGetScripts, scriptType]);
 
   const editorProps: SrcEditorProps = React.useMemo(
     () => ({
@@ -589,13 +603,13 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
       <Toolbar.Header className={defaultPadding}>
         {modalState.type === 'libname' ? (
           <TextPrompt
-            placeholder="Library name"
+            placeholder={i18nValues.scripts.libraryName}
             defaultFocus
             onAction={(success, value) => {
               if (value === '') {
                 setModalState({
                   type: 'error',
-                  label: 'The library must have a name',
+                  label: i18nValues.scripts.libraryMustName,
                 });
               } else {
                 if (success) {
@@ -611,7 +625,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           <>
             <Button
               icon="plus"
-              tooltip="Add a new script"
+              tooltip={i18nValues.scripts.addNewScript}
               onClick={() => {
                 setModalState({ type: 'libname' });
               }}
@@ -623,7 +637,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                   label={
                     librariesState.selected
                       ? librariesState.selected
-                      : 'No library selected'
+                      : i18nValues.scripts.noLibrarySelected
                   }
                   items={Object.keys(librariesState.libraries).map(
                     (name: string) => ({
@@ -658,14 +672,14 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                     {isEditAllowed(librariesState) && (
                       <Button
                         icon="save"
-                        tooltip="Save the script"
+                        tooltip={i18nValues.scripts.saveScript}
                         onClick={onSaveLibrary}
                       />
                     )}
                     {isDeleteAllowed(librariesState) && (
                       <ConfirmButton
                         icon="trash"
-                        tooltip="Delete the script"
+                        tooltip={i18nValues.scripts.deleteScript}
                         onAction={success => success && onDeleteLibrary()}
                         onBlur={() => {
                           setModalState({ type: 'close' });
@@ -689,17 +703,17 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                   (isLibraryOutdated(libEntry) ? (
                     <MessageString
                       type="error"
-                      value="The script is dangeroulsy outdated!"
+                      value={i18nValues.scripts.scriptDangerOutdate}
                     />
                   ) : libEntry.status.isEdited ? (
                     <MessageString
                       type="warning"
-                      value="The script is not saved"
+                      value={i18nValues.scripts.scriptNotSaved}
                     />
                   ) : (
                     <MessageString
                       type="succes"
-                      value="The script is saved"
+                      value={i18nValues.scripts.scriptSaved}
                       duration={3000}
                     />
                   ))
@@ -736,7 +750,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           )
         ) : (
           <MessageString
-            value="Please create a library by pressing the + button"
+            value={i18nValues.scripts.createLibraryPlease}
             type={'warning'}
           />
         )}

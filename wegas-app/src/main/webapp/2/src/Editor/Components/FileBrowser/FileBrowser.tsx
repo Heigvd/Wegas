@@ -13,6 +13,9 @@ import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { MessageString } from '../MessageString';
 import { generateAbsolutePath, FileAPI } from '../../../API/files.api';
 import { FileBrowserNode, FileBrowserNodeProps } from './FileBrowserNode';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
 
 const fileBrowserStyle = css({
   paddingRight: '5px',
@@ -50,6 +53,8 @@ export function FileBrowser({
   const [rootFile, setRootFile] = React.useState<IAbstractContentDescriptor>();
   const [error, setError] = React.useState<string>('');
   const comp = React.useRef(); // Safeguard to avoid changing state when unmounted comp
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
 
   React.useEffect(() => {
     // Allows to cancel the state update in case the component is unmounted before promise finishes
@@ -102,7 +107,7 @@ export function FileBrowser({
       </div>
     </DefaultDndProvider>
   ) : (
-    <div>Loading files</div>
+    <div>{i18nValues.loadingFiles}</div>
   );
 }
 

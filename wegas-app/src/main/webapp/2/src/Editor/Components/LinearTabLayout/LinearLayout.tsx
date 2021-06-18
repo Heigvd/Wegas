@@ -17,6 +17,9 @@ import 'react-reflex/styles.css';
 import { flex, noOverflow, grow, expandHeight } from '../../../css/classes';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { TabComponent } from './DnDTabs';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
@@ -36,10 +39,11 @@ export const splitter = css({
     border: 'none',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25)',
   },
-  '&.reflex-container.vertical > .reflex-splitter:hover, &.reflex-container.horizontal > .reflex-splitter:hover' : {
-    border: 'none',
-    backgroundColor: themeVar.colors.ActiveColor,
-  },
+  '&.reflex-container.vertical > .reflex-splitter:hover, &.reflex-container.horizontal > .reflex-splitter:hover':
+    {
+      border: 'none',
+      backgroundColor: themeVar.colors.ActiveColor,
+    },
 });
 
 /**
@@ -832,7 +836,7 @@ interface LinearLayoutProps<T extends ComponentMap> {
   /**
    * The className for general styling
    */
-  classNames?: ClassNames
+  classNames?: ClassNames;
   /**
    * If tabs are children of other tabs (styling purpose mainly).
    */
@@ -852,6 +856,8 @@ export function MainLinearLayout<T extends ComponentMap>({
   areChildren,
 }: LinearLayoutProps<T>) {
   // const tabs = React.useRef<ComponentMap>(tabs ? tabs : {});
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
   const savedLayoutJSON = window.localStorage.getItem(
     `DnDGridLayoutData.${layoutId}`,
   );
@@ -985,7 +991,7 @@ export function MainLinearLayout<T extends ComponentMap>({
             >
               {rendered.length === 0 ? (
                 <ReflexElement>
-                  <div>Loading...</div>
+                  <div>{i18nValues.loading}...</div>
                 </ReflexElement>
               ) : (
                 rendered

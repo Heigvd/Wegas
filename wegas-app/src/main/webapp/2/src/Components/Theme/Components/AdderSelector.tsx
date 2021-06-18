@@ -20,6 +20,7 @@ interface AdderSelectorProps {
   selectedItem: string;
   placeholder: string;
   menuLabel: string;
+  tooltip: string;
   onSelect: (value: string) => void;
   onAccept: (value: string) => void;
   onError: (value: string | undefined) => string | void;
@@ -30,6 +31,7 @@ export function AdderSelector({
   selectedItem,
   placeholder,
   menuLabel,
+  tooltip,
   onSelect,
   onAccept,
   onError,
@@ -85,7 +87,11 @@ export function AdderSelector({
             items={items}
             onSelect={({ value }) => onSelect(value)}
           />
-          <Button icon="plus" onClick={() => setEditing(true)} />
+          <Button
+            icon="plus"
+            tooltip={tooltip}
+            onClick={() => setEditing(true)}
+          />
         </>
       )}
     </div>

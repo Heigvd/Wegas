@@ -8,6 +8,9 @@ import {
   tabsStyle,
   tabStyle,
 } from '../../../Components/Tabs';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 // export const dndAcceptType = 'DnDTab';
 
@@ -38,8 +41,12 @@ interface TabInternalProps {
 
 export type TabProps = React.PropsWithChildren<TabInternalProps>;
 
+
 export const Tab = React.forwardRef<HTMLDivElement, TabProps>(
-  (props: TabProps, ref: React.RefObject<HTMLDivElement>) => (
+  (props: TabProps, ref: React.RefObject<HTMLDivElement>) => {
+    const { lang } = React.useContext(languagesCTX);
+    const i18nValues = internalTranslate(commonTranslations, lang);
+    return (
     <div
       ref={ref}
       className={cx(
@@ -49,11 +56,12 @@ export const Tab = React.forwardRef<HTMLDivElement, TabProps>(
       }
       onClick={props.onClick}
     >
-      <React.Suspense fallback={<div>Loading...</div>}>
+      <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
         {props.children}
       </React.Suspense>
     </div>
-  ),
+    );
+  },
 );
 
 Tab.displayName = 'Tab';

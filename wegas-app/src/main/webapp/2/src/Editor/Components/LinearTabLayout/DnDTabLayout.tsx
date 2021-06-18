@@ -22,6 +22,11 @@ import {
 import { childrenPlusTabStyle, plusTabStyle } from '../../../Components/Tabs';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { EditorTabsTranslations } from '../../../i18n/editorTabs/definitions';
 
 const dropZoneFocus = hatchedBackground;
 
@@ -143,11 +148,11 @@ interface TabLayoutProps {
   /**
    * The className for general styling
    */
-  classNames?: ClassNames
+  classNames?: ClassNames;
   /**
    * If tabs are children of other tabs (styling purpose mainly).
    */
-   areChildren?: boolean;
+  areChildren?: boolean;
 }
 
 /**
@@ -169,6 +174,9 @@ export function DnDTabLayout({
   areChildren,
 }: TabLayoutProps) {
   const { general, header, content } = classNames;
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nTabsNames = internalTranslate(editorTabsTranslations, lang);
   React.useEffect(() => {
     if (
       defaultActiveLabel === undefined ||
@@ -210,6 +218,13 @@ export function DnDTabLayout({
     const componentsKeys = Object.keys(components);
     for (let i = 0; i < componentsKeys.length; i += 1) {
       const label = componentsKeys[i];
+      const translatedLabel = i18nTabsNames.tabsNames[
+        label as keyof EditorTabsTranslations['tabsNames']
+      ]
+        ? i18nTabsNames.tabsNames[
+            label as keyof EditorTabsTranslations['tabsNames']
+          ]
+        : label;
 
       // Always put a dropTab on the left of a tab
       tabs.push(
@@ -235,7 +250,7 @@ export function DnDTabLayout({
             CustomTab={CustomTab}
             isChild={areChildren}
           >
-            {label}
+            {translatedLabel}
             <IconButton
               icon="times"
               tooltip="Remove tab"
@@ -263,23 +278,45 @@ export function DnDTabLayout({
   };
 
   return (
-    <Toolbar vertical={vertical} className={cx(relative, general, css({backgroundColor: themeVar.colors.BackgroundColor}))}>
-      <Toolbar.Header className={cx(header, {
-        [childrenHeaderStyle]: areChildren !== undefined && areChildren,
-        [headerStyle]: !areChildren
-      })}>
+    <Toolbar
+      vertical={vertical}
+      className={cx(
+        relative,
+        general,
+        css({ backgroundColor: themeVar.colors.BackgroundColor }),
+      )}
+    >
+      <Toolbar.Header
+        className={cx(header, {
+          [childrenHeaderStyle]: areChildren !== undefined && areChildren,
+          [headerStyle]: !areChildren,
+        })}
+      >
         <div ref={dropTabs} className={cx(flex, grow, autoScroll)}>
           {renderTabs()}
           {selectItems && Object.keys(selectItems).length > 0 && (
-            <CustomTab key={'-1'} className={cx({
-              [childrenPlusTabStyle]: areChildren !== undefined && areChildren,
-              [plusTabStyle]: !areChildren
-            })}>
+            <CustomTab
+              key={'-1'}
+              className={cx({
+                [childrenPlusTabStyle]:
+                  areChildren !== undefined && areChildren,
+                [plusTabStyle]: !areChildren,
+              })}
+            >
               <DropMenu
-                items={Object.keys(selectItems).map(label => ({
-                  label: label,
-                  value: label,
-                }))}
+                items={Object.keys(selectItems).map(label => {
+                  const translatedLabel = i18nTabsNames.tabsNames[
+                    label as keyof EditorTabsTranslations['tabsNames']
+                  ]
+                    ? i18nTabsNames.tabsNames[
+                        label as keyof EditorTabsTranslations['tabsNames']
+                      ]
+                    : label;
+                  return {
+                    label: translatedLabel,
+                    value: label,
+                  };
+                })}
                 icon="plus"
                 onSelect={i => {
                   onSelect && onSelect(i.value);
@@ -299,7 +336,7 @@ export function DnDTabLayout({
                 innerClassName={cx(flex, expandBoth)}
                 outerClassName={expandBoth}
               >
-                <React.Suspense fallback={<div>Loading...</div>}>
+                <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
                   {components[defaultActiveLabel]}
                 </React.Suspense>
               </Reparentable>

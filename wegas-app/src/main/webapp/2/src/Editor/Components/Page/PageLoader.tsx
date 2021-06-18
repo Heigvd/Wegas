@@ -11,6 +11,9 @@ import { FlexItem } from '../../../Components/Layouts/FlexList';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { State } from '../../../data/Reducer/reducers';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 const modalStyle = css({
   zIndex: 10000,
@@ -61,6 +64,8 @@ export function PageLoader({
   disabled,
   readOnly,
 }: PageLoaderProps) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
   const selectedPageSelector = React.useCallback(
     (s: State) => (selectedPageId ? s.pages[selectedPageId] : undefined),
     [selectedPageId],
@@ -87,7 +92,9 @@ export function PageLoader({
   return (
     <DefaultDndProvider>
       <ThemeProvider contextName={currentContext} modeName={currentMode}>
-        <React.Suspense fallback={<TextLoader text="Building World!" />}>
+        <React.Suspense
+          fallback={<TextLoader text={i18nValues.buildingWorld} />}
+        >
           <div
             className={
               cx(flex, { [editStyle]: displayFrame }, expandHeight) +
@@ -108,7 +115,7 @@ export function PageLoader({
                 }}
               />
             ) : (
-              <pre>{`The page is undefined`}</pre>
+              <pre>{i18nValues.pageUndefined}</pre>
             )}
             {((waiting && loadTimer != null) ||
               // Petit tweak pour laisser la page se charger (si un scénario à un problème par contre, on verra le loader tourner éternellement)

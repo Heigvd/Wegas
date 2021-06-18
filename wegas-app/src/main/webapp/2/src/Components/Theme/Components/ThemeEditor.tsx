@@ -20,6 +20,9 @@ import { ThemeSelector } from './Theme/ThemeSelector';
 import { ModeSelector } from './Mode/ModeSelector';
 import { themeVar } from '../ThemeVars';
 import { outlineButtonStyle } from '../../Inputs/Buttons/Button';
+import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
 
@@ -32,7 +35,7 @@ const themeEditorHeaderStyle = css({
     ...outlineButtonStyle,
     marginLeft: '15px',
   },
-  ['button.noOutline']: {
+  ['button.noOutline, .confirmBtn button:not(.dark)']: {
     backgroundColor: themeVar.colors.PrimaryColor,
     border: 'none',
     marginLeft: '5px',
@@ -40,30 +43,39 @@ const themeEditorHeaderStyle = css({
   ['button.iconOnly']: {
     color: themeVar.colors.HeaderColor,
     ['&:hover']: {
-      color:themeVar.colors.PrimaryColor + "!important",
-    }
-  }
+      color: themeVar.colors.PrimaryColor + '!important',
+    },
+  },
 });
 
 export default function ThemeEditor() {
   const { themes, selectedThemes } = useThemeStore(s => s);
   const dispatch = getThemeDispatch();
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
 
   return (
     <Toolbar>
       <Toolbar.Header
-        className={cx(flex, defaultPaddingBottom, defaultPaddingLeft, themeEditorHeaderStyle)}
+        className={cx(
+          flex,
+          defaultPaddingBottom,
+          defaultPaddingLeft,
+          themeEditorHeaderStyle,
+        )}
       >
         <ThemeSelector />
         <ModeSelector />
         <DropMenu
-          label={'Contexts'}
+          label={i18nValues.themeEditor.contexts}
           items={Object.keys(selectedThemes).map(
             (k: keyof typeof selectedThemes) => ({
               value: k,
               label: (
                 <>
-                  <span style={{ minWidth: '100px' }}>{`${k}'s theme :`}</span>
+                  <span style={{ minWidth: '100px' }}>
+                    {i18nValues.themeEditor.themeNameVal(k)}
+                  </span>
                   <DropMenu
                     buttonClassName="noOutline"
                     label={selectedThemes[k]}

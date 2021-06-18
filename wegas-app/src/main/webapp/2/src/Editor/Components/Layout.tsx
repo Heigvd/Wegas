@@ -18,7 +18,7 @@ const FileBrowserWithMeta = React.lazy(
   () => import('./FileBrowser/FileBrowser'),
 );
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
-const LanguageEditor = React.lazy(() => import('./LanguageEditor'));
+// const LanguageEditor = React.lazy(() => import('./Languages/LanguageEditor'));
 const PlayLocal = React.lazy(() => import('./PlayLocal'));
 const PlayServer = React.lazy(() => import('./PlayServer'));
 const InstancesEditor = React.lazy(
@@ -27,6 +27,7 @@ const InstancesEditor = React.lazy(
 const ThemeEditor = React.lazy(
   () => import('../../Components/Theme/Components/ThemeEditor'),
 );
+const Languages = React.lazy(() => import('./Languages/Languages'));
 // const Tester = React.lazy(
 //   () => import('../../Testers/Components/DropDownTester'),
 // );
@@ -45,7 +46,8 @@ export const availableLayoutTabs = {
   'Variable Properties': <EntityEditor />,
   Files: <FileBrowserWithMeta />,
   Scripts: <LibraryEditor />,
-  'Language Editor': <LanguageEditor />,
+  // 'Language Editor': <LanguageEditor />,
+  Languages: <Languages />,
   'Client Console': <PlayLocal />,
   'Server Console': <PlayServer />,
   'Instances Editor': <InstancesEditor />,

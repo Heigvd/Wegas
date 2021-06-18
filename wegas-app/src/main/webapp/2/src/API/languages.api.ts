@@ -1,4 +1,4 @@
-import { rest } from './rest';
+import { managedModeRequest, rest } from './rest';
 import { GameModel } from '../data/selectors';
 import { IGameModelLanguage, IGameModel } from 'wegas-ts-api';
 
@@ -69,6 +69,65 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
       }).then((res: Response) => {
         return res.json() as Promise<IGameModelLanguage>;
       });
+    },
+    /**
+     * Add new language
+     * @param language The language to update
+     */
+    addLanguage(language: IGameModelLanguage) {
+      return rest(LANGUAGES_BASE(gameModelId) + 'Lang', {
+        method: 'POST',
+        body: JSON.stringify(language),
+      }).then((res: Response) => {
+        return res.json() as Promise<IGameModel>;
+      });
+    },
+
+    /**
+     * Delete language value
+     * @param code The code of the language to delete (FR/EN/DE/etc...)
+     */
+    deleteLanguage(code: string) {
+      return rest(LANGUAGES_BASE(gameModelId) + 'Lang/' + code, {
+        method: 'DELETE',
+      }).then((res: Response) => {
+        return res.json() as Promise<IGameModel>;
+      });
+    },
+
+    /**
+     * Copy translations from another language
+     * @param language The language to update
+     * @param source The source language
+     */
+    copyTranslations(language: IGameModelLanguage, source: IGameModelLanguage) {
+      return managedModeRequest(
+        LANGUAGES_BASE(gameModelId) +
+          'CopyLanguage/' +
+          language.code +
+          '/' +
+          source.code,
+        {
+          method: 'PUT',
+        },
+      );
+    },
+
+    /**
+     * Clear translations
+     * @param language The language to update
+     * @param outdated if true, only clear outdated translations
+     */
+    clearTranslations(language: IGameModelLanguage, outdated: boolean) {
+      return managedModeRequest(
+        LANGUAGES_BASE(gameModelId) +
+          'Clear/' +
+          language.code +
+          (outdated ? '/Outdated' : '/All'),
+        {
+          method: 'PUT',
+        },
+      );
     },
 
     //   /**

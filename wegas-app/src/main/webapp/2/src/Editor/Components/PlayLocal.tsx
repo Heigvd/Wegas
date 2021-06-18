@@ -22,7 +22,16 @@ class ErrorBoundary extends React.Component<Record<string, unknown>> {
   }
   render() {
     if (this.state.error) {
-      return <div className={cx(defaultPadding, css({color: themeVar.colors.ErrorColor}))}>{this.state.error.message}</div>;
+      return (
+        <div
+          className={cx(
+            defaultPadding,
+            css({ color: themeVar.colors.ErrorColor }),
+          )}
+        >
+          {this.state.error.message}
+        </div>
+      );
     }
     return this.props.children;
   }

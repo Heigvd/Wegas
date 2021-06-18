@@ -31,7 +31,7 @@ export const iconButtonStyle = css({
     },
     ['&.shadow']: {
       boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.15)',
-    }
+    },
   },
   borderStyle: 'none',
   paddingLeft: '5px',
@@ -73,7 +73,6 @@ export const iconButtonStyle = css({
     },
   },
 });
-
 
 export interface IconButtonProps extends ClassStyleId, DisabledReadonly {
   onClick?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;

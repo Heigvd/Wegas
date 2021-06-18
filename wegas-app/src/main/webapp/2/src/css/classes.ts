@@ -278,6 +278,10 @@ export const hatchedBackground = css({
   zIndex: 1000,
 });
 
+export const insideInsetShadow = css({
+  boxShadow: 'inset 0 0 8px rgba(0,0,0,0.2)',
+});
+
 export const thinHatchedBackground = css({
   background:
     'repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 5px, var(--colors-hovercolor) 5px,  var(--colors-hovercolor) 10px);',

@@ -17,6 +17,9 @@ import FileBrowser from '../../../Editor/Components/FileBrowser/FileBrowser';
 import { borderBottom } from '../../../Editor/Components/FormView/commonView';
 import { Selector } from '../../../Editor/Components/FormView/Select';
 import { IconComp, icons } from '../../../Editor/Components/Views/FontAwesome';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { DropMenu } from '../../DropMenu';
 import HTMLEditor from '../../HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
@@ -57,9 +60,11 @@ interface PreviewState {
 }
 
 export default function Preview() {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
   const [previewState, setPreviewState] = React.useState<PreviewState>({
     numericVar: 2,
-    textVar: 'some text',
+    textVar: 'Lorem Ipsum',
     iconVar: 'dog',
     booleanVar: true,
     disabled: false,
@@ -81,7 +86,7 @@ export default function Preview() {
           icon="cog"
           items={[
             {
-              label: 'Components state',
+              label: i18nValues.themeEditor.componentState,
               value: 'componentState',
               items: COMPONENT_STATES.map(feature => ({
                 value: feature,
@@ -102,7 +107,7 @@ export default function Preview() {
                         setPreviewState(o => ({ ...o, [feature]: !o[feature] }))
                       }
                     />
-                    {feature}
+                    {i18nValues.themeEditor.states(feature)}
                   </div>
                 ),
               })),
@@ -113,7 +118,7 @@ export default function Preview() {
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, flexColumn)}>
         <div className={previewPageHeaderStyle}>
-          <h2>Preview page</h2>
+          <h2>{i18nValues.themeEditor.previewPage}</h2>
         </div>
         <div className={cx(previewPageStyle, expandBoth)}>
           <ReflexContainer orientation="vertical" className={previewClassName}>
@@ -261,7 +266,7 @@ export default function Preview() {
                 </ReflexElement>
                 <ReflexSplitter />
                 <ReflexElement className={reflexElementStyle}>
-                  <ConfirmButton label="Click me" />
+                  <ConfirmButton label={i18nValues.themeEditor.clickMe} />
                 </ReflexElement>
               </ReflexContainer>
             </ReflexElement>
