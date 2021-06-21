@@ -11,7 +11,7 @@ import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
-import HTMLEditor from '../../HTMLEditor';
+import HTMLEditor from '../../HTML/HTMLEditor';
 import {
   OnVariableChange,
   onVariableChangeSchema,

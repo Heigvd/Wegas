@@ -55,6 +55,35 @@ export function useTranslate(
   return translatable ? translate(translatable, lang) : '';
 }
 
+export function unsafeTranslate(
+  translatable: ITranslatableContent | STranslatableContent | undefined | null,
+  lang: string,
+) {
+  let translations: { [lang: string]: ITranslation };
+  if (!translatable) {
+    return undefined;
+  }
+
+  // récupère les translations sous forme de ITranslation
+  if ('translations' in translatable) {
+    translations = translatable.translations;
+  } else {
+    translations = Object.entries(translatable.getTranslations()).reduce(
+      (o, t) => ({ ...o, [t[0]]: t[1].getEntity() }),
+      {},
+    );
+  }
+  const translation = translations[lang];
+
+  if (Object.keys(translations).length === 0) {
+    return undefined;
+  } else if (translation === undefined) {
+    return undefined;
+  } else {
+    return translation.translation;
+  }
+}
+
 export function translate(
   translatable: ITranslatableContent | STranslatableContent | undefined | null,
   lang: string,

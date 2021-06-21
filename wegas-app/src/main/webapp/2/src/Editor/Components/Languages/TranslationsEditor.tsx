@@ -8,6 +8,7 @@ import { useOkCancelModal } from '../../../Components/Modal';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
 import {
+  autoScroll,
   expandBoth,
   expandWidth,
   flex,
@@ -16,15 +17,20 @@ import {
   grow,
 } from '../../../css/classes';
 import { manageResponseHandler } from '../../../data/actions';
-import { entityIs, scriptableEntityIs } from '../../../data/entities';
+import { entityIs } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import { instantiate } from '../../../data/scriptable';
 import { GameModel, VariableDescriptor } from '../../../data/selectors';
-import { getDispatch, useStore } from '../../../data/Stores/store';
-import getEditionConfig, { getIcon } from '../../editionConfig';
+import { store, useStore } from '../../../data/Stores/store';
+import { getIcon } from '../../editionConfig';
 import { IconComp, withDefault } from '../Views/FontAwesome';
-import { Schema } from 'jsoninput';
-import { wlog } from '../../../Helper/wegaslog';
+import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
+import { unsafeTranslate } from '../FormView/translatable';
+import { LightWeightHTMLEditor } from '../../../Components/HTML/LightWeightHTMLEditor';
+import { IGameModel } from '../../../../../../../../../wegas-ts-api/target/wegas-ts-api/dist';
+import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
+import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 
 const listStyle = css({
   padding: '4px',
@@ -34,462 +40,156 @@ const langaugeVisitorHeaderStyle = css({
   borderBottom: `solid 1px ${themeVar.colors.HeaderColor}`,
 });
 
-// const schemas = {
-//   label: {
-//     description: 'com.wegas.core.i18n.persistence.TranslatableContent',
-//     properties: {
-//       '@class': {
-//         const: 'TranslatableContent',
-//         required: false,
-//         type: 'string',
-//         view: {
-//           index: 0,
-//           type: 'hidden',
-//         },
-//       },
-//       id: {
-//         featureLevel: 'ADVANCED',
-//         index: -1000,
-//         required: false,
-//         type: 'number',
-//         view: {
-//           featureLevel: 'ADVANCED',
-//           index: -1000,
-//           label: 'id',
-//           readOnly: true,
-//           type: 'number',
-//         },
-//       },
-//       parentId: {
-//         featureLevel: 'INTERNAL',
-//         index: -980,
-//         required: false,
-//         type: 'number',
-//         view: {
-//           featureLevel: 'INTERNAL',
-//           index: -980,
-//           label: 'Parent ID',
-//           layout: 'shortInline',
-//           readOnly: true,
-//           type: 'number',
-//         },
-//       },
-//       parentType: {
-//         featureLevel: 'INTERNAL',
-//         index: -990,
-//         required: false,
-//         type: 'string',
-//         view: {
-//           featureLevel: 'INTERNAL',
-//           index: -990,
-//           label: 'Parent Type',
-//           layout: 'shortInline',
-//           readOnly: true,
-//           type: 'string',
-//         },
-//       },
-//       refId: {
-//         featureLevel: 'INTERNAL',
-//         index: -800,
-//         required: false,
-//         type: 'string',
-//         view: {
-//           featureLevel: 'INTERNAL',
-//           index: -800,
-//           label: 'RefID',
-//           readOnly: true,
-//           type: 'string',
-//         },
-//       },
-//       version: {
-//         featureLevel: 'ADVANCED',
-//         required: true,
-//         type: 'number',
-//         value: 0,
-//         view: {
-//           featureLevel: 'ADVANCED',
-//           index: 0,
-//           label: 'Version',
-//           readOnly: true,
-//           type: 'number',
-//         },
-//       },
-//       translations: {
-//         additionalProperties: {
-//           description: 'com.wegas.core.i18n.persistence.Translation',
-//           properties: {
-//             '@class': {
-//               const: 'Translation',
-//               required: false,
-//               type: 'string',
-//               view: {
-//                 index: 0,
-//                 type: 'hidden',
-//               },
-//             },
-//             lang: {
-//               required: true,
-//               type: 'string',
-//               view: {
-//                 featureLevel: 'DEFAULT',
-//                 index: 0,
-//                 label: 'Language',
-//                 readOnly: true,
-//                 type: 'string',
-//               },
-//             },
-//             parentId: {
-//               featureLevel: 'INTERNAL',
-//               index: -980,
-//               required: false,
-//               type: 'number',
-//               view: {
-//                 featureLevel: 'INTERNAL',
-//                 index: -980,
-//                 label: 'Parent ID',
-//                 layout: 'shortInline',
-//                 readOnly: true,
-//                 type: 'number',
-//               },
-//             },
-//             parentType: {
-//               featureLevel: 'INTERNAL',
-//               index: -990,
-//               required: false,
-//               type: 'string',
-//               view: {
-//                 featureLevel: 'INTERNAL',
-//                 index: -990,
-//                 label: 'Parent Type',
-//                 layout: 'shortInline',
-//                 readOnly: true,
-//                 type: 'string',
-//               },
-//             },
-//             refId: {
-//               index: -800,
-//               required: false,
-//               type: 'string',
-//               view: {
-//                 featureLevel: 'DEFAULT',
-//                 index: -800,
-//                 label: 'RefID',
-//                 readOnly: true,
-//                 type: 'string',
-//               },
-//             },
-//             status: {
-//               required: true,
-//               type: 'string',
-//               value: '',
-//               view: {
-//                 featureLevel: 'DEFAULT',
-//                 index: 0,
-//                 label: 'Status',
-//               },
-//             },
-//             translation: {
-//               required: true,
-//               type: 'string',
-//               value: '',
-//               view: {
-//                 featureLevel: 'DEFAULT',
-//                 index: 0,
-//                 label: 'Text',
-//               },
-//             },
-//           },
-//           required: false,
-//           type: 'object',
-//         },
-//         required: true,
-//         type: 'object',
-//         value: [],
-//         view: {
-//           featureLevel: 'DEFAULT',
-//           index: 0,
-//           label: 'Translations',
-//           type: 'hashlist',
-//         },
-//       },
-//     },
-//     required: true,
-//     type: 'object',
-//     index: -470,
-//     value: {
-//       '@class': 'TranslatableContent',
-//       translations: {},
-//       version: 0,
-//     },
-//     view: {
-//       description: 'Displayed to players',
-//       featureLevel: 'DEFAULT',
-//       index: -470,
-//       label: 'Label',
-//       type: 'i18nstring',
-//     },
-//   },
-//   description: {
-//     description: 'com.wegas.core.i18n.persistence.TranslatableContent',
-//     properties: {
-//       '@class': {
-//         const: 'TranslatableContent',
-//         required: false,
-//         type: 'string',
-//         view: {
-//           index: 0,
-//           type: 'hidden',
-//         },
-//       },
-//       id: {
-//         featureLevel: 'ADVANCED',
-//         index: -1000,
-//         required: false,
-//         type: 'number',
-//         view: {
-//           featureLevel: 'ADVANCED',
-//           index: -1000,
-//           label: 'id',
-//           readOnly: true,
-//           type: 'number',
-//         },
-//       },
-//       parentId: {
-//         featureLevel: 'INTERNAL',
-//         index: -980,
-//         required: false,
-//         type: 'number',
-//         view: {
-//           featureLevel: 'INTERNAL',
-//           index: -980,
-//           label: 'Parent ID',
-//           layout: 'shortInline',
-//           readOnly: true,
-//           type: 'number',
-//         },
-//       },
-//       parentType: {
-//         featureLevel: 'INTERNAL',
-//         index: -990,
-//         required: false,
-//         type: 'string',
-//         view: {
-//           featureLevel: 'INTERNAL',
-//           index: -990,
-//           label: 'Parent Type',
-//           layout: 'shortInline',
-//           readOnly: true,
-//           type: 'string',
-//         },
-//       },
-//       refId: {
-//         featureLevel: 'INTERNAL',
-//         index: -800,
-//         required: false,
-//         type: 'string',
-//         view: {
-//           featureLevel: 'INTERNAL',
-//           index: -800,
-//           label: 'RefID',
-//           readOnly: true,
-//           type: 'string',
-//         },
-//       },
-//       version: {
-//         featureLevel: 'ADVANCED',
-//         required: true,
-//         type: 'number',
-//         value: 0,
-//         view: {
-//           featureLevel: 'ADVANCED',
-//           index: 0,
-//           label: 'Version',
-//           readOnly: true,
-//           type: 'number',
-//         },
-//       },
-//       translations: {
-//         additionalProperties: {
-//           description: 'com.wegas.core.i18n.persistence.Translation',
-//           properties: {
-//             '@class': {
-//               const: 'Translation',
-//               required: false,
-//               type: 'string',
-//               view: {
-//                 index: 0,
-//                 type: 'hidden',
-//               },
-//             },
-//             lang: {
-//               required: true,
-//               type: 'string',
-//               view: {
-//                 featureLevel: 'DEFAULT',
-//                 index: 0,
-//                 label: 'Language',
-//                 readOnly: true,
-//                 type: 'string',
-//               },
-//             },
-//             parentId: {
-//               featureLevel: 'INTERNAL',
-//               index: -980,
-//               required: false,
-//               type: 'number',
-//               view: {
-//                 featureLevel: 'INTERNAL',
-//                 index: -980,
-//                 label: 'Parent ID',
-//                 layout: 'shortInline',
-//                 readOnly: true,
-//                 type: 'number',
-//               },
-//             },
-//             parentType: {
-//               featureLevel: 'INTERNAL',
-//               index: -990,
-//               required: false,
-//               type: 'string',
-//               view: {
-//                 featureLevel: 'INTERNAL',
-//                 index: -990,
-//                 label: 'Parent Type',
-//                 layout: 'shortInline',
-//                 readOnly: true,
-//                 type: 'string',
-//               },
-//             },
-//             refId: {
-//               index: -800,
-//               required: false,
-//               type: 'string',
-//               view: {
-//                 featureLevel: 'DEFAULT',
-//                 index: -800,
-//                 label: 'RefID',
-//                 readOnly: true,
-//                 type: 'string',
-//               },
-//             },
-//             status: {
-//               required: true,
-//               type: 'string',
-//               value: '',
-//               view: {
-//                 featureLevel: 'DEFAULT',
-//                 index: 0,
-//                 label: 'Status',
-//               },
-//             },
-//             translation: {
-//               required: true,
-//               type: 'string',
-//               value: '',
-//               view: {
-//                 featureLevel: 'DEFAULT',
-//                 index: 0,
-//                 label: 'Text',
-//               },
-//             },
-//           },
-//           required: false,
-//           type: 'object',
-//         },
-//         required: true,
-//         type: 'object',
-//         value: [],
-//         view: {
-//           featureLevel: 'DEFAULT',
-//           index: 0,
-//           label: 'Translations',
-//           type: 'hashlist',
-//         },
-//       },
-//     },
-//     required: true,
-//     type: 'object',
-//     index: 1,
-//     value: {
-//       '@class': 'TranslatableContent',
-//       translations: {},
-//       version: 0,
-//     },
-//     view: {
-//       featureLevel: 'DEFAULT',
-//       index: 1,
-//       label: 'Description',
-//       type: 'i18nhtml',
-//     },
-//   },
-// };
+interface TranslationViewProps {
+  variableId: number;
+  languageCode: string;
+}
 
-// interface TranslationViewProps {
-//   variable: IVariableDescriptor;
-// }
+function TranslationView({ variableId, languageCode }: TranslationViewProps) {
+  const variable = useStore(
+    s => s.variableDescriptors[variableId],
+    deepDifferent,
+  );
 
-// function TranslationView({ variable }: TranslationViewProps) {
-//   const translations = Object.entries(variable)
-//     .filter(([, v]) => entityIs(v, 'TranslatableContent'))
-//     .reduce((o, [k, v]) => ({ ...o, [k]: v }), {});
-//   const schema = Object.keys(translations).reduce(
-//     (o, key) => ({ ...o, [key]: schemas[key as keyof typeof schemas] }),
-//     {},
-//   );
+  const translations: { [key: string]: ITranslatableContent } = React.useMemo(
+    () =>
+      Object.entries(variable || {})
+        .filter(([, v]) => entityIs(v, 'TranslatableContent'))
+        .reduce((o, [k, v]) => ({ ...o, [k]: v }), {}),
+    [variable],
+  );
 
-//   return (
-//     <div>
-//       <JSONForm
-//         value={translations}
-//         schema={{
-//           description: 'custom.translation.schema',
-//           properties: schema,
-//         }}
-//         onChange={val => {
-//           // setVal(val);
-//           // onChange && onChange(val);
-//         }}
-//       />
-//     </div>
-//   );
-// }
+  const [editedTranslations, setEditedTranslations] = React.useState<{
+    [key: string]: string | undefined;
+  }>(
+    Object.keys(translations).reduce((o, k) => ({ ...o, [k]: undefined }), {}),
+  );
+
+  return (
+    <div>
+      {Object.entries(translations).map(([k, v]) => {
+        const value = unsafeTranslate(v, languageCode);
+        return (
+          <div key={k}>
+            {k}
+            {k === 'text' ? (
+              <LightWeightHTMLEditor
+                value={
+                  editedTranslations[k] == null
+                    ? value == null
+                      ? ''
+                      : value
+                    : editedTranslations[k]
+                }
+                onChange={value =>
+                  setEditedTranslations(ot => ({
+                    ...ot,
+                    [k]: value === '' ? undefined : value,
+                  }))
+                }
+              />
+            ) : (
+              <SimpleInput
+                value={
+                  editedTranslations[k] == null
+                    ? value == null
+                      ? ''
+                      : value
+                    : editedTranslations[k]
+                }
+                onChange={value =>
+                  setEditedTranslations(ot => ({
+                    ...ot,
+                    [k]: String(value) === '' ? undefined : String(value),
+                  }))
+                }
+              />
+            )}
+            <div className={cx(flex, flexRow)}>
+              <ConfirmButton
+                className={grow}
+                icon="outdent"
+                tooltip="Outdate other languages"
+              />
+              <Toggler
+                value={
+                  v.translations[languageCode] == null ||
+                  v.translations[languageCode].status == null
+                    ? true
+                    : !v.translations[languageCode].status.includes('outdated')
+                }
+                onChange={value => {
+                  LanguagesAPI.setTranslationStatus(
+                    languageCode,
+                    v.id!,
+                    editedTranslations[k]!,
+                    !value,
+                  ).then(res => {
+                    store.dispatch(manageResponseHandler(res));
+                  });
+                }}
+                hint="Mark as outdated"
+              />
+              <Button
+                icon="undo"
+                tooltip="Undo modifications"
+                disabled={editedTranslations[k] == null}
+                onClick={() =>
+                  setEditedTranslations(ot => ({ ...ot, [k]: undefined }))
+                }
+              />
+              <Button
+                icon="save"
+                tooltip="Save modifications"
+                disabled={editedTranslations[k] == null}
+                onClick={() => {
+                  LanguagesAPI.updateTranslation(
+                    languageCode,
+                    v.id!,
+                    editedTranslations[k]!,
+                  ).then(res => {
+                    setEditedTranslations(ot => ({ ...ot, [k]: undefined }));
+                    store.dispatch(manageResponseHandler(res));
+                  });
+                }}
+              />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 interface LanguagesVisitorProps {
   itemId: number | undefined;
+  languageCode: string;
 }
 
-function LanguagesVisitor({ itemId }: LanguagesVisitorProps) {
-  const [schema, setSchema] = React.useState<Schema>();
-  const item = useStore(() => instantiate(VariableDescriptor.select(itemId)));
+function LanguagesVisitor({ itemId, languageCode }: LanguagesVisitorProps) {
+  const item = useStore(() => VariableDescriptor.select(itemId), deepDifferent);
 
   if (item == null) {
     return null;
   }
-
-  getEditionConfig(item.getEntity()).then(setSchema);
-
-  wlog(schema);
 
   return (
     <div className={cx(flex, flexColumn)}>
       <div
         className={cx(flex, flexRow, expandWidth, langaugeVisitorHeaderStyle)}
       >
-        <IconComp icon={withDefault(getIcon(item.getEntity()), 'question')} />
-        {editorLabel(item.getEntity())}
+        <IconComp icon={withDefault(getIcon(item), 'question')} />
+        {editorLabel(item)}
       </div>
-      <div>
-        {Object.entries(item.getEntity())
-          .filter(([, v]) => entityIs(v, 'TranslatableContent'))
-          .map(([k, v]) => (
-            <div key={v.id}>{k}</div>
-          ))}
-      </div>
-      {/* <TranslationView variable={item.getEntity()} /> */}
-      {scriptableEntityIs(item, 'ListDescriptor') && (
+      <TranslationView variableId={item.id!} languageCode={languageCode} />
+      {entityIs(item, 'ListDescriptor') && (
         <div className={cx(flex, flexColumn, listStyle)}>
-          {item.getItemsIds().map(childrenId => (
-            <LanguagesVisitor key={childrenId} itemId={childrenId} />
+          {item.itemsIds.map(childrenId => (
+            <LanguagesVisitor
+              key={childrenId}
+              itemId={childrenId}
+              languageCode={languageCode}
+            />
           ))}
         </div>
       )}
@@ -514,9 +214,112 @@ interface LanguageCopyAction {
 
 type LanguageAction = LanguageClearAction | LanguageCopyAction;
 
-export function TranslationEditor() {
-  // const languages = useGameModel().languages;
+interface TranslationsListProps {
+  language: IGameModelLanguage;
+  languages: IGameModelLanguage[];
+  onSelect: (action: LanguageAction) => void;
+  scroll: number;
+  onScroll: (scroll: number) => void;
+  root: Readonly<IGameModel>;
+}
 
+function TranslationsList({
+  language,
+  languages,
+  onSelect,
+  scroll,
+  onScroll,
+  root,
+}: TranslationsListProps) {
+  const scrollTimer = React.useRef<NodeJS.Timeout>();
+
+  return (
+    <div className={cx(expandBoth, flex, flexColumn)}>
+      <div className={cx(expandWidth, flex, flexRow)}>
+        <h3 className={grow}>{languageLabel(language)}</h3>
+        <DropMenu
+          icon="cog"
+          items={[
+            {
+              label: 'Clear translations',
+              type: 'CLEAR_TRANSLATIONS',
+              language,
+              items: [
+                {
+                  label: 'Outdated translations',
+                  language,
+                  type: 'CLEAR_OUTDATED',
+                },
+                {
+                  label: 'All translations',
+                  language,
+                  type: 'CLEAR_ALL',
+                },
+              ],
+            },
+            {
+              label: 'Copy translations',
+              type: 'COPY_TRANSLATIONS',
+              language,
+              items: languages
+                .filter(lang => lang.id !== language.id)
+                .map(lang => ({
+                  label: languageLabel(lang),
+                  language: lang,
+                  type: 'COPY',
+                })),
+            },
+          ]}
+          onSelect={item => {
+            if (item.type === 'COPY') {
+              onSelect({
+                type: 'COPY',
+                language: language,
+                sourceLanguage: item.language,
+              });
+            } else if (
+              item.type === 'CLEAR_OUTDATED' ||
+              item.type === 'CLEAR_ALL'
+            ) {
+              onSelect({
+                type: item.type as LanguageClearAction['type'],
+                language: language,
+              });
+            }
+          }}
+        />
+      </div>
+      <div
+        className={cx(flex, flexColumn, grow, autoScroll)}
+        ref={element => {
+          if (element != null && scroll != null) {
+            element.scrollTop = scroll;
+          }
+        }}
+        onScroll={e => {
+          const target = e.target as HTMLDivElement;
+          if (scrollTimer.current != null) {
+            clearTimeout(scrollTimer.current);
+          }
+          scrollTimer.current = setTimeout(() => {
+            onScroll(target.scrollTop);
+          }, 50);
+        }}
+      >
+        {root.itemsIds.map(itemId => (
+          <LanguagesVisitor
+            key={itemId}
+            itemId={itemId}
+            languageCode={language.code}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function TranslationEditor() {
+  const [languageAction, setLanguageAction] = React.useState<LanguageAction>();
   const { languages, root } = useStore(() => {
     return {
       languages: GameModel.selectCurrent().languages,
@@ -524,80 +327,32 @@ export function TranslationEditor() {
     };
   });
 
+  // const languages = GameModel.selectCurrent().languages;
+  // const root = GameModel.selectCurrent();
+
+  const [scroll, setScroll] = React.useState(0);
   const [selectedLanguages, setSelectedLanguages] = React.useState(
     languages.filter(language => language.active),
   );
-
-  const [languageAction, setLanguageAction] = React.useState<LanguageAction>();
-
   const { showModal, OkCancelModal } = useOkCancelModal();
 
+  // Awfull workaround, must be done in an other way
   const languagesContent = React.useMemo(() => {
     const content: JSX.Element[] = [];
     selectedLanguages.forEach((language, i, a) => {
       content.push(
         <ReflexElement>
-          <div className={cx(expandBoth, flex, flexColumn)}>
-            <div className={cx(expandWidth, flex, flexRow)}>
-              <h3 className={grow}>{languageLabel(language)}</h3>
-              <DropMenu
-                icon="cog"
-                items={[
-                  {
-                    label: 'Clear translations',
-                    type: 'CLEAR_TRANSLATIONS',
-                    language,
-                    items: [
-                      {
-                        label: 'Outdated translations',
-                        language,
-                        type: 'CLEAR_OUTDATED',
-                      },
-                      {
-                        label: 'All translations',
-                        language,
-                        type: 'CLEAR_ALL',
-                      },
-                    ],
-                  },
-                  {
-                    label: 'Copy translations',
-                    type: 'COPY_TRANSLATIONS',
-                    language,
-                    items: languages
-                      .filter(lang => lang.id !== language.id)
-                      .map(lang => ({
-                        label: languageLabel(lang),
-                        language: lang,
-                        type: 'COPY',
-                      })),
-                  },
-                ]}
-                onSelect={item => {
-                  if (item.type === 'COPY') {
-                    showModal();
-                    setLanguageAction({
-                      type: 'COPY',
-                      language,
-                      sourceLanguage: item.language,
-                    });
-                  } else if (
-                    item.type === 'CLEAR_OUTDATED' ||
-                    item.type === 'CLEAR_ALL'
-                  ) {
-                    showModal();
-                    setLanguageAction({
-                      type: item.type as LanguageClearAction['type'],
-                      language,
-                    });
-                  }
-                }}
-              />
-            </div>
-            {root.itemsIds.map(itemId => (
-              <LanguagesVisitor key={itemId} itemId={itemId} />
-            ))}
-          </div>
+          <TranslationsList
+            language={language}
+            languages={languages}
+            root={root}
+            onSelect={action => {
+              showModal();
+              setLanguageAction(action);
+            }}
+            scroll={scroll}
+            onScroll={setScroll}
+          />
         </ReflexElement>,
       );
       if (i < a.length - 1) {
@@ -605,7 +360,7 @@ export function TranslationEditor() {
       }
     });
     return content;
-  }, [languages, root.itemsIds, selectedLanguages, showModal]);
+  }, [languages, root, scroll, selectedLanguages, showModal]);
 
   function toggleLanguage(language: IGameModelLanguage) {
     setSelectedLanguages(selectedLanguages =>
@@ -647,14 +402,14 @@ export function TranslationEditor() {
                   languageAction.language,
                   languageAction.sourceLanguage,
                 ).then(res => {
-                  getDispatch()(manageResponseHandler(res));
+                  store.dispatch(manageResponseHandler(res));
                 });
               } else {
                 LanguagesAPI.clearTranslations(
                   languageAction.language,
                   languageAction.type === 'CLEAR_OUTDATED',
                 ).then(res => {
-                  getDispatch()(manageResponseHandler(res));
+                  store.dispatch(manageResponseHandler(res));
                 });
               }
 

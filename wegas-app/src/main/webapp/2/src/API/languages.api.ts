@@ -104,9 +104,9 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
       return managedModeRequest(
         LANGUAGES_BASE(gameModelId) +
           'CopyLanguage/' +
-          language.code +
+          source.code +
           '/' +
-          source.code,
+          language.code,
         {
           method: 'PUT',
         },
@@ -130,112 +130,53 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
       );
     },
 
-    //   /**
-    //    * Delete a specific file
-    //    * @param absolutePath file to delete
-    //    * @param froce allows recursive delete on directories
-    //    */
-    //   deleteFile(
-    //     absolutePath: string,
-    //     force?: boolean,
-    //   ): Promise<IFileDescriptor | undefined> {
-    //     return rest(
-    //       TRANSLATION_BASE(gameModelId) +
-    //         (force ? 'force/' : '') +
-    //         'delete' +
-    //         absolutePath,
-    //       {
-    //         method: 'DELETE',
-    //       },
-    //     )
-    //       .then((res: Response) => {
-    //         return res.json();
-    //       })
-    //       .catch(() => {
-    //         if (
-    //           confirm(
-    //             `Are you sure you want to delete ${absolutePath} with all files and subdirectories?`,
-    //           )
-    //         ) {
-    //           return this.deleteFile(absolutePath, true);
-    //         }
-    //         throw Error('Force delete not accepted or failed');
-    //       });
-    //   },
-    //   /**
-    //    * Create a new file
-    //    * @param name the name of the file to upload
-    //    * @param path the path where to save the file (if undefined, takes root (/))
-    //    * @param file the file to save (keep undefined for directory)
-    //    * @param force force modifying the file content
-    //    */
-    //   createFile(
-    //     name: string,
-    //     path: string = '',
-    //     file?: File,
-    //     force: boolean = false,
-    //   ): Promise<IFileDescriptor> {
-    //     const data = new FormData();
-    //     data.append('name', name);
-    //     data.append('file', file as Blob);
-    //     return rest(
-    //       TRANSLATION_BASE(gameModelId) +
-    //         (force ? 'force/' : '') +
-    //         'upload' +
-    //         path,
-    //       {
-    //         method: 'POST',
-    //         body: data,
-    //       },
-    //       undefined,
-    //       'multipart/form-data',
-    //     ).then((res: Response) => {
-    //       return res.json();
-    //     });
-    //   },
-    //   /**
-    //    * Get metata of a specific file/directory
-    //    * @param absolutePath the absolute path of the file (if undefined, takes root (/))
-    //    */
-    //   getFileMeta(absolutePath: string = ''): Promise<IFileDescriptor> {
-    //     return rest(TRANSLATION_BASE(gameModelId) + 'meta' + absolutePath).then(
-    //       (res: Response) => {
-    //         return res.json();
-    //       },
-    //     );
-    //   },
-    //   /**
-    //    * Update file metadata
-    //    * @param file the file to update
-    //    */
-    //   updateMetadata(file: IFileDescriptor) {
-    //     return rest(
-    //       TRANSLATION_BASE(gameModelId) + 'update' + generateAbsolutePath(file),
-    //       {
-    //         method: 'PUT',
-    //         body: JSON.stringify(file),
-    //       },
-    //     ).then((res: Response) => {
-    //       if (res.status === 204) {
-    //         throw Error(res.statusText);
-    //       }
-    //       return res.json();
-    //     });
-    //   },
-    //   /**
-    //    * Delete the whole file tree
-    //    */
-    //   destruct(): Promise<IFileDescriptor> {
-    //     return rest(
-    //       TRANSLATION_BASE(gameModelId) +
-    //         'destruct' +
-    //         {
-    //           method: 'DELETE',
-    //         },
-    //     ).then((res: Response) => {
-    //       return res.json();
-    //     });
-    //   },
+    /**
+     *
+     * @param languageCode The code of the tranlations's language
+     * @param translationId The id of the translation to update
+     * @param translationValue The value to set in the translation
+     */
+    updateTranslation(
+      languageCode: string,
+      translationId: number,
+      translationValue: string,
+    ) {
+      return managedModeRequest(LANGUAGES_BASE(gameModelId) + 'Tr/MINOR', {
+        method: 'PUT',
+        body: JSON.stringify({
+          '@class': 'TranslationUpdate',
+          code: languageCode,
+          trId: translationId,
+          value: translationValue,
+        }),
+      });
+    },
+    /**
+     *
+     * @param languageCode The code of the tranlations's language
+     * @param translationId The id of the translation to update
+     * @param translationValue The value to set in the translation
+     * @param outdate if true, set the translation as outdated, if false, set translation as up to date
+     */
+    setTranslationStatus(
+      languageCode: string,
+      translationId: number,
+      translationValue: string,
+      outdate: boolean,
+    ) {
+      return managedModeRequest(
+        LANGUAGES_BASE(gameModelId) + `Tr/${outdate ? 'OUTDATE' : 'CATCH_UP'}`,
+        {
+          method: 'PUT',
+          body: JSON.stringify({
+            '@class': 'TranslationUpdate',
+            code: languageCode,
+            trId: translationId,
+            value: translationValue,
+          }),
+        },
+      );
+    },
   };
 };
 
