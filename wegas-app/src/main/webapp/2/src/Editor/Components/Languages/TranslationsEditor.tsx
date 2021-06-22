@@ -12,6 +12,7 @@ import {
   flexColumn,
   flexRow,
   grow,
+  itemCenter,
 } from '../../../css/classes';
 import { manageResponseHandler } from '../../../data/actions';
 import { entityIs } from '../../../data/entities';
@@ -27,6 +28,8 @@ import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton'
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { isArray } from 'lodash-es';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 
 const langaugeVisitorHeaderStyle = css({
   borderBottom: `solid 1px ${themeVar.colors.HeaderColor}`,
@@ -59,6 +62,10 @@ const columnMargin = css({
   marginRight: '1em',
   marginTop: '1em',
   marginBottom: '1em',
+});
+
+const inputStyle = css({
+  maxWidth: '500px',
 });
 
 interface TranslationViewProps {
@@ -139,7 +146,7 @@ function TranslationView({
               return (
                 <div
                   key={language.id!}
-                  className={cx(flex, flexColumn, columnMargin, {
+                  className={cx(flex, flexColumn, columnMargin, inputStyle, {
                     [firstColumnMargin]: index === 0,
                   })}
                 >
@@ -215,6 +222,15 @@ function TranslationView({
   );
 }
 
+function variableIsList(
+  variable: IVariableDescriptor,
+): variable is IVariableDescriptor & { itemsIds: number[] } {
+  return (
+    'itemsIds' in variable &&
+    isArray((variable as IVariableDescriptor & { itemsIds: number[] }).itemsIds)
+  );
+}
+
 interface LanguagesVisitorProps {
   itemId: number | undefined;
   selectedLanguages: IGameModelLanguage[];
@@ -227,7 +243,7 @@ function LanguagesVisitor({
   depth = 0,
 }: LanguagesVisitorProps) {
   const item = useStore(() => VariableDescriptor.select(itemId), deepDifferent);
-
+  const [show, setShow] = React.useState(true);
   if (item == null) {
     return null;
   }
@@ -238,6 +254,7 @@ function LanguagesVisitor({
         className={cx(
           flex,
           flexRow,
+          itemCenter,
           langaugeVisitorHeaderStyle,
           rowSpanStyle(selectedLanguages.length),
           depthMarginStyle(depth),
@@ -245,12 +262,19 @@ function LanguagesVisitor({
       >
         <IconComp icon={withDefault(getIcon(item), 'question')} />
         {editorLabel(item)}
+        {variableIsList(item) && (
+          <IconButton
+            icon={show ? 'caret-down' : 'caret-right'}
+            onClick={() => setShow(os => !os)}
+          />
+        )}
       </div>
       <TranslationView
         variableId={item.id!}
         selectedLanguages={selectedLanguages}
       />
-      {entityIs(item, 'ListDescriptor') &&
+      {show &&
+        variableIsList(item) &&
         item.itemsIds.map(childrenId => (
           <LanguagesVisitor
             key={childrenId}
