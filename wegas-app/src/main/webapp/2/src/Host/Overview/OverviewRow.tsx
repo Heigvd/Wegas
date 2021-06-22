@@ -1,7 +1,7 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
-import HTMLEditor from '../../Components/HTMLEditor';
+import HTMLEditor from '../../Components/HTML/HTMLEditor';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import {
   flex,

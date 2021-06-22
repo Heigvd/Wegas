@@ -21,7 +21,7 @@ import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { internalTranslate } from '../../../i18n/internalTranslator';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { DropMenu } from '../../DropMenu';
-import HTMLEditor from '../../HTMLEditor';
+import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Toggler } from '../../Inputs/Boolean/Toggler';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';

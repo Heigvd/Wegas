@@ -21,22 +21,22 @@ import 'tinymce/skins/ui/oxide/skin.min.css';
 import 'tinymce/icons/default';
 
 import { Editor as TinyEditor } from '@tinymce/tinymce-react';
-import { Modal } from './Modal';
-import { generateAbsolutePath, fileURL } from '../API/files.api';
+import { Modal } from '../Modal';
+import { generateAbsolutePath, fileURL } from '../../API/files.api';
 import {
   CommonView,
   CommonViewContainer,
-} from '../Editor/Components/FormView/commonView';
-import { LabeledView, Labeled } from '../Editor/Components/FormView/labeled';
-import { FileBrowser } from '../Editor/Components/FileBrowser/FileBrowser';
+} from '../../Editor/Components/FormView/commonView';
+import { LabeledView, Labeled } from '../../Editor/Components/FormView/labeled';
+import { FileBrowser } from '../../Editor/Components/FileBrowser/FileBrowser';
 import { css, cx } from 'emotion';
-import { classesCTX } from './Contexts/ClassesProvider';
-import { flexColumn, flex } from '../css/classes';
+import { classesCTX } from '../Contexts/ClassesProvider';
+import { flexColumn, flex } from '../../css/classes';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { classNameOrEmpty } from '../Helper/className';
-import { isActionAllowed } from './PageComponents/tools/options';
+import { classNameOrEmpty } from '../../Helper/className';
+import { isActionAllowed } from '../PageComponents/tools/options';
 import { RawEditorSettings } from 'tinymce/tinymce';
-import { inputDefaultCSS, inputStyleCSS } from './Inputs/SimpleInput';
+import { inputDefaultCSS, inputStyleCSS } from '../Inputs/SimpleInput';
 
 const toolbar = css({
   width: '300px',
@@ -76,7 +76,7 @@ interface ActionButton {
   onAction: (api: TinyMCEButtonAPI, editor: TinyMCEEditor) => void;
 }
 
-interface HTMLEditorProps extends ClassStyleId, DisabledReadonly {
+export interface HTMLEditorProps extends ClassStyleId, DisabledReadonly {
   /**
    * value - content to inject in the editor
    */
@@ -351,8 +351,8 @@ export default function HTMLEditor({
               <img
                 src={
                   require(onSave
-                    ? '../pictures/tinymcetoolbar.png'
-                    : '../pictures/tinymcetoolbarnosave.png').default
+                    ? '../../pictures/tinymcetoolbar.png'
+                    : '../../pictures/tinymcetoolbarnosave.png').default
                 }
                 onClick={() => HTMLEditor.current && HTMLEditor.current.focus()}
               />

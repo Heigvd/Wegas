@@ -28,7 +28,7 @@ import {
   createTranslation,
 } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import HTMLEditor from '../../HTMLEditor';
+import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';

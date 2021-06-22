@@ -66,7 +66,8 @@ export function DialogueDisplay({
 }: DialogueDisplayProps) {
   const historyDiv = React.useRef<HTMLDivElement>(null);
 
-  const [waiting, setWaiting] = React.useState(false);
+  const [waitingUser, setWaitingUser] = React.useState(false);
+  const [waitingSystem, setWaitingSystem] = React.useState(false);
 
   const dialogueInstance = dialogue.getInstance(Player.self());
   const history = dialogueInstance.getTransitionHistory();
@@ -130,7 +131,7 @@ export function DialogueDisplay({
           <DialogueEntry
             key={`STATE${transitionId}`}
             text={currentState.getText()}
-            waiting={i === arr.length - 1 && waiting}
+            waiting={i === arr.length - 1 && waitingSystem}
           />,
         );
       }
@@ -180,12 +181,19 @@ export function DialogueDisplay({
               key={`CHOICE${transition.getId()}`}
               label={transition.getActionText()}
               onClick={() => {
-                setWaiting(true);
+                setWaitingUser(true);
                 store.dispatch(
                   applyFSMTransition(
                     dialogue.getEntity(),
                     transition.getEntity(),
-                    () => setWaiting(false),
+                    () => {
+                      setWaitingUser(false);
+                      setWaitingSystem(true);
+                      setTimeout(() => {
+                        setWaitingSystem(false);
+                        setWaitingUser(false);
+                      }, 1000);
+                    },
                   ),
                 );
               }}
@@ -194,9 +202,13 @@ export function DialogueDisplay({
             />
           ))}
           {/* ---------- waiting for the next answer to be revealed ------------------------ */}
-          {waiting && choices.length > 0 && (
+          {(waitingUser || waitingSystem) && choices.length > 0 && (
             <WaitingLoader
-              color={themeVar.colors.LightTextColor}
+              color={
+                waitingSystem
+                  ? themeVar.colors.DisabledColor
+                  : themeVar.colors.LightTextColor
+              }
               background={themeVar.colors.DisabledColor}
             />
           )}

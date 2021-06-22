@@ -9,7 +9,13 @@ import {
 } from '../../data/methods/VariableDescriptorMethods';
 import { State as RState } from '../../data/Reducer/reducers';
 import { ComponentWithForm } from './FormView/ComponentWithForm';
-import { grow, flex, flexRow, flexColumn, MediumPadding } from '../../css/classes';
+import {
+  grow,
+  flex,
+  flexRow,
+  flexColumn,
+  MediumPadding,
+} from '../../css/classes';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import {
   IDialogueDescriptor,
@@ -22,7 +28,7 @@ import {
 } from 'wegas-ts-api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { SimpleInput } from '../../Components/Inputs/SimpleInput';
-import HTMLEditor from '../../Components/HTMLEditor';
+import HTMLEditor from '../../Components/HTML/HTMLEditor';
 import {
   FlowChart,
   FlowLine,
@@ -44,7 +50,6 @@ import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { internalTranslate } from '../../i18n/internalTranslator';
 //import { internalTranslate } from '../../i18n/internalTranslator';
 //import { commonTranslations } from '../../i18n/common/common';
-
 
 const emptyPath: (string | number)[] = [];
 
@@ -90,7 +95,7 @@ export interface StateProcess extends Process<TransitionFlowLine> {
 }
 
 interface StateMachineEditorProps<
-  IFSM extends IFSMDescriptor | IDialogueDescriptor
+  IFSM extends IFSMDescriptor | IDialogueDescriptor,
 > extends DisabledReadonly {
   stateMachine: Immutable<IFSM>;
   stateMachineInstance: IFSM['defaultInstance'];
@@ -101,7 +106,7 @@ interface StateMachineEditorProps<
   editPath?: (string | number)[] | undefined;
 }
 export function StateMachineEditor<
-  IFSM extends IFSMDescriptor | IDialogueDescriptor
+  IFSM extends IFSMDescriptor | IDialogueDescriptor,
 >({
   title,
   stateMachine,
@@ -124,7 +129,6 @@ export function StateMachineEditor<
     [forceLocalDispatch, localDispatch],
   );
 
-
   const processes: StateProcess[] = React.useMemo(
     () =>
       Object.entries(stateMachine.states).map(([key, state]) => ({
@@ -142,29 +146,27 @@ export function StateMachineEditor<
     [stateMachine.states],
   );
 
-  const createTransition: (
-    nextStateId: number,
-    index: number,
-  ) => TTransition = React.useCallback(
-    (nextStateId, index) => {
-      return {
-        ...{
-          version: 0,
-          nextStateId,
-          preStateImpact: createScript(),
-          triggerCondition: createScript(),
-          index,
-        },
-        ...(entityIs(stateMachine, 'FSMDescriptor')
-          ? { '@class': 'Transition', label: '' }
-          : {
-              '@class': 'DialogueTransition',
-              actionText: createTranslatableContent(lang),
-            }),
-      };
-    },
-    [lang, stateMachine],
-  );
+  const createTransition: (nextStateId: number, index: number) => TTransition =
+    React.useCallback(
+      (nextStateId, index) => {
+        return {
+          ...{
+            version: 0,
+            nextStateId,
+            preStateImpact: createScript(),
+            triggerCondition: createScript(),
+            index,
+          },
+          ...(entityIs(stateMachine, 'FSMDescriptor')
+            ? { '@class': 'Transition', label: '' }
+            : {
+                '@class': 'DialogueTransition',
+                actionText: createTranslatableContent(lang),
+              }),
+        };
+      },
+      [lang, stateMachine],
+    );
 
   const connectState = React.useCallback(
     (
@@ -313,7 +315,9 @@ export function StateMachineEditor<
 
         // Removing transition from state
         const currentState = stateMachine.states[Number(sourceProcess.id)];
-        currentState.transitions = (currentState.transitions as TTransition[]).filter(
+        currentState.transitions = (
+          currentState.transitions as TTransition[]
+        ).filter(
           t => transition == null || t.id !== transition.transition.id,
         ) as typeof currentState.transitions;
 
@@ -423,10 +427,8 @@ export function StateMachineEditor<
 }
 
 function globalStateSelector(s: RState) {
-  let editedVariable:
-    | IFSMDescriptor
-    | IDialogueDescriptor
-    | undefined = undefined;
+  let editedVariable: IFSMDescriptor | IDialogueDescriptor | undefined =
+    undefined;
   let editPath: (string | number)[] | undefined = undefined;
   if (
     s.global.editing &&
@@ -478,10 +480,16 @@ export function ConnectedStateMachineEditor({
 
   if ('variable' in globalState) {
     if (globalState.variable == null) {
-      return <span className={MediumPadding}>{i18nValues.stateMachine.selectVariable}</span>;
+      return (
+        <span className={MediumPadding}>
+          {i18nValues.stateMachine.selectVariable}
+        </span>
+      );
     } else {
       return (
-        <span className={MediumPadding}>{i18nValues.stateMachine.selectedNotStateMachine}</span>
+        <span className={MediumPadding}>
+          {i18nValues.stateMachine.selectedNotStateMachine}
+        </span>
       );
     }
   } else {
