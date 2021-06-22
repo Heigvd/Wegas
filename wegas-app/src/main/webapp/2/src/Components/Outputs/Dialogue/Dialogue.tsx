@@ -187,6 +187,7 @@ export function DialogueDisplay({
                     dialogue.getEntity(),
                     transition.getEntity(),
                     () => {
+                      setWaitingUser(false);
                       setWaitingSystem(true);
                       setTimeout(() => {
                         setWaitingSystem(false);
@@ -201,9 +202,13 @@ export function DialogueDisplay({
             />
           ))}
           {/* ---------- waiting for the next answer to be revealed ------------------------ */}
-          {waitingUser && choices.length > 0 && (
+          {(waitingUser || waitingSystem) && choices.length > 0 && (
             <WaitingLoader
-              color={themeVar.colors.LightTextColor}
+              color={
+                waitingSystem
+                  ? themeVar.colors.DisabledColor
+                  : themeVar.colors.LightTextColor
+              }
               background={themeVar.colors.DisabledColor}
             />
           )}
