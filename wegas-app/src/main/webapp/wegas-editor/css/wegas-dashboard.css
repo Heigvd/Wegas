@@ -77,6 +77,13 @@
     color: #666 !important;
 }
 
+.yui3-skin-sam .customize-group-window .group-title {
+    font-size: 1.6em;
+    font-weight: 400;
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+
 .yui3-skin-sam .customize-group-window .customize-group-submit-button {
     background-color: #4caf50;
     display: block;

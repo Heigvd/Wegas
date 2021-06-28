@@ -115,6 +115,7 @@ export function childrenDeserializerFactory(
     context,
     editMode,
     containerPropsKeys,
+    inheritedOptionsState,
   }: ChildrenDeserializerProps<{}>) {
     return (
       <>
@@ -132,6 +133,7 @@ export function childrenDeserializerFactory(
                 Container={Container}
                 containerPropsKeys={containerPropsKeys}
                 dropzones={dropzones}
+                inheritedOptionsState={inheritedOptionsState}
               />
             );
           })

@@ -15,7 +15,7 @@ import {
 import { scriptEditStyle } from './Script/Script';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { DropMenu } from '../../../Components/DropMenu';
-import HTMLEditor from '../../../Components/HTMLEditor';
+import HTMLEditor from '../../../Components/HTML/HTMLEditor';
 import {
   createSourceFile,
   ScriptTarget,

@@ -24,6 +24,8 @@ export const FILE_EDIT = 'FILE/EDIT';
 export const VARIABLE_CREATE = 'VARIABLE/CREATE';
 export const CLOSE_EDITOR = 'EDITOR/CLOSE';
 
+export const UNSAVED_CHANGES = 'EDITOR/UNSAVED';
+
 // export const PAGE_EDIT_MODE = 'PAGE/EDIT_MODE';
 // export const PAGE_SRC_MODE = 'PAGE/SRC_MODE';
 // export const PAGE_LOAD_ID = 'PAGE/LOAD_ID';
@@ -43,6 +45,7 @@ export const GAMEMODEL_EDIT = 'GAMEMODEL/EDIT';
 export const LANGUAGE_EDIT = 'LANGUAGE/EDIT';
 
 export const TEAM_FETCH_ALL = 'TEAM/FETCH/ALL';
+export const TEAM_UPDATE = 'TEAM/UPDATE';
 
 export const GAME_FETCH = 'GAME/FETCH';
 

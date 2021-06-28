@@ -403,6 +403,7 @@ public final class WegasChildrenPatch extends WegasPatch {
         return sb;
     }
 
+    @Override
     protected PatchDiff buildDiff(boolean bypassVisibility) {
         List<PatchDiff> subs = new ArrayList<>();
 

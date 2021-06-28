@@ -44,7 +44,7 @@ type ExtractTuppleArray<
   Lookup extends false | {} = false,
   RET = {
     [key in keyof T]: N extends keyof T[key] ? T[key][N] : unknown;
-  }
+  },
 > = ValueOf<RET> extends keyof Lookup
   ? {
       [key in keyof RET]: RET[key] extends keyof Lookup

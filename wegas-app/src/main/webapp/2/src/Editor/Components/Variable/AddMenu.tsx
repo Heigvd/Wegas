@@ -3,11 +3,7 @@ import produce from 'immer';
 import { Actions } from '../../../data';
 import { getIcon, getLabel, getChildren } from '../../editionConfig';
 import { StoreDispatch, store } from '../../../data/Stores/store';
-import {
-  DropMenu,
-  DropMenuProps,
-  DropMenuItem,
-} from '../../../Components/DropMenu';
+import { DropMenu, DropMenuProps } from '../../../Components/DropMenu';
 import { withDefault, IconComp } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { VariableDescriptor } from '../../../data/selectors';
@@ -61,6 +57,7 @@ interface AddMenuProps {
   forceLocalDispatch?: boolean;
   onSelect?: DropMenuProps<string, DropMenuItem<string>>['onSelect'];
   focusTab?: (tab: AvailableLayoutTab) => void;
+  style?: React.CSSProperties;
 }
 
 /**
@@ -75,12 +72,14 @@ export const AddMenuParent = asyncSFC(
     forceLocalDispatch,
     onSelect,
     focusTab,
+    style,
   }: {
     variable: IListDescriptor | IQuestionDescriptor | IWhQuestionDescriptor;
   } & AddMenuProps) => {
     const items = await buildMenuItems(variable);
     return (
       <DropMenu
+        style={style}
         label={label}
         prefixedLabel={prefixedLabel}
         items={items}

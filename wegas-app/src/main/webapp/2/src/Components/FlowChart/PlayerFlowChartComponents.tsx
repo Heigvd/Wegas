@@ -1,16 +1,28 @@
 import { cx } from 'emotion';
 import * as React from 'react';
 import { Icon, IconComp } from '../../Editor/Components/Views/FontAwesome';
-import { Text } from '../Outputs/Text';
+import { classNameOrEmpty } from '../../Helper/className';
+import { HTMLText } from '../Outputs/HTMLText';
+import { isActionAllowed } from '../PageComponents/tools/options';
 import { FlowLine, Process } from './FlowChart';
-import { FlowLineProps, CustomFlowLineComponent } from './FlowLineComponent';
-import { ProcessProps, CustomProcessComponent } from './ProcessComponent';
+import {
+  CustomFlowLineComponent,
+  FlowLineComponentProps,
+} from './FlowLineComponent';
+import {
+  CustomProcessComponent,
+  ProcessComponentProps,
+} from './ProcessComponent';
 import {
   indexTagStyle,
+  stateBoxActionStyle,
   stateBoxStyle,
   StateProcessHandle,
 } from './StateProcessComponent';
-import { transitionBoxStyle } from './TransitionFlowLineComponent';
+import {
+  transitionBoxActionStyle,
+  transitionBoxStyle,
+} from './TransitionFlowLineComponent';
 
 export interface LabeledFlowLine extends FlowLine {
   label?: string;
@@ -24,19 +36,30 @@ export interface LabeledProcess<F extends LabeledFlowLine> extends Process<F> {
 export function LabeledFlowLineComponent<
   F extends LabeledFlowLine,
   P extends LabeledProcess<F>
->(props: FlowLineProps<F, P>) {
+>({
+  onClick,
+  startProcess,
+  flowline,
+  disabled,
+  readOnly,
+  selected,
+  position,
+}: FlowLineComponentProps<F, P>) {
   return (
-    <CustomFlowLineComponent {...props}>
-      {(flowline, startProcess, onClick) =>
-        flowline.label && (
-          <div
-            onClick={e => onClick && onClick(e, startProcess, flowline)}
-            className={transitionBoxStyle}
-          >
-            <Text text={flowline.label} />
-          </div>
-        )
-      }
+    <CustomFlowLineComponent selected={selected} position={position}>
+      {flowline.label && (
+        <div
+          onClick={e => onClick && onClick(e, startProcess, flowline)}
+          className={cx(transitionBoxStyle, {
+            [transitionBoxActionStyle]: isActionAllowed({
+              readOnly: readOnly,
+              disabled: disabled,
+            }),
+          })}
+        >
+          <HTMLText text={flowline.label} />
+        </div>
+      )}
     </CustomFlowLineComponent>
   );
 }
@@ -46,14 +69,36 @@ interface PlayerFlowChartProcessBoxProps<
   P extends LabeledProcess<F>
 > extends ClassStyleId {
   process: P;
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 
 function PlayerFlowChartProcessBox<
   F extends LabeledFlowLine,
   P extends LabeledProcess<F>
->({ process, className, style, id }: PlayerFlowChartProcessBoxProps<F, P>) {
+>({
+  process,
+  className,
+  style,
+  id,
+  disabled,
+  readOnly,
+}: PlayerFlowChartProcessBoxProps<F, P>) {
   return (
-    <div className={cx(stateBoxStyle, className)} style={style} id={id}>
+    <div
+      className={
+        cx(stateBoxStyle, {
+          [stateBoxActionStyle]: isActionAllowed({
+            disabled: disabled,
+            readOnly: readOnly,
+          }),
+        }) +
+        classNameOrEmpty(className) +
+        classNameOrEmpty(process.className)
+      }
+      style={{ ...style, ...process.style }}
+      id={id}
+    >
       {process.icon && (
         <div className={indexTagStyle}>
           <p>
@@ -63,7 +108,7 @@ function PlayerFlowChartProcessBox<
       )}
       <div>
         <p className="StateLabelTextStyle">
-          <Text text={process.label} />
+          <HTMLText text={process.label} />
         </p>
       </div>
       <StateProcessHandle sourceProcess={process} />
@@ -74,10 +119,19 @@ function PlayerFlowChartProcessBox<
 export function PlayerFlowChartProcessComponent<
   F extends LabeledFlowLine,
   P extends LabeledProcess<F>
->(props: ProcessProps<F, P>) {
+>({
+  isProcessSelected,
+  onClick,
+  ...processProps
+}: ProcessComponentProps<F, P>) {
+  const { disabled, readOnly, process } = processProps;
   return (
-    <CustomProcessComponent {...props}>
-      {process => <PlayerFlowChartProcessBox process={process} />}
+    <CustomProcessComponent {...processProps}>
+      <PlayerFlowChartProcessBox
+        process={process}
+        disabled={disabled}
+        readOnly={readOnly}
+      />
     </CustomProcessComponent>
   );
 }

@@ -4,20 +4,19 @@ import {
   pageComponentFactory,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { store } from '../../../data/Stores/store';
+import { store, useStore } from '../../../data/Stores/store';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, STextDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
-import HTMLEditor from '../../HTMLEditor';
+import HTMLEditor from '../../HTML/HTMLEditor';
 import {
   OnVariableChange,
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
-import { useCurrentPlayer } from '../../../data/selectors/Player';
 import {
   useOnCancelAction,
   Validate,
@@ -25,6 +24,7 @@ import {
   validatorSchema,
 } from '../../Inputs/Validate';
 import { TumbleLoader } from '../../Loader';
+import { Player } from '../../../data/selectors';
 
 interface PlayerTextInputProps
   extends WegasComponentProps,
@@ -41,19 +41,24 @@ interface PlayerTextInputProps
 }
 
 function PlayerTextInput({
-  // placeholder,
+  placeholder,
   context,
   script,
-  // options,
   className,
   style,
   id,
   onVariableChange,
   validator,
   onCancel,
+  options,
 }: PlayerTextInputProps) {
   const text = useScript<STextDescriptor | string>(script, context);
-  const player = useCurrentPlayer();
+  const placeholderText = useScript<string>(placeholder, context);
+
+  const value =
+    useStore(() =>
+      typeof text === 'object' ? text.getValue(Player.self()) : text,
+    ) || '';
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
   const { handleOnCancel } = useOnCancelAction(onCancel, context);
@@ -76,20 +81,16 @@ function PlayerTextInput({
   return text == null ? (
     <TumbleLoader />
   ) : validator ? (
-    <Validate
-      value={typeof text === 'object' ? text.getValue(player) : text}
-      onValidate={onChange}
-      onCancel={handleOnCancel}
-    >
+    <Validate value={value} onValidate={onChange} onCancel={handleOnCancel}>
       {(value, onChange) => {
         return (
           <HTMLEditor
             id={id}
             value={String(value)}
             onChange={onChange}
-            // disabled={disabled}
-            // readOnly={readOnly}
-            // placeholder={placeholderText}
+            disabled={options.disabled || options.locked}
+            readOnly={options.readOnly}
+            placeholder={placeholderText}
             className={className}
             style={style}
           />
@@ -99,11 +100,11 @@ function PlayerTextInput({
   ) : (
     <HTMLEditor
       id={id}
-      value={typeof text === 'object' ? text.getValue(player) : text}
+      value={value}
       onChange={onChange}
-      // disabled={disabled}
-      // readOnly={readOnly}
-      // placeholder={placeholderText}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
+      placeholder={placeholderText}
       className={className}
       style={style}
     />

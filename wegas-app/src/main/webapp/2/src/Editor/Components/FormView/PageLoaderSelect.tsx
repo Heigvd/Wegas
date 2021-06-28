@@ -13,7 +13,7 @@ import {
   PageLoaderComponentProps,
 } from '../../../Helper/pages';
 import { useScript } from '../../../Components/Hooks/useScript';
-import { DropMenu, DropMenuItem } from '../../../Components/DropMenu';
+import { DropMenu } from '../../../Components/DropMenu';
 import { cx, css } from 'emotion';
 import { flex, flexRow, grow } from '../../../css/classes';
 import { MessageString } from '../MessageString';

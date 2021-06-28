@@ -113,8 +113,10 @@ export function runScript(
 ): ThunkResult {
   return function (dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
-    return asyncRunScript(gameModelId, script, player, context).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    return asyncRunScript(gameModelId, script, player, context).then(
+      res =>
+        res != null &&
+        dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
 }
@@ -208,12 +210,8 @@ export function selectChoice(
     if (p.id == null) {
       throw Error('Missing persisted player');
     }
-    return QuestionDescriptorAPI.selectChoice(
-      gameModelId,
-      p.id,
-      choice,
-    ).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    return QuestionDescriptorAPI.selectChoice(gameModelId, p.id, choice).then(
+      res => dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
 }
@@ -225,12 +223,8 @@ export function cancelReply(reply: IReply, player?: IPlayer): ThunkResult {
     if (p.id == null || !reply) {
       throw Error('Missing persisted player');
     }
-    return QuestionDescriptorAPI.cancelReply(
-      gameModelId,
-      p.id,
-      reply,
-    ).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    return QuestionDescriptorAPI.cancelReply(gameModelId, p.id, reply).then(
+      res => dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
 }
@@ -261,9 +255,8 @@ export function validateQuestion(
   return function (dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
-    const instance = getInstance<IQuestionInstance | IWhQuestionInstance>(
-      question,
-    );
+    const instance =
+      getInstance<IQuestionInstance | IWhQuestionInstance>(question);
     if (p.id == null || instance == null) {
       throw Error('Missing persisted player');
     }
@@ -315,6 +308,7 @@ export function readMessages(
 export function applyFSMTransition(
   stateMachine: IFSMDescriptor | IDialogueDescriptor,
   transition: ITransition | IDialogueTransition,
+  cbFn?: () => void,
 ): ThunkResult {
   return function (dispatch, getState) {
     if (stateMachine.id == null) {
@@ -323,9 +317,10 @@ export function applyFSMTransition(
     if (transition.id == null) {
       throw Error('Missing transition id');
     }
-    return FSM_API.applyTransition(stateMachine.id, transition.id).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState().global)),
-    );
+    return FSM_API.applyTransition(stateMachine.id, transition.id).then(res => {
+      dispatch(manageResponseHandler(res, dispatch, getState().global));
+      cbFn && cbFn();
+    });
   };
 }
 

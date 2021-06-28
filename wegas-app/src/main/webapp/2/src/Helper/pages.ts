@@ -1,7 +1,6 @@
-import { Item } from '../Editor/Components/Tree/TreeSelect';
 import { css } from 'emotion';
 import { cloneDeep } from 'lodash-es';
-import { themeVar } from '../Components/Style/ThemeVars';
+import { themeVar } from '../Components/Theme/ThemeVars';
 import { IScript } from 'wegas-ts-api';
 
 export function isPageItem(
@@ -115,7 +114,7 @@ export function pageItemsToTreeItem(
 export function indexToTree(index: PageIndex): Item<PageIndexItem>[] {
   return pageItemsToTreeItem(index.root.items, item =>
     isPageItem(item) && item.id === index.defaultPageId
-      ? css({ color: themeVar.Common.colors.SuccessColor })
+      ? css({ color: themeVar.colors.SuccessColor })
       : undefined,
   );
 }

@@ -4,7 +4,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { Button } from '../../Inputs/Buttons/Button';
+import { Button, ButtonProps } from '../../Inputs/Buttons/Button';
 import {
   onComponentClick,
   WegasComponentProps,
@@ -36,11 +36,13 @@ function PlayerButton({
   stopPropagation,
   confirmClick,
   tooltip,
+  options,
   ...restProps
 }: PlayerButtonProps) {
   const translation = useScript<string>(label, context) || '';
 
-  const buttonProps = {
+  const buttonProps: ButtonProps = React.useMemo(
+    () => ({
     id: id,
     className: className,
     style: { margin: 'auto', ...style },
@@ -49,7 +51,23 @@ function PlayerButton({
     label:
       label && translation !== '' ? <Text text={translation} /> : undefined,
     tooltip,
-  };
+      disabled: options.disabled || options.locked,
+      readOnly: options.readOnly,
+    }),
+    [
+      className,
+      icon,
+      id,
+      label,
+      options.disabled,
+      options.locked,
+      options.readOnly,
+      prefixedLabel,
+      style,
+      tooltip,
+      translation,
+    ],
+  );
 
   const onClick = React.useCallback(
     onComponentClick(restProps, context, stopPropagation, confirmClick),
@@ -60,20 +78,13 @@ function PlayerButton({
     <ConfirmButton
       onAction={(success, event) => {
         if (success) {
-          // store.dispatch(Actions.VariableInstanceActions.runScript(action!));
           onClick(event);
         }
       }}
       {...buttonProps}
     />
   ) : (
-    <Button
-      onClick={event =>
-        // store.dispatch(Actions.VariableInstanceActions.runScript(action!))
-        onClick(event)
-      }
-      {...buttonProps}
-    />
+    <Button onClick={event => onClick(event)} {...buttonProps} />
   );
 }
 

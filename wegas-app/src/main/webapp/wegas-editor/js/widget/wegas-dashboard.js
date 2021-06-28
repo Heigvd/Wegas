@@ -148,8 +148,9 @@ YUI.add('wegas-dashboard', function(Y) {
             this.detailsTarget = null;
 
             // Use scenario name as name space for these preferences:
-            this.clientPrefs = "wegas-dashboard-" + gm.get("name").replace(/\s+/g, '');
-            var cfg = localStorage.getItem(this.clientPrefs) || {};
+            this.clientPrefsNs = "wegas-dashboard-" + gm.get("name").replace(/\s+/g, '');
+
+            var cfg = localStorage.getItem(this.clientPrefsNs) || {};
             if (typeof cfg === "string") {
                 try {
                     cfg = JSON.parse(cfg);
@@ -228,6 +229,11 @@ YUI.add('wegas-dashboard', function(Y) {
              }*/
 
             this.toolbar.add(new Y.Wegas.Text({
+                content: '<a title="Customize columns"><span class="fa fa-2x fa-cogs"></span></a>',
+                cssClass: 'customize-all global-button'
+            }));
+
+            this.toolbar.add(new Y.Wegas.Text({
                 content: '<a title="Download overview (Excel)" href="rest/GameModel/Game/'
                     + game.get('id')
                     + '/ExportMembers.xlsx" target="_blank"><span class="fa fa-2x fa-file-excel-o"></span></a>',
@@ -257,6 +263,7 @@ YUI.add('wegas-dashboard', function(Y) {
             this.get("contentBox").delegate("click", this.onBooleanClick, ".bloc__boolean.toggleable", this);
             this.get("contentBox").delegate("click", this.onTextClick, ".bloc__text.clickable", this);
 
+            this.get("contentBox").delegate("click", this.onCustomizeAllClick, ".customize-all", this);
             this.get("contentBox").delegate("click", this.onCustomizeGroupClick, ".customize-group", this);
 
             Y.Wegas.app.once('ready', Y.bind(this.syncUI, this));
@@ -412,31 +419,37 @@ YUI.add('wegas-dashboard', function(Y) {
                                             label = label.slice(0, 1).toUpperCase() + label.slice(1);
                                         }
                                         var currGroup = {
-                                            id: results.structure[i].title,
+                                            id: results.structure[i].id,
+                                            name: label,
                                             label: label,
                                             itemType: "group",
                                             items: {},
                                             customizable: false
-                                        },
-                                            prefs = this.preferences.main[results.structure[i].title] || {};
+                                        };
+                                        currGroup.customizable = true;
+                                        currGroup.label = '<span class="customize-group" data-group="' + currGroup.id + '" title="Customize columns">' + currGroup.label + '</span>';
+
+                                        var oldPrefs = this.preferences.main[results.structure[i].id] || {};
+                                        var newPrefs = {};
+
                                         for (j in results.structure[i].items) {
                                             item = results.structure[i].items[j];
                                             currGroup.items[item.id] = item;
-                                            var isActive = prefs[item.id] ? prefs[item.id].active : item.active;
-                                            prefs[item.id] = {
+                                            var isActive = oldPrefs[item.id] ? oldPrefs[item.id].active : item.active;
+                                            newPrefs[item.id] = {
                                                 id: item.id,
                                                 label: item.label || item.id,
                                                 active: isActive
                                             };
 
                                             // Until we make this option a standard, only show its icon when at least one column is inactive:
-                                            if ((item.active === false || isActive === false) && !currGroup.customizable) {
-                                                currGroup.customizable = true;
-                                                currGroup.label = '<span class="customize-group" data-group="' + currGroup.id + '" title="Customize columns">' + currGroup.label + '</span>';
-                                            }
+//                                            if ((item.active === false || isActive === false) && !currGroup.customizable) {
+//                                                currGroup.customizable = true;
+//                                                currGroup.label = '<span class="customize-group" data-group="' + currGroup.id + '" title="Customize columns">' + currGroup.label + '</span>';
+//                                            }
                                         }
-                                        this._monitoredData.structure.main.def[results.structure[i].title] = currGroup;
-                                        this.preferences.main[results.structure[i].title] = prefs;
+                                        this._monitoredData.structure.main.def[results.structure[i].id] = currGroup;
+                                        this.preferences.main[results.structure[i].id] = newPrefs;
                                     }
                                 }
 
@@ -707,7 +720,11 @@ YUI.add('wegas-dashboard', function(Y) {
                     var tabPrefs = this.preferences[tableName],
                         groupPrefs = tabPrefs && tabPrefs[i],
                         cellDef = tableDef[i];
+                    cell = undefined;
                     if (cellDef.itemType === "group") {
+                        if (Object.values(groupPrefs).find(function(item) {
+                            return item.active;
+                        }) != null) {
                         cell = {
                             label: cellDef.label,
                             children: []
@@ -725,10 +742,13 @@ YUI.add('wegas-dashboard', function(Y) {
                                 firstOfGroup = false;
                             }
                         }
+                        }
                     } else {
                         cell = parseItem(i, cellDef);
                     }
+                    if (cell) {
                     tableColumns.push(cell);
+                }
                 }
                 tables[tableName] = tableColumns;
             }
@@ -849,17 +869,53 @@ YUI.add('wegas-dashboard', function(Y) {
                     empty = false;
                 }
             }
-            if (empty) {
-                items[cbx].active = !(items[cbx].active);
-                alert("Sorry, at least one option has to be active.");
-            } else {
+//            if (empty) {
+//                items[cbx].active = !(items[cbx].active);
+//                alert("Sorry, at least one option has to be active.");
+//            } else {
                 if (items[cbx].active) {
                     target.addClass("selected");
                 } else {
                     target.removeClass("selected");
                 }
                 // Update localStorage:
-                localStorage.setItem(this.clientPrefs, JSON.stringify(storedPrefs));
+            localStorage.setItem(this.clientPrefsNs, JSON.stringify(storedPrefs));
+//            }
+            event.halt(true);
+        },
+        onCustomizeAllClick: function(event) {
+            var groups = this.preferences.main,
+                title = "Monitored variables/columns",
+                body = '';
+            if (this.detailsOverlay.get("visible")) {
+                this.detailsOverlay.hide();
+            }
+            if (event.currentTarget !== this.detailsTarget) {
+                body = '<div class="customize-group-window">';
+                for (var group in groups) {
+                    if (groups.hasOwnProperty(group)) {
+                        var items = groups[group];
+                        var itemBody = "";
+                        for (var j in items) {
+                            if (items[j].label) {
+                                itemBody += '<div class="checkbox' + (items[j].active ? ' selected' : '') + '" data-group="' + group + '" data-cbx="' + items[j].id + '">' + items[j].label + "</div>";
+                            }
+                        }
+                        if (itemBody) {
+                            body += '<div class="group-title">' + this._monitoredData.structure.main.def[group].name + "</div>";
+                            body += itemBody;
+                        }
+                    }
+                }
+                body += '<button class="customize-group-submit-button">OK</button></div>';
+                this._display(title, body, true, Y.bind(function() {
+                    this.syncUI();
+                }, this));
+                this.detailsTarget = event.currentTarget;
+                this.detailsOverlay.bodyNode.delegate("click", this.onCustomizationClick, ".checkbox", this);
+                this.detailsOverlay.bodyNode.delegate("click", this.closeDetails, ".customize-group-submit-button", this);
+            } else {
+                this.detailsTarget = null;
             }
             event.halt(true);
         },

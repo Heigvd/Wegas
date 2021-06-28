@@ -26,7 +26,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;

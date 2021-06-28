@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cx, css } from 'emotion';
+import { cx } from 'emotion';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
 import {
@@ -10,19 +10,6 @@ import {
 } from '../../../css/classes';
 import { Button } from '../Buttons/Button';
 import { classOrNothing, classNameOrEmpty } from '../../../Helper/className';
-import { themeVar } from '../../Style/ThemeVars';
-
-const cbxStyle = css({
-  cursor: 'pointer',
-  color: themeVar.Common.colors.DarkTextColor,
-  textAlign: 'center',
-  ['$:not(.disabled):not(.readonly):hover']: {
-    backgroundColor: themeVar.Common.colors.HoverColor,
-  },
-  ['&.disabled &.readOnly']: {
-    cursor: 'default',
-  },
-});
 
 export interface CheckBoxProps extends InputProps<boolean> {
   /**
@@ -41,6 +28,10 @@ export interface CheckBoxProps extends InputProps<boolean> {
    * radio - displays a radio button instead of a check box
    */
   radio?: boolean;
+  /**
+   * propagateClick - avoid stopping propagation when click
+   */
+  propagateClick?: boolean;
 }
 
 export function CheckBox({
@@ -52,6 +43,7 @@ export function CheckBox({
   hint,
   checkBoxClassName,
   radio,
+  propagateClick,
   className,
   style,
   id,
@@ -98,21 +90,22 @@ export function CheckBox({
               }
         }
         onClick={e => {
-          e.stopPropagation();
+          if (!propagateClick) {
+            e.stopPropagation();
+          }
           if (!disabled && !readOnly && onChange) {
             onChange(!value);
           }
         }}
         className={
           'wegas wegas-cbx' +
-          cbxStyle +
-          ' ' +
           classOrNothing('disabled', disabled) +
           classOrNothing('readOnly', readOnly) +
           classNameOrEmpty(checkBoxClassName)
         }
         disabled={disabled}
-        noHover={disabled}
+        readOnly={readOnly}
+        // noHover={disabled}
       />
     </div>
   );

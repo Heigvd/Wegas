@@ -24,6 +24,7 @@ public class ValidateAddressToken extends Token {
      *
      * @return root page location
      */
+    @Override
     public String getRedirectTo() {
         return "/";
     }

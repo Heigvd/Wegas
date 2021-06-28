@@ -1,23 +1,17 @@
 import {
   WegasMethodParameter,
-  WegasTypeString,
   MethodConfig,
   WegasMethod,
   getVariableMethodConfig,
-  WegasMethodReturnType,
 } from '../../../../editionConfig';
 
 import { schemaProps } from '../../../../../Components/PageComponents/tools/schemaProps';
 
 import { pick } from 'lodash-es';
 
-import { ScriptMode, isScriptCondition } from '../Script';
+import { isScriptCondition } from '../Script';
 
-import {
-  StringOrT,
-  genVarItems,
-  TreeSelectItem,
-} from '../../TreeVariableSelect';
+import { StringOrT, genVarItems } from '../../TreeVariableSelect';
 
 import { store } from '../../../../../data/Stores/store';
 import { TYPESTRING } from 'jsoninput/typings/types';
@@ -55,6 +49,10 @@ export interface IInitAttributes extends IParameterAttributes {
   initExpression: ScriptItemValue;
   variableName?: string;
 }
+
+export const defaultBooleanAttributes: Partial<IInitAttributes> = {
+  initExpression: undefined,
+};
 
 export const defaultInitAttributes: Partial<IInitAttributes> = {
   variableName: undefined,
@@ -122,6 +120,12 @@ export const isFilledObject = (
     Object.values(filtererdObject).every(v => v !== undefined)
   );
 };
+
+export const isBooleanExpression = (
+  scriptAttributes: PartialAttributes,
+): scriptAttributes is IInitAttributes =>
+  isFilledObject(defaultBooleanAttributes, scriptAttributes) &&
+  scriptAttributes.initExpression?.type === 'boolean';
 
 export const isInitAttributes = (
   scriptAttributes: PartialAttributes,

@@ -5,18 +5,17 @@ import { runLoadedScript } from '../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../data/selectors';
 import { usePagesContextStateStore } from '../../data/Stores/pageContextStore';
 import { store } from '../../data/Stores/store';
-import { CleaningHashmapMethods } from '../../Editor/Components/FormView/HashList';
 import { safeClientScriptEval } from '../Hooks/useScript';
 import { ClientAndServerAction } from '../PageComponents/Inputs/tools';
 import { assembleStateAndContext } from '../PageComponents/tools/EditableComponent';
 import { clientAndServerScriptChoices } from '../PageComponents/tools/options';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
-import { themeVar } from '../Style/ThemeVars';
+import { themeVar } from '../Theme/ThemeVars';
 import { Button } from './Buttons/Button';
 
 const validatorStyle = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  backgroundColor: themeVar.colors.HeaderColor,
+  borderRadius: themeVar.dimensions.BorderRadius,
   padding: '5px',
 });
 
@@ -35,7 +34,7 @@ export interface ValidatorComponentProps {
   onCancel?: IScript | ClientAndServerAction;
 }
 
-interface ValidateProps<T> {
+interface ValidateProps<T> extends DisabledReadonly {
   value: T;
   onValidate: (value: T) => void;
   onCancel: () => void;
@@ -47,6 +46,8 @@ export function Validate<T>({
   onValidate,
   onCancel,
   children,
+  disabled,
+  readOnly,
 }: ValidateProps<T>) {
   const [savedValue, setSavedValue] = React.useState<T>(value);
 
@@ -60,8 +61,18 @@ export function Validate<T>({
         {children(savedValue, setSavedValue)}
       </div>
       <div className={cx(flex, flexColumn, inputStyle)}>
-        <Button icon="times" onClick={() => onCancel()} />
-        <Button icon="check" onClick={() => onValidate(savedValue)} />
+        <Button
+          icon="times"
+          onClick={() => onCancel()}
+          disabled={disabled}
+          readOnly={readOnly}
+        />
+        <Button
+          icon="check"
+          onClick={() => onValidate(savedValue)}
+          disabled={disabled}
+          readOnly={readOnly}
+        />
       </div>
     </div>
   );
@@ -130,7 +141,7 @@ export function useOnCancelAction(
 
   const state = usePagesContextStateStore(s => s);
 
-  function handleOnCancel() {
+  const handleOnCancel = React.useCallback(() => {
     if (client) {
       safeClientScriptEval(client, context, undefined, state);
     }
@@ -144,11 +155,13 @@ export function useOnCancelAction(
         ),
       );
     }
-  }
+  }, [client, context, server, state]);
 
-  if (!onCancel || Object.keys(onCancel).length === 0) {
-    return { handleOnCancel: () => {} };
-  } else {
-    return { client, server, handleOnCancel };
-  }
+  return React.useMemo(() => {
+    if (!onCancel || Object.keys(onCancel).length === 0) {
+      return { handleOnCancel: () => {} };
+    } else {
+      return { client, server, handleOnCancel };
+    }
+  }, [client, handleOnCancel, onCancel, server]);
 }

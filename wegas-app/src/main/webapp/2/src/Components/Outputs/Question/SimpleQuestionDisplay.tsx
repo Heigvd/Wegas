@@ -1,12 +1,15 @@
+import { cx } from 'emotion';
 import * as React from 'react';
 import { IChoiceDescriptor, IChoiceInstance } from 'wegas-ts-api';
+import { halfOpacity } from '../../../css/classes';
 import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
 import { StoreDispatch } from '../../../data/Stores/store';
 import { Button } from '../../Inputs/Buttons/Button';
+import { isActionAllowed } from '../../PageComponents/tools/options';
 import { ChoiceContainer } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
 import { RepliesDisplay } from './Reply';
-import { TranslatableText } from '../Text';
+import { TranslatableText } from '../HTMLText';
 
 interface SimpleChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
@@ -46,7 +49,7 @@ function SimpleChoiceDisplay({
   );
 }
 
-interface SimpleQuestionDisplayProps extends QuestionInfo {
+interface SimpleQuestionDisplayProps extends QuestionInfo, DisabledReadonly {
   dispatch: StoreDispatch;
 }
 
@@ -57,12 +60,14 @@ export function SimpleQuestionDisplay({
   choicesD,
   choicesI,
   replies,
+  ...options
 }: SimpleQuestionDisplayProps) {
   const validatedReplies = replies.filter(r => r.validated);
 
   const canReply =
-    questionD.maxReplies == null ||
-    validatedReplies.length < questionD.maxReplies;
+    (questionD.maxReplies == null ||
+      validatedReplies.length < questionD.maxReplies) &&
+    isActionAllowed(options);
 
   const onChoiceValidate = React.useCallback(
     (choice: IChoiceDescriptor) => {
@@ -76,7 +81,11 @@ export function SimpleQuestionDisplay({
   }
 
   return (
-    <div className={questionStyle}>
+    <div
+      className={cx(questionStyle, {
+        [halfOpacity]: options.disabled,
+      })}
+    >
       <TranslatableText
         content= {questionD.description}
       />

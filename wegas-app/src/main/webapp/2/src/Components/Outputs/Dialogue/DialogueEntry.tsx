@@ -9,9 +9,10 @@ import {
   expandHeight,
   grow,
 } from '../../../css/classes';
-import { Text } from '../Text';
+import { HTMLText } from '../HTMLText';
+import { Global } from '../../../data/selectors';
 import { useTranslate } from '../../../Editor/Components/FormView/translatable';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { WaitingLoader } from './WaitingLoader';
 
 const dialogueEntryStyle = (player?: boolean) =>
@@ -25,12 +26,12 @@ const textContainerStyle = (player?: boolean) =>
   css({
     position: 'relative',
     backgroundColor: player
-      ? themeVar.Common.colors.PrimaryColor
-      : themeVar.Common.colors.HeaderColor,
+      ? themeVar.colors.PrimaryColor
+      : themeVar.colors.HeaderColor,
     color: player
-      ? themeVar.Common.colors.LightTextColor
-      : themeVar.Common.colors.DarkTextColor,
-    borderRadius: themeVar.Common.dimensions.BorderRadius,
+      ? themeVar.colors.LightTextColor
+      : themeVar.colors.DarkTextColor,
+    borderRadius: themeVar.dimensions.BorderRadius,
     padding: '5px 10px',
     overflow: 'hidden',
     fontSize: 'initial',
@@ -43,18 +44,36 @@ const portraitStyle = css({
   margin: '5px',
 });
 
+const portraitPlayerStyle = css({
+  backgroundColor: themeVar.colors.ActiveColor,
+  borderRadius: '50%',
+  fontSize: '1.3em',
+  textAlign: 'center',
+  color: themeVar.colors.LightTextColor,
+  width: '35px',
+  height: '35px',
+});
+
 interface UserPortraitProps extends ClassStyleId {
   color?: string;
+  player?: boolean;
 }
 
 function UserPortrait({
   color = '#00BFCE',
+  player,
   className,
   style,
   id,
 }: UserPortraitProps) {
+  const user = Global.selectCurrentUser();
   return (
     <div className={className} style={style} id={id}>
+      {player ? (
+        <div className={cx(portraitPlayerStyle)}>
+          <p className={css({ lineHeight: '34px' })}>{user.name?.charAt(0)}</p>
+        </div>
+      ) : (
       <svg
         width="35"
         height="35"
@@ -70,6 +89,7 @@ function UserPortrait({
           fill="white"
         />
       </svg>
+      )}
     </div>
   );
 }
@@ -99,16 +119,17 @@ export function DialogueEntry({ text, player, waiting }: DialogueEntryProps) {
             className={portraitStyle}
             color={
               player
-                ? themeVar.Common.colors.ActiveColor
-                : themeVar.Common.colors.HeaderColor
+                  ? themeVar.colors.ActiveColor
+                  : themeVar.colors.HeaderColor
             }
+              player={player}
           />
           <div className={cx(expandHeight, grow, textContainerStyle(player))}>
-            <Text text={translation} />
+            <HTMLText text={translation} />
             {waiting && (
               <WaitingLoader
-                color={themeVar.Common.colors.HeaderColor}
-                background={themeVar.Common.colors.DisabledColor}
+                  color={themeVar.colors.LightTextColor}
+                  background={themeVar.colors.DisabledColor}
               />
             )}
           </div>

@@ -359,6 +359,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     @JsonIgnore
+    @Override
     public Player getTestPlayer() {
         if (this instanceof DebugGame) {
             return this.getAnyLivePlayer();

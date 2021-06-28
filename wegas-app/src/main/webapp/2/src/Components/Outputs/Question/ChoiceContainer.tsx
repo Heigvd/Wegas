@@ -1,22 +1,22 @@
 import { css } from 'emotion';
 import * as React from 'react';
-import { themeVar } from '../../Style/ThemeVars';
-import { TranslatableText } from '../Text';
+import { TranslatableText } from '../HTMLText';
+import { themeVar } from '../../Theme/ThemeVars';
 
 export const choiceContainerStyle = css({
   margin: '1em 0',
   padding: '15px',
   boxShadow: '2px 2px 6px rgba(0, 0, 0, 0.2)',
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  borderRadius: themeVar.dimensions.BorderRadius,
+  backgroundColor: themeVar.colors.HeaderColor,
   '&.disabled': {
-    backgroundColor: themeVar.Common.colors.BackgroundColor,
+    backgroundColor: themeVar.colors.BackgroundColor,
     opacity: '0.7',
   },
 });
 export const choiceLabelStyle = css({
-  borderBottom: '1px solid ' + themeVar.Common.colors.HeaderColor,
-  color: themeVar.Common.colors.DarkTextColor,
+  borderBottom: '1px solid ' + themeVar.colors.HeaderColor,
+  color: themeVar.colors.DarkTextColor,
   fontWeight: 'bold',
 });
 export const choiceDescriptionStyle = css({

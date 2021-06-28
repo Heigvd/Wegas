@@ -35,6 +35,7 @@ function ChildrenDeserializer({
   uneditable,
   context,
   editMode,
+  inheritedOptionsState,
   containerPropsKeys,
   exposeAs,
 }: ChildrenDeserializerProps<StateProps>) {
@@ -59,6 +60,7 @@ function ChildrenDeserializer({
               dropzones={{
                 side: true,
               }}
+              inheritedOptionsState={inheritedOptionsState}
             />
           );
         })

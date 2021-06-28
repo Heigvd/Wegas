@@ -1,16 +1,19 @@
 import * as React from 'react';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
-import { ThemeProvider, themeCTX } from '../../../Components/Style/Theme';
+import { ThemeProvider, themeCTX } from '../../../Components/Theme/Theme';
 import { TextLoader, TumbleLoader } from '../../../Components/Loader';
 import { PageDeserializer } from '../../../Components/PageComponents/tools/PageDeserializer';
 import { useStore } from '../../../data/Stores/store';
 import { css, cx } from 'emotion';
 import { flex, expandHeight } from '../../../css/classes';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { FlexItem } from '../../../Components/Layouts/FlexList';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { State } from '../../../data/Reducer/reducers';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 const modalStyle = css({
   zIndex: 10000,
@@ -33,9 +36,7 @@ const loaderStyle = css({
 });
 
 const editStyle = css({
-  borderStyle: 'solid',
-  borderWidth: '5px',
-  borderColor: themeVar.Common.colors.PrimaryColor,
+  borderTop: '2px solid ' + themeVar.colors.ActiveColor,
   overflow: 'auto',
 });
 
@@ -47,6 +48,8 @@ interface PageLoaderProps extends ClassStyleId {
   context?: {
     [name: string]: unknown;
   };
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 
 export function PageLoader({
@@ -58,15 +61,18 @@ export function PageLoader({
   id,
   loadTimer = 0,
   context = {},
+  disabled,
+  readOnly,
 }: PageLoaderProps) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
   const selectedPageSelector = React.useCallback(
     (s: State) => (selectedPageId ? s.pages[selectedPageId] : undefined),
     [selectedPageId],
   );
   const selectedPage = useStore(selectedPageSelector, deepDifferent);
-  const { currentContext, currentMode = themeMode } = React.useContext(
-    themeCTX,
-  );
+  const { currentContext, currentMode = themeMode } =
+    React.useContext(themeCTX);
 
   const [waiting, setWaiting] = React.useState(false);
 
@@ -86,7 +92,9 @@ export function PageLoader({
   return (
     <DefaultDndProvider>
       <ThemeProvider contextName={currentContext} modeName={currentMode}>
-        <React.Suspense fallback={<TextLoader text="Building World!" />}>
+        <React.Suspense
+          fallback={<TextLoader text={i18nValues.buildingWorld} />}
+        >
           <div
             className={
               cx(flex, { [editStyle]: displayFrame }, expandHeight) +
@@ -101,9 +109,13 @@ export function PageLoader({
                 Container={FlexItem}
                 dropzones={{}}
                 context={context}
+                inheritedOptionsState={{
+                  disabled,
+                  readOnly,
+                }}
               />
             ) : (
-              <pre>{`The page is undefined`}</pre>
+              <pre>{i18nValues.pageUndefined}</pre>
             )}
             {((waiting && loadTimer != null) ||
               // Petit tweak pour laisser la page se charger (si un scénario à un problème par contre, on verra le loader tourner éternellement)

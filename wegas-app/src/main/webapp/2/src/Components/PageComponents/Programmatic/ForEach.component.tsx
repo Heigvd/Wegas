@@ -43,6 +43,7 @@ function ChildrenDeserializer({
   itemKey,
   getItemsFn,
   editMode,
+  inheritedOptionsState,
   wegasChildren,
 }: ChildrenDeserializerProps<ForEachProps>) {
   const items = useScript<{ [key: string]: any }[]>(getItemsFn, context);
@@ -78,6 +79,7 @@ function ChildrenDeserializer({
           Container={FlexItem}
           containerPropsKeys={defaultFlexLayoutOptionsKeys}
           dropzones={{}}
+          inheritedOptionsState={inheritedOptionsState}
         />
       );
     });

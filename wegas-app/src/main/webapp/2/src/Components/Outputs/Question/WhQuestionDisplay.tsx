@@ -9,6 +9,7 @@ import {
   IStringInstance,
   IWhQuestionDescriptor,
 } from 'wegas-ts-api';
+import { halfOpacity } from '../../../css/classes';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import {
   validateQuestion,
@@ -26,18 +27,16 @@ import {
   createTranslation,
 } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import HTMLEditor from '../../HTMLEditor';
+import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { autoMargin } from '../../../css/classes';
-import {
-  ChoiceContainer,
-  choiceInputStyle,
-} from './ChoiceContainer';
+import { ChoiceContainer, choiceInputStyle } from './ChoiceContainer';
 import { questionStyle } from './Question';
-import { TranslatableText } from '../Text';
+import { TranslatableText } from '../HTMLText';
+import { isActionAllowed } from '../../PageComponents/tools/options';
 
 interface WhQuestionInfo {
   questionD: Readonly<IWhQuestionDescriptor>;
@@ -60,7 +59,7 @@ export function whQuestionInfo(
   };
 }
 
-interface WhChoiceDisplayProps {
+interface WhChoiceDisplayProps extends DisabledReadonly {
   choiceD: IWhChoiceDescriptor;
   choiceI: IWhChoiceInstance;
   questionI: IWhQuestionInstance;
@@ -71,13 +70,15 @@ function WhChoiceDisplay({
   choiceI,
   questionI,
   onChange,
+  disabled,
+  readOnly,
 }: WhChoiceDisplayProps) {
   const { lang } = React.useContext(languagesCTX);
   return (
     <ChoiceContainer
       active
       descriptor={choiceD}
-      canReply={!questionI.validated}
+      canReply={!questionI.validated && isActionAllowed({ disabled, readOnly })}
     >
       {choiceD['@class'] === 'BooleanDescriptor' ? (
         <CheckBox
@@ -87,7 +88,8 @@ function WhChoiceDisplay({
             newChoiceI.value = v;
             onChange(newChoiceI);
           }}
-          disabled={questionI.validated}
+          disabled={questionI.validated || disabled}
+          readOnly={readOnly}
         />
       ) : choiceD['@class'] === 'NumberDescriptor' ? (
         <NumberSlider
@@ -105,7 +107,8 @@ function WhChoiceDisplay({
             newChoiceI.value = v;
             onChange(newChoiceI);
           }}
-          disabled={questionI.validated}
+          disabled={questionI.validated || disabled}
+          readOnly={readOnly}
           displayValues="NumberInput"
         />
       ) : choiceD['@class'] === 'StringDescriptor' ? (
@@ -119,7 +122,8 @@ function WhChoiceDisplay({
             );
             onChange(newChoiceI);
           }}
-          disabled={questionI.validated}
+          disabled={questionI.validated || disabled}
+          readOnly={readOnly}
         />
       ) : (
         <HTMLEditor
@@ -132,15 +136,17 @@ function WhChoiceDisplay({
             );
             onChange(newChoiceI);
           }}
-          disabled={questionI.validated}
+          disabled={questionI.validated || disabled}
+          readOnly={readOnly}
           inline={false}
+          keepInternalValue
         />
       )}
     </ChoiceContainer>
   );
 }
 
-interface WhQuestionDisplayProps extends WhQuestionInfo {
+interface WhQuestionDisplayProps extends WhQuestionInfo, DisabledReadonly {
   dispatch: StoreDispatch;
 }
 
@@ -150,17 +156,23 @@ export function WhQuestionDisplay({
   questionI,
   choicesD,
   choicesI,
+  disabled,
+  readOnly,
 }: WhQuestionDisplayProps) {
-  const [choicesValues, setChoicesValues] = React.useState<
-    (IWhChoiceInstance | undefined)[]
-  >(choicesI);
+  const [choicesValues, setChoicesValues] =
+    React.useState<(IWhChoiceInstance | undefined)[]>(choicesI);
 
   if (questionI == null || !questionI.active) {
     return null;
   }
 
   return (
-    <div className={questionStyle}>
+    <div
+      className={cx(questionStyle, {
+        [halfOpacity]: disabled,
+      })}
+    >
+
       <TranslatableText
           content={questionD.description}
       />
@@ -183,6 +195,8 @@ export function WhQuestionDisplay({
             questionI={questionI}
             choiceD={choiceD}
             choiceI={choiceI}
+            disabled={disabled}
+            readOnly={readOnly}
           />
         );
       })}
@@ -196,7 +210,8 @@ export function WhQuestionDisplay({
               choiceI => choiceI != null && dispatch(updateInstance(choiceI)),
             );
           }}
-          disabled={questionI.validated}
+          disabled={questionI.validated || disabled}
+          readOnly={readOnly}
         />
       </div>
       {/* <RepliesDisplay replies={replies} /> */}

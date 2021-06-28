@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -42,6 +43,8 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -50,12 +53,14 @@ import javax.persistence.Version;
 @Entity
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @Table(indexes = {
-    @Index(columnList = "clientscriptlibrary_gamemodel_id"),
-    @Index(columnList = "scriptlibrary_gamemodel_id"),
-    @Index(columnList = "csslibrary_gamemodel_id"),
-    @Index(columnList = "csslibrary_gamemodel_id, scriptlibrary_gamemodel_id, clientscriptlibrary_gamemodel_id, contentKey", unique = true)
+    @Index(columnList = "gamemodel_id"),
+    @Index(columnList = "gamemodel_id, libraryType, contentKey", unique = true)
 })
 public class GameModelContent extends AbstractEntity implements Serializable, ModelScoped, NamedEntity {
+
+    public static final String CSS = "CSS";
+    public static final String SERVER_SCRIPT = "ServerScript";
+    public static final String CLIENT_SCRIPT = "ClientScript";
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -63,29 +68,40 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     @JsonView(Views.IndexI.class)
     private Long id;
 
+    @NotNull
     @ManyToOne
     @JsonIgnore
-    private GameModel csslibrary_GameModel; // NOPMD : field name in db
+    private GameModel gameModel;
 
-    @ManyToOne
-    @JsonIgnore
-    private GameModel scriptlibrary_GameModel; // NOPMD : field name in db
-
-    @ManyToOne
-    @JsonIgnore
-    private GameModel clientscriptlibrary_GameModel; // NOPMD : field name in db
-
+    @NotBlank
+    @JsonView(Views.ExportI.class)
     @WegasEntityProperty(
-        nullable = false,
+        notSerialized = true,
+        optional = false, nullable = false, proposal = EmptyString.class, ignoreNull = true,
         view = @View(label = "Key", readOnly = true, value = StringView.class))
     private String contentKey;
 
     /**
-     *
+     * Library type. Kind of parent folder name
      */
+    @NotBlank
+    @JsonView(Views.ExportI.class)
     @WegasEntityProperty(
-        optional = false, nullable = false, proposal = EmptyString.class,
-        view = @View(label = "Content Type", readOnly = true, value = StringView.class))
+        notSerialized = true,
+        optional = false, nullable = false, proposal = EmptyString.class, ignoreNull = true,
+        view  = @View(label = "Library Type", readOnly = true, value = StringView.class)
+    )
+    private String libraryType;
+
+    /**
+     * MIME type. This is not the same as the library type. For instance one may define a
+     * type:ClientScript library with aa application/javascript MIME type and another ClientScript
+     * with application/typescript mimetype.
+     */
+    @NotBlank
+    @WegasEntityProperty(
+        optional = false, nullable = false, proposal = EmptyString.class, ignoreNull = true,
+        view = @View(label = "MIME Type", readOnly = true, value = StringView.class))
     private String contentType;
     /**
      *
@@ -134,10 +150,22 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
      * @param content
      * @param contentType
      */
-    public GameModelContent(String key, String content, String contentType) {
+    public GameModelContent(String key, String content, String contentType, String libraryType) {
         this.contentKey = key;
         this.content = content;
         this.contentType = contentType;
+        this.libraryType = libraryType;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + Objects.hashCode(this.id);
+        hash = 29 * hash + Objects.hashCode(gameModel);
+        hash = 29 * hash + Objects.hashCode(contentType);
+        hash = 29 * hash + Objects.hashCode(libraryType);
+        hash = 29 * hash + Objects.hashCode(this.contentKey);
+        return hash;
     }
 
     @Override
@@ -158,26 +186,26 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
         if (!Objects.equals(this.id, other.id)) {
             return false;
         }
-        if (!Objects.equals(this.csslibrary_GameModel, other.csslibrary_GameModel)) {
+        if (!Objects.equals(this.gameModel, other.gameModel)) {
             return false;
         }
-        if (!Objects.equals(this.scriptlibrary_GameModel, other.scriptlibrary_GameModel)) {
+        if (!Objects.equals(this.libraryType, other.libraryType)) {
             return false;
         }
-        if (!Objects.equals(this.clientscriptlibrary_GameModel, other.clientscriptlibrary_GameModel)) {
+        if (!Objects.equals(this.contentType, other.contentType)) {
             return false;
         }
         return true;
     }
 
     @JsonIgnore
-    public GameModel getClientscriptlibrary_GameModel() { // NOPMD : field name in db
-        return clientscriptlibrary_GameModel;
+    public GameModel getGameModel() {
+        return gameModel;
     }
 
     @JsonIgnore
-    public void setClientscriptlibrary_GameModel(GameModel clientscriptlibrary_GameModel) { // NOPMD : field name in db
-        this.clientscriptlibrary_GameModel = clientscriptlibrary_GameModel;
+    public void setGameModel(GameModel gameModel) {
+        this.gameModel = gameModel;
     }
 
     /**
@@ -194,6 +222,14 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
         this.contentType = contentType;
     }
 
+    public String getLibraryType() {
+        return libraryType;
+    }
+
+    public void setLibraryType(String libraryType) {
+        this.libraryType = libraryType;
+    }
+
     /**
      * @return the content
      */
@@ -208,19 +244,10 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
         this.content = content;
     }
 
-    @JsonIgnore
-    public GameModel getCsslibrary_GameModel() { // NOPMD: field name in db
-        return csslibrary_GameModel;
-    }
-
-    @JsonIgnore
-    public void setCsslibrary_GameModel(GameModel csslibrary_GameModel) { // NOPMD: field name in db
-        this.csslibrary_GameModel = csslibrary_GameModel;
-    }
-
     /**
      * @return the id
      */
+    @Override
     public Long getId() {
         return id;
     }
@@ -242,17 +269,6 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
         this.contentKey = contentKey;
     }
 
-    @JsonIgnore
-    public String getLibraryType() {
-        if (this.clientscriptlibrary_GameModel != null) {
-            return "ClientScript";
-        } else if (this.scriptlibrary_GameModel != null) {
-            return "ServerScript";
-        } else {
-            return "CSS";
-        }
-    }
-
     @Override
     @JsonIgnore
     public String getName() {
@@ -263,16 +279,6 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     @JsonIgnore
     public void setName(String name) {
         // no implementation
-    }
-
-    @JsonIgnore
-    public GameModel getScriptlibrary_GameModel() { // NOPMD: field name in db
-        return scriptlibrary_GameModel;
-    }
-
-    @JsonIgnore
-    public void setScriptlibrary_GameModel(GameModel scriptlibrary_GameModel) { // NOPMD: field name in db
-        this.scriptlibrary_GameModel = scriptlibrary_GameModel;
     }
 
     public Long getVersion() {
@@ -291,28 +297,6 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     @Override
     public void setVisibility(Visibility visibility) {
         this.visibility = visibility;
-    }
-
-    @JsonIgnore
-    public GameModel getGameModel() {
-        if (this.clientscriptlibrary_GameModel != null) {
-            return clientscriptlibrary_GameModel;
-        } else if (this.scriptlibrary_GameModel != null) {
-            return scriptlibrary_GameModel;
-        } else {
-            return csslibrary_GameModel;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 29 * hash + Objects.hashCode(this.id);
-        hash = 29 * hash + Objects.hashCode(csslibrary_GameModel);
-        hash = 29 * hash + Objects.hashCode(scriptlibrary_GameModel);
-        hash = 29 * hash + Objects.hashCode(clientscriptlibrary_GameModel);
-        hash = 29 * hash + Objects.hashCode(this.contentKey);
-        return hash;
     }
 
     @Override

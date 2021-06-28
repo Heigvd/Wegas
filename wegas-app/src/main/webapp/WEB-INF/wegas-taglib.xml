@@ -51,9 +51,9 @@
             <type>com.wegas.core.persistence.game.Player</type>
         </attribute>
         <attribute>
-            <name>editorMode</name>
+            <name>mode</name>
             <required>true</required>
-            <type>java.lang.Boolean</type>
+            <type>com.wegas.app.pdf.uicomponent.GameModel.Mode</type>
         </attribute>
         <attribute>
             <name>defaultValues</name>
@@ -77,9 +77,9 @@
             <type>com.wegas.core.persistence.game.Player</type>
         </attribute>
         <attribute>
-            <name>editorMode</name>
+            <name>mode</name>
             <required>true</required>
-            <type>java.lang.Boolean</type>
+            <type>com.wegas.app.pdf.uicomponent.GameModel.Mode</type>
         </attribute>
         <attribute>
             <name>defaultValues</name>
@@ -108,9 +108,9 @@
             <type>com.wegas.core.persistence.game.Player</type>
         </attribute>
         <attribute>
-            <name>editorMode</name>
+            <name>mode</name>
             <required>true</required>
-            <type>java.lang.Boolean</type>
+            <type>com.wegas.app.pdf.uicomponent.GameModel.Mode</type>
         </attribute>
         <attribute>
             <name>defaultValues</name>

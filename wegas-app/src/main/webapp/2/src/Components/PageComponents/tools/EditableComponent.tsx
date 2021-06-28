@@ -39,7 +39,7 @@ import { EditHandle } from './EditHandle';
 import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
 import { OptionsState } from './OptionsComponent';
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
 import { TumbleLoader } from '../../Loader';
 import { ThunkResult, store } from '../../../data/Stores/store';
@@ -91,14 +91,9 @@ const handleControlStyle = css({
   },
 });
 
-const disabledStyle = css({
-  opacity: 0.5,
-  backgroundColor: themeVar.Common.colors.DisabledColor,
-});
-
 const showBordersStyle = css({
   borderStyle: 'solid',
-  borderColor: themeVar.Common.colors.HighlightColor,
+  borderColor: themeVar.colors.HighlightColor,
 });
 
 // Helper functions
@@ -367,6 +362,17 @@ export function ComponentDropZone({
   );
 }
 
+const lockedOverlayStyle = css({
+  width: '100%',
+  height: '100%',
+  left: 0,
+  top: 0,
+  position: 'absolute',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+});
+
 interface LockedOverlayProps {
   locked?: boolean;
   // confirmClick: boolean;
@@ -378,20 +384,7 @@ interface LockedOverlayProps {
 
 function LockedOverlay({ locked }: LockedOverlayProps) {
   return (
-    <div
-      onClick={e => e.stopPropagation()}
-      style={{
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        left: 0,
-        top: 0,
-        backgroundColor: 'rgba(100,100,100,.5)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
+    <div onClick={e => e.stopPropagation()} className={lockedOverlayStyle}>
       {locked && <TumbleLoader />}
       {/* {confirmClick && <ConfirmButton onAction={onConfirmClick} />} */}
     </div>
@@ -472,6 +465,10 @@ export interface PageComponentProps extends EmptyPageComponentProps {
    */
   dropzones: DropZones;
   /**
+   * pageId - the id of the page
+   */
+  pageId: string | undefined;
+  /**
    * path - the path of the current component
    */
   path: number[];
@@ -536,13 +533,8 @@ export function ComponentContainer({
   const [dragHoverState, setDragHoverState] = React.useState<boolean>(false);
   const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
 
-  const {
-    onDrop,
-    editMode,
-    handles,
-    pageIdPath,
-    showBorders,
-  } = React.useContext(pageCTX);
+  const { onDrop, editMode, handles, pageIdPath, showBorders } =
+    React.useContext(pageCTX);
 
   const { editedPath } = React.useContext(pageEditorCTX);
 
@@ -551,7 +543,7 @@ export function ComponentContainer({
   const itemPath = containerPath.pop();
   const isNotFirstComponent = path.length > 0;
   const editable = editMode && isNotFirstComponent;
-  const showComponent = editable || !options.hidden;
+  const showComponent = !options.hidden;
 
   const isSelected = JSON.stringify(path) === JSON.stringify(editedPath);
   const isFocused = usePagesStateStore(
@@ -614,13 +606,11 @@ export function ComponentContainer({
           x: 0,
           y: 0,
         };
-        const {
-          left: srcX,
-          top: srcY,
-        } = container.current.getBoundingClientRect() || {
-          x: 0,
-          y: 0,
-        };
+        const { left: srcX, top: srcY } =
+          container.current.getBoundingClientRect() || {
+            x: 0,
+            y: 0,
+          };
 
         const [relX, relY] = [absX - srcX, absY - srcY];
 
@@ -647,13 +637,16 @@ export function ComponentContainer({
           [cx(foregroundContent, thinHoverColorInsetShadow)]: isFocused,
           [childDropzoneHorizontalStyle]: !vertical,
           [childDropzoneVerticalStyle]: vertical,
-          [disabledStyle]: options.disabled,
         }) +
         classNameOrEmpty(layoutClassName) +
         classNameOrEmpty(options.outerClassName)
       }
       style={layoutStyle}
-      onClick={onClickManaged ? undefined : onClick}
+      onClick={
+        onClickManaged || options.disabled || options.readOnly || options.locked
+          ? undefined
+          : onClick
+      }
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
       {...dropFunctions}
@@ -704,18 +697,7 @@ export function ComponentContainer({
           dropPosition="AFTER"
         />
       )}
-      {(options.disabled || options.locked) === true && (
-        <LockedOverlay
-          locked={options.locked}
-          // confirmClick={waitConfirmation}
-          // onConfirmClick={(confirmed, event) => {
-          //   if (confirmed) {
-          //     onClick(event);
-          //   }
-          //   setWaitConfirmation(false);
-          // }}
-        />
-      )}
+      {options.locked === true && <LockedOverlay locked={options.locked} />}
     </Container>
   ) : null;
 }

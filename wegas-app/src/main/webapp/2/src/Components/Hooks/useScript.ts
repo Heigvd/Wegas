@@ -34,7 +34,7 @@ import {
   createTranslation,
   translate,
 } from '../../Editor/Components/FormView/translatable';
-import { wwarn } from '../../Helper/wegaslog';
+import { wlog, wwarn } from '../../Helper/wegaslog';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { replace, createLRU } from '../../Helper/tools';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
@@ -48,6 +48,11 @@ import {
   usePagesContextStateStore,
 } from '../../data/Stores/pageContextStore';
 import { PageComponentContext } from '../PageComponents/tools/options';
+import { IGame } from 'wegas-ts-api';
+import {
+  schemaProps,
+  SchemaPropsType,
+} from '../PageComponents/tools/schemaProps';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -67,6 +72,8 @@ interface GlobalClasses {
   Function: typeof globalThis['Function'];
   gameModel?: Readonly<SGameModel>;
   self?: Readonly<SPlayer>;
+  schemaProps: SchemaPropsType;
+  CurrentGame: IGame;
   API_VIEW: View;
   Variable: GlobalVariableClass;
   Editor: GlobalEditorClass;
@@ -82,6 +89,7 @@ interface GlobalClasses {
   };
   APIMethods: APIMethodsClass;
   Helpers: GlobalHelpersClass;
+  wlog: (a: any) => void;
 }
 
 const globalDispatch = store.dispatch;
@@ -111,7 +119,7 @@ export function createSandbox<T = unknown>() {
       doc.createElementNS = undefined;
     }
   }
-  return { sandbox, globals: (sandbox.contentWindow as unknown) as T };
+  return { sandbox, globals: sandbox.contentWindow as unknown as T };
 }
 
 export const { sandbox, globals } = createSandbox<GlobalClasses>();
@@ -145,7 +153,9 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   // Global variables
   globals.gameModel = instantiate(gameModel);
   globals.self = instantiate(player);
+  globals.schemaProps = schemaProps;
   globals.API_VIEW = API_VIEW;
+  globals.CurrentGame = CurrentGame;
   // Variable class
   globals.Variable = {
     find: <T extends IVariableDescriptor>(_gm: unknown, name: string) => {
@@ -157,7 +167,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     select: <T extends SVariableDescriptor>(_gm: unknown, id: number) => {
       const iDesc = VDSelect.select<IVariableDescriptor>(id);
       if (iDesc) {
-        return (instantiate(iDesc) as unknown) as T | undefined;
+        return instantiate(iDesc) as unknown as T | undefined;
       }
     },
     getItems,
@@ -322,7 +332,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
             ActionCreator.EDITOR_ADD_EVENT_HANDLER({
               id,
               type,
-              cb: (cb as unknown) as WegasEventHandler,
+              cb: cb as unknown as WegasEventHandler,
             }),
           );
         }
@@ -384,6 +394,8 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.Helpers = {
     cloneDeep: cloneDeep,
   };
+
+  globals.wlog = wlog;
 }
 
 export type ScriptReturnType = object | number | boolean | string | undefined;
@@ -435,7 +447,7 @@ const memoClientScriptEval = (() => {
     script?: string | IScript,
     context: PageComponentContext = {},
     state?: PageComponentContext,
-  ): T extends IMergeable ? unknown : T => {
+  ): T extends WegasScriptEditorReturnType ? T : unknown => {
     const currentState = addSetterToState(
       state || pagesContextStateStore.getState(),
     );
@@ -480,7 +492,7 @@ export function clientScriptEval<T extends ScriptReturnType>(
   state?: {
     [name: string]: unknown;
   },
-): T extends IMergeable ? unknown : T {
+): T extends WegasScriptEditorReturnType ? T : unknown {
   return memoClientScriptEval(script, context, state);
 }
 
@@ -493,7 +505,7 @@ export function safeClientScriptEval<T extends ScriptReturnType>(
   state?: {
     [name: string]: unknown;
   },
-): T extends IMergeable ? unknown : T {
+): T extends WegasScriptEditorReturnType ? T : unknown {
   try {
     return clientScriptEval<T>(script, context, state);
   } catch (e) {
@@ -522,6 +534,20 @@ export function useScript<T extends ScriptReturnType>(
   },
   catchCB?: (e: Error) => void,
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
+  const oldContext =
+    React.useRef<{
+      [name: string]: unknown;
+    }>();
+
+  const newContext = React.useMemo(() => {
+    if (deepDifferent(context, oldContext.current)) {
+      oldContext.current = context;
+      return context;
+    } else {
+      return oldContext.current;
+    }
+  }, [context]);
+
   const globalContexts = useGlobalContexts();
 
   const state = usePagesContextStateStore(s => s);
@@ -529,12 +555,12 @@ export function useScript<T extends ScriptReturnType>(
   const fn = React.useCallback(() => {
     if (Array.isArray(script)) {
       return script.map(scriptItem =>
-        safeClientScriptEval<T>(scriptItem, context, catchCB, state),
+        safeClientScriptEval<T>(scriptItem, newContext, catchCB, state),
       );
     } else {
-      return safeClientScriptEval<T>(script, context, catchCB, state);
+      return safeClientScriptEval<T>(script, newContext, catchCB, state);
     }
-  }, [script, context, state, catchCB]);
+  }, [script, newContext, state, catchCB]);
 
   const returnValue = useStore(s => {
     setGlobals(globalContexts, s);
@@ -554,13 +580,13 @@ export function useUnsafeScript<T extends ScriptReturnType>(
   context?: {
     [name: string]: unknown;
   },
-): T extends IMergeable ? unknown : T {
+): T extends WegasScriptEditorReturnType ? T : unknown {
   const globalContexts = useGlobalContexts();
 
-  const fn = React.useCallback(() => clientScriptEval<T>(script, context), [
-    script,
-    context,
-  ]);
+  const fn = React.useCallback(
+    () => clientScriptEval<T>(script, context),
+    [script, context],
+  );
   const returnValue = useStore(s => {
     setGlobals(globalContexts, s);
     return fn();

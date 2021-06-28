@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { SearchableItems } from '../Tree/searchable';
-import { TreeSelect, Item } from '../Tree/TreeSelect';
+import { TreeSelect } from '../Tree/TreeSelect';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { useStore } from '../../../data/Stores/store';
 import { varIsList } from '../../../data/entities';
@@ -15,7 +15,7 @@ import {
   createScript,
 } from '../../../Helper/wegasEntites';
 import { scriptEditStyle } from './Script/Script';
-import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
+import { inputStyle, SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { IVariableDescriptor, IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
@@ -26,7 +26,6 @@ import {
   grow,
   flexColumn,
 } from '../../../css/classes';
-import { inputStyle } from '../../../Components/Inputs/inputStyles';
 import { VariableScriptPath } from '../Variable/VariableScriptPath';
 
 const treeCss = css({
@@ -46,11 +45,6 @@ const treeCss = css({
     outline: 'none',
   },
 });
-
-export interface TreeSelectItem<T> extends Item<T> {
-  label: string;
-  items?: TreeSelectItem<T>[];
-}
 
 export type StringOrT<FNT, T> = FNT extends undefined ? string : T;
 

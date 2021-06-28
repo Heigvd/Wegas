@@ -1,14 +1,13 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
-import { flexRow } from '../../../css/classes';
 import { Button } from '../../Inputs/Buttons/Button';
-import { themeVar } from '../../Style/ThemeVars';
-import { TranslatableText } from '../Text';
+import { TranslatableText } from '../HTMLText';
+import { expandWidth, flexRow, stretch } from '../../../css/classes';
+import { themeVar } from '../../Theme/ThemeVars';
 
 const choiceButtonStyle = css({
   backgroundColor: 'white',
   color: 'black',
-  width: 'fit-content',
   padding: 0,
   overflow: 'hidden',
   margin: '5px',
@@ -16,26 +15,37 @@ const choiceButtonStyle = css({
 
 const choiceButtonText = css({
   padding: '5px',
+  textAlign: 'left',
+  flex: '1 1 auto',
 });
 
 const choiceButtonIcon = css({
   display: 'flex',
   alignContent: 'center',
   justifyContent: 'center',
-  backgroundColor: themeVar.Common.colors.ActiveColor,
+  backgroundColor: themeVar.colors.ActiveColor,
   padding: '10px',
-  height: '100%',
 });
+
+interface DialogueChoiceProps extends DisabledReadonly {
+  label: STranslatableContent;
+  onClick: () => void;
+}
 
 export function DialogueChoice({
   label,
   onClick,
-}: {
-  label: STranslatableContent;
-  onClick: () => void;
-}) {
+  disabled,
+  readOnly,
+}: DialogueChoiceProps) {
   return (
-    <Button onClick={onClick} className={cx(flexRow, choiceButtonStyle)}>
+    <Button
+      onClick={onClick}
+      className={cx(flexRow, expandWidth, choiceButtonStyle, stretch)}
+      disabled={disabled}
+      readOnly={readOnly}
+    >
+
       <TranslatableText className={choiceButtonText} content={label} />
       <div className={choiceButtonIcon}>
         <img src={require('../../../pictures/chat_button.svg').default} />

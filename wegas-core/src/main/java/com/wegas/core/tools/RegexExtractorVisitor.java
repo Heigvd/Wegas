@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -108,12 +109,12 @@ public class RegexExtractorVisitor implements MergeHelper.MergeableVisitor {
     }
 
     public void processStyles(GameModel gameModel) {
-        this.processLibrary(gameModel.getCssLibraryList());
+        this.processLibrary(gameModel.getLibrariesAsList(GameModelContent.CSS));
     }
 
     public void processScripts(GameModel gameModel) {
-        this.processLibrary(gameModel.getClientScriptLibraryList());
-        this.processLibrary(gameModel.getScriptLibraryList());
+        this.processLibrary(gameModel.getLibrariesAsList(GameModelContent.CLIENT_SCRIPT));
+        this.processLibrary(gameModel.getLibrariesAsList(GameModelContent.SERVER_SCRIPT));
     }
 
     private void processLibrary(List<GameModelContent> library) {

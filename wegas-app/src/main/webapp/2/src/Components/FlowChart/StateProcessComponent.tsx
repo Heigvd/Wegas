@@ -1,7 +1,10 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { FlowLine, Process } from './FlowChart';
-import { ProcessProps, CustomProcessComponent } from './ProcessComponent';
+import {
+  CustomProcessComponent,
+  ProcessComponentProps,
+} from './ProcessComponent';
 import {
   StateProcess,
   TransitionFlowLine,
@@ -15,7 +18,11 @@ import {
   PROCESS_HANDLE_DND_TYPE,
 } from './Handles';
 import { useDrag } from 'react-dnd';
-import { Text } from '../Outputs/Text';
+import { HTMLText } from '../Outputs/HTMLText';
+import { isActionAllowed } from '../PageComponents/tools/options';
+import { classNameOrEmpty } from '../../Helper/className';
+import { wlog } from '../../Helper/wegaslog';
+import { themeVar } from '../Theme/ThemeVars';
 
 const stateContainerStyle = css({
   display: 'inline-flex',
@@ -29,18 +36,21 @@ export const stateBoxStyle = css({
   alignItems: 'center',
   padding: '15px 15px 15px 15px',
   boxSizing: 'border-box',
-  background: '#2097F6', // primaryColor theme var?
+  background: themeVar.colors.HeaderColor,
   borderRadius: '8px',
-  border: '4px solid transparent',
+  border: '1px solid ' + themeVar.colors.PrimaryColor,
   boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', //shadow theme var?
-  color: '#fff', //LightText theme var?
-  cursor: 'pointer',
+  color: themeVar.colors.PrimaryColor,
   flexGrow: 0,
+  maxHeight: '100px',
   '&>*': {
     marginRight: '15px',
   },
-  '&:hover': {
-    background: '#0D71C1', // primaryColor theme var?
+  '& *': {
+    whiteSpace: 'nowrap',
+    maxHeight: '40px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
   '.StateLabelTextStyle': {
     fontSize: '16px',
@@ -48,10 +58,17 @@ export const stateBoxStyle = css({
   },
 });
 
+export const stateBoxActionStyle = css({
+  cursor: 'pointer',
+  '&:hover': {
+    background: themeVar.colors.BackgroundColor,
+  },
+});
+
 export const indexTagStyle = css({
   display: 'flex',
   borderRadius: '50%',
-  border: '1px solid #fff', //LightText theme var?
+  border: '1px solid ' + themeVar.colors.ActiveColor, //LightText theme var?
   minWidth: '23px',
   height: '23px',
   justifyContent: 'center',
@@ -61,7 +78,7 @@ export const indexTagStyle = css({
 
 const handleForTransition = css({
   position: 'absolute',
-  backgroundColor: '#FFA462', //evidence color editor theme var?
+  backgroundColor: themeVar.colors.HighlightColor, //evidence color editor theme var?
   borderRadius: '50%',
   minWidth: '20px',
   height: '20px',
@@ -75,7 +92,7 @@ const handleForTransition = css({
 });
 const stateMoreInfosStyle = css({
   position: 'absolute',
-  backgroundColor: '#fff',
+  backgroundColor: themeVar.colors.BackgroundColor,
   color: '#807F7F',
   fontSize: '0.8em',
   boxShadow: '0px 0px 6px rgba(0, 0, 0, 0.17)',
@@ -97,22 +114,22 @@ const stateMoreInfosStyle = css({
   },
 });
 
-const selectedStateBoxStyle = css({
-  background: '#FFFFFF',
-  border: '4px solid #0D71C1',
-  color: '#0D71C1',
+export const selectedStateBoxStyle = css({
+  background: themeVar.colors.BackgroundColor,
+  border: '4px solid ' + themeVar.colors.ActiveColor,
+  color: themeVar.colors.ActiveColor,
   '&:hover': {
-    background: '#FFFFFF',
+    background: themeVar.colors.BackgroundColor,
   },
   [`.${indexTagStyle}`]: {
-    borderColor: '#0D71C1',
+    borderColor: themeVar.colors.ActiveColor,
   },
 });
 
 // Ignoring style while not in use
 // @ts-ignore
 const dragAndHoverStyle = css({
-  background: '#F97617', // add a third color? "evidence color shaded" editor theme var
+  background: themeVar.colors.HighlightColor, // add a third color? "evidence color shaded" editor theme var
 });
 
 interface StateBoxProps {
@@ -120,6 +137,8 @@ interface StateBoxProps {
   className?: string;
   onClick?: (e: ModifierKeysEvent, process: StateProcess) => void;
   selected?: boolean;
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 
 export function StateBox({
@@ -127,24 +146,33 @@ export function StateBox({
   className,
   onClick,
   selected,
+  disabled,
+  readOnly,
 }: StateBoxProps) {
   const [isShown, setIsShown] = React.useState(false);
   const { lang } = React.useContext(languagesCTX);
   return (
     <div
-      className={stateContainerStyle}
-      onClick={e => onClick && onClick(e, state)}
+      className={stateContainerStyle + classNameOrEmpty(state.className)}
+      style={state.style}
+      onClick={e =>
+        isActionAllowed({ disabled, readOnly }) &&
+        onClick &&
+        onClick(e, state) &&
+        wlog(selected)
+      }
     >
       <div
         className={cx(
           stateBoxStyle,
           {
+            [stateBoxActionStyle]: isActionAllowed({ disabled, readOnly }),
             [selectedStateBoxStyle]: selected,
           },
           className,
         )}
-        onMouseEnter={() => setIsShown(true)}
-        onMouseLeave={() => setIsShown(false)}
+        onMouseEnter={() => !disabled && setIsShown(true)}
+        onMouseLeave={() => !disabled && setIsShown(false)}
       >
         <div className={indexTagStyle}>
           <p>{state.id}</p>
@@ -156,7 +184,7 @@ export function StateBox({
         )} */}
         <div>
           <p className="StateLabelTextStyle">
-            <Text
+            <HTMLText
               text={
                 (entityIs(state.state, 'State')
                   ? state.state.label
@@ -165,7 +193,9 @@ export function StateBox({
             />
           </p>
         </div>
-        <StateProcessHandle sourceProcess={state} />
+        {isActionAllowed({ readOnly, disabled }) && (
+          <StateProcessHandle sourceProcess={state} />
+        )}
       </div>
       {isShown && state.state.onEnterEvent.content != '' && (
         <div className={stateMoreInfosStyle}>
@@ -177,14 +207,21 @@ export function StateBox({
   );
 }
 
-export function StateProcessComponent(
-  props: ProcessProps<TransitionFlowLine, StateProcess>,
-) {
+export function StateProcessComponent({
+  isProcessSelected,
+  onClick,
+  ...processProps
+}: ProcessComponentProps<TransitionFlowLine, StateProcess>) {
+  const { disabled, readOnly, process } = processProps;
   return (
-    <CustomProcessComponent {...props}>
-      {(process, onClick, selected) => (
-        <StateBox state={process} onClick={onClick} selected={selected} />
-      )}
+    <CustomProcessComponent {...processProps}>
+      <StateBox
+        state={process}
+        onClick={onClick}
+        selected={isProcessSelected && isProcessSelected(process)}
+        disabled={disabled}
+        readOnly={readOnly}
+      />
     </CustomProcessComponent>
   );
 }

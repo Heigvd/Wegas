@@ -9,7 +9,13 @@ import {
 } from '../../data/methods/VariableDescriptorMethods';
 import { State as RState } from '../../data/Reducer/reducers';
 import { ComponentWithForm } from './FormView/ComponentWithForm';
-import { grow, flex, flexRow, flexColumn } from '../../css/classes';
+import {
+  grow,
+  flex,
+  flexRow,
+  flexColumn,
+  MediumPadding,
+} from '../../css/classes';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import {
   IDialogueDescriptor,
@@ -22,7 +28,7 @@ import {
 } from 'wegas-ts-api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { SimpleInput } from '../../Components/Inputs/SimpleInput';
-import HTMLEditor from '../../Components/HTMLEditor';
+import HTMLEditor from '../../Components/HTML/HTMLEditor';
 import {
   FlowChart,
   FlowLine,
@@ -40,7 +46,11 @@ import { focusTab } from './LinearTabLayout/LinearLayout';
 import produce, { Immutable } from 'immer';
 import { StateProcessComponent } from '../../Components/FlowChart/StateProcessComponent';
 import { TransitionFlowLineComponent } from '../../Components/FlowChart/TransitionFlowLineComponent';
-import { Text } from '../../Components/Outputs/Text';
+import { HTMLText } from '../../Components/Outputs/HTMLText';
+import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
+import { internalTranslate } from '../../i18n/internalTranslator';
+//import { internalTranslate } from '../../i18n/internalTranslator';
+//import { commonTranslations } from '../../i18n/common/common';
 
 const emptyPath: (string | number)[] = [];
 
@@ -67,15 +77,14 @@ function deleteTransition<T extends IFSMDescriptor | IDialogueDescriptor>(
   stateMachine: Immutable<T>,
   stateId: number,
   transitionId: number,
+  dispatch: typeof store.dispatch,
 ) {
   const newStateMachine = produce((stateMachine: T) => {
     const transitions = stateMachine.states[stateId].transitions;
     transitions.splice(transitionId, 1);
   })(stateMachine);
 
-  store.dispatch(
-    Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
-  );
+  dispatch(Actions.VariableDescriptorActions.updateDescriptor(newStateMachine));
 }
 
 export interface TransitionFlowLine extends FlowLine {
@@ -87,8 +96,8 @@ export interface StateProcess extends Process<TransitionFlowLine> {
 }
 
 interface StateMachineEditorProps<
-  IFSM extends IFSMDescriptor | IDialogueDescriptor
-> {
+  IFSM extends IFSMDescriptor | IDialogueDescriptor,
+> extends DisabledReadonly {
   stateMachine: Immutable<IFSM>;
   stateMachineInstance: IFSM['defaultInstance'];
   localDispatch?: StoreDispatch;
@@ -98,19 +107,28 @@ interface StateMachineEditorProps<
   editPath?: (string | number)[] | undefined;
 }
 export function StateMachineEditor<
-  IFSM extends IFSMDescriptor | IDialogueDescriptor
+  IFSM extends IFSMDescriptor | IDialogueDescriptor,
 >({
   title,
   stateMachine,
   localDispatch,
   forceLocalDispatch,
   editPath = emptyPath,
-}: //search,
-StateMachineEditorProps<IFSM>) {
+  search, // TODO:Implement search in Flowchart
+  ...options
+}: StateMachineEditorProps<IFSM>) {
   type TState = IFSM['states'][0];
   type TTransition = TState['transitions'][0];
 
   const { lang } = React.useContext(languagesCTX);
+
+  const dispatch = React.useMemo(
+    () =>
+      localDispatch != null && forceLocalDispatch
+        ? localDispatch!
+        : store.dispatch,
+    [forceLocalDispatch, localDispatch],
+  );
 
   const processes: StateProcess[] = React.useMemo(
     () =>
@@ -129,10 +147,8 @@ StateMachineEditorProps<IFSM>) {
     [stateMachine.states],
   );
 
-  const createTransition: (
-    nextStateId: number,
-    index: number,
-  ) => TTransition = React.useCallback(
+  const createTransition: (nextStateId: number, index: number) => TTransition =
+    React.useCallback(
     (nextStateId, index) => {
       return {
         ...{
@@ -193,30 +209,69 @@ StateMachineEditorProps<IFSM>) {
         (source.transitions as IAbstractTransition[]).push(newTransition);
       })(stateMachine);
 
-      store.dispatch(
+      dispatch(
         Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
       );
     },
-    [createTransition, stateMachine],
+    [createTransition, dispatch, stateMachine],
+  );
+
+  const onStateClick = React.useCallback(
+    (e: ModifierKeysEvent, state: StateProcess) => {
+      const actions: EditorAction<
+        IFSMDescriptor | IDialogueDescriptor
+      >['more'] = {};
+      if (state.state.id !== stateMachine.defaultInstance.currentStateId) {
+        actions.delete = {
+          label: 'Delete',
+          confirm: true,
+          sorting: 'button',
+          action: (
+            sm: IFSMDescriptor | IDialogueDescriptor,
+            path?: (string | number)[],
+          ) => {
+            if (path != null && path.length === 2) {
+              deleteState(sm, Number(path[1]));
+            }
+          },
+        };
+      }
+
+      const dispatchLocal =
+        (e.ctrlKey === true || forceLocalDispatch === true) &&
+        localDispatch != null;
+
+      const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
+      dispatch(
+        Actions.EditorActions.editStateMachine(stateMachine, [
+          'states',
+          state.id,
+        ]),
+      );
+      if (!dispatchLocal) {
+        focusTab(mainLayoutId, 'Variable Properties');
+      }
+    },
+    [forceLocalDispatch, localDispatch, stateMachine],
   );
 
   const updateStatePosition = React.useCallback(
-    (sourceState: StateProcess, position: XYPosition) => {
+    (sourceState: StateProcess, position: XYPosition, e: MouseEvent) => {
       const newStateMachine = produce((stateMachine: IFSM) => {
         stateMachine.states[Number(sourceState.id)].x =
           position.x >= 10 ? position.x : 10;
         stateMachine.states[Number(sourceState.id)].y =
           position.y >= 10 ? position.y : 10;
       })(stateMachine);
-
-      store.dispatch(
+      onStateClick(e, sourceState);
+      dispatch(
         Actions.VariableDescriptorActions.updateDescriptor(
           newStateMachine,
           false,
         ),
       );
     },
-    [stateMachine],
+    [dispatch, onStateClick, stateMachine],
   );
 
   const createState = React.useCallback(
@@ -261,7 +316,9 @@ StateMachineEditorProps<IFSM>) {
 
         // Removing transition from state
         const currentState = stateMachine.states[Number(sourceProcess.id)];
-        currentState.transitions = (currentState.transitions as TTransition[]).filter(
+        currentState.transitions = (
+          currentState.transitions as TTransition[]
+        ).filter(
           t => transition == null || t.id !== transition.transition.id,
         ) as typeof currentState.transitions;
 
@@ -271,54 +328,17 @@ StateMachineEditorProps<IFSM>) {
         }
       })(stateMachine);
 
-      store.dispatch(
+      dispatch(
         Actions.EditorActions.editStateMachine(stateMachine, [
           'states',
           String(newStateId),
         ]),
       );
-      store.dispatch(
+      dispatch(
         Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
       );
     },
-    [createTransition, lang, stateMachine],
-  );
-
-  const onStateClick = React.useCallback(
-    (e: ModifierKeysEvent, state: StateProcess) => {
-      const actions: EditorAction<
-        IFSMDescriptor | IDialogueDescriptor
-      >['more'] = {};
-      if (state.state.id !== stateMachine.defaultInstance.currentStateId) {
-        actions.delete = {
-          label: 'Delete',
-          confirm: true,
-          action: (
-            sm: IFSMDescriptor | IDialogueDescriptor,
-            path?: (string | number)[],
-          ) => {
-            if (path != null && path.length === 2) {
-              deleteState(sm, Number(path[1]));
-            }
-          },
-        };
-      }
-
-      const dispatchLocal =
-        (e.ctrlKey === true || forceLocalDispatch === true) &&
-        localDispatch != null;
-      const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
-      dispatch(
-        Actions.EditorActions.editStateMachine(stateMachine, [
-          'states',
-          state.id,
-        ]),
-      );
-      if (!dispatchLocal) {
-        focusTab(mainLayoutId, 'Variable Properties');
-      }
-    },
-    [forceLocalDispatch, localDispatch, stateMachine],
+    [createTransition, dispatch, lang, stateMachine],
   );
 
   const onFlowlineClick = React.useCallback(
@@ -333,12 +353,13 @@ StateMachineEditorProps<IFSM>) {
       actions.delete = {
         label: 'Delete',
         confirm: true,
+        sorting: 'button',
         action: (
           sm: IFSMDescriptor | IDialogueDescriptor,
           path?: (string | number)[],
         ) => {
           if (path != null && path?.length === 4) {
-            deleteTransition(sm, Number(path[1]), Number(path[3]));
+            deleteTransition(sm, Number(path[1]), Number(path[3]), dispatch);
           }
         },
       };
@@ -348,7 +369,7 @@ StateMachineEditorProps<IFSM>) {
         localDispatch != null;
       const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
       dispatch(
-        Actions.EditorActions.editVariable(
+        Actions.EditorActions.editStateMachine(
           stateMachine,
           ['states', startProcess.id, 'transitions', flowline.id],
           undefined,
@@ -401,15 +422,14 @@ StateMachineEditorProps<IFSM>) {
       isProcessSelected={isProcessSelected}
       Process={StateProcessComponent}
       Flowline={TransitionFlowLineComponent}
+      {...options}
     />
   );
 }
 
 function globalStateSelector(s: RState) {
-  let editedVariable:
-    | IFSMDescriptor
-    | IDialogueDescriptor
-    | undefined = undefined;
+  let editedVariable: IFSMDescriptor | IDialogueDescriptor | undefined =
+    undefined;
   let editPath: (string | number)[] | undefined = undefined;
   if (
     s.global.editing &&
@@ -447,19 +467,30 @@ function globalStateSelector(s: RState) {
   }
 }
 
+interface ConnectedStateMachineEditorProps extends DisabledReadonly {
+  localDispatch?: StoreDispatch;
+}
+
 export function ConnectedStateMachineEditor({
   localDispatch,
-}: {
-  localDispatch?: StoreDispatch;
-}) {
+  ...options
+}: ConnectedStateMachineEditorProps) {
   const globalState = useStore(globalStateSelector);
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
 
   if ('variable' in globalState) {
     if (globalState.variable == null) {
-      return <span>Select a variable to display</span>;
+      return (
+        <span className={MediumPadding}>
+          {i18nValues.stateMachine.selectVariable}
+        </span>
+      );
     } else {
       return (
-        <span>The selected variable is not some kind of state machine</span>
+        <span className={MediumPadding}>
+          {i18nValues.stateMachine.selectedNotStateMachine}
+        </span>
       );
     }
   } else {
@@ -471,17 +502,27 @@ export function ConnectedStateMachineEditor({
           localDispatch={localDispatch}
           search={globalState.search}
           editPath={globalState.editPath}
+          {...options}
         />
       </div>
     );
   }
 }
 
-export default function StateMachineEditorWithMeta() {
+export default function StateMachineEditorWithMeta({
+  disabled,
+  readOnly,
+}: DisabledReadonly) {
   return (
-    <ComponentWithForm entityEditor>
+    <ComponentWithForm entityEditor disabled={disabled} readOnly={readOnly}>
       {({ localDispatch }) => {
-        return <ConnectedStateMachineEditor localDispatch={localDispatch} />;
+        return (
+          <ConnectedStateMachineEditor
+            localDispatch={localDispatch}
+            disabled={disabled}
+            readOnly={readOnly}
+          />
+        );
       }}
     </ComponentWithForm>
   );
@@ -498,6 +539,7 @@ interface ModifiableTextProps {
 }
 
 // Currently this component is not used but it will be in the future
+// TODO : Integrade this component in DialogueEditor
 // @ts-ignore
 function ModifiableText({
   mode,
@@ -546,7 +588,7 @@ function ModifiableText({
     </div>
   ) : (
     <div onClick={() => setEditingText(true)} className={stateTextStyle}>
-      <Text text={newTextValue} />
+      <HTMLText text={newTextValue} />
     </div>
   );
 }

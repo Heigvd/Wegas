@@ -102,6 +102,7 @@ function ChildrenDeserializer({
   uneditable,
   context,
   editMode,
+  inheritedOptionsState,
   ifCondition,
 }: ChildrenDeserializerProps<IfElseProps>) {
   const condition = useScript<boolean>(ifCondition, context);
@@ -124,6 +125,7 @@ function ChildrenDeserializer({
             Container={FlexItem}
             containerPropsKeys={defaultFlexLayoutOptionsKeys}
             dropzones={{}}
+            inheritedOptionsState={inheritedOptionsState}
           />
         )}
         {children2.type === ElseChildrenType ? (
@@ -138,6 +140,7 @@ function ChildrenDeserializer({
             Container={FlexItem}
             containerPropsKeys={defaultFlexLayoutOptionsKeys}
             dropzones={{}}
+            inheritedOptionsState={inheritedOptionsState}
           />
         )}
       </>
@@ -158,6 +161,7 @@ function ChildrenDeserializer({
         Container={FlexItem}
         containerPropsKeys={defaultFlexLayoutOptionsKeys}
         dropzones={{}}
+        inheritedOptionsState={inheritedOptionsState}
       />
     );
   }

@@ -20,7 +20,7 @@
 
             <!-- Stylesheets from current game model style library -->
             <!--<style type="text/css"># {editorGameController.combinedStyleSheet}</style>-->
-            <ui:repeat var="sheet" value="#{editorGameController.currentGameModel.cssLibraryList}" varStatus="status">
+            <ui:repeat var="sheet" value="#{editorGameController.currentGameModel.getLibrariesAsList('CSS')}" varStatus="status">
                 <style type="text/css"  id="css-library-#{sheet.getContentKey()}">
                     ${editorGameController.processSheet(sheet.getContent())}
                 </style>

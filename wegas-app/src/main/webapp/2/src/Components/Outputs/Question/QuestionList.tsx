@@ -21,19 +21,18 @@ import { Player } from '../../../data/selectors';
 import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
 import { useStore, store } from '../../../data/Stores/store';
 import { EntityChooser } from '../../EntityChooser';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { ConnectedQuestionDisplay } from './Question';
 
-
 const repliedLabelStyle = css({
-  backgroundColor: themeVar.Common.colors.LightTextColor,
-  color: themeVar.Common.colors.PrimaryColor,
-  border: "2px solid " + themeVar.Common.colors.PrimaryColor,
-  boxShadow: "none",
-  "&:hover": {
-    backgroundColor: themeVar.Common.colors.LightTextColor,
-    color: themeVar.Common.colors.ActiveColor,
-    border: "2px solid " + themeVar.Common.colors.ActiveColor,
+  backgroundColor: themeVar.colors.LightTextColor,
+  color: themeVar.colors.PrimaryColor,
+  border: '2px solid ' + themeVar.colors.PrimaryColor,
+  boxShadow: 'none',
+  '&:hover': {
+    backgroundColor: themeVar.colors.LightTextColor,
+    color: themeVar.colors.ActiveColor,
+    border: '2px solid ' + themeVar.colors.ActiveColor,
   },
 });
 
@@ -43,13 +42,14 @@ const repliedLabelStyle = css({
 
 export function QuestionLabel({
   questionD,
+  disabled,
 }: {
   questionD: IQuestionDescriptor | IWhQuestionDescriptor;
+  disabled?: boolean;
 }) {
   const unreadSelector = React.useCallback(() => {
-    const player = instantiate(Player.selectCurrent());
     return {
-      isUnread: instantiate(questionD).getInstance(player).isUnread(),
+      isUnread: instantiate(questionD).getInstance(Player.self()).isUnread(),
     };
   }, [questionD]);
   const { isUnread } = useStore(unreadSelector);
@@ -58,7 +58,7 @@ export function QuestionLabel({
     <div
       className={cx(flex, itemCenter)}
       onClick={() => {
-        store.dispatch(read(instantiate(questionD).getEntity()));
+        !disabled && store.dispatch(read(instantiate(questionD).getEntity()));
       }}
     >
       {isUnread ? (
@@ -73,34 +73,39 @@ export function QuestionLabel({
   );
 }
 
-function customLabelStyle(e:IWhQuestionDescriptor | IQuestionDescriptor):string | undefined {
-    const isReplied = instantiate(e).isReplied(instantiate(Player.selectCurrent()));
-    return isReplied ? repliedLabelStyle : undefined;
+function customLabelStyle(
+  e: IWhQuestionDescriptor | IQuestionDescriptor,
+): string | undefined {
+  const isReplied = instantiate(e).isReplied(
+    instantiate(Player.selectCurrent()),
+  );
+  return isReplied ? repliedLabelStyle : undefined;
 }
-interface QuestionListProps {
-  questionList:SListDescriptor,
-  autoOpenFirst?: boolean,
+interface QuestionListProps extends DisabledReadonly {
+  questionList: SListDescriptor;
+  autoOpenFirst?: boolean;
 }
 export default function QuestionList({
   questionList,
   autoOpenFirst,
+  disabled,
+  readOnly,
 }: QuestionListProps) {
   const entitiesSelector = React.useCallback(() => {
-       return {
+    return {
       questions: flatten<IQuestionDescriptor | IWhQuestionDescriptor>(
         questionList.getEntity(),
         'QuestionDescriptor',
         'WhQuestionDescriptor',
       ).filter(q => {
-        const instance = getInstance<IQuestionInstance | IWhQuestionInstance>(
-          q,
-        );
+        const instance =
+          getInstance<IQuestionInstance | IWhQuestionInstance>(q);
         if (instance != null) {
           return instance.active;
         }
         return false;
       }),
-      player:Player.selectCurrent()
+      player: Player.selectCurrent(),
     };
   }, [questionList]);
 
@@ -113,9 +118,11 @@ export default function QuestionList({
   return (
     <EntityChooser
       entities={entities.questions}
-      entityLabel={e => <QuestionLabel questionD={e} />}
+      entityLabel={e => <QuestionLabel questionD={e} disabled={disabled} />}
       autoOpenFirst={autoOpenFirst}
       customLabelStyle={customLabelStyle}
+      disabled={disabled}
+      readOnly={readOnly}
     >
       {ConnectedQuestionDisplay}
     </EntityChooser>
