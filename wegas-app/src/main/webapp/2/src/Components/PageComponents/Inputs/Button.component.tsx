@@ -14,7 +14,7 @@ import { icons, Icons } from '../../../Editor/Components/Views/FontAwesome';
 import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
-import { Text } from '../../Outputs/Text';
+import { HTMLText } from '../../Outputs/HTMLText';
 
 export interface PlayerButtonProps extends WegasComponentProps {
   label?: IScript;
@@ -49,7 +49,7 @@ function PlayerButton({
     icon: icon,
     prefixedLabel: prefixedLabel,
     label:
-      label && translation !== '' ? <Text text={translation} /> : undefined,
+      label && translation !== '' ? <HTMLText text={translation} /> : undefined,
     tooltip,
       disabled: options.disabled || options.locked,
       readOnly: options.readOnly,

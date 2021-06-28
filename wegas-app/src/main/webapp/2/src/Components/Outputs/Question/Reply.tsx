@@ -11,7 +11,7 @@ import {
   choiceLabelStyle,
   choiceDescriptionStyle,
 } from './ChoiceContainer';
-import { TranslatableText } from '../Text';
+import { TranslatableText } from '../HTMLText';
 
 const repliesContainer = css({
   marginTop: '5px',
