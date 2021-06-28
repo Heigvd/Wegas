@@ -40,13 +40,11 @@ const layout = css({
 });
 
 export const availableLayoutTabs = {
-  // Tester: <Tester />,
   Variables: <TreeView />,
   'State Machine': <StateMachineEditor />,
   'Variable Properties': <EntityEditor />,
   Files: <FileBrowserWithMeta />,
   Scripts: <LibraryEditor />,
-  // 'Language Editor': <LanguageEditor />,
   Languages: <Languages />,
   'Client Console': <PlayLocal />,
   'Server Console': <PlayServer />,

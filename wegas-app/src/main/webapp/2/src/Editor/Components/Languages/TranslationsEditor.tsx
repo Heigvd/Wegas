@@ -37,6 +37,8 @@ import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { isArray } from 'lodash-es';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { languagesTranslations } from '../../../i18n/languages/languages';
 
 const langaugeVisitorHeaderStyle = css({
   borderBottom: `solid 1px ${themeVar.colors.PrimaryColor}`,
@@ -320,6 +322,7 @@ function TranslationHeader({
   onSelect,
   index,
 }: TranslationHeaderProps) {
+  const i18nValues = useInternalTranslate(languagesTranslations);
   return (
     <div
       className={cx(flex, flexRow, {
@@ -331,24 +334,24 @@ function TranslationHeader({
         icon="cog"
         items={[
           {
-            label: 'Clear translations',
+            label: i18nValues.clearTranslations,
             type: 'CLEAR_TRANSLATIONS',
             language,
             items: [
               {
-                label: 'Outdated translations',
+                label: i18nValues.outdatedTranslations,
                 language,
                 type: 'CLEAR_OUTDATED',
               },
               {
-                label: 'All translations',
+                label: i18nValues.allTranslations,
                 language,
                 type: 'CLEAR_ALL',
               },
             ],
           },
           {
-            label: 'Copy translations',
+            label: i18nValues.copyTranslations,
             type: 'COPY_TRANSLATIONS',
             language,
             items: languages
@@ -391,6 +394,7 @@ export function TranslationEditor() {
       root: GameModel.selectCurrent(),
     };
   });
+  const i18nValues = useInternalTranslate(languagesTranslations);
 
   const [selectedLanguages, setSelectedLanguages] = React.useState(
     languages.filter(language => language.active),
@@ -473,14 +477,14 @@ export function TranslationEditor() {
             }}
           >
             {languageAction.type === 'COPY'
-              ? `Are you sure that you want to copy translations from ${languageLabel(
-                  languageAction.sourceLanguage,
-                )} to ${languageLabel(
-                  languageAction.language,
-                )}. Translations will be overriden!`
-              : `Are you sure that you want to delete all ${
-                  languageAction.type === 'CLEAR_OUTDATED' ? 'outdated' : ''
-                } translations of ${languageLabel(languageAction.language)}`}
+              ? i18nValues.warningCopy(
+                  languageLabel(languageAction.sourceLanguage),
+                  languageLabel(languageAction.language),
+                )
+              : i18nValues.warningDelete(
+                  languageLabel(languageAction.language),
+                  languageAction.type === 'CLEAR_OUTDATED',
+                )}
           </OkCancelModal>
         )}
       </Toolbar.Content>
