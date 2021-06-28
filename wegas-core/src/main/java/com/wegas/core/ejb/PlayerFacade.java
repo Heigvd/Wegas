@@ -396,7 +396,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public List<VariableInstance> getInstances(final Long playerId) {
         Player player = this.find(playerId);
-        try (ActAsPlayer acting = requestManager.actAsPlayer(player)) {
+        try ( ActAsPlayer acting = requestManager.actAsPlayer(player)) {
             Team team = player.getTeam();
             Game game = team.getGame();
             GameModel gameModel = game.getGameModel();
@@ -437,8 +437,9 @@ public class PlayerFacade extends BaseFacade<Player> {
         //      In this case, the user lacks the user edit right, we have to bypass it
         //      with a sudo
         if (team instanceof DebugTeam == false && playerUser != null) {
-            Collection<WegasPermission> perms = playerUser.getRequieredUpdatePermission();
-            perms.addAll(player.getGame().getRequieredUpdatePermission());
+            RequestManager.RequestContext context = requestManager.getCurrentContext();
+            Collection<WegasPermission> perms = playerUser.getRequieredUpdatePermission(context);
+            perms.addAll(player.getGame().getRequieredUpdatePermission(context));
 
             requestManager.assertUserHasPermission(perms, "DELETE", player);
             try (Sudoer su = requestManager.sudoer()) {
@@ -471,9 +472,9 @@ public class PlayerFacade extends BaseFacade<Player> {
             players.addAll(t.getPlayers());
         }
         return players;
-        /*TypedQuery<Player> findByGameId = getEntityManager().createNamedQuery("Player.findPlayerByGameId", Player.class);
-        findByGameId.setParameter("gameId", gameId);
-        return findByGameId.getResultList();*/
+        /* TypedQuery<Player> findByGameId =
+         * getEntityManager().createNamedQuery("Player.findPlayerByGameId", Player.class);
+         * findByGameId.setParameter("gameId", gameId); return findByGameId.getResultList(); */
     }
 
     /**
