@@ -11,7 +11,7 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     Styles: 'Styles',
     Client: 'Client',
     Server: 'Server',
-    'Language Editor': 'Language Editor',
+    Languages: 'Language Editor',
     'Client Console': 'Client Console',
     'Server Console': 'Server Console',
     'Instances Editor': 'Instances Editor',
@@ -25,6 +25,8 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     'Pages Layout': 'Pages Layout',
     'Source Editor': 'Source Editor',
     'Component Properties': 'Component Properties',
+    'Language editor': 'Language editor',
+    'Translation manager': 'Translation manager',
   },
   stateMachine: {
     selectVariable: 'Select a variable to display',
