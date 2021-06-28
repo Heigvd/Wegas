@@ -10,10 +10,10 @@ import {
 } from '../../../Components/PageComponents/tools/schemaProps';
 import { LabeledView, Labeled } from './labeled';
 import { DragDropArray } from './Array';
-import { DropMenuItem } from '../../../Components/DropMenu';
 import { setEntry, getEntry } from '../../../Helper/tools';
 import { legendStyle, reset, borderTopStyle } from './Object';
 import { cx } from 'emotion';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 interface ObjectValues {
   [key: string]: string | number | ObjectValues;
@@ -24,31 +24,9 @@ interface ImprovedObjectValue {
   index: number;
 }
 
-interface HashListProp {
-  prop: string;
-}
-
-// interface HashListValueSchema {
-//   [key: string]: SchemaPropsSchemas;
-// }
-
-interface HashListValue {
-  prop: string;
-  schema: SchemaPropsSchemas;
-}
-
-type HashListItem = HashListValue | HashListProp;
-
 function isHashListValue(item: HashListItem): item is HashListValue {
   return 'schema' in item && item.schema != null;
 }
-
-export type HashListChoice = DropMenuItem<HashListItem> & {
-  value: HashListItem;
-  items?: HashListChoices;
-};
-
-export type HashListChoices = HashListChoice[];
 
 export function hashListChoicesToSchema(
   choices?: HashListChoices,
@@ -77,12 +55,18 @@ function isIntermediateKey(
   return [key != null && choice != null && choice.items != null, choice?.items];
 }
 
+// export interface CleaningHashmapMethods {
+//   errorDetector: (value?: object | null) => boolean;
+//   cleaningMethod: (value?: object | null) => object;
+// }
+
 type HashListViewBag = CommonView &
   LabeledView & {
     disabled?: boolean;
     tooltip?: string;
     choices?: HashListChoices;
     objectViewStyle?: boolean;
+    cleaning?: CleaningHashmapMethods;
   };
 
 interface EntryViewProps<T> {
@@ -132,7 +116,7 @@ export function EntryView<T>({
   );
 }
 
-type ImprovedValues = { [prop: string]: ImprovedObjectValue };
+export type ImprovedValues = { [prop: string]: ImprovedObjectValue };
 const normalizeValues = (nv: object, choices?: HashListChoices) => (
   ov?: ImprovedValues,
 ): ImprovedValues =>
@@ -374,7 +358,7 @@ function HashListView({
   onChange: onChangeOutside,
   value,
 }: HashListViewProps) {
-  const { label, description, choices, objectViewStyle } = view;
+  const { label, description, choices, objectViewStyle, cleaning } = view;
 
   const onChange = React.useCallback(
     (value?: ImprovedValues) => {
@@ -408,16 +392,36 @@ function HashListView({
       })
     : undefined;
 
+  const computedLabel =
+    label || cleaning ? (
+      <>
+        {label}
+        {cleaning && cleaning.errorDetector(value) && (
+          <Button
+            label={'Clean value'}
+            onClick={() =>
+              onChange(
+                normalizeValues(
+                  cleaning.cleaningMethod(value),
+                  choices,
+                )(undefined),
+              )
+            }
+          />
+        )}
+      </>
+    ) : undefined;
+
   return (
     <>
       <CommonViewContainer errorMessage={errorMessage} view={view}>
         {objectViewStyle ? (
           <fieldset
             className={cx(reset, {
-              [borderTopStyle]: label !== undefined,
+              [borderTopStyle]: computedLabel !== undefined,
             })}
           >
-            <legend className={legendStyle}>{label}</legend>
+            <legend className={legendStyle}>{computedLabel}</legend>
             <EntriesView
               view={view}
               allowedChoices={allowedChoices}
@@ -428,7 +432,7 @@ function HashListView({
             />
           </fieldset>
         ) : (
-          <Labeled label={label} description={description}>
+          <Labeled label={computedLabel} description={description}>
             {({ inputId, labelNode }) => (
               <EntriesView
                 view={view}

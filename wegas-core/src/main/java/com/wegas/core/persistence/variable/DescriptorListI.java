@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
@@ -28,13 +28,23 @@ import java.util.List;
 public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
 
     /**
+     * Sorted shallow copy of items. This list is not managed. Thus
+     * any modification will no be propagated to database
+     *
      * @return the variableDescriptors
      */
     List<T> getItems();
 
     /**
-     * return he gameModel this belongs to
-     * sugar for default methods
+     * unsorted managed list of items.
+     * One shall modify this list to make effective changes
+     *
+     * @return
+     */
+    List<T> getRawItems();
+
+    /**
+     * return he gameModel this belongs to sugar for default methods
      *
      * @return the gameModel owning this descriptor list
      */
@@ -42,15 +52,14 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
     GameModel getGameModel();
 
     /**
-     * Return children ids
-     * DO NOT OVERRIDE, NEVER!
+     * Return children ids DO NOT OVERRIDE, NEVER!
      *
      * @return list of children's id
      */
     @JsonView(Views.IndexI.class)
     @WegasExtraProperty(view = @View(value = Hidden.class, label = ""),
-            proposal = EmptyArray.class,
-            optional = false, nullable = false
+        proposal = EmptyArray.class,
+        optional = false, nullable = false
     )
     default List<Long> getItemsIds() {
         List<Long> ids = new LinkedList<>();
@@ -66,8 +75,7 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
     }
 
     /**
-     * just do nothing
-     * DO NOT OVERRIDE, NEVER!
+     * just do nothing DO NOT OVERRIDE, NEVER!
      *
      * @param itemsIds
      */
@@ -114,8 +122,8 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
     }
 
     /**
-     * Add a new child. Register the new child within the gameModel (global variable descriptor list)
-     * and within its parent.
+     * Add a new child. Register the new child within the gameModel (global variable descriptor
+     * list) and within its parent.
      *
      * @param index new child position, null means last position
      * @param item  the new child to add
@@ -132,8 +140,17 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
             } else {
                 items.add(item);
             }
+
+            // add the item to the managed list
+            this.getRawItems().add(item);
+
+            // rewrite all items indexes
+            int i = 0;
+            for (T t : items) {
+                t.setIndexOrder(i++);
+            }
+            this.setChildParent(item);
         }
-        this.setChildParent(item);
     }
 
     /**
@@ -141,7 +158,7 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
      * @return number of children
      */
     default int size() {
-        return this.getItems().size();
+        return this.getRawItems().size();
     }
 
     /**
@@ -163,7 +180,7 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
      */
     default boolean remove(T item) {
         this.getGameModel().removeFromVariableDescriptors(item);
-        return this.getItems().remove(item);
+        return this.getRawItems().remove(item);
     }
 
     /**
@@ -174,9 +191,8 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
      * @return true if item has been removed from its parent
      */
     default boolean localRemove(T item) {
-        return this.getItems().remove(item);
+        return this.getRawItems().remove(item);
     }
-
 
     @JsonIgnore
     default List<VariableDescriptor> getOrderedVariableDesacriptors() {
@@ -189,6 +205,5 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
         }
         return acc;
     }
-
 
 }

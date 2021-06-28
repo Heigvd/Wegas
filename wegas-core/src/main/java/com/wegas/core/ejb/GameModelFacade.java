@@ -1,9 +1,8 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -242,7 +241,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         modelFacade.processLanguages(newVersion, toPatch);
         // ensure variable tree is up to date with newVersion's
-        modelFacade.fixVariableTree(newVersion, toPatch);
+        modelFacade.fixVariableTree(newVersion, toPatch, false);
         // merge recusrsively and bypass visibility restriction
         gameModel.deepMergeForce(newVersion);
 
@@ -759,6 +758,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 case MODEL:
                     requestManager.assertCanInstantiateGameModel(srcGameModel);
                     // prefer the reference
+                    GameModel theModel = srcGameModel;
                     GameModel ref = modelFacade.getReference(srcGameModel);
                     if (ref != null) {
                         srcGameModel = ref;
@@ -766,7 +766,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     newGameModel = new GameModel();
                     // merge deep but skip PRIVATE content
                     newGameModel.deepMerge(srcGameModel);
-                    newGameModel.setBasedOn(srcGameModel);
+                    newGameModel.setBasedOn(theModel);
                     break;
 
                 case SCENARIO:
@@ -1013,6 +1013,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     /**
      * @param gameModelId
      */
+    @Override
     public void reset(final Long gameModelId) {
         this.reset(this.find(gameModelId));
     }
@@ -1020,6 +1021,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     /**
      * @param gameModel
      */
+    @Override
     public void reset(final GameModel gameModel) {
         // Need to flush so prepersit events will be thrown (for example Game will add default teams)
         ///getEntityManager().flush();

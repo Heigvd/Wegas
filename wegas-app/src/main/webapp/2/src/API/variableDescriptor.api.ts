@@ -60,18 +60,49 @@ export const VariableDescriptorAPI = {
     gameModelId: number,
     playerId: number,
     script: IScript,
-    context?: IVariableDescriptor,
+    variableContext?: IVariableDescriptor,
+    unmanaged: boolean = false,
+  ) {
+    const request = `${VD_BASE(gameModelId)}Script/Run/${playerId}/${
+      variableContext ? variableContext.id : ''
+    }`;
+    const payload = {
+      method: 'POST',
+      body: JSON.stringify(script),
+    };
+    if (unmanaged) {
+      `${VD_BASE(gameModelId)}Script/Run/${playerId}/${
+        variableContext ? variableContext.id : ''
+      }`;
+      return rest(request, payload).then((res: Response) => {
+        return res.json();
+      });
+    } else {
+      return managedModeRequest(request, payload);
+    }
+  },
+
+  runLoadedScript(
+    gameModelId: number,
+    playerId: number,
+    script: IScript,
+    currentDescriptor?: IVariableDescriptor,
+    payload?: { [key: string]: unknown },
   ) {
     return managedModeRequest(
-      `${VD_BASE(gameModelId)}Script/Run/${playerId}/${
-        context ? context.id : ''
+      `${VD_BASE(gameModelId)}Script/LoadedRun/${playerId}/${
+        currentDescriptor ? currentDescriptor.id : ''
       }`,
       {
         method: 'POST',
-        body: JSON.stringify(script),
+        body: JSON.stringify({
+          script,
+          payload: payload ? payload : {},
+        }),
       },
     );
   },
+
   contains(gameModelId: number, criteria: string) {
     return rest(`${VD_BASE(gameModelId)}contains`, {
       method: 'POST',
@@ -92,5 +123,11 @@ export const VariableDescriptorAPI = {
   },
   reset(gameModelId: number) {
     return managedModeRequest(`${VD_BASE(gameModelId)}Reset`);
+  },
+  getByIds(ids: number[], gameModelId: number) {
+    return managedModeRequest(`${VD_BASE(gameModelId)}ByIds`, {
+      method: 'POST',
+      body: JSON.stringify(ids),
+    });
   },
 };

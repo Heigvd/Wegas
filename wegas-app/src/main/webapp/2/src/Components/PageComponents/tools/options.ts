@@ -1,18 +1,16 @@
 // OPTIONS -> ACTIONS
-import { store } from '../../../data/store';
+import { store } from '../../../data/Stores/store';
 import { ActionCreator } from '../../../data/actions';
 import { clientScriptEval, useScript } from '../../Hooks/useScript';
 import { fileURL } from '../../../API/files.api';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
-import { wlog } from '../../../Helper/wegaslog';
+import { wlog, wwarn } from '../../../Helper/wegaslog';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
-import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 import { schemaProps } from './schemaProps';
 import { PlayerInfoBulletProps } from './InfoBullet';
 import { createScript } from '../../../Helper/wegasEntites';
 import { IScript } from 'wegas-ts-api';
-import { instantiate } from '../../../data/scriptable';
 import {
   SDialogueDescriptor,
   SFSMInstance,
@@ -28,6 +26,10 @@ import {
   SPeerReviewDescriptor,
 } from 'wegas-ts-api';
 
+export interface PageComponentContext {
+  [item: string]: unknown;
+}
+
 export interface WegasComponentOptionsAction {
   priority?: number;
 }
@@ -35,25 +37,26 @@ export interface WegasComponentOptionsAction {
 export interface OpenPageAction {
   pageLoaderName: IScript;
   pageId: IScript;
-  context?: { [item: string]: any };
+  context?: PageComponentContext;
 }
 interface OpenURLAction {
-  url: string;
+  url: IScript;
+  context?: PageComponentContext;
 }
 interface OpenFileAction {
   filePath: IScript;
-  context?: { [item: string]: any };
+  context?: PageComponentContext;
 }
 interface ImpactVariableAction {
   impact: IScript;
 }
 interface LocalScriptEvalAction {
   script: IScript;
-  context?: { [item: string]: any };
+  context?: PageComponentContext;
 }
 interface OpenPopupPageAction {
   pageId: IScript;
-  context?: { [item: string]: any };
+  context?: PageComponentContext;
 }
 interface PlaySoundAction {
   filePath: string;
@@ -113,20 +116,27 @@ export const wegasComponentActions: WegasComponentActions = {
     }
   },
   openUrl: props => {
-    window.open(props.url);
+    const path = clientScriptEval<string | false>(props.url, props.context);
+    if (path) {
+      const win = window.open(path);
+      win!.focus();
+    }
   },
   openFile: props => {
-    const win = window.open(
-      fileURL(clientScriptEval(props.filePath, props.context)),
-      '_blank',
+    const path = clientScriptEval<string | false>(
+      props.filePath,
+      props.context,
     );
-    win!.focus();
+    if (path) {
+      const win = window.open(fileURL(path), '_blank');
+      win!.focus();
+    }
   },
   impactVariable: props => {
     try {
       store.dispatch(runScript(props.impact, Player.selectCurrent()));
     } catch (error) {
-      wlog(error);
+      wwarn(error);
     }
   },
   localScriptEval: props => {
@@ -174,7 +184,7 @@ export const actionsChoices: HashListChoices = [
       schema: schemaProps.object({
         label: 'Open Url',
         properties: {
-          url: schemaProps.string({ label: 'Url', required: true }),
+          url: schemaProps.scriptString({ label: 'Url', required: true }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
       }),
@@ -250,7 +260,7 @@ export const actionsChoices: HashListChoices = [
           fileDescriptor: schemaProps.path({
             label: 'File',
             required: true,
-            pick: 'FILE',
+            pickType: 'FILE',
             filter: {
               filterType: 'grey',
               fileType: 'audio',
@@ -406,6 +416,14 @@ export const layoutConditionnalChoices: HashListChoices = [
   },
 ];
 
+export function isActionAllowed({
+  disabled,
+  readOnly,
+  locked,
+}: DisabledReadonlyLocked) {
+  return !disabled && !readOnly && !locked;
+}
+
 // OPTIONS -> DECORATIONS
 export interface WegasComponentDecorations {
   infoBullet?: PlayerInfoBulletProps;
@@ -476,8 +494,7 @@ function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
   if (!descriptor) {
     return 0;
   } else {
-    const self = instantiate(Player.selectCurrent());
-    const instance = descriptor?.getInstance(self);
+    const instance = descriptor?.getInstance(Player.self());
 
     if (!instance) {
       return 0;
@@ -509,11 +526,11 @@ function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
             return 1;
           } else {
             // non-cbx must have 0 reply
-            return descriptor.isReplied(self) ? 0 : 1;
+            return descriptor.isReplied(Player.self()) ? 0 : 1;
           }
         }
       } else if (instance instanceof SWhQuestionInstance) {
-        return instance.getActive && !instance.isValidated() ? 1 : 0;
+        return instance.getActive() && !instance.isValidated() ? 1 : 0;
       } else if (instance instanceof SSurveyInstance) {
         return instance.getActive() &&
           (instance.getStatus() === 'REQUESTED' ||

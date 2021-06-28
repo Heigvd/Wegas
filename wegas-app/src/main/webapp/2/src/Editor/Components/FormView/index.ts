@@ -20,7 +20,7 @@ import {
 import translatable from './translatable';
 import EntityArrayFieldSelect from './EntityArrayFieldSelect';
 import FlatVariableSelect from './FlatVariableSelect';
-import { LabeledHTMLEditor } from '../../../Components/HTMLEditor';
+import { LabeledHTMLEditor } from '../../../Components/HTML/HTMLEditor';
 import { TimestampView } from './Timestamp';
 import { VariableInput } from './Script/VariableInput';
 import PageSelect from './PageSelect';
@@ -34,6 +34,7 @@ import PathSelector from './PathSelector';
 import AttachmentSelector from './AttachmentSelector';
 import { ScriptableString } from './ScriptableString';
 import { ScriptablePath } from './ScriptablePath';
+import { ScriptableBoolean } from './ScriptableBoolean';
 
 export const DEFINED_VIEWS = {
   hidden,
@@ -44,6 +45,7 @@ export const DEFINED_VIEWS = {
   i18nstring: translatable(StringInput),
   number: StringInput,
   boolean: BooleanView,
+  scriptableBoolean: ScriptableBoolean,
   textarea: Textarea,
   array: ArrayWidget,
   select: Select,

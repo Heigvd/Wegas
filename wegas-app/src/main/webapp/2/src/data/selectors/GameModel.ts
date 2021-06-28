@@ -1,4 +1,4 @@
-import { store } from '../store';
+import { store } from '../Stores/store';
 
 /**
  * Get the current GameModel

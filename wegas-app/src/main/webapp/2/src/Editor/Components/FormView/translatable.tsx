@@ -38,7 +38,9 @@ export function createTranslatableContent(
     '@class': 'TranslatableContent',
     translations:
       lang === undefined
-        ? {}
+        ? {
+            DEF: createTranslation('DEF', value),
+          }
         : {
             [lang]: createTranslation(lang, value),
           },
@@ -51,6 +53,35 @@ export function useTranslate(
 ) {
   const { lang } = React.useContext(languagesCTX);
   return translatable ? translate(translatable, lang) : '';
+}
+
+export function unsafeTranslate(
+  translatable: ITranslatableContent | STranslatableContent | undefined | null,
+  lang: string,
+) {
+  let translations: { [lang: string]: ITranslation };
+  if (!translatable) {
+    return undefined;
+  }
+
+  // récupère les translations sous forme de ITranslation
+  if ('translations' in translatable) {
+    translations = translatable.translations;
+  } else {
+    translations = Object.entries(translatable.getTranslations()).reduce(
+      (o, t) => ({ ...o, [t[0]]: t[1].getEntity() }),
+      {},
+    );
+  }
+  const translation = translations[lang];
+
+  if (Object.keys(translations).length === 0) {
+    return undefined;
+  } else if (translation === undefined) {
+    return undefined;
+  } else {
+    return translation.translation;
+  }
 }
 
 export function translate(
@@ -92,17 +123,23 @@ export default function translatable<P extends EndProps>(
   function Translated(
     props: TranslatableProps & Omit<P, 'value' | 'onChange'>,
   ) {
-    const { lang } = React.useContext(languagesCTX);
+    const { lang, availableLang } = React.useContext(languagesCTX);
     const [currentLanguage, setCurrentLanguage] = React.useState<string>(lang);
+
+    React.useEffect(() => {
+      setCurrentLanguage(lang);
+    }, [lang]);
 
     const view = React.useMemo(
       () => ({
         ...props.view,
         label: <span>{`${props.view.label}`}</span>,
         onLanguage: setCurrentLanguage,
+        currentLanguage,
       }),
-      [props.view],
+      [props.view, currentLanguage],
     );
+
     const pvalue: ITranslatableContent =
       typeof props.value === 'object' &&
       entityIs(props.value, 'TranslatableContent')
@@ -115,6 +152,23 @@ export default function translatable<P extends EndProps>(
           );
 
     const currTranslation = pvalue.translations[currentLanguage];
+
+    if ((view as any).readOnly) {
+      // variable is protected by the model
+      const theLanguage = availableLang.find(al => al.code === currentLanguage);
+      if (theLanguage != null && theLanguage.visibility === 'PRIVATE') {
+        // but this language is not defined by the model
+        if (
+          Object.entries(pvalue.translations).find(([key, value]) => {
+            const lang = availableLang.find(al => al.code === key);
+            return lang && lang.visibility != 'PRIVATE' && value.translation;
+          })
+        ) {
+          (view as any).readOnly = false;
+        }
+      }
+    }
+
     return (
       <Comp
         {...(props as any)} // https://github.com/Microsoft/TypeScript/issues/28748

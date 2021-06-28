@@ -1,4 +1,4 @@
-import { wlog } from './wegaslog';
+import { wwarn } from './wegaslog';
 import { cloneDeep } from 'lodash-es';
 
 /**
@@ -12,13 +12,13 @@ export function array_move<T>(
 ) {
   const newI = old_index < new_index ? new_index - 1 : new_index;
   if (arr == null) {
-    wlog('The array does not exists');
+    wwarn('The array does not exists');
     return arr;
   } else if (old_index > arr.length || old_index < 0) {
-    wlog('Trying to move an unexisting item');
+    wwarn('Trying to move an unexisting item');
     return arr;
   } else if (newI > arr.length || newI < 0) {
-    wlog('Trying to move item outside of the array');
+    wwarn('Trying to move item outside of the array');
     return arr;
   } else {
     const newArr = [...arr];
@@ -152,7 +152,123 @@ export function arrayRemoveDuplicates(a: unknown[]) {
   });
 }
 
-
-export function replace(str:string, index:number, length:number, replacement:string) {
+export function replace(
+  str: string,
+  index: number,
+  length: number,
+  replacement: string,
+) {
   return str.substr(0, index) + replacement + str.substr(index + length - 1);
+}
+
+interface LruNode<K, V> {
+  key: K;
+  value: V;
+  next: LruNode<K, V> | null;
+  previous: LruNode<K, V> | null;
+}
+
+interface LRU<K, V> {
+  size(): number;
+  has(key: K): boolean;
+  get(key: K): V | undefined;
+  set(key: K, value: V): V;
+}
+
+export function createLRU<K, V>(maxSize?: number): LRU<K, V> {
+  const index = new Map<K, LruNode<K, V>>();
+  let head: LruNode<K, V> | null = null;
+  let tail: LruNode<K, V> | null = null;
+
+  /**
+   * get and bring to front
+   */
+  const get = (key: K) => {
+    const node = index.get(key);
+    if (node) {
+      // remove from list and link previous to next
+      const prev = node.previous;
+      const next = node.next;
+
+      if (prev) {
+        prev.next = next;
+      } else {
+        // no prev means node is HEAD
+        head = next;
+      }
+
+      if (next) {
+        next.previous = prev;
+      } else {
+        // no next means node is the TAIL
+        // new tail is prev
+        tail = prev;
+      }
+
+      // move node to head
+      node.previous = null;
+      node.next = head;
+
+      if (head) {
+        head.previous = node;
+      }
+      head = node;
+
+      return node.value;
+    }
+  };
+
+  const removeOldest = () => {
+    console.log('RemoveOldest');
+    if (tail) {
+      if (tail.previous) {
+        // penultimate becomes the last
+        tail.previous.next = null;
+      }
+      index.delete(tail.key);
+      tail = tail.previous;
+    }
+  };
+
+  return {
+    size() {
+      return index.size;
+    },
+    has(key: K) {
+      return index.has(key);
+    },
+    get,
+    set(key: K, value: V) {
+      if (index.get(key)) {
+        // update item
+        const node = index.get(key)!;
+        node.value = value;
+        // get to move to front
+        get(key);
+        return value;
+      } else {
+        // new item
+        const newNode: LruNode<K, V> = {
+          key,
+          value,
+          previous: null,
+          next: head,
+        };
+        if (head) {
+          head.previous = newNode;
+        }
+        head = newNode;
+        if (!tail) {
+          // first interted item is the head and the tail
+          tail = newNode;
+        }
+        index.set(key, newNode);
+
+        if (maxSize && index.size > maxSize) {
+          removeOldest();
+        }
+        return value;
+      }
+    },
+  };
 }

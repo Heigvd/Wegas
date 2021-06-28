@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.survey.persistence.input;
@@ -67,14 +67,6 @@ public abstract class SurveyInputDescriptor
     private static final String mustBeInsideSection = "A SurveyInputDescriptor can only exist inside a SurveySectionDescriptor";
 
     /**
-     * To order questions/inputs
-     */
-    @WegasEntityProperty(
-        optional = false, nullable = false, proposal = ValueGenerators.One.class,
-        view = @View(label = "Index"))
-    protected Integer index;
-
-    /**
      * Textual descriptor to be displayed to players
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -116,14 +108,6 @@ public abstract class SurveyInputDescriptor
      */
     public SurveyInputDescriptor(String name) {
         this.name = name;
-    }
-
-    public int getIndex() {
-        return index != null ? index : 0;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
     }
 
     /**

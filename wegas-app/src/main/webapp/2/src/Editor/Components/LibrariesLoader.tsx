@@ -6,12 +6,12 @@ import {
   setGlobals,
   useGlobalContexts,
 } from '../../Components/Hooks/useScript';
-import { useWebsocket } from '../../API/websocket';
+import { useWebsocketEvent } from '../../API/websocket';
 import { IGameModelContent } from 'wegas-ts-api';
 
 // @ts-ignore
 import mainStyle from '!!raw-loader!../../css/defaultStyle.less';
-import { store } from '../../data/store';
+import { store } from '../../data/Stores/store';
 
 interface LibrariesContext {
   updateCSSLibraries: (name: string) => void;
@@ -114,7 +114,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
       },
     );
   }, []);
-  useWebsocket('LibraryUpdate-CSS', cssEventHandler);
+  useWebsocketEvent('LibraryUpdate-CSS', cssEventHandler);
 
   const clientScriptEventHandler = React.useCallback(
     (updatedLibraryName: string) => {
@@ -129,7 +129,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
     },
     [],
   );
-  useWebsocket('LibraryUpdate-ClientScript', clientScriptEventHandler);
+  useWebsocketEvent('LibraryUpdate-ClientScript', clientScriptEventHandler);
 
   React.useEffect(() => {
     Object.entries(jsLibs).forEach(([key, lib]) =>

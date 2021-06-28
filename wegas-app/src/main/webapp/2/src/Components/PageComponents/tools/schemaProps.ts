@@ -1,8 +1,4 @@
-import {
-  ScriptMode,
-  CodeLanguage,
-  ScriptProps,
-} from '../../../Editor/Components/FormView/Script/Script';
+import { ScriptProps } from '../../../Editor/Components/FormView/Script/Script';
 import { TYPESTRING, Schema, WidgetProps } from 'jsoninput/typings/types';
 import { DEFINED_VIEWS } from '../../../Editor/Components/FormView';
 import { WegasMethod } from '../../../Editor/editionConfig';
@@ -19,20 +15,14 @@ import {
   TreeVariableSelectProps,
   ScripableVariableSelectProps,
   TreeVSelectProps,
-  TreeSelectItem,
 } from '../../../Editor/Components/FormView/TreeVariableSelect';
 import { IArrayProps } from '../../../Editor/Components/FormView/Array';
 import { StatementViewProps } from '../../../Editor/Components/FormView/Script/Expressions/ExpressionEditor';
 import { createScript } from '../../../Helper/wegasEntites';
-import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
-import {
-  FileFilter,
-  FilePickingType,
-} from '../../../Editor/Components/FileBrowser/FileBrowser';
 import { CustomScriptProps } from '../../../Editor/Components/FormView/CustomScript';
 import { IAbstractContentDescriptor, IScript } from 'wegas-ts-api';
-import { ScriptContext } from '../../Hooks/useGlobalLibs';
 import { ScriptableStringProps } from '../../../Editor/Components/FormView/ScriptableString';
+import { ScriptableBooleanProps } from '../../../Editor/Components/FormView/ScriptableBoolean';
 
 type TypedProps<T extends { view: {} }> = Schema<
   T['view'] & {
@@ -40,32 +30,8 @@ type TypedProps<T extends { view: {} }> = Schema<
   }
 >;
 
-type SchemaLayout = 'inline' | 'shortInline';
-
-export interface SelectItem {
-  label: string;
-  value: {};
-}
-
-interface SimpleSchemaProps {
-  required?: boolean;
-  index?: number;
-}
-
-interface CommonSchemaProps extends SimpleSchemaProps {
-  label?: string;
-  featureLevel?: FeatureLevel;
-  layout?: SchemaLayout;
-  borderTop?: boolean;
-}
-
-interface ReadOnlySchemaProps {
-  readOnly?: boolean;
-}
-
-interface ValueSchemaProps<T> {
-  value?: T;
-}
+// For tests only
+//const simpleSchemaProps: SimpleSchemaPropsType = {
 
 const simpleSchemaProps = {
   hidden: ({
@@ -143,9 +109,12 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     readOnly,
+    fullWidth = false,
   }: CommonSchemaProps &
     ReadOnlySchemaProps &
-    ValueSchemaProps<string>): TypedProps<StringInputProps> => ({
+    ValueSchemaProps<string> & {
+      fullWidth?: boolean;
+    }): TypedProps<StringInputProps> => ({
     required,
     type: 'string',
     value,
@@ -158,6 +127,7 @@ const simpleSchemaProps = {
       label,
       type: 'string',
       readOnly,
+      fullWidth,
     },
   }),
   html: ({
@@ -169,9 +139,10 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     readOnly,
+    noResize = false,
   }: CommonSchemaProps &
     ReadOnlySchemaProps &
-    ValueSchemaProps<ITranslatableContent>) => ({
+    ValueSchemaProps<ITranslatableContent> & { noResize?: boolean }) => ({
     required,
     type: 'object',
     value,
@@ -184,6 +155,7 @@ const simpleSchemaProps = {
       label,
       type: 'i18nhtml',
       readOnly,
+      noResize,
     },
   }),
   custom: <T extends keyof typeof DEFINED_VIEWS>({
@@ -235,7 +207,7 @@ const simpleSchemaProps = {
     borderTop,
   }: {
     mode?: ScriptMode;
-    language?: 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS';
+    language?: ScriptLanguage;
   } & CommonSchemaProps &
     ValueSchemaProps<string>): TypedProps<ScriptProps> => ({
     required,
@@ -266,7 +238,7 @@ const simpleSchemaProps = {
     scriptContext,
   }: {
     returnType?: WegasScriptEditorReturnTypeName[];
-    language?: 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS';
+    language?: ScriptLanguage;
     args?: [string, WegasScriptEditorReturnTypeName[]][];
     scriptContext?: ScriptContext;
   } & CommonSchemaProps &
@@ -541,6 +513,29 @@ const simpleSchemaProps = {
       richText,
     },
   }),
+  scriptBoolean: ({
+    label,
+    required = false,
+    value = undefined,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: CommonSchemaProps &
+    ValueSchemaProps<IScript>): TypedProps<ScriptableBooleanProps> => ({
+    required,
+    type: 'object',
+    index,
+    value,
+    view: {
+      borderTop,
+      index,
+      featureLevel,
+      label,
+      type: 'scriptableBoolean',
+      layout,
+    },
+  }),
   array: ({
     label,
     itemSchema = {},
@@ -619,9 +614,11 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     objectViewStyle,
+    cleaning,
   }: {
     choices?: HashListChoices;
     objectViewStyle?: boolean;
+    cleaning?: CleaningHashmapMethods;
   } & CommonSchemaProps &
     ValueSchemaProps<object>) => ({
     required,
@@ -637,12 +634,13 @@ const simpleSchemaProps = {
       layout,
       borderTop,
       objectViewStyle,
+      cleaning,
     },
   }),
   file: ({
     label,
     required = false,
-    pick = 'FILE',
+    pickType = 'FILE',
     filter,
     value,
     featureLevel = 'DEFAULT',
@@ -650,7 +648,7 @@ const simpleSchemaProps = {
     layout,
     borderTop,
   }: {
-    pick?: FilePickingType;
+    pickType?: FilePickingType;
     filter?: FileFilter;
   } & CommonSchemaProps &
     ValueSchemaProps<IAbstractContentDescriptor>) => ({
@@ -659,7 +657,7 @@ const simpleSchemaProps = {
     value,
     index,
     view: {
-      pick,
+      pickType,
       filter,
       featureLevel,
       index,
@@ -672,7 +670,7 @@ const simpleSchemaProps = {
   path: ({
     label,
     required = false,
-    pick = 'FILE',
+    pickType = 'FILE',
     filter,
     value,
     featureLevel = 'DEFAULT',
@@ -681,7 +679,7 @@ const simpleSchemaProps = {
     borderTop,
     scriptable,
   }: {
-    pick?: FilePickingType;
+    pickType?: FilePickingType;
     filter?: FileFilter;
     scriptable?: boolean;
   } & CommonSchemaProps &
@@ -691,7 +689,7 @@ const simpleSchemaProps = {
     value,
     index,
     view: {
-      pick,
+      pickType,
       filter,
       featureLevel,
       index,
@@ -701,13 +699,10 @@ const simpleSchemaProps = {
       borderTop,
     },
   }),
-};
+} as const;
 
-type SimpleSchemaPropsValues = keyof typeof simpleSchemaProps;
-
-export type SimpleSchemaPropsSchemas = ReturnType<
-  typeof simpleSchemaProps[SimpleSchemaPropsValues]
->;
+// For tests only !
+//const objectSchemaProps: ObjectSchemaPropsType = {
 
 const objectSchemaProps = {
   object: ({
@@ -731,15 +726,26 @@ const objectSchemaProps = {
     index,
     view: { featureLevel, index, label, layout, borderTop },
   }),
-};
+} as const;
+
+export const schemaProps = {
+  ...simpleSchemaProps,
+  ...objectSchemaProps,
+} as const;
+
+export type SchemaPropsType = typeof schemaProps;
+
+type SimpleSchemaPropsValues = keyof typeof simpleSchemaProps;
+
+export type SimpleSchemaPropsSchemas = ReturnType<
+  typeof simpleSchemaProps[SimpleSchemaPropsValues]
+>;
 
 type ObjectSchemaPropsValues = keyof typeof objectSchemaProps;
 
 type ObjectSchemaPropsSchemas = ReturnType<
   typeof objectSchemaProps[ObjectSchemaPropsValues]
 >;
-
-export const schemaProps = { ...simpleSchemaProps, ...objectSchemaProps };
 
 export type SchemaPropsValues =
   | SimpleSchemaPropsValues

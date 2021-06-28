@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
+import { setPagesContextState } from '../../../data/Stores/pageContextStore';
 import { createScript } from '../../../Helper/wegasEntites';
+import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import {
   FlexListProps,
@@ -23,6 +25,7 @@ import { schemaProps } from '../tools/schemaProps';
 interface StateProps extends WegasComponentProps, FlexListProps {
   exposeAs: string;
   initialState: IScript;
+  localState?: boolean;
 }
 
 function ChildrenDeserializer({
@@ -32,6 +35,7 @@ function ChildrenDeserializer({
   uneditable,
   context,
   editMode,
+  inheritedOptionsState,
   containerPropsKeys,
   exposeAs,
 }: ChildrenDeserializerProps<StateProps>) {
@@ -56,6 +60,7 @@ function ChildrenDeserializer({
               dropzones={{
                 side: true,
               }}
+              inheritedOptionsState={inheritedOptionsState}
             />
           );
         })
@@ -64,16 +69,37 @@ function ChildrenDeserializer({
   );
 }
 
-function State({ children, context, exposeAs, initialState }: StateProps) {
+function State({
+  children,
+  context,
+  exposeAs,
+  initialState,
+  localState,
+}: StateProps) {
+  const initRef = React.useRef<unknown>();
+  const exposeAsRef = React.useRef<string>();
+
   const init = safeClientScriptEval(initialState, context);
+
   const [state, setState] = React.useState(init);
 
-  if (context) {
+  if (localState && context) {
     context[exposeAs] = {
       state,
       setState,
     };
   }
+
+  React.useEffect(() => {
+    if (
+      (!localState && deepDifferent(initRef.current, init)) ||
+      exposeAsRef.current !== exposeAs
+    ) {
+      initRef.current = init;
+      exposeAsRef.current = exposeAs;
+      setPagesContextState(exposeAs, init);
+    }
+  }, [exposeAs, init, localState]);
 
   return (
     <React.Fragment key={JSON.stringify(state)}>{children}</React.Fragment>
@@ -103,10 +129,12 @@ registerComponent(
         required: true,
         value: 'state',
       }),
+      localState: schemaProps.boolean({ label: 'Local state', value: false }),
     },
     getComputedPropsFromVariable: () => ({
       initialState: createScript('({})', 'TypeScript'),
       exposeAs: 'state',
+      localState: false,
       children: [],
     }),
   }),

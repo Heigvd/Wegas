@@ -3,7 +3,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -170,7 +170,7 @@ public class VariableDescriptorController {
             VariableDescriptor parent = variableDescriptorFacade.find(gm, entityName);
 
             if (parent instanceof DescriptorListI) {
-                return variableDescriptorFacade.createChild(gm, (DescriptorListI) parent, entity, false);
+                return variableDescriptorFacade.createChild(gm, (DescriptorListI) parent, entity, false, false);
             } else {
                 throw WegasErrorMessage.error("Parent entity does not allow children");
             }

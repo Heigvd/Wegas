@@ -13,7 +13,7 @@ import {
   getLabel,
   getChildren,
 } from '../../editionConfig';
-import { StoreDispatch, useStore, store } from '../../../data/store';
+import { StoreDispatch, useStore, store } from '../../../data/Stores/store';
 import { css, cx } from 'emotion';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { DropMenu } from '../../../Components/DropMenu';
@@ -27,7 +27,7 @@ import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { Edition } from '../../../data/Reducer/globalState';
 import { mainLayoutId } from '../Layout';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import {
   globalSelection,
   localSelection,
@@ -36,6 +36,7 @@ import {
   flex,
   grow,
   flexColumn,
+  toolboxHeaderStyle,
 } from '../../../css/classes';
 import {
   IVariableDescriptor,
@@ -44,6 +45,17 @@ import {
 } from 'wegas-ts-api';
 import { focusTab } from '../LinearTabLayout/LinearLayout';
 import { State } from '../../../data/Reducer/reducers';
+import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
+import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
+import { useOkCancelModal } from '../../../Components/Modal';
+import {
+  internalTranslate,
+  useInternalTranslate,
+} from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+
+const TREECONTENTID = 'TREECONTENT';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -76,7 +88,7 @@ export function VariableTreeTitle({
   style,
 }: VariableTreeTitleProps) {
   return (
-    <div className={className} style={style}>
+    <div className={cx(className, css({ margin: '3px 0' }))} style={style}>
       <IconComp icon={withDefault(getIcon(variable!), 'question')} />
       {entityIs(variable, 'EvaluationDescriptorContainer')
         ? subPath && subPath.length === 1
@@ -89,56 +101,78 @@ export function VariableTreeTitle({
   );
 }
 
-interface TreeProps {
+interface TreeProps extends DisabledReadonly {
   variables: number[];
+  noHeader?: boolean;
+  noVisibleRoot?: boolean;
   localState?: Readonly<Edition> | undefined;
   localDispatch?: StoreDispatch;
   forceLocalDispatch?: boolean;
 }
 export function TreeView({
   variables,
+  noHeader = false,
+  noVisibleRoot = false,
   localState,
   localDispatch,
   forceLocalDispatch,
+  ...options
 }: TreeProps) {
   const [search, setSearch] = React.useState('');
+  const [onAccept, setOnAccept] = React.useState(() => () => {});
+
   const { data } = useAsync(itemsPromise);
+  const { showModal, OkCancelModal } = useOkCancelModal(TREECONTENTID);
+  const i18nValues = useInternalTranslate(commonTranslations);
+
   const globalDispatch = store.dispatch;
+  const actionAllowed = isActionAllowed(options);
 
   return (
-    <Toolbar>
-      <Toolbar.Header>
-        <input
-          type="string"
-          value={search}
-          placeholder="Filter"
-          aria-label="Filter"
-          onChange={ev => {
-            setSearch(ev.target.value);
-          }}
-        />
-        <DropMenu
-          items={data || []}
-          icon="plus"
-          onSelect={(i, e) => {
-            if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
-              localDispatch(Actions.EditorActions.createVariable(i.value));
-            } else {
-              globalDispatch(Actions.EditorActions.createVariable(i.value));
-              focusTab(mainLayoutId, 'Variable Properties');
-            }
-          }}
-        />
-        <SearchTool />
+    <Toolbar className={css({ padding: '1.5em' })}>
+      <Toolbar.Header className={toolboxHeaderStyle}>
+        {!noHeader && actionAllowed && (
+          <>
+            <SimpleInput
+              value={search}
+              placeholder={i18nValues.filter}
+              aria-label="Filter"
+              onChange={ev => {
+                setSearch(ev.toString());
+              }}
+            />
+            <DropMenu
+              items={data || []}
+              icon="plus"
+              onSelect={(i, e) => {
+                if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
+                  localDispatch(Actions.EditorActions.createVariable(i.value));
+                } else {
+                  globalDispatch(Actions.EditorActions.createVariable(i.value));
+                  focusTab(mainLayoutId, 'Variable Properties');
+                }
+              }}
+            />
+            <SearchTool />
+          </>
+        )}
       </Toolbar.Header>
-      <Toolbar.Content style={{ paddingTop: '1px' }}>
+      <Toolbar.Content id={TREECONTENTID} className={css({ padding: '1px' })}>
+        <OkCancelModal onOk={onAccept}>
+          <p>{i18nValues.changesWillBeLost}</p>
+          <p>{i18nValues.areYouSure}</p>
+        </OkCancelModal>
         <Container
           onDropResult={({ source, target, id }) => {
             if (
               source.parent !== target.parent ||
               source.index !== target.index
             ) {
-              globalDispatch(
+              let dispatch = store.dispatch;
+              if (forceLocalDispatch && localDispatch) {
+                dispatch = localDispatch;
+              }
+              dispatch(
                 moveDescriptor(
                   id as IVariableDescriptor,
                   target.index,
@@ -153,17 +187,23 @@ export function TreeView({
               {variables ? (
                 variables.map(id => (
                   <CTree
+                    onShowWarning={onOk => {
+                      setOnAccept(() => onOk);
+                      showModal();
+                    }}
                     nodeProps={nodeProps}
                     key={id}
                     search={search}
                     variableId={id}
+                    noVisibleRoot={noVisibleRoot}
                     localState={localState}
                     localDispatch={localDispatch}
                     forceLocalDispatch={forceLocalDispatch}
+                    {...options}
                   />
                 ))
               ) : (
-                <span>Loading ...</span>
+                <span>{`${i18nValues.loading} ...`}</span>
               )}
             </div>
           )}
@@ -203,21 +243,20 @@ function isEditing(
     shallowIs(subPath || [], editing.path)
   );
 }
-
-//const SELECTED_STYLE_WIDTH = 4;
-const headerStyle = css({
-  //  borderLeft: `${SELECTED_STYLE_WIDTH}px solid transparent`,
-});
-
 export const nodeContentStyle = cx(
   css({
-    cursor: 'pointer',
     marginRight: '5px',
-    ':hover': {
-      backgroundColor: themeVar.Common.colors.HoverColor,
-    },
   }),
   componentMarginLeft,
+);
+
+export const actionNodeContentStyle = cx(
+  css({
+    cursor: 'pointer',
+    ':hover': {
+      backgroundColor: themeVar.colors.HoverColor,
+    },
+  }),
 );
 
 export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_DRAG_ITEM';
@@ -227,11 +266,22 @@ interface CTreeProps {
   subPath?: string[];
   search?: string;
   nodeProps: () => {};
+  onShowWarning?: (onAccept: () => void) => void;
 }
 
 export function CTree(
   props: Omit<CTreeProps & TreeProps, 'variables'>,
 ): JSX.Element | null {
+  // const unsaved = useStore(() => props?.localState?.unsaved);
+  // props.localState
+  // const unsaved = useStore(s => s.global.editing?.unsaved);
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
+  const actionAllowed = isActionAllowed({
+    disabled: props.disabled,
+    readOnly: props.readOnly,
+  });
+
   const infoSelector = React.useCallback(
     (state: State) => {
       let variable:
@@ -274,77 +324,109 @@ export function CTree(
     props.subPath,
     props.localState,
   );
+
+  const onClickAction = React.useCallback(
+    (e: ModifierKeysEvent) => {
+      let dispatch = store.dispatch;
+      if ((props.forceLocalDispatch || e.ctrlKey) && props.localDispatch) {
+        dispatch = props.localDispatch;
+      } else {
+        if (
+          entityIs(variable, 'FSMDescriptor') ||
+          entityIs(variable, 'DialogueDescriptor')
+        ) {
+          focusTab(mainLayoutId, 'State Machine');
+        }
+        focusTab(mainLayoutId, 'Variable Properties');
+      }
+      getEntityActions(variable!).then(({ edit }) =>
+        dispatch(
+          edit(VariableDescriptor.select(props.variableId)!, props.subPath),
+        ),
+      );
+    },
+    [
+      props.forceLocalDispatch,
+      props.localDispatch,
+      props.subPath,
+      props.variableId,
+      variable,
+    ],
+  );
+
   if (variable) {
     if (!match) {
       return null;
     }
     return (
       <Node
+        noToggle={props.noVisibleRoot}
+        disabled={props.disabled}
         dragId={TREEVIEW_ITEM_TYPE}
+        dragDisabled={!actionAllowed}
+        dropDisabled={!actionAllowed}
         {...props.nodeProps()}
         header={
           <div
-            className={cx(headerStyle, flex, {
+            className={cx(flex, {
               [globalSelection]: editing,
               [localSelection]: localEditing,
               [searchSelection]: searching,
             })}
             onClick={(e: ModifierKeysEvent) => {
-              let dispatch = store.dispatch;
-              if (
-                (props.forceLocalDispatch || e.ctrlKey) &&
-                props.localDispatch
-              ) {
-                dispatch = props.localDispatch;
-              } else {
-                if (
-                  entityIs(variable, 'FSMDescriptor') ||
-                  entityIs(variable, 'DialogueDescriptor')
-                ) {
-                  focusTab(mainLayoutId, 'State Machine');
+              if (actionAllowed) {
+                const unsaved =
+                  props.forceLocalDispatch || e.ctrlKey
+                    ? props?.localState?.unsaved
+                    : store.getState().global.editing?.unsaved;
+                if (unsaved && props.onShowWarning) {
+                  props.onShowWarning(() => onClickAction(e));
+                } else {
+                  onClickAction(e);
                 }
-                focusTab(mainLayoutId, 'Variable Properties');
               }
-              getEntityActions(variable!).then(({ edit }) =>
-                dispatch(
-                  edit(
-                    VariableDescriptor.select(props.variableId)!,
-                    props.subPath,
-                  ),
-                ),
-              );
             }}
           >
-            <VariableTreeTitle
-              variable={variable}
-              subPath={props.subPath}
-              className={nodeContentStyle}
-            />
-            {entityIs(variable, 'ListDescriptor') ||
-            entityIs(variable, 'QuestionDescriptor') ||
-            entityIs(variable, 'WhQuestionDescriptor') ? (
-              <AddMenuParent
+            {!props.noVisibleRoot && (
+              <VariableTreeTitle
                 variable={variable}
-                localDispatch={props.localDispatch}
-                focusTab={tabId => focusTab(mainLayoutId, tabId)}
-                forceLocalDispatch={props.forceLocalDispatch}
+                subPath={props.subPath}
+                className={cx(nodeContentStyle, {
+                  [actionNodeContentStyle]: actionAllowed,
+                })}
               />
-            ) : entityIs(variable, 'ChoiceDescriptor') ? (
-              <AddMenuChoice
-                variable={variable}
-                localDispatch={props.localDispatch}
-                focusTab={tabId => focusTab(mainLayoutId, tabId)}
-                forceLocalDispatch={props.forceLocalDispatch}
-              />
-            ) : entityIs(variable, 'EvaluationDescriptorContainer') ? (
-              <AddMenuFeedback
-                variable={variable}
-                localDispatch={props.localDispatch}
-                focusTab={tabId => focusTab(mainLayoutId, tabId)}
-                path={props.subPath![0] as 'feedback' | 'fbComments'}
-                forceLocalDispatch={props.forceLocalDispatch}
-              />
-            ) : null}
+            )}
+            {actionAllowed &&
+              (entityIs(variable, 'ListDescriptor') ||
+              entityIs(variable, 'QuestionDescriptor') ||
+              entityIs(variable, 'WhQuestionDescriptor') ? (
+                <AddMenuParent
+                  label={props.noVisibleRoot ? 'Add' : undefined}
+                  prefixedLabel={!props.noVisibleRoot}
+                  variable={variable}
+                  localDispatch={props.localDispatch}
+                  focusTab={tabId => focusTab(mainLayoutId, tabId)}
+                  forceLocalDispatch={props.forceLocalDispatch}
+                  style={
+                    props.noVisibleRoot ? { marginBottom: '10px' } : undefined
+                  }
+                />
+              ) : entityIs(variable, 'ChoiceDescriptor') ? (
+                <AddMenuChoice
+                  variable={variable}
+                  localDispatch={props.localDispatch}
+                  focusTab={tabId => focusTab(mainLayoutId, tabId)}
+                  forceLocalDispatch={props.forceLocalDispatch}
+                />
+              ) : entityIs(variable, 'EvaluationDescriptorContainer') ? (
+                <AddMenuFeedback
+                  variable={variable}
+                  localDispatch={props.localDispatch}
+                  focusTab={tabId => focusTab(mainLayoutId, tabId)}
+                  path={props.subPath![0] as 'feedback' | 'fbComments'}
+                  forceLocalDispatch={props.forceLocalDispatch}
+                />
+              ) : null)}
           </div>
         }
         id={variable}
@@ -360,6 +442,9 @@ export function CTree(
                   localState={props.localState}
                   localDispatch={props.localDispatch}
                   forceLocalDispatch={props.forceLocalDispatch}
+                  disabled={props.disabled}
+                  readOnly={props.readOnly}
+                  onShowWarning={props.onShowWarning}
                 />
               ))
             : entityIs(variable, 'ChoiceDescriptor')
@@ -373,6 +458,9 @@ export function CTree(
                   localState={props.localState}
                   localDispatch={props.localDispatch}
                   forceLocalDispatch={props.forceLocalDispatch}
+                  disabled={props.disabled}
+                  readOnly={props.readOnly}
+                  onShowWarning={props.onShowWarning}
                 />
               ))
             : entityIs(variable, 'PeerReviewDescriptor')
@@ -386,6 +474,9 @@ export function CTree(
                   localState={props.localState}
                   localDispatch={props.localDispatch}
                   forceLocalDispatch={props.forceLocalDispatch}
+                  disabled={props.disabled}
+                  readOnly={props.readOnly}
+                  onShowWarning={props.onShowWarning}
                 />,
                 <CTree
                   nodeProps={nodeProps}
@@ -396,6 +487,9 @@ export function CTree(
                   localState={props.localState}
                   localDispatch={props.localDispatch}
                   forceLocalDispatch={props.forceLocalDispatch}
+                  disabled={props.disabled}
+                  readOnly={props.readOnly}
+                  onShowWarning={props.onShowWarning}
                 />,
               ]
             : entityIs(variable, 'EvaluationDescriptorContainer')
@@ -413,6 +507,9 @@ export function CTree(
                   localState={props.localState}
                   localDispatch={props.localDispatch}
                   forceLocalDispatch={props.forceLocalDispatch}
+                  disabled={props.disabled}
+                  readOnly={props.readOnly}
+                  onShowWarning={props.onShowWarning}
                 />
               ))
             : null
@@ -420,7 +517,7 @@ export function CTree(
       </Node>
     );
   }
-  return <div>Loading...</div>;
+  return <div>{i18nValues.loading}...</div>;
 }
 export function Tree() {
   const entities = useGameModel().itemsIds;

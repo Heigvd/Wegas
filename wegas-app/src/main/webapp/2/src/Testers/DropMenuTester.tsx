@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { expandBoth, flex, flexColumn } from '../css/classes';
 import { cx } from 'emotion';
-import { DropMenu, SelecteDropdMenuItem, DropMenuItem } from '../Components/DropMenu';
+import { DropMenu, SelecteDropdMenuItem } from '../Components/DropMenu';
 
 type MenuTesterItemValue = { prop: string; schema: { name: string } };
 

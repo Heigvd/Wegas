@@ -5,7 +5,7 @@ import { LabeledView, Labeled } from './labeled';
 import { scriptEditStyle } from './Script/Script';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { createScript } from '../../../Helper/wegasEntites';
-import { useStore } from '../../../data/store';
+import { useStore } from '../../../data/Stores/store';
 import {
   isWegasComponent,
   visitComponents,
@@ -13,7 +13,7 @@ import {
   PageLoaderComponentProps,
 } from '../../../Helper/pages';
 import { useScript } from '../../../Components/Hooks/useScript';
-import { DropMenu, DropMenuItem } from '../../../Components/DropMenu';
+import { DropMenu } from '../../../Components/DropMenu';
 import { cx, css } from 'emotion';
 import { flex, flexRow, grow } from '../../../css/classes';
 import { MessageString } from '../MessageString';

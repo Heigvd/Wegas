@@ -1,0 +1,56 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <!-- unify indexes -->
+
+    <changeSet author="maxence (generated)" id="1611655477358-1a">
+        <comment>Create new column for variable order</comment>
+        <addColumn tableName="variabledescriptor">
+            <column name="indexorder" type="int4"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="maxence (generated)" id="1611655477358-1b">
+        <comment>Unify variable descriptos indexes</comment>
+        <sql>
+            UPDATE variabledescriptor
+            SET indexorder = FOO.index
+            FROM (
+                SELECT
+                    vd.id AS vd_id,
+                    coalesce(
+                        vd.gm_items_order,
+                        vd.ld_items_order,
+                        vd.whd_items_order,
+                        cd.qd_items_order,
+                        ssd.index,
+                        sid.index
+                    ) AS index
+                FROM variabledescriptor vd
+                LEFT JOIN choicedescriptor cd on cd.id = vd.id
+                LEFT JOIN surveysectiondescriptor ssd on ssd.id = vd.id
+                LEFT JOIN surveyinputdescriptor sid on sid.id = vd.id
+            ) AS FOO
+            WHERE id = FOO.vd_id;
+        </sql>
+    </changeSet>
+
+    <changeSet author="maxence (generated)" id="1611655477358-1c">
+        <dropColumn columnName="gm_items_order" tableName="variabledescriptor"/>
+        <dropColumn columnName="ld_items_order" tableName="variabledescriptor"/>
+        <dropColumn columnName="whd_items_order" tableName="variabledescriptor"/>
+        <dropColumn columnName="qd_items_order" tableName="choicedescriptor"/>
+        <dropColumn columnName="index" tableName="surveyinputdescriptor"/>
+        <dropColumn columnName="index" tableName="surveysectiondescriptor"/>
+    </changeSet>
+
+
+    <changeSet author="maxence (generated)" id="1611655477358-2">
+        <renameColumn tableName="mcqresult" oldColumnName="results_order" newColumnName="index" />
+    </changeSet>
+
+    <changeSet author="maxence (generated)" id="1611655477358-3">
+        <renameColumn tableName="assignment" oldColumnName="assignments_order" newColumnName="index" />
+    </changeSet>
+
+</databaseChangeLog>

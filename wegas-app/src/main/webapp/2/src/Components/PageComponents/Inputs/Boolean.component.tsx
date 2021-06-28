@@ -4,12 +4,12 @@ import {
   pageComponentFactory,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { store } from '../../../data/store';
+import { store, useStore } from '../../../data/Stores/store';
 import { Actions } from '../../../data';
 import { Toggler } from '../../Inputs/Boolean/Toggler';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { IBooleanDescriptor, IScript } from 'wegas-ts-api';
+import { IScript, SBooleanDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
 import {
@@ -18,7 +18,7 @@ import {
   useOnVariableChange,
 } from './tools';
 import { TumbleLoader } from '../../Loader';
-import { useComponentScript } from '../../Hooks/useComponentScript';
+import { Player } from '../../../data/selectors';
 
 interface PlayerBooleanProps extends WegasComponentProps {
   /**
@@ -33,14 +33,7 @@ interface PlayerBooleanProps extends WegasComponentProps {
    * type - the behaviour and style of the component
    */
   type?: 'checkbox' | 'toggler';
-  /**
-   * inactive - if true, the component will only display the boolean but the user won't be abe to change it
-   */
-  inactive?: boolean;
-  /**
-   * disabled - if true, the component will be disabled
-   */
-  disabled?: boolean;
+
   onVariableChange?: OnVariableChange;
 }
 
@@ -48,19 +41,14 @@ function PlayerBoolean({
   script,
   type,
   label,
-  disabled,
-  inactive,
+  options,
   context,
   className,
   style,
   id,
   onVariableChange,
 }: PlayerBooleanProps) {
-  const {
-    descriptor,
-    instance,
-    notFound,
-  } = useComponentScript<IBooleanDescriptor>(script, context);
+  const bool = useScript<SBooleanDescriptor | boolean>(script, context);
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
@@ -68,7 +56,11 @@ function PlayerBoolean({
 
   const BooleanComponent = type === 'toggler' ? Toggler : CheckBox;
 
-  return notFound ? (
+  const value = useStore(() =>
+    typeof bool === 'object' ? bool.getValue(Player.self()) : bool,
+  );
+
+  return bool == null ? (
     <TumbleLoader />
   ) : (
     <BooleanComponent
@@ -76,16 +68,16 @@ function PlayerBoolean({
       style={style}
       id={id}
       label={textLabel}
-      value={instance?.getValue()}
-      disabled={disabled}
-      readOnly={inactive}
+      value={value}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
       onChange={v => {
         if (handleOnChange) {
           handleOnChange(v);
-        } else {
+        } else if (typeof bool === 'object') {
           store.dispatch(
             Actions.VariableInstanceActions.runScript(
-              `Variable.find(gameModel,"${descriptor?.getName()}").setValue(self, ${v});`,
+              `Variable.find(gameModel,"${bool.getName()}").setValue(self, ${v});`,
             ),
           );
         }
@@ -101,18 +93,15 @@ registerComponent(
     name: 'Boolean',
     icon: 'check-square',
     schema: {
-      script: schemaProps.scriptVariable({
+      script: schemaProps.scriptBoolean({
         label: 'Variable',
         required: true,
-        returnType: ['SBooleanDescriptor'],
       }),
       label: schemaProps.scriptString({ label: 'Label' }),
       type: schemaProps.select({
         label: 'Type',
         values: ['checkbox', 'toggler'],
       }),
-      disabled: schemaProps.boolean({ label: 'Disabled' }),
-      inactive: schemaProps.boolean({ label: 'Inactive' }),
       onVariableChange: onVariableChangeSchema('On change action'),
     },
     allowedVariables: ['BooleanDescriptor'],

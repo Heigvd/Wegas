@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { CommonView, CommonViewContainer } from './commonView';
 import { LabeledView, Labeled } from './labeled';
-import { DropMenu, DropMenuItem } from '../../../Components/DropMenu';
+import { DropMenu } from '../../../Components/DropMenu';
 import { cx } from 'emotion';
 import { flex, flexRow, grow } from '../../../css/classes';
-import { themeCTX } from '../../../Components/Style/Theme';
+import { themeCTX } from '../../../Components/Theme/Theme';
 import { WidgetProps } from 'jsoninput/typings/types';
 
 export interface ThemeModeSelectProps extends WidgetProps.BaseProps {
@@ -20,16 +20,6 @@ export default function ThemeModeSelect({
   onChange,
   errorMessage,
 }: ThemeModeSelectProps) {
-  // const [mode, setMode] = React.useState(value);
-  // React.useEffect(() => setMode(value), [value]);
-  // const onNewMode = React.useCallback(
-  //   (newValue: string) => {
-  //     setMode(newValue);
-  //     onChange(newValue);
-  //   },
-  //   [onChange],
-  // );
-
   const { themesState, currentContext } = React.useContext(themeCTX);
 
   const modes =

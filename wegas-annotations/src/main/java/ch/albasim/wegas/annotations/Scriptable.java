@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, MEI
  * Licensed under the MIT License
  */
 package ch.albasim.wegas.annotations;

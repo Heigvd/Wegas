@@ -1,9 +1,8 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -73,6 +72,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -187,15 +187,22 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     /**
      * Create a new descriptor in a DescriptorListI
      *
-     * @param gameModel the gameModel
-     * @param list      new descriptor parent
-     * @param entity    new descriptor to create
+     * @param gameModel   the gameModel
+     * @param list        new descriptor parent
+     * @param entity      new descriptor to create
+     * @param resetNames  should completely reset names or try to keep provideds ?
+     * @param resetRefIds should generate brand new refIds ?
      *
      * @return the new descriptor
      */
+    @Override
     public VariableDescriptor createChild(final GameModel gameModel,
         final DescriptorListI<VariableDescriptor> list,
-        final VariableDescriptor entity, boolean resetNames) {
+        final VariableDescriptor entity, boolean resetNames, boolean resetRefIds) {
+
+        if (resetRefIds) {
+            MergeHelper.resetRefIds(entity, null, true);
+        }
 
         List<String> usedNames = this.findDistinctNames(gameModel, entity.getRefId());
         List<TranslatableContent> usedLabels = this.findDistinctLabels(list);
@@ -216,15 +223,15 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             // still no name but a tag
             entity.setName(entity.getEditorTag());
         }
-
+ 
         Map<String, String> newNames = Helper.setUniqueName(entity, usedNames, gameModel, resetNames);
 
         // some impacts may impact renamed variable. -> update them to impact the new variable name
         for (Entry<String, String> newName : newNames.entrySet()) {
             FindAndReplacePayload payload = new FindAndReplacePayload();
-            payload.setRegex(false);
-            payload.setFind("Variable.find(gameModel, \"" + newName.getKey() + "\")");
-            payload.setReplace("Variable.find(gameModel, \"" + newName.getValue() + "\")");
+            payload.setRegex(true);
+            payload.setFind("Variable.find\\(gameModel, ([\"'])" + Pattern.quote(newName.getKey()) + "([\"'])\\)");
+            payload.setReplace("Variable.find(gameModel, $1" + newName.getValue() + "$2)");
             payload.setPretend(false);
 
             FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);
@@ -458,7 +465,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      */
     public VariableDescriptor createChild(final Long parentDescriptorId, final VariableDescriptor entity) {
         VariableDescriptor parent = this.find(parentDescriptorId);
-        return this.createChild(parent.getGameModel(), (DescriptorListI) parent, entity, false);
+        return this.createChild(parent.getGameModel(), (DescriptorListI) parent, entity, false, false);
     }
 
     /**
@@ -479,7 +486,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                 }
             }
         } // */
-        this.createChild(find, find, variableDescriptor, false);
+        this.createChild(find, find, variableDescriptor, false, false);
     }
 
     /**
@@ -495,14 +502,12 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         final VariableDescriptor oldEntity = this.find(entityId); // Retrieve the entity to duplicate
         final VariableDescriptor newEntity = (VariableDescriptor) oldEntity.duplicate();
 
-        // reset reference id for all new entites within newEntity
-        MergeHelper.resetRefIds(newEntity, null, true);
         if (oldEntity.belongsToProtectedGameModel()) {
             MergeHelper.resetVisibility(newEntity, Visibility.PRIVATE);
         }
 
         final DescriptorListI list = oldEntity.getParent();
-        this.createChild(oldEntity.getGameModel(), list, newEntity, true);
+        this.createChild(oldEntity.getGameModel(), list, newEntity, true, true);
         return newEntity;
     }
 
@@ -571,7 +576,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                 staticText.setLabel(label);
                 staticText.setText(value);
 
-                this.createChild(gameModel, parent, staticText, false);
+                this.createChild(gameModel, parent, staticText, false, false);
 
                 staticText.setName(vdName);
             }
@@ -610,7 +615,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                     text.setName(vdName);
                     text.setLabel(label);
 
-                    this.createChild(gameModel, parent, text, false);
+                    this.createChild(gameModel, parent, text, false, false);
                 }
             }
         }
@@ -881,7 +886,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                 }
             }
         } else {
-            throw WegasErrorMessage.error("Moving \"" + vd.getLabel().translateOrEmpty(vd.getGameModel()) + "\" is not authorized");
+            throw WegasErrorMessage.error("Moving \"" + vd.getEditorLabel() + "\" is not authorized");
         }
     }
 
@@ -898,9 +903,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     /**
      * Move given descriptor in targetListDescriptor at specified position.
      *
-     * @param descriptorId           id of the descrptor to move
+     * @param descriptorId           id of the descriptor to move
      * @param targetListDescriptorId id of the new list
-     * @param index                  new position in the targetlist
+     * @param index                  new position in the targetList
      */
     public void move(final Long descriptorId, final Long targetListDescriptorId, final Integer index) {
         this.move(descriptorId, (DescriptorListI) this.find(targetListDescriptorId), index);
@@ -1084,8 +1089,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                         });
                     }
 
-                    theVar = this.createChild(target, target,
-                        theVar, false);
+                    theVar = this.createChild(target, target, theVar, false, false);
 
                     ContentConnector srcRepo = jcrConnectorProvider.getContentConnector(source,
                         WorkspaceType.FILES);

@@ -1,16 +1,22 @@
 import * as React from 'react';
 import { css, keyframes, cx } from 'emotion';
 import { useScript } from '../../Hooks/useScript';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { IScript } from 'wegas-ts-api';
 
 const infoBeamStyle = css({
   position: 'absolute',
-  color: themeVar.Common.colors.SecondaryTextColor,
-  backgroundColor: themeVar.Common.colors.WarningColor,
+  padding: '3px',
+  color: themeVar.colors.LightTextColor,
+  backgroundColor: themeVar.colors.WarningColor,
   borderRadius: '50%',
-  padding: '0px 5px 0px 5px',
-  zIndex: 10000,
+  height: '21px',
+  width: '21px',
+  textAlign: 'center',
+  fontSize: '12px',
+  lineHeight: '15px',
+  fontWeight: 'normal',
+  zIndex: 10,
 });
 
 const blinkAnimation = keyframes(`
@@ -39,7 +45,7 @@ export interface InfoBulletProps {
 
 export function InfoBullet({ show, blink, message }: InfoBulletProps) {
   return show !== false ? (
-    <div
+    <span
       ref={container => {
         if (container) {
           const { width, height } = container.getBoundingClientRect();
@@ -52,7 +58,7 @@ export function InfoBullet({ show, blink, message }: InfoBulletProps) {
       className={cx(infoBeamStyle, { [blinkStyle]: blink })}
     >
       {message}
-    </div>
+    </span>
   ) : null;
 }
 

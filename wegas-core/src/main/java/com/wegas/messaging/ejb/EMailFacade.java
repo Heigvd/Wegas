@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.messaging.ejb;
@@ -61,7 +61,7 @@ public class EMailFacade {
         props.setProperty("mail.smtp.auth", Helper.getWegasProperty("mail.smtp.auth"));
         props.put("mail.smtp.port", Helper.getWegasProperty("mail.smtp.port"));
         if (Helper.getWegasProperty("mail.smtp.starttls.enable").equals("true")) {
-        props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.ssl.trust", Helper.getWegasProperty("mail.smtp.host"));
         } else {
             props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");

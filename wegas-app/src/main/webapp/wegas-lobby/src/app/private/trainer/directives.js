@@ -247,7 +247,7 @@ angular.module('private.trainer.directives', [
                 }, 1000);
             }
         };
-        
+
         // This should, but will not be called by ng-blur in the current version of Angular (1.3)
         ctrl.saveToken = function(sessionToSet) {
             SessionsModel.updateSessionToken(sessionToSet).then(function(response) {
@@ -429,6 +429,7 @@ angular.module('private.trainer.directives', [
                                     button.removeClass("button--disable button--spinner button--rotate");
                                 } else {
                                     response.flash();
+                                    button.removeClass("button--disable button--spinner button--rotate");
                                 }
                             });
                         }

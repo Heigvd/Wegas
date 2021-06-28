@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
@@ -242,6 +242,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      * @return value of player p instance
      */
     @Scriptable(label = "value")
+    @Override
     public Double getValue(Player p) {
         return this.getInstance(p).getValue();
     }

@@ -1,8 +1,9 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -31,34 +32,9 @@ public class LibraryFacade {
     @Inject
     private GameModelFacade gameModelFacade;
 
-    private List<GameModelContent> getLibrary(Long gameModelId, String name) {
-
-        GameModel gameModel = gameModelFacade.find(gameModelId);
-        switch (name) {
-            case "ServerScript":
-            case "Script":
-                return gameModel.getScriptLibraryList();
-
-            case "ClientScript":
-                return gameModel.getClientScriptLibraryList();
-
-            case "CSS":
-                return gameModel.getCssLibraryList();
-
-            default:
-                throw WegasErrorMessage.error("Unable to find associated library: " + name);
-        }
-    }
-
     public Map<String, GameModelContent> findLibrary(Long gameModelId, String name) {
-        Map<String, GameModelContent> library = new HashMap<>();
-        List<GameModelContent> list = this.getLibrary(gameModelId, name);
-
-        for (GameModelContent gmc : list) {
-            library.put(gmc.getContentKey(), gmc);
-        }
-
-        return library;
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        return gameModel.getLibrariesAsMap(name);
     }
 
     /**
@@ -70,36 +46,25 @@ public class LibraryFacade {
      */
     public String getLibraryContent(Long gameModelId, String name) {
         StringBuilder ret = new StringBuilder();
-        for (GameModelContent c : this.getLibrary(gameModelId, name)) {
+        Map<String, GameModelContent> libs = this.findLibrary(gameModelId, name);
+        for (GameModelContent c : libs.values()) {
             ret.append(c.getContent().replaceAll("\\.\\./", ""));
+            ret.append(System.lineSeparator());
             //ret.append(c.getContent());
         }
+        ret.append(System.lineSeparator());
         return ret.toString();
     }
 
-    public GameModelContent create(Long gameModelId, String library, String key, GameModelContent content) {
-        List<GameModelContent> lib = this.getLibrary(gameModelId, library);
-
+    public GameModelContent create(Long gameModelId, String libraryName, String key, GameModelContent content) {
         GameModel gameModel = gameModelFacade.find(gameModelId);
-
-        if (gameModel.getGameModelContent(lib, key) == null) {
+        if (gameModel.findLibrary(libraryName, key) == null) {
+            content.setLibraryType(libraryName);
             content.setContentKey(key);
-            lib.add(content);
+            gameModel.addLibrary(content);
+
             if (!gameModel.isModel()) {
                 content.setVisibility(ModelScoped.Visibility.PRIVATE);
-            }
-
-            switch (library) {
-                case "Script":
-                case "ServerScript":
-                    content.setScriptlibrary_GameModel(gameModel);
-                    break;
-                case "ClientScript":
-                    content.setClientscriptlibrary_GameModel(gameModel);
-                    break;
-                case "CSS":
-                    content.setCsslibrary_GameModel(gameModel);
-                    break;
             }
         } else {
             throw new WegasConflictException();
@@ -108,35 +73,24 @@ public class LibraryFacade {
         return content;
     }
 
-    public GameModelContent update(Long gameModelId, String library, String key, GameModelContent content) {
-        List<GameModelContent> lib = this.getLibrary(gameModelId, library);
-
+    public GameModelContent update(Long gameModelId, String libraryName, String key, GameModelContent content) {
         GameModel gameModel = gameModelFacade.find(gameModelId);
+        GameModelContent lib = gameModel.findLibrary(libraryName, key);
 
-        GameModelContent gameModelContent = gameModel.getGameModelContent(lib, key);
-        if (gameModelContent != null) {
-            content.setContentKey(gameModelContent.getContentKey());
-            gameModelContent.merge(content);
-            //gameModelContent.setContent(content.getContent());
-            //gameModelContent.setVersion(content.getVersion());
-            //if (gameModel.isModel()) {
-            // visibility is writable only if the gameModel is a model
-            //    gameModelContent.setVisibility(content.getVisibility());
-            //}
+        if (lib != null) {
+            content.setContentKey(content.getContentKey());
+            lib.merge(content);
         } else {
             throw WegasErrorMessage.error("Library does not exists");
         }
-        return gameModelContent;
+        return lib;
     }
 
-    public void delete(Long gameModelId, String library, String key) {
-        List<GameModelContent> lib = this.getLibrary(gameModelId, library);
-
+    public void delete(Long gameModelId, String libraryName, String key) {
         GameModel gameModel = gameModelFacade.find(gameModelId);
-
-        GameModelContent gameModelContent = gameModel.getGameModelContent(lib, key);
+        GameModelContent gameModelContent = gameModel.findLibrary(libraryName, key);
         if (gameModelContent != null) {
-            lib.remove(gameModelContent);
+            gameModel.removeLib(gameModelContent);
         }
     }
 }

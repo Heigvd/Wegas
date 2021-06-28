@@ -5,14 +5,14 @@ import {
   useVariableDescriptor,
   useVariableInstance,
 } from '../../Hooks/useVariable';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { INumberDescriptor } from 'wegas-ts-api';
 import { wwarn } from '../../../Helper/wegaslog';
 import { TumbleLoader } from '../../Loader';
 
 const boxStyle = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
-  color: themeVar.Common.colors.TextColor,
+  backgroundColor: themeVar.colors.HeaderColor,
+  color: themeVar.colors.DarkTextColor,
   display: 'inline-block',
   width: '1ex',
   height: '1ex',

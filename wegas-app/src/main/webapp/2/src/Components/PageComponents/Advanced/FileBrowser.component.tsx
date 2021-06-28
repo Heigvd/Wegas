@@ -1,26 +1,33 @@
 import * as React from 'react';
+import { IScript, SListDescriptor } from 'wegas-ts-api';
+import {
+  ComponentWithForm,
+  ComponentWithFormFlexValues,
+  flexValuesSchema,
+} from '../../../Editor/Components/FormView/ComponentWithForm';
+import { TreeView } from '../../../Editor/Components/Variable/VariableTree';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { useScript } from '../../Hooks/useScript';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { useScript } from '../../Hooks/useScript';
-import { IScript, SListDescriptor } from 'wegas-ts-api';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { ComponentWithForm } from '../../../Editor/Components/FormView/ComponentWithForm';
-import { CTree } from '../../../Editor/Components/Variable/VariableTree';
+import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerFileBrowserProps extends WegasComponentProps {
   list?: IScript;
+  flexValues?: ComponentWithFormFlexValues;
 }
 
 export default function PlayerFileBrowser({
   list,
+  flexValues,
   context,
   className,
   style,
   id,
+  options,
 }: PlayerFileBrowserProps) {
   const rootDirectory = useScript<SListDescriptor>(list, context);
   const rootDirectoryId = rootDirectory?.getId();
@@ -30,14 +37,23 @@ export default function PlayerFileBrowser({
       File not found
     </pre>
   ) : (
-    <ComponentWithForm entityEditor>
+    <ComponentWithForm
+      flexValues={flexValues}
+      entityEditor
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
+    >
       {({ localDispatch }) => {
         return (
-          <CTree
-            variableId={rootDirectoryId}
+          // TODO : Implements a disable/readOnly/lock management on this component
+          <TreeView
+            variables={[rootDirectoryId]}
+            noHeader
+            noVisibleRoot
             localDispatch={localDispatch}
             forceLocalDispatch
-            nodeProps={() => ({})}
+            disabled={options.disabled || options.locked}
+            readOnly={options.readOnly}
           />
         );
       }}
@@ -57,6 +73,7 @@ registerComponent(
         required: true,
         returnType: ['SListDescriptor'],
       }),
+      flexValues: flexValuesSchema,
     },
     allowedVariables: ['ListDescriptor'],
     getComputedPropsFromVariable: v => ({
@@ -65,5 +82,13 @@ registerComponent(
         overflow: 'auto',
       },
     }),
+    obsoleteComponent: {
+      keepDisplayingToPlayer: true,
+      isObsolete: oldComponent => oldComponent.type === 'File browser',
+      sanitizer: (oldComponent: WegasComponent) => {
+        oldComponent.type = 'Variable tree';
+        return oldComponent;
+      },
+    },
   }),
 );

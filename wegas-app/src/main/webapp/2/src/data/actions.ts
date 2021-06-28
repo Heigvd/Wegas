@@ -15,9 +15,14 @@ import { AvailableViews } from '../Editor/Components/FormView';
 import { getEntityActions } from '../Editor/editionConfig';
 import * as ActionType from './actionTypes';
 import { discriminant, normalizeDatas, NormalizedData } from './normalize';
-import { closeEditor, EditingState, Edition } from './Reducer/globalState';
+import {
+  closeEditor,
+  EditingState,
+  Edition,
+  EditorAction,
+} from './Reducer/globalState';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
-import { StoreDispatch, store } from './store';
+import { StoreDispatch, store } from './Stores/store';
 
 export { ActionType };
 export type ActionTypeValues = ValueOf<typeof ActionType>;
@@ -36,15 +41,16 @@ const variableEditAction = <TA extends ActionTypeValues>(type: TA) => <
   path?: TA extends ValueOf<typeof ActionType.FSM_EDIT>
     ? string[]
     : (string | number)[];
-  actions: {
-    save?: (entity: TE) => void;
-    more?: {
-      [id: string]: {
-        label: React.ReactNode;
-        action: (entity: TE, path: string[]) => void;
-      };
-    };
-  };
+  actions: EditorAction<TE>;
+  // {
+  //   save?: (entity: TE) => void;
+  //   more?: {
+  //     [id: string]: {
+  //       label: React.ReactNode;
+  //       action: (entity: TE, path: string[]) => void;
+  //     };
+  //   };
+  // };
 }) => createAction(type, data);
 
 /**
@@ -103,6 +109,8 @@ export const ActionCreator = {
     };
   }) => createAction(ActionType.VARIABLE_CREATE, data),
   CLOSE_EDITOR: () => createAction(ActionType.CLOSE_EDITOR, {}),
+  USAVED_CHANGES: (unsaved: boolean) =>
+    createAction(ActionType.UNSAVED_CHANGES, { unsaved }),
   MANAGED_RESPONSE_ACTION: (data: {
     // Nearly empty shells
     deletedEntities: {
@@ -140,6 +148,8 @@ export const ActionCreator = {
   }) => createAction(ActionType.LANGUAGE_EDIT, data),
   TEAM_FETCH_ALL: (data: { teams: ITeam[] }) =>
     createAction(ActionType.TEAM_FETCH_ALL, data),
+  TEAM_UPDATE: (data: { team: ITeam }) =>
+    createAction(ActionType.TEAM_UPDATE, data),
   GAME_FETCH: (data: { game: IGame }) =>
     createAction(ActionType.GAME_FETCH, data),
   LOCK_SET: (data: { token: string; locked: boolean }) =>
@@ -175,6 +185,7 @@ export function manageResponseHandler(
   payload: IManagedResponse,
   localDispatch?: StoreDispatch,
   localState?: EditingState,
+  selectUpdatedEntity: boolean = true,
 ) {
   const deletedEntities = normalizeDatas(payload.deletedEntities);
   if (localDispatch && localState) {
@@ -199,6 +210,7 @@ export function manageResponseHandler(
           discriminant(currentEditingEntity) as keyof NormalizedData
         ][currentEditingEntity.id];
       if (
+        selectUpdatedEntity &&
         updatedEntity &&
         shallowDifferent(updatedEntity, currentEditingEntity)
       ) {
@@ -216,28 +228,29 @@ export function manageResponseHandler(
     }
   }
 
-  const managetValuesOnly = {
+  const managedValuesOnly = {
     deletedEntities,
     updatedEntities,
     events: [],
   };
 
   const managedValues = {
-    ...managetValuesOnly,
-    events: payload.events.map(event => {
-      const timedEvent: WegasEvent = {
-        ...event,
-        timestamp: new Date().getTime(),
-        unread: true,
-      };
-      triggerEventHandlers(timedEvent);
+    ...managedValuesOnly,
+    events:
+      payload.events?.map(event => {
+        const timedEvent: WegasEvent = {
+          ...event,
+          timestamp: new Date().getTime(),
+          unread: true,
+        };
+        triggerEventHandlers(timedEvent);
 
-      return timedEvent;
-    }),
+        return timedEvent;
+      }) || [],
   };
 
   localDispatch &&
     localDispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
 
-  return ActionCreator.MANAGED_RESPONSE_ACTION(managetValuesOnly);
+  return ActionCreator.MANAGED_RESPONSE_ACTION(managedValuesOnly);
 }

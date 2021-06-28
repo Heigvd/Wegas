@@ -7,44 +7,59 @@ import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { useScript } from '../../Hooks/useScript';
 import { IScript, SFSMDescriptor } from 'wegas-ts-api';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { StateMachineEditor } from '../../../Editor/Components/StateMachineEditor';
-import { ComponentWithForm } from '../../../Editor/Components/FormView/ComponentWithForm';
-import { useCurrentPlayer } from '../../../data/selectors/Player';
+import {
+  ComponentWithForm,
+  ComponentWithFormFlexValues,
+  flexValuesSchema,
+} from '../../../Editor/Components/FormView/ComponentWithForm';
+import { Player } from '../../../data/selectors';
 
 interface PlayerStateMachineProps extends WegasComponentProps {
   stateMachine?: IScript;
   title?: IScript;
+  flexValues?: ComponentWithFormFlexValues;
 }
 
 export default function PlayerStateMachine({
   stateMachine,
   title,
+  flexValues,
   context,
   className,
   style,
   id,
+  options,
 }: PlayerStateMachineProps) {
-  const player = useCurrentPlayer();
   const titleText = useScript<string>(title, context);
   const FSM = useScript<SFSMDescriptor>(stateMachine, context);
   const descriptor = FSM?.getEntity();
-  const instance = FSM?.getInstance(player).getEntity();
+  const instance = FSM?.getInstance(Player.self()).getEntity();
 
   return descriptor == null || instance == null ? (
     <pre className={className} style={style} id={id}>
       State machine not found
     </pre>
   ) : (
-    <ComponentWithForm entityEditor>
-      {({ localDispatch }) => {
+    <ComponentWithForm
+      flexValues={flexValues}
+      entityEditor
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
+    >
+      {({ localDispatch, localState }) => {
         return (
           <StateMachineEditor
             title={titleText}
             stateMachine={descriptor}
             stateMachineInstance={instance}
             localDispatch={localDispatch}
+            editPath={
+              localState?.type === 'VariableFSM' ? localState.path : undefined
+            }
             forceLocalDispatch
+            disabled={options.disabled || options.locked}
+            readOnly={options.readOnly}
           />
         );
       }}
@@ -65,13 +80,8 @@ registerComponent(
         returnType: ['SFSMDescriptor', 'SDialogueDescriptor'],
       }),
       title: schemaProps.scriptString({ label: 'Title', richText: true }),
+      flexValues: flexValuesSchema,
     },
     allowedVariables: ['FSMDescriptor', 'DialogueDescriptor'],
-    getComputedPropsFromVariable: v => ({
-      questionList: createFindVariableScript(v),
-      style: {
-        overflow: 'auto',
-      },
-    }),
   }),
 );

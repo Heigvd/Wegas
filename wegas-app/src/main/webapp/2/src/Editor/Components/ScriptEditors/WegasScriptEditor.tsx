@@ -1,9 +1,6 @@
 import * as React from 'react';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
-import {
-  ScriptContext,
-  useGlobalLibs,
-} from '../../../Components/Hooks/useGlobalLibs';
+import { useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
 
 // @ts-ignore
 import libes5 from '!!raw-loader!typescript/lib/lib.es5.d.ts';
@@ -67,6 +64,25 @@ const headerSize = textToArray(header()).length;
 const footer = () => `\n};`;
 const footerSize = textToArray(footer()).length - 1;
 
+export const formatScriptToFunctionBody = (val: string) => {
+  let newValue = val;
+  // Removing first tab if exists
+  if (newValue.length > 0 && newValue[0] === '\t') {
+    newValue = newValue.substring(1);
+  }
+  const lines = textToArray(newValue);
+  const tabber = lines.length > 1 ? '\t' : '';
+  if (lines.length > 0 && !lines[lines.length - 1].includes('return')) {
+    lines[lines.length - 1] = tabber + 'return ' + lines[lines.length - 1];
+  } else {
+    lines[lines.length - 1] = lines[lines.length - 1].replace(
+      /\breturn /,
+      tabber + 'return ',
+    );
+  }
+  return arrayToText(lines);
+};
+
 /**
  * formatScriptToFunction - if the return type is defined, return the script wrapped in a function
  * @param val - The script value
@@ -78,22 +94,7 @@ const formatScriptToFunction = (
   args?: [string, WegasScriptEditorReturnTypeName[]][],
 ) => {
   if (returnType !== undefined && returnType.length > 0) {
-    let newValue = val;
-    // Removing first tab if exists
-    if (newValue.length > 0 && newValue[0] === '\t') {
-      newValue = newValue.substring(1);
-    }
-    const lines = textToArray(newValue);
-    const tabber = lines.length > 1 ? '\t' : '';
-    if (lines.length > 0 && !lines[lines.length - 1].includes('return')) {
-      lines[lines.length - 1] = tabber + 'return ' + lines[lines.length - 1];
-    } else {
-      lines[lines.length - 1] = lines[lines.length - 1].replace(
-        /.*(return).* /,
-        tabber + 'return ',
-      );
-    }
-    newValue = arrayToText(lines);
+    const newValue = formatScriptToFunctionBody(val);
     return `${header(returnType, args)}${newValue}${footer()}`;
   }
   return val;
@@ -195,23 +196,27 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   );
 
   const globalLibs = useGlobalLibs(scriptContext);
-  const extraLibs: MonacoDefinitionsLibraries[] = [
-    ...(newExtraLibs || []),
-    ...globalLibs,
-    {
-      name: 'defaultLib:lib.d.ts',
-      content: libes5,
-      // + libes2015_collection
-      // + libes2015_core
-      // + libes2015_generator
-      // + libes2015_iterable
-      // + libes2015_promise
-      // + libes2015_proxy
-      // + libes2015_reflect
-      // + libes2015_symbol
-      // + libes2015_symbol_wellknown
-    },
-  ];
+
+  const extraLibs: MonacoDefinitionsLibraries[] = React.useMemo(
+    () => [
+      ...(newExtraLibs || []),
+      ...globalLibs,
+      {
+        name: 'defaultLib:lib.d.ts',
+        content: libes5,
+        // + libes2015_collection
+        // + libes2015_core
+        // + libes2015_generator
+        // + libes2015_iterable
+        // + libes2015_promise
+        // + libes2015_proxy
+        // + libes2015_reflect
+        // + libes2015_symbol
+        // + libes2015_symbol_wellknown
+      },
+    ],
+    [globalLibs, newExtraLibs],
+  );
 
   if (returnType !== undefined && returnType.length > 0) {
     editorLock = (editor: MonacoSCodeEditor) => {
@@ -269,7 +274,9 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     [onChange, trimFunctionToScript],
   );
   const handleBlur = React.useCallback(
-    val => trimFunctionToScript(val, onBlur),
+    val => {
+      trimFunctionToScript(val, onBlur);
+    },
     [onBlur, trimFunctionToScript],
   );
   const handleSave = React.useCallback(
@@ -279,12 +286,29 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
 
   const content = formatScriptToFunction(value || '', returnType, args);
 
+  // return (
+  //   <SrcEditor
+  //     {...props}
+  //     language={language}
+  //     extraLibs={extraLibs}
+  //     value={content}
+  //     onEditorReady={editorLock}
+  //     onChange={handleChange}
+  //     onBlur={onBlur}
+  //     onSave={onSave}
+  //     defaultActions={actions}
+  //   />
+  // );
+
   const editorProps: SrcEditorProps = {
     ...props,
     language,
     extraLibs,
     value: content,
     onEditorReady: editorLock,
+    // onChange,
+    // onBlur,
+    // onSave,
     onChange: handleChange,
     onBlur: handleBlur,
     onSave: handleSave,

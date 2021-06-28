@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.exception.client;
@@ -30,6 +30,7 @@ public class WegasAccessDenied extends WegasRuntimeException {
         this.user = user;
     }
 
+    @Override
     public String toString() {
         return (mode != null ? mode : "[n/a]")
             + "Permission Denied for user "

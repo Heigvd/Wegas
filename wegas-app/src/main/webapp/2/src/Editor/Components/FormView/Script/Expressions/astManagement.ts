@@ -54,14 +54,11 @@ import {
   isAttributes,
   PartialAttributes,
   PartialSchemaAttributes,
+  isBooleanExpression,
 } from './expressionEditorHelpers';
-import {
-  WegasTypeString,
-  WegasMethodReturnType,
-  isWegasMethodReturnType,
-} from '../../../../editionConfig';
+import { isWegasMethodReturnType } from '../../../../editionConfig';
 import { wlog } from '../../../../../Helper/wegaslog';
-import { ScriptMode, isScriptCondition } from '../Script';
+import { isScriptCondition } from '../Script';
 import { isEmptyStatement } from '@babel/types';
 import generate from '@babel/generator';
 import { parse } from '@babel/parser';
@@ -455,6 +452,21 @@ export const generateImpactExpression = (
     tolerateTypeVariation,
   );
 
+export const generateBooleanLiteralExpression = (
+  scriptAttributes: IAttributes,
+  schemaAttributes: PartialSchemaAttributes,
+  tolerateTypeVariation?: boolean,
+) =>
+  generateCallExpression(
+    memberExpression(
+      generateExpressionWithInitValue(scriptAttributes.initExpression.script),
+      identifier(scriptAttributes.methodName),
+    ),
+    scriptAttributes,
+    schemaAttributes,
+    tolerateTypeVariation,
+  );
+
 export const generateConditionStatement = (
   scriptAttributes: IConditionAttributes,
   schemaAttributes: PartialSchemaAttributes,
@@ -612,6 +624,13 @@ export const generateStatement = (
             newStatement = expressionStatement(
               generateImpactExpression(attributes, properties, true),
             );
+          } else {
+            if (isBooleanExpression(attributes)) {
+              newStatement = expressionStatement(
+                booleanLiteral(Boolean(attributes.initExpression.script)),
+                // generateBooleanLiteralExpression(attributes, properties, true),
+              );
+            }
           }
         }
       }

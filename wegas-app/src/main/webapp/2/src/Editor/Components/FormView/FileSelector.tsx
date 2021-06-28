@@ -2,11 +2,7 @@ import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonView, CommonViewContainer } from './commonView';
 import { LabeledView, Labeled } from './labeled';
-import {
-  FileBrowser,
-  FileFilter,
-  FilePickingType,
-} from '../FileBrowser/FileBrowser';
+import { FileBrowser } from '../FileBrowser/FileBrowser';
 import { generateAbsolutePath, FileAPI } from '../../../API/files.api';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { cx } from 'emotion';
@@ -31,7 +27,7 @@ export interface CommonFileSelectProps<
 
 interface CustomFileSelectProps<T extends keyof AllowedTypes>
   extends CommonFileSelectProps<T> {
-  pick?: FilePickingType;
+  pickType?: FilePickingType;
   filter?: FileFilter;
   inputId?: string;
   labelNode?: JSX.Element;
@@ -42,7 +38,7 @@ export function CustomFileSelector<T extends keyof AllowedTypes>({
   onChange,
   valueType,
   filter,
-  pick = 'BOTH',
+  pickType = 'BOTH',
   inputId,
   labelNode,
 }: CustomFileSelectProps<T>) {
@@ -95,7 +91,7 @@ export function CustomFileSelector<T extends keyof AllowedTypes>({
               (onChange as (val: IAbstractContentDescriptor) => void)(file);
             }
           }}
-          pick={pick}
+          pickType={pickType}
         />
       )}
     </>
@@ -105,7 +101,7 @@ export function CustomFileSelector<T extends keyof AllowedTypes>({
 type LabeledCustomFileSelectProps<
   T extends keyof AllowedTypes
 > = WidgetProps.BaseProps<
-  CommonView & LabeledView & { pick?: FilePickingType; filter?: FileFilter }
+  CommonView & LabeledView & { pickType?: FilePickingType; filter?: FileFilter }
 > &
   CommonFileSelectProps<T>;
 
@@ -131,7 +127,7 @@ export function LabeledCustomFileSelector<T extends keyof AllowedTypes>(
 }
 
 type FileSelectProps = WidgetProps.BaseProps<
-  CommonView & LabeledView & { pick: FilePickingType; filter?: FileFilter }
+  CommonView & LabeledView & { pickType: FilePickingType; filter?: FileFilter }
 > &
   CommonFileSelectProps<'IAbstractContentDescriptor'>;
 

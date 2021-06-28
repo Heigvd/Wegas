@@ -1,9 +1,8 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -346,9 +345,8 @@ public class WebsocketFacade {
                 if (eventClass == EntityDestroyedEvent.class) {
                     List<DestroyedEntity> refreshed = new ArrayList<>();
                     /*
-                     * Not possible to find an already destroyed entity, so, in
-                     * this case (and since those informations are sufficient),
-                     * only id and class name are propagated
+                     * Not possible to find an already destroyed entity, so, in this case (and since
+                     * those informations are sufficient), only id and class name are propagated
                      */
                     for (AbstractEntity ae : toPropagate) {
                         refreshed.add(new DestroyedEntity(ae));
@@ -458,10 +456,19 @@ public class WebsocketFacade {
                 if (result == null) {
                     logger.error("Unexpected NULL pusher result");
                     this.fallback(clientEvent, audience, socketId);
-                } else if (result.getHttpStatus() == 403) {
-                    logger.error("403 QUOTA REACHED");
-                } else if (result.getHttpStatus() == 413) {
-                    logger.error("413 MESSAGE TOO BIG NOT DETECTED!!!!");
+                } else if (result.getHttpStatus() != null) {
+                    if (result.getHttpStatus() == 403) {
+                        logger.error("403 QUOTA REACHED");
+                    } else if (result.getHttpStatus() == 413) {
+                        logger.error("413 MESSAGE TOO BIG NOT DETECTED!!!!");
+                        this.fallback(clientEvent, audience, socketId);
+                    }
+                } else {
+                    logger.error("NO HTTP CODE: Result{status:{}. message{}}",
+                        result.getStatus(),
+                        result.getMessage());
+                    // fallback or not fallback?
+                    // As we have no status code, how to decide if the propagation was successful?
                     this.fallback(clientEvent, audience, socketId);
                 }
 
@@ -521,9 +528,9 @@ public class WebsocketFacade {
             User user = newPlayer.getUser();
             if (user != null) {
                 try {
-                    /*for (Entry<String, List<AbstractEntity>> entry : newPlayer.getGame().getEntities().entrySet()) {
-                        this.propagate(new EntityUpdatedEvent(entry.getValue()), entry.getKey(), null);
-                    }*/
+                    /* for (Entry<String, List<AbstractEntity>> entry :
+                     * newPlayer.getGame().getEntities().entrySet()) { this.propagate(new
+                     * EntityUpdatedEvent(entry.getValue()), entry.getKey(), null); } */
 
                     pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update",
                         parseJSON(
@@ -776,8 +783,7 @@ public class WebsocketFacade {
                 }
 
                 /*
-                 * Detect no longer online user still in the local list
-                 * and remove them
+                 * Detect no longer online user still in the local list and remove them
                  */
                 Iterator<Cache.Entry<Long, OnlineUser>> it = onlineUsers.iterator();
                 while (it.hasNext()) {
@@ -862,7 +868,7 @@ public class WebsocketFacade {
 
         @Override
         public Object process(MutableEntry<Long, OnlineUser> entry, Object... arguments) throws EntryProcessorException {
-            if (entry != null) {
+            if (entry != null && playerId != null) {
                 OnlineUser value = entry.getValue();
                 if (value != null) {
                     value.touch(playerId);

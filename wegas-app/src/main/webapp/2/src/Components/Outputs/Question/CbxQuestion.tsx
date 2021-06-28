@@ -1,22 +1,19 @@
 import { cx } from 'emotion';
 import * as React from 'react';
 import { IChoiceDescriptor, IChoiceInstance } from 'wegas-ts-api';
-import { autoMargin } from '../../../css/classes';
+import { autoMargin, halfOpacity } from '../../../css/classes';
 import { TranslatableContent } from '../../../data/i18n';
 import {
   selectChoice,
   toggleReply,
   validateQuestion,
 } from '../../../data/Reducer/VariableInstanceReducer';
-import { StoreDispatch } from '../../../data/store';
+import { StoreDispatch } from '../../../data/Stores/store';
 import { MessageString } from '../../../Editor/Components/MessageString';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
-import {
-  ChoiceContainer,
-  choiceContainerStyle,
-  choiceInputStyle,
-} from './ChoiceContainer';
+import { isActionAllowed } from '../../PageComponents/tools/options';
+import { ChoiceContainer, choiceInputStyle } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
 import { RepliesDisplay } from './Reply';
 
@@ -67,7 +64,7 @@ function CbxChoiceDisplay({
   );
 }
 
-interface CbxQuestionDisplayProps extends QuestionInfo {
+interface CbxQuestionDisplayProps extends QuestionInfo, DisabledReadonly {
   dispatch: StoreDispatch;
 }
 
@@ -78,10 +75,12 @@ export function CbxQuestionDisplay({
   choicesD,
   choicesI,
   replies,
+  ...options
 }: CbxQuestionDisplayProps) {
   const { maxReplies, minReplies } = questionD;
 
-  const canReply = questionI != null && !questionI.validated;
+  const canReply =
+    questionI != null && !questionI.validated && isActionAllowed(options);
   const maxReplyReached = maxReplies != null && replies.length >= maxReplies;
   const remainingChoices = minReplies == null ? 0 : minReplies - replies.length;
   const radio = maxReplies === 1 && minReplies === 1;
@@ -102,7 +101,11 @@ export function CbxQuestionDisplay({
   }
 
   return (
-    <div className={questionStyle}>
+    <div
+      className={cx(questionStyle, {
+        [halfOpacity]: options.disabled,
+      })}
+    >
       <div
         dangerouslySetInnerHTML={{
           __html: questionD.description
@@ -128,7 +131,7 @@ export function CbxQuestionDisplay({
         );
       })}
       {!questionI.validated && (
-        <div className={cx(choiceContainerStyle, choiceInputStyle)}>
+        <div className={cx(choiceInputStyle)}>
           {remainingChoices > 0 && (
             <MessageString
               type="warning"
@@ -141,7 +144,8 @@ export function CbxQuestionDisplay({
             className={autoMargin}
             label={'Validate'}
             onClick={() => dispatch(validateQuestion(questionD))}
-            disabled={remainingChoices > 0}
+            disabled={remainingChoices > 0 || options.disabled}
+            readOnly={options.readOnly}
           />
         </div>
       )}

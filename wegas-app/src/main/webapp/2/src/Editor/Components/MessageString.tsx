@@ -1,14 +1,14 @@
 import { css } from 'emotion';
 import * as React from 'react';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 
 const messageStyle = (color?: string) =>
   css({
     color,
     padding: '5px',
     whiteSpace: 'pre-wrap',
-    fontSize: '0.8em',
-    lineHeight: '0.8em',
+    fontSize: '0.9em',
+    lineHeight: '0.9em',
     margin: 'auto',
   });
 
@@ -44,17 +44,17 @@ interface MessageStringProps {
 function colorByType(type?: MessageStringStyle) {
   switch (type) {
     case 'succes': {
-      return themeVar.Common.colors.SuccessColor;
+      return themeVar.colors.SuccessColor;
     }
     case 'warning': {
-      return themeVar.Common.colors.WarningColor;
+      return themeVar.colors.WarningColor;
     }
     case 'error': {
-      return themeVar.Common.colors.ErrorColor;
+      return themeVar.colors.ErrorColor;
     }
     case 'normal':
     default: {
-      return themeVar.Common.colors.TextColor;
+      return themeVar.colors.DarkTextColor;
     }
   }
 }

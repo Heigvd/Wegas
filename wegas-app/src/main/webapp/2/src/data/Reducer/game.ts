@@ -2,7 +2,7 @@ import { Reducer } from 'redux';
 import u from 'immer';
 import { ActionType, StateActions, ActionCreator } from '../actions';
 import { omit } from 'lodash-es';
-import { store, ThunkResult } from '../store';
+import { store, ThunkResult } from '../Stores/store';
 import { GameAPI } from '../../API/games.api';
 import { IGame } from 'wegas-ts-api';
 // import normalizeData from '../normalize/index';
@@ -39,7 +39,7 @@ export default games;
  * @param gameModel the new version of the game model
  */
 export function getGame(): ThunkResult {
-  return function() {
+  return function () {
     const gameId = store.getState().global.currentGameId;
     return GameAPI.get(gameId).then(res => {
       return store.dispatch(ActionCreator.GAME_FETCH({ game: res }));

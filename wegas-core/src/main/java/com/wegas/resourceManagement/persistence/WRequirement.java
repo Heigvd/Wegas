@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
@@ -169,6 +169,7 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
      *
      * @return get requirement unique name
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -177,6 +178,7 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
      *
      * @param name
      */
+    @Override
     public void setName(String name) {
         this.name = name;
     }

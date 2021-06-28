@@ -9,7 +9,7 @@ import {
   DisplayMode,
   displayModes,
 } from '../../Inputs/Number/NumberSlider';
-import { store } from '../../../data/store';
+import { store } from '../../../data/Stores/store';
 import { Actions } from '../../../data';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { INumberDescriptor, IScript } from 'wegas-ts-api';
@@ -37,10 +37,6 @@ interface PlayerNumberSliderProps extends WegasComponentProps {
    * Can be a boolean or a formatting function that takes the value and return a string
    */
   displayValues?: DisplayMode;
-  /**
-   * disabled - set the component in disabled mode
-   */
-  disabled?: boolean;
   onVariableChange?: OnVariableChange;
 }
 
@@ -51,6 +47,7 @@ function PlayerNumberSlider({
   style,
   id,
   onVariableChange,
+  options,
   ...restProps
 }: PlayerNumberSliderProps) {
   // const number = useScript<SNumberDescriptor>(script, context);
@@ -86,8 +83,10 @@ function PlayerNumberSlider({
           }
         }
       }}
-      min={descriptor?.getMinValue() || 0}
-      max={descriptor?.getMaxValue() || 1}
+      min={descriptor?.getMinValue() || -100}
+      max={descriptor?.getMaxValue() || 100}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
     />
   );
 }
@@ -109,7 +108,6 @@ registerComponent(
         label: 'Display value',
         values: displayModes,
       }),
-      disabled: schemaProps.boolean({ label: 'Disabled' }),
       onVariableChange: onVariableChangeSchema('On number change action'),
       ...classStyleIdShema,
     },

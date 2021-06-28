@@ -1,13 +1,14 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import Header from './Header';
 import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
-import { useStore } from '../../data/store';
+import { useStore } from '../../data/Stores/store';
 import { visitIndex } from '../../Helper/pages';
 import { PageLoader } from './Page/PageLoader';
 import { ComponentMap } from './LinearTabLayout/DnDTabLayout';
-import { themeVar } from '../../Components/Style/ThemeVars';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import { State } from '../../data/Reducer/reducers';
+import { XLPadding } from '../../css/classes';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageEditor = React.lazy(() => import('./Page/PageEditor'));
@@ -17,35 +18,39 @@ const FileBrowserWithMeta = React.lazy(
   () => import('./FileBrowser/FileBrowser'),
 );
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
-const LanguageEditor = React.lazy(() => import('./LanguageEditor'));
+// const LanguageEditor = React.lazy(() => import('./Languages/LanguageEditor'));
 const PlayLocal = React.lazy(() => import('./PlayLocal'));
 const PlayServer = React.lazy(() => import('./PlayServer'));
 const InstancesEditor = React.lazy(
   () => import('./Variable/InstanceProperties'),
 );
 const ThemeEditor = React.lazy(
-  () => import('../../Components/Style/ThemeEditor'),
+  () => import('../../Components/Theme/Components/ThemeEditor'),
 );
-
-const Tester = React.lazy(() => import('../../Testers/FlowChartTester'));
+const Languages = React.lazy(() => import('./Languages/Languages'));
+// const Tester = React.lazy(
+//   () => import('../../Testers/Components/DropDownTester'),
+// );
 
 const layout = css({
   display: 'flex',
   flexDirection: 'column',
   height: '100vh',
+  backgroundColor: themeVar.colors.SecondaryBackgroundColor,
 });
 
 export const availableLayoutTabs = {
+  // Tester: <Tester />,
   Variables: <TreeView />,
   'State Machine': <StateMachineEditor />,
   'Variable Properties': <EntityEditor />,
   Files: <FileBrowserWithMeta />,
   Scripts: <LibraryEditor />,
-  'Language Editor': <LanguageEditor />,
-  'Play Local': <PlayLocal />,
-  'Play Server': <PlayServer />,
+  // 'Language Editor': <LanguageEditor />,
+  Languages: <Languages />,
+  'Client Console': <PlayLocal />,
+  'Server Console': <PlayServer />,
   'Instances Editor': <InstancesEditor />,
-  Tester: <Tester />,
   'Theme Editor': <ThemeEditor />,
   'Page Editor': <PageEditor />,
 } as const;
@@ -70,9 +75,11 @@ export default function Layout() {
 
   return (
     <div
-      className={
-        layout + ' ' + css({ fontFamily: themeVar.Common.others.TextFont2 })
-      }
+      className={cx(
+        layout,
+        XLPadding,
+        css({ fontFamily: themeVar.others.TextFont2, paddingBottom: '1em' }),
+      )}
       id="WegasLayout"
     >
       <Header />

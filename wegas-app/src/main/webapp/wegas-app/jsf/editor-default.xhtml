@@ -20,7 +20,7 @@
 
             <!-- Stylesheets from current game model style library -->
             <!--<style type="text/css"># {editorGameController.combinedStyleSheet}</style>-->
-            <ui:repeat var="sheet" value="#{editorGameController.currentGameModel.cssLibraryList}" varStatus="status">
+            <ui:repeat var="sheet" value="#{editorGameController.currentGameModel.getLibrariesAsList('CSS')}" varStatus="status">
                 <style type="text/css"  id="css-library-#{sheet.getContentKey()}">
                     #{sheet.getContent().replaceAll("\\.\\./", "")}
                 </style>
@@ -43,7 +43,7 @@
                        var="o" value="#{editorGameController.currentGameModel.properties.clientScriptUri.split(';')}" varStatus="status">
                 <script type="text/javascript" src="#{o.trim()}?#{wegasConfig.timestamp}"></script>
             </ui:repeat>-->
-            
+
             <script type="text/javascript">
                 YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function(Y) {
                     Y.namespace("Wegas.Config").ExtraTabs = [/*Tab(s) cfg {label:"label", children:[]}*/];
@@ -74,8 +74,8 @@
                             Instance: {
                                 source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: #{writeRightNotNeeded eq 'true' ?
-                                        'undefined' : 
-                                        '"/VariableInstance/AllPlayerInstances/' += editorGameController.currentPlayer.id += '"'
+                                                  'undefined' :
+                                                  '"/VariableInstance/AllPlayerInstances/' += editorGameController.currentPlayer.id += '"'
                                     },
                                 plugins: [{
                                         fn: "VariableInstanceCache",
@@ -213,14 +213,14 @@
                         });
                         try {
                             Y.log("SoftClientScript");
-                #{editorGameController.getClientScripts()}          // Run game model specific js footer
+                            #{editorGameController.getClientScripts()}          // Run game model specific js footer
                         } catch (e) {
                             Y.log("Error running client scripts.", "error");
                         }
                     });
                     try {
                         Y.log("HardClientScript");
-                #{editorGameController.staticClientScripts};
+                        #{editorGameController.staticClientScripts};
                     } catch (e) {
                         Y.log("Error running client scripts.", "error");
                     }

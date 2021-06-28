@@ -82,6 +82,7 @@ export function Tree<T>({
 }: TreeProps<T>) {
   return (
     <DefaultDndProvider>
+      {/* create an invisible root node to initiate the tree */}
       <TreeNode
         id={id}
         type={type}

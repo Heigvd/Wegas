@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
@@ -24,6 +24,7 @@ public class ValidateAddressToken extends Token {
      *
      * @return root page location
      */
+    @Override
     public String getRedirectTo() {
         return "/";
     }

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.util;
@@ -21,6 +21,7 @@ import org.apache.shiro.util.ByteSource;
  */
 public class JpaCredentialsMatcher extends SimpleCredentialsMatcher {
 
+    @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
         if (info instanceof JpaAuthenticationInfo) {
             JpaAuthenticationInfo jpaInfo = (JpaAuthenticationInfo) info;

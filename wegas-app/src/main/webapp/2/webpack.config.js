@@ -6,8 +6,8 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 
 const smp = new SpeedMeasurePlugin();
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-  .BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin =
+  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const CopyPlugin = require('copy-webpack-plugin');
 
 const PROD = process.env.NODE_ENV === 'production';
@@ -42,8 +42,9 @@ const modules = {
   // stats: 'verbose',
   devtool: PROD || PREPROD ? 'source-map' : 'inline-source-map',
   entry: {
-    editor: ['./src/Editor/index.tsx'],
+    editor: ['./src/index.tsx'],
     player: ['./src/player.tsx'],
+    host: ['./src/host.tsx'],
   },
   output: {
     path: path.join(__dirname, 'dist'),
@@ -115,6 +116,19 @@ const modules = {
             options: {
               limit: 8000, // Convert images < 8kb to base64 strings
               name: 'src/pictures/[hash]-[name].[ext]',
+            },
+          },
+        ],
+      },
+
+      {
+        test: /\.(ttf)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8000,
+              name: 'src/fonts/[hash]-[name].[ext]',
             },
           },
         ],

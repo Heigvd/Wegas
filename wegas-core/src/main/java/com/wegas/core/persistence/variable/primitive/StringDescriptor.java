@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
@@ -27,17 +27,17 @@ import com.wegas.core.persistence.annotations.WegasRefs;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.False;
+import com.wegas.editor.ValueGenerators.One;
+import com.wegas.editor.Visible;
 import com.wegas.editor.jsonschema.JSONArray;
 import com.wegas.editor.jsonschema.JSONString;
-import com.wegas.editor.ValueGenerators.EmptyArray;
-import com.wegas.editor.ValueGenerators.One;
-import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.view.ArrayView;
 import com.wegas.editor.view.EntityArrayFiledSelect;
 import com.wegas.editor.view.Hidden;
 import com.wegas.editor.view.I18nStringView;
 import com.wegas.editor.view.NumberView;
-import com.wegas.editor.Visible;
 import com.wegas.mcq.persistence.QuestionDescriptor.CheckPositiveness;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import java.util.ArrayList;

@@ -3,64 +3,57 @@ import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
 import { arrayRemoveDuplicates } from '../../../Helper/tools';
 import { css } from 'emotion';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 
 export const buttonStyle = css({
   display: 'flex',
   alignItems: 'center',
-  backgroundColor: themeVar.Common.colors.MainColor,
-  color: themeVar.Common.colors.SecondaryTextColor,
-  ['&.dark']: {
-    backgroundColor: themeVar.Common.colors.SecondaryTextColor,
-    color: themeVar.Common.colors.MainColor,
-  },
+  backgroundColor: themeVar.colors.PrimaryColor,
+  color: themeVar.colors.LightTextColor,
   borderStyle: 'none',
-  paddingLeft: '5px',
-  paddingRight: '5px',
-  paddingTop: '2px',
-  paddingBottom: '2px',
+  paddingLeft: '10px',
+  paddingRight: '10px',
+  paddingTop: '5px',
+  paddingBottom: '5px',
   cursor: 'pointer',
-  fontFamily: themeVar.Common.others.TextFont2,
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
-
-  ['&:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):not(.confirmBtn):hover']: {
-    color: themeVar.Common.colors.HoverTextColor,
-    backgroundColor: themeVar.Common.colors.ActiveColor,
-    outline: 'none',
+  fontFamily: themeVar.others.TextFont2,
+  borderRadius: themeVar.dimensions.BorderRadius,
+  ['&:hover']: {
+    backgroundColor: themeVar.colors.PrimaryColorShade,
   },
   ['&:focus']: {
     outline: 'none',
   },
   ['&.readOnly']: {
     cursor: 'initial',
+    ['&:hover']: {
+      backgroundColor: themeVar.colors.PrimaryColor,
+    },
   },
   ['&.disabled']: {
     cursor: 'initial',
-    backgroundColor: themeVar.Common.colors.DisabledColor,
-  },
-  ['&.noBackground']: {
-    ['&:not(.disabled):not(.readOnly):hover']: {
-      color: themeVar.Common.colors.HoverColor,
-    },
-    backgroundColor: 'transparent',
+    backgroundColor: themeVar.colors.DisabledColor,
   },
   ['&.noClick']: {
     cursor: 'inherit',
   },
-  ['&.iconOnly']: {
-    color: themeVar.Common.colors.TextColor,
+  ['&.iconOnly, &.noBackground']: {
+    color: themeVar.colors.PrimaryColor,
     backgroundColor: 'transparent',
-    ['&:not(.disabled),&:not(.readOnly)']: {
-      [':hover']: {
-        color: themeVar.Common.colors.ActiveColor,
-      },
+    ['&:hover']: {
+      color: themeVar.colors.PrimaryColorShade,
     },
-    ['&:disabled']: {
-      color: themeVar.Common.colors.DisabledColor,
-      [':hover']: {
-        color: themeVar.Common.colors.DisabledColor,
-      },
+    ['&.disabled']: {
+      color: themeVar.colors.DisabledColor,
     },
+    ['&.readOnly:hover']: {
+      color: themeVar.colors.PrimaryColor,
+      backgroundColor: 'transparent',
+    },
+  },
+  ['&.dark']: {
+    backgroundColor: themeVar.colors.LightTextColor,
+    color: themeVar.colors.PrimaryColor,
   },
   ['&.disabledBorders']: {
     ['&.borderTopLeft']: {
@@ -76,48 +69,82 @@ export const buttonStyle = css({
       borderBottomRightRadius: 'unset',
     },
   },
-  ['&.confirmBtn']: {
-    display: 'flex',
-    padding: '5px',
-    backgroundColor: themeVar.Common.colors.HeaderColor,
-    textAlign: 'center',
-    width: 'max-content',
-  },
   ['&.active']: {
-    ['&:not(.iconOnly),&:not(noBackground)']: {
-      backgroundColor: themeVar.Common.colors.ActiveColor,
-    },
+    backgroundColor: themeVar.colors.ActiveColor,
     ['&.iconOnly,&.noBackground']: {
-      color: themeVar.Common.colors.ActiveColor,
+      color: themeVar.colors.ActiveColor,
     },
   },
   ['&.success']: {
-    ['&:not(.iconOnly),&:not(.noBackground)']: {
-      backgroundColor: themeVar.Common.colors.SuccessColor,
+    backgroundColor: themeVar.colors.SuccessColor,
+    ['&:hover']: {
+      backgroundColor: themeVar.colors.PrimaryColorShade,
     },
     ['&.iconOnly,&.noBackground']: {
-      color: themeVar.Common.colors.SuccessColor,
+      color: themeVar.colors.SuccessColor,
+      backgroundColor: 'transparent',
+      ['&:hover']: {
+        color: themeVar.colors.ActiveColor,
+      },
+      ['&.disabled']: {
+        color: themeVar.colors.DisabledColor,
+        backgroundColor: 'transparent',
+      },
+      ['&.readOnly:hover']: {
+        color: themeVar.colors.SuccessColor,
+        backgroundColor: 'transparent',
+      },
+    },
+    ['&.readOnly:hover']: {
+      backgroundColor: themeVar.colors.SuccessColor,
+    },
+    ['&.disabled']: {
+      backgroundColor: themeVar.colors.DisabledColor,
     },
   },
   ['&.warning']: {
-    // backgroundColor: themeVar.Common.colors.WarningColor,
     ['&:not(.iconOnly),&:not(.noBackground)']: {
-      backgroundColor: themeVar.Common.colors.WarningColor,
+      backgroundColor: themeVar.colors.WarningColor,
     },
     ['&.iconOnly,&.noBackground']: {
-      color: themeVar.Common.colors.WarningColor,
+      color: themeVar.colors.WarningColor,
     },
   },
   ['&.error']: {
     ['&:not(.iconOnly),&:not(.noBackground)']: {
-      backgroundColor: themeVar.Common.colors.ErrorColor,
+      backgroundColor: themeVar.colors.ErrorColor,
     },
     ['&.iconOnly,&.noBackground']: {
-      color: themeVar.Common.colors.ErrorColor,
+      color: themeVar.colors.ErrorColor,
     },
   },
 });
 
+export const headerOutlineButtonStyle = css({
+  border: '1px solid ' + themeVar.colors.DisabledColor,
+  borderRadius: '50%',
+  height: '40px',
+  width: '40px',
+  justifyContent: 'center',
+  button: {
+    padding: 0,
+    width: '100%',
+    justifyContent: 'center',
+  },
+});
+export const outlineButtonStyle = {
+  border: '1px solid ' + themeVar.colors.LightTextColor,
+  backgroundColor: 'transparent',
+};
+
+export const outlinePrimaryButtonStyle = css({
+  border: '1px solid ' + themeVar.colors.PrimaryColor,
+  backgroundColor: 'transparent',
+  color: themeVar.colors.PrimaryColor,
+  ['&:hover']: {
+    backgroundColor: themeVar.colors.HeaderColor,
+  },
+});
 export interface DisableBorders {
   top?: boolean;
   right?: boolean;
@@ -161,11 +188,9 @@ export function disableBorderToSelector(disableBorders?: DisableBorders) {
     : '';
 }
 
-export interface ButtonProps extends ClassStyleId {
+export interface ButtonProps extends ClassStyleId, DisabledReadonly {
   label?: React.ReactNode;
   onClick?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
-  disabled?: boolean;
-  readOnly?: boolean;
   tabIndex?: number;
   tooltip?: string;
   noHover?: boolean;
@@ -173,6 +198,7 @@ export interface ButtonProps extends ClassStyleId {
   id?: string;
   disableBorders?: DisableBorders;
   icon?: Icons;
+  src?: string;
   pressed?: boolean;
   prefixedLabel?: boolean;
   noBackground?: boolean;
@@ -200,6 +226,7 @@ export const Button = React.forwardRef<
       type,
       id,
       icon,
+      src,
       pressed,
       prefixedLabel,
       noBackground,
@@ -243,7 +270,7 @@ export const Button = React.forwardRef<
           classNameOrEmpty(className)
         }
         style={style}
-        onClick={onClick}
+        onClick={e => !readOnly && onClick && onClick(e)}
         disabled={disabled}
         tabIndex={tabIndex}
         title={tooltip}
@@ -253,6 +280,7 @@ export const Button = React.forwardRef<
       >
         {prefixedLabel && computedLabel}
         {icon && <IconComp icon={icon} />}
+        {src && <img alt={tooltip} src={src} />}
         {!prefixedLabel && computedLabel}
       </button>
     );

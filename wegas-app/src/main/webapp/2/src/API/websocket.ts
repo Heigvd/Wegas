@@ -1,12 +1,13 @@
 // import PusherConstructor, { Pusher } from 'pusher-js';
 // import { inflate } from 'pako';
-import { store } from '../data/store';
-import { updatePusherStatus } from '../data/Reducer/globalState';
+import { store } from '../data/Stores/store';
+import { editorEvent, updatePusherStatus } from '../data/Reducer/globalState';
 import { manageResponseHandler } from '../data/actions';
 import { Actions } from '../data';
 import * as React from 'react';
-import { wlog } from '../Helper/wegaslog';
+import { werror, wwarn } from '../Helper/wegaslog';
 import { IAbstractEntity } from 'wegas-ts-api';
+import { entityIs } from '../data/entities';
 
 const CHANNEL_PREFIX = {
   Admin: 'private-Admin',
@@ -89,27 +90,27 @@ async function processEvent(
   }
   return { event, data };
 }
-
-export type WebSocketEvent =
-  | 'EntityUpdatedEvent'
-  | 'EntityDestroyedEvent'
-  | 'CustomEvent'
-  | 'PageUpdate'
-  | 'LibraryUpdate-CSS'
-  | 'LibraryUpdate-ClientScript'
-  | 'LibraryUpdate-ServerScript'
-  | 'LockEvent';
-
-const webSocketEvents: WebSocketEvent[] = [
+const webSocketEvents = [
   'EntityUpdatedEvent',
   'EntityDestroyedEvent',
   'CustomEvent',
   'PageUpdate',
+  'LibraryUpdate-Theme',
+  'LibraryUpdate-SelectedThemes',
   'LibraryUpdate-CSS',
   'LibraryUpdate-ClientScript',
   'LibraryUpdate-ServerScript',
   'LockEvent',
-];
+  'OutdatedEntitiesEvent',
+  'populateQueue-dec',
+] as const;
+
+export type WebSocketEvent = ValueOf<typeof webSocketEvents>;
+
+interface OutadatedEntitesEvent {
+  '@class': 'OutdatedEntitiesEvent';
+  updatedEntities: { type: WegasClassNames; id: number }[];
+}
 
 interface EventMap {
   [eventId: string]: ((
@@ -117,11 +118,11 @@ interface EventMap {
   ) => void)[];
 }
 
-interface ICustomEventData {
-  deletedEntities: IAbstractEntity[];
-  updatedEntities: IAbstractEntity[];
-  events: any[];
-}
+// interface ICustomEventData {
+//   deletedEntities: IAbstractEntity[];
+//   updatedEntities: IAbstractEntity[];
+//   events: any[];
+// }
 
 export interface LockEventData {
   '@class': 'LockEvent';
@@ -167,44 +168,46 @@ class WebSocketListener {
         CHANNEL_PREFIX.Player + CurrentPlayerId,
         CHANNEL_PREFIX.Team + CurrentTeamId,
         CHANNEL_PREFIX.User + CurrentUser.id,
+        'global-channel',
       ];
-
-      channels.forEach(chan =>
-        this.socket!.subscribe(chan).bind_global(
-          async (event: string, data: {}) => {
-            const processed = await processEvent(event, data);
-            if (processed.event.startsWith('pusher:')) {
-              //pusher events
-              return;
-            }
-            this.eventReveived(
-              processed.event as WebSocketEvent,
-              processed.data,
-            );
-          },
-        ),
-      );
+      channels.forEach(c => this.bindChannel(c, this.socket));
     });
   }
-  public bindCallback(
-    eventId: WebSocketEvent,
-    callback: (data: unknown) => void,
+
+  public bindChannel(
+    channelId: string,
+    socket: import('pusher-js').Pusher.PusherSocket | null = this.socket,
   ) {
+    socket!
+      .subscribe(channelId)
+      .bind_global(async (event: string, data: {}) => {
+        const processed = await processEvent(event, data);
+        if (processed.event.startsWith('pusher:')) {
+          //pusher events
+          return;
+        }
+        this.eventReveived(processed.event as WebSocketEvent, processed.data);
+      });
+    this.socket?.channels;
+  }
+
+  public unbindChannel(channelId: string) {
+    this.socket!.unsubscribe(channelId);
+  }
+
+  public bindEvent(eventId: string, callback: (data: unknown) => void) {
     if (this.events[eventId]) {
       this.events[eventId].push(callback);
     } else {
-      wlog('Unknown event');
+      this.events[eventId] = [callback];
     }
   }
 
-  public unbindCallback(
-    eventId: WebSocketEvent,
-    callback: (data: unknown) => void,
-  ) {
+  public unbindCallback(eventId: string, callback: (data: unknown) => void) {
     if (this.events[eventId]) {
       this.events[eventId] = this.events[eventId].filter(el => el !== callback);
     } else {
-      wlog('Unknown event');
+      wwarn(`Unknown event ${eventId}`);
     }
   }
 
@@ -219,21 +222,79 @@ class WebSocketListener {
     }
 
     // Dispatch inside managed events... (may be simplified)
+    // see : websocketFacade.java , EntityUpdatedEvent.java
     switch (event) {
       case 'EntityUpdatedEvent':
-      case 'EntityDestroyedEvent':
-      case 'CustomEvent':
         return store.dispatch(
           manageResponseHandler(
             {
               '@class': 'ManagedResponse',
-              deletedEntities: (data as ICustomEventData).deletedEntities,
-              updatedEntities: (data as ICustomEventData).updatedEntities,
-              events: (data as ICustomEventData).events,
+              deletedEntities: [],
+              updatedEntities: (data as { updatedEntities: IAbstractEntity[] })
+                .updatedEntities,
+              events: [],
             },
             store.dispatch,
           ),
         );
+      // {updatedEntities:{"@class":IAbstractEntity["@class"];id:number}[]}
+      case 'EntityDestroyedEvent':
+        return store.dispatch(
+          manageResponseHandler(
+            {
+              '@class': 'ManagedResponse',
+              deletedEntities: (data as {
+                deletedEntities: {
+                  '@class': IAbstractEntity['@class'];
+                  id: number;
+                }[];
+              }).deletedEntities,
+              updatedEntities: [],
+              events: [],
+            },
+            store.dispatch,
+          ),
+        );
+      case 'OutdatedEntitiesEvent': {
+        const { updatedEntities } = data as OutadatedEntitesEvent;
+
+        const toUpdate: { instances: number[]; descriptors: number[] } = {
+          instances: [],
+          descriptors: [],
+        };
+
+        for (const updatedEntity of updatedEntities) {
+          if (
+            entityIs({ '@class': updatedEntity.type }, 'VariableInstance', true)
+          ) {
+            toUpdate.instances.push(updatedEntity.id);
+          } else if (
+            entityIs(
+              { '@class': updatedEntity.type },
+              'VariableDescriptor',
+              true,
+            )
+          ) {
+            toUpdate.descriptors.push(updatedEntity.id);
+          }
+        }
+
+        if (toUpdate.instances.length > 0) {
+          store.dispatch(
+            Actions.VariableInstanceActions.getByIds(toUpdate.instances),
+          );
+        }
+
+        if (toUpdate.descriptors.length > 0) {
+          store.dispatch(
+            Actions.VariableDescriptorActions.getByIds(toUpdate.descriptors),
+          );
+        }
+
+        return;
+      }
+      case 'CustomEvent':
+        return store.dispatch(editorEvent(data as CustomEvent));
       case 'PageUpdate':
         store.dispatch(Actions.PageActions.get(data as string));
         return;
@@ -242,7 +303,7 @@ class WebSocketListener {
         return;
       default:
         if (!eventFound) {
-          throw Error(`Event [${event}] unchecked`);
+          werror(`Event [${event}] unchecked`);
         }
     }
   }
@@ -257,11 +318,54 @@ const SingletonWebSocket = new WebSocketListener(
   PusherApp.cluster,
 );
 
-export const useWebsocket = (
-  event: WebSocketEvent,
+export const useWebsocketEvent = (
+  event: WebSocketEvent | string,
   cb: (data: unknown) => void,
-) =>
+) => {
   React.useEffect(() => {
-    SingletonWebSocket.bindCallback(event, cb);
+    SingletonWebSocket.bindEvent(event, cb);
     return () => SingletonWebSocket.unbindCallback(event, cb);
   }, [event, cb]);
+  return SingletonWebSocket;
+};
+
+export const useWebsocketChannel = (channel: string) => {
+  React.useEffect(() => {
+    SingletonWebSocket.bindChannel(channel);
+    return () => SingletonWebSocket.unbindChannel(channel);
+  }, [channel]);
+  return SingletonWebSocket;
+};
+
+export const useWebsocket = (
+  channel: string,
+  event: string,
+  cb: (data: unknown) => void,
+) => {
+  useWebsocketChannel(channel);
+  return useWebsocketEvent(event, cb);
+};
+
+export function useLiveUpdate(
+  variableIdToWatch: number | undefined,
+  delay: number = 500,
+) {
+  const waitTimer = React.useRef<NodeJS.Timeout | null>();
+  const [waitingState, setWaitingState] = React.useState(false);
+
+  useWebsocketEvent(
+    'CustomEvent',
+    ({ payload }: { payload: IAbstractEntity }) => {
+      if (variableIdToWatch != null && payload.id === variableIdToWatch) {
+        setWaitingState(true);
+        if (waitTimer.current != null) {
+          clearTimeout(waitTimer.current);
+        }
+        waitTimer.current = setTimeout(() => {
+          setWaitingState(false);
+        }, delay);
+      }
+    },
+  );
+  return waitingState;
+}

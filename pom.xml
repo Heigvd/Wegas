@@ -133,8 +133,8 @@
 
         <shiro.version>1.7.0</shiro.version>
         <payara.version>5.2020.5</payara.version>
-        <!--<payara.micro.version>5.201.albasim-p1</payara.micro.version>-->
-        <payara.micro.version>5.2020.5-albasim-p1</payara.micro.version>
+        <payara.micro.version>5.2020.5</payara.micro.version>
+        <!--<payara.micro.version>5.2020.5-albasim-p1</payara.micro.version>-->
         <payara-api.version>5.2020.5</payara-api.version>
         <junit.version>4.13.1</junit.version>
         <arquillian.version>1.6.0.Final</arquillian.version>
@@ -257,11 +257,12 @@
                 <version>${shiro.version}</version>
             </dependency>
 
+            <!-- does not work with our beloved RunAs
             <dependency>
                 <groupId>org.apache.shiro</groupId>
                 <artifactId>shiro-hazelcast</artifactId>
                 <version>${shiro.version}</version>
-            </dependency>
+            </dependency>-->
 
 
             <dependency>
@@ -316,12 +317,12 @@
             <dependency>
                 <groupId>com.itextpdf</groupId>
                 <artifactId>itextpdf</artifactId>
-                <version>5.5.13</version>
+                <version>5.5.13.2</version>
             </dependency>
             <dependency>
                 <groupId>org.xhtmlrenderer</groupId>
                 <artifactId>flying-saucer-pdf</artifactId>
-                <version>9.1.18</version>
+                <version>9.1.20</version>
                 <type>jar</type>
             </dependency>
             <dependency>
@@ -940,8 +941,8 @@
                 <configuration>
                     <header>wegas/licenseheader.template</header>
                     <properties>
-                        <license.owner>School of Business and Engineering Vaud, Comem, MEI</license.owner>
-                        <license.years>2013-2020</license.years>
+                        <license.owner>School of Management and Engineering Vaud, Comem, MEI</license.owner>
+                        <license.years>2013-2021</license.years>
                     </properties>
                     <includes>
                         <include>**/*.java</include>

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
@@ -84,6 +84,7 @@ public class SurveyToken extends Token {
         return "/survey.html?surveyIds=" + String.join(",", ids);
     }
 
+    @Override
     public void process(AccountFacade accountFacade, HttpServletRequest request) {
         accountFacade.processSurveyToken(this, request);
     }

@@ -7,27 +7,28 @@ import {
   flex,
   flexDistribute,
   itemCenter,
+  halfOpacity,
 } from '../../css/classes';
 import { Value } from './Value';
 import { cx, css } from 'emotion';
 import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../../Helper/className';
-import { themeVar } from '../Style/ThemeVars';
+import { themeVar } from '../Theme/ThemeVars';
 
 const phasePathStyle = css({
   height: '0.5em',
   width: '100%',
-  backgroundColor: themeVar.Common.colors.BorderColor,
+  backgroundColor: themeVar.colors.PrimaryColor,
 });
 
 const phaseDotStyle = css({
   borderRadius: '50%',
   borderStyle: 'solid',
   borderWidth: '5px',
-  borderColor: themeVar.Common.colors.BorderColor,
+  borderColor: themeVar.colors.PrimaryColor,
 });
 
-interface PhaseComponentProps {
+export interface PhaseComponentProps {
   /**
    * value - the current value of the progess bar
    */
@@ -38,7 +39,7 @@ interface PhaseComponentProps {
   phase: number;
 }
 
-function SimplePhaseComponent({ value, phase }: PhaseComponentProps) {
+export function SimplePhaseComponent({ value, phase }: PhaseComponentProps) {
   return (
     <div className={'phaseDotStyle ' + phaseDotStyle}>
       <IconComp
@@ -48,17 +49,17 @@ function SimplePhaseComponent({ value, phase }: PhaseComponentProps) {
           size: 'lg',
           color:
             phase < value
-              ? themeVar.Common.colors.MainColor
+              ? themeVar.colors.PrimaryColor
               : phase > value
               ? 'transparent'
-              : themeVar.Common.colors.ActiveColor,
+              : themeVar.colors.ActiveColor,
         }}
       />
     </div>
   );
 }
 
-function SimpleInterPhaseComponent(_props: PhaseComponentProps) {
+export function SimpleInterPhaseComponent(_props: PhaseComponentProps) {
   return <div className={'phasePathStyle ' + phasePathStyle}></div>;
 }
 
@@ -105,6 +106,10 @@ export interface PhasesProgressBarProps extends ClassStyleId {
    * displayValue - should the current value be displayed with the gauge
    */
   displayValue?: boolean;
+  /**
+   * disabled - if true, displayed as disabled
+   */
+  disabled?: boolean;
 }
 
 interface CustomPhasesProgressBarProps extends PhasesProgressBarProps {
@@ -122,12 +127,15 @@ export function CustomPhasesProgressBar({
   style,
   PhaseComponent,
   InterPhaseComponent,
+  disabled,
 }: CustomPhasesProgressBarProps) {
   return (
     <div
       className={
         'wegas wegas-phaseProgessBar ' +
-        cx(flex, textCenter, justifyCenter, flexColumn, grow) +
+        cx(flex, textCenter, justifyCenter, flexColumn, grow, {
+          [halfOpacity]: disabled,
+        }) +
         classNameOrEmpty(className)
       }
       style={style}

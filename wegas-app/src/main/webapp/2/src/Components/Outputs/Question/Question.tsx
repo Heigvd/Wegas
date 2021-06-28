@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { store, useStore } from '../../../data/store';
+import { store, useStore } from '../../../data/Stores/store';
 import {
   IQuestionDescriptor,
   IWhQuestionDescriptor,
@@ -15,6 +15,7 @@ import { getChoices } from '../../../data/scriptable/impl/QuestionDescriptor';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { CbxQuestionDisplay } from './CbxQuestion';
 import { css } from 'emotion';
+import { select } from '../../../data/selectors/VariableDescriptorSelector';
 
 export interface QuestionInfo {
   questionD: Readonly<IQuestionDescriptor>;
@@ -33,11 +34,12 @@ export const questionStyle = css({
  * @param question QuestionDescriptor to query
  */
 export function questionInfo(question: IQuestionDescriptor): QuestionInfo {
+  const questionD = select<IQuestionDescriptor>(question.id)!;
   const choicesD = getChoices(question);
   const choicesI = choicesD.map(c => getInstance(c));
 
   return {
-    questionD: question,
+    questionD,
     questionI: getInstance(question),
     choicesD,
     choicesI,
@@ -52,42 +54,69 @@ export function questionInfo(question: IQuestionDescriptor): QuestionInfo {
   };
 }
 
+interface ConnectedSimpleQuestionDisplayProps extends DisabledReadonly {
+  entity: Readonly<IQuestionDescriptor>;
+}
+
 export function ConnectedSimpleQuestionDisplay({
   entity,
-}: {
-  entity: Readonly<IQuestionDescriptor>;
-}) {
+  ...options
+}: ConnectedSimpleQuestionDisplayProps) {
   const questionInfoSelector = React.useCallback(() => questionInfo(entity), [
     entity,
   ]);
   const state = useStore(questionInfoSelector);
+
   return state.questionD.cbx ? (
-    <CbxQuestionDisplay {...state} dispatch={store.dispatch} />
+    <CbxQuestionDisplay {...state} dispatch={store.dispatch} {...options} />
   ) : (
-    <SimpleQuestionDisplay {...state} dispatch={store.dispatch} />
+    <SimpleQuestionDisplay {...state} dispatch={store.dispatch} {...options} />
   );
+}
+
+interface ConnectedWhQuestionDisplay extends DisabledReadonly {
+  entity: Readonly<IWhQuestionDescriptor>;
 }
 
 export function ConnectedWhQuestionDisplay({
   entity,
-}: {
-  entity: Readonly<IWhQuestionDescriptor>;
-}) {
+  disabled,
+  readOnly,
+}: ConnectedWhQuestionDisplay) {
   const questionInfoSelector = React.useCallback(() => whQuestionInfo(entity), [
     entity,
   ]);
   const state = useStore(questionInfoSelector);
-  return <WhQuestionDisplay {...state} dispatch={store.dispatch} />;
+  return (
+    <WhQuestionDisplay
+      {...state}
+      dispatch={store.dispatch}
+      disabled={disabled}
+      readOnly={readOnly}
+    />
+  );
+}
+
+interface ConnectedQuestionDisplayProps extends DisabledReadonly {
+  entity: Readonly<IQuestionDescriptor | IWhQuestionDescriptor>;
 }
 
 export function ConnectedQuestionDisplay({
   entity,
-}: {
-  entity: Readonly<IQuestionDescriptor | IWhQuestionDescriptor>;
-}) {
+  disabled,
+  readOnly,
+}: ConnectedQuestionDisplayProps) {
   return entityIs(entity, 'QuestionDescriptor') ? (
-    <ConnectedSimpleQuestionDisplay entity={entity} />
+    <ConnectedSimpleQuestionDisplay
+      entity={entity}
+      disabled={disabled}
+      readOnly={readOnly}
+    />
   ) : (
-    <ConnectedWhQuestionDisplay entity={entity} />
+    <ConnectedWhQuestionDisplay
+      entity={entity}
+      disabled={disabled}
+      readOnly={readOnly}
+    />
   );
 }

@@ -12,3 +12,12 @@ interface ClassStyleId {
    */
   id?: string;
 }
+
+interface DisabledReadonly {
+  disabled?: boolean;
+  readOnly?: boolean;
+}
+
+interface DisabledReadonlyLocked extends DisabledReadonly {
+  locked?: boolean;
+}

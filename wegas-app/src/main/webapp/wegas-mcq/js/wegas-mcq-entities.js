@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -1266,6 +1266,35 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                                     targetClass: "BooleanDescriptor"
                                                 }
                                             }]
+                                    }, {
+                                        type: BUTTON,
+                                        label: '<span class="fa fa-commenting-o"></span> Static Text',
+                                        plugins: [{
+                                                fn: "AddEntityChildAction",
+                                                cfg: {
+                                                    targetClass: "StaticTextDescriptor"
+                                                }
+                                            }]
+                                    },
+                                    {
+                                        type: BUTTON,
+                                        label: '<span class="fa fa-folder"></span> Section',
+                                        plugins: [{
+                                                fn: "AddEntityChildAction",
+                                                cfg: {
+                                                    targetClass: "ListDescriptor",
+                                                    cfg: {
+                                                        allowedTypes: [
+                                                            "NumberDescriptor",
+                                                            "TextDescriptor",
+                                                            "StringDescriptor",
+                                                            "BooleanDescriptor",
+                                                            "StaticTextDescriptor"
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
                                     }
 
                                 ]

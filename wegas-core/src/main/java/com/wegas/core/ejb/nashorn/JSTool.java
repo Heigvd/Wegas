@@ -2,16 +2,14 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb.nashorn;
 
 // !!! This is what jdk9+ version could be
 import com.wegas.core.exception.client.WegasRuntimeException;
-
 import java.util.Set;
-
 import jdk.nashorn.api.tree.CompilationUnitTree;
 import jdk.nashorn.api.tree.DoWhileLoopTree;
 import jdk.nashorn.api.tree.ExpressionTree;

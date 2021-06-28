@@ -1,14 +1,8 @@
 import * as React from 'react';
 import { useDrop, DragObjectWithType, DropTargetMonitor } from 'react-dnd';
-import { css, cx } from 'emotion';
-import { IconName } from '@fortawesome/fontawesome-svg-core';
-import { generateAbsolutePath, FileAPI, fileURL } from '../../../API/files.api';
-import { TextPrompt } from '../TextPrompt';
-import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
-import { GameModel } from '../../../data/selectors';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import { store, StoreDispatch } from '../../../data/store';
-import { editFile } from '../../../data/Reducer/globalState';
+
+import { css, cx } from 'emotion';
 import {
   flex,
   grow,
@@ -16,35 +10,80 @@ import {
   block,
   localSelection,
   globalSelection,
+  disabledColorStyle,
+  infoShortTextStyle,
+  defaultMarginLeft,
+  defaultMarginBottom,
+  thinHoverColorInsetShadow,
+  textCenter,
+  dropZoneStyle,
 } from '../../../css/classes';
-import { MessageString } from '../MessageString';
-import { FilePickingType, FileFilter } from './FileBrowser';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
+
+import { store, StoreDispatch } from '../../../data/Stores/store';
+import { GameModel } from '../../../data/selectors';
+import { editFile } from '../../../data/Reducer/globalState';
+
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
+import { TextPrompt } from '../TextPrompt';
+import { MessageString } from '../MessageString';
+
+import { generateAbsolutePath, FileAPI, fileURL } from '../../../API/files.api';
+import {
+  isDirectory,
+  isFile,
+  isImage,
+  formatFileSize,
+  getIconForFile,
+} from '../../../Helper/fileTools';
+import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// styles
 
 const clickableStyle = css({
   cursor: 'pointer',
   ':hover': {
-    backgroundColor: themeVar.Common.colors.HoverColor,
+    backgroundColor: themeVar.colors.HoverColor,
   },
 });
 
-const disabledStyle = css({
-  color: themeVar.Common.colors.DisabledColor,
+const noToggleStyle = css({
+  margin: '0 0.8em',
+  color: themeVar.colors.DarkTextColor,
 });
 
-const dropZoneStyle = css({
-  borderStyle: 'solid',
-  borderWidth: '2px',
-  borderColor: 'red',
+const previewStyle = css(
+  {
+    position: 'absolute',
+    backgroundColor: themeVar.colors.BackgroundColor,
+    maxWidth: '220px',
+    margin: '3px 2em 10px',
+    padding: '10px',
+    borderWidth: '1px',
+    borderRadius: themeVar.dimensions.BorderRadius,
+    fontSize: '75%',
+    zIndex: 10000,
+  },
+  thinHoverColorInsetShadow,
+);
+
+const inPreviewStyle = css(textCenter);
+
+const imagePreviewStyle = css({
+  maxWidth: '200px',
 });
 
-const isDirectory = (file: IAbstractContentDescriptor) =>
-  file.mimeType === 'application/wfs-directory';
-
-const isFile = (file: IAbstractContentDescriptor) => !isDirectory(file);
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// NB: The selected paths are paths to be highlighted
 
 const isSelected = (
   file: IAbstractContentDescriptor,
@@ -63,6 +102,8 @@ const isChildrenSelected = (
   return false;
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 const sortFiles = (
   a: IAbstractContentDescriptor,
   b: IAbstractContentDescriptor,
@@ -77,12 +118,16 @@ const sortFiles = (
   }
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 const gameModelDependsOnModel = () => {
   return (
     GameModel.selectCurrent().type === 'SCENARIO' &&
     GameModel.selectCurrent().basedOnId !== null
   );
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const isUploadAllowed = (file?: IAbstractContentDescriptor) => {
   return (
@@ -92,6 +137,8 @@ const isUploadAllowed = (file?: IAbstractContentDescriptor) => {
       file.visibility === 'INHERITED')
   );
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 type DropAction = (
   item: DragObjectWithType,
@@ -109,19 +156,7 @@ const dropSpecs = (action: DropAction, disabled: boolean) => ({
   }),
 });
 
-const getIconForFileType = (fileType: string): IconName => {
-  if (fileType.indexOf('directory') !== -1) {
-    return 'folder';
-  } else if (fileType.indexOf('audio/') !== -1) {
-    return 'file-audio';
-  } else if (fileType.indexOf('video/') !== -1) {
-    return 'file-video';
-  } else if (fileType.indexOf('image/') !== -1) {
-    return 'file-image';
-  } else {
-    return 'file';
-  }
-};
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 interface ModalStateClose {
   type: 'close';
@@ -132,8 +167,8 @@ interface ModalStateError {
   label: string;
 }
 
-interface ModalStateFilename {
-  type: 'filename';
+interface ModalStateFolderName {
+  type: 'folderName';
 }
 
 interface ModalStateOverride {
@@ -153,61 +188,122 @@ interface ModalStateChangeType {
 type ModalState =
   | ModalStateClose
   | ModalStateError
-  | ModalStateFilename
+  | ModalStateFolderName
   | ModalStateOverride
   | ModalStateDelete
   | ModalStateChangeType;
 
-export interface FileBrowserNodeProps extends ClassStyleId {
-  defaultFile: IAbstractContentDescriptor;
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// React element
+
+export interface FileBrowserNodeProps extends ClassStyleId, DisabledReadonly {
+  /**
+   * item - item to display in a node
+   */
+  item: IAbstractContentDescriptor;
+  /**
+   * isRootNode - is root item
+   */
+  isRootNode?: boolean;
+  /**
+   * selectedLocalPaths - a path to be highlighted
+   */
   selectedLocalPaths?: string[];
+  /**
+   * selectedGlobalPaths - a path to be highlighted
+   */
   selectedGlobalPaths?: string[];
-  defaultOpen?: boolean;
-  noBracket?: boolean;
+  /**
+   * defaultOpened - by default, the current node is opened (expanded)
+   */
+  defaultOpened?: boolean;
+  /**
+   * noOpenCloseToggle - without open/close icon for folder
+   */
+  noToggle?: boolean;
+  /**
+   * noDelete - without option to delete
+   */
   noDelete?: boolean;
-  readOnly?: boolean;
+  /**
+   * pickOnly - without option to upload file or create folder
+   */
+  pickOnly?: boolean;
+  /**
+   * onFileClick - action on file click
+   */
   onFileClick?: (
     file: IAbstractContentDescriptor,
     onFileUpdate?: (updatedFile: IAbstractContentDescriptor) => void,
   ) => void;
-  onDelelteFile?: (deletedFile: IAbstractContentDescriptor) => void;
-  localDispatch?: StoreDispatch;
-  pick?: FilePickingType;
+  /**
+   * onDeleteFile - action on file deletion
+   */
+  onDeleteFile?: (deletedFile: IAbstractContentDescriptor) => void;
+  /**
+   * pickType - file picking options
+   */
+  pickType?: FilePickingType;
+  /**
+   * filter - file filtering options
+   */
   filter?: FileFilter;
+  /**
+   * localDispatch
+   */
+  localDispatch?: StoreDispatch;
 }
 
 export function FileBrowserNode({
-  defaultFile,
+  id,
+  item,
+  isRootNode = false,
   selectedLocalPaths = [],
   selectedGlobalPaths = [],
-  defaultOpen = false,
-  noBracket = false,
+  defaultOpened = false,
+  noToggle = false,
   noDelete = false,
-  readOnly = false,
+  pickOnly = false,
   onFileClick = () => {},
-  onDelelteFile = () => {},
-  localDispatch,
-  pick,
+  onDeleteFile = () => {},
+  pickType,
   filter,
+  localDispatch,
   className,
   style,
+  disabled,
+  readOnly,
 }: FileBrowserNodeProps) {
-  const [open, setOpen] = React.useState(
-    defaultOpen ||
-      isChildrenSelected(defaultFile, selectedLocalPaths) ||
-      isChildrenSelected(defaultFile, selectedGlobalPaths) ||
-      noBracket,
+  const actionAllowed = isActionAllowed({ disabled, readOnly });
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nEditorValues = internalTranslate(editorTabsTranslations, lang);
+
+  //const isDisplayPreviewAllowed = !disabled;
+
+  const [opened, setOpened] = React.useState(
+    defaultOpened ||
+      isRootNode ||
+      noToggle ||
+      isChildrenSelected(item, selectedLocalPaths) ||
+      isChildrenSelected(item, selectedGlobalPaths),
   );
+
   const [modalState, setModalState] = React.useState<ModalState>({
     type: 'close',
   });
-  const [children, setChildren] = React.useState<
-    IAbstractContentDescriptor[]
-  >();
-  const [
-    currentFile,
-    setCurrentFile,
-  ] = React.useState<IAbstractContentDescriptor>(defaultFile);
+
+  const [hoveringImageFile, setHoveringImageFile] =
+    React.useState<boolean>(false);
+
+  const [displayPreview, setDisplayPreview] = React.useState<boolean>(false);
+
+  const [children, setChildren] =
+    React.useState<IAbstractContentDescriptor[]>();
+
+  const [currentFile, setCurrentFile] =
+    React.useState<IAbstractContentDescriptor>(item);
+
   const [nbUploadingFiles, dispatchUploadingFiles] = React.useReducer(
     (uploadCount: number, action: { type: 'increment' | 'decrement' }) => {
       switch (action.type) {
@@ -225,8 +321,8 @@ export function FileBrowserNode({
   const uploader = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
-    if (isDirectory(defaultFile)) {
-      FileAPI.getFileList(generateAbsolutePath(defaultFile))
+    if (isDirectory(item)) {
+      FileAPI.getFileList(generateAbsolutePath(item))
         .then(files => {
           setChildren(files);
         })
@@ -238,7 +334,7 @@ export function FileBrowserNode({
           setChildren([]);
         });
     }
-  }, [defaultFile]);
+  }, [item]);
 
   const openUploader = (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -266,10 +362,12 @@ export function FileBrowserNode({
     if (oldFile) {
       setModalState({
         type: 'error',
-        label: `Directory [${generateAbsolutePath({
-          path: currentFile.path,
-          name: name,
-        })}] allready exists`,
+        label: i18nEditorValues.fileBrowser.directory(
+          generateAbsolutePath({
+            path: currentFile.path,
+            name: name,
+          }),
+        ),
       });
     } else {
       FileAPI.createFile(name, generateAbsolutePath(currentFile))
@@ -280,7 +378,7 @@ export function FileBrowserNode({
             }
           });
           setModalState({ type: 'close' });
-          setOpen(true);
+          setOpened(true);
         })
         .catch(({ statusText }: Response) => {
           setModalState({
@@ -373,7 +471,7 @@ export function FileBrowserNode({
   const deleteFile = (file: IAbstractContentDescriptor) => {
     FileAPI.deleteFile(generateAbsolutePath(file), true)
       .then(deletedFile => {
-        onDelelteFile && onDelelteFile(deletedFile);
+        onDeleteFile && onDeleteFile(deletedFile);
         setModalState({ type: 'close' });
       })
       .catch(({ statusText }: Response) => {
@@ -391,30 +489,30 @@ export function FileBrowserNode({
 
   const [dropZoneProps, dropZone] = useDrop(
     dropSpecs(item => {
-      const { files } = (item as unknown) as {
+      const { files } = item as unknown as {
         files: FileList;
         items: DataTransferItemList;
       };
       if (dropZoneProps.isShallowOver) {
         insertFiles(files, newFiles => {
           if (newFiles.length > 0) {
-            setOpen(true);
+            setOpened(true);
           }
         });
       }
-    }, readOnly),
+    }, !actionAllowed),
   );
 
-  const timeoutBeforeExpend = 1000;
+  const timeoutBeforeExpand = 1000;
 
   React.useEffect(() => {
     let openTimeout: number | undefined;
     if (isDirectory(currentFile)) {
       if (dropZoneProps.isShallowOver && dropZoneProps.canDrop) {
-        openTimeout = (setTimeout(
-          () => setOpen(true),
-          timeoutBeforeExpend,
-        ) as unknown) as number;
+        openTimeout = setTimeout(
+          () => setOpened(true),
+          timeoutBeforeExpand,
+        ) as unknown as number;
       }
       return () => {
         clearTimeout(openTimeout);
@@ -422,28 +520,53 @@ export function FileBrowserNode({
     }
   }, [dropZoneProps, currentFile]);
 
-  const pickApproved =
-    !pick ||
-    pick === 'BOTH' ||
-    (pick === 'FOLDER' && isDirectory(currentFile)) ||
-    (pick === 'FILE' && isFile(currentFile));
-  const typeFilterApproved =
-    !filter || currentFile.mimeType.includes(filter.fileType);
-  const greyFiltered =
+  const timeoutBeforePreview = 750;
+
+  React.useEffect(() => {
+    let previewTimeout: number | undefined;
+    if (!disabled && hoveringImageFile) {
+      previewTimeout = setTimeout(
+        () => setDisplayPreview(true),
+        timeoutBeforePreview,
+      ) as unknown as number;
+      return () => {
+        setDisplayPreview(false);
+        clearTimeout(previewTimeout);
+      };
+    } else {
+      setDisplayPreview(false);
+      clearTimeout(previewTimeout);
+    }
+  }, [hoveringImageFile, currentFile, disabled]);
+
+  const pickTypeApproved =
+    !pickType ||
+    pickType === 'BOTH' ||
+    (pickType === 'FOLDER' && isDirectory(currentFile)) ||
+    (pickType === 'FILE' && isFile(currentFile));
+  const filterApproved =
+    !filter ||
+    !filter.fileType ||
+    currentFile.mimeType.includes(filter.fileType);
+  const filterRefused =
     isFile(currentFile) &&
     filter &&
+    filter.fileType &&
     !currentFile.mimeType.includes(filter.fileType);
 
   //TODO : Improve node layout using flex only
 
-  return !filter || filter.filterType !== 'hide' || typeFilterApproved ? (
+  return !filter ||
+    filterApproved ||
+    !(filter.filterType == 'hide' && filterRefused) ? (
     <div
+      id={id}
       ref={dropZone}
       className={cx(flex, grow) + classNameOrEmpty(className)}
       style={style}
     >
-      {!readOnly && (
-        // allow to browse file in the file system
+      {!pickOnly && actionAllowed && (
+        // hidden input required to browse file in the file system
         <input
           ref={uploader}
           type="file"
@@ -461,56 +584,91 @@ export function FileBrowserNode({
           }}
         />
       )}
-      {isDirectory(currentFile) && !noBracket && (
-        <div className={css({ verticalAlign: 'top' })}>
-          <Button
-            icon={open ? 'caret-down' : 'caret-right'}
-            onClick={event => {
-              event.stopPropagation();
-              event.preventDefault();
-              setOpen(oldOpen => !oldOpen);
-            }}
-          />
-        </div>
-      )}
+      {!isRootNode &&
+        (isDirectory(currentFile) && !noToggle ? (
+          <div className={css({ verticalAlign: 'top' })}>
+            <Button
+              icon={opened ? 'caret-down' : 'caret-right'}
+              onClick={event => {
+                event.stopPropagation();
+                event.preventDefault();
+                setOpened(oldOpen => !oldOpen);
+              }}
+            />
+          </div>
+        ) : (
+          <div className={noToggleStyle} />
+        ))}
       <div className={cx(block, grow)}>
         <div
           className={cx(flex, grow, {
-            [clickableStyle]: typeFilterApproved && pickApproved,
-            [disabledStyle]: greyFiltered,
+            [clickableStyle]:
+              filterApproved &&
+              pickTypeApproved &&
+              !isRootNode &&
+              actionAllowed,
+            [disabledColorStyle]:
+              filter && filter.filterType == 'grey' && filterRefused,
             [dropZoneStyle]:
               isDirectory(currentFile) && dropZoneProps.isShallowOver,
             [localSelection]: isSelected(currentFile, selectedLocalPaths),
             [globalSelection]: isSelected(currentFile, selectedGlobalPaths),
           })}
           onClick={(e: ModifierKeysEvent) => {
-            if (typeFilterApproved && pickApproved) {
+            if (
+              filterApproved &&
+              pickTypeApproved &&
+              !isRootNode &&
+              actionAllowed
+            ) {
               onFileClick(currentFile, setCurrentFile);
-              if (!readOnly) {
+              if (!pickOnly) {
                 const dispatch =
                   e.ctrlKey && localDispatch ? localDispatch : store.dispatch;
                 dispatch(editFile(currentFile, setCurrentFile));
               }
             }
           }}
+          onMouseEnter={(
+            _event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+          ) => {
+            if (isImage(currentFile)) {
+              setHoveringImageFile(true);
+            }
+          }}
+          onMouseLeave={(
+            _event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+          ) => {
+            if (isImage(currentFile)) {
+              setHoveringImageFile(false);
+            }
+          }}
         >
-          <Button
-            disabled={greyFiltered}
-            icon={getIconForFileType(currentFile.mimeType)}
-          />
-          <div className={grow}>{currentFile.name}</div>
+          {!isRootNode && (
+            <>
+              <Button
+                disabled={
+                  filter && filter.filterType == 'grey' && filterRefused
+                }
+                icon={getIconForFile(currentFile, opened)}
+              />
+              <div className={grow}>{currentFile.name}</div>
+            </>
+          )}
           {nbUploadingFiles > 0 && (
             <div className={grow}>
               <MessageString
-                value={`Uploading ${nbUploadingFiles} files`}
+                value={i18nEditorValues.fileBrowser.uploading(
+                  nbUploadingFiles.toString(),
+                )}
                 type="warning"
               />
             </div>
           )}
           <div className={flex}>
-            {modalState.type === 'filename' && (
+            {modalState.type === 'folderName' && (
               <TextPrompt
-                placeholder="Directory name"
+                placeholder={i18nEditorValues.fileBrowser.directoryName}
                 onAction={(success, value) => {
                   if (success) {
                     insertDirectory(value);
@@ -526,7 +684,10 @@ export function FileBrowserNode({
             {modalState.type === 'type' && (
               <ConfirmButton
                 icon={'trash'}
-                label={`Are you sure that you want to change the file type from [${currentFile.mimeType}] to [${modalState.file.type}]`}
+                label={i18nEditorValues.fileBrowser.changeType(
+                  currentFile.mimeType,
+                  modalState.file.type,
+                )}
                 onAction={success => {
                   if (success) {
                     updateFile(modalState.file, true);
@@ -537,10 +698,10 @@ export function FileBrowserNode({
                 defaultConfirm
               />
             )}
-            {modalState.type === 'close' && isFile(currentFile) && (
+            {modalState.type === 'close' && !disabled && isFile(currentFile) && (
               <Button
                 icon={'external-link-alt'}
-                tooltip={'Open file'}
+                tooltip={i18nEditorValues.fileBrowser.openFile}
                 onClick={event => {
                   event.stopPropagation();
                   openFile(currentFile);
@@ -548,54 +709,74 @@ export function FileBrowserNode({
               />
             )}
             {modalState.type === 'close' &&
-              !readOnly &&
+              !pickOnly &&
+              actionAllowed &&
               (isDirectory(currentFile) ? (
                 <>
                   <Button
+                    label={
+                      isRootNode ? i18nEditorValues.fileBrowser.newFolder : ''
+                    }
                     icon={'folder-plus'}
-                    tooltip={'Add new directory in folder'}
+                    tooltip={i18nEditorValues.fileBrowser.addNewFolder}
                     disabled={!isUploadAllowed(currentFile)}
                     onClick={event => {
                       event.stopPropagation();
-                      setModalState({ type: 'filename' });
+                      setModalState({ type: 'folderName' });
                     }}
+                    className={cx(
+                      { [defaultMarginBottom]: isRootNode },
+                      { [defaultMarginLeft]: isRootNode },
+                    )}
                   />
                   <Button
+                    label={
+                      isRootNode ? i18nEditorValues.fileBrowser.uploadFile : ''
+                    }
                     icon={'file-upload'}
-                    tooltip={'Upload file in the folder'}
+                    tooltip={i18nEditorValues.fileBrowser.uploadFileFolder}
                     disabled={!isUploadAllowed(currentFile)}
                     onClick={openUploader}
+                    className={cx(
+                      { [defaultMarginBottom]: isRootNode },
+                      { [defaultMarginLeft]: isRootNode },
+                    )}
                   />
                 </>
               ) : (
                 <Button
                   icon={'file-import'}
-                  tooltip={'Upload new version'}
+                  tooltip={i18nEditorValues.fileBrowser.uploadNew}
                   disabled={!isUploadAllowed(currentFile)}
                   onClick={openUploader}
                 />
               ))}
-            {modalState.type === 'close' && !noDelete && !readOnly && (
-              <ConfirmButton
-                icon={'trash'}
-                tooltip={'Delete'}
-                onAction={success => {
-                  if (success) {
-                    if (children && children.length > 0) {
-                      setModalState({ type: 'delete' });
-                    } else {
-                      deleteFile(currentFile);
+            {modalState.type === 'close' &&
+              !noDelete &&
+              !pickOnly &&
+              actionAllowed &&
+              !isRootNode && (
+                <ConfirmButton
+                  icon={'trash'}
+                  tooltip={i18nValues.delete}
+                  className={flex}
+                  onAction={success => {
+                    if (success) {
+                      if (children && children.length > 0) {
+                        setModalState({ type: 'delete' });
+                      } else {
+                        deleteFile(currentFile);
+                      }
                     }
-                  }
-                }}
-              />
-            )}
+                  }}
+                />
+              )}
             {modalState.type === 'delete' && (
               <ConfirmButton
-                label="Are you sure to delete the folder and all its subdirectories?"
+                label={i18nEditorValues.fileBrowser.deleteFolder}
                 defaultConfirm
                 icon={'trash'}
-                tooltip={'Force delete'}
+                tooltip={i18nValues.forceDelete}
                 onAction={success => {
                   if (success) {
                     deleteFile(currentFile);
@@ -615,7 +796,7 @@ export function FileBrowserNode({
             {modalState.type === 'override' && (
               <ConfirmButton
                 icon={'trash'}
-                label={`Are you sure that you want to override the file [${modalState.files[0].name}]`}
+                label={`${i18nEditorValues.fileBrowser.overrideFile} [${modalState.files[0].name}] ?`}
                 onAction={success => {
                   const removeFile = () =>
                     setModalState(oldState => {
@@ -638,7 +819,8 @@ export function FileBrowserNode({
                         if (!newFile) {
                           setModalState({
                             type: 'error',
-                            label: 'File insertion failed',
+                            label:
+                              i18nEditorValues.fileBrowser.fileInsertFailed,
                           });
                         }
                         removeFile();
@@ -654,39 +836,65 @@ export function FileBrowserNode({
             )}
           </div>
         </div>
+        {displayPreview && (
+          <div className={cx(previewStyle)}>
+            <div className={cx(inPreviewStyle)}>
+              <img
+                className={cx(imagePreviewStyle)}
+                src={fileURL(generateAbsolutePath(currentFile))}
+              />
+              <br />
+              {currentFile.mimeType}
+              <br />
+              {formatFileSize(currentFile.bytes)}
+            </div>
+          </div>
+        )}
         <div className={cx(block, grow)}>
           {isDirectory(currentFile) &&
-            open &&
-            (children
-              ? children.length > 0
-                ? children.sort(sortFiles).map(child => (
-                    <FileBrowserNode
-                      key={generateAbsolutePath(child)}
-                      defaultFile={child}
-                      onDelelteFile={deletedFile => {
-                        setChildren(oldChildren => {
-                          if (oldChildren) {
-                            return oldChildren.filter(
-                              child =>
-                                generateAbsolutePath(child) !==
-                                generateAbsolutePath(deletedFile),
-                            );
-                          }
-                        });
-                        onDelelteFile && onDelelteFile(deletedFile);
-                      }}
-                      onFileClick={onFileClick}
-                      selectedLocalPaths={selectedLocalPaths}
-                      selectedGlobalPaths={selectedGlobalPaths}
-                      localDispatch={localDispatch}
-                      noDelete={noDelete}
-                      readOnly={readOnly}
-                      filter={filter}
-                      pick={pick}
-                    />
-                  ))
-                : 'Empty...'
-              : 'Loading...')}
+            opened &&
+            (children ? (
+              children.length > 0 ? (
+                children.sort(sortFiles).map(child => (
+                  <FileBrowserNode
+                    key={generateAbsolutePath(child)}
+                    item={child}
+                    selectedLocalPaths={selectedLocalPaths}
+                    selectedGlobalPaths={selectedGlobalPaths}
+                    defaultOpened={defaultOpened}
+                    noToggle={noToggle}
+                    noDelete={noDelete}
+                    pickOnly={pickOnly}
+                    onFileClick={onFileClick}
+                    onDeleteFile={deletedFile => {
+                      setChildren(oldChildren => {
+                        if (oldChildren) {
+                          return oldChildren.filter(
+                            child =>
+                              generateAbsolutePath(child) !==
+                              generateAbsolutePath(deletedFile),
+                          );
+                        }
+                      });
+                      onDeleteFile && onDeleteFile(deletedFile);
+                    }}
+                    pickType={pickType}
+                    filter={filter}
+                    localDispatch={localDispatch}
+                    disabled={disabled}
+                    readOnly={readOnly}
+                  />
+                ))
+              ) : (
+                <div className={cx(noToggleStyle, infoShortTextStyle)}>
+                  {i18nValues.empty}
+                </div>
+              )
+            ) : (
+              <div className={cx(noToggleStyle, infoShortTextStyle)}>
+                {i18nValues.loading}...
+              </div>
+            ))}
         </div>
       </div>
     </div>

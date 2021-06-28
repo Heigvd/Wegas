@@ -4,7 +4,7 @@ import { LabeledView, Labeled } from '../labeled';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import { css } from 'emotion';
-import { store } from '../../../../data/store';
+import { store } from '../../../../data/Stores/store';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
 import { WyswygScriptEditor } from './WyswygScriptEditor';
@@ -39,15 +39,6 @@ export const scriptEditStyle = css({
   // marginTop: '0.8em',
   width: '500px',
 });
-
-export type ScriptMode = 'SET' | 'GET';
-
-export type CodeLanguage =
-  | 'JavaScript'
-  | 'TypeScript'
-  | 'CSS'
-  | 'JSON'
-  | 'PlainText';
 
 const operators = ['&&', '||'] as const;
 

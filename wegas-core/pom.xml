@@ -13,6 +13,35 @@
     <packaging>jar</packaging>
     <name>wegas-core</name>
 
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <property>
+                    <name>!reporting</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>de.empulse.eclipselink</groupId>
+                        <artifactId>staticweave-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>reporting</id>
+            <activation>
+                <property>
+                    <name>reporting</name>
+                </property>
+            </activation>
+        </profile>
+    </profiles>
+
+
     <dependencies>
         <dependency>
             <groupId>ch.albasim.wegas</groupId>
@@ -53,10 +82,11 @@
             <artifactId>shiro-web</artifactId>
         </dependency>
 
+        <!-- Does not work with our runAs
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-hazelcast</artifactId>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -329,6 +359,7 @@
                 </executions>
             </plugin>
 
+            <!-- Profile dependent activation -->
             <plugin>
                 <groupId>de.empulse.eclipselink</groupId>
                 <artifactId>staticweave-maven-plugin</artifactId>
@@ -386,7 +417,7 @@
                 <configuration>
                     <systemProperties>
                         <java.util.logging.config.file>${project.basedir}/src/test/resources/logging.properties</java.util.logging.config.file>
-                        <arquillian.launch>glassfish-embedded</arquillian.launch>
+                        <arquillian.launch>payara-embedded</arquillian.launch>
                     </systemProperties>
                 </configuration>
             </plugin>

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { Player, VariableDescriptor } from '../../data/selectors';
-import { useStore } from '../../data/store';
+import { useStore } from '../../data/Stores/store';
 import { IVariableDescriptor, IPlayer } from 'wegas-ts-api';
 import { instantiate } from '../../data/scriptable';
 

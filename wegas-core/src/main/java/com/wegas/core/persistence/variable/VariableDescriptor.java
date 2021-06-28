@@ -3,7 +3,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
@@ -30,6 +30,7 @@ import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.LabelledEntity;
+import com.wegas.core.persistence.Orderable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.annotations.WegasConditions.And;
@@ -142,7 +143,8 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "gamemodel_id"),
     @Index(columnList = "dtype"),
     @Index(columnList = "scope_id"),
-    @Index(columnList = "label_id")
+    @Index(columnList = "label_id"),
+    @Index(columnList = "gamemodel_id, refid", unique = true),
 })
 @NamedQuery(
     name = "VariableDescriptor.findAllNamesInModelAndItsScenarios",
@@ -236,7 +238,7 @@ import org.slf4j.LoggerFactory;
 @WegasEntity(callback = VariableDescriptor.VdMergeCallback.class)
 public abstract class VariableDescriptor<T extends VariableInstance>
     extends AbstractEntity
-    implements LabelledEntity, Broadcastable, AcceptInjection, ModelScoped {
+    implements LabelledEntity, Broadcastable, AcceptInjection, ModelScoped, Orderable {
 
     private static final long serialVersionUID = 1L;
 
@@ -335,6 +337,9 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     @ManyToOne
     @JsonIgnore
     private WhQuestionDescriptor parentWh;
+
+    @JsonIgnore
+    private Integer indexOrder;
 
     @ManyToOne
     @JsonIgnore
@@ -582,6 +587,20 @@ public abstract class VariableDescriptor<T extends VariableInstance>
             this.setRoot(null);
             this.setParentWh(null);
         }
+    }
+
+    @Override
+    @JsonIgnore
+    public Integer getOrder() {
+        return getIndexOrder();
+    }
+
+    public Integer getIndexOrder() {
+        return indexOrder;
+    }
+
+    public void setIndexOrder(Integer indexOrder) {
+        this.indexOrder = indexOrder;
     }
 
     public WhQuestionDescriptor getParentWh() {
@@ -895,6 +914,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     /**
      * @param context allow to circumscribe the propagation within the given context. It may be an
      *                instance of GameModel, Game, Team, or Player
+     * @param create
      */
     public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         int sFlag = 0;

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global Variable, self, gameModel, Event, Java, com, QuestionFacade, I18n */
@@ -58,19 +58,20 @@ var WegasDashboard = (function() {
         var order = Object.keys(section.items).length;
 
         section.items[id] = {
-            order: order,
-            varName: varName,
-            itemType: 'variable',
-            formatter: cfg.formatter,
-            transformer: cfg.transformer,
-            label: cfg.label,
-            index: cfg.index || Object.keys(section).length,
-            active: (cfg.active !== undefined) ? cfg.active : true,
-            sortable: cfg.sortable,
-            preventClick: cfg.preventClick,
-            sortFn: cfg.sortFn,
-            mapFn: cfg.mapFn,
-            mapFnExtraArgs: cfg.mapFnExtraArgs
+          order: order,
+          varName: varName,
+          itemType: "variable",
+          formatter: cfg.formatter,
+          transformer: cfg.transformer,
+          label: cfg.label,
+          index: cfg.index || Object.keys(section).length,
+          active: cfg.active !== undefined ? cfg.active : true,
+          sortable: cfg.sortable,
+          preventClick: cfg.preventClick,
+          sortFn: cfg.sortFn,
+          mapFn: cfg.mapFn,
+          mapFnExtraArgs: cfg.mapFnExtraArgs,
+          kind: cfg.kind,
         };
     }
 
@@ -95,7 +96,7 @@ var WegasDashboard = (function() {
             doFn: doFn,
             label: cfg.label,
             icon: cfg.icon || "fa fa-pencil",
-            hasGlobal: cfg.hasGlobal
+            hasGlobal: cfg.hasGlobal,
         };
     }
 
@@ -160,6 +161,7 @@ var WegasDashboard = (function() {
                 var sectionCfg = theCfg[sectionName];
 
                 var section = {
+                    id: sectionName,
                     title: sectionCfg.title || sectionName,
                     items: []
                 };
@@ -176,7 +178,29 @@ var WegasDashboard = (function() {
                             item.itemType = 'action';
                             item.label = itemCfg.label || id;
                             item.icon = itemCfg.icon;
-                            item.do = itemCfg.doFn + "";
+                            if(typeof itemCfg.doFn === "function"){
+                                item.do = itemCfg.doFn + "";
+                            }
+                            else if(typeof itemCfg.doFn === "object"){
+                                if("type" in itemCfg.doFn){
+                                    switch(itemCfg.doFn.type){
+                                        case "ModalAction":{
+                                            var actions = itemCfg.doFn.actions.map(function(f){
+                                                return {
+                                                    doFn:f.doFn + "",
+                                                    schemaFn:f.schemaFn + ""
+                                                }
+                                            })
+                                            item.do = JSON.stringify({
+                                                type:itemCfg.doFn.type,
+                                                actions:actions,
+                                                showAdvancedImpact:itemCfg.doFn.showAdvancedImpact
+                                            })
+                                        }
+                                    }
+    
+                                }
+                            }
                             item.hasGlobal = itemCfg.hasGlobal;
 
                             items[id] = {
@@ -216,8 +240,13 @@ var WegasDashboard = (function() {
                             item.preventClick = itemCfg.preventClick;
                             item.sortable = itemCfg.sortable;
                             item.sortFn = itemCfg.sortFn;
-                            item.kind = variables[varName].descriptor.getJSONClassName()
-                                .replaceAll("Descriptor", "").toLowerCase();
+                            if(itemCfg.kind != null){
+                                item.kind = itemCfg.kind;
+                            }
+                            else{
+                                item.kind = variables[varName].descriptor.getJSONClassName()
+                                .replaceAll("Descriptor", "").toLowerCase();                            
+                            }
                             break;
                         default:
                     }
@@ -243,7 +272,7 @@ var WegasDashboard = (function() {
                         var item = items[id];
                         if (item.itemType === "variable") {
                             var variable = variables[item.varName];
-
+                                                        
                             if (item.mapFn) {
                                 var args = [teamId, variable.instances[teamId]];
                                 for (var i in item.mapFnExtraArgs) {

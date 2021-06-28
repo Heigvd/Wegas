@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global I18n */
@@ -75,8 +75,8 @@ YUI.add('wegas-entity', function(Y) {
             }
         };
     /**
-     * 
-     * @param {{type:"string" | "html", description?:string, label?:string, index?:number}} param 
+     *
+     * @param {{type:"string" | "html", description?:string, label?:string, index?:number}} param
      */
     Y.Wegas.Helper.getTranslationAttr = function(param) {
         var TRANSLATION_CONTENT_ATTR_DEF = {
@@ -850,7 +850,7 @@ YUI.add('wegas-entity', function(Y) {
         ATTRS: {
             version: VERSION_ATTR_DEF,
             visibility: Wegas.persistence.Entity.ATTRS_DEF.VISIBILITY,
-            contentKey: {type: "string"},
+            //contentKey: {type: "string"},
             contentType: {type: "string"},
             content: {type: "string"}
         }

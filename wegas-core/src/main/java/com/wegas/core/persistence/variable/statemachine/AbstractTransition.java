@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
@@ -29,6 +30,8 @@ import com.wegas.editor.view.Hidden;
 import com.wegas.editor.view.NumberView;
 import com.wegas.editor.view.ScriptView;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.AttributeOverride;
@@ -61,7 +64,7 @@ import javax.persistence.Version;
     }
 )
 @JsonIgnoreProperties({"stateId"})
-public abstract class AbstractTransition extends AbstractEntity {
+public abstract class AbstractTransition extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
 
@@ -240,6 +243,11 @@ public abstract class AbstractTransition extends AbstractEntity {
     @Override
     public WithPermission getMergeableParent() {
         return this.getState();
+    }
+
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        return this.getState().getEntities();
     }
 
     @Override

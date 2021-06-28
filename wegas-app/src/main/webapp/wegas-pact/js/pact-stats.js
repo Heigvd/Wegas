@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2019  School of Business and Engineering Vaud, Comem, MEI, HES-SO
+ * Copyright (c) 2019  School of Management and Engineering Vaud, Comem, MEI, HES-SO
  * Licensed under the MIT License
  * 
  * Author: J.Hulaas, oct. 2019

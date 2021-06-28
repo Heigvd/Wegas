@@ -1,33 +1,38 @@
 import * as React from 'react';
 import { useTranslate } from '../../Editor/Components/FormView/translatable';
 import { Player } from '../../data/selectors';
-import { useStore, store } from '../../data/store';
+import { useStore, store } from '../../data/Stores/store';
 import { EntityChooser } from '../EntityChooser';
-import { cx, css } from 'emotion';
-import { flex, itemCenter } from '../../css/classes';
+import { cx } from 'emotion';
+import {
+  flex,
+  itemCenter,
+  unreadSignalStyle,
+  unreadSpaceStyle,
+} from '../../css/classes';
 import { readMessage } from '../../data/Reducer/VariableInstanceReducer';
-import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
-import { TranslatableText } from './Text';
+import { TranslatableText } from './HTMLText';
 import { IMessage, IInboxDescriptor } from 'wegas-ts-api';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 
-const unreadSignalStyle = css({ margin: '3px' });
-
 interface MessageLabelProps {
   message: IMessage;
+  disabled?: boolean;
 }
 
-function MessageLabel({ message }: MessageLabelProps) {
+function MessageLabel({ message, disabled }: MessageLabelProps) {
   const translatedLabel = useTranslate(message.subject);
   return (
     <div
       className={cx(flex, itemCenter)}
-      onClick={() => store.dispatch(readMessage(message))}
+      onClick={() => !disabled && store.dispatch(readMessage(message))}
     >
-      <div className={flex}>{translatedLabel}</div>
-      {message.unread && (
-        <FontAwesome className={unreadSignalStyle} icon="exclamation" />
+      {message.unread ? (
+        <div className={cx(unreadSpaceStyle, unreadSignalStyle)} />
+      ) : (
+        <div className={cx(unreadSpaceStyle)} />
       )}
+      <div className={flex}>{translatedLabel}</div>
     </div>
   );
 }
@@ -48,11 +53,11 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
   );
 }
 
-interface InboxDisplayProps {
+interface InboxDisplayProps extends DisabledReadonly {
   inbox: IInboxDescriptor;
 }
 
-export function InboxDisplay({ inbox }: InboxDisplayProps) {
+export function InboxDisplay({ inbox, disabled, readOnly }: InboxDisplayProps) {
   const messagesSelector = React.useCallback(
     () => getInstance(inbox, Player.selectCurrent())!.messages,
     [inbox],
@@ -64,6 +69,8 @@ export function InboxDisplay({ inbox }: InboxDisplayProps) {
     <EntityChooser
       entities={messages}
       entityLabel={e => <MessageLabel message={e} />}
+      disabled={disabled}
+      readOnly={readOnly}
     >
       {MessageDisplay}
     </EntityChooser>

@@ -3,7 +3,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -32,8 +32,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -42,7 +40,6 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import javax.json.JsonValue;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -124,6 +121,7 @@ public class UtilsController {
      */
     @DELETE
     @Path("EmCache")
+    @RequiresRoles("Administrator")
     public void wipeEmCache() {
         jpaCacheHelper.requestClearCache();
     }
@@ -133,12 +131,14 @@ public class UtilsController {
      */
     @DELETE
     @Path("LocalEmCache")
+    @RequiresRoles("Administrator")
     public void directWipeEmCache() {
         jpaCacheHelper.clearCacheLocal();
     }
 
     @GET
     @Path("ReviveCluster")
+    @RequiresRoles("Administrator")
     public void revive() {
         applicationLifecycle.requestClusterMemberNotification();
     }
@@ -586,6 +586,7 @@ public class UtilsController {
      */
     @DELETE
     @Path("JCR_GC")
+    @RequiresRoles("Administrator")
     public void jcrGC() {
         jcrConnector.revisionGC();
     }

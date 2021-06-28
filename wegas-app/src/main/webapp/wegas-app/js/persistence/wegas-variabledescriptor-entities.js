@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global I18n */
@@ -413,6 +413,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                         label: "Pdf (Players document)",
                                         outputType: "pdf",
                                         mode: "player"
+                                    },{
+                                        type: "PrintButton",
+                                        label: "Pdf (proofreading document)",
+                                        outputType: "pdf",
+                                        mode: "reader"
                                     }, {
                                         type: "OpenEntityButton",
                                         label: "Json",

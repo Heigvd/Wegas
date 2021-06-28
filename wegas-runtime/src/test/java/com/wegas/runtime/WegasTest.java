@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.runtime;
@@ -143,13 +143,13 @@ public class WegasTest {
         }
 
         User scenUser = client.get("/rest/User/" + scenarist.getUserId(), User.class);
-        scenUser.getRoles().add(roles.get("Scenarist"));
-        scenUser.getRoles().add(roles.get("Trainer"));
+        scenUser.addRole(roles.get("Scenarist"));
+        scenUser.addRole(roles.get("Trainer"));
 
         client.put("/rest/User/Account/" + scenUser.getMainAccount().getId(), scenUser.getMainAccount());
 
         User trainerUser = client.get("/rest/User/" + trainer.getUserId(), User.class);
-        trainerUser.getRoles().add(roles.get("Trainer"));
+        trainerUser.addRole(roles.get("Trainer"));
 
         client.put("/rest/User/Account/" + trainerUser.getMainAccount().getId(), trainerUser.getMainAccount());
     }
@@ -243,7 +243,7 @@ public class WegasTest {
 
         /*
          * DELETE	/Assign/{assignmentId}
-         * POST	/Assign/{resourceId}/{taskInstanceId} 
+         * POST	/Assign/{resourceId}/{taskInstanceId}
          * PUT * /MoveAssignment/{assignmentId}/{index}
          */
         // Load resource and task from botch instance
@@ -280,6 +280,12 @@ public class WegasTest {
         Assert.assertArrayEquals(gaelle_a.getAssignments().toArray(), gaelle_b.getAssignments().toArray());
     }
 
+    private void deleteGame(Game game) throws IOException {
+        client.login(root);
+        client.put("/rest/GameModel/Game/" + game.getId() + "/status/DELETE");
+        client.delete("/rest/GameModel/Game/" + game.getId());
+    }
+
     @Test
     public void testStandardProcess() throws IOException {
         logger.info("root share to Scenarist");
@@ -301,7 +307,7 @@ public class WegasTest {
         });
         logger.info("# gamemodels trainer:" + gameModels.size());
         // Get
-        Assert.assertEquals(2, gameModels.size()); // artos +empty
+        Assert.assertTrue(gameModels.contains(artos));
 
         //create a game
         Game myGame = client.postJSON_asString("/rest/GameModel/" + artos.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + artos.getId() + "\",\"access\":\"OPEN\",\"name\":\"ArtosGame\"}", Game.class);
@@ -336,6 +342,93 @@ public class WegasTest {
         });
 
         Assert.assertEquals(1, userTeams.size()); // artos +empty
+        Team team = userTeams.get(0);
+
+        // user leave
+        Player deleted = client.delete("/rest/GameModel/Game/Team/" + team.getId() + "/Player/" + team.getPlayers().get(0).getId(), new TypeReference<Player>() {
+        });
+
+        userTeams = client.get("/rest/User/Current/Team", new TypeReference<List<Team>>() {
+        });
+
+        Assert.assertNull(userTeams);
+
+        /** ************************************ CLEAN **************************************** */
+        deleteGame(myGame);
+    }
+
+    @Test
+    public void testTrainerDeletePlayer() throws IOException {
+        logger.info("root share to Scenarist");
+        client.login(root);
+        client.post("/rest/User/ShareGameModel/" + artos.getId() + "/View,Edit,Delete,Instantiate,Duplicate/" + scenarist.getAccountId(), null);
+
+        logger.info("scenarist create a game");
+        client.login(scenarist);
+        List<GameModel> gameModels = client.get("/rest/GameModel/status/LIVE", new TypeReference<List<GameModel>>() {
+        });
+
+        Assert.assertTrue(gameModels.contains(artos));
+        logger.info("# gamemodels scen:" + gameModels.size());
+
+        //create a game
+        Game myGame = client.postJSON_asString("/rest/GameModel/" + artos.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + artos.getId() + "\",\"access\":\"OPEN\",\"name\":\"ArtosGame\"}", Game.class);
+        String token = myGame.getToken();
+
+        List<Game> games = client.get("/rest/GameModel/Game/status/LIVE", new TypeReference<List<Game>>() {
+        });
+        Assert.assertEquals(1, games.size()); // artos
+
+        // User join the game
+        client.login(user);
+
+        Game gameToJoin = client.get("/rest/GameModel/Game/FindByToken/" + token, Game.class);
+
+        gameToJoin.setGameModel(artos); //Hack
+
+        Team teamToCreate = new Team();
+        teamToCreate.setDeclaredSize(1);
+        teamToCreate.setName("myTeam");
+        teamToCreate.setGame(gameToJoin);
+
+        Team newTeam = client.post("/rest/GameModel/Game/" + gameToJoin.getId() + "/Team", teamToCreate, Team.class);
+
+        Assert.assertEquals(Populatable.Status.LIVE, newTeam.getStatus());
+
+        Team joinedTeam = client.post("/rest/GameModel/Game/Team/" + newTeam.getId() + "/Player", null, Team.class);
+        Assert.assertEquals(1, joinedTeam.getPlayers().size());
+        Assert.assertEquals(Populatable.Status.LIVE, joinedTeam.getPlayers().get(0).getStatus());
+
+        client.login(user);
+
+        List<Team> userTeams = client.get("/rest/User/Current/Team", new TypeReference<List<Team>>() {
+        });
+
+        Assert.assertEquals(1, userTeams.size()); // artos +empty
+
+        // scenarist delete the player
+        client.login(scenarist);
+
+        games = client.get("/rest/Editor/GameModel/Game/status/LIVE", new TypeReference<List<Game>>() {
+        });
+        Assert.assertEquals(1, games.size()); // artos
+        List<Team> teams = games.get(0).getTeams();
+        Assert.assertEquals(1, teams.size()); // myTeam
+        List<Player> players = teams.get(0).getPlayers();
+        Assert.assertEquals(1, players.size()); // user
+
+        Player deleted = client.delete("/rest/GameModel/Game/Team/"
+            + teams.get(0).getId() + "/Player/" + players.get(0).getId(), new TypeReference<Player>() {
+        });
+
+        games = client.get("/rest/GameModel/Game/status/LIVE", new TypeReference<List<Game>>() {
+        });
+        Assert.assertEquals(1, games.size()); // artos
+        teams = games.get(0).getTeams();
+        Assert.assertEquals(0, teams.size()); // myTeam
+
+        /** ************************************ CLEAN **************************************** */
+        deleteGame(myGame);
     }
 
     @Test

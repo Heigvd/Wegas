@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.persistence;
@@ -13,11 +13,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.ReviewingNotStarted;
-import com.wegas.editor.view.Hidden;
+import com.wegas.editor.Visible;
+import com.wegas.editor.view.ReviewStateSelectView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -53,7 +55,10 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
     @Enumerated(value = EnumType.STRING)
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = ReviewingNotStarted.class,
-            view = @View(label = "Review State"))
+            view = @View(
+                    label = "Review State",
+                    value = ReviewStateSelectView.class))
+    @Visible(VariableInstance.IsNotDefaultInstance.class)
     private PeerReviewDescriptor.ReviewingState reviewState = PeerReviewDescriptor.ReviewingState.NOT_STARTED;
 
     /**
@@ -62,7 +67,8 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
     @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "To review", value = Hidden.class))
+            view = @View(label = "To review"))
+    @Visible(VariableInstance.IsNotDefaultInstance.class)
     private List<Review> toReview = new ArrayList<>();
 
     /**
@@ -71,7 +77,8 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Reviewed", value = Hidden.class))
+            view = @View(label = "Reviewed"))
+    @Visible(VariableInstance.IsNotDefaultInstance.class)
     private List<Review> reviewed = new ArrayList<>();
 
     /**

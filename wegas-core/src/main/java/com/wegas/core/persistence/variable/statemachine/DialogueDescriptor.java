@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
@@ -13,8 +13,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
-import com.wegas.editor.jsonschema.JSONObject;
 import com.wegas.editor.Schema;
+import com.wegas.editor.jsonschema.JSONObject;
 import com.wegas.editor.view.Hidden;
 import java.util.HashMap;
 import java.util.Map;

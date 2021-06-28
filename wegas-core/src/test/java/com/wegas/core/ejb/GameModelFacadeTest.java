@@ -1,8 +1,9 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -43,9 +44,9 @@ public class GameModelFacadeTest extends AbstractArquillianTestMinimal {
 
         GameModel myGameModel = new GameModel();
         myGameModel.setName(name);
-        myGameModel.setClientScript(new GameModelContent(CLIENT_SCRIPTNAME, CLIENT_SCRIPTCONTENT, ""));
-        myGameModel.setScript(new GameModelContent(SERVER_SCRIPTNAME, SERVER_SCRIPTCONTENT, ""));
-        myGameModel.setCss(new GameModelContent(CSS_NAME, CSS_CONTENT, ""));
+        myGameModel.addLibrary(new GameModelContent(CLIENT_SCRIPTNAME, CLIENT_SCRIPTCONTENT, "application/javascript", GameModelContent.CLIENT_SCRIPT));
+        myGameModel.addLibrary(new GameModelContent(SERVER_SCRIPTNAME, SERVER_SCRIPTCONTENT, "application/javascript", GameModelContent.SERVER_SCRIPT));
+        myGameModel.addLibrary(new GameModelContent(CSS_NAME, CSS_CONTENT, "text/css", GameModelContent.CSS));
         myGameModel.getProperties().setPagesUri(PAGE_URI);
 
         final int size = gameModelFacade.findAll().size();
@@ -54,10 +55,10 @@ public class GameModelFacadeTest extends AbstractArquillianTestMinimal {
 
         myGameModel = gameModelFacade.find(myGameModel.getId());
         Assert.assertEquals(name, myGameModel.getName());
-        Assert.assertEquals(CLIENT_SCRIPTCONTENT, myGameModel.getClientScript(CLIENT_SCRIPTNAME).getContent());
+        Assert.assertEquals(CLIENT_SCRIPTCONTENT, myGameModel.findLibrary(GameModelContent.CLIENT_SCRIPT, CLIENT_SCRIPTNAME).getContent());
+        Assert.assertEquals(CSS_CONTENT, myGameModel.findLibrary(GameModelContent.CSS, CSS_NAME).getContent());
+        Assert.assertEquals(SERVER_SCRIPTCONTENT, myGameModel.findLibrary(GameModelContent.SERVER_SCRIPT, SERVER_SCRIPTNAME).getContent());
         Assert.assertEquals(PAGE_URI, myGameModel.getProperties().getPagesUri());
-        Assert.assertEquals(CSS_CONTENT, myGameModel.getCss(CSS_NAME).getContent());
-        Assert.assertEquals(SERVER_SCRIPTCONTENT, myGameModel.getScript(SERVER_SCRIPTNAME).getContent());
 
         gameModelFacade.remove(myGameModel.getId());
         Assert.assertEquals(size, gameModelFacade.findAll().size());

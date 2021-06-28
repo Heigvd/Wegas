@@ -10,7 +10,7 @@ import { createScript } from '../Helper/wegasEntites';
 
 //It's really important to import index.ts in order to have the widjets allready registered before using Form
 import '../Editor/Components/FormView';
-import { themeVar } from '../Components/Style/ThemeVars';
+import { themeVar } from '../Components/Theme/ThemeVars';
 import { IScript, IAbstractContentDescriptor } from 'wegas-ts-api';
 
 const testSchema = {
@@ -18,6 +18,7 @@ const testSchema = {
   translated: schemaProps.scriptString({ label: 'Translated', richText: true }),
   hidden: schemaProps.hidden({}),
   boolean: schemaProps.boolean({ label: 'Boolean' }),
+  scriptableBoolean: schemaProps.scriptBoolean({ label: 'Script Boolean' }),
   number: schemaProps.number({ label: 'Number' }),
   string: schemaProps.string({ label: 'String' }),
   script: schemaProps.script({ label: 'Script' }),
@@ -67,7 +68,7 @@ const testSchema = {
   file: schemaProps.file({ label: 'File' }),
   greyFilterfile: schemaProps.file({
     label: 'Filtered audio file',
-    pick: 'FILE',
+    pickType: 'FILE',
     filter: {
       filterType: 'grey',
       fileType: 'audio',
@@ -92,6 +93,7 @@ interface SchemaPropsTesterState {
   translated: IScript;
   hidden: string[];
   boolean: boolean;
+  scriptableBoolean: IScript;
   number: number;
   string: string;
   script: IScript;
@@ -110,10 +112,13 @@ export default function SchemaPropsTester() {
   const [values, setValues] = React.useState<SchemaPropsTesterState>({
     variable: createScript(),
     translated: createScript(
-      '"<p>&nbsp;I18n.toString(Variable.find(gameModel,\'infoboxPhaseActuelle\'))</p>"',
+      "I18n.toString(Variable.find(gameModel,'infoboxPhaseActuelle'))",
     ),
     hidden: ['hidden'],
     boolean: false,
+    scriptableBoolean: createScript(
+      'Variable.find(gameModel,"infoboxPhaseActuelle")',
+    ),
     number: 0,
     string: '',
     script: createScript(),
@@ -158,7 +163,7 @@ export default function SchemaPropsTester() {
         style={{
           margin: '20px',
           borderStyle: 'solid',
-          borderColor: themeVar.Common.colors.BorderColor,
+          borderColor: themeVar.colors.PrimaryColor,
         }}
       >
         {Object.entries(values).map(([k, v]) => (

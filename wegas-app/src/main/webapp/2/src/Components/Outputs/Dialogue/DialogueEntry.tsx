@@ -9,61 +9,86 @@ import {
   expandHeight,
   grow,
 } from '../../../css/classes';
+import { Global } from '../../../data/selectors';
 import { useTranslate } from '../../../Editor/Components/FormView/translatable';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { WaitingLoader } from './WaitingLoader';
 
 const dialogueEntryStyle = (player?: boolean) =>
   css({
     width: '80%',
     margin: '5px',
-    ...(player ? { marginLeft: '20%' } : { marginRight: '20%' }),
+    ...(player ? { marginLeft: '18%' } : { marginRight: '18%' }),
   });
 
 const textContainerStyle = (player?: boolean) =>
   css({
     position: 'relative',
     backgroundColor: player
-      ? themeVar.Common.colors.HeaderColor
-      : themeVar.Common.colors.DisabledColor,
-    borderRadius: themeVar.Common.dimensions.BorderRadius,
-    padding: '5px',
+      ? themeVar.colors.PrimaryColor
+      : themeVar.colors.HeaderColor,
+    color: player
+      ? themeVar.colors.LightTextColor
+      : themeVar.colors.DarkTextColor,
+    borderRadius: themeVar.dimensions.BorderRadius,
+    padding: '5px 10px',
     overflow: 'hidden',
+    fontSize: 'initial',
+    lineHeight: '1.1em',
   });
 
 const portraitStyle = css({
-  width: '50px',
-  height: '50px',
+  width: '40px',
+  height: '40px',
   margin: '5px',
+});
+
+const portraitPlayerStyle = css({
+  backgroundColor: themeVar.colors.ActiveColor,
+  borderRadius: '50%',
+  fontSize: '1.3em',
+  textAlign: 'center',
+  color: themeVar.colors.LightTextColor,
+  width: '35px',
+  height: '35px',
 });
 
 interface UserPortraitProps extends ClassStyleId {
   color?: string;
+  player?: boolean;
 }
 
 function UserPortrait({
   color = '#00BFCE',
+  player,
   className,
   style,
   id,
 }: UserPortraitProps) {
+  const user = Global.selectCurrentUser();
   return (
     <div className={className} style={style} id={id}>
-      <svg
-        width="50"
-        height="50"
-        viewBox="0 0 50 50"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle cx="25" cy="25" r="25" fill={color} />
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M8.33331 43.6373C8.49419 36.4296 14.2332 30.6369 21.2928 30.6287H28.7002C35.7599 30.6369 41.4989 36.4296 41.6597 43.6373C37.2372 47.5941 31.3978 50 24.9965 50C18.5952 50 12.7559 47.5941 8.33331 43.6373ZM24.9965 28.7281C19.8828 28.7281 15.7373 24.4735 15.7373 19.2251C15.7373 13.9768 19.8828 9.72222 24.9965 9.72222C30.1103 9.72222 34.2558 13.9768 34.2558 19.2251C34.2497 24.4709 30.1077 28.7218 24.9965 28.7281Z"
-          fill="white"
-        />
-      </svg>
+      {player ? (
+        <div className={cx(portraitPlayerStyle)}>
+          <p className={css({ lineHeight: '34px' })}>{user.name?.charAt(0)}</p>
+        </div>
+      ) : (
+        <svg
+          width="35"
+          height="35"
+          viewBox="0 0 50 50"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle cx="25" cy="25" r="25" fill={color} />
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M8.33331 43.6373C8.49419 36.4296 14.2332 30.6369 21.2928 30.6287H28.7002C35.7599 30.6369 41.4989 36.4296 41.6597 43.6373C37.2372 47.5941 31.3978 50 24.9965 50C18.5952 50 12.7559 47.5941 8.33331 43.6373ZM24.9965 28.7281C19.8828 28.7281 15.7373 24.4735 15.7373 19.2251C15.7373 13.9768 19.8828 9.72222 24.9965 9.72222C30.1103 9.72222 34.2558 13.9768 34.2558 19.2251C34.2497 24.4709 30.1077 28.7218 24.9965 28.7281Z"
+            fill="white"
+          />
+        </svg>
+      )}
     </div>
   );
 }
@@ -86,23 +111,31 @@ export function DialogueEntry({ text, player, waiting }: DialogueEntryProps) {
         dialogueEntryStyle(player),
       )}
     >
-      <UserPortrait
-        className={portraitStyle}
-        color={
-          player
-            ? themeVar.Common.colors.ActiveColor
-            : themeVar.Common.colors.HeaderColor
-        }
-      />
-      <div className={cx(expandHeight, grow, textContainerStyle(player))}>
-        <div dangerouslySetInnerHTML={{ __html: translation }} />
-        {waiting && (
-          <WaitingLoader
-            color={themeVar.Common.colors.HeaderColor}
-            background={themeVar.Common.colors.DisabledColor}
-          />
-        )}
-      </div>
+      {
+        /* if there is nothing to say, just skip the entry */
+        translation != null && translation.length > 0 && (
+          <>
+            <UserPortrait
+              className={portraitStyle}
+              color={
+                player
+                  ? themeVar.colors.ActiveColor
+                  : themeVar.colors.HeaderColor
+              }
+              player={player}
+            />
+            <div className={cx(expandHeight, grow, textContainerStyle(player))}>
+              <div dangerouslySetInnerHTML={{ __html: translation }} />
+              {waiting && (
+                <WaitingLoader
+                  color={themeVar.colors.LightTextColor}
+                  background={themeVar.colors.DisabledColor}
+                />
+              )}
+            </div>
+          </>
+        )
+      }
     </div>
   );
 }
