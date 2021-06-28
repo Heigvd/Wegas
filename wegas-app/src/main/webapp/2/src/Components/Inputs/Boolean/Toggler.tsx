@@ -10,48 +10,48 @@ import {
   itemCenter,
 } from '../../../css/classes';
 import { classOrNothing, classNameOrEmpty } from '../../../Helper/className';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 
 const togglerStyle = css({
   display: 'flex',
-  minWidth: '50px',
+  minWidth: '45px',
   height: '24px',
   boxSizing: 'border-box',
   borderRadius: '24px',
-  borderStyle: 'solid',
-  borderWidth: '2px',
-  color: themeVar.Common.colors.LightTextColor,
-  borderColor: themeVar.Common.colors.PrimaryColor,
-  backgroundColor: themeVar.Common.colors.ErrorColor,
+  color: themeVar.colors.LightTextColor,
+  backgroundColor: themeVar.colors.ErrorColor,
   cursor: 'pointer',
   margin: 'auto',
+  marginTop: '5px',
   flexDirection: 'row',
   ['&.disabled']: {
     opacity: '50%',
-    borderColor: themeVar.Common.colors.DisabledColor,
+    borderColor: themeVar.colors.DisabledColor,
     cursor: 'default',
   },
   ['&.readOnly']: {
-    borderColor: themeVar.Common.colors.DisabledColor,
+    borderColor: themeVar.colors.DisabledColor,
     cursor: 'default',
   },
   ['&.checked']: {
-    backgroundColor: themeVar.Common.colors.SuccessColor,
+    backgroundColor: themeVar.colors.SuccessColor,
     flexDirection: 'row-reverse',
   },
 });
 
 const togglerHandleStyle = css({
   borderRadius: '20px',
-  width: '20px',
-  height: '20px',
-  backgroundColor: themeVar.Common.colors.PrimaryColor,
+  width: '17px',
+  height: '17px',
+  margin: '3px',
+  backgroundColor: themeVar.colors.BackgroundColor,
+  alignSelf: 'center',
   ['&.disabled']: {
     opacity: '50%',
-    backgroundColor: themeVar.Common.colors.DisabledColor,
+    backgroundColor: themeVar.colors.DisabledColor,
   },
   ['&.readOnly']: {
-    backgroundColor: themeVar.Common.colors.DisabledColor,
+    backgroundColor: themeVar.colors.DisabledColor,
   },
 });
 

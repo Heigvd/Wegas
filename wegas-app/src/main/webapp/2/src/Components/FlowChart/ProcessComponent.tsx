@@ -9,7 +9,7 @@ import {
   stateBoxActionStyle,
   stateBoxStyle,
 } from './StateProcessComponent';
-import { themeVar } from '../Style/ThemeVars';
+import { themeVar } from '../Theme/ThemeVars';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { classNameOrEmpty } from '../../Helper/className';
 
@@ -21,7 +21,7 @@ const processStyle = css({
 });
 
 export const disabledStyle = css({
-  backgroundColor: themeVar.Common.colors.DisabledColor,
+  backgroundColor: themeVar.colors.DisabledColor,
   cursor: 'initial',
 });
 
@@ -43,11 +43,11 @@ export interface ProcessProps<F extends FlowLine, P extends Process<F>>
   /**
    * a callback triggered when a component has been moved
    */
-  onMove: (postion: XYPosition) => void;
+  onMove: (postion: XYPosition, e: MouseEvent) => void;
   /**
    * a callback triggered when a component movement ended
    */
-  onMoveEnd: (postion: XYPosition) => void;
+  onMoveEnd: (postion: XYPosition, e: MouseEvent) => void;
   /**
    * a callback triggered when a handle is dropped on the process component
    */
@@ -56,7 +56,7 @@ export interface ProcessProps<F extends FlowLine, P extends Process<F>>
 
 export function CustomProcessComponent<
   F extends FlowLine,
-  P extends Process<F>
+  P extends Process<F>,
 >({
   process,
   onReady,
@@ -85,16 +85,19 @@ export function CustomProcessComponent<
   }, []);
 
   const onDrag = React.useCallback(
-    (_e: MouseEvent, position: XYPosition) => onMove(position),
+    (e: MouseEvent, position: XYPosition) => onMove(position, e),
     [onMove],
   );
 
   const onDragEnd = React.useCallback(
-    (_e: MouseEvent, position: XYPosition) => {
-      onMoveEnd({
-        x: Math.max(position.x, 0),
-        y: Math.max(position.y, 0),
-      });
+    (e: MouseEvent, position: XYPosition) => {
+      onMoveEnd(
+        {
+          x: Math.max(position.x, 0),
+          y: Math.max(position.y, 0),
+        },
+        e,
+      );
     },
     [onMoveEnd],
   );
@@ -142,7 +145,7 @@ export interface ProcessComponentProps<F extends FlowLine, P extends Process<F>>
 
 export function DefaultProcessComponent<
   F extends FlowLine,
-  P extends Process<F>
+  P extends Process<F>,
 >({
   isProcessSelected,
   onClick,

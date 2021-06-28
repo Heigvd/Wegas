@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useDrop, DropTargetMonitor } from 'react-dnd';
-import { Tab, DragTab, DropTab } from './DnDTabs';
+import { Tab, DragTab, DropTab, TabComponent } from './DnDTabs';
 import { Toolbar } from '../../../Components/Toolbar';
 import { DropMenu } from '../../../Components/DropMenu';
 import { Reparentable } from '../Reparentable';
@@ -16,21 +16,17 @@ import {
   hideOverflow,
   autoScroll,
   headerStyle,
-  contentStyle,
   hatchedBackground,
+  childrenHeaderStyle,
 } from '../../../css/classes';
-import { themeVar } from '../../../Components/Style/ThemeVars';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
-
-const tabButton = css({
-  color: themeVar.Common.colors.LightTextColor,
-  ':hover': {
-    color: themeVar.Common.colors.HoverTextColor,
-  },
-  ':focus': {
-    outline: 'none',
-  },
-});
+import { childrenPlusTabStyle, plusTabStyle } from '../../../Components/Tabs';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { EditorTabsTranslations } from '../../../i18n/editorTabs/definitions';
 
 const dropZoneFocus = hatchedBackground;
 
@@ -98,6 +94,11 @@ export const dropSpecsFactory = (action: DropAction, layoutAccept: string) => {
     }),
   };
 };
+export interface ClassNames {
+  general?: string;
+  header?: string;
+  content?: string;
+}
 
 interface TabLayoutProps {
   /**
@@ -113,7 +114,7 @@ interface TabLayoutProps {
    */
   selectItems?: ComponentMap;
   /**
-   * activeId - the selected tab
+   * defaultActiveLabel - the selected tab at startup
    */
   defaultActiveLabel?: string;
   /**
@@ -140,6 +141,18 @@ interface TabLayoutProps {
    * layoutId - The token that filter the drop actions
    */
   layoutId: string;
+  /**
+   * The tab component to use in this layout
+   */
+  CustomTab?: TabComponent;
+  /**
+   * The className for general styling
+   */
+  classNames?: ClassNames;
+  /**
+   * If tabs are children of other tabs (styling purpose mainly).
+   */
+  areChildren?: boolean;
 }
 
 /**
@@ -156,7 +169,14 @@ export function DnDTabLayout({
   onDeleteTab,
   onNewTab,
   layoutId,
+  CustomTab = Tab,
+  classNames = {},
+  areChildren,
 }: TabLayoutProps) {
+  const { general, header, content } = classNames;
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nTabsNames = internalTranslate(editorTabsTranslations, lang);
   React.useEffect(() => {
     if (
       defaultActiveLabel === undefined ||
@@ -198,6 +218,13 @@ export function DnDTabLayout({
     const componentsKeys = Object.keys(components);
     for (let i = 0; i < componentsKeys.length; i += 1) {
       const label = componentsKeys[i];
+      const translatedLabel = i18nTabsNames.tabsNames[
+        label as keyof EditorTabsTranslations['tabsNames']
+      ]
+        ? i18nTabsNames.tabsNames[
+            label as keyof EditorTabsTranslations['tabsNames']
+          ]
+        : label;
 
       // Always put a dropTab on the left of a tab
       tabs.push(
@@ -210,6 +237,7 @@ export function DnDTabLayout({
             overviewNode: <div className={dropTabZone}></div>,
           }}
           layoutId={layoutId}
+          CustomTab={CustomTab}
         >
           <DragTab
             key={label}
@@ -219,14 +247,14 @@ export function DnDTabLayout({
               onSelect && onSelect(label);
             }}
             layoutId={layoutId}
+            CustomTab={CustomTab}
+            isChild={areChildren}
           >
-            {label}
-            <Button
+            {translatedLabel}
+            <IconButton
               icon="times"
               tooltip="Remove tab"
               onClick={() => onDeleteTab(label)}
-              className={tabButton}
-              noBackground
             />
           </DragTab>
         </DropTab>,
@@ -235,7 +263,7 @@ export function DnDTabLayout({
       // At the end, don't forget to add a dropTab on the right of the last tab
       if (Number(i) === componentsKeys.length - 1) {
         tabs.push(
-          <Tab
+          <CustomTab
             key={label + 'RIGHTDROP'}
             className={
               dropTabsProps.isShallowOver
@@ -250,30 +278,56 @@ export function DnDTabLayout({
   };
 
   return (
-    <Toolbar vertical={vertical} className={relative}>
-      <Toolbar.Header className={headerStyle}>
+    <Toolbar
+      vertical={vertical}
+      className={cx(
+        relative,
+        general,
+        css({ backgroundColor: themeVar.colors.BackgroundColor }),
+      )}
+    >
+      <Toolbar.Header
+        className={cx(header, {
+          [childrenHeaderStyle]: areChildren !== undefined && areChildren,
+          [headerStyle]: !areChildren,
+        })}
+      >
         <div ref={dropTabs} className={cx(flex, grow, autoScroll)}>
           {renderTabs()}
           {selectItems && Object.keys(selectItems).length > 0 && (
-            <Tab key={'-1'}>
+            <CustomTab
+              key={'-1'}
+              className={cx({
+                [childrenPlusTabStyle]:
+                  areChildren !== undefined && areChildren,
+                [plusTabStyle]: !areChildren,
+              })}
+            >
               <DropMenu
-                items={Object.keys(selectItems).map(label => ({
-                  label: label,
-                  value: label,
-                }))}
+                items={Object.keys(selectItems).map(label => {
+                  const translatedLabel = i18nTabsNames.tabsNames[
+                    label as keyof EditorTabsTranslations['tabsNames']
+                  ]
+                    ? i18nTabsNames.tabsNames[
+                        label as keyof EditorTabsTranslations['tabsNames']
+                      ]
+                    : label;
+                  return {
+                    label: translatedLabel,
+                    value: label,
+                  };
+                })}
                 icon="plus"
                 onSelect={i => {
                   onSelect && onSelect(i.value);
                   onNewTab(String(i.value));
                 }}
-                buttonClassName={tabButton}
-                noBackground
               />
-            </Tab>
+            </CustomTab>
           )}
         </div>
       </Toolbar.Header>
-      <Toolbar.Content className={cx(relative, contentStyle)}>
+      <Toolbar.Content className={cx(relative, content)}>
         <div className={cx(expandBoth, hideOverflow)}>
           <div className={cx(autoScroll, absoute, expandBoth, flex)}>
             {defaultActiveLabel && components[defaultActiveLabel] && (
@@ -282,7 +336,7 @@ export function DnDTabLayout({
                 innerClassName={cx(flex, expandBoth)}
                 outerClassName={expandBoth}
               >
-                <React.Suspense fallback={<div>Loading...</div>}>
+                <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
                   {components[defaultActiveLabel]}
                 </React.Suspense>
               </Reparentable>

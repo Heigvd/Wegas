@@ -10,7 +10,7 @@ import {
 import { GameModel } from '../../../data/selectors';
 import { omit } from 'lodash-es';
 import u from 'immer';
-import { WebSocketEvent, useWebsocket } from '../../../API/websocket';
+import { WebSocketEvent, useWebsocketEvent } from '../../../API/websocket';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
 import MergeEditor from './MergeEditor';
 import { TextPrompt } from '../TextPrompt';
@@ -27,6 +27,10 @@ import { IAbstractContentDescriptor, IGameModelContent } from 'wegas-ts-api';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { librariesCTX } from '../LibrariesLoader';
 import { store } from '../../../data/Stores/store';
+import { defaultMarginRight, defaultPadding } from '../../../css/classes';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [
@@ -254,18 +258,17 @@ const setLibraryState = (oldState: ILibrariesState, action: StateAction) =>
  * getScriptLanguage that gives a language type from a libType
  * @param scriptType - the type of library
  */
-const getScriptLanguage: (
-  scriptType: LibType,
-) => 'css' | 'typescript' = scriptType => {
-  switch (scriptType) {
-    case 'CSS':
-      return 'css';
-    case 'ClientScript':
-    case 'ServerScript':
-    default:
-      return 'typescript';
-  }
-};
+const getScriptLanguage: (scriptType: LibType) => 'css' | 'typescript' =
+  scriptType => {
+    switch (scriptType) {
+      case 'CSS':
+        return 'css';
+      case 'ClientScript':
+      case 'ServerScript':
+      default:
+        return 'typescript';
+    }
+  };
 
 /**
  * getScriptOutdatedState is a function that looks for a lastestVersionLibrary.
@@ -385,6 +388,8 @@ interface ScriptEditorProps {
  * ScriptEditor is a component for wegas library management
  */
 function ScriptEditor({ scriptType }: ScriptEditorProps) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
   const [librariesState, dispatchStateAction] = React.useReducer(
     setLibraryState,
     {
@@ -423,7 +428,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
   /**
    * A new pusher event is registered in order to catch external updates on libraries
    */
-  useWebsocket(
+  useWebsocketEvent(
     ('LibraryUpdate-' + scriptType) as WebSocketEvent,
     websocketEventHandler,
   );
@@ -441,7 +446,21 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
       visibility: IVisibility = 'PRIVATE',
     ) => {
       if (name !== null) {
-        return LibraryAPI.addLibrary(scriptType, name, content, visibility)
+        const mimeType =
+          scriptType === 'CSS'
+            ? 'text/css'
+            : scriptType === 'ServerScript'
+            ? 'application/javascript'
+            : scriptType === 'ClientScript'
+            ? 'application/typescript'
+            : '';
+        return LibraryAPI.addLibrary(
+          scriptType,
+          mimeType,
+          name,
+          content,
+          visibility,
+        )
           .then((res: IGameModelContent) => {
             dispatchStateAction({
               type: 'InsertLibrary',
@@ -455,21 +474,24 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
               case 'NOTNEW':
                 setModalState({
                   type: 'error',
-                  label:
-                    'Script name not available (script already exists or the name contains bad characters)',
+                  label: i18nValues.scripts.scriptNameNotAvailable,
                 });
                 break;
               case 'UNKNOWN':
               default:
                 setModalState({
                   type: 'error',
-                  label: 'Cannot create the script',
+                  label: i18nValues.scripts.cannotCreateScript,
                 });
             }
           });
       }
     },
-    [scriptType],
+    [
+      i18nValues.scripts.cannotCreateScript,
+      i18nValues.scripts.scriptNameNotAvailable,
+      scriptType,
+    ],
   );
 
   /**
@@ -495,8 +517,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             } catch (e) {
               setModalState({
                 type: 'warning',
-                label:
-                  'The library has been saved but the script contains errors',
+                label: i18nValues.scripts.librarySavedErrors,
               });
             }
           } else if (scriptType === 'CSS') {
@@ -506,15 +527,17 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
         .catch(() => {
           setModalState({
             type: 'error',
-            label: 'The library cannot be saved',
+            label: i18nValues.scripts.libraryCannotSave,
           });
         });
     }
   }, [
     librariesState,
-    scriptType,
     libEntry,
+    scriptType,
     globalContexts,
+    i18nValues.scripts.librarySavedErrors,
+    i18nValues.scripts.libraryCannotSave,
     updateCSSLibraries,
   ]);
 
@@ -531,13 +554,18 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
         }
       })
       .catch(() => {
-        'The library cannot be deleted';
+        i18nValues.scripts.libraryCannotDelete;
         setModalState({
           type: 'error',
-          label: 'Cannot delete the script',
+          label: i18nValues.scripts.cannotDeleteScript,
         });
       });
-  }, [librariesState.selected, scriptType]);
+  }, [
+    i18nValues.scripts.cannotDeleteScript,
+    i18nValues.scripts.libraryCannotDelete,
+    librariesState.selected,
+    scriptType,
+  ]);
 
   /**
    * When scriptType changes, gets all libraries of this type and refresh the librariesState
@@ -550,10 +578,10 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
       .catch(() => {
         setModalState({
           type: 'error',
-          label: 'Cannot get the scripts',
+          label: i18nValues.scripts.cannotGetScripts,
         });
       });
-  }, [scriptType]);
+  }, [i18nValues.scripts.cannotGetScripts, scriptType]);
 
   const editorProps: SrcEditorProps = React.useMemo(
     () => ({
@@ -572,16 +600,16 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
 
   return (
     <Toolbar>
-      <Toolbar.Header>
+      <Toolbar.Header className={defaultPadding}>
         {modalState.type === 'libname' ? (
           <TextPrompt
-            placeholder="Library name"
+            placeholder={i18nValues.scripts.libraryName}
             defaultFocus
             onAction={(success, value) => {
               if (value === '') {
                 setModalState({
                   type: 'error',
-                  label: 'The library must have a name',
+                  label: i18nValues.scripts.libraryMustName,
                 });
               } else {
                 if (success) {
@@ -594,91 +622,103 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             applyOnEnter
           />
         ) : (
-          <Button
-            icon="plus"
-            tooltip="Add a new script"
-            onClick={() => {
-              setModalState({ type: 'libname' });
-            }}
-          />
-        )}
-        {librariesState.selected && (
           <>
-            <DropMenu
-              label={
-                librariesState.selected
-                  ? librariesState.selected
-                  : 'No library selected'
-              }
-              items={Object.keys(librariesState.libraries).map(
-                (name: string) => ({
-                  value: name,
-                  label: name,
-                }),
-              )}
-              onSelect={({ value }) =>
-                dispatchStateAction({
-                  type: 'SelectLibrary',
-                  name: value,
-                })
-              }
+            <Button
+              icon="plus"
+              tooltip={i18nValues.scripts.addNewScript}
+              onClick={() => {
+                setModalState({ type: 'libname' });
+              }}
             />
-            <DropMenu
-              label={getLibraryVisibility(librariesState)}
-              items={visibilities
-                .filter(v => isVisibilityAllowed(librariesState, v))
-                .map(v => ({
-                  value: v,
-                  label: v,
-                }))}
-              onSelect={({ value }) =>
-                dispatchStateAction({
-                  type: 'SetLibraryVisibility',
-                  visibility: value as IVisibility,
-                })
-              }
-            />
-            {!isLibraryOutdated(libEntry) && (
+            {librariesState.selected && (
               <>
-                {isEditAllowed(librariesState) && (
-                  <Button
-                    icon="save"
-                    tooltip="Save the script"
-                    onClick={onSaveLibrary}
-                  />
+                <DropMenu
+                  containerClassName={defaultMarginRight}
+                  label={
+                    librariesState.selected
+                      ? librariesState.selected
+                      : i18nValues.scripts.noLibrarySelected
+                  }
+                  items={Object.keys(librariesState.libraries).map(
+                    (name: string) => ({
+                      value: name,
+                      label: name,
+                    }),
+                  )}
+                  onSelect={({ value }) =>
+                    dispatchStateAction({
+                      type: 'SelectLibrary',
+                      name: value,
+                    })
+                  }
+                />
+                <DropMenu
+                  label={getLibraryVisibility(librariesState)}
+                  items={visibilities
+                    .filter(v => isVisibilityAllowed(librariesState, v))
+                    .map(v => ({
+                      value: v,
+                      label: v,
+                    }))}
+                  onSelect={({ value }) =>
+                    dispatchStateAction({
+                      type: 'SetLibraryVisibility',
+                      visibility: value as IVisibility,
+                    })
+                  }
+                />
+                {!isLibraryOutdated(libEntry) && (
+                  <>
+                    {isEditAllowed(librariesState) && (
+                      <Button
+                        icon="save"
+                        tooltip={i18nValues.scripts.saveScript}
+                        onClick={onSaveLibrary}
+                      />
+                    )}
+                    {isDeleteAllowed(librariesState) && (
+                      <ConfirmButton
+                        icon="trash"
+                        tooltip={i18nValues.scripts.deleteScript}
+                        onAction={success => success && onDeleteLibrary()}
+                        onBlur={() => {
+                          setModalState({ type: 'close' });
+                        }}
+                      />
+                    )}
+                  </>
                 )}
-                {isDeleteAllowed(librariesState) && (
-                  <ConfirmButton
-                    icon="trash"
-                    tooltip="Delete the script"
-                    onAction={success => success && onDeleteLibrary()}
-                    onBlur={() => setModalState({ type: 'close' })}
+                {modalState.type === 'error' ||
+                modalState.type === 'warning' ? (
+                  <MessageString
+                    type={modalState.type}
+                    value={modalState.label}
+                    duration={3000}
+                    onLabelVanish={() => {
+                      setModalState({ type: 'close' });
+                    }}
                   />
+                ) : (
+                  libEntry &&
+                  (isLibraryOutdated(libEntry) ? (
+                    <MessageString
+                      type="error"
+                      value={i18nValues.scripts.scriptDangerOutdate}
+                    />
+                  ) : libEntry.status.isEdited ? (
+                    <MessageString
+                      type="warning"
+                      value={i18nValues.scripts.scriptNotSaved}
+                    />
+                  ) : (
+                    <MessageString
+                      type="succes"
+                      value={i18nValues.scripts.scriptSaved}
+                      duration={3000}
+                    />
+                  ))
                 )}
               </>
-            )}
-            {libEntry &&
-              (isLibraryOutdated(libEntry) ? (
-                <MessageString
-                  type="error"
-                  value="The script is dangeroulsy outdated!"
-                />
-              ) : libEntry.status.isEdited ? (
-                <MessageString type="warning" value="The script is not saved" />
-              ) : (
-                <MessageString
-                  type="succes"
-                  value="The script is saved"
-                  duration={3000}
-                />
-              ))}
-            {(modalState.type === 'error' || modalState.type === 'warning') && (
-              <MessageString
-                type={modalState.type}
-                value={modalState.label}
-                duration={3000}
-                onLabelVanish={() => setModalState({ type: 'close' })}
-              />
             )}
           </>
         )}
@@ -710,7 +750,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           )
         ) : (
           <MessageString
-            value="Please create a library by pressing the + button"
+            value={i18nValues.scripts.createLibraryPlease}
             type={'warning'}
           />
         )}
@@ -721,7 +761,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
 
 export default function LibraryEditor() {
   return (
-    <TabLayout tabs={['Styles', 'Client', 'Server']}>
+    <TabLayout tabs={['Styles', 'Client', 'Server']} areChildren>
       <ScriptEditor scriptType="CSS" />
       <ScriptEditor scriptType="ClientScript" />
       <ScriptEditor scriptType="ServerScript" />

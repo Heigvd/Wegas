@@ -18,7 +18,7 @@ import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReduce
 import { Player } from '../../../data/selectors';
 import { store } from '../../../data/Stores/store';
 import { isActionAllowed } from '../../PageComponents/tools/options';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { DialogueChoice } from './DialogueChoice';
 import { DialogueEntry } from './DialogueEntry';
 import { WaitingLoader } from './WaitingLoader';
@@ -33,13 +33,13 @@ const dialogEntryStyle = css({
   overflow: 'auto',
   '&>.player': {
     alignSelf: 'flex-end',
-    backgroundColor: themeVar.Common.colors.PrimaryColor,
+    backgroundColor: themeVar.colors.PrimaryColor,
   },
 });
 
 const choicePannelStyle = css({
   position: 'relative',
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  backgroundColor: themeVar.colors.DisabledColor,
   padding: '5px',
   minHeight: '4em',
   flexShrink: 0,
@@ -48,7 +48,7 @@ const choicePannelStyle = css({
 const dialogueDisplayStyle = css({
   border: 'none',
   boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.1)',
-  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  borderRadius: themeVar.dimensions.BorderRadius,
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,7 +66,8 @@ export function DialogueDisplay({
 }: DialogueDisplayProps) {
   const historyDiv = React.useRef<HTMLDivElement>(null);
 
-  const [waiting, setWaiting] = React.useState(false);
+  const [waitingUser, setWaitingUser] = React.useState(false);
+  const [waitingSystem, setWaitingSystem] = React.useState(false);
 
   const dialogueInstance = dialogue.getInstance(Player.self());
   const history = dialogueInstance.getTransitionHistory();
@@ -74,16 +75,6 @@ export function DialogueDisplay({
 
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // dialogue state
-
-  const wait = React.useCallback(() => {
-    setWaiting(true);
-    const timer = setTimeout(() => {
-      setWaiting(false);
-    }, 2000);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, []);
 
   let currentState = Object.values(dialogueStates)
     .sort((stateA, stateB) => {
@@ -140,7 +131,7 @@ export function DialogueDisplay({
           <DialogueEntry
             key={`STATE${transitionId}`}
             text={currentState.getText()}
-            waiting={i === arr.length - 1 && waiting}
+            waiting={i === arr.length - 1 && waitingSystem}
           />,
         );
       }
@@ -151,9 +142,8 @@ export function DialogueDisplay({
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // next input choices
 
-  const choices = dialogueStates[
-    dialogueInstance.getCurrentStateId()
-  ].getTransitions();
+  const choices =
+    dialogueStates[dialogueInstance.getCurrentStateId()].getTransitions();
 
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // render
@@ -191,11 +181,19 @@ export function DialogueDisplay({
               key={`CHOICE${transition.getId()}`}
               label={transition.getActionText()}
               onClick={() => {
-                wait();
+                setWaitingUser(true);
                 store.dispatch(
                   applyFSMTransition(
                     dialogue.getEntity(),
                     transition.getEntity(),
+                    () => {
+                      setWaitingUser(false);
+                      setWaitingSystem(true);
+                      setTimeout(() => {
+                        setWaitingSystem(false);
+                        setWaitingUser(false);
+                      }, 1000);
+                    },
                   ),
                 );
               }}
@@ -203,12 +201,15 @@ export function DialogueDisplay({
               readOnly={readOnly}
             />
           ))}
-
           {/* ---------- waiting for the next answer to be revealed ------------------------ */}
-          {waiting && choices.length > 0 && (
+          {(waitingUser || waitingSystem) && choices.length > 0 && (
             <WaitingLoader
-              color={themeVar.Common.colors.HeaderColor}
-              background={themeVar.Common.colors.HeaderColor}
+              color={
+                waitingSystem
+                  ? themeVar.colors.DisabledColor
+                  : themeVar.colors.LightTextColor
+              }
+              background={themeVar.colors.DisabledColor}
             />
           )}
         </div>

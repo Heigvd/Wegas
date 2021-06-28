@@ -3,8 +3,7 @@ import { cx, css } from 'emotion';
 import { classNameOrEmpty } from '../../Helper/className';
 import { flex, flexColumn, flexRow } from '../../css/classes';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
-import { themeVar } from '../Style/ThemeVars';
-import { HashListChoices } from '../../Editor/Components/FormView/HashList';
+import { themeVar } from '../Theme/ThemeVars';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 
 const SPLITTER_SELECTOR = 'fonkyflex-splitter';
@@ -15,10 +14,6 @@ const NODRAG_SELECTOR = 'fonkyflex-nodrag';
 
 const DEFAULT_FLEX_WRAP = 1000;
 
-// const SPLITTER_TYPE = 'Splitter';
-// const CONTENT_TYPE = 'Content';
-// type ContainerItemType = typeof SPLITTER_TYPE | typeof CONTENT_TYPE;
-
 const noSelectStyle = css({
   userSelect: 'none',
 });
@@ -26,24 +21,24 @@ const noSelectStyle = css({
 const containerStyle = css({
   [`&>.${SPLITTER_SELECTOR}.${HORIZONTAL_SELECTOR}`]: {
     height: 'auto',
-    minWidth: themeVar.Splitter.dimensions.SplitterSize,
-    maxWidth: themeVar.Splitter.dimensions.SplitterSize,
-    borderLeft: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
-    borderRight: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
+    minWidth: '5px',
+    maxWidth: '5px',
+    borderLeft: `solid 2px ${themeVar.colors.BackgroundColor}`,
+    borderRight: `solid 2px ${themeVar.colors.BackgroundColor}`,
     cursor: 'col-resize',
   },
   [`&>.${SPLITTER_SELECTOR}.${VERTICAL_SELECTOR}`]: {
-    minHeight: themeVar.Splitter.dimensions.SplitterSize,
-    maxHeight: themeVar.Splitter.dimensions.SplitterSize,
-    borderTop: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
-    borderBottom: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
+    minHeight: '5px',
+    maxHeight: '5px',
+    borderTop: `solid 2px ${themeVar.colors.BackgroundColor}`,
+    borderBottom: `solid 2px ${themeVar.colors.BackgroundColor}`,
     width: 'auto',
     cursor: 'row-resize',
   },
 });
 
 const splitterStyle = css({
-  backgroundColor: themeVar.Common.colors.PrimaryColor,
+  backgroundColor: themeVar.colors.PrimaryColor,
 });
 
 export const defaultFlexContainerStyle: React.CSSProperties = {

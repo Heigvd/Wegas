@@ -2,7 +2,7 @@ import { cx } from 'emotion';
 import * as React from 'react';
 import { Icon, IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../../Helper/className';
-import { Text } from '../Outputs/Text';
+import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { FlowLine, Process } from './FlowChart';
 import {
@@ -57,7 +57,7 @@ export function LabeledFlowLineComponent<
             }),
           })}
         >
-          <Text text={flowline.label} />
+          <HTMLText text={flowline.label} />
         </div>
       )}
     </CustomFlowLineComponent>
@@ -108,7 +108,7 @@ function PlayerFlowChartProcessBox<
       )}
       <div>
         <p className="StateLabelTextStyle">
-          <Text text={process.label} />
+          <HTMLText text={process.label} />
         </p>
       </div>
       <StateProcessHandle sourceProcess={process} />

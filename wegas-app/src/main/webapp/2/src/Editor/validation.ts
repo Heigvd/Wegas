@@ -61,9 +61,12 @@ export function validation<Args extends unknown[], Ref>(
     return 'eq' in value;
   }
   function equals(value: EQUALS): validator<Args> {
-    return (...args) =>
-      leafValidation(value.eq[0])(...args) ===
-      leafValidation(value.eq[1])(...args);
+    return (...args) => {
+      return (
+        leafValidation(value.eq[0])(...args) ===
+        leafValidation(value.eq[1])(...args)
+      );
+    };
   }
   interface NOTEQUALS {
     neq: [Ref, Ref];
@@ -93,9 +96,9 @@ export function validation<Args extends unknown[], Ref>(
   }
   function isEmpty(value: ISEMPTY): validator<Args> {
     return (...args) => {
-        const a = leafValidation(value.isEmpty)(...args);
-        return a instanceof Array && a.length === 0;
-    }
+      const a = leafValidation(value.isEmpty)(...args);
+      return a instanceof Array && a.length === 0;
+    };
   }
   interface ISTRUE {
     isTrue: Ref;

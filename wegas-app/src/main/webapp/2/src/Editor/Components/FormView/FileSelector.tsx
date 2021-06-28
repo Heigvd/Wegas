@@ -2,11 +2,7 @@ import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonView, CommonViewContainer } from './commonView';
 import { LabeledView, Labeled } from './labeled';
-import {
-  FileBrowser,
-  FileFilter,
-  FilePickingType,
-} from '../FileBrowser/FileBrowser';
+import { FileBrowser } from '../FileBrowser/FileBrowser';
 import { generateAbsolutePath, FileAPI } from '../../../API/files.api';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { cx } from 'emotion';

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
 import { Toolbar } from '../Toolbar';
 
@@ -10,7 +10,7 @@ import {
 import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './Handles';
 import { useDrop } from 'react-dnd';
 import { classNameOrEmpty } from '../../Helper/className';
-import { Text } from '../Outputs/Text';
+import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import {
   computeFlowlineValues,
@@ -25,11 +25,22 @@ import {
   ArrowDefs,
   FlowLineComponentProps,
 } from './FlowLineComponent';
+import { themeVar } from '../Theme/ThemeVars';
 
 const flowChartStyle = css({
   width: '100%',
   height: '100%',
-  borderStyle: 'solid',
+  border: '2px solid ' + themeVar.colors.ActiveColor,
+});
+
+const flowChartHeaderStyle = css({
+  paddingLeft: '1.5em',
+  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+});
+
+const flowChartDisabledStyle = css({
+  opacity: 0.5,
+  backgroundColor: themeVar.colors.DisabledColor,
 });
 
 export interface Processes<F extends FlowLine, P extends Process<F>> {
@@ -104,7 +115,7 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
   /**
    * a callback triggered when a component has been moved
    */
-  onMove: (process: P, newPosition: XYPosition) => void;
+  onMove: (process: P, newPosition: XYPosition, e: MouseEvent) => void;
   /**
    * a callback triggered when a new process is requested
    * @example dropping a handle on the main board
@@ -261,11 +272,12 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   }, [processes]);
 
   // Tricking the rendering to build flowline after the first render (onReady like move)
-  const [flows, setFlows] = React.useState<{
-    flowlines: React.ReactNode;
-    handles: React.ReactNode;
-    labels: React.ReactNode;
-  }>(emptyFlows);
+  const [flows, setFlows] =
+    React.useState<{
+      flowlines: React.ReactNode;
+      handles: React.ReactNode;
+      labels: React.ReactNode;
+    }>(emptyFlows);
 
   const drawFlows = React.useCallback(() => {
     try {
@@ -422,12 +434,15 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
 
   return (
     <Toolbar
-      className={flowChartStyle + classNameOrEmpty(className)}
+      className={
+        cx(flowChartStyle, { [flowChartDisabledStyle]: disabled }) +
+        classNameOrEmpty(className)
+      }
       style={style}
       id={id}
     >
-      <Toolbar.Header>
-        {typeof title === 'string' ? <Text text={title} /> : title}
+      <Toolbar.Header className={flowChartHeaderStyle}>
+        {typeof title === 'string' ? <HTMLText text={title} /> : title}
       </Toolbar.Header>
       <Toolbar.Content
         style={{ position: 'relative' }}
@@ -484,7 +499,9 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
                 [process.id]: { ...op[process.id], position },
               }))
             }
-            onMoveEnd={position => actionsAllowed && onMove(process, position)}
+            onMoveEnd={(position, e) =>
+              actionsAllowed && onMove(process, position, e)
+            }
             onConnect={(processes, flowline) => {
               setTempFlow(undefined);
               if (actionsAllowed) {

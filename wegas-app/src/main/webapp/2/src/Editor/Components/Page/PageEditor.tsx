@@ -20,7 +20,7 @@ import {
 } from './PagesLayout';
 import { store, useStore } from '../../../data/Stores/store';
 import { Actions } from '../../../data';
-import { flex, grow, expandBoth } from '../../../css/classes';
+import { flex, grow, expandBoth, defaultPadding } from '../../../css/classes';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { mergeDeep } from '../../../Helper/tools';
 import { findComponent } from '../../../Helper/pages';
@@ -29,9 +29,15 @@ import {
   IVariableDescriptor,
 } from 'wegas-ts-api';
 import { State } from '../../../data/Reducer/reducers';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 const toggleButtonStyle = css({
   display: 'flex',
+  padding: '0 15px 0 15px',
 });
 
 export interface Handles {
@@ -185,11 +191,13 @@ export function updateComponent(
 }
 
 function SourceEditor() {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
   return (
     <pageEditorCTX.Consumer>
       {({ selectedPageId, selectedPage, loading }) =>
         loading ? (
-          <pre>Loading the pages</pre>
+          <pre>{i18nValues.loadingPages}</pre>
         ) : (
           <JSONandJSEditor
             content={JSON.stringify(selectedPage, null, 2)}
@@ -198,7 +206,7 @@ function SourceEditor() {
                 if (selectedPageId) {
                   patchPage(selectedPageId, JSON.parse(content));
                 } else {
-                  throw Error('No selected page');
+                  throw Error(i18nValues.noSelectedPage);
                 }
               } catch (e) {
                 return { status: 'error', text: (e as Error).message };
@@ -217,22 +225,20 @@ interface PageDisplayProps {
   setShowBorders: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const toolbarStyle = css({
-  display: flex,
-});
-
 function PageEditionToolbar({
   setShowBorders,
   setEditMode,
   setShowControls,
 }: Partial<PageDisplayProps>) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
   const { editMode, showControls, showBorders } = React.useContext(pageCTX);
   return (
-    <div className={toolbarStyle}>
+    <div className={flex}>
       {setShowControls && editMode && (
         <Toggler
           className={toggleButtonStyle}
-          label="Show controls: "
+          label={i18nValues.pageEditor.showControls}
           value={showControls}
           onChange={() => setShowControls(c => !c)}
         />
@@ -241,7 +247,7 @@ function PageEditionToolbar({
       {setEditMode && (
         <Toggler
           className={toggleButtonStyle}
-          label="Edit mode:"
+          label={i18nValues.pageEditor.editMode}
           value={editMode}
           onChange={() => setEditMode(!editMode)}
         />
@@ -249,7 +255,7 @@ function PageEditionToolbar({
       {setShowBorders && editMode && (
         <Toggler
           className={toggleButtonStyle}
-          label="Toggle borders: "
+          label={i18nValues.pageEditor.toggleBorders}
           value={showBorders}
           onChange={() => setShowBorders(b => !b)}
         />
@@ -264,13 +270,15 @@ function PageDisplay({
   setShowControls,
 }: PageDisplayProps) {
   const { selectedPageId, loading } = React.useContext(pageEditorCTX);
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
 
   if (loading) {
-    return <pre>Loading the pages</pre>;
+    return <pre>{i18nValues.loadingPages}</pre>;
   }
   return (
     <Toolbar className={expandBoth + ' PAGE-DISPLAY'}>
-      <Toolbar.Header>
+      <Toolbar.Header className={defaultPadding}>
         <PageEditionToolbar
           setShowBorders={setShowBorders}
           setShowControls={setShowControls}
@@ -301,6 +309,7 @@ interface LayoutProps {
     page: WegasComponent,
     path: number[],
     type: string,
+    index: number,
   ) => void;
   onDuplicateLayoutComponent: (
     pageId: string,
@@ -346,6 +355,8 @@ function Layout({
 export const PAGE_EDITOR_LAYOUT_ID = 'PageEditorLayout';
 
 export default function PageEditor() {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
   const handles = React.useRef({});
   const focusTab = React.useRef<(tabId: string, layoutId: string) => void>();
   const [
@@ -404,47 +415,51 @@ export default function PageEditor() {
       destIndex: number,
       props?: WegasComponent['props'],
     ) => {
-      const moveInsideItself = destPath.join().indexOf(sourcePath.join()) === 0;
-      const samePage = sourcePageId === destPageId;
-      const sameContainerPath =
-        JSON.stringify(sourcePath.slice(0, -1)) === JSON.stringify(destPath);
       const sourceIndex: number | undefined = sourcePath.slice(-1)[0];
+      const samePages = sourcePageId === destPageId;
+      const samePath = !deepDifferent(sourcePath.slice(0, -1), destPath);
+      const deleteIndex =
+        samePages && samePath && sourceIndex > destIndex
+          ? sourceIndex + 1
+          : sourceIndex;
+      const deletePath =
+        samePages && // If same pages
+        destPath.length + 1 < sourcePath.length && // If component is dragged out of its container
+        destIndex <= sourcePath[destPath.length] // If component new path is before its old container
+          ? // Add 1 to the container path current path
+            [
+              ...sourcePath.slice(0, destPath.length),
+              sourcePath[destPath.length] + 1,
+              ...sourcePath.slice(destPath.length + 1),
+            ]
+          : // Set the new index of the component in case it is moved inside the same container
+            [...sourcePath.slice(0, -1), deleteIndex];
 
-      const computedDestIndex =
-        sameContainerPath && destIndex > sourceIndex
-          ? destIndex - 1
-          : destIndex;
+      const { component } = findComponent(sourcePage, sourcePath);
+      if (component != null) {
+        const newDest = createComponent(
+          destPage,
+          destPath,
+          component.type,
+          props ? mergeDeep(component.props, props) : component.props,
+          destIndex,
+        );
+        let newDestPage = newDest?.newPage;
+        let newSourcePage: WegasComponent | undefined = undefined;
+        const newDestPath = newDest?.newPath;
 
-      const samePosition = sourceIndex === computedDestIndex;
+        if (samePages && newDestPage) {
+          newDestPage = deleteComponent(newDestPage, deletePath);
+        } else {
+          newSourcePage = deleteComponent(sourcePage, sourcePath);
+        }
 
-      // Don't do anything if the result is the same than before or if the user tries to put a container in itself
-      if (
-        !(
-          moveInsideItself ||
-          (samePage && sameContainerPath && samePosition && props == null)
-        )
-      ) {
-        const { component } = findComponent(sourcePage, sourcePath);
-        if (component) {
-          const newSourcePage = deleteComponent(sourcePage, sourcePath);
-          // Don't do anything if the path to the source element points to nothing (should never happen)
-          if (newSourcePage != null) {
-            const newDestPage = createComponent(
-              samePage ? newSourcePage : destPage,
-              destPath,
-              component.type,
-              props ? mergeDeep(component.props, props) : component.props,
-              computedDestIndex,
-            );
-            // Don't modify the source page if it's the same than the destination page
-            if (newDestPage != null) {
-              if (sourcePageId !== destPageId) {
-                patchPage(sourcePageId, newSourcePage);
-              }
-              patchPage(destPageId, newDestPage.newPage);
-              onEdit(destPageId, newDestPage.newPath);
-            }
+        if (newDestPage) {
+          patchPage(destPageId, newDestPage);
+          if (!samePages && newSourcePage) {
+            patchPage(sourcePageId, newSourcePage);
           }
+          onEdit(destPageId, newDestPath);
         }
       }
     },
@@ -579,12 +594,13 @@ export default function PageEditor() {
   );
 
   const onNewLayoutComponent = React.useCallback(
-    (pageId, page, path, componentTypeName) => {
+    (pageId, page, path, componentTypeName, index) => {
       const newComponent = createComponent(
         page,
         path,
         componentTypeName,
         computeProps(components[componentTypeName], undefined, undefined),
+        index,
       );
       if (newComponent) {
         patchPage(pageId, newComponent.newPage);
@@ -667,7 +683,7 @@ export default function PageEditor() {
   // useComparator({selectedPageId,editedPath})
 
   return Object.keys(availableLayoutTabs).length === 0 ? (
-    <pre>Loading...</pre>
+    <pre>{i18nValues.loading}...</pre>
   ) : (
     <div className={cx(flex, grow) + ' PAGE-EDITOR'}>
       <pageEditorCTX.Provider
@@ -705,6 +721,7 @@ export default function PageEditor() {
             onFocusTab={ft => {
               focusTab.current = ft;
             }}
+            areChildren
           />
         </pageCTX.Provider>
       </pageEditorCTX.Provider>

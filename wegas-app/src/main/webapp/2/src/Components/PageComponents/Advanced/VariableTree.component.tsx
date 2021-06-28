@@ -15,7 +15,7 @@ import {
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
 
-interface PlayerFileBrowserProps extends WegasComponentProps {
+interface PlayerVariableTreeProps extends WegasComponentProps {
   list?: IScript;
   flexValues?: ComponentWithFormFlexValues;
 }
@@ -28,7 +28,7 @@ export default function PlayerVariableTree({
   style,
   id,
   options,
-}: PlayerFileBrowserProps) {
+}: PlayerVariableTreeProps) {
   const rootDirectory = useScript<SListDescriptor>(list, context);
   const rootDirectoryId = rootDirectory?.getId();
 
@@ -43,12 +43,13 @@ export default function PlayerVariableTree({
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
     >
-      {({ localDispatch }) => {
+      {({ localDispatch, localState }) => {
         return (
           <TreeView
             variables={[rootDirectoryId]}
             noHeader
             noVisibleRoot
+            localState={localState}
             localDispatch={localDispatch}
             forceLocalDispatch
             disabled={options.disabled || options.locked}

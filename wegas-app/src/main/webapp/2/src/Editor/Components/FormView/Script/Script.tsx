@@ -40,15 +40,6 @@ export const scriptEditStyle = css({
   width: '500px',
 });
 
-export type ScriptMode = 'SET' | 'GET';
-
-export type CodeLanguage =
-  | 'JavaScript'
-  | 'TypeScript'
-  | 'CSS'
-  | 'JSON'
-  | 'PlainText';
-
 const operators = ['&&', '||'] as const;
 
 type Operator = typeof operators[number];

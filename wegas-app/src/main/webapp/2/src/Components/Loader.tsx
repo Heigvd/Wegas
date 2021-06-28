@@ -1,22 +1,22 @@
 import { css, keyframes } from 'emotion';
 import * as React from 'react';
-import { themeVar } from './Style/ThemeVars';
+import { themeVar } from './Theme/ThemeVars';
 
 const anim = keyframes({
   '0%': {
     width: '0%',
     left: 0,
-    borderBottomColor: themeVar.Common.colors.PrimaryColor,
+    borderBottomColor: themeVar.colors.PrimaryColor,
   },
   '50%': {
     width: '50%',
     left: '25%',
-    borderBottomColor: themeVar.Common.colors.PrimaryColor,
+    borderBottomColor: themeVar.colors.PrimaryColor,
   },
   '100%': {
     width: '0%',
     left: '100%',
-    borderBottomColor: themeVar.Common.colors.PrimaryColor,
+    borderBottomColor: themeVar.colors.PrimaryColor,
   },
 });
 const loaderStyle = css({
@@ -35,6 +35,7 @@ const loaderStyle = css({
     animation: `${anim} 3s infinite`,
   },
 });
+
 export function TextLoader({ text = 'Loading...' }: { text?: string }) {
   return <span className={loaderStyle}>{text}</span>;
 }
@@ -54,6 +55,7 @@ function tumbleLoaderStyle(containerSize: number, color: string = '#fff') {
   const margin = size / 8 + 'px';
   const border = (size / 32) * 3 + 'px';
   return css({
+    zIndex: 10000,
     display: 'inline-block',
     width: sideSize,
     height: sideSize,
@@ -76,7 +78,7 @@ interface TumblerLoaderProps {
 }
 
 export function TumbleLoader({
-  color = themeVar.Common.colors.ActiveColor,
+  color = themeVar.colors.ActiveColor,
   size,
 }: TumblerLoaderProps) {
   const container = React.useRef<HTMLDivElement>(null);
@@ -85,7 +87,7 @@ export function TumbleLoader({
   React.useEffect(() => {
     const parentBox = container.current?.parentElement?.getBoundingClientRect();
     if (parentBox) {
-      setComputedSize(Math.min(parentBox.height, parentBox.width));
+      setComputedSize(Math.min(parentBox.height - 25, parentBox.width - 25));
     }
   }, []);
 
@@ -162,7 +164,7 @@ interface DotLoaderProps {
 }
 
 export function DotLoader({
-  color = themeVar.Common.colors.ActiveColor,
+  color = themeVar.colors.ActiveColor,
 }: DotLoaderProps) {
   return (
     <div className={dotLoaderStyle(color)}>

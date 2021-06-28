@@ -20,7 +20,10 @@ export function deepDifferent<T>(a: T, b: T) {
   return JSON.stringify(a) !== JSON.stringify(b);
 }
 
-type StoreType<S, A extends AnyAction> = Store<Readonly<S>, AnyAction> & {
+export type StoreType<S, A extends AnyAction> = Store<
+  Readonly<S>,
+  AnyAction
+> & {
   dispatch: ThunkDispatch<S, undefined, A>;
 };
 /**

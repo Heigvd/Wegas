@@ -12,6 +12,9 @@ import {
   SrcEditorAction,
 } from './editorHelpers';
 import { useJSONSchema } from './useJSONSchema';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 export interface SrcEditorProps {
   /**
@@ -146,6 +149,8 @@ function SrcEditor({
   const editorValue = React.useRef(value || '');
   const mounted = React.useRef<boolean>(false);
   const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
 
   React.useEffect(() => {
     mounted.current = true;
@@ -167,13 +172,15 @@ function SrcEditor({
     () => {
       if (reactMonaco) {
         if (editor) {
-          editor.setModel(
-            reactMonaco.editor.createModel(
-              value || '',
-              language || 'plaintext',
-              defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
-            ),
+          const newModel = reactMonaco.editor.createModel(
+            value || '',
+            language || 'plaintext',
+            defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
           );
+
+          newModel.updateOptions({ tabSize: 2 });
+
+          editor.setModel(newModel);
 
           // Unmount effect to dispose editor and model
           return () => {
@@ -348,7 +355,7 @@ function SrcEditor({
             language={language}
             value={value}
             editorDidMount={handleEditorDidMount}
-            loading={'Loading...'}
+            loading={i18nValues.loading + '...'}
             options={{
               readOnly,
               minimap: { enabled: minimap },

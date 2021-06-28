@@ -76,19 +76,26 @@ export function buildGlobalServerMethods(
     }, '');
 }
 
-type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
+export interface ActionsProps<T> {
+  action: (entity: T, path?: (string | number)[]) => void;
+  label: React.ReactNode;
+  confirm?: boolean;
+  sorting: 'button' | 'toolbox' | 'close';
+}
+
+//type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
   save?: (entity: T) => void;
   more?: {
-    [id: string]: {
-      label: React.ReactNode;
-      action: actionFn<T>;
-      confirm?: boolean;
-    };
+    [id: string]: ActionsProps<T>;
   };
 }
 
-export interface VariableEdition {
+export interface EditionState {
+  unsaved: boolean;
+}
+
+export interface VariableEdition extends EditionState {
   type: 'Variable' | 'VariableFSM';
   entity: IAbstractEntity;
   config?: Schema<AvailableViews>;
@@ -96,7 +103,7 @@ export interface VariableEdition {
   actions: EditorAction<IAbstractEntity>;
 }
 
-export interface VariableCreateEdition {
+export interface VariableCreateEdition extends EditionState {
   type: 'VariableCreate';
   '@class': IVariableDescriptor['@class'];
   parentId?: number;
@@ -105,7 +112,7 @@ export interface VariableCreateEdition {
   actions: EditorAction<IAbstractEntity>;
 }
 
-export interface ComponentEdition {
+export interface ComponentEdition extends EditionState {
   type: 'Component';
   page: string;
   path: (string | number)[];
@@ -113,7 +120,7 @@ export interface ComponentEdition {
   actions: EditorAction<IAbstractEntity>;
 }
 
-export interface FileEdition {
+export interface FileEdition extends EditionState {
   type: 'File';
   entity: IAbstractContentDescriptor;
   cb?: (updatedValue: IMergeable) => void;
@@ -255,6 +262,7 @@ export function editorManagement(
         config: action.payload.config,
         path: action.payload.path,
         actions: action.payload.actions,
+        unsaved: false,
       };
     case ActionType.VARIABLE_CREATE:
       return {
@@ -263,14 +271,20 @@ export function editorManagement(
         parentId: action.payload.parentId,
         parentType: action.payload.parentType,
         actions: action.payload.actions,
+        unsaved: false,
       };
     case ActionType.FILE_EDIT:
       return {
         type: 'File',
         ...action.payload,
+        unsaved: false,
       };
     case ActionType.CLOSE_EDITOR:
       return undefined;
+    case ActionType.UNSAVED_CHANGES:
+      return state.editing == null
+        ? state.editing
+        : { ...state.editing, ...action.payload };
     default:
       return state.editing;
   }
@@ -456,6 +470,7 @@ export function editVariable(
             more: {
               duplicate: {
                 label: 'Duplicate',
+                sorting: 'toolbox',
                 action: (entity: IVariableDescriptor) => {
                   dispatch(
                     Actions.VariableDescriptorActions.duplicateDescriptor(
@@ -466,6 +481,7 @@ export function editVariable(
               },
               delete: {
                 label: 'Delete',
+                sorting: 'button',
                 action: (entity: IVariableDescriptor, path?: string[]) => {
                   dispatch(
                     Actions.VariableDescriptorActions.deleteDescriptor(
@@ -478,6 +494,7 @@ export function editVariable(
               },
               findUsage: {
                 label: 'Find usage',
+                sorting: 'toolbox',
                 action: (entity: IVariableDescriptor) => {
                   if (entityIsPersisted(entity)) {
                     dispatch(Actions.EditorActions.searchUsage(entity));
@@ -506,10 +523,9 @@ export function deleteState<T extends IFSMDescriptor | IDialogueDescriptor>(
     delete states[id];
     // delete transitions pointing to deleted state
     for (const s in states) {
-      (states[s] as IAbstractState).transitions = (states[s]
-        .transitions as IAbstractTransition[]).filter(
-        t => t.nextStateId !== id,
-      );
+      (states[s] as IAbstractState).transitions = (
+        states[s].transitions as IAbstractTransition[]
+      ).filter(t => t.nextStateId !== id);
     }
   })(stateMachine);
 
@@ -528,48 +544,37 @@ export function editStateMachine(
   entity: Immutable<IAbstractStateMachineDescriptor>,
   path: string[] = [],
   config?: Schema<AvailableViews>,
+  actions?: EditorAction<IVariableDescriptor>,
 ): ThunkResult {
   return function (dispatch) {
-    const deleteAction = {
-      label: 'Delete',
-      confirm: true,
-      action: (entity: IFSMDescriptor, path?: string[]) => {
-        if (
-          path != null &&
-          Number(path.length) === 2 &&
-          Number(path.length) !== entity.defaultInstance.currentStateId
-        ) {
-          deleteState(entity, Number(path[1]));
-        } else {
-          dispatch(
-            Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
-          );
-        }
-      },
-    };
-
     dispatch(
       ActionCreator.FSM_EDIT({
         entity,
         config,
         path,
-        actions: {
+        actions: actions || {
           more: {
-            delete: deleteAction,
-            // {
-            //   label: 'Delete',
-            //   confirm: true,
-            //   action: (entity: IFSMDescriptor, path?: string[]) => {
-            //     dispatch(
-            //       Actions.VariableDescriptorActions.deleteDescriptor(
-            //         entity,
-            //         path,
-            //       ),
-            //     );
-            //   },
-            // },
+            delete: {
+                label: 'Delete',
+                sorting: 'button',
+                confirm: true,
+                action: (entity: IFSMDescriptor, path?: string[]) => {
+                  if (
+                    path != null &&
+                    Number(path.length) === 2 &&
+                    Number(path.length) !== entity.defaultInstance.currentStateId
+                  ) {
+                    deleteState(entity, Number(path[1]));
+                  } else {
+                    dispatch(
+                      Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
+                    );
+                  }
+                },
+            },
             findUsage: {
               label: 'Find usage',
+              sorting: 'toolbox',
               action: (entity: IFSMDescriptor) => {
                 if (entityIsPersisted(entity)) {
                   dispatch(Actions.EditorActions.searchUsage(entity));
@@ -635,6 +640,7 @@ export function createVariable(
  */
 export function saveEditor(value: IMergeable): ThunkResult {
   return function save(dispatch, getState) {
+    dispatch(setUnsavedChanges(false));
     const editMode = getState().global.editing;
     if (editMode == null) {
       return;
@@ -677,6 +683,10 @@ export function updatePusherStatus(status: string, socket_id: string) {
 
 export function closeEditor() {
   return ActionCreator.CLOSE_EDITOR();
+}
+
+export function setUnsavedChanges(unsaved: boolean) {
+  return ActionCreator.USAVED_CHANGES(unsaved);
 }
 
 export function editorEvent(anyEvent: WegasEvents[keyof WegasEvents]) {

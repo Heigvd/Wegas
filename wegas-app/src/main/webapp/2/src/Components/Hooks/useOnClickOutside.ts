@@ -11,7 +11,7 @@ function isNode(object: any): object is Node {
 }
 
 export function useOnClickOutside(
-  ref: React.RefObject<HTMLDivElement>,
+  ref: React.RefObject<HTMLElement>,
   cb: () => void,
 ) {
   React.useEffect(() => {

@@ -50,6 +50,7 @@ import com.wegas.editor.view.StringView;
 import com.wegas.editor.view.Textarea;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import javax.jcr.RepositoryException;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -273,28 +274,12 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     private List<Game> games = new ArrayList<>();
 
     /**
-     * Holds all the scripts contained in current game model.
+     * Holds all the scripts and others libraries contained in current game model.
      */
-    @OneToMany(mappedBy = "scriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "gameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
     @WegasEntityProperty(includeByDefault = false, notSerialized = true)
-    private List<GameModelContent> scriptLibrary = new ArrayList<>();
-
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "csslibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonView({Views.ExportI.class})
-    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
-    private List<GameModelContent> cssLibrary = new ArrayList<>();
-
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "clientscriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonView({Views.ExportI.class})
-    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
-    private List<GameModelContent> clientScriptLibrary = new ArrayList<>();
+    private List<GameModelContent> libraries = new ArrayList<>();
 
     /**
      *
@@ -587,22 +572,6 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
-     * @return the scriptLibrary
-     */
-    @JsonIgnore
-    public List<GameModelContent> getScriptLibraryList() {
-        return scriptLibrary;
-    }
-
-    /**
-     * @param scriptLibrary the scriptLibrary to set
-     */
-    @JsonIgnore
-    public void setScriptLibraryList(List<GameModelContent> scriptLibrary) {
-        this.scriptLibrary = scriptLibrary;
-    }
-
-    /**
      * @return all players from all teams and all games
      */
     @JsonIgnore
@@ -703,187 +672,164 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         this.properties = properties;
     }
 
-    @JsonIgnore
-    public Map<String, Map<String, GameModelContent>> getLibraries() {
-        Map<String, Map<String, GameModelContent>> libraries = new HashMap<>();
-
-        libraries.put("Script", this.getScriptLibrary());
-        libraries.put("ClientScript", this.getClientScriptLibrary());
-        libraries.put("CSS", this.getCssLibrary());
-
+    /**
+     * get the list of all libraries. Unsorted. all library types
+     *
+     * @return the list of all libraries
+     */
+    public List<GameModelContent> getLibraries() {
         return libraries;
     }
 
-    public void setLibraries(Map<String, Map<String, GameModelContent>> libraries) {
-        this.setScriptLibrary(libraries.get("Script"));
-        this.setClientScriptLibrary(libraries.get("ClientScript"));
-        this.setCssLibrary(libraries.get("CSS"));
+    /**
+     * Set gameModel libraries
+     *
+     * @param libraries
+     */
+    public void setLibraries(List<GameModelContent> libraries) {
+        this.libraries = libraries;
+        if (libraries != null) {
+            libraries.forEach(g -> g.setGameModel(this));
+        }
     }
 
     /**
-     * @return the cssLibrary
+     * Get all libraries. Groupes by type and mapped by key
+     *
+     * @return
      */
     @JsonIgnore
-    public List<GameModelContent> getCssLibraryList() {
-        return cssLibrary;
+    public Map<String, Map<String, GameModelContent>> getLibrariesAsMap() {
+        Map<String, Map<String, GameModelContent>> libraries = new HashMap<>();
+        for (GameModelContent gmc : this.getLibraries()) {
+            if (!libraries.containsKey(gmc.getLibraryType())) {
+                libraries.put(gmc.getLibraryType(), new HashMap<>());
+            }
+            libraries.get(gmc.getLibraryType()).put(gmc.getContentKey(), gmc);
+        }
+        return libraries;
     }
 
     /**
-     * @param cssLibrary the cssLibrary to set
+     * Set library from map
+     *
+     * @param libraries
+     *
      */
     @JsonIgnore
-    public void setCssLibraryList(List<GameModelContent> cssLibrary) {
-        this.cssLibrary = cssLibrary;
-    }
-
-    private Map<String, GameModelContent> getLibraryAsMap(List<GameModelContent> library) {
-        Map<String, GameModelContent> map = new HashMap<>();
-        for (GameModelContent gmc : library) {
-            map.put(gmc.getContentKey(), gmc);
-        }
-        return map;
-    }
-
-    public Map<String, GameModelContent> getCssLibrary() {
-        return getLibraryAsMap(cssLibrary);
-    }
-
-    public void setCssLibrary(Map<String, GameModelContent> library) {
-        this.cssLibrary = new ArrayList<>();
-        for (Entry<String, GameModelContent> entry : library.entrySet()) {
-            String key = entry.getKey();
-            GameModelContent gmc = entry.getValue();
-            gmc.setCsslibrary_GameModel(this);
-            gmc.setContentKey(key);
-            cssLibrary.add(gmc);
-        }
+    public void setLibrariesFromMap(Map<String, Map<String, GameModelContent>> libraries) {
+        List<GameModelContent> newLibs = new ArrayList<>();
+        libraries
+            .forEach((kLib, vLib) -> {
+            vLib.forEach((kEntry, vEntry) -> {
+                vEntry.setLibraryType(kLib);
+                    vEntry.setContentKey(kEntry);
+                    newLibs.add(vEntry);
+                });
+            });
+        this.setLibraries(newLibs);
     }
 
     /**
-     * @return the clientScriptLibrary
+     * Return libraries of the given type
+     *
+     * @param libraryType type of library to fetch
+     *
+     * @return list of all libraries of the given type
      */
     @JsonIgnore
-    public List<GameModelContent> getClientScriptLibraryList() {
-        return clientScriptLibrary;
-    }
-
-    public Map<String, GameModelContent> getScriptLibrary() {
-        return getLibraryAsMap(scriptLibrary);
-    }
-
-    public Map<String, GameModelContent> getClientScriptLibrary() {
-        return getLibraryAsMap(clientScriptLibrary);
-    }
-
-    public void setScriptLibrary(Map<String, GameModelContent> library) {
-        this.scriptLibrary = new ArrayList<>();
-        for (Entry<String, GameModelContent> entry : library.entrySet()) {
-            String key = entry.getKey();
-            GameModelContent gmc = entry.getValue();
-            gmc.setScriptlibrary_GameModel(this);
-            gmc.setContentKey(key);
-            scriptLibrary.add(gmc);
-        }
-    }
-
-    public void setClientScriptLibrary(Map<String, GameModelContent> library) {
-        this.clientScriptLibrary = new ArrayList<>();
-        for (Entry<String, GameModelContent> entry : library.entrySet()) {
-            String key = entry.getKey();
-            GameModelContent gmc = entry.getValue();
-            gmc.setClientscriptlibrary_GameModel(this);
-            gmc.setContentKey(key);
-            clientScriptLibrary.add(gmc);
-        }
+    public List<GameModelContent> getLibrariesAsList(String libraryType) {
+        return this.libraries.stream()
+            .filter(g -> g.getLibraryType().equals(libraryType))
+            .collect(Collectors.toList());
     }
 
     /**
-     * @param key
+     * Return libraries of the given type, mapped by there key name
      *
-     * @return the clientScript matching the key or null
+     * @param libraryType type of library to fetch
+     *
+     * @return map of all libraries of the given type
      */
-    public GameModelContent getClientScript(String key) {
-        return this.getGameModelContent(clientScriptLibrary, key);
+    @JsonIgnore
+    public Map<String, GameModelContent> getLibrariesAsMap(String libraryType) {
+        return this.libraries.stream()
+            .filter(g -> g.getLibraryType().equals(libraryType))
+            .collect(Collectors.toMap(g -> g.getContentKey(), g -> g));
     }
 
     /**
-     * Add or update a client script.
+     * Find the library of given type with given key.
      *
-     * @param clientScript
-     */
-    public void setClientScript(GameModelContent clientScript) {
-        GameModelContent cs = this.getClientScript(clientScript.getContentKey());
-        if (cs != null) {
-            cs.setContent(clientScript.getContent());
-        } else {
-            clientScript.setClientscriptlibrary_GameModel(this);
-            clientScriptLibrary.add(clientScript);
-        }
-    }
-
-    /**
-     * @param key
+     * @param libraryName type of library to look for
+     * @param key         library key name
      *
-     * @return the clientScript matching the key or null
+     * @return the found one or null
      */
-    public GameModelContent getScript(String key) {
-        return this.getGameModelContent(scriptLibrary, key);
-    }
-
-    /**
-     * Add or update a client script.
-     *
-     * @param script
-     */
-    public void setScript(GameModelContent script) {
-        GameModelContent s = this.getScript(script.getContentKey());
-        if (s != null) {
-            s.setContent(script.getContent());
-        } else {
-            script.setScriptlibrary_GameModel(this);
-            scriptLibrary.add(script);
-        }
-    }
-
-    /**
-     * @param key
-     *
-     * @return the clientScript matching the key or null
-     */
-    public GameModelContent getCss(String key) {
-        return this.getGameModelContent(cssLibrary, key);
-    }
-
-    /**
-     * Add or update a stylesheet.
-     *
-     * @param css
-     */
-    public void setCss(GameModelContent css) {
-        GameModelContent stylesheet = this.getCss(css.getContentKey());
-        if (stylesheet != null) {
-            stylesheet.setContent(css.getContent());
-        } else {
-            css.setCsslibrary_GameModel(this);
-            cssLibrary.add(css);
-        }
-    }
-
-    public GameModelContent getGameModelContent(List<GameModelContent> list, String key) {
-        for (GameModelContent gmc : list) {
-            if (gmc.getContentKey().equals(key)) {
-                return gmc;
+    public GameModelContent findLibrary(String libraryName, String key) {
+        for (GameModelContent item : this.libraries) {
+            if (item.getContentKey().equals(key)
+                && item.getLibraryType().equals(libraryName)) {
+                return item;
             }
         }
         return null;
     }
 
     /**
-     * @param clientScriptLibrary the clientScriptLibrary to set
+     * Add all provided gameModelContent libraries in the gameModel. Overides libraries' type with
+     * given one. Overrides libraries keys with keys from the map
+     *
+     * @param libraries content to add
+     * @param type      type of libraries
+     * @param mimetype  MIME type of libraries
      */
-    @JsonIgnore
-    public void setClientScriptLibraryList(List<GameModelContent> clientScriptLibrary) {
-        this.clientScriptLibrary = clientScriptLibrary;
+    private void addAllToLibraries(Map<String, GameModelContent> libraries, String type, String mimeType) {
+        libraries.forEach((key, gmc) -> {
+            gmc.setLibraryType(type);
+            gmc.setContentKey(key);
+            gmc.setContentType(mimeType);
+            this.addLibrary(gmc);
+        });
+    }
+
+    /**
+     * Backward compatibility for old exported JSON
+     *
+     * @param library
+     */
+    public void setCssLibrary(Map<String, GameModelContent> libraries) {
+        this.addAllToLibraries(libraries, GameModelContent.CSS, "test/css");
+    }
+
+    /**
+     * Backward compatibility for old exported JSON
+     *
+     * @param library
+     */
+    public void setScriptLibrary(Map<String, GameModelContent> libraries) {
+        this.addAllToLibraries(libraries, GameModelContent.SERVER_SCRIPT, "application/javascript");
+    }
+
+    /**
+     * Backward compatibility for old exported JSON
+     *
+     * @param library
+     */
+    public void setClientScriptLibrary(Map<String, GameModelContent> libraries) {
+        this.addAllToLibraries(libraries, GameModelContent.CLIENT_SCRIPT, "application/javascript");
+    }
+
+    /**
+     * Add the given GameModelContent to libraries.
+     *
+     * @param gameModelContent
+     */
+    public void addLibrary(GameModelContent gameModelContent) {
+        if (!this.libraries.contains(gameModelContent)) {
+            this.libraries.add(gameModelContent);
+            gameModelContent.setGameModel(this);
+        }
     }
 
     /**
@@ -1322,6 +1268,14 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         entities.add(this);
         map.put(this.getChannel(), entities);
         return map;
+    }
+
+    public void removeLib(GameModelContent gameModelContent) {
+        this.libraries.remove(gameModelContent);
+    }
+
+    public Object getLibrary(String CLIENT_SCRIPT, String CLIENT_SCRIPTNAME) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public enum GmType {

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { cx } from 'emotion';
 import { flex, expandBoth, flexColumn } from '../css/classes';
-import HTMLEditor from '../Components/HTMLEditor';
+import HTMLEditor from '../Components/HTML/HTMLEditor';
 import { Toggler } from '../Components/Inputs/Boolean/Toggler';
 
 export default function WegasScriptEditorTester() {
