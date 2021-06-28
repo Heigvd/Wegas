@@ -305,21 +305,12 @@ export function DnDTabLayout({
             >
               <DropMenu
                 items={Object.keys(selectItems).map(label => {
-<<<<<<< HEAD
-                  const translatedLabel = i18nTabsNames.tabsNames[
-                    label as keyof EditorTabsTranslations['tabsNames']
-                  ]
-                    ? i18nTabsNames.tabsNames[
-                        label as keyof EditorTabsTranslations['tabsNames']
-                      ]
-=======
                   const translatedOrUndefLabel =
                     i18nTabsNames.tabsNames[
                       label as keyof EditorTabsTranslations['tabsNames']
                     ];
                   const translatedLabel = translatedOrUndefLabel
                     ? translatedOrUndefLabel
->>>>>>> Wegas_new_UI
                     : label;
                   return {
                     label: translatedLabel,
