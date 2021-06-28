@@ -5,7 +5,7 @@ import { TranslatableContent } from '../../../data/i18n';
 import { VariableDescriptor } from '../../../data/selectors';
 import { StoreConsumer } from '../../../data/Stores/store';
 import { Button } from '../../Inputs/Buttons/Button';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import {
   choiceContainerStyle,
   choiceLabelStyle,
@@ -14,9 +14,9 @@ import {
 
 const repliesContainer = css({
   marginTop: '5px',
-  borderTop: '1px solid ' + themeVar.Common.colors.DisabledColor,
+  borderTop: '1px solid ' + themeVar.colors.DisabledColor,
   fontWeight: 'bold',
-  fontSize: themeVar.ComponentTitle.others.FontFamily5,
+  fontSize: themeVar.others.TextFont2,
 });
 
 interface ReplyDisplayProps {

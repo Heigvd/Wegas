@@ -1,15 +1,21 @@
 import * as React from 'react';
-import { Store } from 'redux';
+import { AnyAction } from 'redux';
 import {
   useAnyStore,
   refDifferent,
+  StoreType,
 } from '../Components/Hooks/storeHookFactory';
 
 function id<T>(x: T) {
   return x;
 }
 
-export function createStoreConnector<S extends Store>(store: S) {
+export function createStoreConnector<
+  SS,
+  SA extends AnyAction
+  // S extends Store<SS, SA>
+>(store: StoreType<SS, SA>) {
+  type S = StoreType<SS, SA>;
   type State = ReturnType<S['getState']>;
   type Dispatch = S['dispatch'];
 
@@ -41,7 +47,7 @@ export function createStoreConnector<S extends Store>(store: S) {
     }) => React.ReactElement | null;
   }) {
     const {
-      selector = id as (s: State) => State,
+      selector = id as (s: State) => R,
       children,
       shouldUpdate = refDifferent,
     } = props;

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { SimpleInput } from '../SimpleInput';
-import { ConfirmAdder } from './ConfirmAdder';
+import { ButtonsOrientation, ConfirmAdder } from '../Confirm/ConfirmAdder';
 
 interface ConfirmStringAdderProps {
   label?: string;
@@ -8,6 +8,7 @@ interface ConfirmStringAdderProps {
   forceInputValue?: boolean;
   onAccept: (value?: string) => void;
   placeholder?: string;
+  orientation?: ButtonsOrientation;
 }
 
 export function ConfirmStringAdder({
@@ -16,6 +17,7 @@ export function ConfirmStringAdder({
   forceInputValue,
   onAccept,
   placeholder,
+  orientation,
 }: ConfirmStringAdderProps) {
   return (
     <ConfirmAdder
@@ -28,6 +30,7 @@ export function ConfirmStringAdder({
           : undefined
       }
       onAccept={onAccept}
+      orientation={orientation}
     >
       {onNewValue => (
         <SimpleInput

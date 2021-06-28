@@ -28,7 +28,7 @@ import {
   createTranslation,
 } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import HTMLEditor from '../../HTMLEditor';
+import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';
@@ -139,6 +139,7 @@ function WhChoiceDisplay({
           disabled={questionI.validated || disabled}
           readOnly={readOnly}
           inline={false}
+          keepInternalValue
         />
       )}
     </ChoiceContainer>
@@ -158,9 +159,8 @@ export function WhQuestionDisplay({
   disabled,
   readOnly,
 }: WhQuestionDisplayProps) {
-  const [choicesValues, setChoicesValues] = React.useState<
-    (IWhChoiceInstance | undefined)[]
-  >(choicesI);
+  const [choicesValues, setChoicesValues] =
+    React.useState<(IWhChoiceInstance | undefined)[]>(choicesI);
 
   if (questionI == null || !questionI.active) {
     return null;

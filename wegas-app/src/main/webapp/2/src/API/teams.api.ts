@@ -1,4 +1,4 @@
-import { rest } from './rest';
+import { managedModeRequest, rest } from './rest';
 import { ITeam } from 'wegas-ts-api';
 
 /*
@@ -21,5 +21,24 @@ export const TeamAPI = {
     return rest(TEAM_BASE(gameId)).then((res: Response) => {
       return res.json();
     });
+  },
+  /**
+   * Get all the emails from the players of the team
+   * If no teamId is given then returns all the emails of the players in the game
+   * @param gameId
+   * @param teamId
+   */
+  getEmails(gameId: number, teamId?: number): Promise<string[]> {
+    return rest(
+      `/User/Emails/${gameId}${teamId != null ? '/' + teamId : ''}`,
+    ).then((res: Response) => {
+      return res.json();
+    });
+  },
+  update(gameModelId: number, gameId: number, team: ITeam) {
+    return managedModeRequest(
+      `/GameModel/${gameModelId}/Game/${gameId}/Team/${team.id!}`,
+      { method: 'PUT', body: JSON.stringify(team) },
+    );
   },
 };

@@ -20,7 +20,7 @@ import {
 import translatable from './translatable';
 import EntityArrayFieldSelect from './EntityArrayFieldSelect';
 import FlatVariableSelect from './FlatVariableSelect';
-import { LabeledHTMLEditor } from '../../../Components/HTMLEditor';
+import { LabeledHTMLEditor } from '../../../Components/HTML/HTMLEditor';
 import { TimestampView } from './Timestamp';
 import { VariableInput } from './Script/VariableInput';
 import PageSelect from './PageSelect';

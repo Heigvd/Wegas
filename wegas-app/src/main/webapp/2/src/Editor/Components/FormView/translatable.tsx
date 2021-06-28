@@ -38,7 +38,9 @@ export function createTranslatableContent(
     '@class': 'TranslatableContent',
     translations:
       lang === undefined
-        ? {}
+        ? {
+            DEF: createTranslation('DEF', value),
+          }
         : {
             [lang]: createTranslation(lang, value),
           },
@@ -51,6 +53,35 @@ export function useTranslate(
 ) {
   const { lang } = React.useContext(languagesCTX);
   return translatable ? translate(translatable, lang) : '';
+}
+
+export function unsafeTranslate(
+  translatable: ITranslatableContent | STranslatableContent | undefined | null,
+  lang: string,
+) {
+  let translations: { [lang: string]: ITranslation };
+  if (!translatable) {
+    return undefined;
+  }
+
+  // récupère les translations sous forme de ITranslation
+  if ('translations' in translatable) {
+    translations = translatable.translations;
+  } else {
+    translations = Object.entries(translatable.getTranslations()).reduce(
+      (o, t) => ({ ...o, [t[0]]: t[1].getEntity() }),
+      {},
+    );
+  }
+  const translation = translations[lang];
+
+  if (Object.keys(translations).length === 0) {
+    return undefined;
+  } else if (translation === undefined) {
+    return undefined;
+  } else {
+    return translation.translation;
+  }
 }
 
 export function translate(
@@ -96,7 +127,7 @@ export default function translatable<P extends EndProps>(
     const [currentLanguage, setCurrentLanguage] = React.useState<string>(lang);
 
     React.useEffect(() => {
-        setCurrentLanguage(lang);
+      setCurrentLanguage(lang);
     }, [lang]);
 
     const view = React.useMemo(
@@ -137,7 +168,6 @@ export default function translatable<P extends EndProps>(
         }
       }
     }
-
 
     return (
       <Comp

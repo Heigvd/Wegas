@@ -4,7 +4,6 @@ import { SchemaPropsSchemas } from '../../../Components/PageComponents/tools/sch
 import { wegasComponentCommonSchema } from '../Page/ComponentProperties';
 import { hashListChoicesToSchema } from '../FormView/HashList';
 import {
-  // layoutChoices,
   layoutCommonChoices,
   layoutConditionnalChoices,
   actionsChoices,

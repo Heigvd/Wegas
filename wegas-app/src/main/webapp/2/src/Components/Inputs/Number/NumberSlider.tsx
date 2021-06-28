@@ -12,7 +12,7 @@ import { Value } from '../../Outputs/Value';
 import { InputProps } from '../SimpleInput';
 import { NumberInput } from './NumberInput';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { themeVar } from '../../Style/ThemeVars';
+import { themeVar } from '../../Theme/ThemeVars';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 
 const valueDisplayStyle = css({
@@ -110,7 +110,7 @@ export function NumberSlider({
     [value],
   );
 
-  const onSliderChange = React.useCallback(
+  const onNumberChange = React.useCallback(
     (value: number, trigger: TriggerEvent) => {
       if (trigger === 'Change' || trigger === 'NumberInput') {
         refValue.current = value;
@@ -152,7 +152,7 @@ export function NumberSlider({
             <NumberInput
               value={internalValue}
               onChange={v => {
-                onSliderChange(Math.min(Math.max(v, min), max), 'NumberInput');
+                onNumberChange(Math.min(Math.max(v, min), max), 'NumberInput');
               }}
               disabled={disabled}
               readOnly={readOnly}
@@ -174,7 +174,7 @@ export function NumberSlider({
     internalValue,
     max,
     min,
-    onSliderChange,
+    onNumberChange,
     readOnly,
     value,
   ]);
@@ -190,7 +190,7 @@ export function NumberSlider({
           active: leftPartStyle
             ? desinterpolate(leftPartStyle)
             : desinterpolate({
-                backgroundColor: themeVar.Common.colors.PrimaryColor,
+                backgroundColor: themeVar.colors.PrimaryColor,
               }),
           thumb: handleStyle
             ? desinterpolate(handleStyle)
@@ -203,7 +203,7 @@ export function NumberSlider({
         xmin={min}
         xstep={Math.abs(max - min) / (steps ? steps : 100)}
         x={internalValue}
-        onChange={({ x }) => !readOnly && onSliderChange(x, 'Change')}
+        onChange={({ x }) => !readOnly && onNumberChange(x, 'Change')}
         onDragEnd={() =>
           !readOnly && onChange && onChange(refValue.current, 'DragEnd')
         }

@@ -18,6 +18,7 @@ import com.wegas.core.api.ResourceFacadeI;
 import com.wegas.core.api.ReviewingFacadeI;
 import com.wegas.core.api.ScriptEventFacadeI;
 import com.wegas.core.api.StateMachineFacadeI;
+import com.wegas.core.api.TeamFacadeI;
 import com.wegas.core.api.VariableDescriptorFacadeI;
 import com.wegas.core.api.VariableInstanceFacadeI;
 import com.wegas.core.ejb.nashorn.JSTool;
@@ -201,6 +202,9 @@ public class ScriptFacade extends WegasAbstractFacade {
     @Inject
     private I18nFacade i18nFacade;
 
+    @Inject
+    private TeamFacade teamFacade;
+
     /**
      *
      */
@@ -255,6 +259,8 @@ public class ScriptFacade extends WegasAbstractFacade {
         putBinding(bindings, "GameModelFacade", GameModelFacadeI.class, gameModelFacade);
         putBinding(bindings, "I18nFacade", I18nFacadeI.class, i18nFacade);
 
+        putBinding(bindings, "Team", TeamFacadeI.class, teamFacade);
+
         putBinding(bindings, "Variable", VariableDescriptorFacadeI.class, variableDescriptorFacade);
         putBinding(bindings, "VariableDescriptorFacade", VariableDescriptorFacadeI.class, variableDescriptorFacade);
 
@@ -297,7 +303,7 @@ public class ScriptFacade extends WegasAbstractFacade {
          * Then inject soft ones. It means a soft script may override methods defined in a hard
          * coded one
          */
-        for (GameModelContent script : player.getGameModel().getScriptLibraryList()) {
+        for (GameModelContent script : player.getGameModel().getLibrariesAsList(GameModelContent.SERVER_SCRIPT)) {
             ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + script.getContentKey(), ScriptContext.ENGINE_SCOPE);
 
             String cacheFileName = "soft:" + player.getGameModel().getId() + ":" + script.getContentKey();

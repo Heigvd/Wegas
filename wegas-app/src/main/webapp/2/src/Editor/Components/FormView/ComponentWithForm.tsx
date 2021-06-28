@@ -9,9 +9,16 @@ import {
   getConfig,
   getUpdate,
   getEntity,
+  editingGotPath,
 } from '../EntityEditor';
 import { css, cx } from 'emotion';
-import { Edition, closeEditor } from '../../../data/Reducer/globalState';
+import {
+  Edition,
+  closeEditor,
+  setUnsavedChanges,
+  EditingState,
+  ActionsProps,
+} from '../../../data/Reducer/globalState';
 import { StoreDispatch } from '../../../data/Stores/store';
 import { createStoreConnector } from '../../../data/connectStore';
 import { flex, grow, autoScroll, halfOpacity } from '../../../css/classes';
@@ -19,12 +26,19 @@ import { InstancePropertiesProps } from '../Variable/InstanceProperties';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { Toolbar } from '../../../Components/Toolbar';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
+import { Dispatch } from 'redux';
+import { StateActions } from '../../../data/actions';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 
 const growBig = css({
   flex: '30 1 auto',
+});
+const closeButtonStyle = css({
+  color: themeVar.colors.DisabledColor,
+  marginLeft: 'auto',
 });
 
 export interface ComponentWithFormChildrenProps {
@@ -89,6 +103,67 @@ const AsyncInstancesEditor = asyncSFC<InstancePropertiesProps>(
   },
 );
 
+function EmbeddedForm({
+  localState,
+  localDispatch,
+  onInstanceEditorAction,
+}: {
+  localState: EditingState;
+  localDispatch: Dispatch<StateActions>;
+  onInstanceEditorAction?: () => void;
+}) {
+  const { editing, events } = localState;
+
+  const path = React.useMemo(
+    () => (editingGotPath(editing) ? editing.path : undefined),
+    [editing],
+  );
+  const config = React.useMemo(() => editing && getConfig(editing), [editing]);
+  const update = React.useMemo(
+    () => editing && getUpdate(editing, localDispatch),
+    [editing, localDispatch],
+  );
+  const entity = React.useMemo(() => getEntity(editing), [editing]);
+
+  const actions: ActionsProps<IMergeable>[] = [
+    ...Object.values(
+      editing && 'actions' in editing && editing.actions.more
+        ? editing.actions.more
+        : {},
+    ),
+    {
+      label: 'Close',
+      sorting: 'close',
+      action: () => localDispatch(closeEditor()),
+    },
+  ];
+  if (onInstanceEditorAction) {
+    actions.push({
+      label: 'Instance',
+      sorting: 'toolbox',
+      action: onInstanceEditorAction,
+    });
+  }
+
+  if (!editing || !config || !update) {
+    return null;
+  }
+
+  return (
+    <AsyncVariableForm
+      path={path}
+      getConfig={config}
+      update={update}
+      actions={actions}
+      entity={entity}
+      onChange={() => {
+        localDispatch(setUnsavedChanges(true));
+      }}
+      error={parseEventFromIndex(events, localDispatch)}
+    />
+  );
+}
+
 interface ComponentWithFormProps extends DisabledReadonly {
   children: (
     props: ComponentWithFormChildrenProps,
@@ -104,10 +179,8 @@ export function ComponentWithForm({
   disabled,
   flexValues = defaultFlexValues,
 }: ComponentWithFormProps) {
-  const {
-    useStore: useLocalStore,
-    getDispatch: getLocalDispatch,
-  } = React.useMemo(() => createStoreConnector(storeFactory()), []);
+  const { useStore: useLocalStore, getDispatch: getLocalDispatch } =
+    React.useMemo(() => createStoreConnector(storeFactory()), []);
   const localState = useLocalStore(
     (state: LocalGlobalState) => state.global,
     shallowDifferent,
@@ -123,11 +196,16 @@ export function ComponentWithForm({
         ? localState.editing.actions.more
         : {},
     ),
-    { label: 'Close', action: () => localDispatch(closeEditor()) },
+    {
+      label: 'Close',
+      sorting: 'close',
+      action: () => localDispatch(closeEditor()),
+    },
   ];
   if (entityEditor) {
     actions.push({
       label: 'Instance',
+      sorting: 'toolbox',
       action: () => setInstanceView(show => !show),
     });
   }
@@ -158,15 +236,12 @@ export function ComponentWithForm({
           }
           className={cx(flex)}
         >
-          <AsyncVariableForm
-            {...localState.editing}
-            getConfig={getConfig(localState.editing)}
-            update={getUpdate(localState.editing, localDispatch)}
-            actions={actions}
-            entity={localEntity}
-            error={parseEventFromIndex(localState.events, localDispatch)}
-            disabled={disabled}
-            readOnly={readOnly}
+          <EmbeddedForm
+            localState={localState}
+            localDispatch={localDispatch}
+            onInstanceEditorAction={
+              entityEditor ? () => setInstanceView(show => !show) : undefined
+            }
           />
         </ReflexElement>
       )}
@@ -182,8 +257,10 @@ export function ComponentWithForm({
         >
           <Toolbar>
             <Toolbar.Header>
-              <Button
-                label="Close instance editor"
+              <IconButton
+                icon="times"
+                tooltip="Close instance editor"
+                className={closeButtonStyle}
                 onClick={() => setInstanceView(false)}
               />
             </Toolbar.Header>

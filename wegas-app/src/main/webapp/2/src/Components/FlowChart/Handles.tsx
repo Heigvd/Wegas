@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css } from 'emotion';
-import { themeVar } from '../Style/ThemeVars';
+import { themeVar } from '../Theme/ThemeVars';
 import { useDrag } from 'react-dnd';
 import { FlowLine, Process, Processes } from './FlowChart';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
@@ -22,7 +22,7 @@ const processHandleStyle = css({
   width: `${PROCESS_HANDLE_SIDE}px`,
   height: `${PROCESS_HANDLE_SIDE}px`,
   borderRadius: `${PROCESS_HANDLE_SIDE / 2}px`,
-  backgroundColor: themeVar.Common.colors.WarningColor,
+  backgroundColor: themeVar.colors.HighlightColor,
   opacity: 0.4,
   cursor: 'move',
   ':hover': { opacity: 1 },
@@ -67,7 +67,7 @@ const flowHandleStyle = (selected: boolean) =>
     width: `${FLOW_HANDLE_SIDE}px`,
     height: `${FLOW_HANDLE_SIDE}px`,
     borderRadius: `${FLOW_HANDLE_SIDE / 2}px`,
-    backgroundColor: themeVar.Common.colors.WarningColor,
+    backgroundColor: themeVar.colors.HighlightColor,
     opacity: selected ? 0.4 : 0.0,
     cursor: 'move',
     ':hover': { opacity: 1 },

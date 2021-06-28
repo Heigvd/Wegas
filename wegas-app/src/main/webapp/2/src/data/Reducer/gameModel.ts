@@ -1,8 +1,15 @@
 import { Reducer } from 'redux';
 import u from 'immer';
-import { ActionType, StateActions, ActionCreator } from '../actions';
+import {
+  ActionType,
+  StateActions,
+  ActionCreator,
+  manageResponseHandler,
+} from '../actions';
 import { omit } from 'lodash-es';
 import { IGameModel, IGameModelLanguage } from 'wegas-ts-api';
+import { GameModelApi } from '../../API/gameModel.api';
+import { store, ThunkResult } from '../Stores/store';
 
 export interface GameModelState {
   [id: string]: Readonly<IGameModel>;
@@ -63,4 +70,15 @@ export function editLanguage(
   gameModelId: string,
 ) {
   return ActionCreator.LANGUAGE_EDIT({ gameModelLanguage, gameModelId });
+}
+
+export function liveEdition<T extends IMergeable>(
+  channel: string,
+  entity: T,
+): ThunkResult {
+  return function (dispatch, getState) {
+    return GameModelApi.liveEdition(channel, entity).then(res =>
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
 }

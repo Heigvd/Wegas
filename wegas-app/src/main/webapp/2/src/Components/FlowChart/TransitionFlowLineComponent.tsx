@@ -7,12 +7,13 @@ import {
 import { entityIs } from '../../data/entities';
 import { translate } from '../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
-import { Text } from '../Outputs/Text';
+import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import {
   CustomFlowLineComponent,
   FlowLineComponentProps,
 } from './FlowLineComponent';
+import { themeVar } from '../Theme/ThemeVars';
 
 const transitionContainerStyle = css({
   display: 'inline-flex',
@@ -25,11 +26,11 @@ export const transitionBoxStyle = css({
   alignItems: 'center',
   padding: '20px 10px 20px 10px',
   boxSizing: 'border-box',
-  background: '#E7F4FF',
-  border: '1px solid #2097F7',
+  background: themeVar.colors.PrimaryColor,
+  border: '1px solid transparent',
   borderRadius: '8px',
-  boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-  color: '#2097F7',
+  boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.25)',
+  color: themeVar.colors.LightTextColor,
   flexGrow: 0,
   '&>*': {
     margin: '0 7px',
@@ -50,20 +51,21 @@ export const transitionBoxStyle = css({
 export const transitionBoxActionStyle = css({
   cursor: 'pointer',
   '&:hover': {
-    background: '#FFF',
-    color: '#0D71C1',
-    borderColor: '#0D71C1',
+    background: themeVar.colors.BackgroundColor,
+    color: themeVar.colors.ActiveColor,
+    borderColor: themeVar.colors.ActiveColor,
   },
 });
 
 const selectedTransitionBoxStyle = css({
-  background: '#FFFFFF',
-  border: '4px solid #0D71C1',
+  background: themeVar.colors.BackgroundColor,
+  border: '4px solid ' + themeVar.colors.ActiveColor,
+  color: themeVar.colors.ActiveColor,
 });
 
 const transitionMoreInfosStyle = css({
   position: 'relative',
-  backgroundColor: '#fff',
+  backgroundColor: themeVar.colors.BackgroundColor,
   color: '#807F7F',
   padding: '10px',
   fontSize: '12px',
@@ -119,7 +121,7 @@ export function TransitionBox({
         )} */}
         <div>
           <p className="StateLabelTextStyle">
-            <Text
+            <HTMLText
               text={
                 (entityIs(transition.transition, 'Transition')
                   ? transition.transition.label

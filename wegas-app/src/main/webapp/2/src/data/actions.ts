@@ -109,6 +109,8 @@ export const ActionCreator = {
     };
   }) => createAction(ActionType.VARIABLE_CREATE, data),
   CLOSE_EDITOR: () => createAction(ActionType.CLOSE_EDITOR, {}),
+  USAVED_CHANGES: (unsaved: boolean) =>
+    createAction(ActionType.UNSAVED_CHANGES, { unsaved }),
   MANAGED_RESPONSE_ACTION: (data: {
     // Nearly empty shells
     deletedEntities: {
@@ -146,6 +148,8 @@ export const ActionCreator = {
   }) => createAction(ActionType.LANGUAGE_EDIT, data),
   TEAM_FETCH_ALL: (data: { teams: ITeam[] }) =>
     createAction(ActionType.TEAM_FETCH_ALL, data),
+  TEAM_UPDATE: (data: { team: ITeam }) =>
+    createAction(ActionType.TEAM_UPDATE, data),
   GAME_FETCH: (data: { game: IGame }) =>
     createAction(ActionType.GAME_FETCH, data),
   LOCK_SET: (data: { token: string; locked: boolean }) =>

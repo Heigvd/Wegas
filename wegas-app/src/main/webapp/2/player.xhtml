@@ -1,43 +1,64 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core">
-  <f:event type="preRenderView" listener="#{facesContext.externalContext.response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')}"
-           />
-  <f:event type="preRenderView" listener="#{facesContext.externalContext.response.setHeader('Pragma', 'no-cache')}" />
-  <f:event type="preRenderView" listener="#{facesContext.externalContext.response.setHeader('Expires', '0')}" />
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://xmlns.jcp.org/jsf/core"
+>
+  <f:event
+    type="preRenderView"
+    listener="#{facesContext.externalContext.response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')}"
+  />
+  <f:event
+    type="preRenderView"
+    listener="#{facesContext.externalContext.response.setHeader('Pragma', 'no-cache')}"
+  />
+  <f:event
+    type="preRenderView"
+    listener="#{facesContext.externalContext.response.setHeader('Expires', '0')}"
+  />
   <h:head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
     <meta name="theme-color" content="#000000" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <meta http-equiv="Content-Type" content="text/html" />
-    <meta http-equiv="Content-Language" content="#{requestController.locale.toLanguageTag()}" />
+    <meta
+      http-equiv="Content-Language"
+      content="#{requestController.locale.toLanguageTag()}"
+    />
     <title>#{editorGameController.currentGameModel.name}</title>
-    <link rel="icon" type="image/ico" href="../favicon.ico" />
+    <link rel="icon" type="image/ico" href="/Wegas/favicon_orange.ico" />
     <link rel="preload" href="dist/player.js" as="script" />
   </h:head>
   <h:body>
     <div id="root" />
     <script type="application/javascript">
-        var API_ENDPOINT = "#{request.contextPath}" + "/rest/";
-        var API_VIEW = "Public";
-        var CurrentUser = #{requestController.currentUser.toJsonWithView("Index")};
-        var CurrentGM = #{gameController.currentGameModel.toJsonWithView("Public")};
-        //var CurrentGame = #   {gameController.currentGame.toJsonWithView("Editor")}; // JS comments do not comment Java Faces interpolation !!!!!!!!
-        var CurrentGame = #{gameController.currentGame.toJsonWithView("Extended")};
-        var CurrentPlayerId = #{gameController.currentPlayer.id};
-        var CurrentTeamId = #{gameController.currentPlayer.team.id};
-        var PusherApp = {
-            authEndpoint: API_ENDPOINT + "Pusher/auth",
-            applicationKey: "#{gameController.getWegasProperty('pusher.key')}",
-            cluster: "#{gameController.getWegasProperty('pusher.cluster')}"
-        };
+      var API_ENDPOINT = "#{request.contextPath}" + "/rest/";
+      var API_VIEW = "Public";
+      var APP_CONTEXT = "Player";
+      var CurrentUser = #{requestController.currentUser.toJsonWithView("Index")};
+      var CurrentGM = #{gameController.currentGameModel.toJsonWithView("Public")};
+      //var CurrentGame = #   {gameController.currentGame.toJsonWithView("Editor")}; // JS comments do not comment Java Faces interpolation !!!!!!!!
+      var CurrentGame = #{gameController.currentGame.toJsonWithView("Extended")};
+      var CurrentPlayerId = #{gameController.currentPlayer.id};
+      var CurrentTeamId = #{gameController.currentPlayer.team.id};
+      var PusherApp = {
+          authEndpoint: API_ENDPOINT + "Pusher/auth",
+          applicationKey: "#{gameController.getWegasProperty('pusher.key')}",
+          cluster: "#{gameController.getWegasProperty('pusher.cluster')}"
+      };
     </script>
     <!-- <script type="application/javascript" src="dist/manifest.js"/> -->
     <!-- <script type="application/javascript" src="dist/vendors.js"/> -->
     <script type="application/javascript" src="dist/player.js" />
   </h:body>
-
 </html>

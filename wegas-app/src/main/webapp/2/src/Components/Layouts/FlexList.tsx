@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { HashListChoices } from '../../Editor/Components/FormView/HashList';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 import { css, cx } from 'emotion';
 import { flex, grow } from '../../css/classes';

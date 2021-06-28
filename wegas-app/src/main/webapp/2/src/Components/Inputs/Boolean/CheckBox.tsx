@@ -28,6 +28,10 @@ export interface CheckBoxProps extends InputProps<boolean> {
    * radio - displays a radio button instead of a check box
    */
   radio?: boolean;
+  /**
+   * propagateClick - avoid stopping propagation when click
+   */
+  propagateClick?: boolean;
 }
 
 export function CheckBox({
@@ -39,6 +43,7 @@ export function CheckBox({
   hint,
   checkBoxClassName,
   radio,
+  propagateClick,
   className,
   style,
   id,
@@ -85,7 +90,9 @@ export function CheckBox({
               }
         }
         onClick={e => {
-          e.stopPropagation();
+          if (!propagateClick) {
+            e.stopPropagation();
+          }
           if (!disabled && !readOnly && onChange) {
             onChange(!value);
           }

@@ -1,5 +1,6 @@
 import {
   IAbstractEntity,
+  ScriptableEntity,
   WegasClassNames,
   WegasClassNamesAndClasses,
 } from 'wegas-ts-api';
@@ -85,6 +86,28 @@ export function entityIs<T extends WegasClassNames>(
         inheritance === true &&
         inherit(variableClass, cls))
     );
+  }
+  return false;
+}
+
+/**
+ * Check scriptable entity type (allows to keep the scriptable attribute of the entity while returning).
+ * @param variable Variable to test
+ * @param cls Discriminant, class
+ * @param inheritance Return true if class is inherited from searched class
+ */
+export function scriptableEntityIs<T extends WegasClassNames>(
+  variable: unknown,
+  cls: T,
+  inheritance?: boolean,
+): variable is ScriptableEntity<WegasClassNamesAndClasses[T]> {
+  if ('object' === typeof variable && variable != null) {
+    if ('getEntity' in variable) {
+      const sVariable = variable as SVariableDescriptor;
+      if (typeof sVariable.getEntity === 'function') {
+        return entityIs(sVariable.getEntity(), cls, inheritance);
+      }
+    }
   }
   return false;
 }

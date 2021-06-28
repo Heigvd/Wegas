@@ -5,6 +5,7 @@ import { Button } from '../../Components/Inputs/Buttons/Button';
 import { Player } from '../../data/selectors';
 import { store } from '../../data/Stores/store';
 import { runScript } from '../../data/Reducer/VariableInstanceReducer';
+import { defaultMargin } from '../../css/classes';
 
 const container = css({ width: '100%' });
 const editor = css({ width: '100%', height: '400px' });
@@ -30,8 +31,10 @@ export default function PlayServer() {
           onChange={e => setScript(e)}
           scriptContext="Server internal"
         />
+        <div className={defaultMargin}>
         <Button onClick={playScript} label="Run script" />
-        {error}
+        <div>{error}</div>
+        </div>
       </div>
     </div>
   );

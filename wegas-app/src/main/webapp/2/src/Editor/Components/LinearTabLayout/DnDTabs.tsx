@@ -5,10 +5,12 @@ import { DropAction } from './DnDTabLayout';
 import { hidden, flex } from '../../../css/classes';
 import { dropZoneFocus } from '../../../Components/Contexts/DefaultDndProvider';
 import {
-  activeTabStyle,
-  inactiveTabStyle,
+  tabsStyle,
   tabStyle,
 } from '../../../Components/Tabs';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 // export const dndAcceptType = 'DnDTab';
 
@@ -31,32 +33,40 @@ interface TabInternalProps {
    * className - the className to apply on the component
    */
   className?: string;
+  /**
+   * If tab is child of other tabs (styling purpose mainly).
+   */
+  isChild?: boolean;
 }
 
-type TabProps = React.PropsWithChildren<TabInternalProps>;
+export type TabProps = React.PropsWithChildren<TabInternalProps>;
+
 
 export const Tab = React.forwardRef<HTMLDivElement, TabProps>(
-  (props: TabProps, ref: React.RefObject<HTMLDivElement>) => (
+  (props: TabProps, ref: React.RefObject<HTMLDivElement>) => {
+    const { lang } = React.useContext(languagesCTX);
+    const i18nValues = internalTranslate(commonTranslations, lang);
+    return (
     <div
       ref={ref}
-      className={
+      className={cx(
         props.className
-          ? props.className
-          : cx(tabStyle, {
-              [activeTabStyle]: props.active !== undefined && props.active,
-              [inactiveTabStyle]: !props.active,
-            })
+        ? props.className
+        : cx(tabStyle, tabsStyle(props.isChild, props.active)))
       }
       onClick={props.onClick}
     >
-      <React.Suspense fallback={<div>Loading...</div>}>
+      <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
         {props.children}
       </React.Suspense>
     </div>
-  ),
+    );
+  },
 );
 
 Tab.displayName = 'Tab';
+
+export type TabComponent = typeof Tab;
 
 interface DragTabProps extends TabProps {
   /**
@@ -71,6 +81,14 @@ interface DragTabProps extends TabProps {
    * layoutId - The token that filter the drop actions
    */
   layoutId: string;
+  /**
+   * The tab component to use in this component
+   */
+  CustomTab?: TabComponent;
+  /**
+   * If tab is child of other tabs (styling purpose mainly).
+   */
+  isChild?: boolean;
 }
 
 interface DnDItem {
@@ -79,20 +97,40 @@ interface DnDItem {
   children?: React.PropsWithChildren<{}>['children'];
 }
 
-export function DragTab(props: DragTabProps) {
+export function DragTab({
+  label,
+  layoutId,
+  active,
+  children,
+  className,
+  onClick,
+  onDrag,
+  CustomTab = Tab,
+  isChild,
+}: DragTabProps) {
   const [, drag] = useDrag<DnDItem, unknown, unknown>({
     item: {
-      label: props.label,
-      type: props.layoutId,
-      children: props.children,
+      label: label,
+      type: layoutId,
+      children: children,
     },
-    begin: () => props.onDrag && props.onDrag(props.label),
+    begin: () => onDrag && onDrag(label),
   });
 
-  if (props.children === null) {
+  if (children === null) {
     return null;
   }
-  return <Tab ref={drag} {...props} />;
+  return (
+    <CustomTab
+      ref={drag}
+      active={active}
+      className={className}
+      onClick={onClick}
+      isChild={isChild}
+    >
+      {children}
+    </CustomTab>
+  );
 }
 
 export interface DropTabProps extends TabProps {
@@ -121,13 +159,27 @@ export interface DropTabProps extends TabProps {
    * layoutId - The token that filter the drop actions
    */
   layoutId: string;
+  /**
+   * The tab component to use in this component
+   */
+  CustomTab?: TabComponent;
 }
 
-export function DropTab(props: DropTabProps) {
+export function DropTab({
+  layoutId,
+  active,
+  children,
+  className,
+  disabled,
+  onClick,
+  onDrop,
+  overview,
+  CustomTab = Tab,
+}: DropTabProps) {
   const [dropTabProps, dropTab] = useDrop({
-    accept: props.layoutId,
+    accept: layoutId,
     canDrop: () => true,
-    drop: props.onDrop,
+    drop: onDrop,
     collect: (mon: DropTargetMonitor) => ({
       isOverCurrent: mon.isOver({ shallow: true }),
       canDrop: mon.canDrop(),
@@ -141,45 +193,45 @@ export function DropTab(props: DropTabProps) {
     /* Delaying action on purpose to avoid DnD loosing drop target while dropping */
     setTimeout(() => {
       setStyle(
-        dropTabProps.canDrop && dropTabProps.isOverCurrent && !props.disabled
+        dropTabProps.canDrop && dropTabProps.isOverCurrent && !disabled
           ? dropZone
           : hidden,
       );
     }, 50);
-  }, [
-    dropTabProps.canDrop,
-    dropTabProps.isOverCurrent,
-    props.className,
-    props.disabled,
-  ]);
+  }, [dropTabProps.canDrop, dropTabProps.isOverCurrent, disabled]);
 
   const renderTab = (): JSX.Element => {
-    if (props.overview) {
-      switch (props.overview.position) {
+    if (overview) {
+      switch (overview.position) {
         case 'left':
           return (
             <>
-              <div className={style}>{props.overview.overviewNode}</div>
-              {props.children}
+              <div className={style}>{overview.overviewNode}</div>
+              {children}
             </>
           );
         case 'right':
           return (
             <div className={style}>
-              {props.children}
-              {props.overview.overviewNode}
+              {children}
+              {overview.overviewNode}
             </div>
           );
         default:
-          return <div className={style}>{props.overview.overviewNode}</div>;
+          return <div className={style}>{overview.overviewNode}</div>;
       }
     }
-    return <div className={style}>{props.children}</div>;
+    return <div className={style}>{children}</div>;
   };
 
   return (
-    <Tab {...props} ref={dropTab} className={cx(props.className, flex)}>
+    <CustomTab
+      active={active}
+      onClick={onClick}
+      ref={dropTab}
+      className={cx(className, flex)}
+    >
       {renderTab()}
-    </Tab>
+    </CustomTab>
   );
 }

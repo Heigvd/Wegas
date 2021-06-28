@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { useOnClickOutside } from '../../Components/Hooks/useOnClickOutside';
-import { css, cx } from 'emotion';
-import { Button } from '../../Components/Inputs/Buttons/Button';
+import { cx } from 'emotion';
 import { flex, flexRow } from '../../css/classes';
-
-const buttonZone = css({
-  margin: '5px',
-});
+import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
+import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../i18n/internalTranslator';
+import { commonTranslations } from '../../i18n/common/common';
 
 interface TextPromptProps extends ClassStyleId {
   /**
@@ -48,6 +47,8 @@ export function TextPrompt({
   const inputValue = React.useRef('');
   const input = React.useRef<HTMLInputElement>(null);
   const textPrompt = React.useRef<HTMLDivElement>(null);
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
 
   React.useEffect(() => {
     if (defaultFocus && input.current) {
@@ -55,7 +56,9 @@ export function TextPrompt({
     }
   }, [defaultFocus]);
 
-  useOnClickOutside(textPrompt, () => onBlur && onBlur());
+  useOnClickOutside(textPrompt, () => {
+    onBlur && onBlur();
+  });
 
   return (
     <div
@@ -77,22 +80,20 @@ export function TextPrompt({
         }}
       />
       <div className={cx(flex, flexRow)}>
-        <Button
-          className={buttonZone}
-          icon={'check'}
-          label={'Accept'}
-          onClick={event => {
-            event.stopPropagation();
-            onAction(true, inputValue.current);
-          }}
-        />
-        <Button
-          className={buttonZone}
+      <IconButton
           icon={'times'}
-          label={'Cancel'}
+          tooltip={i18nValues.cancel}
           onClick={event => {
             event.stopPropagation();
             onAction(false, inputValue.current);
+          }}
+        />
+        <IconButton
+          icon={'check'}
+          tooltip={i18nValues.accept}
+          onClick={event => {
+            event.stopPropagation();
+            onAction(true, inputValue.current);
           }}
         />
       </div>

@@ -61,16 +61,25 @@ export const VariableDescriptorAPI = {
     playerId: number,
     script: IScript,
     variableContext?: IVariableDescriptor,
+    unmanaged: boolean = false,
   ) {
-    return managedModeRequest(
+    const request = `${VD_BASE(gameModelId)}Script/Run/${playerId}/${
+      variableContext ? variableContext.id : ''
+    }`;
+    const payload = {
+      method: 'POST',
+      body: JSON.stringify(script),
+    };
+    if (unmanaged) {
       `${VD_BASE(gameModelId)}Script/Run/${playerId}/${
         variableContext ? variableContext.id : ''
-      }`,
-      {
-        method: 'POST',
-        body: JSON.stringify(script),
-      },
-    );
+      }`;
+      return rest(request, payload).then((res: Response) => {
+        return res.json();
+      });
+    } else {
+      return managedModeRequest(request, payload);
+    }
   },
 
   runLoadedScript(

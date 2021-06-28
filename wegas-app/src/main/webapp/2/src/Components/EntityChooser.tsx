@@ -9,7 +9,7 @@ import {
   halfOpacity,
   justifyCenter,
 } from '../css/classes';
-import { themeVar } from './Style/ThemeVars';
+import { themeVar } from './Theme/ThemeVars';
 import { classNameOrEmpty } from '../Helper/className';
 
 const entityChooser = css({
@@ -25,16 +25,16 @@ const labelList = css({
 const labelStyle = (disabled?: boolean) =>
   cx(
     css({
-      backgroundColor: themeVar.Common.colors.PrimaryColor,
+      backgroundColor: themeVar.colors.PrimaryColor,
       padding: '10px',
       boxShadow: `2px 2px 6px rgba(0, 0, 0, 0.2)`,
-      color: themeVar.Common.colors.LightTextColor,
-      borderRadius: themeVar.Common.dimensions.BorderRadius,
+      color: themeVar.colors.LightTextColor,
+      borderRadius: themeVar.dimensions.BorderRadius,
       border: '2px solid transparent',
       ...(!disabled
         ? {
             '&:hover': {
-              backgroundColor: themeVar.Common.colors.ActiveColor,
+              backgroundColor: themeVar.colors.ActiveColor,
               cursor: 'pointer',
             },
           }
@@ -45,28 +45,28 @@ const labelStyle = (disabled?: boolean) =>
 /* const labelArrow = css({
   borderTop: '20px solid transparent',
   borderBottom: '20px solid transparent',
-  borderLeft: `20px solid ${themeVar.Common.colors.HeaderColor}`,
+  borderLeft: `20px solid ${themeVar.colors.HeaderColor}`,
 }); */
 
 const labelContainer = css({
   marginBottom: '10px',
   /* [`&>.${labelArrow}`]: {
-      borderLeft: `20px solid ${themeVar.Common.colors.DisabledColor}`,
+      borderLeft: `20px solid ${themeVar.colors.DisabledColor}`,
     }, */
 });
 
 const activeLabel = css(
   {
-    backgroundColor: themeVar.Common.colors.ActiveColor,
-    color: themeVar.Common.colors.LightTextColor,
+    backgroundColor: themeVar.colors.ActiveColor,
+    color: themeVar.colors.LightTextColor,
     boxShadow: 'none',
-    border: '2px solid ' + themeVar.Common.colors.ActiveColor,
+    border: '2px solid ' + themeVar.colors.ActiveColor,
   },
   /*
-    borderLeft: `20px solid ${themeVar.Common.colors.PrimaryColor}`,
+    borderLeft: `20px solid ${themeVar.colors.PrimaryColor}`,
  */
   /*
-      borderLeft: `20px solid ${themeVar.Common.colors.ActiveColor}`,
+      borderLeft: `20px solid ${themeVar.colors.ActiveColor}`,
   */
 );
 

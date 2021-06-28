@@ -6,8 +6,11 @@ import { Labeled, LabeledView } from './labeled';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { flex, flexColumn } from '../../../css/classes';
 import { ListDescriptorChild } from '../../editionConfig';
-import { inputStyleCSS } from '../../../Components/Inputs/inputStyles';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
+import { inputStyleCSS } from '../../../Components/Inputs/SimpleInput';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 
 export interface Choice {
   value?: {};
@@ -35,16 +38,28 @@ export interface IAsyncSelectProps extends WidgetProps.BaseProps {
   } & CommonView &
     LabeledView;
 }
-const selectStyle = css({
+export const selectStyle = css({
   ...inputStyleCSS,
-  // display: 'inline-block',
-  padding: '2px 4px',
-  // border: '1px solid lightgray',
-  // backgroundColor: 'lightgray',
-  textAlign: 'center',
+  padding: '2px 30px 2px 4px',
   alignItems: 'center',
 });
 
+export const selectArrowStyle = css({
+  select: {
+    appearance: 'none',
+    background: 'transparent',
+    backgroundImage:
+      'linear-gradient(45deg, transparent 50%, ' +
+      themeVar.colors.PrimaryColor +
+      ' 50%), linear-gradient(135deg, ' +
+      themeVar.colors.PrimaryColor +
+      ' 50%, transparent 50%)',
+    backgroundSize: '6px 6px, 6px 6px',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition:
+      'calc(100% - 14px) calc(1em - 5px), calc(100% - 8px) calc(1em - 5px)',
+  },
+});
 const defaultTitle: Choice = {
   value: '[[[default]]]',
   label: '- please select -',
@@ -68,12 +83,9 @@ function genItems(o: string | Choice) {
     );
   }
   const { label = o.value, value, disabled: choiceDisabled } = o;
+  const strValue = typeof value === 'string' ? value : JSON.stringify(value);
   return (
-    <option
-      key={`k-${value}`}
-      value={typeof value === 'string' ? value : JSON.stringify(value)}
-      disabled={choiceDisabled}
-    >
+    <option key={`k-${value}`} value={strValue} disabled={choiceDisabled}>
       {label}
     </option>
   );
@@ -81,7 +93,7 @@ function genItems(o: string | Choice) {
 
 interface SelectorProps extends ClassStyleId, DisabledReadonly {
   choices: Choices;
-  value: string;
+  value: string | number | undefined;
   onChange?: (
     event: React.ChangeEvent<{
       value: string;
@@ -94,20 +106,29 @@ export function Selector({
   id,
   className,
   style,
-  value,
+  value = '',
   onChange,
   readOnly,
   disabled,
 }: SelectorProps) {
-  return choices.length > 1 ? (
+  const i18nValues = useInternalTranslate(commonTranslations);
+  return choices.length > 1 && !readOnly ? (
     <select
       id={id}
       className={selectStyle + classNameOrEmpty(className)}
       style={style}
       value={value}
-      onChange={onChange}
+      onChange={event => {
+        event.persist();
+        if (onChange) {
+          onChange(event);
+        }
+      }}
       disabled={disabled || readOnly}
     >
+      <option value="" disabled hidden>
+        - {i18nValues.plzChooseValue} -
+      </option>
       {choices.map(genItems)}
     </select>
   ) : choices.length === 1 ? (
@@ -131,9 +152,16 @@ function SelectView(props: ISelectProps) {
   const onChange = function onChange(
     event: React.ChangeEvent<{ value: string }>,
   ) {
-    let parsedValue = event.target.value;
+    let parsedValue: string | undefined = event.target.value;
     try {
-      parsedValue = JSON.parse(event.target.value);
+      parsedValue = JSON.parse(parsedValue);
+    } catch (_e) {
+      parsedValue =
+        typeof parsedValue === 'string' ||
+        typeof parsedValue === 'number' ||
+        typeof parsedValue === 'boolean'
+          ? String(parsedValue)
+          : undefined;
     } finally {
       props.onChange(parsedValue);
     }
@@ -169,7 +197,7 @@ function SelectView(props: ISelectProps) {
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>
         {({ inputId, labelNode }) => (
-          <div className={cx(flex, flexColumn)}>
+          <div className={cx(flex, flexColumn, selectArrowStyle)}>
             {labelNode}
             <Selector
               id={inputId}
@@ -195,7 +223,7 @@ export function ListChildrenSelectView(props: ListChildrenSelectViewProps) {
       {...props}
       view={{
         ...props.view,
-        choices: [...((ListDescriptorChild as unknown) as string[])],
+        choices: [...(ListDescriptorChild as unknown as string[])],
       }}
     />
   );
@@ -209,7 +237,7 @@ export function ListChildrenNullSelectView(props: ListChildrenSelectViewProps) {
         ...props.view,
         choices: [
           { label: 'None', value: '' },
-          ...((ListDescriptorChild as unknown) as string[]),
+          ...(ListDescriptorChild as unknown as string[]),
         ],
       }}
     />

@@ -1,4 +1,4 @@
-import { wlog } from './wegaslog';
+import { wwarn } from './wegaslog';
 import { cloneDeep } from 'lodash-es';
 
 /**
@@ -12,13 +12,13 @@ export function array_move<T>(
 ) {
   const newI = old_index < new_index ? new_index - 1 : new_index;
   if (arr == null) {
-    wlog('The array does not exists');
+    wwarn('The array does not exists');
     return arr;
   } else if (old_index > arr.length || old_index < 0) {
-    wlog('Trying to move an unexisting item');
+    wwarn('Trying to move an unexisting item');
     return arr;
   } else if (newI > arr.length || newI < 0) {
-    wlog('Trying to move item outside of the array');
+    wwarn('Trying to move item outside of the array');
     return arr;
   } else {
     const newArr = [...arr];
@@ -147,7 +147,7 @@ export function mergeDeep(target: any, ...sources: any): any {
  * @param a - the array to trim
  */
 export function arrayRemoveDuplicates(a: unknown[]) {
-  return a.filter(function(item, pos) {
+  return a.filter(function (item, pos) {
     return a.indexOf(item) == pos;
   });
 }

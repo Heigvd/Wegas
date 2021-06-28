@@ -60,17 +60,18 @@ var WegasDashboard = (function() {
         section.items[id] = {
             order: order,
             varName: varName,
-            itemType: 'variable',
+          itemType: "variable",
             formatter: cfg.formatter,
             transformer: cfg.transformer,
             label: cfg.label,
             index: cfg.index || Object.keys(section).length,
-            active: (cfg.active !== undefined) ? cfg.active : true,
+          active: cfg.active !== undefined ? cfg.active : true,
             sortable: cfg.sortable,
             preventClick: cfg.preventClick,
             sortFn: cfg.sortFn,
             mapFn: cfg.mapFn,
-            mapFnExtraArgs: cfg.mapFnExtraArgs
+          mapFnExtraArgs: cfg.mapFnExtraArgs,
+          kind: cfg.kind,
         };
     }
 
@@ -95,7 +96,7 @@ var WegasDashboard = (function() {
             doFn: doFn,
             label: cfg.label,
             icon: cfg.icon || "fa fa-pencil",
-            hasGlobal: cfg.hasGlobal
+            hasGlobal: cfg.hasGlobal,
         };
     }
 
@@ -187,7 +188,29 @@ var WegasDashboard = (function() {
                             item.itemType = 'action';
                             item.label = itemCfg.label || id;
                             item.icon = itemCfg.icon;
+                            if(typeof itemCfg.doFn === "function"){
                             item.do = itemCfg.doFn + "";
+                            }
+                            else if(typeof itemCfg.doFn === "object"){
+                                if("type" in itemCfg.doFn){
+                                    switch(itemCfg.doFn.type){
+                                        case "ModalAction":{
+                                            var actions = itemCfg.doFn.actions.map(function(f){
+                                                return {
+                                                    doFn:f.doFn + "",
+                                                    schemaFn:f.schemaFn + ""
+                                                }
+                                            })
+                                            item.do = JSON.stringify({
+                                                type:itemCfg.doFn.type,
+                                                actions:actions,
+                                                showAdvancedImpact:itemCfg.doFn.showAdvancedImpact
+                                            })
+                                        }
+                                    }
+    
+                                }
+                            }
                             item.hasGlobal = itemCfg.hasGlobal;
 
                             items[id] = {
@@ -227,8 +250,13 @@ var WegasDashboard = (function() {
                             item.preventClick = itemCfg.preventClick;
                             item.sortable = itemCfg.sortable;
                             item.sortFn = itemCfg.sortFn;
+                            if(itemCfg.kind != null){
+                                item.kind = itemCfg.kind;
+                            }
+                            else{
                             item.kind = variables[varName].descriptor.getJSONClassName()
                                 .replaceAll("Descriptor", "").toLowerCase();
+                            }
                             break;
                         default:
                     }

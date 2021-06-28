@@ -17,3 +17,7 @@ export const wlog = (message?: unknown, ...optionalParams: unknown[]): void =>
 export const wwarn = (message?: unknown, ...optionalParams: unknown[]): void =>
   // eslint-disable-next-line no-console
   wconsole(console.warn)(message, ...optionalParams);
+
+export const werror = (message?: unknown, ...optionalParams: unknown[]): void =>
+  // eslint-disable-next-line no-console
+  wconsole(console.error)(message, ...optionalParams);

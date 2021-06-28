@@ -9,15 +9,17 @@ import {
   featuresCTX,
   isFeatureEnabled,
 } from '../../Components/Contexts/FeaturesProvider';
-import { LangToggler } from '../../Components/Contexts/LanguagesProvider';
+import { LangToggler, languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import {
   flex,
   itemCenter,
-  grow,
   foregroundContent,
   flexRow,
   componentMarginLeft,
   componentMarginRight,
+  flexBetween,
+  itemsTop,
+  inlineBlock,
 } from '../../css/classes';
 import { Title } from '../../Components/Inputs/String/Title';
 import { mainLayoutId } from './Layout';
@@ -25,10 +27,12 @@ import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
 import { DropMenu } from '../../Components/DropMenu';
 import { parseEvent } from './EntityEditor';
 import { editorEventRemove } from '../../data/Reducer/globalState';
-import { themeVar } from '../../Components/Style/ThemeVars';
-import { Button } from '../../Components/Inputs/Buttons/Button';
+import { Button, headerOutlineButtonStyle } from '../../Components/Inputs/Buttons/Button';
 import { State } from '../../data/Reducer/reducers';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
+import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
+import { internalTranslate } from '../../i18n/internalTranslator';
+import { commonTranslations } from '../../i18n/common/common';
 
 function wegasEventSelector(s: State) {
   return s.global.events;
@@ -36,6 +40,8 @@ function wegasEventSelector(s: State) {
 // May be moved in a proper file to allow wider usage
 // interface NotificationMenuProps {}
 function NotificationMenu({ className, style }: ClassStyleId) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
   const wegasEvents = useStore(wegasEventSelector);
   const [recievedEvents, setRecievedEvents] = React.useState<number[]>([]);
 
@@ -50,7 +56,7 @@ function NotificationMenu({ className, style }: ClassStyleId) {
       onOpen={() => setRecievedEvents(wegasEvents.map(e => e.timestamp))}
       label={
         <div>
-          Notifications
+          {i18nValues.header.notifications}
           <InfoBullet
             show={show}
             blink={blink}
@@ -101,12 +107,10 @@ function NotificationMenu({ className, style }: ClassStyleId) {
   );
 }
 
-const headerStyle = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
-});
-
 export default function Header() {
   const { currentFeatures } = React.useContext(featuresCTX);
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
 
   return (
     <StoreConsumer
@@ -116,39 +120,43 @@ export default function Header() {
       })}
     >
       {({ state: { gameModel, user }, dispatch }) => (
-        <div className={cx(flex, itemCenter, foregroundContent, headerStyle)}>
-          <Title className={grow}>{gameModel.name}</Title>
-          <LangToggler />
-          <FeatureToggler
-            className={cx(componentMarginLeft, componentMarginRight)}
-          />
-          {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
-            <NotificationMenu className={componentMarginRight} />
-          )}
-          <FontAwesome icon="user" />
-          <span className={componentMarginLeft}>{user.name}</span>
-          <ConfirmButton
-            icon="undo"
-            tooltip="Restart the game (applied to every scenarist)"
-            onAction={success => {
-              if (success) {
-                dispatch(Actions.VariableDescriptorActions.reset());
-                dispatch(Actions.EditorActions.resetPageLoader());
-              }
-            }}
-            className={componentMarginLeft}
-          />
-          <Button
-            icon={[{ icon: 'undo' }, { icon: 'window-restore', size: 'xs' }]}
-            tooltip="Reset layout"
-            onClick={() => {
-              window.localStorage.removeItem(
-                'DnDGridLayoutData.' + mainLayoutId,
-              );
-              window.location.reload();
-            }}
-            className={componentMarginLeft}
-          />
+        <div className={cx(flex, itemsTop, flexBetween, foregroundContent, css({paddingBottom: '1em'}))}>
+          <div>
+            <FontAwesome icon="user" />
+            <span className={componentMarginLeft}>{user.name}</span>
+          </div>
+          <Title className={css({margin: 0})}>{gameModel.name}</Title>
+          <div className={cx(flex, itemCenter)}>
+            <LangToggler />
+            <FeatureToggler
+              className={cx(componentMarginLeft, componentMarginRight)}
+            />
+            {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
+              <NotificationMenu className={componentMarginRight} />
+            )}
+            <ConfirmButton
+              icon="fast-backward"
+              tooltip={i18nValues.header.restartGame}
+              onAction={success => {
+                if (success) {
+                  dispatch(Actions.VariableDescriptorActions.reset());
+                  dispatch(Actions.EditorActions.resetPageLoader());
+                }
+              }}
+              buttonClassName={cx(componentMarginLeft, headerOutlineButtonStyle)}
+            />
+            <IconButton
+              icon='redo'
+              tooltip={i18nValues.header.resetLayout}
+              onClick={() => {
+                window.localStorage.removeItem(
+                  'DnDGridLayoutData.' + mainLayoutId,
+                );
+                window.location.reload();
+              }}
+              className={cx(componentMarginLeft, inlineBlock, headerOutlineButtonStyle)}
+            />
+          </div>
         </div>
       )}
     </StoreConsumer>

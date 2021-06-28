@@ -11,7 +11,7 @@ import {
   unreadSpaceStyle,
 } from '../../css/classes';
 import { readMessage } from '../../data/Reducer/VariableInstanceReducer';
-import { TranslatableText } from './Text';
+import { TranslatableText } from './HTMLText';
 import { IMessage, IInboxDescriptor } from 'wegas-ts-api';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 

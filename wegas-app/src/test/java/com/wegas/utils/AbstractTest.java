@@ -57,9 +57,8 @@ public abstract class AbstractTest extends AbstractArquillianTestMinimal {
             if (injectScript == null) {
                 throw WegasErrorMessage.error("Injected Script doesn't exists [" + injectScriptPath + "]");
             }
-            GameModelContent gameModelContent = new GameModelContent(injectScriptPath, injectScript, "JavaScript");
-            gameModelContent.setScriptlibrary_GameModel(gameModel);
-            gameModel.getScriptLibraryList().add(gameModelContent);
+            GameModelContent gameModelContent = new GameModelContent(injectScriptPath, injectScript, "application/javascript", "ServerScript");
+            gameModel.addLibrary(gameModelContent);
         }
 
         System.out.println("Create game model : " + gameModel.getName());
@@ -82,9 +81,9 @@ public abstract class AbstractTest extends AbstractArquillianTestMinimal {
 
             scriptContent.append(injectScript);
         }
-        GameModelContent gameModelContent = new GameModelContent("ConcatenatedScripts", scriptContent.toString(), "JavaScript");
-        gameModelContent.setScriptlibrary_GameModel(gameModel);
-        gameModel.getScriptLibraryList().add(gameModelContent);
+        GameModelContent gameModelContent = new GameModelContent("ConcatenatedScripts", scriptContent.toString(), "application/javascript", "ServerScript");
+        gameModelContent.setGameModel(gameModel);
+        gameModel.addLibrary(gameModelContent);
 
         logger.info("Create game model : " + gameModel.getName());
 

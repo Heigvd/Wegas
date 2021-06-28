@@ -17,22 +17,34 @@ import { Schema } from 'jsoninput';
 import { AvailableViews } from '../FormView';
 import { LocalGlobalState } from '../../../data/Stores/storeFactory';
 import { updateInstance } from '../../../data/Reducer/VariableInstanceReducer';
-import { flex, flexColumn, grow, localSelection } from '../../../css/classes';
-import { themeVar } from '../../../Components/Style/ThemeVars';
-import { themeCTX, ThemeComponent } from '../../../Components/Style/Theme';
+import {
+  flex,
+  flexColumn,
+  grow,
+  localSelection,
+  MediumPadding,
+} from '../../../css/classes';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { themeCTX, ThemeComponent } from '../../../Components/Theme/Theme';
 import { IVariableInstance } from 'wegas-ts-api';
 import { VariableDescriptor, VariableInstance } from '../../../data/selectors';
-import { Edition, VariableEdition } from '../../../data/Reducer/globalState';
+import {
+  Edition,
+  setUnsavedChanges,
+  VariableEdition,
+} from '../../../data/Reducer/globalState';
 import { VariableTreeTitle } from './VariableTree';
 import { State } from '../../../data/Reducer/reducers';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 const listBox = css({
   width: '100%',
   maxHeight: '100px',
   overflowY: 'auto',
-  borderColor: themeVar.Common.colors.PrimaryColor,
-  borderWidth: '2px',
-  borderStyle: 'solid',
+  border: '1px solid ' + themeVar.colors.PrimaryColor,
+  borderRadius: themeVar.dimensions.BorderRadius,
 });
 
 const listItem = css({
@@ -40,14 +52,13 @@ const listItem = css({
   width: '100%',
   cursor: 'pointer',
   ':hover': {
-    backgroundColor: themeVar.Common.colors.HoverColor,
+    backgroundColor: themeVar.colors.HoverColor,
   },
 });
 
 const titleStyle = css({
-  textAlign: 'center',
   margin: '5px',
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  fontWeight: 700,
 });
 
 function isEditingVariable(editing?: Edition): editing is VariableEdition {
@@ -79,12 +90,13 @@ export function InstanceProperties({
   actions,
   ...options
 }: InstancePropertiesProps) {
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(editorTabsTranslations, lang);
   const editing = state.global.editing;
   const events = state.global.events;
 
-  const [selectedInstanceId, setSelectedInstanceId] = React.useState<
-    number | undefined
-  >();
+  const [selectedInstanceId, setSelectedInstanceId] =
+    React.useState<number | undefined>();
 
   const instances = useStore(instancesSelector);
 
@@ -105,11 +117,11 @@ export function InstanceProperties({
       className={cx(grow, titleStyle)}
     />
   ) : (
-    'No descriptor is beeing edited'
+    i18nValues.instanceProps.noDescriptorEdited
   );
 
   return (
-    <Toolbar>
+    <Toolbar className={MediumPadding}>
       <Toolbar.Header>
         <div className={cx(flex, flexColumn)}>
           <div>{title}</div>
@@ -133,7 +145,7 @@ export function InstanceProperties({
                     {`#${i.id} - ${
                       scope
                         ? `${scope.name} (#${scope.id})`
-                        : 'Current game model'
+                        : i18nValues.instanceProps.currentGameModel
                     }`}
                   </div>
                 );
@@ -154,6 +166,7 @@ export function InstanceProperties({
             entity={selectedInstance}
             error={parseEventFromIndex(events)}
             actions={actions}
+            onChange={() => dispatch(setUnsavedChanges(true))}
             {...options}
           />
         )}

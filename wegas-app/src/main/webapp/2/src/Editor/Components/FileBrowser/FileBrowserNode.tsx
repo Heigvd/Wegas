@@ -26,7 +26,7 @@ import { store, StoreDispatch } from '../../../data/Stores/store';
 import { GameModel } from '../../../data/selectors';
 import { editFile } from '../../../data/Reducer/globalState';
 
-import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import { TextPrompt } from '../TextPrompt';
@@ -40,8 +40,11 @@ import {
   formatFileSize,
   getIconForFile,
 } from '../../../Helper/fileTools';
-import { FilePickingType, FileFilter } from './FileBrowser';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // styles
@@ -49,24 +52,24 @@ import { isActionAllowed } from '../../../Components/PageComponents/tools/option
 const clickableStyle = css({
   cursor: 'pointer',
   ':hover': {
-    backgroundColor: themeVar.Common.colors.HoverColor,
+    backgroundColor: themeVar.colors.HoverColor,
   },
 });
 
 const noToggleStyle = css({
   margin: '0 0.8em',
-  color: themeVar.Common.colors.DarkTextColor,
+  color: themeVar.colors.DarkTextColor,
 });
 
 const previewStyle = css(
   {
     position: 'absolute',
-    backgroundColor: themeVar.Common.colors.BackgroundColor,
+    backgroundColor: themeVar.colors.BackgroundColor,
     maxWidth: '220px',
     margin: '3px 2em 10px',
     padding: '10px',
     borderWidth: '1px',
-    borderRadius: themeVar.Common.dimensions.BorderRadius,
+    borderRadius: themeVar.dimensions.BorderRadius,
     fontSize: '75%',
     zIndex: 10000,
   },
@@ -272,6 +275,9 @@ export function FileBrowserNode({
   readOnly,
 }: FileBrowserNodeProps) {
   const actionAllowed = isActionAllowed({ disabled, readOnly });
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nEditorValues = internalTranslate(editorTabsTranslations, lang);
 
   //const isDisplayPreviewAllowed = !disabled;
 
@@ -287,20 +293,16 @@ export function FileBrowserNode({
     type: 'close',
   });
 
-  const [hoveringImageFile, setHoveringImageFile] = React.useState<boolean>(
-    false,
-  );
+  const [hoveringImageFile, setHoveringImageFile] =
+    React.useState<boolean>(false);
 
   const [displayPreview, setDisplayPreview] = React.useState<boolean>(false);
 
-  const [children, setChildren] = React.useState<
-    IAbstractContentDescriptor[]
-  >();
+  const [children, setChildren] =
+    React.useState<IAbstractContentDescriptor[]>();
 
-  const [
-    currentFile,
-    setCurrentFile,
-  ] = React.useState<IAbstractContentDescriptor>(item);
+  const [currentFile, setCurrentFile] =
+    React.useState<IAbstractContentDescriptor>(item);
 
   const [nbUploadingFiles, dispatchUploadingFiles] = React.useReducer(
     (uploadCount: number, action: { type: 'increment' | 'decrement' }) => {
@@ -360,10 +362,12 @@ export function FileBrowserNode({
     if (oldFile) {
       setModalState({
         type: 'error',
-        label: `Directory [${generateAbsolutePath({
-          path: currentFile.path,
-          name: name,
-        })}] allready exists`,
+        label: i18nEditorValues.fileBrowser.directory(
+          generateAbsolutePath({
+            path: currentFile.path,
+            name: name,
+          }),
+        ),
       });
     } else {
       FileAPI.createFile(name, generateAbsolutePath(currentFile))
@@ -485,7 +489,7 @@ export function FileBrowserNode({
 
   const [dropZoneProps, dropZone] = useDrop(
     dropSpecs(item => {
-      const { files } = (item as unknown) as {
+      const { files } = item as unknown as {
         files: FileList;
         items: DataTransferItemList;
       };
@@ -505,10 +509,10 @@ export function FileBrowserNode({
     let openTimeout: number | undefined;
     if (isDirectory(currentFile)) {
       if (dropZoneProps.isShallowOver && dropZoneProps.canDrop) {
-        openTimeout = (setTimeout(
+        openTimeout = setTimeout(
           () => setOpened(true),
           timeoutBeforeExpand,
-        ) as unknown) as number;
+        ) as unknown as number;
       }
       return () => {
         clearTimeout(openTimeout);
@@ -521,10 +525,10 @@ export function FileBrowserNode({
   React.useEffect(() => {
     let previewTimeout: number | undefined;
     if (!disabled && hoveringImageFile) {
-      previewTimeout = (setTimeout(
+      previewTimeout = setTimeout(
         () => setDisplayPreview(true),
         timeoutBeforePreview,
-      ) as unknown) as number;
+      ) as unknown as number;
       return () => {
         setDisplayPreview(false);
         clearTimeout(previewTimeout);
@@ -654,7 +658,9 @@ export function FileBrowserNode({
           {nbUploadingFiles > 0 && (
             <div className={grow}>
               <MessageString
-                value={`Uploading ${nbUploadingFiles} files`}
+                value={i18nEditorValues.fileBrowser.uploading(
+                  nbUploadingFiles.toString(),
+                )}
                 type="warning"
               />
             </div>
@@ -662,7 +668,7 @@ export function FileBrowserNode({
           <div className={flex}>
             {modalState.type === 'folderName' && (
               <TextPrompt
-                placeholder="Directory name"
+                placeholder={i18nEditorValues.fileBrowser.directoryName}
                 onAction={(success, value) => {
                   if (success) {
                     insertDirectory(value);
@@ -678,7 +684,10 @@ export function FileBrowserNode({
             {modalState.type === 'type' && (
               <ConfirmButton
                 icon={'trash'}
-                label={`Are you sure that you want to change the file type from [${currentFile.mimeType}] to [${modalState.file.type}]`}
+                label={i18nEditorValues.fileBrowser.changeType(
+                  currentFile.mimeType,
+                  modalState.file.type,
+                )}
                 onAction={success => {
                   if (success) {
                     updateFile(modalState.file, true);
@@ -692,7 +701,7 @@ export function FileBrowserNode({
             {modalState.type === 'close' && !disabled && isFile(currentFile) && (
               <Button
                 icon={'external-link-alt'}
-                tooltip={'Open file'}
+                tooltip={i18nEditorValues.fileBrowser.openFile}
                 onClick={event => {
                   event.stopPropagation();
                   openFile(currentFile);
@@ -705,9 +714,11 @@ export function FileBrowserNode({
               (isDirectory(currentFile) ? (
                 <>
                   <Button
-                    label={isRootNode ? 'New folder' : ''}
+                    label={
+                      isRootNode ? i18nEditorValues.fileBrowser.newFolder : ''
+                    }
                     icon={'folder-plus'}
-                    tooltip={'Add new folder'}
+                    tooltip={i18nEditorValues.fileBrowser.addNewFolder}
                     disabled={!isUploadAllowed(currentFile)}
                     onClick={event => {
                       event.stopPropagation();
@@ -719,9 +730,11 @@ export function FileBrowserNode({
                     )}
                   />
                   <Button
-                    label={isRootNode ? 'Upload file' : ''}
+                    label={
+                      isRootNode ? i18nEditorValues.fileBrowser.uploadFile : ''
+                    }
                     icon={'file-upload'}
-                    tooltip={'Upload file in the folder'}
+                    tooltip={i18nEditorValues.fileBrowser.uploadFileFolder}
                     disabled={!isUploadAllowed(currentFile)}
                     onClick={openUploader}
                     className={cx(
@@ -733,7 +746,7 @@ export function FileBrowserNode({
               ) : (
                 <Button
                   icon={'file-import'}
-                  tooltip={'Upload new version'}
+                  tooltip={i18nEditorValues.fileBrowser.uploadNew}
                   disabled={!isUploadAllowed(currentFile)}
                   onClick={openUploader}
                 />
@@ -745,7 +758,7 @@ export function FileBrowserNode({
               !isRootNode && (
                 <ConfirmButton
                   icon={'trash'}
-                  tooltip={'Delete'}
+                  tooltip={i18nValues.delete}
                   className={flex}
                   onAction={success => {
                     if (success) {
@@ -760,10 +773,10 @@ export function FileBrowserNode({
               )}
             {modalState.type === 'delete' && (
               <ConfirmButton
-                label="Are you sure to delete the folder and all its subdirectories ?"
+                label={i18nEditorValues.fileBrowser.deleteFolder}
                 defaultConfirm
                 icon={'trash'}
-                tooltip={'Force delete'}
+                tooltip={i18nValues.forceDelete}
                 onAction={success => {
                   if (success) {
                     deleteFile(currentFile);
@@ -783,7 +796,7 @@ export function FileBrowserNode({
             {modalState.type === 'override' && (
               <ConfirmButton
                 icon={'trash'}
-                label={`Are you sure that you want to override the file [${modalState.files[0].name}]`}
+                label={`${i18nEditorValues.fileBrowser.overrideFile} [${modalState.files[0].name}] ?`}
                 onAction={success => {
                   const removeFile = () =>
                     setModalState(oldState => {
@@ -806,7 +819,8 @@ export function FileBrowserNode({
                         if (!newFile) {
                           setModalState({
                             type: 'error',
-                            label: 'File insertion failed',
+                            label:
+                              i18nEditorValues.fileBrowser.fileInsertFailed,
                           });
                         }
                         removeFile();
@@ -873,12 +887,12 @@ export function FileBrowserNode({
                 ))
               ) : (
                 <div className={cx(noToggleStyle, infoShortTextStyle)}>
-                  empty
+                  {i18nValues.empty}
                 </div>
               )
             ) : (
               <div className={cx(noToggleStyle, infoShortTextStyle)}>
-                Loading...
+                {i18nValues.loading}...
               </div>
             ))}
         </div>

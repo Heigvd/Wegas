@@ -1,37 +1,97 @@
-<div class="card__illustration illustration illustration--icon" illustration="{{session.properties.iconUri}}"></div>
+<div
+  class="card__illustration illustration illustration--icon"
+  illustration="{{session.properties.iconUri}}"
+></div>
 <div class="card__description">
-    <div class="line line--primary">{{session.name}}</div>
-    <div class="line">{{'TRAINER-CARD-DETAILS-CREATED-ON' | translate}} {{'COMMONS-DATE' | translate: {date: session.createdTime} }}
-        <span ng-if="user.isAdmin">{{'TRAINER-CARD-DETAILS-CREATED-BY' | translate}}
-            <span ng-class="{true:'highlighted'}[session.createdByName !== username]">{{session.createdByName}}</span>
-        </span>
-    </div>
-    <div class="line">{{'TRAINER-CARD-DETAILS-SCENARIO' | translate}}:&nbsp;{{session.gameModelName}}</div>
-    <div ng-if="(session.gameModel.comments)" class="line line--optional">{{session.gameModel.comments}}</div>
+  <div class="line line--primary">{{session.name}}</div>
+  <div class="line">
+    {{'TRAINER-CARD-DETAILS-CREATED-ON' | translate}} {{'COMMONS-DATE' |
+    translate: {date: session.createdTime} }}
+    <span ng-if="user.isAdmin"
+      >{{'TRAINER-CARD-DETAILS-CREATED-BY' | translate}}
+      <span ng-class="{true:'highlighted'}[session.createdByName !== username]"
+        >{{session.createdByName}}</span
+      >
+    </span>
+  </div>
+  <div class="line">
+    {{'TRAINER-CARD-DETAILS-SCENARIO' |
+    translate}}:&nbsp;{{session.gameModelName}}
+  </div>
+  <div ng-if="(session.gameModel.comments)" class="line line--optional">
+    {{session.gameModel.comments}}
+  </div>
 </div>
 <div class="card__actions">
-    <div class="card__actions__access"
-         ng-class="{true:'card__actions__access--open', false:'card__actions__access--close'}[open]">
-        <label
-            class="choice choice--toogle">
-            <div class="choice__box" title="{{(open ? 'TRAINER-CARD-ACCESS-OPEN' : 'TRAINER-CARD-ACCESS-CLOSE') | translate}}">
-                <input ng-model="open" ng-change="editAccess(session)" type="checkbox" />
-                <div class="choice__box__display"></div>
-            </div>
-        </label>
-        <div class="key-label" onClick="this.firstChild.select()" title="{{'TRAINER-CARD-KEY-ICON' | translate}}"><input type="text" id="token-{{session.id}}" class="key" value="{{session.token}}" placeholder="{{'PRIVATE-SESSIONS-ACCESS-KEY-PLACEHOLDER-INPUT' | translate}}" ng-model="session.token" ng-change="editToken(session)" autocomplete="off" spellcheck="false" /></div>
+  <div
+    class="card__actions__access"
+    ng-class="{true:'card__actions__access--open', false:'card__actions__access--close'}[open]"
+  >
+    <label class="choice choice--toogle">
+      <div
+        class="choice__box"
+        title="{{(open ? 'TRAINER-CARD-ACCESS-OPEN' : 'TRAINER-CARD-ACCESS-CLOSE') | translate}}"
+      >
+        <input
+          ng-model="open"
+          ng-change="editAccess(session)"
+          type="checkbox"
+        />
+        <div class="choice__box__display"></div>
+      </div>
+    </label>
+    <div
+      class="key-label"
+      onClick="this.firstChild.select()"
+      title="{{'TRAINER-CARD-KEY-ICON' | translate}}"
+    >
+      <input
+        type="text"
+        id="token-{{session.id}}"
+        class="key"
+        value="{{session.token}}"
+        placeholder="{{'PRIVATE-SESSIONS-ACCESS-KEY-PLACEHOLDER-INPUT' | translate}}"
+        ng-model="session.token"
+        ng-change="editToken(session)"
+        autocomplete="off"
+        spellcheck="false"
+      />
     </div>
-    <a class="button button--small button--round button--default-reverse button--label-off button--settings" title="{{'TRAINER-CARD-SETTINGS-BTN' | translate}}" ui-sref=".settings({id: session.id})">
-      <span class="button__label">{{'TRAINER-CARD-SETTINGS-BTN' | translate}}</span>
-    </a>
-    <a class="button button--small button--round button--default-reverse button--label-off button--user" title="{{'TRAINER-CARD-USERS-BTN' | translate}}" ui-sref=".users({id: session.id})">
-      <span class="button__label">{{'TRAINER-CARD-USERS-BTN' | translate}}</span>
-    </a>
-    <a  id="archive-{{session.id}}"
-        class="button button--small button--round button--default-reverse button--label-off button--archive" title="{{'TRAINER-CARD-MOVE-ARCHIVE-BTN' | translate}}" ng-click="archive(session)">
-      <span class="button__label">{{'TRAINER-CARD-MOVE-ARCHIVE-BTN' | translate}}</span>
-    </a>
-    <a class="button button--small button--round button--default button--label-off button--trainer action--button" title="{{'TRAINER-CARD-MONITORING-BTN' | translate}}" href="{{ServiceURL}}host.html?gameId={{session.id}}" target="_blank">
-      <span class="button__label">{{'TRAINER-CARD-MONITORING-BTN' | translate}}</span>
-    </a>
+  </div>
+  <a
+    class="button button--small button--round button--default-reverse button--label-off button--settings"
+    title="{{'TRAINER-CARD-SETTINGS-BTN' | translate}}"
+    ui-sref=".settings({id: session.id})"
+  >
+    <span class="button__label"
+      >{{'TRAINER-CARD-SETTINGS-BTN' | translate}}</span
+    >
+  </a>
+  <a
+    class="button button--small button--round button--default-reverse button--label-off button--user"
+    title="{{'TRAINER-CARD-USERS-BTN' | translate}}"
+    ui-sref=".users({id: session.id})"
+  >
+    <span class="button__label">{{'TRAINER-CARD-USERS-BTN' | translate}}</span>
+  </a>
+  <a
+    id="archive-{{session.id}}"
+    class="button button--small button--round button--default-reverse button--label-off button--archive"
+    title="{{'TRAINER-CARD-MOVE-ARCHIVE-BTN' | translate}}"
+    ng-click="archive(session)"
+  >
+    <span class="button__label"
+      >{{'TRAINER-CARD-MOVE-ARCHIVE-BTN' | translate}}</span
+    >
+  </a>
+  <a
+    class="button button--small button--round button--default button--label-off button--trainer action--button"
+    title="{{'TRAINER-CARD-MONITORING-BTN' | translate}}"
+    href="{{ServiceURL}}{{session.gameModel.uiversion > 1 ? session.gameModel.uiversion + '/': ''}}host.html?gameId={{session.id}}"
+    target="_blank"
+  >
+    <span class="button__label"
+      >{{'TRAINER-CARD-MONITORING-BTN' | translate}}</span
+    >
+  </a>
 </div>
