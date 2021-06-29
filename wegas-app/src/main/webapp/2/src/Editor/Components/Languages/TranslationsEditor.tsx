@@ -142,14 +142,21 @@ function TranslationView({
               return (
                 <div
                   key={language.id!}
-                  className={cx(flex, flexColumn, defaultMargin, inputStyle, defaultPadding, {
-                    [classNameOrEmpty(className)]: index === 0,
-                  })}
+                  className={cx(
+                    flex,
+                    flexColumn,
+                    defaultMargin,
+                    inputStyle,
+                    defaultPadding,
+                    {
+                      [classNameOrEmpty(className)]: index === 0,
+                    },
+                  )}
                 >
                   <div
                     className={cx(
-                    defaultMarginBottom,
-                    rowSpanStyle(selectedLanguages.length),
+                      defaultMarginBottom,
+                      rowSpanStyle(selectedLanguages.length),
                     )}
                   >
                     {k}
@@ -172,6 +179,17 @@ function TranslationView({
                       className={grow}
                       icon="outdent"
                       tooltip="Outdate other languages"
+                      onAction={success => {
+                        if (success) {
+                          LanguagesAPI.outdateTranslations(
+                            languageCode,
+                            v.id!,
+                            getValue(translation, k, languageCode),
+                          ).then(res => {
+                            store.dispatch(manageResponseHandler(res));
+                          });
+                        }
+                      }}
                     />
                     <Toggler
                       value={
@@ -264,7 +282,10 @@ function LanguagesVisitor({
           depthMarginStyle(depth),
         )}
       >
-        <IconComp icon={withDefault(getIcon(item), 'question')} className={css({marginRight: '5px'})} />
+        <IconComp
+          icon={withDefault(getIcon(item), 'question')}
+          className={css({ marginRight: '5px' })}
+        />
         {editorLabel(item)}
         {variableIsList(item) && (
           <IconButton
@@ -276,7 +297,7 @@ function LanguagesVisitor({
       <TranslationView
         variableId={item.id!}
         selectedLanguages={selectedLanguages}
-        className= {cx(depthMarginStyle(depth), defaultMarginTop)}
+        className={cx(depthMarginStyle(depth), defaultMarginTop)}
       />
       {show &&
         variableIsList(item) &&
@@ -326,7 +347,7 @@ function TranslationHeader({
   return (
     <div
       className={cx(flex, flexRow, {
-        [defaultMarginLeft]: index > 0
+        [defaultMarginLeft]: index > 0,
       })}
     >
       <h3>{languageLabel(language)}</h3>
