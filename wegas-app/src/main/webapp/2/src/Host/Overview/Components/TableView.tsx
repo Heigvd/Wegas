@@ -1,13 +1,13 @@
 import * as React from 'react';
 import {
   componentOrRawHTML,
-  ReactTransformer,
+  ReactFormatter,
   TrainerComponentKey,
 } from './components';
 
 interface TableViewProps<K extends TrainerComponentKey> {
-  header: (string | ReactTransformer<K>)[];
-  content: (string | ReactTransformer<K>)[][];
+  header: (string | ReactFormatter<K>)[];
+  content: (string | ReactFormatter<K>)[][];
 }
 
 export function TableView<K extends TrainerComponentKey>({
