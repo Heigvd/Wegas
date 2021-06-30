@@ -144,12 +144,11 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         vd.merge(entity);
 
         /*
-         * This flush is required by several EntityRevivedEvent listener,
-         * which opperate some SQL queries (which didn't return anything before
-         * entites have been flushed to database
+         * This flush is required by several EntityRevivedEvent listener, which opperate some SQL
+         * queries (which didn't return anything before entites have been flushed to database
          *
-         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
-         * it will not return any result if this flush not occurs
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name, it will not
+         * return any result if this flush not occurs
          */
         this.getEntityManager().flush();
 
@@ -174,7 +173,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
         return query.getResultList();
     }
-
 
     public List<VariableDescriptor> getReadableChildren(ListDescriptor list) {
         TypedQuery<VariableDescriptor> query = getEntityManager().createNamedQuery(
@@ -223,7 +221,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             // still no name but a tag
             entity.setName(entity.getEditorTag());
         }
- 
+
         Map<String, String> newNames = Helper.setUniqueName(entity, usedNames, gameModel, resetNames);
 
         // some impacts may impact renamed variable. -> update them to impact the new variable name
@@ -243,12 +241,11 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         list.addItem(entity);
 
         /*
-         * This flush is required by several EntityRevivedEvent listener,
-         * which opperate some SQL queries (which didn't return anything before
-         * entites have been flushed to database
+         * This flush is required by several EntityRevivedEvent listener, which opperate some SQL
+         * queries (which didn't return anything before entites have been flushed to database
          *
-         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
-         * it will not return any result if this flush not occurs
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name, it will not
+         * return any result if this flush not occurs
          */
         this.getEntityManager().flush();
 
@@ -477,15 +474,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     public void create(final Long gameModelId, final VariableDescriptor variableDescriptor) {
         GameModel find = this.gameModelFacade.find(gameModelId);
         /*
-        for (Game g : find.getGames()) {
-            logger.error("Game {}",  g);
-            for (Team t : g.getTeams()) {
-                logger.error("  Team {} -> {}",  t, t.getStatus());
-                for (Player p : t.getPlayers()) {
-                    logger.error("    Player {} -> {}",  p, p.getStatus());
-                }
-            }
-        } // */
+         * for (Game g : find.getGames()) { logger.error("Game {}", g); for (Team t : g.getTeams())
+         * { logger.error(" Team {} -> {}", t, t.getStatus()); for (Player p : t.getPlayers()) {
+         * logger.error(" Player {} -> {}", p, p.getStatus()); } } } // */
         this.createChild(find, find, variableDescriptor, false, false);
     }
 
@@ -861,6 +852,26 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     }
 
     /**
+     * Is the given <code>item</cpde> an ancetor of <code>other</code>.
+     *
+     * @param item  a description
+     * @param other a DescriptorList
+     *
+     * @return true if item is an ancestor of other or if both equals
+     */
+    private boolean isAncestorOf(VariableDescriptor item, DescriptorListI<? extends VariableDescriptor> other) {
+        if (item != null && other != null) {
+            if (item.equals(other)) {
+                return true;
+            }
+            if (other instanceof VariableDescriptor) {
+                return isAncestorOf(item, ((VariableDescriptor<VariableInstance>) other).getParent());
+            }
+        }
+        return false;
+    }
+
+    /**
      *
      * @param descriptorId         id of the descriptor to move
      * @param targetListDescriptor new parent
@@ -873,8 +884,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         DescriptorListI from = vd.getParent();
 
         Visibility targetVisibility = targetListDescriptor instanceof ModelScoped ? ((ModelScoped) targetListDescriptor).getVisibility() : Visibility.INHERITED;
-
-        if (!vd.belongsToProtectedGameModel() || (vd.getVisibility() == ModelScoped.Visibility.PRIVATE)) {
+        if (from != null && targetListDescriptor != null
+            && !isAncestorOf(vd, targetListDescriptor)
+            && (!vd.belongsToProtectedGameModel() || (vd.getVisibility() == ModelScoped.Visibility.PRIVATE))) {
             if (!vd.belongsToProtectedGameModel() || targetVisibility != Visibility.INTERNAL) {
                 from.localRemove(vd);
                 targetListDescriptor.addItem(index, vd);
