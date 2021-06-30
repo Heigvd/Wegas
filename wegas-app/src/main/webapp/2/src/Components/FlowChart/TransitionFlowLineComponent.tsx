@@ -163,9 +163,14 @@ export function TransitionFlowLineComponent({
   readOnly,
   selected,
   position,
+  zoom,
 }: FlowLineComponentProps<TransitionFlowLine, StateProcess>) {
   return (
-    <CustomFlowLineComponent selected={selected} position={position}>
+    <CustomFlowLineComponent
+      selected={selected}
+      position={position}
+      zoom={zoom}
+    >
       <TransitionBox
         transition={flowline}
         onClick={e => onClick && onClick(e, startProcess, flowline)}

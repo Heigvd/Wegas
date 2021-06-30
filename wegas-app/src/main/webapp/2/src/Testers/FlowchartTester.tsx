@@ -42,6 +42,7 @@ export default function FlowChartTester() {
     <div className={cx(flex, expandBoth, flexColumn)}>
       <div style={{ height: '100%' }}>
         <FlowChart
+          title="Test flowchart"
           onConnect={wlog}
           onMove={wlog}
           onNew={wlog}

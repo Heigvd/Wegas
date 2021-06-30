@@ -40,6 +40,7 @@ export function useMouseEventDnd<T extends HTMLElement>(
   { onDragStart, onDrag, onDragEnd }: MouseDnDHandler,
   prenventClick?: boolean,
   disabled?: boolean,
+  zoom: number = 1,
 ) {
   const draggingTarget = React.useRef<T | null>(null);
   const draggingStarted = React.useRef(false);
@@ -63,12 +64,12 @@ export function useMouseEventDnd<T extends HTMLElement>(
         draggingTarget.current = target;
         const targetBox = target.getBoundingClientRect();
         const parentBox = target.parentElement?.getBoundingClientRect();
-        const x = targetBox.left - (parentBox?.left || 0);
-        const y = targetBox.top - (parentBox?.top || 0);
-        initialPosition.current = { x, y };
+        const x = (targetBox.left - (parentBox?.left || 0)) / zoom;
+        const y = (targetBox.top - (parentBox?.top || 0)) / zoom;
+        initialPosition.current = { x: x, y: y };
         clickPosition.current = {
-          x: e.clientX - targetBox.left,
-          y: e.clientY - targetBox.top,
+          x: (e.clientX - targetBox.left) / zoom,
+          y: (e.clientY - targetBox.top) / zoom,
         };
 
         // Create a ghost of the dragged element to avoid scroll bars to schrink when moving up or left
@@ -80,7 +81,7 @@ export function useMouseEventDnd<T extends HTMLElement>(
         onDragStart && onDragStart(e, initialPosition.current);
       }
     },
-    [disabled, onDragStart, ref],
+    [disabled, onDragStart, ref, zoom],
   );
   const onMouseMove = React.useCallback(
     (e: MouseEvent) => {
