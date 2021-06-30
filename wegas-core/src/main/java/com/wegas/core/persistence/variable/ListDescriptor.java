@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -133,7 +132,7 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
     @Override
     @JsonIgnore
     public List<VariableDescriptor> getReadableItems() {
-        if (this.beans.getRequestManager().isEditorView()) {
+        if (this.beans == null || this.beans.getRequestManager().isEditorView()) {
             return this.getItems();
         } else {
             return this.beans.getVariableDescriptorFacade().getReadableChildren(this);
