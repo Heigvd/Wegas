@@ -179,7 +179,7 @@ import org.slf4j.LoggerFactory;
 )
 @NamedQuery(
     name = "VariableDescriptor.findReadableByRootGameModelId",
-    query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId AND vd.isolation <> com.wegas.core.persistence.variable.VariableDescriptor.Isolation.HIDDEN"
+    query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.root AS gm WHERE gm.id = :gameModelId AND vd.isolation <> com.wegas.core.persistence.variable.VariableDescriptor.Isolation.HIDDEN"
 )
 @NamedQuery(
     name = "VariableDescriptor.findReadableByParentListId",
