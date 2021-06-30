@@ -2,13 +2,13 @@ import * as React from 'react';
 import { DropDown } from '../../../Components/DropDown';
 import {
   TrainerComponentKey,
-  ReactTransformer,
+  ReactFormatter,
   componentOrRawHTML,
 } from './components';
 
 interface TrainerDropMenuProps<K extends TrainerComponentKey> {
-  label: string | ReactTransformer<K>;
-  content: string | ReactTransformer<K>;
+  label: string | ReactFormatter<K>;
+  content: string | ReactFormatter<K>;
 }
 
 export function TrainerDropDown<K extends TrainerComponentKey>({

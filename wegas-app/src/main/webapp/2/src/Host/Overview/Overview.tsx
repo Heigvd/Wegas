@@ -116,7 +116,6 @@ export interface DataItem extends OverviewItem {
   kind: ValueKind;
   sortable?: boolean;
   formatter?: string;
-  transformer?: string;
   sortFn?: string;
   preventClick?: boolean;
 }
