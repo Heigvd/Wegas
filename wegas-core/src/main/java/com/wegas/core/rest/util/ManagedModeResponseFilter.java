@@ -83,7 +83,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 response.setEntity(exceptions.remove(0));
             }
             if (response.getEntity() != null) {
-                logger.warn("Problem : ", response.getEntity());
+                logger.warn("Problem : {}", response.getEntity());
             }
 
             exceptions.forEach(ex

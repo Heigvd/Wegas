@@ -89,6 +89,10 @@ public class EntityListener {
         if (o instanceof JCRClient) {
             this.injectJTABean((JCRClient) o);
         }
+        if (o instanceof AcceptInjection) {
+            AcceptInjection id = (AcceptInjection) o;
+            id.setBeanjection(getBeansjection());
+        }
     }
 
     @PostPersist
