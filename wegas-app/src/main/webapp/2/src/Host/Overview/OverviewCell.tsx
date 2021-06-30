@@ -7,7 +7,7 @@ import { themeVar } from '../../Components/Theme/ThemeVars';
 import {
   componentOrRawHTML,
   components,
-  ReactTransformer,
+  ReactFormatter,
 } from './Components/components';
 import {
   ActionItem,
@@ -48,9 +48,9 @@ export function OverviewCell({
   const [showPopup, setShowPopup] = React.useState(false);
 
   if (isDataItem(structure)) {
-    const { kind, formatter, transformer } = structure;
+    const { kind, formatter } = structure;
 
-    const view = formatter ? 'formatter' : transformer ? 'transformer' : kind;
+    const view = formatter ? 'formatter' : kind;
     const value = typeof data === 'object' ? data.body : data;
 
     switch (view) {
@@ -114,31 +114,12 @@ export function OverviewCell({
         );
       case 'formatter': {
         const formatterFunction = `return (${formatter})(data)`;
-        const formattedvalue = globals.Function(
-          'data',
-          formatterFunction,
-        )(data);
+        const formattedvalue: string | ReactFormatter<keyof typeof components> =
+          globals.Function('data', formatterFunction)(data);
 
         return (
           <td className={className} style={style} id={id}>
-            <div>
-              <HTMLText text={String(formattedvalue)} />
-            </div>
-          </td>
-        );
-      }
-      case 'transformer': {
-        const transformerFunction = `return (${transformer})(data)`;
-        const transformedvalue:
-          | string
-          | ReactTransformer<keyof typeof components> = globals.Function(
-          'data',
-          transformerFunction,
-        )(data);
-
-        return (
-          <td className={className} style={style} id={id}>
-            <div>{componentOrRawHTML(transformedvalue)}</div>
+            <div>{componentOrRawHTML(formattedvalue)}</div>
           </td>
         );
       }
