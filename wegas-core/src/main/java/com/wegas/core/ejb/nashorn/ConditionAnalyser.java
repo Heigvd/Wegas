@@ -77,7 +77,7 @@ public class ConditionAnalyser {
     }
 
     /**
-     * Parse given script and return all variable methods call.
+     * Parse given script and return all variable method calls
      *
      * @param condition the script to analyze
      *

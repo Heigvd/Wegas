@@ -198,9 +198,11 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                             VariableDescriptor variable = dep.getVariable();
                             //VariableInstance instance = variableDescriptorFacade.getInstance(dep, player);
                             if (dep.getScope() == DependencyScope.UNKNOWN) {
+                                // Unknown scope forces evaluation
                                 mustEval = true;
                                 break;
                             } else if (desc.contains(variable)) {
+                                // the deps has just been modified
                                 mustEval = true;
                                 break;
                             } else if (dep.getScope() == DependencyScope.CHILDREN) {
@@ -217,6 +219,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                             }
                         }
                         if (!mustEval) {
+                            // skip this transition and go to next one
                             continue;
                         }
                     }
@@ -272,6 +275,16 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                              * Loop prevention : that player already passed through this transiton
                              */
                             logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
+
+                            /*
+                             * FSM3 Breaking Change
+                             *
+                             * If the blocked transition depends on some variables, such a
+                             * transition will no longer be triggered at the next eval (even if the
+                             * condition is actually true) but will requires a dep updated to be
+                             * evaluated again.
+                             *
+                             */
                         } else {
                             requestManager.getEventCounter().acceptCurrent(smi);
                             passedTransitions.add(transition);
@@ -433,7 +446,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
      * If dependOnMode is automatic, parse transition script and rebuild the list of dependencies.
      *
      * @param gameModel  the gameModel
-     * @param transition the transition to analyse
+     * @param transition the transition to analyze
      */
     public void analyseTransition(GameModel gameModel, AbstractTransition transition) {
         if (transition.getDependsOnStrategy() == AbstractTransition.DependsOnStrategy.AUTO) {
@@ -519,10 +532,11 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
     }
 
     /**
-     * Register new dependency. If a dependency to the same variable already exists, it will update
-     * it scope to keep the mose wide-open (self &lt; children &lt; unknown).
+     * Update the <code>dep</code> it scope to keep the mose wide-open (self &lt; children &lt;
+     * unknown).
      *
-     * @param tDep
+     * @param dep   the dependency
+     * @param scope the scope
      */
     public void setScope(TransitionDependency dep, DependencyScope scope) {
         DependencyScope currentScope = dep.getScope();
@@ -541,6 +555,14 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
         }
     }
 
+    /**
+     * Go through all transitions of the statemachine and rebuild their dependencies.
+     * <p>
+     * If the stratefy is "automatic", try to understand on which variables the conditions depends.
+     *
+     * @param gameModel the gameModel
+     * @param vd        the stateMachine
+     */
     public void reviveStateMachine(GameModel gameModel, AbstractStateMachineDescriptor vd) {
         Collection<AbstractState> values = vd.getStates().values();
         values.forEach(state -> {
@@ -553,7 +575,8 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                         if (dep != null) {
                             tDep.setVariable(dep);
                         } else {
-                            logger.error("What ????");
+                            logger.error("Revive {}/{}/{}: povided dependencydoes not exists: {}",
+                                vd, state, transition, tDep);
                         }
                     } catch (WegasNoResultException ex) {
                         // no-op

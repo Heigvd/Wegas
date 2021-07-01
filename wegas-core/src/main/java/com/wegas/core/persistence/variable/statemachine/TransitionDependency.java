@@ -285,4 +285,12 @@ public class TransitionDependency extends AbstractEntity {
         }
 
     }
+
+    @Override
+    public String toString() {
+        return "TransitionDependency{" + "id=" + id
+            + ", transition=" + transition
+            + ", variable=" + getVariableName()
+            + ", scope=" + scope + '}';
+    }
 }
