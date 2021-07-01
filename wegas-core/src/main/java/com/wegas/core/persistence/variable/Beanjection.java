@@ -9,9 +9,11 @@
 package com.wegas.core.persistence.variable;
 
 import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
@@ -47,7 +49,11 @@ public class Beanjection implements Serializable {
 
     private QuestionDescriptorFacade questionDescriptorFacade;
 
+    private StateMachineFacade stateMachineFacade;
+
     private GameFacade gameFacade;
+
+    private RequestManager requestManager;
 
     public Beanjection() {
         // ensure to have an empty constructor
@@ -57,7 +63,8 @@ public class Beanjection implements Serializable {
         this.variableInstanceFacade = variableInstanceFacade;
     }
 
-    public Beanjection(VariableInstanceFacade variableInstanceFacade,
+    public Beanjection(RequestManager requestManager,
+        VariableInstanceFacade variableInstanceFacade,
         VariableDescriptorFacade variableDescriptorFacade,
         ResourceFacade resourceFacade,
         IterationFacade iterationFacade,
@@ -65,8 +72,10 @@ public class Beanjection implements Serializable {
         UserFacade userFacade,
         AccountFacade accountFacade,
         TeamFacade teamFacade,
-        QuestionDescriptorFacade questionDescriptorFacade, 
+        QuestionDescriptorFacade questionDescriptorFacade,
+        StateMachineFacade stateMachineFacade,
         GameFacade gameFacade) {
+        this.requestManager = requestManager;
         this.variableInstanceFacade = variableInstanceFacade;
         this.variableDescriptorFacade = variableDescriptorFacade;
         this.resourceFacade = resourceFacade;
@@ -76,7 +85,16 @@ public class Beanjection implements Serializable {
         this.accountFacade = accountFacade;
         this.teamFacade = teamFacade;
         this.questionDescriptorFacade = questionDescriptorFacade;
+        this.stateMachineFacade = stateMachineFacade;
         this.gameFacade = gameFacade;
+    }
+
+    public RequestManager getRequestManager() {
+        return requestManager;
+    }
+
+    public void setRequestManager(RequestManager requestManager) {
+        this.requestManager = requestManager;
     }
 
     public VariableInstanceFacade getVariableInstanceFacade() {
@@ -157,5 +175,13 @@ public class Beanjection implements Serializable {
 
     public GameFacade getGameFacade() {
         return gameFacade;
+    }
+
+    public StateMachineFacade getStateMachineFacade() {
+        return stateMachineFacade;
+    }
+
+    public void setStateMachineFacade(StateMachineFacade stateMachineFacade) {
+        this.stateMachineFacade = stateMachineFacade;
     }
 }

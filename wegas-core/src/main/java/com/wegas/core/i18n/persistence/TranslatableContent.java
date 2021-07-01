@@ -15,6 +15,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
@@ -370,10 +371,10 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
      * SECURITY
      */
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         Broadcastable owner = getOwner();
         if (owner != null) {
-            Collection<WegasPermission> perms = owner.getRequieredUpdatePermission();
+            Collection<WegasPermission> perms = owner.getRequieredUpdatePermission(context);
             perms.add(this.getParentGameModel().getAssociatedTranslatePermission(""));
             return perms;
         }
@@ -381,10 +382,10 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         Broadcastable owner = getOwner();
         if (owner != null) {
-            return owner.getRequieredReadPermission();
+            return owner.getRequieredReadPermission(context);
         }
 
         return null;

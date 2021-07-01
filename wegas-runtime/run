@@ -31,6 +31,7 @@ function show_help {
     echo "Usage: ./run [OPTIONS]"
     echo " -d NUM         number of populating daemon (default is ${NB_POPULATORS})"
     echo " -g             debug mode"
+    echo " -s DB_HOST     postgresql host (default is ${DB_HOST})"
     echo " -j JAVA_PATH   java path (default is ${JAVA_HOME})"
     echo " -m HEAP        heap size (default is ${HEAP})"
     echo " -p PORT        debug port (default is ${DEBUG_PORT})"
@@ -41,7 +42,7 @@ function show_help {
 # A POSIX variable
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
-while getopts "h?gm:t:d:p:w:j:" opt; do
+while getopts "h?gm:t:d:p:w:j:s:" opt; do
     case "$opt" in
     h|\?)
         show_help
@@ -50,6 +51,8 @@ while getopts "h?gm:t:d:p:w:j:" opt; do
     d)  NB_POPULATORS=$OPTARG
         ;;
     g)  DEBUG="true"
+        ;;
+    s)  DB_HOST=$OPTARG
         ;;
     j)  JAVA_HOME=$OPTARG
         ;;
@@ -71,6 +74,7 @@ if [ ${DEBUG} == "true" ]; then
     echo DEBUG_PORT ${DEBUG_PORT}
 fi
 
+echo DB_HOST ${DB_HOST}
 echo HEAP ${HEAP}
 echo WAR ${THE_WAR}
 

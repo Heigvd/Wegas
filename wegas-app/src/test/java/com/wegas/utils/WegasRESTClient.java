@@ -378,6 +378,7 @@ public class WegasRESTClient {
         HttpResponse response = client.execute(post);
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+            EntityUtils.consume(response.getEntity());
             throw WegasErrorMessage.error("POST failed");
         }
 

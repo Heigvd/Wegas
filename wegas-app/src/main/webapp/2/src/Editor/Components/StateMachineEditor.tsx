@@ -148,25 +148,26 @@ export function StateMachineEditor<
 
   const createTransition: (nextStateId: number, index: number) => TTransition =
     React.useCallback(
-      (nextStateId, index) => {
-        return {
-          ...{
-            version: 0,
-            nextStateId,
-            preStateImpact: createScript(),
-            triggerCondition: createScript(),
-            index,
-          },
-          ...(entityIs(stateMachine, 'FSMDescriptor')
-            ? { '@class': 'Transition', label: '' }
-            : {
-                '@class': 'DialogueTransition',
-                actionText: createTranslatableContent(lang),
-              }),
-        };
-      },
-      [lang, stateMachine],
-    );
+    (nextStateId, index) => {
+      return {
+        ...{
+          version: 0,
+          nextStateId,
+          preStateImpact: createScript(),
+          triggerCondition: createScript(),
+          dependencies: [],
+          index,
+        },
+        ...(entityIs(stateMachine, 'FSMDescriptor')
+          ? { '@class': 'Transition', label: '' }
+          : {
+              '@class': 'DialogueTransition',
+              actionText: createTranslatableContent(lang),
+            }),
+      };
+    },
+    [lang, stateMachine],
+  );
 
   const connectState = React.useCallback(
     (

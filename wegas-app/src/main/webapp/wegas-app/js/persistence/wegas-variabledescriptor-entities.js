@@ -231,6 +231,30 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         ATTRS: {
             version: VERSION_ATTR_DEF,
             visibility: Wegas.persistence.Entity.ATTRS_DEF.VISIBILITY,
+            isolation: {
+                value: "OPEN",
+                index: -3,
+                view: {
+                    type: SELECT,
+                    layout: 'shortInline',
+                    choices: [
+                        {
+                            value: 'OPEN',
+                            label: 'None'
+                        },
+                        {
+                            value: 'SECURED',
+                            label: 'Secured'
+                        },
+                        {
+                            value: 'HIDDEN',
+                            label: 'Hidden'
+                        }
+                    ],
+                    className: 'wegas-advanced-feature',
+                    label: 'Variable isolation'
+                }
+            },
             comments: {
                 type: ['null', STRING],
                 index: 100,

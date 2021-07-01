@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
@@ -650,23 +651,23 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         return WegasPermission.getAsCollection(this.getAssociatedWritePermission());
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         return WegasPermission.getAsCollection(this.getAssociatedReadPermission());
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
         // Only trainer can create games
         return WegasMembership.TRAINER;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredDeletePermission() {
+    public Collection<WegasPermission> getRequieredDeletePermission(RequestContext context) {
         return WegasMembership.ADMIN;
     }
 
