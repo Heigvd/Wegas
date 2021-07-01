@@ -11,30 +11,30 @@ export const components = {
 export type TrainerComponent = typeof components;
 export type TrainerComponentKey = keyof TrainerComponent;
 
-export interface ReactTransformer<K extends TrainerComponentKey> {
+export interface ReactFormatter<K extends TrainerComponentKey> {
   component: K;
   props: Parameters<TrainerComponent[K]>[0];
 }
 
-export function transformerIsReact<K extends TrainerComponentKey>(
-  transformerOutput: string | ReactTransformer<K>,
-): transformerOutput is ReactTransformer<K> {
+export function formatterIsReact<K extends TrainerComponentKey>(
+  formatterOutput: string | ReactFormatter<K>,
+): formatterOutput is ReactFormatter<K> {
   return (
-    typeof transformerOutput === 'object' &&
-    'component' in transformerOutput &&
-    Object.keys(components).includes(transformerOutput.component)
+    typeof formatterOutput === 'object' &&
+    'component' in formatterOutput &&
+    Object.keys(components).includes(formatterOutput.component)
   );
 }
 
 export function componentOrRawHTML<K extends TrainerComponentKey>(
-  transformerOutput: string | ReactTransformer<K>,
+  formatterOutput: string | ReactFormatter<K>,
 ) {
-  if (transformerIsReact(transformerOutput)) {
+  if (formatterIsReact(formatterOutput)) {
     const TrainerComponent = components[
-      transformerOutput.component
+      formatterOutput.component
     ] as React.FunctionComponent<{}>;
-    return <TrainerComponent {...(transformerOutput.props as {})} />;
+    return <TrainerComponent {...(formatterOutput.props as {})} />;
   } else {
-    return <HTMLText text={transformerOutput} />;
+    return <HTMLText text={formatterOutput} />;
   }
 }
