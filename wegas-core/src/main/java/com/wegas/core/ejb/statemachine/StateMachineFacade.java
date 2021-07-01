@@ -565,7 +565,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
     /**
      * Go through all transitions of the statemachine and rebuild their dependencies.
      * <p>
-     * If the stratefy is "automatic", try to understand on which variables the conditions depends.
+     * If the strategy is "automatic", try to understand which variables the conditions depends on.
      *
      * @param gameModel the gameModel
      * @param vd        the stateMachine

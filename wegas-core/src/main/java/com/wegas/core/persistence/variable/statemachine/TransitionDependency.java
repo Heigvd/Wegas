@@ -13,6 +13,7 @@ import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.AbstractEntity;
@@ -201,8 +202,8 @@ public class TransitionDependency extends AbstractEntity {
      * @return permsission required to update the dependency
      */
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getTransition().getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        return this.getTransition().getRequieredUpdatePermission(context);
     }
 
     /**
@@ -211,8 +212,8 @@ public class TransitionDependency extends AbstractEntity {
      * @return permsission required to read the dependency
      */
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getTransition().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return this.getTransition().getRequieredReadPermission(context);
     }
 
     /**
