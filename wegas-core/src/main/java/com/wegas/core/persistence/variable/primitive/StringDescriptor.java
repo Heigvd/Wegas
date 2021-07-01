@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable.primitive;
 
 import ch.albasim.wegas.annotations.CommonView;
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.IMergeable;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
@@ -200,7 +201,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      * @return value of player instance
      */
     @Override
-    @Scriptable(label = "value")
+    @Scriptable(label = "value", dependsOn = DependencyScope.SELF)
     public String getValue(Player p) {
         return this.getInstance(p).getValue();
     }
@@ -220,7 +221,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      * @param p
      * @param value
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void setValue(Player p,
         @Param(view = @View(label = "", value = I18nStringView.class)) TranslatableContent value) {
         this.getInstance(p).setValue(value);
@@ -242,7 +243,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      *
      * @return
      */
-    @Scriptable(label = "number of selected values")
+    @Scriptable(label = "number of selected values", dependsOn = DependencyScope.SELF)
     public int countSelectedValues(Player p) {
         StringInstance instance = this.getInstance(p);
 
@@ -259,7 +260,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      *
      * @return position of the value or null if value not present
      */
-    @Scriptable(label = "position of value, starting at 1", nullable = true)
+    @Scriptable(label = "position of value, starting at 1", nullable = true, dependsOn = DependencyScope.SELF)
     public Integer getPositionOfValue(Player p,
         @Param(view = @View(label = "", value = EntityArrayFiledSelect.StringAllowedValuesSelect.class)) String value) {
         StringInstance instance = this.getInstance(p);
@@ -280,7 +281,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      *
      * @return
      */
-    @Scriptable(label = "selected value is")
+    @Scriptable(label = "selected value is", dependsOn = DependencyScope.SELF)
     public boolean isValueSelected(Player p,
         @Param(view = @View(label = "", value = EntityArrayFiledSelect.StringAllowedValuesSelect.class)) String value) {
         StringInstance instance = this.getInstance(p);
@@ -312,7 +313,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      *
      * @return
      */
-    @Scriptable(label = "selected values are")
+    @Scriptable(label = "selected values are", dependsOn = DependencyScope.SELF)
     public boolean areSelectedValues(Player p,
         @Param(
             schema = JSONArrayOfAllowedValues.class,
@@ -353,7 +354,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      *
      * @return
      */
-    @Scriptable(label = "value is not selected")
+    @Scriptable(label = "value is not selected", dependsOn = DependencyScope.SELF)
     public boolean isNotSelectedValue(Player p,
         @Param(view = @View(label = "", value = EntityArrayFiledSelect.StringAllowedValuesSelect.class)) String value) {
         return !this.isValueSelected(p, value);

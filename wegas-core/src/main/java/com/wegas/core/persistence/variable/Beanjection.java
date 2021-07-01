@@ -13,6 +13,7 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
@@ -48,6 +49,8 @@ public class Beanjection implements Serializable {
 
     private QuestionDescriptorFacade questionDescriptorFacade;
 
+    private StateMachineFacade stateMachineFacade;
+
     private GameFacade gameFacade;
 
     private RequestManager requestManager;
@@ -70,6 +73,7 @@ public class Beanjection implements Serializable {
         AccountFacade accountFacade,
         TeamFacade teamFacade,
         QuestionDescriptorFacade questionDescriptorFacade,
+        StateMachineFacade stateMachineFacade,
         GameFacade gameFacade) {
         this.requestManager = requestManager;
         this.variableInstanceFacade = variableInstanceFacade;
@@ -81,6 +85,7 @@ public class Beanjection implements Serializable {
         this.accountFacade = accountFacade;
         this.teamFacade = teamFacade;
         this.questionDescriptorFacade = questionDescriptorFacade;
+        this.stateMachineFacade = stateMachineFacade;
         this.gameFacade = gameFacade;
     }
 
@@ -170,5 +175,13 @@ public class Beanjection implements Serializable {
 
     public GameFacade getGameFacade() {
         return gameFacade;
+    }
+
+    public StateMachineFacade getStateMachineFacade() {
+        return stateMachineFacade;
+    }
+
+    public void setStateMachineFacade(StateMachineFacade stateMachineFacade) {
+        this.stateMachineFacade = stateMachineFacade;
     }
 }

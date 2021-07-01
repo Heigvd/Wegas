@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -143,10 +142,7 @@ public class RequestManager implements RequestManagerI {
         INTERNAL_SCRIPT
     }
 
-    /*
-    @Resource
-    private TransactionSynchronizationRegistry txReg;
-     */
+    // @Resource private TransactionSynchronizationRegistry txReg;
     @Inject
     private ConcurrentHelper concurrentHelper;
 
@@ -204,7 +200,7 @@ public class RequestManager implements RequestManagerI {
     /**
      * SL4j Logger
      */
-    private static Logger logger = LoggerFactory.getLogger(RequestManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(RequestManager.class);
 
     /**
      * Default request env is {@link RequestEnvironment#STD}
@@ -306,30 +302,34 @@ public class RequestManager implements RequestManagerI {
     /**
      * List of all updated gameModelContent
      */
-    private List<GameModelContent> updatedGameModelContent = new ArrayList<>();
+    private final List<GameModelContent> updatedGameModelContent = new ArrayList<>();
 
     /**
      * Contains all updated entities
      */
-    private Set<AbstractEntity> updatedEntities = new HashSet<>();
+    private final Set<AbstractEntity> updatedEntities = new HashSet<>();
+    /**
+     * List of just updated entities
+     */
+    private final Set<AbstractEntity> justUpdatedEntities = new HashSet<>();
 
     /**
      * List of entities which have been deleted during the request
      */
-    private Set<AbstractEntity> destroyedEntities = new HashSet<>();
+    private final Set<AbstractEntity> destroyedEntities = new HashSet<>();
 
     /**
      * Contains all permission already granted to the current user during the request
      */
-    private Collection<WegasPermission> grantedPermissions = new HashSet<>();
+    private final Collection<WegasPermission> grantedPermissions = new HashSet<>();
 
     /**
-     * List of shiro permissions current user has at the begining of the request
+     * List of shiro permissions current user has at the beginning of the request
      */
     private Collection<String> effectiveDBPermissions;
 
     /**
-     * List of shiro permissions current user has at the begining of the request
+     * List of shiro permissions current user has at the beginning of the request
      */
     private Collection<String> degradedDBPermissions;
 
@@ -346,7 +346,7 @@ public class RequestManager implements RequestManagerI {
     /**
      * event to propagate to request client
      */
-    private List<ClientEvent> events = new ArrayList<>();
+    private final List<ClientEvent> events = new ArrayList<>();
 
     /**
      * the current locale
@@ -447,16 +447,16 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Register entities as updatedEntities
+     * Register entities as a just updatedEntities
      *
      * @param entities entities to register
      */
     public void addUpdatedEntities(Set<AbstractEntity> entities) {
-        this.addEntities(entities, updatedEntities);
+        this.addEntities(entities, justUpdatedEntities);
     }
 
     public void addUpdatedEntity(AbstractEntity entity) {
-        this.addEntity(entity, updatedEntities);
+        this.addEntity(entity, justUpdatedEntities);
     }
 
     /**
@@ -523,7 +523,8 @@ public class RequestManager implements RequestManagerI {
         boolean add = true;
         if (container == destroyedEntities) {
             removeEntityFromContainer(updatedEntities, entity);
-        } else if (container == updatedEntities && destroyedEntities.contains(entity)) {
+            removeEntityFromContainer(justUpdatedEntities, entity);
+        } else if (destroyedEntities.contains(entity)) {
             add = false;
         }
 
@@ -626,7 +627,8 @@ public class RequestManager implements RequestManagerI {
 
         /*
          * When running requests as a player, one should never have more permissions than it needs
-         * Hence, we have to degrade permission to keep only those that are relevant to the player context
+         * Hence, we have to degrade permission to keep only those that are relevant to the player
+         * context
          */
         if (currentPlayer != null) {
             if (wasAdmin || hasRole("Administrator")) {
@@ -781,6 +783,7 @@ public class RequestManager implements RequestManagerI {
      * clear the updatedEntities container
      */
     public void clearUpdatedEntities() {
+        this.justUpdatedEntities.clear();
         this.updatedEntities.clear();
     }
 
@@ -812,10 +815,10 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
-    public Map<String, List<AbstractEntity>> getMappedUpdatedEntities() {
+    private Map<String, List<AbstractEntity>> mapEntities(Set<AbstractEntity> entities) {
         Map<String, List<AbstractEntity>> map = new HashMap<>();
 
-        for (AbstractEntity entity : updatedEntities) {
+        for (AbstractEntity entity : entities) {
             if (entity instanceof Broadcastable) {
                 addAll(map, ((Broadcastable) entity).getEntities());
             }
@@ -832,6 +835,15 @@ public class RequestManager implements RequestManagerI {
             }
         }
         return map;
+
+    }
+
+    public Map<String, List<AbstractEntity>> getMappedJustUpdatedEntities() {
+        return mapEntities(justUpdatedEntities);
+    }
+
+    public Map<String, List<AbstractEntity>> getMappedUpdatedEntities() {
+        return mapEntities(updatedEntities);
     }
 
     public Map<String, List<AbstractEntity>> getMappedDestroyedEntities() {
@@ -847,6 +859,14 @@ public class RequestManager implements RequestManagerI {
             }
         }
         return map;
+    }
+
+    /**
+     *
+     */
+    public void migrateUpdateEntities() {
+        this.addEntities(justUpdatedEntities, updatedEntities);
+        justUpdatedEntities.clear();
     }
 
     /**
@@ -867,6 +887,31 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
+     * @return
+     */
+    public Map<String, List<AbstractEntity>> getAllMappedUpdatedEntities() {
+        return mapEntities(getAllUpdatedEntities());
+    }
+
+    /**
+     * @return
+     */
+    public Set<AbstractEntity> getAllUpdatedEntities() {
+        Set<AbstractEntity> all = new HashSet<>();
+        this.addEntities(updatedEntities, all);
+        this.addEntities(justUpdatedEntities, all);
+        return all;
+    }
+
+    /**
+     * @return
+     */
+    public Set<AbstractEntity> getJustUpdatedEntities() {
+        return justUpdatedEntities;
+    }
+
+    /**
+     *
      * clear the destroyedEntities container.
      */
     public void clearDestroyedEntities() {
@@ -1381,11 +1426,9 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
-    /*
-     ---------------------------------------------------------------------------
-     | Security
-     ---------------------------------------------------------------------------
-     */
+    //---------------------------------------------------------------------------
+    // Security
+    //---------------------------------------------------------------------------
     /**
      * Clear all granted wegas permissions and clear effective roles/DBPermissions
      */
@@ -1842,8 +1885,8 @@ public class RequestManager implements RequestManagerI {
         // null means no permission required
         if (permissions != null) {
             /*
-             * not null value means at least one permission from the list.
-             * Hence, empty string "" means forbidden, even for admin
+             * not null value means at least one permission from the list. Hence, empty string ""
+             * means forbidden, even for admin
              */
             for (WegasPermission perm : permissions) {
                 if (this.hasPermission(perm)) {
@@ -2106,7 +2149,7 @@ public class RequestManager implements RequestManagerI {
 
     /*
      * Assert the current user have write right on the game
-
+     *
      * @throw WegasAccessDenied
      */
     public void assertGameTrainer(final Game game) {

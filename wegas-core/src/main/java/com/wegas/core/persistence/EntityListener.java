@@ -12,6 +12,7 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.jcr.jta.JCRClient;
@@ -72,6 +73,9 @@ public class EntityListener {
     private QuestionDescriptorFacade questionDescriptorFacade;
 
     @Inject
+    private StateMachineFacade stateMachineFacade;
+
+    @Inject
     private TeamFacade teamFacade;
 
     @Inject
@@ -80,7 +84,7 @@ public class EntityListener {
     private Beanjection getBeansjection() {
         return new Beanjection(requestManager, variableInstanceFacade, variableDescriptorFacade,
             resourceFacade, iterationFacade, reviewingFacade, userFacade, accountFacade,
-            teamFacade, questionDescriptorFacade, gameFacade);
+            teamFacade, questionDescriptorFacade, stateMachineFacade, gameFacade);
     }
 
     @PrePersist

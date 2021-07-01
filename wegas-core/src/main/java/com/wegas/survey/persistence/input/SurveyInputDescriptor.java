@@ -7,6 +7,7 @@
  */
 package com.wegas.survey.persistence.input;
 
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
@@ -244,7 +245,7 @@ public abstract class SurveyInputDescriptor
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void activate(Player p) {
         this.getInstance(p).setActive(true);
     }
@@ -253,7 +254,7 @@ public abstract class SurveyInputDescriptor
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void deactivate(Player p) {
         this.getInstance(p).setActive(false);
     }
@@ -264,7 +265,7 @@ public abstract class SurveyInputDescriptor
      *
      * @return true if the player's survey is active
      */
-    @Scriptable(label = "is active")
+    @Scriptable(label = "is active", dependsOn = DependencyScope.SELF)
     public boolean isActive(Player p) {
         return this.getInstance(p).getActive();
     }
@@ -276,7 +277,7 @@ public abstract class SurveyInputDescriptor
      *
      * @return true if the player's survey is not active
      */
-    @Scriptable(label = "is not active")
+    @Scriptable(label = "is not active", dependsOn = DependencyScope.SELF)
     public boolean isNotActive(Player p) {
         return this.getInstance(p).getActive() == false;
     }

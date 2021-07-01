@@ -7,6 +7,7 @@
  */
 package com.wegas.mcq.persistence.wh;
 
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
@@ -91,7 +92,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      */
     @Override
     @JsonView(Views.ExportI.class)
-    @Scriptable(label = "getItems", wysiwyg = false)
+    @Scriptable(label = "getItems", wysiwyg = false, dependsOn = DependencyScope.CHILDREN)
     public List<VariableDescriptor> getItems() {
         return Helper.copyAndSortModifiable(this.items, new EntityComparators.OrderComparator<>());
     }
@@ -150,7 +151,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      *
      * @return the player instance active status
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean isActive(Player p) {
         WhQuestionInstance instance = this.getInstance(p);
         return instance.getActive();
@@ -160,7 +161,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void activate(Player p) {
         this.setActive(p, true);
     }
@@ -169,12 +170,12 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void deactivate(Player p) {
         this.setActive(p, false);
     }
 
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void reopen(Player p) {
         this.getInstance(p).setValidated(false);
     }
@@ -185,7 +186,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      *
      * @return true if the player has already answers this question
      */
-    @Scriptable(label = "has been replied")
+    @Scriptable(label = "has been replied", dependsOn = DependencyScope.SELF)
     public boolean isReplied(Player p) {
         WhQuestionInstance instance = this.getInstance(p);
         return instance.isValidated();
@@ -198,12 +199,12 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      *
      * @return true if the player has not yet answers this question
      */
-    @Scriptable(label = "has not been replied")
+    @Scriptable(label = "has not been replied", dependsOn = DependencyScope.SELF)
     public boolean isNotReplied(Player p) {
         return !this.isReplied(p);
     }
 
-    @Scriptable(label = "feedback")
+    @Scriptable(label = "feedback", dependsOn = DependencyScope.SELF)
     public String getFeedback(Player p) {
         return this.getInstance(p).getFeedback().translateOrEmpty(p);
     }
@@ -213,7 +214,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      * @param p
      * @param value
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void setFeedback(
         Player p,
         @Param(view = @View(label = "", value = I18nHtmlView.class)) TranslatableContent value) {
@@ -221,7 +222,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
     }
 
     /**
-     * Set feedbckFrom nashorn
+     * Set feedback from nashorn
      *
      * @param p
      * @param value
