@@ -17,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.google.common.base.Objects;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -44,6 +43,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -434,7 +434,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     @JsonIgnore
     public Player getUserLivePlayer(User user) {
         if (this.getStatus().equals(Status.LIVE)
-            && Objects.equal(this.user, user)) {
+            && Objects.equals(this.user, user)) {
             return this;
         } else {
             return null;
@@ -449,7 +449,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     public Player getUserLiveOrSurveyPlayer(User user) {
         if ((this.getStatus().equals(Status.LIVE)
             || this.getStatus().equals(Status.SURVEY))
-            && Objects.equal(this.user, user)) {
+            && Objects.equals(this.user, user)) {
             return this;
         } else {
             return null;
