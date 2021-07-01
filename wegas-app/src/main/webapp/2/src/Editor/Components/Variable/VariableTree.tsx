@@ -10,7 +10,7 @@ import { moveDescriptor } from '../../../data/Reducer/VariableDescriptorReducer'
 import {
   getEntityActions,
   getIcon,
-  getLabel,
+  getClassLabel,
   getChildren,
 } from '../../editionConfig';
 import { StoreDispatch, useStore, store } from '../../../data/Stores/store';
@@ -65,7 +65,7 @@ const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
         return (
           <>
             <IconComp icon={withDefault(getIcon(entity), 'question')} />
-            {getLabel(entity)}
+            {getClassLabel(entity)}
           </>
         );
       });

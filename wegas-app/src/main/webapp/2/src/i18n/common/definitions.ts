@@ -13,6 +13,8 @@ export interface CommonTranslations {
   reset: string;
   save: string;
   edit: string;
+  duplicate: string;
+  close: string;
   filter: string;
   empty: string;
   forceDelete: string;

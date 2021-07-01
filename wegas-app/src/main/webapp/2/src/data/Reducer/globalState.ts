@@ -80,7 +80,7 @@ export interface ActionsProps<T> {
   action: (entity: T, path?: (string | number)[]) => void;
   label: React.ReactNode;
   confirm?: boolean;
-  sorting: 'button' | 'toolbox' | 'close';
+  sorting: 'delete' | 'duplicate' | 'toolbox' | 'close';
 }
 
 //type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
@@ -470,7 +470,7 @@ export function editVariable(
             more: {
               duplicate: {
                 label: 'Duplicate',
-                sorting: 'toolbox',
+                sorting: 'duplicate',
                 action: (entity: IVariableDescriptor) => {
                   dispatch(
                     Actions.VariableDescriptorActions.duplicateDescriptor(
@@ -481,7 +481,7 @@ export function editVariable(
               },
               delete: {
                 label: 'Delete',
-                sorting: 'button',
+                sorting: 'delete',
                 action: (entity: IVariableDescriptor, path?: string[]) => {
                   dispatch(
                     Actions.VariableDescriptorActions.deleteDescriptor(
@@ -556,7 +556,7 @@ export function editStateMachine(
           more: {
             delete: {
                 label: 'Delete',
-                sorting: 'button',
+                sorting: 'delete',
                 confirm: true,
                 action: (entity: IFSMDescriptor, path?: string[]) => {
                   if (

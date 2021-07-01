@@ -15,6 +15,8 @@ export const commonTranslationsEN: CommonTranslations = {
   reset: 'Reset',
   save: 'Save',
   edit: 'Edit',
+  duplicate: 'Duplicate',
+  close: 'Close',
   filter: 'Filter',
   empty: 'Empty',
   forceDelete: 'Force delete',

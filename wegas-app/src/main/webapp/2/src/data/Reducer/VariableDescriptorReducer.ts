@@ -131,14 +131,14 @@ export function createDescriptor(
             more: {
               duplicate: {
                 label: 'duplicate',
-                sorting: 'toolbox',
+                sorting: 'duplicate',
                 action: (entity: IVariableDescriptor) => {
                   dispatch(duplicateDescriptor(entity));
                 },
               },
               delete: {
                 label: 'delete',
-                sorting: 'button',
+                sorting: 'delete',
                 action: (entity: IVariableDescriptor, path?: string[]) => {
                   dispatch(deleteDescriptor(entity, path));
                 },

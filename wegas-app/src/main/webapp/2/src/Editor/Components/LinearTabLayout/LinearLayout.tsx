@@ -23,21 +23,16 @@ import { commonTranslations } from '../../../i18n/common/common';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
-    backgroundColor: themeVar.colors.PrimaryColor,
+    backgroundColor: themeVar.colors.DisabledColor,
     zIndex: 1,
-  },
-  '&.reflex-container > .reflex-splitter:hover': {
-    backgroundColor: themeVar.colors.ActiveColor,
   },
   '&.reflex-container.vertical > .reflex-splitter': {
     width: '3px',
     border: 'none',
-    boxShadow: '2px 0 2px rgba(0, 0, 0, 0.25)',
   },
   '&.reflex-container.horizontal > .reflex-splitter': {
     height: '3px',
     border: 'none',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25)',
   },
   '&.reflex-container.vertical > .reflex-splitter:hover, &.reflex-container.horizontal > .reflex-splitter:hover':
     {
