@@ -163,7 +163,7 @@ interface IndexItemAdderProps extends LayoutButtonProps {
   path: string[];
 }
 
-function IndexItemAdder({
+export function IndexItemAdder({
   path,
   className,
   style,

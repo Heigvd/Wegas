@@ -7,8 +7,6 @@ export const commonTranslationsFR: CommonTranslations = {
   areYouSure: 'Êtes-vous sûr de vouloir continuer?',
   loading: 'Chargement',
   loadingFiles: 'Chargement des fichiers',
-  loadingPages:'Chargement des pages',
-  noSelectedPage: 'Aucune page sélectionnée',
   accept: 'Accepter',
   cancel: 'Annuler',
   delete: 'Supprimer',
@@ -19,11 +17,10 @@ export const commonTranslationsFR: CommonTranslations = {
   empty: 'Vide',
   forceDelete: 'Forcer à supprimer',
   buildingWorld: 'Le monde se construit!',
-  pageUndefined: 'La page n\'est pas définie',
   features: 'Fonctionnalités',
   header: {
     restartGame: 'Recommence le jeu (appliqué à tous les scénaristes)',
     resetLayout: 'Réinitialiser mise en page',
     notifications: 'Notifications',
-  }
+  },
 };
