@@ -146,7 +146,9 @@ export default function translatable<P extends EndProps>(
         ? props.value
         : createTranslatableContent(
             currentLanguage,
-            typeof props.value === 'string'
+            props.value == null
+              ? ''
+              : typeof props.value === 'string'
               ? props.value
               : JSON.stringify(props.value),
           );
