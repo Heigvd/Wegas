@@ -7,12 +7,14 @@
  */
 package com.wegas.survey.persistence.input;
 
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.WithPermission;
@@ -202,13 +204,13 @@ public abstract class SurveyInputDescriptor
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getMergeableParent().getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        return this.getMergeableParent().getRequieredUpdatePermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getMergeableParent().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return this.getMergeableParent().getRequieredReadPermission(context);
     }
 
     @Override
@@ -243,7 +245,7 @@ public abstract class SurveyInputDescriptor
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void activate(Player p) {
         this.getInstance(p).setActive(true);
     }
@@ -252,7 +254,7 @@ public abstract class SurveyInputDescriptor
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void deactivate(Player p) {
         this.getInstance(p).setActive(false);
     }
@@ -263,7 +265,7 @@ public abstract class SurveyInputDescriptor
      *
      * @return true if the player's survey is active
      */
-    @Scriptable(label = "is active")
+    @Scriptable(label = "is active", dependsOn = DependencyScope.SELF)
     public boolean isActive(Player p) {
         return this.getInstance(p).getActive();
     }
@@ -275,7 +277,7 @@ public abstract class SurveyInputDescriptor
      *
      * @return true if the player's survey is not active
      */
-    @Scriptable(label = "is not active")
+    @Scriptable(label = "is not active", dependsOn = DependencyScope.SELF)
     public boolean isNotActive(Player p) {
         return this.getInstance(p).getActive() == false;
     }

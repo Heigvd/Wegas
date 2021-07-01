@@ -15,6 +15,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
@@ -377,12 +378,12 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getTaskInstance().getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        return this.getTaskInstance().getRequieredUpdatePermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getTaskInstance().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return this.getTaskInstance().getRequieredReadPermission(context);
     }
 }

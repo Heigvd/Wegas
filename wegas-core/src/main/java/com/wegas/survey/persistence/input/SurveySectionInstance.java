@@ -35,7 +35,6 @@ public class SurveySectionInstance extends VariableInstance {
         // ensure there is an empty constructor
     }
 
-    
     /**
      * @return the active
      */

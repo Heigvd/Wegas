@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -40,6 +39,7 @@ import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.ActAsPlayer;
+import com.wegas.core.security.util.ScriptExecutionContext;
 import com.wegas.core.security.util.Sudoer;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasIsTeamMate;
@@ -134,10 +134,15 @@ public class RequestManager implements RequestManagerI {
         INTERNAL
     }
 
-    /*
-    @Resource
-    private TransactionSynchronizationRegistry txReg;
+    /**
+     * What kind of script is being executed
      */
+    public enum RequestContext {
+        EXTERNAL,
+        INTERNAL_SCRIPT
+    }
+
+    // @Resource private TransactionSynchronizationRegistry txReg;
     @Inject
     private ConcurrentHelper concurrentHelper;
 
@@ -195,12 +200,14 @@ public class RequestManager implements RequestManagerI {
     /**
      * SL4j Logger
      */
-    private static Logger logger = LoggerFactory.getLogger(RequestManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(RequestManager.class);
 
     /**
      * Default request env is {@link RequestEnvironment#STD}
      */
     private RequestEnvironment env = RequestEnvironment.STD;
+
+    private RequestContext currentContext = RequestContext.EXTERNAL;
 
     /**
      * Default view is {@link Views.Public}
@@ -295,30 +302,34 @@ public class RequestManager implements RequestManagerI {
     /**
      * List of all updated gameModelContent
      */
-    private List<GameModelContent> updatedGameModelContent = new ArrayList<>();
+    private final List<GameModelContent> updatedGameModelContent = new ArrayList<>();
 
     /**
      * Contains all updated entities
      */
-    private Set<AbstractEntity> updatedEntities = new HashSet<>();
+    private final Set<AbstractEntity> updatedEntities = new HashSet<>();
+    /**
+     * List of just updated entities
+     */
+    private final Set<AbstractEntity> justUpdatedEntities = new HashSet<>();
 
     /**
      * List of entities which have been deleted during the request
      */
-    private Set<AbstractEntity> destroyedEntities = new HashSet<>();
+    private final Set<AbstractEntity> destroyedEntities = new HashSet<>();
 
     /**
      * Contains all permission already granted to the current user during the request
      */
-    private Collection<WegasPermission> grantedPermissions = new HashSet<>();
+    private final Collection<WegasPermission> grantedPermissions = new HashSet<>();
 
     /**
-     * List of shiro permissions current user has at the begining of the request
+     * List of shiro permissions current user has at the beginning of the request
      */
     private Collection<String> effectiveDBPermissions;
 
     /**
-     * List of shiro permissions current user has at the begining of the request
+     * List of shiro permissions current user has at the beginning of the request
      */
     private Collection<String> degradedDBPermissions;
 
@@ -335,7 +346,7 @@ public class RequestManager implements RequestManagerI {
     /**
      * event to propagate to request client
      */
-    private List<ClientEvent> events = new ArrayList<>();
+    private final List<ClientEvent> events = new ArrayList<>();
 
     /**
      * the current locale
@@ -410,16 +421,42 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Register entities as updatedEntities
+     * Get the current script context
+     *
+     * @return current script context
+     */
+    public RequestContext getCurrentContext() {
+        return currentContext;
+    }
+
+    /**
+     * Change the script context
+     *
+     * @param currentContext new script context
+     */
+    public void setCurrentContext(RequestContext currentContext) {
+        this.currentContext = currentContext;
+    }
+
+    public ScriptExecutionContext switchToInternalExecContext(boolean doFLush) {
+        return new ScriptExecutionContext(this, RequestManager.RequestContext.INTERNAL_SCRIPT, doFLush);
+    }
+
+    public ScriptExecutionContext switchToExternalExecContext(boolean doFLush) {
+        return new ScriptExecutionContext(this, RequestManager.RequestContext.EXTERNAL, doFLush);
+    }
+
+    /**
+     * Register entities as a just updatedEntities
      *
      * @param entities entities to register
      */
     public void addUpdatedEntities(Set<AbstractEntity> entities) {
-        this.addEntities(entities, updatedEntities);
+        this.addEntities(entities, justUpdatedEntities);
     }
 
     public void addUpdatedEntity(AbstractEntity entity) {
-        this.addEntity(entity, updatedEntities);
+        this.addEntity(entity, justUpdatedEntities);
     }
 
     /**
@@ -486,7 +523,8 @@ public class RequestManager implements RequestManagerI {
         boolean add = true;
         if (container == destroyedEntities) {
             removeEntityFromContainer(updatedEntities, entity);
-        } else if (container == updatedEntities && destroyedEntities.contains(entity)) {
+            removeEntityFromContainer(justUpdatedEntities, entity);
+        } else if (destroyedEntities.contains(entity)) {
             add = false;
         }
 
@@ -589,7 +627,8 @@ public class RequestManager implements RequestManagerI {
 
         /*
          * When running requests as a player, one should never have more permissions than it needs
-         * Hence, we have to degrade permission to keep only those that are relevant to the player context
+         * Hence, we have to degrade permission to keep only those that are relevant to the player
+         * context
          */
         if (currentPlayer != null) {
             if (wasAdmin || hasRole("Administrator")) {
@@ -744,6 +783,7 @@ public class RequestManager implements RequestManagerI {
      * clear the updatedEntities container
      */
     public void clearUpdatedEntities() {
+        this.justUpdatedEntities.clear();
         this.updatedEntities.clear();
     }
 
@@ -775,10 +815,10 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
-    public Map<String, List<AbstractEntity>> getMappedUpdatedEntities() {
+    private Map<String, List<AbstractEntity>> mapEntities(Set<AbstractEntity> entities) {
         Map<String, List<AbstractEntity>> map = new HashMap<>();
 
-        for (AbstractEntity entity : updatedEntities) {
+        for (AbstractEntity entity : entities) {
             if (entity instanceof Broadcastable) {
                 addAll(map, ((Broadcastable) entity).getEntities());
             }
@@ -795,6 +835,15 @@ public class RequestManager implements RequestManagerI {
             }
         }
         return map;
+
+    }
+
+    public Map<String, List<AbstractEntity>> getMappedJustUpdatedEntities() {
+        return mapEntities(justUpdatedEntities);
+    }
+
+    public Map<String, List<AbstractEntity>> getMappedUpdatedEntities() {
+        return mapEntities(updatedEntities);
     }
 
     public Map<String, List<AbstractEntity>> getMappedDestroyedEntities() {
@@ -810,6 +859,14 @@ public class RequestManager implements RequestManagerI {
             }
         }
         return map;
+    }
+
+    /**
+     *
+     */
+    public void migrateUpdateEntities() {
+        this.addEntities(justUpdatedEntities, updatedEntities);
+        justUpdatedEntities.clear();
     }
 
     /**
@@ -830,6 +887,31 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
+     * @return
+     */
+    public Map<String, List<AbstractEntity>> getAllMappedUpdatedEntities() {
+        return mapEntities(getAllUpdatedEntities());
+    }
+
+    /**
+     * @return
+     */
+    public Set<AbstractEntity> getAllUpdatedEntities() {
+        Set<AbstractEntity> all = new HashSet<>();
+        this.addEntities(updatedEntities, all);
+        this.addEntities(justUpdatedEntities, all);
+        return all;
+    }
+
+    /**
+     * @return
+     */
+    public Set<AbstractEntity> getJustUpdatedEntities() {
+        return justUpdatedEntities;
+    }
+
+    /**
+     *
      * clear the destroyedEntities container.
      */
     public void clearDestroyedEntities() {
@@ -931,6 +1013,10 @@ public class RequestManager implements RequestManagerI {
      */
     public void setView(Class view) {
         this.view = view;
+    }
+
+    public boolean isEditorView(){
+        return Views.EditorI.class.isAssignableFrom(this.view);
     }
 
     /**
@@ -1340,11 +1426,9 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
-    /*
-     ---------------------------------------------------------------------------
-     | Security
-     ---------------------------------------------------------------------------
-     */
+    //---------------------------------------------------------------------------
+    // Security
+    //---------------------------------------------------------------------------
     /**
      * Clear all granted wegas permissions and clear effective roles/DBPermissions
      */
@@ -1801,8 +1885,8 @@ public class RequestManager implements RequestManagerI {
         // null means no permission required
         if (permissions != null) {
             /*
-             * not null value means at least one permission from the list.
-             * Hence, empty string "" means forbidden, even for admin
+             * not null value means at least one permission from the list. Hence, empty string ""
+             * means forbidden, even for admin
              */
             for (WegasPermission perm : permissions) {
                 if (this.hasPermission(perm)) {
@@ -1846,7 +1930,7 @@ public class RequestManager implements RequestManagerI {
      * @throws WegasAccessDenied currentUser do NOT have the permission
      */
     public void assertCreateRight(WithPermission entity) {
-        this.assertUserHasPermission(entity.getRequieredCreatePermission(), "Create", entity);
+        this.assertUserHasPermission(entity.getRequieredCreatePermission(this.currentContext), "Create", entity);
     }
 
     /**
@@ -1857,7 +1941,7 @@ public class RequestManager implements RequestManagerI {
      * @throws WegasAccessDenied currentUser do NOT have the permission
      */
     public void assertReadRight(WithPermission entity) {
-        this.assertUserHasPermission(entity.getRequieredReadPermission(), "Read", entity);
+        this.assertUserHasPermission(entity.getRequieredReadPermission(this.currentContext), "Read", entity);
     }
 
     /**
@@ -1868,7 +1952,7 @@ public class RequestManager implements RequestManagerI {
      * @throws WegasAccessDenied currentUser do NOT have the permission
      */
     public void assertUpdateRight(WithPermission entity) {
-        this.assertUserHasPermission(entity.getRequieredUpdatePermission(), "Update", entity);
+        this.assertUserHasPermission(entity.getRequieredUpdatePermission(this.currentContext), "Update", entity);
     }
 
     /**
@@ -1879,7 +1963,7 @@ public class RequestManager implements RequestManagerI {
      * @throws WegasAccessDenied currentUser do NOT have the permission
      */
     public void assertDeleteRight(WithPermission entity) {
-        this.assertUserHasPermission(entity.getRequieredDeletePermission(), "Delete", entity);
+        this.assertUserHasPermission(entity.getRequieredDeletePermission(this.getCurrentContext()), "Delete", entity);
     }
 
     /*
@@ -2043,11 +2127,19 @@ public class RequestManager implements RequestManagerI {
                     // e.g. private-Role-Administrator
                     return this.isMemberOf(new WegasMembership(m.group(4)));
                 } else {
-                    return this.hasEntityPermission(
-                        new WegasEntityPermission(
-                            Long.parseLong(m.group(4)),
-                            WegasEntityPermission.Level.READ,
-                            WegasEntityPermission.EntityType.valueOf(m.group(3).toUpperCase())));
+                    if ("GameModelEditor".equals(m.group(3))) {
+                        return this.hasEntityPermission(
+                            new WegasEntityPermission(
+                                Long.parseLong(m.group(4)),
+                                WegasEntityPermission.Level.WRITE,
+                                WegasEntityPermission.EntityType.GAMEMODEL));
+                    } else {
+                        return this.hasEntityPermission(
+                            new WegasEntityPermission(
+                                Long.parseLong(m.group(4)),
+                                WegasEntityPermission.Level.READ,
+                                WegasEntityPermission.EntityType.valueOf(m.group(3).toUpperCase())));
+                    }
                 }
             }
         }
@@ -2057,12 +2149,12 @@ public class RequestManager implements RequestManagerI {
 
     /*
      * Assert the current user have write right on the game
-
+     *
      * @throw WegasAccessDenied
      */
     public void assertGameTrainer(final Game game) {
         if (!hasGameWriteRight(game)) {
-            throw new WegasAccessDenied(game, "Trainer", game.getRequieredUpdatePermission().toString(), this.getCurrentUser());
+            throw new WegasAccessDenied(game, "Trainer", game.getRequieredUpdatePermission(this.currentContext).toString(), this.getCurrentUser());
         }
     }
 
@@ -2075,7 +2167,7 @@ public class RequestManager implements RequestManagerI {
      */
     public void assertCanReadGameModel(final GameModel gameModel) {
         if (!hasGameModelReadRight(gameModel)) {
-            throw new WegasAccessDenied(gameModel, "Read", gameModel.getRequieredReadPermission().toString(), this.getCurrentUser());
+            throw new WegasAccessDenied(gameModel, "Read", gameModel.getRequieredReadPermission(this.currentContext).toString(), this.getCurrentUser());
         }
     }
 

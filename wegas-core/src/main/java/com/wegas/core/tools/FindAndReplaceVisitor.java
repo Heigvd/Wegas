@@ -125,7 +125,9 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
     public void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references) {
         if (!this.isProtected(ancestors.peekFirst(), protectionLevel)
             && field != null && field.getAnnotation() != null && field.getAnnotation().searchable()) {
-            if (target instanceof String && field.getType() == WegasFieldProperties.FieldType.PROPERTY) {
+            if (target instanceof String
+                && (field.getType() == WegasFieldProperties.FieldType.PROPERTY
+                || field.getType() == WegasFieldProperties.FieldType.CHILDREN)) {
                 String newContent = this.replace((String) target);
                 if (newContent != null) {
                     this.genEntry(ancestors, target, field, (String) target, newContent);
@@ -268,9 +270,7 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
             Mergeable ancestor = it.next();
             if (ancestor instanceof GameModel == false) {
                 String name = genName(ancestor);
-                /*if (Helper.isNullOrEmpty(name)) {
-                name = ancestor.getClass().getSimpleName();
-                }*/
+                /* if (Helper.isNullOrEmpty(name)) { name = ancestor.getClass().getSimpleName(); } */
                 if (!Helper.isNullOrEmpty(name)) {
                     sb.append(name);
                     if (it.hasNext()) {

@@ -21,6 +21,7 @@ import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.security.util.ActAsPlayer;
+import com.wegas.core.security.util.ScriptExecutionContext;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.IOException;
 import javax.naming.NamingException;
@@ -254,7 +255,9 @@ public class StateMachineITest extends AbstractArquillianTest {
 
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            scriptFacade.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){print('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"), null);
+            try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(false)) {
+                scriptFacade.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){print('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"), null);
+            }
             requestFacade.commit();
         }
         Assert.assertEquals(ENDVAL, ((NumberInstance) variableInstanceFacade.find(number.getId(), player.getId())).getValue(), 0);
