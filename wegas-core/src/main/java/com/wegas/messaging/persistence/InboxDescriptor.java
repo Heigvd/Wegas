@@ -8,6 +8,7 @@
 package com.wegas.messaging.persistence;
 
 import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
@@ -196,7 +197,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * @return
      */
-    @Scriptable(returnType = Scriptable.ReturnType.VOID)
+    @Scriptable(returnType = Scriptable.ReturnType.VOID, dependsOn = DependencyScope.NONE)
     public Message sendMessage(Player p,
         @Param(view = @View(label = "from", value = I18nStringView.class),
             proposal = EmptyI18n.class) TranslatableContent from,
@@ -225,7 +226,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * @return check if the given player's inbox is empty
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean isEmpty(Player p) {
         return this.getInstance(p).getMessages().isEmpty();
     }
@@ -248,7 +249,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * @return true is a message identified by the token exists and has been read, false otherwise
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean isTokenMarkedAsRead(Player self,
         @Param(view = @View(label = "token")) String token) {
         return this.getInstance(self).isTokenMarkedAsRead(token);

@@ -40,6 +40,7 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.statemachine.AbstractTransition;
 import com.wegas.core.security.util.ActAsPlayer;
+import com.wegas.core.security.util.ScriptExecutionContext;
 import com.wegas.log.xapi.Xapi;
 import com.wegas.log.xapi.XapiI;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
@@ -256,7 +257,7 @@ public class ScriptFacade extends WegasAbstractFacade {
 
         putBinding(bindings, "GameModelFacade", GameModelFacadeI.class, gameModelFacade);
         putBinding(bindings, "I18nFacade", I18nFacadeI.class, i18nFacade);
-        
+
         putBinding(bindings, "Team", TeamFacadeI.class, teamFacade);
 
         putBinding(bindings, "Variable", VariableDescriptorFacadeI.class, variableDescriptorFacade);
@@ -292,10 +293,12 @@ public class ScriptFacade extends WegasAbstractFacade {
             logger.error("noSuchProperty injection", e);
         }
 
-        /**
-         * Inject hard server scripts first
-         */
-        this.injectStaticScript(ctx, player.getGameModel());
+        // Server script are internal
+        try (ScriptExecutionContext context = requestManager.switchToInternalExecContext(true)) {
+            /**
+             * Inject hard server scripts first
+             */
+            this.injectStaticScript(ctx, player.getGameModel());
 
         /**
          * Then inject soft ones. It means a soft script may override methods defined in a hard
@@ -304,17 +307,18 @@ public class ScriptFacade extends WegasAbstractFacade {
         for (GameModelContent script : player.getGameModel().getLibrariesAsList(GameModelContent.SERVER_SCRIPT)) {
             ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + script.getContentKey(), ScriptContext.ENGINE_SCOPE);
 
-            String cacheFileName = "soft:" + player.getGameModel().getId() + ":" + script.getContentKey();
-            String version = script.getVersion().toString();
+                String cacheFileName = "soft:" + player.getGameModel().getId() + ":" + script.getContentKey();
+                String version = script.getVersion().toString();
 
-            CachedScript cached = getCachedScript(cacheFileName, version, script.getContent());
+                CachedScript cached = getCachedScript(cacheFileName, version, script.getContent());
 
-            try {
-                cached.script.eval(ctx);
-            } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
-                throw new WegasScriptException("Server script " + script.getContentKey(), ex.getLineNumber(), ex.getMessage());
-            } catch (Exception ex) { // Java exception (Java -> JS -> Java -> throw)
-                throw new WegasScriptException("Server script " + script.getContentKey(), ex.getMessage());
+                try {
+                    cached.script.eval(ctx);
+                } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
+                    throw new WegasScriptException("Server script " + script.getContentKey(), ex.getLineNumber(), ex.getMessage());
+                } catch (Exception ex) { // Java exception (Java -> JS -> Java -> throw)
+                    throw new WegasScriptException("Server script " + script.getContentKey(), ex.getMessage());
+                }
             }
         }
         return ctx;

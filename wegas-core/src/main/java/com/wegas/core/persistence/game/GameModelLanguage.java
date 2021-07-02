@@ -13,6 +13,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.Orderable;
@@ -248,13 +249,13 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getGameModel().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return this.getGameModel().getRequieredReadPermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getGameModel().getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        return this.getGameModel().getRequieredUpdatePermission(context);
     }
 
     @Override

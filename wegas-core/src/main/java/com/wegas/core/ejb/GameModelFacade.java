@@ -211,12 +211,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         userFacade.addUserPermission(userFacade.getCurrentUser(), "GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
 
         /*
-         * This flush is required by several EntityRevivedEvent listener,
-         * which opperate some SQL queries (which didn't return anything before
-         * entites have been flushed to database
+         * This flush is required by several EntityRevivedEvent listener, which opperate some SQL
+         * queries (which didn't return anything before entites have been flushed to database
          *
-         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
-         * it will not return any result if this flush not occurs
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name, it will not
+         * return any result if this flush not occurs
          */
         variableDescriptorFacade.flush();
 
@@ -1027,6 +1026,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         ///getEntityManager().flush();
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
         this.propagateAndReviveDefaultInstances(gameModel, gameModel, false); // reset the whole gameModel
+        // speed-up scenario restart but may miss some transitions triggerd by default values
+        //requestManager.migrateUpdateEntities();
         stateMachineFacade.runStateMachines(gameModel);
 
         /* clear .user-uploads
