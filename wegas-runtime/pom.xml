@@ -14,7 +14,7 @@
         <skip.surefire.tests>${skipTests}</skip.surefire.tests>
     </properties>
 
-    <dependencyManagement>
+    <!--<dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
@@ -24,7 +24,7 @@
                 <scope>import</scope>
             </dependency>
         </dependencies>
-    </dependencyManagement>
+    </dependencyManagement>-->
 
     <dependencies>
 
@@ -136,6 +136,7 @@
         <dependency>
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
