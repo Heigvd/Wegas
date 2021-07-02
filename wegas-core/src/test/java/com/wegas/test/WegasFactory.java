@@ -209,7 +209,7 @@ public class WegasFactory {
      * @return brand new persisted state machine
      */
     public StateMachineDescriptor createStateMachineDescriptor(GameModel gameModel, DescriptorListI parent,
-            String name, String label, Visibility visibility) {
+            String name, String label, boolean active, Visibility visibility) {
         StateMachineDescriptor desc = new StateMachineDescriptor();
         desc.setName(name);
         desc.setLabel(TranslatableContent.build(gameModel.getLanguages().get(0).getCode(), label));
@@ -217,10 +217,16 @@ public class WegasFactory {
         desc.setScope(new TeamScope());
 
         desc.setDefaultInstance(new StateMachineInstance());
+        desc.getDefaultInstance().setEnabled(active);
 
         this.createDescriptor(gameModel, desc, parent);
 
         return desc;
+    }
+
+    public StateMachineDescriptor createStateMachineDescriptor(GameModel gameModel, DescriptorListI parent,
+            String name, String label, Visibility visibility) {
+        return this.createStateMachineDescriptor(gameModel, parent, name, label, true, visibility);
     }
 
     /**
@@ -293,7 +299,9 @@ public class WegasFactory {
         State fromState = states.get(from);
         fromState.addTransition(t);
 
-        return find;
+        // call update to revive transition dependencies
+        variableDescriptorFacade.update(find.getId(), find);
+        return (StateMachineDescriptor) variableDescriptorFacade.find(fsmD.getId());
     }
 
 public TaskDescriptor createTask(GameModel gameModel, DescriptorListI parent, String name, String label, String index, String description) {

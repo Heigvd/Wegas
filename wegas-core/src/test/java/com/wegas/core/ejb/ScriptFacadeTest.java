@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -13,6 +14,7 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
+import com.wegas.core.security.util.ScriptExecutionContext;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import javax.ejb.EJBException;
 import javax.inject.Inject;
@@ -63,7 +65,9 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
         //Test with events
         final Script testEvent = new Script("Event.on('testEvent', function(o){Variable.find(gameModel,'" + VARIABLENAME + "').getInstance(self).setValue(o.value);});\nEvent.fire('testEvent', {'value':'" + VALUE + "'});");
         testEvent.setLanguage("JavaScript");
-        scriptFacade.eval(player.getId(), testEvent, null);
+        try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(false)) {
+            scriptFacade.eval(player.getId(), testEvent, null);
+        }
         Assert.assertEquals(VALUE, ((StringInstance) variableInstanceFacade.find(stringDescriptor.getId(), player.getId())).getValue());
     }
 

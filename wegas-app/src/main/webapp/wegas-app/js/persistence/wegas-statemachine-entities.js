@@ -359,6 +359,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             }
         }
     });
+
     /*
      * Transition Entity
      */
@@ -370,10 +371,10 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         _getParent: function() {
             if (this.get("stateMachineId") && this.get("parentId")) {
                 var fsm = Y.Wegas.Facade.Variable.cache.find("id", this.get("stateMachineId"));
-                if (fsm){
+                if (fsm) {
                     var states = fsm.get("states");
-                    for (var i in states){
-                        if (states[i] && states[i].get("id") === this.get("parentId")){
+                    for (var i in states) {
+                        if (states[i] && states[i].get("id") === this.get("parentId")) {
                             return states[i];
                         }
                     }
@@ -432,6 +433,85 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 view: {
                     className: 'wegas-advanced-feature',
                     label: 'Index'
+                }
+            },
+            dependsOnStrategy: {
+                type: "string",
+                index: 50,
+                value: 'AUTO',
+                view: {
+                    type: "select",
+                    label: "Depends-On Strategy",
+                    className: "wegas-advanced-feature",
+                    choices: [
+                        {
+                            label: "Automatic",
+                            value: "AUTO"
+                        },
+                        {
+                            label: "Manual",
+                            value: "MANUAL"
+                        }
+                    ],
+                }
+            },
+            dependencies: {
+                items: {
+                    required: false,
+                    type: "object",
+                    properties: {
+                        id: IDATTRDEF,
+                        "@class": {
+                            value: "TransitionDependency",
+                            view: {type: 'hidden'}
+                        },
+                        refId: Y.Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+                        parentId: IDATTRDEF,
+                        parentType: {
+                            type: "string",
+                            view: {type: HIDDEN}
+                        },
+                        scope: {
+                            type: "string",
+                            index: -300,
+                            view: {
+                                type: "select",
+                                label: "Scope",
+                                layout: 'shortInline',
+                                choices: [
+                                    {
+                                        label: "Variable Only",
+                                        value: "SELF"
+                                    }, {
+                                        label: "Variable and its children",
+                                        value: "MANUAL"
+                                    }, {
+                                        label: "Unknown",
+                                        value: "UNKNOWN"
+                                    }
+                                ]
+                            }
+                        },
+                        variableName: {
+                            index: -301,
+                            view: {
+                                layout: 'shortInline',
+                                index: 0,
+                                type: "flatvariableselect"
+                            }
+                        }
+                    },
+                },
+                required: true,
+                type: "array",
+                value: [],
+                view: {
+                    index: 51,
+                    highlight: true,
+                    label: "Depends on"
+                },
+                visible: function(val, formVal) {
+                    return formVal.dependsOnStrategy === 'MANUAL';
                 }
             }
         }
@@ -510,6 +590,86 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 view: {
                     label: 'Only once',
                     description: 'Allowed to trigger only once',
+                }
+            },
+            dependsOnStrategy: {
+                type: "string",
+                index: 50,
+                value: 'AUTO',
+                view: {
+                    type: "select",
+                    label: "Depends-On Strategy",
+                    className: "wegas-advanced-feature",
+                    choices: [
+                        {
+                            label: "Automatic",
+                            value: "AUTO"
+                        },
+                        {
+                            label: "Manual",
+                            value: "MANUAL"
+                        }
+                    ],
+                }
+            },
+            dependencies: {
+                items: {
+                    required: false,
+                    type: "object",
+                    properties: {
+                        id: IDATTRDEF,
+                        "@class": {
+                            value: "TransitionDependency",
+                            view: {type: 'hidden'}
+                        },
+                        refId: Y.Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+                        parentId: IDATTRDEF,
+                        parentType: {
+                            type: "string",
+                            view: {type: HIDDEN}
+                        },
+                        scope: {
+                            type: "string",
+                            index: -300,
+                            view: {
+                                type: "select",
+                                label: "Scope",
+                                layout: 'shortInline',
+                                choices: [
+                                    {
+                                        label: "Variable Only",
+                                        value: "SELF"
+                                    }, {
+                                        label: "Variable and its children",
+                                        value: "MANUAL"
+                                    }, {
+                                        label: "Unknown",
+                                        value: "UNKNOWN"
+                                    }
+                                ]
+                            }
+                        },
+                        variableName: {
+                            index: -301,
+                            view: {
+                                layout: 'shortInline',
+                                index: 0,
+                                type: "flatvariableselect"
+                            }
+                        }
+                    }
+                },
+                required: true,
+                type: "array",
+                index: 51,
+                value: [],
+                view: {
+                    index: 0,
+                    highlight: true,
+                    label: "Depends on"
+                },
+                visible: function(val, formVal) {
+                    return formVal.dependsOnStrategy === 'MANUAL';
                 }
             },
             triggerEvent: {
@@ -647,7 +807,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 type: HTML
             }),
             label: {
-                transient:true,
+                transient: true,
                 view: {
                     type: HIDDEN
                 }
@@ -723,7 +883,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 type: HTML
             }),
             label: {
-                transient:true,
+                transient: true,
                 view: {
                     type: HIDDEN
                 }

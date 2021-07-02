@@ -10,6 +10,7 @@ package com.wegas.core.ejb.nashorn;
 // !!! This is what jdk9+ version could be
 import com.wegas.core.exception.client.WegasRuntimeException;
 import java.util.Set;
+import jdk.nashorn.api.scripting.NashornException;
 import jdk.nashorn.api.tree.CompilationUnitTree;
 import jdk.nashorn.api.tree.DoWhileLoopTree;
 import jdk.nashorn.api.tree.ExpressionTree;
@@ -52,6 +53,8 @@ public class JSTool {
      * @param code source
      *
      * @return AST
+     * @throws NullPointerException if code is null
+     * @throws NashornException if parse fails
      */
     public static CompilationUnitTree parse(String code) {
 

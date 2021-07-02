@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -9,11 +8,14 @@
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
@@ -22,11 +24,14 @@ import com.wegas.core.security.util.ActAsPlayer;
 import static com.wegas.test.TestHelper.toList;
 import static com.wegas.test.TestHelper.toMap;
 import com.wegas.test.arquillian.AbstractArquillianTest;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -329,7 +334,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
             }
         }
 
-        /* player fire event  -> NO MOVE */
+        /* player fire event -> NO MOVE */
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
             scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
@@ -422,7 +427,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            /* player fire event  -> NO MOVE */
+            /* player fire event -> NO MOVE */
             scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
             requestFacade.commit();
         }
@@ -451,7 +456,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         gameModelFacade.reset(scenario.getId());
         requestFacade.getRequestManager().getEventCounter().clear();
-        /* player fire event and event2 twice*/
+        /* player fire event and event2 twice */
 
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
@@ -522,7 +527,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            /* player fire event  -> NO MOVE */
+            /* player fire event -> NO MOVE */
             scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
             requestFacade.commit();
         }
@@ -563,5 +568,282 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         // Clean up
         variableDescriptorFacade.remove(number.getId());
         variableDescriptorFacade.remove(sm.getId());
+    }
+
+    private void assertFSM(StateMachineDescriptor desc, Player player, Boolean active, Long stateId) {
+        StateMachineInstance instance = desc.getInstance(player);
+        assertEquals(active, instance.getEnabled());
+        assertEquals(stateId, instance.getCurrentStateId());
+    }
+
+    private StateMachineDescriptor createFSM(GameModel gm, String name, boolean active, String... conditions) {
+        StateMachineDescriptor vd = wegasFactory.createStateMachineDescriptor(gm, gm, name, "", active, ModelScoped.Visibility.INHERITED);
+        wegasFactory.createState(vd, 1l, "");
+        Long from = 1l;
+        for (String condition : conditions) {
+            Long to = from + 1;
+            wegasFactory.createState(vd, to, "");
+            wegasFactory.createTransition(vd, from, to, condition, "", 0);
+            from = to;
+        }
+        return (StateMachineDescriptor) variableDescriptorFacade.find(vd.getId());
+    }
+
+    @Test
+    public void testTransitionDependencies() throws IOException, WegasNoResultException {
+        wegasFactory.createNumberDescriptor(scenario, scenario, "x", "",
+            ModelScoped.Visibility.PRIVATE, null, null, 0.0);
+
+        String iNoC = "inactive_NoCondition";
+        String ixGt10 = "inactive_xgt10";
+        String ixGt5 = "inactive_xgt5";
+        String ixgt10xgt5 = "inactive_xgt10xgt5";
+
+        String aNoC = "active_NoCondition";
+        String axGt10 = "active_xgt10";
+        String axGt5 = "active_xgt5";
+        String axgt10xgt5 = "active_xgt10xgt5";
+
+        StateMachineDescriptor inactiveNoCond
+            = this.createFSM(scenario, iNoC, false, "");
+        StateMachineDescriptor inactiveX5
+            = this.createFSM(scenario, ixGt5, false, "Variable.find(gameModel, \"x\").getValue(self)>5");
+        StateMachineDescriptor inactiveX10
+            = this.createFSM(scenario, ixGt10, false, "Variable.find(gameModel, \"x\").getValue(self)>10");
+        StateMachineDescriptor inactiveX10X5
+            = this.createFSM(scenario, ixgt10xgt5, false, "Variable.find(gameModel, 'x').getValue(self)>10", "Variable.find(gameModel, \"x\").getValue(self)>5");
+
+        StateMachineDescriptor activeNoCond
+            = this.createFSM(scenario, aNoC, true, "");
+        StateMachineDescriptor activeX5
+            = this.createFSM(scenario, axGt5, true, "Variable.find(gameModel, \"x\").getValue(self)>5");
+        StateMachineDescriptor activeX10
+            = this.createFSM(scenario, axGt10, true, "Variable.find(gameModel, \"x\").getValue(self)>10");
+        StateMachineDescriptor activeX10X5
+            = this.createFSM(scenario, axgt10xgt5, true, "Variable.find(gameModel, 'x').getValue(self)>10", "Variable.find(gameModel, \"x\").getValue(self)>5");
+
+        gameModelFacade.reset(scenario.getId());
+
+        ///////////////////////////////
+        // Initial state : only the activeNoCond should have been triggered
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            a.setFlushOnExit(false);
+            requestFacade.commit();
+        }
+
+        assertFSM(inactiveNoCond, player, false, 1l);
+        assertFSM(inactiveX10, player, false, 1l);
+        assertFSM(inactiveX10X5, player, false, 1l);
+        assertFSM(inactiveX5, player, false, 1l);
+
+        assertFSM(activeNoCond, player, true, 2l);
+        assertFSM(activeX10, player, true, 1l);
+        assertFSM(activeX10X5, player, true, 1l);
+        assertFSM(activeX5, player, true, 1l);
+
+        /////////////////////////////
+        // x:= 6
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            a.setFlushOnExit(false);
+            scriptFacade.eval(player, new Script("JavaScript", "Variable.find(gameModel, 'x').setValue(self, 6);"), null);
+            requestFacade.commit();
+        }
+
+        ////////////////////////////
+        // active x5 triggered
+        assertFSM(inactiveNoCond, player, false, 1l);
+        assertFSM(inactiveX10, player, false, 1l);
+        assertFSM(inactiveX10X5, player, false, 1l);
+        assertFSM(inactiveX5, player, false, 1l);
+
+        assertFSM(activeNoCond, player, true, 2l);
+        assertFSM(activeX10, player, true, 1l);
+        assertFSM(activeX10X5, player, true, 1l);
+        assertFSM(activeX5, player, true, 2l);
+
+        /////////////////////////////
+        // active inactivex5
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            a.setFlushOnExit(false);
+            scriptFacade.eval(player, new Script("JavaScript", "Variable.find(gameModel, '" + ixGt5 + "').enable(self);"), null);
+            requestFacade.commit();
+        }
+
+        ////////////////////////////
+        // inactivex5 activated and triggered
+        assertFSM(inactiveNoCond, player, false, 1l);
+        assertFSM(inactiveX10, player, false, 1l);
+        assertFSM(inactiveX10X5, player, false, 1l);
+        assertFSM(inactiveX5, player, true, 2l);
+
+        assertFSM(activeNoCond, player, true, 2l);
+        assertFSM(activeX10, player, true, 1l);
+        assertFSM(activeX10X5, player, true, 1l);
+        assertFSM(activeX5, player, true, 2l);
+
+        /////////////////////////////
+        // x := 10
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            a.setFlushOnExit(false);
+            scriptFacade.eval(player, new Script("JavaScript", "Variable.find(gameModel, 'x').setValue(self, 10);"), null);
+            requestFacade.commit();
+        }
+
+        ////////////////////////////
+        // no changes
+        assertFSM(inactiveNoCond, player, false, 1l);
+        assertFSM(inactiveX10, player, false, 1l);
+        assertFSM(inactiveX10X5, player, false, 1l);
+        assertFSM(inactiveX5, player, true, 2l);
+
+        assertFSM(activeNoCond, player, true, 2l);
+        assertFSM(activeX10, player, true, 1l);
+        assertFSM(activeX10X5, player, true, 1l);
+        assertFSM(activeX5, player, true, 2l);
+
+        /////////////////////////////
+        // x := 11
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            a.setFlushOnExit(false);
+            scriptFacade.eval(player, new Script("JavaScript", "Variable.find(gameModel, 'x').setValue(self, 11);"), null);
+            requestFacade.commit();
+        }
+
+        ////////////////////////////
+        // activex10 and activex10x5 triggered
+        assertFSM(inactiveNoCond, player, false, 1l);
+        assertFSM(inactiveX10, player, false, 1l);
+        assertFSM(inactiveX10X5, player, false, 1l);
+        assertFSM(inactiveX5, player, true, 2l);
+
+        assertFSM(activeNoCond, player, true, 2l);
+        assertFSM(activeX10, player, true, 2l);
+        assertFSM(activeX10X5, player, true, 3l);
+        assertFSM(activeX5, player, true, 2l);
+
+        /////////////////////////////
+        // active inactivex5
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            a.setFlushOnExit(false);
+            scriptFacade.eval(player, new Script("JavaScript", "Variable.find(gameModel, '" + ixGt10 + "').enable(self);"), null);
+            requestFacade.commit();
+        }
+
+        ////////////////////////////
+        // inactivex10 activated and triggered
+        assertFSM(inactiveNoCond, player, false, 1l);
+        assertFSM(inactiveX10, player, true, 2l);
+        assertFSM(inactiveX10X5, player, false, 1l);
+        assertFSM(inactiveX5, player, true, 2l);
+
+        assertFSM(activeNoCond, player, true, 2l);
+        assertFSM(activeX10, player, true, 2l);
+        assertFSM(activeX10X5, player, true, 3l);
+        assertFSM(activeX5, player, true, 2l);
+
+        /////////////////////////////
+        // active inactivex10x5
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            a.setFlushOnExit(false);
+            scriptFacade.eval(player, new Script("JavaScript", "Variable.find(gameModel, '" + ixgt10xgt5 + "').enable(self);"), null);
+            requestFacade.commit();
+        }
+
+        ////////////////////////////
+        // inactivex10 activated and triggered
+        assertFSM(inactiveNoCond, player, false, 1l);
+        assertFSM(inactiveX10, player, true, 2l);
+        assertFSM(inactiveX10X5, player, true, 3l);
+        assertFSM(inactiveX5, player, true, 2l);
+
+        assertFSM(activeNoCond, player, true, 2l);
+        assertFSM(activeX10, player, true, 2l);
+        assertFSM(activeX10X5, player, true, 3l);
+        assertFSM(activeX5, player, true, 2l);
+
+        /////////////////////////////
+        // active inactiveNoCondition
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            a.setFlushOnExit(false);
+            scriptFacade.eval(player,
+                new Script("JavaScript", "Variable.find(gameModel, '" + iNoC + "').enable(self);"), null);
+            requestFacade.commit();
+        }
+
+        ////////////////////////////
+        // inactivex10 activated and triggered
+        assertFSM(inactiveNoCond, player, true, 2l);
+        assertFSM(inactiveX10, player, true, 2l);
+        assertFSM(inactiveX10X5, player, true, 3l);
+        assertFSM(inactiveX5, player, true, 2l);
+
+        assertFSM(activeNoCond, player, true, 2l);
+        assertFSM(activeX10, player, true, 2l);
+        assertFSM(activeX10X5, player, true, 3l);
+        assertFSM(activeX5, player, true, 2l);
+    }
+
+    @Test
+    public void testTransitionDependenciesRemoveVariable() throws IOException, WegasNoResultException {
+        NumberDescriptor x = wegasFactory.createNumberDescriptor(scenario, scenario, "x", "",
+            ModelScoped.Visibility.PRIVATE, null, null, 0.0);
+
+        StateMachineDescriptor myFsm = this.createFSM(scenario, "myFsm", true,
+            "Variable.find(gameModel, \"x\").getValue(self) > 5");
+
+        // transition has a dependency
+        AbstractTransition transition = (AbstractTransition) myFsm.getState(1l).getTransitions().get(0);
+        Set<TransitionDependency> dependencies = transition.getDependencies();
+        assertEquals(1l, dependencies.size());
+        TransitionDependency tDep = dependencies.iterator().next();
+        assertEquals("x", tDep.getVariableName());
+
+        // x knowns the dependency
+        x = (NumberDescriptor) variableDescriptorFacade.find(x.getId());
+        assertEquals(1, x.getMayTrigger().size());
+        TransitionDependency xDep = x.getMayTrigger().iterator().next();
+        assertEquals(xDep.getId(), tDep.getId());
+
+        // Remove x should remove dep
+        variableDescriptorFacade.remove(x.getId());
+
+        // reload fsm
+        myFsm = (StateMachineDescriptor) variableDescriptorFacade.find(myFsm.getId());
+        transition = (AbstractTransition) myFsm.getState(1l).getTransitions().get(0);
+        assertTrue(transition.getDependencies().isEmpty());
+    }
+
+    @Test
+    public void testTransitionDependenciesRemoveCondition() throws IOException, WegasNoResultException {
+        NumberDescriptor x = wegasFactory.createNumberDescriptor(scenario, scenario, "x", "",
+            ModelScoped.Visibility.PRIVATE, null, null, 0.0);
+
+        StateMachineDescriptor myFsm = this.createFSM(scenario, "myFsm", true,
+            "Variable.find(gameModel, \"x\").getValue(self)>5");
+
+        // transition has a dependency
+        AbstractTransition transition = (AbstractTransition) myFsm.getState(1l).getTransitions().get(0);
+        Set<TransitionDependency> dependencies = transition.getDependencies();
+        assertEquals(1l, dependencies.size());
+        TransitionDependency tDep = dependencies.iterator().next();
+        assertEquals("x", tDep.getVariableName());
+
+        // x knowns the dependency
+        x = (NumberDescriptor) variableDescriptorFacade.find(x.getId());
+        assertEquals(1, x.getMayTrigger().size());
+        TransitionDependency xDep = x.getMayTrigger().iterator().next();
+        assertEquals(xDep.getId(), tDep.getId());
+
+        // Remove condition should clear dep
+        transition.getTriggerCondition().setContent("");
+        variableDescriptorFacade.update(myFsm.getId(), myFsm);
+
+        // reload fsm
+        myFsm = (StateMachineDescriptor) variableDescriptorFacade.find(myFsm.getId());
+        transition = (AbstractTransition) myFsm.getState(1l).getTransitions().get(0);
+        assertTrue(transition.getDependencies().isEmpty());
+        // reload x
+        x = (NumberDescriptor) variableDescriptorFacade.find(x.getId());
+        assertTrue(x.getMayTrigger().isEmpty());
     }
 }

@@ -1025,6 +1025,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         ///getEntityManager().flush();
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
         this.propagateAndReviveDefaultInstances(gameModel, gameModel, false); // reset the whole gameModel
+        // speed-up scenario restart but may miss some transitions triggerd by default values
+        //requestManager.migrateUpdateEntities();
         stateMachineFacade.runStateMachines(gameModel);
 
         /* clear .user-uploads this special directory contains files uploaded by players. Hence, it

@@ -8,6 +8,7 @@
 package com.wegas.mcq.persistence;
 
 import ch.albasim.wegas.annotations.CommonView;
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.IMergeable;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
@@ -154,7 +155,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void setCurrentResult(Player player, String resultName) throws WegasNoResultException {
         ChoiceInstance instance = this.getInstance(player);
         Result resultByName = getResultByName(resultName);
@@ -195,7 +196,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void activate(Player p) {
         this.getInstance(p).activate();
     }
@@ -209,7 +210,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         this.deactivate(p);
     }
 
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void deactivate(Player p) {
         this.getInstance(p).deactivate();
     }
@@ -294,7 +295,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * @param p <p>
      * @return player instance active status
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean isActive(Player p) {
         return this.getInstance(p).getActive();
     }
@@ -308,7 +309,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @return true only if the choice is not selectable any longer
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean hasBeenIgnored(Player p) {
         // Is there any not ignored validated reply link to this choice
         for (Reply r : this.getInstance(p).getReplies(Boolean.TRUE)) {
@@ -361,7 +362,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @return return true if this choice can be selected by the player
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean hasNotBeenSelected(Player p) {
         return !this.hasBeenSelected(p);
     }
@@ -373,7 +374,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * <p>
      * @return true if one or more question replies referencing this choice exist
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean hasBeenSelected(Player p) {
         for (Reply r : this.getInstance(p).getReplies(Boolean.TRUE)) {
             if (!r.getIgnored()) {
@@ -409,7 +410,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean hasResultBeenApplied(Player p, String resultName) throws WegasNoResultException {
         return this.hasResultBeenApplied(p, this.getResultByName(resultName));
     }

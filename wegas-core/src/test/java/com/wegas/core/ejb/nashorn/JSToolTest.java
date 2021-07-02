@@ -7,6 +7,11 @@
  */
 package com.wegas.core.ejb.nashorn;
 
+import java.util.List;
+import java.util.Optional;
+import jdk.nashorn.api.tree.CompilationUnitTree;
+import jdk.nashorn.api.tree.Tree;
+import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -165,5 +170,116 @@ public class JSToolTest {
 
         System.out.println(sanitize);
         assertEquals(expected, sanitize);
+    }
+
+    @Test
+    public void testSimpleCondition() {
+        String script = "Variable.find(gameModel, \"x\").getValue(self, 12) > 10";
+        CompilationUnitTree parse = JSTool.parse(script);
+        List<? extends Tree> sourceElements = parse.getSourceElements();
+    }
+
+    private ConditionAnalyser.VariableCall findDepAndAssert(List<ConditionAnalyser.VariableCall> list, String name) {
+        Optional<ConditionAnalyser.VariableCall> find = list.stream()
+            .filter(p -> p.getVariableName().equals(name))
+            .findFirst();
+        if (find.isPresent()) {
+            return find.get();
+        } else {
+            Assert.fail("Not found: " + name);
+            return null;
+        }
+    }
+
+    private ConditionAnalyser.VariableCall findDepAndAssert(List<ConditionAnalyser.VariableCall> list, String name, String method) {
+        Optional<ConditionAnalyser.VariableCall> find = list.stream()
+            .filter(p -> p.getVariableName().equals(name) && p.getMethodName().equals(method))
+            .findFirst();
+        if (find.isPresent()) {
+            return find.get();
+        } else {
+            Assert.fail("Not found: " + name);
+            return null;
+        }
+    }
+
+    @Test
+    public void testAndCondition() {
+        String script = "Variable.find(gameModel, \"x\").getValue(self, 12) > 10 && Variable.find(gameModel, \"y\").getSomething(self, 12) > 10";
+        List<ConditionAnalyser.VariableCall> list = ConditionAnalyser.analyseCondition(script);
+        Assert.assertEquals(2, list.size());
+
+        findDepAndAssert(list, "x", "getValue");
+        findDepAndAssert(list, "y", "getSomething");
+
+    }
+
+    @Test
+    public void testAndCondition2() {
+        String script = "Variable.find(gameModel, \"x\").getValue(self, 12) > 10"
+            + "&& Variable.find(gameModel, \"y\").getValue(self, 12) > 10"
+            + "&& Variable.find(gameModel, \"z\").getValue(self, 12) > 10";
+
+        List<ConditionAnalyser.VariableCall> list = ConditionAnalyser.analyseCondition(script);
+        Assert.assertEquals(3, list.size());
+        findDepAndAssert(list, "x", "getValue");
+        findDepAndAssert(list, "y", "getValue");
+        findDepAndAssert(list, "z", "getValue");
+    }
+
+    @Test
+    public void testAndConditionSameVariable() {
+        String script = "Variable.find(gameModel, \"x\").getValue(self, 12) > 10"
+            + "&& Variable.find(gameModel, \"x\").getValue(self, 12) < 20";
+
+        List<ConditionAnalyser.VariableCall> list = ConditionAnalyser.analyseCondition(script);
+        Assert.assertEquals(2, list.size());
+        findDepAndAssert(list, "x", "getValue");
+    }
+
+
+    @Test
+    public void testNestedCallsCondition() {
+        String script = "Variable.find(gameModel, \"x\").item(self, Variable.find(gameModel, \"y\").getValue(self)).size() > 0";
+
+        List<ConditionAnalyser.VariableCall> list = ConditionAnalyser.analyseCondition(script);
+        Assert.assertEquals(0, list.size());
+    }
+
+    @Test
+    public void testNestedCallsCondition2() {
+        String script = "Variable.find(gameModel, \"x\").item(self, Variable.find(gameModel, \"y\").getValue(self))> 0";
+
+        List<ConditionAnalyser.VariableCall> list = ConditionAnalyser.analyseCondition(script);
+        Assert.assertEquals(2, list.size());
+
+        findDepAndAssert(list, "x", "item");
+        findDepAndAssert(list, "y", "getValue");
+    }
+
+    @Test
+    public void testVariableCompare() {
+        String script = "Variable.find(gameModel, \"x\").getValue(self) <= Variable.find(gameModel, \"y\").getValue(self)";
+
+        List<ConditionAnalyser.VariableCall> list = ConditionAnalyser.analyseCondition(script);
+        Assert.assertEquals(2, list.size());
+
+        findDepAndAssert(list, "x", "getValue");
+        findDepAndAssert(list, "y", "getValue");
+    }
+
+    @Test
+    public void testNestIf() {
+        String script = "if (Variable.find(gameModel, \"x\").getValue(self) < 10){\n"
+            + "            Variable.find(gameModel, \"y\").getValue(self) > 10;\n"
+            + "        } else {\n"
+            + "            false;\n"
+            + "        }";
+
+        List<ConditionAnalyser.VariableCall> list = ConditionAnalyser.analyseCondition(script);
+        Assert.assertEquals(2, list.size());
+
+        findDepAndAssert(list, "x", "getValue");
+        findDepAndAssert(list, "y", "getValue");
     }
 }

@@ -7,6 +7,7 @@
  */
 package com.wegas.survey.persistence;
 
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
@@ -121,7 +122,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      */
     @Override
     @JsonView(Views.ExportI.class)
-    @Scriptable(label = "getItems", wysiwyg = false)
+    @Scriptable(label = "getItems", wysiwyg = false, dependsOn = DependencyScope.CHILDREN)
     public List<SurveySectionDescriptor> getItems() {
         return Helper.copyAndSortModifiable(this.items, new EntityComparators.OrderComparator<>());
     }
@@ -223,7 +224,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void activate(Player p) {
         this.getInstance(p).setActive(true);
     }
@@ -232,7 +233,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void deactivate(Player p) {
         this.getInstance(p).setActive(false);
     }
@@ -241,7 +242,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void request(Player p) {
         this.getInstance(p).setStatus(SurveyStatus.REQUESTED);
     }
@@ -250,7 +251,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void complete(Player p) {
         this.getInstance(p).setStatus(SurveyStatus.COMPLETED);
     }
@@ -259,7 +260,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void close(Player p) {
         this.getInstance(p).setStatus(SurveyStatus.CLOSED);
     }
@@ -270,7 +271,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      *
      * @return true if the player's survey is active
      */
-    @Scriptable(label = "is active")
+    @Scriptable(label = "is active", dependsOn = DependencyScope.SELF)
     public boolean isActive(Player p) {
         return this.getInstance(p).getActive();
     }
@@ -282,7 +283,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      *
      * @return true if the player's survey is not active
      */
-    @Scriptable(label = "is not active")
+    @Scriptable(label = "is not active", dependsOn = DependencyScope.SELF)
     public boolean isNotActive(Player p) {
         return this.getInstance(p).getActive() == false;
     }
@@ -293,7 +294,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      *
      * @return true if the player has already started the survey
      */
-    @Scriptable(label = "is ongoing")
+    @Scriptable(label = "is ongoing", dependsOn = DependencyScope.SELF)
     public boolean isOngoing(Player p) {
         return this.getInstance(p).getStatus() == SurveyStatus.ONGOING;
     }
@@ -305,7 +306,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      *
      * @return true if the player has not yet started the survey
      */
-    @Scriptable(label = "is not ongoing")
+    @Scriptable(label = "is not ongoing", dependsOn = DependencyScope.SELF)
     public boolean isNotOngoing(Player p) {
         return this.getInstance(p).getStatus() != SurveyStatus.ONGOING;
     }
@@ -316,7 +317,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      *
      * @return true if the player has already completed the survey
      */
-    @Scriptable(label = "has been completed")
+    @Scriptable(label = "has been completed", dependsOn = DependencyScope.SELF)
     public boolean isCompleted(Player p) {
         return this.getInstance(p).getStatus() == SurveyStatus.COMPLETED;
     }
@@ -328,7 +329,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      *
      * @return true if the player has not yet completed the survey
      */
-    @Scriptable(label = "has not been completed")
+    @Scriptable(label = "has not been completed", dependsOn = DependencyScope.SELF)
     public boolean isNotCompleted(Player p) {
         return this.getInstance(p).getStatus() != SurveyStatus.COMPLETED;
     }
@@ -339,7 +340,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      *
      * @return true if the player has closed the survey
      */
-    @Scriptable(label = "is closed")
+    @Scriptable(label = "is closed", dependsOn = DependencyScope.SELF)
     public boolean isClosed(Player p) {
         return this.getInstance(p).getStatus() == SurveyStatus.CLOSED;
     }
@@ -351,7 +352,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      *
      * @return true if the player has not yet started the survey
      */
-    @Scriptable(label = "is not closed")
+    @Scriptable(label = "is not closed", dependsOn = DependencyScope.SELF)
     public boolean isNotClosed(Player p) {
         return this.getInstance(p).getStatus() != SurveyStatus.CLOSED;
     }

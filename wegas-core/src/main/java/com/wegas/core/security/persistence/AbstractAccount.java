@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -473,12 +474,12 @@ public abstract class AbstractAccount extends AbstractEntity {
     public abstract AuthenticationMethod getAuthenticationMethod();
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
         return null;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         // nobody but the user itset can edit its account
         Collection<WegasPermission> p = WegasPermission.getAsCollection(
             this.getUser().getAssociatedWritePermission()
@@ -487,8 +488,8 @@ public abstract class AbstractAccount extends AbstractEntity {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        Collection<WegasPermission> p = this.getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        Collection<WegasPermission> p = this.getRequieredUpdatePermission(context);
 
         /**
          * In order to share gameModels and games with others trainer/scenarist a trainer/scenario
