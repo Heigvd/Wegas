@@ -147,6 +147,15 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
         }
     }
 
+    @Test(expected = WegasScriptException.class)
+    public void testTimeoutEvalInterrupts3() throws Throwable {
+        try {
+            scriptFacade.eval(player.getId(), new Script("JavaScript", "while(1){}"), null);
+        } catch (EJBException e) {
+            throw e.getCause();
+        }
+    }
+
     @Test
     public void testTimeoutEval() {
         final double VALUE = 99;

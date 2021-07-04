@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -9,7 +8,7 @@
 package com.wegas.core.async;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
+import com.hazelcast.cp.lock.FencedLock;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
@@ -187,8 +186,8 @@ public class PopulatorFacade extends WegasAbstractFacade {
         }
     }
 
-    public ILock getLock() {
-        return hzInstance.getLock("PopulatorSchedulerLock");
+    public FencedLock getLock() {
+        return hzInstance.getCPSubsystem().getLock("PopulatorSchedulerLock");
     }
 
     /**
@@ -260,7 +259,7 @@ public class PopulatorFacade extends WegasAbstractFacade {
         requestManager.su();
         Candidate candidate = null;
 
-        ILock lock = this.getLock();
+        FencedLock lock = this.getLock();
         lock.lock();
         try {
             try {

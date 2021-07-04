@@ -633,9 +633,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 throw WegasErrorMessage.error("Duplicating repository gm_" + srcGameModel.getId() + " failure: " + ex);
             }
         }
-        /* clear .user-uploads
-         * this special directory contains files uploaded by players.
-         * Hence, it has to be erase
+        /* clear .user-uploads this special directory contains files uploaded by players. Hence, it
+         * has to be erase
          */
         jcrFacade.deleteUserUploads(newGameModel);
     }
@@ -1030,9 +1029,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         //requestManager.migrateUpdateEntities();
         stateMachineFacade.runStateMachines(gameModel);
 
-        /* clear .user-uploads
-         * this special directory contains files uploaded by players.
-         * Hence, it has to be erase on restart
+        /* clear .user-uploads this special directory contains files uploaded by players. Hence, it
+         * has to be erase on restart
          */
         jcrFacade.deleteUserUploads(gameModel);
     }
