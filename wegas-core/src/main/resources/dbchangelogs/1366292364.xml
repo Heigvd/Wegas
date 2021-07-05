@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
-    <changeSet author="fx (generated)" id="1366292364654-1">
-        <addColumn tableName="mcqchoicedescriptor">
-            <column name="question_variabledescriptor_id" type="int8"/>
-        </addColumn>
-        <addForeignKeyConstraint baseColumnNames="question_variabledescriptor_id" baseTableName="mcqchoicedescriptor" baseTableSchemaName="public" constraintName="fk_mcqchoicedescriptor_question_variabledescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="variabledescriptor_id" referencedTableName="variabledescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
-    </changeSet>
-</databaseChangeLog>

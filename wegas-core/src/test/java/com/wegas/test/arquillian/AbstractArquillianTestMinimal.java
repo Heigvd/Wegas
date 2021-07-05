@@ -228,9 +228,9 @@ public abstract class AbstractArquillianTestMinimal {
                 + "INSERT INTO abstractaccount (id, username, emaildomain, currentauth, dtype, user_id, shadow_id, details_id) VALUES (1, 'root', 'localhost', 'PLAIN', 'JpaAccount', 1, 1, 1);"
                 + "INSERT INTO users_roles (user_id, role_id) VALUES (1, 1);"
                 + "UPDATE sequence SET seq_count=seq_count+50 WHERE seq_name = 'SEQ_GEN';"
-                + "CREATE INDEX IF NOT EXISTS index_accountdetails_email ON accountdetails (email) WHERE (checkuniqueness AND email IS NOT NULL AND email NOT LIKE '');"
-                + "CREATE INDEX IF NOT EXISTS index_abstractaccount_username ON abstractaccount (username) WHERE (dtype = 'JpaAccount' AND username IS NOT NULL AND username NOT LIKE '');"
-                + "CREATE INDEX IF NOT EXISTS index_abstractaccount_persistentid ON abstractaccount (persistentid) WHERE (dtype = 'AaiAccount');"
+                + "CREATE UNIQUE INDEX IF NOT EXISTS index_accountdetails_email ON accountdetails (email) WHERE (checkuniqueness AND email IS NOT NULL AND email <> '');"
+                + "CREATE UNIQUE INDEX IF NOT EXISTS index_abstractaccount_username ON abstractaccount (username) WHERE (dtype = 'JpaAccount' AND username IS NOT NULL AND username NOT LIKE '');"
+                + "CREATE UNIQUE INDEX IF NOT EXISTS index_abstractaccount_persistentid ON abstractaccount (persistentid) WHERE (dtype = 'AaiAccount');"
                 + "CREATE INDEX IF NOT EXISTS index_listDesc_allowedType ON listdescriptor_allowedtypes (listdescriptor_id);"
                 + "CREATE INDEX IF NOT EXISTS index_numberinstance_history_numberinstance_id ON numberinstance_history (numberinstance_id);"
                 + "CREATE INDEX IF NOT EXISTS index_objectdescriptor_properties_objectdescriptor_id ON objectdescriptor_properties (objectdescriptor_id);"
@@ -252,7 +252,7 @@ public abstract class AbstractArquillianTestMinimal {
                 + "CREATE INDEX IF NOT EXISTS index_result_files_result_id on result_files (result_id);"
                 + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_taskdescriptor_id_predecessor_id on taskdescriptor_taskdescriptor (taskdescriptor_id,predecessor_id);"
                 + "CREATE INDEX IF NOT EXISTS index_users_roles_roles_id_user_id on users_roles (role_id,user_id);"
-                + "CREATE INDEX IF NOT EXISTS index_game_toen ON game (token) WHERE (status = 'LIVE' OR status = 'BIN');"
+                + "CREATE UNIQUE INDEX IF NOT EXISTS index_game_token ON game (token) WHERE (status = 'LIVE' OR status = 'BIN');"
                 + "CREATE INDEX IF NOT EXISTS index_surveydescriptor_token_surveys_id on surveydescriptor_token (surveys_id);"
                 + "CREATE INDEX IF NOT EXISTS index_surveydescriptor_token_tokens_id on surveydescriptor_token (tokens_id);";
 
