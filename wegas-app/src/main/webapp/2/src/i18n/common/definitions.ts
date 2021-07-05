@@ -15,12 +15,14 @@ export interface CommonTranslations {
   edit: string;
   duplicate: string;
   close: string;
+  add: string;
   filter: string;
   empty: string;
   forceDelete: string;
   buildingWorld: string;
   pageUndefined: string;
   features: string;
+  deepSearch: string;
   header: {
     restartGame: string;
     resetLayout: string;

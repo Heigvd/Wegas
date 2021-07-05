@@ -21,7 +21,6 @@ import { withDefault, IconComp } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { AddMenuParent, AddMenuChoice, AddMenuFeedback } from './AddMenu';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import { SearchTool } from '../SearchTool';
 import { useAsync } from '../../../Components/Hooks/useAsync';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
@@ -37,6 +36,9 @@ import {
   grow,
   flexColumn,
   toolboxHeaderStyle,
+  flexRow,
+  flexBetween,
+  defaultMarginRight,
 } from '../../../css/classes';
 import {
   IVariableDescriptor,
@@ -54,6 +56,7 @@ import {
 } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 
 const TREECONTENTID = 'TREECONTENT';
 
@@ -120,6 +123,7 @@ export function TreeView({
 }: TreeProps) {
   const [search, setSearch] = React.useState('');
   const [onAccept, setOnAccept] = React.useState(() => () => {});
+  const [deepSearch, setDeepSearch] = React.useState(false);
 
   const { data } = useAsync(itemsPromise);
   const { showModal, OkCancelModal } = useOkCancelModal(TREECONTENTID);
@@ -128,20 +132,14 @@ export function TreeView({
   const globalDispatch = store.dispatch;
   const actionAllowed = isActionAllowed(options);
 
+
   return (
     <Toolbar className={css({ padding: '1.5em' })}>
-      <Toolbar.Header className={toolboxHeaderStyle}>
+      <Toolbar.Header className={cx(toolboxHeaderStyle,flexBetween)}>
         {!noHeader && actionAllowed && (
           <>
-            <SimpleInput
-              value={search}
-              placeholder={i18nValues.filter}
-              aria-label="Filter"
-              onChange={ev => {
-                setSearch(ev.toString());
-              }}
-            />
             <DropMenu
+              tooltip={i18nValues.add}
               items={data || []}
               icon="plus"
               onSelect={(i, e) => {
@@ -153,7 +151,24 @@ export function TreeView({
                 }
               }}
             />
-            <SearchTool />
+            <div className={cx(flex, flexRow)}>
+              <SimpleInput
+                value={search}
+                placeholder={i18nValues.filter}
+                aria-label="Filter"
+                onChange={ev => {
+                  setSearch(ev.toString());
+                }}
+                className={defaultMarginRight}
+              />
+              {/* <SearchTool /> */}
+              <Toggler
+                className={css({fontSize: '14px', lineHeight:'100%', justifyContent: 'flex-end'})}
+                label={i18nValues.deepSearch}
+                value={deepSearch}
+                onChange={() => setDeepSearch(c => !c)}
+              />
+            </div>
           </>
         )}
       </Toolbar.Header>
