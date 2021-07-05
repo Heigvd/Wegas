@@ -92,7 +92,7 @@ export function VariableTreeTitle({
 }: VariableTreeTitleProps) {
   return (
     <div className={cx(className, css({ margin: '3px 0' }))} style={style}>
-      <IconComp icon={withDefault(getIcon(variable!), 'question')} />
+      <IconComp icon={withDefault(getIcon(variable!), 'question')} className={css({marginRight: '2px'})}/>
       {entityIs(variable, 'EvaluationDescriptorContainer')
         ? subPath && subPath.length === 1
           ? String(subPath[0]) === 'feedback'

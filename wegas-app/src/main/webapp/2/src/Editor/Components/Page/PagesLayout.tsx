@@ -417,7 +417,7 @@ function LayoutNodeTitle({
       style={style}
       title={tooltip}
     >
-      <IconComp icon={icon} style={bulletCSS} />
+      <IconComp icon={icon} className={css({marginRight: '3px'})}/>
       <div className={grow}>{newTitle}</div>
       {children}
     </div>
@@ -922,7 +922,7 @@ export function PagesLayout(props: PagesLayoutProps) {
   return (
     <Toolbar className={expandBoth}>
       <Toolbar.Header className={defaultPadding}>
-        <IndexItemAdder path={[]} />
+        <IndexItemAdder path={[]} tooltip={i18nValues.add}/>
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, grow)}>
         <Tree<NodeId>
