@@ -3,7 +3,7 @@ import { get, cloneDeep } from 'lodash-es';
 import { Schema } from 'jsoninput';
 import { State } from '../../data/Reducer/reducers';
 import { GameModel, Helper } from '../../data/selectors';
-import getEditionConfig from '../editionConfig';
+import getEditionConfig, { getClassLabel } from '../editionConfig';
 import { Actions } from '../../data';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
@@ -21,6 +21,8 @@ import {
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { MessageString } from './MessageString';
 import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
+import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
+import { wlog } from '../../Helper/wegaslog';
 
 export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
@@ -209,8 +211,13 @@ async function WindowedEditor<T extends IMergeable>({
         duration={3000}
         onLabelVanish={error && error.onRead}
       />
+      {wlog(entity)}
       <Form
         entity={pathEntity}
+        label={editorTitle({
+          label: (entity ? (entity as { label?: ITranslatableContent}).label : undefined),
+          editorTag: (entity ? (entity as { editorTag?: string}).editorTag : undefined),
+          name: getClassLabel(pathEntity)})}
         update={update != null ? updatePath : update}
         actions={actions.map(action => ({
           ...action,

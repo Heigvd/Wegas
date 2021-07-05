@@ -10,7 +10,7 @@ import { moveDescriptor } from '../../../data/Reducer/VariableDescriptorReducer'
 import {
   getEntityActions,
   getIcon,
-  getLabel,
+  getClassLabel,
   getChildren,
 } from '../../editionConfig';
 import { StoreDispatch, useStore, store } from '../../../data/Stores/store';
@@ -21,7 +21,6 @@ import { withDefault, IconComp } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { AddMenuParent, AddMenuChoice, AddMenuFeedback } from './AddMenu';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-// import { SearchTool } from '../SearchTool';
 import { useAsync } from '../../../Components/Hooks/useAsync';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
@@ -36,6 +35,8 @@ import {
   grow,
   flexColumn,
   toolboxHeaderStyle,
+  flexRow,
+  flexBetween,
 } from '../../../css/classes';
 import {
   IVariableDescriptor,
@@ -65,7 +66,7 @@ const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
         return (
           <>
             <IconComp icon={withDefault(getIcon(entity), 'question')} />
-            {getLabel(entity)}
+            {getClassLabel(entity)}
           </>
         );
       });
@@ -131,28 +132,11 @@ export function TreeView({
 
   return (
     <Toolbar className={css({ padding: '1.5em' })}>
-      <Toolbar.Header className={toolboxHeaderStyle}>
+      <Toolbar.Header className={cx(toolboxHeaderStyle, flexBetween)}>
         {!noHeader && actionAllowed && (
           <>
-            <SimpleInput
-              value={value}
-              placeholder={i18nValues.filter}
-              aria-label="Filter"
-              onChange={ev => {
-                globalDispatch(
-                  String(ev) === ''
-                    ? Actions.EditorActions.clearSearch()
-                    : Actions.EditorActions.search(String(ev)),
-                );
-              }}
-            />
-            <Toggler
-              value={deep}
-              onChange={value =>
-                globalDispatch(Actions.EditorActions.searchSetDeep(value))
-              }
-            />
             <DropMenu
+              tooltip={i18nValues.add}
               items={data || []}
               icon="plus"
               onSelect={(i, e) => {
@@ -164,7 +148,32 @@ export function TreeView({
                 }
               }}
             />
-            {/* <SearchTool /> */}
+            <div className={cx(flex, flexRow)}>
+              <SimpleInput
+                value={value}
+                placeholder={i18nValues.filter}
+                aria-label="Filter"
+                onChange={ev => {
+                  globalDispatch(
+                    String(ev) === ''
+                      ? Actions.EditorActions.clearSearch()
+                      : Actions.EditorActions.search(String(ev)),
+                  );
+                }}
+              />
+              <Toggler
+                className={css({
+                  fontSize: '14px',
+                  lineHeight: '100%',
+                  justifyContent: 'flex-end',
+                })}
+                label={i18nValues.deepSearch}
+                value={deep}
+                onChange={value =>
+                  globalDispatch(Actions.EditorActions.searchSetDeep(value))
+                }
+              />
+            </div>
           </>
         )}
       </Toolbar.Header>

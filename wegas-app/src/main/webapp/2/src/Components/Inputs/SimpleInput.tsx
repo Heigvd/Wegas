@@ -18,6 +18,7 @@ export const inputStyleCSS: ObjectInterpolation<undefined> = {
   border: '2px solid ' + themeVar.colors.PrimaryColor,
   borderRadius: themeVar.dimensions.BorderRadius,
   backgroundColor: themeVar.colors.BackgroundColor,
+  fontFamily: themeVar.others.TextFont2,
   outline: 'none',
   '::placeholder': {
     opacity: '0.5',

@@ -6,7 +6,6 @@ import {
   shrinkWidth,
   grow,
   flex,
-  flexColumn,
   itemCenter,
 } from '../../../css/classes';
 import { classOrNothing, classNameOrEmpty } from '../../../Helper/className';
@@ -21,7 +20,7 @@ const togglerStyle = css({
   color: themeVar.colors.LightTextColor,
   backgroundColor: themeVar.colors.ErrorColor,
   cursor: 'pointer',
-  margin: 'auto',
+  marginLeft: '5px',
   marginTop: '5px',
   flexDirection: 'row',
   ['&.disabled']: {
@@ -102,7 +101,7 @@ export function Toggler({
     <div
       id={id}
       className={
-        cx(flex, flexColumn, itemCenter, shrinkWidth) +
+        cx(flex, itemCenter, shrinkWidth) +
         classNameOrEmpty(className)
       }
       style={style}

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
-import { noOverflow, expandHeight, defaultMargin, MediumPadding } from '../../css/classes';
+import { noOverflow, expandHeight, defaultMargin, MediumPadding, defaultMarginBottom } from '../../css/classes';
 import './FormView';
 import { wwarn } from '../../Helper/wegaslog';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
@@ -12,6 +12,9 @@ import { DropMenu } from '../../Components/DropMenu';
 import { css } from 'emotion';
 import { ActionsProps } from '../../data/Reducer/globalState';
 import { IconComp } from './Views/FontAwesome';
+import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
+import { internalTranslate } from '../../i18n/internalTranslator';
+import { commonTranslations } from '../../i18n/common/common';
 
 const closeButtonStyle = css({
 color: "black",
@@ -30,6 +33,7 @@ interface EditorProps<T> extends DisabledReadonly {
   path?: (string | number)[];
   config?: Schema;
   onChange?: (newEntity: T) => void;
+  label?: React.ReactNode;
 }
 
 export type IForm = typeof Form;
@@ -43,11 +47,14 @@ export function Form<T>({
   update,
   disabled,
   readOnly,
+  label,
 }: EditorProps<T>) {
   const oldReceivedEntity = React.useRef(entity);
   const form = React.useRef<JSONForm>(null);
   const [val, setVal] = React.useState(entity);
   const toolbox : ActionsProps<T>[] = [];
+  const { lang } = React.useContext(languagesCTX);
+  const i18nValues = internalTranslate(commonTranslations, lang);
 
   if (
     deepDifferent(entity, oldReceivedEntity.current) &&
@@ -69,7 +76,7 @@ export function Form<T>({
               <IconButton
                 icon="save"
                 chipStyle
-                tooltip="Save"
+                tooltip={i18nValues.save}
                 disabled={!deepDifferent(val, entity)}
                 onClick={() => {
                   if (form.current != null) {
@@ -87,7 +94,7 @@ export function Form<T>({
             <ConfirmButton
               icon="undo"
               chipStyle
-              tooltip="Reset"
+              tooltip={i18nValues.reset}
               onAction={accept => {
                 accept && setVal(entity);
               }}
@@ -102,13 +109,13 @@ export function Form<T>({
                   case 'toolbox':
                     toolbox.push(a);
                     break;
-                  case 'button':
+                  case 'delete':
                     return a.confirm ? (
                       <ConfirmButton
                         key={i}
                         icon="trash"
                         chipStyle
-                        tooltip="Delete"
+                        tooltip={i18nValues.delete}
                         onAction={succes =>
                           succes && val != null && a.action(val, path)
                         }
@@ -117,21 +124,29 @@ export function Form<T>({
                         <IconButton
                           icon= "trash"
                           chipStyle
-                          tooltip="Delete"
+                          tooltip={i18nValues.delete}
                           key={i}
                           onClick={() => val != null && a.action(val, path)}
                           className={expandHeight}
                         />
                       )
+                  case 'duplicate':
+                    return <IconButton
+                          icon= "clone"
+                          chipStyle
+                          tooltip={i18nValues.duplicate}
+                          key={i}
+                          onClick={() => val != null && a.action(val, path)}
+                          className={expandHeight}
+                        />
                   case 'close':
-                    <IconButton
+                    return <IconButton
                       icon= 'times'
-                      tooltip="Close"
+                      tooltip={i18nValues.close}
                       key={i}
                       onClick={() => val != null && a.action(val, path)}
                       className={closeButtonStyle}
                     />
-                    break;
                   default:
                   toolbox.push(a);
                   break;
@@ -151,6 +166,7 @@ export function Form<T>({
       </Toolbar.Header>
       <Toolbar.Content className={noOverflow}>
         <div className={defaultMargin}>
+          <h3 className={defaultMarginBottom}>{label}</h3>
           <JSONForm
             // Ugly workaround to force update JSONForm when config changes or entity changes
             key={JSON.stringify({

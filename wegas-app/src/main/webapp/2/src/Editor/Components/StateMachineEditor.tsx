@@ -204,7 +204,7 @@ export function StateMachineEditor<
         actions.delete = {
           label: 'Delete',
           confirm: true,
-          sorting: 'button',
+          sorting: 'delete',
           action: (
             sm: IFSMDescriptor | IDialogueDescriptor,
             path?: (string | number)[],
@@ -332,7 +332,7 @@ export function StateMachineEditor<
       actions.delete = {
         label: 'Delete',
         confirm: true,
-        sorting: 'button',
+        sorting: 'delete',
         action: (
           sm: IFSMDescriptor | IDialogueDescriptor,
           path?: (string | number)[],

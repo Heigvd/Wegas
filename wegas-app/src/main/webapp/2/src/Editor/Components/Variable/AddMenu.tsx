@@ -1,7 +1,7 @@
 import * as React from 'react';
 import produce from 'immer';
 import { Actions } from '../../../data';
-import { getIcon, getLabel, getChildren } from '../../editionConfig';
+import { getIcon, getClassLabel, getChildren } from '../../editionConfig';
 import { StoreDispatch, store } from '../../../data/Stores/store';
 import { DropMenu, DropMenuProps } from '../../../Components/DropMenu';
 import { withDefault, IconComp } from '../Views/FontAwesome';
@@ -32,7 +32,7 @@ function buildMenuItems(
           return (
             <>
               <IconComp icon={withDefault(getIcon(entity), 'question')} />
-              {getLabel(entity)}
+              {getClassLabel(entity)}
             </>
           );
         });

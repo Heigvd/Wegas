@@ -24,11 +24,9 @@ export const contentContainerStyle = css({
   maxWidth: '500px',
   zIndex: 10000,
   whiteSpace: 'nowrap',
-  margin: '2px',
-  boxShadow: `0px 0px 4px 1px ${themeVar.colors.PrimaryColor}`,
+  boxShadow: `0px 0px 8px ${themeVar.colors.DisabledColor}`,
   '>div': {
-    padding: '1px',
-    borderRadius: '3px',
+    padding: '4px 10px',
   },
   [`& .${containerStyle}`]: {
     width: '100%',

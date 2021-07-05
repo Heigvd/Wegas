@@ -62,6 +62,7 @@ export interface DropMenuProps<
   noBackground?: boolean;
   style?: React.CSSProperties;
   selected?: T | T[];
+  tooltip?: string;
 }
 /**
  * returns an empty string
@@ -109,6 +110,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
   noBackground,
   style,
   selected,
+  tooltip,
 }: DropMenuProps<T, MItem>) {
   const onStateChange = React.useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -143,6 +145,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
             <Button
               label={label}
               prefixedLabel={prefixedLabel}
+              tooltip={tooltip || undefined}
               icon={withDefault(
                 icon,
                 !adder && items.length === 0
