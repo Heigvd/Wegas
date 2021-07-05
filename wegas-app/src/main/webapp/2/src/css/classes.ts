@@ -213,11 +213,8 @@ export const localSelection = css({
   backgroundColor: themeVar.colors.HeaderColor,
 });
 export const globalSelection = css({
-  //  borderStyle: 'solid',
-  //  borderWidth: '2px',
-  //  borderColor: themeVar.colors.BorderColor,
   borderRadius: themeVar.dimensions.BorderRadius,
-  boxShadow: `0px 0px 0px 1px ${themeVar.colors.PrimaryColor}`,
+  backgroundColor: themeVar.colors.HoverColor,
 });
 export const searchSelection = css({
   backgroundColor: themeVar.colors.HighlightColor,
