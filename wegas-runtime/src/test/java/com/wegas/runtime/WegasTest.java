@@ -76,7 +76,6 @@ public class WegasTest {
     private static TestAuthenticationInformation trainer;
     private static TestAuthenticationInformation user;
 
-    //org.jboss.arquillian.junit.JUnitClassRulesFilter truc;
     GameModel artos;
 
     @Deployment(name = "wegas1.war")

@@ -96,7 +96,7 @@ public class TransitionDependency extends AbstractEntity {
             value = DependencyScopeSelectView.class
         )
     )
-    @Column(length = 10, columnDefinition = "character varying(10) default 'LIVE'::character varying")
+    @Column(length = 10, columnDefinition = "character varying(10)")
     @Enumerated(value = EnumType.STRING)
     private DependencyScope scope;
 

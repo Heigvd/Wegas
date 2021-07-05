@@ -56,7 +56,7 @@ public class Shadow extends AbstractEntity {
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "shadow")
     private AbstractAccount account;
 
-    @Column(length = 24, columnDefinition = "character varying(24)")
+    @Column(length = 24, columnDefinition = "character varying(24) default 'SHA_256'::character varying")
     @Enumerated(value = EnumType.STRING)
     private HashMethod hashMethod = HashMethod.SHA_256;
 

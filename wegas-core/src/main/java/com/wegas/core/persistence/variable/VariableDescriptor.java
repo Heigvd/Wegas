@@ -458,7 +458,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     private ScopeType broadcastScope;
 
     @Version
-    @Column(columnDefinition = "bigint default '0'::bigint")
+    @Column(columnDefinition = "bigint default 0::bigint")
     @WegasEntityProperty(sameEntityOnly = true,
         nullable = false, optional = false,
         proposal = Zero.class,

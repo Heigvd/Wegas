@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
-    <changeSet author="maxence" id="1553507837578-1">
-        <addPrimaryKey columnNames="lang, translatablecontent_id" constraintName="translatablecontent_translations_pkey" tableName="translatablecontent_translations"/>
-        <addNotNullConstraint columnDataType="varchar(255)" columnName="lang" tableName="translatablecontent_translations"/>
-        <addNotNullConstraint columnDataType="bigint" columnName="translatablecontent_id" tableName="translatablecontent_translations"/>
-    </changeSet>
-</databaseChangeLog>

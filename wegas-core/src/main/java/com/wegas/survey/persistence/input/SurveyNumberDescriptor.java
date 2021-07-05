@@ -23,7 +23,6 @@ import com.wegas.editor.view.NumberView;
 import static java.lang.Boolean.FALSE;
 import java.util.Collection;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.OneToOne;
@@ -62,7 +61,6 @@ public class SurveyNumberDescriptor extends SurveyInputDescriptor {
     /**
      * Tells if this input should be presented as a scale
      */
-    @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
         optional = false, nullable = false, proposal = ValueGenerators.False.class,
         view = @View(label = "Present as a scale", value = Hidden.class))
@@ -115,8 +113,8 @@ public class SurveyNumberDescriptor extends SurveyInputDescriptor {
 
     /*
      * Set the maximum allowed value (included)
-     * 
-     * @param minValue 
+     *
+     * @param minValue
      */
     public void setMaxValue(Long maxValue) {
         this.maxValue = maxValue;
@@ -124,8 +122,8 @@ public class SurveyNumberDescriptor extends SurveyInputDescriptor {
 
     /*
      * Get the isScale value
-     * 
-     * @param minValue 
+     *
+     * @param minValue
      */
     public Boolean getIsScale() {
         return isScale;
@@ -133,8 +131,8 @@ public class SurveyNumberDescriptor extends SurveyInputDescriptor {
 
     /*
      * Set the isScale parameter
-     * 
-     * @param minValue 
+     *
+     * @param minValue
      */
     public void setIsScale(Boolean isScale) {
         this.isScale = isScale;
@@ -147,7 +145,7 @@ public class SurveyNumberDescriptor extends SurveyInputDescriptor {
         return unit;
     }
 
-    /* 
+    /*
      * Set the measurement unit
      */
     public void setUnit(TranslatableContent unit) {
