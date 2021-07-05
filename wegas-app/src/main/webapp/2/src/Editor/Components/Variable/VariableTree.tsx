@@ -21,7 +21,7 @@ import { withDefault, IconComp } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { AddMenuParent, AddMenuChoice, AddMenuFeedback } from './AddMenu';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import { SearchTool } from '../SearchTool';
+// import { SearchTool } from '../SearchTool';
 import { useAsync } from '../../../Components/Hooks/useAsync';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
@@ -31,7 +31,6 @@ import { themeVar } from '../../../Components/Theme/ThemeVars';
 import {
   globalSelection,
   localSelection,
-  searchSelection,
   componentMarginLeft,
   flex,
   grow,
@@ -54,6 +53,7 @@ import {
 } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 
 const TREECONTENTID = 'TREECONTENT';
 
@@ -118,7 +118,7 @@ export function TreeView({
   forceLocalDispatch,
   ...options
 }: TreeProps) {
-  const [search, setSearch] = React.useState('');
+  // const [search, setSearch] = React.useState('');
   const [onAccept, setOnAccept] = React.useState(() => () => {});
 
   const { data } = useAsync(itemsPromise);
@@ -127,6 +127,7 @@ export function TreeView({
 
   const globalDispatch = store.dispatch;
   const actionAllowed = isActionAllowed(options);
+  const { value, deep } = useStore(s => s.global.search);
 
   return (
     <Toolbar className={css({ padding: '1.5em' })}>
@@ -134,12 +135,18 @@ export function TreeView({
         {!noHeader && actionAllowed && (
           <>
             <SimpleInput
-              value={search}
+              value={value}
               placeholder={i18nValues.filter}
               aria-label="Filter"
               onChange={ev => {
-                setSearch(ev.toString());
+                globalDispatch(Actions.EditorActions.search(ev.toString()));
               }}
+            />
+            <Toggler
+              value={deep}
+              onChange={value =>
+                globalDispatch(Actions.EditorActions.searchSetDeep(value))
+              }
             />
             <DropMenu
               items={data || []}
@@ -153,7 +160,7 @@ export function TreeView({
                 }
               }}
             />
-            <SearchTool />
+            {/* <SearchTool /> */}
           </>
         )}
       </Toolbar.Header>
@@ -193,7 +200,6 @@ export function TreeView({
                     }}
                     nodeProps={nodeProps}
                     key={id}
-                    search={search}
                     variableId={id}
                     noVisibleRoot={noVisibleRoot}
                     localState={localState}
@@ -216,16 +222,24 @@ export function TreeView({
 /**
  * test a variable and children's editorLabel against a text
  */
-function isMatch(variableId: number, search: string): boolean {
+function isMatch(variableId: number, search: string, deep: boolean): boolean {
   const variable = VariableDescriptor.select(variableId);
   if (variable == null) {
     return false;
+  }
+  if (
+    deep &&
+    Object.values(variable).filter(value =>
+      JSON.stringify(value).toLowerCase().includes(search.toLowerCase()),
+    ).length > 0
+  ) {
+    return true;
   }
   if (editorLabel(variable).toLowerCase().includes(search.toLowerCase())) {
     return true;
   }
   if (varIsList(variable)) {
-    return variable.itemsIds.some(id => isMatch(id, search));
+    return variable.itemsIds.some(id => isMatch(id, search, deep));
   }
   return false;
 }
@@ -264,22 +278,29 @@ export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_DRAG_ITEM';
 interface CTreeProps {
   variableId: number;
   subPath?: string[];
-  search?: string;
+  // search?: string;
   nodeProps: () => {};
   onShowWarning?: (onAccept: () => void) => void;
 }
 
-export function CTree(
-  props: Omit<CTreeProps & TreeProps, 'variables'>,
-): JSX.Element | null {
-  // const unsaved = useStore(() => props?.localState?.unsaved);
-  // props.localState
-  // const unsaved = useStore(s => s.global.editing?.unsaved);
+export function CTree({
+  nodeProps,
+  variableId,
+  disabled,
+  forceLocalDispatch,
+  localDispatch,
+  localState,
+  noVisibleRoot,
+  onShowWarning,
+  readOnly,
+  // search,
+  subPath,
+}: Omit<CTreeProps & TreeProps, 'variables' | 'noHeader'>): JSX.Element | null {
   const { lang } = React.useContext(languagesCTX);
   const i18nValues = internalTranslate(commonTranslations, lang);
   const actionAllowed = isActionAllowed({
-    disabled: props.disabled,
-    readOnly: props.readOnly,
+    disabled: disabled,
+    readOnly: readOnly,
   });
 
   const infoSelector = React.useCallback(
@@ -288,11 +309,10 @@ export function CTree(
         | undefined
         | IVariableDescriptor
         | IResult
-        | IEvaluationDescriptorContainer = VariableDescriptor.select(
-        props.variableId,
-      );
-      if (Array.isArray(props.subPath) && props.subPath.length > 0) {
-        variable = get(variable, props.subPath) as
+        | IEvaluationDescriptorContainer =
+        VariableDescriptor.select(variableId);
+      if (Array.isArray(subPath) && subPath.length > 0) {
+        variable = get(variable, subPath) as
           | IVariableDescriptor
           | IResult
           | IEvaluationDescriptorContainer;
@@ -300,36 +320,26 @@ export function CTree(
 
       return {
         variable: variable,
-        match: isMatch(props.variableId, props.search || ''),
-        editing: isEditing(
-          props.variableId,
-          props.subPath,
-          state.global.editing,
+        match: isMatch(
+          variableId,
+          state.global.search.value || '',
+          state.global.search.deep,
         ),
-        searching:
-          (variable &&
-            entityIs(variable, 'VariableDescriptor') &&
-            state.global.search.type === 'GLOBAL' &&
-            state.global.search.value.includes(editorLabel(variable))) ||
-          false,
+        editing: isEditing(variableId, subPath, state.global.editing),
       };
     },
-    [props.search, props.subPath, props.variableId],
+    [subPath, variableId],
   );
 
-  const { searching, editing, variable, match } = useStore(infoSelector);
+  const { editing, variable, match } = useStore(infoSelector);
 
-  const localEditing = isEditing(
-    props.variableId,
-    props.subPath,
-    props.localState,
-  );
+  const localEditing = isEditing(variableId, subPath, localState);
 
   const onClickAction = React.useCallback(
     (e: ModifierKeysEvent) => {
       let dispatch = store.dispatch;
-      if ((props.forceLocalDispatch || e.ctrlKey) && props.localDispatch) {
-        dispatch = props.localDispatch;
+      if ((forceLocalDispatch || e.ctrlKey) && localDispatch) {
+        dispatch = localDispatch;
       } else {
         if (
           entityIs(variable, 'FSMDescriptor') ||
@@ -340,18 +350,10 @@ export function CTree(
         focusTab(mainLayoutId, 'Variable Properties');
       }
       getEntityActions(variable!).then(({ edit }) =>
-        dispatch(
-          edit(VariableDescriptor.select(props.variableId)!, props.subPath),
-        ),
+        dispatch(edit(VariableDescriptor.select(variableId)!, subPath)),
       );
     },
-    [
-      props.forceLocalDispatch,
-      props.localDispatch,
-      props.subPath,
-      props.variableId,
-      variable,
-    ],
+    [forceLocalDispatch, localDispatch, subPath, variableId, variable],
   );
 
   if (variable) {
@@ -360,37 +362,37 @@ export function CTree(
     }
     return (
       <Node
-        noToggle={props.noVisibleRoot}
-        disabled={props.disabled}
+        noToggle={noVisibleRoot}
+        disabled={disabled}
         dragId={TREEVIEW_ITEM_TYPE}
         dragDisabled={!actionAllowed}
         dropDisabled={!actionAllowed}
-        {...props.nodeProps()}
+        {...nodeProps()}
         header={
           <div
             className={cx(flex, {
               [globalSelection]: editing,
               [localSelection]: localEditing,
-              [searchSelection]: searching,
+              // [searchSelection]: searching,
             })}
             onClick={(e: ModifierKeysEvent) => {
               if (actionAllowed) {
                 const unsaved =
-                  props.forceLocalDispatch || e.ctrlKey
-                    ? props?.localState?.unsaved
+                  forceLocalDispatch || e.ctrlKey
+                    ? localState?.unsaved
                     : store.getState().global.editing?.unsaved;
-                if (unsaved && props.onShowWarning) {
-                  props.onShowWarning(() => onClickAction(e));
+                if (unsaved && onShowWarning) {
+                  onShowWarning(() => onClickAction(e));
                 } else {
                   onClickAction(e);
                 }
               }
             }}
           >
-            {!props.noVisibleRoot && (
+            {!noVisibleRoot && (
               <VariableTreeTitle
                 variable={variable}
-                subPath={props.subPath}
+                subPath={subPath}
                 className={cx(nodeContentStyle, {
                   [actionNodeContentStyle]: actionAllowed,
                 })}
@@ -401,30 +403,28 @@ export function CTree(
               entityIs(variable, 'QuestionDescriptor') ||
               entityIs(variable, 'WhQuestionDescriptor') ? (
                 <AddMenuParent
-                  label={props.noVisibleRoot ? 'Add' : undefined}
-                  prefixedLabel={!props.noVisibleRoot}
+                  label={noVisibleRoot ? 'Add' : undefined}
+                  prefixedLabel={!noVisibleRoot}
                   variable={variable}
-                  localDispatch={props.localDispatch}
+                  localDispatch={localDispatch}
                   focusTab={tabId => focusTab(mainLayoutId, tabId)}
-                  forceLocalDispatch={props.forceLocalDispatch}
-                  style={
-                    props.noVisibleRoot ? { marginBottom: '10px' } : undefined
-                  }
+                  forceLocalDispatch={forceLocalDispatch}
+                  style={noVisibleRoot ? { marginBottom: '10px' } : undefined}
                 />
               ) : entityIs(variable, 'ChoiceDescriptor') ? (
                 <AddMenuChoice
                   variable={variable}
-                  localDispatch={props.localDispatch}
+                  localDispatch={localDispatch}
                   focusTab={tabId => focusTab(mainLayoutId, tabId)}
-                  forceLocalDispatch={props.forceLocalDispatch}
+                  forceLocalDispatch={forceLocalDispatch}
                 />
               ) : entityIs(variable, 'EvaluationDescriptorContainer') ? (
                 <AddMenuFeedback
                   variable={variable}
-                  localDispatch={props.localDispatch}
+                  localDispatch={localDispatch}
                   focusTab={tabId => focusTab(mainLayoutId, tabId)}
-                  path={props.subPath![0] as 'feedback' | 'fbComments'}
-                  forceLocalDispatch={props.forceLocalDispatch}
+                  path={subPath![0] as 'feedback' | 'fbComments'}
+                  forceLocalDispatch={forceLocalDispatch}
                 />
               ) : null)}
           </div>
@@ -438,13 +438,12 @@ export function CTree(
                   nodeProps={nodeProps}
                   key={i}
                   variableId={i}
-                  search={props.search}
-                  localState={props.localState}
-                  localDispatch={props.localDispatch}
-                  forceLocalDispatch={props.forceLocalDispatch}
-                  disabled={props.disabled}
-                  readOnly={props.readOnly}
-                  onShowWarning={props.onShowWarning}
+                  localState={localState}
+                  localDispatch={localDispatch}
+                  forceLocalDispatch={forceLocalDispatch}
+                  disabled={disabled}
+                  readOnly={readOnly}
+                  onShowWarning={onShowWarning}
                 />
               ))
             : entityIs(variable, 'ChoiceDescriptor')
@@ -452,15 +451,14 @@ export function CTree(
                 <CTree
                   nodeProps={nodeProps}
                   key={r.id}
-                  search={props.search}
                   variableId={r.parentId!}
                   subPath={['results', String(index)]}
-                  localState={props.localState}
-                  localDispatch={props.localDispatch}
-                  forceLocalDispatch={props.forceLocalDispatch}
-                  disabled={props.disabled}
-                  readOnly={props.readOnly}
-                  onShowWarning={props.onShowWarning}
+                  localState={localState}
+                  localDispatch={localDispatch}
+                  forceLocalDispatch={forceLocalDispatch}
+                  disabled={disabled}
+                  readOnly={readOnly}
+                  onShowWarning={onShowWarning}
                 />
               ))
             : entityIs(variable, 'PeerReviewDescriptor')
@@ -468,28 +466,26 @@ export function CTree(
                 <CTree
                   nodeProps={nodeProps}
                   key={0}
-                  search={props.search}
-                  variableId={props.variableId}
+                  variableId={variableId}
                   subPath={['feedback']}
-                  localState={props.localState}
-                  localDispatch={props.localDispatch}
-                  forceLocalDispatch={props.forceLocalDispatch}
-                  disabled={props.disabled}
-                  readOnly={props.readOnly}
-                  onShowWarning={props.onShowWarning}
+                  localState={localState}
+                  localDispatch={localDispatch}
+                  forceLocalDispatch={forceLocalDispatch}
+                  disabled={disabled}
+                  readOnly={readOnly}
+                  onShowWarning={onShowWarning}
                 />,
                 <CTree
                   nodeProps={nodeProps}
                   key={1}
-                  search={props.search}
-                  variableId={props.variableId}
+                  variableId={variableId}
                   subPath={['fbComments']}
-                  localState={props.localState}
-                  localDispatch={props.localDispatch}
-                  forceLocalDispatch={props.forceLocalDispatch}
-                  disabled={props.disabled}
-                  readOnly={props.readOnly}
-                  onShowWarning={props.onShowWarning}
+                  localState={localState}
+                  localDispatch={localDispatch}
+                  forceLocalDispatch={forceLocalDispatch}
+                  disabled={disabled}
+                  readOnly={readOnly}
+                  onShowWarning={onShowWarning}
                 />,
               ]
             : entityIs(variable, 'EvaluationDescriptorContainer')
@@ -497,19 +493,18 @@ export function CTree(
                 <CTree
                   nodeProps={nodeProps}
                   key={r.id}
-                  search={props.search}
-                  variableId={props.variableId}
+                  variableId={variableId}
                   subPath={[
-                    ...(props.subPath ? props.subPath : []),
+                    ...(subPath ? subPath : []),
                     'evaluations',
                     String(index),
                   ]}
-                  localState={props.localState}
-                  localDispatch={props.localDispatch}
-                  forceLocalDispatch={props.forceLocalDispatch}
-                  disabled={props.disabled}
-                  readOnly={props.readOnly}
-                  onShowWarning={props.onShowWarning}
+                  localState={localState}
+                  localDispatch={localDispatch}
+                  forceLocalDispatch={forceLocalDispatch}
+                  disabled={disabled}
+                  readOnly={readOnly}
+                  onShowWarning={onShowWarning}
                 />
               ))
             : null
