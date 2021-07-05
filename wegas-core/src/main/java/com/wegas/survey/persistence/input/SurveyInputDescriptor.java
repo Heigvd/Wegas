@@ -30,7 +30,6 @@ import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import static java.lang.Boolean.TRUE;
 import java.util.Collection;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Inheritance;
@@ -82,7 +81,6 @@ public abstract class SurveyInputDescriptor
     /**
      * Tells if a reply to this input/question is compulsory
      */
-    @Column(columnDefinition = "boolean default true")
     @WegasEntityProperty(
         optional = false, nullable = false, proposal = ValueGenerators.True.class,
         view = @View(label = "Reply is compulsory"))

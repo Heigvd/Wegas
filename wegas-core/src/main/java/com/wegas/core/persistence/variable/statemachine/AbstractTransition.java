@@ -103,7 +103,7 @@ public abstract class AbstractTransition extends AbstractEntity implements Broad
     private Long id;
 
     @Version
-    @Column(columnDefinition = "bigint default '0'::bigint")
+    @Column(columnDefinition = "bigint default 0::bigint")
     @WegasEntityProperty(
         nullable = false, optional = false, proposal = Zero.class,
         sameEntityOnly = true, view = @View(
@@ -171,7 +171,7 @@ public abstract class AbstractTransition extends AbstractEntity implements Broad
             value = ManualOrAutoSelectView.class,
             index = -300
         ))
-    @Column(length = 10, columnDefinition = "character varying(10) default 'LIVE'::character varying")
+    @Column(length = 10, columnDefinition = "character varying(10) default 'AUTO'::character varying")
     @Enumerated(value = EnumType.STRING)
     private DependsOnStrategy dependsOnStrategy = DependsOnStrategy.AUTO;
 

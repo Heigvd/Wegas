@@ -166,7 +166,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     private static final long serialVersionUID = 1L;
 
     @Version
-    @Column(columnDefinition = "bigint default '0'::bigint")
+    @Column(columnDefinition = "bigint default 0::bigint")
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
         sameEntityOnly = true, view = @View(
             index = -999,

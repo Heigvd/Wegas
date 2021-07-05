@@ -75,7 +75,7 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     private AbstractStateMachineDescriptor stateMachine;
 
     @Version
-    @Column(columnDefinition = "bigint default '0'::bigint")
+    @Column(columnDefinition = "bigint default 0::bigint")
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
         sameEntityOnly = true, view = @View(
             label = "Version",

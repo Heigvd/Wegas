@@ -179,7 +179,7 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
             }
         }
     }
-    
+
     public SurveyChoicesDescriptor getParentSurveyChoice() {
         return parentSurveyChoice;
     }
