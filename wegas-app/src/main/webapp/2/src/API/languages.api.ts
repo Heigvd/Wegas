@@ -75,11 +75,9 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
      * @param language The language to update
      */
     addLanguage(language: IGameModelLanguage) {
-      return rest(LANGUAGES_BASE(gameModelId) + 'Lang', {
+      return managedModeRequest(LANGUAGES_BASE(gameModelId) + 'Lang', {
         method: 'POST',
         body: JSON.stringify(language),
-      }).then((res: Response) => {
-        return res.json() as Promise<IGameModel>;
       });
     },
 
