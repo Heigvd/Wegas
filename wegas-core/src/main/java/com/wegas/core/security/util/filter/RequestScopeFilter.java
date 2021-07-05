@@ -23,8 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
- * CacheControl No-Cache for static content
+ * Request headers logger
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */

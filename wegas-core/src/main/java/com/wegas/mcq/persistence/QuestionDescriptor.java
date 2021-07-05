@@ -9,6 +9,7 @@ package com.wegas.mcq.persistence;
 
 import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
 import static ch.albasim.wegas.annotations.CommonView.LAYOUT.shortInline;
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
@@ -181,7 +182,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @return the player instance active status
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public boolean isActive(Player p) {
         QuestionInstance instance = this.getInstance(p);
         return instance.getActive();
@@ -191,7 +192,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void activate(Player p) {
         this.setActive(p, true);
     }
@@ -205,7 +206,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         this.deactivate(p);
     }
 
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void deactivate(Player p) {
         this.setActive(p, false);
     }
@@ -216,7 +217,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * @param p
      * @param value
      */
-    @Scriptable(label = "validate")
+    @Scriptable(label = "validate", dependsOn = DependencyScope.NONE)
     public void setValidated(Player p, @Param(proposal = True.class) boolean value) {
         this.getInstance(p).setValidated(value);
     }
@@ -228,7 +229,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @return
      */
-    @Scriptable(label = "is validated")
+    @Scriptable(label = "is validated", dependsOn = DependencyScope.SELF)
     public boolean getValidated(Player p) {
         return this.getInstance(p).isValidated();
     }
@@ -344,7 +345,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Override
     @JsonView(Views.ExportI.class)
-    @Scriptable(label = "getItems", wysiwyg = false)
+    @Scriptable(label = "getItems", wysiwyg = false, dependsOn = DependencyScope.CHILDREN)
     public List<ChoiceDescriptor> getItems() {
         return Helper.copyAndSortModifiable(this.items, new EntityComparators.OrderComparator<>());
     }
@@ -385,7 +386,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @return true if the player has already answers this question
      */
-    @Scriptable(label = "has been replied")
+    @Scriptable(label = "has been replied", dependsOn = DependencyScope.CHILDREN)
     public boolean isReplied(Player p) {
         return !this.isNotReplied(p);
     }
@@ -397,7 +398,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @return true if the player has not yet answers this question
      */
-    @Scriptable(label = "has not been replied")
+    @Scriptable(label = "has not been replied", dependsOn = DependencyScope.CHILDREN)
     public boolean isNotReplied(Player p) {
         QuestionInstance instance = this.getInstance(p);
         // no validated replies at all
@@ -411,7 +412,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @return
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.CHILDREN)
     public boolean isStillAnswerabled(Player p) {
         if (this.getMaxReplies() != null) {
             QuestionInstance qi = this.getInstance(p);
