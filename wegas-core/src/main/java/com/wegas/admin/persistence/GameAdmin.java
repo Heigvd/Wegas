@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.admin.persistence.data.GameAdminTeam;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.DebugTeam;
@@ -281,12 +282,12 @@ public class GameAdmin extends AbstractEntity {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
         return WegasMembership.TRAINER;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         return WegasMembership.ADMIN;
     }
 

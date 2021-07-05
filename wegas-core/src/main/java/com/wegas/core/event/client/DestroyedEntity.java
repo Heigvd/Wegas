@@ -9,6 +9,7 @@ package com.wegas.core.event.client;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -57,7 +58,7 @@ public class DestroyedEntity extends AbstractEntity {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         return null;
     }
 

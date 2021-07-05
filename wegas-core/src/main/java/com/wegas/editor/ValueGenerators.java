@@ -98,6 +98,13 @@ public class ValueGenerators {
         }
     }
 
+    public static class IsolationVal implements ValueGenerator {
+
+        public String getValue() {
+            return "OPEN";
+        }
+    }
+
     public static class TeamScopeVal implements ValueGenerator {
 
         @Override

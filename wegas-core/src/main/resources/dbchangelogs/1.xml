@@ -1,0 +1,2580 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="maxence" id="1-1">
+        <createTable tableName="abstractaccount">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="abstractaccount_pkey"/>
+            </column>
+            <column name="dtype" type="VARCHAR(31)"/>
+            <column name="agreedtime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="comment" type="VARCHAR(255)"/>
+            <column name="createdtime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="emaildomain" type="VARCHAR(255)"/>
+            <column name="firstname" type="VARCHAR(255)"/>
+            <column name="lastname" type="VARCHAR(255)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="username" type="VARCHAR(100)"/>
+            <column name="user_id" type="BIGINT"/>
+            <column name="details_id" type="BIGINT"/>
+            <column name="shadow_id" type="BIGINT"/>
+            <column name="homeorg" type="VARCHAR(255)"/>
+            <column name="persistentid" type="TEXT"/>
+            <column name="currentauth" type="VARCHAR(24)"/>
+            <column name="newsalt" type="VARCHAR(255)"/>
+            <column name="nextauth" type="VARCHAR(24)"/>
+            <column name="salt" type="VARCHAR(255)"/>
+            <column defaultValueBoolean="false" name="verified" type="BOOLEAN"/>
+        </createTable>
+
+
+        <createTable tableName="variabledescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="variabledescriptor_pkey"/>
+            </column>
+            <column name="dtype" type="VARCHAR(31)"/>
+            <column name="comments" type="TEXT"/>
+            <column name="editortag" type="VARCHAR(255)"/>
+            <column name="indexorder" type="INTEGER"/>
+            <column defaultValue="PRIVATE" name="isolation" type="VARCHAR(24)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="version" type="BIGINT" defaultValue="0::bigint"/>
+            <column defaultValue="PRIVATE" name="visibility" type="VARCHAR(24)"/>
+            <column name="gamemodel_id" type="BIGINT"/>
+            <column name="parentlist_id" type="BIGINT"/>
+            <column name="parentwh_id" type="BIGINT"/>
+            <column name="root_id" type="BIGINT"/>
+            <column name="defaultinstance_id" type="BIGINT"/>
+            <column name="label_id" type="BIGINT"/>
+            <column name="scope_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="surveyinputdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveyinputdescriptor_pkey"/>
+            </column>
+            <column name="iscompulsory" type="BOOLEAN"/>
+            <column name="section_id" type="BIGINT"/>
+            <column name="description_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="surveynumberdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveynumberdescriptor_pkey"/>
+            </column>
+            <column name="isscale" type="BOOLEAN"/>
+            <column name="maxvalue" type="BIGINT"/>
+            <column name="minvalue" type="BIGINT"/>
+            <column name="unit_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="mcqresult">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="mcqresult_pkey"/>
+            </column>
+            <column name="index" type="INTEGER"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="version" type="BIGINT" defaultValue="0::bigint"/>
+            <column name="ignoration_content" type="TEXT"/>
+            <column name="ignoration_language" type="VARCHAR(255)"/>
+            <column name="content" type="TEXT"/>
+            <column name="lang" type="VARCHAR(255)"/>
+            <column name="choicedescriptor_id" type="BIGINT"/>
+            <column name="answer_id" type="BIGINT"/>
+            <column name="ignorationanswer_id" type="BIGINT"/>
+            <column name="label_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="gameteams">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="gameteams_pkey"/>
+            </column>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="game_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="variableinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="variableinstance_pkey"/>
+            </column>
+            <column name="dtype" type="VARCHAR(31)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="version" type="BIGINT" defaultValue="0::bigint"/>
+            <column name="gamemodel_id" type="BIGINT"/>
+            <column name="player_id" type="BIGINT"/>
+            <column name="playerscope_id" type="BIGINT"/>
+            <column name="team_id" type="BIGINT"/>
+            <column name="teamscope_id" type="BIGINT"/>
+            <column name="gamemodelscope_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="whquestioninstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="whquestioninstance_pkey"/>
+            </column>
+            <column name="active" type="BOOLEAN"/>
+            <column name="unread" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="validated" type="BOOLEAN"/>
+            <column name="feedback_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="resourcedescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="resourcedescriptor_pkey"/>
+            </column>
+            <column name="description_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="evaluationinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="evaluationinstance_pkey"/>
+            </column>
+            <column name="dtype" type="VARCHAR(31)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="commentsreview_id" type="BIGINT"/>
+            <column name="evaluationdescriptor_id" type="BIGINT"/>
+            <column name="feedbackreview_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="questiondescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="questiondescriptor_pkey"/>
+            </column>
+            <column defaultValueBoolean="false" name="cbx" type="BOOLEAN"/>
+            <column name="maxreplies" type="INTEGER"/>
+            <column name="minreplies" type="INTEGER"/>
+            <column defaultValueBoolean="false" name="tabular" type="BOOLEAN"/>
+            <column name="description_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="questioninstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="questioninstance_pkey"/>
+            </column>
+            <column name="active" type="BOOLEAN"/>
+            <column name="unread" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="validated" type="BOOLEAN"/>
+        </createTable>
+
+
+        <createTable tableName="surveysectiondescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveysectiondescriptor_pkey"/>
+            </column>
+            <column name="survey_id" type="BIGINT"/>
+            <column name="description_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="translatablecontent">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="translatablecontent_pkey"/>
+            </column>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column defaultValueNumeric="0" name="version" type="BIGINT"/>
+            <column name="parentdescriptor_id" type="BIGINT"/>
+            <column name="parentinstance_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="peerreviewdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="peerreviewdescriptor_pkey"/>
+            </column>
+            <column defaultValueBoolean="false" name="includeevicted" type="BOOLEAN"/>
+            <column name="maxnumberofreviewer" type="INTEGER"/>
+            <column name="toreview_id" type="BIGINT"/>
+            <column name="description_id" type="BIGINT"/>
+            <column name="fbcomments_id" type="BIGINT"/>
+            <column name="feedback_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="permission">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="permission_pkey"/>
+            </column>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="permissions" type="VARCHAR(255)"/>
+            <column name="role_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="evaluationdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="evaluationdescriptor_pkey"/>
+            </column>
+            <column name="dtype" type="VARCHAR(31)"/>
+            <column name="index" type="INTEGER"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="container_id" type="BIGINT"/>
+            <column name="description_id" type="BIGINT"/>
+            <column name="label_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="activity">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="activity_pkey"/>
+            </column>
+            <column name="wcompletion" type="FLOAT8"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="stime" type="FLOAT8"/>
+            <column name="wtime" type="FLOAT8"/>
+            <column name="requirement_id" type="BIGINT"/>
+            <column name="resourceinstance_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="taskinstance_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="message">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="message_pkey"/>
+            </column>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="senttime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column defaultValue="" name="token" type="VARCHAR(64)"/>
+            <column name="unread" type="BOOLEAN"/>
+            <column name="inboxinstance_id" type="BIGINT"/>
+            <column name="body_id" type="BIGINT"/>
+            <column name="date_id" type="BIGINT"/>
+            <column name="from_id" type="BIGINT"/>
+            <column name="subject_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="choicedescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="choicedescriptor_pkey"/>
+            </column>
+            <column name="cost" type="BIGINT"/>
+            <column name="duration" type="BIGINT"/>
+            <column name="maxreplies" type="INTEGER"/>
+            <column name="question_id" type="BIGINT"/>
+            <column name="description_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="game">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="game_pkey"/>
+            </column>
+            <column name="dtype" type="VARCHAR(31)"/>
+            <column name="access" type="INTEGER"/>
+            <column name="createdtime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column defaultValue="LIVE" name="status" type="VARCHAR(24)"/>
+            <column name="token" type="VARCHAR(255)"/>
+            <column name="updatedtime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="createdby_id" type="BIGINT"/>
+            <column name="gamemodel_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="team">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="team_pkey"/>
+            </column>
+            <column name="dtype" type="VARCHAR(31)"/>
+            <column name="createdtime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="declaredsize" type="INTEGER"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="notes" type="TEXT"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column defaultValue="WAITING" name="status" type="VARCHAR(24)"/>
+            <column name="createdby_id" type="BIGINT"/>
+            <column name="gameteams_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="attachment">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="attachment_pkey"/>
+            </column>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="message_id" type="BIGINT"/>
+            <column name="file_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="surveychoicesdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveychoicesdescriptor_pkey"/>
+            </column>
+            <column name="isscale" type="BOOLEAN"/>
+            <column name="isslider" type="BOOLEAN"/>
+            <column name="maxselectable" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="whquestiondescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="whquestiondescriptor_pkey"/>
+            </column>
+            <column name="description_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="fsm_state">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="fsm_state_pkey"/>
+            </column>
+            <column name="dtype" type="VARCHAR(31)"/>
+            <column name="fsm_statekey" type="BIGINT"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="version" type="BIGINT" defaultValue="0::bigint"/>
+            <column name="x" type="SMALLINT"/>
+            <column name="y" type="SMALLINT"/>
+            <column name="content" type="TEXT"/>
+            <column name="lang" type="VARCHAR(255)"/>
+            <column name="statemachine_id" type="BIGINT"/>
+            <column name="text_id" type="BIGINT"/>
+            <column name="label" type="VARCHAR(255)"/>
+        </createTable>
+
+
+        <createTable tableName="inboxdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="inboxdescriptor_pkey"/>
+            </column>
+            <column defaultValueBoolean="false" name="capped" type="BOOLEAN"/>
+        </createTable>
+
+
+        <createTable tableName="stringinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="stringinstance_pkey"/>
+            </column>
+            <column name="trvalue_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="abstractscope">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="abstractscope_pkey"/>
+            </column>
+            <column name="dtype" type="VARCHAR(31)"/>
+            <column name="broadcastscope" type="VARCHAR(255)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="variabledescriptor_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="fsminstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="fsminstance_pkey"/>
+            </column>
+            <column name="currentstate_id" type="BIGINT"/>
+            <column defaultValueBoolean="true" name="enabled" type="BOOLEAN"/>
+        </createTable>
+
+
+        <createTable tableName="mcqreply">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="mcqreply_pkey"/>
+            </column>
+            <column name="createdtime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column defaultValueBoolean="false" name="ignored" type="BOOLEAN"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="starttime" type="BIGINT"/>
+            <column defaultValueBoolean="false" name="unread" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="validated" type="BOOLEAN"/>
+            <column name="choiceinstance_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="result_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="assignment">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="assignment_pkey"/>
+            </column>
+            <column name="index" type="INTEGER"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="resourceinstance_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="taskinstance_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="iteration">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="iteration_pkey"/>
+            </column>
+            <column name="beginat" type="BIGINT"/>
+            <column name="cpi" type="FLOAT8"/>
+            <column name="createdtime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="wspi" type="FLOAT8"/>
+            <column name="burndowninstance_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="wrequirement">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="wrequirement_pkey"/>
+            </column>
+            <column name="completeness" type="FLOAT8"/>
+            <column name="wlevel" type="INTEGER"/>
+            <column name="wlimit" type="INTEGER"/>
+            <column name="wrequirement_name" type="VARCHAR(255)"/>
+            <column name="quality" type="FLOAT8"/>
+            <column name="quantity" type="BIGINT"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="wwork" type="VARCHAR(255)"/>
+            <column name="taskinstance_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="statictextdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="statictextdescriptor_pkey"/>
+            </column>
+            <column name="text_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="transition">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="transition_pkey"/>
+            </column>
+            <column name="dtype" type="VARCHAR(31)"/>
+            <column defaultValue="AUTO" name="dependsonstrategy" type="VARCHAR(10)"/>
+            <column name="index" type="INTEGER"/>
+            <column name="nextstateid" type="BIGINT"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="version" type="BIGINT" defaultValue="0::bigint"/>
+            <column name="ontransition_content" type="TEXT"/>
+            <column name="ontransition_language" type="VARCHAR(255)"/>
+            <column name="content" type="TEXT"/>
+            <column name="lang" type="VARCHAR(255)"/>
+            <column name="state_id" type="BIGINT"/>
+            <column name="label" type="VARCHAR(255)"/>
+            <column name="actiontext_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="surveydescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveydescriptor_pkey"/>
+            </column>
+            <column defaultValueBoolean="true" name="ispublished" type="BOOLEAN"/>
+            <column name="description_id" type="BIGINT"/>
+            <column name="descriptionend_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="gamemodelcontent">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="gamemodelcontent_pkey"/>
+            </column>
+            <column name="content" type="TEXT"/>
+            <column name="contentkey" type="VARCHAR(255)"/>
+            <column name="contenttype" type="VARCHAR(255)"/>
+            <column name="librarytype" type="VARCHAR(255)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column defaultValueNumeric="0" name="version" type="BIGINT"/>
+            <column defaultValue="PRIVATE" name="visibility" type="VARCHAR(24)"/>
+            <column name="gamemodel_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="iterationperiod">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="iterationperiod_pkey"/>
+            </column>
+            <column name="ac" type="FLOAT8"/>
+            <column name="aw" type="FLOAT8"/>
+            <column name="deltaac" type="FLOAT8"/>
+            <column name="deltaatstart" type="FLOAT8"/>
+            <column name="deltaev" type="FLOAT8"/>
+            <column name="ev" type="FLOAT8"/>
+            <column name="ew" type="FLOAT8"/>
+            <column name="lastworkedstep" type="INTEGER"/>
+            <column name="periodnumber" type="BIGINT"/>
+            <column name="planned" type="FLOAT8"/>
+            <column name="pw" type="FLOAT8"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="replanned" type="FLOAT8"/>
+            <column name="iteration_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="choiceinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="choiceinstance_pkey"/>
+            </column>
+            <column name="active" type="BOOLEAN"/>
+            <column name="unread" type="BOOLEAN"/>
+            <column name="currentresult_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="translatablecontent_translations">
+            <column name="lang" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="translatablecontent_translations_pkey"/>
+            </column>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="translatablecontent_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="translatablecontent_translations_pkey"/>
+            </column>
+            <column name="tr" type="TEXT"/>
+        </createTable>
+
+
+        <createTable tableName="triggerdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="triggerdescriptor_pkey"/>
+            </column>
+            <column defaultValueBoolean="false" name="disableself" type="BOOLEAN"/>
+            <column name="oneshot" type="BOOLEAN"/>
+        </createTable>
+
+
+        <createTable tableName="textinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="textinstance_pkey"/>
+            </column>
+            <column name="trvalue_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="review">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="review_pkey"/>
+            </column>
+            <column name="createdtime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="reviewstate" type="VARCHAR(255)"/>
+            <column name="author_id" type="BIGINT"/>
+            <column name="reviewer_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="surveyinputinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveyinputinstance_pkey"/>
+            </column>
+            <column name="active" type="BOOLEAN"/>
+            <column name="isreplied" type="BOOLEAN"/>
+        </createTable>
+
+
+        <createTable tableName="player">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="player_pkey"/>
+            </column>
+            <column name="jointime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column defaultValue="" name="lang" type="VARCHAR(16)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column defaultValue="WAITING" name="status" type="VARCHAR(24)"/>
+            <column defaultValueNumeric="0" name="version" type="BIGINT"/>
+            <column name="team_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="gameadmin">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="gameadmin_pkey"/>
+            </column>
+            <column name="comments" type="TEXT"/>
+            <column name="createdtime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="creator" type="VARCHAR(255)"/>
+            <column name="prevgameid" type="BIGINT"/>
+            <column name="prevgamemodel" type="VARCHAR(255)"/>
+            <column name="prevname" type="VARCHAR(255)"/>
+            <column name="prevteamcount" type="INTEGER"/>
+            <column name="prevteams" type="TEXT"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="status" type="VARCHAR(24)"/>
+            <column name="game_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="gamemodellanguage">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="gamemodellanguage_pkey"/>
+            </column>
+            <column defaultValueBoolean="false" name="active" type="BOOLEAN"/>
+            <column defaultValue="" name="code" type="VARCHAR(16)"/>
+            <column name="indexorder" type="INTEGER"/>
+            <column name="lang" type="VARCHAR(255)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column defaultValue="PRIVATE" name="visibility" type="VARCHAR(24)"/>
+            <column name="gamemodel_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="occupation">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="occupation_pkey"/>
+            </column>
+            <column name="editable" type="BOOLEAN"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="wtime" type="INTEGER"/>
+            <column name="resourceinstance_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="iterationevent">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="iterationevent_pkey"/>
+            </column>
+            <column name="data" type="VARCHAR(255)"/>
+            <column name="eventtype" type="VARCHAR(255)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="step" type="INTEGER"/>
+            <column name="iterationperiod_id" type="BIGINT"/>
+            <column name="taskinstance_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="gamemodel">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="gamemodel_pkey"/>
+            </column>
+            <column defaultValueNumeric="1" name="uiversion" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="basedon_id" type="BIGINT"/>
+            <column name="comments" type="TEXT"/>
+            <column name="createdtime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="description" type="TEXT"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column defaultValue="LIVE" name="status" type="VARCHAR(24)"/>
+            <column defaultValue="SCENARIO" name="type" type="VARCHAR(24)"/>
+            <column name="clientscripturi" type="VARCHAR(255)"/>
+            <column name="cssuri" type="VARCHAR(255)"/>
+            <column name="freeforall" type="BOOLEAN"/>
+            <column name="guestallowed" type="BOOLEAN"/>
+            <column name="iconuri" type="VARCHAR(255)"/>
+            <column name="logid" type="VARCHAR(255)"/>
+            <column name="pagesuri" type="VARCHAR(255)"/>
+            <column name="scripturi" type="VARCHAR(255)"/>
+            <column name="websocket" type="VARCHAR(255)"/>
+            <column name="createdby_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="taskdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="taskdescriptor_pkey"/>
+            </column>
+            <column name="index" type="VARCHAR(24)"/>
+            <column name="description_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="transitiondependency">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="transitiondependency_pkey"/>
+            </column>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column defaultValue="SELF" name="scope" type="VARCHAR(10)"/>
+            <column name="transition_id" type="BIGINT"/>
+            <column name="variable_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="enumitem">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="enumitem_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="item_order" type="INTEGER"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="parentevaluation_id" type="BIGINT"/>
+            <column name="parentstring_id" type="BIGINT"/>
+            <column name="parentsurveychoice_id" type="BIGINT"/>
+            <column name="label_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="accountdetails">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="accountdetails_pkey"/>
+            </column>
+            <column name="checkuniqueness" type="BOOLEAN"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+        </createTable>
+
+
+        <createTable tableName="listdescriptor_allowedtypes">
+            <column name="listdescriptor_id" type="BIGINT"/>
+            <column name="allowedtypes" type="VARCHAR(255)"/>
+        </createTable>
+
+
+        <createTable tableName="numberinstance_history">
+            <column name="history_order" type="INTEGER"/>
+            <column name="history" type="FLOAT8"/>
+            <column name="numberinstance_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="objectdescriptor_properties">
+            <column name="properties_key" type="VARCHAR(255)"/>
+            <column name="properties" type="TEXT"/>
+            <column name="objectdescriptor_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="objectinstance_properties">
+            <column name="properties_key" type="VARCHAR(255)"/>
+            <column name="properties" type="TEXT"/>
+            <column name="objectinstance_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="resourcedescriptor_properties">
+            <column name="properties_key" type="VARCHAR(255)"/>
+            <column name="properties" type="TEXT"/>
+            <column name="resourcedescriptor_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="resourceinstance_properties">
+            <column name="properties_key" type="VARCHAR(255)"/>
+            <column name="properties" type="TEXT"/>
+            <column name="resourceinstance_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="taskdescriptor_taskdescriptor">
+            <column name="predecessor_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="taskdescriptor_taskdescriptor_pkey"/>
+            </column>
+            <column name="taskdescriptor_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="taskdescriptor_taskdescriptor_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="users_roles">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="users_roles_pkey"/>
+            </column>
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="users_roles_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="taskinstance_plannification">
+            <column name="taskinstance_id" type="BIGINT"/>
+            <column name="plannification" type="INTEGER"/>
+        </createTable>
+
+
+        <createTable tableName="taskinstance_properties">
+            <column name="properties_key" type="VARCHAR(255)"/>
+            <column name="properties" type="TEXT"/>
+            <column name="taskinstance_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="taskdescriptor_properties">
+            <column name="properties_key" type="VARCHAR(255)"/>
+            <column name="properties" type="TEXT"/>
+            <column name="taskdescriptor_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="transitionhistory">
+            <column name="transition_order" type="INTEGER"/>
+            <column name="transitionid" type="BIGINT"/>
+            <column name="statemachineinstance_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="iteration_taskinstance">
+            <column name="iteration_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="iteration_taskinstance_pkey"/>
+            </column>
+            <column name="taskinstance_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="iteration_taskinstance_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="questiondescriptor_pictures">
+            <column name="questiondescriptor_id" type="BIGINT"/>
+            <column name="pictures" type="VARCHAR(255)"/>
+        </createTable>
+
+
+        <createTable tableName="result_files">
+            <column name="result_id" type="BIGINT"/>
+            <column name="files" type="VARCHAR(255)"/>
+        </createTable>
+
+
+        <createTable tableName="surveydescriptor_token">
+            <column name="surveys_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveydescriptor_token_pkey"/>
+            </column>
+            <column name="tokens_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveydescriptor_token_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="shadow">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="shadow_pkey"/>
+            </column>
+            <column name="hashmethod" type="VARCHAR(24)" defaultValue="SHA_256"/>
+            <column name="nexthashmethod" type="VARCHAR(24)"/>
+            <column name="passwordhex" type="VARCHAR(255)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="salt" type="VARCHAR(255)"/>
+        </createTable>
+
+
+        <createTable tableName="users">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="users_pkey"/>
+            </column>
+            <column name="lastseenat" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="refid" type="VARCHAR(255)"/>
+        </createTable>
+
+
+        <createTable tableName="abstractstatemachinedescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="abstractstatemachinedescriptor_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="booleandescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="booleandescriptor_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="booleaninstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="booleaninstance_pkey"/>
+            </column>
+            <column name="val" type="BOOLEAN"/>
+        </createTable>
+
+
+        <createTable tableName="burndowndescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="burndowndescriptor_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="burndowninstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="burndowninstance_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="categorizedevaluationdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="categorizedevaluationdescriptor_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="categorizedevaluationinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="categorizedevaluationinstance_pkey"/>
+            </column>
+            <column name="evaluationvalue" type="VARCHAR(255)"/>
+        </createTable>
+
+
+        <createTable tableName="dialoguedescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="dialoguedescriptor_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="evaluationdescriptorcontainer">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="evaluationdescriptorcontainer_pkey"/>
+            </column>
+            <column name="refid" type="VARCHAR(255)"/>
+        </createTable>
+
+
+        <createTable tableName="fsmdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="fsmdescriptor_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="gradedescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="gradedescriptor_pkey"/>
+            </column>
+            <column name="maxvalue" type="BIGINT"/>
+            <column name="minvalue" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="gradeinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="gradeinstance_pkey"/>
+            </column>
+            <column name="evaluationvalue" type="FLOAT8"/>
+        </createTable>
+
+
+        <createTable tableName="inboxinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="inboxinstance_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="listdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="listdescriptor_pkey"/>
+            </column>
+            <column name="addshortcut" type="VARCHAR(255)"/>
+        </createTable>
+
+
+        <createTable tableName="listinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="listinstance_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="numberdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="numberdescriptor_pkey"/>
+            </column>
+            <column name="historysize" type="INTEGER"/>
+            <column name="maxvalue" type="FLOAT8"/>
+            <column name="minvalue" type="FLOAT8"/>
+        </createTable>
+
+
+        <createTable tableName="numberinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="numberinstance_pkey"/>
+            </column>
+            <column name="val" type="FLOAT8"/>
+        </createTable>
+
+
+        <createTable tableName="objectdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="objectdescriptor_pkey"/>
+            </column>
+            <column name="description" type="TEXT"/>
+        </createTable>
+
+
+        <createTable tableName="objectinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="objectinstance_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="peerreviewinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="peerreviewinstance_pkey"/>
+            </column>
+            <column name="reviewstate" type="VARCHAR(255)"/>
+        </createTable>
+
+
+        <createTable tableName="roles">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="roles_pkey"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(100)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+        </createTable>
+
+
+        <createTable tableName="resourceinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="resourceinstance_pkey"/>
+            </column>
+            <column name="active" type="BOOLEAN"/>
+            <column name="confidence" type="INTEGER"/>
+        </createTable>
+
+
+        <createTable tableName="statictextinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="statictextinstance_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="stringdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="stringdescriptor_pkey"/>
+            </column>
+            <column name="maxselectable" type="INTEGER"/>
+            <column name="sortable" type="BOOLEAN"/>
+            <column name="validationpattern" type="VARCHAR(255)"/>
+        </createTable>
+
+
+        <createTable tableName="token">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="token_pkey"/>
+            </column>
+            <column name="dtype" type="VARCHAR(31)"/>
+            <column name="autologin" type="BOOLEAN"/>
+            <column name="expirydate" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="refid" type="VARCHAR(255)"/>
+            <column name="remaininguses" type="BIGINT"/>
+            <column name="token" type="VARCHAR(255)"/>
+            <column name="account_id" type="BIGINT"/>
+            <column name="game_id" type="BIGINT"/>
+            <column name="team_id" type="BIGINT"/>
+        </createTable>
+
+
+        <createTable tableName="surveyinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveyinstance_pkey"/>
+            </column>
+            <column name="active" type="BOOLEAN"/>
+            <column name="status" type="TEXT"/>
+        </createTable>
+
+
+        <createTable tableName="surveysectioninstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveysectioninstance_pkey"/>
+            </column>
+            <column name="active" type="BOOLEAN"/>
+        </createTable>
+
+
+        <createTable tableName="surveytextdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveytextdescriptor_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="taskinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="taskinstance_pkey"/>
+            </column>
+            <column name="active" type="BOOLEAN"/>
+        </createTable>
+
+
+        <createTable tableName="textdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="textdescriptor_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="textevaluationdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="textevaluationdescriptor_pkey"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="textevaluationinstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="textevaluationinstance_pkey"/>
+            </column>
+            <column name="evaluationvalue" type="TEXT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="maxence" id="1-2">
+        <addForeignKeyConstraint baseColumnNames="details_id" baseTableName="abstractaccount" constraintName="fk_abstractaccount_details_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="accountdetails" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="shadow_id" baseTableName="abstractaccount" constraintName="fk_abstractaccount_shadow_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="shadow" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="abstractaccount" constraintName="fk_abstractaccount_user_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="variabledescriptor_id" baseTableName="abstractscope" constraintName="fk_abstractscope_variabledescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="abstractstatemachinedescriptor" constraintName="fk_abstractstatemachinedescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="booleandescriptor" constraintName="fk_booleandescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="burndowndescriptor" constraintName="fk_burndowndescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="choicedescriptor" constraintName="fk_choicedescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="question_id" baseTableName="choicedescriptor" constraintName="fk_choicedescriptor_question_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="dialoguedescriptor" constraintName="fk_dialoguedescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="parentstring_id" baseTableName="enumitem" constraintName="fk_enumitem_parentstring_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="parentsurveychoice_id" baseTableName="enumitem" constraintName="fk_enumitem_parentsurveychoice_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="statemachine_id" baseTableName="fsm_state" constraintName="fk_fsm_state_statemachine_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="fsmdescriptor" constraintName="fk_fsmdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="inboxdescriptor" constraintName="fk_inboxdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="listdescriptor_id" baseTableName="listdescriptor_allowedtypes" constraintName="fk_listdescriptor_allowedtypes_listdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="listdescriptor" constraintName="fk_listdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="choicedescriptor_id" baseTableName="mcqresult" constraintName="fk_mcqresult_choicedescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="numberdescriptor" constraintName="fk_numberdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="objectdescriptor" constraintName="fk_objectdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="peerreviewdescriptor" constraintName="fk_peerreviewdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="toreview_id" baseTableName="peerreviewdescriptor" constraintName="fk_peerreviewdescriptor_toreview_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="questiondescriptor" constraintName="fk_questiondescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="questiondescriptor_id" baseTableName="questiondescriptor_pictures" constraintName="fk_questiondescriptor_pictures_questiondescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="resourcedescriptor" constraintName="fk_resourcedescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="statictextdescriptor" constraintName="fk_statictextdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="stringdescriptor" constraintName="fk_stringdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveychoicesdescriptor" constraintName="fk_surveychoicesdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveydescriptor" constraintName="fk_surveydescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveyinputdescriptor" constraintName="fk_surveyinputdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="section_id" baseTableName="surveyinputdescriptor" baseTableSchemaName="public" constraintName="fk_surveyinputdescriptor_section_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="surveysectiondescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveynumberdescriptor" constraintName="fk_surveynumberdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveysectiondescriptor" constraintName="fk_surveysectiondescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="survey_id" baseTableName="surveysectiondescriptor" baseTableSchemaName="public" constraintName="fk_surveysectiondescriptor_survey_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="surveydescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveytextdescriptor" constraintName="fk_surveytextdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="taskdescriptor" constraintName="fk_taskdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="predecessor_id" baseTableName="taskdescriptor_taskdescriptor" constraintName="fk_taskdescriptor_taskdescriptor_predecessor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="taskdescriptor_id" baseTableName="taskdescriptor_taskdescriptor" constraintName="fk_taskdescriptor_taskdescriptor_taskdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="textdescriptor" constraintName="fk_textdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="variable_id" baseTableName="transitiondependency" constraintName="fk_transitiondependency_variable_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="parentdescriptor_id" baseTableName="translatablecontent" constraintName="fk_translatablecontent_parentdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="triggerdescriptor" constraintName="fk_triggerdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="defaultinstance_id" baseTableName="variabledescriptor" constraintName="fk_variabledescriptor_defaultinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="gamemodel_id" baseTableName="variabledescriptor" constraintName="fk_variabledescriptor_gamemodel_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="gamemodel" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="variabledescriptor" constraintName="fk_variabledescriptor_label_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="parentlist_id" baseTableName="variabledescriptor" constraintName="fk_variabledescriptor_parentlist_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="parentwh_id" baseTableName="variabledescriptor" constraintName="fk_variabledescriptor_parentwh_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="root_id" baseTableName="variabledescriptor" constraintName="fk_variabledescriptor_root_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="gamemodel" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="scope_id" baseTableName="variabledescriptor" constraintName="fk_variabledescriptor_scope_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="abstractscope" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="whquestiondescriptor" constraintName="fk_whquestiondescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="surveyinputdescriptor" constraintName="fk_surveyinputdescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+        <addForeignKeyConstraint baseColumnNames="unit_id" baseTableName="surveynumberdescriptor" constraintName="fk_surveynumberdescriptor_unit_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+        <addForeignKeyConstraint baseColumnNames="currentresult_id" baseTableName="choiceinstance" constraintName="fk_choiceinstance_currentresult_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="mcqresult" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="result_id" baseTableName="mcqreply" constraintName="fk_mcqreply_result_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="mcqresult" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="answer_id" baseTableName="mcqresult" constraintName="fk_mcqresult_answer_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="ignorationanswer_id" baseTableName="mcqresult" constraintName="fk_mcqresult_ignorationanswer_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="mcqresult" constraintName="fk_mcqresult_label_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="result_id" baseTableName="result_files" constraintName="fk_result_files_result_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="mcqresult" validate="true"/>
+
+
+
+        <addForeignKeyConstraint baseColumnNames="game_id" baseTableName="gameteams" constraintName="fk_gameteams_game_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="game" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="gameteams_id" baseTableName="team" constraintName="fk_team_gameteams_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="gameteams" validate="true"/>
+
+
+
+        <addForeignKeyConstraint baseColumnNames="resourceinstance_id" baseTableName="activity" constraintName="fk_activity_resourceinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="taskinstance_id" baseTableName="activity" constraintName="fk_activity_taskinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="resourceinstance_id" baseTableName="assignment" constraintName="fk_assignment_resourceinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="taskinstance_id" baseTableName="assignment" constraintName="fk_assignment_taskinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="booleaninstance" constraintName="fk_booleaninstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="burndowninstance" constraintName="fk_burndowninstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="choiceinstance" constraintName="fk_choiceinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="fsminstance" constraintName="fk_fsminstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="inboxinstance" constraintName="fk_inboxinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="burndowninstance_id" baseTableName="iteration" constraintName="fk_iteration_burndowninstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="taskinstance_id" baseTableName="iteration_taskinstance" constraintName="fk_iteration_taskinstance_taskinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="taskinstance_id" baseTableName="iterationevent" constraintName="fk_iterationevent_taskinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="listinstance" constraintName="fk_listinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="choiceinstance_id" baseTableName="mcqreply" constraintName="fk_mcqreply_choiceinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="inboxinstance_id" baseTableName="message" constraintName="fk_message_inboxinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="numberinstance" constraintName="fk_numberinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="objectinstance" constraintName="fk_objectinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="resourceinstance_id" baseTableName="occupation" constraintName="fk_occupation_resourceinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="peerreviewinstance" constraintName="fk_peerreviewinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="questioninstance" constraintName="fk_questioninstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="resourceinstance" constraintName="fk_resourceinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="author_id" baseTableName="review" constraintName="fk_review_author_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="reviewer_id" baseTableName="review" constraintName="fk_review_reviewer_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="statictextinstance" constraintName="fk_statictextinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="stringinstance" constraintName="fk_stringinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveyinputinstance" constraintName="fk_surveyinputinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveyinstance" constraintName="fk_surveyinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveysectioninstance" constraintName="fk_surveysectioninstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="taskinstance" constraintName="fk_taskinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="taskinstance_id" baseTableName="taskinstance_plannification" constraintName="fk_taskinstance_plannification_taskinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="textinstance" constraintName="fk_textinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="parentinstance_id" baseTableName="translatablecontent" constraintName="fk_translatablecontent_parentinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="gamemodel_id" baseTableName="variableinstance" constraintName="fk_variableinstance_gamemodel_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="gamemodel" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="gamemodelscope_id" baseTableName="variableinstance" constraintName="fk_variableinstance_gamemodelscope_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="abstractscope" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="player_id" baseTableName="variableinstance" constraintName="fk_variableinstance_player_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="player" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="playerscope_id" baseTableName="variableinstance" constraintName="fk_variableinstance_playerscope_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="abstractscope" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="team_id" baseTableName="variableinstance" constraintName="fk_variableinstance_team_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="team" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="teamscope_id" baseTableName="variableinstance" constraintName="fk_variableinstance_teamscope_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="abstractscope" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="whquestioninstance" constraintName="fk_whquestioninstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="taskinstance_id" baseTableName="wrequirement" constraintName="fk_wrequirement_taskinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="feedback_id" baseTableName="whquestioninstance" constraintName="fk_whquestioninstance_feedback_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="resourcedescriptor" constraintName="fk_resourcedescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="resourcedescriptor_id" baseTableName="resourcedescriptor_properties" constraintName="fk_resourcedescriptor_properties_resourcedescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="resourcedescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="categorizedevaluationinstance" constraintName="fk_categorizedevaluationinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="evaluationinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="commentsreview_id" baseTableName="evaluationinstance" constraintName="fk_evaluationinstance_commentsreview_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="review" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="evaluationdescriptor_id" baseTableName="evaluationinstance" constraintName="fk_evaluationinstance_evaluationdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="evaluationdescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="feedbackreview_id" baseTableName="evaluationinstance" constraintName="fk_evaluationinstance_feedbackreview_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="review" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="gradeinstance" constraintName="fk_gradeinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="evaluationinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="textevaluationinstance" constraintName="fk_textevaluationinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="evaluationinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="questiondescriptor" constraintName="fk_questiondescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="surveysectiondescriptor" constraintName="fk_surveysectiondescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="file_id" baseTableName="attachment" constraintName="fk_attachment_file_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="choicedescriptor" constraintName="fk_choicedescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="enumitem" constraintName="fk_enumitem_label_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="evaluationdescriptor" constraintName="fk_evaluationdescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="evaluationdescriptor" constraintName="fk_evaluationdescriptor_label_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="text_id" baseTableName="fsm_state" constraintName="fk_fsm_state_text_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="body_id" baseTableName="message" constraintName="fk_message_body_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="date_id" baseTableName="message" constraintName="fk_message_date_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="from_id" baseTableName="message" constraintName="fk_message_from_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="subject_id" baseTableName="message" constraintName="fk_message_subject_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="peerreviewdescriptor" constraintName="fk_peerreviewdescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="text_id" baseTableName="statictextdescriptor" constraintName="fk_statictextdescriptor_text_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="trvalue_id" baseTableName="stringinstance" constraintName="fk_stringinstance_trvalue_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="surveydescriptor" constraintName="fk_surveydescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="taskdescriptor" constraintName="fk_taskdescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="trvalue_id" baseTableName="textinstance" constraintName="fk_textinstance_trvalue_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="actiontext_id" baseTableName="transition" constraintName="fk_transition_actiontext_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="translatablecontent_id" baseTableName="translatablecontent_translations" constraintName="fk_translatablecontent_translations_translatablecontent_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="whquestiondescriptor" constraintName="fk_whquestiondescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+
+        <addForeignKeyConstraint baseColumnNames="fbcomments_id" baseTableName="peerreviewdescriptor" constraintName="fk_peerreviewdescriptor_fbcomments_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="evaluationdescriptorcontainer" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="feedback_id" baseTableName="peerreviewdescriptor" constraintName="fk_peerreviewdescriptor_feedback_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="evaluationdescriptorcontainer" validate="true"/>
+
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="permission" constraintName="fk_permission_role_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="roles" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="permission" constraintName="fk_permission_user_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="categorizedevaluationdescriptor" constraintName="fk_categorizedevaluationdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="evaluationdescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="parentevaluation_id" baseTableName="enumitem" constraintName="fk_enumitem_parentevaluation_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="evaluationdescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="container_id" baseTableName="evaluationdescriptor" constraintName="fk_evaluationdescriptor_container_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="evaluationdescriptorcontainer" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="gradedescriptor" constraintName="fk_gradedescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="evaluationdescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="textevaluationdescriptor" constraintName="fk_textevaluationdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="evaluationdescriptor" validate="true"/>
+
+
+
+        <addForeignKeyConstraint baseColumnNames="requirement_id" baseTableName="activity" constraintName="fk_activity_requirement_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="wrequirement" validate="true"/>
+
+        <addForeignKeyConstraint baseColumnNames="message_id" baseTableName="attachment" constraintName="fk_attachment_message_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="message" validate="true"/>
+
+
+
+        <addForeignKeyConstraint baseColumnNames="createdby_id" baseTableName="game" constraintName="fk_game_createdby_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="gamemodel_id" baseTableName="game" constraintName="fk_game_gamemodel_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="gamemodel" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="game_id" baseTableName="gameadmin" constraintName="fk_gameadmin_game_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="game" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="game_id" baseTableName="token" constraintName="fk_token_game_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="game" validate="true"/>
+
+
+
+        <addForeignKeyConstraint baseColumnNames="team_id" baseTableName="player" constraintName="fk_player_team_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="team" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="createdby_id" baseTableName="team" constraintName="fk_team_createdby_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="team_id" baseTableName="token" constraintName="fk_token_team_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="team" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="state_id" baseTableName="transition" constraintName="fk_transition_state_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="fsm_state" validate="true"/>
+
+        <addForeignKeyConstraint baseColumnNames="statemachineinstance_id" baseTableName="transitionhistory" constraintName="fk_transitionhistory_statemachineinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="fsminstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="iteration_id" baseTableName="iteration_taskinstance" constraintName="fk_iteration_taskinstance_iteration_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="iteration" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="iteration_id" baseTableName="iterationperiod" constraintName="fk_iterationperiod_iteration_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="iteration" validate="true"/>
+
+        <addForeignKeyConstraint baseColumnNames="transition_id" baseTableName="transitiondependency" constraintName="fk_transitiondependency_transition_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="transition" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="gamemodel_id" baseTableName="gamemodelcontent" constraintName="fk_gamemodelcontent_gamemodel_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="gamemodel" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="iterationperiod_id" baseTableName="iterationevent" constraintName="fk_iterationevent_iterationperiod_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="iterationperiod" validate="true"/>
+
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="player" constraintName="fk_player_user_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="gamemodel_id" baseTableName="gamemodellanguage" constraintName="fk_gamemodellanguage_gamemodel_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="gamemodel" validate="true"/>
+
+        <addForeignKeyConstraint baseColumnNames="basedon_id" baseTableName="gamemodel" constraintName="fk_gamemodel_basedon_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="gamemodel" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="createdby_id" baseTableName="gamemodel" constraintName="fk_gamemodel_createdby_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="taskdescriptor_id" baseTableName="taskdescriptor_properties" constraintName="fk_taskdescriptor_properties_taskdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="taskdescriptor" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="numberinstance_id" baseTableName="numberinstance_history" constraintName="fk_numberinstance_history_numberinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="numberinstance" validate="true"/>
+
+        <addForeignKeyConstraint baseColumnNames="objectdescriptor_id" baseTableName="objectdescriptor_properties" constraintName="fk_objectdescriptor_properties_objectdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="objectdescriptor" validate="true"/>
+
+        <addForeignKeyConstraint baseColumnNames="objectinstance_id" baseTableName="objectinstance_properties" constraintName="fk_objectinstance_properties_objectinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="objectinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="resourceinstance_id" baseTableName="resourceinstance_properties" constraintName="fk_resourceinstance_properties_resourceinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="resourceinstance" validate="true"/>
+
+
+
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="users_roles" constraintName="fk_users_roles_role_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="roles" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="users_roles" constraintName="fk_users_roles_user_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="taskinstance_id" baseTableName="taskinstance_properties" constraintName="fk_taskinstance_properties_taskinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="taskinstance" validate="true"/>
+
+
+        <addForeignKeyConstraint baseColumnNames="account_id" baseTableName="token" constraintName="fk_token_account_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="abstractaccount" validate="true"/>
+
+    </changeSet>
+
+    <changeSet author="maxence" id="1-3">
+        <createIndex indexName="index_abstractaccount_user_id" tableName="abstractaccount">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex indexName="index_abstractaccount_shadow_id" tableName="abstractaccount">
+            <column name="shadow_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_abstractaccount_details_id" tableName="abstractaccount">
+            <column name="details_id"/>
+        </createIndex>
+
+        <createIndex indexName="index_variabledescriptor_defaultinstance_id" tableName="variabledescriptor">
+            <column name="defaultinstance_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_variabledescriptor_parentlist_id" tableName="variabledescriptor">
+            <column name="parentlist_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_variabledescriptor_parentwh_id" tableName="variabledescriptor">
+            <column name="parentwh_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_variabledescriptor_root_id" tableName="variabledescriptor">
+            <column name="root_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_variabledescriptor_gamemodel_id" tableName="variabledescriptor">
+            <column name="gamemodel_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_variabledescriptor_dtype" tableName="variabledescriptor">
+            <column name="dtype"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_variabledescriptor_scope_id" tableName="variabledescriptor">
+            <column name="scope_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_variabledescriptor_label_id" tableName="variabledescriptor">
+            <column name="label_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_variabledescriptor_gamemodel_id_refid" tableName="variabledescriptor" unique="true">
+            <column name="gamemodel_id"/>
+            <column name="refid"/>
+        </createIndex>
+
+
+        <addUniqueConstraint columnNames="gamemodel_id, name" constraintName="unq_variabledescriptor_0" tableName="variabledescriptor"/>
+
+
+        <createIndex indexName="index_surveyinputdescriptor_section_id" tableName="surveyinputdescriptor">
+            <column name="section_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_surveyinputdescriptor_description_id" tableName="surveyinputdescriptor">
+            <column name="description_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_surveynumberdescriptor_unit_id" tableName="surveynumberdescriptor">
+            <column name="unit_id"/>
+        </createIndex>
+
+        <createIndex indexName="index_mcqresult_choicedescriptor_id" tableName="mcqresult">
+            <column name="choicedescriptor_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_mcqresult_label_id" tableName="mcqresult">
+            <column name="label_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_mcqresult_answer_id" tableName="mcqresult">
+            <column name="answer_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_mcqresult_ignorationanswer_id" tableName="mcqresult">
+            <column name="ignorationanswer_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_mcqresult_name_choicedescriptor_id" tableName="mcqresult">
+            <column name="name"/>
+            <column name="choicedescriptor_id"/>
+        </createIndex>
+
+
+        <addUniqueConstraint columnNames="choicedescriptor_id, name" constraintName="unq_mcqresult_0" tableName="mcqresult"/>
+
+
+        <createIndex indexName="index_gameteams_game_id" tableName="gameteams">
+            <column name="game_id"/>
+        </createIndex>
+
+        <createIndex indexName="index_variableinstance_gamemodelscope_id" tableName="variableinstance">
+            <column name="gamemodelscope_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_variableinstance_gamemodel_id" tableName="variableinstance">
+            <column name="gamemodel_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_variableinstance_teamscope_id" tableName="variableinstance">
+            <column name="teamscope_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_variableinstance_team_id" tableName="variableinstance">
+            <column name="team_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_variableinstance_playerscope_id" tableName="variableinstance">
+            <column name="playerscope_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_variableinstance_player_id" tableName="variableinstance">
+            <column name="player_id"/>
+        </createIndex>
+
+        <createIndex indexName="index_whquestioninstance_feedback_id" tableName="whquestioninstance">
+            <column name="feedback_id"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_resourcedescriptor_description_id" tableName="resourcedescriptor">
+            <column name="description_id"/>
+        </createIndex>
+
+        <createIndex indexName="index_evaluationinstance_evaluationdescriptor_id" tableName="evaluationinstance">
+            <column name="evaluationdescriptor_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_evaluationinstance_commentsreview_id" tableName="evaluationinstance">
+            <column name="commentsreview_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_evaluationinstance_feedbackreview_id" tableName="evaluationinstance">
+            <column name="feedbackreview_id"/>
+        </createIndex>
+
+        <createIndex indexName="index_questiondescriptor_description_id" tableName="questiondescriptor">
+            <column name="description_id"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_surveysectiondescriptor_survey_id" tableName="surveysectiondescriptor">
+            <column name="survey_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_surveysectiondescriptor_description_id" tableName="surveysectiondescriptor">
+            <column name="description_id"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_translatablecontent_parentdescriptor_id" tableName="translatablecontent">
+            <column name="parentdescriptor_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_translatablecontent_parentinstance_id" tableName="translatablecontent">
+            <column name="parentinstance_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_peerreviewdescriptor_fbcomments_id" tableName="peerreviewdescriptor">
+            <column name="fbcomments_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_peerreviewdescriptor_toreview_id" tableName="peerreviewdescriptor">
+            <column name="toreview_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_peerreviewdescriptor_feedback_id" tableName="peerreviewdescriptor">
+            <column name="feedback_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_peerreviewdescriptor_description_id" tableName="peerreviewdescriptor">
+            <column name="description_id"/>
+        </createIndex>
+
+
+
+        <createIndex indexName="index_permission_role_id" tableName="permission">
+            <column name="role_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_permission_user_id" tableName="permission">
+            <column name="user_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_evaluationdescriptor_container_id" tableName="evaluationdescriptor">
+            <column name="container_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_evaluationdescriptor_label_id" tableName="evaluationdescriptor">
+            <column name="label_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_evaluationdescriptor_description_id" tableName="evaluationdescriptor">
+            <column name="description_id"/>
+        </createIndex>
+
+
+        <addUniqueConstraint columnNames="container_id, name" constraintName="unq_evaluationdescriptor_0" tableName="evaluationdescriptor"/>
+
+
+        <createIndex indexName="index_activity_resourceinstance_id" tableName="activity">
+            <column name="resourceinstance_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_activity_taskinstance_id" tableName="activity">
+            <column name="taskinstance_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_activity_requirement_id" tableName="activity">
+            <column name="requirement_id"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_message_inboxinstance_id" tableName="message">
+            <column name="inboxinstance_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_message_subject_id" tableName="message">
+            <column name="subject_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_message_from_id" tableName="message">
+            <column name="from_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_message_date_id" tableName="message">
+            <column name="date_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_message_body_id" tableName="message">
+            <column name="body_id"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_choicedescriptor_question_id" tableName="choicedescriptor">
+            <column name="question_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_choicedescriptor_description_id" tableName="choicedescriptor">
+            <column name="description_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_game_gamemodel_id" tableName="game">
+            <column name="gamemodel_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_game_createdby_id" tableName="game">
+            <column name="createdby_id"/>
+        </createIndex>
+
+        <createIndex indexName="index_team_gameteams_id" tableName="team">
+            <column name="gameteams_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_team_createdby_id" tableName="team">
+            <column name="createdby_id"/>
+        </createIndex>
+
+
+        <addUniqueConstraint columnNames="name, gameteams_id" constraintName="unq_team_0" tableName="team"/>
+
+
+        <createIndex indexName="index_attachment_message_id" tableName="attachment">
+            <column name="message_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_attachment_file_id" tableName="attachment">
+            <column name="file_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_whquestiondescriptor_description_id" tableName="whquestiondescriptor">
+            <column name="description_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_fsm_state_statemachine_id" tableName="fsm_state">
+            <column name="statemachine_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_fsm_state_text_id" tableName="fsm_state">
+            <column name="text_id"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_stringinstance_trvalue_id" tableName="stringinstance">
+            <column name="trvalue_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_abstractscope_variabledescriptor_id" tableName="abstractscope">
+            <column name="variabledescriptor_id"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_mcqreply_choiceinstance_id" tableName="mcqreply">
+            <column name="choiceinstance_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_mcqreply_result_id" tableName="mcqreply">
+            <column name="result_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_assignment_resourceinstance_id" tableName="assignment">
+            <column name="resourceinstance_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_assignment_taskinstance_id" tableName="assignment">
+            <column name="taskinstance_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_iteration_burndowninstance_id" tableName="iteration">
+            <column name="burndowninstance_id"/>
+        </createIndex>
+
+
+
+        <createIndex indexName="index_wrequirement_taskinstance_id" tableName="wrequirement">
+            <column name="taskinstance_id"/>
+        </createIndex>
+
+
+        <addUniqueConstraint columnNames="taskinstance_id, wrequirement_name" constraintName="unq_wrequirement_0" tableName="wrequirement"/>
+
+
+        <createIndex indexName="index_statictextdescriptor_text_id" tableName="statictextdescriptor">
+            <column name="text_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_transition_state_id" tableName="transition">
+            <column name="state_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_transition_actiontext_id" tableName="transition">
+            <column name="actiontext_id"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_surveydescriptor_description_id" tableName="surveydescriptor">
+            <column name="description_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_surveydescriptor_descriptionend_id" tableName="surveydescriptor">
+            <column name="descriptionend_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_gamemodelcontent_gamemodel_id" tableName="gamemodelcontent">
+            <column name="gamemodel_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_gamemodelcontent_gamemodel_id_librarytype_contentkey" tableName="gamemodelcontent" unique="true">
+            <column name="gamemodel_id"/>
+            <column name="librarytype"/>
+            <column name="contentkey"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_iterationperiod_iteration_id" tableName="iterationperiod">
+            <column name="iteration_id"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_choiceinstance_currentresult_id" tableName="choiceinstance">
+            <column name="currentresult_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_translatablecontent_translations_translatablecontent_id" tableName="translatablecontent_translations">
+            <column name="translatablecontent_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_textinstance_trvalue_id" tableName="textinstance">
+            <column name="trvalue_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_review_author_id" tableName="review">
+            <column name="author_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_review_reviewer_id" tableName="review">
+            <column name="reviewer_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_player_user_id" tableName="player">
+            <column name="user_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_player_team_id" tableName="player">
+            <column name="team_id"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_gameadmin_game_id" tableName="gameadmin">
+            <column name="game_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_gamemodellanguage_gamemodel_id" tableName="gamemodellanguage">
+            <column name="gamemodel_id"/>
+        </createIndex>
+
+
+
+
+        <addUniqueConstraint columnNames="gamemodel_id, code" constraintName="unq_gamemodellanguage_0" tableName="gamemodellanguage"/>
+
+
+        <createIndex indexName="index_occupation_resourceinstance_id" tableName="occupation">
+            <column name="resourceinstance_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_iterationevent_iterationperiod_id" tableName="iterationevent">
+            <column name="iterationperiod_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_iterationevent_taskinstance_id" tableName="iterationevent">
+            <column name="taskinstance_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_gamemodel_createdby_id" tableName="gamemodel">
+            <column name="createdby_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_gamemodel_basedon_id" tableName="gamemodel">
+            <column name="basedon_id"/>
+        </createIndex>
+
+
+
+
+
+
+        <createIndex indexName="index_taskdescriptor_description_id" tableName="taskdescriptor">
+            <column name="description_id"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_transitiondependency_transition_id" tableName="transitiondependency">
+            <column name="transition_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_transitiondependency_variable_id" tableName="transitiondependency">
+            <column name="variable_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_enumitem_label_id" tableName="enumitem">
+            <column name="label_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_enumitem_parentevaluation_id" tableName="enumitem">
+            <column name="parentevaluation_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_enumitem_parentstring_id" tableName="enumitem">
+            <column name="parentstring_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_enumitem_parentsurveychoice_id" tableName="enumitem">
+            <column name="parentsurveychoice_id"/>
+        </createIndex>
+
+        <addUniqueConstraint columnNames="parentsurveychoice_id, parentevaluation_id, parentstring_id, name" constraintName="unq_enumitem_0" tableName="enumitem"/>
+
+        <createIndex indexName="index_listdesc_allowedtype" tableName="listdescriptor_allowedtypes">
+            <column name="listdescriptor_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_numberinstance_history_numberinstance_id" tableName="numberinstance_history">
+            <column name="numberinstance_id"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_objectdescriptor_properties_objectdescriptor_id" tableName="objectdescriptor_properties">
+            <column name="objectdescriptor_id"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_objectinstance_properties_objectinstance_id" tableName="objectinstance_properties">
+            <column name="objectinstance_id"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_resourcedescriptor_properties_resourcedescriptor_id" tableName="resourcedescriptor_properties">
+            <column name="resourcedescriptor_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_resourceinstance_properties_resourceinstance_id" tableName="resourceinstance_properties">
+            <column name="resourceinstance_id"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_taskdescriptor_taskdescriptor_pred" tableName="taskdescriptor_taskdescriptor">
+            <column name="predecessor_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_taskdescriptor_taskdescriptor_task" tableName="taskdescriptor_taskdescriptor">
+            <column name="taskdescriptor_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_taskdescriptor_taskdescriptor_taskdescriptor_id_predecess" tableName="taskdescriptor_taskdescriptor">
+            <column name="taskdescriptor_id"/>
+            <column name="predecessor_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_users_roles_role_id" tableName="users_roles">
+            <column name="role_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_users_roles_user_id" tableName="users_roles">
+            <column name="user_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_users_roles_roles_id_user_id" tableName="users_roles">
+            <column name="role_id"/>
+            <column name="user_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_taskinstance_plannification_taskinstance_id" tableName="taskinstance_plannification">
+            <column name="taskinstance_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_taskinstance_properties_taskinstance_id" tableName="taskinstance_properties">
+            <column name="taskinstance_id"/>
+        </createIndex>
+
+
+
+
+        <createIndex indexName="index_taskdescriptor_properties_taskdescriptor_id" tableName="taskdescriptor_properties">
+            <column name="taskdescriptor_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_transitionhistory_statemachineinstance_id" tableName="transitionhistory">
+            <column name="statemachineinstance_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_iteration_taskinstance_iteration_id" tableName="iteration_taskinstance">
+            <column name="iteration_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_iteration_taskinstance_id" tableName="iteration_taskinstance">
+            <column name="taskinstance_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_questiondescriptor_pictures_questiondescriptor_id" tableName="questiondescriptor_pictures">
+            <column name="questiondescriptor_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_result_files_result_id" tableName="result_files">
+            <column name="result_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_surveydescriptor_token_surveys_id" tableName="surveydescriptor_token">
+            <column name="surveys_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_surveydescriptor_token_tokens_id" tableName="surveydescriptor_token">
+            <column name="tokens_id"/>
+        </createIndex>
+
+        <addUniqueConstraint columnNames="name" constraintName="unq_roles_0" tableName="roles"/>
+
+
+
+
+        <createIndex indexName="index_token_account_id" tableName="token">
+            <column name="account_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_token_game_id" tableName="token">
+            <column name="game_id"/>
+        </createIndex>
+
+
+        <createIndex indexName="index_token_team_id" tableName="token">
+            <column name="team_id"/>
+        </createIndex>
+
+
+        <createSequence cacheSize="1" cycle="false" dataType="bigint" incrementBy="50" maxValue="9223372036854775807" minValue="1" sequenceName="mcqvarinstrep_seq" startValue="50"/>
+
+
+        <createSequence cacheSize="1" cycle="false" dataType="bigint" incrementBy="50" maxValue="9223372036854775807" minValue="1" sequenceName="seq_gen_sequence" startValue="50"/>
+
+    </changeSet>
+
+    <changeSet author="maxence" id="1-3-special-1">
+        <createIndex indexName="index_game_token" tableName="game" unique="true">
+            <column name="token"/>
+        </createIndex>
+        <modifySql>
+            <append value=" WHERE (status = 'LIVE' OR status = 'BIN')" />
+        </modifySql>
+    </changeSet>
+    <changeSet author="maxence" id="1-3-special-2">
+        <createIndex indexName="index_abstractaccount_persistentid" tableName="abstractaccount" unique="true">
+            <column name="persistentid"/>
+        </createIndex>
+        <modifySql>
+            <append value=" WHERE (dtype = 'AaiAccount')"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="maxence" id="1-3-special-3">
+        <createIndex indexName="index_abstractaccount_username" tableName="abstractaccount" unique="true">
+            <column name="username"/>
+        </createIndex>
+        <modifySql>
+            <append value=" WHERE (dtype = 'JpaAccount' AND username IS NOT NULL AND username NOT LIKE '')" />
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="maxence" id="1-3-special-4">
+        <createIndex indexName="index_accountdetails_email" tableName="accountdetails" unique="true">
+            <column name="email"/>
+        </createIndex>
+        <modifySql>
+            <append value=" WHERE (checkuniqueness AND email IS NOT NULL AND email != '')" />
+        </modifySql>
+    </changeSet>
+
+    <!-- Sequence -->
+    <changeSet author="maxence" id="1-4">
+        <createTable tableName="sequence">
+            <column name="seq_name" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="sequence_pkey"/>
+            </column>
+            <column name="seq_count" type="numeric(38)"/>
+        </createTable>
+        <insert tableName="sequence">
+            <column name="seq_name" value="SEQ_GEN" />
+            <column name="seq_count" value="200"/>
+        </insert>
+    </changeSet>
+
+
+    <!-- DATA -->
+    <changeSet author="maxence" id="1-5">
+        <!-- create admin role -->
+        <insert tableName="roles">
+            <column name="id" value="1" />
+            <column name="name" value="Administrator" />
+            <column name="refid" value="roles:1IwSQBb" />
+        </insert>
+        <insert tableName="permission">
+            <column name="id" value="1" />
+            <column name="role_id" value="1" />
+            <column name="permissions" value="GameModel:*:*" />
+            <column name="refid" value="permission:4pxO6B2" />
+        </insert>
+        <insert tableName="permission">
+            <column name="id" value="2" />
+            <column name="role_id" value="1" />
+            <column name="permissions" value="Game:*:*" />
+            <column name="refid" value="permission:4pxO6B2" />
+        </insert>
+        <insert tableName="permission">
+            <column name="id" value="3" />
+            <column name="role_id" value="1" />
+            <column name="permissions" value="User:*:*" />
+            <column name="refid" value="permission:4pxO6B2" />
+        </insert>
+
+        <!-- create other roles -->
+        <insert tableName="roles">
+            <column name="id" value="2" />
+            <column name="name" value="Trainer" />
+            <column name="refid" value="roles:5QB5d2C" />
+        </insert>
+        <insert tableName="roles">
+            <column name="id" value="3" />
+            <column name="name" value="Scenarist" />
+            <column name="refid" value="roles:4jS5jRZ" />
+        </insert>
+
+        <!-- a user -->
+        <insert tableName="users">
+            <column name="id" value="1" />
+            <column name="lastseenat" value="2021-07-01 12:00:00.000+00" />
+            <column name="refid" value="users:1zK2ES9" />
+        </insert>
+        <!-- with a "1234" password -->
+        <insert tableName="shadow">
+            <column name="id" value="5" />
+            <column name="passwordhex" value="eb86410aa029d4f7b85c1b4c3c0a25736f9ae4806bd75d456a333d83b648f2ee" />
+            <column name="refid" value="Shadow:1N4ychf" />
+            <column name="salt" value="69066d73c2d03f85c5a8d3e39a2f184f" />
+            <column name="hashmethod" value="SHA_256" />
+        </insert>
+        <insert tableName="accountdetails">
+            <column name="id" value="7" />
+            <column name="checkuniqueness" value="true" />
+            <column name="email" value="root@root.com" />
+            <column name="refid" value="Details:1N4ychf" />
+        </insert>
+        <insert tableName="abstractaccount">
+            <column name="id" value="1" />
+            <column name="user_id" value="1" />
+            <column name="dtype" value="JpaAccount" />
+            <column name="firstname" value="Admin" />
+            <column name="lastname" value="" />
+            <column name="username" value="root" />
+            <column name="createdtime" value="2021-07-01 12:00:00.000+00" />
+            <column name="refid" value="jpaaccount:t1N4ychf" />
+            <column name="verified" value="true" />
+            <column name="shadow_id" value="5" />
+            <column name="emaildomain" value="root.com" />
+            <column name="details_id" value="7" />
+            <column name="currentauth" value="PLAIN" />
+            <column name="nextauth" value="SHA_256" />
+            <column name="newsalt" value="db6929d06a585d8ecfce28672999a125" />
+        </insert>
+
+        <!-- give admin right -->
+        <insert tableName="users_roles">
+            <column name="user_id" value="1" />
+            <column name="role_id" value="1" />
+        </insert>
+
+        <!-- Create empty gamemodel -->
+        <insert tableName="gamemodel">
+            <column name="id" value="8" />
+            <column name="type" value="SCENARIO" />
+            <column name="uiversion" value="1" />
+            <column name="status" value="LIVE" />
+            <column name="name" value="Empty Scenario [EN]" />
+            <column name="description" value="" />
+            <column name="freeforall" value="false" />
+            <column name="guestallowed" value="false" />
+            <column name="cssuri" value="" />
+            <column name="iconuri" value="" />
+            <column name="pagesuri" value="" />
+            <column name="scripturi" value="" />
+            <column name="clientscripturi" value="" />
+            <column name="websocket" value="" />
+            <column name="comments" value="" />
+            <column name="createdtime" value="2021-07-01 12:00:00.000+00" />
+            <column name="refid" value="gamemodel:1Uff22y" />
+        </insert>
+        <insert tableName="gamemodellanguage">
+            <column name="id" value="9" />
+            <column name="code" value="EN" />
+            <column name="active" value="true" />
+            <column name="indexorder" value="0" />
+            <column name="gamemodel_id" value="8" />
+            <column name="refid" value="gamemodellanguage:102ek67BI" />
+            <column name="visibility" value="PRIVATE" />
+        </insert>
+
+        <insert tableName="game">
+            <column name="id" value="10" />
+            <column name="dtype" value="DebugGame" />
+            <column name="name" value="" />
+            <column name="gamemodel_id" value="8" />
+            <column name="createdtime" value="2021-07-01 12:00:00.000+00" />
+            <column name="updatedtime" value="2021-07-01 12:00:00.000+00" />
+            <column name="createdby_id" value="1" />
+            <column name="status" value="LIVE" />
+            <column name="refid" value="game:1nSGDdE" />
+        </insert>
+
+        <insert tableName="gameteams">
+            <column name="id" value="11" />
+            <column name="game_id" value="10" />
+            <column name="refid" value="gameteam:1dsfkun" />
+        </insert>
+
+        <insert tableName="team">
+            <column name="id" value="12" />
+            <column name="dtype" value="DebugTeam" />
+            <column name="name" value="Test team" />
+            <column name="gameteams_id" value="11" />
+            <column name="createdtime" value="2021-07-01 12:00:00.000+00" />
+            <column name="status" value="LIVE" />
+            <column name="refid" value="team:1STGnBn" />
+        </insert>
+
+        <insert tableName="player">
+            <column name="id" value="13" />
+            <column name="team_id" value="12" />
+            <column name="jointime" value="2021-07-01 12:00:00.000+00" />
+            <column name="status" value="LIVE" />
+            <column name="version" value="1" />
+            <column name="lang" value="EN" />
+            <column name="refid" value="player:18DE87Q" />
+        </insert>
+
+        <insert tableName="permission">
+            <column name="id" value="4" />
+            <column name="user_id" value="1" />
+            <column name="permissions" value="GameModel:View,Edit,Delete,Duplicate,Instantiate:gm8" />
+            <column name="refid" value="permission:4pxO6B2" />
+        </insert>
+
+        <insert tableName="permission">
+            <column name="id" value="5" />
+            <column name="role_id" value="2" />
+            <column name="permissions" value="GameModel:Instantiate:gm8" />
+            <column name="refid" value="permission:4p7dskjh" />
+        </insert>
+
+        <insert tableName="permission">
+            <column name="id" value="6" />
+            <column name="role_id" value="3" />
+            <column name="permissions" value="GameModel:Duplicate,Instantiate:gm8" />
+            <column name="refid" value="permission:4p7dskjh" />
+        </insert>
+
+        <sql>
+            ALTER SEQUENCE seq_gen_sequence RESTART WITH 100;
+        </sql>
+
+        <update tableName="sequence">
+            <column name="seq_count" valueComputed="seq_count+100"/>
+            <where>seq_name='SEQ_GEN'</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="maxence" id="1-6-catchup">
+        <addForeignKeyConstraint baseColumnNames="surveys_id" baseTableName="surveydescriptor_token" constraintName="fk_surveydescriptor_token_surveys_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="descriptionend_id" baseTableName="surveydescriptor" constraintName="fk_surveydescriptor_descriptionend_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="tokens_id" baseTableName="surveydescriptor_token" constraintName="fk_surveydescriptor_token_tokens_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="token" validate="true"/>
+        <dropForeignKeyConstraint baseTableName="surveyinputdescriptor" constraintName="fk_surveyinputdescriptor_section_id"/>
+        <addForeignKeyConstraint baseColumnNames="section_id" baseTableName="surveyinputdescriptor" constraintName="fk_surveyinputdescriptor_section_id" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor"/>
+        <dropForeignKeyConstraint baseTableName="surveysectiondescriptor" constraintName="fk_surveysectiondescriptor_survey_id"/>
+        <addForeignKeyConstraint baseColumnNames="survey_id" baseTableName="surveysectiondescriptor" constraintName="fk_surveysectiondescriptor_survey_id" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor"/>
+        <modifyDataType columnName="maxselectable" newDataType="int" tableName="surveychoicesdescriptor"/>
+        <dropDefaultValue columnDataType="varchar(10)" columnName="scope" tableName="transitiondependency"/>
+        <modifyDataType columnName="status" newDataType="varchar(255)" tableName="surveyinstance"/>
+    </changeSet>
+</databaseChangeLog>
