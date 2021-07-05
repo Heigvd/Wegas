@@ -139,7 +139,11 @@ export function TreeView({
               placeholder={i18nValues.filter}
               aria-label="Filter"
               onChange={ev => {
-                globalDispatch(Actions.EditorActions.search(ev.toString()));
+                globalDispatch(
+                  String(ev) === ''
+                    ? Actions.EditorActions.clearSearch()
+                    : Actions.EditorActions.search(String(ev)),
+                );
               }}
             />
             <Toggler
@@ -326,12 +330,13 @@ export function CTree({
           state.global.search.deep,
         ),
         editing: isEditing(variableId, subPath, state.global.editing),
+        searching: state.global.search.value != null,
       };
     },
     [subPath, variableId],
   );
 
-  const { editing, variable, match } = useStore(infoSelector);
+  const { editing, variable, match, searching } = useStore(infoSelector);
 
   const localEditing = isEditing(variableId, subPath, localState);
 
@@ -367,6 +372,7 @@ export function CTree({
         dragId={TREEVIEW_ITEM_TYPE}
         dragDisabled={!actionAllowed}
         dropDisabled={!actionAllowed}
+        expanded={searching && match}
         {...nodeProps()}
         header={
           <div
