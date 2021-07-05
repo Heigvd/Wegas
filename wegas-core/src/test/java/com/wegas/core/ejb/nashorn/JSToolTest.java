@@ -21,7 +21,100 @@ import org.junit.Test;
  */
 public class JSToolTest {
 
+    private int counter = 0;
+
     public JSToolTest() {
+    }
+
+    private void run(String script, Integer nbIter) {
+        long starttime = System.currentTimeMillis();
+        for (int i = 0; i < nbIter; i++) {
+            String makeScriptInterruptible = JSTool.makeScriptInterruptible(script);
+        }
+        counter += nbIter;
+        long endttime = System.currentTimeMillis();
+
+        long duration = endttime - starttime;
+        double perScript = duration / nbIter.doubleValue();
+        System.out.println(String.format("%d, %d, %d, %6.3f", counter, nbIter, duration, perScript));
+    }
+
+    public void benchmarkInjection(String script) {
+        System.out.println(String.format("counter, run, duration, perScript"));
+        run(script, 1);
+        run(script, 1);
+        run(script, 1);
+        run(script, 1);
+        run(script, 1);
+        run(script, 1);
+        run(script, 1);
+        run(script, 1);
+        run(script, 1);
+        run(script, 1);
+        run(script, 10);
+        run(script, 10);
+        run(script, 10);
+        run(script, 10);
+        run(script, 10);
+        run(script, 10);
+        run(script, 10);
+        run(script, 10);
+        run(script, 10);
+        run(script, 100);
+        run(script, 100);
+        run(script, 100);
+        run(script, 100);
+        run(script, 100);
+        run(script, 100);
+        run(script, 100);
+        run(script, 100);
+        run(script, 100);
+        run(script, 100);
+        run(script, 100);
+        run(script, 100);
+        run(script, 100);
+        run(script, 100);
+        run(script, 100);
+        run(script, 100);
+        run(script, 100);
+    }
+
+    @Test
+    public void benchmarkSimpleScript() {
+        this.benchmarkInjection("Variable.find(gameModel, \"x\").add(self, 1);");
+    }
+
+    @Test
+    public void benchmarkSimpleScript2Stmts() {
+        this.benchmarkInjection(
+            "Variable.find(gameModel, \"x\").add(self, 1);\n"
+            + "Variable.find(gameModel, \"y\").add(self, 2);"
+        );
+    }
+
+    @Test
+    public void benchmarkSimpleScript10Stmts() {
+        this.benchmarkInjection(
+            "Variable.find(gameModel, \"x1\").add(self, 1);\n"
+            + "Variable.find(gameModel, \"x2\").add(self, 1);\n"
+            + "Variable.find(gameModel, \"x3\").add(self, 1);\n"
+            + "Variable.find(gameModel, \"x4\").add(self, 1);\n"
+            + "Variable.find(gameModel, \"x5\").add(self, 1);\n"
+            + "Variable.find(gameModel, \"x6\").add(self, 1);\n"
+            + "Variable.find(gameModel, \"x7\").add(self, 1);\n"
+            + "Variable.find(gameModel, \"x8\").add(self, 1);\n"
+            + "Variable.find(gameModel, \"x9\").add(self, 1);\n"
+            + "Variable.find(gameModel, \"x10\").add(self, 1);\n"
+        );
+    }
+
+    @Test
+    public void benchmarkIf() {
+        this.benchmarkInjection(
+            "if (Variable.find(gameModel, \"x\").getValue(self, 1)){\n"
+            + "  Variable.find(gameModel, \"y\").add(self, 2);"
+            + "}"
+        );
     }
 
     @Test

@@ -11,6 +11,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.persistence.game.*;
 import com.wegas.test.TestHelper;
 import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
+import fish.payara.security.oauth2.OAuth2AuthenticationMechanism;
 import java.util.function.Function;
 import javax.naming.NamingException;
 import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;

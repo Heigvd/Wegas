@@ -58,18 +58,18 @@ var WegasDashboard = (function() {
         var order = Object.keys(section.items).length;
 
         section.items[id] = {
-          order: order,
-          varName: varName,
+            order: order,
+            varName: varName,
           itemType: "variable",
-          formatter: cfg.formatter,
-          transformer: cfg.transformer,
-          label: cfg.label,
-          index: cfg.index || Object.keys(section).length,
+            formatter: cfg.formatter,
+            transformer: cfg.transformer,
+            label: cfg.label,
+            index: cfg.index || Object.keys(section).length,
           active: cfg.active !== undefined ? cfg.active : true,
-          sortable: cfg.sortable,
-          preventClick: cfg.preventClick,
-          sortFn: cfg.sortFn,
-          mapFn: cfg.mapFn,
+            sortable: cfg.sortable,
+            preventClick: cfg.preventClick,
+            sortFn: cfg.sortFn,
+            mapFn: cfg.mapFn,
           mapFnExtraArgs: cfg.mapFnExtraArgs,
           kind: cfg.kind,
         };
@@ -98,6 +98,16 @@ var WegasDashboard = (function() {
             icon: cfg.icon || "fa fa-pencil",
             hasGlobal: cfg.hasGlobal,
         };
+    }
+
+    /**
+     * hack; remove sanitizer marks
+     *
+     * @param {type} fn function to serialize
+     * @returns function source-code
+     */
+    function serializeFunction(fn) {
+        return (fn + "").replaceAll("RequestManager.isInterrupted\\(\\);", "");
     }
 
     function registerStatExporter(id, activityPattern, userConfig) {
@@ -179,7 +189,7 @@ var WegasDashboard = (function() {
                             item.label = itemCfg.label || id;
                             item.icon = itemCfg.icon;
                             if(typeof itemCfg.doFn === "function"){
-                                item.do = itemCfg.doFn + "";
+                            item.do = itemCfg.doFn + "";
                             }
                             else if(typeof itemCfg.doFn === "object"){
                                 if("type" in itemCfg.doFn){
@@ -244,8 +254,8 @@ var WegasDashboard = (function() {
                                 item.kind = itemCfg.kind;
                             }
                             else{
-                                item.kind = variables[varName].descriptor.getJSONClassName()
-                                .replaceAll("Descriptor", "").toLowerCase();                            
+                            item.kind = variables[varName].descriptor.getJSONClassName()
+                                .replaceAll("Descriptor", "").toLowerCase();
                             }
                             break;
                         default:
@@ -272,7 +282,7 @@ var WegasDashboard = (function() {
                         var item = items[id];
                         if (item.itemType === "variable") {
                             var variable = variables[item.varName];
-                                                        
+
                             if (item.mapFn) {
                                 var args = [teamId, variable.instances[teamId]];
                                 for (var i in item.mapFnExtraArgs) {
@@ -308,16 +318,16 @@ var WegasDashboard = (function() {
             overview.structure.forEach(function(groupItems) {
                 groupItems.items.forEach(function(item) {
                     if (item.formatter) {
-                        item.formatter = item.formatter + "";
+                        item.formatter = serializeFunction(item.formatter);
                     }
                     if (item.transformer) {
-                        item.transformer = item.transformer + "";
+                        item.transformer = serializeFunction(item.transformer);
                     }
                     if (item.sortFn) {
-                        item.sortFn = item.sortFn + "";
+                        item.sortFn = serializeFunction(item.sortFn);
                     }
                     if (item.do) {
-                        item.do = item.do + "";
+                        item.do = serializeFunction(item.do);
                     }
                 });
             });

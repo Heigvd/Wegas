@@ -10,8 +10,8 @@ package com.wegas.core;
 
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.hazelcast.core.Cluster;
-import com.hazelcast.core.Member;
+import com.hazelcast.cluster.Cluster;
+import com.hazelcast.cluster.Member;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;

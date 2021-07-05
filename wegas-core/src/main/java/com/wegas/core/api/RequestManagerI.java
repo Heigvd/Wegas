@@ -124,8 +124,7 @@ public interface RequestManagerI {
     void sendNotification(Object payload);
 
     /**
-     * Try to Lock the token. Non-blocking. Return true if token has been
-     * locked, false otherwise
+     * Try to Lock the token. Non-blocking. Return true if token has been locked, false otherwise
      *
      * @param token
      *
@@ -168,4 +167,11 @@ public interface RequestManagerI {
      * @return app base url
      */
     String getBaseUrl();
+
+    /**
+     * Check if current thread has been interrupted or if it should be aborted due to a timeout.
+     *
+     * @throws InterruptedException if thread has been interrupted or request time expired
+     */
+    void isInterrupted() throws InterruptedException;
 }
