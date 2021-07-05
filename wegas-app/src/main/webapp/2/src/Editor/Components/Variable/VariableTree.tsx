@@ -55,6 +55,7 @@ import {
 import { commonTranslations } from '../../../i18n/common/common';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
+import { useDebounceFn } from '../../../Components/Hooks/useDebounce';
 
 const TREECONTENTID = 'TREECONTENT';
 
@@ -130,6 +131,16 @@ export function TreeView({
   const actionAllowed = isActionAllowed(options);
   const { value, deep } = useStore(s => s.global.search);
 
+  const searchFn = useDebounceFn(
+    (value: string) =>
+      globalDispatch(
+        value.length < 2
+          ? Actions.EditorActions.clearSearch()
+          : Actions.EditorActions.search(value),
+      ),
+    500,
+  );
+
   return (
     <Toolbar className={css({ padding: '1.5em' })}>
       <Toolbar.Header className={cx(toolboxHeaderStyle, flexBetween)}>
@@ -153,13 +164,7 @@ export function TreeView({
                 value={value}
                 placeholder={i18nValues.filter}
                 aria-label="Filter"
-                onChange={ev => {
-                  globalDispatch(
-                    String(ev) === ''
-                      ? Actions.EditorActions.clearSearch()
-                      : Actions.EditorActions.search(String(ev)),
-                  );
-                }}
+                onChange={ev => searchFn(String(ev))}
               />
               <Toggler
                 className={css({
