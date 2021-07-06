@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -62,6 +61,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -294,7 +294,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         if (audienceOwner != null) {
             VariableDescriptor descriptor = this.getDescriptor();
             if (descriptor != null) {
-                if (descriptor.getIsolation() == Isolation.HIDDEN){
+                if (descriptor.getIsolation() == Isolation.HIDDEN) {
                     return descriptor.getGameModel().getEditorChannel();
                 }
             }
@@ -347,10 +347,9 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /*
-      @PostUpdate @PostRemove @PostPersist public void
-      onInstanceUpdate() { // If the instance has no scope, it means it's a
-      default if (this.getScope() != null) { //
-      RequestFacade.lookup().getRequestManager().addUpdatedInstance(this); } }
+     * @PostUpdate @PostRemove @PostPersist public void onInstanceUpdate() { // If the instance has
+     * no scope, it means it's a default if (this.getScope() != null) { //
+     * RequestFacade.lookup().getRequestManager().addUpdatedInstance(this); } }
      */
     /**
      * @return the scope
@@ -614,8 +613,14 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         WegasPermission perm = null;
         if (this.getScope() == null) {
-            // Default instance case
-            return this.getDefaultDescriptor().getGameModel().getRequieredReadPermission(context);
+            if (this.getDefaultDescriptor() == null) {
+                logger.error("ORPHAN VARIABLE INSTANCE: {}", this.getId());
+                // almost due to cyclic PostLoad behaviour => ensure at least read right on the GM
+                perm = this.getGameModel().getAssociatedReadPermission();
+            } else {
+                // Default instance case
+                return this.getDefaultDescriptor().getGameModel().getRequieredReadPermission(context);
+            }
         } else {
             // effectives instance cases
 
@@ -652,10 +657,11 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * Will be printed in the schema so the client modify a schema entry depending
-     * on the instance type
+     * Will be printed in the schema so the client modify a schema entry depending on the instance
+     * type
      */
     public static class IsDefaultInstance extends Equals {
+
         public IsDefaultInstance() {
             super(
                 new WegasRefs.Field(VariableDescriptor.class, "defaultInstance"),
@@ -665,10 +671,11 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * Will be printed in the schema so the client modify a schema entry depending
-     * on the instance type
+     * Will be printed in the schema so the client modify a schema entry depending on the instance
+     * type
      */
     public static class IsNotDefaultInstance extends Not {
+
         public IsNotDefaultInstance() {
             super(new IsDefaultInstance());
         }
