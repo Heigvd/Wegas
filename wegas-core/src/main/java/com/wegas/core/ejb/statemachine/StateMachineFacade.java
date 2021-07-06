@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -91,7 +90,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
      *
      * @param context a gameModel, a game, a team or a player
      */
-    public void runStateMachines(InstanceOwner context) throws WegasScriptException {
+    public void runStateMachines(InstanceOwner context, boolean forceEvalAll) throws WegasScriptException {
 
         List<Player> players;
         if (context == null || context.getPlayers() == null) {
@@ -123,7 +122,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
 
         //getEntityManager().flush();
         for (Player player : players) {
-            this.runForPlayer(player);
+            this.runForPlayer(player, forceEvalAll);
         }
     }
 
@@ -145,13 +144,13 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
         return stateMachineDescriptors;
     }
 
-    private void runForPlayer(Player player) throws WegasScriptException {
+    private void runForPlayer(Player player, boolean forceEvalAll) throws WegasScriptException {
         // State machine only contains internal scripts
-        try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)){
+        try ( ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
             List<AbstractStateMachineDescriptor> statemachines = this.getAllStateMachines(player.getGameModel());
             List<AbstractTransition> passed = new ArrayList<>();
             //stateMachineEventsCounter = new InternalStateMachineEventCounter();
-            Integer steps = this.doSteps(player, passed, statemachines, 0);
+            Integer steps = this.doSteps(player, passed, statemachines, 0, forceEvalAll);
             logger.info("#steps[{}] - Player {} triggered transition(s):{}", steps, player.getName(), passed);
             //stateMachineEventsCounter = null;
             /*
@@ -161,7 +160,19 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
         }
     }
 
-    private Integer doSteps(Player player, List<AbstractTransition> passedTransitions, List<AbstractStateMachineDescriptor> stateMachineDescriptors, Integer steps) throws WegasScriptException {
+    /**
+     *
+     * @param player
+     * @param passedTransitions       list of transition already walked in this run
+     * @param stateMachineDescriptors all fsmD
+     * @param steps                   current stem number
+     * @param forceEvalAll            if true, bypass the transitionDependency optimisation
+     *
+     * @return total number of steps
+     *
+     * @throws WegasScriptException
+     */
+    private Integer doSteps(Player player, List<AbstractTransition> passedTransitions, List<AbstractStateMachineDescriptor> stateMachineDescriptors, Integer steps, boolean forceEvalAll) throws WegasScriptException {
 
         Map<StateMachineInstance, AbstractTransition> selectedTransitions = new HashMap<>();
 
@@ -191,7 +202,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                 // all cases because:
                 // the state machine may have been just activated
                 // it may have changed its currentState
-                boolean forceEval = desc.contains(sm);
+                boolean forceEval = forceEvalAll || desc.contains(sm);
 
                 for (AbstractTransition transition : (List<AbstractTransition>) currentState.getSortedTransitions()) {
                     logger.trace("Process FSM Transition {}", transition);
@@ -338,7 +349,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                 }
             }
             steps++;
-            steps = this.doSteps(player, passedTransitions, stateMachineDescriptors, steps);
+            steps = this.doSteps(player, passedTransitions, stateMachineDescriptors, steps, forceEvalAll);
         }
         return steps;
 
@@ -429,7 +440,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
     @Override
     public long countValidTransition(DialogueDescriptor dialogueDescriptor, Player currentPlayer) {
         long count = 0;
-        try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
+        try ( ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
             DialogueState currentState = (DialogueState) dialogueDescriptor.getInstance(currentPlayer).getCurrentState();
             for (DialogueTransition transition : currentState.getTransitions()) {
                 if (isTransitionValid(transition, currentPlayer.getId(), dialogueDescriptor)) {

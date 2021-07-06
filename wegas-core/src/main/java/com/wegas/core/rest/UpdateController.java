@@ -879,7 +879,7 @@ public class UpdateController {
             g.addTeam(dt);
             this.getEntityManager().persist(dt);
             gameModelFacade.propagateAndReviveDefaultInstances(g.getGameModel(), dt, true); // restart missing debugTeam
-            stateMachineFacade.runStateMachines(dt);
+            stateMachineFacade.runStateMachines(dt, true);
             this.getEntityManager().flush();
             counter++;
             if (counter == 25) {

@@ -1027,7 +1027,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         this.propagateAndReviveDefaultInstances(gameModel, gameModel, false); // reset the whole gameModel
         // speed-up scenario restart but may miss some transitions triggerd by default values
         //requestManager.migrateUpdateEntities();
-        stateMachineFacade.runStateMachines(gameModel);
+        stateMachineFacade.runStateMachines(gameModel, true);
 
         /* clear .user-uploads this special directory contains files uploaded by players. Hence, it
          * has to be erase on restart

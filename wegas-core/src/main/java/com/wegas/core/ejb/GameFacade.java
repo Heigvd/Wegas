@@ -13,7 +13,6 @@ import com.wegas.core.Helper.EmailAttributes;
 import com.wegas.core.XlsxSpreadsheet;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.async.PopulatorScheduler;
-import static com.wegas.core.ejb.RequestManager.RequestContext.INTERNAL_SCRIPT;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
@@ -213,7 +212,7 @@ public class GameFacade extends BaseFacade<Game> {
         gameModelFacade.propagateAndReviveDefaultInstances(gameModel, game, true); // at this step the game is empty (no teams; no players), hence, only Game[Model]Scoped are propagated
 
         this.addDebugTeam(game);
-        stateMachineFacade.runStateMachines(game);
+        stateMachineFacade.runStateMachines(game, true);
 
         gameCreatedEvent.fire(new EntityCreated<>(game));
     }
@@ -770,7 +769,7 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public void reset(final Game game) {
         gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), game, false);
-        stateMachineFacade.runStateMachines(game);
+        stateMachineFacade.runStateMachines(game, true);
     }
 
     /**

@@ -643,7 +643,7 @@ public class PlayerFacade extends BaseFacade<Player> {
             p.setStatus(Status.INITIALIZING);
             this.flush();
 
-            stateMachineFacade.runStateMachines(p);
+            stateMachineFacade.runStateMachines(p, true);
             p.setStatus(Status.LIVE);
             this.flush();
             websocketFacade.propagateNewPlayer(p);
@@ -658,7 +658,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public void reset(final Player player) {
         gameModelFacade.propagateAndReviveDefaultInstances(player.getGameModel(), player, false); // reset only this player instances
-        stateMachineFacade.runStateMachines(player);
+        stateMachineFacade.runStateMachines(player, true);
     }
 
     /**
