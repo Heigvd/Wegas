@@ -79,6 +79,7 @@
     "react-dom": "^16.12.0",
     "react-input-slider": "^5.1.4",
     "react-reflex": "^3.0.18",
+    "react-smooth-dnd": "^0.11.1",
     "reactn": "^2.2.6",
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",

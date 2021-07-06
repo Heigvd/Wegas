@@ -4,7 +4,6 @@ import { Actions } from '../../../data';
 import { Toolbar } from '../../../Components/Toolbar';
 import { varIsList, entityIs } from '../../../data/entities';
 import { get } from 'lodash-es';
-
 import { Container, Node } from '../Views/TreeView';
 import { moveDescriptor } from '../../../data/Reducer/VariableDescriptorReducer';
 import {
@@ -37,7 +36,6 @@ import {
   toolboxHeaderStyle,
   flexRow,
   flexBetween,
-  searchSelection,
 } from '../../../css/classes';
 import {
   IVariableDescriptor,
@@ -404,7 +402,6 @@ export function CTree({
             className={cx(flex, nodeStyle, {
               [globalSelection]: editing,
               [localSelection]: localEditing,
-              [searchSelection]: searching,
               [actionNodeContentStyle]: actionAllowed,
             })}
             onClick={(e: ModifierKeysEvent) => {
