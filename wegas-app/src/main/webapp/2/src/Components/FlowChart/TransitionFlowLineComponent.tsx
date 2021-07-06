@@ -24,12 +24,11 @@ export const transitionBoxStyle = css({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  padding: '20px 10px 20px 10px',
+  padding: '15px',
   boxSizing: 'border-box',
   background: themeVar.colors.PrimaryColor,
-  border: '1px solid transparent',
+  border: '1px solid ' + themeVar.colors.BackgroundColor,
   borderRadius: '8px',
-  boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.25)',
   color: themeVar.colors.LightTextColor,
   flexGrow: 0,
   '&>*': {
@@ -51,9 +50,9 @@ export const transitionBoxStyle = css({
 export const transitionBoxActionStyle = css({
   cursor: 'pointer',
   '&:hover': {
-    background: themeVar.colors.BackgroundColor,
-    color: themeVar.colors.ActiveColor,
-    borderColor: themeVar.colors.ActiveColor,
+    background: themeVar.colors.ActiveColor,
+    boxShadow: '0px 0px 6px rgba(0, 0, 0, 0.3)',
+    borderColor: 'transparent',
   },
 });
 
