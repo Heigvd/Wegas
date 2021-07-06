@@ -19,9 +19,10 @@ YUI.add('wegas-toggle-on-click', function(Y) {
         getState: function() {
             var stateName = this.get("stateName");
             if (stateName) {
-                Y.Wegas.Config.ToggleOnClick = Y.Wegas.Config.ToggleOnClick || {};
-                Y.Wegas.Config.ToggleOnClick[stateName] = Y.Wegas.Config.ToggleOnClick[stateName] || {};
-                return Y.Wegas.Config.ToggleOnClick[stateName];
+                var config = Y.namespace("Wegas.Config");
+                config.ToggleOnClick = config.ToggleOnClick || {};
+                config.ToggleOnClick[stateName] = config.ToggleOnClick[stateName] || {};
+                return config.ToggleOnClick[stateName];
             } else {
                 return this._state;
             }
