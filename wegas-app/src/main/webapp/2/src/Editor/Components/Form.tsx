@@ -1,7 +1,7 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
-import { noOverflow, expandHeight, defaultMargin, MediumPadding, defaultMarginBottom } from '../../css/classes';
+import { noOverflow, expandHeight, defaultMargin, defaultMarginBottom, defaultPaddingBottom, defaultPaddingLeft, defaultPaddingRight, toolboxHeaderStyle } from '../../css/classes';
 import './FormView';
 import { wwarn } from '../../Helper/wegaslog';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
@@ -9,7 +9,7 @@ import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { isActionAllowed } from '../../Components/PageComponents/tools/options';
 import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { DropMenu } from '../../Components/DropMenu';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { ActionsProps } from '../../data/Reducer/globalState';
 import { IconComp } from './Views/FontAwesome';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
@@ -20,6 +20,13 @@ const closeButtonStyle = css({
 color: "black",
 });
 
+const toolboxContainerStyle= css({
+  position: 'sticky',
+  top: 0,
+  zIndex: 10,
+  padding: '1em 0',
+  backgroundColor: 'white',
+});
 const toolboxButtonStyle = css({
 margin: '0 5px',
 height: '35px',
@@ -65,8 +72,8 @@ export function Form<T>({
   }
 
   return (
-    <Toolbar className={MediumPadding}>
-      <Toolbar.Header>
+    <Toolbar className={cx(defaultPaddingBottom, defaultPaddingLeft, defaultPaddingRight)}>
+      <Toolbar.Header className={cx(toolboxContainerStyle, toolboxHeaderStyle)}>
         {isActionAllowed({
           disabled,
           readOnly,
