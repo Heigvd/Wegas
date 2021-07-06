@@ -3,7 +3,7 @@ import { GameModel, Global } from '../../data/selectors';
 import { css, cx } from 'emotion';
 import { useStore, store } from '../../data/Stores/store';
 import { Actions } from '../../data';
-import { FontAwesome } from './Views/FontAwesome';
+import { FontAwesome, IconComp } from './Views/FontAwesome';
 import {
   FeatureToggler,
   featuresCTX,
@@ -20,6 +20,7 @@ import {
   flexBetween,
   itemsTop,
   inlineBlock,
+  defaultMarginLeft,
 } from '../../css/classes';
 import { Title } from '../../Components/Inputs/String/Title';
 import { mainLayoutId } from './Layout';
@@ -115,9 +116,15 @@ export default function Header() {
   const dispatch = store.dispatch;
   return (
         <div className={cx(flex, itemsTop, flexBetween, foregroundContent, css({paddingBottom: '1em'}))}>
-          <div>
+          <div className={cx(flex, itemCenter)}>
             <FontAwesome icon="user" />
             <span className={componentMarginLeft}>{user.name}</span>
+            <DropMenu 
+              label={<IconComp icon='cog'/>}
+              items={[{label: "holà", id: '1234'},
+              {label: "holo", id: '1284'},
+              ]}
+              buttonClassName={cx(defaultMarginLeft, css({padding: '5px 5px'}))}/>
             <FeatureToggler
               className={cx(componentMarginLeft, componentMarginRight)}
             />
