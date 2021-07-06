@@ -484,9 +484,9 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                             Scriptable annotation = m.getAnnotation(Scriptable.class);
 
                             if (annotation.dependsOn() != DependencyScope.NONE) {
-                                TransitionDependency findDep = findDep = findDep(updatedDeps, vd);
+                                TransitionDependency findDep = findDep(updatedDeps, vd);
                                 if (findDep == null) {
-                                    findDep(currentDeps, vd);
+                                    findDep = findDep(currentDeps, vd);
                                 }
 
                                 if (findDep != null) {
