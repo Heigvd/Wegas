@@ -50,12 +50,8 @@ import { State } from '../../../data/Reducer/reducers';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { useOkCancelModal } from '../../../Components/Modal';
-import {
-  internalTranslate,
-  useInternalTranslate,
-} from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 
 const TREECONTENTID = 'TREECONTENT';
@@ -300,8 +296,7 @@ export function CTree(
   // const unsaved = useStore(() => props?.localState?.unsaved);
   // props.localState
   // const unsaved = useStore(s => s.global.editing?.unsaved);
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
   const actionAllowed = isActionAllowed({
     disabled: props.disabled,
     readOnly: props.readOnly,

@@ -6,8 +6,7 @@ import { css, cx } from 'emotion';
 import { inlineFlex } from '../../../css/classes';
 import { IconButton } from './IconButton';
 import { themeVar } from '../../Theme/ThemeVars';
-import { internalTranslate } from '../../../i18n/internalTranslator';
-import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 
 const confirmButtonsContainerStyle = css({
@@ -69,8 +68,7 @@ export function ConfirmButton({
 }: ConfirmButtonProps) {
   const [confirmation, setConfirmation] = React.useState(defaultConfirm);
   const confirmButton = React.useRef(null);
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
 
   useOnClickOutside(confirmButton, () => {
     if (!dontResetOnBlur) {

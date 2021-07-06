@@ -35,8 +35,7 @@ import {
 } from '../../../data/Reducer/globalState';
 import { VariableTreeTitle } from './VariableTree';
 import { State } from '../../../data/Reducer/reducers';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 const listBox = css({
@@ -90,8 +89,7 @@ export function InstanceProperties({
   actions,
   ...options
 }: InstancePropertiesProps) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
   const editing = state.global.editing;
   const events = state.global.events;
 

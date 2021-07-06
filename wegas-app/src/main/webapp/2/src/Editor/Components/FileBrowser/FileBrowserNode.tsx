@@ -41,8 +41,7 @@ import {
   getIconForFile,
 } from '../../../Helper/fileTools';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
@@ -275,9 +274,8 @@ export function FileBrowserNode({
   readOnly,
 }: FileBrowserNodeProps) {
   const actionAllowed = isActionAllowed({ disabled, readOnly });
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
-  const i18nEditorValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
+  const i18nEditorValues = useInternalTranslate(editorTabsTranslations);
 
   //const isDisplayPreviewAllowed = !disabled;
 

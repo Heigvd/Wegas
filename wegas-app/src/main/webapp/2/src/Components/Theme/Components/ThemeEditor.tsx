@@ -20,8 +20,7 @@ import { ThemeSelector } from './Theme/ThemeSelector';
 import { ModeSelector } from './Mode/ModeSelector';
 import { themeVar } from '../ThemeVars';
 import { outlineButtonStyle } from '../../Inputs/Buttons/Button';
-import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
@@ -51,8 +50,7 @@ const themeEditorHeaderStyle = css({
 export default function ThemeEditor() {
   const { themes, selectedThemes } = useThemeStore(s => s);
   const dispatch = getThemeDispatch();
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   return (
     <Toolbar>

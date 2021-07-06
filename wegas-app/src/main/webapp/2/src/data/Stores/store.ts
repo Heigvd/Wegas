@@ -21,6 +21,7 @@ function storeInit() {
   store.dispatch(Actions.PageActions.getAll());
   store.dispatch(Actions.GameActions.getGame());
   store.dispatch(Actions.TeamActions.getTeams());
+  store.dispatch(Actions.EditorActions.getLanguage());
 }
 storeInit();
 

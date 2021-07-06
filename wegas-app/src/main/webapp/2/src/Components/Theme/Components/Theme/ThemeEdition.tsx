@@ -18,8 +18,7 @@ import {
 } from '../../../../data/Stores/themeStore';
 import { borderBottom } from '../../../../Editor/Components/FormView/commonView';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
-import { internalTranslate } from '../../../../i18n/internalTranslator';
-import { languagesCTX } from '../../../Contexts/LanguagesProvider';
+import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { DropMenu } from '../../../DropMenu';
 import { CheckBox } from '../../../Inputs/Boolean/CheckBox';
 import { Toolbar } from '../../../Toolbar';
@@ -27,8 +26,7 @@ import { Theme } from '../../ThemeVars';
 import { ThemeValueModifier } from './ThemeValueModifier';
 
 export function ThemeEdition() {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
   const { themes, editedThemeName } = useThemeStore(s => s);
   const dispatch = getThemeDispatch();
 

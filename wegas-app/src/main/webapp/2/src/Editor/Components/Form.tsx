@@ -12,8 +12,7 @@ import { DropMenu } from '../../Components/DropMenu';
 import { css, cx } from 'emotion';
 import { ActionsProps } from '../../data/Reducer/globalState';
 import { IconComp } from './Views/FontAwesome';
-import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
 
 const closeButtonStyle = css({
@@ -60,8 +59,7 @@ export function Form<T>({
   const form = React.useRef<JSONForm>(null);
   const [val, setVal] = React.useState(entity);
   const toolbox : ActionsProps<T>[] = [];
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
 
   if (
     deepDifferent(entity, oldReceivedEntity.current) &&

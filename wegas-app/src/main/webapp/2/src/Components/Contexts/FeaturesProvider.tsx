@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { commonTranslations } from '../../i18n/common/common';
-import { internalTranslate } from '../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { DropMenu } from '../DropMenu';
-import { languagesCTX } from './LanguagesProvider';
 
 const availableFeatures: FeatureLevel[] = ['ADVANCED', 'INTERNAL'];
 
@@ -58,8 +57,7 @@ export const FeaturesProvider = React.memo(FeaturesContext);
  * Features selector allows to select features inside the feature context given by the FeatureProvider
  */
 export function FeatureToggler({ className, style }: ClassStyleId) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
   const { currentFeatures, setFeature, removeFeature } = React.useContext(
     featuresCTX,
   );

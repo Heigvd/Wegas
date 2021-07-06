@@ -11,17 +11,15 @@ import {
 } from '../../../../data/Stores/themeStore';
 import { commonTranslations } from '../../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
-import { internalTranslate } from '../../../../i18n/internalTranslator';
-import { languagesCTX } from '../../../Contexts/LanguagesProvider';
+import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { ConfirmButton } from '../../../Inputs/Buttons/ConfirmButton';
 import { AdderSelector } from '../AdderSelector';
 
 export function ThemeSelector() {
   const { themes, editedThemeName } = useThemeStore(s => s);
   const dispatch = getThemeDispatch();
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
-  const i18nValuesEditor = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
+  const i18nValuesEditor = useInternalTranslate(editorTabsTranslations);
 
   const onError = React.useCallback(
     (value: string | undefined) => {

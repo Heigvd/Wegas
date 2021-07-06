@@ -22,8 +22,7 @@ import {
 import { childrenPlusTabStyle, plusTabStyle } from '../../../Components/Tabs';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { EditorTabsTranslations } from '../../../i18n/editorTabs/definitions';
@@ -174,9 +173,8 @@ export function DnDTabLayout({
   areChildren,
 }: TabLayoutProps) {
   const { general, header, content } = classNames;
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
-  const i18nTabsNames = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
+  const i18nTabsNames = useInternalTranslate(editorTabsTranslations);
   React.useEffect(() => {
     if (
       defaultActiveLabel === undefined ||

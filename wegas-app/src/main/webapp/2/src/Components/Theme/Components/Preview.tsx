@@ -18,8 +18,7 @@ import { borderBottom } from '../../../Editor/Components/FormView/commonView';
 import { Selector } from '../../../Editor/Components/FormView/Select';
 import { IconComp, icons } from '../../../Editor/Components/Views/FontAwesome';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
-import { internalTranslate } from '../../../i18n/internalTranslator';
-import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { DropMenu } from '../../DropMenu';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
@@ -60,8 +59,7 @@ interface PreviewState {
 }
 
 export default function Preview() {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
   const [previewState, setPreviewState] = React.useState<PreviewState>({
     numericVar: 2,
     textVar: 'Lorem Ipsum',

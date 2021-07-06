@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { GameModel, Global } from '../../data/selectors';
 import { css, cx } from 'emotion';
-import { StoreConsumer, useStore, store } from '../../data/Stores/store';
+import { useStore, store } from '../../data/Stores/store';
 import { Actions } from '../../data';
 import { FontAwesome } from './Views/FontAwesome';
 import {
@@ -9,7 +9,7 @@ import {
   featuresCTX,
   isFeatureEnabled,
 } from '../../Components/Contexts/FeaturesProvider';
-import { LangToggler, languagesCTX } from '../../Components/Contexts/LanguagesProvider';
+import { LangToggler } from '../../Components/Contexts/LanguagesProvider';
 import {
   flex,
   itemCenter,
@@ -27,12 +27,13 @@ import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
 import { DropMenu } from '../../Components/DropMenu';
 import { parseEvent } from './EntityEditor';
 import { editorEventRemove } from '../../data/Reducer/globalState';
-import { Button, headerOutlineButtonStyle } from '../../Components/Inputs/Buttons/Button';
+import { Button } from '../../Components/Inputs/Buttons/Button';
 import { State } from '../../data/Reducer/reducers';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
-import { internalTranslate } from '../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
+import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
 
 function wegasEventSelector(s: State) {
   return s.global.events;
@@ -40,8 +41,7 @@ function wegasEventSelector(s: State) {
 // May be moved in a proper file to allow wider usage
 // interface NotificationMenuProps {}
 function NotificationMenu({ className, style }: ClassStyleId) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
   const wegasEvents = useStore(wegasEventSelector);
   const [recievedEvents, setRecievedEvents] = React.useState<number[]>([]);
 
@@ -109,28 +109,38 @@ function NotificationMenu({ className, style }: ClassStyleId) {
 
 export default function Header() {
   const { currentFeatures } = React.useContext(featuresCTX);
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
-
+  const i18nValues = useInternalTranslate(commonTranslations);
+  const {gameModel, user, userLanguage} = useStore(s => ({gameModel: GameModel.selectCurrent(),
+    user: Global.selectCurrentUser(), userLanguage: s.global.currentEditorLanguageCode}));
+  const dispatch = store.dispatch;
   return (
-    <StoreConsumer
-      selector={() => ({
-        gameModel: GameModel.selectCurrent(),
-        user: Global.selectCurrentUser(),
-      })}
-    >
-      {({ state: { gameModel, user }, dispatch }) => (
         <div className={cx(flex, itemsTop, flexBetween, foregroundContent, css({paddingBottom: '1em'}))}>
           <div>
             <FontAwesome icon="user" />
             <span className={componentMarginLeft}>{user.name}</span>
-          </div>
-          <Title className={css({margin: 0})}>{gameModel.name}</Title>
-          <div className={cx(flex, itemCenter)}>
-            <LangToggler />
             <FeatureToggler
               className={cx(componentMarginLeft, componentMarginRight)}
             />
+            <IconButton
+              icon='redo'
+              tooltip={i18nValues.header.resetLayout}
+              onClick={() => {
+                window.localStorage.removeItem(
+                  'DnDGridLayoutData.' + mainLayoutId,
+                );
+                window.location.reload();
+              }}
+              className={cx(componentMarginLeft, inlineBlock)}
+              chipStyle
+            />
+          </div>
+          <Title className={css({margin: 0})}>{gameModel.name}</Title>
+          <div className={cx(flex, itemCenter)}>
+            <DropMenu label={userLanguage} items={Object.entries(editorLanguages).map(([key, value]) => ({
+              label: key + ": " + value,
+              id: key
+            }))} onSelect={(item) => {dispatch(Actions.EditorActions.setLanguage(item.id as EditorLanguagesCode))}}/>
+            <LangToggler />
             {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
               <NotificationMenu className={componentMarginRight} />
             )}
@@ -143,22 +153,10 @@ export default function Header() {
                   dispatch(Actions.EditorActions.resetPageLoader());
                 }
               }}
-              buttonClassName={cx(componentMarginLeft, headerOutlineButtonStyle)}
-            />
-            <IconButton
-              icon='redo'
-              tooltip={i18nValues.header.resetLayout}
-              onClick={() => {
-                window.localStorage.removeItem(
-                  'DnDGridLayoutData.' + mainLayoutId,
-                );
-                window.location.reload();
-              }}
-              className={cx(componentMarginLeft, inlineBlock, headerOutlineButtonStyle)}
+              buttonClassName={cx(componentMarginLeft)}
+              chipStyle
             />
           </div>
         </div>
-      )}
-    </StoreConsumer>
   );
 }

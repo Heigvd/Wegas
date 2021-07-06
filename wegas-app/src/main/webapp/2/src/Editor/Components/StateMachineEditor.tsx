@@ -47,8 +47,8 @@ import produce, { Immutable } from 'immer';
 import { StateProcessComponent } from '../../Components/FlowChart/StateProcessComponent';
 import { TransitionFlowLineComponent } from '../../Components/FlowChart/TransitionFlowLineComponent';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
-import { internalTranslate } from '../../i18n/internalTranslator';
-//import { internalTranslate } from '../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
+//import { useInternalTranslate } from '../../i18n/internalTranslator';
 //import { commonTranslations } from '../../i18n/common/common';
 
 const emptyPath: (string | number)[] = [];
@@ -476,8 +476,7 @@ export function ConnectedStateMachineEditor({
   ...options
 }: ConnectedStateMachineEditorProps) {
   const globalState = useStore(globalStateSelector);
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   if ('variable' in globalState) {
     if (globalState.variable == null) {

@@ -30,8 +30,7 @@ import {
 } from 'wegas-ts-api';
 import { State } from '../../../data/Reducer/reducers';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
@@ -191,8 +190,7 @@ export function updateComponent(
 }
 
 function SourceEditor() {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
   return (
     <pageEditorCTX.Consumer>
       {({ selectedPageId, selectedPage, loading }) =>
@@ -230,8 +228,7 @@ function PageEditionToolbar({
   setEditMode,
   setShowControls,
 }: Partial<PageDisplayProps>) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
   const { editMode, showControls, showBorders } = React.useContext(pageCTX);
   return (
     <div className={flex}>
@@ -270,8 +267,7 @@ function PageDisplay({
   setShowControls,
 }: PageDisplayProps) {
   const { selectedPageId, loading } = React.useContext(pageEditorCTX);
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
 
   if (loading) {
     return <pre>{i18nValues.loadingPages}</pre>;
@@ -355,8 +351,7 @@ function Layout({
 export const PAGE_EDITOR_LAYOUT_ID = 'PageEditorLayout';
 
 export default function PageEditor() {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
   const handles = React.useRef({});
   const focusTab = React.useRef<(tabId: string, layoutId: string) => void>();
   const [
