@@ -296,7 +296,6 @@ export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_DRAG_ITEM';
 interface CTreeProps {
   variableId: number;
   subPath?: string[];
-  // search?: string;
   nodeProps: () => {};
   onShowWarning?: (onAccept: () => void) => void;
 }
@@ -311,7 +310,6 @@ export function CTree({
   noVisibleRoot,
   onShowWarning,
   readOnly,
-  // search,
   subPath,
 }: Omit<CTreeProps & TreeProps, 'variables' | 'noHeader'>): JSX.Element | null {
   const { lang } = React.useContext(languagesCTX);
@@ -393,7 +391,6 @@ export function CTree({
             className={cx(flex, {
               [globalSelection]: editing,
               [localSelection]: localEditing,
-              // [searchSelection]: searching,
             })}
             onClick={(e: ModifierKeysEvent) => {
               if (actionAllowed) {
