@@ -19,10 +19,16 @@ import {
 import { classNameOrEmpty } from '../../../../Helper/className';
 import { deepDifferent } from '../../../../Components/Hooks/storeHookFactory';
 import { omit } from 'lodash-es';
-import { Button } from '../../../../Components/Inputs/Buttons/Button';
+import { FontAwesome } from '../FontAwesome';
 
 const treeNodeStyle = cx(flex, flexColumn, css({ marginTop: '1px' }));
 const childrenStyle = css({ marginLeft: '2em' });
+const caretStyle = css({
+  padding: '0 0.3em',
+  width: '1em',
+  display: 'inline-block',
+  cursor: 'pointer',
+});
 
 export interface NodeBasicInfo<T> {
   parent?: T;
@@ -508,10 +514,9 @@ export function TreeNode<T>({
           <div ref={preview} className={cx(flex, relative, itemCenter)}>
             {children != null && (
               <div>
-                <Button
-                  icon={expanded ? 'caret-down' : 'caret-right'}
-                  onClick={() => setExpanded(e => !e)}
-                />
+                <span className={caretStyle} onClick={() => setExpanded(e => !e)}>
+                  <FontAwesome icon={expanded ? 'caret-down' : 'caret-right'} />
+                </span>
               </div>
             )}
             {title != null && <div>{title}</div>}

@@ -13,7 +13,6 @@ import { cx, css } from 'emotion';
 import { FontAwesome, IconComp, Icon, Icons } from '../Views/FontAwesome';
 import {
   actionNodeContentStyle,
-  nodeContentStyle,
   TREEVIEW_ITEM_TYPE as TREEVIEW_INDEX_ITEM_TYPE,
 } from '../Variable/VariableTree';
 import { omit } from 'lodash-es';
@@ -64,8 +63,10 @@ export const PAGE_LAYOUT_COMPONENT = 'PAGE_LAYOUT_COMPONENT';
 
 const titleStyle = css({
   borderStyle: 'solid',
+  borderWidth: '1px',
   borderColor: 'transparent',
   borderRadius: themeVar.dimensions.BorderRadius,
+  padding: '2px',
   [`&>.${CONTROLS_CLASSNAME}`]: {
     visibility: 'hidden',
   },
@@ -404,7 +405,6 @@ function LayoutNodeTitle({
     <div
       onMouseUp={onMouseUp}
       className={cx(
-        nodeContentStyle,
         actionNodeContentStyle,
         titleStyle,
         flex,
@@ -417,7 +417,7 @@ function LayoutNodeTitle({
       style={style}
       title={tooltip}
     >
-      <IconComp icon={icon} style={bulletCSS} />
+      <IconComp icon={icon} className={css({marginRight: '3px'})}/>
       <div className={grow}>{newTitle}</div>
       {children}
     </div>
@@ -922,9 +922,9 @@ export function PagesLayout(props: PagesLayoutProps) {
   return (
     <Toolbar className={expandBoth}>
       <Toolbar.Header className={defaultPadding}>
-        <IndexItemAdder path={[]} />
+        <IndexItemAdder path={[]} tooltip={i18nValues.add}/>
       </Toolbar.Header>
-      <Toolbar.Content className={cx(flex, grow)}>
+      <Toolbar.Content className={cx(flex, grow, defaultPadding)}>
         <Tree<NodeId>
           id={{ pagePath: [] }}
           type="NODE"

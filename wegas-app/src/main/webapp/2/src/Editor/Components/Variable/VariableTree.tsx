@@ -37,6 +37,7 @@ import {
   toolboxHeaderStyle,
   flexRow,
   flexBetween,
+  searchSelection,
 } from '../../../css/classes';
 import {
   IVariableDescriptor,
@@ -58,6 +59,30 @@ import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { useDebounceFn } from '../../../Components/Hooks/useDebounce';
 
 const TREECONTENTID = 'TREECONTENT';
+const nodeStyle = css({
+  borderStyle: 'solid',
+  borderWidth: '1px',
+  borderColor: 'transparent',
+  borderRadius: themeVar.dimensions.BorderRadius,
+  padding: '2px',
+  alignItems: 'center',
+});
+
+export const nodeContentStyle = cx(
+  css({
+    marginRight: '5px',
+  }),
+  componentMarginLeft,
+);
+
+export const actionNodeContentStyle = cx(
+  css({
+    cursor: 'pointer',
+    ':hover': {
+      border: '1px solid ' + themeVar.colors.PrimaryColor,
+    },
+  }),
+);
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -90,8 +115,11 @@ export function VariableTreeTitle({
   style,
 }: VariableTreeTitleProps) {
   return (
-    <div className={cx(className, css({ margin: '3px 0' }))} style={style}>
-      <IconComp icon={withDefault(getIcon(variable!), 'question')} />
+    <div className={className} style={style}>
+      <IconComp
+        icon={withDefault(getIcon(variable!), 'question')}
+        className={css({ marginRight: '2px' })}
+      />
       {entityIs(variable, 'EvaluationDescriptorContainer')
         ? subPath && subPath.length === 1
           ? String(subPath[0]) === 'feedback'
@@ -275,21 +303,6 @@ function isEditing(
     shallowIs(subPath || [], editing.path)
   );
 }
-export const nodeContentStyle = cx(
-  css({
-    marginRight: '5px',
-  }),
-  componentMarginLeft,
-);
-
-export const actionNodeContentStyle = cx(
-  css({
-    cursor: 'pointer',
-    ':hover': {
-      backgroundColor: themeVar.colors.HoverColor,
-    },
-  }),
-);
 
 export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_DRAG_ITEM';
 
@@ -388,9 +401,11 @@ export function CTree({
         {...nodeProps()}
         header={
           <div
-            className={cx(flex, {
+            className={cx(flex, nodeStyle, {
               [globalSelection]: editing,
               [localSelection]: localEditing,
+              [searchSelection]: searching,
+              [actionNodeContentStyle]: actionAllowed,
             })}
             onClick={(e: ModifierKeysEvent) => {
               if (actionAllowed) {
@@ -410,9 +425,7 @@ export function CTree({
               <VariableTreeTitle
                 variable={variable}
                 subPath={subPath}
-                className={cx(nodeContentStyle, {
-                  [actionNodeContentStyle]: actionAllowed,
-                })}
+                className={nodeContentStyle}
               />
             )}
             {actionAllowed &&
