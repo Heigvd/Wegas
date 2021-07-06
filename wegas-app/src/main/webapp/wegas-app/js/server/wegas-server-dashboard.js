@@ -99,6 +99,16 @@ var WegasDashboard = (function() {
         };
     }
 
+    /**
+     * hack; remove sanitizer marks
+     *
+     * @param {type} fn function to serialize
+     * @returns function source-code
+     */
+    function serializeFunction(fn) {
+        return (fn + "").replaceAll("RequestManager.isInterrupted\\(\\);", "");
+    }
+
     function registerStatExporter(id, activityPattern, userConfig) {
         var fn = function(owner, payload) {
             var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
@@ -197,7 +207,7 @@ var WegasDashboard = (function() {
                                             })
                                         }
                                     }
-    
+
                                 }
                             }
                             item.hasGlobal = itemCfg.hasGlobal;
@@ -311,13 +321,13 @@ var WegasDashboard = (function() {
             overview.structure.forEach(function(groupItems) {
                 groupItems.items.forEach(function(item) {
                     if (item.formatter) {
-                        item.formatter = item.formatter + "";
+                        item.formatter = serializeFunction(item.formatter);
                     }
                     if (item.sortFn) {
-                        item.sortFn = item.sortFn + "";
+                        item.sortFn = serializeFunction(item.sortFn);
                     }
                     if (item.do) {
-                        item.do = item.do + "";
+                        item.do = serializeFunction(item.do);
                     }
                 });
             });

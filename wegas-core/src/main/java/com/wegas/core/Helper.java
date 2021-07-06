@@ -10,8 +10,8 @@ package com.wegas.core;
 
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.hazelcast.core.Cluster;
-import com.hazelcast.core.Member;
+import com.hazelcast.cluster.Cluster;
+import com.hazelcast.cluster.Member;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
@@ -73,6 +73,7 @@ public class Helper {
     public static final String TEAM_CHANNEL_PREFIX = "private-Team-";
     public static final String GAME_CHANNEL_PREFIX = "private-Game-";
     public static final String GAMEMODEL_CHANNEL_PREFIX = "private-GameModel-";
+    public static final String GAMEMODEL_EDITOR_CHANNEL_PREFIX = "private-GameModelEditor-";
 
     private Helper() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");

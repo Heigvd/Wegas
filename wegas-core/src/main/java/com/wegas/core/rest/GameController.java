@@ -322,7 +322,7 @@ public class GameController {
         final Collection<Game> retGames = new ArrayList<>();
         final Collection<Game> games = gameFacade.findAll(Game.Status.BIN);
         for (Game g : games) {
-            if (requestManager.hasAnyPermission(g.getRequieredDeletePermission())) {
+            if (requestManager.hasAnyPermission(g.getRequieredDeletePermission(requestManager.getCurrentContext()))) {
                 gameFacade.delete(g);
                 retGames.add(g);
             }

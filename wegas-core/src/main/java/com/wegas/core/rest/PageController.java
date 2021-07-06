@@ -10,7 +10,7 @@ package com.wegas.core.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
+import com.hazelcast.cp.lock.FencedLock;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PageFacade;
@@ -220,7 +220,7 @@ public class PageController {
     }
 
     /**
-     * @param gameModelId 
+     * @param gameModelId
      * @param payload contains the path of the item to delete
      *
      * @throws RepositoryException
@@ -281,7 +281,7 @@ public class PageController {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
 
-        final ILock gameModelLock = hzInstance.getLock("page-" + gameModelId);
+        final FencedLock gameModelLock = hzInstance.getCPSubsystem().getLock("page-" + gameModelId);
         gameModelLock.lock();
         try {
             PageIndex newIndex = pageFacade.createIndexItem(gm, payload);
@@ -313,7 +313,7 @@ public class PageController {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
 
-        final ILock gameModelLock = hzInstance.getLock("page-" + gameModelId);
+        final FencedLock gameModelLock = hzInstance.getCPSubsystem().getLock("page-" + gameModelId);
         gameModelLock.lock();
         try {
             Page page = pageFacade.duplicatePage(gm, pageId);

@@ -13,6 +13,7 @@ import com.wegas.core.Helper.EmailAttributes;
 import com.wegas.core.XlsxSpreadsheet;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.async.PopulatorScheduler;
+import static com.wegas.core.ejb.RequestManager.RequestContext.INTERNAL_SCRIPT;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
@@ -32,6 +33,7 @@ import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.persistence.token.SurveyToken;
+import com.wegas.core.security.util.ScriptExecutionContext;
 import com.wegas.survey.persistence.SurveyDescriptor;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -518,7 +520,6 @@ public class GameFacade extends BaseFacade<Game> {
         player.setStatus(Status.SURVEY);
         player.setUser(currentUser);
 
-
         GameModelLanguage lang = playerFacade.findPreferredLanguages(game.getGameModel(), languages);
 
         player.setLang(lang.getCode());
@@ -673,10 +674,9 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Send invitation to participate in a survey.
-     * One invitation will be sent to each recipient address.
-     * Such survey is made of several SurveyDescriptor.
-     * Every SurveyDescriptor must belong to the same gameModel.
+     * Send invitation to participate in a survey. One invitation will be sent to each recipient
+     * address. Such survey is made of several SurveyDescriptor. Every SurveyDescriptor must belong
+     * to the same gameModel.
      *
      * @param surveys   surveys
      * @param email     structure with attributes recipients, sender, subject and body.
@@ -888,6 +888,7 @@ public class GameFacade extends BaseFacade<Game> {
 
         CellStyle subtitleStyle = xlsx.createSmallerHeaderStyle();
 
+        try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
         ScriptObjectMirror overviews = (ScriptObjectMirror) scriptFacade.eval(p, new Script(script), null);
 
         for (Object oSheet : overviews.values()) {
@@ -977,9 +978,8 @@ public class GameFacade extends BaseFacade<Game> {
                     }
                 }
             }
-
             xlsx.autoWidth();
-
+            }
         }
     }
 }

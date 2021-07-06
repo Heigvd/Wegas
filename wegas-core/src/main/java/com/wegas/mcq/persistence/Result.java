@@ -13,6 +13,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
@@ -82,7 +83,7 @@ public class Result extends AbstractEntity implements LabelledEntity, Orderable 
     private static final long serialVersionUID = 1L;
 
     @Version
-    @Column(columnDefinition = "bigint default '0'::bigint")
+    @Column(columnDefinition = "bigint default 0::bigint")
     @WegasEntityProperty(
         nullable = false, optional = false, proposal = Zero.class,
         sameEntityOnly = true, view = @View(
@@ -464,16 +465,16 @@ public class Result extends AbstractEntity implements LabelledEntity, Orderable 
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        Collection<WegasPermission> perms = this.getMergeableParent().getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        Collection<WegasPermission> perms = this.getMergeableParent().getRequieredUpdatePermission(context);
         // see issue #1441
         perms.add(this.getParentGameModel().getAssociatedTranslatePermission(""));
         return perms;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getChoiceDescriptor().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return this.getChoiceDescriptor().getRequieredReadPermission(context);
     }
 
     /*

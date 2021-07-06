@@ -262,6 +262,14 @@ public class PlayerFacade extends BaseFacade<Player> {
         return this.findPlayerInGameModel(gameModelId, userId) != null;
     }
 
+    private Iterable<VariableInstance> getPlayerReadablePrivateInstances(Player player) {
+        TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
+            "VariableInstance.findReadablePlayerInstances", VariableInstance.class);
+        query.setParameter("playerId", player.getId());
+
+        return query.getResultList();
+    }
+
     /**
      * Get all PlayerScoped variableinstances a player has access to. Including:
      * <ul>
@@ -282,7 +290,7 @@ public class PlayerFacade extends BaseFacade<Player> {
         TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
             "VariableInstance.findPlayerInstance", VariableInstance.class);
 
-        for (VariableInstance instance : player.getPrivateInstances()) {
+        for (VariableInstance instance : this.getPlayerReadablePrivateInstances(player)) {
             PlayerScope scope = instance.getPlayerScope();
             query.setParameter("scopeId", scope.getId());
             if (scope.getBroadcastScope() == ScopeType.PlayerScope) {
@@ -307,6 +315,14 @@ public class PlayerFacade extends BaseFacade<Player> {
         return result;
     }
 
+    private Iterable<VariableInstance> getTeamReadablePrivateInstances(Team team) {
+        TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
+            "VariableInstance.findReadableTeamInstances", VariableInstance.class);
+        query.setParameter("teamId", team.getId());
+
+        return query.getResultList();
+    }
+
     /**
      * Get all TeamScoped variableinstances a team has access to. Including:
      * <ul>
@@ -325,7 +341,7 @@ public class PlayerFacade extends BaseFacade<Player> {
         TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
             "VariableInstance.findTeamInstance", VariableInstance.class);
 
-        for (VariableInstance instance : team.getPrivateInstances()) {
+        for (VariableInstance instance : this.getTeamReadablePrivateInstances(team)) {
             TeamScope scope = instance.getTeamScope();
             query.setParameter("scopeId", scope.getId());
             if (scope.getBroadcastScope() == ScopeType.GameModelScope) {
@@ -347,6 +363,14 @@ public class PlayerFacade extends BaseFacade<Player> {
         return result;
     }
 
+    private List<VariableInstance> getGameModelReadablePrivateInstances(GameModel gameModel) {
+        TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
+            "VariableInstance.findReadableGameModelInstances", VariableInstance.class);
+        query.setParameter("gameModelId", gameModel.getId());
+
+        return query.getResultList();
+    }
+
     /**
      * Get all GameModelScoped variableinstances a gameModel owns Including:
      * <ul>
@@ -358,7 +382,8 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @return all instances owned by the gameModel
      */
     private List<VariableInstance> getGameModelInstances(GameModel gameModel) {
-        return gameModel.getPrivateInstances();
+        return this.getGameModelReadablePrivateInstances(gameModel);
+        //return gameModel.getPrivateInstances();
     }
 
     /**
@@ -371,7 +396,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public List<VariableInstance> getInstances(final Long playerId) {
         Player player = this.find(playerId);
-        try (ActAsPlayer acting = requestManager.actAsPlayer(player)) {
+        try ( ActAsPlayer acting = requestManager.actAsPlayer(player)) {
             Team team = player.getTeam();
             Game game = team.getGame();
             GameModel gameModel = game.getGameModel();
@@ -412,8 +437,9 @@ public class PlayerFacade extends BaseFacade<Player> {
         //      In this case, the user lacks the user edit right, we have to bypass it
         //      with a sudo
         if (team instanceof DebugTeam == false && playerUser != null) {
-            Collection<WegasPermission> perms = playerUser.getRequieredUpdatePermission();
-            perms.addAll(player.getGame().getRequieredUpdatePermission());
+            RequestManager.RequestContext context = requestManager.getCurrentContext();
+            Collection<WegasPermission> perms = playerUser.getRequieredUpdatePermission(context);
+            perms.addAll(player.getGame().getRequieredUpdatePermission(context));
 
             requestManager.assertUserHasPermission(perms, "DELETE", player);
             try (Sudoer su = requestManager.sudoer()) {
@@ -446,9 +472,9 @@ public class PlayerFacade extends BaseFacade<Player> {
             players.addAll(t.getPlayers());
         }
         return players;
-        /*TypedQuery<Player> findByGameId = getEntityManager().createNamedQuery("Player.findPlayerByGameId", Player.class);
-        findByGameId.setParameter("gameId", gameId);
-        return findByGameId.getResultList();*/
+        /* TypedQuery<Player> findByGameId =
+         * getEntityManager().createNamedQuery("Player.findPlayerByGameId", Player.class);
+         * findByGameId.setParameter("gameId", gameId); return findByGameId.getResultList(); */
     }
 
     /**

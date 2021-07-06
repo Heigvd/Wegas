@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.WithPermission;
@@ -74,7 +75,7 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     private AbstractStateMachineDescriptor stateMachine;
 
     @Version
-    @Column(columnDefinition = "bigint default '0'::bigint")
+    @Column(columnDefinition = "bigint default 0::bigint")
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
         sameEntityOnly = true, view = @View(
             label = "Version",
@@ -292,16 +293,16 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        Collection<WegasPermission> perms = this.getStateMachine().getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        Collection<WegasPermission> perms = this.getStateMachine().getRequieredUpdatePermission(context);
         // see issue #1441
         perms.add(this.getParentGameModel().getAssociatedTranslatePermission(""));
         return perms;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getStateMachine().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return this.getStateMachine().getRequieredReadPermission(context);
     }
 
     /**

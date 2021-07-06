@@ -65,15 +65,16 @@
         <param-value>jdbc/wegas_dev</param-value>
     </context-param>
 
-    <context-param>
-        <param-name>javax.faces.FACELETS_LIBRARIES</param-name>
-        <param-value>/WEB-INF/wegas-taglib.xml</param-value>
-    </context-param>
-
     <!--Liquibase sevlet listener to check database on start up and apply new changes if needed-->
     <listener>
         <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
     </listener>
+
+    <!-- Faces taglib -->
+    <context-param>
+        <param-name>javax.faces.FACELETS_LIBRARIES</param-name>
+        <param-value>/WEB-INF/wegas-taglib.xml</param-value>
+    </context-param>
 
     <!--File Mime Types-->
     <mime-mapping>

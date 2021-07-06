@@ -7,6 +7,7 @@
  */
 package com.wegas.reviewing.persistence;
 
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.IMergeable;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
@@ -326,12 +327,12 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      *
      * @return player's instance state
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public String getState(Player p) {
         return this.getInstance(p).getReviewState().toString();
     }
 
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void setState(Player p, String stateName) {
         ReviewingState newState = ReviewingState.valueOf(stateName);
         PeerReviewInstance instance = this.getInstance(p);

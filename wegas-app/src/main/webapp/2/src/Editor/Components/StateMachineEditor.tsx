@@ -156,6 +156,7 @@ export function StateMachineEditor<
           nextStateId,
           preStateImpact: createScript(),
           triggerCondition: createScript(),
+          dependencies: [],
           index,
         },
         ...(entityIs(stateMachine, 'FSMDescriptor')

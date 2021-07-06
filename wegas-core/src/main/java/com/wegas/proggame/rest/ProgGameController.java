@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -7,9 +8,11 @@
  */
 package com.wegas.proggame.rest;
 
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.security.util.ScriptExecutionContext;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.POST;
@@ -32,18 +35,24 @@ public class ProgGameController {
     @Inject
     private ScriptFacade scriptFacade;
 
+    @Inject
+    private RequestManager requestManager;
+
     /**
      *
      * @param playerId
      * @param script
+     *
      * @return whatever the script returns
      */
     @POST
     @Path("/Run/{playerId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
     public Object run(
-            @PathParam("playerId") Long playerId, String script) throws WegasScriptException {
+        @PathParam("playerId") Long playerId, String script) throws WegasScriptException {
 
-        return scriptFacade.timeoutEval(playerId, new Script("JavaScript", script));
+        try (ScriptExecutionContext ctx = requestManager.switchToExternalExecContext(true)) {
+            return scriptFacade.timeoutEval(playerId, new Script("JavaScript", script));
+        }
     }
 }
