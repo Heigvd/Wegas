@@ -8,6 +8,7 @@ import { IconButton } from './IconButton';
 import { themeVar } from '../../Theme/ThemeVars';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
+import { OkCancelModal } from '../../Modal';
 
 const confirmButtonsContainerStyle = css({
   display: 'flex',
@@ -42,6 +43,8 @@ interface ConfirmButtonProps extends ButtonProps {
   //TODO TO ASK add iconButton props with icon?
   chipStyle?: boolean;
   shadow?: boolean;
+  modalDisplay?: boolean;
+  modalMessage?: string;
 }
 
 export function ConfirmButton({
@@ -61,6 +64,8 @@ export function ConfirmButton({
   buttonClassName,
   chipStyle,
   shadow,
+  modalDisplay,
+  modalMessage,
   tabIndex,
   tooltip,
   type,
@@ -132,38 +137,46 @@ export function ConfirmButton({
           className={buttonClassName}
         />
       )}
-      {confirmation && (
-        <div
-          ref={confirmButton}
-          tabIndex={tabIndex}
-          id={id}
-          className={
-            `wegas wegas-btn confirmBtn ${confirmButtonsContainerStyle}` +
-            disableBorderToSelector(disableBorders) +
-            classNameOrEmpty(className)
-          }
-        >
-          <Button
-            label={i18nValues.cancel}
-            onClick={onConfirm(false)}
-            disabled={disabled}
-            readOnly={readOnly}
-            noHover={noHover != null ? noHover : true}
-            dark
-            className={css({
-              border: '1px solid ' + themeVar.colors.PrimaryColor,
-            })}
-          />
-          <Button
-            label={i18nValues.accept}
-            onClick={onConfirm(true)}
-            disabled={disabled}
-            readOnly={readOnly}
-            noHover={noHover != null ? noHover : true}
-            type={type}
-          />
-        </div>
-      )}
+      {confirmation &&
+        (modalDisplay ? (
+          <OkCancelModal
+            onOk={() => onConfirm(true)}
+            onCancel={() => onConfirm(false)}
+          >
+            {modalMessage}
+          </OkCancelModal>
+        ) : (
+          <div
+            ref={confirmButton}
+            tabIndex={tabIndex}
+            id={id}
+            className={
+              `wegas wegas-btn confirmBtn ${confirmButtonsContainerStyle}` +
+              disableBorderToSelector(disableBorders) +
+              classNameOrEmpty(className)
+            }
+          >
+            <Button
+              label={i18nValues.cancel}
+              onClick={onConfirm(false)}
+              disabled={disabled}
+              readOnly={readOnly}
+              noHover={noHover != null ? noHover : true}
+              dark
+              className={css({
+                border: '1px solid ' + themeVar.colors.PrimaryColor,
+              })}
+            />
+            <Button
+              label={i18nValues.accept}
+              onClick={onConfirm(true)}
+              disabled={disabled}
+              readOnly={readOnly}
+              noHover={noHover != null ? noHover : true}
+              type={type}
+            />
+          </div>
+        ))}
     </div>
   );
 }

@@ -13,6 +13,7 @@ export const commonTranslationsDE: CommonTranslations = {
   cancel: 'Abbrechen',
   delete: 'Löschen',
   reset: 'Zurücksetzen',
+  restart: 'Neustarten',
   save: 'Speichern ',
   edit: 'Bearbeiten',
   duplicate: 'Duplizieren',
@@ -24,6 +25,7 @@ export const commonTranslationsDE: CommonTranslations = {
   buildingWorld: 'Die Welt wird gebaut!',
   pageUndefined: 'Die Seite ist undefiniert',
   features: 'Funktionen',
+  language: 'Sprache',
   deepSearch: 'Tiefensuche',
   header: {
     restartGame: 'Neustart des Spiels (gilt für jeden Szenaristen)',

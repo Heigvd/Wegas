@@ -19,7 +19,6 @@ import {
   componentMarginRight,
   flexBetween,
   itemsTop,
-  inlineBlock,
   defaultMarginLeft,
 } from '../../css/classes';
 import { Title } from '../../Components/Inputs/String/Title';
@@ -31,10 +30,14 @@ import { editorEventRemove } from '../../data/Reducer/globalState';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { State } from '../../data/Reducer/reducers';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
-import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
 import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
+
+const transparentDropDownButton = css({
+  backgroundColor: 'transparent',
+  color: 'inherit',
+});
 
 function wegasEventSelector(s: State) {
   return s.global.events;
@@ -107,63 +110,116 @@ function NotificationMenu({ className, style }: ClassStyleId) {
     />
   );
 }
-
 export default function Header() {
   const { currentFeatures } = React.useContext(featuresCTX);
   const i18nValues = useInternalTranslate(commonTranslations);
-  const {gameModel, user, userLanguage} = useStore(s => ({gameModel: GameModel.selectCurrent(),
-    user: Global.selectCurrentUser(), userLanguage: s.global.currentEditorLanguageCode}));
+  const { gameModel, user, userLanguage } = useStore(s => ({
+    gameModel: GameModel.selectCurrent(),
+    user: Global.selectCurrentUser(),
+    userLanguage: s.global.currentEditorLanguageCode,
+  }));
   const dispatch = store.dispatch;
   return (
-        <div className={cx(flex, itemsTop, flexBetween, foregroundContent, css({paddingBottom: '1em'}))}>
-          <div className={cx(flex, itemCenter)}>
-            <FontAwesome icon="user" />
-            <span className={componentMarginLeft}>{user.name}</span>
-            <DropMenu 
-              label={<IconComp icon='cog'/>}
-              items={[{label: "holà", id: '1234'},
-              {label: "holo", id: '1284'},
-              ]}
-              buttonClassName={cx(defaultMarginLeft, css({padding: '5px 5px'}))}/>
-            <FeatureToggler
-              className={cx(componentMarginLeft, componentMarginRight)}
-            />
-            <IconButton
-              icon='redo'
-              tooltip={i18nValues.header.resetLayout}
-              onClick={() => {
-                window.localStorage.removeItem(
-                  'DnDGridLayoutData.' + mainLayoutId,
-                );
-                window.location.reload();
-              }}
-              className={cx(componentMarginLeft, inlineBlock)}
-              chipStyle
-            />
-          </div>
-          <Title className={css({margin: 0})}>{gameModel.name}</Title>
-          <div className={cx(flex, itemCenter)}>
-            <DropMenu label={userLanguage} items={Object.entries(editorLanguages).map(([key, value]) => ({
-              label: key + ": " + value,
-              id: key
-            }))} onSelect={(item) => {dispatch(Actions.EditorActions.setLanguage(item.id as EditorLanguagesCode))}}/>
-            <LangToggler />
-            {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
-              <NotificationMenu className={componentMarginRight} />
-            )}
-            <ConfirmButton
-              icon="fast-backward"
-              tooltip={i18nValues.header.restartGame}
-              onAction={success => {
-                if (success) {
-                  dispatch(Actions.VariableDescriptorActions.reset());
-                  dispatch(Actions.EditorActions.resetPageLoader());
-                }
-              }}
-              buttonClassName={cx(componentMarginLeft)}
-              chipStyle
-            />
-          </div>
-        </div>
+    <div
+      className={cx(
+        flex,
+        itemsTop,
+        flexBetween,
+        foregroundContent,
+        css({ paddingBottom: '1em' }),
+      )}
+    >
+      <div className={cx(flex, itemCenter)}>
+        <FontAwesome icon="user" />
+        <span className={componentMarginLeft}>{user.name}</span>
+        <DropMenu
+          label={<IconComp icon="cog" />}
+          items={[
+            {
+              label: <FeatureToggler className={transparentDropDownButton} />,
+              value: 'selectFeatures',
+            },
+            {
+              label: (
+                <DropMenu
+                  label={i18nValues.language + ': ' + userLanguage}
+                  items={Object.entries(editorLanguages).map(
+                    ([key, value]) => ({
+                      label: key + ': ' + value,
+                      id: key,
+                    }),
+                  )}
+                  onSelect={item => {
+                    dispatch(
+                      Actions.EditorActions.setLanguage(
+                        item.id as EditorLanguagesCode,
+                      ),
+                    );
+                  }}
+                  direction="right"
+                  buttonClassName={transparentDropDownButton}
+                />
+              ),
+              value: 'selectUserLanguage',
+            },
+            {
+              label: (
+                <div
+                  onClick={() => {
+                    window.localStorage.removeItem(
+                      'DnDGridLayoutData.' + mainLayoutId,
+                    );
+                    window.location.reload();
+                  }}
+                  className={css({padding: '5px 10px'})}
+                >
+                  <IconComp icon="undo" /> {i18nValues.header.resetLayout}
+                </div>
+              ),
+              value: 'resetLayout',
+            },
+          ]}
+          buttonClassName={cx(defaultMarginLeft, css({ padding: '5px 5px' }))}
+        />
+      </div>
+      <Title className={css({ margin: 0 })}>{gameModel.name}</Title>
+
+      <DropMenu
+        label={<IconComp icon="gamepad" />}
+        items={[
+          {
+            label: (
+              <LangToggler
+                label={i18nValues.language}
+                className={transparentDropDownButton}
+                direction="right"
+              />
+            ),
+            value: 'selectGameLanguage',
+          },
+          {
+            label: (
+              <ConfirmButton
+                label={i18nValues.restart}
+                icon="fast-backward"
+                onAction={success => {
+                  if (success) {
+                    dispatch(Actions.VariableDescriptorActions.reset());
+                    dispatch(Actions.EditorActions.resetPageLoader());
+                  }
+                }}
+                buttonClassName={transparentDropDownButton}
+                modalDisplay
+                modalMessage= {i18nValues.header.restartGame + "?"}
+              />
+            ),
+            value: 'restartGame',
+          },
+        ]}
+      />
+      {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
+        <NotificationMenu className={componentMarginRight} />
+      )}
+    </div>
   );
 }

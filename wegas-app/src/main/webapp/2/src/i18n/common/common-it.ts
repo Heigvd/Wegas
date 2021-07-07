@@ -13,6 +13,7 @@ export const commonTranslationsIT: CommonTranslations = {
   cancel: 'Cancellare',
   delete: 'Cancellare',
   reset: 'resettare',
+  restart: 'Riavviare',
   save: 'Salva',
   edit: 'Modifica',
   duplicate: 'Duplicato',
@@ -24,6 +25,7 @@ export const commonTranslationsIT: CommonTranslations = {
   buildingWorld: 'Il mondo è in costruzione!',
   pageUndefined: 'La pagina non è definita',
   features: 'Caratteristiche',
+  language: 'Lingua',
   deepSearch: 'Ricerca profonda',
   header: {
     restartGame: 'Riavviare il gioco (applicato ad ogni scenarista)',

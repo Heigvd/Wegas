@@ -92,8 +92,9 @@ export function FeatureToggler({ className, style }: ClassStyleId) {
           ),
         }))}
         onSelect={({ value: feature }) => selectFeature(feature)}
-        containerClassName={className}
+        buttonClassName={className}
         style={style}
+        direction= "right"
       />
     ),
     [i18nValues.features, className, style, currentFeatures, selectFeature],

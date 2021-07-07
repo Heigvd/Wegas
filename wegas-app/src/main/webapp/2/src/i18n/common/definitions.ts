@@ -11,6 +11,7 @@ export interface CommonTranslations {
   cancel: string;
   delete: string;
   reset: string;
+  restart: string;
   save: string;
   edit: string;
   duplicate: string;
@@ -22,6 +23,7 @@ export interface CommonTranslations {
   buildingWorld: string;
   pageUndefined: string;
   features: string;
+  language: string;
   deepSearch: string;
   header: {
     restartGame: string;
