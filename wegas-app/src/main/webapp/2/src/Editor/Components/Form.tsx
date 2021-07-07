@@ -165,7 +165,6 @@ export function Form<T>({
                   buttonClassName={toolboxButtonStyle}
                 />
             }
-
           </>
         )}
       </Toolbar.Header>

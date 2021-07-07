@@ -24,7 +24,7 @@ export const tabStyle = css({
   display: 'flex',
   alignItems: 'center',
   cursor: 'pointer',
-  marginLeft: '6px',
+  marginRight: '6px',
   padding: '10px 10px',
   borderRadius:
     themeVar.dimensions.BorderRadius +
@@ -56,6 +56,7 @@ export const inactiveTabStyle = css({
 export const activeTabStyle = css({
   color: themeVar.colors.LightTextColor,
   backgroundColor: themeVar.colors.ActiveColor,
+  boxShadow: '2px 2px 6px rgba(0,0,0,0.2)',
   height: '52px',
   button: {
     color: themeVar.colors.LightTextColor,

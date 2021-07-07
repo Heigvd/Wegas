@@ -9,7 +9,6 @@ import { themeVar } from '../../../Components/Theme/ThemeVars';
 
 const containerStyle = css({
   position: 'relative',
-  marginTop: '1em',
 });
 const errorStyle = css({
   color: themeVar.colors.WarningColor,

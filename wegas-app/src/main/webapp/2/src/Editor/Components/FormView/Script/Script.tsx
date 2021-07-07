@@ -3,7 +3,7 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { LabeledView, Labeled } from '../labeled';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { store } from '../../../../data/Stores/store';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
@@ -31,8 +31,9 @@ import { DropMenu } from '../../../../Components/DropMenu';
 import { ResizeHandle } from '../../ResizeHandle';
 import { createScript } from '../../../../Helper/wegasEntites';
 import { IScript, IVariableDescriptor, IVariableInstance } from 'wegas-ts-api';
-import { Button } from '../../../../Components/Inputs/Buttons/Button';
 import { EmbeddedSrcEditor } from '../../ScriptEditors/EmbeddedSrcEditor';
+import { flex, flexBetween } from '../../../../css/classes';
+import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
 
 export const scriptEditStyle = css({
   minHeight: '5em',
@@ -268,27 +269,31 @@ export function Script({
         {({ labelNode }) => {
           return (
             <>
-              {labelNode}
-              {!error && (
-                <Button
-                  icon="code"
-                  pressed={error !== undefined}
-                  onClick={() => setSrcMode(sm => !sm)}
-                />
-              )}
-              {isServerScript && (
-                <Button
-                  icon="play"
-                  onClick={() => testScript(script.current)}
-                />
-              )}
+              <div className={cx(flex, flexBetween, css({marginTop: '20px'}))}>
+                {labelNode}
+                <div className={flex}>
+                {!error && (
+                  <IconButton
+                    icon="code"
+                    pressed={error !== undefined}
+                    onClick={() => setSrcMode(sm => !sm)}
+                  />
+                )}
+                {isServerScript && (
+                  <IconButton
+                    icon="play"
+                    onClick={() => testScript(script.current)}
+                  />
+                )}
+                </div>
+              </div>
               {isScriptCondition(view.mode) && (
-                <DropMenu
-                  label={operator}
-                  items={operators.map(o => ({ label: o, value: o }))}
-                  onSelect={({ label }) => onSelectOperator(label)}
-                />
-              )}
+                  <DropMenu
+                    label={operator}
+                    items={operators.map(o => ({ label: o, value: o }))}
+                    onSelect={({ label }) => onSelectOperator(label)}
+                  />
+                )}
               {srcMode ? (
                 <ResizeHandle minSize={200}>
                   <EmbeddedSrcEditor

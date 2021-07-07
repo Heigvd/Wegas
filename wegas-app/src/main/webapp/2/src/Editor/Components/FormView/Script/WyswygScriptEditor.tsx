@@ -9,7 +9,6 @@ import { themeVar } from '../../../../Components/Theme/ThemeVars';
 
 const scriptStyle = css({
   border: '1px solid ' + themeVar.colors.DisabledColor,
-  padding: '2px',
 });
 
 function createNewExpression(mode?: ScriptMode) {
