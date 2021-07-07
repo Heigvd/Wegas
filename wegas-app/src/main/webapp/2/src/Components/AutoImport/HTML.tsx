@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { sanitize } from '../../Helper/sanitize';
+import sanitize from '../../Helper/sanitize';
 
 /**
  * HTML widget

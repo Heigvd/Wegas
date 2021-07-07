@@ -1,6 +1,7 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { useOnClickOutside } from '../Components/Hooks/useOnClickOutside';
+import { HTMLText } from '../Components/Outputs/HTMLText';
 import { themeVar } from '../Components/Theme/ThemeVars';
 import { Toolbar } from '../Components/Toolbar';
 import { flex } from '../css/classes';
@@ -130,11 +131,7 @@ export function InfoOverlay({
             <h2>{title}</h2>
           </Toolbar.Header>
           <Toolbar.Content>
-            <div
-              dangerouslySetInnerHTML={{
-                __html: content ? content : '',
-              }}
-            />
+            <HTMLText text={content} />
           </Toolbar.Content>
         </Toolbar>
       </div>

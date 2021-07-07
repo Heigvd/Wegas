@@ -22,7 +22,7 @@ function removeTag(doc: HTMLElement, tagName: string) {
  *  secure iframe
  *  prevent password autofill in form
  */
-export function sanitize(html: string): string {
+export default function sanitize(html: string): string {
   if (html) {
     if (typeof html === 'string') {
       let root;
