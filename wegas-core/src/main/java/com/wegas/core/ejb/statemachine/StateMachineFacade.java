@@ -118,8 +118,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
             players = context.getPlayers();
         }
 
-        logger.debug("Received Reset event");
-
+        //logger.debug("Received Reset event");
         //getEntityManager().flush();
         for (Player player : players) {
             this.runForPlayer(player, forceEvalAll);
@@ -287,6 +286,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                     } else if (validTransition) {
                         logger.trace("Valid transition found");
                         if (passedTransitions.contains(transition)) {
+                            validTransition = false;
                             /*
                              * Loop prevention : that player already passed through this transiton
                              */
