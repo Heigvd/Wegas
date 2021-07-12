@@ -75,6 +75,8 @@ export const editorTabsTranslationsIT: EditorTabsTranslations = {
     scriptNotSaved: 'Lo script non viene salvato',
     scriptSaved: 'Lo script viene salvato',
     createLibraryPlease: 'Crea una biblioteca premendo il pulsante +',
+    canntoBeParsed: 'Lo script non può essere analizzato',
+    canntoBeParsedCondition: 'Lo script non può essere analizzato come condizione',
   },
   instanceProps: {
     noDescriptorEdited: 'Nessun descrittore è stato modificato',
@@ -165,5 +167,10 @@ export const editorTabsTranslationsIT: EditorTabsTranslations = {
   },
   languageEditor: {
     languages: 'Lingue',
+  },
+  variableProperties: {
+    toggleCoding: 'Alterna la console di codifica',
+    runScripts: 'Eseguire gli script',
+    deleteGroup: 'Cancellare questo gruppo',
   },
 };

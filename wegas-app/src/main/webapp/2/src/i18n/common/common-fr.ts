@@ -9,6 +9,7 @@ export const commonTranslationsFR: CommonTranslations = {
   loadingFiles: 'Chargement des fichiers',
   loadingPages:'Chargement des pages',
   noSelectedPage: 'Aucune page sélectionnée',
+  someWentWrong: 'Quelque chose a mal tourné',
   accept: 'Accepter',
   cancel: 'Annuler',
   delete: 'Supprimer',

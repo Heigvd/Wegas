@@ -28,9 +28,9 @@ const ThemeEditor = React.lazy(
   () => import('../../Components/Theme/Components/ThemeEditor'),
 );
 const Languages = React.lazy(() => import('./Languages/Languages'));
-// const Tester = React.lazy(
-//   () => import('../../Testers/Components/DropDownTester'),
-// );
+ /* const Tester = React.lazy(
+   () => import('../../Testers/SchemaPropsTester'),
+ ); */
 
 const layout = css({
   display: 'flex',
@@ -40,7 +40,7 @@ const layout = css({
 });
 
 export const availableLayoutTabs = {
-  // Tester: <Tester />,
+  //Tester: <Tester />,
   Variables: <TreeView />,
   'State Machine': <StateMachineEditor />,
   'Variable Properties': <EntityEditor />,

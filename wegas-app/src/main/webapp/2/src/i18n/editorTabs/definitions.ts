@@ -67,6 +67,8 @@ export interface EditorTabsTranslations {
     scriptNotSaved: string;
     scriptSaved: string;
     createLibraryPlease: string;
+    canntoBeParsed: string;
+    canntoBeParsedCondition: string;
   };
   instanceProps: {
     noDescriptorEdited: string;
@@ -141,4 +143,9 @@ export interface EditorTabsTranslations {
   languageEditor: {
     languages: string;
   };
+  variableProperties: {
+    toggleCoding: string;
+    runScripts: string;
+    deleteGroup: string;
+  }
 }

@@ -78,6 +78,8 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
     scriptSaved: 'Das Skript wird gespeichert',
     createLibraryPlease:
       'Bitte legen Sie eine Bibliothek an, indem Sie die Taste + drücken',
+      canntoBeParsed: 'Das Skript kann nicht geparst werden',
+    canntoBeParsedCondition: 'Das Skript kann nicht als Bedingung geparst werden',
   },
   instanceProps: {
     noDescriptorEdited: 'Es wird kein Deskriptor bearbeitet',
@@ -169,4 +171,9 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
   languageEditor: {
     languages: 'Sprachen',
   },
+  variableProperties: {
+    toggleCoding: 'Kodierkonsole umschalten',
+    runScripts: 'Skripte ausführen',
+    deleteGroup: 'Diese Gruppe löschen'
+  }
 };

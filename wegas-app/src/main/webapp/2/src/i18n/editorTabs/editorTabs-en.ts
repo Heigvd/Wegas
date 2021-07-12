@@ -75,6 +75,8 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     scriptNotSaved: 'The script is not saved',
     scriptSaved: 'The script is saved',
     createLibraryPlease: 'Please create a library by pressing the + button',
+    canntoBeParsed: 'The script cannot be parsed',
+    canntoBeParsedCondition: 'The script cannot be parsed as a condition',
   },
   instanceProps: {
     noDescriptorEdited: 'No descriptor is beeing edited',
@@ -164,4 +166,9 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
   languageEditor: {
     languages: 'Languages',
   },
+  variableProperties: {
+    toggleCoding: 'Toggle coding console',
+    runScripts: 'Run scripts',
+    deleteGroup: 'Delete this group',
+  }
 };

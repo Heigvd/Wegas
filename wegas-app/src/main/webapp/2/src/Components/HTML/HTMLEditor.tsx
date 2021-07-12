@@ -31,7 +31,7 @@ import { LabeledView, Labeled } from '../../Editor/Components/FormView/labeled';
 import { FileBrowser } from '../../Editor/Components/FileBrowser/FileBrowser';
 import { css, cx } from 'emotion';
 import { classesCTX } from '../Contexts/ClassesProvider';
-import { flexColumn, flex } from '../../css/classes';
+import { flexColumn, flex, defaultMarginTop } from '../../css/classes';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { classNameOrEmpty } from '../../Helper/className';
 import { isActionAllowed } from '../PageComponents/tools/options';
@@ -436,7 +436,7 @@ export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
       >
         <Labeled {...this.props.view}>
           {({ labelNode, inputId }) => (
-            <div className={cx(flex, flexColumn)}>
+            <div className={cx(flex, flexColumn, defaultMarginTop)}>
               {labelNode}
               <HTMLEditor
                 value={this.state.value}

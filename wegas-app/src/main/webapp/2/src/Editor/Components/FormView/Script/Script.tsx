@@ -32,8 +32,10 @@ import { ResizeHandle } from '../../ResizeHandle';
 import { createScript } from '../../../../Helper/wegasEntites';
 import { IScript, IVariableDescriptor, IVariableInstance } from 'wegas-ts-api';
 import { EmbeddedSrcEditor } from '../../ScriptEditors/EmbeddedSrcEditor';
-import { flex, flexBetween } from '../../../../css/classes';
+import { defaultMarginBottom, flex, flexBetween, itemBottom } from '../../../../css/classes';
 import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
+import { useInternalTranslate } from '../../../../i18n/internalTranslator';
+import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 
 export const scriptEditStyle = css({
   minHeight: '5em',
@@ -155,6 +157,7 @@ export function Script({
   const script = React.useRef('');
   const [statements, setStatements] = React.useState<Statement[] | null>(null);
   const [operator, setOperator] = React.useState<Operator>(operators[0]);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   const isServerScript = view.mode === 'SET';
 
@@ -249,10 +252,10 @@ export function Script({
                 condition.expression,
               );
             } else {
-              setError(['The script cannot be parsed']);
+              setError([i18nValues.scripts.canntoBeParsed]);
             }
           } else {
-            setError(['The script cannot be parsed as a condition']);
+            setError([i18nValues.scripts.canntoBeParsedCondition]);
           }
         }
         setStatements(newExpressions);
@@ -261,7 +264,7 @@ export function Script({
     } catch (e) {
       setError([e.message]);
     }
-  }, [operator, value, view.mode]);
+  }, [i18nValues.scripts.canntoBeParsed, i18nValues.scripts.canntoBeParsedCondition, operator, value, view.mode]);
 
   return (
     <CommonViewContainer view={view} errorMessage={error}>
@@ -269,12 +272,13 @@ export function Script({
         {({ labelNode }) => {
           return (
             <>
-              <div className={cx(flex, flexBetween, css({marginTop: '20px'}))}>
+              <div className={cx(flex, flexBetween, itemBottom)}>
                 {labelNode}
                 <div className={flex}>
                 {!error && (
                   <IconButton
                     icon="code"
+                    tooltip={i18nValues.variableProperties.toggleCoding}
                     pressed={error !== undefined}
                     onClick={() => setSrcMode(sm => !sm)}
                   />
@@ -282,6 +286,7 @@ export function Script({
                 {isServerScript && (
                   <IconButton
                     icon="play"
+                    tooltip={i18nValues.variableProperties.runScripts}
                     onClick={() => testScript(script.current)}
                   />
                 )}
@@ -292,6 +297,7 @@ export function Script({
                     label={operator}
                     items={operators.map(o => ({ label: o, value: o }))}
                     onSelect={({ label }) => onSelectOperator(label)}
+                    buttonClassName= {defaultMarginBottom}
                   />
                 )}
               {srcMode ? (

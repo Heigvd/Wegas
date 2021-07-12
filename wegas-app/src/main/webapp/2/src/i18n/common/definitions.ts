@@ -7,6 +7,7 @@ export interface CommonTranslations {
   loadingFiles: string;
   loadingPages: string;
   noSelectedPage: string;
+  someWentWrong: string;
   accept: string;
   cancel: string;
   delete: string;
