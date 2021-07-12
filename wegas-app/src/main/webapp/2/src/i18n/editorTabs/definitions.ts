@@ -9,7 +9,7 @@ export interface EditorTabsTranslations {
     Styles: string;
     Client: string;
     Server: string;
-    'Language Editor': string;
+    Languages: string;
     'Client Console': string;
     'Server Console': string;
     'Instances Editor': string;
@@ -23,6 +23,8 @@ export interface EditorTabsTranslations {
     'Pages Layout': string;
     'Source Editor': string;
     'Component Properties': string;
+    'Language editor': string;
+    'Translation manager': string;
   };
   stateMachine: {
     selectVariable: string;

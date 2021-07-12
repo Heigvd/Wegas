@@ -7,12 +7,18 @@ import { useOkCancelModal } from '../../../Components/Modal';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
 import {
+  defaultMargin,
+  defaultMarginBottom,
+  defaultMarginLeft,
+  defaultMarginTop,
+  defaultPadding,
   expandWidth,
   flex,
   flexColumn,
   flexRow,
   grow,
   itemCenter,
+  MediumPadding,
 } from '../../../css/classes';
 import { manageResponseHandler } from '../../../data/actions';
 import { entityIs } from '../../../data/entities';
@@ -30,9 +36,14 @@ import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { isArray } from 'lodash-es';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { classNameOrEmpty } from '../../../Helper/className';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { languagesTranslations } from '../../../i18n/languages/languages';
 
 const langaugeVisitorHeaderStyle = css({
-  borderBottom: `solid 1px ${themeVar.colors.HeaderColor}`,
+  borderBottom: `solid 1px ${themeVar.colors.PrimaryColor}`,
+  marginTop: '0.5em',
+  fontWeight: 700,
 });
 
 const translationContainerStyle = (nbLanguages: number) => {
@@ -53,29 +64,22 @@ const depthMarginStyle = (depth: number) =>
     marginLeft: depth + 'em',
   });
 
-const firstColumnMargin = css({
-  marginLeft: '10em',
-});
-
-const columnMargin = css({
-  marginLeft: '1em',
-  marginRight: '1em',
-  marginTop: '1em',
-  marginBottom: '1em',
-});
-
 const inputStyle = css({
-  maxWidth: '500px',
+  //maxWidth: '500px',
+  minWidth: '484px',
+  backgroundColor: themeVar.colors.SecondaryBackgroundColor,
 });
 
 interface TranslationViewProps {
   variableId: number;
   selectedLanguages: IGameModelLanguage[];
+  className?: string;
 }
 
 function TranslationView({
   variableId,
   selectedLanguages,
+  className,
 }: TranslationViewProps) {
   const variable = useStore(
     s => s.variableDescriptors[variableId],
@@ -132,24 +136,31 @@ function TranslationView({
       {Object.entries(translations).map(([k, v]) => {
         return (
           <React.Fragment key={k}>
-            <div
-              className={cx(
-                rowSpanStyle(selectedLanguages.length),
-                firstColumnMargin,
-              )}
-            >
-              {k}
-            </div>
             {selectedLanguages.map((language, index) => {
               const languageCode = language.code;
               const translation = unsafeTranslate(v, languageCode);
               return (
                 <div
                   key={language.id!}
-                  className={cx(flex, flexColumn, columnMargin, inputStyle, {
-                    [firstColumnMargin]: index === 0,
-                  })}
+                  className={cx(
+                    flex,
+                    flexColumn,
+                    defaultMargin,
+                    inputStyle,
+                    defaultPadding,
+                    {
+                      [classNameOrEmpty(className)]: index === 0,
+                    },
+                  )}
                 >
+                  <div
+                    className={cx(
+                      defaultMarginBottom,
+                      rowSpanStyle(selectedLanguages.length),
+                    )}
+                  >
+                    {k}
+                  </div>
                   {k === 'text' ? (
                     <LightWeightHTMLEditor
                       value={getValue(translation, k, languageCode)}
@@ -168,6 +179,17 @@ function TranslationView({
                       className={grow}
                       icon="outdent"
                       tooltip="Outdate other languages"
+                      onAction={success => {
+                        if (success) {
+                          LanguagesAPI.outdateTranslations(
+                            languageCode,
+                            v.id!,
+                            getValue(translation, k, languageCode),
+                          ).then(res => {
+                            store.dispatch(manageResponseHandler(res));
+                          });
+                        }
+                      }}
                     />
                     <Toggler
                       value={
@@ -260,7 +282,10 @@ function LanguagesVisitor({
           depthMarginStyle(depth),
         )}
       >
-        <IconComp icon={withDefault(getIcon(item), 'question')} />
+        <IconComp
+          icon={withDefault(getIcon(item), 'question')}
+          className={css({ marginRight: '5px' })}
+        />
         {editorLabel(item)}
         {variableIsList(item) && (
           <IconButton
@@ -272,6 +297,7 @@ function LanguagesVisitor({
       <TranslationView
         variableId={item.id!}
         selectedLanguages={selectedLanguages}
+        className={cx(depthMarginStyle(depth), defaultMarginTop)}
       />
       {show &&
         variableIsList(item) &&
@@ -317,10 +343,11 @@ function TranslationHeader({
   onSelect,
   index,
 }: TranslationHeaderProps) {
+  const i18nValues = useInternalTranslate(languagesTranslations);
   return (
     <div
-      className={cx(flex, flexRow, columnMargin, {
-        [firstColumnMargin]: index === 0,
+      className={cx(flex, flexRow, {
+        [defaultMarginLeft]: index > 0,
       })}
     >
       <h3>{languageLabel(language)}</h3>
@@ -328,24 +355,24 @@ function TranslationHeader({
         icon="cog"
         items={[
           {
-            label: 'Clear translations',
+            label: i18nValues.clearTranslations,
             type: 'CLEAR_TRANSLATIONS',
             language,
             items: [
               {
-                label: 'Outdated translations',
+                label: i18nValues.outdatedTranslations,
                 language,
                 type: 'CLEAR_OUTDATED',
               },
               {
-                label: 'All translations',
+                label: i18nValues.allTranslations,
                 language,
                 type: 'CLEAR_ALL',
               },
             ],
           },
           {
-            label: 'Copy translations',
+            label: i18nValues.copyTranslations,
             type: 'COPY_TRANSLATIONS',
             language,
             items: languages
@@ -374,6 +401,7 @@ function TranslationHeader({
             });
           }
         }}
+        containerClassName={cx(flex, itemCenter)}
       />
     </div>
   );
@@ -387,6 +415,7 @@ export function TranslationEditor() {
       root: GameModel.selectCurrent(),
     };
   });
+  const i18nValues = useInternalTranslate(languagesTranslations);
 
   const [selectedLanguages, setSelectedLanguages] = React.useState(
     languages.filter(language => language.active),
@@ -402,7 +431,7 @@ export function TranslationEditor() {
   }
 
   return (
-    <Toolbar className={expandWidth}>
+    <Toolbar className={cx(expandWidth, MediumPadding)}>
       <Toolbar.Header>
         <h2 className={grow}>Translation management</h2>
         <DropMenu
@@ -469,14 +498,14 @@ export function TranslationEditor() {
             }}
           >
             {languageAction.type === 'COPY'
-              ? `Are you sure that you want to copy translations from ${languageLabel(
-                  languageAction.sourceLanguage,
-                )} to ${languageLabel(
-                  languageAction.language,
-                )}. Translations will be overriden!`
-              : `Are you sure that you want to delete all ${
-                  languageAction.type === 'CLEAR_OUTDATED' ? 'outdated' : ''
-                } translations of ${languageLabel(languageAction.language)}`}
+              ? i18nValues.warningCopy(
+                  languageLabel(languageAction.sourceLanguage),
+                  languageLabel(languageAction.language),
+                )
+              : i18nValues.warningDelete(
+                  languageLabel(languageAction.language),
+                  languageAction.type === 'CLEAR_OUTDATED',
+                )}
           </OkCancelModal>
         )}
       </Toolbar.Content>

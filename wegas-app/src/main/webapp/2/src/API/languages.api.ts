@@ -75,11 +75,9 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
      * @param language The language to update
      */
     addLanguage(language: IGameModelLanguage) {
-      return rest(LANGUAGES_BASE(gameModelId) + 'Lang', {
+      return managedModeRequest(LANGUAGES_BASE(gameModelId) + 'Lang', {
         method: 'POST',
         body: JSON.stringify(language),
-      }).then((res: Response) => {
-        return res.json() as Promise<IGameModel>;
       });
     },
 
@@ -131,7 +129,7 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
     },
 
     /**
-     *
+     * Change the value of a translation
      * @param languageCode The code of the tranlations's language
      * @param translationId The id of the translation to update
      * @param translationValue The value to set in the translation
@@ -152,7 +150,7 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
       });
     },
     /**
-     *
+     * Change the outadated status of a translation
      * @param languageCode The code of the tranlations's language
      * @param translationId The id of the translation to update
      * @param translationValue The value to set in the translation
@@ -176,6 +174,27 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
           }),
         },
       );
+    },
+    /**
+     * Set all other translations status to outdated
+     * @param languageCode The code of the tranlations's language
+     * @param translationId The id of the translation to update
+     * @param translationValue The value to set in the translation
+     */
+    outdateTranslations(
+      languageCode: string,
+      translationId: number,
+      translationValue: string,
+    ) {
+      return managedModeRequest(LANGUAGES_BASE(gameModelId) + 'Tr/MAJOR', {
+        method: 'PUT',
+        body: JSON.stringify({
+          '@class': 'TranslationUpdate',
+          code: languageCode,
+          trId: translationId,
+          value: translationValue,
+        }),
+      });
     },
   };
 };

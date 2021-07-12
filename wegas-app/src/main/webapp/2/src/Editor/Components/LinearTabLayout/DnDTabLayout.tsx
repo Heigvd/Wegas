@@ -218,12 +218,12 @@ export function DnDTabLayout({
     const componentsKeys = Object.keys(components);
     for (let i = 0; i < componentsKeys.length; i += 1) {
       const label = componentsKeys[i];
-      const translatedLabel = i18nTabsNames.tabsNames[
-        label as keyof EditorTabsTranslations['tabsNames']
-      ]
-        ? i18nTabsNames.tabsNames[
-            label as keyof EditorTabsTranslations['tabsNames']
-          ]
+      const translatedOrUndefLabel =
+        i18nTabsNames.tabsNames[
+          label as keyof EditorTabsTranslations['tabsNames']
+        ];
+      const translatedLabel = translatedOrUndefLabel
+        ? translatedOrUndefLabel
         : label;
 
       // Always put a dropTab on the left of a tab
@@ -305,12 +305,12 @@ export function DnDTabLayout({
             >
               <DropMenu
                 items={Object.keys(selectItems).map(label => {
-                  const translatedLabel = i18nTabsNames.tabsNames[
-                    label as keyof EditorTabsTranslations['tabsNames']
-                  ]
-                    ? i18nTabsNames.tabsNames[
-                        label as keyof EditorTabsTranslations['tabsNames']
-                      ]
+                  const translatedOrUndefLabel =
+                    i18nTabsNames.tabsNames[
+                      label as keyof EditorTabsTranslations['tabsNames']
+                    ];
+                  const translatedLabel = translatedOrUndefLabel
+                    ? translatedOrUndefLabel
                     : label;
                   return {
                     label: translatedLabel,

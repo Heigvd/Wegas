@@ -555,22 +555,25 @@ export function editStateMachine(
         actions: actions || {
           more: {
             delete: {
-                label: 'Delete',
-                sorting: 'button',
-                confirm: true,
-                action: (entity: IFSMDescriptor, path?: string[]) => {
-                  if (
-                    path != null &&
-                    Number(path.length) === 2 &&
-                    Number(path.length) !== entity.defaultInstance.currentStateId
-                  ) {
-                    deleteState(entity, Number(path[1]));
-                  } else {
-                    dispatch(
-                      Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
-                    );
-                  }
-                },
+              label: 'Delete',
+              sorting: 'button',
+              confirm: true,
+              action: (entity: IFSMDescriptor, path?: string[]) => {
+                if (
+                  path != null &&
+                  Number(path.length) === 2 &&
+                  Number(path.length) !== entity.defaultInstance.currentStateId
+                ) {
+                  deleteState(entity, Number(path[1]));
+                } else {
+                  dispatch(
+                    Actions.VariableDescriptorActions.deleteDescriptor(
+                      entity,
+                      path,
+                    ),
+                  );
+                }
+              },
             },
             findUsage: {
               label: 'Find usage',
