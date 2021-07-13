@@ -46,11 +46,14 @@ export function ModeSelector() {
                 icon={{
                   icon: 'trash',
                 }}
+                tooltip={i18nValues.themeEditor.deleteMode}
                 onAction={sucess => {
                   if (sucess) {
                     dispatch(deleteMode(k));
                   }
                 }}
+                modalDisplay
+                modalMessage={i18nValues.themeEditor.deleteMode + "?"}
               />
             )}
             <Button
@@ -61,6 +64,7 @@ export function ModeSelector() {
                     ? themeVar.colors.SuccessColor
                     : undefined,
               }}
+              tooltip={i18nValues.themeEditor.setMainMode}
               onClick={e => {
                 e.stopPropagation();
                 dispatch(setBaseMode(k));

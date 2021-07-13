@@ -9,7 +9,6 @@ import {
   flexColumn,
   flexRow,
   justifyCenter,
-  justifyEnd,
   pointer,
 } from '../css/classes';
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
@@ -207,7 +206,7 @@ export function OkCancelModal({
     <Modal attachedToId={attachedToId}>
       <div className={cx(flex, flexColumn)}>
         {children}
-        <div className={cx(flex, flexRow, justifyEnd, defaultMarginTop)}>
+        <div className={cx(flex, flexRow, justifyCenter, defaultMarginTop)}>
           <Button
             label={i18nValues.cancel}
             onClick={onCancel}

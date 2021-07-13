@@ -42,12 +42,16 @@ export function ThemeSelector() {
                 icon="recycle"
                 tooltip={i18nValues.reset}
                 onAction={success => success && dispatch(resetTheme(k))}
+                modalDisplay
+                modalMessage={i18nValues.reset + "?"}
               />
             ) : (
               <ConfirmButton
                 icon="trash"
-                tooltip={i18nValues.delete}
+                tooltip={i18nValuesEditor.themeEditor.deleteTheme}
                 onAction={success => success && dispatch(deleteTheme(k))}
+                modalDisplay
+                modalMessage={i18nValuesEditor.themeEditor.deleteTheme + "?"}
               />
             )}
           </div>

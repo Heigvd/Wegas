@@ -81,6 +81,7 @@ export interface EditorTabsTranslations {
     theme: (t: string) => string;
     themeName: string;
     addTheme: string;
+    deleteTheme: string;
     modeAlreadyExists: string;
     mode: (m: string) => string;
     modeName: string;
@@ -96,6 +97,8 @@ export interface EditorTabsTranslations {
     someText: string;
     clickMe: string;
     nextMode: string;
+    deleteMode: string;
+    setMainMode: string;
     states: (state: string) => string;
     sections: (section: string) => string;
     themeColorShades: {

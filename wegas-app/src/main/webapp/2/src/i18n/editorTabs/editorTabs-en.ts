@@ -89,6 +89,7 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     theme: t => `Theme: ${t}`,
     themeName: 'Theme Name',
     addTheme: 'Add a theme',
+    deleteTheme: 'Delete theme',
     modeAlreadyExists: 'The mode already exists',
     mode: m => `Mode: ${m}`,
     modeName: 'Mode name',
@@ -104,6 +105,8 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     someText: 'Some text',
     clickMe: 'Click me',
     nextMode: 'Next mode : ',
+    deleteMode: 'Delete mode',
+    setMainMode: 'Set as main mode',
     states: state => {
       if (state === 'disabled') return 'Disabled';
       else if (state === 'readOnly') return 'Read only';
