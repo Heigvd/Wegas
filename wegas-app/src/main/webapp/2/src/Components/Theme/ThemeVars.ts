@@ -281,10 +281,10 @@ export function modeClass(themeValues: ThemeValues, mode: Mode): string {
 
 export const defaultThemeValues: ThemeValues = {
   colors: {
-    'Primary color': '#00C2C8',
-    'Primary color shade': '#2B8588',
-    'Primary color tint': '#44E2E7',
-    'Primary color pastel': '#DBF2F3',
+    'Primary color': '#0A9FF1',
+    'Primary color shade': '#05517A',
+    'Primary color tint': '#00ACFF',
+    'Primary color pastel': '#D5EAF6',
     'Secondary color': '#46C892',
     'Secondary color shade': '#217058',
     'Secondary color tint': '#33E399',

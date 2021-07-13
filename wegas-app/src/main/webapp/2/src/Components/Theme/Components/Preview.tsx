@@ -31,7 +31,7 @@ import { SimpleInput } from '../../Inputs/SimpleInput';
 import { HTMLText } from '../../Outputs/HTMLText';
 import { StandardGauge } from '../../Outputs/StandardGauge';
 import { Toolbar } from '../../Toolbar';
-import { SelectedThemes, themeVar } from '../ThemeVars';
+import { SelectedThemes } from '../ThemeVars';
 
 const MIN_VALUE = 0;
 const MAX_VALUE = 10;
@@ -45,7 +45,6 @@ const previewPageHeaderStyle = css({
 
 const previewPageStyle = css({
   padding: '1em',
-  border: '2px solid ' + themeVar.colors.PrimaryColor,
 });
 
 interface PreviewState {

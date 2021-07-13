@@ -30,7 +30,6 @@ import { themeVar } from '../Theme/ThemeVars';
 const flowChartStyle = css({
   width: '100%',
   height: '100%',
-  border: '2px solid ' + themeVar.colors.ActiveColor,
 });
 
 const flowChartHeaderStyle = css({

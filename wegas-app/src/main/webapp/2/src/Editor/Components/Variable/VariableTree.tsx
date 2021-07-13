@@ -87,7 +87,7 @@ const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
         const entity = { '@class': i };
         return (
           <>
-            <IconComp icon={withDefault(getIcon(entity), 'question')} />
+            <IconComp icon={withDefault(getIcon(entity), 'question')}  className={css({marginRight: '3px'})}/>
             {getClassLabel(entity)}
           </>
         );
