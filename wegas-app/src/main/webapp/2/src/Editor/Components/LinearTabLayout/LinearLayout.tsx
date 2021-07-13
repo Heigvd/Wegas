@@ -14,7 +14,7 @@ import {
 import { wlog, wwarn } from '../../../Helper/wegaslog';
 
 import 'react-reflex/styles.css';
-import { flex, noOverflow, grow, expandHeight } from '../../../css/classes';
+import { flex, noOverflow, grow, expandHeight, MediumPadding } from '../../../css/classes';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { TabComponent } from './DnDTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -984,7 +984,7 @@ export function MainLinearLayout<T extends ComponentMap>({
             >
               {rendered.length === 0 ? (
                 <ReflexElement>
-                  <div>{i18nValues.loading}...</div>
+                  <div className={MediumPadding}>{i18nValues.loading}...</div>
                 </ReflexElement>
               ) : (
                 rendered

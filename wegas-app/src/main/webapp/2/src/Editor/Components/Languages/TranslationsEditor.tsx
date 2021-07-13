@@ -7,12 +7,14 @@ import { useOkCancelModal } from '../../../Components/Modal';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
 import {
+  defaultMarginTop,
   expandWidth,
   flex,
   flexColumn,
   flexRow,
   grow,
   itemCenter,
+  MediumPadding,
 } from '../../../css/classes';
 import { manageResponseHandler } from '../../../data/actions';
 import { entityIs } from '../../../data/entities';
@@ -136,6 +138,7 @@ function TranslationView({
               className={cx(
                 rowSpanStyle(selectedLanguages.length),
                 firstColumnMargin,
+                defaultMarginTop,
               )}
             >
               {k}
@@ -243,7 +246,7 @@ function LanguagesVisitor({
   depth = 0,
 }: LanguagesVisitorProps) {
   const item = useStore(() => VariableDescriptor.select(itemId), deepDifferent);
-  const [show, setShow] = React.useState(true);
+  const [show, setShow] = React.useState(false);
   if (item == null) {
     return null;
   }
@@ -319,7 +322,7 @@ function TranslationHeader({
 }: TranslationHeaderProps) {
   return (
     <div
-      className={cx(flex, flexRow, columnMargin, {
+      className={cx(flex, flexRow, columnMargin, itemCenter, {
         [firstColumnMargin]: index === 0,
       })}
     >
@@ -402,7 +405,7 @@ export function TranslationEditor() {
   }
 
   return (
-    <Toolbar className={expandWidth}>
+    <Toolbar className={cx(expandWidth, MediumPadding)}>
       <Toolbar.Header>
         <h2 className={grow}>Translation management</h2>
         <DropMenu

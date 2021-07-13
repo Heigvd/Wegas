@@ -63,12 +63,14 @@ const modalCloseButtonStyle = css({
   margin: 'auto',
 });
 
-const secondaryButtonStyle = css({
+export const secondaryButtonStyle = css({
   backgroundColor: 'transparent',
   color: themeVar.colors.PrimaryColor,
   border: '1px solid ' + themeVar.colors.PrimaryColor,
   ['&:hover']: {
-    color: themeVar.colors.LightTextColor,
+    color: themeVar.colors.ActiveColor,
+    backgroundColor: themeVar.colors.HoverColor,
+    borderColor: 'transparent',
   },
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////////

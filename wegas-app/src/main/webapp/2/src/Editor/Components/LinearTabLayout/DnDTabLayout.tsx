@@ -18,6 +18,7 @@ import {
   headerStyle,
   hatchedBackground,
   childrenHeaderStyle,
+  MediumPadding,
 } from '../../../css/classes';
 import { childrenPlusTabStyle, plusTabStyle } from '../../../Components/Tabs';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
@@ -334,7 +335,7 @@ export function DnDTabLayout({
                 innerClassName={cx(flex, expandBoth)}
                 outerClassName={expandBoth}
               >
-                <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
+                <React.Suspense fallback={<div className={MediumPadding}>{i18nValues.loading}...</div>}>
                   {components[defaultActiveLabel]}
                 </React.Suspense>
               </Reparentable>
