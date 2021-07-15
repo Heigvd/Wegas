@@ -28,7 +28,7 @@ const ThemeEditor = React.lazy(
   () => import('../../Components/Theme/Components/ThemeEditor'),
 );
 const Languages = React.lazy(() => import('./Languages/Languages'));
-// const Tester = React.lazy(() => import('../../Testers/SmoothDndTester'));
+const Tester = React.lazy(() => import('../../Testers/ScriptViewTester'));
 
 const layout = css({
   display: 'flex',
@@ -49,7 +49,7 @@ export const availableLayoutTabs = {
   'Instances Editor': <InstancesEditor />,
   'Theme Editor': <ThemeEditor />,
   'Page Editor': <PageEditor />,
-  // Tester: <Tester />,
+  Tester: <Tester />,
 } as const;
 
 export type AvailableLayoutTab = keyof typeof availableLayoutTabs;

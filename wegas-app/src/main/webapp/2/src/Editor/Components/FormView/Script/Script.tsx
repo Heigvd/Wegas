@@ -3,7 +3,7 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { LabeledView, Labeled } from '../labeled';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { store } from '../../../../data/Stores/store';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
@@ -33,6 +33,7 @@ import { createScript } from '../../../../Helper/wegasEntites';
 import { IScript, IVariableDescriptor, IVariableInstance } from 'wegas-ts-api';
 import { Button } from '../../../../Components/Inputs/Buttons/Button';
 import { EmbeddedSrcEditor } from '../../ScriptEditors/EmbeddedSrcEditor';
+import { flex, flexRow } from '../../../../css/classes';
 
 export const scriptEditStyle = css({
   minHeight: '5em',
@@ -194,6 +195,7 @@ export function Script({
         returnedProgram = program(statements);
       }
       onCodeChange(generate(returnedProgram).code);
+      setStatements(statements);
     },
     [onCodeChange, view.mode],
   );
@@ -269,19 +271,21 @@ export function Script({
           return (
             <>
               {labelNode}
-              {!error && (
-                <Button
-                  icon="code"
-                  pressed={error !== undefined}
-                  onClick={() => setSrcMode(sm => !sm)}
-                />
-              )}
-              {isServerScript && (
-                <Button
-                  icon="play"
-                  onClick={() => testScript(script.current)}
-                />
-              )}
+              <div className={cx(flex, flexRow)}>
+                {isServerScript && (
+                  <Button
+                    icon="play"
+                    onClick={() => testScript(script.current)}
+                  />
+                )}
+                {!error && (
+                  <Button
+                    icon="code"
+                    pressed={error !== undefined}
+                    onClick={() => setSrcMode(sm => !sm)}
+                  />
+                )}
+              </div>
               {isScriptCondition(view.mode) && (
                 <DropMenu
                   label={operator}

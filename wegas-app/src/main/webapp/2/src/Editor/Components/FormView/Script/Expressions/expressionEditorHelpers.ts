@@ -11,7 +11,7 @@ import { pick } from 'lodash-es';
 
 import { isScriptCondition } from '../Script';
 
-import { StringOrT, genVarItems } from '../../TreeVariableSelect';
+import { StringOrT } from '../../TreeVariableSelect';
 
 import { store } from '../../../../../data/Stores/store';
 import { TYPESTRING } from 'jsoninput/typings/types';
@@ -335,21 +335,15 @@ export const makeItems: (
 });
 
 export const makeSchemaInitExpression = (
-  variableIds: number[],
+  variablesItems: TreeSelectItem<string | ScriptItemValue>[] | undefined,
   mode?: ScriptMode,
-  scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
 ) => ({
   variableName: schemaProps.hidden({ type: 'string', index: 1000 }),
   initExpression: schemaProps.tree({
     items: [
       {
         label: 'Variables',
-        items: genVarItems(
-          variableIds,
-          undefined,
-          scriptableClassFilter,
-          value => makeItems(value, 'variable'),
-        ),
+        items: variablesItems,
         value: 'Variables',
         selectable: false,
       },
@@ -430,6 +424,11 @@ export const makeSchemaConditionAttributes = (
           returnType: 'string',
           index: method.parameters.length + index,
           layout: 'inline',
+          required: true,
+          value: {
+            label: 'equals',
+            value: '===',
+          },
         }),
         comparator: schemaProps.custom({
           label: undefined,
@@ -437,37 +436,23 @@ export const makeSchemaConditionAttributes = (
           viewType: method.returns,
           index: method.parameters.length + index,
           layout: 'inline',
+          required: true,
+          value: 0,
         }),
       }
     : {}),
 });
 
-export const makeGlobalMethodSchema = (
-  variableIds: number[],
-  scriptMethod?: WegasMethod,
-  mode?: ScriptMode,
-  scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
-): {
-  description: string;
-  properties: IInitSchemaAttributes;
-} => ({
-  description: 'GlobalMethodSchema',
-  properties: {
-    ...makeSchemaInitExpression(variableIds, mode, scriptableClassFilter),
-    ...(scriptMethod ? makeSchemaParameters(1, scriptMethod.parameters) : {}),
-  },
-});
-
 export const generateSchema = async (
   attributes: PartialAttributes,
-  variableIds: number[],
+  variablesItems: TreeSelectItem<string | ScriptItemValue>[] | undefined,
   mode?: ScriptMode,
 ): Promise<WyiswygExpressionSchema> => {
   let newSchemaProps:
     | IInitSchemaAttributes
     | ISchemaAttributes
     | IConditionSchemaAttributes = {
-    ...makeSchemaInitExpression(variableIds, mode),
+    ...makeSchemaInitExpression(variablesItems, mode),
   };
 
   if (attributes.initExpression) {

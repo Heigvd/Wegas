@@ -89,6 +89,10 @@ export interface SimpleInputProps extends InputProps<string | number> {
    * set width 100%
    */
   fullWidth?: boolean;
+  /**
+   * allow only a certain type of input
+   */
+  inputType?: 'text' | 'number';
 }
 
 export function SimpleInput({
@@ -105,6 +109,7 @@ export function SimpleInput({
   style,
   onFocus,
   fullWidth,
+  inputType = 'text',
 }: SimpleInputProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const textAeraRef = React.useRef<HTMLTextAreaElement>(null);
@@ -164,7 +169,7 @@ export function SimpleInput({
   return (
     <input
       ref={inputRef}
-      type="text"
+      type={inputType}
       className={inputStyle + classNameOrEmpty(className)}
       style={{ ...(fullWidth ? { width: '100%' } : {}), ...style }}
       id={id}

@@ -39,8 +39,9 @@ import {
   memberExpression,
   binaryExpression,
   emptyStatement,
+  ExpressionStatement,
 } from '@babel/types';
-import { omit } from 'lodash-es';
+import { omit, pick } from 'lodash-es';
 import {
   WegasOperators,
   defaultConditionAttributes,
@@ -55,9 +56,13 @@ import {
   PartialAttributes,
   PartialSchemaAttributes,
   isBooleanExpression,
+  generateSchema,
+  IParameterAttributes,
+  IParameterSchemaAtributes,
+  typeCleaner,
+  ScriptItemValue,
 } from './expressionEditorHelpers';
 import { isWegasMethodReturnType } from '../../../../editionConfig';
-import { wlog } from '../../../../../Helper/wegaslog';
 import { isScriptCondition } from '../Script';
 import { isEmptyStatement } from '@babel/types';
 import generate from '@babel/generator';
@@ -145,56 +150,51 @@ export function methodParse(
     throw Error(`${message} :\n${code}`);
   }
 
-  try {
-    if (isEmptyStatement(statement)) {
-      return {};
-    }
-    if (!isExpressionStatement(statement)) {
-      throwParseError('The statement is not an expression statement');
+  if (isEmptyStatement(statement)) {
+    return {};
+  }
+  if (!isExpressionStatement(statement)) {
+    throwParseError('The statement is not an expression statement');
+  } else {
+    const expression = statement.expression;
+    if (!isCallExpression(expression)) {
+      throwParseError('The first expression is not a call expression');
     } else {
-      const expression = statement.expression;
-      if (!isCallExpression(expression)) {
-        throwParseError('The first expression is not a call expression');
-      } else {
-        const parameters: PartialAttributes = expression.arguments
-          .map(methodParameterParse)
-          .reduce((o, a, i) => ({ ...o, [i]: a }), {});
-        let callee = expression.callee;
-        let initMethod = '';
-        while (isMemberExpression(callee)) {
-          if (isIdentifier(callee.property)) {
-            initMethod = '.' + callee.property.name + initMethod;
-          } else {
-            throwParseError(
-              `The member's property of ${initMethod} must be of type identifier`,
-            );
-          }
-          callee = callee.object;
-        }
-        if (isIdentifier(callee)) {
-          if (callee.name !== ignoredStartingIdentifier) {
-            return {
-              ...parameters,
-              initExpression: {
-                type: 'global',
-                script: callee.name + initMethod,
-              },
-            };
-          } else {
-            throwParseError(
-              `A method starting with ${ignoredStartingIdentifier} is ignored`,
-            );
-          }
+      const parameters: PartialAttributes = expression.arguments
+        .map(methodParameterParse)
+        .reduce((o, a, i) => ({ ...o, [i]: a }), {});
+      let callee = expression.callee;
+      let initMethod = '';
+      while (isMemberExpression(callee)) {
+        if (isIdentifier(callee.property)) {
+          initMethod = '.' + callee.property.name + initMethod;
         } else {
           throwParseError(
-            `The last member of ${initMethod} must be of type identifier`,
+            `The member's property of ${initMethod} must be of type identifier`,
           );
         }
+        callee = callee.object;
+      }
+      if (isIdentifier(callee)) {
+        if (callee.name !== ignoredStartingIdentifier) {
+          return {
+            ...parameters,
+            initExpression: {
+              type: 'global',
+              script: callee.name + initMethod,
+            },
+          };
+        } else {
+          throwParseError(
+            `A method starting with ${ignoredStartingIdentifier} is ignored`,
+          );
+        }
+      } else {
+        throwParseError(
+          `The last member of ${initMethod} must be of type identifier`,
+        );
       }
     }
-  } catch (e) {
-    wlog('Method parser error');
-    wlog(e);
   }
 }
 
@@ -528,10 +528,16 @@ export const parseStatement = (
       return { attributes: {} };
     }
   } else {
-    const newAttributes = methodParse(statement, 'Variable');
-    if (newAttributes) {
-      return { attributes: newAttributes, error };
-    } else if (isScriptCondition(mode)) {
+    // let newAttributes: Partial<IInitAttributes> | undefined;
+    // try {
+    //   newAttributes = methodParse(statement, 'Variable');
+    // } catch (e) {
+    //   error = e;
+    // }
+    // if (newAttributes) {
+    //   return { attributes: newAttributes, error };
+    // } else
+    if (isScriptCondition(mode)) {
       if (isConditionCallStatement(statement)) {
         return {
           attributes: {
@@ -640,3 +646,89 @@ export const generateStatement = (
     return undefined;
   }
 };
+
+export function computeState(
+  attributes: IInitAttributes,
+  variablesItems: TreeSelectItem<string | ScriptItemValue>[] | undefined,
+  mode?: ScriptMode,
+) {
+  let newAttributes: Partial<IConditionAttributes> =
+    attributes.initExpression.type === 'global'
+      ? pick(attributes, 'initExpression')
+      : attributes;
+
+  return generateSchema(attributes, variablesItems, mode).then(
+    (schema: WyiswygExpressionSchema) => {
+      const schemaProperties = schema.properties;
+
+      //Remove additional properties that doesn't fit schema
+      newAttributes = pick(newAttributes, Object.keys(schemaProperties));
+
+      // If a variable is selected, set the variableName
+      if (
+        newAttributes.initExpression &&
+        newAttributes.initExpression.type === 'variable'
+      ) {
+        const variableName = (
+          (
+            (
+              parse(newAttributes.initExpression.script).program
+                .body[0] as ExpressionStatement
+            ).expression as CallExpression
+          ).arguments[1] as StringLiteral
+        ).value;
+        newAttributes = {
+          ...newAttributes,
+          variableName,
+        };
+      }
+
+      newAttributes = {
+        ...newAttributes,
+        ...(Object.keys(schemaProperties)
+          .filter(k => !isNaN(Number(k)))
+          .map((k: string) => {
+            const nK = Number(k);
+            const schemaProperty = schemaProperties[
+              nK
+            ] as IParameterSchemaAtributes[number];
+            // Trying to translate parameter from previous type to new type (undefined if fails)
+            return typeCleaner(
+              newAttributes[nK],
+              schemaProperty.type as WegasTypeString,
+              schemaProperty.required,
+              schemaProperty.value,
+            );
+          })
+          .reduce(
+            (o: IParameterAttributes, v, i) => ({ ...o, [i]: v }),
+            {},
+          ) as IParameterSchemaAtributes),
+      };
+
+      if (isConditionSchemaAttributes(schemaProperties)) {
+        //Verify the chosen operator and change it if not in the operator list
+        newAttributes.operator = schemaProperties.operator.enum.includes(
+          newAttributes.operator,
+        )
+          ? newAttributes.operator
+          : undefined;
+
+        //Trying to translate comparator
+        newAttributes.comparator = typeCleaner(
+          (newAttributes as IConditionAttributes).comparator,
+          schemaProperties.comparator.type as WegasTypeString,
+          schemaProperties.comparator.required,
+          schemaProperties.comparator.value,
+        );
+      }
+      const statement = generateStatement(newAttributes, schema, mode);
+
+      if (statement) {
+        // onChange && onChange(statement);
+      }
+
+      return { attributes: newAttributes, schema, statement };
+    },
+  );
+}

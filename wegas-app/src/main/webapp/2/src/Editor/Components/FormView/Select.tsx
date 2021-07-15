@@ -99,6 +99,7 @@ interface SelectorProps extends ClassStyleId, DisabledReadonly {
       value: string;
     }>,
   ) => void;
+  allowUndefined?: boolean;
 }
 
 export function Selector({
@@ -108,6 +109,7 @@ export function Selector({
   style,
   value = '',
   onChange,
+  allowUndefined = false,
   readOnly,
   disabled,
 }: SelectorProps) {
@@ -126,9 +128,11 @@ export function Selector({
       }}
       disabled={disabled || readOnly}
     >
-      <option value="" disabled hidden>
-        - {i18nValues.plzChooseValue} -
-      </option>
+      {allowUndefined && (
+        <option value="" disabled hidden>
+          - {i18nValues.plzChooseValue} -
+        </option>
+      )}
       {choices.map(genItems)}
     </select>
   ) : choices.length === 1 ? (
