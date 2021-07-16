@@ -1905,6 +1905,7 @@ public class SchemaGenerator extends AbstractMojo {
 
                     JSONExtendedSchema prop = javaToJSType(reified, param != null && param.nullable());
                     if (param != null) {
+                        prop.setRequired(!param.nullable());
                         injectView(prop, param.view(), null);
                         if (!Undefined.class.equals(param.proposal())) {
                             try {
