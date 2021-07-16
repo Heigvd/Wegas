@@ -11,7 +11,7 @@ import { ExpressionEditor } from '../Editor/Components/FormView/Script/Expressio
 
 export default function SchemaPropsTester() {
   const [statement, setStatement] = React.useState<string>(
-    'Variable.find(gameModel,"test").getValue(self) === "abc"',
+    'Variable.find(gameModel,"test")',
   );
 
   const [errors, setErrors] = React.useState<ValidationError[]>([]);
@@ -31,7 +31,7 @@ export default function SchemaPropsTester() {
         onChange={v => {
           setStatement(v);
         }}
-        mode="GET"
+        mode="SET"
       />
       <div
         style={{

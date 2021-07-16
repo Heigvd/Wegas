@@ -28,7 +28,7 @@ import { WegasScriptEditor } from '../../../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
 import { LabeledView, Labeled } from '../../labeled';
 import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
-import { pick } from 'lodash-es';
+import { isArray, pick } from 'lodash-es';
 import { CallExpression, StringLiteral, emptyStatement } from '@babel/types';
 import { themeVar } from '../../../../../Components/Theme/ThemeVars';
 import { Button } from '../../../../../Components/Inputs/Buttons/Button';
@@ -133,6 +133,12 @@ export function ExpressionEditor({
   const [{ attributes, error, softError, schema }, dispatchFormState] =
     React.useReducer(setFormState, {});
 
+  React.useEffect(() => {
+    if (error) {
+      setSrcMode(true);
+    }
+  }, [error]);
+
   const testCode = React.useCallback(
     (
       code: string,
@@ -207,23 +213,19 @@ export function ExpressionEditor({
         });
       });
     }
-  }, [attributes, code, mode, testCode, variablesItems]);
+  }, [code, mode, testCode, variablesItems]);
 
   const computeState = React.useCallback(
     (attributes: IInitAttributes) => {
-      let newAttributes: Partial<IConditionAttributes> =
-        attributes &&
-        attributes.initExpression.type === 'global' &&
-        deepDifferent(attributes.initExpression, attributes.initExpression)
-          ? pick(attributes, 'initExpression')
-          : attributes;
-
       return generateSchema(attributes, variablesItems, mode).then(
         (schema: WyiswygExpressionSchema) => {
           const schemaProperties = schema.properties;
 
           //Remove additional properties that doesn't fit schema
-          newAttributes = pick(newAttributes, Object.keys(schemaProperties));
+          let newAttributes: Partial<IConditionAttributes> = pick(
+            attributes,
+            Object.keys(schemaProperties),
+          );
 
           // If a variable is selected, set the variableName
           if (
@@ -253,12 +255,19 @@ export function ExpressionEditor({
                 const schemaProperty = schemaProperties[
                   nK
                 ] as IParameterSchemaAtributes[number];
+                const defaultItemsValue =
+                  schemaProperty.view != null &&
+                  'items' in schemaProperty.view &&
+                  isArray(schemaProperty.view.items) &&
+                  schemaProperty.view.items.length > 0
+                    ? schemaProperty.view.items[0]
+                    : undefined;
+
                 // Trying to translate parameter from previous type to new type (undefined if fails)
                 return typeCleaner(
                   newAttributes[nK],
                   schemaProperty.type as WegasTypeString,
-                  schemaProperty.required,
-                  schemaProperty.value,
+                  schemaProperty.value || defaultItemsValue,
                 );
               })
               .reduce(
@@ -279,12 +288,10 @@ export function ExpressionEditor({
             newAttributes.comparator = typeCleaner(
               (newAttributes as IConditionAttributes).comparator,
               schemaProperties.comparator.type as WegasTypeString,
-              schemaProperties.comparator.required,
               schemaProperties.comparator.value,
             );
           }
           const statement = generateStatement(newAttributes, schema, mode);
-
           let newCode = undefined;
           if (statement) {
             // Try to parse statement back before sending new code
@@ -303,7 +310,7 @@ export function ExpressionEditor({
         },
       );
     },
-    [variablesItems, mode, onChange],
+    [mode, onChange, variablesItems],
   );
 
   return (
@@ -314,11 +321,9 @@ export function ExpressionEditor({
         pressed={srcMode}
         onClick={() => setSrcMode(srcMode => !srcMode)}
       />
-      {error || srcMode ? (
+      {srcMode ? (
         <div className={scriptEditStyle}>
-          {(error || softError) && (
-            <MessageString type="error" value={error || softError} />
-          )}
+          <MessageString type="error" value={error || softError} />
           <EmbeddedSrcEditor
             value={code}
             onChange={onChange}
@@ -335,21 +340,29 @@ export function ExpressionEditor({
         <Form
           value={attributes}
           schema={schema}
-          onChange={(v, e) => {
+          onChange={(v: IInitAttributes, e) => {
             if (deepDifferent(v, attributes)) {
-              if (e && e.length > 0) {
-                dispatchFormState({
-                  type: 'SET_SOFT_ERROR',
-                  payload: { error: e.join('\n') },
-                });
-              } else {
-                computeState(v).then(({ attributes, schema }) =>
-                  dispatchFormState({
-                    type: 'SET_IF_DEF',
-                    payload: { attributes, schema },
-                  }),
-                );
+              // if (e && e.length > 0) {
+              //   dispatchFormState({
+              //     type: 'SET_IF_DEF',
+              //     payload: { softError: e.join('\n'), attributes: v },
+              //   });
+              // } else {
+              let newAttributes = v;
+              if (
+                (v.initExpression.type === 'global' &&
+                  attributes?.initExpression?.type !== 'global') ||
+                v.initExpression.script !== attributes?.initExpression?.script
+              ) {
+                newAttributes = pick(newAttributes, 'initExpression');
               }
+              computeState(newAttributes).then(({ attributes, schema }) =>
+                dispatchFormState({
+                  type: 'SET_IF_DEF',
+                  payload: { attributes, schema, softError: e.join('\n') },
+                }),
+              );
+              // }
             }
           }}
           context={attributes}

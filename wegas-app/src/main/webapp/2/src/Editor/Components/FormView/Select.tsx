@@ -170,27 +170,27 @@ function SelectView(props: ISelectProps) {
       props.onChange(parsedValue);
     }
   };
-  const selectChoices = [
+  const selectChoices: Choices = [
     ...(props.view.undefined ? [undefinedTitle] : []),
     ...props.view.choices,
   ];
-  const choices =
-    props.value != undefined || props.view.undefined
-      ? selectChoices.some(c => {
-          if ('string' === typeof c) {
-            return props.value === c;
-          }
-          return props.value === c.value;
-        })
-        ? selectChoices
-        : [
-            {
-              label: props.value,
-              value: props.value,
-              disabled: true,
-            } as Choice | string,
-          ].concat(selectChoices)
-      : ([defaultTitle] as (Choice | string)[]).concat(selectChoices || []);
+  // const choices =
+  //   props.value != undefined || props.view.undefined
+  //     ? selectChoices.some(c => {
+  //         if ('string' === typeof c) {
+  //           return props.value === c;
+  //         }
+  //         return props.value === c.value;
+  //       })
+  //       ? selectChoices
+  //       : [
+  //           {
+  //             label: props.value,
+  //             value: props.value,
+  //             disabled: true,
+  //           } as Choice | string,
+  //         ].concat(selectChoices)
+  //     : ([defaultTitle] as (Choice | string)[]).concat(selectChoices || []);
 
   const value =
     typeof props.value === 'string'
@@ -206,7 +206,7 @@ function SelectView(props: ISelectProps) {
             <Selector
               id={inputId}
               value={value}
-              choices={choices}
+              choices={selectChoices}
               onChange={onChange}
               readOnly={props.view.readOnly}
             />

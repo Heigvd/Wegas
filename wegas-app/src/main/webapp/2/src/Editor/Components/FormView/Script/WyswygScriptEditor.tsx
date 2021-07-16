@@ -6,6 +6,8 @@ import { emptyStatement } from '@babel/types';
 import Form from 'jsoninput';
 import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
 import { themeVar } from '../../../../Components/Theme/ThemeVars';
+import generate from '@babel/generator';
+import { parse } from '@babel/parser';
 
 const scriptStyle = css({
   border: '1px solid ' + themeVar.colors.DisabledColor,
@@ -53,19 +55,24 @@ export function WyswygScriptEditor({
               itemSchema: {
                 statement: schemaProps.statement({ required: true, mode }),
               },
-              userOnChildAdd: () => ({ statement: createNewExpression(mode) }),
+              userOnChildAdd: () => ({
+                statement: mode === 'GET' ? 'true' : ';',
+              }),
             }),
           },
         }}
         value={{
           statements: forceEmptyExpressions(expr, mode).map(e => ({
-            statement: e ? e : createNewExpression(mode),
+            statement: generate(e ? e : createNewExpression(mode)).code,
           })),
         }}
         onChange={value => {
           const cleanValue: Statement[] = value.statements.map(
-            (s: { statement: Statement }) =>
-              s ? s.statement : createNewExpression(mode),
+            (s: { statement: string }) => {
+              return s
+                ? parse(s.statement).program.body[0]
+                : createNewExpression(mode);
+            },
           );
           setExpr(forceEmptyExpressions(cleanValue, mode));
           onChange(cleanValue);
@@ -73,5 +80,4 @@ export function WyswygScriptEditor({
       />
     </div>
   );
-  // }
 }
