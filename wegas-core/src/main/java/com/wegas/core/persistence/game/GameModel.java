@@ -827,7 +827,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     /**
      * Backward compatibility for old exported JSON
      *
-     * @param library
+     * @param libraries new client scripts
      */
     public void setClientScriptLibrary(Map<String, GameModelContent> libraries) {
         this.addAllToLibraries(libraries, GameModelContent.CLIENT_SCRIPT, "application/javascript");

@@ -336,11 +336,11 @@ YUI.add("wegas-review-widgets", function(Y) {
                     for (j = 0; j < group.items.length; j++) {
                         item = group.items[j];
                         if (item.formatter) {
-                            formatter = item.formatter.indexOf("function") === 0 ? eval("(" + item.formatter + ")") : item.formatter;
+                            formatter = item.formatter.indexOf("function") === 0 ? W.Sandbox.eval("return (" + item.formatter + ")") : item.formatter;
                         }
 
                         if (item.nodeFormatter) {
-                            nodeFormatter = item.nodeFormatter.indexOf("function") === 0 ? eval("(" + item.nodeFormatter + ")") : item.nodeFormatter;
+                            nodeFormatter = item.nodeFormatter.indexOf("function") === 0 ? W.Sandbox.eval("return (" + item.nodeFormatter + ")") : item.nodeFormatter;
                         } else {
                             nodeFormatter = null;
                         }
@@ -1169,13 +1169,13 @@ YUI.add("wegas-review-widgets", function(Y) {
                         });
                         // Title
                         /*this._panel.destroyAll();
-                         
+
                          this._currentPanel = new Y.Wegas.Text({
                          editable: false,
                          cssClass: "wegas-review-treeview__title__panel",
                          content: "<h2>RTFM</h2>"
                          });
-                         
+
                          this._panel.add(this._currentPanel);
                          */
                         break;
@@ -1298,7 +1298,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 modeFbEval = "hidden";
 
             this.get("contentBox").one(".title").setContent(this.get("title"));
-            this.get("contentBox").one(".description").setContent(desc.get("description"));
+            this.get("contentBox").one(".description").setContent(I18n.t(desc.get("description")));
 
             var content = this.get(CONTENTBOX).one(".toReview").one(".content");
             this.showOverlay();
@@ -1866,7 +1866,7 @@ YUI.add("wegas-review-widgets", function(Y) {
 
             this.fire('editing', payload);
 
-            // live update: 
+            // live update:
             //   1) send one liveUpdate ASAP
             //   2) send one liveUpdate each second until user stop editing
             this.queueLiveEdition(prd.get("scopeType"),

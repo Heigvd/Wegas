@@ -51,8 +51,8 @@ export function createTranslatableContent(
 export function useTranslate(
   translatable?: ITranslatableContent | STranslatableContent | null,
 ) {
-  const { lang } = React.useContext(languagesCTX);
-  return translatable ? translate(translatable, lang) : '';
+  const { lang, availableLang } = React.useContext(languagesCTX);
+  return translatable ? translate(translatable, lang, availableLang) : '';
 }
 
 export function unsafeTranslate(
@@ -84,33 +84,46 @@ export function unsafeTranslate(
   }
 }
 
+/**
+ * According to requested language, returns the most relevant translation found within the given translatable content
+ */
 export function translate(
   translatable: ITranslatableContent | STranslatableContent | undefined | null,
   lang: string,
-) {
-  let translations: { [lang: string]: ITranslation };
+  availableLanguages: IGameModelLanguage[] = [],
+): string {
   if (!translatable) {
     return '';
   }
 
-  // récupère les translations sous forme de ITranslation
-  if ('translations' in translatable) {
-    translations = translatable.translations;
-  } else {
-    translations = Object.entries(translatable.getTranslations()).reduce(
-      (o, t) => ({ ...o, [t[0]]: t[1].getEntity() }),
-      {},
-    );
-  }
-  const translation = translations[lang];
+  // Make sure to have a map of ITranslation
+  const translations =
+    translatable instanceof STranslatableContent
+    ? translatable.getEntity().translations
+    : entityIs(translatable, 'TranslatableContent')
+    ? translatable.translations
+    : {};
 
-  if (Object.keys(translations).length === 0) {
-    return '';
-  } else if (translation === undefined) {
-    return Object.values(translations)[0]?.translation || '';
-  } else {
-    return translation.translation;
+  // List of code, ordered by languages ''importance''
+  const languages =
+    availableLanguages.length > 0
+      ? availableLanguages.map(gml => gml.code) // prefer globally defined language list
+      : Object.keys(translations); // but if it's empty, use in-content languages
+
+  // move requested language at first position
+  const langIndex = languages.indexOf(lang);
+  if (langIndex >= 0) {
+    languages.splice(langIndex, 1);
+    languages.unshift(lang);
   }
+
+  // find the first language code of first non-empty translation
+  const codeToUse = languages.find(
+    code => code in translations && translations[code].translation,
+  );
+
+  // return found translation or empty string
+  return codeToUse ? translations[codeToUse].translation : '';
 }
 
 /**

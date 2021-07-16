@@ -1,8 +1,8 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
-import { expandWidth, flexRow, stretch } from '../../../css/classes';
-import { useTranslate } from '../../../Editor/Components/FormView/translatable';
 import { Button } from '../../Inputs/Buttons/Button';
+import { TranslatableText } from '../HTMLText';
+import { expandWidth, flexRow, stretch } from '../../../css/classes';
 import { themeVar } from '../../Theme/ThemeVars';
 
 const choiceButtonStyle = css({
@@ -38,7 +38,6 @@ export function DialogueChoice({
   disabled,
   readOnly,
 }: DialogueChoiceProps) {
-  const translation = useTranslate(label);
   return (
     <Button
       onClick={onClick}
@@ -46,12 +45,8 @@ export function DialogueChoice({
       disabled={disabled}
       readOnly={readOnly}
     >
-      <div
-        className={choiceButtonText}
-        dangerouslySetInnerHTML={{
-          __html: translation,
-        }}
-      ></div>
+
+      <TranslatableText className={choiceButtonText} content={label} />
       <div className={choiceButtonIcon}>
         <img src={require('../../../pictures/chat_button.svg').default} />
       </div>

@@ -22,7 +22,7 @@
             <!--<style type="text/css"># {editorGameController.combinedStyleSheet}</style>-->
             <ui:repeat var="sheet" value="#{editorGameController.currentGameModel.getLibrariesAsList('CSS')}" varStatus="status">
                 <style type="text/css"  id="css-library-#{sheet.getContentKey()}">
-                    #{sheet.getContent().replaceAll("\\.\\./", "")}
+                    ${editorGameController.processSheet(sheet.getContent())}
                 </style>
             </ui:repeat>
 
@@ -74,8 +74,8 @@
                             Instance: {
                                 source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: #{writeRightNotNeeded eq 'true' ?
-                                                  'undefined' :
-                                                  '"/VariableInstance/AllPlayerInstances/' += editorGameController.currentPlayer.id += '"'
+                                  'undefined' :
+                                  '"/VariableInstance/AllPlayerInstances/' += editorGameController.currentPlayer.id += '"'
                                     },
                                 plugins: [{
                                         fn: "VariableInstanceCache",
@@ -211,16 +211,29 @@
                                 Y.Wegas.Facade.Variable.sendRequest({request: "/PlayerInstances/" + player.get("id")});
                             }
                         });
-                        try {
+
+                        Y.use("wegas-react-form", function() {
+
                             Y.log("SoftClientScript");
-                            #{editorGameController.getClientScripts()}          // Run game model specific js footer
-                        } catch (e) {
-                            Y.log("Error running client scripts.", "error");
-                        }
+                            /* THIS IS NOT A COMMENT
+                             <ui:repeat var="clientscript" value="#{editorGameController.getEscapedClientScriptsList()}" varStatus="status">
+                             */
+
+                            try {
+                                // Run game model specific js footer
+                                W.Sandbox.eval("#{clientscript}", undefined, true);
+                            } catch (e) {
+                                Y.log("Error running client scripts: " + e.message, "error");
+                            }
+
+                            /* THIS IS NOT A COMMENT
+                             </ui:repeat>
+                             */
+                        });
                     });
                     try {
                         Y.log("HardClientScript");
-                        #{editorGameController.staticClientScripts};
+                #{editorGameController.staticClientScripts};
                     } catch (e) {
                         Y.log("Error running client scripts.", "error");
                     }

@@ -10,7 +10,6 @@ import {
   IWhQuestionDescriptor,
 } from 'wegas-ts-api';
 import { halfOpacity } from '../../../css/classes';
-import { TranslatableContent } from '../../../data/i18n';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import {
   validateQuestion,
@@ -36,6 +35,7 @@ import { SimpleInput } from '../../Inputs/SimpleInput';
 import { autoMargin } from '../../../css/classes';
 import { ChoiceContainer, choiceInputStyle } from './ChoiceContainer';
 import { questionStyle } from './Question';
+import { TranslatableText } from '../HTMLText';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 
 interface WhQuestionInfo {
@@ -172,12 +172,9 @@ export function WhQuestionDisplay({
         [halfOpacity]: disabled,
       })}
     >
-      <div
-        dangerouslySetInnerHTML={{
-          __html: questionD.description
-            ? TranslatableContent.toString(questionD.description)
-            : '',
-        }}
+
+      <TranslatableText
+          content={questionD.description}
       />
       {choicesD.map((choiceD, i) => {
         const choiceI = choicesI[i];

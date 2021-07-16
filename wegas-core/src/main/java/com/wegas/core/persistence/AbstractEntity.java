@@ -65,7 +65,7 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
 
     private static final long serialVersionUID = -2538440276749623728L;
 
-    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractEntity.class);
+    static final protected org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractEntity.class);
 
     @WegasEntityProperty(
         nullable = false,

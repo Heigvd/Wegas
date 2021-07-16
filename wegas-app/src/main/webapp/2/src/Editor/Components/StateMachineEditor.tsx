@@ -46,6 +46,7 @@ import { focusTab } from './LinearTabLayout/LinearLayout';
 import produce, { Immutable } from 'immer';
 import { StateProcessComponent } from '../../Components/FlowChart/StateProcessComponent';
 import { TransitionFlowLineComponent } from '../../Components/FlowChart/TransitionFlowLineComponent';
+import { HTMLText } from '../../Components/Outputs/HTMLText';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { internalTranslate } from '../../i18n/internalTranslator';
 
@@ -566,12 +567,8 @@ function ModifiableText({
       {`Click here to edit ${mode === 'String' ? 'label' : 'text'}`}
     </div>
   ) : (
-    <div
-      onClick={() => setEditingText(true)}
-      className={stateTextStyle}
-      dangerouslySetInnerHTML={{
-        __html: newTextValue,
-      }}
-    />
+    <div onClick={() => setEditingText(true)} className={stateTextStyle}>
+      <HTMLText text={newTextValue} />
+    </div>
   );
 }
