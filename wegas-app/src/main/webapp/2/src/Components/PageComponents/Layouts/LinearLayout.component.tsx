@@ -4,7 +4,6 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { splitter } from '../../../Editor/Components/LinearTabLayout/LinearLayout';
 import 'react-reflex/styles.css';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import {
@@ -17,10 +16,15 @@ import {
   PageDeserializer,
 } from '../tools/PageDeserializer';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { classStyleIdShema } from '../tools/options';
-import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
-import { omit } from 'lodash-es';
 import { emptyLayoutItemStyle } from './FlexList.component';
+import {
+  FonkyFlexContainer,
+  FonkyFlexContainerProps,
+  FonkyFlexContent,
+  FonkyFlexSplitter,
+} from '../../Layouts/FonkyFlex';
+import { expandBoth } from '../../../css/classes';
+import { themeCTX } from '../../Theme/Theme';
 
 const CONTENT_TYPE = 'LinearLayout';
 
@@ -30,8 +34,9 @@ export interface PlayerLinearLayoutChildrenProps {
 
 export interface PlayerLinearLayoutProps
   extends WegasComponentProps,
+    FonkyFlexContainerProps,
     PlayerLinearLayoutChildrenProps {
-  flexValues?: number[];
+  noPlayerResize?: boolean;
   children: React.ReactNode[];
 }
 
@@ -40,15 +45,38 @@ function PlayerLinearLayout({
   children,
   className,
   style,
+  editMode,
+  path,
+  flexValues,
+  noPlayerResize,
 }: PlayerLinearLayoutProps) {
+  const { currentContext } = React.useContext(themeCTX);
+  const { onUpdate } = React.useContext(pageCTX);
   return (
-    <ReflexContainer
-      className={splitter + classNameOrEmpty(className)}
+    <FonkyFlexContainer
+      lockSplitters={
+        !editMode || (currentContext === 'player' && noPlayerResize)
+      }
+      flexValues={flexValues}
+      className={expandBoth + classNameOrEmpty(className)}
       style={style}
-      orientation={vertical ? 'horizontal' : 'vertical'}
+      vertical={vertical}
+      onStopResize={(_splitterNumber, flexValues) => {
+        editMode &&
+          onUpdate(
+            {
+              type: CONTENT_TYPE,
+              props: {
+                flexValues: flexValues,
+              },
+            },
+            path,
+            true,
+          );
+      }}
     >
       {children}
-    </ReflexContainer>
+    </FonkyFlexContainer>
   );
 }
 
@@ -62,7 +90,7 @@ export function EmptyComponentContainer({ path }: { path: number[] }) {
   const { onDrop } = React.useContext(pageCTX);
 
   return (
-    <ReflexElement>
+    <FonkyFlexContent>
       <div ref={dropZone} className={emptyLayoutItemStyle}>
         <ComponentDropZone
           onDrop={dndComponent => {
@@ -73,7 +101,7 @@ export function EmptyComponentContainer({ path }: { path: number[] }) {
         />
         The layout is empty, drop components in to fill it!
       </div>
-    </ReflexElement>
+    </FonkyFlexContent>
   );
 }
 
@@ -85,58 +113,52 @@ export function ChildrenDeserializer({
   context,
   inheritedOptionsState,
   noSplitter,
-  flexValues,
+  containerPropsKeys,
+  dropzones,
+  noPlayerResize,
 }: ChildrenDeserializerProps<PlayerLinearLayoutProps>) {
+  const { currentContext } = React.useContext(themeCTX);
   const { editMode /*, onUpdate*/ } = React.useContext(pageCTX);
 
   const showSplitter = editMode || !noSplitter;
 
-  return (
-    <>
-      {editMode && (!wegasChildren || wegasChildren.length === 0) ? (
-        <EmptyComponentContainer path={path} />
-      ) : (
-        wegasChildren?.reduce<JSX.Element[]>((old, _component, i, arr) => {
-          const content = (
-            <ReflexElement flex={flexValues && flexValues[i]}>
-              <PageDeserializer
-                key={JSON.stringify([...(path ? path : []), i])}
-                pageId={pageId}
-                path={[...(path ? path : []), i]}
-                uneditable={uneditable}
-                context={context}
-                dropzones={{ side: true }}
-                inheritedOptionsState={inheritedOptionsState}
-              />
-            </ReflexElement>
-          );
+  const test =
+    !wegasChildren || wegasChildren.length === 0 ? (
+      <EmptyComponentContainer path={path} />
+    ) : (
+      wegasChildren?.reduce<JSX.Element[]>((old, _component, i, arr) => {
+        const content = (
+          <PageDeserializer
+            key={JSON.stringify([...path, i])}
+            pageId={pageId}
+            path={[...path, i]}
+            uneditable={uneditable}
+            Container={FonkyFlexContent}
+            context={context}
+            containerPropsKeys={containerPropsKeys}
+            dropzones={dropzones}
+            inheritedOptionsState={inheritedOptionsState}
+          />
+        );
 
-          if (showSplitter && i < arr.length - 1) {
-            const splitter = (
-              <ReflexSplitter
-              // onStopResize={handleProps => {
-              //   editMode &&
-              //     onUpdate(
-              //       {
-              //         type: CONTENT_TYPE,
-              //         props: {
-              //           flexValues: [...(flexValues?.slice(0,i) || []), ],
-              //         },
-              //       },
-              //       path,
-              //       true,
-              //     );
-              // }}
-              />
-            );
-            return [...old, content, splitter];
-          } else {
-            return [...old, content];
-          }
-        }, [])
-      )}
-    </>
-  );
+        if (showSplitter && i < arr.length - 1) {
+          const splitter = (
+            <FonkyFlexSplitter
+              notDraggable={
+                !editMode || (currentContext === 'player' && noPlayerResize)
+              }
+              key={'SPLITTER' + JSON.stringify([...path, i])}
+            />
+          );
+          return [...old, content, splitter];
+        } else {
+          return [...old, content];
+        }
+      }, [])
+    );
+
+  // debugger;
+  return <>{test}</>;
 }
 
 const test = pageComponentFactory({
@@ -152,9 +174,14 @@ const test = pageComponentFactory({
   icon: 'columns',
   schema: {
     vertical: schemaProps.boolean({ label: 'Vertical' }),
+    noPlayerResize: schemaProps.boolean({ label: 'No player resize' }),
     // noSplitter: schemaProps.boolean({ label: 'No splitter' }),
-    flexValues: schemaProps.hidden({ type: 'array' }),
-    ...omit(classStyleIdShema, ['id']),
+    // flexValues: schemaProps.hidden({ type: 'array' }),
+    flexValues: schemaProps.array({
+      itemSchema: {
+        statement: schemaProps.number({}),
+      },
+    }),
   },
   getComputedPropsFromVariable: () => ({
     children: [],
