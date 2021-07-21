@@ -8,10 +8,11 @@ import {
   grow,
   flexDistribute,
   expandBoth,
-  contentCenter,
-  justifyCenter,
   itemCenter,
   textCenter,
+  defaultMargin,
+  flexBetween,
+  defaultMarginRight,
 } from '../../../css/classes';
 import {
   usePageComponentStore,
@@ -31,6 +32,7 @@ import { pageCTX } from './PageEditor';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import Modal from '../../../pictures/componentsIcons/modal.svg';
 
 const headerStyle = css({
   padding: '20px',
@@ -41,50 +43,71 @@ const headerStyle = css({
 
 const paletteStyle = (editMode: boolean) =>
   css({
-    backgroundColor: editMode
-      ? themeVar.colors.BackgroundColor
-      : themeVar.colors.DisabledColor,
+    backgroundColor: themeVar.colors.BackgroundColor,
     opacity: editMode ? 1 : 0.5,
   });
 
-const componentTypeStyle = (
-  selected: boolean,
-  show: boolean,
+const componentTypeButtonStyle = (
+  opened: boolean,
   enabled: boolean,
 ) => {
   return css({
-    transition: show ? 'all 0.5s' : undefined,
-    textAlign: 'center',
-    padding: show ? '20px' : 0,
-    height: show ? 'auto' : 0,
-    width: show ? 'auto' : 0,
-    overflow: 'hidden',
-    backgroundColor: selected
+    padding: '15px',
+    backgroundColor: enabled
       ? themeVar.colors.PrimaryColor
       : themeVar.colors.HeaderColor,
-    color: selected
-      ? themeVar.colors.HeaderColor
+    color: enabled
+      ? themeVar.colors.LightTextColor
       : themeVar.colors.PrimaryColor,
-    margin: show ? '5px' : 0,
     cursor: enabled ? 'pointer' : 'initial',
+    marginBottom: opened ? '0px' : '3px',
+    '&:hover': {
+      backgroundColor: enabled
+      ? themeVar.colors.ActiveColor
+      : themeVar.colors.HeaderColor,
+      transition: 'background-color .5s ease',
+    }
   });
 };
 
-const componentStyle = (show: boolean) =>
-  css({
-    visibility: show ? 'visible' : 'collapse',
-    transition: show ? 'all 1s' : undefined,
-    padding: show ? '20px' : 0,
-    height: show ? 'fit-content' : 0,
-    width: show ? 'fit-content' : 0,
-    maxHeight: show ? 'fit-content' : 0,
-    maxWidth: show ? 'fit-content' : 0,
+const componentTypeCollapseStyle = (
+  opened: boolean
+) => {
+  return css({
+    transition: 'all .8s ease',
+    textAlign: 'center',
+    opacity: opened ? 1 : 0,
+    maxHeight: opened ? '500px' : 0,
+    width: 'auto',
     overflow: 'hidden',
     backgroundColor: themeVar.colors.HeaderColor,
+    marginBottom: opened ? '3px' : 0,
+    justifyContent: 'flex-start',
+  });
+};
+
+  const componentStyle =  css({
+    width: '90px',
+    height: '90px',
+    padding: '0 10px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    fontSize: '14px',
+    lineHeight: '16px',
+    backgroundColor: themeVar.colors.HeaderColor,
     color: themeVar.colors.PrimaryColor,
-    margin: show ? '5px' : 0,
+    margin: '15px 5px',
     cursor: 'pointer',
-    ':hover': {
+    '&:hover': {
+      backgroundColor: themeVar.colors.PrimaryColor,
+      color: themeVar.colors.HeaderColor,
+    },
+  });
+
+  const componentIconStyle =  css({
+    fill: themeVar.colors.PrimaryColor,
+    width: '70px',
+    '&:hover': {
       backgroundColor: themeVar.colors.PrimaryColor,
       color: themeVar.colors.HeaderColor,
     },
@@ -140,14 +163,14 @@ export function useComponentDrag(
   });
 }
 
-interface ComponentTypeElementProps {
+/* interface ComponentTypeElementProps {
   componentType: ComponentType;
   currentType: ComponentType | undefined;
   onClick: (type: ComponentType) => void;
   enabled: boolean;
-}
+} */
 
-function ComponentTypeElement({
+/* function ComponentTypeElement({
   componentType,
   onClick,
   currentType,
@@ -167,32 +190,110 @@ function ComponentTypeElement({
       {`${selected ? i18nValues.pageEditor.back : translatedType}`}
     </div>
   );
+} */
+
+interface ComponentTypeElementProps {
+  componentType: ComponentType;
+  onClick: (type: ComponentType) => void;
+  currentType: ComponentType | undefined;
+  enabled: boolean;
+  componentNames: string[];
+}
+
+function ComponentTypeElement({
+  componentType,
+  onClick,
+  //currentType,
+  enabled,
+  componentNames,
+}: ComponentTypeElementProps) {
+  const [opened, setOpened] = React.useState(false);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
+  const translatedType = i18nValues.pageEditor.componentTypes[componentType]
+    ? i18nValues.pageEditor.componentTypes[componentType]
+    : componentType;
+
+
+  function componentTypeIcon(name: ComponentType) {
+    switch (name) {
+      case 'Layout':
+        return "table";
+      case 'Input':
+        return "edit";
+      case 'Output':
+        return "icons";
+      case 'Advanced':
+        return "atom";
+      case 'Programmatic':
+        return "code";
+  }}
+  return (
+    <>
+    <div
+      className={cx(componentTypeButtonStyle(opened, enabled), flex, flexBetween)}
+      onClick={() => {
+        enabled && onClick(componentType);
+        setOpened(opened => !opened);
+      }}
+    >
+      <div>
+        <IconComp icon={componentTypeIcon(componentType)} className={defaultMarginRight}/>
+        {`${translatedType}`}
+      </div>
+      <IconComp icon={opened ? "chevron-up" : "chevron-down"} />
+    </div>
+    <div className={cx(
+            flex,
+            grow,
+            flexWrap,
+            flexDistribute,
+            componentTypeCollapseStyle(opened),
+          )}>
+            <div className={cx(defaultMargin, flex)}>
+    {componentNames.map(k =>
+            <ComponentElement
+              key={k}
+              componentName={k}
+              componentType={componentType}
+            />)}
+            </div>
+    </div>
+    </>
+  );
 }
 
 interface ComponentElementProps {
   componentName: string;
-  currentType: ComponentType | undefined;
+  componentType: ComponentType | undefined;
 }
 
 function ComponentElement({
   componentName,
-  currentType,
+  componentType,
 }: ComponentElementProps) {
   const i18nValues = useInternalTranslate(editorTabsTranslations);
   const component = usePageComponentStore(s => s[componentName]);
   const [, drag] = useComponentDrag(componentName);
   return (
-    <div
+    <>
+    {component.componentType === componentType &&
+      <div
       ref={drag}
-      className={componentStyle(component.componentType === currentType)}
+      className={componentStyle}
       title={componentName}
     >
       {component ? (
-        <IconComp icon={component.icon} />
+        <>
+          <Modal className={componentIconStyle} />
+          {/* <IconComp icon={component.icon} /> */}
+          {componentName}
+        </>
       ) : (
         <span>{`${i18nValues.pageEditor.unknownComponent} "${componentName}"`}</span>
       )}
     </div>
+    }
+    </>
   );
 }
 
@@ -222,7 +323,7 @@ export function ComponentPalette({
           </Button>
         </div>
       )}
-      <div className={cx(flex, flexColumn, grow, paletteStyle(editMode))}>
+      <div className={cx(flex, flexColumn, grow, paletteStyle(editMode), defaultMargin)}>
         <div className={cx(flex, flexColumn, expandWidth)}>
           {componentTypes.map(t => (
             <ComponentTypeElement
@@ -233,24 +334,7 @@ export function ComponentPalette({
                 setCurrentType(o => (o === type ? undefined : type))
               }
               enabled={editMode}
-            />
-          ))}
-        </div>
-        <div
-          className={cx(
-            flex,
-            grow,
-            flexWrap,
-            flexDistribute,
-            justifyCenter,
-            contentCenter,
-          )}
-        >
-          {componentNames.map(k => (
-            <ComponentElement
-              key={k}
-              componentName={k}
-              currentType={currentType}
+              componentNames = {componentNames}
             />
           ))}
         </div>

@@ -90,6 +90,7 @@
     "wegas-ts-api": "link:../../../../../wegas-ts-api/target/wegas-ts-api"
   },
   "devDependencies": {
+    "@svgr/webpack": "^5.5.0",
     "@types/chart.js": "^2.9.32",
     "@types/color": "^3.0.0",
     "@types/hoist-non-react-statics": "^3.3.1",

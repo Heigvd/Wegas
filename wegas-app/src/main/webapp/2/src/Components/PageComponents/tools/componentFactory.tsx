@@ -19,7 +19,6 @@ import { ChildrenDeserializerProps } from './PageDeserializer';
 import { classStyleIdShema } from './options';
 
 export const componentTypes = [
-  'Other',
   'Layout',
   'Input',
   'Output',

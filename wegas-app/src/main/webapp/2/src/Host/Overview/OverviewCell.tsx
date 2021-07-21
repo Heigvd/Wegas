@@ -52,7 +52,6 @@ export function OverviewCell({
 
     const view = formatter ? 'formatter' : kind;
     const value = typeof data === 'object' ? data.body : data;
-
     switch (view) {
       case 'boolean':
         return (

@@ -41,14 +41,20 @@ export function useAnyStore<R, S, A extends AnyAction>(
     selector(store.getState()),
   );
   const isFirstRun = React.useRef(true);
+  const mounted = React.useRef(false);
+  React.useEffect(() => { mounted.current = true
+  return () => {mounted.current = false}
+}, []);
   const stateUpdater = React.useCallback(() => {
     const value = selector(store.getState());
-    setSelected(v => {
-      if (shouldUpdate(v, value)) {
-        return value;
-      }
-      return v;
-    });
+    if(mounted.current === true) {
+      setSelected(v => {
+        if (shouldUpdate(v, value)) {
+          return value;
+        }
+        return v;
+      });
+    }
   }, [selector, shouldUpdate, store]);
   React.useEffect(() => {
     // if the stateUpdater changed, run it.

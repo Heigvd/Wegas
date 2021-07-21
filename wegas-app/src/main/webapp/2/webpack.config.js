@@ -111,7 +111,7 @@ const modules = {
       //   enforce: 'pre',
       // },
       {
-        test: /\.(png|jp(e*)g|svg)$/,
+        test: /\.(png|jp(e*)g)$/,
         use: [
           {
             loader: 'url-loader',
@@ -122,7 +122,10 @@ const modules = {
           },
         ],
       },
-
+      {
+        test: /\.svg$/,
+        use: ['@svgr/webpack'],
+      },
       {
         test: /\.(ttf)$/,
         use: [
