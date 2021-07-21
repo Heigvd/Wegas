@@ -199,7 +199,7 @@ public class TeamFacade extends BaseFacade<Team> implements TeamFacadeI {
      */
     public void reset(final Team team) {
         gameModelFacade.propagateAndReviveDefaultInstances(team.getGame().getGameModel(), team, false); // reset the team and all its players
-        stateMachineFacade.runStateMachines(team);
+        stateMachineFacade.runStateMachines(team, true);
     }
 
     /**

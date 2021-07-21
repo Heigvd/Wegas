@@ -1,214 +1,144 @@
-/* global gameModel, self, Variable*/
+/* global gameModel, self, Variable, WegasDashboard, Infinity, I18n*/
 var PactDashboard = (function() {
 
     // This variable only exists in games made from dec. 2019:
-    var sequenceVarExists = true;
-    try {
-        var test = Variable.find(gameModel, "sequence");
-    } catch(e) {
-        sequenceVarExists = false;
-    }
+    var sequenceVarExists = Variable.hasVariable(gameModel, "sequence");
 
-    // This is client-side code !
-    var levelDisplay = function(value) {
-        return (value/10).toFixed(1);
+    /**
+     * convert internal (11, 12, 21, 31, ..) )level to human readable 1.1, 1.2, 2.1, ...
+     */
+    var levelDisplay = function(teamId, instance) {
+        return (instance.getValue() / 10).toFixed(1);
     };
 
     WegasDashboard.registerVariable("currentLevel", {
-        transformer: levelDisplay,
+        mapFn: levelDisplay,
         label: 'Niveau actuel',
         sortable: true
     });
 
     WegasDashboard.registerVariable("maxLevel", {
-        transformer: levelDisplay,
+        mapFn: levelDisplay,
         label: 'Max atteint',
         sortable: true,
         active: false
     });
 
     WegasDashboard.registerVariable("levelLimit", {
-        transformer: levelDisplay,
+        mapFn: levelDisplay,
         label: 'Niveau autorisé',
         sortable: true,
         active: false
     });
 
     // This is self-contained client-side code !
-    var countersDisplayCurrent = function(obj) {
+    var formatCounters = function(bloc, counters) {
 
         function colored(nbErrs, nbTotal) {
-            var ratio = nbTotal != 0 ? nbErrs/nbTotal : 0;
+            var ratio = nbTotal != 0 ? nbErrs / nbTotal : 0;
             if (nbErrs <= 1 || ratio <= 0.2) {
                 // Green:
                 return "<span class='result-green'>" + nbErrs + "</span>";
             } else if (ratio <= 0.4 && ratio > 0.2) {
                 // Orange:
-                return "<span class='result-orange'>" + nbErrs  + "</span>";
+                return "<span class='result-orange'>" + nbErrs + "</span>";
             } else {
                 // Red:
-                return "<span class='result-red'>" + nbErrs  + "</span>";
+                return "<span class='result-red'>" + nbErrs + "</span>";
             }
         }
 
-        var counters = obj.object,
-            level = obj.data ? obj.data.currentLevel : 99;
-
-        // If player has just started a new level, but not yet submitted any code:
-        if (!counters[level]) {
-            counters[level] = {
-                submissions: 0,
-                successful: 0,
-                incomplete: 0,
-                exceptions: 0
-            };
-        }
-
-        return  '<table class="dashboard-internal-table">' +
-                '<tr><td>Exceptions:</td><td>' + colored(counters[level].exceptions, counters[level].submissions) + '</td></tr>' +
-                '<tr><td>Incomplets:</td><td>' + colored(counters[level].incomplete, counters[level].submissions) + '</td></tr>' +
-                '<tr><td>Réussis:</td><td class="result-gray">' + counters[level].successful + '</td></tr>' +
-                '<tr class="result-total"><td>Total:</td><td class="result-gray">' + counters[level].submissions + '</td></tr>' +
-                '</tr></table>';
+        bloc.setContent('<table class="dashboard-internal-table">' +
+            '<tr><td>Exceptions:</td><td>' + colored(counters.exceptions, counters.submissions) + '</td></tr>' +
+            '<tr><td>Incomplets:</td><td>' + colored(counters.incomplete, counters.submissions) + '</td></tr>' +
+            '<tr><td>Réussis:</td><td class="result-gray">' + counters.successful + '</td></tr>' +
+            '<tr class="result-total"><td>Total:</td><td class="result-gray">' + counters.submissions + '</td></tr>' +
+            '</tr></table>');
     };
 
 
-    // This is self-contained client-side code !
-    var countersDisplayAll = function(obj) {
 
-        function colored(nbErrs, nbTotal) {
-            var ratio = nbTotal != 0 ? nbErrs/nbTotal : 0;
-            if (nbErrs <= 1 || ratio <= 0.2) {
-                // Green:
-                return "<span class='result-green'>" + nbErrs + "</span>";
-            } else if (ratio <= 0.4 && ratio > 0.2) {
-                // Orange:
-                return "<span class='result-orange'>" + nbErrs  + "</span>";
+    /*
+     * Counters of the current level
+     * Returns {submissions: x, successful: x, incomplete: x, exceptions: x}
+     */
+    var extractCurrentCount = function(teamId, instance, currentLevel) {
+        var current = instance.getProperty("" + currentLevel.getValue());
+        if (current) {
+            try {
+                var counter = JSON.parse(current);
+                return counter;
+            } catch (e) {
+            }
+        }
+
+        return  {
+            submissions: 0,
+            successful: 0,
+            incomplete: 0,
+            exceptions: 0
+        };
+    };
+
+    /*
+     * Sum counters of all levels
+     * moreover, include current level as the strange sort method use it
+     * Returns {currentLevel:x, submissions: x, successful: x, incomplete: x, exceptions: x}
+     */
+    var extractAllCount = function(teamId, instance, currentLevel) {
+        var sum = {
+            currentLevel: currentLevel.getValue(),
+            submissions: 0,
+            successful: 0,
+            incomplete: 0,
+            exceptions: 0
+        };
+        instance.getProperties().values().forEach(function(sCount) {
+            try {
+                var count = JSON.parse(sCount);
+                sum.successful += count.successful;
+                sum.incomplete += count.incomplete;
+                sum.exceptions += count.exceptions;
+                sum.submissions += count.submissions;
+            } catch (e) {
+            }
+        });
+        return sum;
+    };
+
+    // This is self-contained client-side code !
+    var sortCounters = function(a, b, desc) {
+
+        function errorCount(counter) {
+            return counter.exceptions + counter.incomplete;
+        }
+
+        function errorRatio(counter) {
+            if (counter.submissions > 0) {
+                return errorCount(counter) / counter.submissions;
             } else {
-                // Red:
-                return "<span class='result-red'>" + nbErrs  + "</span>";
+                return Infinity;
             }
         }
 
-        var counters = obj.object,
-            level = obj.data ? obj.data.maxLevel : 99,
-            sum = obj.sum = {
-                submissions: 0,
-                successful: 0,
-                incomplete: 0,
-                exceptions: 0
-            };
+        var res;
 
-        // If player has just started a new level, but not yet submitted any code:
-        if (!counters[level]) {
-            counters[level] = {
-                submissions: 0,
-                successful: 0,
-                incomplete: 0,
-                exceptions: 0
-            };
-        }
-
-        // Compute sum of counters for all levels:
-        for (var key in counters) {
-            sum.submissions += counters[key].submissions;
-            sum.successful += counters[key].successful;
-            sum.incomplete += counters[key].incomplete;
-            sum.exceptions += counters[key].exceptions;
-        }
-
-        return  '<table class="dashboard-internal-table">' +
-                '<tr><td>Exceptions:</td><td>' + colored(sum.exceptions, sum.submissions) + '</td></tr>' +
-                '<tr><td>Incomplets:</td><td>' + colored(sum.incomplete, sum.submissions) + '</td></tr>' +
-                '<tr><td>Réussis:</td><td class="result-gray">' + sum.successful + '</td></tr>' +
-                '<tr class="result-total"><td>Total:</td><td class="result-gray">' + sum.submissions + '</td></tr>' +
-                '</tr></table>';
-    };
-
-
-    // This is self-contained client-side code !
-    var countersSortCurrent = function(a, b, desc) {
-
-        // Returns infinity if the user has not yet begun the game or the current level:
-        function errorRatio(playerCounters, level) {
-            if (level === 0) return Infinity;
-            var errs = playerCounters[level].exceptions + playerCounters[level].incomplete,
-                total = playerCounters[level].submissions;
-            return errs/total;
-        }
-
-        function errors(playerCounters, level) {
-            if (level === 0) return Infinity;
-            return playerCounters[level].exceptions + playerCounters[level].incomplete;
-        }
-
-        // Return the most advanced player of a and b (?)
-        var countersA = a.get("counters").object,
-            countersB = b.get("counters").object,
-            levelA = a.get("currentLevel"),
-            levelB = b.get("currentLevel"),
-            errRA, errRB, errsA, errsB, res;
-
-        // Return 1 if A needs more urgent help than B, otherwise -1 (or 0 if their needs are equal).
-        // We don't consider their respective advancement levels !
-        // We first consider their error ratios :
-        errRA = errorRatio(countersA, levelA);
-        errRB = errorRatio(countersB, levelB);
-        if (errRA > errRB) {
-            res = 1;
-        } else if (errRA === errRB) { // If error ratios are equal, consider the absolute number of errors
-            errsA = errors(countersA, levelA);
-            errsB = errors(countersB, levelB);
-            if (errsA > errsB) {
-                res = 1;
-            } else if (errsA === errsB) {
-                res = 0;
-            } else {
-                res = -1;
-            }
-        } else {
-            res = -1;
-        }
-
-        return desc ? -res : res;
-
-    };
-
-
-
-
-    // This is self-contained client-side code !
-    var countersSortAll = function(a, b, desc) {
-
-        function errorRatio(playerCounters) {
-            var errs = playerCounters.exceptions + playerCounters.incomplete,
-                total = playerCounters.submissions;
-            return errs/total;
-        }
-
-        function errors(playerCounters) {
-            return playerCounters.exceptions + playerCounters.incomplete;
-        }
-
-        // Return the most advanced player of a and b (?)
-        var countersA = a.get("counters_all").sum,
-            countersB = b.get("counters_all").sum,
-            levelA = a.get("maxLevel"),
-            levelB = b.get("maxLevel"),
-            errRA, errRB, errsA, errsB, res;
+        var ratioA = errorRatio(a);
+        var ratioB = errorRatio(b);
 
         // Return 1 if A needs more urgent help than B, otherwise -1 (or 0 if their needs are equal).
         // First look at their advancement levels:
-        if (levelA < levelB) {
+        if (a.currentLevel < b.currentLevel) {
             res = 1;
-        } else if (levelA === levelB) { // If advancement levels are equal, consider their error ratios :
-            errRA = errorRatio(countersA);
-            errRB = errorRatio(countersB);
-            if (errRA > errRB) {
+        } else if (a.currentLevel === b.currentLevel) {
+            // If advancement levels are equal, consider their error ratios :
+            if (ratioA > ratioB) {
                 res = 1;
-            } else if (errRA === errRB) { // If error ratios are equal, consider the absolute number of errors
-                errsA = errors(countersA);
-                errsB = errors(countersB);
+            } else if (ratioA === ratioB) {
+                // If error ratios are equal, consider the absolute number of errors
+                var errsA = errorCount(a);
+                var errsB = errorCount(b);
+
                 if (errsA > errsB) {
                     res = 1;
                 } else if (errsA === errsB) {
@@ -224,85 +154,106 @@ var PactDashboard = (function() {
         }
 
         return desc ? -res : res;
-
     };
 
-
     WegasDashboard.registerVariable("counters", {
-        transformer: countersDisplayAll,
+        mapFn: extractAllCount,
+        mapFnExtraArgs: ["currentLevel"],
+        formatter: formatCounters,
         sortable: true,
-        sortFn: countersSortAll,
-        label: 'Facilité globale',
+        sortFn: sortCounters,
+        label: 'New Facilité globale',
         id: "counters_all"
     });
 
     WegasDashboard.registerVariable("counters", {
-        transformer: countersDisplayCurrent,
+        mapFn: extractCurrentCount,
+        mapFnExtraArgs: ["currentLevel"],
+        formatter: formatCounters,
         sortable: true,
-        sortFn: countersSortCurrent,
-        label: 'Facilité niv. actuel',
+        sortFn: sortCounters,
+        label: 'New Facilité niv. actuel',
         active: false,
+        id: "counters"
     });
 
+    var sequenceForCurrentLevel = function(teamId, instance, currentLevel) {
+        var pList = instance.getInternalProperties();
+        var result = {};
+
+        pList.forEach(function(entry) {
+            var key = entry.getKey();
+            if (key.startsWith(currentLevel.getValue() + "-")) {
+                result[key] = JSON.parse(entry.getValue());
+            }
+        });
+
+        return {
+            sequence: result,
+            totalLength: pList.size()
+        };
+    };
 
     // This is self-contained client-side code !
-    var sequenceDisplayCurrent = function(obj) {
-       
-        var seqObj = obj.object,
-            level = obj.data ? obj.data.currentLevel : 99,
+    var sequenceFormatter = function(bloc, value) {
+
+        var seqObj = value.sequence,
             keys = Object.keys(seqObj),
             seq = '';
 
-        // Keep only the current level:
-        function filterLevel(key) {
-            return (key.indexOf(level) === 0);
-        }
-
-        keys = keys.filter(filterLevel).sort();
-        
         var event, time, start, duration;
-        
+
         for (var k in keys) {
-            event = seqObj[keys[k]];
-            time = new Date(event.time).toTimeString().substr(0,8);
-            switch(event.type) {
-                case "OK": seq += '<span class="success" title="Success">OK</span>'; break;
-                case "SEM": seq += '<span class="semantic-error" title="Semantic error' + (event.message ? ': ' + event.message : '') + '">SEM</span>'; break;
-                case "SYN": seq += '<span class="syntax-error" title="Syntax error' + (event.message ? ': ' + event.message : '') + '">SYN</span>'; break;
-                case "THEORY-RESUMED": start = event.time; break;
+            event = seqObj[keys[k]].get("val");
+            time = new Date(event.time).toTimeString().substr(0, 8);
+            switch (event.type) {
+                case "OK":
+                    seq += '<span class="success" title="Success">OK</span>';
+                    break;
+                case "SEM":
+                    seq += '<span class="semantic-error" title="Semantic error' + (event.message ? ': ' + event.message : '') + '">SEM</span>';
+                    break;
+                case "SYN":
+                    seq += '<span class="syntax-error" title="Syntax error' + (event.message ? ': ' + event.message : '') + '">SYN</span>';
+                    break;
+                case "THEORY-RESUMED":
+                    start = event.time;
+                    break;
                 case "THEORY-SUSPENDED":
-                    duration = Math.round((event.time - start)/1000);
+                    duration = Math.round((event.time - start) / 1000);
                     if (duration > 0) {
-                        seq += '<span class="theory" title="Theory: ' + event.topic + '">TH:'+ duration + 's</span>';
+                        seq += '<span class="theory" title="Theory: ' + event.topic + '">TH:' + duration + 's</span>';
                     }
                     break;
-                default: seq += '[INTERNAL ERROR: ' + event.type + ']';
+                default:
+                    seq += '[INTERNAL ERROR: ' + event.type + ']';
             }
         }
-        
 
-        return  '<span class="sequence">' +
-                (seq ? seq : '<span style="background:white;font-style:italic;padding:0 4px;color:#666;">aucune activité à ce niveau</span>') +
-                '</span>';
+
+        bloc.setContent('<span class="sequence">' +
+            (seq ? seq : '<span style="background:white;font-style:italic;padding:0 4px;color:#666;">aucune activité à ce niveau</span>') +
+            '</span>');
     };
-    
-    
+
+
     // This is self-contained client-side code !
     var sequenceSortCurrent = function(a, b, desc) {
 
         // Return the most active player of a and b (the one with most events)
-        var seqA = Object.keys(a.get("sequence").object).length,
-            seqB = Object.keys(b.get("sequence").object).length,
+        var seqA = a.totalLength,
+            seqB = b.totalLength,
             res = seqA === seqB ? 0 : (seqA > seqB ? 1 : -1);
 
         return desc ? -res : res;
-
     };
 
 
     if (sequenceVarExists) {
         WegasDashboard.registerVariable("sequence", {
-            transformer: sequenceDisplayCurrent,
+            mapFn: sequenceForCurrentLevel,
+            mapFnExtraArgs: ["currentLevel"],
+            formatter: sequenceFormatter,
             sortable: true,
             sortFn: sequenceSortCurrent,
             label: 'Séquence',
@@ -310,35 +261,59 @@ var PactDashboard = (function() {
         });
     }
 
-    // This is self-contained client-side code !
     // Hides all "history-error" elements following the first "history-success" element.
-    var shortHistory = function(obj) {
-        var el = document.createElement('div');
-        el.innerHTML = obj.body;
-        var matches = el.getElementsByClassName('wegas-dashboard-inbox-message'),
+    var shortenHistory = function(teamId, instance, data) {
+        var msgs = instance.getSortedMessages(),
+            empty = msgs.length === 0,
+            content = '',
             foundFirstSuccess = false;
-        for (var i = 0; i < matches.length; i++) {
-            if (!foundFirstSuccess) {
-                var isSuccess = matches.item(i).getElementsByClassName('history-success').length > 0;
-                if (isSuccess) {
-                    foundFirstSuccess = true;
+
+        if (empty) {
+            content = "<i>(0 messages)</i>";
+        } else {
+            for (var i = 0; i < msgs.length; i++) {
+                var curmsg = msgs[i],
+                    subj = curmsg.getSubject() && I18n.t(curmsg.getSubject()),
+                    date = curmsg.getDate() && I18n.t(curmsg.getDate()),
+                    body = curmsg.getBody() && I18n.t(curmsg.getBody()),
+                    from = curmsg.getFrom() && I18n.t(curmsg.getFrom());
+
+                if (!foundFirstSuccess) {
+                    if (subj.contains('history-success')) {
+                        foundFirstSuccess = true;
+                    }
+                } else {
+                    if (subj.contains('history-error')) {
+                        continue;
+                    }
                 }
-            } else {
-                var isError = matches.item(i).getElementsByClassName('history-error').length > 0;
-                if (isError) {
-                    matches.item(i).classList.add('hidden');
+
+                content += '<div class="wegas-dashboard-inbox-message">';
+
+                if (from && from.length) {
+                    content += "<b>" + subj + "</b><br/>";
                 }
+                if (subj && subj.length) {
+                    content += "<b>" + subj + "</b>&nbsp;&nbsp;";
+                }
+                if (date && date.length) {
+                    content += "(" + date + ")";
+                }
+                if (body && body.length) {
+                    content += "<br/>&nbsp;<br/>" + body;
+                }
+
+                content += '<hr/></div>';
             }
         }
-        obj.body = el.innerHTML;
-        return obj;
-    }
+        return {"title": data.teamName + ": " + data.label, "body": content, "empty": empty};
+    };
 
 
     WegasDashboard.registerVariable("history", {
         label: 'Historique bref',
         id: "history_short",
-        transformer: shortHistory
+        mapFn: shortenHistory
     });
 
 

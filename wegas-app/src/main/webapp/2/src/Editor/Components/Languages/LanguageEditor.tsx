@@ -27,6 +27,7 @@ import { ListView } from '../../../Components/ListView';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { commonTranslations } from '../../../i18n/common/common';
+import { manageResponseHandler } from '../../../data/actions';
 import { secondaryButtonStyle } from '../../../Components/Modal';
 
 const languagePanelStyle = css({ width: '50%' });
@@ -78,10 +79,12 @@ function LanguageEditForm({
   );
 }
 export default function LanguageEditor() {
-  const [selectedLanguageId, setSelectedLanguageId] =
-    React.useState<number | undefined>(undefined);
-  const [selectedLanguage, setSelectedLanguage] =
-    React.useState<IGameModelLanguage | null | undefined>();
+  const [selectedLanguageId, setSelectedLanguageId] = React.useState<
+    number | undefined
+  >(undefined);
+  const [selectedLanguage, setSelectedLanguage] = React.useState<
+    IGameModelLanguage | null | undefined
+  >();
 
   const languages = useGameModel().languages;
   const i18nEditorTabValues = useInternalTranslate(editorTabsTranslations);
@@ -186,16 +189,22 @@ export default function LanguageEditor() {
               <Button
                 label={i18nCommonValues.accept}
                 onClick={() => {
-                  LanguagesAPI.updateLanguage(selectedLanguage).then(
-                    gameModelLanguage => {
-                      getDispatch()(
-                        Actions.GameModelActions.editLanguage(
-                          gameModelLanguage,
-                          String(GameModel.selectCurrent().id),
-                        ),
-                      );
-                    },
-                  );
+                  if (selectedLanguage.id === -1) {
+                    LanguagesAPI.updateLanguage(selectedLanguage).then(
+                      gameModelLanguage => {
+                        getDispatch()(
+                          Actions.GameModelActions.editLanguage(
+                            gameModelLanguage,
+                            String(GameModel.selectCurrent().id),
+                          ),
+                        );
+                      },
+                    );
+                  } else {
+                    LanguagesAPI.addLanguage(selectedLanguage).then(res => {
+                      getDispatch()(manageResponseHandler(res));
+                    });
+                  }
                 }}
                 className={defaultMarginLeft}
               />

@@ -223,7 +223,7 @@ YUI.add("wegas-entitychooser", function(Y) {
 
                         if (getLabel) {
                             if (typeof getLabel === "string") {
-                                getLabel = eval("(" + getLabel + ")");
+                                getLabel = W.Sandbox.eval("return (" + getLabel + ")");
                             }
                             label = getLabel(items[i], items[i].get("name"), function(name, the_label) {
                                 entityBox.one("[data-name='" + name + "']").setContent(
@@ -555,7 +555,7 @@ YUI.add("wegas-entitychooser", function(Y) {
         },
         getFormConfig: function() {
             if (this.get("evalFormConfig")) {
-                return eval(this.get("evalFormConfig"));
+                return W.Sandbox.eval(this.get("evalFormConfig"));
             } else {
                 return this.get("formConfig");
             }

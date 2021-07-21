@@ -2,7 +2,6 @@ import { cx } from 'emotion';
 import * as React from 'react';
 import { IChoiceDescriptor, IChoiceInstance } from 'wegas-ts-api';
 import { halfOpacity } from '../../../css/classes';
-import { TranslatableContent } from '../../../data/i18n';
 import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
 import { StoreDispatch } from '../../../data/Stores/store';
 import { Button } from '../../Inputs/Buttons/Button';
@@ -10,6 +9,7 @@ import { isActionAllowed } from '../../PageComponents/tools/options';
 import { ChoiceContainer } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
 import { RepliesDisplay } from './Reply';
+import { TranslatableText } from '../HTMLText';
 
 interface SimpleChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
@@ -86,12 +86,8 @@ export function SimpleQuestionDisplay({
         [halfOpacity]: options.disabled,
       })}
     >
-      <div
-        dangerouslySetInnerHTML={{
-          __html: questionD.description
-            ? TranslatableContent.toString(questionD.description)
-            : '',
-        }}
+      <TranslatableText
+        content= {questionD.description}
       />
       {choicesD.map((choiceD, i) => {
         const choiceI = choicesI[i];

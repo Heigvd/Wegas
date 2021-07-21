@@ -32,14 +32,18 @@ import { ResizeHandle } from '../../ResizeHandle';
 import { createScript } from '../../../../Helper/wegasEntites';
 import { IScript, IVariableDescriptor, IVariableInstance } from 'wegas-ts-api';
 import { EmbeddedSrcEditor } from '../../ScriptEditors/EmbeddedSrcEditor';
-import { defaultMarginBottom, flex, flexBetween, itemBottom } from '../../../../css/classes';
+import {
+  defaultMarginBottom,
+  flex,
+  flexBetween,
+  itemBottom,
+} from '../../../../css/classes';
 import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 
 export const scriptEditStyle = css({
   minHeight: '5em',
-  // marginTop: '0.8em',
   width: '500px',
 });
 
@@ -198,6 +202,7 @@ export function Script({
         returnedProgram = program(statements);
       }
       onCodeChange(generate(returnedProgram).code);
+      setStatements(statements);
     },
     [onCodeChange, view.mode],
   );
@@ -264,7 +269,13 @@ export function Script({
     } catch (e) {
       setError([e.message]);
     }
-  }, [i18nValues.scripts.canntoBeParsed, i18nValues.scripts.canntoBeParsedCondition, operator, value, view.mode]);
+  }, [
+    i18nValues.scripts.canntoBeParsed,
+    i18nValues.scripts.canntoBeParsedCondition,
+    operator,
+    value,
+    view.mode,
+  ]);
 
   return (
     <CommonViewContainer view={view} errorMessage={error}>
@@ -275,31 +286,31 @@ export function Script({
               <div className={cx(flex, flexBetween, itemBottom)}>
                 {labelNode}
                 <div className={flex}>
-                {!error && (
-                  <IconButton
-                    icon="code"
-                    tooltip={i18nValues.variableProperties.toggleCoding}
-                    pressed={error !== undefined}
-                    onClick={() => setSrcMode(sm => !sm)}
-                  />
-                )}
-                {isServerScript && (
-                  <IconButton
-                    icon="play"
-                    tooltip={i18nValues.variableProperties.runScripts}
-                    onClick={() => testScript(script.current)}
-                  />
-                )}
+                  {!error && (
+                    <IconButton
+                      icon="code"
+                      tooltip={i18nValues.variableProperties.toggleCoding}
+                      pressed={error !== undefined}
+                      onClick={() => setSrcMode(sm => !sm)}
+                    />
+                  )}
+                  {isServerScript && (
+                    <IconButton
+                      icon="play"
+                      tooltip={i18nValues.variableProperties.runScripts}
+                      onClick={() => testScript(script.current)}
+                    />
+                  )}
                 </div>
               </div>
               {isScriptCondition(view.mode) && (
-                  <DropMenu
-                    label={operator}
-                    items={operators.map(o => ({ label: o, value: o }))}
-                    onSelect={({ label }) => onSelectOperator(label)}
-                    buttonClassName= {defaultMarginBottom}
-                  />
-                )}
+                <DropMenu
+                  label={operator}
+                  items={operators.map(o => ({ label: o, value: o }))}
+                  onSelect={({ label }) => onSelectOperator(label)}
+                  buttonClassName={defaultMarginBottom}
+                />
+              )}
               {srcMode ? (
                 <ResizeHandle minSize={200}>
                   <EmbeddedSrcEditor

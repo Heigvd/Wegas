@@ -6,6 +6,8 @@ import Form from 'jsoninput';
 import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
 import { css } from 'emotion';
 import { themeVar } from '../../../../Components/Theme/ThemeVars';
+import generate from '@babel/generator';
+import { parse } from '@babel/parser';
 
 function createNewExpression(mode?: ScriptMode) {
   return isScriptCondition(mode)
@@ -49,19 +51,24 @@ export function WyswygScriptEditor({
               itemSchema: {
                 statement: schemaProps.statement({ required: true, mode, noMarginTop: true }),
               },
-              userOnChildAdd: () => ({ statement: createNewExpression(mode) }),
+              userOnChildAdd: () => ({
+                statement: mode === 'GET' ? 'true' : ';',
+              }),
             }),
           },
         }}
         value={{
           statements: forceEmptyExpressions(expr, mode).map(e => ({
-            statement: e ? e : createNewExpression(mode),
+            statement: generate(e ? e : createNewExpression(mode)).code,
           })),
         }}
         onChange={value => {
           const cleanValue: Statement[] = value.statements.map(
-            (s: { statement: Statement }) =>
-              s ? s.statement : createNewExpression(mode),
+            (s: { statement: string }) => {
+              return s
+                ? parse(s.statement).program.body[0]
+                : createNewExpression(mode);
+            },
           );
           setExpr(forceEmptyExpressions(cleanValue, mode));
           onChange(cleanValue);
@@ -69,5 +76,4 @@ export function WyswygScriptEditor({
       />
     </div>
   );
-  // }
 }

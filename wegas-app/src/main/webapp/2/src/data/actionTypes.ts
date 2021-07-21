@@ -35,10 +35,9 @@ export const PAGE_INDEX = 'PAGE/INDEX';
 export const PAGE_FETCH = 'PAGE/FETCH';
 export const PAGE_ERROR = 'PAGE/ERROR';
 
-export const SEARCH_USAGE = 'SEARCH/USAGE';
-export const SEARCH_GLOBAL = 'SEARCH/GLOBAL';
-export const SEARCH_ONGOING = 'SEARCH/ONGOING';
-export const SEARCH_CLEAR = 'SEARCH/CLEAR';
+export const SEARCH = 'SEARCH';
+export const SEARCH_DEEP = 'SEARCH/DEEP';
+export const SEARCH_SET_DEEP = 'SEARCH/SET/DEEP';
 
 export const PUSHER_SOCKET = 'PUSHER/SOCKET';
 

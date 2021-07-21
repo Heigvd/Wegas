@@ -13,6 +13,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 const PROD = process.env.NODE_ENV === 'production';
 const PREPROD = process.env.NODE_ENV === 'pre-production';
 const STATS = process.env.NODE_ENV === 'stats';
+
 const isCI =
   typeof process.env.CI === 'string'
     ? process.env.CI.toLowerCase() === 'true'
@@ -24,6 +25,7 @@ const plugins = [
   // }),
   new ForkTsCheckerWebpackPlugin({
     formatter: 'codeframe',
+    tsconfig: process.env.TS_NODE_PROJECT,
   }),
   new CopyPlugin({
     patterns: [{ from: 'src/**/*.less' }],

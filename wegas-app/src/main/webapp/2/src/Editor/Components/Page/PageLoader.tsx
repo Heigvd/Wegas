@@ -13,6 +13,7 @@ import { State } from '../../../data/Reducer/reducers';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
+import { pagesTranslations } from '../../../i18n/pages/pages';
 
 const modalStyle = css({
   zIndex: 10000,
@@ -63,7 +64,8 @@ export function PageLoader({
   disabled,
   readOnly,
 }: PageLoaderProps) {
-  const i18nValues = useInternalTranslate(commonTranslations);
+  const i18nCommonValues = useInternalTranslate(commonTranslations);
+  const i18nPagesValues = useInternalTranslate(pagesTranslations);
   const selectedPageSelector = React.useCallback(
     (s: State) => (selectedPageId ? s.pages[selectedPageId] : undefined),
     [selectedPageId],
@@ -91,7 +93,7 @@ export function PageLoader({
     <DefaultDndProvider>
       <ThemeProvider contextName={currentContext} modeName={currentMode}>
         <React.Suspense
-          fallback={<TextLoader text={i18nValues.buildingWorld} />}
+          fallback={<TextLoader text={i18nCommonValues.buildingWorld} />}
         >
           <div
             className={
@@ -113,7 +115,7 @@ export function PageLoader({
                 }}
               />
             ) : (
-              <pre>{i18nValues.pageUndefined}</pre>
+              <pre>{i18nPagesValues.pageUndefined}</pre>
             )}
             {((waiting && loadTimer != null) ||
               // Petit tweak pour laisser la page se charger (si un scénario à un problème par contre, on verra le loader tourner éternellement)

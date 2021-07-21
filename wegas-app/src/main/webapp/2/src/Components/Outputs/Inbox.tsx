@@ -48,7 +48,7 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div>{date}</div>
       <div>{from}</div>
-      <TranslatableText htmlTranslatableContent={entity.body} />
+      <TranslatableText content={entity.body} />
     </div>
   );
 }

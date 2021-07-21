@@ -20,10 +20,13 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +44,8 @@ public class AbstractGameController implements Serializable {
     /**
      *
      */
-    @Inject @HttpParam("id")
+    @Inject
+    @HttpParam("id")
     protected Long playerId;
 
     /**
@@ -58,11 +62,9 @@ public class AbstractGameController implements Serializable {
 //    public Locale calculateLocale(FacesContext context) {
 //        Util.notNull("context", context);
 //        Locale locale;
-
 //        if (context.getViewRoot() != null) {
 //        locale = context.getViewRoot().getLocale();
 //        }
-
 //        if (locale != null) {
 //        return locale;
 //        }
@@ -90,7 +92,6 @@ public class AbstractGameController implements Serializable {
 //        }
 //        return locale;
 //    }
-
     public String getCombinedFile(List<String> fileList, String mediaType) throws IOException, WegasForbiddenException {
         StringBuilder acc = new StringBuilder();
         ServletContext context = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
@@ -108,8 +109,8 @@ public class AbstractGameController implements Serializable {
                 if (mediaType.equals(MediaTypeCss)) {                     // @hack for css files, we correct the path
                     String dir = fileName.substring(0, fileName.lastIndexOf('/') + 1);
                     content = content.replaceAll("url\\(\"?\'?([^:\\)\"\']+)\"?\'?\\)",
-                            "url(" + context.getContextPath()
-                            + dir + "$1)");                                     //Regexp to avoid rewriting protocol guess they contain ':' (http: data:)
+                        "url(" + context.getContextPath()
+                        + dir + "$1)");                                     //Regexp to avoid rewriting protocol guess they contain ':' (http: data:)
                 }
                 acc.append(content).append('\n');
             } catch (NullPointerException e) {
@@ -118,8 +119,6 @@ public class AbstractGameController implements Serializable {
         }
         return acc.toString();
     }
-
-
 
     public String getStaticClientScripts() throws IOException, WegasForbiddenException {
         String clientScriptUri = this.getCurrentGameModel().getProperties().getClientScriptUri();
@@ -138,13 +137,37 @@ public class AbstractGameController implements Serializable {
         return libraryFacade.getLibraryContent(this.getCurrentGameModel().getId(), "ClientScript");
     }
 
+    public List<String> getEscapedClientScriptsList() {
+        return libraryFacade.findLibrary(this.getCurrentGameModel().getId(), "ClientScript")
+            .values().stream().map(c -> StringEscapeUtils.escapeEcmaScript(c.getContent()))
+            .collect(Collectors.toList());
+    }
+
+    public String getEscapedClientScripts() {
+        String script = StringEscapeUtils.escapeEcmaScript(this.getClientScripts());
+        return script;
+    }
+
     /**
-     * Get all style-sheets defined in the current gameModel CSS library concatenated within a single string
+     * Get all style-sheets defined in the current gameModel CSS library concatenated within a
+     * single string
      *
      * @return
      */
     public String getCombinedStyleSheet() {
-        return libraryFacade.getLibraryContent(this.getCurrentGameModel().getId(), "CSS");
+        this.getCurrentGameModel().getId();
+        String styleSheets = libraryFacade.getLibraryContent(this.getCurrentGameModel().getId(), "CSS");
+
+        //styleSheets.replaceAll(styleSheets, MediaTypeJs);
+        return processSheet(styleSheets);
+    }
+
+    public String processSheet(String sheet) {
+        Long id = this.getCurrentGameModel().getId();
+        return sheet.replaceAll("\\.\\./", "")
+            .replaceAll(
+                "wegas-file\\([\"']([^\"']*)[\"']\\)",
+                "url(\"rest/GameModel/" + id + "/File/read$1\")");
     }
 
     /**

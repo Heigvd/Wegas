@@ -5,8 +5,6 @@ export interface CommonTranslations {
   areYouSure: string;
   loading: string;
   loadingFiles: string;
-  loadingPages: string;
-  noSelectedPage: string;
   someWentWrong: string;
   accept: string;
   cancel: string;
@@ -22,7 +20,6 @@ export interface CommonTranslations {
   empty: string;
   forceDelete: string;
   buildingWorld: string;
-  pageUndefined: string;
   features: string;
   language: string;
   deepSearch: string;
@@ -30,5 +27,5 @@ export interface CommonTranslations {
     restartGame: string;
     resetLayout: string;
     notifications: string;
-  }
+  };
 }

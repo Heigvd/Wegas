@@ -11,6 +11,7 @@ import {
   choiceLabelStyle,
   choiceDescriptionStyle,
 } from './ChoiceContainer';
+import { TranslatableText } from '../HTMLText';
 
 const repliesContainer = css({
   marginTop: '5px',
@@ -45,17 +46,9 @@ function ReplyDisplay({ reply }: ReplyDisplayProps) {
         )}
       </StoreConsumer>
 
-      <div
+      <TranslatableText
         className={choiceDescriptionStyle}
-        dangerouslySetInnerHTML={{
-          __html: reply.ignored
-            ? ignorationAnswer
-              ? TranslatableContent.toString(ignorationAnswer)
-              : ''
-            : answer
-            ? TranslatableContent.toString(answer)
-            : '',
-        }}
+        content={reply.ignored ? ignorationAnswer : answer}
       />
     </div>
   );

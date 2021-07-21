@@ -11,7 +11,7 @@ import { pick } from 'lodash-es';
 
 import { isScriptCondition } from '../Script';
 
-import { StringOrT, genVarItems } from '../../TreeVariableSelect';
+import { StringOrT } from '../../TreeVariableSelect';
 
 import { store } from '../../../../../data/Stores/store';
 import { TYPESTRING } from 'jsoninput/typings/types';
@@ -29,17 +29,24 @@ const booleanOperators = {
 
 export type WegasOperators = keyof typeof booleanOperators;
 
-export type ExpressionType = 'variable' | 'global' | 'boolean';
+interface CallItemValue {
+  type: 'variable' | 'global';
+  script: string;
+}
+
+interface BooleanItemValue {
+  type: 'boolean';
+  script: 'true' | 'false';
+}
 
 export interface SelectOperator {
   label: string;
   value: WegasOperators;
 }
 
-export interface ScriptItemValue {
-  type: ExpressionType;
-  script: string;
-}
+type ScriptItemValue = CallItemValue | BooleanItemValue;
+
+type ExpressionType = ScriptItemValue['type'];
 
 export interface IParameterAttributes {
   [param: number]: unknown;
@@ -50,7 +57,7 @@ export interface IInitAttributes extends IParameterAttributes {
   variableName?: string;
 }
 
-export const defaultBooleanAttributes: Partial<IInitAttributes> = {
+const defaultBooleanAttributes: Partial<IInitAttributes> = {
   initExpression: undefined,
 };
 
@@ -63,7 +70,7 @@ export interface IAttributes extends IInitAttributes {
   methodName: string;
 }
 
-export const defaultAttributes: Partial<IAttributes> = {
+const defaultAttributes: Partial<IAttributes> = {
   ...defaultInitAttributes,
   methodName: undefined,
 };
@@ -89,14 +96,14 @@ export interface IParameterSchemaAtributes {
     oldType: WegasTypeString;
   };
 }
-export interface IInitSchemaAttributes extends IParameterSchemaAtributes {
+interface IInitSchemaAttributes extends IParameterSchemaAtributes {
   initExpression: ReturnType<typeof schemaProps['tree']>;
 }
 
-export interface ISchemaAttributes extends IInitSchemaAttributes {
+interface ISchemaAttributes extends IInitSchemaAttributes {
   methodName: ReturnType<typeof schemaProps['select']>;
 }
-export interface IConditionSchemaAttributes extends ISchemaAttributes {
+interface IConditionSchemaAttributes extends ISchemaAttributes {
   operator: ReturnType<typeof schemaProps['select']>;
   comparator: ReturnType<typeof schemaProps['custom']>;
 }
@@ -108,10 +115,7 @@ export interface WyiswygExpressionSchema {
   properties: PartialSchemaAttributes;
 }
 
-export const isFilledObject = (
-  defaultObject: object,
-  comparedObject: object,
-) => {
+function isFilledObject(defaultObject: object, comparedObject: object) {
   const defaultObjectKeys = Object.keys(defaultObject);
   const filtererdObject = pick(comparedObject, defaultObjectKeys);
   const objectKeys = Object.keys(filtererdObject);
@@ -119,78 +123,76 @@ export const isFilledObject = (
     objectKeys.length === defaultObjectKeys.length &&
     Object.values(filtererdObject).every(v => v !== undefined)
   );
-};
+}
 
-export const isBooleanExpression = (
+export function isBooleanExpression(
   scriptAttributes: PartialAttributes,
-): scriptAttributes is IInitAttributes =>
-  isFilledObject(defaultBooleanAttributes, scriptAttributes) &&
-  scriptAttributes.initExpression?.type === 'boolean';
+): scriptAttributes is IInitAttributes {
+  return (
+    isFilledObject(defaultBooleanAttributes, scriptAttributes) &&
+    scriptAttributes.initExpression?.type === 'boolean'
+  );
+}
 
-export const isInitAttributes = (
+export function isAttributes(
   scriptAttributes: PartialAttributes,
-): scriptAttributes is IInitAttributes =>
-  isFilledObject(defaultInitAttributes, scriptAttributes);
+): scriptAttributes is IAttributes {
+  return isFilledObject(defaultAttributes, scriptAttributes);
+}
 
-export const isAttributes = (
+export function isConditionAttributes(
   scriptAttributes: PartialAttributes,
-): scriptAttributes is IAttributes =>
-  isFilledObject(defaultAttributes, scriptAttributes);
+): scriptAttributes is IConditionAttributes {
+  return isFilledObject(defaultConditionAttributes, scriptAttributes);
+}
 
-export const isConditionAttributes = (
-  scriptAttributes: PartialAttributes,
-): scriptAttributes is IConditionAttributes =>
-  isFilledObject(defaultConditionAttributes, scriptAttributes);
-
-export const isInitSchemaAttributes = (
+export function isInitSchemaAttributes(
   scriptAttributes: PartialSchemaAttributes,
-): scriptAttributes is IInitSchemaAttributes =>
-  isFilledObject(defaultInitAttributes, scriptAttributes);
+): scriptAttributes is IInitSchemaAttributes {
+  return isFilledObject(defaultInitAttributes, scriptAttributes);
+}
 
-export const isSchemaAttributes = (
+export function isConditionSchemaAttributes(
   scriptAttributes: PartialSchemaAttributes,
-): scriptAttributes is ISchemaAttributes =>
-  isFilledObject(defaultAttributes, scriptAttributes);
+): scriptAttributes is IConditionSchemaAttributes {
+  return isFilledObject(defaultConditionAttributes, scriptAttributes);
+}
 
-export const isConditionSchemaAttributes = (
-  scriptAttributes: PartialSchemaAttributes,
-): scriptAttributes is IConditionSchemaAttributes =>
-  isFilledObject(defaultConditionAttributes, scriptAttributes);
-
-export const filterVariableMethods = (
+function filterVariableMethods(
   methods: MethodConfig,
   mode?: ScriptMode,
-): MethodConfig =>
-  Object.keys(methods)
+): MethodConfig {
+  return Object.keys(methods)
     .filter(k =>
       mode === 'GET'
         ? methods[k].returns !== undefined
         : methods[k].returns === undefined,
     )
     .reduce((o, k) => ({ ...o, [k]: methods[k] }), {});
+}
 
-export const filterOperators = (
+function filterOperators(
   methodReturns: WegasMethod['returns'],
-): SelectOperator[] =>
-  Object.keys(booleanOperators)
+): SelectOperator[] {
+  return Object.keys(booleanOperators)
     .filter(k => methodReturns === 'number' || k === '===')
     .map((k: WegasOperators) => ({
       label: booleanOperators[k].label,
       value: k,
     }));
+}
 
-export const typeCleaner = (
+export function typeCleaner(
   variable: unknown,
   expectedType: WegasTypeString,
-  required?: boolean,
   defaultValue?: unknown,
-) => {
+) {
   const variableCurrentType = Array.isArray(variable)
     ? 'array'
     : typeof variable;
   if (variableCurrentType === expectedType) {
     return variable;
-  } else if (typeof variable === 'undefined' && !required) {
+  } else if (typeof variable === 'undefined') {
     return variable;
   } else {
     switch (expectedType) {
@@ -198,14 +200,14 @@ export const typeCleaner = (
         if (variableCurrentType === 'number') {
           return Boolean(variable);
         } else {
-          return defaultValue ? defaultValue : required ? false : undefined;
+          return defaultValue;
         }
       }
       case 'number': {
         if (!isNaN(Number(variable))) {
           return Number(variable);
         } else {
-          return defaultValue ? defaultValue : required ? 0 : undefined;
+          return defaultValue;
         }
       }
       case 'string': {
@@ -215,7 +217,7 @@ export const typeCleaner = (
         ) {
           return String(variable);
         } else {
-          return defaultValue ? defaultValue : required ? '' : undefined;
+          return defaultValue;
         }
       }
       case 'null': {
@@ -232,7 +234,7 @@ export const typeCleaner = (
       }
     }
   }
-};
+}
 
 interface FullNameMethod extends ServerGlobalMethod {
   fullName: string;
@@ -257,7 +259,7 @@ function getServerMethods(
   }
 }
 
-export function genGlobalItems<T = string>(
+function genGlobalItems<T = string>(
   mode?: ScriptMode,
   decorateFn?: (value: string) => T,
 ): TreeSelectItem<StringOrT<typeof decorateFn, T>>[] {
@@ -267,13 +269,15 @@ export function genGlobalItems<T = string>(
         ? method.returns !== undefined
         : method.returns === undefined,
     )
-    .map(method => ({
-      label: method.label,
-      value: decorateFn ? decorateFn(method.fullName) : method.fullName,
-    }));
+    .map(method => {
+      return {
+        label: method.label,
+        value: decorateFn ? decorateFn(method.fullName) : method.fullName,
+      };
+    });
 }
 
-export function getGlobalMethodConfig(globalMethod: string): MethodConfig {
+function getGlobalMethodConfig(globalMethod: string): MethodConfig {
   const foundMethod = getServerMethods(
     store.getState().global.serverMethods,
   ).find(method => method.fullName === globalMethod);
@@ -303,12 +307,12 @@ interface VariableMethodSearcher extends MethodSearcher {
 interface BooleanMethodSearcher extends MethodSearcher {
   type: 'boolean';
 }
-export type MethodSearchers =
+type MethodSearchers =
   | GlobalMethodSearcher
   | VariableMethodSearcher
   | BooleanMethodSearcher;
 
-export async function getMethodConfig(
+async function getMethodConfig(
   methodSearcher: MethodSearchers,
 ): Promise<MethodConfig> {
   switch (methodSearcher.type) {
@@ -326,80 +330,90 @@ export async function getMethodConfig(
   }
 }
 
-export const makeItems: (
+export function makeItems(
   value: string,
   type: ExpressionType,
-) => ScriptItemValue = (value, type) => ({
-  type,
-  script: type === 'variable' ? `Variable.find(gameModel,'${value}')` : value,
-});
-
-export const makeSchemaInitExpression = (
-  variableIds: number[],
-  mode?: ScriptMode,
-  scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
-) => ({
-  variableName: schemaProps.hidden({ type: 'string', index: 1000 }),
-  initExpression: schemaProps.tree({
-    items: [
-      {
-        label: 'Variables',
-        items: genVarItems(
-          variableIds,
-          undefined,
-          scriptableClassFilter,
-          value => makeItems(value, 'variable'),
-        ),
-        value: 'Variables',
-        selectable: false,
-      },
-      {
-        label: 'Global methods',
-        items: genGlobalItems(mode, value => makeItems(value, 'global')),
-        value: 'Global methods',
-        selectable: false,
-      },
-      ...(isScriptCondition(mode)
-        ? [
-            {
-              label: 'Booleans',
-              items: [
-                { label: 'True', value: makeItems('true', 'boolean') },
-                { label: 'False', value: makeItems('false', 'boolean') },
-              ],
-              value: 'Booleans',
-              selectable: false,
-            },
-          ]
-        : []),
-    ],
-    type: 'object',
-    layout: 'inline',
-    borderBottom: true,
-  }),
-});
-
-export const makeSchemaMethodSelector = (methods?: MethodConfig) => ({
-  ...(methods && Object.keys(methods).length > 0
+): ScriptItemValue {
+  return type === 'variable'
     ? {
-        methodName: schemaProps.select({
-          values: Object.keys(methods).map(k => ({
-            label: methods[k].label,
-            value: k,
-          })),
-          returnType: 'string',
-          index: 1,
-          layout: 'inline',
-        }),
+        type,
+        script: `Variable.find(gameModel,'${value}')`,
       }
-    : {}),
-});
+    : type === 'global'
+    ? {
+        type,
+        script: value,
+      }
+    : {
+        type,
+        script: value as BooleanItemValue['script'],
+      };
+}
 
-export const makeSchemaParameters = (
+function makeSchemaInitExpression(
+  variablesItems: TreeSelectItem<string | ScriptItemValue>[] | undefined,
+  mode?: ScriptMode,
+) {
+  return {
+    variableName: schemaProps.hidden({ type: 'string', index: 1000 }),
+    initExpression: schemaProps.tree({
+      items: [
+        {
+          label: 'Variables',
+          items: variablesItems,
+          value: 'Variables',
+          selectable: false,
+        },
+        {
+          label: 'Global methods',
+          items: genGlobalItems(mode, value => makeItems(value, 'global')),
+          value: 'Global methods',
+          selectable: false,
+        },
+        ...(isScriptCondition(mode)
+          ? [
+              {
+                label: 'Booleans',
+                items: [
+                  { label: 'True', value: makeItems('true', 'boolean') },
+                  { label: 'False', value: makeItems('false', 'boolean') },
+                ],
+                value: 'Booleans',
+                selectable: false,
+              },
+            ]
+          : []),
+      ],
+      type: 'object',
+      layout: 'inline',
+      borderBottom: true,
+    }),
+  };
+}
+
+function makeSchemaMethodSelector(methods?: MethodConfig) {
+  return {
+    ...(methods && Object.keys(methods).length > 0
+      ? {
+          methodName: schemaProps.select({
+            values: Object.keys(methods).map(k => ({
+              label: methods[k].label,
+              value: k,
+            })),
+            returnType: 'string',
+            index: 1,
+            layout: 'inline',
+          }),
+        }
+      : {}),
+  };
+}
+
+function makeSchemaParameters(
   index: number,
   parameters: WegasMethodParameter[],
-) =>
-  parameters.reduce(
+) {
+  return parameters.reduce(
     (o, p, i) => ({
       ...o,
       [i]: {
@@ -408,66 +422,58 @@ export const makeSchemaParameters = (
         type: p.type === 'identifier' ? 'string' : p.type,
         oldType: p.type,
         view: {
-          // label: i + ' ' + JSON.stringify(p.view),
           ...p.view,
           index: index + i,
-          //layout: 'inline',
         },
       },
     }),
     {},
   );
+}
 
-export const makeSchemaConditionAttributes = (
+function makeSchemaConditionAttributes(
   index: number,
   method?: WegasMethod,
   mode?: ScriptMode,
-) => ({
-  ...(method && isScriptCondition(mode) && method.returns !== 'boolean'
-    ? {
-        operator: schemaProps.select({
-          values: filterOperators(method.returns),
-          returnType: 'string',
-          index: method.parameters.length + index,
-          layout: 'inline',
-        }),
-        comparator: schemaProps.custom({
-          label: undefined,
-          type: method.returns,
-          viewType: method.returns,
-          index: method.parameters.length + index,
-          layout: 'inline',
-        }),
-      }
-    : {}),
-});
+) {
+  return {
+    ...(method && isScriptCondition(mode) && method.returns !== 'boolean'
+      ? {
+          operator: schemaProps.select({
+            values: filterOperators(method.returns),
+            returnType: 'string',
+            index: method.parameters.length + index,
+            layout: 'inline',
+            required: true,
+            value: {
+              label: 'equals',
+              value: '===',
+            },
+          }),
+          comparator: schemaProps.custom({
+            label: undefined,
+            type: method.returns,
+            viewType: method.returns,
+            index: method.parameters.length + index,
+            layout: 'inline',
+            required: true,
+            value: 0,
+          }),
+        }
+      : {}),
+  };
+}
 
-export const makeGlobalMethodSchema = (
-  variableIds: number[],
-  scriptMethod?: WegasMethod,
-  mode?: ScriptMode,
-  scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
-): {
-  description: string;
-  properties: IInitSchemaAttributes;
-} => ({
-  description: 'GlobalMethodSchema',
-  properties: {
-    ...makeSchemaInitExpression(variableIds, mode, scriptableClassFilter),
-    ...(scriptMethod ? makeSchemaParameters(1, scriptMethod.parameters) : {}),
-  },
-});
-
-export const generateSchema = async (
+export async function generateSchema(
   attributes: PartialAttributes,
-  variableIds: number[],
+  variablesItems: TreeSelectItem<string | ScriptItemValue>[] | undefined,
   mode?: ScriptMode,
-): Promise<WyiswygExpressionSchema> => {
+): Promise<WyiswygExpressionSchema> {
   let newSchemaProps:
     | IInitSchemaAttributes
     | ISchemaAttributes
     | IConditionSchemaAttributes = {
-    ...makeSchemaInitExpression(variableIds, mode),
+    ...makeSchemaInitExpression(variablesItems, mode),
   };
 
   if (attributes.initExpression) {
@@ -501,7 +507,6 @@ export const generateSchema = async (
         break;
       }
     }
-
     let propsIndex = 1;
     if (type === 'variable') {
       propsIndex += 1;
@@ -522,4 +527,4 @@ export const generateSchema = async (
     description: 'WyiswygExpression',
     properties: newSchemaProps,
   };
-};
+}

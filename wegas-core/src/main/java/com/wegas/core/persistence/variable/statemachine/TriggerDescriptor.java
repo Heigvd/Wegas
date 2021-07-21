@@ -68,7 +68,7 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
     @WegasEntityProperty(
         nullable = false, optional = false, proposal = True.class,
         view = @View(
-            index = 602,
+            index = 601,
             label = "Disable itself",
             description = "Disable once triggered. May be rearmed afterwards"
         ))
@@ -83,7 +83,7 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
         view = @View(
             label = "Depends on strategy",
             value = ManualOrAutoSelectView.class,
-            index = -300
+            index = 602
         ))
     private DependsOnStrategy dependsOnStrategy;
 

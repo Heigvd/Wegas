@@ -325,7 +325,7 @@ function ArrayWidget({
   }
   const singleItemType: Exclude<typeof itemType, TYPESTRING[]> = itemType;
   const defaultNewChild: (newValue?: {} | undefined) => void = newValue =>
-    typeCleaner(newValue, singleItemType || 'object', true, defaultItem);
+    typeCleaner(newValue, singleItemType || 'object', defaultItem);
   const onNewChild: (menuValue?: {} | undefined) => void = menuValue => {
     const newValue = [
       ...(value || []),

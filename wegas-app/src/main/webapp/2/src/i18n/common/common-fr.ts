@@ -7,8 +7,6 @@ export const commonTranslationsFR: CommonTranslations = {
   areYouSure: 'Êtes-vous sûr de vouloir continuer?',
   loading: 'Chargement',
   loadingFiles: 'Chargement des fichiers',
-  loadingPages:'Chargement des pages',
-  noSelectedPage: 'Aucune page sélectionnée',
   someWentWrong: 'Quelque chose a mal tourné',
   accept: 'Accepter',
   cancel: 'Annuler',
@@ -24,7 +22,6 @@ export const commonTranslationsFR: CommonTranslations = {
   empty: 'Vide',
   forceDelete: 'Forcer à supprimer',
   buildingWorld: 'Le monde se construit!',
-  pageUndefined: 'La page n\'est pas définie',
   features: 'Fonctionnalités',
   language: 'Langue',
   deepSearch: 'Recherche approfondie',
@@ -32,5 +29,5 @@ export const commonTranslationsFR: CommonTranslations = {
     restartGame: 'Recommence le jeu (appliqué à tous les scénaristes)',
     resetLayout: 'Réinitialiser mise en page',
     notifications: 'Notifications',
-  }
+  },
 };

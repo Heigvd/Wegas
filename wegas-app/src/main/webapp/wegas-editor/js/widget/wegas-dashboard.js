@@ -12,6 +12,10 @@
 YUI.add('wegas-dashboard', function(Y) {
     "use strict";
 
+    W.Sandbox.exposeInY("window", "open", function(url) {
+        window.open(url, "_blank");
+    });
+
     var TITLE_TEMPLATE = "<span class='team-name'></span>",
         LINK_TEMPLATE = "<span class='details__link details__link__closed'>Details</span>",
         BASE_TEMPLATE = "<div><div class='team-details__notes'><textarea class='infos-comments' placeholder='Enter a comment here'></textarea></div>" + "</div>",
@@ -70,7 +74,7 @@ YUI.add('wegas-dashboard', function(Y) {
                             "do": function(team, payload) {
                                 var p = team.getLivePlayer();
                                 if (p) {
-                                    window.open("game-lock.html?id=" + p.get("id"), "_blank");
+                                    Y.window.open("game-lock.html?id=" + p.get("id"));
                                 } else {
                                     Y.Wegas.Alerts.showMessage("error", "No valid player in team");
                                 }
@@ -516,34 +520,10 @@ YUI.add('wegas-dashboard', function(Y) {
                 tables = {}, data = {}, i, j, tableDef,
                 teamId, team, teamData, entry,
                 cell, cellDef,
-                tableName, tableColumns, formatter, transformer, sortFn,
-                key1, key2, firstCellFormatter,
+                tableName, tableColumns,
+                firstCellFormatter,
                 firstOfGroup,
                 getPlayerIcon,
-                // Parses the given JSON string and returns the possibly nested object :
-                parseJSON = function(strObj) {
-                    var props,
-                        res = {};
-                    try {
-                        props = JSON.parse(strObj.body);
-                    } catch (e) {
-                        alert("SyncTable: " + e);
-                        return null;
-                    }
-                    // Handle nested objects as well, i.e. when a value is a string representation of a JSON object.
-                    for (var key in props) {
-                        if (typeof props[key] === 'string') {
-                            try {
-                                res[key] = JSON.parse(props[key]);
-                            } catch (e) {
-                                res[key] = props[key];
-                            }
-                        } else {
-                            res[key] = props[key];
-                        }
-                    }
-                    return res;
-                },
                 parseItem = function(id, def, firstOfGroup) {
                     var item = {
                         key: id,
@@ -554,6 +534,8 @@ YUI.add('wegas-dashboard', function(Y) {
                         disabledTooltip: def.disabledTooltip || "This action is not yet active",
                         cssClass: (firstOfGroup ? "first-of-group" : "")
                     };
+                    var formatter;
+                    var sortFn;
 
                     if (def.itemType === "action") {
 
@@ -587,26 +569,28 @@ YUI.add('wegas-dashboard', function(Y) {
                             }
                         };
                         item.icon = def.icon;
-                        item.do = eval("(" + def.do + ")");
+
+                        item.do = W.Sandbox.eval("return (" + def.do + ")");
+
                         item.sortable = false;
                         item.globalOnly = def.globalOnly;
                     } else {
                         if (def.formatter) {
-                            formatter = eval("(" + def.formatter + ")");
+                            formatter = W.Sandbox.eval("return (" + def.formatter + ")");
                             if (formatter) {
-                                item.valueFormatter = formatter;
-                            }
-                        }
-                        if (def.transformer) {
-                            transformer = eval("(" + def.transformer + ")");
-                            if (transformer) {
-                                item.valueTransformer = transformer;
+                                item.valueFormatter = function(bloc, value) {
+                                    var node = W.Sandbox.proxyNode(bloc);
+                                    formatter(node, value);
+                                };
                             }
                         }
                         if (def.sortFn) {
-                            sortFn = eval("(" + def.sortFn + ")");
+                            sortFn = W.Sandbox.eval("return (" + def.sortFn + ")");
                             if (sortFn) {
-                                item.sortFn = sortFn;
+                                item.sortFn = function(a, b, desc) {
+                                    // intercept sort function and provide data
+                                    return sortFn(a.get(id), b.get(id), desc);
+                                };
                             }
                         }
 
@@ -618,10 +602,6 @@ YUI.add('wegas-dashboard', function(Y) {
                             var fallback = false;
                             if (def.kind) {
                                 if (def.kind === "boolean") {
-                                    if (o.column.valueTransformer) {
-                                        o.value = o.column.valueTransformer.call(this, o.value);
-                                    }
-
                                     if (def.preventClick) {
                                         o.cell.setHTML("<span class=\"bloc__value bloc__boolean\">" + (o.value ? "✔" : "✕") + "</span>");
                                     } else {
@@ -634,18 +614,10 @@ YUI.add('wegas-dashboard', function(Y) {
 
                                 } else if (def.kind === "inbox") {
                                     o.cell.setHTML('<i class="bloc__text clickable ' + (o.value.empty ? 'icon fa fa-comment-o"' : 'icon fa fa-commenting-o"') + ' title="Click to view"></i>');
-                                    if (o.column.valueTransformer) {
-                                        o.value = o.column.valueTransformer.call(this, o.value);
-                                    }
                                 } else if (def.kind === "text") {
                                     o.cell.setHTML('<i class="bloc__text clickable ' + (o.value.empty ? 'icon fa fa-file-o"' : 'icon fa fa-file-text-o"') + ' title="Click to view"></i>');
                                 } else {
                                     fallback = true;
-                                    if (def.kind === "object") {
-                                        o.value.object = parseJSON(o.value);
-                                        // Extra data required by PACT:
-                                        o.value.data = o.data;
-                                    }
                                 }
                             } else {
                                 fallback = true;
@@ -653,9 +625,6 @@ YUI.add('wegas-dashboard', function(Y) {
 
                             if (fallback) {
                                 if (o.value !== undefined && o.value !== null) {
-                                    if (o.column.valueTransformer) {
-                                        o.value = o.column.valueTransformer.call(this, o.value);
-                                    }
                                     o.cell.setHTML("<span class=\"bloc__value\">" + o.value + "</span>");
                                 } else {
                                     o.cell.setHTML("<span class=\"bloc__value no-value\"></span>");
@@ -756,30 +725,30 @@ YUI.add('wegas-dashboard', function(Y) {
                         if (Object.values(groupPrefs).find(function(item) {
                             return item.active;
                         }) != null) {
-                            cell = {
-                                label: cellDef.label,
-                                children: []
-                            };
-                            firstOfGroup = true;
-                            var children = Y.Object.values(cellDef.items).sort(function(a, b) {
-                                return a.order - b.order;
-                            });
-                            for (j in children) {
-                                var child = children[j];
-                                var id = child.id;
-                                var itemPrefs = groupPrefs && groupPrefs[id];
-                                if (itemPrefs && itemPrefs.active !== false) {
-                                    cell.children.push(parseItem(id, child, firstOfGroup));
-                                    firstOfGroup = false;
-                                }
+                        cell = {
+                            label: cellDef.label,
+                            children: []
+                        };
+                        firstOfGroup = true;
+                        var children = Y.Object.values(cellDef.items).sort(function(a, b) {
+                            return a.order - b.order;
+                        });
+                        for (j in children) {
+                            var child = children[j];
+                            var id = child.id;
+                            var itemPrefs = groupPrefs && groupPrefs[id];
+                            if (itemPrefs && itemPrefs.active !== false) {
+                                cell.children.push(parseItem(id, child, firstOfGroup));
+                                firstOfGroup = false;
                             }
+                        }
                         }
                     } else {
                         cell = parseItem(i, cellDef);
                     }
                     if (cell) {
-                        tableColumns.push(cell);
-                    }
+                    tableColumns.push(cell);
+                }
                 }
                 tables[tableName] = tableColumns;
             }
@@ -904,12 +873,12 @@ YUI.add('wegas-dashboard', function(Y) {
 //                items[cbx].active = !(items[cbx].active);
 //                alert("Sorry, at least one option has to be active.");
 //            } else {
-            if (items[cbx].active) {
-                target.addClass("selected");
-            } else {
-                target.removeClass("selected");
-            }
-            // Update localStorage:
+                if (items[cbx].active) {
+                    target.addClass("selected");
+                } else {
+                    target.removeClass("selected");
+                }
+                // Update localStorage:
             localStorage.setItem(this.clientPrefsNs, JSON.stringify(storedPrefs));
 //            }
             event.halt(true);

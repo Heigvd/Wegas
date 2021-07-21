@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useTranslate } from '../../Editor/Components/FormView/translatable';
 import { ITranslatableContent } from 'wegas-ts-api';
+import sanitize from '../../Helper/sanitize';
 import { classNameOrEmpty, classOrNothing } from '../../Helper/className';
 import { halfOpacity } from '../../css/classes';
 
@@ -18,20 +19,23 @@ export function HTMLText({ text, style, className, id, disabled }: TextProps) {
       }
       style={style}
       dangerouslySetInnerHTML={{
-        __html: text || '',
+        __html: sanitize(text || ''),
       }}
     />
   );
 }
 
 interface TranslatableTextProps extends ClassStyleId {
-  htmlTranslatableContent: ITranslatableContent;
+  content?: ITranslatableContent | STranslatableContent | null;
 }
 
+/**
+ * Provide a convinent way to translate and display a TranslatableContent
+ */
 export function TranslatableText({
-  htmlTranslatableContent,
+  content,
   ...props
 }: TranslatableTextProps) {
-  const translatedContent = useTranslate(htmlTranslatableContent);
+  const translatedContent = useTranslate(content);
   return <HTMLText {...props} text={translatedContent} />;
 }

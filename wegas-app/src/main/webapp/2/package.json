@@ -4,7 +4,8 @@
   "version": "0.0.1",
   "scripts": {
     "start": "webpack-dev-server --hot --mode development",
-    "start-pre-prod": "cross-env NODE_ENV=pre-production webpack-dev-server --hot --mode production",
+    "start-no-unused": "cross-env TS_NODE_PROJECT=\"tsconfig-no-unused.json\" webpack-dev-server --hot --mode development",
+    "start-pre-prod": "cross-env NODE_ENV=pre-production  webpack-dev-server --hot --mode production",
     "build": "rimraf dist && cross-env NODE_ENV=production webpack --mode production",
     "test": "jest",
     "lint": "eslint 'src' --ext '.js,.ts,.tsx'",
@@ -79,6 +80,7 @@
     "react-dom": "^16.12.0",
     "react-input-slider": "^5.1.4",
     "react-reflex": "^3.0.18",
+    "react-smooth-dnd": "^0.11.1",
     "reactn": "^2.2.6",
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",

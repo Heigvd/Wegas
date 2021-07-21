@@ -152,7 +152,10 @@ public class PopulatorFacade extends WegasAbstractFacade {
                     player.setStatus(Status.INITIALIZING);
                     this.flush();
 
-                    stateMachineFacade.runStateMachines(player);
+                    // When joining a game, force all state machine
+                    // this is required because transitions which depend on default value
+                    // will not been triggered otherwise
+                    stateMachineFacade.runStateMachines(player, true);
 
                     player.setStatus(Status.LIVE);
                 }

@@ -14,6 +14,7 @@ import { icons, Icons } from '../../../Editor/Components/Views/FontAwesome';
 import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
+import { HTMLText } from '../../Outputs/HTMLText';
 
 export interface PlayerButtonProps extends WegasComponentProps {
   label?: IScript;
@@ -42,20 +43,14 @@ function PlayerButton({
 
   const buttonProps: ButtonProps = React.useMemo(
     () => ({
-      id: id,
-      className: className,
-      style: { margin: 'auto', ...style },
-      icon: icon,
-      prefixedLabel: prefixedLabel,
-      label:
-        label && translation !== '' ? (
-          <div
-            dangerouslySetInnerHTML={{
-              __html: translation,
-            }}
-          ></div>
-        ) : undefined,
-      tooltip,
+    id: id,
+    className: className,
+    style: { margin: 'auto', ...style },
+    icon: icon,
+    prefixedLabel: prefixedLabel,
+    label:
+      label && translation !== '' ? <HTMLText text={translation} /> : undefined,
+    tooltip,
       disabled: options.disabled || options.locked,
       readOnly: options.readOnly,
     }),

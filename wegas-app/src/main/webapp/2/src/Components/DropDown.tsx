@@ -5,7 +5,7 @@ import { classNameOrEmpty } from '../Helper/className';
 import { useOnClickOutside } from './Hooks/useOnClickOutside';
 
 export const itemStyle = css({
-  width: '100%',
+  // width: '100%',
   cursor: 'pointer',
   ':hover': {
     textShadow: '0 0 1px',

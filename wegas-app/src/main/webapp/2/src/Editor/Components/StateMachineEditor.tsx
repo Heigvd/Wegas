@@ -46,31 +46,11 @@ import { focusTab } from './LinearTabLayout/LinearLayout';
 import produce, { Immutable } from 'immer';
 import { StateProcessComponent } from '../../Components/FlowChart/StateProcessComponent';
 import { TransitionFlowLineComponent } from '../../Components/FlowChart/TransitionFlowLineComponent';
+import { HTMLText } from '../../Components/Outputs/HTMLText';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
-//import { useInternalTranslate } from '../../i18n/internalTranslator';
-//import { commonTranslations } from '../../i18n/common/common';
 
 const emptyPath: (string | number)[] = [];
-
-export function searchWithState(
-  search?: RState['global']['search'],
-  searched?: string,
-): boolean {
-  let value = '';
-  if (search == null || searched == null) {
-    return false;
-  }
-  if (search.type === 'GLOBAL') {
-    value = search.value;
-  } else if (search.type === 'USAGE') {
-    const variable = VariableDescriptor.select(search.value);
-    if (variable) {
-      value = `Variable.find(gameModel, "${variable.name}")`;
-    }
-  }
-  return value !== '' && searched.indexOf(value) >= 0;
-}
 
 function deleteTransition<T extends IFSMDescriptor | IDialogueDescriptor>(
   stateMachine: Immutable<T>,
@@ -148,26 +128,26 @@ export function StateMachineEditor<
 
   const createTransition: (nextStateId: number, index: number) => TTransition =
     React.useCallback(
-    (nextStateId, index) => {
-      return {
-        ...{
-          version: 0,
-          nextStateId,
-          preStateImpact: createScript(),
-          triggerCondition: createScript(),
-          dependencies: [],
-          index,
-        },
-        ...(entityIs(stateMachine, 'FSMDescriptor')
-          ? { '@class': 'Transition', label: '' }
-          : {
-              '@class': 'DialogueTransition',
-              actionText: createTranslatableContent(lang),
-            }),
-      };
-    },
-    [lang, stateMachine],
-  );
+      (nextStateId, index) => {
+        return {
+          ...{
+            version: 0,
+            nextStateId,
+            preStateImpact: createScript(),
+            triggerCondition: createScript(),
+            dependencies: [],
+            index,
+          },
+          ...(entityIs(stateMachine, 'FSMDescriptor')
+            ? { '@class': 'Transition', label: '' }
+            : {
+                '@class': 'DialogueTransition',
+                actionText: createTranslatableContent(lang),
+              }),
+        };
+      },
+      [lang, stateMachine],
+    );
 
   const connectState = React.useCallback(
     (
@@ -586,12 +566,8 @@ function ModifiableText({
       {`Click here to edit ${mode === 'String' ? 'label' : 'text'}`}
     </div>
   ) : (
-    <div
-      onClick={() => setEditingText(true)}
-      className={stateTextStyle}
-      dangerouslySetInnerHTML={{
-        __html: newTextValue,
-      }}
-    />
+    <div onClick={() => setEditingText(true)} className={stateTextStyle}>
+      <HTMLText text={newTextValue} />
+    </div>
   );
 }

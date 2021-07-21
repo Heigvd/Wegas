@@ -27,9 +27,9 @@ const ThemeEditor = React.lazy(
   () => import('../../Components/Theme/Components/ThemeEditor'),
 );
 const Languages = React.lazy(() => import('./Languages/Languages'));
- /* const Tester = React.lazy(
-   () => import('../../Testers/SchemaPropsTester'),
- ); */
+// const Tester = React.lazy(
+//   () => import('../../Testers/Components/FlexLayoutTester'),
+// );
 
 const layout = css({
   display: 'flex',
@@ -41,19 +41,18 @@ const layout = css({
 });
 
 export const availableLayoutTabs = {
-  //Tester: <Tester />,
   Variables: <TreeView />,
   'State Machine': <StateMachineEditor />,
   'Variable Properties': <EntityEditor />,
   Files: <FileBrowserWithMeta />,
   Scripts: <LibraryEditor />,
-  // 'Language Editor': <LanguageEditor />,
   Languages: <Languages />,
   'Client Console': <PlayLocal />,
   'Server Console': <PlayServer />,
   'Instances Editor': <InstancesEditor />,
   'Theme Editor': <ThemeEditor />,
   'Page Editor': <PageEditor />,
+  // Tester: <Tester />,
 } as const;
 
 export type AvailableLayoutTab = keyof typeof availableLayoutTabs;

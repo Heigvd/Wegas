@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { HTMLText } from '../Outputs/HTMLText';
 
 interface DummyHTMLEditorProps {
   value?: string;
@@ -11,7 +12,7 @@ export function DummyHTMLEditor({ value }: DummyHTMLEditorProps) {
         src={require('../../pictures/htmleditor.png').default}
         onClick={() => {}}
       />
-      <div
+      <HTMLText
         style={{
           position: 'absolute',
           top: '40px',
@@ -20,7 +21,7 @@ export function DummyHTMLEditor({ value }: DummyHTMLEditorProps) {
           height: '141px',
           overflow: 'hidden',
         }}
-        dangerouslySetInnerHTML={{ __html: value == null ? '' : value }}
+        text={value == null ? '' : value }
       />
     </div>
   );

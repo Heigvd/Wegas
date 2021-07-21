@@ -377,10 +377,10 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                 this.updateStyleSheet(this.currentScriptName, this.aceField.getValue());
                             } else if (this.get('library') === 'ClientScript') {
                                 try {
-                                    eval(this.aceField.getValue());
+                                    W.Sandbox.eval(this.aceField.getValue(), undefined, true);
                                 } catch (e) {
-                                    this.showMessage('error',
-                                        'This script contains errors');
+                                    Y.log("Error in script: ", e.message);
+                                    this.showMessage('error', 'This script contains errors ', e.message);
                                 }
                             }
                             //this.syncUI();
