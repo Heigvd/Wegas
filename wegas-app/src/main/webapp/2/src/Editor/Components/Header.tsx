@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { GameModel, Global } from '../../data/selectors';
-import { css, cx } from 'emotion';
+import { css, cx, keyframes } from 'emotion';
 import { useStore, store } from '../../data/Stores/store';
 import { Actions } from '../../data';
 import { FontAwesome, IconComp } from './Views/FontAwesome';
@@ -21,7 +21,6 @@ import {
   itemsTop,
   defaultMarginLeft,
 } from '../../css/classes';
-import { Title } from '../../Components/Inputs/String/Title';
 import { mainLayoutId } from './Layout';
 import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
 import { DropMenu } from '../../Components/DropMenu';
@@ -33,10 +32,33 @@ import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
 import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 
 const transparentDropDownButton = css({
   backgroundColor: 'transparent',
   color: 'inherit',
+});
+
+const reduceButtonStyle = css({
+  '&.iconOnly': {
+    justifyContent: 'center',
+    borderRadius: 0,
+    color: themeVar.colors.DisabledColor,
+  }
+});
+
+const hideHeaderStyle = css({
+  maxHeight: '0px',
+  opacity: 0,
+  padding: 0,
+});
+
+const showHeaderStyle = css({
+  maxHeight: '200px',
+  opacity: 1,
+  overflow: 'hidden',
+  padding: '2em 0',
+  transition: 'all .8s ease',
 });
 
 function wegasEventSelector(s: State) {
@@ -113,6 +135,7 @@ function NotificationMenu({ className, style }: ClassStyleId) {
 export default function Header() {
   const { currentFeatures } = React.useContext(featuresCTX);
   const i18nValues = useInternalTranslate(commonTranslations);
+  const [showHeader, setShowHeader] = React.useState(true);
   const { gameModel, user, userLanguage } = useStore(s => ({
     gameModel: GameModel.selectCurrent(),
     user: Global.selectCurrentUser(),
@@ -120,13 +143,26 @@ export default function Header() {
   }));
   const dispatch = store.dispatch;
   return (
+    <>
+    <Button
+    className={cx(reduceButtonStyle, {
+      [css({borderBottom: '1px solid ' + themeVar.colors.DisabledColor})]:showHeader
+    })}
+    noBackground={false}
+    icon={showHeader ? 'chevron-up' : 'chevron-down'}
+    tooltip={showHeader ?"Hide header" : "Show header"}
+    onClick={() => setShowHeader(showHeader => !showHeader)}>
+     </Button>
     <div
       className={cx(
         flex,
         itemsTop,
         flexBetween,
         foregroundContent,
-        css({ paddingBottom: '1em' }),
+        showHeaderStyle,
+        {
+          [hideHeaderStyle]:!showHeader
+        }
       )}
     >
       <div className={cx(flex, itemCenter)}>
@@ -182,7 +218,7 @@ export default function Header() {
           buttonClassName={cx(defaultMarginLeft, css({ padding: '5px 5px' }))}
         />
       </div>
-      <Title className={css({ margin: 0 })}>{gameModel.name}</Title>
+      <h1 className={css({ margin: 0 })}>{gameModel.name}</h1>
 
       <DropMenu
         label={<IconComp icon="gamepad" />}
@@ -221,5 +257,6 @@ export default function Header() {
         <NotificationMenu className={componentMarginRight} />
       )}
     </div>
+    </>
   );
 }

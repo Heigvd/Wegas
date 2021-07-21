@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { css } from 'emotion';
 import Header from './Header';
 import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
 import { useStore } from '../../data/Stores/store';
@@ -8,7 +8,6 @@ import { PageLoader } from './Page/PageLoader';
 import { ComponentMap } from './LinearTabLayout/DnDTabLayout';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { State } from '../../data/Reducer/reducers';
-import { XLPadding } from '../../css/classes';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageEditor = React.lazy(() => import('./Page/PageEditor'));
@@ -37,6 +36,8 @@ const layout = css({
   flexDirection: 'column',
   height: '100vh',
   backgroundColor: themeVar.colors.SecondaryBackgroundColor,
+  padding: '0 2em 1em 2em',
+  fontFamily: themeVar.others.TextFont2,
 });
 
 export const availableLayoutTabs = {
@@ -75,11 +76,7 @@ export default function Layout() {
 
   return (
     <div
-      className={cx(
-        layout,
-        XLPadding,
-        css({ fontFamily: themeVar.others.TextFont2, paddingBottom: '1em' }),
-      )}
+      className={layout}
       id="WegasLayout"
     >
       <Header />
