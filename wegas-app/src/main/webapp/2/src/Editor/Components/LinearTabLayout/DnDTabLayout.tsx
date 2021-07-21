@@ -226,38 +226,41 @@ export function DnDTabLayout({
         : label;
 
       // Always put a dropTab on the left of a tab
-      tabs.push(
-        <DropTab
-          key={label + 'LEFTDROP'}
-          onDrop={onDropTab(i)}
-          disabled={!dropTabsProps.isOver}
-          overview={{
-            position: 'left',
-            overviewNode: <div className={dropTabZone}></div>,
-          }}
-          layoutId={layoutId}
-          CustomTab={CustomTab}
-        >
-          <DragTab
-            key={label}
-            label={label}
-            active={label === defaultActiveLabel}
-            onClick={() => {
-              onSelect && onSelect(label);
+
+      if (components[label] != null) {
+        tabs.push(
+          <DropTab
+            key={label + 'LEFTDROP'}
+            onDrop={onDropTab(i)}
+            disabled={!dropTabsProps.isOver}
+            overview={{
+              position: 'left',
+              overviewNode: <div className={dropTabZone}></div>,
             }}
             layoutId={layoutId}
             CustomTab={CustomTab}
-            isChild={areChildren}
           >
-            {translatedLabel}
-            <IconButton
-              icon="times"
-              tooltip="Remove tab"
-              onClick={() => onDeleteTab(label)}
-            />
-          </DragTab>
-        </DropTab>,
-      );
+            <DragTab
+              key={label}
+              label={label}
+              active={label === defaultActiveLabel}
+              onClick={() => {
+                onSelect && onSelect(label);
+              }}
+              layoutId={layoutId}
+              CustomTab={CustomTab}
+              isChild={areChildren}
+            >
+              {translatedLabel}
+              <IconButton
+                icon="times"
+                tooltip="Remove tab"
+                onClick={() => onDeleteTab(label)}
+              />
+            </DragTab>
+          </DropTab>,
+        );
+      }
 
       // At the end, don't forget to add a dropTab on the right of the last tab
       if (Number(i) === componentsKeys.length - 1) {
@@ -335,7 +338,11 @@ export function DnDTabLayout({
                 innerClassName={cx(flex, expandBoth)}
                 outerClassName={expandBoth}
               >
-                <React.Suspense fallback={<div className={MediumPadding}>{i18nValues.loading}...</div>}>
+                <React.Suspense
+                  fallback={
+                    <div className={MediumPadding}>{i18nValues.loading}...</div>
+                  }
+                >
                   {components[defaultActiveLabel]}
                 </React.Suspense>
               </Reparentable>

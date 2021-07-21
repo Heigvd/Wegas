@@ -78,6 +78,7 @@ interface LanguageSelectorProps extends ClassStyleId {
   filterActiveLanguages?: boolean;
   label?: string;
   direction?: DropDownDirection;
+  buttonClassName?: string;
 }
 export function LanguageSelector({
   language,
@@ -87,6 +88,7 @@ export function LanguageSelector({
   className,
   label,
   direction,
+  buttonClassName,
 }: LanguageSelectorProps) {
   const { lang, availableLang } = React.useContext(languagesCTX);
   const [currentLanguage, setCurrentLang] = React.useState(
@@ -97,7 +99,7 @@ export function LanguageSelector({
     : availableLang;
   return (
     <DropMenu
-        label={`${label && (label + ":")} ${currentLanguage}`}
+      label={`${label && label + ':'} ${currentLanguage}`}
       items={languages.map(language => ({
         value: language,
         label: `${language.code} : ${language.lang}`,
@@ -107,15 +109,17 @@ export function LanguageSelector({
         onSelect(item, keys);
       }}
       style={style}
-      buttonClassName={className}
-      direction= {direction && direction}
+      buttonClassName={buttonClassName}
+      containerClassName={className}
+      direction={direction && direction}
     />
   );
 }
 
 interface LangTogglerProps extends ClassStyleId {
   label?: string;
-  direction? : DropDownDirection;
+  direction?: DropDownDirection;
+  buttonClassName?: string;
 }
 /**
  * Language selector allows to select language inside the language context given by the LangProvider

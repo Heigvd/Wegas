@@ -25,6 +25,7 @@ export const commonTranslationsEN: CommonTranslations = {
   features: 'Features',
   language: 'Language',
   deepSearch: 'Deep search',
+  role: 'User role',
   header: {
     restartGame: 'Restart the game (applied to every scenarist)',
     resetLayout: 'Reset layout',

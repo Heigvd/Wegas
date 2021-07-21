@@ -4,6 +4,7 @@ import { render } from 'react-dom';
 import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
 import { LanguagesProvider } from './Components/Contexts/LanguagesProvider';
+import { RoleProvider } from './Components/Contexts/RoleProvider';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
 import { PopupManager } from './Components/PopupManager';
 import { ThemeProvider } from './Components/Theme/Theme';
@@ -56,11 +57,13 @@ function mount() {
       <LanguagesProvider>
         <ClassesProvider>
           <LibrariesLoader>
-            <ThemeProvider contextName="editor">
-              <PopupManager>
-                <Layout />
-              </PopupManager>
-            </ThemeProvider>
+            <RoleProvider>
+              <ThemeProvider contextName="editor">
+                <PopupManager>
+                  <Layout />
+                </PopupManager>
+              </ThemeProvider>
+            </RoleProvider>
           </LibrariesLoader>
         </ClassesProvider>
       </LanguagesProvider>

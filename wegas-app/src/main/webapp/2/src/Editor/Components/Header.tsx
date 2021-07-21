@@ -20,6 +20,7 @@ import {
   flexBetween,
   itemsTop,
   defaultMarginLeft,
+  expandWidth,
 } from '../../css/classes';
 import { Title } from '../../Components/Inputs/String/Title';
 import { mainLayoutId } from './Layout';
@@ -33,6 +34,7 @@ import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
 import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
+import { RoleSelector } from '../../Components/Contexts/RoleProvider';
 
 const transparentDropDownButton = css({
   backgroundColor: 'transparent',
@@ -136,8 +138,20 @@ export default function Header() {
           label={<IconComp icon="cog" />}
           items={[
             {
-              label: <FeatureToggler className={transparentDropDownButton} />,
-              value: 'selectFeatures',
+              label: (
+                <RoleSelector
+                  buttonClassName={transparentDropDownButton}
+                  className={expandWidth}
+                />
+              ),
+            },
+            {
+              label: (
+                <FeatureToggler
+                  buttonClassName={transparentDropDownButton}
+                  className={expandWidth}
+                />
+              ),
             },
             {
               label: (
@@ -158,9 +172,9 @@ export default function Header() {
                   }}
                   direction="right"
                   buttonClassName={transparentDropDownButton}
+                  style={{ width: '100%' }}
                 />
               ),
-              value: 'selectUserLanguage',
             },
             {
               label: (
@@ -171,12 +185,11 @@ export default function Header() {
                     );
                     window.location.reload();
                   }}
-                  className={css({padding: '5px 10px'})}
+                  className={css({ padding: '5px 10px' })}
                 >
                   <IconComp icon="undo" /> {i18nValues.header.resetLayout}
                 </div>
               ),
-              value: 'resetLayout',
             },
           ]}
           buttonClassName={cx(defaultMarginLeft, css({ padding: '5px 5px' }))}
@@ -191,7 +204,8 @@ export default function Header() {
             label: (
               <LangToggler
                 label={i18nValues.language}
-                className={transparentDropDownButton}
+                className={expandWidth}
+                buttonClassName={transparentDropDownButton}
                 direction="right"
               />
             ),
@@ -210,7 +224,7 @@ export default function Header() {
                 }}
                 buttonClassName={transparentDropDownButton}
                 modalDisplay
-                modalMessage= {i18nValues.header.restartGame + "?"}
+                modalMessage={i18nValues.header.restartGame + '?'}
               />
             ),
             value: 'restartGame',

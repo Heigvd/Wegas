@@ -23,6 +23,7 @@ export interface CommonTranslations {
   features: string;
   language: string;
   deepSearch: string;
+  role: string;
   header: {
     restartGame: string;
     resetLayout: string;
