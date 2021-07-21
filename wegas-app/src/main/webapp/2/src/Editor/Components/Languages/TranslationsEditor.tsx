@@ -9,9 +9,8 @@ import { Toolbar } from '../../../Components/Toolbar';
 import {
   defaultMargin,
   defaultMarginBottom,
-  defaultMarginLeft,
-  defaultMarginTop,
   defaultPadding,
+  defaultMarginTop,
   expandWidth,
   flex,
   flexColumn,
@@ -44,6 +43,14 @@ const langaugeVisitorHeaderStyle = css({
   borderBottom: `solid 1px ${themeVar.colors.PrimaryColor}`,
   marginTop: '0.5em',
   fontWeight: 700,
+});
+
+const firstColumnMargin = css({
+  marginLeft: '10em',
+});
+
+const columnMargin = css({
+  margin: '1em',
 });
 
 const translationContainerStyle = (nbLanguages: number) => {
@@ -136,6 +143,15 @@ function TranslationView({
       {Object.entries(translations).map(([k, v]) => {
         return (
           <React.Fragment key={k}>
+            <div
+              className={cx(
+                rowSpanStyle(selectedLanguages.length),
+                firstColumnMargin,
+                defaultMarginTop,
+              )}
+            >
+              {k}
+            </div>
             {selectedLanguages.map((language, index) => {
               const languageCode = language.code;
               const translation = unsafeTranslate(v, languageCode);
@@ -265,7 +281,7 @@ function LanguagesVisitor({
   depth = 0,
 }: LanguagesVisitorProps) {
   const item = useStore(() => VariableDescriptor.select(itemId), deepDifferent);
-  const [show, setShow] = React.useState(true);
+  const [show, setShow] = React.useState(false);
   if (item == null) {
     return null;
   }
@@ -346,8 +362,8 @@ function TranslationHeader({
   const i18nValues = useInternalTranslate(languagesTranslations);
   return (
     <div
-      className={cx(flex, flexRow, {
-        [defaultMarginLeft]: index > 0,
+      className={cx(flex, flexRow, columnMargin, itemCenter, {
+        [firstColumnMargin]: index === 0,
       })}
     >
       <h3>{languageLabel(language)}</h3>

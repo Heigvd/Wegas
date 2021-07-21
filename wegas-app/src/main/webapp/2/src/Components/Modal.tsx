@@ -9,7 +9,6 @@ import {
   flexColumn,
   flexRow,
   justifyCenter,
-  justifyEnd,
   pointer,
 } from '../css/classes';
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
@@ -64,12 +63,14 @@ const modalCloseButtonStyle = css({
   margin: 'auto',
 });
 
-const secondaryButtonStyle = css({
+export const secondaryButtonStyle = css({
   backgroundColor: 'transparent',
   color: themeVar.colors.PrimaryColor,
   border: '1px solid ' + themeVar.colors.PrimaryColor,
   ['&:hover']: {
-    color: themeVar.colors.LightTextColor,
+    color: themeVar.colors.ActiveColor,
+    backgroundColor: themeVar.colors.HoverColor,
+    borderColor: 'transparent',
   },
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,7 +208,7 @@ export function OkCancelModal({
     <Modal attachedToId={attachedToId}>
       <div className={cx(flex, flexColumn)}>
         {children}
-        <div className={cx(flex, flexRow, justifyEnd, defaultMarginTop)}>
+        <div className={cx(flex, flexRow, justifyCenter, defaultMarginTop)}>
           <Button
             label={i18nValues.cancel}
             onClick={onCancel}

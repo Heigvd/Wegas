@@ -8,7 +8,7 @@ import { LanguageSelector } from '../../../Components/Contexts/LanguagesProvider
 import { componentMarginLeft } from '../../../css/classes';
 
 export const titleStyle = css({
-  marginBottom: '5px',
+  margin: '5px 0px',
   display: 'flex',
   '[title]': {
     display: 'inline-block',

@@ -84,6 +84,7 @@ interface CommonSchemaProps extends SimpleSchemaProps {
   featureLevel?: FeatureLevel;
   layout?: SchemaLayout;
   borderTop?: boolean;
+  noMarginTop?: boolean;
 }
 
 interface ReadOnlySchemaProps {

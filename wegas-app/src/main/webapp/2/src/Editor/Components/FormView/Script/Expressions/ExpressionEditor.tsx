@@ -39,7 +39,6 @@ import { genVarItems } from '../../TreeVariableSelect';
 
 const expressionEditorStyle = css({
   backgroundColor: themeVar.colors.HeaderColor,
-  marginTop: '0.8em',
   padding: '2px',
   div: {
     marginTop: '0',

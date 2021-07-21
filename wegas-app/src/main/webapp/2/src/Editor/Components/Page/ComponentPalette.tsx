@@ -29,8 +29,7 @@ import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { IconComp } from '../Views/FontAwesome';
 import { pageCTX } from './PageEditor';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 const headerStyle = css({
@@ -156,8 +155,7 @@ function ComponentTypeElement({
 }: ComponentTypeElementProps) {
   const selected = componentType === currentType;
   const show = currentType == null || selected;
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
   const translatedType = i18nValues.pageEditor.componentTypes[componentType]
     ? i18nValues.pageEditor.componentTypes[componentType]
     : componentType;
@@ -180,8 +178,7 @@ function ComponentElement({
   componentName,
   currentType,
 }: ComponentElementProps) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
   const component = usePageComponentStore(s => s[componentName]);
   const [, drag] = useComponentDrag(componentName);
   return (
@@ -204,8 +201,7 @@ export function ComponentPalette({
 }: {
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
   const [currentType, setCurrentType] = React.useState<ComponentType>();
 
   const { editMode } = React.useContext(pageCTX);

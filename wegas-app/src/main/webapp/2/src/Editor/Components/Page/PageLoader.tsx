@@ -11,8 +11,7 @@ import { FlexItem } from '../../../Components/Layouts/FlexList';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { State } from '../../../data/Reducer/reducers';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { pagesTranslations } from '../../../i18n/pages/pages';
 
@@ -65,9 +64,8 @@ export function PageLoader({
   disabled,
   readOnly,
 }: PageLoaderProps) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nCommonValues = internalTranslate(commonTranslations, lang);
-  const i18nPagesValues = internalTranslate(pagesTranslations, lang);
+  const i18nCommonValues = useInternalTranslate(commonTranslations);
+  const i18nPagesValues = useInternalTranslate(pagesTranslations);
   const selectedPageSelector = React.useCallback(
     (s: State) => (selectedPageId ? s.pages[selectedPageId] : undefined),
     [selectedPageId],

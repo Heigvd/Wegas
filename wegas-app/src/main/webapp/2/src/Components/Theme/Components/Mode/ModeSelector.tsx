@@ -10,8 +10,7 @@ import {
   deleteMode,
 } from '../../../../data/Stores/themeStore';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
-import { internalTranslate } from '../../../../i18n/internalTranslator';
-import { languagesCTX } from '../../../Contexts/LanguagesProvider';
+import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { Button } from '../../../Inputs/Buttons/Button';
 import { ConfirmButton } from '../../../Inputs/Buttons/ConfirmButton';
 import { themeVar } from '../../ThemeVars';
@@ -24,8 +23,7 @@ export function ModeSelector() {
   const currentTheme = themes[editedThemeName];
   const currentModes = currentTheme?.modes || {};
 
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   const onError = React.useCallback(
     (value: string | undefined) => {
@@ -48,11 +46,14 @@ export function ModeSelector() {
                 icon={{
                   icon: 'trash',
                 }}
+                tooltip={i18nValues.themeEditor.deleteMode}
                 onAction={sucess => {
                   if (sucess) {
                     dispatch(deleteMode(k));
                   }
                 }}
+                modalDisplay
+                modalMessage={i18nValues.themeEditor.deleteMode + "?"}
               />
             )}
             <Button
@@ -63,6 +64,7 @@ export function ModeSelector() {
                     ? themeVar.colors.SuccessColor
                     : undefined,
               }}
+              tooltip={i18nValues.themeEditor.setMainMode}
               onClick={e => {
                 e.stopPropagation();
                 dispatch(setBaseMode(k));

@@ -14,6 +14,7 @@ import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
 import { AvailableViews } from '../Editor/Components/FormView';
 import { getEntityActions } from '../Editor/editionConfig';
 import * as ActionType from './actionTypes';
+import { EditorLanguagesCode } from './i18n';
 import { discriminant, normalizeDatas, NormalizedData } from './normalize';
 import {
   closeEditor,
@@ -90,7 +91,8 @@ export const ActionCreator = {
     createAction(ActionType.EDITOR_RESET_PAGE_LOADER, {}),
   EDITOR_UNREGISTER_PAGE_LOADER: (data: { name: string }) =>
     createAction(ActionType.EDITOR_UNREGISTER_PAGE_LOADER, data),
-
+  EDITOR_SET_LANGUAGE: (data: { language: EditorLanguagesCode }) =>
+    createAction(ActionType.EDITOR_SET_LANGUAGE, data),
   VARIABLE_EDIT: variableEditAction(ActionType.VARIABLE_EDIT),
   FSM_EDIT: variableEditAction(ActionType.FSM_EDIT),
   FILE_EDIT: (data: {

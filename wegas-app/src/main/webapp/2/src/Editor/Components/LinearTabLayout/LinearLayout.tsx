@@ -14,11 +14,10 @@ import {
 import { wlog, wwarn } from '../../../Helper/wegaslog';
 
 import 'react-reflex/styles.css';
-import { flex, noOverflow, grow, expandHeight } from '../../../css/classes';
+import { flex, noOverflow, grow, expandHeight, MediumPadding } from '../../../css/classes';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { TabComponent } from './DnDTabs';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 
 export const splitter = css({
@@ -851,8 +850,7 @@ export function MainLinearLayout<T extends ComponentMap>({
   areChildren,
 }: LinearLayoutProps<T>) {
   // const tabs = React.useRef<ComponentMap>(tabs ? tabs : {});
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
   const savedLayoutJSON = window.localStorage.getItem(
     `DnDGridLayoutData.${layoutId}`,
   );
@@ -986,7 +984,7 @@ export function MainLinearLayout<T extends ComponentMap>({
             >
               {rendered.length === 0 ? (
                 <ReflexElement>
-                  <div>{i18nValues.loading}...</div>
+                  <div className={MediumPadding}>{i18nValues.loading}...</div>
                 </ReflexElement>
               ) : (
                 rendered

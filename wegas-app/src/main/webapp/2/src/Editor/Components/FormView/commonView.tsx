@@ -6,10 +6,14 @@ import {
 } from '../../../Components/Contexts/FeaturesProvider';
 import { flex, flexRow, itemCenter } from '../../../css/classes';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { classNameOrEmpty } from '../../../Helper/className';
+import { wlog } from '../../../Helper/wegaslog';
 
 const containerStyle = css({
   position: 'relative',
-  marginTop: '1em',
+});
+const marginTopStyle = css({
+  marginTop: '9px',
 });
 const errorStyle = css({
   color: themeVar.colors.WarningColor,
@@ -50,11 +54,13 @@ export interface CommonView {
   index?: number;
   readOnly?: boolean;
   featureLevel?: FeatureLevel;
+  noMarginTop?: boolean;
 }
 interface CommonViewProps {
   children: React.ReactNode;
   errorMessage?: string[];
   view: CommonView;
+  className?: string;
 }
 /**
  * Handle errorMessage, layout.
@@ -64,6 +70,7 @@ export function CommonViewContainer({
   children,
   errorMessage,
   view,
+  className,
 }: CommonViewProps) {
   const { currentFeatures } = React.useContext(featuresCTX);
   const error = errorMessage && errorMessage.join(', ');
@@ -73,11 +80,13 @@ export function CommonViewContainer({
     view.featureLevel === undefined ||
     isFeatureEnabled(currentFeatures, view.featureLevel)
   ) {
+    wlog(view.noMarginTop);
     return (
       <div
-        className={cx(containerStyle, layout, {
+        className={cx(containerStyle, layout, classNameOrEmpty(className), {
           [`${borderTop}`]: Boolean(view.borderTop),
           [`${borderBottom}`]: Boolean(view.borderBottom),
+          [marginTopStyle]: !view.noMarginTop,
         })}
       >
         {children}

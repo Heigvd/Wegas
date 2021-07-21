@@ -1,9 +1,8 @@
-import { cx } from 'emotion';
+import { css, cx } from 'emotion';
 import * as React from 'react';
 import {
   flex,
   flexRow,
-  flexColumn,
   justifyCenter,
   itemCenter,
   defaultMarginLeft,
@@ -48,7 +47,7 @@ export function AdderSelector({
   return (
     <div className={cx(flex, flexRow)}>
       {editing ? (
-        <div className={cx(flex, flexColumn, justifyCenter, itemCenter)}>
+        <div className={cx(flex, justifyCenter, itemCenter)}>
           {error && <MessageString type="warning" value={error} />}
           <SimpleInput
             autoFocus
@@ -63,19 +62,20 @@ export function AdderSelector({
                 setValue(undefined);
                 setEditing(false);
               }}
+              className={cx(css({padding: 0}), defaultMarginLeft)}
             />
             <Button
               icon="check"
               tooltip={i18nValues.ok}
               disabled={error != null || value == null}
               onClick={() => {
-                if (value != null) {
+                if (value != null && value.length > 0) {
                   onAccept(value);
                   setValue(undefined);
                   setEditing(false);
                 }
               }}
-              className={defaultMarginLeft}
+              className={cx(css({padding: 0}), defaultMarginLeft)}
             />
           </div>
         </div>

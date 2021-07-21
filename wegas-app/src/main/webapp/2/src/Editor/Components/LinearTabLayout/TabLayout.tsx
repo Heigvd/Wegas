@@ -13,8 +13,7 @@ import {
   headerStyle,
 } from '../../../css/classes';
 import { ClassNames, ComponentMap } from './DnDTabLayout';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 
 interface TabLayoutProps {
@@ -57,8 +56,7 @@ export function TabLayout({
 }: TabLayoutProps) {
   const {general, header, content} = classNames;
   const[activeLabel, setActiveLabel] = React.useState(defaultActiveLabel);
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
 
   return (
     <Toolbar vertical={vertical} className={cx(relative, general)}>

@@ -5,10 +5,12 @@ export interface CommonTranslations {
   areYouSure: string;
   loading: string;
   loadingFiles: string;
+  someWentWrong: string;
   accept: string;
   cancel: string;
   delete: string;
   reset: string;
+  restart: string;
   save: string;
   edit: string;
   duplicate: string;
@@ -19,6 +21,7 @@ export interface CommonTranslations {
   forceDelete: string;
   buildingWorld: string;
   features: string;
+  language: string;
   deepSearch: string;
   header: {
     restartGame: string;

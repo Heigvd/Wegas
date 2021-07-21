@@ -48,7 +48,6 @@ import { Selector } from '../../../Editor/Components/FormView/Select';
 import { translate } from '../../../Editor/Components/FormView/translatable';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import {
-  internalTranslate,
   useInternalTranslate,
 } from '../../../i18n/internalTranslator';
 import { PeerReviewTranslations } from '../../../i18n/peerReview/definitions';
@@ -507,8 +506,7 @@ function ReviewEditor({
   disabled,
   readOnly,
 }: ReviewEditorProps) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(peerReviewTranslations, lang);
+  const i18nValues = useInternalTranslate(peerReviewTranslations);
 
   const rev = useStore(() => {
     const reviewed = peerReview

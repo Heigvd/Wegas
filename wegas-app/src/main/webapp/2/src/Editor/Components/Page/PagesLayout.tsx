@@ -47,8 +47,7 @@ import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { State } from '../../../data/Reducer/reducers';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
@@ -172,8 +171,7 @@ export function IndexItemAdder({
 }: IndexItemAdderProps) {
   const [modalState, setModalState] = React.useState<LayoutModalStates>();
   const { dispatch } = store;
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   return (
     <div className={className} style={style} title={tooltip}>
@@ -277,9 +275,8 @@ function IndexItemModifer({
 }: IndexItemModiferProps) {
   const [modalState, setModalState] = React.useState<LayoutModalStates>();
   const { dispatch } = store;
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
-  const i18nEditorValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
+  const i18nEditorValues = useInternalTranslate(editorTabsTranslations);
 
   return (
     <div className={className} title={tooltip}>
@@ -445,8 +442,7 @@ function WegasComponentTitle({
   selectedComponentPath,
   componentControls,
 }: WegasComponentTitleProps) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
   const registeredComponent = usePageComponentStore(s => s[component.type]);
   const { editMode } = React.useContext(pageCTX);
 
@@ -555,8 +551,7 @@ function WegasComponentNode({
   selectedComponentPath,
   componentControls,
 }: WegasComponentNodeProps) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
   const pageSelector = React.useCallback(
     (s: State) => s.pages[pageId],
     [pageId],
@@ -646,8 +641,7 @@ function PageIndexTitle({
   onPageClick,
   defaultPageId,
 }: PageIndexTitleProps) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
   const { selectedPageId } = React.useContext(pageEditorCTX);
   const { dispatch } = store;
   const folderIsNotEmpty =
@@ -792,8 +786,7 @@ function PageIndexItemNode({
   onPageClick,
   componentControls,
 }: PagesLayoutNodeProps): JSX.Element | null {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
   const { selectedPageId, editedPath } = React.useContext(pageEditorCTX);
   const pageSelector = React.useCallback(
     (s: State) => {
@@ -916,8 +909,7 @@ export function PagesLayout(props: PagesLayoutProps) {
   const { dispatch } = store;
   const { componentControls } = props;
   const { onMove, onNew } = componentControls;
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
 
   return (
     <Toolbar className={expandBoth}>

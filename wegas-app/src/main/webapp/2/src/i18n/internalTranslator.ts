@@ -1,13 +1,13 @@
-import * as React from 'react';
-import { languagesCTX } from '../Components/Contexts/LanguagesProvider';
+import { EditorLanguagesCode } from '../data/i18n';
+import { useStore } from '../data/Stores/store';
 
 export interface TranslatableObject<T> {
   [lang: string]: T;
 }
 
-export function internalTranslate<Translations>(
+function internalTranslate<Translations>(
   translatableObject: TranslatableObject<Translations>,
-  lang?: string,
+  lang?: EditorLanguagesCode,
 ): Translations {
   return (
     (lang && translatableObject[lang]) ||
@@ -19,6 +19,6 @@ export function internalTranslate<Translations>(
 export function useInternalTranslate<Translations>(
   translatableObject: TranslatableObject<Translations>,
 ): Translations {
-  const { lang } = React.useContext(languagesCTX);
+  const  lang = useStore(s => s.global.currentEditorLanguageCode);
   return internalTranslate(translatableObject, lang);
 }

@@ -17,6 +17,9 @@ const choiceButtonText = css({
   padding: '5px',
   textAlign: 'left',
   flex: '1 1 auto',
+  '&:hover': {
+    color: themeVar.colors.LightTextColor,
+  }
 });
 
 const choiceButtonIcon = css({

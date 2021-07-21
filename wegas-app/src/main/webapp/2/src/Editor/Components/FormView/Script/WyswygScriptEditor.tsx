@@ -1,18 +1,13 @@
 import * as React from 'react';
 import { ScriptView, isScriptCondition } from './Script';
 import { Statement, expressionStatement, booleanLiteral } from '@babel/types';
-import { css } from 'emotion';
 import { emptyStatement } from '@babel/types';
 import Form from 'jsoninput';
 import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
+import { css } from 'emotion';
 import { themeVar } from '../../../../Components/Theme/ThemeVars';
 import generate from '@babel/generator';
 import { parse } from '@babel/parser';
-
-const scriptStyle = css({
-  border: '1px solid ' + themeVar.colors.DisabledColor,
-  padding: '2px',
-});
 
 function createNewExpression(mode?: ScriptMode) {
   return isScriptCondition(mode)
@@ -46,14 +41,15 @@ export function WyswygScriptEditor({
   }, [expressions]);
 
   return (
-    <div className={scriptStyle}>
+    <div className={css({border: `1px solid ${themeVar.colors.DisabledColor}`})}>
       <Form
         schema={{
           description: 'multipleStatementForm',
+          view: {noMarginTop: true},
           properties: {
             statements: schemaProps.array({
               itemSchema: {
-                statement: schemaProps.statement({ required: true, mode }),
+                statement: schemaProps.statement({ required: true, mode, noMarginTop: true }),
               },
               userOnChildAdd: () => ({
                 statement: mode === 'GET' ? 'true' : ';',

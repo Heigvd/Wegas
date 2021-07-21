@@ -47,12 +47,8 @@ import { State } from '../../../data/Reducer/reducers';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { useOkCancelModal } from '../../../Components/Modal';
-import {
-  internalTranslate,
-  useInternalTranslate,
-} from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { useDebounceFn } from '../../../Components/Hooks/useDebounce';
 
@@ -89,7 +85,10 @@ const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
         const entity = { '@class': i };
         return (
           <>
-            <IconComp icon={withDefault(getIcon(entity), 'question')} />
+            <IconComp
+              icon={withDefault(getIcon(entity), 'question')}
+              className={css({ marginRight: '3px' })}
+            />
             {getClassLabel(entity)}
           </>
         );
@@ -323,8 +322,7 @@ export function CTree({
   readOnly,
   subPath,
 }: Omit<CTreeProps & TreeProps, 'variables' | 'noHeader'>): JSX.Element | null {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
   const actionAllowed = isActionAllowed({
     disabled: disabled,
     readOnly: readOnly,
