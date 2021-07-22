@@ -786,6 +786,7 @@ registerComponent(
     componentType: 'Advanced',
     name: 'Peer Review treeview display',
     icon: 'user-edit',
+    illustration: 'PRTreeView',
     schema: {
       peerReview: schemaProps.scriptVariable({
         label: 'Peer review',

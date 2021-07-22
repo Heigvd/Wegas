@@ -75,6 +75,7 @@ registerComponent(
     componentType: 'Output',
     name: 'Boxes',
     icon: 'ellipsis-h',
+    illustration: 'boxes',
     schema: {
       script: schemaProps.scriptVariable({
         label: 'Variable',

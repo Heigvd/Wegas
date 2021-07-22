@@ -17,6 +17,7 @@ import {
 } from 'wegas-ts-api';
 import { ChildrenDeserializerProps } from './PageDeserializer';
 import { classStyleIdShema } from './options';
+import { IconComponentType } from '../../../Editor/Components/Page/ComponentIcon';
 
 export const componentTypes = [
   'Layout',
@@ -53,6 +54,7 @@ export interface PageComponent<
   componentType: ComponentType;
   componentName: string;
   icon: Icon;
+  illustration?: IconComponentType;
   dropzones?: DropZones;
   schema: {
     description: string;
@@ -148,6 +150,10 @@ interface ComponentFactoryBasicParameters<
    */
   icon: Icon;
   /**
+   * The illustration of the component for the palette
+   */
+  illustration?: IconComponentType;
+  /**
    * Component to display
    */
   component: React.FunctionComponent<P>;
@@ -241,6 +247,7 @@ export function pageComponentFactory<
     container: param.container,
     manageOnClick: param.manageOnClick,
     icon: param.icon,
+    illustration:param.illustration,
     dropzones: param.dropzones,
     componentName: param.name,
     schema: {

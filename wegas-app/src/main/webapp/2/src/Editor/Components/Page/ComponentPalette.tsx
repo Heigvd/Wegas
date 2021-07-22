@@ -12,7 +12,6 @@ import {
   textCenter,
   defaultMargin,
   flexBetween,
-  defaultMarginRight,
 } from '../../../css/classes';
 import {
   usePageComponentStore,
@@ -32,7 +31,7 @@ import { pageCTX } from './PageEditor';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
-import Modal from '../../../pictures/componentsIcons/modal.svg';
+import { ComponentIcon, ComponentTypeIcon } from './ComponentIcon';
 
 const headerStyle = css({
   padding: '20px',
@@ -47,10 +46,7 @@ const paletteStyle = (editMode: boolean) =>
     opacity: editMode ? 1 : 0.5,
   });
 
-const componentTypeButtonStyle = (
-  opened: boolean,
-  enabled: boolean,
-) => {
+const componentTypeButtonStyle = (opened: boolean, enabled: boolean) => {
   return css({
     padding: '15px',
     backgroundColor: enabled
@@ -63,16 +59,14 @@ const componentTypeButtonStyle = (
     marginBottom: opened ? '0px' : '3px',
     '&:hover': {
       backgroundColor: enabled
-      ? themeVar.colors.ActiveColor
-      : themeVar.colors.HeaderColor,
+        ? themeVar.colors.ActiveColor
+        : themeVar.colors.HeaderColor,
       transition: 'background-color .5s ease',
-    }
+    },
   });
 };
 
-const componentTypeCollapseStyle = (
-  opened: boolean
-) => {
+const componentTypeCollapseStyle = (opened: boolean) => {
   return css({
     transition: 'all .8s ease',
     textAlign: 'center',
@@ -83,35 +77,37 @@ const componentTypeCollapseStyle = (
     backgroundColor: themeVar.colors.HeaderColor,
     marginBottom: opened ? '3px' : 0,
     justifyContent: 'flex-start',
+    flexWrap: 'wrap',
   });
 };
 
-  const componentStyle =  css({
-    width: '90px',
-    height: '90px',
-    padding: '0 10px',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    fontSize: '14px',
-    lineHeight: '16px',
-    backgroundColor: themeVar.colors.HeaderColor,
-    color: themeVar.colors.PrimaryColor,
-    margin: '15px 5px',
-    cursor: 'pointer',
-    '&:hover': {
-      backgroundColor: themeVar.colors.PrimaryColor,
-      color: themeVar.colors.HeaderColor,
-    },
-  });
+const componentStyle = css({
+  width: '90px',
+  height: '90px',
+  padding: '5px 10px',
+  overflow: 'hidden',
+  fontSize: '13px',
+  lineHeight: '16px',
+  backgroundColor: themeVar.colors.HeaderColor,
+  color: themeVar.colors.PrimaryColor,
+  margin: '5px',
+  cursor: 'pointer',
+  '&:hover': {
+    color: themeVar.colors.ActiveColor,
+    transition: 'all .5s',
+    svg: {
+      fill: themeVar.colors.ActiveColor,
+      transition: 'all .5s',
+    }
+  },
+});
 
-  const componentIconStyle =  css({
-    fill: themeVar.colors.PrimaryColor,
-    width: '70px',
-    '&:hover': {
-      backgroundColor: themeVar.colors.PrimaryColor,
-      color: themeVar.colors.HeaderColor,
-    },
-  });
+const ComponentTextStyle = css({
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  margin: '2px 0',
+});
 
 export interface DnDComponent {
   componentName: string;
@@ -163,35 +159,6 @@ export function useComponentDrag(
   });
 }
 
-/* interface ComponentTypeElementProps {
-  componentType: ComponentType;
-  currentType: ComponentType | undefined;
-  onClick: (type: ComponentType) => void;
-  enabled: boolean;
-} */
-
-/* function ComponentTypeElement({
-  componentType,
-  onClick,
-  currentType,
-  enabled,
-}: ComponentTypeElementProps) {
-  const selected = componentType === currentType;
-  const show = currentType == null || selected;
-  const i18nValues = useInternalTranslate(editorTabsTranslations);
-  const translatedType = i18nValues.pageEditor.componentTypes[componentType]
-    ? i18nValues.pageEditor.componentTypes[componentType]
-    : componentType;
-  return (
-    <div
-      className={componentTypeStyle(selected, show, enabled)}
-      onClick={() => enabled && onClick(componentType)}
-    >
-      {`${selected ? i18nValues.pageEditor.back : translatedType}`}
-    </div>
-  );
-} */
-
 interface ComponentTypeElementProps {
   componentType: ComponentType;
   onClick: (type: ComponentType) => void;
@@ -213,51 +180,44 @@ function ComponentTypeElement({
     ? i18nValues.pageEditor.componentTypes[componentType]
     : componentType;
 
-
-  function componentTypeIcon(name: ComponentType) {
-    switch (name) {
-      case 'Layout':
-        return "table";
-      case 'Input':
-        return "edit";
-      case 'Output':
-        return "icons";
-      case 'Advanced':
-        return "atom";
-      case 'Programmatic':
-        return "code";
-  }}
   return (
     <>
-    <div
-      className={cx(componentTypeButtonStyle(opened, enabled), flex, flexBetween)}
-      onClick={() => {
-        enabled && onClick(componentType);
-        setOpened(opened => !opened);
-      }}
-    >
-      <div>
-        <IconComp icon={componentTypeIcon(componentType)} className={defaultMarginRight}/>
-        {`${translatedType}`}
+      <div
+        className={cx(
+          componentTypeButtonStyle(opened, enabled),
+          flex,
+          flexBetween,
+        )}
+        onClick={() => {
+          enabled && onClick(componentType);
+          setOpened(opened => !opened);
+        }}
+      >
+        <div>
+          <ComponentTypeIcon componentType={componentType} />
+          {`${translatedType}`}
+        </div>
+        <IconComp icon={opened ? 'chevron-up' : 'chevron-down'} />
       </div>
-      <IconComp icon={opened ? "chevron-up" : "chevron-down"} />
-    </div>
-    <div className={cx(
-            flex,
-            grow,
-            flexWrap,
-            flexDistribute,
-            componentTypeCollapseStyle(opened),
-          )}>
-            <div className={cx(defaultMargin, flex)}>
-    {componentNames.map(k =>
+      <div
+        className={cx(
+          flex,
+          grow,
+          flexWrap,
+          flexDistribute,
+          componentTypeCollapseStyle(opened),
+        )}
+      >
+        <div className={cx(defaultMargin, flex, flexWrap)}>
+          {componentNames.map(k => (
             <ComponentElement
               key={k}
               componentName={k}
               componentType={componentType}
-            />)}
-            </div>
-    </div>
+            />
+          ))}
+        </div>
+      </div>
     </>
   );
 }
@@ -276,23 +236,22 @@ function ComponentElement({
   const [, drag] = useComponentDrag(componentName);
   return (
     <>
-    {component.componentType === componentType &&
-      <div
-      ref={drag}
-      className={componentStyle}
-      title={componentName}
-    >
-      {component ? (
-        <>
-          <Modal className={componentIconStyle} />
-          {/* <IconComp icon={component.icon} /> */}
-          {componentName}
-        </>
-      ) : (
-        <span>{`${i18nValues.pageEditor.unknownComponent} "${componentName}"`}</span>
+      {component.componentType === componentType && (
+        <div ref={drag} className={componentStyle} title={componentName}>
+          {component ? (
+            <>
+              {component.illustration ? (
+                <ComponentIcon componentIllu={component.illustration} />
+              ) : (
+                <IconComp icon={component.icon} />
+              )}
+              <p className={ComponentTextStyle}>{componentName}</p>
+            </>
+          ) : (
+            <span>{`${i18nValues.pageEditor.unknownComponent} "${componentName}"`}</span>
+          )}
+        </div>
       )}
-    </div>
-    }
     </>
   );
 }
@@ -323,7 +282,15 @@ export function ComponentPalette({
           </Button>
         </div>
       )}
-      <div className={cx(flex, flexColumn, grow, paletteStyle(editMode), defaultMargin)}>
+      <div
+        className={cx(
+          flex,
+          flexColumn,
+          grow,
+          paletteStyle(editMode),
+          defaultMargin,
+        )}
+      >
         <div className={cx(flex, flexColumn, expandWidth)}>
           {componentTypes.map(t => (
             <ComponentTypeElement
@@ -334,7 +301,7 @@ export function ComponentPalette({
                 setCurrentType(o => (o === type ? undefined : type))
               }
               enabled={editMode}
-              componentNames = {componentNames}
+              componentNames={componentNames}
             />
           ))}
         </div>

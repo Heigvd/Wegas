@@ -67,6 +67,7 @@ registerComponent(
     componentType: 'Advanced',
     name: 'Variable tree',
     icon: 'atom',
+    illustration: 'variableTree',
     schema: {
       list: schemaProps.scriptVariable({
         label: 'Root dir',

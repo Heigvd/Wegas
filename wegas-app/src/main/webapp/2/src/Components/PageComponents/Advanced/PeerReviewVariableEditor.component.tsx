@@ -273,6 +273,7 @@ registerComponent(
     componentType: 'Advanced',
     name: 'Peer Review variable editor',
     icon: 'pen-alt',
+    illustration: 'PRVariableEditor',
     schema: {
       peerReview: schemaProps.scriptVariable({
         label: 'Peer review',

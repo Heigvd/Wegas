@@ -39,6 +39,7 @@ registerComponent(
     componentType: 'Advanced',
     name: 'Dialogue',
     icon: 'comments',
+    illustration: 'dialogue',
     schema: {
       dialogue: schemaProps.scriptVariable({
         label: 'Dialogue',

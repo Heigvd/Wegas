@@ -42,6 +42,7 @@ registerComponent(
     componentType: 'Advanced',
     name: 'Inbox',
     icon: 'envelope',
+    illustration: 'inbox',
     schema: {
       inbox: schemaProps.scriptVariable({
         label: 'Mailbox',

@@ -67,6 +67,7 @@ registerComponent(
     componentType: 'Advanced',
     name: 'File browser',
     icon: 'atom',
+    illustration: 'fileBrowser',
     schema: {
       list: schemaProps.scriptVariable({
         label: 'Root dir',

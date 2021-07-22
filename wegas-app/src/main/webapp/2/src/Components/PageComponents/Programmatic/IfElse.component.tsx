@@ -188,6 +188,7 @@ registerComponent(
     },
     name: 'If Else',
     icon: 'code',
+    illustration: 'ifElse',
     schema: {
       ifCondition: schemaProps.script({ label: 'If condition', mode: 'GET' }),
     },

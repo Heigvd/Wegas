@@ -172,6 +172,7 @@ const test = pageComponentFactory({
   },
   name: CONTENT_TYPE,
   icon: 'columns',
+  illustration: 'linearLayout',
   schema: {
     vertical: schemaProps.boolean({ label: 'Vertical' }),
     noPlayerResize: schemaProps.boolean({ label: 'No player resize' }),

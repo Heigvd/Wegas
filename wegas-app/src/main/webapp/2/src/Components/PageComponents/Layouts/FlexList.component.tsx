@@ -155,6 +155,7 @@ registerComponent(
     },
     name: 'FlexList',
     icon: 'bars',
+    illustration: 'flexList',
     schema: { ...flexListSchema, ...classStyleIdShema },
     getComputedPropsFromVariable: () => ({ children: [] }),
   }),

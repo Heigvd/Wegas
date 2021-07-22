@@ -104,6 +104,7 @@ registerComponent(
     manageOnClick: true,
     name: 'Button',
     icon: 'hand-pointer',
+    illustration: 'button',
     schema: buttonSchema,
   }),
 );
