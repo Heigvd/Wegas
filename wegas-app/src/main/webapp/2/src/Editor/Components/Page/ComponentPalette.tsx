@@ -12,6 +12,7 @@ import {
   textCenter,
   defaultMargin,
   flexBetween,
+  defaultMarginTop,
 } from '../../../css/classes';
 import {
   usePageComponentStore,
@@ -36,7 +37,7 @@ import { ComponentIcon, ComponentTypeIcon } from './ComponentIcon';
 const headerStyle = css({
   padding: '20px',
   width: 'auto',
-  backgroundColor: themeVar.colors.HeaderColor,
+  borderBottom: '2px solid ' + themeVar.colors.WarningColor,
   color: themeVar.colors.WarningColor,
 });
 
@@ -277,7 +278,7 @@ export function ComponentPalette({
           <p className={textCenter}>
             {i18nValues.pageEditor.editorMustEnabled}
           </p>
-          <Button onClick={() => setEditMode(true)}>
+          <Button onClick={() => setEditMode(true)} className={defaultMarginTop}>
             {i18nValues.pageEditor.enableEditMode}
           </Button>
         </div>

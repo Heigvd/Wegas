@@ -19,6 +19,8 @@ import {
   fixedCellStyle,
   OverviewCell,
 } from './OverviewCell';
+import EyeIcon from '../../pictures/icon_eye.svg';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 
 interface OverviewRowProps {
   team: STeam;
@@ -93,11 +95,12 @@ export function OverviewRow({
         </td>
         <td>
           <div className={cx(flex, itemCenter, justifyCenter)}>
-            <Button
-              src={require('../../pictures/icon_eye.svg').default}
-              tooltip="View playing session"
-              onClick={() => onClick('Watch team')}
-            />
+            <div
+              className={css({'&:hover svg': {fill: themeVar.colors.ActiveColor}})}
+              title="View playing session"
+              onClick={() => onClick('Watch team')}>
+                <EyeIcon className={css({fill: themeVar.colors.PrimaryColor})}/>
+            </div>
           </div>
         </td>
       </tr>

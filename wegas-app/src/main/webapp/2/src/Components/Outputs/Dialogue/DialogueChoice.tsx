@@ -4,27 +4,28 @@ import { Button } from '../../Inputs/Buttons/Button';
 import { TranslatableText } from '../HTMLText';
 import { expandWidth, flexRow, stretch } from '../../../css/classes';
 import { themeVar } from '../../Theme/ThemeVars';
+import ChatIcon from '../../../pictures/chat_button.svg';
 
 const choiceButtonStyle = css({
   backgroundColor: 'white',
-  color: 'black',
+  color: themeVar.colors.DarkTextColor,
   padding: 0,
   overflow: 'hidden',
   margin: '5px',
+  '&:hover': {
+    color: themeVar.colors.LightTextColor,
+  }
 });
 
 const choiceButtonText = css({
   padding: '5px',
   textAlign: 'left',
   flex: '1 1 auto',
-  '&:hover': {
-    color: themeVar.colors.LightTextColor,
-  }
 });
 
 const choiceButtonIcon = css({
   display: 'flex',
-  alignContent: 'center',
+  alignItems: 'center',
   justifyContent: 'center',
   backgroundColor: themeVar.colors.ActiveColor,
   padding: '10px',
@@ -51,7 +52,7 @@ export function DialogueChoice({
 
       <TranslatableText className={choiceButtonText} content={label} />
       <div className={choiceButtonIcon}>
-        <img src={require('../../../pictures/chat_button.svg').default} />
+        <ChatIcon />
       </div>
     </Button>
   );
