@@ -83,11 +83,10 @@ const subMenuItemContainer = (isSelected: boolean) =>
       padding: '3px 10px',
       width: '100%',
       userSelect: 'none',
-      backgroundColor: isSelected ? themeVar.colors.ActiveColor : undefined,
-      color: isSelected ? themeVar.colors.LightTextColor : undefined,
+      backgroundColor: isSelected ? themeVar.colors.HeaderColor : undefined,
       ':hover': {
-        backgroundColor: themeVar.colors.ActiveColor,
-        color: themeVar.colors.LightTextColor,
+        backgroundColor: themeVar.colors.HeaderColor,
+        color: themeVar.colors.DarkTextColor,
       },
     }),
   );

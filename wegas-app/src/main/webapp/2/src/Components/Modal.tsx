@@ -9,6 +9,7 @@ import {
   flexColumn,
   flexRow,
   justifyCenter,
+  layoutStyle,
   pointer,
 } from '../css/classes';
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
@@ -206,7 +207,7 @@ export function OkCancelModal({
 
   return (
     <Modal attachedToId={attachedToId}>
-      <div className={cx(flex, flexColumn)}>
+      <div className={cx(flex, flexColumn, layoutStyle)}>
         {children}
         <div className={cx(flex, flexRow, justifyCenter, defaultMarginTop)}>
           <Button

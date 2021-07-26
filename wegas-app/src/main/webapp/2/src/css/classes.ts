@@ -224,7 +224,7 @@ export const searchSelection = css({
 export const layoutStyle = css({
   color: themeVar.colors.DarkTextColor,
   backgroundColor: themeVar.colors.BackgroundColor,
-  fontFamily: themeVar.others.TextFont1,
+  fontFamily: themeVar.others.TextFont2,
 });
 export const headerStyle = css({
   backgroundColor: themeVar.colors.SecondaryBackgroundColor,

@@ -39,6 +39,9 @@ import { themeVar } from '../../Components/Theme/ThemeVars';
 const transparentDropDownButton = css({
   backgroundColor: 'transparent',
   color: 'inherit',
+  '&:hover': {
+    backgroundColor: 'transparent',
+  }
 });
 
 const reduceButtonStyle = css({

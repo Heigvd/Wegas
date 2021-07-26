@@ -14,6 +14,7 @@ import { ActionsProps } from '../../data/Reducer/globalState';
 import { IconComp } from './Views/FontAwesome';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 
 const closeButtonStyle = css({
 color: "black",
@@ -24,7 +25,7 @@ const toolboxContainerStyle= css({
   top: 0,
   zIndex: 10,
   padding: '1em 0',
-  backgroundColor: 'white',
+  backgroundColor: themeVar.colors.BackgroundColor,
 });
 const toolboxButtonStyle = css({
 margin: '0 5px',

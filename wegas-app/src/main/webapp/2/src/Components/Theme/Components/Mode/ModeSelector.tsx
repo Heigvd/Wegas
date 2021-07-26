@@ -12,7 +12,6 @@ import {
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { Button } from '../../../Inputs/Buttons/Button';
-import { ConfirmButton } from '../../../Inputs/Buttons/ConfirmButton';
 import { themeVar } from '../../ThemeVars';
 import { AdderSelector } from '../AdderSelector';
 
@@ -42,19 +41,17 @@ export function ModeSelector() {
           <div className={cx(flex, flexRow, grow)}>
             <div className={grow}>{k}</div>
             {k !== currentTheme.baseMode && (
-              <ConfirmButton
-                icon={{
-                  icon: 'trash',
-                }}
-                tooltip={i18nValues.themeEditor.deleteMode}
-                onAction={sucess => {
-                  if (sucess) {
-                    dispatch(deleteMode(k));
-                  }
-                }}
-                modalDisplay
-                modalMessage={i18nValues.themeEditor.deleteMode + "?"}
-              />
+              <Button
+              icon={{
+                icon: 'trash',
+              }}
+              tooltip={i18nValues.themeEditor.deleteMode}
+              onClick={sucess => {
+                if (sucess) {
+                  dispatch(deleteMode(k));
+                }
+              }}
+            />
             )}
             <Button
               icon={{
