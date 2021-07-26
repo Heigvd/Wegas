@@ -33,7 +33,7 @@ const confirmButtonsContainerStyle = css({
 interface ConfirmButtonProps extends ButtonProps {
   onAction?: (
     success: boolean,
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    event?: React.MouseEvent<HTMLElement, MouseEvent>,
   ) => void;
   onBlur?: () => void;
   defaultConfirm?: boolean;
@@ -84,7 +84,7 @@ export function ConfirmButton({
   });
 
   const onClickVerify = React.useCallback(
-    (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
       event.stopPropagation();
       onClick && onClick(event);
       setConfirmation(true);
@@ -93,13 +93,12 @@ export function ConfirmButton({
   );
 
   const onConfirm = React.useCallback(
-    (accept: boolean) =>
-      (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        event.stopPropagation();
-        onClick && onClick(event);
-        onAction && onAction(accept, event);
-        setConfirmation(defaultConfirm);
-      },
+    (accept: boolean) => (event?: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      event?.stopPropagation();
+      event && onClick && onClick(event);
+      onAction && onAction(accept, event);
+      setConfirmation(defaultConfirm);
+    },
     [defaultConfirm, onAction, onClick],
   );
 
@@ -139,8 +138,9 @@ export function ConfirmButton({
       {confirmation &&
         (modalDisplay ? (
           <OkCancelModal
-            onOk={(e) => onConfirm(true)(e)}
-            onCancel={onConfirm(false)}
+            onOk={e => onConfirm(true)(e)}
+            onCancel={e => onConfirm(false)(e)}
+            unattached={true}
           >
             {modalMessage}
           </OkCancelModal>
