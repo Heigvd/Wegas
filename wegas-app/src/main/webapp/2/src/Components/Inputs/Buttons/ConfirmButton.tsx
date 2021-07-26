@@ -9,7 +9,6 @@ import { themeVar } from '../../Theme/ThemeVars';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { OkCancelModal } from '../../Modal';
-
 const confirmButtonsContainerStyle = css({
   display: 'flex',
   backgroundColor: themeVar.colors.BackgroundColor,
@@ -140,8 +139,8 @@ export function ConfirmButton({
       {confirmation &&
         (modalDisplay ? (
           <OkCancelModal
-            onOk={() => onConfirm(true)}
-            onCancel={() => onConfirm(false)}
+            onOk={(e) => onConfirm(true)(e)}
+            onCancel={onConfirm(false)}
           >
             {modalMessage}
           </OkCancelModal>

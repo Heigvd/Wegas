@@ -11,6 +11,7 @@ import {
   itemCenter,
   justifyCenter,
   justifyEnd,
+  layoutStyle,
 } from '../../../css/classes';
 import { useThemeStore } from '../../../data/Stores/themeStore';
 import FileBrowser from '../../../Editor/Components/FileBrowser/FileBrowser';
@@ -113,11 +114,11 @@ export default function Preview() {
           onSelect={() => {}}
         />
       </Toolbar.Header>
-      <Toolbar.Content className={cx(flex, flexColumn)}>
+      <Toolbar.Content className={cx(flex, flexColumn, previewClassName)}>
         <div className={previewPageHeaderStyle}>
           <h2>{i18nValues.themeEditor.previewPage}</h2>
         </div>
-        <div className={cx(previewPageStyle, expandBoth)}>
+        <div className={cx(previewPageStyle, expandBoth, layoutStyle)}>
           <ReflexContainer orientation="vertical" className={previewClassName}>
             <ReflexElement>
               <ReflexContainer orientation="horizontal">
@@ -127,6 +128,7 @@ export default function Preview() {
                     min={MIN_VALUE}
                     max={MAX_VALUE}
                     disabled={disabled}
+                    className={css({height: '100%'})}
                   />
                 </ReflexElement>
                 <ReflexSplitter />

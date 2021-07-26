@@ -25,10 +25,6 @@ export const contentContainerStyle = css({
   zIndex: 10000,
   whiteSpace: 'nowrap',
   boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.1)',
-  '> div': {
-    width: '100%',
-    padding: '0px 10px'
-  },
   [`& .${containerStyle}`]: {
     width: '100%',
   },

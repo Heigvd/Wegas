@@ -78,6 +78,8 @@ const subMenuItemContainer = (isSelected: boolean) =>
     itemCenter,
     css({
       cursor: 'pointer',
+      padding: '3px 10px',
+      width: '100%',
       userSelect: 'none',
       backgroundColor: isSelected ? themeVar.colors.ActiveColor : undefined,
       color: isSelected ? themeVar.colors.LightTextColor : undefined,
@@ -156,7 +158,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                 ev.stopPropagation();
                 toggleMenu();
               }}
-              className={buttonClassName}
+              className={buttonClassName + " dropDownButton"}
               noBackground={noBackground}
             />
           </div>
@@ -167,7 +169,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                 contentContainerStyle + classNameOrEmpty(listClassName)
               }
               ref={n => {
-                justifyDropMenu(n, n?.parentElement, direction);
+                justifyDropMenu(n, n?.parentElement?.querySelector(".dropDownButton"), direction);
               }}
             >
               {adder && (

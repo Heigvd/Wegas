@@ -196,6 +196,7 @@ export function TreeView({
                   fontSize: '14px',
                   lineHeight: '100%',
                   justifyContent: 'flex-end',
+                  marginLeft: '5px',
                 })}
                 label={i18nValues.deepSearch}
                 value={deep}

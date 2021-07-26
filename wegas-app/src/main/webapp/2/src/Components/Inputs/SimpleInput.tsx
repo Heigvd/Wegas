@@ -19,6 +19,7 @@ export const inputStyleCSS: ObjectInterpolation<undefined> = {
   borderRadius: themeVar.dimensions.BorderRadius,
   backgroundColor: themeVar.colors.BackgroundColor,
   fontFamily: themeVar.others.TextFont2,
+  color: themeVar.colors.DarkTextColor,
   outline: 'none',
   '::placeholder': {
     opacity: '0.5',

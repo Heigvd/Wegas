@@ -38,6 +38,7 @@ const layout = css({
   backgroundColor: themeVar.colors.SecondaryBackgroundColor,
   padding: '0 2em 1em 2em',
   fontFamily: themeVar.others.TextFont2,
+  color: themeVar.colors.DarkTextColor,
 });
 
 export const availableLayoutTabs = {

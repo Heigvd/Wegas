@@ -188,8 +188,8 @@ export function Modal({
 }
 
 interface OkCancelModalProps {
-  onOk?: () => void;
-  onCancel?: () => void;
+  onOk?:  (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onCancel?:  (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   /**
    * attachedTo - the ID of the element to insert the modal (will cover the whole element). By default, gets the last themeCTX provider
    */
@@ -239,13 +239,13 @@ export function useOkCancelModal(attachedToId?: string) {
       return show ? (
         <OkCancelModal
           attachedToId={attachedToId}
-          onCancel={() => {
+          onCancel={(e) => {
             setShow(false);
-            onCancel && onCancel();
+            onCancel && onCancel(e);
           }}
-          onOk={() => {
+          onOk={(e) => {
             setShow(false);
-            onOk && onOk();
+            onOk && onOk(e);
           }}
         >
           {children}
