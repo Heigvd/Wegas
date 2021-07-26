@@ -14,11 +14,18 @@ import {
 import { wlog, wwarn } from '../../../Helper/wegaslog';
 
 import 'react-reflex/styles.css';
-import { flex, noOverflow, grow, expandHeight, MediumPadding } from '../../../css/classes';
+import {
+  flex,
+  noOverflow,
+  grow,
+  expandHeight,
+  MediumPadding,
+} from '../../../css/classes';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { TabComponent } from './DnDTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
+import { roleCTX, UserRole } from '../../../Components/Contexts/RoleProvider';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
@@ -539,7 +546,7 @@ type TabLayoutsAction<T extends ComponentMap> =
  * setLayout is the reducer function for layout disposition management
  */
 const setLayout =
-  (layoutAccept: string) =>
+  (layoutAccept: string, role: UserRole) =>
   <T extends ManagedLayoutMap>(
     layouts: T,
     action: TabLayoutsAction<T['layoutMap']>,
@@ -746,7 +753,7 @@ const setLayout =
       }
       // Saving layout in local storage
       window.localStorage.setItem(
-        `DnDGridLayoutData.${layoutAccept}`,
+        `DnDGridLayoutData.${layoutAccept}.${role}`,
         JSON.stringify(newLayouts),
       );
       return newLayouts;
@@ -773,6 +780,7 @@ const reduceChildren = <T extends ComponentMap>(
     ? layoutMap
     : // Deepcopy
       JSON.parse(JSON.stringify(defaultLayout));
+  // debugger;
   const key = newLayoutMap.lastKey;
   if (children && children.length > 0) {
     if (typeof children[0] === 'string') {
@@ -791,14 +799,6 @@ const reduceChildren = <T extends ComponentMap>(
   }
   return newLayoutMap;
 };
-
-// const layoutTabMissing = (layout: LayoutMap | null, tabs: ComponentMap) =>
-//   !layout ||
-//   Object.values(layout).some(
-//     item =>
-//       item.type === 'TabLayoutNode' &&
-//       item.children.some(c => !Object.keys(tabs).includes(c)),
-//   );
 
 // eslint-disable-next-line
 interface LayoutItem<T extends ComponentMap>
@@ -849,20 +849,41 @@ export function MainLinearLayout<T extends ComponentMap>({
   classNames = {},
   areChildren,
 }: LinearLayoutProps<T>) {
-  // const tabs = React.useRef<ComponentMap>(tabs ? tabs : {});
+  const { currentRole } = React.useContext(roleCTX);
   const i18nValues = useInternalTranslate(commonTranslations);
-  const savedLayoutJSON = window.localStorage.getItem(
-    `DnDGridLayoutData.${layoutId}`,
+
+  const savedScenaristLayoutJSON = window.localStorage.getItem(
+    `DnDGridLayoutData.${layoutId}.SCENARIO_EDITOR`,
   );
-  const savedLayout = savedLayoutJSON
-    ? (JSON.parse(savedLayoutJSON) as ManagedLayoutMap)
+  const savedScenaristLayout = savedScenaristLayoutJSON
+    ? (JSON.parse(savedScenaristLayoutJSON) as ManagedLayoutMap)
     : null;
-  const [layout, dispatchLayout] = React.useReducer(
-    setLayout(layoutId),
-    savedLayout /*&& !layoutTabMissing(savedLayout.layoutMap, tabs)*/
-      ? savedLayout
+  const [scenaristLayout, dispatchScenaristLayout] = React.useReducer(
+    setLayout(layoutId, 'SCENARIO_EDITOR'),
+    savedScenaristLayout /*&& !layoutTabMissing(savedLayout.layoutMap, tabs)*/
+      ? savedScenaristLayout
       : reduceChildren(initialLayout),
   );
+
+  const savedContentLayoutJSON = window.localStorage.getItem(
+    `DnDGridLayoutData.${layoutId}.CONTENT_EDITOR}`,
+  );
+  const savedContentLayout = savedContentLayoutJSON
+    ? (JSON.parse(savedContentLayoutJSON) as ManagedLayoutMap)
+    : null;
+  const [contentLayout, dispatchContentLayout] = React.useReducer(
+    setLayout(layoutId, 'CONTENT_EDITOR'),
+    savedContentLayout /*&& !layoutTabMissing(savedLayout.layoutMap, tabs)*/
+      ? savedContentLayout
+      : reduceChildren(initialLayout),
+  );
+
+  const layout =
+    currentRole === 'CONTENT_EDITOR' ? contentLayout : scenaristLayout;
+  const dispatchLayout =
+    currentRole === 'CONTENT_EDITOR'
+      ? dispatchContentLayout
+      : dispatchScenaristLayout;
 
   const onDrop =
     (layoutKey: string) =>
@@ -905,9 +926,12 @@ export function MainLinearLayout<T extends ComponentMap>({
       tabKey: tabKey,
     });
 
-  const focusTab = React.useCallback((tabId: string) => {
-    dispatchLayout({ type: 'EXTERNALSELECT', tabKey: tabId });
-  }, []);
+  const focusTab = React.useCallback(
+    (tabId: string) => {
+      dispatchLayout({ type: 'EXTERNALSELECT', tabKey: tabId });
+    },
+    [dispatchLayout],
+  );
 
   tabLayouts[layoutId] = focusTab;
 

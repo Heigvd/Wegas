@@ -56,11 +56,14 @@ export const FeaturesProvider = React.memo(FeaturesContext);
 /**
  * Features selector allows to select features inside the feature context given by the FeatureProvider
  */
-export function FeatureToggler({ className, style }: ClassStyleId) {
+export function FeatureToggler({
+  buttonClassName,
+  className,
+  style,
+}: ClassStyleId & { buttonClassName?: string }) {
   const i18nValues = useInternalTranslate(commonTranslations);
-  const { currentFeatures, setFeature, removeFeature } = React.useContext(
-    featuresCTX,
-  );
+  const { currentFeatures, setFeature, removeFeature } =
+    React.useContext(featuresCTX);
 
   const selectFeature = React.useCallback(
     (feature: FeatureLevel) => {
@@ -90,13 +93,22 @@ export function FeatureToggler({ className, style }: ClassStyleId) {
               {feature}
             </>
           ),
+          noCloseMenu: true,
         }))}
+        containerClassName={className}
         onSelect={({ value: feature }) => selectFeature(feature)}
-        buttonClassName={className}
+        buttonClassName={buttonClassName}
         style={style}
-        direction= "right"
+        direction="right"
       />
     ),
-    [i18nValues.features, className, style, currentFeatures, selectFeature],
+    [
+      i18nValues.features,
+      className,
+      buttonClassName,
+      style,
+      currentFeatures,
+      selectFeature,
+    ],
   );
 }

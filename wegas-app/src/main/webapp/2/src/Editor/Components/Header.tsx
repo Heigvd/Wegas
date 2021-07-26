@@ -20,6 +20,7 @@ import {
   flexBetween,
   itemsTop,
   defaultMarginLeft,
+  expandWidth,
 } from '../../css/classes';
 import { mainLayoutId } from './Layout';
 import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
@@ -32,6 +33,7 @@ import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
 import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
+import { RoleSelector } from '../../Components/Contexts/RoleProvider';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 
 const transparentDropDownButton = css({
@@ -44,7 +46,7 @@ const reduceButtonStyle = css({
     justifyContent: 'center',
     borderRadius: 0,
     color: themeVar.colors.DisabledColor,
-  }
+  },
 });
 
 const hideHeaderStyle = css({
@@ -144,119 +146,132 @@ export default function Header() {
   const dispatch = store.dispatch;
   return (
     <>
-    <Button
-    className={cx(reduceButtonStyle, {
-      [css({borderBottom: '1px solid ' + themeVar.colors.DisabledColor})]:showHeader
-    })}
-    noBackground={false}
-    icon={showHeader ? 'chevron-up' : 'chevron-down'}
-    tooltip={showHeader ?"Hide header" : "Show header"}
-    onClick={() => setShowHeader(showHeader => !showHeader)}>
-     </Button>
-    <div
-      className={cx(
-        flex,
-        itemsTop,
-        flexBetween,
-        foregroundContent,
-        showHeaderStyle,
-        {
-          [hideHeaderStyle]:!showHeader
-        }
-      )}
-    >
-      <div className={cx(flex, itemCenter)}>
-        <FontAwesome icon="user" />
-        <span className={componentMarginLeft}>{user.name}</span>
+      <Button
+        className={cx(reduceButtonStyle, {
+          [css({ borderBottom: '1px solid ' + themeVar.colors.DisabledColor })]:
+            showHeader,
+        })}
+        noBackground={false}
+        icon={showHeader ? 'chevron-up' : 'chevron-down'}
+        tooltip={showHeader ? 'Hide header' : 'Show header'}
+        onClick={() => setShowHeader(showHeader => !showHeader)}
+      ></Button>
+      <div
+        className={cx(
+          flex,
+          itemsTop,
+          flexBetween,
+          foregroundContent,
+          showHeaderStyle,
+          {
+            [hideHeaderStyle]: !showHeader,
+          },
+        )}
+      >
+        <div className={cx(flex, itemCenter)}>
+          <FontAwesome icon="user" />
+          <span className={componentMarginLeft}>{user.name}</span>
+          <DropMenu
+            label={<IconComp icon="cog" />}
+            items={[
+              {
+                label: (
+                  <RoleSelector
+                    buttonClassName={transparentDropDownButton}
+                    className={expandWidth}
+                  />
+                ),
+              },
+              {
+                label: (
+                  <FeatureToggler
+                    buttonClassName={transparentDropDownButton}
+                    className={expandWidth}
+                  />
+                ),
+              },
+              {
+                label: (
+                  <DropMenu
+                    label={i18nValues.language + ': ' + userLanguage}
+                    items={Object.entries(editorLanguages).map(
+                      ([key, value]) => ({
+                        label: key + ': ' + value,
+                        id: key,
+                      }),
+                    )}
+                    onSelect={item => {
+                      dispatch(
+                        Actions.EditorActions.setLanguage(
+                          item.id as EditorLanguagesCode,
+                        ),
+                      );
+                    }}
+                    direction="right"
+                    buttonClassName={transparentDropDownButton}
+                    style={{ width: '100%' }}
+                  />
+                ),
+              },
+              {
+                label: (
+                  <div
+                    onClick={() => {
+                      window.localStorage.removeItem(
+                        'DnDGridLayoutData.' + mainLayoutId,
+                      );
+                      window.location.reload();
+                    }}
+                    className={css({ padding: '5px 10px' })}
+                  >
+                    <IconComp icon="undo" /> {i18nValues.header.resetLayout}
+                  </div>
+                ),
+              },
+            ]}
+            buttonClassName={cx(defaultMarginLeft, css({ padding: '5px 5px' }))}
+          />
+        </div>
+        <h1 className={css({ margin: 0 })}>{gameModel.name}</h1>
+
         <DropMenu
-          label={<IconComp icon="cog" />}
+          label={<IconComp icon="gamepad" />}
           items={[
             {
-              label: <FeatureToggler className={transparentDropDownButton} />,
-              value: 'selectFeatures',
-            },
-            {
               label: (
-                <DropMenu
-                  label={i18nValues.language + ': ' + userLanguage}
-                  items={Object.entries(editorLanguages).map(
-                    ([key, value]) => ({
-                      label: key + ': ' + value,
-                      id: key,
-                    }),
-                  )}
-                  onSelect={item => {
-                    dispatch(
-                      Actions.EditorActions.setLanguage(
-                        item.id as EditorLanguagesCode,
-                      ),
-                    );
-                  }}
-                  direction="right"
+                <LangToggler
+                  label={i18nValues.language}
+                  className={expandWidth}
                   buttonClassName={transparentDropDownButton}
+                  direction="right"
                 />
               ),
-              value: 'selectUserLanguage',
+              value: 'selectGameLanguage',
             },
             {
               label: (
-                <div
-                  onClick={() => {
-                    window.localStorage.removeItem(
-                      'DnDGridLayoutData.' + mainLayoutId,
-                    );
-                    window.location.reload();
+                <ConfirmButton
+                  label={i18nValues.restart}
+                  icon="fast-backward"
+                  onAction={success => {
+                    if (success) {
+                      dispatch(Actions.VariableDescriptorActions.reset());
+                      dispatch(Actions.EditorActions.resetPageLoader());
+                    }
                   }}
-                  className={css({padding: '5px 10px'})}
-                >
-                  <IconComp icon="undo" /> {i18nValues.header.resetLayout}
-                </div>
+                  buttonClassName={transparentDropDownButton}
+                  modalDisplay
+                  modalMessage={i18nValues.header.restartGame + '?'}
+                />
               ),
-              value: 'resetLayout',
+              value: 'restartGame',
             },
           ]}
-          buttonClassName={cx(defaultMarginLeft, css({ padding: '5px 5px' }))}
         />
+        {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
+          <NotificationMenu className={componentMarginRight} />
+        )}
       </div>
-      <h1 className={css({ margin: 0 })}>{gameModel.name}</h1>
-
-      <DropMenu
-        label={<IconComp icon="gamepad" />}
-        items={[
-          {
-            label: (
-              <LangToggler
-                label={i18nValues.language}
-                className={transparentDropDownButton}
-                direction="right"
-              />
-            ),
-            value: 'selectGameLanguage',
-          },
-          {
-            label: (
-              <ConfirmButton
-                label={i18nValues.restart}
-                icon="fast-backward"
-                onAction={success => {
-                  if (success) {
-                    dispatch(Actions.VariableDescriptorActions.reset());
-                    dispatch(Actions.EditorActions.resetPageLoader());
-                  }
-                }}
-                buttonClassName={transparentDropDownButton}
-                modalDisplay
-                modalMessage= {i18nValues.header.restartGame + "?"}
-              />
-            ),
-            value: 'restartGame',
-          },
-        ]}
-      />
-      {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
-        <NotificationMenu className={componentMarginRight} />
-      )}
-    </div>
     </>
   );
 }

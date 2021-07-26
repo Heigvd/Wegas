@@ -1,4 +1,5 @@
-type IAbstractContentDescriptor = import('wegas-ts-api').IAbstractContentDescriptor;
+type IAbstractContentDescriptor =
+  import('wegas-ts-api').IAbstractContentDescriptor;
 
 type TYPESTRING = 'string' | 'number' | 'boolean' | 'object' | 'array' | 'null';
 
@@ -50,6 +51,7 @@ type HashListItem = HashListValue | HashListProp;
 
 interface DropMenuItem<T> extends Item<T> {
   disabled?: true;
+  noCloseMenu?: boolean;
   items?: DropMenuItem<T>[];
 }
 

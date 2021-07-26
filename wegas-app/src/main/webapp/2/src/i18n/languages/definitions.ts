@@ -6,4 +6,6 @@ export interface LanguagesTranslations {
   outdatedTranslations: string;
   allTranslations: string;
   copyTranslations: string;
+  CONTENT_EDITOR: string;
+  SCENARIO_EDITOR: string;
 }

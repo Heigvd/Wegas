@@ -12,4 +12,6 @@ export const languagesTranslationsIT: LanguagesTranslations = {
   outdatedTranslations: 'Traduzioni obsolete',
   allTranslations: 'Tutte le traduzioni',
   copyTranslations: 'Copiare le traduzioni',
+  CONTENT_EDITOR: 'Editore di contenuti',
+  SCENARIO_EDITOR: 'Editore di scenario',
 };
