@@ -9,13 +9,19 @@ import {
   setEditedMode,
   deleteMode,
 } from '../../../../data/Stores/themeStore';
+import { classNameOrEmpty } from '../../../../Helper/className';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { Button } from '../../../Inputs/Buttons/Button';
 import { themeVar } from '../../ThemeVars';
 import { AdderSelector } from '../AdderSelector';
 
-export function ModeSelector() {
+interface ModeSelectorProps {
+  dropMenuClassName?: string;
+  addButtonClassName?: string;
+}
+
+export function ModeSelector({dropMenuClassName, addButtonClassName}: ModeSelectorProps) {
   const { themes, editedThemeName, editedModeName } = useThemeStore(s => s);
   const dispatch = getThemeDispatch();
 
@@ -79,6 +85,8 @@ export function ModeSelector() {
       }}
       onAccept={value => dispatch(addNewMode(value))}
       onError={onError}
+      dropMenuClassName={classNameOrEmpty(dropMenuClassName)}
+      addButtonClassName={classNameOrEmpty(addButtonClassName)}
     />
   );
 }

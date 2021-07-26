@@ -24,27 +24,18 @@ import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
+const addIconStyle = css({
+color: themeVar.colors.LightTextColor,
+'&:hover': {
+  color: themeVar.colors.PrimaryColor,
+}
+});
 
 const themeEditorHeaderStyle = css({
   backgroundColor: themeVar.colors.ActiveColor,
   button: {
     fontSize: '13px',
-  },
-  ['button:not(.iconOnly)']: {
-    ...outlineButtonStyle,
-    marginLeft: '15px',
-  },
-  ['button.noOutline, .confirmBtn button:not(.dark)']: {
-    backgroundColor: themeVar.colors.PrimaryColor,
-    border: 'none',
-    marginLeft: '5px',
-  },
-  ['button.iconOnly']: {
-    color: themeVar.colors.HeaderColor,
-    ['&:hover']: {
-      color: themeVar.colors.PrimaryColor + '!important',
-    },
-  },
+  }
 });
 
 export default function ThemeEditor() {
@@ -62,8 +53,8 @@ export default function ThemeEditor() {
           themeEditorHeaderStyle,
         )}
       >
-        <ThemeSelector />
-        <ModeSelector />
+        <ThemeSelector dropMenuClassName={css({...outlineButtonStyle})} addButtonClassName={addIconStyle}/>
+        <ModeSelector dropMenuClassName={css({...outlineButtonStyle})} addButtonClassName={addIconStyle}/>
         <DropMenu
           label={i18nValues.themeEditor.contexts}
           items={Object.keys(selectedThemes).map(
@@ -90,6 +81,7 @@ export default function ThemeEditor() {
             }),
           )}
           onSelect={() => {}}
+          buttonClassName={css({...outlineButtonStyle})}
         />
       </Toolbar.Header>
       <Toolbar.Content>

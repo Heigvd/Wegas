@@ -9,6 +9,51 @@ export const iconButtonStyle = css({
   alignItems: 'center',
   color: themeVar.colors.PrimaryColor,
   backgroundColor: 'transparent',
+  borderStyle: 'none',
+  paddingLeft: '5px',
+  paddingRight: '5px',
+  paddingTop: '5px',
+  paddingBottom: '5px',
+  cursor: 'pointer',
+  fontFamily: themeVar.others.TextFont2,
+  borderRadius: themeVar.dimensions.BorderRadius,
+  ['&:hover']: {
+    color: themeVar.colors.ActiveColor,
+  },
+  ['&:focus']: {
+    outline: 'none',
+  },
+  ['&.readOnly']: {
+    cursor: 'initial',
+    '&:hover': {
+      color: 'inherit',
+    }
+  },
+  ['&.disabled']: {
+    cursor: 'initial',
+    color: themeVar.colors.DisabledColor,
+    '&:hover': {
+      color: themeVar.colors.DisabledColor,
+    }
+  },
+  ['&.noClick']: {
+    cursor: 'inherit',
+  },
+  ['&.success']: {
+    ['&.iconOnly']: {
+      color: themeVar.colors.SuccessColor,
+    },
+  },
+  ['&.warning']: {
+    ['&.iconOnly']: {
+      color: themeVar.colors.WarningColor,
+    },
+  },
+  ['&.error']: {
+    ['&.iconOnly']: {
+      color: themeVar.colors.ErrorColor,
+    },
+  },
   ['&.dark']: {
     backgroundColor: themeVar.colors.LightTextColor,
     color: themeVar.colors.PrimaryColor,
@@ -31,45 +76,6 @@ export const iconButtonStyle = css({
     },
     ['&.shadow']: {
       boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.15)',
-    },
-  },
-  borderStyle: 'none',
-  paddingLeft: '5px',
-  paddingRight: '5px',
-  paddingTop: '5px',
-  paddingBottom: '5px',
-  cursor: 'pointer',
-  fontFamily: themeVar.others.TextFont2,
-  borderRadius: themeVar.dimensions.BorderRadius,
-  ['&:not(.disabled):not(.readOnly):hover']: {
-    color: themeVar.colors.ActiveColor,
-  },
-  ['&:focus']: {
-    outline: 'none',
-  },
-  ['&.readOnly']: {
-    cursor: 'initial',
-  },
-  ['&.disabled']: {
-    cursor: 'initial',
-    color: themeVar.colors.DisabledColor,
-  },
-  ['&.noClick']: {
-    cursor: 'inherit',
-  },
-  ['&.success']: {
-    ['&.iconOnly']: {
-      color: themeVar.colors.SuccessColor,
-    },
-  },
-  ['&.warning']: {
-    ['&.iconOnly']: {
-      color: themeVar.colors.WarningColor,
-    },
-  },
-  ['&.error']: {
-    ['&.iconOnly']: {
-      color: themeVar.colors.ErrorColor,
     },
   },
 });

@@ -8,10 +8,12 @@ import {
   defaultMarginLeft,
 } from '../../../css/classes';
 import { MessageString } from '../../../Editor/Components/MessageString';
+import { classNameOrEmpty } from '../../../Helper/className';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { modalTranslations } from '../../../i18n/modal/modal';
 import { DropMenu } from '../../DropMenu';
 import { Button } from '../../Inputs/Buttons/Button';
+import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 
 interface AdderSelectorProps {
@@ -23,6 +25,8 @@ interface AdderSelectorProps {
   onSelect: (value: string) => void;
   onAccept: (value: string) => void;
   onError: (value: string | undefined) => string | void;
+  addButtonClassName?: string;
+  dropMenuClassName?: string;
 }
 
 export function AdderSelector({
@@ -31,6 +35,8 @@ export function AdderSelector({
   placeholder,
   menuLabel,
   tooltip,
+  dropMenuClassName,
+  addButtonClassName,
   onSelect,
   onAccept,
   onError,
@@ -86,11 +92,13 @@ export function AdderSelector({
             selected={selectedItem}
             items={items}
             onSelect={({ value }) => onSelect(value)}
+            buttonClassName={classNameOrEmpty(dropMenuClassName)}
           />
-          <Button
+          <IconButton
             icon="plus"
             tooltip={tooltip}
             onClick={() => setEditing(true)}
+            className={addButtonClassName}
           />
         </>
       )}
