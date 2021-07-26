@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { css } from 'emotion';
 import Header from './Header';
 import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
 import { useStore } from '../../data/Stores/store';
@@ -8,7 +8,6 @@ import { PageLoader } from './Page/PageLoader';
 import { ComponentMap } from './LinearTabLayout/DnDTabLayout';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { State } from '../../data/Reducer/reducers';
-import { XLPadding } from '../../css/classes';
 import { roleCTX } from '../../Components/Contexts/RoleProvider';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
@@ -39,6 +38,8 @@ const layout = css({
   flexDirection: 'column',
   height: '100vh',
   backgroundColor: themeVar.colors.SecondaryBackgroundColor,
+  padding: '0 2em 1em 2em',
+  fontFamily: themeVar.others.TextFont2,
 });
 
 export const availableLayoutTabs = {
@@ -93,14 +94,7 @@ export default function Layout() {
   }
 
   return (
-    <div
-      className={cx(
-        layout,
-        XLPadding,
-        css({ fontFamily: themeVar.others.TextFont2, paddingBottom: '1em' }),
-      )}
-      id="WegasLayout"
-    >
+    <div className={layout} id="WegasLayout">
       <Header />
       <DndLinearLayout
         tabs={layoutPages}
