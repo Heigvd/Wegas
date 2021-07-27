@@ -6,7 +6,7 @@ import {
   shrinkWidth,
   grow,
   flex,
-  itemCenter,
+  itemBottom,
 } from '../../../css/classes';
 import { classOrNothing, classNameOrEmpty } from '../../../Helper/className';
 import { themeVar } from '../../Theme/ThemeVars';
@@ -101,7 +101,7 @@ export function Toggler({
     <div
       id={id}
       className={
-        cx(flex, itemCenter, shrinkWidth) +
+        cx(flex, itemBottom, shrinkWidth) +
         classNameOrEmpty(className)
       }
       style={style}

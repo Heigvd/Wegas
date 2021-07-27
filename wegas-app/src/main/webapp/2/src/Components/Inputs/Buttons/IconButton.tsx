@@ -60,12 +60,14 @@ export const iconButtonStyle = css({
   },
   ['&.chip']: {
     margin: '0 3px',
-    height: '35px',
-    width: '35px',
+    height: '33px',
+    width: '33px',
     justifyContent: 'center',
     backgroundColor: themeVar.colors.PrimaryColor,
     color: themeVar.colors.LightTextColor,
     borderRadius: '50%',
+    padding: 0,
+    fontSize: '14px',
     ['&.disabled']: {
       backgroundColor: themeVar.colors.DisabledColor,
       color: themeVar.colors.LightTextColor,

@@ -14,4 +14,9 @@ export const languagesTranslationsFR: LanguagesTranslations = {
   copyTranslations: 'Copier les traductions',
   CONTENT_EDITOR: 'Editeur de contenu',
   SCENARIO_EDITOR: 'Editeur de scénario',
+  translationManagement: 'Gestion de la traduction',
+  outdateOtherLanguages: 'Rendre les autres langues dépassés',
+  markAsOutadated: 'Marquer comme dépassé',
+  undoModifications: 'Annuler les modifications',
+  saveModifications: 'Sauvegarder les modifications',
 };

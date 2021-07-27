@@ -8,4 +8,9 @@ export interface LanguagesTranslations {
   copyTranslations: string;
   CONTENT_EDITOR: string;
   SCENARIO_EDITOR: string;
+  translationManagement: string;
+  outdateOtherLanguages: string;
+  markAsOutadated: string;
+  undoModifications: string;
+  saveModifications: string;
 }

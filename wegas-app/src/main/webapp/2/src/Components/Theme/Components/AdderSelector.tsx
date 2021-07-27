@@ -6,13 +6,13 @@ import {
   justifyCenter,
   itemCenter,
   defaultMarginLeft,
+  defaultMarginRight,
 } from '../../../css/classes';
 import { MessageString } from '../../../Editor/Components/MessageString';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { modalTranslations } from '../../../i18n/modal/modal';
 import { DropMenu } from '../../DropMenu';
-import { Button } from '../../Inputs/Buttons/Button';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 
@@ -60,8 +60,8 @@ export function AdderSelector({
             placeholder={placeholder}
             onChange={v => setValue(String(v))}
           />
-          <div className={cx(flex, flexRow)}>
-            <Button
+          <div className={cx(flex, flexRow, defaultMarginRight)}>
+            <IconButton
               icon="times"
               tooltip={i18nValues.cancel}
               onClick={() => {
@@ -69,8 +69,9 @@ export function AdderSelector({
                 setEditing(false);
               }}
               className={cx(css({padding: 0}), defaultMarginLeft)}
+              chipStyle
             />
-            <Button
+            <IconButton
               icon="check"
               tooltip={i18nValues.ok}
               disabled={error != null || value == null}
@@ -82,6 +83,7 @@ export function AdderSelector({
                 }
               }}
               className={cx(css({padding: 0}), defaultMarginLeft)}
+              chipStyle
             />
           </div>
         </div>
@@ -98,7 +100,7 @@ export function AdderSelector({
             icon="plus"
             tooltip={tooltip}
             onClick={() => setEditing(true)}
-            className={addButtonClassName}
+            className={classNameOrEmpty(addButtonClassName)}
           />
         </>
       )}

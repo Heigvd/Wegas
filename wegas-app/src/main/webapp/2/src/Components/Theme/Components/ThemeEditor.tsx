@@ -26,6 +26,7 @@ import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
 const addIconStyle = css({
 color: themeVar.colors.LightTextColor,
+marginRight: "10px",
 '&:hover': {
   color: themeVar.colors.PrimaryColor,
 }
