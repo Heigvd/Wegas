@@ -64,7 +64,7 @@ const modalCloseButtonStyle = css({
   margin: 'auto',
 });
 
-export const secondaryButtonStyle = css({
+export const secondaryButtonCSS = {
   backgroundColor: 'transparent',
   color: themeVar.colors.PrimaryColor,
   border: '1px solid ' + themeVar.colors.PrimaryColor,
@@ -73,7 +73,11 @@ export const secondaryButtonStyle = css({
     backgroundColor: themeVar.colors.HoverColor,
     borderColor: 'transparent',
   },
-});
+};
+
+export const secondaryButtonStyle = css(
+  secondaryButtonCSS
+);
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
 // React element

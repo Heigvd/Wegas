@@ -46,7 +46,7 @@ export function ModeSelector({dropMenuClassName, addButtonClassName}: ModeSelect
         label: (
           <div className={cx(flex, flexRow, grow)}>
             <div className={grow}>{k}</div>
-            {k !== currentTheme.baseMode && (
+            {(k !== currentTheme.baseMode && k !== "light" && k !== "dark") && (
               <Button
               icon={{
                 icon: 'trash',

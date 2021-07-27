@@ -162,9 +162,6 @@ export function ConfirmButton({
               readOnly={readOnly}
               noHover={noHover != null ? noHover : true}
               dark
-              className={css({
-                border: '1px solid ' + themeVar.colors.PrimaryColor,
-              })}
             />
             <Button
               label={i18nValues.accept}

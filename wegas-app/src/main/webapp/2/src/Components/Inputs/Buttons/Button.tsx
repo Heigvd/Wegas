@@ -4,6 +4,33 @@ import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
 import { arrayRemoveDuplicates } from '../../../Helper/tools';
 import { css } from 'emotion';
 import { themeVar } from '../../Theme/ThemeVars';
+import { secondaryButtonCSS } from '../../Modal';
+
+export const headerOutlineButtonStyle = css({
+  border: '1px solid ' + themeVar.colors.DisabledColor,
+  borderRadius: '50%',
+  height: '40px',
+  width: '40px',
+  justifyContent: 'center',
+  button: {
+    padding: 0,
+    width: '100%',
+    justifyContent: 'center',
+  },
+});
+export const outlineButtonStyle = {
+  border: '1px solid ' + themeVar.colors.LightTextColor,
+  backgroundColor: 'transparent',
+};
+
+export const outlinePrimaryButtonStyle = css({
+  border: '1px solid ' + themeVar.colors.PrimaryColor,
+  backgroundColor: 'transparent',
+  color: themeVar.colors.PrimaryColor,
+  ['&:hover']: {
+    backgroundColor: themeVar.colors.HeaderColor,
+  },
+});
 
 export const buttonStyle = css({
   display: 'flex',
@@ -52,8 +79,7 @@ export const buttonStyle = css({
     },
   },
   ['&.dark']: {
-    backgroundColor: themeVar.colors.LightTextColor,
-    color: themeVar.colors.PrimaryColor,
+    ...secondaryButtonCSS
   },
   ['&.disabledBorders']: {
     ['&.borderTopLeft']: {
@@ -120,31 +146,6 @@ export const buttonStyle = css({
   },
 });
 
-export const headerOutlineButtonStyle = css({
-  border: '1px solid ' + themeVar.colors.DisabledColor,
-  borderRadius: '50%',
-  height: '40px',
-  width: '40px',
-  justifyContent: 'center',
-  button: {
-    padding: 0,
-    width: '100%',
-    justifyContent: 'center',
-  },
-});
-export const outlineButtonStyle = {
-  border: '1px solid ' + themeVar.colors.LightTextColor,
-  backgroundColor: 'transparent',
-};
-
-export const outlinePrimaryButtonStyle = css({
-  border: '1px solid ' + themeVar.colors.PrimaryColor,
-  backgroundColor: 'transparent',
-  color: themeVar.colors.PrimaryColor,
-  ['&:hover']: {
-    backgroundColor: themeVar.colors.HeaderColor,
-  },
-});
 export interface DisableBorders {
   top?: boolean;
   right?: boolean;
