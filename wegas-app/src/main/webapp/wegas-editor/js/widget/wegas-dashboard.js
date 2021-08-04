@@ -34,11 +34,11 @@ YUI.add('wegas-dashboard', function(Y) {
                             "itemType": "action",
                             "label": "Impact variables",
                             "hasGlobal": true,
-                            "do": function(team, payload) {
-                                new Y.Wegas.ImpactsTeamModal({
-                                    "team": team
-                                }).render();
-                            }
+                            "do": "function(team, payload) {" +
+                                "    new Y.Wegas.ImpactsTeamModal({" +
+                                "        team: team" +
+                                "    }).render();" +
+                                "}"
                         }
                     }
                 },
@@ -53,16 +53,16 @@ YUI.add('wegas-dashboard', function(Y) {
                             "itemType": "action",
                             "label": "Send real E-Mail",
                             "hasGlobal": true,
-                            "do": function(team, payload) {
-                                new Y.Wegas.EmailTeamModal({
-                                    "team": team,
-                                    "on": {
-                                        "email:sent": function() {
-                                            this.close();
-                                        }
-                                    }
-                                }).render();
-                            }
+                            "do": "function(team, payload) {" +
+                                "    new Y.Wegas.EmailTeamModal({" +
+                                "        team: team," +
+                                "        on: {" +
+                                "            'email:sent': function() {" +
+                                "                this.close();" +
+                                "            }" +
+                                "        }" +
+                                "    }).render();" +
+                                "}"
                         },
                         view: {
                             "id": "view",
@@ -71,14 +71,14 @@ YUI.add('wegas-dashboard', function(Y) {
                             "itemType": "action",
                             "label": "View playing session",
                             "hasGlobal": false,
-                            "do": function(team, payload) {
-                                var p = team.getLivePlayer();
-                                if (p) {
-                                    Y.window.open("game-lock.html?id=" + p.get("id"));
-                                } else {
-                                    Y.Wegas.Alerts.showMessage("error", "No valid player in team");
-                                }
-                            }
+                            "do": "function(team, payload) {" +
+                                "    var p = team.getLivePlayer();" +
+                                "    if (p) {" +
+                                "        Y.window.open('game-lock.html?id=' + p.get('id'));" +
+                                "    } else {" +
+                                "        Y.Wegas.Alerts.showMessage('error', 'No valid player in team');" +
+                                "    }" +
+                                "}"
                         }
                     }
                 }
@@ -725,30 +725,30 @@ YUI.add('wegas-dashboard', function(Y) {
                         if (Object.values(groupPrefs).find(function(item) {
                             return item.active;
                         }) != null) {
-                        cell = {
-                            label: cellDef.label,
-                            children: []
-                        };
-                        firstOfGroup = true;
-                        var children = Y.Object.values(cellDef.items).sort(function(a, b) {
-                            return a.order - b.order;
-                        });
-                        for (j in children) {
-                            var child = children[j];
-                            var id = child.id;
-                            var itemPrefs = groupPrefs && groupPrefs[id];
-                            if (itemPrefs && itemPrefs.active !== false) {
-                                cell.children.push(parseItem(id, child, firstOfGroup));
-                                firstOfGroup = false;
+                            cell = {
+                                label: cellDef.label,
+                                children: []
+                            };
+                            firstOfGroup = true;
+                            var children = Y.Object.values(cellDef.items).sort(function(a, b) {
+                                return a.order - b.order;
+                            });
+                            for (j in children) {
+                                var child = children[j];
+                                var id = child.id;
+                                var itemPrefs = groupPrefs && groupPrefs[id];
+                                if (itemPrefs && itemPrefs.active !== false) {
+                                    cell.children.push(parseItem(id, child, firstOfGroup));
+                                    firstOfGroup = false;
+                                }
                             }
-                        }
                         }
                     } else {
                         cell = parseItem(i, cellDef);
                     }
                     if (cell) {
-                    tableColumns.push(cell);
-                }
+                        tableColumns.push(cell);
+                    }
                 }
                 tables[tableName] = tableColumns;
             }
@@ -873,12 +873,12 @@ YUI.add('wegas-dashboard', function(Y) {
 //                items[cbx].active = !(items[cbx].active);
 //                alert("Sorry, at least one option has to be active.");
 //            } else {
-                if (items[cbx].active) {
-                    target.addClass("selected");
-                } else {
-                    target.removeClass("selected");
-                }
-                // Update localStorage:
+            if (items[cbx].active) {
+                target.addClass("selected");
+            } else {
+                target.removeClass("selected");
+            }
+            // Update localStorage:
             localStorage.setItem(this.clientPrefsNs, JSON.stringify(storedPrefs));
 //            }
             event.halt(true);
