@@ -19,4 +19,6 @@ export const languagesTranslationsFR: LanguagesTranslations = {
   markAsOutadated: 'Marquer comme dépassé',
   undoModifications: 'Annuler les modifications',
   saveModifications: 'Sauvegarder les modifications',
+  hideOptions: 'Masquer les options',
+  showOptions: 'Montrer plus d\'options',
 };

@@ -19,4 +19,6 @@ export const languagesTranslationsEN: LanguagesTranslations = {
   markAsOutadated: 'Mark as outdated',
   undoModifications: 'Undo modifications',
   saveModifications: 'Save modifications',
+  hideOptions: 'Hide options',
+  showOptions: 'Show more options',
 };
