@@ -19,4 +19,6 @@ export const languagesTranslationsIT: LanguagesTranslations = {
   markAsOutadated: 'Segna come obsoleto',
   undoModifications: 'Annullare le modifiche',
   saveModifications: 'Salvare le modifiche',
+  hideOptions: 'Nascondi le opzioni',
+  showOptions: 'Mostra altre opzioni',
 };

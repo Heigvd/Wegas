@@ -13,4 +13,6 @@ export interface LanguagesTranslations {
   markAsOutadated: string;
   undoModifications: string;
   saveModifications: string;
+  hideOptions: string;
+  showOptions: string;
 }

@@ -475,10 +475,10 @@ export function TranslationEditor() {
             {
               label: (
                 <div
-                  className={css({padding: '5px'})}
+                  className={css({padding: '5px', width: '100%'})}
                   onClick={() => setShowOptions(showOptions => !showOptions)}>
-                  <IconComp icon={showOptions ? "blind" : "eye"} className={defaultMarginRight}/>
-                  {showOptions ? "Hide options" : "Show Options"}
+                  <IconComp icon={showOptions ? "eye-slash" : "eye"} className={defaultMarginRight}/>
+                  {showOptions ? i18nValues.hideOptions : i18nValues.showOptions}
                 </div>
               )
             },

@@ -19,4 +19,6 @@ export const languagesTranslationsDE: LanguagesTranslations = {
   markAsOutadated: 'Als veraltet markieren',
   undoModifications: 'Änderungen zurücknehmen',
   saveModifications: 'Änderungen speichern',
+  hideOptions: 'Optionen ausblenden',
+  showOptions: 'Weitere Optionen anzeigen',
 };
