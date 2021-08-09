@@ -209,15 +209,13 @@ function SrcEditor({
   React.useEffect(() => {
     if (reactMonaco) {
       if (language === 'javascript') {
+        /*
         reactMonaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-          target: reactMonaco.languages.typescript.ScriptTarget.ES5,
+          source: reactMonaco.languages.typescript.ScriptTarget.ES5,
           noLib: true,
-          allowNonTsExtensions: true,
+          lib: ['es6'],
         });
-        addExtraLib(
-          reactMonaco.languages.typescript.javascriptDefaults,
-          extraLibs,
-        );
+        */
       } else if (language === 'typescript') {
         reactMonaco.languages.typescript.typescriptDefaults.setCompilerOptions({
           // noLib: true, //TODO: wait for the issue / stackoverflow solution :P
@@ -350,7 +348,7 @@ function SrcEditor({
             height={size ? size.height : undefined} // By default, it fully fits with its parent
             width={size ? size.width : undefined} // By default, it fully fits with its parent
             theme={'dark'}
-            language={language}
+            language={'javascript'}
             value={value}
             editorDidMount={handleEditorDidMount}
             loading={i18nValues.loading + '...'}
