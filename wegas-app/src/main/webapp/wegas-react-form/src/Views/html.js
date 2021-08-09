@@ -131,6 +131,7 @@ function getTinyConfig(fixedToolbar) {
         //     editor.on('focus', () => tbs.forEach(e => { e.style.maxHeight = '90px'; }));
         //     editor.on('blur', () => tbs.forEach(e => { e.style.maxHeight = 0; }));
         // }
+        entity_encoding: 'raw'
     };
 
     const extraButtons = Wegas.Config.TinyExtraButtons;
