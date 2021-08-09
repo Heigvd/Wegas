@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Statement, ExpressionStatement } from '@babel/types';
+import { ExpressionStatement } from '@babel/types';
 import generate from '@babel/generator';
 import Form from 'jsoninput';
 import { css } from 'emotion';
@@ -16,8 +16,8 @@ import {
   generateSchema,
   PartialAttributes,
   makeItems,
-  IAttributes,
   SelectOperator,
+  testCode,
 } from './expressionEditorHelpers';
 import { ScriptView, scriptEditStyle, returnTypes } from '../Script';
 import { useStore } from '../../../../../data/Stores/store';
@@ -29,7 +29,7 @@ import { CommonView, CommonViewContainer } from '../../commonView';
 import { LabeledView, Labeled } from '../../labeled';
 import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
 import { isArray, pick } from 'lodash-es';
-import { CallExpression, StringLiteral, emptyStatement } from '@babel/types';
+import { CallExpression, StringLiteral } from '@babel/types';
 import { themeVar } from '../../../../../Components/Theme/ThemeVars';
 import { Button } from '../../../../../Components/Inputs/Buttons/Button';
 import { EmbeddedSrcEditor } from '../../../ScriptEditors/EmbeddedSrcEditor';
@@ -138,44 +138,8 @@ export function ExpressionEditor({
     }
   }, [error]);
 
-  const testCode = React.useCallback(
-    (
-      code: string,
-    ):
-      | string
-      | Partial<IInitAttributes | IAttributes | IConditionAttributes> => {
-      let newStatement: Statement = emptyStatement();
-      try {
-        const statements = parse(code, {
-          sourceType: 'script',
-        }).program.body;
-
-        if (statements.length <= 1) {
-          if (statements.length === 0) {
-            newStatement = emptyStatement();
-          } else {
-            newStatement = statements[0];
-          }
-
-          const { attributes, error } = parseStatement(newStatement, mode);
-
-          if (error != null) {
-            return error;
-          } else {
-            return attributes;
-          }
-        } else {
-          return 'While multiple statements are detected, source mode is forced';
-        }
-      } catch (e) {
-        return e.message;
-      }
-    },
-    [mode],
-  );
-
   React.useEffect(() => {
-    const parsedCode = testCode(code);
+    const parsedCode = testCode(code, mode);
     if (typeof parsedCode === 'string') {
       dispatchFormState({ type: 'SET_ERROR', payload: { error: parsedCode } });
     } else {
@@ -212,7 +176,7 @@ export function ExpressionEditor({
         });
       });
     }
-  }, [code, mode, testCode, variablesItems]);
+  }, [code, mode, variablesItems]);
 
   const computeState = React.useCallback(
     (attributes: IInitAttributes) => {
