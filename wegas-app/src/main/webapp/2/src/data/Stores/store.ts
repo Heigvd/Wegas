@@ -22,12 +22,12 @@ function storeInit() {
   store.dispatch(Actions.GameActions.getGame());
   store.dispatch(Actions.TeamActions.getTeams());
   store.dispatch(Actions.EditorActions.getLanguage());
+  store.dispatch(Actions.GameModelActions.getGameModel(CurrentGM.id!));
 }
 storeInit();
 
-export const { StoreConsumer, useStore, getDispatch } = createStoreConnector(
-  store,
-);
+export const { StoreConsumer, useStore, getDispatch } =
+  createStoreConnector(store);
 export type ThunkResult<R = void> = ThunkAction<
   R,
   State,

@@ -82,3 +82,11 @@ export function liveEdition<T extends IMergeable>(
     );
   };
 }
+
+export function getGameModel(gameModelId: number): ThunkResult {
+  return function (dispatch, getState) {
+    return GameModelApi.get(gameModelId).then(res =>
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
