@@ -9,7 +9,7 @@ import '../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar';
 import { getY } from '../index';
 import FormStyles from './form-styles';
 
-const { Wegas } = getY();
+const {Wegas} = getY();
 const tinymceStyle = css({
     '& .mce-tinymce': {
         // boxShadow: 'none',
@@ -66,9 +66,9 @@ function getTinyConfig(fixedToolbar) {
         plugins: [
             'autolink link image lists code media table',
             'paste advlist textcolor dynamic_toolbar',
-            // textcolor wordcount autosave contextmenu
-            // advlist charmap print preview hr anchor pagebreak spellchecker
-            // directionality
+                // textcolor wordcount autosave contextmenu
+                // advlist charmap print preview hr anchor pagebreak spellchecker
+                // directionality
         ],
         toolbar1: 'bold italic bullist | link image media code addToolbarButton',
         toolbar2: `forecolor backcolor underline
@@ -131,6 +131,7 @@ function getTinyConfig(fixedToolbar) {
         //     editor.on('focus', () => tbs.forEach(e => { e.style.maxHeight = '90px'; }));
         //     editor.on('blur', () => tbs.forEach(e => { e.style.maxHeight = 0; }));
         // }
+        //entity_encoding: 'raw'
     };
 
     const extraButtons = Wegas.Config.TinyExtraButtons;
@@ -210,7 +211,7 @@ function getTinyConfig(fixedToolbar) {
  * @param {string} content
  */
 function toTinyMCE(content) {
-    let updated = content;
+    let updated = Wegas.App.sanitize(content);
     if (updated === null || typeof content !== 'string') {
         updated = undefined;
     }
@@ -219,7 +220,7 @@ function toTinyMCE(content) {
             new RegExp('data-file="([^"]*)"', 'gi'),
             `src="${Wegas.Facade.File.getPath()}$1"
              href="${Wegas.Facade.File.getPath()}$1"`,
-        ); // @hack Place both href and src so it
+            ); // @hack Place both href and src so it
         // will work for both <a> and <img>
         // elements
     }
@@ -238,15 +239,17 @@ function toInjectorStyle(content) {
         yuiId[n].removeAttribute('id');
     }
 
-    return root.innerHTML
+    return Wegas.App.sanitize(
+        root.innerHTML
         .replace(
             new RegExp('((src|href)="[^"]*/rest/File/GameModelId/[^"]*/read([^"]*)")', 'gi'),
             'data-file="$3"',
-        ) // Replace absolute path with injector style path (old version)
+            ) // Replace absolute path with injector style path (old version)
         .replace(
             new RegExp('((src|href)="[^"]*/rest/GameModel/[^"]*/File/read([^"]*)")', 'gi'),
             'data-file="$3"',
-        ); // Replace absolute path with injector style path
+            ) // Replace absolute path with injector style path
+        );
 }
 
 let id = 0;
@@ -267,7 +270,7 @@ class HTMLView extends React.Component {
                 content: toTinyMCE(nextProps.value) || '',
             };
         }
-        return { oldProps: nextProps };
+        return {oldProps: nextProps};
     }
 
     constructor(props) {
@@ -290,7 +293,7 @@ class HTMLView extends React.Component {
         const oldContent = this.state.sent;
         const newContent = toInjectorStyle(content);
         if (oldContent !== newContent) {
-            this.setState({ content, sent: newContent }, () => {
+            this.setState({content, sent: newContent}, () => {
                 this.props.onChange(newContent);
             });
         }
@@ -302,21 +305,21 @@ class HTMLView extends React.Component {
                 <div
                     className={FormStyles.disabled.toString()}
                     dangerouslySetInnerHTML={{
-                        __html: Wegas.App.sanitize(this.state.content),
-                    }}
-                />
-            );
+                            __html: this.state.content,
+                        }}
+                    />
+                );
         } else {
             return (
                 <div {...tinymceStyle}>
                     <div id={this.id} className="tinymce-toolbar" />
                     <Editor
-                        value={Wegas.App.sanitize(this.state.content)}
+                        value={this.state.content}
                         init={getTinyConfig('#' + this.id)}
                         onEditorChange={this.onChangeHandler}
-                    />
+                        />
                 </div>
-            );
+                );
         }
     }
 }
