@@ -18,6 +18,7 @@ export const commonServerMethods: ServerGlobalObject = {
             content: {
               type: 'string',
               view: {
+                label: 'Popup content',
                 type: 'html',
               },
             },
@@ -68,6 +69,29 @@ export const commonServerMethods: ServerGlobalObject = {
           type: 'string',
           required: true,
           view: { label: 'Event name' },
+        },
+      ],
+    },
+  },
+  Test: {
+    sendMail: {
+      '@class': 'ServerGlobalMethod',
+      label: 'Send mail',
+      parameters: [
+        {
+          type: 'object',
+          required: true,
+          view: { label: 'To', type: 'i18nstring' },
+        },
+        {
+          type: 'object',
+          required: false,
+          view: { label: 'Subject', type: 'i18nstring' },
+        },
+        {
+          type: 'object',
+          required: false,
+          view: { label: 'MEssage', type: 'i18nhtml' },
         },
       ],
     },

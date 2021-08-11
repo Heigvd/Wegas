@@ -19,6 +19,7 @@ import {
   MediumPadding,
   flexBetween,
   defaultMarginRight,
+  layoutStyle,
 } from '../../../css/classes';
 import { manageResponseHandler } from '../../../data/actions';
 import { entityIs } from '../../../data/entities';
@@ -34,22 +35,16 @@ import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton'
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { isArray, isNumber } from 'lodash-es';
+import { isArray } from 'lodash-es';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { languagesTranslations } from '../../../i18n/languages/languages';
 import {
   generateSchema,
-  makeItems,
+  IAttributes,
   testCode,
 } from '../FormView/Script/Expressions/expressionEditorHelpers';
-import { wlog } from '../../../Helper/wegaslog';
-import { getConfig, overrideSchema } from '../EntityEditor';
-import { Schema } from 'jsoninput';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
-import { commonTranslations } from '../../../i18n/common/common';
-import { BaseView } from 'jsoninput/typings/types';
-import { genVarItems } from '../FormView/TreeVariableSelect';
 
 const langaugeVisitorHeaderStyle = css({
   borderBottom: `solid 1px ${themeVar.colors.PrimaryColor}`,
@@ -80,14 +75,13 @@ const depthMarginStyle = (depth: number) =>
   });
 
 const inputStyle = css({
-  //maxWidth: '500px',
-  minWidth: '484px',
   backgroundColor: themeVar.colors.SecondaryBackgroundColor,
 });
 
 interface SharedItemViewProps {
   label: string;
   showOptions: boolean;
+  view: 'string' | 'html';
 }
 
 interface TranslationItemViewProps extends SharedItemViewProps {
@@ -109,8 +103,8 @@ function TranslationItemView({
   outdated,
   showOptions,
   itemClassName,
-  rowSpanClassName,
   disabledButtons,
+  view,
   onUndo,
   onSave,
   onValueChange,
@@ -130,7 +124,7 @@ function TranslationItemView({
         itemClassName,
       )}
     >
-      <div className={cx(flex, flexBetween, rowSpanClassName)}>
+      <div className={cx(flex, flexBetween)}>
         {label}
         <div className={flex}>
           <Button
@@ -147,7 +141,7 @@ function TranslationItemView({
           />
         </div>
       </div>
-      {label === 'text' ? (
+      {view === 'html' ? (
         <LightWeightHTMLEditor value={value} onChange={onValueChange} />
       ) : (
         <SimpleInput
@@ -187,23 +181,31 @@ function TranslationItemView({
 
 interface TranslationViewItemProps extends SharedItemViewProps {
   language: IGameModelLanguage;
-  index: number;
+  firstItem: boolean;
   depth: number;
   selectedLanguages: IGameModelLanguage[];
 }
 
 interface TranslatableContentViewProps extends TranslationViewItemProps {
   value: ITranslatableContent;
+  script?: {
+    fieldName: string;
+    index: number;
+    parentClass: string;
+    parentId: number;
+  };
 }
 
 function TranslatableContentView({
   value,
   label,
   language,
-  index,
+  firstItem,
   depth,
   selectedLanguages,
   showOptions,
+  view,
+  script,
 }: TranslatableContentViewProps) {
   const languageCode = language.code;
   const translation = unsafeTranslate(value, languageCode);
@@ -244,20 +246,35 @@ function TranslatableContentView({
       outdated={outdated}
       showOptions={showOptions}
       itemClassName={
-        index === 0 ? cx(depthMarginStyle(depth), defaultMarginTop) : undefined
+        firstItem ? cx(depthMarginStyle(depth), defaultMarginTop) : undefined
       }
       rowSpanClassName={rowSpanStyle(selectedLanguages.length)}
       disabledButtons={editedTranslation[languageCode] == null}
+      view={view}
       onUndo={() => setValue(languageCode)(undefined)}
       onSave={() => {
-        LanguagesAPI.updateTranslation(
-          languageCode,
-          value.id!,
-          editedTranslation[languageCode]!,
-        ).then(res => {
-          setValue(languageCode)(undefined);
-          store.dispatch(manageResponseHandler(res));
-        });
+        if (script != null) {
+          LanguagesAPI.updateScript(
+            languageCode,
+            script.fieldName,
+            script.index,
+            script.parentClass,
+            script.parentId,
+            editedTranslation[languageCode]!,
+          ).then(res => {
+            setValue(languageCode)(undefined);
+            store.dispatch(manageResponseHandler(res));
+          });
+        } else {
+          LanguagesAPI.updateTranslation(
+            languageCode,
+            value.id!,
+            editedTranslation[languageCode]!,
+          ).then(res => {
+            setValue(languageCode)(undefined);
+            store.dispatch(manageResponseHandler(res));
+          });
+        }
       }}
       onValueChange={setValue(languageCode)}
       onOutdateOthers={() =>
@@ -283,7 +300,7 @@ function TranslatableContentView({
   );
 }
 
-interface ScriptViewProps extends TranslationViewItemProps {
+interface ScriptViewProps extends Omit<TranslationViewItemProps, 'view'> {
   value: IScript;
 }
 
@@ -291,138 +308,161 @@ async function AsyncScriptView({
   value,
   label,
   language,
-  index,
+  firstItem,
   depth,
   selectedLanguages,
   showOptions,
 }: ScriptViewProps) {
-  const languageCode = language.code;
-  // const parent = useStore(() => VariableDescriptor.select(value.parentId!))!;
   const parent = VariableDescriptor.select(value.parentId!)!;
-  const schema = (await getEditionConfig(parent)) as {
+  const parentSchema = (await getEditionConfig(parent)) as {
     properties: { [key: string]: { view: { mode: ScriptMode } } };
   };
-  const mode = schema.properties[label].view.mode;
+  const mode = parentSchema.properties[label].view.mode;
 
-  const test = testCode(value.content, mode);
+  const attributes = testCode(value.content, mode) as {
+    [key: string]: ITranslatableContent;
+  } & IAttributes;
 
-  if (typeof test === 'string') {
+  if (typeof attributes === 'string') {
     return null;
   }
 
-  const schema2 = await generateSchema(test, [], mode);
+  const schema = await generateSchema(attributes, [], mode);
 
-  return (
-    <div>
-      <ul>
-        {Object.entries(schema2.properties)
-          .filter(
-            ([k, v]) =>
-              (!isNaN(Number(k)) || k === 'comparator') &&
-              v.type === 'i18nstring',
-          )
-          .map(([k, v]) => (
-            <li key={k}>
-              {k} : {JSON.stringify(v)}
-            </li>
-          ))}
-      </ul>
-      {/* <div>{JSON.stringify(test)}</div>
-      <ul>
-        {Object.entries(schema.properties)
-          .filter(([k]) => k === label)
-          .map(([k, v]) => (
-            <li key={k}>
-              {k} : {JSON.stringify(v)}
-            </li>
-          ))}
-      </ul> */}
-    </div>
+  const translatableEntries = Object.entries(schema.properties).filter(
+    ([k, v]) =>
+      !isNaN(Number(k)) &&
+      v &&
+      (v.view?.type === 'i18nstring' || v.view?.type === 'i18nhtml'),
   );
 
-  // const translation = unsafeTranslate(value, languageCode);
+  return translatableEntries.length > 0 ? (
+    <div
+      className={cx(
+        flex,
+        flexColumn,
+        defaultMargin,
+        inputStyle,
+        defaultPadding,
+        firstItem ? cx(depthMarginStyle(depth), defaultMarginTop) : undefined,
+      )}
+    >
+      {label}
+      <div
+        className={cx(
+          flex,
+          flexColumn,
+          defaultMargin,
+          defaultPadding,
+          layoutStyle,
+        )}
+      >
+        {attributes.initExpression.script}
+        <div>
+          {translatableEntries.map(([k, v], i) => {
+            const translatable = attributes[k];
+            const viewLabel =
+              (v?.view as { label?: string } | undefined)?.label ||
+              attributes.methodName ||
+              k;
+            const view = v?.view?.type === 'i18nhtml' ? 'html' : 'string';
 
-  // const [editedTranslation, setEditedTranslation] = React.useState<{
-  //   [code: string]: string | undefined;
-  // }>({});
-
-  // const getValue = React.useCallback(
-  //   (value: string | undefined, languageCode: string): string => {
-  //     const editedValue = editedTranslation[languageCode];
-  //     return editedValue == null ? (value == null ? '' : value) : editedValue;
-  //   },
-  //   [editedTranslation],
-  // );
-
-  // function setValue(languageCode: string) {
-  //   return function (value: string | undefined) {
-  //     setEditedTranslation(ot => {
-  //       return {
-  //         ...(ot || {}),
-  //         [languageCode]: value === '' ? undefined : value,
-  //       };
-  //     });
-  //   };
-  // }
-
-  // const outdated =
-  //   value.translations[languageCode] == null ||
-  //   value.translations[languageCode].status == null
-  //     ? true
-  //     : !value.translations[languageCode].status.includes('outdated');
-  // return (
-  //   <TranslationItemView
-  //     label={label}
-  //     value={getValue(translation, languageCode)}
-  //     outdated={outdated}
-  //     showOptions={showOptions}
-  //     itemClassName={
-  //       index === 0 ? cx(depthMarginStyle(depth), defaultMarginTop) : undefined
-  //     }
-  //     rowSpanClassName={rowSpanStyle(selectedLanguages.length)}
-  //     disabledButtons={editedTranslation[languageCode] == null}
-  //     onUndo={() => setValue(languageCode)(undefined)}
-  //     onSave={() => {
-  //       LanguagesAPI.updateTranslation(
-  //         languageCode,
-  //         value.id!,
-  //         editedTranslation[languageCode]!,
-  //       ).then(res => {
-  //         setValue(languageCode)(undefined);
-  //         store.dispatch(manageResponseHandler(res));
-  //       });
-  //     }}
-  //     onValueChange={setValue(languageCode)}
-  //     onOutdateOthers={() =>
-  //       LanguagesAPI.outdateTranslations(
-  //         languageCode,
-  //         value.id!,
-  //         getValue(translation, languageCode),
-  //       ).then(res => {
-  //         store.dispatch(manageResponseHandler(res));
-  //       })
-  //     }
-  //     onOutdate={outdate => {
-  //       LanguagesAPI.setTranslationStatus(
-  //         languageCode,
-  //         value.id!,
-  //         getValue(translation, languageCode),
-  //         !outdate,
-  //       ).then(res => {
-  //         store.dispatch(manageResponseHandler(res));
-  //       });
-  //     }}
-  //   />
-  // );
+            return (
+              <TranslatableContentView
+                key={String(parent.id!) + k}
+                label={viewLabel}
+                value={translatable}
+                language={language}
+                firstItem={false}
+                depth={depth}
+                selectedLanguages={selectedLanguages}
+                showOptions={showOptions}
+                view={view}
+                script={{
+                  fieldName: label,
+                  index: i,
+                  parentClass: parent['@class'],
+                  parentId: parent.id!,
+                }}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  ) : null;
 }
 
-export const ScriptView = asyncSFC<ScriptViewProps>(AsyncScriptView);
+const ScriptView = asyncSFC<ScriptViewProps>(AsyncScriptView);
 
-interface TranslationViewProps {
-  variableId: number;
+interface SharedTranslationViewProps {
   selectedLanguages: IGameModelLanguage[];
   showOptions: boolean;
   depth: number;
+}
+
+interface AsyncTranslationViewProps extends SharedTranslationViewProps {
+  variable: IMergeable;
+  translations: { [key: string]: ITranslatableContent | IScript };
+}
+async function AsyncTranslationView({
+  variable,
+  translations,
+  selectedLanguages,
+  depth,
+  showOptions,
+}: AsyncTranslationViewProps) {
+  const schema = (await getEditionConfig(variable)) as {
+    properties: { [key: string]: { view: { type: string } } };
+  };
+
+  return (
+    <>
+      {Object.entries(translations).map(([k, v]) => {
+        return (
+          <React.Fragment key={k}>
+            {selectedLanguages.map((language, index) => {
+              return entityIs(v, 'TranslatableContent') ? (
+                <TranslatableContentView
+                  key={language.id!}
+                  label={k}
+                  value={v}
+                  language={language}
+                  firstItem={index === 0}
+                  depth={depth}
+                  selectedLanguages={selectedLanguages}
+                  showOptions={showOptions}
+                  view={
+                    schema.properties[k].view.type === 'i18nhtml'
+                      ? 'html'
+                      : 'string'
+                  }
+                />
+              ) : (
+                <ScriptView
+                  key={language.id!}
+                  label={k}
+                  value={v}
+                  language={language}
+                  firstItem={index === 0}
+                  depth={depth}
+                  selectedLanguages={selectedLanguages}
+                  showOptions={showOptions}
+                />
+              );
+            })}
+          </React.Fragment>
+        );
+      })}
+    </>
+  );
+}
+
+const TranslationsView =
+  asyncSFC<AsyncTranslationViewProps>(AsyncTranslationView);
+
+interface TranslationViewProps extends SharedTranslationViewProps {
+  variableId: number;
 }
 
 function TranslationView({
@@ -448,135 +488,15 @@ function TranslationView({
       [variable],
     );
 
-  // const [editedTranslations, setEditedTranslations] = React.useState<{
-  //   [key: string]: { [code: string]: string | undefined };
-  // }>(
-  //   Object.keys(translations).reduce(
-  //     (o, k) => ({
-  //       ...o,
-  //       [k]: selectedLanguages.reduce(
-  //         (o, l) => ({ ...o, [l.code]: undefined }),
-  //         {},
-  //       ),
-  //     }),
-  //     {},
-  //   ),
-  // );
-
-  // const getValue = React.useCallback(
-  //   (value: string | undefined, k: string, languageCode: string): string => {
-  //     const editedValue = editedTranslations[k][languageCode];
-  //     return editedValue == null ? (value == null ? '' : value) : editedValue;
-  //   },
-  //   [editedTranslations],
-  // );
-
-  // function setValue(k: string, languageCode: string) {
-  //   return function (value: string | undefined) {
-  //     setEditedTranslations(ot => {
-  //       return {
-  //         ...ot,
-  //         [k]: {
-  //           ...(ot[k] || {}),
-  //           [languageCode]: value === '' ? undefined : value,
-  //         },
-  //       };
-  //     });
-  //   };
-  // }
-
-  return (
-    <>
-      {Object.entries(translations).map(([k, v]) => {
-        return (
-          <React.Fragment key={k}>
-            {selectedLanguages.map((language, index) => {
-              // const languageCode = language.code;
-              // const translation = unsafeTranslate(v, languageCode);
-              return entityIs(v, 'TranslatableContent') ? (
-                <TranslatableContentView
-                  key={language.id!}
-                  label={k}
-                  value={v}
-                  language={language}
-                  index={index}
-                  depth={depth}
-                  selectedLanguages={selectedLanguages}
-                  showOptions={showOptions}
-                />
-              ) : (
-                <ScriptView
-                  key={language.id!}
-                  label={k}
-                  value={v}
-                  language={language}
-                  index={index}
-                  depth={depth}
-                  selectedLanguages={selectedLanguages}
-                  showOptions={showOptions}
-                />
-              );
-
-              /*(
-                <TranslationItemView
-                  key={language.id!}
-                  label={k}
-                  value={getValue(translation, k, languageCode)}
-                  outdated={
-                    v.translations[languageCode] == null ||
-                    v.translations[languageCode].status == null
-                      ? true
-                      : !v.translations[languageCode].status.includes(
-                          'outdated',
-                        )
-                  }
-                  showOptions={showOptions}
-                  itemClassName={
-                    index === 0
-                      ? cx(depthMarginStyle(depth), defaultMarginTop)
-                      : undefined
-                  }
-                  rowSpanClassName={rowSpanStyle(selectedLanguages.length)}
-                  disabledButtons={editedTranslations[k][languageCode] == null}
-                  onUndo={() => setValue(k, languageCode)(undefined)}
-                  onSave={() => {
-                    LanguagesAPI.updateTranslation(
-                      languageCode,
-                      v.id!,
-                      editedTranslations[k][languageCode]!,
-                    ).then(res => {
-                      setValue(k, languageCode)(undefined);
-                      store.dispatch(manageResponseHandler(res));
-                    });
-                  }}
-                  onValueChange={setValue(k, languageCode)}
-                  onOutdateOthers={() =>
-                    LanguagesAPI.outdateTranslations(
-                      languageCode,
-                      v.id!,
-                      getValue(translation, k, languageCode),
-                    ).then(res => {
-                      store.dispatch(manageResponseHandler(res));
-                    })
-                  }
-                  onOutdate={outdate => {
-                    LanguagesAPI.setTranslationStatus(
-                      languageCode,
-                      v.id!,
-                      getValue(translation, k, languageCode),
-                      !outdate,
-                    ).then(res => {
-                      store.dispatch(manageResponseHandler(res));
-                    });
-                  }}
-                />
-              )*/
-            })}
-          </React.Fragment>
-        );
-      })}
-    </>
-  );
+  return variable ? (
+    <TranslationsView
+      depth={depth}
+      selectedLanguages={selectedLanguages}
+      showOptions={showOptions}
+      variable={variable}
+      translations={translations}
+    />
+  ) : null;
 }
 
 function variableIsList(
@@ -876,7 +796,4 @@ export function TranslationEditor() {
       </Toolbar.Content>
     </Toolbar>
   );
-}
-function variableIdsSelector(s: any): number[] {
-  throw new Error('Function not implemented.');
 }

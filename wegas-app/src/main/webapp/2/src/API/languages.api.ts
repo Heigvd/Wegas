@@ -150,6 +150,37 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
       });
     },
     /**
+     * Change the value of a translation in a script
+     * @param languageCode The code of the tranlations's language
+     * @param fieldName The name of the script method
+     * @param index The index of the modified argument
+     * @param parentClass The class of the parent of the script field
+     * @param parentId THe id of the parent
+     * @param translationValue The value to set in the translation
+     * @returns
+     */
+    updateScript(
+      languageCode: string,
+      fieldName: string,
+      index: number,
+      parentClass: string,
+      parentId: number,
+      translationValue: string,
+    ) {
+      return managedModeRequest(LANGUAGES_BASE(gameModelId) + 'Tr/MINOR', {
+        method: 'PUT',
+        body: JSON.stringify({
+          '@class': 'InScriptUpdate',
+          code: languageCode,
+          fieldName,
+          index,
+          parentClass,
+          parentId,
+          value: translationValue,
+        }),
+      });
+    },
+    /**
      * Change the outadated status of a translation
      * @param languageCode The code of the tranlations's language
      * @param translationId The id of the translation to update
