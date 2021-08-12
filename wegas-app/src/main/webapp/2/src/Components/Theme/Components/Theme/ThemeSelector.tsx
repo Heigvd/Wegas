@@ -10,7 +10,6 @@ import {
   addNewLib,
 } from '../../../../data/Stores/themeStore';
 import { classNameOrEmpty } from '../../../../Helper/className';
-import { wlog } from '../../../../Helper/wegaslog';
 import { commonTranslations } from '../../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';

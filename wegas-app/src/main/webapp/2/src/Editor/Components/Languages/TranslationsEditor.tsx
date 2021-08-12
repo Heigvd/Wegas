@@ -45,6 +45,9 @@ import {
   testCode,
 } from '../FormView/Script/Expressions/expressionEditorHelpers';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
+import { parse } from '@babel/parser';
+import { program } from '@babel/types';
+import generate from '@babel/generator';
 
 const langaugeVisitorHeaderStyle = css({
   borderBottom: `solid 1px ${themeVar.colors.PrimaryColor}`,
@@ -181,8 +184,7 @@ function TranslationItemView({
 
 interface TranslationViewItemProps extends SharedItemViewProps {
   language: IGameModelLanguage;
-  firstItem: boolean;
-  depth: number;
+  depth?: number;
   selectedLanguages: IGameModelLanguage[];
 }
 
@@ -200,7 +202,6 @@ function TranslatableContentView({
   value,
   label,
   language,
-  firstItem,
   depth,
   selectedLanguages,
   showOptions,
@@ -237,7 +238,7 @@ function TranslatableContentView({
     value.translations[languageCode] == null ||
     value.translations[languageCode].status == null
       ? true
-      : !value.translations[languageCode].status.includes('outdated');
+      : !value.translations[languageCode].status!.includes('outdated');
 
   return (
     <TranslationItemView
@@ -246,7 +247,9 @@ function TranslatableContentView({
       outdated={outdated}
       showOptions={showOptions}
       itemClassName={
-        firstItem ? cx(depthMarginStyle(depth), defaultMarginTop) : undefined
+        depth != null
+          ? cx(depthMarginStyle(depth), defaultMarginTop)
+          : undefined
       }
       rowSpanClassName={rowSpanStyle(selectedLanguages.length)}
       disabledButtons={editedTranslation[languageCode] == null}
@@ -300,6 +303,84 @@ function TranslatableContentView({
   );
 }
 
+type ExtractedAttributes = {
+  [key: string]: ITranslatableContent;
+} & IAttributes;
+
+type TranslatableEntry = [
+  string,
+  { view?: { label?: string; type?: string } } | undefined,
+];
+
+interface TranslatableExpression {
+  attributes: ExtractedAttributes;
+  translatableEntries: TranslatableEntry[];
+  offsetIndex: number;
+}
+
+interface ExpressionViewProps
+  extends Pick<
+    TranslationViewItemProps,
+    'language' | 'selectedLanguages' | 'showOptions'
+  > {
+  expression: TranslatableExpression;
+  fieldName: string;
+  parentDescriptor: IVariableDescriptor;
+  indexOffset: number;
+}
+
+async function AsyncExpressionView({
+  expression,
+  fieldName,
+  parentDescriptor,
+  language,
+  selectedLanguages,
+  showOptions,
+}: ExpressionViewProps) {
+  return (
+    <div
+      className={cx(
+        flex,
+        flexColumn,
+        defaultMargin,
+        defaultPadding,
+        layoutStyle,
+      )}
+    >
+      {expression.attributes.initExpression.script}
+      <div>
+        {expression.translatableEntries.map(([k, v], i) => {
+          const translatable = expression.attributes[k];
+          const viewLabel =
+            v?.view?.label || expression.attributes.methodName || k;
+          const view = v?.view?.type === 'i18nhtml' ? 'html' : 'string';
+          const index = i + expression.offsetIndex;
+
+          return (
+            <TranslatableContentView
+              key={String(parentDescriptor.id!) + fieldName + index + k}
+              label={viewLabel}
+              value={translatable}
+              language={language}
+              selectedLanguages={selectedLanguages}
+              showOptions={showOptions}
+              view={view}
+              script={{
+                fieldName,
+                index,
+                parentClass: parentDescriptor['@class'],
+                parentId: parentDescriptor.id!,
+              }}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+const ExpressionView = asyncSFC<ExpressionViewProps>(AsyncExpressionView);
+
 interface ScriptViewProps extends Omit<TranslationViewItemProps, 'view'> {
   value: IScript;
 }
@@ -308,35 +389,50 @@ async function AsyncScriptView({
   value,
   label,
   language,
-  firstItem,
   depth,
   selectedLanguages,
   showOptions,
 }: ScriptViewProps) {
-  const parent = VariableDescriptor.select(value.parentId!)!;
-  const parentSchema = (await getEditionConfig(parent)) as {
+  const parentDescriptor = VariableDescriptor.select(value.parentId!)!;
+  const parentSchema = (await getEditionConfig(parentDescriptor)) as {
     properties: { [key: string]: { view: { mode: ScriptMode } } };
   };
   const mode = parentSchema.properties[label].view.mode;
 
-  const attributes = testCode(value.content, mode) as {
-    [key: string]: ITranslatableContent;
-  } & IAttributes;
+  const parsedExpressions = parse(value.content, { sourceType: 'script' })
+    .program.body;
 
-  if (typeof attributes === 'string') {
-    return null;
+  const expressions: TranslatableExpression[] = [];
+  let offsetIndex = 0;
+
+  for (const expression of parsedExpressions) {
+    const expressionCode = generate(program([expression])).code;
+    const attributes = testCode(expressionCode, mode) as
+      | ExtractedAttributes
+      | string;
+
+    if (typeof attributes !== 'string') {
+      const schema = await generateSchema(attributes, [], mode);
+      const translatableEntries = Object.entries(schema.properties).filter(
+        ([k, v]) =>
+          !isNaN(Number(k)) &&
+          v &&
+          (v.view?.type === 'i18nstring' || v.view?.type === 'i18nhtml'),
+      ) as TranslatableEntry[];
+
+      if (translatableEntries.length > 0) {
+        expressions.push({
+          attributes,
+          translatableEntries,
+          offsetIndex,
+        });
+      }
+
+      offsetIndex += translatableEntries.length;
+    }
   }
 
-  const schema = await generateSchema(attributes, [], mode);
-
-  const translatableEntries = Object.entries(schema.properties).filter(
-    ([k, v]) =>
-      !isNaN(Number(k)) &&
-      v &&
-      (v.view?.type === 'i18nstring' || v.view?.type === 'i18nhtml'),
-  );
-
-  return translatableEntries.length > 0 ? (
+  return expressions.length > 0 ? (
     <div
       className={cx(
         flex,
@@ -344,51 +440,28 @@ async function AsyncScriptView({
         defaultMargin,
         inputStyle,
         defaultPadding,
-        firstItem ? cx(depthMarginStyle(depth), defaultMarginTop) : undefined,
+        depth != null
+          ? cx(depthMarginStyle(depth), defaultMarginTop)
+          : undefined,
       )}
     >
       {label}
-      <div
-        className={cx(
-          flex,
-          flexColumn,
-          defaultMargin,
-          defaultPadding,
-          layoutStyle,
-        )}
-      >
-        {attributes.initExpression.script}
-        <div>
-          {translatableEntries.map(([k, v], i) => {
-            const translatable = attributes[k];
-            const viewLabel =
-              (v?.view as { label?: string } | undefined)?.label ||
-              attributes.methodName ||
-              k;
-            const view = v?.view?.type === 'i18nhtml' ? 'html' : 'string';
-
-            return (
-              <TranslatableContentView
-                key={String(parent.id!) + k}
-                label={viewLabel}
-                value={translatable}
-                language={language}
-                firstItem={false}
-                depth={depth}
-                selectedLanguages={selectedLanguages}
-                showOptions={showOptions}
-                view={view}
-                script={{
-                  fieldName: label,
-                  index: i,
-                  parentClass: parent['@class'],
-                  parentId: parent.id!,
-                }}
-              />
-            );
-          })}
-        </div>
-      </div>
+      {expressions.map(e => (
+        <ExpressionView
+          key={
+            String(parentDescriptor.id!) +
+            e.attributes.initExpression +
+            e.offsetIndex
+          }
+          expression={e}
+          fieldName={label}
+          language={language}
+          parentDescriptor={parentDescriptor}
+          selectedLanguages={selectedLanguages}
+          showOptions={showOptions}
+          indexOffset={0}
+        />
+      ))}
     </div>
   ) : null;
 }
@@ -428,8 +501,7 @@ async function AsyncTranslationView({
                   label={k}
                   value={v}
                   language={language}
-                  firstItem={index === 0}
-                  depth={depth}
+                  depth={index === 0 ? depth : undefined}
                   selectedLanguages={selectedLanguages}
                   showOptions={showOptions}
                   view={
@@ -444,8 +516,7 @@ async function AsyncTranslationView({
                   label={k}
                   value={v}
                   language={language}
-                  firstItem={index === 0}
-                  depth={depth}
+                  depth={index === 0 ? depth : undefined}
                   selectedLanguages={selectedLanguages}
                   showOptions={showOptions}
                 />

@@ -21,7 +21,6 @@ import { useDrag } from 'react-dnd';
 import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { classNameOrEmpty } from '../../Helper/className';
-import { wlog } from '../../Helper/wegaslog';
 import { themeVar } from '../Theme/ThemeVars';
 
 const stateContainerStyle = css({
