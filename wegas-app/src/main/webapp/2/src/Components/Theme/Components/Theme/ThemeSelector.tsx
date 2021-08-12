@@ -22,7 +22,10 @@ interface ThemeSelectorProps {
   addButtonClassName?: string;
 }
 
-export function ThemeSelector({dropMenuClassName, addButtonClassName}: ThemeSelectorProps) {
+export function ThemeSelector({
+  dropMenuClassName,
+  addButtonClassName,
+}: ThemeSelectorProps) {
   const { themes, editedThemeName } = useThemeStore(s => s);
   const dispatch = getThemeDispatch();
   const i18nValues = useInternalTranslate(commonTranslations);
@@ -50,15 +53,17 @@ export function ThemeSelector({dropMenuClassName, addButtonClassName}: ThemeSele
                 tooltip={i18nValues.reset}
                 onAction={success => success && dispatch(resetTheme(k))}
                 modalDisplay
-                modalMessage={i18nValues.reset + "?"}
+                modalMessage={i18nValues.reset + '?'}
               />
             ) : (
               <ConfirmButton
                 icon="trash"
                 tooltip={i18nValuesEditor.themeEditor.deleteTheme}
-                onAction={success => {wlog(success); success && dispatch(deleteTheme(k))}}
+                onAction={success => {
+                  success && dispatch(deleteTheme(k));
+                }}
                 modalDisplay
-                modalMessage={i18nValuesEditor.themeEditor.deleteTheme + "?"}
+                modalMessage={i18nValuesEditor.themeEditor.deleteTheme + '?'}
               />
             )}
           </div>

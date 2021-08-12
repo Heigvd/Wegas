@@ -157,10 +157,7 @@ export function StateBox({
       className={stateContainerStyle + classNameOrEmpty(state.className)}
       style={state.style}
       onClick={e =>
-        isActionAllowed({ disabled, readOnly }) &&
-        onClick &&
-        onClick(e, state) &&
-        wlog(selected)
+        isActionAllowed({ disabled, readOnly }) && onClick && onClick(e, state)
       }
     >
       <div

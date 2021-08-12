@@ -1,7 +1,8 @@
-import { wlog } from './wegaslog';
+import { werror } from './wegaslog';
 
 // detect youtube url
-const YOUTUBE_PATTERN = /^(?:https?:)?\/\/www\.youtube(?:-nocookie)?.com\/embed\/(.*)$/;
+const YOUTUBE_PATTERN =
+  /^(?:https?:)?\/\/www\.youtube(?:-nocookie)?.com\/embed\/(.*)$/;
 
 /**
  * Remove all tag matching the given name within the given html element
@@ -103,7 +104,7 @@ export default function sanitize(html: string): string {
 
       return root.innerHTML;
     } else {
-      wlog(`Could not sanitize non-string argument! ${html}`);
+      werror(`Could not sanitize non-string argument! ${html}`);
     }
   }
   return '';
