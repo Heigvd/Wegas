@@ -22,6 +22,7 @@ export const iconButtonStyle = css({
   },
   ['&:focus']: {
     outline: 'none',
+    color: themeVar.colors.ActiveColor,
   },
   ['&.readOnly']: {
     cursor: 'initial',
@@ -61,6 +62,7 @@ export const iconButtonStyle = css({
   ['&.chip']: {
     margin: '0 3px',
     height: '33px',
+    minWidth: '33px',
     width: '33px',
     justifyContent: 'center',
     backgroundColor: themeVar.colors.PrimaryColor,
@@ -72,7 +74,7 @@ export const iconButtonStyle = css({
       backgroundColor: themeVar.colors.DisabledColor,
       color: themeVar.colors.LightTextColor,
     },
-    ['&:not(.disabled):not(.readOnly):hover']: {
+    ['&:not(.disabled):not(.readOnly):hover, &:not(.disabled):not(.readOnly):focus']: {
       backgroundColor: themeVar.colors.ActiveColor,
       color: themeVar.colors.LightTextColor,
     },

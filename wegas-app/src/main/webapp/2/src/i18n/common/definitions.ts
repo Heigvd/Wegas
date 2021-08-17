@@ -1,6 +1,8 @@
 export interface CommonTranslations {
   plzChooseValue: string;
   newChanges: string;
+  changesNotSaved: string;
+  changesSaved: string;
   changesWillBeLost: string;
   areYouSure: string;
   loading: string;

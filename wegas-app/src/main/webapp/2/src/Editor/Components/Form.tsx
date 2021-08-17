@@ -15,6 +15,7 @@ import { IconComp } from './Views/FontAwesome';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
 import { themeVar } from '../../Components/Theme/ThemeVars';
+import { MessageString } from './MessageString';
 
 const closeButtonStyle = css({
 color: "black",
@@ -168,6 +169,19 @@ export function Form<T>({
             }
           </>
         )}
+        {deepDifferent(val, entity) ? (
+            <MessageString
+              type="warning"
+              value={i18nValues.changesNotSaved}
+            />
+          ) : (
+            <MessageString
+              type="succes"
+              value={i18nValues.changesSaved}
+              duration={3000}
+            />
+          )
+        }
       </Toolbar.Header>
       <Toolbar.Content className={noOverflow}>
         <div className={defaultMargin}>
@@ -193,76 +207,3 @@ export function Form<T>({
     </Toolbar>
   );
 }
-
-
-/*
-
-deux compos, fonction de filtrage
-Peux modifier l'interface  actions (et en crééer une exprès)
-
-*/
-
-/*  function AdvancedToolBoxItem(actions:any) {
-  const dropMenuOtherActions: any[] = [];
-
-  actions.map((action:any, i:string) => {
-    const btnProps: IconButtonProps = {
-      tabIndex: 1,
-      chipStyle: true,
-      tooltip: action.label?.toString(),
-      icon:IconAction(action.label?.toString()),
-    };
-    //switch: fill the table, create buttons if necessary, create close tag if exist
-    // if table.length > 0, create dropdownmenu with elements
-      switch (action.label) {
-        case 'Duplicate':
-          dropMenuOtherActions.push(action);
-          break;
-        case 'Delete':
-          return (
-            <ConfirmButton
-              {...btnProps}
-              key={i}
-              onAction={succes =>
-                succes && action.action(this.state.val, this.props.path)
-              }
-              buttonClassName={expandHeight}
-            />)
-        case 'Find usage':
-          dropMenuOtherActions.push(action);
-          break;
-        case 'Close':
-          <IconButton
-            {...btnProps}
-            key={i}
-            onClick={() => action.action(this.state.val, this.props.path)}
-            className={expandHeight}
-          />
-          break;
-        case 'Instance':
-          dropMenuOtherActions.push(action);
-          break;
-        default:
-          return (
-            <IconButton
-            tabIndex= {1}
-            chipStyle
-            tooltip= {action.label?.toString()}
-            icon="cat"
-            key={i}
-            onClick={() => action.action(this.state.val, this.props.path)}
-            className={expandHeight}
-          />
-          );
-    };
-  }
-  )
-  if (dropMenuOtherActions.length > 0){
-    <DropMenu
-      items={dropMenuOtherActions || []}
-      icon="cog"
-      onSelect={(i, e) => {i.action(this.state.val, this.props.path)
-      }}
-    />
-  }
-} */

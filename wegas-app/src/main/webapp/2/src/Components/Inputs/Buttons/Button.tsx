@@ -50,6 +50,7 @@ export const buttonStyle = css({
   },
   ['&:focus']: {
     outline: 'none',
+    backgroundColor: themeVar.colors.PrimaryColorShade,
   },
   ['&.readOnly']: {
     cursor: 'initial',
@@ -67,13 +68,13 @@ export const buttonStyle = css({
   ['&.iconOnly, &.noBackground']: {
     color: themeVar.colors.PrimaryColor,
     backgroundColor: 'transparent',
-    ['&:hover']: {
+    ['&:hover, &:focus']: {
       color: themeVar.colors.PrimaryColorShade,
     },
     ['&.disabled']: {
       color: themeVar.colors.DisabledColor,
     },
-    ['&.readOnly:hover']: {
+    ['&.readOnly:hover, &.readOnly:focus']: {
       color: themeVar.colors.PrimaryColor,
       backgroundColor: 'transparent',
     },
@@ -103,7 +104,7 @@ export const buttonStyle = css({
   },
   ['&.success']: {
     backgroundColor: themeVar.colors.SuccessColor,
-    ['&:hover']: {
+    ['&:hover, &:focus']: {
       backgroundColor: themeVar.colors.PrimaryColorShade,
     },
     ['&.iconOnly,&.noBackground']: {
