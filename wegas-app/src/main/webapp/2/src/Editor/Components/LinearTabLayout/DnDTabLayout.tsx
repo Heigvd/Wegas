@@ -250,13 +250,22 @@ export function DnDTabLayout({
               layoutId={layoutId}
               CustomTab={CustomTab}
               isChild={areChildren}
+              //className={fullScreenTabStyle}
             >
               {translatedLabel}
+              <div>
+              <IconButton
+                icon="expand-alt"
+                tooltip="Fullscreen"
+                className={'fullscreen-btn'}
+              />
               <IconButton
                 icon="times"
                 tooltip="Remove tab"
                 onClick={() => onDeleteTab(label)}
+                className={'close-btn'}
               />
+              </div>
             </DragTab>
           </DropTab>,
         );
