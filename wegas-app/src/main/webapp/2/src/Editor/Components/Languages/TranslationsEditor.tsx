@@ -89,7 +89,7 @@ interface SharedItemViewProps {
 
 interface TranslationItemViewProps extends SharedItemViewProps {
   value: string;
-  outdated: boolean;
+  upToDate: boolean;
   itemClassName?: string;
   rowSpanClassName: string;
   disabledButtons: boolean;
@@ -103,7 +103,7 @@ interface TranslationItemViewProps extends SharedItemViewProps {
 function TranslationItemView({
   label,
   value,
-  outdated,
+  upToDate,
   showOptions,
   itemClassName,
   disabledButtons,
@@ -166,10 +166,12 @@ function TranslationItemView({
               }}
             />
             <Toggler
-              value={outdated}
+              value={upToDate}
               onChange={onOutdate}
-              hint={i18nValues.markAsOutadated}
-              label={i18nValues.outdated}
+              hint={
+                upToDate ? i18nValues.markAsOutdated : i18nValues.markAsUpToDate
+              }
+              label={upToDate ? i18nValues.outdated : i18nValues.upToDate}
               className={css({
                 fontSize: '14px',
                 color: themeVar.colors.DisabledColor,
@@ -234,17 +236,17 @@ function TranslatableContentView({
     };
   }
 
-  const outdated =
+  const upToDate =
     value.translations[languageCode] == null ||
     value.translations[languageCode].status == null
       ? true
-      : !value.translations[languageCode].status!.includes('outdated');
+      : !value.translations[languageCode].status!.includes('outdate');
 
   return (
     <TranslationItemView
       label={label}
       value={getValue(translation, languageCode)}
-      outdated={outdated}
+      upToDate={upToDate}
       showOptions={showOptions}
       itemClassName={
         depth != null
@@ -263,7 +265,7 @@ function TranslatableContentView({
             script.index,
             script.parentClass,
             script.parentId,
-            editedTranslation[languageCode]!,
+            getValue(translation, languageCode),
           ).then(res => {
             setValue(languageCode)(undefined);
             store.dispatch(manageResponseHandler(res));
@@ -272,7 +274,7 @@ function TranslatableContentView({
           LanguagesAPI.updateTranslation(
             languageCode,
             value.id!,
-            editedTranslation[languageCode]!,
+            getValue(translation, languageCode),
           ).then(res => {
             setValue(languageCode)(undefined);
             store.dispatch(manageResponseHandler(res));
@@ -280,24 +282,52 @@ function TranslatableContentView({
         }
       }}
       onValueChange={setValue(languageCode)}
-      onOutdateOthers={() =>
-        LanguagesAPI.outdateTranslations(
-          languageCode,
-          value.id!,
-          getValue(translation, languageCode),
-        ).then(res => {
-          store.dispatch(manageResponseHandler(res));
-        })
-      }
+      onOutdateOthers={() => {
+        if (script != null) {
+          LanguagesAPI.outdateScripts(
+            languageCode,
+            script.fieldName,
+            script.index,
+            script.parentClass,
+            script.parentId,
+            getValue(translation, languageCode),
+          ).then(res => {
+            setValue(languageCode)(undefined);
+            store.dispatch(manageResponseHandler(res));
+          });
+        } else {
+          LanguagesAPI.outdateTranslations(
+            languageCode,
+            value.id!,
+            getValue(translation, languageCode),
+          ).then(res => {
+            store.dispatch(manageResponseHandler(res));
+          });
+        }
+      }}
       onOutdate={outdate => {
-        LanguagesAPI.setTranslationStatus(
-          languageCode,
-          value.id!,
-          getValue(translation, languageCode),
-          !outdate,
-        ).then(res => {
-          store.dispatch(manageResponseHandler(res));
-        });
+        if (script != null) {
+          LanguagesAPI.setScriptStatus(
+            languageCode,
+            script.fieldName,
+            script.index,
+            script.parentClass,
+            script.parentId,
+            getValue(translation, languageCode),
+            !outdate,
+          ).then(res => {
+            store.dispatch(manageResponseHandler(res));
+          });
+        } else {
+          LanguagesAPI.setTranslationStatus(
+            languageCode,
+            value.id!,
+            getValue(translation, languageCode),
+            !outdate,
+          ).then(res => {
+            store.dispatch(manageResponseHandler(res));
+          });
+        }
       }}
     />
   );

@@ -8,6 +8,7 @@ export const languagesTranslationsFR: LanguagesTranslations = {
       outdated ? 'obsolètes ' : ''
     } de ${language}?`,
   outdated: 'obsolète',
+  upToDate: 'a jour',
   clearTranslations: 'Supprimer les traductions',
   outdatedTranslations: 'Traductions obsolètes',
   allTranslations: 'Toutes les traductions',
@@ -16,9 +17,10 @@ export const languagesTranslationsFR: LanguagesTranslations = {
   SCENARIO_EDITOR: 'Editeur de scénario',
   translationManagement: 'Gestion de la traduction',
   outdateOtherLanguages: 'Rendre les autres langues dépassés',
-  markAsOutadated: 'Marquer comme dépassé',
+  markAsOutdated: 'Marquer comme dépassé',
+  markAsUpToDate: 'Marquer comme à jour',
   undoModifications: 'Annuler les modifications',
   saveModifications: 'Sauvegarder les modifications',
   hideOptions: 'Masquer les options',
-  showOptions: 'Montrer plus d\'options',
+  showOptions: "Montrer plus d'options",
 };

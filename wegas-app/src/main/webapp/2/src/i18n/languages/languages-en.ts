@@ -8,6 +8,7 @@ export const languagesTranslationsEN: LanguagesTranslations = {
       outdated ? 'outdated ' : ''
     }translations of ${language}?`,
   outdated: 'outdated',
+  upToDate: 'up to date',
   clearTranslations: 'Clear translations',
   outdatedTranslations: 'Outdated translations',
   allTranslations: 'All translations',
@@ -16,7 +17,8 @@ export const languagesTranslationsEN: LanguagesTranslations = {
   SCENARIO_EDITOR: 'Scenario editor',
   translationManagement: 'Translation management',
   outdateOtherLanguages: 'Outdate other languages',
-  markAsOutadated: 'Mark as outdated',
+  markAsOutdated: 'Mark as outdated',
+  markAsUpToDate: 'Mark as up to date',
   undoModifications: 'Undo modifications',
   saveModifications: 'Save modifications',
   hideOptions: 'Hide options',
