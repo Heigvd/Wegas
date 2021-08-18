@@ -38,6 +38,17 @@ export const tabStyle = css({
   button: {
     padding: '0 0 0 10px',
   },
+  '& .fullscreen-btn': {
+    opacity: 0,
+    height: 0,
+    transition: 'all .5s',
+    paddingBottom: 0,
+  },
+  '&:hover .fullscreen-btn': {
+    opacity: 1,
+    height: 'auto',
+    paddingBottom: '3px',
+  }
 });
 export const inactiveTabStyle = css({
   backgroundColor: themeVar.colors.BackgroundColor,

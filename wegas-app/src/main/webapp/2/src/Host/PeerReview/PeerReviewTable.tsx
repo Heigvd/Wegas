@@ -15,10 +15,12 @@ import {
 } from './PeerReviewPage';
 
 const PRTableStyle = css({
+  display: 'block',
   borderCollapse: 'separate',
   borderSpacing: '10px',
   fontSize: '14px',
   'td, th': trainerCellStyleI,
+  overflowX: 'auto',
   'thead th, thead td': {
     backgroundColor: themeVar.colors.HighlightColor,
     fontSize: '16px',

@@ -3,6 +3,8 @@ import { CommonTranslations } from './definitions';
 export const commonTranslationsFR: CommonTranslations = {
   plzChooseValue: 'Faites un choix',
   newChanges: 'Nouveaux changements!',
+  changesNotSaved: 'Changements non sauvegardés!',
+  changesSaved: 'Changement sauvegardés',
   changesWillBeLost: 'Les modifications vont être perdues.',
   areYouSure: 'Êtes-vous sûr de vouloir continuer?',
   loading: 'Chargement',

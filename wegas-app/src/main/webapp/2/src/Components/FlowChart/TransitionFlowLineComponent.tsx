@@ -24,8 +24,8 @@ export const transitionBoxStyle = css({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  padding: '15px',
   boxSizing: 'border-box',
+  padding: '4px',
   background: themeVar.colors.PrimaryColor,
   border: '1px solid ' + themeVar.colors.BackgroundColor,
   borderRadius: '8px',
@@ -44,6 +44,7 @@ export const transitionBoxStyle = css({
     maxHeight: '30px',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    alignItems: 'center',
   },
 });
 
@@ -57,9 +58,12 @@ export const transitionBoxActionStyle = css({
 });
 
 const selectedTransitionBoxStyle = css({
-  background: themeVar.colors.BackgroundColor,
+  background: themeVar.colors.ActiveColor,
   border: '4px solid ' + themeVar.colors.ActiveColor,
-  color: themeVar.colors.ActiveColor,
+  '&:hover': {
+    backgroundColor: themeVar.colors.ActiveColor,
+    border: '4px solid ' + themeVar.colors.ActiveColor,
+  }
 });
 
 const transitionMoreInfosStyle = css({
@@ -118,8 +122,7 @@ export function TransitionBox({
           <img src="" alt="" />
         </div>
         )} */}
-        <div>
-          <p className="StateLabelTextStyle">
+        <div className="StateLabelTextStyle">
             <HTMLText
               text={
                 (entityIs(transition.transition, 'Transition')
@@ -128,8 +131,6 @@ export function TransitionBox({
                 'Empty'
               }
             />
-          </p>
-          <p></p>
         </div>
       </div>
       {isShown &&
