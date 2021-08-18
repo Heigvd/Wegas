@@ -1,56 +1,60 @@
-import * as React from 'react';
-import { VariableDescriptor } from '../../../data/selectors';
-import { Actions } from '../../../data';
-import { Toolbar } from '../../../Components/Toolbar';
-import { varIsList, entityIs } from '../../../data/entities';
-import { get } from 'lodash-es';
-import { Container, Node } from '../Views/TreeView';
-import { moveDescriptor } from '../../../data/Reducer/VariableDescriptorReducer';
-import {
-  getEntityActions,
-  getIcon,
-  getClassLabel,
-  getChildren,
-} from '../../editionConfig';
-import { StoreDispatch, useStore, store } from '../../../data/Stores/store';
 import { css, cx } from 'emotion';
-import { shallowIs } from '../../../Helper/shallowIs';
-import { DropMenu } from '../../../Components/DropMenu';
-import { withDefault, IconComp } from '../Views/FontAwesome';
-import { asyncSFC } from '../../../Components/HOC/asyncSFC';
-import { AddMenuParent, AddMenuChoice, AddMenuFeedback } from './AddMenu';
-import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import { useAsync } from '../../../Components/Hooks/useAsync';
-import { ComponentWithForm } from '../FormView/ComponentWithForm';
-import { useGameModel } from '../../../Components/Hooks/useGameModel';
-import { Edition } from '../../../data/Reducer/globalState';
-import { mainLayoutId } from '../Layout';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { get } from 'lodash-es';
+import * as React from 'react';
+import { IResult, IEvaluationDescriptorContainer } from 'wegas-ts-api';
+import { DropMenu } from '../Components/DropMenu';
+import { asyncSFC } from '../Components/HOC/asyncSFC';
+import { deepDifferent } from '../Components/Hooks/storeHookFactory';
+import { useAsync } from '../Components/Hooks/useAsync';
+import { useDebounceFn } from '../Components/Hooks/useDebounce';
+import { useGameModel } from '../Components/Hooks/useGameModel';
+import { Toggler } from '../Components/Inputs/Boolean/Toggler';
+import { SimpleInput } from '../Components/Inputs/SimpleInput';
+import { useOkCancelModal } from '../Components/Modal';
+import { isActionAllowed } from '../Components/PageComponents/tools/options';
+import { themeVar } from '../Components/Theme/ThemeVars';
+import { Toolbar } from '../Components/Toolbar';
+import { TreeNode } from '../Components/TreeView/TreeNode';
 import {
+  DEFAULT_FILE_TYPE,
+  DEFAULT_TREENODE_TYPE,
+  TreeView,
+} from '../Components/TreeView/TreeView';
+import {
+  componentMarginLeft,
+  toolboxHeaderStyle,
+  flexBetween,
+  flex,
+  flexRow,
   globalSelection,
   localSelection,
-  componentMarginLeft,
-  flex,
-  grow,
-  flexColumn,
-  toolboxHeaderStyle,
-  flexRow,
-  flexBetween,
-} from '../../../css/classes';
+} from '../css/classes';
+import { Actions } from '../data';
+import { entityIs, varIsList } from '../data/entities';
+import { editorLabel } from '../data/methods/VariableDescriptorMethods';
+import { Edition } from '../data/Reducer/globalState';
+import { State } from '../data/Reducer/reducers';
+import { moveDescriptor } from '../data/Reducer/VariableDescriptorReducer';
+import { VariableDescriptor } from '../data/selectors';
+import { StoreDispatch, store, useStore } from '../data/Stores/store';
+import { ComponentWithForm } from '../Editor/Components/FormView/ComponentWithForm';
+import { mainLayoutId } from '../Editor/Components/Layout';
+import { focusTab } from '../Editor/Components/LinearTabLayout/LinearLayout';
 import {
-  IVariableDescriptor,
-  IEvaluationDescriptorContainer,
-  IResult,
-} from 'wegas-ts-api';
-import { focusTab } from '../LinearTabLayout/LinearLayout';
-import { State } from '../../../data/Reducer/reducers';
-import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
-import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
-import { useOkCancelModal } from '../../../Components/Modal';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { commonTranslations } from '../../../i18n/common/common';
-import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
-import { useDebounceFn } from '../../../Components/Hooks/useDebounce';
+  AddMenuParent,
+  AddMenuChoice,
+  AddMenuFeedback,
+} from '../Editor/Components/Variable/AddMenu';
+import { IconComp, withDefault } from '../Editor/Components/Views/FontAwesome';
+import {
+  getChildren,
+  getIcon,
+  getClassLabel,
+  getEntityActions,
+} from '../Editor/editionConfig';
+import { shallowIs } from '../Helper/shallowIs';
+import { commonTranslations } from '../i18n/common/common';
+import { useInternalTranslate } from '../i18n/internalTranslator';
 
 const TREECONTENTID = 'TREECONTENT';
 const nodeStyle = css({
@@ -128,16 +132,25 @@ export function VariableTreeTitle({
   );
 }
 
-interface TreeProps extends DisabledReadonly {
-  variables: number[];
+interface SharedTreeProps extends DisabledReadonly {
   noHeader?: boolean;
   noVisibleRoot?: boolean;
   localState?: Readonly<Edition> | undefined;
   localDispatch?: StoreDispatch;
   forceLocalDispatch?: boolean;
 }
-export function TreeView({
-  variables,
+
+interface TreeProps extends SharedTreeProps {
+  root: IParentDescriptor;
+  noHeader?: boolean;
+  noVisibleRoot?: boolean;
+  localState?: Readonly<Edition> | undefined;
+  localDispatch?: StoreDispatch;
+  forceLocalDispatch?: boolean;
+}
+
+export function VariableTreeView({
+  root,
   noHeader = false,
   noVisibleRoot = false,
   localState,
@@ -145,8 +158,10 @@ export function TreeView({
   forceLocalDispatch,
   ...options
 }: TreeProps) {
-  // const [search, setSearch] = React.useState('');
   const [onAccept, setOnAccept] = React.useState(() => () => {});
+  const [openNodes, setOpenNodes] = React.useState<{
+    [path: string]: boolean | undefined;
+  }>({});
 
   const { data } = useAsync(itemsPromise);
   const { showModal, OkCancelModal } = useOkCancelModal(TREECONTENTID);
@@ -154,7 +169,13 @@ export function TreeView({
 
   const globalDispatch = store.dispatch;
   const actionAllowed = isActionAllowed(options);
-  const { value, deep } = useStore(s => s.global.search);
+  const { value, deep } = useStore(
+    s => ({
+      value: s.global.search.value,
+      deep: s.global.search.deep,
+    }),
+    deepDifferent,
+  );
 
   const searchFn = useDebounceFn(
     (value: string) =>
@@ -213,51 +234,54 @@ export function TreeView({
           <p>{i18nValues.changesWillBeLost}</p>
           <p>{i18nValues.areYouSure}</p>
         </OkCancelModal>
-        <Container
-          onDropResult={({ source, target, id }) => {
-            if (
-              source.parent !== target.parent ||
-              source.index !== target.index
-            ) {
+        <TreeView
+          rootId={String(root.id)}
+          acceptTypes={[DEFAULT_TREENODE_TYPE, DEFAULT_FILE_TYPE]}
+          onMove={(from, to) => {
+            const movedVariable = from.data as IVariableDescriptor;
+            const index = to.path.pop();
+            const parentVariable = to.data;
+
+            if (movedVariable != null && index != null) {
               let dispatch = store.dispatch;
               if (forceLocalDispatch && localDispatch) {
                 dispatch = localDispatch;
               }
               dispatch(
                 moveDescriptor(
-                  id as IVariableDescriptor,
-                  target.index,
-                  target.parent as IParentDescriptor,
+                  movedVariable,
+                  index,
+                  parentVariable as unknown as IParentDescriptor,
                 ),
               );
             }
           }}
+          nodeManagement={{
+            // openNodes: computedOpenNodes,
+            openNodes,
+            setOpenNodes,
+          }}
         >
-          {({ nodeProps }) => (
-            <div className={cx(flex, grow, flexColumn)}>
-              {variables ? (
-                variables.map(id => (
-                  <CTree
-                    onShowWarning={onOk => {
-                      setOnAccept(() => onOk);
-                      showModal();
-                    }}
-                    nodeProps={nodeProps}
-                    key={id}
-                    variableId={id}
-                    noVisibleRoot={noVisibleRoot}
-                    localState={localState}
-                    localDispatch={localDispatch}
-                    forceLocalDispatch={forceLocalDispatch}
-                    {...options}
-                  />
-                ))
-              ) : (
-                <span>{`${i18nValues.loading} ...`}</span>
-              )}
-            </div>
+          {root.itemsIds ? (
+            root.itemsIds.map(id => (
+              <CTree
+                onShowWarning={onOk => {
+                  setOnAccept(() => onOk);
+                  showModal();
+                }}
+                key={id}
+                variableId={id}
+                noVisibleRoot={noVisibleRoot}
+                localState={localState}
+                localDispatch={localDispatch}
+                forceLocalDispatch={forceLocalDispatch}
+                {...options}
+              />
+            ))
+          ) : (
+            <span>{`${i18nValues.loading} ...`}</span>
           )}
-        </Container>
+        </TreeView>
       </Toolbar.Content>
     </Toolbar>
   );
@@ -288,6 +312,20 @@ function isMatch(variableId: number, search: string, deep: boolean): boolean {
   return false;
 }
 
+/**
+ * test a variable and children's editorLabel against a text
+ */
+function isOpen(variableId: number, search: string, deep: boolean): boolean {
+  const variable = VariableDescriptor.select(variableId);
+  if (variable == null) {
+    return false;
+  }
+  if (varIsList(variable)) {
+    return variable.itemsIds.some(id => isMatch(id, search, deep));
+  }
+  return false;
+}
+
 function isEditing(
   variableId: number,
   subPath?: string[],
@@ -307,12 +345,10 @@ export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_DRAG_ITEM';
 interface CTreeProps {
   variableId: number;
   subPath?: string[];
-  nodeProps: () => {};
   onShowWarning?: (onAccept: () => void) => void;
 }
 
 export function CTree({
-  nodeProps,
   variableId,
   disabled,
   forceLocalDispatch,
@@ -322,7 +358,10 @@ export function CTree({
   onShowWarning,
   readOnly,
   subPath,
-}: Omit<CTreeProps & TreeProps, 'variables' | 'noHeader'>): JSX.Element | null {
+}: Omit<
+  CTreeProps & SharedTreeProps,
+  'variables' | 'noHeader'
+>): JSX.Element | null {
   const i18nValues = useInternalTranslate(commonTranslations);
   const actionAllowed = isActionAllowed({
     disabled: disabled,
@@ -346,6 +385,11 @@ export function CTree({
 
       return {
         variable: variable,
+        open: isOpen(
+          variableId,
+          state.global.search.value || '',
+          state.global.search.deep,
+        ),
         match: isMatch(
           variableId,
           state.global.search.value || '',
@@ -358,7 +402,7 @@ export function CTree({
     [subPath, variableId],
   );
 
-  const { editing, variable, match, searching } = useStore(infoSelector);
+  const { editing, variable, match, searching, open } = useStore(infoSelector);
 
   const localEditing = isEditing(variableId, subPath, localState);
 
@@ -388,15 +432,11 @@ export function CTree({
       return null;
     }
     return (
-      <Node
-        noToggle={noVisibleRoot}
-        disabled={disabled}
-        dragId={TREEVIEW_ITEM_TYPE}
-        dragDisabled={!actionAllowed}
-        dropDisabled={!actionAllowed}
-        expanded={searching && match}
-        {...nodeProps()}
-        header={
+      <TreeNode
+        forceOpenClose={searching && open ? true : undefined}
+        notDraggable={!actionAllowed}
+        notDroppable={!actionAllowed}
+        label={
           <div
             className={cx(flex, nodeStyle, {
               [globalSelection]: editing,
@@ -455,104 +495,94 @@ export function CTree({
               ) : null)}
           </div>
         }
-        id={variable}
+        data={variable}
+        id={String(variable.id)}
       >
-        {({ nodeProps }) =>
-          varIsList(variable)
-            ? variable.itemsIds.map(i => (
-                <CTree
-                  nodeProps={nodeProps}
-                  key={i}
-                  variableId={i}
-                  localState={localState}
-                  localDispatch={localDispatch}
-                  forceLocalDispatch={forceLocalDispatch}
-                  disabled={disabled}
-                  readOnly={readOnly}
-                  onShowWarning={onShowWarning}
-                />
-              ))
-            : entityIs(variable, 'ChoiceDescriptor')
-            ? variable.results.map((r, index) => (
-                <CTree
-                  nodeProps={nodeProps}
-                  key={r.id}
-                  variableId={r.parentId!}
-                  subPath={['results', String(index)]}
-                  localState={localState}
-                  localDispatch={localDispatch}
-                  forceLocalDispatch={forceLocalDispatch}
-                  disabled={disabled}
-                  readOnly={readOnly}
-                  onShowWarning={onShowWarning}
-                />
-              ))
-            : entityIs(variable, 'PeerReviewDescriptor')
-            ? [
-                <CTree
-                  nodeProps={nodeProps}
-                  key={0}
-                  variableId={variableId}
-                  subPath={['feedback']}
-                  localState={localState}
-                  localDispatch={localDispatch}
-                  forceLocalDispatch={forceLocalDispatch}
-                  disabled={disabled}
-                  readOnly={readOnly}
-                  onShowWarning={onShowWarning}
-                />,
-                <CTree
-                  nodeProps={nodeProps}
-                  key={1}
-                  variableId={variableId}
-                  subPath={['fbComments']}
-                  localState={localState}
-                  localDispatch={localDispatch}
-                  forceLocalDispatch={forceLocalDispatch}
-                  disabled={disabled}
-                  readOnly={readOnly}
-                  onShowWarning={onShowWarning}
-                />,
-              ]
-            : entityIs(variable, 'EvaluationDescriptorContainer')
-            ? variable.evaluations.map((r, index) => (
-                <CTree
-                  nodeProps={nodeProps}
-                  key={r.id}
-                  variableId={variableId}
-                  subPath={[
-                    ...(subPath ? subPath : []),
-                    'evaluations',
-                    String(index),
-                  ]}
-                  localState={localState}
-                  localDispatch={localDispatch}
-                  forceLocalDispatch={forceLocalDispatch}
-                  disabled={disabled}
-                  readOnly={readOnly}
-                  onShowWarning={onShowWarning}
-                />
-              ))
-            : null
-        }
-      </Node>
+        {varIsList(variable)
+          ? variable.itemsIds.map(i => (
+              <CTree
+                key={i}
+                variableId={i}
+                localState={localState}
+                localDispatch={localDispatch}
+                forceLocalDispatch={forceLocalDispatch}
+                disabled={disabled}
+                readOnly={readOnly}
+                onShowWarning={onShowWarning}
+              />
+            ))
+          : entityIs(variable, 'ChoiceDescriptor')
+          ? variable.results.map((r, index) => (
+              <CTree
+                key={r.id}
+                variableId={r.parentId!}
+                subPath={['results', String(index)]}
+                localState={localState}
+                localDispatch={localDispatch}
+                forceLocalDispatch={forceLocalDispatch}
+                disabled={disabled}
+                readOnly={readOnly}
+                onShowWarning={onShowWarning}
+              />
+            ))
+          : entityIs(variable, 'PeerReviewDescriptor')
+          ? [
+              <CTree
+                key={0}
+                variableId={variableId}
+                subPath={['feedback']}
+                localState={localState}
+                localDispatch={localDispatch}
+                forceLocalDispatch={forceLocalDispatch}
+                disabled={disabled}
+                readOnly={readOnly}
+                onShowWarning={onShowWarning}
+              />,
+              <CTree
+                key={1}
+                variableId={variableId}
+                subPath={['fbComments']}
+                localState={localState}
+                localDispatch={localDispatch}
+                forceLocalDispatch={forceLocalDispatch}
+                disabled={disabled}
+                readOnly={readOnly}
+                onShowWarning={onShowWarning}
+              />,
+            ]
+          : entityIs(variable, 'EvaluationDescriptorContainer')
+          ? variable.evaluations.map((r, index) => (
+              <CTree
+                key={r.id}
+                variableId={variableId}
+                subPath={[
+                  ...(subPath ? subPath : []),
+                  'evaluations',
+                  String(index),
+                ]}
+                localState={localState}
+                localDispatch={localDispatch}
+                forceLocalDispatch={forceLocalDispatch}
+                disabled={disabled}
+                readOnly={readOnly}
+                onShowWarning={onShowWarning}
+              />
+            ))
+          : null}
+      </TreeNode>
     );
   }
   return <div>{i18nValues.loading}...</div>;
 }
-export function Tree() {
-  const entities = useGameModel().itemsIds;
-  return <TreeView variables={entities} />;
-}
 
 export default function TreeWithMeta() {
-  const entities = useGameModel().itemsIds;
+  const root = useGameModel();
   return (
     <ComponentWithForm entityEditor>
       {({ localState, localDispatch }) => {
         return (
-          <TreeView
-            variables={entities}
+          <VariableTreeView
+            root={root}
             localState={localState}
             localDispatch={localDispatch}
           />

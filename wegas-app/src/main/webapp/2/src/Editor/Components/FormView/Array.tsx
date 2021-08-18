@@ -69,7 +69,7 @@ function Adder<T>({ onChildAdd, choices, id, tooltip }: AdderProps<T>) {
   return (
     <Button
       id={id}
-      label= {i18nValues.add}
+      label={i18nValues.add}
       icon="plus-circle"
       onClick={() => onChildAdd()}
       tooltip={tooltip}

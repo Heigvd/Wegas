@@ -99,7 +99,7 @@ const componentStyle = css({
     svg: {
       fill: themeVar.colors.ActiveColor,
       transition: 'all .5s',
-    }
+    },
   },
 });
 
@@ -278,7 +278,10 @@ export function ComponentPalette({
           <p className={textCenter}>
             {i18nValues.pageEditor.editorMustEnabled}
           </p>
-          <Button onClick={() => setEditMode(true)} className={defaultMarginTop}>
+          <Button
+            onClick={() => setEditMode(true)}
+            className={defaultMarginTop}
+          >
             {i18nValues.pageEditor.enableEditMode}
           </Button>
         </div>

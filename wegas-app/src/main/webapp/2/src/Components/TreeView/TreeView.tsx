@@ -1,0 +1,474 @@
+import * as React from 'react';
+import { TreeChildren } from './TreeChildren';
+import {
+  nodeStyle,
+  emptyNodeStyle,
+  dragUpStyle,
+  dragDownStyle,
+  dragOverStyle,
+} from './classes';
+import { wwarn } from '../../Helper/wegaslog';
+
+export const DEFAULT_TREENODE_TYPE = 'DEFAULT_TREENODE_TYPE';
+export const DEFAULT_FILE_TYPE = 'Files';
+
+const MARGIN_SIZE = 20;
+function DefaultCarret({ icon }: { icon: string }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        width: MARGIN_SIZE,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      {icon}
+    </div>
+  );
+}
+
+const DEFAULT_TOP_PADDING = 5;
+const DEFAULT_LEFT_PADDING = 10;
+const DEFAULT_BOTTOM_PADDING = 10;
+const MINIMUM_NODE_LABEL_HEIGHT = 30;
+const MINIMUM_NODE_LABEL_WIDTH = 100;
+const KEEP_OPEN_ON_DRAG = false;
+const OPEN_CLOSE_BUTTONS = {
+  open: <DefaultCarret icon="▾" />,
+  close: <DefaultCarret icon="▸" />,
+};
+const DESIGN_PARAMS: DesignParams = {
+  nodeStyle,
+  emptyNodeStyle,
+  dragUpStyle,
+  dragDownStyle,
+  dragOverStyle,
+};
+
+interface DesignParams {
+  nodeStyle: string;
+  emptyNodeStyle: string;
+  dragUpStyle: string;
+  dragDownStyle: string;
+  dragOverStyle: string;
+}
+
+interface TreeViewContextParameters {
+  minimumNodeHeight: number;
+  minimumLabelWidth: number;
+  keepOpenOnDrag: boolean;
+  openCloseButtons: {
+    open: React.ReactNode;
+    close: React.ReactNode;
+  };
+  designParams: DesignParams;
+  openOnDrag: null | number;
+}
+
+export type OnMoveFn<T = unknown> = (
+  from: {
+    path?: number[];
+    id?: string;
+    data?: T | null;
+    dataTransfer: unknown;
+  },
+  to: { path: number[]; id: string; data?: T | null },
+) => void;
+
+type TreeContextParameters = Partial<TreeViewContextParameters>;
+
+interface DragState {
+  id: string;
+  position: 'UP' | 'DOWN' | 'IN' | 'IN_LAST' | 'IN_EMPTY' | undefined;
+}
+
+export const POSITION_DATA = {
+  openCloseButton: 'TREENODE_OPEN_CLOSE_BUTTON',
+  label: 'TREENODE_LABEL',
+  margin: 'TREENODE_MARGIN',
+  content: 'TREENODE_CONTENT',
+};
+
+interface TreeViewContext extends TreeViewContextParameters {
+  dragState: DragState;
+  openNodes: { [path: string]: boolean | undefined };
+  toggleNode: (id: string) => void;
+  endDrag: () => void;
+}
+
+export const treeviewCTX = React.createContext<TreeViewContext>({
+  dragState: { id: '0', position: undefined },
+  minimumNodeHeight: MINIMUM_NODE_LABEL_HEIGHT,
+  minimumLabelWidth: MINIMUM_NODE_LABEL_WIDTH,
+  keepOpenOnDrag: KEEP_OPEN_ON_DRAG,
+  openCloseButtons: OPEN_CLOSE_BUTTONS,
+  designParams: DESIGN_PARAMS,
+  openOnDrag: null,
+  openNodes: {},
+  toggleNode: () => {},
+  endDrag: () => {},
+});
+
+interface TreeViewProps<T = unknown> extends ClassStyleId {
+  rootId: string;
+  rootData?: T | null;
+  rootPath?: number[];
+  notDroppable?: boolean;
+  nodeManagement?: {
+    openNodes: { [path: string]: boolean | undefined };
+    setOpenNodes: React.Dispatch<
+      React.SetStateAction<{ [path: string]: boolean | undefined }>
+    >;
+  };
+  onMove?: OnMoveFn<T>;
+  acceptTypes?: string[];
+  parameters?: TreeContextParameters;
+  style?: React.CSSProperties;
+  className?: string;
+}
+
+export function TreeView<T = unknown>({
+  rootId,
+  rootData = null,
+  rootPath = [],
+  notDroppable,
+  nodeManagement,
+  parameters,
+  onMove,
+  acceptTypes = [DEFAULT_TREENODE_TYPE],
+  children,
+  className,
+  style,
+}: React.PropsWithChildren<TreeViewProps<T>>) {
+  const oppeningTimer = React.useRef<NodeJS.Timer | null>(null);
+
+  const {
+    minimumNodeHeight = MINIMUM_NODE_LABEL_HEIGHT,
+    minimumLabelWidth = MINIMUM_NODE_LABEL_WIDTH,
+    keepOpenOnDrag = KEEP_OPEN_ON_DRAG,
+    openCloseButtons = OPEN_CLOSE_BUTTONS,
+    designParams = DESIGN_PARAMS,
+    openOnDrag = null,
+  } = parameters || {};
+
+  const [dragState, setDragState] = React.useState<DragState>({
+    id: rootId,
+    position: undefined,
+  });
+
+  const { id, position } = dragState;
+
+  const [openNodesState, setOpenNodesState] = React.useState<{
+    [path: string]: boolean | undefined;
+  }>(nodeManagement?.openNodes || {});
+
+  const openNodes = nodeManagement?.openNodes || openNodesState;
+  const setOpenNodes = nodeManagement?.setOpenNodes || setOpenNodesState;
+
+  const toggleNode = React.useCallback(
+    function (id: string) {
+      setOpenNodes(o => ({ ...o, [id]: !o[id] }));
+    },
+    [setOpenNodes],
+  );
+
+  const openNode = React.useCallback(
+    function (id: string) {
+      setOpenNodes(o => ({ ...o, [id]: true }));
+    },
+    [setOpenNodes],
+  );
+
+  function endDrag() {
+    setDragState(ods => ({ ...ods, position: undefined }));
+  }
+
+  React.useEffect(() => {
+    if (oppeningTimer.current != null) {
+      clearTimeout(oppeningTimer.current);
+    }
+    oppeningTimer.current = setTimeout(() => {
+      if (position === 'IN') {
+        openNode(id);
+      }
+    }, 500);
+  }, [position, id, openNodes, openNode]);
+
+  React.useEffect(() => {
+    return function () {
+      if (oppeningTimer.current != null) {
+        clearTimeout(oppeningTimer.current);
+      }
+    };
+  }, []);
+
+  const dropZoneSplittingSize = minimumNodeHeight / 3;
+
+  const onDragOver = React.useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      const allowDrag = acceptTypes.some(type =>
+        e.dataTransfer.types
+          .map(type => type.toLowerCase())
+          .includes(type.toLowerCase()),
+      );
+
+      if (allowDrag) {
+        // preventDefault is the magic to make onDrop work
+        e.preventDefault();
+        // stopPropagation is there to avoid onDragOver be captured by parents
+        e.stopPropagation();
+
+        let target = e.target as HTMLElement;
+        let idData;
+        let positionData;
+        let showDownData;
+        let hasChildrenData;
+        let notDroppable;
+        let parentNotDroppable;
+        do {
+          idData = target.getAttribute('data-treenode-id');
+          positionData = target.getAttribute('data-treenode-position');
+          showDownData = target.getAttribute('data-treenode-show-down');
+          hasChildrenData = target.getAttribute('data-treenode-has-children');
+          notDroppable = target.getAttribute('data-treenode-not-droppable');
+          parentNotDroppable = target.getAttribute(
+            'data-treenode-parent-not-droppable',
+          );
+          target = target.parentElement as HTMLElement;
+        } while (target != null && idData == null && positionData == null);
+
+        // isOverAllowed(acceptType,itemType)
+
+        if (idData != null && positionData != null) {
+          let position: DragState['position'] = undefined;
+          notDroppable = notDroppable === 'true';
+          parentNotDroppable = parentNotDroppable === 'true';
+
+          switch (positionData) {
+            case POSITION_DATA.openCloseButton:
+              if (!notDroppable) {
+                position = 'IN';
+              }
+              break;
+            case POSITION_DATA.label: {
+              const { top, height } = target.getBoundingClientRect();
+              const relativeY = e.clientY - top;
+              showDownData = showDownData === 'true';
+              hasChildrenData = hasChildrenData === 'true';
+
+              if (relativeY < dropZoneSplittingSize) {
+                if (!parentNotDroppable) {
+                  position = 'UP';
+                }
+              } else if (
+                showDownData &&
+                height - relativeY < dropZoneSplittingSize
+              ) {
+                if (!parentNotDroppable) {
+                  position = 'DOWN';
+                }
+              } else if (hasChildrenData) {
+                if (!notDroppable) {
+                  position = 'IN';
+                }
+              }
+              break;
+            }
+            case POSITION_DATA.margin:
+              if (!notDroppable) {
+                position = 'IN_LAST';
+              }
+              break;
+            case POSITION_DATA.content:
+              if (!notDroppable) {
+                position = 'IN_EMPTY';
+              }
+              break;
+          }
+
+          setDragState({
+            id: idData,
+            position,
+          });
+        } else {
+          setDragState({
+            id: '',
+            position: undefined,
+          });
+        }
+      } else {
+        setDragState({
+          id: '',
+          position: undefined,
+        });
+      }
+    },
+    [acceptTypes, dropZoneSplittingSize],
+  );
+
+  const onDrop = React.useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      // stopPropagation avoids interference with react-dnd library
+      e.stopPropagation();
+      if (onMove) {
+        let target = e.target as HTMLElement;
+        let data;
+        let id;
+        let path;
+        do {
+          if (
+            position === 'IN' ||
+            position === 'IN_EMPTY' ||
+            position === 'IN_LAST'
+          ) {
+            data = target.getAttribute('data-treenode-data');
+            id = target.getAttribute('data-treenode-id');
+          } else {
+            data = target.getAttribute('data-treenode-parent-data');
+            id = target.getAttribute('data-treenode-parent-id');
+          }
+          path = target.getAttribute('data-treenode-path');
+          target = target.parentElement as HTMLElement;
+        } while (target != null && id == null && path == null);
+
+        if (id != null && path != null) {
+          if (data != null) {
+            data = JSON.parse(data);
+          }
+          path = JSON.parse(path) as number[];
+          if (position === 'UP' || position === 'DOWN') {
+            // Pop first element (index of the child)
+            path.pop();
+            let index = path.pop();
+            if (index != null) {
+              if (position === 'DOWN') {
+                index += 1;
+              }
+              path = [...path, index];
+            }
+          }
+
+          let fromPath;
+          let fromId;
+          let fromData;
+
+          try {
+            fromPath = JSON.parse(e.dataTransfer.getData('path'));
+          } catch (_e) {
+            fromPath = undefined;
+          }
+          try {
+            fromId = e.dataTransfer.getData('id');
+          } catch (_e) {
+            fromId = undefined;
+          }
+          try {
+            fromData = JSON.parse(e.dataTransfer.getData('data'));
+          } catch (_e) {
+            fromData = undefined;
+          }
+
+          onMove(
+            {
+              path: fromPath,
+              id: fromId,
+              data: fromData,
+              dataTransfer: e.dataTransfer,
+            },
+            { path, id, data },
+          );
+          if (id !== rootId) {
+            openNode(id);
+          }
+        } else {
+          wwarn('No given id');
+        }
+      }
+
+      setDragState({
+        id: '',
+        position: undefined,
+      });
+    },
+    [onMove, openNode, position, rootId],
+  );
+
+  // const [{ item, isOverCurrent }, drop] = useDrop<any, void, any>({
+  //   accept: acceptTypes,
+  //   canDrop: () => !notDroppable,
+  //   drop: (props, monitor) => {
+  //     const test = props;
+  //     const test2 = monitor;
+  //     const test3 = component;
+  //     //debugger;
+  //   },
+  //   hover: (props, monitor) => {
+  //     const test = props;
+  //     const test2 = monitor;
+  //     const test3 = component;
+  //     // debugger;
+  //   },
+  //   collect: (mon: DropTargetMonitor) => {
+  //     // debugger;
+  //     return {
+  //       isOverCurrent: mon.isOver(),
+  //       item: mon.getItem(),
+  //     };
+  //   },
+  // });
+
+  return (
+    <div
+      // ref={drop}
+      style={{
+        paddingTop: DEFAULT_TOP_PADDING,
+        paddingLeft: DEFAULT_LEFT_PADDING,
+        paddingBottom: DEFAULT_BOTTOM_PADDING,
+        ...style,
+      }}
+      className={className}
+      id={rootId}
+      data-treenode-path={JSON.stringify([
+        ...rootPath,
+        React.Children.count(children),
+      ])}
+      data-treenode-id={rootId}
+      data-treenode-position={POSITION_DATA.margin}
+      data-treenode-data={JSON.stringify(rootData)}
+      data-treenode-not-droppable={notDroppable}
+      onDragOver={onDragOver}
+      onDragLeave={() => {
+        setDragState({
+          id: '',
+          position: undefined,
+        });
+      }}
+      onDrop={onDrop}
+    >
+      <treeviewCTX.Provider
+        value={{
+          dragState,
+          minimumNodeHeight: minimumNodeHeight,
+          minimumLabelWidth,
+          keepOpenOnDrag,
+          openCloseButtons,
+          designParams,
+          openOnDrag,
+          openNodes,
+          toggleNode,
+          endDrag,
+        }}
+      >
+        <TreeChildren
+          id={rootId}
+          data={rootData}
+          path={rootPath}
+          notDroppable={notDroppable}
+        >
+          {children}
+        </TreeChildren>
+      </treeviewCTX.Provider>
+    </div>
+  );
+}

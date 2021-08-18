@@ -514,7 +514,10 @@ export function TreeNode<T>({
           <div ref={preview} className={cx(flex, relative, itemCenter)}>
             {children != null && (
               <div>
-                <span className={caretStyle} onClick={() => setExpanded(e => !e)}>
+                <span
+                  className={caretStyle}
+                  onClick={() => setExpanded(e => !e)}
+                >
                   <FontAwesome icon={expanded ? 'caret-down' : 'caret-right'} />
                 </span>
               </div>
