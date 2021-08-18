@@ -19,8 +19,6 @@ import {
   hatchedBackground,
   childrenHeaderStyle,
   MediumPadding,
-  flexColumn,
-  itemCenter,
 } from '../../../css/classes';
 import { childrenPlusTabStyle, plusTabStyle } from '../../../Components/Tabs';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
@@ -254,13 +252,6 @@ export function DnDTabLayout({
               isChild={areChildren}
               //className={fullScreenTabStyle}
             >
-              <div className={cx(flex, flexColumn, itemCenter)}>
-              <IconButton
-                icon="expand-alt"
-                tooltip="Fullscreen"
-                className={'fullscreen-btn'}
-              />
-              <div className={flex}>
               {translatedLabel}
               <IconButton
                 icon="times"
@@ -268,8 +259,6 @@ export function DnDTabLayout({
                 onClick={() => onDeleteTab(label)}
                 className={'close-btn'}
               />
-              </div>
-              </div>
             </DragTab>
           </DropTab>,
         );

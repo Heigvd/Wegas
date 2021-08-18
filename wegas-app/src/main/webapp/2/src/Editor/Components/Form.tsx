@@ -164,6 +164,17 @@ export function Form<T>({
                       className={expandHeight}
                     />
                   );
+                  case 'findUsage':
+                    return (
+                      <IconButton
+                        icon="search"
+                        chipStyle
+                        tooltip={String(a.label)}
+                        key={i}
+                        onClick={() => val != null && a.action(val, path)}
+                        className={closeButtonStyle}
+                      />
+                    );
                 case 'close':
                   return (
                     <IconButton
