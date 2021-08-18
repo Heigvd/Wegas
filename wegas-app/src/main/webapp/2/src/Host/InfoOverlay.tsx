@@ -15,7 +15,6 @@ const overlayStyle = css({
   position: 'absolute',
   top: 0,
   left: 0,
-  //overflow: 'auto',
   maxWidth: '450px',
   maxHeight: '300px',
   padding: '2em',
@@ -34,10 +33,7 @@ const overlayStyle = css({
     zIndex: 1001,
     left: '-13px',
     top: '43px',
-  },
-  h2: {
-    fontSize: '2em',
-  },
+  }
 });
 const overlayContentStyle = css({
   overflow: 'auto',
