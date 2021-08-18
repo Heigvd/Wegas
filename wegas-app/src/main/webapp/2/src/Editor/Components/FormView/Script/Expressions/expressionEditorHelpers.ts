@@ -18,6 +18,9 @@ import { TYPESTRING } from 'jsoninput/typings/types';
 import { safeClientScriptEval } from '../../../../../Components/Hooks/useScript';
 import { isServerMethod } from '../../../../../data/Reducer/globalState';
 import { SVariableDescriptor } from 'wegas-ts-api';
+import { emptyStatement, Statement } from '@babel/types';
+import { parseStatement } from './astManagement';
+import { parse } from '@babel/parser';
 
 const booleanOperators = {
   '===': { label: 'equals' },
@@ -527,4 +530,36 @@ export async function generateSchema(
     description: 'WyiswygExpression',
     properties: newSchemaProps,
   };
+}
+
+export function testCode(
+  code: string,
+  mode: ScriptMode | undefined,
+): string | Partial<IInitAttributes | IAttributes | IConditionAttributes> {
+  let newStatement: Statement = emptyStatement();
+  try {
+    const statements = parse(code, {
+      sourceType: 'script',
+    }).program.body;
+
+    if (statements.length <= 1) {
+      if (statements.length === 0) {
+        newStatement = emptyStatement();
+      } else {
+        newStatement = statements[0];
+      }
+
+      const { attributes, error } = parseStatement(newStatement, mode);
+
+      if (error != null) {
+        return error;
+      } else {
+        return attributes;
+      }
+    } else {
+      return 'While multiple statements are detected, source mode is forced';
+    }
+  } catch (e) {
+    return e.message;
+  }
 }

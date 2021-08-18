@@ -1,7 +1,16 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
-import { noOverflow, expandHeight, defaultMargin, defaultMarginBottom, defaultPaddingBottom, defaultPaddingLeft, defaultPaddingRight, toolboxHeaderStyle } from '../../css/classes';
+import {
+  noOverflow,
+  expandHeight,
+  defaultMargin,
+  defaultMarginBottom,
+  defaultPaddingBottom,
+  defaultPaddingLeft,
+  defaultPaddingRight,
+  toolboxHeaderStyle,
+} from '../../css/classes';
 import './FormView';
 import { wwarn } from '../../Helper/wegaslog';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
@@ -18,10 +27,10 @@ import { themeVar } from '../../Components/Theme/ThemeVars';
 import { MessageString } from './MessageString';
 
 const closeButtonStyle = css({
-color: "black",
+  color: 'black',
 });
 
-const toolboxContainerStyle= css({
+const toolboxContainerStyle = css({
   position: 'sticky',
   top: 0,
   zIndex: 10,
@@ -29,9 +38,9 @@ const toolboxContainerStyle= css({
   backgroundColor: themeVar.colors.BackgroundColor,
 });
 const toolboxButtonStyle = css({
-margin: '0 5px',
-height: '35px',
-padding: '0 6px'
+  margin: '0 5px',
+  height: '35px',
+  padding: '0 6px',
 });
 
 interface EditorProps<T> extends DisabledReadonly {
@@ -60,7 +69,7 @@ export function Form<T>({
   const oldReceivedEntity = React.useRef(entity);
   const form = React.useRef<JSONForm>(null);
   const [val, setVal] = React.useState(entity);
-  const toolbox : ActionsProps<T>[] = [];
+  const toolbox: ActionsProps<T>[] = [];
   const i18nValues = useInternalTranslate(commonTranslations);
 
   if (
@@ -72,7 +81,13 @@ export function Form<T>({
   }
 
   return (
-    <Toolbar className={cx(defaultPaddingBottom, defaultPaddingLeft, defaultPaddingRight)}>
+    <Toolbar
+      className={cx(
+        defaultPaddingBottom,
+        defaultPaddingLeft,
+        defaultPaddingRight,
+      )}
+    >
       <Toolbar.Header className={cx(toolboxContainerStyle, toolboxHeaderStyle)}>
         {isActionAllowed({
           disabled,
@@ -112,61 +127,68 @@ export function Form<T>({
               buttonClassName={expandHeight}
             />
             {actions.map((a, i) => {
-              switch (a.sorting){
-                  case 'toolbox':
-                    toolbox.push(a);
-                    break;
-                  case 'delete':
-                    return a.confirm ? (
-                      <ConfirmButton
-                        key={i}
-                        icon="trash"
-                        chipStyle
-                        tooltip={i18nValues.delete}
-                        onAction={succes =>
-                          succes && val != null && a.action(val, path)
-                        }
-                        buttonClassName={expandHeight}
-                      />) : (
-                        <IconButton
-                          icon= "trash"
-                          chipStyle
-                          tooltip={i18nValues.delete}
-                          key={i}
-                          onClick={() => val != null && a.action(val, path)}
-                          className={expandHeight}
-                        />
-                      )
-                  case 'duplicate':
-                    return <IconButton
-                          icon= "clone"
-                          chipStyle
-                          tooltip={i18nValues.duplicate}
-                          key={i}
-                          onClick={() => val != null && a.action(val, path)}
-                          className={expandHeight}
-                        />
-                  case 'close':
-                    return <IconButton
-                      icon= 'times'
+              switch (a.sorting) {
+                case 'toolbox':
+                  toolbox.push(a);
+                  break;
+                case 'delete':
+                  return a.confirm ? (
+                    <ConfirmButton
+                      key={i}
+                      icon="trash"
+                      chipStyle
+                      tooltip={i18nValues.delete}
+                      onAction={succes =>
+                        succes && val != null && a.action(val, path)
+                      }
+                      buttonClassName={expandHeight}
+                    />
+                  ) : (
+                    <IconButton
+                      icon="trash"
+                      chipStyle
+                      tooltip={i18nValues.delete}
+                      key={i}
+                      onClick={() => val != null && a.action(val, path)}
+                      className={expandHeight}
+                    />
+                  );
+                case 'duplicate':
+                  return (
+                    <IconButton
+                      icon="clone"
+                      chipStyle
+                      tooltip={i18nValues.duplicate}
+                      key={i}
+                      onClick={() => val != null && a.action(val, path)}
+                      className={expandHeight}
+                    />
+                  );
+                case 'close':
+                  return (
+                    <IconButton
+                      icon="times"
                       tooltip={i18nValues.close}
                       key={i}
                       onClick={() => val != null && a.action(val, path)}
                       className={closeButtonStyle}
                     />
-                  default:
+                  );
+                default:
                   toolbox.push(a);
                   break;
               }
             })}
-            {(toolbox.length > 0) &&
-                <DropMenu
-                  items={toolbox || []}
-                  label={<IconComp icon='cog'/>}
-                  onSelect={(i) => {val != null && i.action(val, path)}}
-                  buttonClassName={toolboxButtonStyle}
-                />
-            }
+            {toolbox.length > 0 && (
+              <DropMenu
+                items={toolbox || []}
+                label={<IconComp icon="cog" />}
+                onSelect={i => {
+                  val != null && i.action(val, path);
+                }}
+                buttonClassName={toolboxButtonStyle}
+              />
+            )}
           </>
         )}
         {deepDifferent(val, entity) ? (

@@ -22,7 +22,6 @@ import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { MessageString } from './MessageString';
 import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
 import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
-import { wlog } from '../../Helper/wegaslog';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
 
@@ -213,7 +212,6 @@ async function WindowedEditor<T extends IMergeable>({
         duration={3000}
         onLabelVanish={error && error.onRead}
       />
-      {wlog(entity)}
       <Form
         entity={pathEntity}
         label={editorTitle({
@@ -247,11 +245,15 @@ export const AsyncVariableForm = asyncSFC<EditorProps<IMergeable>>(
   WindowedEditor,
   () => {
     const i18nValues = useInternalTranslate(commonTranslations);
-    return(<div className={MediumPadding}>{i18nValues.loading + "..."}</div>)
+    return <div className={MediumPadding}>{i18nValues.loading + '...'}</div>;
   },
   ({ err }: { err: Error }) => {
     const i18nValues = useInternalTranslate(commonTranslations);
-    return(<span>{err && err.message ? err.message : i18nValues.someWentWrong + "..." }</span>)
+    return (
+      <span>
+        {err && err.message ? err.message : i18nValues.someWentWrong + '...'}
+      </span>
+    );
   },
 );
 

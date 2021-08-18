@@ -257,17 +257,19 @@ const setLibraryState = (oldState: ILibrariesState, action: StateAction) =>
  * getScriptLanguage that gives a language type from a libType
  * @param scriptType - the type of library
  */
-const getScriptLanguage: (scriptType: LibType) => 'css' | 'typescript' =
-  scriptType => {
-    switch (scriptType) {
-      case 'CSS':
-        return 'css';
-      case 'ClientScript':
-      case 'ServerScript':
-      default:
-        return 'typescript';
-    }
-  };
+const getScriptLanguage: (
+  scriptType: LibType,
+) => 'css' | 'typescript' | 'javascript' = scriptType => {
+  switch (scriptType) {
+    case 'CSS':
+      return 'css';
+    case 'ServerScript':
+      return 'javascript';
+    case 'ClientScript':
+    default:
+      return 'typescript';
+  }
+};
 
 /**
  * getScriptOutdatedState is a function that looks for a lastestVersionLibrary.
@@ -736,15 +738,16 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             onResolved={onSaveLibrary}
           />
         ) : librariesState.selected ? (
-          getScriptLanguage(scriptType) === 'typescript' ? (
+          getScriptLanguage(scriptType) === 'css' ? (
+            <SrcEditor {...editorProps} language="css" />
+          ) : (
             <WegasScriptEditor
               {...editorProps}
+              language={getScriptLanguage(scriptType)}
               scriptContext={
                 scriptType === 'ServerScript' ? 'Server external' : 'Client'
               }
             />
-          ) : (
-            <SrcEditor {...editorProps} language="css" />
           )
         ) : (
           <MessageString

@@ -7,7 +7,6 @@ import {
 import { flex, flexRow, itemCenter } from '../../../css/classes';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { wlog } from '../../../Helper/wegaslog';
 
 const containerStyle = css({
   position: 'relative',
@@ -21,11 +20,11 @@ const errorStyle = css({
   fontStyle: 'italic',
 });
 export const borderTop = css({
-  borderTop: '1px solid '  + themeVar.colors.DisabledColor,
+  borderTop: '1px solid ' + themeVar.colors.DisabledColor,
   paddingTop: '10px',
 });
 export const borderBottom = css({
-  borderBottom: '1px solid '  + themeVar.colors.DisabledColor,
+  borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
   paddingBottom: '5px',
   marginBottom: '5px',
 });
@@ -80,7 +79,6 @@ export function CommonViewContainer({
     view.featureLevel === undefined ||
     isFeatureEnabled(currentFeatures, view.featureLevel)
   ) {
-    wlog(view.noMarginTop);
     return (
       <div
         className={cx(containerStyle, layout, classNameOrEmpty(className), {

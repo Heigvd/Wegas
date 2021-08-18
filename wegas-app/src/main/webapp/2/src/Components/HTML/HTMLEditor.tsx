@@ -191,6 +191,8 @@ export default function HTMLEditor({
         theme: 'silver',
         inline: inline,
         readonly: readOnly,
+        min_width: 464,
+        width: '100%',
         placeholder,
         browser_spellcheck: true,
         plugins: [
@@ -344,7 +346,12 @@ export default function HTMLEditor({
       style={style}
       id={id}
     >
-      <div style={{ visibility: fileBrowsing.fn ? 'hidden' : 'visible' }}>
+      <div
+        style={{
+          visibility: fileBrowsing.fn ? 'hidden' : 'visible',
+          minWidth: 464,
+        }}
+      >
         {inline && (
           <div id={toolBarId} className={toolbar}>
             {!editorFocus && (

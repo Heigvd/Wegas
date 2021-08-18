@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -36,8 +35,10 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.AbstractState;
 import com.wegas.core.persistence.variable.statemachine.AbstractStateMachineDescriptor;
+import com.wegas.core.persistence.variable.statemachine.AbstractTransition;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
+import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.messaging.persistence.InboxInstance;
@@ -222,19 +223,26 @@ public class ModelFacade {
                 //inScenario.setStates(new HashMap<>());
                 Set<? extends AbstractState> inModelStates = inModel.getInternalStates();
 
-                for (Iterator<State> it = inScenario.getInternalStates().iterator(); it.hasNext();) {
-                    State state = it.next();
+                for (Iterator<State> itState = inScenario.getInternalStates().iterator(); itState.hasNext();) {
+                    State state = itState.next();
                     boolean found = false;
                     for (AbstractState mState : inModelStates) {
 
                         if (mState.getIndex().equals(state.getIndex())) {
-                            state.getTransitions().clear();
+                            // the state exists in the model and in the scenario
+                            for (Iterator<Transition> itTransition = state.getTransitions().iterator(); itTransition.hasNext();) {
+                                AbstractTransition t = itTransition.next();
+                                t.getDependencies().clear();
+                                itTransition.remove();
+                            }
+
                             found = true;
                             break;
                         }
                     }
                     if (!found) {
-                        it.remove();
+                        // the state does not exists in the model => remove it
+                        itState.remove();
                     }
                 }
             }
@@ -376,9 +384,9 @@ public class ModelFacade {
 
                 /*
                  * go through exclusionCanditates to detemintate which of them should be kept a
-                 * candidate is a descriptor which is not shared among all scenarios, but it may
-                 * contains children which are. When it's the case, the descriptor must be kept. If
-                 * the descriptor doesn't contains any children, it can be removed
+                 * candidate is a descriptor which is not shared among all scenarios, but itState may
+                 * contains children which are. When itState's the case, the descriptor must be kept. If
+                 * the descriptor doesn't contains any children, itState can be removed
                  */
                 boolean restart;
                 do {
@@ -698,8 +706,8 @@ public class ModelFacade {
         fixVariableTree(gameModelFacade.find(modelId),
             scenarios.stream()
                 .map(id -> gameModelFacade.find(id))
-                .collect(Collectors.toList())
-        , true);
+                .collect(Collectors.toList()),
+             true);
     }
 
     private String buildPath(DescriptorListI list) {
@@ -770,28 +778,28 @@ public class ModelFacade {
                 String name = modelVd.getName();
                 if (!ignorePrivate || modelVd.getVisibility() != ModelScoped.Visibility.PRIVATE) {
 
-                for (GameModel scenario : scenarios) {
-                    try {
-                        // get corresponding descriptor in the scenrio
-                        VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
+                    for (GameModel scenario : scenarios) {
+                        try {
+                            // get corresponding descriptor in the scenrio
+                            VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
 
-                        String parentRef = this.getParentRef(vd);
-                        if (!parentRef.equals(modelParentRef)) {
-                            logger.info("Descriptor {} will be moved from {} to {}", vd, buildPath(vd.getParent()), buildPath(modelVd.getParent()));
-                            // Parents differs
-                            toMove.put(vd, modelVd);  //key : the descriptor to move; value: corresponding descriptor within the model
-                        }
-                    } catch (WegasNoResultException ex) {
-                        // corresponding descriptor not found -> it has to be created
-                        // but, in this step we only care about directories
-                        logger.info("Descriptor {} will be created in {} at {}", modelVd, scenario, buildPath(modelVd.getParent()));
-                        if (modelVd instanceof DescriptorListI) {
-                            toCreate.putIfAbsent(scenario, new ArrayList<>());
-                            toCreate.get(scenario).add(modelVd);
+                            String parentRef = this.getParentRef(vd);
+                            if (!parentRef.equals(modelParentRef)) {
+                                logger.info("Descriptor {} will be moved from {} to {}", vd, buildPath(vd.getParent()), buildPath(modelVd.getParent()));
+                                // Parents differs
+                                toMove.put(vd, modelVd);  //key : the descriptor to move; value: corresponding descriptor within the model
+                            }
+                        } catch (WegasNoResultException ex) {
+                            // corresponding descriptor not found -> itState has to be created
+                            // but, in this step we only care about directories
+                            logger.info("Descriptor {} will be created in {} at {}", modelVd, scenario, buildPath(modelVd.getParent()));
+                            if (modelVd instanceof DescriptorListI) {
+                                toCreate.putIfAbsent(scenario, new ArrayList<>());
+                                toCreate.get(scenario).add(modelVd);
+                            }
                         }
                     }
                 }
-            }
             }
 
             // Create missing descriptors (DescriptorListI) to ensure all scenarios have the correct struct
@@ -1270,7 +1278,7 @@ public class ModelFacade {
                          * have been flushed to database
                          *
                          * for instance, reviving a taskDescriptor needs to fetch others tasks by
-                         * name, it will not return any result if this flush not occurs
+                         * name, itState will not return any result if this flush not occurs
                          */
                         variableDescriptorFacade.flush();
 

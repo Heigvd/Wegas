@@ -179,7 +179,7 @@ public abstract class AbstractTransition extends AbstractEntity implements Broad
      * List of variable the condition depends on. Empty means the condition MUST be evaluated in all
      * cases.
      */
-    @OneToMany(mappedBy = "transition", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "transition", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
         optional = false, nullable = false,
         proposal = EmptyArray.class,

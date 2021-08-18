@@ -7,7 +7,8 @@ export const languagesTranslationsIT: LanguagesTranslations = {
     `Sei sicuro di voler eliminare tutte le traduzioni ${
       outdated ? 'obsolete ' : ''
     } di ${language}?`,
-  outdated: 'obsolete',
+  outdated: 'obsoleto',
+  upToDate: 'aggiornato',
   clearTranslations: 'Cancellare le traduzioni',
   outdatedTranslations: 'Traduzioni obsolete',
   allTranslations: 'Tutte le traduzioni',
@@ -16,7 +17,8 @@ export const languagesTranslationsIT: LanguagesTranslations = {
   SCENARIO_EDITOR: 'Editore di scenario',
   translationManagement: 'Gestione delle traduzioni',
   outdateOtherLanguages: 'Superare le altre lingue',
-  markAsOutadated: 'Segna come obsoleto',
+  markAsOutdated: 'Impostare obsoleto',
+  markAsUpToDate: 'Impostare aggiornato',
   undoModifications: 'Annullare le modifiche',
   saveModifications: 'Salvare le modifiche',
   hideOptions: 'Nascondi le opzioni',

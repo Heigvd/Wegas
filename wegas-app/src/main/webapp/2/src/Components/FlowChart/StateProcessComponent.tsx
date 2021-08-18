@@ -21,7 +21,6 @@ import { useDrag } from 'react-dnd';
 import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { classNameOrEmpty } from '../../Helper/className';
-import { wlog } from '../../Helper/wegaslog';
 import { themeVar } from '../Theme/ThemeVars';
 
 const stateContainerStyle = css({
@@ -157,10 +156,7 @@ export function StateBox({
       className={stateContainerStyle + classNameOrEmpty(state.className)}
       style={state.style}
       onClick={e =>
-        isActionAllowed({ disabled, readOnly }) &&
-        onClick &&
-        onClick(e, state) &&
-        wlog(selected)
+        isActionAllowed({ disabled, readOnly }) && onClick && onClick(e, state)
       }
     >
       <div

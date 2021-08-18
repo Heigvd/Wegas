@@ -8,6 +8,7 @@ export const languagesTranslationsDE: LanguagesTranslations = {
       outdated ? 'veralteten ' : ''
     } Übersetzungen von ${language} löschen möchten?`,
   outdated: 'veraltet',
+  upToDate: 'gültig',
   clearTranslations: 'Übersetzungen löschen',
   outdatedTranslations: 'Veraltete Übersetzungen',
   allTranslations: 'Alle Übersetzungen',
@@ -16,7 +17,8 @@ export const languagesTranslationsDE: LanguagesTranslations = {
   SCENARIO_EDITOR: 'Redakteur für Szenario',
   translationManagement: 'Übersetzungsmanagement',
   outdateOtherLanguages: 'Andere Sprachen überholen',
-  markAsOutadated: 'Als veraltet markieren',
+  markAsOutdated: 'Als veraltet markieren',
+  markAsUpToDate: 'Als g!ultig markieren',
   undoModifications: 'Änderungen zurücknehmen',
   saveModifications: 'Änderungen speichern',
   hideOptions: 'Optionen ausblenden',
