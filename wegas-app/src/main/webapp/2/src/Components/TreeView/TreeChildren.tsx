@@ -8,12 +8,14 @@ export interface PassePropsContext {
   path: number[];
   last: boolean;
   notDroppable?: boolean;
+  parentAcceptTypes: string[];
 }
 
 export const passedPropsCTX = React.createContext<PassePropsContext>({
   parentId: 0,
   path: [],
   last: false,
+  parentAcceptTypes: [],
 });
 
 export type DragOverType = 'UP' | 'IN' | 'DOWN' | 'EMPTY' | undefined;
@@ -23,6 +25,7 @@ interface TreeChildrenProps<T = unknown> {
   data: T | null;
   path: number[];
   notDroppable?: boolean;
+  acceptTypes: string[];
 }
 
 export function TreeChildren<T = unknown>({
@@ -31,6 +34,7 @@ export function TreeChildren<T = unknown>({
   path,
   notDroppable,
   children,
+  acceptTypes,
 }: React.PropsWithChildren<TreeChildrenProps<T>>) {
   const { minimumNodeHeight, minimumLabelWidth, designParams, dragState } =
     React.useContext(treeviewCTX);
@@ -70,6 +74,7 @@ export function TreeChildren<T = unknown>({
               path: [...path, index],
               last: index === childrenLength - 1,
               notDroppable,
+              parentAcceptTypes: acceptTypes,
             }}
           >
             {child}

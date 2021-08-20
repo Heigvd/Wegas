@@ -200,7 +200,8 @@ export function CTree({
     }
     return (
       <TreeNode
-        acceptType={TREEVIEW_ITEM_TYPE}
+        acceptTypes={[TREEVIEW_ITEM_TYPE]}
+        type={TREEVIEW_ITEM_TYPE}
         forceOpenClose={searching && open ? true : undefined}
         notDraggable={!actionAllowed}
         notDroppable={!actionAllowed}

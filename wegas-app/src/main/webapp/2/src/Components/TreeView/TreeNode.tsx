@@ -6,7 +6,10 @@ import {
   DEFAULT_TREENODE_TYPE,
   POSITION_DATA,
   treeviewCTX,
+  TREEVIEW_DEFAULT_TYPES,
 } from './TreeView';
+
+let globalComputedId = 0;
 
 export interface TreeNodePassedProps<T = unknown> {
   parentData?: T | null;
@@ -15,10 +18,11 @@ export interface TreeNodePassedProps<T = unknown> {
 }
 
 interface TreeNodeProps<T = unknown> extends ClassStyleId {
-  id: string;
+  // id: string;
   data?: T | null;
   label: React.ReactNode;
-  acceptType?: string;
+  type?: string;
+  acceptTypes?: string[];
   forceOpenClose?: boolean;
   notDraggable?: boolean;
   notDroppable?: boolean;
@@ -27,18 +31,29 @@ interface TreeNodeProps<T = unknown> extends ClassStyleId {
 export function TreeNode<T = unknown>({
   data = null,
   label,
-  acceptType = DEFAULT_TREENODE_TYPE,
+  type = DEFAULT_TREENODE_TYPE,
+  acceptTypes = [DEFAULT_TREENODE_TYPE],
   forceOpenClose,
   notDraggable,
   notDroppable,
   children,
   style,
   className,
-  id,
+  id: initId,
 }: React.PropsWithChildren<TreeNodeProps<T>>) {
-  if (acceptType.toLowerCase() === DEFAULT_FILE_TYPE.toLowerCase()) {
+  const { current: id } = React.useRef(
+    initId == null ? String(globalComputedId++) : initId,
+  );
+
+  if (type.toLowerCase() === DEFAULT_FILE_TYPE.toLowerCase()) {
     throw Error(
-      `Do not use ${DEFAULT_FILE_TYPE} for TreeNode acceptType. This is reserved only for files!`,
+      `Do not use ${type} for TreeNode acceptType. This is reserved only for files!`,
+    );
+  } else if (
+    TREEVIEW_DEFAULT_TYPES.find(t => t.toLowerCase() === type.toLowerCase())
+  ) {
+    throw Error(
+      `Do not use ${type} for TreeNode acceptType. This is reserved for internal TreeNode management`,
     );
   }
 
@@ -60,6 +75,7 @@ export function TreeNode<T = unknown>({
 
   const {
     parentData = null,
+    parentAcceptTypes,
     parentId,
     path = [],
     last,
@@ -100,7 +116,7 @@ export function TreeNode<T = unknown>({
         e.dataTransfer.setData('path', JSON.stringify(path));
         e.dataTransfer.setData('id', id);
         e.dataTransfer.setData('data', JSON.stringify(data));
-        e.dataTransfer.setData(acceptType, '');
+        e.dataTransfer.setData(type, '');
         setDragging(true);
       }}
       onDragEnd={e => {
@@ -139,9 +155,10 @@ export function TreeNode<T = unknown>({
           data-treenode-position={POSITION_DATA.openCloseButton}
           data-treenode-data={JSON.stringify(data)}
           data-treenode-not-droppable={notDroppable}
-          data-treenode-parent-id={parentId}
-          data-treenode-parent-data={JSON.stringify(parentData)}
-          data-treenode-parent-not-droppable={parentNotDroppable}
+          data-treenode-accept-types={JSON.stringify(acceptTypes)}
+          // data-treenode-parent-id={parentId}
+          // data-treenode-parent-data={JSON.stringify(parentData)}
+          // data-treenode-parent-not-droppable={parentNotDroppable}
         >
           {open ? openCloseButtons.open : openCloseButtons.close}
         </div>
@@ -158,14 +175,6 @@ export function TreeNode<T = unknown>({
           [dragUpStyle]: dragUp,
           [dragDownStyle]: dragDown,
         })}
-        // onDragStart={e => {
-        //   wlog('DRAGSTART2');
-        //   e.dataTransfer.setData('path', JSON.stringify(path));
-        //   e.dataTransfer.setData('id', id);
-        //   e.dataTransfer.setData('data', JSON.stringify(data));
-        //   e.dataTransfer.setData(acceptType, '');
-        // }}
-        // onDragEnd={() => endDrag()}
         data-treenode-path={JSON.stringify([...path, 0])}
         data-treenode-id={id}
         data-treenode-position={POSITION_DATA.label}
@@ -173,9 +182,11 @@ export function TreeNode<T = unknown>({
         data-treenode-has-children={children != null}
         data-treenode-show-down={!joinOpen && last}
         data-treenode-not-droppable={notDroppable}
+        data-treenode-accept-types={JSON.stringify(acceptTypes)}
         data-treenode-parent-id={parentId}
         data-treenode-parent-data={JSON.stringify(parentData)}
         data-treenode-parent-not-droppable={parentNotDroppable}
+        data-treenode-parent-accept-types={JSON.stringify(parentAcceptTypes)}
       >
         {label}
       </div>
@@ -190,6 +201,7 @@ export function TreeNode<T = unknown>({
             data-treenode-position={POSITION_DATA.margin}
             data-treenode-data={JSON.stringify(data)}
             data-treenode-not-droppable={notDroppable}
+            data-treenode-accept-types={JSON.stringify(acceptTypes)}
             data-treenode-parent-id={parentId}
             data-treenode-parent-data={JSON.stringify(parentData)}
             data-treenode-parent-not-droppable={parentNotDroppable}
@@ -200,6 +212,7 @@ export function TreeNode<T = unknown>({
             data-treenode-position={POSITION_DATA.content}
             data-treenode-data={JSON.stringify(data)}
             data-treenode-not-droppable={notDroppable}
+            data-treenode-accept-types={JSON.stringify(acceptTypes)}
             data-treenode-parent-id={parentId}
             data-treenode-parent-data={JSON.stringify(parentData)}
             data-treenode-parent-not-droppable={parentNotDroppable}
@@ -210,6 +223,7 @@ export function TreeNode<T = unknown>({
                 path={path}
                 data={data}
                 notDroppable={notDroppable}
+                acceptTypes={acceptTypes}
               >
                 {children}
               </TreeChildren>

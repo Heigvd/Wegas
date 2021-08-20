@@ -13,8 +13,8 @@ import {
 } from '../tools/componentFactory';
 import {
   ComponentDropZone,
-  useDndComponentDrop,
   WegasComponentProps,
+  useDndComponentIsOverFactory,
 } from '../tools/EditableComponent';
 import {
   ChildrenDeserializerProps,
@@ -46,12 +46,13 @@ export function EmptyComponentContainer({
   path,
   condition,
 }: EmptyCompoentContainerProps) {
-  const [{ isOver }, dropZone] = useDndComponentDrop();
+  // const [{ isOver }, dropZone] = useDndComponentDrop();
+  const { isOver, ref } = useDndComponentIsOverFactory();
 
   const { onDrop } = React.useContext(pageCTX);
 
   return (
-    <FlexItem ref={dropZone} className={emptyLayoutItemStyle}>
+    <FlexItem ref={ref} className={emptyLayoutItemStyle}>
       <ComponentDropZone
         onDrop={dndComponent => {
           onDrop(

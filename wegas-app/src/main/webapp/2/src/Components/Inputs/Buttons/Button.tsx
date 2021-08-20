@@ -80,7 +80,7 @@ export const buttonStyle = css({
     },
   },
   ['&.dark']: {
-    ...secondaryButtonCSS
+    ...secondaryButtonCSS,
   },
   ['&.disabledBorders']: {
     ['&.borderTopLeft']: {
@@ -197,7 +197,6 @@ export interface ButtonProps extends ClassStyleId, DisabledReadonly {
   tooltip?: string;
   noHover?: boolean;
   type?: 'submit' | 'reset' | 'button';
-  id?: string;
   disableBorders?: DisableBorders;
   icon?: Icons;
   src?: string;
@@ -210,7 +209,11 @@ export interface ButtonProps extends ClassStyleId, DisabledReadonly {
 
 export const Button = React.forwardRef<
   HTMLButtonElement,
-  React.PropsWithChildren<ButtonProps>
+  React.PropsWithChildren<ButtonProps> &
+    React.DetailedHTMLProps<
+      React.ButtonHTMLAttributes<HTMLElement>,
+      HTMLElement
+    >
 >(
   (
     {
@@ -223,7 +226,7 @@ export const Button = React.forwardRef<
       className,
       style,
       children,
-      tabIndex,
+      //  tabIndex,
       tooltip,
       type,
       id,
@@ -234,6 +237,7 @@ export const Button = React.forwardRef<
       noBackground,
       mode: buttonModes,
       dark,
+      ...defaultButtonProps
     },
     ref,
   ) => {
@@ -254,6 +258,7 @@ export const Button = React.forwardRef<
 
     return (
       <button
+        {...defaultButtonProps}
         ref={ref}
         id={id}
         className={
@@ -274,11 +279,9 @@ export const Button = React.forwardRef<
         style={style}
         onClick={e => !readOnly && onClick && onClick(e)}
         disabled={disabled}
-        tabIndex={tabIndex}
-        title={tooltip}
-        aria-label={tooltip}
-        aria-pressed={pressed}
-        type={type}
+        title={tooltip || defaultButtonProps.title}
+        aria-label={tooltip || defaultButtonProps['aria-label']}
+        aria-pressed={pressed || defaultButtonProps['aria-pressed']}
       >
         {prefixedLabel && computedLabel}
         {icon && <IconComp icon={icon} />}

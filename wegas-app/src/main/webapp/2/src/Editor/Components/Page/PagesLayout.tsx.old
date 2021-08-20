@@ -1,70 +1,57 @@
-import { css, cx } from 'emotion';
-import { omit } from 'lodash-es';
 import * as React from 'react';
+import { Toolbar } from '../../../Components/Toolbar';
+import {
+  flex,
+  flexColumn,
+  grow,
+  itemCenter,
+  expandBoth,
+  globalSelection,
+  defaultPadding,
+} from '../../../css/classes';
+import { cx, css } from 'emotion';
+import { FontAwesome, IconComp, Icon, Icons } from '../Views/FontAwesome';
+// import {
+//   actionNodeContentStyle,
+//   TREEVIEW_ITEM_TYPE as TREEVIEW_INDEX_ITEM_TYPE,
+// } from '../Variable/VariableTreeView.tsx.old';
+import { omit } from 'lodash-es';
+import { DropMenu } from '../../../Components/DropMenu';
+import { TextPrompt } from '../TextPrompt';
+import { isPageItem, isFolderItem } from '../../../Helper/pages';
+import { useStore, store } from '../../../data/Stores/store';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { Actions } from '../../../data';
+import { MessageString } from '../MessageString';
+import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import {
   featuresCTX,
   isFeatureEnabled,
-} from '../Components/Contexts/FeaturesProvider';
-import { DropMenu } from '../Components/DropMenu';
-import { deepDifferent } from '../Components/Hooks/storeHookFactory';
-import { Button } from '../Components/Inputs/Buttons/Button';
-import { ConfirmButton } from '../Components/Inputs/Buttons/ConfirmButton';
-import { usePageComponentStore } from '../Components/PageComponents/tools/componentFactory';
-import { themeVar } from '../Components/Theme/ThemeVars';
-import { Toolbar } from '../Components/Toolbar';
-import { TreeNode } from '../Components/TreeView/TreeNode';
-import { TreeView } from '../Components/TreeView/TreeView';
+} from '../../../Components/Contexts/FeaturesProvider';
+import { pageEditorCTX, pageCTX } from './PageEditor';
 import {
+  Tree,
+  TreeNode,
+  GetParentPropsFn,
   ItemDescription,
   isItemDescription,
-} from '../Components/TreeView/types';
+} from '../Views/TreeView/TreeView';
 import {
-  flex,
-  grow,
-  itemCenter,
-  globalSelection,
-  expandBoth,
-  defaultPadding,
-} from '../css/classes';
-import { Actions } from '../data';
-import { State } from '../data/Reducer/reducers';
-import {
-  pagesStateStore,
   usePagesStateStore,
   isComponentFocused,
+  pagesStateStore,
   PageStateAction,
-} from '../data/Stores/pageStore';
-import { store, useStore } from '../data/Stores/store';
-import { MessageString } from '../Editor/Components/MessageString';
-import { PAGEEDITOR_COMPONENT_TYPE } from '../Editor/Components/Page/ComponentPalette';
-import { pageCTX, pageEditorCTX } from '../Editor/Components/Page/PageEditor';
-import { TextPrompt } from '../Editor/Components/TextPrompt';
-import { TREEVIEW_ITEM_TYPE } from '../Editor/Components/Variable/VariableTreeView';
-import {
-  FontAwesome,
-  Icon,
-  IconComp,
-  Icons,
-} from '../Editor/Components/Views/FontAwesome';
-// import { GetParentPropsFn, Tree, TreeNode } from '../Editor/Components/Views/TreeView/TreeView';
-import { isPageItem, isFolderItem } from '../Helper/pages';
-import { wlog } from '../Helper/wegaslog';
-import { commonTranslations } from '../i18n/common/common';
-import { editorTabsTranslations } from '../i18n/editorTabs/editorTabs';
-import { useInternalTranslate } from '../i18n/internalTranslator';
-import { actionNodeContentStyle } from './NewVariableTreeTester';
-
-interface NodeBasicInfo<T> {
-  parent?: T;
-  index?: number;
-}
-
-// interface DropResult<T> {
-//   item: {};
-//   id: T;
-//   source: NodeBasicInfo<T>;
-//   target: NodeBasicInfo<T>;
-// }
+} from '../../../data/Stores/pageStore';
+import { PAGEEDITOR_COMPONENT_TYPE, isDnDComponent } from './ComponentPalette';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { State } from '../../../data/Reducer/reducers';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { actionNodeContentStyle } from '../Variable/CTree';
+import { TREEVIEW_ITEM_TYPE } from '../Variable/VariableTreeView';
 
 const bulletCSS = {
   width: '1em',
@@ -549,7 +536,7 @@ function WegasComponentTitle({
 
 interface WegasComponentNodeProps {
   component: WegasComponent;
-  // getParentProps: GetParentPropsFn<NodeId>;
+  getParentProps: GetParentPropsFn<NodeId>;
   pageId: string;
   selectedPageId?: string;
   componentPath: number[];
@@ -559,7 +546,7 @@ interface WegasComponentNodeProps {
 
 function WegasComponentNode({
   component,
-  // getParentProps,
+  getParentProps,
   pageId,
   selectedPageId,
   componentPath,
@@ -573,7 +560,7 @@ function WegasComponentNode({
   );
   const page = useStore(pageSelector);
   const id: ComponentNodeId = { pageId, page, componentPath };
-  // const parentProps = getParentProps();
+  const parentProps = getParentProps();
   let computedComponent: WegasComponent;
 
   if (component === undefined) {
@@ -596,7 +583,8 @@ function WegasComponentNode({
 
   return (
     <TreeNode
-      label={
+      {...parentProps}
+      title={
         <WegasComponentTitle
           component={computedComponent}
           componentControls={componentControls}
@@ -605,13 +593,18 @@ function WegasComponentNode({
           pageId={pageId}
           selectedComponentPath={selectedComponentPath}
           selectedPageId={selectedPageId}
+          //isDragging={isDragging}
         />
       }
-      id={JSON.stringify(id)}
-      data={id}
-      acceptType={PAGE_LAYOUT_COMPONENT}
-      notDraggable={componentPath.length === 0}
-      notDroppable={
+      id={id}
+      type={PAGE_LAYOUT_COMPONENT}
+      acceptType={[
+        PAGE_LAYOUT_COMPONENT,
+        TREEVIEW_ITEM_TYPE,
+        PAGEEDITOR_COMPONENT_TYPE,
+      ]}
+      noDrag={componentPath.length === 0}
+      noDrop={
         computedComponent.props?.children == null ||
         (computedComponent.props.children.length === 1 &&
           computedComponent.type === 'For each') ||
@@ -619,17 +612,19 @@ function WegasComponentNode({
       }
     >
       {computedComponent.props?.children
-        ? computedComponent.props?.children?.map((childComponent, i) => (
-            <WegasComponentNode
-              key={compToKey(childComponent, [...componentPath, i])}
-              component={childComponent}
-              pageId={pageId}
-              selectedPageId={selectedPageId}
-              componentPath={[...componentPath, i]}
-              selectedComponentPath={selectedComponentPath}
-              componentControls={componentControls}
-            />
-          ))
+        ? getParentProps =>
+            computedComponent.props?.children?.map((childComponent, i) => (
+              <WegasComponentNode
+                key={compToKey(childComponent, [...componentPath, i])}
+                getParentProps={getParentProps}
+                component={childComponent}
+                pageId={pageId}
+                selectedPageId={selectedPageId}
+                componentPath={[...componentPath, i]}
+                selectedComponentPath={selectedComponentPath}
+                componentControls={componentControls}
+              />
+            ))
         : null}
     </TreeNode>
   );
@@ -782,12 +777,14 @@ interface PagesLayoutNodeProps extends PagesLayoutProps {
   indexItem: PageIndexItem;
   path: string[];
   defaultPageId: string;
+  getParentProps: GetParentPropsFn<NodeId>;
 }
 
 function PageIndexItemNode({
   indexItem,
   path,
   defaultPageId,
+  getParentProps,
   onPageClick,
   componentControls,
 }: PagesLayoutNodeProps): JSX.Element | null {
@@ -809,10 +806,13 @@ function PageIndexItemNode({
   ];
   const id: IndexNodeId = { pagePath: newPath };
 
+  const parentProps = getParentProps();
+
   return isPageItem(indexItem) ? (
     page ? (
       <TreeNode
-        label={
+        {...parentProps}
+        title={
           <PageIndexTitle
             newPath={newPath}
             indexItem={indexItem}
@@ -820,26 +820,29 @@ function PageIndexItemNode({
             defaultPageId={defaultPageId}
           />
         }
-        data={id}
-        id={JSON.stringify(id)}
-        acceptType={PAGE_LAYOUT_ITEM}
+        id={id}
+        type={PAGE_LAYOUT_ITEM}
       >
-        <WegasComponentNode
-          key={indexItem.name + 'FIRSTCOMPONENT'}
-          component={page}
-          pageId={indexItem.id!}
-          selectedPageId={selectedPageId}
-          componentPath={[]}
-          selectedComponentPath={editedPath}
-          componentControls={componentControls}
-        />
+        {getParentProps => (
+          <WegasComponentNode
+            key={indexItem.name + 'FIRSTCOMPONENT'}
+            getParentProps={getParentProps}
+            component={page}
+            pageId={indexItem.id!}
+            selectedPageId={selectedPageId}
+            componentPath={[]}
+            selectedComponentPath={editedPath}
+            componentControls={componentControls}
+          />
+        )}
       </TreeNode>
     ) : (
       <span>{i18nValues.loading}...</span>
     )
   ) : (
     <TreeNode
-      label={
+      {...parentProps}
+      title={
         <PageIndexTitle
           newPath={newPath}
           indexItem={indexItem}
@@ -847,20 +850,22 @@ function PageIndexItemNode({
           defaultPageId={defaultPageId}
         />
       }
-      id={JSON.stringify(id)}
-      data={id}
-      acceptType={PAGE_LAYOUT_ITEM}
+      id={id}
+      type={PAGE_LAYOUT_ITEM}
     >
-      {indexItem.items.map(v => (
-        <PageIndexItemNode
-          key={v.name}
-          indexItem={v}
-          path={newPath}
-          componentControls={componentControls}
-          defaultPageId={defaultPageId}
-          onPageClick={onPageClick}
-        />
-      ))}
+      {getParentProps =>
+        indexItem.items.map(v => (
+          <PageIndexItemNode
+            getParentProps={getParentProps}
+            key={v.name}
+            indexItem={v}
+            path={newPath}
+            componentControls={componentControls}
+            defaultPageId={defaultPageId}
+            onPageClick={onPageClick}
+          />
+        ))
+      }
     </TreeNode>
   );
 }
@@ -902,15 +907,11 @@ interface PagesLayoutProps {
 
 export function PagesLayout(props: PagesLayoutProps) {
   const index = useStore(s => s.pages.index, deepDifferent);
-  //const { dispatch } = store;
+  const { selectedPageId, selectedPage } = React.useContext(pageEditorCTX);
+  const { dispatch } = store;
   const { componentControls } = props;
-  const { onMove /*onNew*/ } = componentControls;
+  const { onMove, onNew } = componentControls;
   const i18nValues = useInternalTranslate(commonTranslations);
-
-  const rootData: NodeBasicInfo<NodeId> = {
-    index: 0,
-    parent: { pagePath: [] },
-  };
 
   return (
     <Toolbar className={expandBoth}>
@@ -918,112 +919,89 @@ export function PagesLayout(props: PagesLayoutProps) {
         <IndexItemAdder path={[]} tooltip={i18nValues.add} />
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, grow, defaultPadding)}>
-        <TreeView
-          rootId="PageRoot"
-          acceptTypes={[
-            PAGE_LAYOUT_COMPONENT,
-            TREEVIEW_ITEM_TYPE,
-            PAGEEDITOR_COMPONENT_TYPE,
-          ]}
-          rootData={rootData.parent}
-          onMove={(from, to) => {
-            if (to.data != null && from.data != null) {
-              // const computedTargetParent = to.data ? to.data : { pagePath: [] };
-              if (
-                //isDnDComponent(from.data) &&
-                isComponentNodeId(from.data) &&
-                isComponentNodeId(to.data)
-                //isComponentNodeId(computedTargetParent) &&
-                // selectedPageId != null &&
-                // selectedPage != null
-              ) {
-                if (from.path != null) {
-                  const pages = store.getState().pages;
-                  const sourcePageId = from.data.pageId;
-                  const destPageId = to.data.pageId;
-                  const sourcePage = pages[sourcePageId];
-                  const destPage = pages[destPageId];
-                  const sourcePath = from.data.componentPath;
-                  const destPath = to.data.componentPath;
-                  // debugger;
-                  onMove(
-                    sourcePageId,
-                    destPageId,
-                    sourcePage,
-                    destPage,
-                    sourcePath,
-                    destPath,
-                    to.path.slice(-1)[0],
-                  );
-                } else {
-                  // onNew(
-                  //   computedTargetParent.pageId,
-                  //   computedTargetParent.page,
-                  //   computedTargetParent.componentPath,
-                  //   item.componentName,
-                  //   target.index || 0,
-                  // );
-                }
+        <Tree<NodeId>
+          id={{ pagePath: [] }}
+          type="NODE"
+          onDrop={({ target, id, item }) => {
+            const computedTargetParent = target.parent
+              ? target.parent
+              : { pagePath: [] };
+
+            if (
+              id == null &&
+              isDnDComponent(item) &&
+              isComponentNodeId(computedTargetParent) &&
+              selectedPageId != null &&
+              selectedPage != null
+            ) {
+              if (item.path != null) {
+                onMove(
+                  selectedPageId,
+                  computedTargetParent.pageId,
+                  selectedPage,
+                  computedTargetParent.page,
+                  item.path,
+                  computedTargetParent.componentPath,
+                  target.index || 0,
+                );
               } else {
-                // if (
-                //   !isComponentNodeId(from.data) &&
-                //   !isComponentNodeId(computedTargetParent)
-                // ) {
-                //   dispatch(
-                //     Actions.PageActions.moveIndexItem(
-                //       id.pagePath,
-                //       computedTargetParent.pagePath,
-                //       target.index,
-                //     ),
-                //   );
-                // } else if (
-                //   isComponentNodeId(id) &&
-                //   isComponentNodeId(computedTargetParent)
-                // ) {
-                //   onMove(
-                //     id.pageId,
-                //     computedTargetParent.pageId,
-                //     id.page,
-                //     computedTargetParent.page,
-                //     id.componentPath,
-                //     computedTargetParent.componentPath,
-                //     target.index || 0,
-                //   );
-                // }
+                onNew(
+                  computedTargetParent.pageId,
+                  computedTargetParent.page,
+                  computedTargetParent.componentPath,
+                  item.componentName,
+                  target.index || 0,
+                );
+              }
+            } else {
+              if (
+                !isComponentNodeId(id) &&
+                !isComponentNodeId(computedTargetParent)
+              ) {
+                dispatch(
+                  Actions.PageActions.moveIndexItem(
+                    id.pagePath,
+                    computedTargetParent.pagePath,
+                    target.index,
+                  ),
+                );
+              } else if (
+                isComponentNodeId(id) &&
+                isComponentNodeId(computedTargetParent)
+              ) {
+                onMove(
+                  id.pageId,
+                  computedTargetParent.pageId,
+                  id.page,
+                  computedTargetParent.page,
+                  id.componentPath,
+                  computedTargetParent.componentPath,
+                  target.index || 0,
+                );
               }
             }
           }}
         >
-          {index ? (
-            index.root.items.map(v => (
-              <PageIndexItemNode
-                key={v.name}
-                indexItem={v}
-                path={[]}
-                defaultPageId={index.defaultPageId}
-                {...props}
-              />
-            ))
-          ) : (
-            <span>{i18nValues.loading}...</span>
+          {getParentProps => (
+            <div className={cx(flex, grow, flexColumn)}>
+              {index ? (
+                index.root.items.map(v => (
+                  <PageIndexItemNode
+                    getParentProps={getParentProps}
+                    key={v.name}
+                    indexItem={v}
+                    path={[]}
+                    defaultPageId={index.defaultPageId}
+                    {...props}
+                  />
+                ))
+              ) : (
+                <span>{i18nValues.loading}...</span>
+              )}
+            </div>
           )}
-        </TreeView>
+        </Tree>
       </Toolbar.Content>
     </Toolbar>
-  );
-}
-
-export default function PagesLayoutTester() {
-  return (
-    <PagesLayout
-      onPageClick={() => wlog('onPageClick')}
-      componentControls={{
-        onDelete: () => wlog('onDelete'),
-        onDuplicate: () => wlog('onDuplicate'),
-        onEdit: () => wlog('onEdit'),
-        onMove: () => wlog('onMove'),
-        onNew: () => wlog('onNew'),
-      }}
-    />
   );
 }

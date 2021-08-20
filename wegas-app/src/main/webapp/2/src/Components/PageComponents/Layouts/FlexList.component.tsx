@@ -16,8 +16,8 @@ import {
   ComponentDropZone,
   DropZones,
   ItemContainer,
-  useDndComponentDrop,
   WegasComponentProps,
+  useDndComponentIsOverFactory,
 } from '../tools/EditableComponent';
 import {
   ChildrenDeserializerProps,
@@ -84,12 +84,12 @@ export function EmptyComponentContainer({
   Container,
   content = 'The layout is empty, drop components in to fill it!',
 }: EmptyPageComponentProps) {
-  const [{ isOver }, dropZone] = useDndComponentDrop();
-
+  // const [{ isOver }, dropZone] = useDndComponentDrop();
+  const { isOver, ref } = useDndComponentIsOverFactory();
   const { onDrop } = React.useContext(pageCTX);
 
   return (
-    <Container ref={dropZone} className={emptyLayoutItemStyle}>
+    <Container ref={ref} className={emptyLayoutItemStyle}>
       <ComponentDropZone
         onDrop={dndComponent => {
           onDrop(dndComponent, path);

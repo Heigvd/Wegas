@@ -37,7 +37,6 @@ export function useDropFunctions<T extends HTMLElement>(
     },
     [dragOut],
   );
-
   const onDragEnd = React.useCallback(
     (event: React.DragEvent<T>) => {
       dragDepth.current = 0;

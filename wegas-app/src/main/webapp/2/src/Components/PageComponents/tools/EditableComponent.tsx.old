@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { dropZoneClass } from '../../Contexts/DefaultDndProvider';
-import {
-  DnDComponent,
-  isDnDComponent,
-} from '../../../Editor/Components/Page/ComponentPalette';
+import { PAGEEDITOR_COMPONENT_TYPE } from '../../../Editor/Components/Page/ComponentPalette';
+import { useDrop, DropTargetMonitor, DragElementWrapper } from 'react-dnd';
 import {
   pageCTX,
   Handles,
+  PageEditorComponent,
   pageEditorCTX,
 } from '../../../Editor/Components/Page/PageEditor';
 import {
@@ -17,6 +16,7 @@ import {
   thinHoverColorInsetShadow,
 } from '../../../css/classes';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
+import { useDebounce } from '../../Hooks/useDebounce';
 import { pick } from 'lodash-es';
 import { classNameOrEmpty } from '../../../Helper/className';
 import {
@@ -36,11 +36,7 @@ import {
 } from './options';
 import { PlayerInfoBullet } from './InfoBullet';
 import { EditHandle } from './EditHandle';
-import {
-  PageComponentNode,
-  isPageComponentNode,
-  ALLOWED_PAGE_EDITOR_COMPONENTS,
-} from '../../../Editor/Components/Page/PagesLayout';
+import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
 import { OptionsState } from './OptionsComponent';
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
 import { themeVar } from '../../Theme/ThemeVars';
@@ -51,8 +47,6 @@ import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceRedu
 import { manageResponseHandler } from '../../../data/actions';
 import { pagesContextStateStore } from '../../../data/Stores/pageContextStore';
 import { addSetterToState } from '../../Hooks/useScript';
-import { wwarn, wlog } from '../../../Helper/wegaslog';
-import { allowDrag } from '../../TreeView/TreeView';
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {
@@ -64,7 +58,7 @@ const childDropZoneIntoCSS = {
 const childDropzoneHorizontalStyle = css({
   ...childDropZoneIntoCSS,
   '&>*>*>.component-dropzone': {
-    maxWidth: 'min(30px,30%)',
+    maxWidth: '30px',
     width: '30%',
     height: '100%',
   },
@@ -76,7 +70,7 @@ const childDropzoneHorizontalStyle = css({
 const childDropzoneVerticalStyle = css({
   ...childDropZoneIntoCSS,
   '&>*>*>.component-dropzone': {
-    maxHeight: 'min(30px,30%)',
+    maxHeight: '30px',
     width: '100%',
     height: '30%',
   },
@@ -212,94 +206,46 @@ const checkIfInsideRectangle = (
   Ptest: { x: number; y: number },
 ) => Ptest.x >= A.x && Ptest.x <= C.x && Ptest.y >= A.y && Ptest.y <= C.y;
 
-// /**
-//  * useDndComponentDrop - it's a hook that normalize the usage of useDrop in the different dropable zone used in this file
-//  * @param onDrop - the function to trigger when a drop occures
-//  */
-// export function useDndComponentDrop(
-//   onDrop?: (
-//     dndComponnent: PageEditorComponent,
-//     dndMonitor: DropTargetMonitor,
-//   ) => void,
-// ): [
-//   {
-//     isOver: boolean;
-//     isOverCurrent: boolean;
-//     canDrop: boolean;
-//     item: PageEditorComponent | null;
-//   },
-//   DragElementWrapper<{}>,
-// ] {
-//   const [dropZoneProps, dropZone] = useDrop<
-//     PageEditorComponent,
-//     void,
-//     {
-//       isOver: boolean;
-//       isOverCurrent: boolean;
-//       canDrop: boolean;
-//       item: PageEditorComponent | null;
-//     }
-//   >({
-//     accept: [PAGEEDITOR_COMPONENT_TYPE, PAGE_LAYOUT_COMPONENT],
-//     canDrop: () => true,
-//     drop: onDrop,
-//     collect: (mon: DropTargetMonitor) => ({
-//       isOver: mon.isOver({ shallow: false }),
-//       isOverCurrent: mon.isOver({ shallow: true }),
-//       canDrop: mon.canDrop(),
-//       item: mon.getItem() as PageEditorComponent | null,
-//     }),
-//   });
-//   const delayedCanDrop = useDebounce(dropZoneProps.canDrop, 100);
-//   return [{ ...dropZoneProps, canDrop: delayedCanDrop }, dropZone];
-// }
-
-export function useDndComponentIsOverFactory(notDroppable?: boolean) {
-  const [isOver, setIsOverCurrent] = React.useState(false);
-
-  const onDragOver = React.useCallback(
-    (e: DragEvent) => {
-      if (e.dataTransfer != null) {
-        const types = e.dataTransfer.types;
-        if (
-          allowDrag(
-            notDroppable === true,
-            ALLOWED_PAGE_EDITOR_COMPONENTS,
-            types,
-          )
-        ) {
-          setIsOverCurrent(true);
-        }
-      }
-    },
-    [notDroppable],
-  );
-  const onDragLeave = React.useCallback(() => {
-    setIsOverCurrent(false);
-  }, []);
-
-  const onDragExit = React.useCallback(() => {
-    setIsOverCurrent(false);
-  }, []);
-
-  const ref = React.useCallback(
-    (ref: HTMLDivElement | null) => {
-      if (ref != null) {
-        ref.addEventListener('dragover', onDragOver);
-        ref.addEventListener('dragleave', onDragLeave);
-        ref.addEventListener('dragexit', onDragExit);
-
-        return () => {
-          ref.removeEventListener('dragover', onDragOver);
-          ref.removeEventListener('dragleave', onDragLeave);
-          ref.removeEventListener('dragexit', onDragExit);
-        };
-      }
-    },
-    [onDragExit, onDragLeave, onDragOver],
-  );
-
-  return { isOver, ref };
+/**
+ * useDndComponentDrop - it's a hook that normalize the usage of useDrop in the different dropable zone used in this file
+ * @param onDrop - the function to trigger when a drop occures
+ */
+export function useDndComponentDrop(
+  onDrop?: (
+    dndComponnent: PageEditorComponent,
+    dndMonitor: DropTargetMonitor,
+  ) => void,
+): [
+  {
+    isOver: boolean;
+    isOverCurrent: boolean;
+    canDrop: boolean;
+    item: PageEditorComponent | null;
+  },
+  DragElementWrapper<{}>,
+] {
+  const [dropZoneProps, dropZone] = useDrop<
+    PageEditorComponent,
+    void,
+    {
+      isOver: boolean;
+      isOverCurrent: boolean;
+      canDrop: boolean;
+      item: PageEditorComponent | null;
+    }
+  >({
+    accept: [PAGEEDITOR_COMPONENT_TYPE, PAGE_LAYOUT_COMPONENT],
+    canDrop: () => true,
+    drop: onDrop,
+    collect: (mon: DropTargetMonitor) => ({
+      isOver: mon.isOver({ shallow: false }),
+      isOverCurrent: mon.isOver({ shallow: true }),
+      canDrop: mon.canDrop(),
+      item: mon.getItem() as PageEditorComponent | null,
+    }),
+  });
+  const delayedCanDrop = useDebounce(dropZoneProps.canDrop, 100);
+  return [{ ...dropZoneProps, canDrop: delayedCanDrop }, dropZone];
 }
 
 /**
@@ -372,9 +318,9 @@ interface ComponentDropZoneProps {
   /**
    * onDrop - the called function when an authorized element is dropped on the zone
    */
-  onDrop: (
-    dndComponnent: PageComponentNode | DnDComponent,
-    event: React.DragEvent<HTMLDivElement>,
+  onDrop?: (
+    dndComponnent: PageEditorComponent,
+    dndMonitor: DropTargetMonitor,
   ) => void;
   /**
    * show - show the zone, hidden by default
@@ -392,46 +338,10 @@ export function ComponentDropZone({
   show,
   dropPosition,
 }: ComponentDropZoneProps) {
-  // const [{ isOverCurrent }, dropZone] = useDndComponentDrop(onDrop);
-  const [isOverCurrent, setIsOverCurrent] = React.useState(false);
-
-  wlog(isOverCurrent);
+  const [{ isOverCurrent }, dropZone] = useDndComponentDrop(onDrop);
   return (
     <div
-      // ref={dropZone}
-      onDragOver={e => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsOverCurrent(true);
-      }}
-      onDragLeave={_e => {
-        setIsOverCurrent(false);
-      }}
-      onDragExit={_e => {
-        setIsOverCurrent(false);
-      }}
-      onDrop={e => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsOverCurrent(false);
-
-        let fromData;
-        try {
-          fromData = JSON.parse(e.dataTransfer.getData('data'));
-        } catch (_e) {
-          fromData = undefined;
-        }
-
-        if (
-          // onDrop &&
-          fromData != null &&
-          (isDnDComponent(fromData) || isPageComponentNode(fromData))
-        ) {
-          onDrop(fromData, e);
-        } else {
-          wwarn('Unmanaged component dropped');
-        }
-      }}
+      ref={dropZone}
       className={
         dropZoneClass(isOverCurrent) +
         (dropPosition === 'INTO'
@@ -689,44 +599,36 @@ export function ComponentContainer({
     setDragHoverState(false);
   }, [children]);
 
-  function stopDragging() {
-    setDragHoverState(false);
-  }
+  const onEditableComponentDrop = React.useCallback(
+    (dndComponent, dndMonitor) => {
+      if (container.current) {
+        const { x: absX, y: absY } = dndMonitor.getClientOffset() || {
+          x: 0,
+          y: 0,
+        };
+        const { left: srcX, top: srcY } =
+          container.current.getBoundingClientRect() || {
+            x: 0,
+            y: 0,
+          };
 
-  React.useEffect(() => {
-    document.addEventListener('dragend', stopDragging);
-    return () => {
-      document.removeEventListener('dragend', stopDragging);
-    };
-  }, []);
+        const [relX, relY] = [absX - srcX, absY - srcY];
 
-  const onEditableComponentDrop: ComponentDropZoneProps['onDrop'] =
-    React.useCallback(
-      (dndComponent, e) => {
-        if (container.current) {
-          // Get the bounding rectangle of target
-          const rect = e.currentTarget.getBoundingClientRect();
-
-          // Mouse position
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-
-          onDrop(dndComponent, path, undefined, {
-            // position: { left: relX, top: relY },
-            position: { left: x, top: y },
-          });
-        }
-      },
-      [onDrop, path],
-    );
+        onDrop(dndComponent, path, undefined, {
+          position: { left: relX, top: relY },
+        });
+      }
+    },
+    [onDrop, path],
+  );
 
   return showComponent ? (
     <Container
-      // ref={ref => {
-      //   if (ref != null) {
-      //     container.current = ref;
-      //   }
-      // }}
+      ref={ref => {
+        if (ref != null) {
+          container.current = ref;
+        }
+      }}
       {...pick(restProps, containerPropsKeys)}
       className={
         cx(handleControlStyle, flex, options.themeModeClassName, {
@@ -758,7 +660,6 @@ export function ComponentContainer({
         />
       )}
       {dragHoverState && editable && dropzones.side && (
-        // {true && (
         <ComponentDropZone
           onDrop={dndComponent => onDrop(dndComponent, containerPath, itemPath)}
           show
@@ -770,7 +671,6 @@ export function ComponentContainer({
           name={name}
           stackedHandles={stackedHandles}
           componentType={componentType}
-          pageId={pageId}
           path={path}
           infoMessage={
             options.hidden

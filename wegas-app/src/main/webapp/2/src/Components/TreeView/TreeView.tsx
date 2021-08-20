@@ -11,6 +11,21 @@ import { wwarn } from '../../Helper/wegaslog';
 
 export const DEFAULT_TREENODE_TYPE = 'DEFAULT_TREENODE_TYPE';
 export const DEFAULT_FILE_TYPE = 'Files';
+export const TREEVIEW_DEFAULT_TYPES = ['path', 'id', 'data'];
+
+export function allowDrag(
+  notDroppable: boolean,
+  acceptTypes: readonly string[] | null,
+  types: readonly string[],
+) {
+  return (
+    !notDroppable &&
+    acceptTypes != null &&
+    acceptTypes.some(type =>
+      types.map(type => type.toLowerCase()).includes(type.toLowerCase()),
+    )
+  );
+}
 
 const MARGIN_SIZE = 20;
 function DefaultCarret({ icon }: { icon: string }) {
@@ -115,6 +130,7 @@ interface TreeViewProps<T = unknown> extends ClassStyleId {
   rootData?: T | null;
   rootPath?: number[];
   notDroppable?: boolean;
+  acceptTypes?: string[];
   nodeManagement?: {
     openNodes: { [path: string]: boolean | undefined };
     setOpenNodes: React.Dispatch<
@@ -122,7 +138,6 @@ interface TreeViewProps<T = unknown> extends ClassStyleId {
     >;
   };
   onMove?: OnMoveFn<T>;
-  acceptTypes?: string[];
   parameters?: TreeContextParameters;
   style?: React.CSSProperties;
   className?: string;
@@ -133,10 +148,10 @@ export function TreeView<T = unknown>({
   rootData = null,
   rootPath = [],
   notDroppable,
+  acceptTypes = [DEFAULT_TREENODE_TYPE],
   nodeManagement,
   parameters,
   onMove,
-  acceptTypes = [DEFAULT_TREENODE_TYPE],
   children,
   className,
   style,
@@ -207,96 +222,101 @@ export function TreeView<T = unknown>({
 
   const onDragOver = React.useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
-      const allowDrag = acceptTypes.some(type =>
-        e.dataTransfer.types
-          .map(type => type.toLowerCase())
-          .includes(type.toLowerCase()),
+      // preventDefault is the magic to make onDrop work
+      e.preventDefault();
+      // stopPropagation is there to avoid onDragOver be captured by parents
+      e.stopPropagation();
+
+      let target = e.target as HTMLElement;
+      let idData;
+      let positionData;
+      let showDownData;
+      let hasChildrenData;
+      let notDroppable;
+      let acceptTypes;
+      let parentNotDroppable;
+      let parentAcceptTypes;
+
+      do {
+        idData = target.getAttribute('data-treenode-id');
+        positionData = target.getAttribute('data-treenode-position');
+        showDownData = target.getAttribute('data-treenode-show-down');
+        hasChildrenData = target.getAttribute('data-treenode-has-children');
+        notDroppable = target.getAttribute('data-treenode-not-droppable');
+        acceptTypes = target.getAttribute('data-treenode-accept-types');
+        parentNotDroppable = target.getAttribute(
+          'data-treenode-parent-not-droppable',
+        );
+        parentAcceptTypes = target.getAttribute(
+          'data-treenode-parent-accept-types',
+        );
+        target = target.parentElement as HTMLElement;
+      } while (target != null && idData == null && positionData == null);
+
+      acceptTypes = JSON.parse(acceptTypes as string) as null | string[];
+      parentAcceptTypes = JSON.parse(parentAcceptTypes as string) as
+        | null
+        | string[];
+      const types = e.dataTransfer.types;
+      notDroppable = notDroppable === 'true';
+      parentNotDroppable = parentNotDroppable === 'true';
+
+      const childrenAllowDrag = allowDrag(notDroppable, acceptTypes, types);
+      const parrentAllowDrag = allowDrag(
+        parentNotDroppable,
+        parentAcceptTypes,
+        types,
       );
 
-      if (allowDrag) {
-        // preventDefault is the magic to make onDrop work
-        e.preventDefault();
-        // stopPropagation is there to avoid onDragOver be captured by parents
-        e.stopPropagation();
+      if (idData != null && positionData != null) {
+        let position: DragState['position'] = undefined;
 
-        let target = e.target as HTMLElement;
-        let idData;
-        let positionData;
-        let showDownData;
-        let hasChildrenData;
-        let notDroppable;
-        let parentNotDroppable;
-        do {
-          idData = target.getAttribute('data-treenode-id');
-          positionData = target.getAttribute('data-treenode-position');
-          showDownData = target.getAttribute('data-treenode-show-down');
-          hasChildrenData = target.getAttribute('data-treenode-has-children');
-          notDroppable = target.getAttribute('data-treenode-not-droppable');
-          parentNotDroppable = target.getAttribute(
-            'data-treenode-parent-not-droppable',
-          );
-          target = target.parentElement as HTMLElement;
-        } while (target != null && idData == null && positionData == null);
+        switch (positionData) {
+          case POSITION_DATA.openCloseButton:
+            if (childrenAllowDrag) {
+              position = 'IN';
+            }
+            break;
+          case POSITION_DATA.label: {
+            const { top, height } = target.getBoundingClientRect();
+            const relativeY = e.clientY - top;
+            showDownData = showDownData === 'true';
+            hasChildrenData = hasChildrenData === 'true';
 
-        // isOverAllowed(acceptType,itemType)
-
-        if (idData != null && positionData != null) {
-          let position: DragState['position'] = undefined;
-          notDroppable = notDroppable === 'true';
-          parentNotDroppable = parentNotDroppable === 'true';
-
-          switch (positionData) {
-            case POSITION_DATA.openCloseButton:
-              if (!notDroppable) {
+            if (relativeY < dropZoneSplittingSize) {
+              if (parrentAllowDrag) {
+                position = 'UP';
+              }
+            } else if (
+              showDownData &&
+              height - relativeY < dropZoneSplittingSize
+            ) {
+              if (parrentAllowDrag) {
+                position = 'DOWN';
+              }
+            } else if (hasChildrenData) {
+              if (childrenAllowDrag) {
                 position = 'IN';
               }
-              break;
-            case POSITION_DATA.label: {
-              const { top, height } = target.getBoundingClientRect();
-              const relativeY = e.clientY - top;
-              showDownData = showDownData === 'true';
-              hasChildrenData = hasChildrenData === 'true';
-
-              if (relativeY < dropZoneSplittingSize) {
-                if (!parentNotDroppable) {
-                  position = 'UP';
-                }
-              } else if (
-                showDownData &&
-                height - relativeY < dropZoneSplittingSize
-              ) {
-                if (!parentNotDroppable) {
-                  position = 'DOWN';
-                }
-              } else if (hasChildrenData) {
-                if (!notDroppable) {
-                  position = 'IN';
-                }
-              }
-              break;
             }
-            case POSITION_DATA.margin:
-              if (!notDroppable) {
-                position = 'IN_LAST';
-              }
-              break;
-            case POSITION_DATA.content:
-              if (!notDroppable) {
-                position = 'IN_EMPTY';
-              }
-              break;
+            break;
           }
-
-          setDragState({
-            id: idData,
-            position,
-          });
-        } else {
-          setDragState({
-            id: '',
-            position: undefined,
-          });
+          case POSITION_DATA.margin:
+            if (childrenAllowDrag) {
+              position = 'IN_LAST';
+            }
+            break;
+          case POSITION_DATA.content:
+            if (childrenAllowDrag) {
+              position = 'IN_EMPTY';
+            }
+            break;
         }
+
+        setDragState({
+          id: idData,
+          position,
+        });
       } else {
         setDragState({
           id: '',
@@ -304,7 +324,7 @@ export function TreeView<T = unknown>({
         });
       }
     },
-    [acceptTypes, dropZoneSplittingSize],
+    [dropZoneSplittingSize],
   );
 
   const onDrop = React.useCallback(
@@ -394,33 +414,8 @@ export function TreeView<T = unknown>({
     [onMove, openNode, position, rootId],
   );
 
-  // const [{ item, isOverCurrent }, drop] = useDrop<any, void, any>({
-  //   accept: acceptTypes,
-  //   canDrop: () => !notDroppable,
-  //   drop: (props, monitor) => {
-  //     const test = props;
-  //     const test2 = monitor;
-  //     const test3 = component;
-  //     //debugger;
-  //   },
-  //   hover: (props, monitor) => {
-  //     const test = props;
-  //     const test2 = monitor;
-  //     const test3 = component;
-  //     // debugger;
-  //   },
-  //   collect: (mon: DropTargetMonitor) => {
-  //     // debugger;
-  //     return {
-  //       isOverCurrent: mon.isOver(),
-  //       item: mon.getItem(),
-  //     };
-  //   },
-  // });
-
   return (
     <div
-      // ref={drop}
       style={{
         paddingTop: DEFAULT_TOP_PADDING,
         paddingLeft: DEFAULT_LEFT_PADDING,
@@ -465,6 +460,7 @@ export function TreeView<T = unknown>({
           data={rootData}
           path={rootPath}
           notDroppable={notDroppable}
+          acceptTypes={acceptTypes}
         >
           {children}
         </TreeChildren>

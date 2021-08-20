@@ -186,7 +186,6 @@ export function VariableTreeView({
           <p>{i18nValues.areYouSure}</p>
         </OkCancelModal>
         <TreeView
-          acceptTypes={[TREEVIEW_ITEM_TYPE]}
           rootId={String(root.id)}
           rootData={root as unknown as IVariableDescriptor}
           onMove={onMove}

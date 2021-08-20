@@ -15,11 +15,7 @@ import { isActionAllowed } from '../Components/PageComponents/tools/options';
 import { themeVar } from '../Components/Theme/ThemeVars';
 import { Toolbar } from '../Components/Toolbar';
 import { TreeNode } from '../Components/TreeView/TreeNode';
-import {
-  DEFAULT_FILE_TYPE,
-  DEFAULT_TREENODE_TYPE,
-  TreeView,
-} from '../Components/TreeView/TreeView';
+import { TreeView } from '../Components/TreeView/TreeView';
 import {
   componentMarginLeft,
   toolboxHeaderStyle,
@@ -236,7 +232,6 @@ export function VariableTreeView({
         </OkCancelModal>
         <TreeView
           rootId={String(root.id)}
-          acceptTypes={[DEFAULT_TREENODE_TYPE, DEFAULT_FILE_TYPE]}
           onMove={(from, to) => {
             const movedVariable = from.data as IVariableDescriptor;
             const index = to.path.pop();
