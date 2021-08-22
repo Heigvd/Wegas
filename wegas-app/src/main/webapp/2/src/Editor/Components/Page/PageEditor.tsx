@@ -437,7 +437,7 @@ export default function PageEditor() {
       const samePages = sourcePageId === destPageId;
       const samePath = !deepDifferent(sourcePath.slice(0, -1), destPath);
       const deleteIndex =
-        samePages && samePath && sourceIndex > destIndex
+        samePages && samePath && sourceIndex >= destIndex
           ? sourceIndex + 1
           : sourceIndex;
       const deletePath =
@@ -525,10 +525,7 @@ export default function PageEditor() {
 
       if (selectedPageId != null && selectedPage != null) {
         const computedPage = replace
-          ? deleteComponent(selectedPage, [
-              ...path,
-              ...(index == null ? [] : [index]),
-            ])
+          ? deleteComponent(selectedPage, [...path, index == null ? 0 : index])
           : selectedPage;
 
         if (computedPage != null) {

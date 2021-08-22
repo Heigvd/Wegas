@@ -13,7 +13,6 @@ import { themeVar } from '../../Theme/ThemeVars';
 import { Button } from '../../Inputs/Buttons/Button';
 import { PAGEEDITOR_COMPONENT_TYPE } from '../../../Editor/Components/Page/ComponentPalette';
 import { PageComponentNode } from '../../../Editor/Components/Page/PagesLayout';
-// import { PageComponentNode } from '../../../Editor/Components/Page/PagesLayout';
 
 const handleContentStyle = css({
   borderRadius: themeVar.dimensions.BorderRadius,
@@ -104,7 +103,6 @@ export function EditHandle({
           />
           <Button
             icon="arrows-alt"
-            // ref={drag}
             draggable
             onDragStart={e => {
               e.stopPropagation();

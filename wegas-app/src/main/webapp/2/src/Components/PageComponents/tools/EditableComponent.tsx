@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
-import { dropZoneClass } from '../../Contexts/DefaultDndProvider';
+import {
+  dropZoneHover,
+  dropZoneFocus,
+} from '../../Contexts/DefaultDndProvider';
 import {
   DnDComponent,
   isDnDComponent,
@@ -42,7 +45,6 @@ import {
   ALLOWED_PAGE_EDITOR_COMPONENTS,
 } from '../../../Editor/Components/Page/PagesLayout';
 import { OptionsState } from './OptionsComponent';
-import { useDropFunctions } from '../../Hooks/useDropFunctions';
 import { themeVar } from '../../Theme/ThemeVars';
 import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
 import { TumbleLoader } from '../../Loader';
@@ -51,7 +53,7 @@ import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceRedu
 import { manageResponseHandler } from '../../../data/actions';
 import { pagesContextStateStore } from '../../../data/Stores/pageContextStore';
 import { addSetterToState } from '../../Hooks/useScript';
-import { wwarn, wlog } from '../../../Helper/wegaslog';
+import { wwarn } from '../../../Helper/wegaslog';
 import { allowDrag } from '../../TreeView/TreeView';
 
 const childDropZoneIntoCSS = {
@@ -86,7 +88,6 @@ const childDropzoneVerticalStyle = css({
 });
 
 const handleControlStyle = css({
-  // textAlign: 'center',
   '&>.wegas-component-handle': {
     visibility: 'hidden',
     opacity: 0.0,
@@ -259,6 +260,8 @@ export function useDndComponentIsOverFactory(notDroppable?: boolean) {
 
   const onDragOver = React.useCallback(
     (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
       if (e.dataTransfer != null) {
         const types = e.dataTransfer.types;
         if (
@@ -385,17 +388,21 @@ interface ComponentDropZoneProps {
    * left or top for AFTER, right or bottom for BEFORE and over for INTO
    */
   dropPosition: 'BEFORE' | 'AFTER' | 'INTO';
+  /**
+   * noFocus - The drop zone will highlight only if something is over it
+   */
+  noFocus?: boolean;
 }
 
 export function ComponentDropZone({
   onDrop,
   show,
   dropPosition,
+  noFocus,
 }: ComponentDropZoneProps) {
   // const [{ isOverCurrent }, dropZone] = useDndComponentDrop(onDrop);
   const [isOverCurrent, setIsOverCurrent] = React.useState(false);
 
-  wlog(isOverCurrent);
   return (
     <div
       // ref={dropZone}
@@ -407,9 +414,9 @@ export function ComponentDropZone({
       onDragLeave={_e => {
         setIsOverCurrent(false);
       }}
-      onDragExit={_e => {
-        setIsOverCurrent(false);
-      }}
+      // onDragExit={_e => {
+      //   setIsOverCurrent(false);
+      // }}
       onDrop={e => {
         e.preventDefault();
         e.stopPropagation();
@@ -433,7 +440,10 @@ export function ComponentDropZone({
         }
       }}
       className={
-        dropZoneClass(isOverCurrent) +
+        cx({
+          [dropZoneHover]: isOverCurrent,
+          [dropZoneFocus]: !noFocus && !isOverCurrent,
+        }) +
         (dropPosition === 'INTO'
           ? ' component-dropzone-into'
           : ' component-dropzone') +
@@ -498,7 +508,11 @@ export interface WegasComponentItemProps extends ClassStyleId {
    */
   onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   /**
-   * onDragEnter - triggered when the mouse is dragging over the element
+   * onDragOver - triggered when the mouse is dragging over the element
+   */
+  onDragOver?: (event: React.DragEvent<HTMLDivElement>) => void;
+  /**
+   * onDragEnter - triggered when the mouse is entering over the element
    */
   onDragEnter?: (event: React.DragEvent<HTMLDivElement>) => void;
   /**
@@ -618,7 +632,7 @@ export function ComponentContainer({
   onClickManaged,
   ...restProps
 }: ComponentContainerProps) {
-  const container = React.useRef<HTMLDivElement>();
+  const container = React.useRef<HTMLDivElement>(null);
   const mouseOver = React.useRef<boolean>(false);
   const [dragHoverState, setDragHoverState] = React.useState<boolean>(false);
   const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
@@ -671,19 +685,28 @@ export function ComponentContainer({
     }
   }, [editable]);
 
-  const dragEnter = React.useCallback(() => {
-    if (editable) {
-      setDragHoverState(true);
-    }
-  }, [editable]);
+  const dragEnter = React.useCallback(
+    e => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (editable) {
+        setDragHoverState(true);
+      }
+    },
+    [editable],
+  );
 
-  const dragLeave = React.useCallback(() => {
-    if (editable) {
-      setDragHoverState(false);
-    }
-  }, [editable]);
-
-  const dropFunctions = useDropFunctions(dragEnter, dragLeave, dragLeave);
+  const dragLeave = React.useCallback(
+    e => {
+      if (editable) {
+        if (e.currentTarget.contains(e.relatedTarget)) {
+          return;
+        }
+        setDragHoverState(false);
+      }
+    },
+    [editable],
+  );
 
   React.useEffect(() => {
     setDragHoverState(false);
@@ -700,33 +723,29 @@ export function ComponentContainer({
     };
   }, []);
 
-  const onEditableComponentDrop: ComponentDropZoneProps['onDrop'] =
-    React.useCallback(
-      (dndComponent, e) => {
-        if (container.current) {
-          // Get the bounding rectangle of target
-          const rect = e.currentTarget.getBoundingClientRect();
+  // const onEditableComponentDrop: ComponentDropZoneProps['onDrop'] =
+  //   React.useCallback(
+  //     (dndComponent, e) => {
+  //       if (container.current) {
+  //         // Get the bounding rectangle of target
+  //         const rect = e.currentTarget.getBoundingClientRect();
 
-          // Mouse position
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
+  //         // Mouse position
+  //         const x = e.clientX - rect.left;
+  //         const y = e.clientY - rect.top;
 
-          onDrop(dndComponent, path, undefined, {
-            // position: { left: relX, top: relY },
-            position: { left: x, top: y },
-          });
-        }
-      },
-      [onDrop, path],
-    );
+  //         onDrop(dndComponent, path, undefined, {
+  //           // position: { left: relX, top: relY },
+  //           position: { left: x, top: y },
+  //         });
+  //       }
+  //     },
+  //     [onDrop, path],
+  //   );
 
   return showComponent ? (
     <Container
-      // ref={ref => {
-      //   if (ref != null) {
-      //     container.current = ref;
-      //   }
-      // }}
+      ref={container}
       {...pick(restProps, containerPropsKeys)}
       className={
         cx(handleControlStyle, flex, options.themeModeClassName, {
@@ -747,16 +766,21 @@ export function ComponentContainer({
       }
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
-      {...dropFunctions}
+      onDragOver={dragEnter}
+      onDragLeave={dragLeave}
+      // {...dropFunctions}
+      // onDragEnter={dragEnter}
+      // onDragEnd={dragLeave}
+      // onDragLeave={dragLeave}
       tooltip={options.tooltip}
     >
-      {dragHoverState && editable && dropzones.center && (
+      {/* {dragHoverState && editable && dropzones.center && (
         <ComponentDropZone
           onDrop={onEditableComponentDrop}
           show
           dropPosition="INTO"
         />
-      )}
+      )} */}
       {dragHoverState && editable && dropzones.side && (
         // {true && (
         <ComponentDropZone
