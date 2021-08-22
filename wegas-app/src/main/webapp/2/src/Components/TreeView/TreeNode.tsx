@@ -71,7 +71,13 @@ export function TreeNode<T = unknown>({
     dragState,
   } = React.useContext(treeviewCTX);
 
-  const { nodeStyle, dragUpStyle, dragDownStyle, dragOverStyle } = designParams;
+  const {
+    nodeStyle,
+    dragUpStyle,
+    dragDownStyle,
+    dragOverStyle,
+    dragMarginStyle,
+  } = designParams;
 
   const {
     parentData = null,
@@ -82,21 +88,6 @@ export function TreeNode<T = unknown>({
     notDroppable: parentNotDroppable,
   } = React.useContext(passedPropsCTX);
 
-  // const [{ isDragging }, drag] = useDrag<any, void, { isDragging: boolean }>({
-  //   item: {
-  //     id,
-  //     type: acceptType,
-  //     path,
-  //     data,
-  //   },
-  //   canDrag: () => !notDraggable,
-  //   collect: (mon: DragSourceMonitor) => {
-  //     return {
-  //       isDragging: mon.isDragging(),
-  //     };
-  //   },
-  // });
-
   const open = openNodes[id];
   const joinOpen = forceOpenClose != null ? forceOpenClose : open;
 
@@ -105,9 +96,8 @@ export function TreeNode<T = unknown>({
   const dragDown = dragOverNode && dragState.position === 'DOWN';
   const dragIn =
     dragOverNode &&
-    (dragState.position === 'IN' ||
-      dragState.position === 'IN_LAST' ||
-      dragState.position === 'IN_EMPTY');
+    (dragState.position === 'IN' || dragState.position === 'IN_EMPTY');
+  const dragMargin = dragOverNode && dragState.position === 'IN_LAST';
 
   return (
     <div
@@ -148,6 +138,7 @@ export function TreeNode<T = unknown>({
           className={cx({
             [dragUpStyle]: dragUp,
             [dragDownStyle]: dragDown,
+            [dragMarginStyle]: dragMargin,
           })}
           onClick={() => toggleNode(id)}
           data-treenode-path={JSON.stringify([...path, 0])}
@@ -156,15 +147,11 @@ export function TreeNode<T = unknown>({
           data-treenode-data={JSON.stringify(data)}
           data-treenode-not-droppable={notDroppable}
           data-treenode-accept-types={JSON.stringify(acceptTypes)}
-          // data-treenode-parent-id={parentId}
-          // data-treenode-parent-data={JSON.stringify(parentData)}
-          // data-treenode-parent-not-droppable={parentNotDroppable}
         >
           {open ? openCloseButtons.open : openCloseButtons.close}
         </div>
       )}
       <div
-        // ref={drag}
         draggable={!notDraggable}
         style={{
           minWidth: minimumLabelWidth,

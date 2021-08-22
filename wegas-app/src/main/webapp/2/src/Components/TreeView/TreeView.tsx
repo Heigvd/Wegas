@@ -6,6 +6,7 @@ import {
   dragUpStyle,
   dragDownStyle,
   dragOverStyle,
+  dragMarginStyle,
 } from './classes';
 import { wwarn } from '../../Helper/wegaslog';
 
@@ -59,6 +60,7 @@ const DESIGN_PARAMS: DesignParams = {
   dragUpStyle,
   dragDownStyle,
   dragOverStyle,
+  dragMarginStyle,
 };
 
 interface DesignParams {
@@ -67,6 +69,7 @@ interface DesignParams {
   dragUpStyle: string;
   dragDownStyle: string;
   dragOverStyle: string;
+  dragMarginStyle: string;
 }
 
 interface TreeViewContextParameters {
@@ -138,7 +141,7 @@ interface TreeViewProps<T = unknown> extends ClassStyleId {
     >;
   };
   onMove?: OnMoveFn<T>;
-  parameters?: TreeContextParameters;
+  parameters?: TreeContextParameters & { designParams: Partial<DesignParams> };
   style?: React.CSSProperties;
   className?: string;
 }
@@ -163,7 +166,7 @@ export function TreeView<T = unknown>({
     minimumLabelWidth = MINIMUM_NODE_LABEL_WIDTH,
     keepOpenOnDrag = KEEP_OPEN_ON_DRAG,
     openCloseButtons = OPEN_CLOSE_BUTTONS,
-    designParams = DESIGN_PARAMS,
+    designParams = {},
     openOnDrag = null,
   } = parameters || {};
 
@@ -448,7 +451,7 @@ export function TreeView<T = unknown>({
           minimumLabelWidth,
           keepOpenOnDrag,
           openCloseButtons,
-          designParams,
+          designParams: { ...DESIGN_PARAMS, ...designParams },
           openOnDrag,
           openNodes,
           toggleNode,

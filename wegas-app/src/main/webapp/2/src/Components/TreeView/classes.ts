@@ -24,6 +24,11 @@ export const dragOverStyle = css({
   marginBottom: `-${DESIGN_SETTINGS.dragOverBorderWidth}px`,
 });
 
+export const dragMarginStyle = css({
+  borderLeft: `solid ${DESIGN_SETTINGS.dragOverBorderWidth}px ${DESIGN_SETTINGS.dragOverColor}`,
+  marginLeft: `-${DESIGN_SETTINGS.dragOverBorderWidth}px`,
+});
+
 export const nodeStyle = css({
   display: 'flex',
   flexDirection: 'row',
