@@ -35,10 +35,10 @@ export const stateBoxStyle = css({
   alignItems: 'center',
   padding: '15px 15px 15px 15px',
   boxSizing: 'border-box',
-  background: themeVar.colors.HeaderColor,
+  background: themeVar.colors.BackgroundColor,
   borderRadius: '8px',
-  border: '1px solid ' + themeVar.colors.ActiveColor,
-  boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.2)',
+  border: '2px solid ' + themeVar.colors.DisabledColor,
+  boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.15)',
   color: themeVar.colors.ActiveColor,
   flexGrow: 0,
   maxHeight: '100px',
@@ -61,7 +61,7 @@ export const stateBoxActionStyle = css({
   cursor: 'pointer',
   '&:hover': {
     background: themeVar.colors.BackgroundColor,
-    boxShadow: '0px 0px 6px rgba(0, 0, 0, 0.3)',
+    border: '2px solid ' + themeVar.colors.PrimaryColor,
   },
 });
 
@@ -115,11 +115,12 @@ const stateMoreInfosStyle = css({
 });
 
 export const selectedStateBoxStyle = css({
-  background: themeVar.colors.BackgroundColor,
-  border: '4px solid ' + themeVar.colors.ActiveColor,
+  background: themeVar.colors.HeaderColor,
   color: themeVar.colors.ActiveColor,
+  borderColor: 'transparent',
+  boxShadow: 'none',
   '&:hover': {
-    background: themeVar.colors.BackgroundColor,
+    background: themeVar.colors.HeaderColor,
   },
   [`.${indexTagStyle}`]: {
     borderColor: themeVar.colors.ActiveColor,

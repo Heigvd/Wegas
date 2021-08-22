@@ -6,11 +6,11 @@ import {
   defaultPadding,
   expandBoth,
   flex,
+  flexBetween,
   flexColumn,
   flexRow,
   itemCenter,
   justifyCenter,
-  justifyEnd,
   layoutStyle,
 } from '../../../css/classes';
 import { useThemeStore } from '../../../data/Stores/themeStore';
@@ -79,7 +79,21 @@ export default function Preview() {
 
   return (
     <Toolbar className={defaultPadding}>
-      <Toolbar.Header className={cx(flex, justifyEnd, borderBottom)}>
+      <Toolbar.Header className={cx(flex, flexBetween, borderBottom)}>
+      <DropMenu
+          label= "Preview"
+          items={[
+            {
+              label: "GAME",
+              value: '1',
+            },
+            {
+              label: "PREVIEW",
+              value: '2',
+            }
+          ]}
+          onSelect={() => {}}
+        />
         <DropMenu
           icon="cog"
           items={[

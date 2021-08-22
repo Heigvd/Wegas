@@ -80,7 +80,7 @@ export interface ActionsProps<T> {
   action: (entity: T, path?: (string | number)[]) => void;
   label: React.ReactNode;
   confirm?: boolean;
-  sorting: 'delete' | 'duplicate' | 'toolbox' | 'close';
+  sorting: 'delete' | 'duplicate' | 'toolbox' | 'close' | 'findUsage';
 }
 
 export interface EditorAction<T extends IAbstractEntity> {
@@ -463,7 +463,7 @@ export function editVariable(
               },
               findUsage: {
                 label: 'Find usage',
-                sorting: 'toolbox',
+                sorting: 'findUsage',
                 action: (entity: IVariableDescriptor) => {
                   if (entityIsPersisted(entity) && entity.name != null) {
                     dispatch(Actions.EditorActions.searchDeep(entity.name));
@@ -546,7 +546,7 @@ export function editStateMachine(
             },
             findUsage: {
               label: 'Find usage',
-              sorting: 'toolbox',
+              sorting: 'findUsage',
               action: (entity: IFSMDescriptor) => {
                 if (entityIsPersisted(entity) && entity.name != null) {
                   dispatch(Actions.EditorActions.searchDeep(entity.name));
