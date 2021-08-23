@@ -1,11 +1,7 @@
 import { EditorLanguagesCode } from '../data/i18n';
 import { useStore } from '../data/Stores/store';
 
-export interface TranslatableObject<T> {
-  [lang: string]: T;
-}
-
-function internalTranslate<Translations>(
+export function internalTranslate<Translations>(
   translatableObject: TranslatableObject<Translations>,
   lang?: EditorLanguagesCode,
 ): Translations {
@@ -19,6 +15,6 @@ function internalTranslate<Translations>(
 export function useInternalTranslate<Translations>(
   translatableObject: TranslatableObject<Translations>,
 ): Translations {
-  const  lang = useStore(s => s.global.currentEditorLanguageCode);
+  const lang = useStore(s => s.global.currentEditorLanguageCode);
   return internalTranslate(translatableObject, lang);
 }

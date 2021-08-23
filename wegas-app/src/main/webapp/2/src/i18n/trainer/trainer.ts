@@ -1,4 +1,3 @@
-import { TranslatableObject } from '../internalTranslator';
 import { trainerTranslationsDE } from './trainer-de';
 import { trainerTranslationsEN } from './trainer-en';
 import { trainerTranslationsFR } from './trainer-fr';

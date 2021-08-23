@@ -1,17 +1,13 @@
 import * as React from 'react';
-import { createStore, applyMiddleware, Reducer } from 'redux';
-import { composeEnhancers } from '../data/Stores/store';
-import thunk, { ThunkMiddleware } from 'redux-thunk';
-import { createStoreConnector } from '../data/connectStore';
-import u from 'immer';
+import { useStore, store } from '../data/Stores/store';
 import { flexColumn, flex, itemCenter, flexRow } from '../css/classes';
 import { cx, css } from 'emotion';
-import { omit } from 'lodash-es';
 import { ITranslatableContent } from 'wegas-ts-api';
 import { translate } from '../Editor/Components/FormView/translatable';
 import { languagesCTX } from './Contexts/LanguagesProvider';
 import { themeVar } from './Theme/ThemeVars';
 import { Button } from './Inputs/Buttons/Button';
+import { ActionCreator } from '../data/actions';
 
 const popupBackgroundStyle = css({
   zIndex: 100000,
@@ -34,7 +30,7 @@ const popupStyle = css({
   borderColor: themeVar.colors.PrimaryColor,
 });
 
-interface Popup {
+export interface Popup {
   /**
    * message - the message of the popup
    */
@@ -49,67 +45,12 @@ interface Popup {
   timestamp: number;
 }
 
-interface PopupState {
+export interface PopupState {
   popups: { [id: string]: Popup };
 }
 
-const PopupActionTypes = {
-  ADD_POPUP: 'AddPopup',
-  REMOVE_POPUP: 'RemovePopup',
-} as const;
-
-function createAction<T extends ValueOf<typeof PopupActionTypes>, P>(
-  type: T,
-  payload: P,
-) {
-  return {
-    type,
-    payload,
-  };
-}
-
-export const PopupActionCreator = {
-  ADD_POPUP: (data: Popup & { id: string }) =>
-    createAction(PopupActionTypes.ADD_POPUP, data),
-  REMOVE_POPUP: (data: { id: string }) =>
-    createAction(PopupActionTypes.REMOVE_POPUP, data),
-};
-
-type PopupActions<
-  A extends keyof typeof PopupActionCreator = keyof typeof PopupActionCreator,
-> = ReturnType<typeof PopupActionCreator[A]>;
-
-const popupsReducer: Reducer<Readonly<PopupState>, PopupActions> = u(
-  (state: PopupState, action: PopupActions) => {
-    switch (action.type) {
-      case PopupActionTypes.ADD_POPUP: {
-        state.popups[action.payload.id] = action.payload;
-        break;
-      }
-
-      case PopupActionTypes.REMOVE_POPUP: {
-        state.popups = omit(state.popups, action.payload.id);
-        break;
-      }
-    }
-    return state;
-  },
-  { popups: {} } as PopupState,
-);
-
-const store = createStore(
-  popupsReducer,
-  composeEnhancers(
-    applyMiddleware(thunk as ThunkMiddleware<PopupState, PopupActions>),
-  ),
-);
-
-const { useStore, getDispatch } = createStoreConnector(store);
-
-export const popupDispatch = getDispatch();
-
 export function PopupManager({ children }: React.PropsWithChildren<{}>) {
-  const popups = useStore(s => s.popups);
+  const popups = useStore(s => s.global.popups);
   const { lang } = React.useContext(languagesCTX);
   return (
     <>
@@ -127,7 +68,7 @@ export function PopupManager({ children }: React.PropsWithChildren<{}>) {
               <Button
                 icon="times"
                 onClick={() =>
-                  popupDispatch(PopupActionCreator.REMOVE_POPUP({ id }))
+                  store.dispatch(ActionCreator.REMOVE_POPUP({ id }))
                 }
               />
             </div>
@@ -147,8 +88,8 @@ export function addPopup(
   const timestamp = new Date().getTime();
   if (duration != null) {
     setTimeout(() => {
-      popupDispatch(PopupActionCreator.REMOVE_POPUP({ id }));
+      store.dispatch(ActionCreator.REMOVE_POPUP({ id }));
     }, duration);
   }
-  return PopupActionCreator.ADD_POPUP({ id, message, duration, timestamp });
+  return ActionCreator.ADD_POPUP({ id, message, duration, timestamp });
 }

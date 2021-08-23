@@ -28,6 +28,8 @@ import i18nGlobalSrc from '!!raw-loader!../../../types/scripts/I18nGlobals.d.ts'
 // @ts-ignore
 import APIMethodsGlobalSrc from '!!raw-loader!../../../types/scripts/APIMethodsGlobals.d.ts';
 // @ts-ignore
+import RolesMethodsGlobalSrc from '!!raw-loader!../../../types/scripts/RolesGlobals.d.ts';
+// @ts-ignore
 import HelpersGlobalSrc from '!!raw-loader!../../../types/scripts/HelpersGlobals.d.ts';
 // @ts-ignore
 import WegasDashboardSrc from '!!raw-loader!../../../types/scripts/WegasDashboard.d.ts';
@@ -202,6 +204,8 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         declare const APIMethods : APIMethodsClass;
 
         declare const Helpers : GlobalHelpersClass;
+
+        declare const Roles : RolesMehtods;
         `
             : `${buildGlobalServerMethods(globalServerMethods)}
         
@@ -249,6 +253,7 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         ${i18nGlobalSrc}\n
         ${APIMethodsGlobalSrc}\n
         ${HelpersGlobalSrc}\n
+        ${RolesMethodsGlobalSrc}\n
         ${SchemaHelper}\n
         ${WegasDashboardSrc}\n
         ${libs}\n

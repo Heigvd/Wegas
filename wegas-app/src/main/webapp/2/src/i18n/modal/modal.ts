@@ -1,4 +1,3 @@
-import { TranslatableObject } from '../internalTranslator';
 import { ModalTranslations } from './definitions';
 import { modalTranslationsDE } from './modal-de';
 import { modalTranslationsEN } from './modal-en';

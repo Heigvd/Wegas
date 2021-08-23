@@ -1,5 +1,5 @@
 import { createStore, applyMiddleware, Reducer } from 'redux';
-import { composeEnhancers } from './store';
+import { composeEnhancers, store } from './store';
 import thunk, { ThunkAction, ThunkMiddleware } from 'redux-thunk';
 import { createStoreConnector } from '../connectStore';
 import u from 'immer';
@@ -9,7 +9,7 @@ import {
   NOCONTENTMESSAGE,
   LibType,
 } from '../../API/library.api';
-import { addPopup, popupDispatch } from '../../Components/PopupManager';
+import { addPopup } from '../../Components/PopupManager';
 import { createTranslatableContent } from '../../Editor/Components/FormView/translatable';
 import { IGameModelContent } from 'wegas-ts-api';
 import {
@@ -29,6 +29,8 @@ import {
 } from '../../Components/Theme/ThemeVars';
 import { cloneDeep } from 'lodash';
 import { wwarn } from '../../Helper/wegaslog';
+
+const globalDispatch = store.dispatch;
 
 const themeActionsTypes = {
   GET_ALL_THEMES: 'GET_ALL_THEMES',
@@ -194,7 +196,7 @@ export function getAllThemes(): ThemeThunkResult {
         );
       })
       .catch((e: Error) => {
-        popupDispatch(
+        globalDispatch(
           addPopup(
             'getAllThemesError',
             createTranslatableContent(undefined, e.message),
@@ -219,7 +221,7 @@ export function getSelectedThemes(): ThemeThunkResult {
         );
       })
       .catch((e: Error) => {
-        popupDispatch(
+        globalDispatch(
           addPopup(
             'getSelectedThemesError',
             createTranslatableContent(undefined, e.message),
@@ -262,7 +264,7 @@ export function addNewLib(
         }
       })
       .catch((e: Error) => {
-        popupDispatch(
+        globalDispatch(
           addPopup(
             'addNewThemeError',
             createTranslatableContent(undefined, e.message),
@@ -276,7 +278,7 @@ export function addNewLib(
 export function deleteTheme(themeName: string): ThemeThunkResult {
   return function (dispatch) {
     if (themeName === 'default' || themeName === 'trainer') {
-      popupDispatch(
+      globalDispatch(
         addPopup(
           'deleteThemeError',
           createTranslatableContent(
@@ -293,7 +295,7 @@ export function deleteTheme(themeName: string): ThemeThunkResult {
           return dispatch(themeActionCreator.DELETE_THEME(themeName));
         })
         .catch((e: Error) => {
-          popupDispatch(
+          globalDispatch(
             addPopup(
               'deleteThemeError',
               createTranslatableContent(undefined, e.message),
@@ -352,7 +354,7 @@ function saveLib(
             }
           })
           .catch((e: Error) => {
-            popupDispatch(
+            globalDispatch(
               addPopup(
                 'addNewThemeError',
                 createTranslatableContent(undefined, e.message),
@@ -365,7 +367,7 @@ function saveLib(
         if (e.message === NOCONTENTMESSAGE) {
           return dispatch(addNewLib(themeName, newTheme, modeName, libType));
         }
-        popupDispatch(
+        globalDispatch(
           addPopup(
             'getThemeError',
             createTranslatableContent(undefined, e.message),
@@ -408,7 +410,7 @@ export function resetTheme(themeName: string): ThemeThunkResult {
     if (Object.keys(defaultThemes).includes(themeName)) {
       return dispatch(saveLib(themeName, defaultThemes[themeName]));
     } else {
-      popupDispatch(
+      globalDispatch(
         addPopup(
           'resetError',
           createTranslatableContent(
@@ -450,7 +452,7 @@ export function deleteMode(modeName: string): ThemeThunkResult {
     const baseMode = newTheme.baseMode;
     // Prevent from removing basemode
     if (modeName === baseMode) {
-      popupDispatch(
+      globalDispatch(
         addPopup(
           'deleteBaseModeError',
           createTranslatableContent(
@@ -533,7 +535,7 @@ export function setSelectedTheme(
         ),
       );
     } else {
-      popupDispatch(
+      globalDispatch(
         addPopup(
           'selectThemeError',
           createTranslatableContent(

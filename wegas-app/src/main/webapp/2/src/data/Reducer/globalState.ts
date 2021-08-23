@@ -42,6 +42,20 @@ import {
   getSavedLanguage,
   getUserLanguage,
 } from '../i18n';
+import { Popup } from '../../Components/PopupManager';
+
+export const DEFAULT_ROLES = {
+  SCENARIO_EDITOR: {
+    id: 'SCENARIO_EDITOR',
+    label: {
+      EN: 'Scenario editor',
+      FR: 'Editeur de scenario',
+      IT: 'Editore di scenario',
+      DE: 'Redakteur für Szenario',
+    },
+    availableTabs: true,
+  },
+};
 
 export function isServerMethod(
   serverObject: ServerGlobalMethod | ServerGlobalObject | undefined,
@@ -170,6 +184,8 @@ export interface GlobalState extends EditingState {
   };
   pageLoaders: { [name: string]: IScript };
   locks: { [token: string]: boolean };
+  roles: { defaultRoleId: string; roles: { [id: string]: Role } };
+  popups: { [id: string]: Popup };
 }
 
 export function eventHandlersManagement(
@@ -381,9 +397,24 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.EDITOR_SET_LANGUAGE:
         state.currentEditorLanguageCode = action.payload.language;
         return;
+      case ActionType.EDITOR_ADD_ROLE:
+        state.roles.roles[action.payload.role.id] = action.payload.role;
+        if (action.payload.defaultRole) {
+          state.roles.defaultRoleId = action.payload.role.id;
+        }
+        return;
       case ActionType.LOCK_SET:
         state.locks[action.payload.token] = action.payload.locked;
         return;
+      case ActionType.ADD_POPUP: {
+        state.popups[action.payload.id] = action.payload;
+        return;
+      }
+      case ActionType.REMOVE_POPUP: {
+        state.popups = omit(state.popups, action.payload.id);
+        return;
+      }
+
       default:
         state.eventsHandlers = eventHandlersManagement(state, action);
         state.events = eventManagement(state, action);
@@ -418,6 +449,11 @@ const global: Reducer<Readonly<GlobalState>> = u(
     },
     pageLoaders: {},
     locks: {},
+    roles: {
+      defaultRoleId: DEFAULT_ROLES.SCENARIO_EDITOR.id,
+      roles: DEFAULT_ROLES,
+    },
+    popups: {},
   } as GlobalState,
 );
 export default global;

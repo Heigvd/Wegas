@@ -1,4 +1,3 @@
-import { TranslatableObject } from '../internalTranslator';
 import { languagesTranslationsDE } from './languages-de';
 import { languagesTranslationsEN } from './languages-en';
 import { languagesTranslationsFR } from './languages-fr';

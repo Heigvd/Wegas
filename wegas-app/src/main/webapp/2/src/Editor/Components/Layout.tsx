@@ -77,16 +77,25 @@ export default function Layout() {
     {},
   );
 
-  const scenaristTabs = Object.keys(scenaristPages);
-  const layoutPages = {
-    ...(currentRole === 'SCENARIO_EDITOR' ? availableLayoutTabs : {}),
+  const allowedPages = useStore(s => {
+    const role = s.global.roles.roles[currentRole];
+    return role == null || role.availableTabs;
+  });
+
+  const layoutPages = Object.entries({
+    ...availableLayoutTabs,
     ...scenaristPages,
-  };
+  })
+    .filter(([t]) => allowedPages === true || allowedPages.includes(t))
+    .reduce((o, [k, v]) => ({ ...o, [k]: v }), {});
   const loading = Object.keys(layoutPages).length === 0;
+  const initTabs = ['Variables', 'Files', 'Page Editor'];
+  const allowedInitTabs = initTabs.filter(
+    t => allowedPages === true || allowedPages.includes(t),
+  );
+
   const initialLayout = (
-    currentRole === 'CONTENT_EDITOR' && scenaristTabs.length > 0
-      ? scenaristTabs
-      : ['Variables', 'Files', 'Page Editor']
+    allowedInitTabs.length > 0 ? allowedInitTabs : allowedInitTabs.slice(0)
   ) as (keyof typeof layoutPages)[];
 
   if (loading) {

@@ -24,6 +24,7 @@ import {
 } from './Reducer/globalState';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
 import { StoreDispatch, store } from './Stores/store';
+import { Popup } from '../Components/PopupManager';
 
 export { ActionType };
 export type ActionTypeValues = ValueOf<typeof ActionType>;
@@ -93,6 +94,10 @@ export const ActionCreator = {
     createAction(ActionType.EDITOR_UNREGISTER_PAGE_LOADER, data),
   EDITOR_SET_LANGUAGE: (data: { language: EditorLanguagesCode }) =>
     createAction(ActionType.EDITOR_SET_LANGUAGE, data),
+
+  EDITOR_ADD_ROLE: (data: { role: Role; defaultRole?: boolean }) =>
+    createAction(ActionType.EDITOR_ADD_ROLE, data),
+
   VARIABLE_EDIT: variableEditAction(ActionType.VARIABLE_EDIT),
   FSM_EDIT: variableEditAction(ActionType.FSM_EDIT),
   FILE_EDIT: (data: {
@@ -157,6 +162,11 @@ export const ActionCreator = {
 
   LOCK_SET: (data: { token: string; locked: boolean }) =>
     createAction(ActionType.LOCK_SET, data),
+
+  ADD_POPUP: (data: Popup & { id: string }) =>
+    createAction(ActionType.ADD_POPUP, data),
+  REMOVE_POPUP: (data: { id: string }) =>
+    createAction(ActionType.REMOVE_POPUP, data),
 };
 
 export type StateActions<

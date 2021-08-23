@@ -133,7 +133,14 @@ export function useMouseEventDnd<T extends HTMLElement>(
       ) {
         const reset =
           onDragEnd &&
-          onDragEnd(e, lastPosition.current, target.getAttribute('data-id'));
+          onDragEnd(
+            e,
+            {
+              x: lastPosition.current.x / zoom,
+              y: lastPosition.current.y / zoom,
+            },
+            target.getAttribute('data-id'),
+          );
         if (reset) {
           draggingTarget.current.style.setProperty(
             'left',

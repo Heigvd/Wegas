@@ -25,7 +25,7 @@ import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { TabComponent } from './DnDTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
-import { roleCTX, UserRole } from '../../../Components/Contexts/RoleProvider';
+import { roleCTX } from '../../../Components/Contexts/RoleProvider';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
@@ -546,7 +546,7 @@ type TabLayoutsAction<T extends ComponentMap> =
  * setLayout is the reducer function for layout disposition management
  */
 const setLayout =
-  (layoutAccept: string, role: UserRole) =>
+  (layoutAccept: string, role: string) =>
   <T extends ManagedLayoutMap>(
     layouts: T,
     action: TabLayoutsAction<T['layoutMap']>,
@@ -803,7 +803,9 @@ const reduceChildren = <T extends ComponentMap>(
 // eslint-disable-next-line
 interface LayoutItem<T extends ComponentMap>
   extends Array<LayoutItem<T> | keyof T> {}
-type LayoutItems<T extends ComponentMap> = LayoutItem<T> | LayoutItem<T>[];
+export type LayoutItems<T extends ComponentMap> =
+  | LayoutItem<T>
+  | LayoutItem<T>[];
 
 interface LinearLayoutProps<T extends ComponentMap> {
   /**
@@ -852,38 +854,18 @@ export function MainLinearLayout<T extends ComponentMap>({
   const { currentRole } = React.useContext(roleCTX);
   const i18nValues = useInternalTranslate(commonTranslations);
 
-  const savedScenaristLayoutJSON = window.localStorage.getItem(
-    `DnDGridLayoutData.${layoutId}.SCENARIO_EDITOR`,
+  const savedLayoutJSON = window.localStorage.getItem(
+    `DnDGridLayoutData.${layoutId}.${currentRole}}`,
   );
-  const savedScenaristLayout = savedScenaristLayoutJSON
-    ? (JSON.parse(savedScenaristLayoutJSON) as ManagedLayoutMap)
+  const savedLayout = savedLayoutJSON
+    ? (JSON.parse(savedLayoutJSON) as ManagedLayoutMap)
     : null;
-  const [scenaristLayout, dispatchScenaristLayout] = React.useReducer(
-    setLayout(layoutId, 'SCENARIO_EDITOR'),
-    savedScenaristLayout /*&& !layoutTabMissing(savedLayout.layoutMap, tabs)*/
-      ? savedScenaristLayout
+  const [layout, dispatchLayout] = React.useReducer(
+    setLayout(layoutId, currentRole),
+    savedLayout /*&& !layoutTabMissing(savedLayout.layoutMap, tabs)*/
+      ? savedLayout
       : reduceChildren(initialLayout),
   );
-
-  const savedContentLayoutJSON = window.localStorage.getItem(
-    `DnDGridLayoutData.${layoutId}.CONTENT_EDITOR}`,
-  );
-  const savedContentLayout = savedContentLayoutJSON
-    ? (JSON.parse(savedContentLayoutJSON) as ManagedLayoutMap)
-    : null;
-  const [contentLayout, dispatchContentLayout] = React.useReducer(
-    setLayout(layoutId, 'CONTENT_EDITOR'),
-    savedContentLayout /*&& !layoutTabMissing(savedLayout.layoutMap, tabs)*/
-      ? savedContentLayout
-      : reduceChildren(initialLayout),
-  );
-
-  const layout =
-    currentRole === 'CONTENT_EDITOR' ? contentLayout : scenaristLayout;
-  const dispatchLayout =
-    currentRole === 'CONTENT_EDITOR'
-      ? dispatchContentLayout
-      : dispatchScenaristLayout;
 
   const onDrop =
     (layoutKey: string) =>

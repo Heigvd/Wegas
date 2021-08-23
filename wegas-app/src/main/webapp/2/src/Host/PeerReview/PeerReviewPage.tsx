@@ -34,7 +34,7 @@ import {
   PeerReviewDescriptorAPI,
   PeerReviewStateSelector,
 } from '../../API/peerReview.api';
-import { addPopup, popupDispatch } from '../../Components/PopupManager';
+import { addPopup } from '../../Components/PopupManager';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
 import { useOkCancelModal } from '../../Components/Modal';
@@ -330,7 +330,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
       )
         .catch(e => {
           e.json().then((error: WegasErrorMessage) => {
-            popupDispatch(
+            store.dispatch(
               addPopup(
                 error.message + new Date().getTime(),
                 createTranslatableContent(lang, error.message),

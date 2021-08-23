@@ -27,14 +27,14 @@ import {
   SVariableInstance,
 } from 'wegas-ts-api';
 import { ScriptableEntity } from 'wegas-ts-api';
-import { popupDispatch, addPopup, PopupActionCreator } from '../PopupManager';
+import { addPopup } from '../PopupManager';
 import { ActionCreator } from '../../data/actions';
 import {
   createTranslatableContent,
   createTranslation,
   translate,
 } from '../../Editor/Components/FormView/translatable';
-import { wlog, wwarn } from '../../Helper/wegaslog';
+import { wwarn } from '../../Helper/wegaslog';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { replace, createLRU } from '../../Helper/tools';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
@@ -89,6 +89,7 @@ interface GlobalClasses {
   };
   APIMethods: APIMethodsClass;
   Helpers: GlobalHelpersClass;
+  Roles: RolesMehtods;
   wlog: (a: any) => void;
 }
 
@@ -318,10 +319,10 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.Popups = {
     addPopup: (id, message, duration) => {
       if (id != null && message != null) {
-        popupDispatch(addPopup(id, message, duration));
+        globalDispatch(addPopup(id, message, duration));
       }
     },
-    removePopup: id => popupDispatch(PopupActionCreator.REMOVE_POPUP({ id })),
+    removePopup: id => globalDispatch(ActionCreator.REMOVE_POPUP({ id })),
   };
 
   globals.WegasEvents = {
@@ -395,7 +396,14 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     cloneDeep: cloneDeep,
   };
 
-  globals.wlog = wlog;
+  globals.Roles = {
+    addRole: (role, defaultRole) => {
+      globalDispatch(ActionCreator.EDITOR_ADD_ROLE({ role, defaultRole }));
+    },
+  };
+
+  // eslint-disable-next-line no-console
+  globals.wlog = console.log;
 }
 
 export type ScriptReturnType = object | number | boolean | string | undefined;
@@ -534,10 +542,9 @@ export function useScript<T extends ScriptReturnType>(
   },
   catchCB?: (e: Error) => void,
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
-  const oldContext =
-    React.useRef<{
-      [name: string]: unknown;
-    }>();
+  const oldContext = React.useRef<{
+    [name: string]: unknown;
+  }>();
 
   const newContext = React.useMemo(() => {
     if (deepDifferent(context, oldContext.current)) {

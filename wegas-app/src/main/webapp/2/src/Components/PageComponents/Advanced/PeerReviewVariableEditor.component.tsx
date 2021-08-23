@@ -42,7 +42,7 @@ import { NumberInput } from '../../Inputs/Number/NumberInput';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';
 import { useOkCancelModal } from '../../Modal';
 import { HTMLText } from '../../Outputs/HTMLText';
-import { popupDispatch, addPopup } from '../../PopupManager';
+import { addPopup } from '../../PopupManager';
 import { themeVar } from '../../Theme/ThemeVars';
 import {
   pageComponentFactory,
@@ -93,8 +93,9 @@ export default function PeerReviewVariableEditor({
     deepDifferent,
   );
 
-  const [value, setValue] =
-    React.useState<string | number | undefined>(storeValue);
+  const [value, setValue] = React.useState<string | number | undefined>(
+    storeValue,
+  );
 
   React.useEffect(() => {
     setValue(storeValue);
@@ -121,7 +122,7 @@ export default function PeerReviewVariableEditor({
         )
           .catch(e => {
             e.json().then((error: WegasErrorMessage) => {
-              popupDispatch(
+              store.dispatch(
                 addPopup(
                   error.message + new Date().getTime(),
                   createTranslatableContent(lang, error.message),
