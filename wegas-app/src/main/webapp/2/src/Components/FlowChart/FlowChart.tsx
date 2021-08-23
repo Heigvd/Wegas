@@ -28,6 +28,7 @@ import {
 import { themeVar } from '../Theme/ThemeVars';
 import { flex, flexRow } from '../../css/classes';
 import { NumberSlider } from '../Inputs/Number/NumberSlider';
+import { useComparator } from '../../Helper/react.debug';
 
 const flowChartStyle = css({
   width: '100%',
@@ -373,16 +374,23 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
     }
   }, [internalProcesses, isFlowlineSelected, zoom]);
 
+  useComparator(
+    { processes, internalProcesses, isFlowlineSelected, zoom },
+    'DEEP',
+  );
+
   React.useLayoutEffect(() => {
     drawFlows();
   }, [drawFlows]);
 
   // Redraw when processes changes
-  const mo = new IntersectionObserver(() => {
-    if (flowValues.length === 0) {
-      drawFlows();
-    }
-  });
+  // const mo = new IntersectionObserver(() => {
+  //   debugger;
+  //   if (flowValues.length === 0) {
+  //     debugger;
+  //     drawFlows();
+  //   }
+  // });
 
   return (
     <Toolbar
@@ -410,10 +418,10 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
         style={{ position: 'relative' }}
         ref={ref => {
           drop(ref);
-          if (ref != null) {
-            container.current = ref;
-            mo.observe(ref);
-          }
+          // if (ref != null) {
+          //   container.current = ref;
+          //   mo.observe(ref);
+          // }
         }}
       >
         <svg
@@ -439,7 +447,6 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
           }}
         >
           <ArrowDefs />
-          {/* {flows.flowlines} */}
           {flowValues.map(v => {
             return v.circular ? (
               <CircularFlowLine
@@ -460,7 +467,6 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
           })}
           {tempFlow != null && <TempFlowLine {...tempFlow} />}
         </svg>
-        {/* {flows.handles} */}
         {flowValues.map(v => (
           <FlowLineHandles
             key={'Handle' + v.id}
@@ -471,7 +477,6 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
             selected={v.selected}
           />
         ))}
-        {/* {flows.labels} */}
         {flowValues.map(v => (
           <Flowline
             key={'Label' + v.id}
@@ -489,23 +494,24 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
             zoom={zoom}
           />
         ))}
-        {processes.map((process, i, a) => (
+        {processes.map((process /*, i, a*/) => (
           <Process
             key={process.id + JSON.stringify(process.position)}
             process={process}
             onReady={ref => {
               processesRef.current[process.id] = ref;
-              if (i === a.length - 1) {
-                mo.observe(ref);
+              // if (i === a.length - 1) {
+              //   mo.observe(ref);
+              // }
+            }}
+            onMove={position => {
+              if (actionsAllowed) {
+                setInternalProcesses(op => ({
+                  ...op,
+                  [process.id]: { ...op[process.id], position },
+                }));
               }
             }}
-            onMove={position =>
-              actionsAllowed &&
-              setInternalProcesses(op => ({
-                ...op,
-                [process.id]: { ...op[process.id], position },
-              }))
-            }
             onMoveEnd={(position, e) =>
               actionsAllowed && onMove(process, position, e)
             }
