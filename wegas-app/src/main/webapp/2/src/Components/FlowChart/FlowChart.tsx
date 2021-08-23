@@ -26,7 +26,7 @@ import {
   FlowLineComponentProps,
 } from './FlowLineComponent';
 import { themeVar } from '../Theme/ThemeVars';
-import { flex, flexRow } from '../../css/classes';
+import { defaultMarginLeft, flex, flexRow } from '../../css/classes';
 import { NumberSlider } from '../Inputs/Number/NumberSlider';
 import { useComparator } from '../../Helper/react.debug';
 
@@ -405,12 +405,13 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
         {typeof title === 'string' ? <HTMLText text={title} /> : title}
         <NumberSlider
           min={0.1}
-          max={10.1}
+          max={1}
           steps={100}
           value={zoom}
           onChange={value => {
             setZoom(Number(value.toFixed(2)));
           }}
+          className={defaultMarginLeft}
           displayValues="External"
         />
       </Toolbar.Header>
