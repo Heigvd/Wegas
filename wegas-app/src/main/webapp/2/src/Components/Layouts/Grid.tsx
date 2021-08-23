@@ -137,6 +137,7 @@ export const GridItem = React.forwardRef<HTMLDivElement, GridItemProps>(
       onMouseOut,
       onMouseEnter,
       onMouseLeave,
+      onDragOver,
       onDragEnter,
       onDragLeave,
       onDragEnd,
@@ -156,6 +157,7 @@ export const GridItem = React.forwardRef<HTMLDivElement, GridItemProps>(
         onMouseOut={onMouseOut}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
+        onDragOver={onDragOver}
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
         onDragEnd={onDragEnd}

@@ -2,7 +2,11 @@ import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
 import { JSONandJSEditor } from '../ScriptEditors/JSONandJSEditor';
 import { deepClone } from 'fast-json-patch';
-import { ComponentPalette, DnDComponent } from './ComponentPalette';
+import {
+  ComponentPalette,
+  DnDComponent,
+  isDnDComponent,
+} from './ComponentPalette';
 import {
   usePageComponentStore,
   PageComponent,
@@ -13,11 +17,7 @@ import ComponentProperties from './ComponentProperties';
 import { PageLoader } from './PageLoader';
 import { css, cx } from 'emotion';
 import { noop } from 'lodash-es';
-import {
-  PagesLayout,
-  LayoutDndComponent,
-  isLayoutDndComponent,
-} from './PagesLayout';
+import { PagesLayout, PageComponentNode } from './PagesLayout';
 import { store, useStore } from '../../../data/Stores/store';
 import { Actions } from '../../../data';
 import {
@@ -58,7 +58,7 @@ export interface FocusedComponent {
   componentPath: number[];
 }
 
-export type PageEditorComponent = DnDComponent | LayoutDndComponent;
+export type PageEditorComponent = DnDComponent | PageComponentNode;
 
 export interface PageContext {
   editMode: boolean;
@@ -437,7 +437,7 @@ export default function PageEditor() {
       const samePages = sourcePageId === destPageId;
       const samePath = !deepDifferent(sourcePath.slice(0, -1), destPath);
       const deleteIndex =
-        samePages && samePath && sourceIndex > destIndex
+        samePages && samePath && sourceIndex >= destIndex
           ? sourceIndex + 1
           : sourceIndex;
       const deletePath =
@@ -511,10 +511,10 @@ export default function PageEditor() {
       let componentPath: number[] | undefined;
       let componentName: string | undefined;
 
-      if (isLayoutDndComponent(dndComponent)) {
-        componentPageId = dndComponent.id.pageId;
-        componentPage = dndComponent.id.page;
-        componentPath = dndComponent.id.componentPath;
+      if (!isDnDComponent(dndComponent)) {
+        componentPageId = dndComponent.pageId;
+        componentPage = store.getState().pages[componentPageId];
+        componentPath = dndComponent.componentPath;
         componentName = undefined;
       } else {
         componentPageId = selectedPageId;
@@ -525,10 +525,7 @@ export default function PageEditor() {
 
       if (selectedPageId != null && selectedPage != null) {
         const computedPage = replace
-          ? deleteComponent(selectedPage, [
-              ...path,
-              ...(index == null ? [] : [index]),
-            ])
+          ? deleteComponent(selectedPage, [...path, index == null ? 0 : index])
           : selectedPage;
 
         if (computedPage != null) {

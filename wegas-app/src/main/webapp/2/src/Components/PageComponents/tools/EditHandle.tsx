@@ -4,13 +4,15 @@ import {
   pageCTX,
   // pageEditorCTX,
 } from '../../../Editor/Components/Page/PageEditor';
-import { useComponentDrag } from '../../../Editor/Components/Page/ComponentPalette';
+// import { useComponentDrag } from '../../../Editor/Components/Page/ComponentPalette';
 import { cx, css } from 'emotion';
 import { flex, flexColumn, flexRow, textCenter } from '../../../css/classes';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 import { MessageString } from '../../../Editor/Components/MessageString';
 import { themeVar } from '../../Theme/ThemeVars';
 import { Button } from '../../Inputs/Buttons/Button';
+import { PAGEEDITOR_COMPONENT_TYPE } from '../../../Editor/Components/Page/ComponentPalette';
+import { PageComponentNode } from '../../../Editor/Components/Page/PagesLayout';
 
 const handleContentStyle = css({
   borderRadius: themeVar.dimensions.BorderRadius,
@@ -20,11 +22,11 @@ const handleContentStyle = css({
 });
 
 //TODO : Find a way to hide all the handles when dragging
-const desapearingStyle = css({
-  //transition: 'all 1s',
-  opacity: 0,
-  zIndex: -1000,
-});
+// const desapearingStyle = css({
+//   //transition: 'all 1s',
+//   opacity: 0,
+//   zIndex: -1000,
+// });
 
 interface EditorHandleProps {
   /**
@@ -35,6 +37,10 @@ interface EditorHandleProps {
    * componentType - The type of component
    */
   componentType: WegasComponentProps['componentType'];
+  /**
+   * pageId - The id of the page where the component is
+   */
+  pageId: string;
   /**
    * path - the path of the current component
    */
@@ -56,6 +62,7 @@ interface EditorHandleProps {
 export function EditHandle({
   name,
   componentType,
+  pageId,
   path,
   stackedHandles,
   infoMessage,
@@ -66,14 +73,13 @@ export function EditHandle({
     React.useContext(pageCTX);
 
   const HandleContent = React.forwardRef<HTMLDivElement>((_, ref) => {
-    const [{ isDragging }, drag] = useComponentDrag(componentType, path);
-    // const debouncedDragging = useDebounce(isDragging, 50);
+    const data: PageComponentNode = { pageId, componentPath: path };
 
     return (
       <div
         ref={ref}
         className={cx(flex, flexColumn, handleContentStyle, {
-          [desapearingStyle]: isDragging,
+          // [desapearingStyle]: isDragging,
         })}
         //Avoiding the container actions to trigger when using handle
         onClick={event => event.stopPropagation()}
@@ -95,7 +101,15 @@ export function EditHandle({
             icon="edit"
             onClick={() => onEdit(isSelected ? undefined : path)}
           />
-          <Button icon="arrows-alt" ref={drag} />
+          <Button
+            icon="arrows-alt"
+            draggable
+            onDragStart={e => {
+              e.stopPropagation();
+              e.dataTransfer.setData('data', JSON.stringify(data));
+              e.dataTransfer.setData(PAGEEDITOR_COMPONENT_TYPE, '');
+            }}
+          />
           <ConfirmButton
             icon="trash"
             onAction={success => {

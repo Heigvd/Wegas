@@ -59,6 +59,7 @@ export function ArrowDefs() {
         refY="10"
         orient="auto"
         fill="rgb(128, 127, 127)"
+        stroke="transparent"
       >
         <circle cx="10" cy="10" r="5" />
       </marker>
@@ -70,6 +71,7 @@ export function ArrowDefs() {
         refY="10"
         orient="auto"
         fill={themeVar.colors.HighlightColor}
+        stroke="transparent"
       >
         <circle cx="10" cy="10" r="5" />
       </marker>
@@ -77,11 +79,11 @@ export function ArrowDefs() {
   );
 }
 
-const arrowCSS = {
+const arrowCSS = (zoom: number) => ({
   stroke: 'rgb(128,127,127)',
-  strokeWidth: 2,
+  strokeWidth: 2 * zoom,
   fill: 'none',
-};
+});
 
 export interface FlowLineProps {
   /**
@@ -92,6 +94,10 @@ export interface FlowLineProps {
    * is the flowline selected
    */
   selected?: boolean;
+  /**
+   * controls the size of the stroke
+   */
+  zoom: number;
 }
 
 interface Values {
@@ -144,6 +150,7 @@ export function computeFlowlineValues(
   startProcessElement: HTMLElement | undefined,
   endProcessElement: HTMLElement | undefined,
   circular: boolean,
+  zoom: number,
   positionOffset: number = 0.5,
 ): FlowLineComputedValues | undefined {
   const parent = startProcessElement?.parentElement;
@@ -379,7 +386,7 @@ export function computeFlowlineValues(
     return circular
       ? {
           x: circularCanvasLeft + (startProcessBox.width - labelBox.width) / 2,
-          y: canvasTop + startProcessBox.height + 150 * positionOffset,
+          y: canvasTop + startProcessBox.height + 150 * zoom * positionOffset,
         }
       : {
           x:
@@ -417,11 +424,15 @@ export function computeFlowlineValues(
   return { flowlineValues, handlesValues, labelValues };
 }
 
-export function StraitFlowLine({ flowlineValues, selected }: FlowLineProps) {
+export function StraitFlowLine({
+  flowlineValues,
+  selected,
+  zoom,
+}: FlowLineProps) {
   return (
     <line
       {...flowlineValues}
-      style={arrowCSS}
+      {...arrowCSS(zoom)}
       markerStart={`url(#${selected ? 'selectedarrowtail' : 'arrowtail'})`}
       markerEnd={`url(#${selected ? 'selectedarrowhead' : 'arrowhead'})`}
     />
@@ -478,12 +489,14 @@ interface CircularFlowLineProps {
   processElement: HTMLElement | undefined;
   positionOffset?: number;
   selected: boolean;
+  zoom: number;
 }
 
 export function CircularFlowLine({
   processElement,
   positionOffset = 0.5,
   selected,
+  zoom,
 }: CircularFlowLineProps) {
   const parent = processElement?.parentElement;
   if (processElement == null || parent == null) {
@@ -507,12 +520,12 @@ export function CircularFlowLine({
     <path
       d={`M ${canvasLeft + (processBox.width * 2) / 3} ${canvasTop} C ${
         canvasLeft + processBox.width / 2
-      } ${canvasTop + 200 * positionOffset}, ${
+      } ${canvasTop + 200 * zoom * positionOffset}, ${
         canvasLeft + (processBox.width * 3) / 2
-      } ${canvasTop + 200 * positionOffset}, ${
+      } ${canvasTop + 200 * zoom * positionOffset}, ${
         canvasLeft + (processBox.width * 4) / 3
       } ${canvasTop}`}
-      style={arrowCSS}
+      {...arrowCSS(zoom)}
       markerStart={`url(#${selected ? 'selectedarrowtail' : 'arrowtail'})`}
       markerEnd={`url(#${selected ? 'selectedarrowhead' : 'arrowhead'})`}
     />
@@ -542,9 +555,17 @@ export interface TempFlowLineProps {
    * the position of the dragged handle
    */
   position: XYPosition;
+  /**
+   * controls the size of the stroke
+   */
+  zoom: number;
 }
 
-export function TempFlowLine({ processElements, position }: TempFlowLineProps) {
+export function TempFlowLine({
+  processElements,
+  position,
+  zoom,
+}: TempFlowLineProps) {
   const parent = isStartProcessElement(processElements)
     ? processElements.startProcessElement.parentElement
     : processElements.endProcessElement.parentElement;
@@ -589,7 +610,7 @@ export function TempFlowLine({ processElements, position }: TempFlowLineProps) {
       y1={startY}
       x2={endX}
       y2={endY}
-      style={arrowCSS}
+      {...arrowCSS(zoom)}
       markerStart={`url(#arrowtail)`}
       markerEnd={`url(#arrowhead)`}
     />
@@ -607,11 +628,15 @@ export function CustomFlowLineComponent({
   position,
   children,
   selected,
-}: React.PropsWithChildren<FlowLineLabelProps>) {
+  zoom,
+}: React.PropsWithChildren<FlowLineLabelProps> & { zoom: number }) {
+  const flowLineContainer = React.useRef<HTMLDivElement>();
+
   return (
     <div
       ref={ref => {
         if (ref != null) {
+          flowLineContainer.current = ref;
           const labelBox = ref.getBoundingClientRect();
           const values = position(labelBox);
           ref.style.setProperty('left', values.x + 'px');
@@ -619,6 +644,7 @@ export function CustomFlowLineComponent({
         }
       }}
       className={childrenContainerStyle(selected)}
+      style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}
     >
       {children}
     </div>
@@ -643,6 +669,10 @@ export interface FlowLineComponentProps<
    * allows to display multiple parralel flowlines
    */
   onClick?: (e: ModifierKeysEvent, sourceProcess: P, flowline: F) => void;
+  /**
+   * allows control the size and position of the component
+   */
+  zoom: number;
 }
 
 export function DefaultFlowLineComponent<
@@ -656,9 +686,14 @@ export function DefaultFlowLineComponent<
   readOnly,
   selected,
   position,
+  zoom,
 }: FlowLineComponentProps<F, P>) {
   return (
-    <CustomFlowLineComponent selected={selected} position={position}>
+    <CustomFlowLineComponent
+      selected={selected}
+      position={position}
+      zoom={zoom}
+    >
       <div
         onClick={e =>
           onClick &&

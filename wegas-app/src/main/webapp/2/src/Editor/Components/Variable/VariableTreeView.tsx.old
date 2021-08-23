@@ -136,7 +136,7 @@ interface TreeProps extends DisabledReadonly {
   localDispatch?: StoreDispatch;
   forceLocalDispatch?: boolean;
 }
-export function TreeView({
+export function VariableTreeView({
   variables,
   noHeader = false,
   noVisibleRoot = false,
@@ -542,7 +542,7 @@ export function CTree({
 }
 export function Tree() {
   const entities = useGameModel().itemsIds;
-  return <TreeView variables={entities} />;
+  return <VariableTreeView variables={entities} />;
 }
 
 export default function TreeWithMeta() {
@@ -551,7 +551,7 @@ export default function TreeWithMeta() {
     <ComponentWithForm entityEditor>
       {({ localState, localDispatch }) => {
         return (
-          <TreeView
+          <VariableTreeView
             variables={entities}
             localState={localState}
             localDispatch={localDispatch}

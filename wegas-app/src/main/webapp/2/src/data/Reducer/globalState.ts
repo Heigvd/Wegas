@@ -36,7 +36,12 @@ import {
 } from 'wegas-ts-api';
 import { cloneDeep } from 'lodash-es';
 import { commonServerMethods } from '../methods/CommonServerMethods';
-import { EditorLanguageData, EditorLanguagesCode, getSavedLanguage, getUserLanguage } from '../i18n';
+import {
+  EditorLanguageData,
+  EditorLanguagesCode,
+  getSavedLanguage,
+  getUserLanguage,
+} from '../i18n';
 
 export function isServerMethod(
   serverObject: ServerGlobalMethod | ServerGlobalObject | undefined,
@@ -386,7 +391,7 @@ const global: Reducer<Readonly<GlobalState>> = u(
     }
   },
   {
-    currentEditorLanguageCode: "EN",
+    currentEditorLanguageCode: 'EN',
     currentGameModelId: CurrentGM.id!,
     currentGameId: CurrentGame.id!,
     currentPlayerId: CurrentPlayerId,
@@ -800,12 +805,14 @@ export function setLock(data: LockEventData) {
   });
 }
 export function getLanguage() {
- const savedLanguage = getSavedLanguage();
- const userLanguage = getUserLanguage();
- return ActionCreator.EDITOR_SET_LANGUAGE({language: savedLanguage ? savedLanguage : userLanguage});
+  const savedLanguage = getSavedLanguage();
+  const userLanguage = getUserLanguage();
+  return ActionCreator.EDITOR_SET_LANGUAGE({
+    language: savedLanguage ? savedLanguage : userLanguage,
+  });
 }
 
 export function setLanguage(lang: EditorLanguagesCode) {
   window.localStorage.setItem(EditorLanguageData, lang);
-  return ActionCreator.EDITOR_SET_LANGUAGE({language: lang});
+  return ActionCreator.EDITOR_SET_LANGUAGE({ language: lang });
 }

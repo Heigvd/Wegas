@@ -311,6 +311,7 @@ export const FonkyFlexContent = React.forwardRef<
     onClick,
     onMouseOver,
     onMouseLeave,
+    onDragOver,
     onDragEnter,
     onDragLeave,
     onDragEnd,
@@ -332,6 +333,7 @@ export const FonkyFlexContent = React.forwardRef<
       onClick={onClick}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
+      onDragOver={onDragOver}
       onDragEnter={onDragEnter}
       onDragLeave={onDragLeave}
       onDragEnd={onDragEnd}

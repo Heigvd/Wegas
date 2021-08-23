@@ -14,7 +14,7 @@ import { commonTranslations } from '../../i18n/common/common';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageEditor = React.lazy(() => import('./Page/PageEditor'));
-const TreeView = React.lazy(() => import('./Variable/VariableTree'));
+const TreeView = React.lazy(() => import('./Variable/VariableTreeView'));
 const EntityEditor = React.lazy(() => import('./EntityEditor'));
 const FileBrowserWithMeta = React.lazy(
   () => import('./FileBrowser/FileBrowser'),
@@ -29,9 +29,7 @@ const ThemeEditor = React.lazy(
   () => import('../../Components/Theme/Components/ThemeEditor'),
 );
 const Languages = React.lazy(() => import('./Languages/Languages'));
-// const Tester = React.lazy(
-//   () => import('../../Testers/Components/DropDownTester'),
-// );
+// const Tester = React.lazy(() => import('../../Testers/FlowchartTester'));
 
 const layout = css({
   display: 'flex',
@@ -44,6 +42,7 @@ const layout = css({
 });
 
 export const availableLayoutTabs = {
+  // Tester: <Tester />,
   Variables: <TreeView />,
   'State Machine': <StateMachineEditor />,
   'Variable Properties': <EntityEditor />,

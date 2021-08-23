@@ -171,7 +171,7 @@ function TranslationItemView({
               hint={
                 upToDate ? i18nValues.markAsOutdated : i18nValues.markAsUpToDate
               }
-              label={upToDate ? i18nValues.outdated : i18nValues.upToDate}
+              label={upToDate ? i18nValues.upToDate : i18nValues.outdated}
               className={css({
                 fontSize: '14px',
                 color: themeVar.colors.DisabledColor,

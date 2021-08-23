@@ -160,11 +160,9 @@ export function deleteDescriptor(
       return store.dispatch(updateDescriptor(vs));
     }
     const gameModelId = store.getState().global.currentGameModelId;
-    return VariableDescriptorAPI.delete(
-      gameModelId,
-      variableDescriptor,
-    ).then(res =>
-      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    return VariableDescriptorAPI.delete(gameModelId, variableDescriptor).then(
+      res =>
+        store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
 }

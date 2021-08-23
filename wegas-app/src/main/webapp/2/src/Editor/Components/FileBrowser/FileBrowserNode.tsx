@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useDrop, DragObjectWithType, DropTargetMonitor } from 'react-dnd';
+import { useDrop, DropTargetMonitor } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 
 import { css, cx } from 'emotion';
@@ -139,21 +139,20 @@ const isUploadAllowed = (file?: IAbstractContentDescriptor) => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-type DropAction = (
-  item: DragObjectWithType,
-  monitor: DropTargetMonitor,
-) => void;
+type DropAction<T> = (item: T, monitor: DropTargetMonitor) => void;
 
-const dropSpecs = (action: DropAction, disabled: boolean) => ({
-  accept: NativeTypes.FILE,
-  canDrop: () => !disabled,
-  drop: action,
-  collect: (mon: DropTargetMonitor) => ({
-    isOver: !!mon.isOver() && !disabled,
-    isShallowOver: !!mon.isOver({ shallow: true }) && !disabled,
-    canDrop: !!mon.canDrop() && !disabled,
-  }),
-});
+function dropSpecs<T>(action: DropAction<T>, disabled: boolean) {
+  return {
+    accept: NativeTypes.FILE,
+    canDrop: () => !disabled,
+    drop: action,
+    collect: (mon: DropTargetMonitor) => ({
+      isOver: !!mon.isOver() && !disabled,
+      isShallowOver: !!mon.isOver({ shallow: true }) && !disabled,
+      canDrop: !!mon.canDrop() && !disabled,
+    }),
+  };
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -8,8 +8,9 @@ import 'react-reflex/styles.css';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import {
   ComponentDropZone,
-  useDndComponentDrop,
+  // useDndComponentDrop,
   WegasComponentProps,
+  useDndComponentIsOverFactory,
 } from '../tools/EditableComponent';
 import {
   ChildrenDeserializerProps,
@@ -85,13 +86,14 @@ function isVertical(props?: PlayerLinearLayoutProps) {
 }
 
 export function EmptyComponentContainer({ path }: { path: number[] }) {
-  const [{ isOver }, dropZone] = useDndComponentDrop();
+  // const [{ isOver }, dropZone] = useDndComponentDrop();
+  const { isOver, ref } = useDndComponentIsOverFactory();
 
   const { onDrop } = React.useContext(pageCTX);
 
   return (
     <FonkyFlexContent>
-      <div ref={dropZone} className={emptyLayoutItemStyle}>
+      <div ref={ref} className={emptyLayoutItemStyle}>
         <ComponentDropZone
           onDrop={dndComponent => {
             onDrop(dndComponent, path);

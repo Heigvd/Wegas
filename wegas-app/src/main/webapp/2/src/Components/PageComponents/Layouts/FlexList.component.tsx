@@ -16,7 +16,6 @@ import {
   ComponentDropZone,
   DropZones,
   ItemContainer,
-  useDndComponentDrop,
   WegasComponentProps,
 } from '../tools/EditableComponent';
 import {
@@ -84,17 +83,16 @@ export function EmptyComponentContainer({
   Container,
   content = 'The layout is empty, drop components in to fill it!',
 }: EmptyPageComponentProps) {
-  const [{ isOver }, dropZone] = useDndComponentDrop();
-
   const { onDrop } = React.useContext(pageCTX);
 
   return (
-    <Container ref={dropZone} className={emptyLayoutItemStyle}>
+    <Container className={emptyLayoutItemStyle}>
       <ComponentDropZone
         onDrop={dndComponent => {
           onDrop(dndComponent, path);
         }}
-        show={isOver}
+        show={true}
+        noFocus={true}
         dropPosition="INTO"
       />
       {content}

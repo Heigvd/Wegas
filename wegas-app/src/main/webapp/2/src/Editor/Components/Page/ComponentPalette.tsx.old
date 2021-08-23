@@ -19,6 +19,12 @@ import {
   componentTypes,
   ComponentType,
 } from '../../../Components/PageComponents/tools/componentFactory';
+import {
+  useDrag,
+  DragElementWrapper,
+  DragSourceOptions,
+  DragPreviewOptions,
+} from 'react-dnd';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { IconComp } from '../Views/FontAwesome';
@@ -106,6 +112,7 @@ const ComponentTextStyle = css({
 
 export interface DnDComponent {
   componentName: string;
+  type: typeof PAGEEDITOR_COMPONENT_TYPE;
   path?: number[];
 }
 
@@ -117,7 +124,9 @@ export function isDnDComponent(
     typeof item === 'object' &&
     item != null &&
     'componentName' in item &&
-    typeof item.componentName === 'string'
+    typeof item.componentName === 'string' &&
+    'type' in item &&
+    typeof item.type === 'string'
   );
 }
 
@@ -128,14 +137,42 @@ export interface DragMonitor {
   isDragging: boolean;
 }
 
+export function useComponentDrag(
+  componentName: string,
+  path?: number[],
+): [
+  DragMonitor,
+  DragElementWrapper<DragSourceOptions>,
+  DragElementWrapper<DragPreviewOptions>,
+] {
+  const { editMode } = React.useContext(pageCTX);
+
+  return useDrag({
+    item: {
+      componentName,
+      type: PAGEEDITOR_COMPONENT_TYPE,
+      path,
+    },
+    canDrag: () => editMode,
+    collect: monitor => ({
+      handlerId: monitor.getHandlerId(),
+      isDragging: !!monitor.isDragging(),
+    }),
+  });
+}
+
 interface ComponentTypeElementProps {
   componentType: ComponentType;
+  onClick: (type: ComponentType) => void;
+  currentType: ComponentType | undefined;
   enabled: boolean;
   componentNames: string[];
 }
 
 function ComponentTypeElement({
   componentType,
+  onClick,
+  //currentType,
   enabled,
   componentNames,
 }: ComponentTypeElementProps) {
@@ -154,9 +191,8 @@ function ComponentTypeElement({
           flexBetween,
         )}
         onClick={() => {
-          if (enabled) {
-            setOpened(opened => !opened);
-          }
+          enabled && onClick(componentType);
+          setOpened(opened => !opened);
         }}
       >
         <div>
@@ -199,19 +235,11 @@ function ComponentElement({
 }: ComponentElementProps) {
   const i18nValues = useInternalTranslate(editorTabsTranslations);
   const component = usePageComponentStore(s => s[componentName]);
+  const [, drag] = useComponentDrag(componentName);
   return (
     <>
       {component.componentType === componentType && (
-        <div
-          draggable
-          onDragStart={e => {
-            e.stopPropagation();
-            e.dataTransfer.setData('data', JSON.stringify({ componentName }));
-            e.dataTransfer.setData(PAGEEDITOR_COMPONENT_TYPE, '');
-          }}
-          className={componentStyle}
-          title={componentName}
-        >
+        <div ref={drag} className={componentStyle} title={componentName}>
           {component ? (
             <>
               {component.illustration ? (
@@ -236,6 +264,7 @@ export function ComponentPalette({
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const i18nValues = useInternalTranslate(editorTabsTranslations);
+  const [currentType, setCurrentType] = React.useState<ComponentType>();
 
   const { editMode } = React.useContext(pageCTX);
 
@@ -272,6 +301,10 @@ export function ComponentPalette({
             <ComponentTypeElement
               key={t}
               componentType={t}
+              currentType={currentType}
+              onClick={type =>
+                setCurrentType(o => (o === type ? undefined : type))
+              }
               enabled={editMode}
               componentNames={componentNames}
             />
