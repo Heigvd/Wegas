@@ -109,7 +109,7 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
         nullable = false, optional = false, proposal = EmptyScript.class,
         view = @View(
             index = 603,
-            label = "Condition",
+            label = "Condition(s)",
             value = ScriptView.Condition.class
         ))
     private Script triggerEvent;
@@ -122,7 +122,7 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
         nullable = false, optional = false, proposal = EmptyScript.class,
         view = @View(
             index = 604,
-            label = "Impact",
+            label = "Impact(s)",
             value = ScriptView.Impact.class
         ))
     private Script postTriggerEvent;
