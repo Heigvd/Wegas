@@ -12,7 +12,7 @@ const containerStyle = css({
   position: 'relative',
 });
 const marginTopStyle = css({
-  marginTop: '9px',
+  marginTop: '15px',
 });
 const errorStyle = css({
   color: themeVar.colors.WarningColor,

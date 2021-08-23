@@ -33,14 +33,15 @@ import { createScript } from '../../../../Helper/wegasEntites';
 import { IScript, IVariableDescriptor, IVariableInstance } from 'wegas-ts-api';
 import { EmbeddedSrcEditor } from '../../ScriptEditors/EmbeddedSrcEditor';
 import {
-  defaultMarginBottom,
   flex,
-  flexBetween,
-  itemBottom,
+  grow,
+  justifyEnd,
 } from '../../../../css/classes';
 import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
+import { themeVar } from '../../../../Components/Theme/ThemeVars';
+import { secondaryButtonStyle } from '../../../../Components/Modal';
 
 export const scriptEditStyle = css({
   minHeight: '5em',
@@ -283,58 +284,65 @@ export function Script({
         {({ labelNode }) => {
           return (
             <>
-              <div className={cx(flex, flexBetween, itemBottom)}>
-                {labelNode}
-                <div className={flex}>
-                  {!error && (
-                    <IconButton
-                      icon="code"
-                      tooltip={i18nValues.variableProperties.toggleCoding}
-                      pressed={error !== undefined}
-                      onClick={() => setSrcMode(sm => !sm)}
+              {labelNode}
+              <div
+                className={css({
+                  border: '1px solid ' + themeVar.colors.DisabledColor,
+                  padding: '5px',
+                })}
+              >
+                {srcMode ? (
+                  <ResizeHandle minSize={200}>
+                    <EmbeddedSrcEditor
+                      value={script.current}
+                      onChange={onCodeChange}
+                      minimap={false}
+                      noGutter={true}
+                      returnType={returnTypes(view.mode)}
+                      scriptContext={
+                        view.mode === 'SET' ? 'Server internal' : 'Client'
+                      }
+                      Editor={WegasScriptEditor}
+                      EmbeddedEditor={WegasScriptEditor}
                     />
-                  )}
-                  {isServerScript && (
-                    <IconButton
-                      icon="play"
-                      tooltip={i18nValues.variableProperties.runScripts}
-                      onClick={() => testScript(script.current)}
-                    />
-                  )}
-                </div>
-              </div>
-              {isScriptCondition(view.mode) && (
-                <DropMenu
-                  label={operator}
-                  items={operators.map(o => ({ label: o, value: o }))}
-                  onSelect={({ label }) => onSelectOperator(label)}
-                  buttonClassName={defaultMarginBottom}
-                />
-              )}
-              {srcMode ? (
-                <ResizeHandle minSize={200}>
-                  <EmbeddedSrcEditor
-                    value={script.current}
-                    onChange={onCodeChange}
-                    minimap={false}
-                    noGutter={true}
-                    returnType={returnTypes(view.mode)}
-                    scriptContext={
-                      view.mode === 'SET' ? 'Server internal' : 'Client'
+                  </ResizeHandle>
+                ) : (
+                  <WyswygScriptEditor
+                    expressions={statements}
+                    onChange={e => {
+                      onStatementsChange(e, operator);
+                    }}
+                    mode={view.mode}
+                    controls={
+                      <div className={cx(flex, justifyEnd, grow)}>
+                        {!error && (
+                          <IconButton
+                            icon="code"
+                            tooltip={i18nValues.variableProperties.toggleCoding}
+                            pressed={error !== undefined}
+                            onClick={() => setSrcMode(sm => !sm)}
+                          />
+                        )}
+                        {isServerScript && (
+                          <IconButton
+                            icon="play"
+                            tooltip={i18nValues.variableProperties.runScripts}
+                            onClick={() => testScript(script.current)}
+                          />
+                        )}
+                        {isScriptCondition(view.mode) && (
+                          <DropMenu
+                            label={operator}
+                            items={operators.map(o => ({ label: o, value: o }))}
+                            onSelect={({ label }) => onSelectOperator(label)}
+                            buttonClassName={secondaryButtonStyle}
+                          />
+                        )}
+                      </div>
                     }
-                    Editor={WegasScriptEditor}
-                    EmbeddedEditor={WegasScriptEditor}
                   />
-                </ResizeHandle>
-              ) : (
-                <WyswygScriptEditor
-                  expressions={statements}
-                  onChange={e => {
-                    onStatementsChange(e, operator);
-                  }}
-                  mode={view.mode}
-                />
-              )}
+                )}
+              </div>
             </>
           );
         }}

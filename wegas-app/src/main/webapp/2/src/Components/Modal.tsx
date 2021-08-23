@@ -36,7 +36,7 @@ const modalStyle = (fixed: boolean) =>
     zIndex: 1000,
   });
 
-const modalContentStyle = css({
+export const modalContentStyle = css({
   margin: '0 auto',
   maxWidth: '100%',
   backgroundColor: themeVar.colors.BackgroundColor,
@@ -47,17 +47,24 @@ const modalContentStyle = css({
   '&:focus': {
     outline: 'none',
   },
+  position: 'relative',
 });
 
-const modalCloseDivStyle = css({
+export const modalCloseDivStyle = css({
   display: 'flex',
   position: 'absolute',
   top: 0,
-  left: 'calc(100% - 1.5em)',
-  width: '1.5em',
-  height: '1.5em',
+  left: 'calc(100% - 2em)',
+  width: '2em',
+  height: '2em',
   cursor: 'pointer',
-  color: 'white',
+  color: themeVar.colors.DisabledColor,
+  justifyContent: 'center',
+  alignItems: 'center',
+  fontSize: '18px',
+  '&:hover': {
+    color: themeVar.colors.PrimaryColor,
+  }
 });
 
 const modalCloseButtonStyle = css({
@@ -69,9 +76,8 @@ export const secondaryButtonCSS = {
     backgroundColor: 'transparent',
     color: themeVar.colors.PrimaryColor,
     border: '1px solid ' + themeVar.colors.PrimaryColor,
-    '&:hover': {
-      color: themeVar.colors.LightTextColor,
-      borderColor: 'transparent',
+    '&:hover, &:focus': {
+      backgroundColor: themeVar.colors.HeaderColor,
     }
   }
 };
@@ -191,7 +197,7 @@ export function Modal({
         >
           {onExit && (
             <div className={modalCloseDivStyle} onClick={onExit}>
-              <IconComp icon="window-close" className={modalCloseButtonStyle} />
+              <IconComp icon="times" className={modalCloseButtonStyle} />
             </div>
           )}
           {children}
@@ -288,4 +294,23 @@ export function useOkCancelModal(attachedToId?: string) {
     [attachedToId, show],
   );
   return { showModal, OkCancelModal: Modal };
+}
+
+export function useModal() {
+  const [show, setShow] = React.useState(false);
+  const showModal = function () {
+    setShow(true);
+  };
+  const ModalComp = React.useCallback(
+    (props: React.PropsWithChildren<ModalProps>) => {
+      return show ? (
+        <Modal
+          {...props}
+          onExit={() => setShow(false)}
+        />
+      ) : null;
+    },
+    [show],
+  );
+  return { showModal, show, Modal: ModalComp };
 }

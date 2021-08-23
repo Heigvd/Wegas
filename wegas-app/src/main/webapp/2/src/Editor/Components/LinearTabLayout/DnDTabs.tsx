@@ -20,14 +20,14 @@ interface TabInternalProps {
    * active - the state of the tab
    */
   active?: boolean;
-  // /**
-  //  * children - the content of the tab
-  //  */
-  // children?: React.ReactChild | null;
   /**
    * onClick - the function to be called when the tab is clicked
    */
-  onClick?: () => void;
+  onClick?: React.DOMAttributes<HTMLDivElement>["onClick"];
+  /**
+   * onDoubleClick - the function to be called when the tab is double clicked
+   */
+  onDoubleClick?: React.DOMAttributes<HTMLDivElement>["onDoubleClick"];
   /**
    * className - the className to apply on the component
    */
@@ -53,6 +53,7 @@ export const Tab = React.forwardRef<HTMLDivElement, TabProps>(
         : cx(tabStyle, tabsStyle(props.isChild, props.active)))
       }
       onClick={props.onClick}
+      onDoubleClick={props.onDoubleClick}
     >
       <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
         {props.children}
@@ -102,6 +103,7 @@ export function DragTab({
   children,
   className,
   onClick,
+  onDoubleClick,
   onDrag,
   CustomTab = Tab,
   isChild,
@@ -124,6 +126,7 @@ export function DragTab({
       active={active}
       className={className}
       onClick={onClick}
+      onDoubleClick={onDoubleClick}
       isChild={isChild}
     >
       {children}
