@@ -24,7 +24,6 @@ import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
 import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
-import { entityIs } from '../../data/entities';
 
 export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
