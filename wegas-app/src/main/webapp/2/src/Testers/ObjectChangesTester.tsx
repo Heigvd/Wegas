@@ -46,14 +46,13 @@ export default function ObjectChangesTester() {
     },
   };
 
-  const [statefullTestObject, setStatefullTestObject] = React.useState<
-    TestObject
-  >({
-    prop: false,
-    next: {
+  const [statefullTestObject, setStatefullTestObject] =
+    React.useState<TestObject>({
       prop: false,
-    },
-  });
+      next: {
+        prop: false,
+      },
+    });
 
   const [nestedTestObject, setNestedTestObject] = React.useState<TestObject>({
     prop: false,
@@ -67,8 +66,6 @@ export default function ObjectChangesTester() {
       },
     },
   });
-
-  wlog('VLAM!');
 
   return (
     <div className={cx(flex, flexRow, expandBoth)}>

@@ -3,7 +3,7 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { LabeledView, Labeled } from '../labeled';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { store } from '../../../../data/Stores/store';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
@@ -31,12 +31,19 @@ import { DropMenu } from '../../../../Components/DropMenu';
 import { ResizeHandle } from '../../ResizeHandle';
 import { createScript } from '../../../../Helper/wegasEntites';
 import { IScript, IVariableDescriptor, IVariableInstance } from 'wegas-ts-api';
-import { Button } from '../../../../Components/Inputs/Buttons/Button';
 import { EmbeddedSrcEditor } from '../../ScriptEditors/EmbeddedSrcEditor';
+import {
+  defaultMarginBottom,
+  flex,
+  flexBetween,
+  itemBottom,
+} from '../../../../css/classes';
+import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
+import { useInternalTranslate } from '../../../../i18n/internalTranslator';
+import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 
 export const scriptEditStyle = css({
   minHeight: '5em',
-  // marginTop: '0.8em',
   width: '500px',
 });
 
@@ -154,6 +161,7 @@ export function Script({
   const script = React.useRef('');
   const [statements, setStatements] = React.useState<Statement[] | null>(null);
   const [operator, setOperator] = React.useState<Operator>(operators[0]);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   const isServerScript = view.mode === 'SET';
 
@@ -194,6 +202,7 @@ export function Script({
         returnedProgram = program(statements);
       }
       onCodeChange(generate(returnedProgram).code);
+      setStatements(statements);
     },
     [onCodeChange, view.mode],
   );
@@ -248,10 +257,10 @@ export function Script({
                 condition.expression,
               );
             } else {
-              setError(['The script cannot be parsed']);
+              setError([i18nValues.scripts.canntoBeParsed]);
             }
           } else {
-            setError(['The script cannot be parsed as a condition']);
+            setError([i18nValues.scripts.canntoBeParsedCondition]);
           }
         }
         setStatements(newExpressions);
@@ -260,7 +269,13 @@ export function Script({
     } catch (e) {
       setError([e.message]);
     }
-  }, [operator, value, view.mode]);
+  }, [
+    i18nValues.scripts.canntoBeParsed,
+    i18nValues.scripts.canntoBeParsedCondition,
+    operator,
+    value,
+    view.mode,
+  ]);
 
   return (
     <CommonViewContainer view={view} errorMessage={error}>
@@ -268,25 +283,32 @@ export function Script({
         {({ labelNode }) => {
           return (
             <>
-              {labelNode}
-              {!error && (
-                <Button
-                  icon="code"
-                  pressed={error !== undefined}
-                  onClick={() => setSrcMode(sm => !sm)}
-                />
-              )}
-              {isServerScript && (
-                <Button
-                  icon="play"
-                  onClick={() => testScript(script.current)}
-                />
-              )}
+              <div className={cx(flex, flexBetween, itemBottom)}>
+                {labelNode}
+                <div className={flex}>
+                  {!error && (
+                    <IconButton
+                      icon="code"
+                      tooltip={i18nValues.variableProperties.toggleCoding}
+                      pressed={error !== undefined}
+                      onClick={() => setSrcMode(sm => !sm)}
+                    />
+                  )}
+                  {isServerScript && (
+                    <IconButton
+                      icon="play"
+                      tooltip={i18nValues.variableProperties.runScripts}
+                      onClick={() => testScript(script.current)}
+                    />
+                  )}
+                </div>
+              </div>
               {isScriptCondition(view.mode) && (
                 <DropMenu
                   label={operator}
                   items={operators.map(o => ({ label: o, value: o }))}
                   onSelect={({ label }) => onSelectOperator(label)}
+                  buttonClassName={defaultMarginBottom}
                 />
               )}
               {srcMode ? (

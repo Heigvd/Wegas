@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
 import {
   flex,
-  flexColumn,
   grow,
   itemCenter,
   expandBoth,
@@ -11,11 +10,6 @@ import {
 } from '../../../css/classes';
 import { cx, css } from 'emotion';
 import { FontAwesome, IconComp, Icon, Icons } from '../Views/FontAwesome';
-import {
-  actionNodeContentStyle,
-  nodeContentStyle,
-  TREEVIEW_ITEM_TYPE as TREEVIEW_INDEX_ITEM_TYPE,
-} from '../Variable/VariableTree';
 import { omit } from 'lodash-es';
 import { DropMenu } from '../../../Components/DropMenu';
 import { TextPrompt } from '../TextPrompt';
@@ -30,28 +24,35 @@ import {
   isFeatureEnabled,
 } from '../../../Components/Contexts/FeaturesProvider';
 import { pageEditorCTX, pageCTX } from './PageEditor';
-import {
-  Tree,
-  TreeNode,
-  GetParentPropsFn,
-  ItemDescription,
-  isItemDescription,
-} from '../Views/TreeView/TreeView';
+// import { ItemDescription, isItemDescription } from '../Views/TreeView/TreeView';
 import {
   usePagesStateStore,
   isComponentFocused,
   pagesStateStore,
   PageStateAction,
 } from '../../../data/Stores/pageStore';
-import { PAGEEDITOR_COMPONENT_TYPE, isDnDComponent } from './ComponentPalette';
+import {
+  DnDComponent,
+  isDnDComponent,
+  PAGEEDITOR_COMPONENT_TYPE,
+} from './ComponentPalette';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { State } from '../../../data/Reducer/reducers';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { actionNodeContentStyle } from '../Variable/CTree';
+import { TREEVIEW_ITEM_TYPE } from '../Variable/VariableTreeView';
+import { TreeNode } from '../../../Components/TreeView/TreeNode';
+import { OnMoveFn, TreeView } from '../../../Components/TreeView/TreeView';
+import { wlog } from '../../../Helper/wegaslog';
+
+interface NodeBasicInfo<T> {
+  parent?: T;
+  index?: number;
+}
 
 const bulletCSS = {
   width: '1em',
@@ -61,11 +62,18 @@ const CONTROLS_CLASSNAME = 'page-index-item-controls';
 
 const PAGE_LAYOUT_ITEM = 'PAGE_LAYOUT_ITEM';
 export const PAGE_LAYOUT_COMPONENT = 'PAGE_LAYOUT_COMPONENT';
+export const ALLOWED_PAGE_EDITOR_COMPONENTS = [
+  PAGE_LAYOUT_COMPONENT,
+  TREEVIEW_ITEM_TYPE,
+  PAGEEDITOR_COMPONENT_TYPE,
+];
 
 const titleStyle = css({
   borderStyle: 'solid',
+  borderWidth: '1px',
   borderColor: 'transparent',
   borderRadius: themeVar.dimensions.BorderRadius,
+  padding: '2px',
   [`&>.${CONTROLS_CLASSNAME}`]: {
     visibility: 'hidden',
   },
@@ -110,17 +118,29 @@ interface ErrorModalState {
 }
 type LayoutModalStates = PageModalState | ErrorModalState /*| SaveModalState*/;
 
-interface IndexNodeId {
+interface PageIndexNode {
   pagePath: string[];
 }
 
-export interface ComponentNodeId {
+export interface PageComponentNode {
   pageId: string;
-  page: WegasComponent;
   componentPath: number[];
 }
 
-type NodeId = IndexNodeId | ComponentNodeId;
+type PageNode = PageIndexNode | PageComponentNode;
+
+function isPageIndexNode(node: PageNode): node is PageIndexNode {
+  return 'pagePath' in node && Array.isArray(node.pagePath);
+}
+
+export function isPageComponentNode(node: PageNode): node is PageComponentNode {
+  return (
+    'pageId' in node &&
+    typeof node.pageId === 'string' &&
+    'componentPath' in node &&
+    Array.isArray(node.componentPath)
+  );
+}
 
 function isWegasComponent(component: unknown): component is WegasComponent {
   if (
@@ -141,17 +161,17 @@ function isWegasComponent(component: unknown): component is WegasComponent {
   return true;
 }
 
-function isComponentNodeId(nodeId: NodeId): nodeId is ComponentNodeId {
-  return 'pageId' in nodeId;
-}
+// function isComponentNodeId(nodeId: PageNode): nodeId is PageComponentNode {
+//   return 'pageId' in nodeId;
+// }
 
-export type LayoutDndComponent = ItemDescription<ComponentNodeId>;
+// export type LayoutDndComponent = ItemDescription<PageComponentNode>;
 
-export function isLayoutDndComponent(
-  item?: Partial<LayoutDndComponent>,
-): item is LayoutDndComponent {
-  return isItemDescription(item) && isComponentNodeId(item.id);
-}
+// export function isLayoutDndComponent(
+//   item?: Partial<LayoutDndComponent>,
+// ): item is LayoutDndComponent {
+//   return isItemDescription(item) && isComponentNodeId(item.id);
+// }
 
 interface LayoutButtonProps extends ClassStyleId {
   tooltip?: string;
@@ -163,7 +183,7 @@ interface IndexItemAdderProps extends LayoutButtonProps {
   path: string[];
 }
 
-function IndexItemAdder({
+export function IndexItemAdder({
   path,
   className,
   style,
@@ -171,8 +191,7 @@ function IndexItemAdder({
 }: IndexItemAdderProps) {
   const [modalState, setModalState] = React.useState<LayoutModalStates>();
   const { dispatch } = store;
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   return (
     <div className={className} style={style} title={tooltip}>
@@ -276,9 +295,8 @@ function IndexItemModifer({
 }: IndexItemModiferProps) {
   const [modalState, setModalState] = React.useState<LayoutModalStates>();
   const { dispatch } = store;
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
-  const i18nEditorValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
+  const i18nEditorValues = useInternalTranslate(editorTabsTranslations);
 
   return (
     <div className={className} title={tooltip}>
@@ -404,7 +422,6 @@ function LayoutNodeTitle({
     <div
       onMouseUp={onMouseUp}
       className={cx(
-        nodeContentStyle,
         actionNodeContentStyle,
         titleStyle,
         flex,
@@ -417,7 +434,7 @@ function LayoutNodeTitle({
       style={style}
       title={tooltip}
     >
-      <IconComp icon={icon} style={bulletCSS} />
+      <IconComp icon={icon} className={css({ marginRight: '3px' })} />
       <div className={grow}>{newTitle}</div>
       {children}
     </div>
@@ -427,7 +444,6 @@ function LayoutNodeTitle({
 const pageDispatch = pagesStateStore.dispatch;
 
 interface WegasComponentTitleProps {
-  page: WegasComponent;
   component: WegasComponent;
   pageId: string;
   selectedPageId?: string;
@@ -437,7 +453,6 @@ interface WegasComponentTitleProps {
 }
 
 function WegasComponentTitle({
-  page,
   component,
   pageId,
   selectedPageId,
@@ -445,8 +460,7 @@ function WegasComponentTitle({
   selectedComponentPath,
   componentControls,
 }: WegasComponentTitleProps) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
   const registeredComponent = usePageComponentStore(s => s[component.type]);
   const { editMode } = React.useContext(pageCTX);
 
@@ -503,7 +517,13 @@ function WegasComponentTitle({
         <ComponentAdder
           tooltip={i18nValues.pageEditor.addComponent}
           onSelect={componentType => {
-            onNew(pageId, page, componentPath, componentType, 0);
+            onNew(
+              pageId,
+              store.getState().pages[pageId],
+              componentPath,
+              componentType,
+              0,
+            );
           }}
           className={CONTROLS_CLASSNAME}
         />
@@ -513,7 +533,8 @@ function WegasComponentTitle({
           <ConfirmButton
             icon="trash"
             onAction={success =>
-              success && onDelete(pageId, page, componentPath)
+              success &&
+              onDelete(pageId, store.getState().pages[pageId], componentPath)
             }
             disabled={componentPath.length === 0}
             tooltip={
@@ -525,7 +546,9 @@ function WegasComponentTitle({
           />
           <Button
             icon="copy"
-            onClick={() => onDuplicate(pageId, page, componentPath)}
+            onClick={() =>
+              onDuplicate(pageId, store.getState().pages[pageId], componentPath)
+            }
             disabled={componentPath.length === 0}
             tooltip={i18nValues.pageEditor.copyComponent}
             className={CONTROLS_CLASSNAME}
@@ -538,7 +561,7 @@ function WegasComponentTitle({
 
 interface WegasComponentNodeProps {
   component: WegasComponent;
-  getParentProps: GetParentPropsFn<NodeId>;
+  // getParentProps: GetParentPropsFn<NodeId>;
   pageId: string;
   selectedPageId?: string;
   componentPath: number[];
@@ -548,22 +571,15 @@ interface WegasComponentNodeProps {
 
 function WegasComponentNode({
   component,
-  getParentProps,
+  // getParentProps,
   pageId,
   selectedPageId,
   componentPath,
   selectedComponentPath,
   componentControls,
 }: WegasComponentNodeProps) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
-  const pageSelector = React.useCallback(
-    (s: State) => s.pages[pageId],
-    [pageId],
-  );
-  const page = useStore(pageSelector);
-  const id: ComponentNodeId = { pageId, page, componentPath };
-  const parentProps = getParentProps();
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
+  const data: PageComponentNode = { pageId, componentPath };
   let computedComponent: WegasComponent;
 
   if (component === undefined) {
@@ -586,28 +602,21 @@ function WegasComponentNode({
 
   return (
     <TreeNode
-      {...parentProps}
-      title={
+      label={
         <WegasComponentTitle
           component={computedComponent}
           componentControls={componentControls}
           componentPath={componentPath}
-          page={page}
           pageId={pageId}
           selectedComponentPath={selectedComponentPath}
           selectedPageId={selectedPageId}
-          //isDragging={isDragging}
         />
       }
-      id={id}
+      data={data}
       type={PAGE_LAYOUT_COMPONENT}
-      acceptType={[
-        PAGE_LAYOUT_COMPONENT,
-        TREEVIEW_INDEX_ITEM_TYPE,
-        PAGEEDITOR_COMPONENT_TYPE,
-      ]}
-      noDrag={componentPath.length === 0}
-      noDrop={
+      acceptTypes={ALLOWED_PAGE_EDITOR_COMPONENTS}
+      notDraggable={componentPath.length === 0}
+      notDroppable={
         computedComponent.props?.children == null ||
         (computedComponent.props.children.length === 1 &&
           computedComponent.type === 'For each') ||
@@ -615,19 +624,17 @@ function WegasComponentNode({
       }
     >
       {computedComponent.props?.children
-        ? getParentProps =>
-            computedComponent.props?.children?.map((childComponent, i) => (
-              <WegasComponentNode
-                key={compToKey(childComponent, [...componentPath, i])}
-                getParentProps={getParentProps}
-                component={childComponent}
-                pageId={pageId}
-                selectedPageId={selectedPageId}
-                componentPath={[...componentPath, i]}
-                selectedComponentPath={selectedComponentPath}
-                componentControls={componentControls}
-              />
-            ))
+        ? computedComponent.props?.children?.map((childComponent, i) => (
+            <WegasComponentNode
+              key={compToKey(childComponent, [...componentPath, i])}
+              component={childComponent}
+              pageId={pageId}
+              selectedPageId={selectedPageId}
+              componentPath={[...componentPath, i]}
+              selectedComponentPath={selectedComponentPath}
+              componentControls={componentControls}
+            />
+          ))
         : null}
     </TreeNode>
   );
@@ -646,8 +653,7 @@ function PageIndexTitle({
   onPageClick,
   defaultPageId,
 }: PageIndexTitleProps) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
   const { selectedPageId } = React.useContext(pageEditorCTX);
   const { dispatch } = store;
   const folderIsNotEmpty =
@@ -781,19 +787,16 @@ interface PagesLayoutNodeProps extends PagesLayoutProps {
   indexItem: PageIndexItem;
   path: string[];
   defaultPageId: string;
-  getParentProps: GetParentPropsFn<NodeId>;
 }
 
 function PageIndexItemNode({
   indexItem,
   path,
   defaultPageId,
-  getParentProps,
   onPageClick,
   componentControls,
 }: PagesLayoutNodeProps): JSX.Element | null {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
   const { selectedPageId, editedPath } = React.useContext(pageEditorCTX);
   const pageSelector = React.useCallback(
     (s: State) => {
@@ -809,15 +812,12 @@ function PageIndexItemNode({
     ...path,
     isPageItem(indexItem) ? indexItem.id! : indexItem.name,
   ];
-  const id: IndexNodeId = { pagePath: newPath };
-
-  const parentProps = getParentProps();
+  const data: PageIndexNode = { pagePath: newPath };
 
   return isPageItem(indexItem) ? (
     page ? (
       <TreeNode
-        {...parentProps}
-        title={
+        label={
           <PageIndexTitle
             newPath={newPath}
             indexItem={indexItem}
@@ -825,29 +825,28 @@ function PageIndexItemNode({
             defaultPageId={defaultPageId}
           />
         }
-        id={id}
+        data={data}
+        id={'PAGE' + indexItem.id}
         type={PAGE_LAYOUT_ITEM}
+        // acceptTypes={[]}
+        notDroppable
       >
-        {getParentProps => (
-          <WegasComponentNode
-            key={indexItem.name + 'FIRSTCOMPONENT'}
-            getParentProps={getParentProps}
-            component={page}
-            pageId={indexItem.id!}
-            selectedPageId={selectedPageId}
-            componentPath={[]}
-            selectedComponentPath={editedPath}
-            componentControls={componentControls}
-          />
-        )}
+        <WegasComponentNode
+          key={indexItem.name + 'FIRSTCOMPONENT'}
+          component={page}
+          pageId={indexItem.id!}
+          selectedPageId={selectedPageId}
+          componentPath={[]}
+          selectedComponentPath={editedPath}
+          componentControls={componentControls}
+        />
       </TreeNode>
     ) : (
       <span>{i18nValues.loading}...</span>
     )
   ) : (
     <TreeNode
-      {...parentProps}
-      title={
+      label={
         <PageIndexTitle
           newPath={newPath}
           indexItem={indexItem}
@@ -855,22 +854,21 @@ function PageIndexItemNode({
           defaultPageId={defaultPageId}
         />
       }
-      id={id}
+      // id={JSON.stringify(id)}
+      data={data}
       type={PAGE_LAYOUT_ITEM}
+      acceptTypes={[PAGE_LAYOUT_ITEM]}
     >
-      {getParentProps =>
-        indexItem.items.map(v => (
-          <PageIndexItemNode
-            getParentProps={getParentProps}
-            key={v.name}
-            indexItem={v}
-            path={newPath}
-            componentControls={componentControls}
-            defaultPageId={defaultPageId}
-            onPageClick={onPageClick}
-          />
-        ))
-      }
+      {indexItem.items.map(v => (
+        <PageIndexItemNode
+          key={v.name}
+          indexItem={v}
+          path={newPath}
+          componentControls={componentControls}
+          defaultPageId={defaultPageId}
+          onPageClick={onPageClick}
+        />
+      ))}
     </TreeNode>
   );
 }
@@ -911,102 +909,112 @@ interface PagesLayoutProps {
 }
 
 export function PagesLayout(props: PagesLayoutProps) {
+  const [openNodes, setOpenNodes] = React.useState<{
+    [path: string]: boolean | undefined;
+  }>({});
+
+  React.useEffect(() => {
+    wlog(openNodes);
+  }, [openNodes]);
+
   const index = useStore(s => s.pages.index, deepDifferent);
-  const { selectedPageId, selectedPage } = React.useContext(pageEditorCTX);
-  const { dispatch } = store;
   const { componentControls } = props;
   const { onMove, onNew } = componentControls;
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
+
+  const rootData: NodeBasicInfo<PageNode> = {
+    index: 0,
+    parent: { pagePath: [] },
+  };
+
+  const onDrop: OnMoveFn<PageNode | DnDComponent> = React.useCallback(
+    (from, to) => {
+      if (
+        to.data != null &&
+        from.data != null &&
+        // Just safeguarding down, to.data will never be a DnDComponent
+        !isDnDComponent(to.data)
+      ) {
+        const pages = store.getState().pages;
+        const index = to.path.slice(-1)[0];
+        // Checking if drag comes from the tree
+        if (!isDnDComponent(from.data)) {
+          // Checking if a page component is moved into another page component
+          if (isPageComponentNode(from.data) && isPageComponentNode(to.data)) {
+            const sourcePageId = from.data.pageId;
+            const destPageId = to.data.pageId;
+            const sourcePage = pages[sourcePageId];
+            const destPage = pages[destPageId];
+            const sourcePath = from.data.componentPath;
+            const destPath = to.data.componentPath;
+
+            onMove(
+              sourcePageId,
+              destPageId,
+              sourcePage,
+              destPage,
+              sourcePath,
+              destPath,
+              index,
+            );
+          }
+          // Checking if a page or a folder is moved into another folder
+          // It's impossible to drop a page or a folder on another page as page nodes are undroppable
+          else if (isPageIndexNode(from.data) && isPageIndexNode(to.data)) {
+            store.dispatch(
+              Actions.PageActions.moveIndexItem(
+                from.data.pagePath,
+                to.data.pagePath,
+                index,
+              ),
+            );
+          }
+        }
+        // Now the drag element comes from outside the tree
+        else {
+          if (isPageComponentNode(to.data)) {
+            const sourceType = from.data.componentName;
+            const destPageId = to.data.pageId;
+            const destPage = pages[destPageId];
+            const destPath = to.data.componentPath;
+            onNew(destPageId, destPage, destPath, sourceType, index);
+          }
+        }
+      }
+    },
+    [onMove, onNew],
+  );
 
   return (
     <Toolbar className={expandBoth}>
       <Toolbar.Header className={defaultPadding}>
-        <IndexItemAdder path={[]} />
+        <IndexItemAdder path={[]} tooltip={i18nValues.add} />
       </Toolbar.Header>
-      <Toolbar.Content className={cx(flex, grow)}>
-        <Tree<NodeId>
-          id={{ pagePath: [] }}
-          type="NODE"
-          onDrop={({ target, id, item }) => {
-            const computedTargetParent = target.parent
-              ? target.parent
-              : { pagePath: [] };
-
-            if (
-              id == null &&
-              isDnDComponent(item) &&
-              isComponentNodeId(computedTargetParent) &&
-              selectedPageId != null &&
-              selectedPage != null
-            ) {
-              if (item.path != null) {
-                onMove(
-                  selectedPageId,
-                  computedTargetParent.pageId,
-                  selectedPage,
-                  computedTargetParent.page,
-                  item.path,
-                  computedTargetParent.componentPath,
-                  target.index || 0,
-                );
-              } else {
-                onNew(
-                  computedTargetParent.pageId,
-                  computedTargetParent.page,
-                  computedTargetParent.componentPath,
-                  item.componentName,
-                  target.index || 0,
-                );
-              }
-            } else {
-              if (
-                !isComponentNodeId(id) &&
-                !isComponentNodeId(computedTargetParent)
-              ) {
-                dispatch(
-                  Actions.PageActions.moveIndexItem(
-                    id.pagePath,
-                    computedTargetParent.pagePath,
-                    target.index,
-                  ),
-                );
-              } else if (
-                isComponentNodeId(id) &&
-                isComponentNodeId(computedTargetParent)
-              ) {
-                onMove(
-                  id.pageId,
-                  computedTargetParent.pageId,
-                  id.page,
-                  computedTargetParent.page,
-                  id.componentPath,
-                  computedTargetParent.componentPath,
-                  target.index || 0,
-                );
-              }
-            }
+      <Toolbar.Content className={cx(flex, grow, defaultPadding)}>
+        <TreeView
+          rootId="PageRoot"
+          rootData={rootData.parent}
+          nodeManagement={{
+            openNodes,
+            setOpenNodes,
           }}
+          onMove={onDrop}
+          acceptTypes={[PAGE_LAYOUT_ITEM]}
         >
-          {getParentProps => (
-            <div className={cx(flex, grow, flexColumn)}>
-              {index ? (
-                index.root.items.map(v => (
-                  <PageIndexItemNode
-                    getParentProps={getParentProps}
-                    key={v.name}
-                    indexItem={v}
-                    path={[]}
-                    defaultPageId={index.defaultPageId}
-                    {...props}
-                  />
-                ))
-              ) : (
-                <span>{i18nValues.loading}...</span>
-              )}
-            </div>
+          {index ? (
+            index.root.items.map(v => (
+              <PageIndexItemNode
+                key={v.name}
+                indexItem={v}
+                path={[]}
+                defaultPageId={index.defaultPageId}
+                {...props}
+              />
+            ))
+          ) : (
+            <span>{i18nValues.loading}...</span>
           )}
-        </Tree>
+        </TreeView>
       </Toolbar.Content>
     </Toolbar>
   );

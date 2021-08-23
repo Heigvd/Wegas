@@ -97,6 +97,7 @@ registerComponent(
     componentType: 'Input',
     name: 'NumberSlider',
     icon: 'sliders-h',
+    illustration: 'numberSlider',
     schema: {
       script: schemaProps.scriptVariable({
         label: 'Variable',

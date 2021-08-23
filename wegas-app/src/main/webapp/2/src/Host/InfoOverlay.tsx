@@ -1,6 +1,7 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { useOnClickOutside } from '../Components/Hooks/useOnClickOutside';
+import { HTMLText } from '../Components/Outputs/HTMLText';
 import { themeVar } from '../Components/Theme/ThemeVars';
 import { Toolbar } from '../Components/Toolbar';
 import { flex } from '../css/classes';
@@ -14,7 +15,6 @@ const overlayStyle = css({
   position: 'absolute',
   top: 0,
   left: 0,
-  //overflow: 'auto',
   maxWidth: '450px',
   maxHeight: '300px',
   padding: '2em',
@@ -33,10 +33,7 @@ const overlayStyle = css({
     zIndex: 1001,
     left: '-13px',
     top: '43px',
-  },
-  h2: {
-    fontSize: '2em',
-  },
+  }
 });
 const overlayContentStyle = css({
   overflow: 'auto',
@@ -130,11 +127,7 @@ export function InfoOverlay({
             <h2>{title}</h2>
           </Toolbar.Header>
           <Toolbar.Content>
-            <div
-              dangerouslySetInnerHTML={{
-                __html: content ? content : '',
-              }}
-            />
+            <HTMLText text={content} />
           </Toolbar.Content>
         </Toolbar>
       </div>

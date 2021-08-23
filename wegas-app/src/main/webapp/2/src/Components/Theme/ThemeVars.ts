@@ -215,14 +215,14 @@ export const defaultDarkMode: Mode = {
   values: {
     colors: {
       PrimaryColor: 'Primary color',
-      PrimaryColorShade: 'Primary color shade',
-      ActiveColor: 'Secondary color pastel',
+      PrimaryColorShade: 'Primary color pastel',
+      ActiveColor: 'Primary color pastel',
       BackgroundColor: 'Dark background color',
       SecondaryBackgroundColor: 'Dark secondary background color',
       DisabledColor: 'Disabled color',
-      HeaderColor: 'Secondary color',
+      HeaderColor: 'Primary color shade',
       HighlightColor: 'Accent color',
-      HoverColor: 'Secondary color',
+      HoverColor: 'Primary color',
       HoverTextColor: 'Secondary text color',
       DarkTextColor: 'Secondary text color',
       LightTextColor: 'Text color',
@@ -281,10 +281,10 @@ export function modeClass(themeValues: ThemeValues, mode: Mode): string {
 
 export const defaultThemeValues: ThemeValues = {
   colors: {
-    'Primary color': '#00C2C8',
-    'Primary color shade': '#2B8588',
-    'Primary color tint': '#44E2E7',
-    'Primary color pastel': '#DBF2F3',
+    'Primary color': '#0A9FF1',
+    'Primary color shade': '#05517A',
+    'Primary color tint': '#00ACFF',
+    'Primary color pastel': '#D5EAF6',
     'Secondary color': '#46C892',
     'Secondary color shade': '#217058',
     'Secondary color tint': '#33E399',

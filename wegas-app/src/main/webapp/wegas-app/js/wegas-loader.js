@@ -87,7 +87,14 @@ YUI().use(function(Y) {
             },
             "wegas-scripteval": {
                 path: "js/persistence/wegas-scripteval-min.js",
-                requires: "wegas-variabledescriptor-entities",
+                requires: [
+                    "wegas-pageloader",
+                    "wegas-entity",
+                    "wegas-variabledescriptor-entities",
+                    "wegas-helper",
+                    "wegas-parent",
+                    "template-micro"
+                ],
                 ws_provides: "ScriptEval"
             },
             "wegas-websocketlistener": {
@@ -480,7 +487,7 @@ YUI().use(function(Y) {
                 type: CSS
             },
             "wegas-showoverlayonclick": {
-            path: "js/plugin/wegas-showoverlayonclick-min.js",
+                path: "js/plugin/wegas-showoverlayonclick-min.js",
                 requires: ["overlay", "wegas-showoverlayonclickcss"],
                 ws_provides: ["ShowOverlayOnClick", "ShowInboxListOnClick"]
             },
@@ -1256,7 +1263,7 @@ YUI().use(function(Y) {
                 // https://fontawesome.com/v4.7.0/
                 type: CSS,
                 path: "font-awesome/4.7.0/css/font-awesome-min.css"
-                //fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+                    //fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
             },
             "roboto-font": {
                 type: CSS,

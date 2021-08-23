@@ -11,6 +11,8 @@ import { classNameOrEmpty } from '../../../Helper/className';
 import { typeCleaner } from './Script/Expressions/expressionEditorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
 
 const transparentStyle = css({
   opacity: 0,
@@ -54,6 +56,7 @@ interface AdderProps<T> {
 }
 
 function Adder<T>({ onChildAdd, choices, id, tooltip }: AdderProps<T>) {
+  const i18nValues = useInternalTranslate(commonTranslations);
   if (Array.isArray(choices)) {
     return (
       <DropMenu
@@ -66,9 +69,11 @@ function Adder<T>({ onChildAdd, choices, id, tooltip }: AdderProps<T>) {
   return (
     <Button
       id={id}
+      label={i18nValues.add}
       icon="plus-circle"
       onClick={() => onChildAdd()}
       tooltip={tooltip}
+      noBackground
     />
   );
 }
@@ -320,7 +325,7 @@ function ArrayWidget({
   }
   const singleItemType: Exclude<typeof itemType, TYPESTRING[]> = itemType;
   const defaultNewChild: (newValue?: {} | undefined) => void = newValue =>
-    typeCleaner(newValue, singleItemType || 'object', true, defaultItem);
+    typeCleaner(newValue, singleItemType || 'object', defaultItem);
   const onNewChild: (menuValue?: {} | undefined) => void = menuValue => {
     const newValue = [
       ...(value || []),

@@ -97,7 +97,7 @@ YUI.add('wegas-sendmail', function(Y) {
                     return;
                 }
                 this.setStatus("");
-                Wegas.Panel.confirm("This will send a real mail", Y.bind(function() {
+                Wegas.Panel.confirm("This will send a real e-mail", Y.bind(function() {
                     this.setStatus("Sending...");
 
                     var data = this.form.getValue();

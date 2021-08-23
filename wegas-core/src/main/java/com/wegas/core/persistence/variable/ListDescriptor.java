@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable;
 
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.IMergeable;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
@@ -118,7 +119,7 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
      */
     @Override
     @JsonView(Views.ExportI.class)
-    @Scriptable(label = "getItems", wysiwyg = false)
+    @Scriptable(label = "getItems", wysiwyg = false, dependsOn = DependencyScope.CHILDREN)
     public List<VariableDescriptor> getItems() {
         return Helper.copyAndSortModifiable(this.items, new EntityComparators.OrderComparator<>());
     }
@@ -127,6 +128,16 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
     @JsonIgnore
     public List<VariableDescriptor> getRawItems() {
         return items;
+    }
+
+    @Override
+    @JsonIgnore
+    public List<VariableDescriptor> getReadableItems() {
+        if (this.beans == null || this.beans.getRequestManager().isEditorView()) {
+            return this.getItems();
+        } else {
+            return this.beans.getVariableDescriptorFacade().getReadableChildren(this);
+        }
     }
 
     @Override

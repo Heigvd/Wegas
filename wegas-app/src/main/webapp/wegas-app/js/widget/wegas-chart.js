@@ -23,7 +23,7 @@ YUI.add('wegas-chart', function(Y) {
         initializer: function() {
             this.handlers = [];
             if (this.get('xLabelMapper')) {
-                this._xLabelMapper = eval('(' + this.get('xLabelMapper') + ')');
+                this._xLabelMapper = W.Sandbox.eval('(' + this.get('xLabelMapper') + ')');
             }
         },
         bindUI: function() {

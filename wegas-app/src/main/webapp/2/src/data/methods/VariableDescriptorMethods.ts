@@ -19,7 +19,7 @@ import { SVariableDescriptor, SVariableInstance, SPlayer } from 'wegas-ts-api';
 import { instantiate } from '../scriptable';
 
 export function editorLabel(vd?: {
-  label: ITranslatableContent;
+  label?: ITranslatableContent;
   editorTag?: string | null;
   name?: string;
 }) {
@@ -31,6 +31,18 @@ export function editorLabel(vd?: {
     return `${vd.editorTag} - ${label}`;
   }
   return (vd && (vd.editorTag || label || vd.name)) || '';
+}
+
+export function editorTitle(vd?: {
+  label?: ITranslatableContent;
+  editorTag?: string | null;
+  name?: string;
+}) {
+  const label = TranslatableContent.toString(vd?.label);
+  if (vd && vd.editorTag && label) {
+    return `${vd.editorTag} - ${label} ${vd.name && " - " + vd.name}`;
+  }
+  return (vd && `${vd.editorTag && vd.editorTag} ${(label && vd.editorTag && " - " + label) || label && label} ${vd.name && " - " + vd.name}`) || '';
 }
 
 export function getParent(vd: IVariableDescriptor): IParentDescriptor {

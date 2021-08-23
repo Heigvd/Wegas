@@ -7,6 +7,7 @@
  */
 package com.wegas.survey.persistence.input;
 
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.EntityComparators;
@@ -113,7 +115,7 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
      */
     @Override
     @JsonView(Views.ExportI.class)
-    @Scriptable(label = "getItems", wysiwyg = false)
+    @Scriptable(label = "getItems", wysiwyg = false, dependsOn = DependencyScope.CHILDREN)
     public List<SurveyInputDescriptor> getItems() {
         return Helper.copyAndSortModifiable(this.items, new EntityComparators.OrderComparator<>());
     }
@@ -206,13 +208,13 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getSurvey().getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        return this.getSurvey().getRequieredUpdatePermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getSurvey().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return this.getSurvey().getRequieredReadPermission(context);
     }
 
     @Override
@@ -245,7 +247,7 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void activate(Player p) {
         this.getInstance(p).setActive(true);
     }
@@ -254,7 +256,7 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void deactivate(Player p) {
         this.getInstance(p).setActive(false);
     }
@@ -265,7 +267,7 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
      *
      * @return true if the player's survey is active
      */
-    @Scriptable(label = "is active")
+    @Scriptable(label = "is active", dependsOn = DependencyScope.SELF)
     public boolean isActive(Player p) {
         return this.getInstance(p).getActive();
     }
@@ -277,7 +279,7 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
      *
      * @return true if the player's survey is not active
      */
-    @Scriptable(label = "is not active")
+    @Scriptable(label = "is not active", dependsOn = DependencyScope.SELF)
     public boolean isNotActive(Player p) {
         return this.getInstance(p).getActive() == false;
     }

@@ -14,6 +14,7 @@ import { icons, Icons } from '../../../Editor/Components/Views/FontAwesome';
 import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
+import { HTMLText } from '../../Outputs/HTMLText';
 
 export interface PlayerButtonProps extends WegasComponentProps {
   label?: IScript;
@@ -49,11 +50,7 @@ function PlayerButton({
       prefixedLabel: prefixedLabel,
       label:
         label && translation !== '' ? (
-          <div
-            dangerouslySetInnerHTML={{
-              __html: translation,
-            }}
-          ></div>
+          <HTMLText text={translation} />
         ) : undefined,
       tooltip,
       disabled: options.disabled || options.locked,
@@ -82,7 +79,7 @@ function PlayerButton({
   return confirm ? (
     <ConfirmButton
       onAction={(success, event) => {
-        if (success) {
+        if (success && event) {
           onClick(event);
         }
       }}
@@ -109,6 +106,7 @@ registerComponent(
     manageOnClick: true,
     name: 'Button',
     icon: 'hand-pointer',
+    illustration: 'button',
     schema: buttonSchema,
   }),
 );

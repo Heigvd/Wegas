@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Statement, ExpressionStatement } from '@babel/types';
+import { ExpressionStatement } from '@babel/types';
 import generate from '@babel/generator';
 import Form from 'jsoninput';
 import { css } from 'emotion';
@@ -15,6 +15,9 @@ import {
   typeCleaner,
   generateSchema,
   PartialAttributes,
+  makeItems,
+  SelectOperator,
+  testCode,
 } from './expressionEditorHelpers';
 import { ScriptView, scriptEditStyle, returnTypes } from '../Script';
 import { useStore } from '../../../../../data/Stores/store';
@@ -25,21 +28,17 @@ import { WegasScriptEditor } from '../../../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
 import { LabeledView, Labeled } from '../../labeled';
 import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
-import { pick } from 'lodash-es';
-import {
-  CallExpression,
-  StringLiteral,
-  emptyStatement,
-  isEmptyStatement,
-} from '@babel/types';
+import { isArray, pick } from 'lodash-es';
+import { CallExpression, StringLiteral } from '@babel/types';
 import { themeVar } from '../../../../../Components/Theme/ThemeVars';
 import { Button } from '../../../../../Components/Inputs/Buttons/Button';
 import { EmbeddedSrcEditor } from '../../../ScriptEditors/EmbeddedSrcEditor';
 import { State } from '../../../../../data/Reducer/reducers';
+import u from 'immer';
+import { genVarItems } from '../../TreeVariableSelect';
 
 const expressionEditorStyle = css({
   backgroundColor: themeVar.colors.HeaderColor,
-  marginTop: '0.8em',
   padding: '2px',
   div: {
     marginTop: '0',
@@ -49,7 +48,9 @@ const expressionEditorStyle = css({
 interface ExpressionEditorState {
   attributes?: PartialAttributes;
   schema?: WyiswygExpressionSchema;
-  statement?: Statement;
+  error?: string | false;
+  softError?: string;
+  code?: string;
 }
 
 function variableIdsSelector(s: State) {
@@ -59,123 +60,135 @@ function variableIdsSelector(s: State) {
     .filter(k => GameModel.selectCurrent().itemsIds.includes(k));
 }
 
+type FormStateActions =
+  | {
+      type: 'SET_IF_DEF';
+      payload: ExpressionEditorState;
+    }
+  | {
+      type: 'SET_ERROR';
+      payload: { error: string };
+    }
+  | {
+      type: 'SET_SOFT_ERROR';
+      payload: { error: string };
+    };
+
 export interface ExpressionEditorProps extends ScriptView {
-  statement: Statement;
+  code: string;
   id?: string;
-  onChange?: (expression: Statement | Statement[]) => void;
+  onChange?: (code: string) => void;
   mode?: ScriptMode;
 }
 
 export function ExpressionEditor({
-  statement,
+  code,
   id,
   mode,
   onChange,
 }: ExpressionEditorProps) {
-  const [error, setError] = React.useState<string>();
   const [srcMode, setSrcMode] = React.useState(false);
-  const [newSrc, setNewSrc] = React.useState<string>();
-  const [formState, setFormState] = React.useState<ExpressionEditorState>({
-    statement,
-  });
 
-  // Getting variables id
-  // First it was done with GameModel.selectCurrent().itemsIds but this array is always full even if the real object are not loaded yet
-  // The new way to get itemIds goes directy into the descriptors state and filter to get only the first layer of itemIds
-  const variableIds = useStore(variableIdsSelector);
+  const variablesItems = useStore(s => {
+    return genVarItems(variableIdsSelector(s), undefined, undefined, value =>
+      makeItems(value, 'variable'),
+    );
+  }, deepDifferent);
 
-  React.useEffect(
-    () => {
-      try {
-        const { attributes, error } = parseStatement(
-          statement || emptyStatement(),
-          mode,
-        );
-
-        const isNewOrUnknown =
-          !formState.statement ||
-          isEmptyStatement(formState.statement) ||
-          generate(formState.statement).code !== generate(statement).code;
-        if (isNewOrUnknown) {
-          if (error !== undefined) {
-            setError(error);
-          }
-          generateSchema(attributes, variableIds, mode).then(schema => {
-            // Validating statement with schema
-            for (const [key, argument] of Object.entries(attributes)) {
-              const numberKey = Number(key);
-              const argType = Array.isArray(argument)
-                ? 'array'
-                : typeof argument;
-              if (!isNaN(numberKey)) {
-                const schemaArgument = schema.properties[numberKey];
-                if (!schemaArgument) {
-                  setError('To much arguments');
-                } else if (argType !== schemaArgument.type) {
-                  setError(
-                    `Argument type mismatch.\nExpected type : ${schemaArgument.type}\nArgument type : ${argType}`,
-                  );
-                }
-              }
+  const setFormState = React.useCallback(
+    (state: ExpressionEditorState, action: FormStateActions) => {
+      return u(state, (state: ExpressionEditorState) => {
+        switch (action.type) {
+          case 'SET_IF_DEF': {
+            const { attributes, error, schema } = action.payload;
+            if (
+              attributes != null &&
+              deepDifferent(attributes, state.attributes)
+            ) {
+              state.attributes = attributes;
             }
-            setFormState({
-              attributes,
-              schema,
-              statement,
-            });
-          });
+            if (error != null && deepDifferent(error, state.error)) {
+              state.error = error;
+            }
+            if (schema != null && deepDifferent(schema, state.schema)) {
+              state.schema = schema;
+            }
+            break;
+          }
+          case 'SET_ERROR': {
+            state.error = action.payload.error;
+            break;
+          }
+          case 'SET_SOFT_ERROR': {
+            state.softError = action.payload.error;
+            break;
+          }
         }
-      } catch (e) {
-        setError(e.message);
-        setFormState({
-          statement,
-        });
-      }
+      });
     },
-    /* eslint-disable react-hooks/exhaustive-deps */
-    /* Linter disabled for the following line to allow reparsing only when a new statement is given to the component
-     Another effect should branch on variablesIds and mode and modify only the schema */
-    [/* formState.statement, mode, variableIds, */ statement],
-    /* eslint-enable */
+    [],
   );
 
-  React.useEffect(
-    () => {
-      const attributes = formState.attributes;
-      if (attributes)
-        generateSchema(attributes, variableIds, mode).then(schema => {
-          setFormState(fs => ({
-            ...fs,
-            schema:
-              /* Verifying if fs.attribues changed during the promise work, if changed, don't do anything to avoid incoherent state */
-              deepDifferent(attributes, fs.attributes) ? fs.schema : schema,
-          }));
+  const [{ attributes, error, softError, schema }, dispatchFormState] =
+    React.useReducer(setFormState, {});
+
+  React.useEffect(() => {
+    if (error) {
+      setSrcMode(true);
+    }
+  }, [error]);
+
+  React.useEffect(() => {
+    const parsedCode = testCode(code, mode);
+    if (typeof parsedCode === 'string') {
+      dispatchFormState({ type: 'SET_ERROR', payload: { error: parsedCode } });
+    } else {
+      generateSchema(parsedCode, variablesItems, mode).then(schema => {
+        // Validating statement with schema
+        for (const [key, argument] of Object.entries(parsedCode)) {
+          const numberKey = Number(key);
+          const argType = Array.isArray(argument) ? 'array' : typeof argument;
+          if (!isNaN(numberKey)) {
+            const schemaArgument = schema.properties[numberKey];
+            if (!schemaArgument) {
+              dispatchFormState({
+                type: 'SET_ERROR',
+                payload: { error: 'To much arguments' },
+              });
+              return;
+            } else if (
+              argType !== 'undefined' &&
+              argType !== schemaArgument.type
+            ) {
+              dispatchFormState({
+                type: 'SET_ERROR',
+                payload: {
+                  error: `Argument type mismatch.\nExpected type : ${schemaArgument.type}\nArgument type : ${argType}`,
+                },
+              });
+              return;
+            }
+          }
+        }
+        dispatchFormState({
+          type: 'SET_IF_DEF',
+          payload: { schema, attributes: parsedCode, error: false },
         });
-    },
-    /* eslint-disable react-hooks/exhaustive-deps */
-    /* Linter disabled for the following line to avoid refreshing schema after a fromState change. The schema should be refreshed at the same time than the attribute change */
-    [mode, variableIds],
-    /* eslint-enable */
-  );
+      });
+    }
+  }, [code, mode, variablesItems]);
 
   const computeState = React.useCallback(
     (attributes: IInitAttributes) => {
-      let newAttributes: Partial<IConditionAttributes> =
-        formState.attributes &&
-        attributes.initExpression.type === 'global' &&
-        deepDifferent(
-          formState.attributes.initExpression,
-          attributes.initExpression,
-        )
-          ? pick(attributes, 'initExpression')
-          : attributes;
-
-      generateSchema(attributes, variableIds, mode).then(
+      return generateSchema(attributes, variablesItems, mode).then(
         (schema: WyiswygExpressionSchema) => {
           const schemaProperties = schema.properties;
 
           //Remove additional properties that doesn't fit schema
-          newAttributes = pick(newAttributes, Object.keys(schemaProperties));
+          let newAttributes: Partial<IConditionAttributes> = pick(
+            attributes,
+            Object.keys(schemaProperties),
+          );
 
           // If a variable is selected, set the variableName
           if (
@@ -205,12 +218,19 @@ export function ExpressionEditor({
                 const schemaProperty = schemaProperties[
                   nK
                 ] as IParameterSchemaAtributes[number];
+                const defaultItemsValue =
+                  schemaProperty.view != null &&
+                  'items' in schemaProperty.view &&
+                  isArray(schemaProperty.view.items) &&
+                  schemaProperty.view.items.length > 0
+                    ? schemaProperty.view.items[0]
+                    : undefined;
+
                 // Trying to translate parameter from previous type to new type (undefined if fails)
                 return typeCleaner(
                   newAttributes[nK],
                   schemaProperty.type as WegasTypeString,
-                  schemaProperty.required,
-                  schemaProperty.value,
+                  schemaProperty.value || defaultItemsValue,
                 );
               })
               .reduce(
@@ -225,79 +245,54 @@ export function ExpressionEditor({
               newAttributes.operator,
             )
               ? newAttributes.operator
-              : undefined;
+              : (schemaProperties.operator.value as SelectOperator).value;
 
             //Trying to translate comparator
             newAttributes.comparator = typeCleaner(
               (newAttributes as IConditionAttributes).comparator,
               schemaProperties.comparator.type as WegasTypeString,
-              schemaProperties.comparator.required,
               schemaProperties.comparator.value,
             );
           }
           const statement = generateStatement(newAttributes, schema, mode);
+          let newCode = undefined;
+          if (statement) {
+            // Try to parse statement back before sending new code
+            const { error } = parseStatement(statement, mode);
+            if (!error) {
+              newCode = generate(statement).code;
+              onChange && onChange(generate(statement).code);
+            }
+          }
 
-          setFormState({
+          return {
             attributes: newAttributes,
             schema,
-            statement,
-          });
-
-          if (statement) {
-            onChange && onChange(statement);
-          }
+            code: newCode,
+          };
         },
       );
     },
-    [formState.attributes, mode, variableIds, onChange],
-  );
-
-  const onScripEditorSave = React.useCallback(
-    (value: string) => {
-      setNewSrc(undefined);
-      try {
-        const newStatement = parse(value, {
-          sourceType: 'script',
-        }).program.body;
-        setError(undefined);
-        if (newStatement.length === 1) {
-          onChange && onChange(newStatement[0]);
-        }
-      } catch (e) {
-        setError(e.message);
-      }
-    },
-    [onChange],
+    [mode, onChange, variablesItems],
   );
 
   return (
     <div id={id} className={expressionEditorStyle}>
-      {newSrc === undefined && error === undefined && (
-        <Button
-          icon="code"
-          pressed={error !== undefined}
-          onClick={() => setSrcMode(sm => !sm)}
-        />
-      )}
-      {error || srcMode ? (
+      <Button
+        icon="code"
+        disabled={typeof error === 'string'}
+        pressed={srcMode}
+        onClick={() => setSrcMode(srcMode => !srcMode)}
+      />
+      {srcMode ? (
         <div className={scriptEditStyle}>
-          <MessageString type="error" value={error} duration={10000} />
-          {newSrc !== undefined && (
-            <Button icon="check" onClick={() => onScripEditorSave(newSrc)} />
-          )}
+          <MessageString type="error" value={error || softError} />
           <EmbeddedSrcEditor
-            value={
-              newSrc === undefined
-                ? formState.statement
-                  ? generate(formState.statement).code
-                  : ''
-                : newSrc
-            }
-            onChange={setNewSrc}
+            value={code}
+            onChange={onChange}
             noGutter
             minimap={false}
             returnType={returnTypes(mode)}
-            onSave={onScripEditorSave}
             resizable
             scriptContext={mode === 'SET' ? 'Server internal' : 'Client'}
             Editor={WegasScriptEditor}
@@ -306,24 +301,34 @@ export function ExpressionEditor({
         </div>
       ) : (
         <Form
-          value={formState.attributes}
-          schema={formState.schema}
-          onChange={(v, e) => {
-            if (deepDifferent(v, formState.attributes)) {
-              if (e && e.length > 0) {
-                setFormState(fs => ({
-                  ...fs,
-                  attributes: v,
-                  statement: fs.schema
-                    ? generateStatement(v, fs.schema, mode)
-                    : undefined,
-                }));
-              } else {
-                computeState(v);
+          value={attributes}
+          schema={schema}
+          onChange={(v: IInitAttributes, e) => {
+            if (deepDifferent(v, attributes)) {
+              // if (e && e.length > 0) {
+              //   dispatchFormState({
+              //     type: 'SET_IF_DEF',
+              //     payload: { softError: e.join('\n'), attributes: v },
+              //   });
+              // } else {
+              let newAttributes = v;
+              if (
+                (v.initExpression.type === 'global' &&
+                  attributes?.initExpression?.type !== 'global') ||
+                v.initExpression.script !== attributes?.initExpression?.script
+              ) {
+                newAttributes = pick(newAttributes, 'initExpression');
               }
+              computeState(newAttributes).then(({ attributes, schema }) =>
+                dispatchFormState({
+                  type: 'SET_IF_DEF',
+                  payload: { attributes, schema, softError: e.join('\n') },
+                }),
+              );
+              // }
             }
           }}
-          context={formState.attributes}
+          context={attributes}
         />
       )}
     </div>
@@ -331,7 +336,7 @@ export function ExpressionEditor({
 }
 
 export interface StatementViewProps extends WidgetProps.BaseProps {
-  value: Statement;
+  value: string;
   view: CommonView & LabeledView & ScriptView;
 }
 
@@ -345,7 +350,7 @@ export default function StatementView(props: StatementViewProps) {
             <ExpressionEditor
               id={inputId}
               onChange={props.onChange}
-              statement={props.value}
+              code={props.value}
               {...props.view}
             />
           </>

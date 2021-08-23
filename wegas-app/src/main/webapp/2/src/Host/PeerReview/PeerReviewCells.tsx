@@ -1,8 +1,9 @@
-import { cx } from 'emotion';
+import { css, cx } from 'emotion';
 import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import { globals } from '../../Components/Hooks/useScript';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { HTMLText } from '../../Components/Outputs/HTMLText';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { flex, flexRow, itemCenter, justifyCenter } from '../../css/classes';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
@@ -115,7 +116,7 @@ export function ReviewTD({
   return (
     <td>
       <div className={cx(flex, flexRow, itemCenter, justifyCenter)}>
-        <div dangerouslySetInnerHTML={{ __html: String(formattedValue) }} />
+        <HTMLText text={String(formattedValue)} />
         {buttonData && (
           <Button
             ref={buttonRef}
@@ -147,6 +148,11 @@ export function TeamTD({ team, value, onShowOverlay }: TeamTDProps) {
 
   return (
     <td>
+      <div className={css({
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+      })}>
       {name}
       <Button
         ref={buttonRef}
@@ -161,6 +167,7 @@ export function TeamTD({ team, value, onShowOverlay }: TeamTDProps) {
           )
         }
       />
+      </div>
     </td>
   );
 }

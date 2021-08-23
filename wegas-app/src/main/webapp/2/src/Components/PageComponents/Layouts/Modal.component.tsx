@@ -113,6 +113,7 @@ registerComponent(
     },
     name: 'Modal',
     icon: 'glasses',
+    illustration: 'modal',
     schema: {
       onExitActions: schemaProps.hashlist({
         label: 'On Exit Actions',

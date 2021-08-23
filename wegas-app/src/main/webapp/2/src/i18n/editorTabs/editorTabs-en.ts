@@ -77,6 +77,8 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     scriptNotSaved: 'The script is not saved',
     scriptSaved: 'The script is saved',
     createLibraryPlease: 'Please create a library by pressing the + button',
+    canntoBeParsed: 'The script cannot be parsed',
+    canntoBeParsedCondition: 'The script cannot be parsed as a condition',
   },
   instanceProps: {
     noDescriptorEdited: 'No descriptor is beeing edited',
@@ -89,6 +91,7 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     theme: t => `Theme: ${t}`,
     themeName: 'Theme Name',
     addTheme: 'Add a theme',
+    deleteTheme: 'Delete theme',
     modeAlreadyExists: 'The mode already exists',
     mode: m => `Mode: ${m}`,
     modeName: 'Mode name',
@@ -104,6 +107,8 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     someText: 'Some text',
     clickMe: 'Click me',
     nextMode: 'Next mode : ',
+    deleteMode: 'Delete mode',
+    setMainMode: 'Set as main mode',
     states: state => {
       if (state === 'disabled') return 'Disabled';
       else if (state === 'readOnly') return 'Read only';
@@ -166,4 +171,9 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
   languageEditor: {
     languages: 'Languages',
   },
+  variableProperties: {
+    toggleCoding: 'Toggle coding console',
+    runScripts: 'Run scripts',
+    deleteGroup: 'Delete this group',
+  }
 };

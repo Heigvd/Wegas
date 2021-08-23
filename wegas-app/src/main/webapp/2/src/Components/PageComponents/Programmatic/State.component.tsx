@@ -117,6 +117,7 @@ registerComponent(
     },
     name: 'State',
     icon: 'code',
+    illustration: 'state',
     schema: {
       initialState: schemaProps.customScript({
         label: 'Initial state',

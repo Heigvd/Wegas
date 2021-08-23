@@ -1,4 +1,7 @@
+import { cx } from 'emotion';
 import * as React from 'react';
+import { flex, flexRow, grow } from '../../css/classes';
+import { HTMLText } from '../Outputs/HTMLText';
 
 interface DummyHTMLEditorProps {
   value?: string;
@@ -7,11 +10,22 @@ interface DummyHTMLEditorProps {
 export function DummyHTMLEditor({ value }: DummyHTMLEditorProps) {
   return (
     <div style={{ position: 'relative' }}>
-      <img
-        src={require('../../pictures/htmleditor.png').default}
-        onClick={() => {}}
-      />
-      <div
+      <div className={cx(flex, flexRow)}>
+        <img src={require('../../pictures/htmleditorleft.png').default} />
+        <div
+          className={grow}
+          ref={ref => {
+            if (ref != null) {
+              ref.style.backgroundImage =
+                'url( ' +
+                require('../../pictures/htmleditorcenter.png').default +
+                ' )';
+            }
+          }}
+        />
+        <img src={require('../../pictures/htmleditorright.png').default} />
+      </div>
+      <HTMLText
         style={{
           position: 'absolute',
           top: '40px',
@@ -20,7 +34,7 @@ export function DummyHTMLEditor({ value }: DummyHTMLEditorProps) {
           height: '141px',
           overflow: 'hidden',
         }}
-        dangerouslySetInnerHTML={{ __html: value == null ? '' : value }}
+        text={value == null ? '' : value}
       />
     </div>
   );

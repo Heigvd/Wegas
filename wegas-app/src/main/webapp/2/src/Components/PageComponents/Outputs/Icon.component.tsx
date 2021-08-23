@@ -34,6 +34,7 @@ registerComponent(
     componentType: 'Output',
     name: 'Icon',
     icon: 'icons',
+    illustration: 'icon',
     schema: {
       icon: schemaProps.select({ label: 'Icon', values: Object.keys(icons) }),
       ...omit(classStyleIdShema, ['id']),

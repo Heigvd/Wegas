@@ -1,6 +1,6 @@
 import { css } from 'emotion';
 import * as React from 'react';
-import { TranslatableContent } from '../../../data/i18n';
+import { TranslatableText } from '../HTMLText';
 import { themeVar } from '../../Theme/ThemeVars';
 
 export const choiceContainerStyle = css({
@@ -51,16 +51,15 @@ export function ChoiceContainer({
   return (
     <div className={choiceContainerStyle + (canReply ? '' : ' disabled')}>
       {label && (
-        <div className={choiceLabelStyle}>
-          {TranslatableContent.toString(label)}
-        </div>
+        <TranslatableText
+          className={choiceLabelStyle}
+          content={label}
+        />
       )}
       {description && (
-        <div
+        <TranslatableText
           className={choiceDescriptionStyle}
-          dangerouslySetInnerHTML={{
-            __html: TranslatableContent.toString(description),
-          }}
+          content={description}
         />
       )}
       <div className={choiceInputStyle}>{children}</div>

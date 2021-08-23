@@ -31,6 +31,7 @@ function show_help {
     echo "Usage: ./run [OPTIONS]"
     echo " -d NUM         number of populating daemon (default is ${NB_POPULATORS})"
     echo " -g             debug mode"
+    echo " -s DB_HOST     postgresql host (default is ${DB_HOST})"
     echo " -j JAVA_PATH   java path (default is ${JAVA_HOME})"
     echo " -m HEAP        heap size (default is ${HEAP})"
     echo " -p PORT        debug port (default is ${DEBUG_PORT})"
@@ -41,7 +42,7 @@ function show_help {
 # A POSIX variable
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
-while getopts "h?gm:t:d:p:w:j:" opt; do
+while getopts "h?gm:t:d:p:w:j:s:" opt; do
     case "$opt" in
     h|\?)
         show_help
@@ -50,6 +51,8 @@ while getopts "h?gm:t:d:p:w:j:" opt; do
     d)  NB_POPULATORS=$OPTARG
         ;;
     g)  DEBUG="true"
+        ;;
+    s)  DB_HOST=$OPTARG
         ;;
     j)  JAVA_HOME=$OPTARG
         ;;
@@ -71,6 +74,7 @@ if [ ${DEBUG} == "true" ]; then
     echo DEBUG_PORT ${DEBUG_PORT}
 fi
 
+echo DB_HOST ${DB_HOST}
 echo HEAP ${HEAP}
 echo WAR ${THE_WAR}
 
@@ -93,35 +97,25 @@ HTTP2_OPTS=-Xbootclasspath/a:grizzly-npn-bootstrap.jar
 #if java home is empty, use java, if not, use JAVA_HOME/java
 if [ "${JAVA_HOME}xxx" = "xxx" ]; then JAVA_EXECUTABLE=java; else JAVA_EXECUTABLE="${JAVA_HOME}/java"; fi
 
-
-# if java has the list-modules options, it's java 9+
-${JAVA_EXECUTABLE} --list-modules > /dev/null 2> /dev/null
-
-if [ $? -eq 0 ]; then
-    echo JAVA 9+ detected: enable extra options
-    JDK_EXTRA_OPTS="--add-modules java.se
-        --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED 
-        --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED 
-        --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED 
-        --add-opens=java.base/java.lang=ALL-UNNAMED
-        --add-opens=java.base/java.net=ALL-UNNAMED
-        --add-opens=java.base/java.nio=ALL-UNNAMED
-        --add-opens=java.base/java.util=ALL-UNNAMED
-        --add-opens=java.base/sun.nio.ch=ALL-UNNAMED 
-        --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED
-        --add-opens=java.naming/javax.naming.spi=ALL-UNNAMED
-        --add-opens=java.logging/java.util.logging=ALL-UNNAMED
-        --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
-        --add-opens=java.management/sun.management=ALL-UNNAMED 
-        --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED"
-    GC="-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
-    GC="-XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1MaxNewSizePercent=75 -XX:G1NewSizePercent=40 -XX:MaxGCPauseMillis=2500"
+echo JAVA 9+ detected: enable extra options
+JDK_EXTRA_OPTS="--add-modules java.se
+    --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED 
+    --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED 
+    --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED 
+    --add-opens=java.base/java.lang=ALL-UNNAMED
+    --add-opens=java.base/java.net=ALL-UNNAMED
+    --add-opens=java.base/java.nio=ALL-UNNAMED
+    --add-opens=java.base/java.util=ALL-UNNAMED
+    --add-opens=java.base/sun.nio.ch=ALL-UNNAMED 
+    --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED
+    --add-opens=java.naming/javax.naming.spi=ALL-UNNAMED
+    --add-opens=java.logging/java.util.logging=ALL-UNNAMED
+    --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+    --add-opens=java.management/sun.management=ALL-UNNAMED 
+    --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED"
+GC="-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
+GC="-XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1MaxNewSizePercent=75 -XX:G1NewSizePercent=40 -XX:MaxGCPauseMillis=2500"
 # -XX:ConcGCThreads=<number> – Basic logging: -Xlog:gc – Detailed logging useful when tuning: -Xlog:gc* 
-else
-    echo JAVA 8 detected
-    JDK_EXTRA_OPTS=""
-    GC="-XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1MaxNewSizePercent=75 -XX:G1NewSizePercent=40 -XX:MaxGCPauseMillis=2500"
-fi
 
 
 ##
@@ -142,12 +136,12 @@ fi
 
 cp ${DEFAULT_WEGAS_PROPERTIES} ${DEFAULT_WEGAS_PROPERTIES_ORI}
 
-
 ${JAVA_EXECUTABLE} ${DEBUG_OPTS} ${JDK_EXTRA_OPTS} ${SSL_OPTS} ${GC} ${HTTP2_OPTS} \
     -XX:+UseStringDeduplication -XX:+UnlockDiagnosticVMOptions \
     -Dproduct.name= -XX:+ParallelRefProcEnabled -XX:+UseCompressedOops -XX:-UseLoopPredicate \
     -Xms${HEAP} -Xmx${HEAP} \
     -Djava.security.egd=file:/dev/urandom \
+    -Dhazelcast.shutdownhook.enabled=true \
     -Dwegas.db.host=${DB_HOST} -Dwegas.db.name=${DB_NAME} \
     -Dwegas.nb_populators=${NB_POPULATORS} -Dwegas.http.threads=${NB_THREADS} \
     -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager \

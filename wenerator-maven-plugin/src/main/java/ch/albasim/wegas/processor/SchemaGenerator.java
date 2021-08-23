@@ -1076,7 +1076,7 @@ public class SchemaGenerator extends AbstractMojo {
             .append("// @ts-nocheck")
             .append(System.lineSeparator())
             .append(System.lineSeparator());
-        
+
 //        sb.append("/**\n" + " * Remove specified keys.\n" + " */\n" + "type WithoutAtClass<Type> = Pick<\n"
 //            + "    Type,\n" + "    Exclude<keyof Type, '@class'>\n" + ">;");
         writeMergeableInterface(sb);
@@ -1199,7 +1199,7 @@ public class SchemaGenerator extends AbstractMojo {
             .append("}")
             .append(System.lineSeparator())
             .append(System.lineSeparator());
-        
+
         //declBuilder.append(EXPORT_TOSTRIP).append("interface WegasEntitiesNamesAndClasses {");
         //intKeys.forEach(key -> {
         //    String sKey = "S" + key;
@@ -1234,7 +1234,7 @@ public class SchemaGenerator extends AbstractMojo {
                 + "AtClassToAbstractClasses & AtClassToConcrtetableClasses & AtClassToConcreteClasses;")
             .append(System.lineSeparator())
             .append(System.lineSeparator());
-        
+
         implBuilder.append(EXPORT_TOSTRIP)
             .append(" type WegasClassNameAndScriptableTypes = "
                 + "AtClassToAbstractTypes & AtClassToConcrtetableTypes & AtClassToConcreteTypes;")
@@ -1905,6 +1905,7 @@ public class SchemaGenerator extends AbstractMojo {
 
                     JSONExtendedSchema prop = javaToJSType(reified, param != null && param.nullable());
                     if (param != null) {
+                        prop.setRequired(!param.nullable());
                         injectView(prop, param.view(), null);
                         if (!Undefined.class.equals(param.proposal())) {
                             try {

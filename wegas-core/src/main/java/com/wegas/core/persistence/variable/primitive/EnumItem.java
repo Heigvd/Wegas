@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
@@ -178,7 +179,7 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
             }
         }
     }
-    
+
     public SurveyChoicesDescriptor getParentSurveyChoice() {
         return parentSurveyChoice;
     }
@@ -207,26 +208,26 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         if (this.parentEvaluation != null) {
-            return parentEvaluation.getRequieredReadPermission();
+            return parentEvaluation.getRequieredReadPermission(context);
         } else if (this.parentString != null) {
-            return parentString.getRequieredReadPermission();
+            return parentString.getRequieredReadPermission(context);
         } else if (this.parentSurveyChoice != null) {
-            return parentSurveyChoice.getRequieredReadPermission();
+            return parentSurveyChoice.getRequieredReadPermission(context);
         }
 
         return null;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         if (this.parentEvaluation != null) {
-            return parentEvaluation.getRequieredUpdatePermission();
+            return parentEvaluation.getRequieredUpdatePermission(context);
         } else if (this.parentString != null) {
-            return parentString.getRequieredUpdatePermission();
+            return parentString.getRequieredUpdatePermission(context);
         } else if (this.parentSurveyChoice != null) {
-            return parentSurveyChoice.getRequieredUpdatePermission();
+            return parentSurveyChoice.getRequieredUpdatePermission(context);
         }
 
         return null;

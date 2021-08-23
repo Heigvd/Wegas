@@ -33,11 +33,11 @@ import {
   setUnsavedChanges,
   VariableEdition,
 } from '../../../data/Reducer/globalState';
-import { VariableTreeTitle } from './VariableTree';
+// import { VariableTreeTitle } from './VariableTreeView.tsx.old';
 import { State } from '../../../data/Reducer/reducers';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { VariableTreeTitle } from './VariableTreeTitle';
 
 const listBox = css({
   width: '100%',
@@ -90,13 +90,13 @@ export function InstanceProperties({
   actions,
   ...options
 }: InstancePropertiesProps) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
   const editing = state.global.editing;
   const events = state.global.events;
 
-  const [selectedInstanceId, setSelectedInstanceId] =
-    React.useState<number | undefined>();
+  const [selectedInstanceId, setSelectedInstanceId] = React.useState<
+    number | undefined
+  >();
 
   const instances = useStore(instancesSelector);
 

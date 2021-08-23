@@ -4,12 +4,8 @@ import { useDrag, DropTargetMonitor, useDrop } from 'react-dnd';
 import { DropAction } from './DnDTabLayout';
 import { hidden, flex } from '../../../css/classes';
 import { dropZoneFocus } from '../../../Components/Contexts/DefaultDndProvider';
-import {
-  tabsStyle,
-  tabStyle,
-} from '../../../Components/Tabs';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { tabsStyle, tabStyle } from '../../../Components/Tabs';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 
 // export const dndAcceptType = 'DnDTab';
@@ -41,25 +37,23 @@ interface TabInternalProps {
 
 export type TabProps = React.PropsWithChildren<TabInternalProps>;
 
-
 export const Tab = React.forwardRef<HTMLDivElement, TabProps>(
   (props: TabProps, ref: React.RefObject<HTMLDivElement>) => {
-    const { lang } = React.useContext(languagesCTX);
-    const i18nValues = internalTranslate(commonTranslations, lang);
+    const i18nValues = useInternalTranslate(commonTranslations);
     return (
-    <div
-      ref={ref}
-      className={cx(
-        props.className
-        ? props.className
-        : cx(tabStyle, tabsStyle(props.isChild, props.active)))
-      }
-      onClick={props.onClick}
-    >
-      <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
-        {props.children}
-      </React.Suspense>
-    </div>
+      <div
+        ref={ref}
+        className={cx(
+          props.className
+            ? props.className
+            : cx(tabStyle, tabsStyle(props.isChild, props.active)),
+        )}
+        onClick={props.onClick}
+      >
+        <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
+          {props.children}
+        </React.Suspense>
+      </div>
     );
   },
 );

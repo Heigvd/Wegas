@@ -32,6 +32,7 @@ import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.persistence.token.SurveyToken;
+import com.wegas.core.security.util.ScriptExecutionContext;
 import com.wegas.survey.persistence.SurveyDescriptor;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -211,7 +212,7 @@ public class GameFacade extends BaseFacade<Game> {
         gameModelFacade.propagateAndReviveDefaultInstances(gameModel, game, true); // at this step the game is empty (no teams; no players), hence, only Game[Model]Scoped are propagated
 
         this.addDebugTeam(game);
-        stateMachineFacade.runStateMachines(game);
+        stateMachineFacade.runStateMachines(game, true);
 
         gameCreatedEvent.fire(new EntityCreated<>(game));
     }
@@ -518,7 +519,6 @@ public class GameFacade extends BaseFacade<Game> {
         player.setStatus(Status.SURVEY);
         player.setUser(currentUser);
 
-
         GameModelLanguage lang = playerFacade.findPreferredLanguages(game.getGameModel(), languages);
 
         player.setLang(lang.getCode());
@@ -580,7 +580,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @param surveys surveys
      * @param request need request to generate the link
      * @param email structure with attributes recipients (ignored here), sender, subject and body.
-     * 
+     *
      * @return list of emails to which an invitation has been sent
      *
      * @throws WegasErrorMessage if 1) surveys belong to different GameModels; 2) no game; 3) no
@@ -640,7 +640,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @param request need request to generate the link
      *
      * @return list of emails to which an invitation has been sent
-     * 
+     *
      * @throws WegasErrorMessage if 1) surveys belong to different GameModel; 2) no game; 3) no
      *                           account
      */
@@ -673,10 +673,9 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Send invitation to participate in a survey. 
-     * One invitation will be sent to each recipient address. 
-     * Such survey is made of several SurveyDescriptor. 
-     * Every SurveyDescriptor must belong to the same gameModel.
+     * Send invitation to participate in a survey. One invitation will be sent to each recipient
+     * address. Such survey is made of several SurveyDescriptor. Every SurveyDescriptor must belong
+     * to the same gameModel.
      *
      * @param surveys   surveys
      * @param email     structure with attributes recipients, sender, subject and body.
@@ -770,7 +769,7 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public void reset(final Game game) {
         gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), game, false);
-        stateMachineFacade.runStateMachines(game);
+        stateMachineFacade.runStateMachines(game, true);
     }
 
     /**
@@ -888,6 +887,7 @@ public class GameFacade extends BaseFacade<Game> {
 
         CellStyle subtitleStyle = xlsx.createSmallerHeaderStyle();
 
+        try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
         ScriptObjectMirror overviews = (ScriptObjectMirror) scriptFacade.eval(p, new Script(script), null);
 
         for (Object oSheet : overviews.values()) {
@@ -915,6 +915,7 @@ public class GameFacade extends BaseFacade<Game> {
 
             int currentCol = 1;
 
+            // write headers
             for (Object oGroup : groups) {
                 ScriptObjectMirror group = (ScriptObjectMirror) oGroup;
                 String title = (String) group.get("title");
@@ -949,6 +950,7 @@ public class GameFacade extends BaseFacade<Game> {
             }
             xlsx.setCurrentRowNumber(1); // focus second row
 
+            // write data
             ScriptObjectMirror data = (ScriptObjectMirror) overview.get("data");
             for (String teamId : data.keySet()) {
                 Team team = teamFacade.find(Long.parseLong(teamId));
@@ -975,9 +977,8 @@ public class GameFacade extends BaseFacade<Game> {
                     }
                 }
             }
-
             xlsx.autoWidth();
-
+            }
         }
     }
 }

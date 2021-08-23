@@ -9,6 +9,7 @@ import {
   expandHeight,
   grow,
 } from '../../../css/classes';
+import { HTMLText } from '../HTMLText';
 import { Global } from '../../../data/selectors';
 import { useTranslate } from '../../../Editor/Components/FormView/translatable';
 import { themeVar } from '../../Theme/ThemeVars';
@@ -73,21 +74,22 @@ function UserPortrait({
           <p className={css({ lineHeight: '34px' })}>{user.name?.charAt(0)}</p>
         </div>
       ) : (
-        <svg
-          width="35"
-          height="35"
-          viewBox="0 0 50 50"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle cx="25" cy="25" r="25" fill={color} />
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M8.33331 43.6373C8.49419 36.4296 14.2332 30.6369 21.2928 30.6287H28.7002C35.7599 30.6369 41.4989 36.4296 41.6597 43.6373C37.2372 47.5941 31.3978 50 24.9965 50C18.5952 50 12.7559 47.5941 8.33331 43.6373ZM24.9965 28.7281C19.8828 28.7281 15.7373 24.4735 15.7373 19.2251C15.7373 13.9768 19.8828 9.72222 24.9965 9.72222C30.1103 9.72222 34.2558 13.9768 34.2558 19.2251C34.2497 24.4709 30.1077 28.7218 24.9965 28.7281Z"
-            fill="white"
-          />
-        </svg>
+      <svg
+        width="35"
+        height="35"
+        viewBox="0 0 50 50"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={css({marginLeft: '3px'})}
+      >
+        <circle cx="25" cy="25" r="25" fill={color} />
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M8.33331 43.6373C8.49419 36.4296 14.2332 30.6369 21.2928 30.6287H28.7002C35.7599 30.6369 41.4989 36.4296 41.6597 43.6373C37.2372 47.5941 31.3978 50 24.9965 50C18.5952 50 12.7559 47.5941 8.33331 43.6373ZM24.9965 28.7281C19.8828 28.7281 15.7373 24.4735 15.7373 19.2251C15.7373 13.9768 19.8828 9.72222 24.9965 9.72222C30.1103 9.72222 34.2558 13.9768 34.2558 19.2251C34.2497 24.4709 30.1077 28.7218 24.9965 28.7281Z"
+          fill="white"
+        />
+      </svg>
       )}
     </div>
   );
@@ -111,31 +113,29 @@ export function DialogueEntry({ text, player, waiting }: DialogueEntryProps) {
         dialogueEntryStyle(player),
       )}
     >
-      {
-        /* if there is nothing to say, just skip the entry */
-        translation != null && translation.length > 0 && (
-          <>
-            <UserPortrait
-              className={portraitStyle}
-              color={
-                player
+      {/* if there is nothing to say, just skip the entry */
+      translation != null && translation.length > 0 && (
+        <>
+          <UserPortrait
+            className={portraitStyle}
+            color={
+              player
                   ? themeVar.colors.ActiveColor
                   : themeVar.colors.HeaderColor
-              }
+            }
               player={player}
-            />
-            <div className={cx(expandHeight, grow, textContainerStyle(player))}>
-              <div dangerouslySetInnerHTML={{ __html: translation }} />
-              {waiting && (
-                <WaitingLoader
+          />
+          <div className={cx(expandHeight, grow, textContainerStyle(player))}>
+            <HTMLText text={translation} />
+            {waiting && (
+              <WaitingLoader
                   color={themeVar.colors.LightTextColor}
                   background={themeVar.colors.DisabledColor}
-                />
-              )}
-            </div>
-          </>
-        )
-      }
+              />
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }

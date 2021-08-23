@@ -9,23 +9,26 @@ import {
   setEditedMode,
   deleteMode,
 } from '../../../../data/Stores/themeStore';
+import { classNameOrEmpty } from '../../../../Helper/className';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
-import { internalTranslate } from '../../../../i18n/internalTranslator';
-import { languagesCTX } from '../../../Contexts/LanguagesProvider';
+import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { Button } from '../../../Inputs/Buttons/Button';
-import { ConfirmButton } from '../../../Inputs/Buttons/ConfirmButton';
 import { themeVar } from '../../ThemeVars';
 import { AdderSelector } from '../AdderSelector';
 
-export function ModeSelector() {
+interface ModeSelectorProps {
+  dropMenuClassName?: string;
+  addButtonClassName?: string;
+}
+
+export function ModeSelector({dropMenuClassName, addButtonClassName}: ModeSelectorProps) {
   const { themes, editedThemeName, editedModeName } = useThemeStore(s => s);
   const dispatch = getThemeDispatch();
 
   const currentTheme = themes[editedThemeName];
   const currentModes = currentTheme?.modes || {};
 
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   const onError = React.useCallback(
     (value: string | undefined) => {
@@ -43,17 +46,18 @@ export function ModeSelector() {
         label: (
           <div className={cx(flex, flexRow, grow)}>
             <div className={grow}>{k}</div>
-            {k !== currentTheme.baseMode && (
-              <ConfirmButton
-                icon={{
-                  icon: 'trash',
-                }}
-                onAction={sucess => {
-                  if (sucess) {
-                    dispatch(deleteMode(k));
-                  }
-                }}
-              />
+            {(k !== currentTheme.baseMode && k !== "light" && k !== "dark") && (
+              <Button
+              icon={{
+                icon: 'trash',
+              }}
+              tooltip={i18nValues.themeEditor.deleteMode}
+              onClick={sucess => {
+                if (sucess) {
+                  dispatch(deleteMode(k));
+                }
+              }}
+            />
             )}
             <Button
               icon={{
@@ -63,6 +67,7 @@ export function ModeSelector() {
                     ? themeVar.colors.SuccessColor
                     : undefined,
               }}
+              tooltip={i18nValues.themeEditor.setMainMode}
               onClick={e => {
                 e.stopPropagation();
                 dispatch(setBaseMode(k));
@@ -80,6 +85,8 @@ export function ModeSelector() {
       }}
       onAccept={value => dispatch(addNewMode(value))}
       onError={onError}
+      dropMenuClassName={classNameOrEmpty(dropMenuClassName)}
+      addButtonClassName={classNameOrEmpty(addButtonClassName)}
     />
   );
 }

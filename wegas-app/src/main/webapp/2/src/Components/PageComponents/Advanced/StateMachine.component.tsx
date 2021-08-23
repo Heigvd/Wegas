@@ -73,6 +73,7 @@ registerComponent(
     componentType: 'Advanced',
     name: 'State machine',
     icon: 'atom',
+    illustration: 'stateMachine',
     schema: {
       stateMachine: schemaProps.scriptVariable({
         label: 'State machine',

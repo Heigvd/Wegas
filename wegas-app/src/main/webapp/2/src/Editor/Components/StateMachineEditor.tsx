@@ -46,31 +46,11 @@ import { focusTab } from './LinearTabLayout/LinearLayout';
 import produce, { Immutable } from 'immer';
 import { StateProcessComponent } from '../../Components/FlowChart/StateProcessComponent';
 import { TransitionFlowLineComponent } from '../../Components/FlowChart/TransitionFlowLineComponent';
+import { HTMLText } from '../../Components/Outputs/HTMLText';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
-import { internalTranslate } from '../../i18n/internalTranslator';
-//import { internalTranslate } from '../../i18n/internalTranslator';
-//import { commonTranslations } from '../../i18n/common/common';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
 
 const emptyPath: (string | number)[] = [];
-
-export function searchWithState(
-  search?: RState['global']['search'],
-  searched?: string,
-): boolean {
-  let value = '';
-  if (search == null || searched == null) {
-    return false;
-  }
-  if (search.type === 'GLOBAL') {
-    value = search.value;
-  } else if (search.type === 'USAGE') {
-    const variable = VariableDescriptor.select(search.value);
-    if (variable) {
-      value = `Variable.find(gameModel, "${variable.name}")`;
-    }
-  }
-  return value !== '' && searched.indexOf(value) >= 0;
-}
 
 function deleteTransition<T extends IFSMDescriptor | IDialogueDescriptor>(
   stateMachine: Immutable<T>,
@@ -155,6 +135,7 @@ export function StateMachineEditor<
             nextStateId,
             preStateImpact: createScript(),
             triggerCondition: createScript(),
+            dependencies: [],
             index,
           },
           ...(entityIs(stateMachine, 'FSMDescriptor')
@@ -224,7 +205,7 @@ export function StateMachineEditor<
         actions.delete = {
           label: 'Delete',
           confirm: true,
-          sorting: 'button',
+          sorting: 'delete',
           action: (
             sm: IFSMDescriptor | IDialogueDescriptor,
             path?: (string | number)[],
@@ -352,7 +333,7 @@ export function StateMachineEditor<
       actions.delete = {
         label: 'Delete',
         confirm: true,
-        sorting: 'button',
+        sorting: 'delete',
         action: (
           sm: IFSMDescriptor | IDialogueDescriptor,
           path?: (string | number)[],
@@ -475,8 +456,7 @@ export function ConnectedStateMachineEditor({
   ...options
 }: ConnectedStateMachineEditorProps) {
   const globalState = useStore(globalStateSelector);
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   if ('variable' in globalState) {
     if (globalState.variable == null) {
@@ -586,12 +566,8 @@ function ModifiableText({
       {`Click here to edit ${mode === 'String' ? 'label' : 'text'}`}
     </div>
   ) : (
-    <div
-      onClick={() => setEditingText(true)}
-      className={stateTextStyle}
-      dangerouslySetInnerHTML={{
-        __html: newTextValue,
-      }}
-    />
+    <div onClick={() => setEditingText(true)} className={stateTextStyle}>
+      <HTMLText text={newTextValue} />
+    </div>
   );
 }

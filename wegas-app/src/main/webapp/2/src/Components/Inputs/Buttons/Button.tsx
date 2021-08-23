@@ -4,6 +4,33 @@ import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
 import { arrayRemoveDuplicates } from '../../../Helper/tools';
 import { css } from 'emotion';
 import { themeVar } from '../../Theme/ThemeVars';
+import { secondaryButtonCSS } from '../../Modal';
+
+export const headerOutlineButtonStyle = css({
+  border: '1px solid ' + themeVar.colors.DisabledColor,
+  borderRadius: '50%',
+  height: '40px',
+  width: '40px',
+  justifyContent: 'center',
+  button: {
+    padding: 0,
+    width: '100%',
+    justifyContent: 'center',
+  },
+});
+export const outlineButtonStyle = {
+  border: '1px solid ' + themeVar.colors.LightTextColor,
+  backgroundColor: 'transparent',
+};
+
+export const outlinePrimaryButtonStyle = css({
+  border: '1px solid ' + themeVar.colors.PrimaryColor,
+  backgroundColor: 'transparent',
+  color: themeVar.colors.PrimaryColor,
+  ['&:hover']: {
+    backgroundColor: themeVar.colors.HeaderColor,
+  },
+});
 
 export const buttonStyle = css({
   display: 'flex',
@@ -23,6 +50,7 @@ export const buttonStyle = css({
   },
   ['&:focus']: {
     outline: 'none',
+    backgroundColor: themeVar.colors.PrimaryColorShade,
   },
   ['&.readOnly']: {
     cursor: 'initial',
@@ -40,20 +68,19 @@ export const buttonStyle = css({
   ['&.iconOnly, &.noBackground']: {
     color: themeVar.colors.PrimaryColor,
     backgroundColor: 'transparent',
-    ['&:hover']: {
+    ['&:hover, &:focus']: {
       color: themeVar.colors.PrimaryColorShade,
     },
     ['&.disabled']: {
       color: themeVar.colors.DisabledColor,
     },
-    ['&.readOnly:hover']: {
+    ['&.readOnly:hover, &.readOnly:focus']: {
       color: themeVar.colors.PrimaryColor,
       backgroundColor: 'transparent',
     },
   },
   ['&.dark']: {
-    backgroundColor: themeVar.colors.LightTextColor,
-    color: themeVar.colors.PrimaryColor,
+    ...secondaryButtonCSS,
   },
   ['&.disabledBorders']: {
     ['&.borderTopLeft']: {
@@ -77,7 +104,7 @@ export const buttonStyle = css({
   },
   ['&.success']: {
     backgroundColor: themeVar.colors.SuccessColor,
-    ['&:hover']: {
+    ['&:hover, &:focus']: {
       backgroundColor: themeVar.colors.PrimaryColorShade,
     },
     ['&.iconOnly,&.noBackground']: {
@@ -120,31 +147,6 @@ export const buttonStyle = css({
   },
 });
 
-export const headerOutlineButtonStyle = css({
-  border: '1px solid ' + themeVar.colors.DisabledColor,
-  borderRadius: '50%',
-  height: '40px',
-  width: '40px',
-  justifyContent: 'center',
-  button: {
-    padding: 0,
-    width: '100%',
-    justifyContent: 'center',
-  },
-});
-export const outlineButtonStyle = {
-  border: '1px solid ' + themeVar.colors.LightTextColor,
-  backgroundColor: 'transparent',
-};
-
-export const outlinePrimaryButtonStyle = css({
-  border: '1px solid ' + themeVar.colors.PrimaryColor,
-  backgroundColor: 'transparent',
-  color: themeVar.colors.PrimaryColor,
-  ['&:hover']: {
-    backgroundColor: themeVar.colors.HeaderColor,
-  },
-});
 export interface DisableBorders {
   top?: boolean;
   right?: boolean;
@@ -195,7 +197,6 @@ export interface ButtonProps extends ClassStyleId, DisabledReadonly {
   tooltip?: string;
   noHover?: boolean;
   type?: 'submit' | 'reset' | 'button';
-  id?: string;
   disableBorders?: DisableBorders;
   icon?: Icons;
   src?: string;
@@ -208,7 +209,11 @@ export interface ButtonProps extends ClassStyleId, DisabledReadonly {
 
 export const Button = React.forwardRef<
   HTMLButtonElement,
-  React.PropsWithChildren<ButtonProps>
+  React.PropsWithChildren<ButtonProps> &
+    React.DetailedHTMLProps<
+      React.ButtonHTMLAttributes<HTMLElement>,
+      HTMLElement
+    >
 >(
   (
     {
@@ -221,7 +226,7 @@ export const Button = React.forwardRef<
       className,
       style,
       children,
-      tabIndex,
+      //  tabIndex,
       tooltip,
       type,
       id,
@@ -232,6 +237,7 @@ export const Button = React.forwardRef<
       noBackground,
       mode: buttonModes,
       dark,
+      ...defaultButtonProps
     },
     ref,
   ) => {
@@ -252,6 +258,7 @@ export const Button = React.forwardRef<
 
     return (
       <button
+        {...defaultButtonProps}
         ref={ref}
         id={id}
         className={
@@ -272,11 +279,9 @@ export const Button = React.forwardRef<
         style={style}
         onClick={e => !readOnly && onClick && onClick(e)}
         disabled={disabled}
-        tabIndex={tabIndex}
-        title={tooltip}
-        aria-label={tooltip}
-        aria-pressed={pressed}
-        type={type}
+        title={tooltip || defaultButtonProps.title}
+        aria-label={tooltip || defaultButtonProps['aria-label']}
+        aria-pressed={pressed || defaultButtonProps['aria-pressed']}
       >
         {prefixedLabel && computedLabel}
         {icon && <IconComp icon={icon} />}

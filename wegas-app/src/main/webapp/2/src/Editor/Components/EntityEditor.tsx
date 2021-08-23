@@ -3,14 +3,14 @@ import { get, cloneDeep } from 'lodash-es';
 import { Schema } from 'jsoninput';
 import { State } from '../../data/Reducer/reducers';
 import { GameModel, Helper } from '../../data/selectors';
-import getEditionConfig from '../editionConfig';
+import getEditionConfig, { getClassLabel } from '../editionConfig';
 import { Actions } from '../../data';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
 import { StoreDispatch, store, useStore } from '../../data/Stores/store';
 import { AvailableViews } from './FormView';
 import { cx } from 'emotion';
-import { flex, grow, flexColumn } from '../../css/classes';
+import { flex, grow, flexColumn, MediumPadding } from '../../css/classes';
 import {
   ActionsProps,
   ComponentEdition,
@@ -21,6 +21,9 @@ import {
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { MessageString } from './MessageString';
 import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
+import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { commonTranslations } from '../../i18n/common/common';
 
 export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
@@ -211,6 +214,15 @@ async function WindowedEditor<T extends IMergeable>({
       />
       <Form
         entity={pathEntity}
+        label={editorTitle({
+          label: entity
+            ? (entity as { label?: ITranslatableContent }).label
+            : undefined,
+          editorTag: entity
+            ? (entity as { editorTag?: string }).editorTag
+            : undefined,
+          name: getClassLabel(pathEntity),
+        })}
         update={update != null ? updatePath : update}
         actions={actions.map(action => ({
           ...action,
@@ -231,10 +243,18 @@ async function WindowedEditor<T extends IMergeable>({
 }
 export const AsyncVariableForm = asyncSFC<EditorProps<IMergeable>>(
   WindowedEditor,
-  () => <div>load...</div>,
-  ({ err }: { err: Error }) => (
-    <span>{err && err.message ? err.message : 'Something went wrong...'}</span>
-  ),
+  () => {
+    const i18nValues = useInternalTranslate(commonTranslations);
+    return <div className={MediumPadding}>{i18nValues.loading + '...'}</div>;
+  },
+  ({ err }: { err: Error }) => {
+    const i18nValues = useInternalTranslate(commonTranslations);
+    return (
+      <span>
+        {err && err.message ? err.message : i18nValues.someWentWrong + '...'}
+      </span>
+    );
+  },
 );
 
 /**

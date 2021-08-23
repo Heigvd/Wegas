@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.jta.JCRClient;
@@ -27,11 +28,13 @@ import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -48,6 +51,7 @@ import com.wegas.editor.view.Hidden;
 import com.wegas.editor.view.NumberView;
 import com.wegas.editor.view.StringView;
 import com.wegas.editor.view.Textarea;
+import java.beans.Beans;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -139,7 +143,7 @@ import org.slf4j.LoggerFactory;
         @Index(columnList = "basedon_id")
     }
 )
-public class GameModel extends AbstractEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable, NamedEntity, JCRClient {
+public class GameModel extends AbstractEntity implements DescriptorListI<VariableDescriptor>, AcceptInjection, InstanceOwner, Broadcastable, NamedEntity, JCRClient {
 
     private static final Logger logger = LoggerFactory.getLogger(GameModel.class);
 
@@ -147,6 +151,10 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     @Transient
     private Boolean onGoingPropagation = false;
+
+    @JsonIgnore
+    @Transient
+    protected Beanjection beans;
 
     @Transient
     @JsonIgnore
@@ -364,6 +372,11 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     public void setBasedOnId(Long id) {
         // jsonIgnore
+    }
+
+    @Override
+    public void setBeanjection(Beanjection beanjection) {
+        this.beans = beanjection;
     }
 
     /**
@@ -814,7 +827,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     /**
      * Backward compatibility for old exported JSON
      *
-     * @param library
+     * @param libraries new client scripts
      */
     public void setClientScriptLibrary(Map<String, GameModelContent> libraries) {
         this.addAllToLibraries(libraries, GameModelContent.CLIENT_SCRIPT, "application/javascript");
@@ -884,6 +897,16 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Override
     public List<VariableDescriptor> getRawItems() {
         return items;
+    }
+
+    @Override
+    @JsonIgnore
+    public List<VariableDescriptor> getReadableItems() {
+        if (this.beans.getRequestManager().isEditorView()) {
+            return this.getItems();
+        } else {
+            return this.beans.getVariableDescriptorFacade().getReadableChildren(this);
+        }
     }
 
     @Override
@@ -1148,13 +1171,17 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         return Helper.GAMEMODEL_CHANNEL_PREFIX + getId();
     }
 
+    public String getEditorChannel() {
+        return Helper.GAMEMODEL_EDITOR_CHANNEL_PREFIX + getId();
+    }
+
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         return WegasPermission.getAsCollection(this.getAssociatedWritePermission());
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         return WegasPermission.getAsCollection(this.getAssociatedReadPermission());
     }
 
@@ -1220,7 +1247,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
         if (this.isPlay()) {
             return WegasMembership.TRAINER;
         } else {

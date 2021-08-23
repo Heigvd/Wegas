@@ -47,7 +47,6 @@ function optionNameToString(result: any, name: IName) {
 function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
   const context = props.context || {};
   const { field, returnAttr, scope, name, ...restView } = props.view;
-
   const computedEntity = context.variableName
     ? VariableDescriptor.first('name', context.variableName)
     : props.formValue;
@@ -58,10 +57,12 @@ function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
   const options =
     scope !== 'instance'
       ? (computedEntity as Record<string, unknown>)[field]
-      : (getInstance(computedEntity as IVariableDescriptor) as Record<
-          string,
-          unknown
-        >)[field];
+      : (
+          getInstance(computedEntity as IVariableDescriptor) as Record<
+            string,
+            unknown
+          >
+        )[field];
 
   if (options == null) {
     return <pre>No attribute {field} found</pre>;
@@ -81,6 +82,18 @@ function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
     value: r[returnAttr || 'name'],
     label: optionNameToString(r, name),
   }));
+
+  if (props.schema.required) {
+    if (
+      props.value != null &&
+      choices.filter(v => v.value === props.value).length > 0
+    ) {
+      props.onChange(props.value);
+    } else {
+      props.onChange(choices[0].value);
+    }
+  }
+
   return <Select {...props} view={{ ...restView, choices }} />;
 }
 

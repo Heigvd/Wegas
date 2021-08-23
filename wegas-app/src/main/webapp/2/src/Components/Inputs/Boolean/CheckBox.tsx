@@ -7,6 +7,7 @@ import {
   flexColumn,
   itemCenter,
   flex,
+  flexRow,
 } from '../../../css/classes';
 import { Button } from '../Buttons/Button';
 import { classOrNothing, classNameOrEmpty } from '../../../Helper/className';
@@ -32,6 +33,10 @@ export interface CheckBoxProps extends InputProps<boolean> {
    * propagateClick - avoid stopping propagation when click
    */
   propagateClick?: boolean;
+  /**
+   * horizontal - Displays label and input on the same line
+   */
+  horizontal?: boolean;
 }
 
 export function CheckBox({
@@ -44,6 +49,7 @@ export function CheckBox({
   checkBoxClassName,
   radio,
   propagateClick,
+  horizontal,
   className,
   style,
   id,
@@ -52,8 +58,10 @@ export function CheckBox({
     <div
       id={id}
       className={
-        cx(flex, flexColumn, itemCenter, shrinkWidth) +
-        classNameOrEmpty(className)
+        cx(flex, itemCenter, shrinkWidth, {
+          [flexRow]: horizontal,
+          [flexColumn]: !horizontal,
+        }) + classNameOrEmpty(className)
       }
       style={style}
       title={hint}

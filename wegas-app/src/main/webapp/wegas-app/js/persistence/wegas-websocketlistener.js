@@ -107,11 +107,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
         },
         onClientScriptUpdate: function(contentKey) {
             this.loadLibrary("ClientScript", contentKey, function(clientScript) {
-                try {
-                    eval(clientScript);
-                } catch (error) {
-                    Y.log("ClientScript sync:" + error);
-                }
+                W.Sandbox.eval(clientScript, undefined, true);
             });
         },
         onServerScriptUpdate: function(contentKey) {

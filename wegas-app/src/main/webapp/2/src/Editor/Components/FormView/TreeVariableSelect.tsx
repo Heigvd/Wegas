@@ -15,7 +15,10 @@ import {
   createScript,
 } from '../../../Helper/wegasEntites';
 import { scriptEditStyle } from './Script/Script';
-import { inputStyle, SimpleInput } from '../../../Components/Inputs/SimpleInput';
+import {
+  inputStyle,
+  SimpleInput,
+} from '../../../Components/Inputs/SimpleInput';
 import { IVariableDescriptor, IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
@@ -27,6 +30,7 @@ import {
   flexColumn,
 } from '../../../css/classes';
 import { VariableScriptPath } from '../Variable/VariableScriptPath';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 
 const treeCss = css({
   padding: '5px 10px',
@@ -54,8 +58,13 @@ export function genVarItems<T = string>(
   classFilter: string[] = [],
   decorateFn?: (value: string) => T,
 ): TreeSelectItem<StringOrT<typeof decorateFn, T>>[] {
-  function mapItem(i: number): TreeSelectItem<StringOrT<typeof decorateFn, T>> {
-    const item = VariableDescriptor.select(i)!;
+  function mapItem(
+    i: number,
+  ): TreeSelectItem<StringOrT<typeof decorateFn, T>> | undefined {
+    const item = VariableDescriptor.select(i);
+    if (item == null) {
+      return undefined;
+    }
     const child = varIsList(item)
       ? genVarItems<T>(item.itemsIds, selectableFn, classFilter, decorateFn)
       : undefined;
@@ -73,15 +82,19 @@ export function genVarItems<T = string>(
       items: child,
     };
   }
-  return items
-    .map(mapItem)
-    .filter(
-      i =>
-        !(
-          i.value === undefined &&
-          (i.items === undefined || i.items.length === 0)
-        ),
+  function itemFilter(
+    item: TreeSelectItem<T> | undefined,
+  ): item is TreeSelectItem<T> {
+    return (
+      item != null &&
+      !(
+        item.value === undefined &&
+        (item.items === undefined || item.items.length === 0)
+      )
     );
+  }
+
+  return items.map(mapItem).filter(itemFilter);
 }
 function getItems<T>(
   items: TreeSelectItem<T>[],
@@ -266,13 +279,16 @@ export type TreeVariableSelectProps = TreeVSelectProps<string> & {
 export function TreeVariableSelect(
   props: TreeVariableSelectProps,
 ): JSX.Element {
-  const items = useStore(GameModel.selectCurrent).itemsIds;
-
-  const varItems = genVarItems(
-    items,
-    undefined,
-    scriptableClassNameToClassFilter(props.view.returnType),
+  const varItems = useStore(
+    () =>
+      genVarItems(
+        GameModel.selectCurrent().itemsIds,
+        undefined,
+        scriptableClassNameToClassFilter(props.view.returnType),
+      ),
+    deepDifferent,
   );
+
   const filteredItems: TreeSelectItem<string>[] = props.view.items
     ? [
         {

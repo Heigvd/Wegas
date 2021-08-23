@@ -28,8 +28,7 @@ import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { librariesCTX } from '../LibrariesLoader';
 import { store } from '../../../data/Stores/store';
 import { defaultMarginRight, defaultPadding } from '../../../css/classes';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
@@ -258,17 +257,19 @@ const setLibraryState = (oldState: ILibrariesState, action: StateAction) =>
  * getScriptLanguage that gives a language type from a libType
  * @param scriptType - the type of library
  */
-const getScriptLanguage: (scriptType: LibType) => 'css' | 'typescript' =
-  scriptType => {
-    switch (scriptType) {
-      case 'CSS':
-        return 'css';
-      case 'ClientScript':
-      case 'ServerScript':
-      default:
-        return 'typescript';
-    }
-  };
+const getScriptLanguage: (
+  scriptType: LibType,
+) => 'css' | 'typescript' | 'javascript' = scriptType => {
+  switch (scriptType) {
+    case 'CSS':
+      return 'css';
+    case 'ServerScript':
+      return 'javascript';
+    case 'ClientScript':
+    default:
+      return 'typescript';
+  }
+};
 
 /**
  * getScriptOutdatedState is a function that looks for a lastestVersionLibrary.
@@ -388,8 +389,7 @@ interface ScriptEditorProps {
  * ScriptEditor is a component for wegas library management
  */
 function ScriptEditor({ scriptType }: ScriptEditorProps) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
   const [librariesState, dispatchStateAction] = React.useReducer(
     setLibraryState,
     {
@@ -738,15 +738,16 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             onResolved={onSaveLibrary}
           />
         ) : librariesState.selected ? (
-          getScriptLanguage(scriptType) === 'typescript' ? (
+          getScriptLanguage(scriptType) === 'css' ? (
+            <SrcEditor {...editorProps} language="css" />
+          ) : (
             <WegasScriptEditor
               {...editorProps}
+              language={getScriptLanguage(scriptType)}
               scriptContext={
                 scriptType === 'ServerScript' ? 'Server external' : 'Client'
               }
             />
-          ) : (
-            <SrcEditor {...editorProps} language="css" />
           )
         ) : (
           <MessageString

@@ -9,7 +9,7 @@ import {
   flexColumn,
   flexRow,
   justifyCenter,
-  justifyEnd,
+  layoutStyle,
   pointer,
 } from '../css/classes';
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
@@ -64,14 +64,21 @@ const modalCloseButtonStyle = css({
   margin: 'auto',
 });
 
-const secondaryButtonStyle = css({
-  backgroundColor: 'transparent',
-  color: themeVar.colors.PrimaryColor,
-  border: '1px solid ' + themeVar.colors.PrimaryColor,
-  ['&:hover']: {
-    color: themeVar.colors.LightTextColor,
-  },
-});
+export const secondaryButtonCSS = {
+  '&.wegas-btn':{
+    backgroundColor: 'transparent',
+    color: themeVar.colors.PrimaryColor,
+    border: '1px solid ' + themeVar.colors.PrimaryColor,
+    '&:hover': {
+      color: themeVar.colors.LightTextColor,
+      borderColor: 'transparent',
+    }
+  }
+};
+
+export const secondaryButtonStyle = css(
+  secondaryButtonCSS
+);
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
 // React element
@@ -81,13 +88,20 @@ export type ModalProps = React.PropsWithChildren<
     /**
      * onExit - called when <esc> key is pressed or when clicked outside of the content of the modal
      */
-    onExit?: () => void;
+    onExit?: (event?: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    /**
+     * unattached - The modal component will be rendered as a child of the calling component.
+     * attachedToId won't be used
+     */
+    unattached?: boolean;
     /**
      * attachedTo - the ID of the element to insert the modal (will cover the whole element). By default, gets the last themeCTX provider
+     * if unattached is set to true, this prop won't be used.
      */
     attachedToId?: string;
     /**
      * innerClassName - the class to apply on the inner component
+     * if false, will simply render in the parent element.
      */
     innerClassName?: string;
     /**
@@ -100,6 +114,7 @@ export type ModalProps = React.PropsWithChildren<
 export function Modal({
   children,
   onExit,
+  unattached,
   attachedToId,
   className,
   style,
@@ -113,7 +128,7 @@ export function Modal({
 
   if (attachedToId) {
     container.current = document.getElementById(attachedToId);
-  } else if (themeRoot?.current) {
+  } else if (!unattached && themeRoot?.current) {
     container.current = themeRoot?.current;
   }
 
@@ -129,7 +144,8 @@ export function Modal({
   const bgClick = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (onExit && e.target === e.currentTarget) {
-        onExit();
+        e.stopPropagation();
+        onExit(e);
       }
     },
     [onExit],
@@ -145,13 +161,13 @@ export function Modal({
     };
   }, [onEscape]);
 
-  return (
-    container.current &&
-    createPortal(
+  const modalComponent = React.useMemo(() => {
+    return (
       <div
         className={
           cx(
-            modalStyle(attachedToId == null),
+            layoutStyle,
+            modalStyle(!attachedToId),
             flex,
             flexColumn,
             justifyCenter,
@@ -180,34 +196,52 @@ export function Modal({
           )}
           {children}
         </div>
-      </div>,
-      container.current,
-    )
-  );
+      </div>
+    );
+  }, [
+    attachedToId,
+    bgClick,
+    children,
+    className,
+    id,
+    innerClassName,
+    innerStyle,
+    onExit,
+    style,
+  ]);
+
+  if (container.current) {
+    return container.current && createPortal(modalComponent, container.current);
+  } else {
+    return modalComponent;
+  }
 }
 
 interface OkCancelModalProps {
-  onOk?: () => void;
-  onCancel?: () => void;
-  /**
-   * attachedTo - the ID of the element to insert the modal (will cover the whole element). By default, gets the last themeCTX provider
-   */
+  onOk?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
+  onCancel?: (event?: React.MouseEvent<HTMLElement, MouseEvent>) => void;
+  unattached?: boolean;
   attachedToId?: string;
 }
 
 export function OkCancelModal({
   onOk,
   onCancel,
+  unattached,
   attachedToId,
   children,
 }: React.PropsWithChildren<OkCancelModalProps>) {
   const i18nValues = useInternalTranslate(modalTranslations);
 
   return (
-    <Modal attachedToId={attachedToId}>
+    <Modal
+      attachedToId={attachedToId}
+      unattached={unattached}
+      onExit={onCancel}
+    >
       <div className={cx(flex, flexColumn)}>
         {children}
-        <div className={cx(flex, flexRow, justifyEnd, defaultMarginTop)}>
+        <div className={cx(flex, flexRow, justifyCenter, defaultMarginTop)}>
           <Button
             label={i18nValues.cancel}
             onClick={onCancel}
@@ -238,13 +272,13 @@ export function useOkCancelModal(attachedToId?: string) {
       return show ? (
         <OkCancelModal
           attachedToId={attachedToId}
-          onCancel={() => {
+          onCancel={e => {
             setShow(false);
-            onCancel && onCancel();
+            onCancel && onCancel(e);
           }}
-          onOk={() => {
+          onOk={e => {
             setShow(false);
-            onOk && onOk();
+            onOk && onOk(e);
           }}
         >
           {children}

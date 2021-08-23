@@ -21,7 +21,6 @@ import { useDrag } from 'react-dnd';
 import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { classNameOrEmpty } from '../../Helper/className';
-import { wlog } from '../../Helper/wegaslog';
 import { themeVar } from '../Theme/ThemeVars';
 
 const stateContainerStyle = css({
@@ -36,11 +35,11 @@ export const stateBoxStyle = css({
   alignItems: 'center',
   padding: '15px 15px 15px 15px',
   boxSizing: 'border-box',
-  background: themeVar.colors.HeaderColor,
+  background: themeVar.colors.BackgroundColor,
   borderRadius: '8px',
-  border: '1px solid ' + themeVar.colors.PrimaryColor,
-  boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', //shadow theme var?
-  color: themeVar.colors.PrimaryColor,
+  border: '2px solid ' + themeVar.colors.DisabledColor,
+  boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.15)',
+  color: themeVar.colors.ActiveColor,
   flexGrow: 0,
   maxHeight: '100px',
   '&>*': {
@@ -62,13 +61,14 @@ export const stateBoxActionStyle = css({
   cursor: 'pointer',
   '&:hover': {
     background: themeVar.colors.BackgroundColor,
+    border: '2px solid ' + themeVar.colors.PrimaryColor,
   },
 });
 
 export const indexTagStyle = css({
   display: 'flex',
   borderRadius: '50%',
-  border: '1px solid ' + themeVar.colors.ActiveColor, //LightText theme var?
+  border: '1px solid ' + themeVar.colors.ActiveColor,
   minWidth: '23px',
   height: '23px',
   justifyContent: 'center',
@@ -78,7 +78,7 @@ export const indexTagStyle = css({
 
 const handleForTransition = css({
   position: 'absolute',
-  backgroundColor: themeVar.colors.HighlightColor, //evidence color editor theme var?
+  backgroundColor: themeVar.colors.WarningColor,
   borderRadius: '50%',
   minWidth: '20px',
   height: '20px',
@@ -115,11 +115,12 @@ const stateMoreInfosStyle = css({
 });
 
 export const selectedStateBoxStyle = css({
-  background: themeVar.colors.BackgroundColor,
-  border: '4px solid ' + themeVar.colors.ActiveColor,
+  background: themeVar.colors.HeaderColor,
   color: themeVar.colors.ActiveColor,
+  borderColor: 'transparent',
+  boxShadow: 'none',
   '&:hover': {
-    background: themeVar.colors.BackgroundColor,
+    background: themeVar.colors.HeaderColor,
   },
   [`.${indexTagStyle}`]: {
     borderColor: themeVar.colors.ActiveColor,
@@ -156,10 +157,7 @@ export function StateBox({
       className={stateContainerStyle + classNameOrEmpty(state.className)}
       style={state.style}
       onClick={e =>
-        isActionAllowed({ disabled, readOnly }) &&
-        onClick &&
-        onClick(e, state) &&
-        wlog(selected)
+        isActionAllowed({ disabled, readOnly }) && onClick && onClick(e, state)
       }
     >
       <div

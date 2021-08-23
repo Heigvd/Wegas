@@ -8,7 +8,6 @@ import {
 } from '../actions';
 import { VariableDescriptor } from '../selectors';
 import { ThunkResult, store } from '../Stores/store';
-import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { entityIsPersisted } from '../entities';
 import { Reducer } from 'redux';
 import { Schema } from 'jsoninput';
@@ -37,6 +36,7 @@ import {
 } from 'wegas-ts-api';
 import { cloneDeep } from 'lodash-es';
 import { commonServerMethods } from '../methods/CommonServerMethods';
+import { EditorLanguageData, EditorLanguagesCode, getSavedLanguage, getUserLanguage } from '../i18n';
 
 export function isServerMethod(
   serverObject: ServerGlobalMethod | ServerGlobalObject | undefined,
@@ -80,10 +80,9 @@ export interface ActionsProps<T> {
   action: (entity: T, path?: (string | number)[]) => void;
   label: React.ReactNode;
   confirm?: boolean;
-  sorting: 'button' | 'toolbox' | 'close';
+  sorting: 'delete' | 'duplicate' | 'toolbox' | 'close' | 'findUsage';
 }
 
-//type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
   save?: (entity: T) => void;
   more?: {
@@ -137,28 +136,15 @@ export interface EditingState {
   eventsHandlers: WegasEventHandlers;
 }
 export interface GlobalState extends EditingState {
+  currentEditorLanguageCode: EditorLanguagesCode;
   currentGameModelId: number;
   currentGameId: number;
   currentPlayerId: number;
   currentTeamId: number;
   currentUser: Readonly<IUser>;
   currentPageId?: string;
-  // pageEdit: Readonly<boolean>;
-  // pageSrc: Readonly<boolean>;
   pageError?: string;
-  search:
-    | {
-        type: 'GLOBAL';
-        value: string;
-        result: number[];
-      }
-    | {
-        type: 'USAGE';
-        value: number;
-        result: number[];
-      }
-    | { type: 'ONGOING' }
-    | { type: 'NONE' };
+  search: { value: string | undefined; deep: boolean };
   pusherStatus: {
     status: string;
     socket_id?: string;
@@ -303,25 +289,15 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.PAGE_ERROR:
         state.pageError = action.payload.error;
         return;
-      case ActionType.SEARCH_CLEAR:
-        state.search = { type: 'NONE' };
+      case ActionType.SEARCH:
+        state.search.value = action.payload.searchString;
         return;
-      case ActionType.SEARCH_ONGOING:
-        state.search = { type: 'ONGOING' };
+      case ActionType.SEARCH_DEEP:
+        state.search.value = action.payload.searchString;
+        state.search.deep = true;
         return;
-      case ActionType.SEARCH_GLOBAL:
-        state.search = {
-          type: 'GLOBAL',
-          value: action.payload.search,
-          result: action.payload.result,
-        };
-        return;
-      case ActionType.SEARCH_USAGE:
-        state.search = {
-          type: 'USAGE',
-          value: action.payload.variableId,
-          result: action.payload.result,
-        };
+      case ActionType.SEARCH_SET_DEEP:
+        state.search.deep = action.payload.deep;
         return;
       case ActionType.PUSHER_SOCKET:
         state.pusherStatus = action.payload;
@@ -397,34 +373,27 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.EDITOR_UNREGISTER_PAGE_LOADER:
         delete state.pageLoaders[action.payload.name];
         return;
+      case ActionType.EDITOR_SET_LANGUAGE:
+        state.currentEditorLanguageCode = action.payload.language;
+        return;
       case ActionType.LOCK_SET:
         state.locks[action.payload.token] = action.payload.locked;
         return;
-      // case ActionType.EDITOR_ADD_EVENT_HANDLER:
-      //   state.eventsHandlers[action.payload.type][action.payload.id] =
-      //     action.payload.cb;
-      //   return;
-      // case ActionType.EDITOR_REMOVE_EVENT_HANDLER:
-      //   state.eventsHandlers[action.payload.type] = omit(
-      //     state.eventsHandlers[action.payload.type],
-      //     action.payload.id,
-      //   );
-      //   return;
       default:
         state.eventsHandlers = eventHandlersManagement(state, action);
         state.events = eventManagement(state, action);
         state.editing = editorManagement(state, action);
     }
-    // return state;
   },
   {
+    currentEditorLanguageCode: "EN",
     currentGameModelId: CurrentGM.id!,
     currentGameId: CurrentGame.id!,
     currentPlayerId: CurrentPlayerId,
     currentTeamId: CurrentTeamId,
     currentUser: CurrentUser,
     pusherStatus: { status: 'disconnected' },
-    search: { type: 'NONE' },
+    search: { value: undefined, deep: false },
     events: [],
     eventsHandlers: {
       ExceptionEvent: {},
@@ -470,7 +439,7 @@ export function editVariable(
             more: {
               duplicate: {
                 label: 'Duplicate',
-                sorting: 'toolbox',
+                sorting: 'duplicate',
                 action: (entity: IVariableDescriptor) => {
                   dispatch(
                     Actions.VariableDescriptorActions.duplicateDescriptor(
@@ -481,7 +450,7 @@ export function editVariable(
               },
               delete: {
                 label: 'Delete',
-                sorting: 'button',
+                sorting: 'delete',
                 action: (entity: IVariableDescriptor, path?: string[]) => {
                   dispatch(
                     Actions.VariableDescriptorActions.deleteDescriptor(
@@ -494,10 +463,10 @@ export function editVariable(
               },
               findUsage: {
                 label: 'Find usage',
-                sorting: 'toolbox',
+                sorting: 'findUsage',
                 action: (entity: IVariableDescriptor) => {
-                  if (entityIsPersisted(entity)) {
-                    dispatch(Actions.EditorActions.searchUsage(entity));
+                  if (entityIsPersisted(entity) && entity.name != null) {
+                    dispatch(Actions.EditorActions.searchDeep(entity.name));
                   }
                 },
               },
@@ -555,29 +524,32 @@ export function editStateMachine(
         actions: actions || {
           more: {
             delete: {
-                label: 'Delete',
-                sorting: 'button',
-                confirm: true,
-                action: (entity: IFSMDescriptor, path?: string[]) => {
-                  if (
-                    path != null &&
-                    Number(path.length) === 2 &&
-                    Number(path.length) !== entity.defaultInstance.currentStateId
-                  ) {
-                    deleteState(entity, Number(path[1]));
-                  } else {
-                    dispatch(
-                      Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
-                    );
-                  }
-                },
+              label: 'Delete',
+              sorting: 'delete',
+              confirm: true,
+              action: (entity: IFSMDescriptor, path?: string[]) => {
+                if (
+                  path != null &&
+                  Number(path.length) === 2 &&
+                  Number(path.length) !== entity.defaultInstance.currentStateId
+                ) {
+                  deleteState(entity, Number(path[1]));
+                } else {
+                  dispatch(
+                    Actions.VariableDescriptorActions.deleteDescriptor(
+                      entity,
+                      path,
+                    ),
+                  );
+                }
+              },
             },
             findUsage: {
               label: 'Find usage',
-              sorting: 'toolbox',
+              sorting: 'findUsage',
               action: (entity: IFSMDescriptor) => {
-                if (entityIsPersisted(entity)) {
-                  dispatch(Actions.EditorActions.searchUsage(entity));
+                if (entityIsPersisted(entity) && entity.name != null) {
+                  dispatch(Actions.EditorActions.searchDeep(entity.name));
                 }
               },
             },
@@ -711,46 +683,20 @@ export function editorEventRead(timestamp: number) {
   return ActionCreator.EDITOR_EVENT_READ({ timestamp });
 }
 
-/**
- * Clear search values
- */
-export function searchClear() {
-  return ActionCreator.SEARCH_CLEAR();
+export function search(searchString: string) {
+  return ActionCreator.SEARCH({ searchString });
 }
-/**
- * globally search for a value
- * @param value the text to search for
- */
-export function searchGlobal(value: string): ThunkResult {
-  return function (dispatch) {
-    dispatch(ActionCreator.SEARCH_ONGOING());
-    const gameModelId = store.getState().global.currentGameModelId;
-    return VariableDescriptorAPI.contains(gameModelId, value)
-      .then(result => {
-        return dispatch(ActionCreator.SEARCH_GLOBAL({ search: value, result }));
-      })
-      .catch((res: Response) => dispatch(editorErrorEvent(res.statusText)));
-  };
+
+export function clearSearch() {
+  return ActionCreator.SEARCH({ searchString: undefined });
 }
-/**
- * Find usage of a given descriptor
- * @param variable persisted descriptor to search for
- */
-export function searchUsage(
-  variable: IVariableDescriptor & { id: number },
-): ThunkResult {
-  const search = `Variable.find(gameModel, "${variable.name}")`;
-  return function (dispatch) {
-    store.dispatch(ActionCreator.SEARCH_ONGOING());
-    const gameModelId = store.getState().global.currentGameModelId;
-    return VariableDescriptorAPI.contains(gameModelId, search)
-      .then(result => {
-        return store.dispatch(
-          ActionCreator.SEARCH_USAGE({ variableId: variable.id, result }),
-        );
-      })
-      .catch((res: Response) => dispatch(editorErrorEvent(res.statusText)));
-  };
+
+export function searchDeep(searchString: string) {
+  return ActionCreator.SEARCH_DEEP({ searchString });
+}
+
+export function searchSetDeep(deep: boolean) {
+  return ActionCreator.SEARCH_SET_DEEP({ deep });
 }
 
 /**
@@ -852,4 +798,14 @@ export function setLock(data: LockEventData) {
     token: data.token,
     locked: data.status === 'lock',
   });
+}
+export function getLanguage() {
+ const savedLanguage = getSavedLanguage();
+ const userLanguage = getUserLanguage();
+ return ActionCreator.EDITOR_SET_LANGUAGE({language: savedLanguage ? savedLanguage : userLanguage});
+}
+
+export function setLanguage(lang: EditorLanguagesCode) {
+  window.localStorage.setItem(EditorLanguageData, lang);
+  return ActionCreator.EDITOR_SET_LANGUAGE({language: lang});
 }

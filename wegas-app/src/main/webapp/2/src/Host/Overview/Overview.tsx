@@ -20,7 +20,6 @@ import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
 
 export const trainerCellStyleI: Interpolation<undefined> = {
-  display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   backgroundColor: '#fff',
@@ -116,7 +115,6 @@ export interface DataItem extends OverviewItem {
   kind: ValueKind;
   sortable?: boolean;
   formatter?: string;
-  transformer?: string;
   sortFn?: string;
   preventClick?: boolean;
 }

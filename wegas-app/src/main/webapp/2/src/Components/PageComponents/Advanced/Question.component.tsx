@@ -46,6 +46,7 @@ registerComponent(
     componentType: 'Advanced',
     name: 'Question',
     icon: 'question',
+    illustration: 'question',
     schema: {
       question: schemaProps.scriptVariable({
         label: 'Question',

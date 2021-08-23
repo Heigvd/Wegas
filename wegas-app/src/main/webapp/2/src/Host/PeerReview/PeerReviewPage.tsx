@@ -35,7 +35,7 @@ import {
   PeerReviewStateSelector,
 } from '../../API/peerReview.api';
 import { addPopup, popupDispatch } from '../../Components/PopupManager';
-import { internalTranslate } from '../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
 import { useOkCancelModal } from '../../Components/Modal';
 // import { testPRData } from './PRinterfaceTests';
@@ -243,7 +243,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
   const spr = useStore(() => instantiate(peerReview));
   const { showModal, OkCancelModal } = useOkCancelModal();
 
-  const i18nValues = internalTranslate(peerReviewTranslations, lang);
+  const i18nValues = useInternalTranslate(peerReviewTranslations);
   const getData = React.useCallback(() => {
     let mounted = true;
     VariableDescriptorAPI.runScript(

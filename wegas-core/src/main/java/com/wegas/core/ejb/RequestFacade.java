@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -10,13 +9,11 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.ActAsPlayer;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.Set;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -119,18 +116,16 @@ public class RequestFacade {
      */
     public void commit(Player player) {
         if (!requestManager.isTestEnv()) {
-            try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            try ( ActAsPlayer a = requestManager.actAsPlayer(player)) {
                 /*
-             * Flush is required to triggered EntityListener's lifecycles events which populate
-             * requestManager touched (deleted, updated and so on) entities
+                 * Flush is required to triggered EntityListener's lifecycles events which populate
+                 * requestManager touched (deleted, updated and so on) entities
                  */
-                EntityManager em = requestManager.getEntityManager();
-
                 requestManager.getEntityManager().flush();
 
-                if (requestManager.getUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
-                    stateMachineFacade.runStateMachines(player);
-                    em.flush();
+                if (!requestManager.getJustUpdatedEntities().isEmpty() || scriptEvent.isEventFired()) {
+                    // Rely on transition dependencies to eval only the required ones
+                    stateMachineFacade.runStateMachines(player, false);
                 }
             }
         }
@@ -173,22 +168,6 @@ public class RequestFacade {
      */
     public ResourceBundle getBundle(String name) {
         return this.requestManager.getBundle(name);
-    }
-
-    /**
-     *
-     * @return all entities which were updated during the transaction
-     */
-    public Set<AbstractEntity> getUpdatedEntities() {
-        return requestManager.getUpdatedEntities();
-    }
-
-    /*
-     *
-     * @return all entities which were destroyed during the transaction
-     */
-    public Set<AbstractEntity> getDestroyedEntities() {
-        return requestManager.getDestroyedEntities();
     }
 
     /**

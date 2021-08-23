@@ -128,6 +128,7 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
       onMouseOut,
       onMouseEnter,
       onMouseLeave,
+      onDragOver,
       onDragEnter,
       onDragLeave,
       onDragEnd,
@@ -147,6 +148,7 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
         onMouseOut={onMouseOut}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
+        onDragOver={onDragOver}
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
         onDragEnd={onDragEnd}

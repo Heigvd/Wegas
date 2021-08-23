@@ -1,13 +1,13 @@
 import { css } from 'emotion';
 import * as React from 'react';
 import { globals } from '../../Components/Hooks/useScript';
-import { Button } from '../../Components/Inputs/Buttons/Button';
 import { HTMLText } from '../../Components/Outputs/HTMLText';
 import { themeVar } from '../../Components/Theme/ThemeVars';
+import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 import {
   componentOrRawHTML,
   components,
-  ReactTransformer,
+  ReactFormatter,
 } from './Components/components';
 import {
   ActionItem,
@@ -17,6 +17,7 @@ import {
   OverviewClickType,
 } from './Overview';
 import { OverviewButton } from './OverviewButton';
+import MailIcon from '../../pictures/icon_mail.svg';
 
 export const fixedCellStyle = css({
   position: 'absolute',
@@ -48,21 +49,21 @@ export function OverviewCell({
   const [showPopup, setShowPopup] = React.useState(false);
 
   if (isDataItem(structure)) {
-    const { kind, formatter, transformer } = structure;
+    const { kind, formatter } = structure;
 
-    const view = formatter ? 'formatter' : transformer ? 'transformer' : kind;
+    const view = formatter ? 'formatter' : kind;
     const value = typeof data === 'object' ? data.body : data;
-
     switch (view) {
       case 'boolean':
         return (
           <td className={className} style={style} id={id}>
             <div>
-              <img
-                src={
-                  require(value === true
-                    ? '../../pictures/icon_ok.svg'
-                    : '../../pictures/icon_notok.svg').default
+              <IconComp
+                icon={value === true ? 'check' : 'times'}
+                className={
+                  value === true
+                    ? css({ color: themeVar.colors.SuccessColor })
+                    : css({ color: themeVar.colors.DisabledColor })
                 }
               />
             </div>
@@ -79,11 +80,11 @@ export function OverviewCell({
         return (
           <td className={className} style={style} id={id}>
             <div>
-              <Button
-                tooltip="Read mails"
-                src={require('../../pictures/icon_mail.svg').default}
-                onClick={() => setShowPopup(o => !o)}
-              />
+              <div
+                title="Read mails"
+                onClick={() => setShowPopup(o => !o)}>
+                  <MailIcon />
+              </div>
             </div>
             {showPopup && (
               <div
@@ -114,31 +115,12 @@ export function OverviewCell({
         );
       case 'formatter': {
         const formatterFunction = `return (${formatter})(data)`;
-        const formattedvalue = globals.Function(
-          'data',
-          formatterFunction,
-        )(data);
+        const formattedvalue: string | ReactFormatter<keyof typeof components> =
+          globals.Function('data', formatterFunction)(data);
 
         return (
           <td className={className} style={style} id={id}>
-            <div>
-              <HTMLText text={String(formattedvalue)} />
-            </div>
-          </td>
-        );
-      }
-      case 'transformer': {
-        const transformerFunction = `return (${transformer})(data)`;
-        const transformedvalue:
-          | string
-          | ReactTransformer<keyof typeof components> = globals.Function(
-          'data',
-          transformerFunction,
-        )(data);
-
-        return (
-          <td className={className} style={style} id={id}>
-            <div>{componentOrRawHTML(transformedvalue)}</div>
+            <div>{componentOrRawHTML(formattedvalue)}</div>
           </td>
         );
       }

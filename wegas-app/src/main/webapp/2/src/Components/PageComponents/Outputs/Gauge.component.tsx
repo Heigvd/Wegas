@@ -63,6 +63,7 @@ registerComponent(
     componentType: 'Output',
     name: 'Gauge',
     icon: 'tachometer-alt',
+    illustration: 'gauge',
     schema: {
       script: schemaProps.scriptVariable({
         label: 'Variable',

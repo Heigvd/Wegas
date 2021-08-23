@@ -78,26 +78,26 @@ public class WegasTest {
 
     GameModel artos;
 
-    @Deployment(name = "wegas1")
+    @Deployment(name = "wegas1.war")
     //@OverProtocol("Local")
     @TargetsContainer("payara1")
     public static WebArchive deployFirst() {
-        return createDeployment();
+        return createDeployment("Wegas1");
     }
 
-    @Deployment(name = "wegas2")
+    @Deployment(name = "wegas2.war")
     //@OverProtocol("Local")
     @TargetsContainer("payara2")
     public static WebArchive deploySecond() {
-        return createDeployment();
+        return createDeployment("Wegas2");
     }
 
-    public static WebArchive createDeployment() {
+    public static WebArchive createDeployment(String name) {
         WegasRuntime.resetDB("wegas_test");
         String warPath;
         warPath = "../wegas-app/target/Wegas";
 
-        WebArchive war = ShrinkWrap.create(ExplodedImporter.class)
+        WebArchive war = ShrinkWrap.create(ExplodedImporter.class, name + ".war")
             .importDirectory(new File(warPath))
             .as(WebArchive.class);
 
@@ -168,7 +168,7 @@ public class WegasTest {
         final String DB_CON = "jdbc:postgresql://localhost:5432/wegas_test";
         final String USER = "user";
         final String PASSWORD = "1234";
-        try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD); Statement st = connection.createStatement()) {
+        try ( Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);  Statement st = connection.createStatement()) {
             Assert.assertEquals("Some indexes are missing. Please create liquibase changesets. See log for details",
                 0, TestHelper.getMissingIndexesCount(st));
         } catch (SQLException ex) {
@@ -206,7 +206,7 @@ public class WegasTest {
         final String DB_CON = "jdbc:postgresql://localhost:5432/wegas_test";
         final String USER = "user";
         final String PASSWORD = "1234";
-        try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD); Statement st = connection.createStatement()) {
+        try ( Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);  Statement st = connection.createStatement()) {
             st.executeUpdate("UPDATE numberdescriptor SET minvalue = -9999 WHERE id = " + var1.getId());
         } catch (SQLException ex) {
         }
@@ -241,11 +241,10 @@ public class WegasTest {
         client.login(root);
         client2.login(root);
 
-        /*
-         * DELETE	/Assign/{assignmentId}
-         * POST	/Assign/{resourceId}/{taskInstanceId}
-         * PUT * /MoveAssignment/{assignmentId}/{index}
-         */
+        // DELETE /Assign/{assignmentId}
+        // POST   /Assign/{resourceId}/{taskInstanceId}
+        // PUT    /MoveAssignment/{assignmentId}/{index}
+
         // Load resource and task from botch instance
         Script fetchTask1 = new Script("JavaScript", "Variable.find(gameModel, 'ChoixEnvironnementDéveloppement').getInstance(self);");
         TaskInstance task1 = client.post(runURL, fetchTask1, TaskInstance.class);

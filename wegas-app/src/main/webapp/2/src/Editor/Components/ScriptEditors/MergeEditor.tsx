@@ -122,7 +122,7 @@ interface MergeEditorProps {
   /**
    * langauge - the editor language
    */
-  language?: 'typescript' | 'css' | 'json';
+  language?: 'javascript' | 'typescript' | 'css' | 'json';
   /**
    * onResolved - this function is fired each time the user resolved all diff and want to apply changes
    * Can be fire from the little floppy button or the Ctrl+S

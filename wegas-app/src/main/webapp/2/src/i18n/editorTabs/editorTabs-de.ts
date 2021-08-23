@@ -80,6 +80,8 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
     scriptSaved: 'Das Skript wird gespeichert',
     createLibraryPlease:
       'Bitte legen Sie eine Bibliothek an, indem Sie die Taste + drücken',
+      canntoBeParsed: 'Das Skript kann nicht geparst werden',
+    canntoBeParsedCondition: 'Das Skript kann nicht als Bedingung geparst werden',
   },
   instanceProps: {
     noDescriptorEdited: 'Es wird kein Deskriptor bearbeitet',
@@ -92,6 +94,7 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
     theme: t => `Thema: ${t}`,
     themeName: 'Name des Themas',
     addTheme: 'Thema hinzufügen',
+    deleteTheme: 'Thema löschen',
     modeAlreadyExists: 'Der Modus ist bereits vorhanden',
     mode: m => `Modus: ${m}`,
     modeName: 'Name des Modus',
@@ -107,6 +110,8 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
     someText: 'Etwas Text',
     clickMe: 'Klicken Sie hier',
     nextMode: 'Nächster Modus : ',
+    deleteMode: 'Modus löschen',
+    setMainMode: 'Als Hauptmodus einstellen',
     states: state => {
       if (state === 'disabled') return 'Deaktiviert';
       else if (state === 'readOnly') return 'Nur lesen';
@@ -171,4 +176,9 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
   languageEditor: {
     languages: 'Sprachen',
   },
+  variableProperties: {
+    toggleCoding: 'Kodierkonsole umschalten',
+    runScripts: 'Skripte ausführen',
+    deleteGroup: 'Diese Gruppe löschen'
+  }
 };

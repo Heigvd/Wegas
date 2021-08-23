@@ -12,8 +12,7 @@ import {
 } from '../../../../css/classes';
 import { EditorTabsTranslations } from '../../../../i18n/editorTabs/definitions';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
-import { internalTranslate } from '../../../../i18n/internalTranslator';
-import { languagesCTX } from '../../../Contexts/LanguagesProvider';
+import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { ConfirmButton } from '../../../Inputs/Buttons/ConfirmButton';
 import { SimpleInput } from '../../../Inputs/SimpleInput';
 import {
@@ -133,8 +132,7 @@ export function ThemeValueModifier<
   K extends keyof ThemeValues[T],
   V extends ThemeValues[T][K],
 >({ theme, section, onChange }: ThemeValueModifierProps<T, K, V>) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
   const componentId = THEME_VALUE_MODIFIER_ID + section;
   const values = React.useMemo(() => {
     const themeValues = theme?.values[section];
