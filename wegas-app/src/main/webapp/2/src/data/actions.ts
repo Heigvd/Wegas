@@ -95,8 +95,11 @@ export const ActionCreator = {
   EDITOR_SET_LANGUAGE: (data: { language: EditorLanguagesCode }) =>
     createAction(ActionType.EDITOR_SET_LANGUAGE, data),
 
-  EDITOR_ADD_ROLE: (data: { role: Role; defaultRole?: boolean }) =>
-    createAction(ActionType.EDITOR_ADD_ROLE, data),
+  EDITOR_SET_ROLES: (data: {
+    roles: { [id: string]: Role };
+    defaultRoleId: string;
+    rolesId: string;
+  }) => createAction(ActionType.EDITOR_SET_ROLES, data),
 
   VARIABLE_EDIT: variableEditAction(ActionType.VARIABLE_EDIT),
   FSM_EDIT: variableEditAction(ActionType.FSM_EDIT),

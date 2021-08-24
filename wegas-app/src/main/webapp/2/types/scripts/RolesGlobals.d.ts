@@ -9,5 +9,9 @@ interface Role {
 }
 
 interface RolesMehtods {
-  addRole: (newRole: Role, defaultRole?: boolean) => void;
+  setRoles: <T extends { [id: string]: Role }>(
+    roles: T,
+    defaultRoleId: keyof T,
+    rolesId: string,
+  ) => void;
 }

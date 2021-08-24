@@ -33,7 +33,7 @@ import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
 import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
-import { RoleSelector } from '../../Components/Contexts/RoleProvider';
+import { RoleSelector, roleCTX } from '../../Components/Contexts/RoleProvider';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 
 const transparentDropDownButton = css({
@@ -41,7 +41,7 @@ const transparentDropDownButton = css({
   color: 'inherit',
   '&:hover': {
     backgroundColor: 'transparent',
-  }
+  },
 });
 
 const reduceButtonStyle = css({
@@ -139,6 +139,7 @@ function NotificationMenu({ className, style }: ClassStyleId) {
 }
 export default function Header() {
   const { currentFeatures } = React.useContext(featuresCTX);
+  const { currentRole } = React.useContext(roleCTX);
   const i18nValues = useInternalTranslate(commonTranslations);
   const [showHeader, setShowHeader] = React.useState(true);
   const { gameModel, user, userLanguage } = useStore(s => ({
@@ -221,7 +222,9 @@ export default function Header() {
                   <div
                     onClick={() => {
                       window.localStorage.removeItem(
-                        'DnDGridLayoutData.' + mainLayoutId,
+                        `DnDGridLayoutData.${mainLayoutId}.${
+                          store.getState().global.roles.rolesId
+                        }.${currentRole}`,
                       );
                       window.location.reload();
                     }}

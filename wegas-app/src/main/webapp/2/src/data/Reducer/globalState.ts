@@ -184,7 +184,11 @@ export interface GlobalState extends EditingState {
   };
   pageLoaders: { [name: string]: IScript };
   locks: { [token: string]: boolean };
-  roles: { defaultRoleId: string; roles: { [id: string]: Role } };
+  roles: {
+    rolesId: string;
+    defaultRoleId: string;
+    roles: { [id: string]: Role };
+  };
   popups: { [id: string]: Popup };
 }
 
@@ -397,11 +401,10 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.EDITOR_SET_LANGUAGE:
         state.currentEditorLanguageCode = action.payload.language;
         return;
-      case ActionType.EDITOR_ADD_ROLE:
-        state.roles.roles[action.payload.role.id] = action.payload.role;
-        if (action.payload.defaultRole) {
-          state.roles.defaultRoleId = action.payload.role.id;
-        }
+      case ActionType.EDITOR_SET_ROLES:
+        state.roles.roles = action.payload.roles;
+        state.roles.defaultRoleId = action.payload.defaultRoleId;
+        state.roles.rolesId = action.payload.rolesId;
         return;
       case ActionType.LOCK_SET:
         state.locks[action.payload.token] = action.payload.locked;
@@ -450,6 +453,7 @@ const global: Reducer<Readonly<GlobalState>> = u(
     pageLoaders: {},
     locks: {},
     roles: {
+      rolesId: 'DEFAULT_ROLES',
       defaultRoleId: DEFAULT_ROLES.SCENARIO_EDITOR.id,
       roles: DEFAULT_ROLES,
     },

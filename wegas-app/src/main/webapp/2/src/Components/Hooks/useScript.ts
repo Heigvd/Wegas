@@ -397,8 +397,14 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   };
 
   globals.Roles = {
-    addRole: (role, defaultRole) => {
-      globalDispatch(ActionCreator.EDITOR_ADD_ROLE({ role, defaultRole }));
+    setRoles: (roles, defaultRoleId, rolesId) => {
+      globalDispatch(
+        ActionCreator.EDITOR_SET_ROLES({
+          roles,
+          defaultRoleId: defaultRoleId as string,
+          rolesId,
+        }),
+      );
     },
   };
 

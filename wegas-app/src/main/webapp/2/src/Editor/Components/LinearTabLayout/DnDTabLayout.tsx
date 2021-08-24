@@ -182,7 +182,9 @@ export function DnDTabLayout({
       (components[defaultActiveLabel] === undefined &&
         Object.keys(components).length > 0)
     ) {
-      onSelect && onSelect(Object.keys(components)[0]);
+      onSelect &&
+        Object.keys(components)[0] != null &&
+        onSelect(Object.keys(components)[0]);
     }
   }, [components, defaultActiveLabel, onSelect]);
 

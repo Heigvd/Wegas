@@ -23,9 +23,10 @@ import {
 } from '../../../css/classes';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { TabComponent } from './DnDTabs';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { internalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { roleCTX } from '../../../Components/Contexts/RoleProvider';
+import { useStore } from '../../../data/Stores/store';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
@@ -533,6 +534,11 @@ interface ActionFlexResize extends Action {
   flexValues: number[];
 }
 
+interface ActionReset extends Action {
+  type: 'RESET';
+  newLayout: ManagedLayoutMap;
+}
+
 type TabLayoutsAction<T extends ComponentMap> =
   | ActionDrop<T>
   | ActionDelete<T>
@@ -540,18 +546,22 @@ type TabLayoutsAction<T extends ComponentMap> =
   | ActionSelect<T>
   | ActionExternalSelect<T>
   | ActionResize
-  | ActionFlexResize;
+  | ActionFlexResize
+  | ActionReset;
 
 /**
  * setLayout is the reducer function for layout disposition management
  */
 const setLayout =
-  (layoutAccept: string, role: string) =>
+  (layoutId: string, role: string, rolesId: string) =>
   <T extends ManagedLayoutMap>(
     layouts: T,
     action: TabLayoutsAction<T['layoutMap']>,
   ) =>
     u(layouts, (layouts: ManagedLayoutMap) => {
+      if (action.type === 'RESET') {
+        return action.newLayout;
+      }
       let newLayouts = layouts;
       // If a layout has been resized, save it in the state
       if (action.type === 'RESIZE') {
@@ -753,7 +763,7 @@ const setLayout =
       }
       // Saving layout in local storage
       window.localStorage.setItem(
-        `DnDGridLayoutData.${layoutAccept}.${role}`,
+        `DnDGridLayoutData.${layoutId}.${rolesId}.${role}`,
         JSON.stringify(newLayouts),
       );
       return newLayouts;
@@ -796,6 +806,8 @@ const reduceChildren = <T extends ComponentMap>(
         newLayoutMap = reduceChildren(child as LayoutItems<T>, newLayoutMap);
       }
     }
+  } else {
+    newLayoutMap = insertNewLayout(newLayoutMap, 'TabLayoutNode', key, []);
   }
   return newLayoutMap;
 };
@@ -852,20 +864,34 @@ export function MainLinearLayout<T extends ComponentMap>({
   areChildren,
 }: LinearLayoutProps<T>) {
   const { currentRole } = React.useContext(roleCTX);
-  const i18nValues = useInternalTranslate(commonTranslations);
+  const { lang, rolesId } = useStore(s => ({
+    lang: s.global.currentEditorLanguageCode,
+    rolesId: s.global.roles.rolesId,
+  }));
 
-  const savedLayoutJSON = window.localStorage.getItem(
-    `DnDGridLayoutData.${layoutId}.${currentRole}}`,
-  );
-  const savedLayout = savedLayoutJSON
-    ? (JSON.parse(savedLayoutJSON) as ManagedLayoutMap)
-    : null;
+  const i18nValues = internalTranslate(commonTranslations, lang);
+
   const [layout, dispatchLayout] = React.useReducer(
-    setLayout(layoutId, currentRole),
-    savedLayout /*&& !layoutTabMissing(savedLayout.layoutMap, tabs)*/
-      ? savedLayout
-      : reduceChildren(initialLayout),
+    setLayout(layoutId, currentRole, rolesId),
+    reduceChildren(initialLayout),
   );
+
+  React.useEffect(() => {
+    const savedLayoutJSON = window.localStorage.getItem(
+      `DnDGridLayoutData.${layoutId}.${rolesId}.${currentRole}`,
+    );
+    const savedLayout = savedLayoutJSON
+      ? (JSON.parse(savedLayoutJSON) as ManagedLayoutMap)
+      : null;
+    if (savedLayout != null) {
+      dispatchLayout({ type: 'RESET', newLayout: savedLayout });
+    } else {
+      dispatchLayout({
+        type: 'RESET',
+        newLayout: reduceChildren(initialLayout),
+      });
+    }
+  }, [currentRole, initialLayout, layoutId, rolesId]);
 
   const onDrop =
     (layoutKey: string) =>
@@ -902,11 +928,12 @@ export function MainLinearLayout<T extends ComponentMap>({
       destTabLayoutKey: layoutKey,
     });
   };
-  const onSelect = (tabKey: string) =>
+  const onSelect = (tabKey: string) => {
     dispatchLayout({
       type: 'SELECT',
       tabKey: tabKey,
     });
+  };
 
   const focusTab = React.useCallback(
     (tabId: string) => {

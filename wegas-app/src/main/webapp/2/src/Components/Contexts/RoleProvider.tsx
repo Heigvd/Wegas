@@ -66,6 +66,7 @@ export function RoleSelector({
               className={defaultPaddingLeft}
               onClick={e => {
                 e.preventDefault();
+                e.stopPropagation();
                 setRole(role.id);
               }}
             >
