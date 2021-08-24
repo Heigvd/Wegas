@@ -35,6 +35,7 @@ export function ArrowDefs() {
         orient="auto"
         fill="transparent"
         stroke="rgb(128, 127, 127)"
+        className={hoverLineStyle}
       >
         <polyline points="0 0, 6 5, 0 10" />
       </marker>
@@ -70,6 +71,12 @@ const arrowCSS = (zoom: number) => ({
   stroke: 'rgb(128,127,127)',
   strokeWidth: 2 * zoom,
   fill: 'none',
+});
+
+const hoverLineStyle = css({
+'&:hover': {
+  stroke: themeVar.colors.PrimaryColor,
+}
 });
 
 export interface FlowLineProps {
@@ -422,6 +429,7 @@ export function StraitFlowLine({
       {...arrowCSS(zoom)}
       markerStart={`url(#${selected ? 'selectedarrowtail' : ''})`}
       markerEnd={`url(#${selected ? 'selectedarrowhead' : 'arrowhead'})`}
+      className={hoverLineStyle}
     />
   );
 }

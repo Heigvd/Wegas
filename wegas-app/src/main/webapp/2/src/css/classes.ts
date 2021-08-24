@@ -210,14 +210,14 @@ export const button = css({
 
 // Editor
 export const localSelection = css({
-  backgroundColor: themeVar.colors.HeaderColor,
+  border: '1px dashed ' + themeVar.colors.PrimaryColor,
 });
 export const globalSelection = css({
   borderRadius: themeVar.dimensions.BorderRadius,
-  backgroundColor: themeVar.colors.HoverColor,
+  backgroundColor: themeVar.colors.HeaderColor,
 });
 export const searchSelection = css({
-  backgroundColor: themeVar.colors.HighlightColor,
+  border: '1px solid ' + themeVar.colors.HighlightColor,
 });
 
 // Layout base styles
