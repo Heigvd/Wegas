@@ -35,7 +35,7 @@ export function ReparentableRoot({ children }: { children: React.ReactNode }) {
     [cache],
   );
   // Empty cache on destroy
-  React.useLayoutEffect(() => () => setCache({}), []);
+  React.useEffect(() => () => setCache({}), []);
   return (
     <ctx.Provider value={getNode}>
       {Object.values(cache).map(c => createPortal(...c))}
@@ -71,7 +71,7 @@ export function Reparentable({
       `${Reparentable.name} must be enclosed by a ${ReparentableRoot.name}`,
     );
   }
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     const node = getNode(children, id);
     const container = n.current;
     if (container) {
