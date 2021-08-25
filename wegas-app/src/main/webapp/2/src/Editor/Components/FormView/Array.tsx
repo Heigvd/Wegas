@@ -13,6 +13,8 @@ import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
+import { wlog } from '../../../Helper/wegaslog';
+import { flex } from '../../../css/classes';
 
 const transparentStyle = css({
   opacity: 0,
@@ -201,7 +203,8 @@ export interface IArrayProps
       // TODO : Use the following view props!
       highlight?: boolean;
       sortable?: boolean;
-    } & CommonView &
+      controls?: React.ReactNode;
+    } & Omit<CommonView, "noMarginTop"> &
       LabeledView
   > {
   value?: {}[];
@@ -222,6 +225,7 @@ interface DropArrayProps<T> {
   readOnly?: boolean;
   unsortable?: boolean;
   filterRemovable?: boolean[];
+  controls?: React.ReactNode;
 }
 
 export function DragDropArray<T>({
@@ -240,19 +244,24 @@ export function DragDropArray<T>({
   children,
   unsortable,
   filterRemovable,
+  controls,
 }: React.PropsWithChildren<DropArrayProps<T>>) {
   const valueLength = Array.isArray(array) ? array.length : 0;
+  wlog(label);
   return (
     <>
       {label}
-      {maxItems > valueLength && !disabled && !readOnly && onChildAdd && (
-        <Adder
-          id={inputId}
-          onChildAdd={onChildAdd}
-          choices={choices}
-          tooltip={tooltip}
-        />
-      )}
+      <div className={flex}>
+        {maxItems > valueLength && !disabled && !readOnly && onChildAdd && (
+          <Adder
+            id={inputId}
+            onChildAdd={onChildAdd}
+            choices={choices}
+            tooltip={tooltip}
+          />
+        )}
+        {controls}
+      </div>
       {React.Children.map(children, (c, i) => (
         <>
           {onMove && !unsortable && (
@@ -312,6 +321,7 @@ function ArrayWidget({
     tooltip,
     userOnChildAdd,
     sortable,
+    controls,
   } = view;
   const { maxItems, minItems } = schema;
   const defaultItem = Array.isArray(schema.items)
@@ -334,7 +344,7 @@ function ArrayWidget({
     onChange(newValue);
   };
   return (
-    <CommonViewContainer errorMessage={errorMessage} view={view}>
+    <CommonViewContainer errorMessage={errorMessage} view={{...view, noMarginTop : true}}>
       <Labeled label={label} description={description}>
         {({ inputId, labelNode }) => (
           <DragDropArray
@@ -351,6 +361,7 @@ function ArrayWidget({
             minItems={minItems}
             tooltip={tooltip}
             unsortable={!sortable}
+            controls={controls}
           >
             {children}
           </DragDropArray>

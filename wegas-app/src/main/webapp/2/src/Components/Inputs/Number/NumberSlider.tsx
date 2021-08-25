@@ -129,7 +129,7 @@ export function NumberSlider({
       switch (displayValues) {
         case 'External':
           display = (
-            <div className={cx({ [halfOpacity]: disabled })}>{value}</div>
+            <div className={cx({[halfOpacity]: disabled })}>{value}</div>
           );
           break;
         case 'Internal':
@@ -192,11 +192,13 @@ export function NumberSlider({
             : desinterpolate({
                 backgroundColor: themeVar.colors.PrimaryColor,
               }),
-          thumb: handleStyle
+          thumb:
+            handleStyle
             ? desinterpolate(handleStyle)
             : isActionAllowed({ readOnly, disabled })
             ? desinterpolate({ cursor: 'pointer' })
             : {},
+          disabled: {opacity: 0.5}
         }}
         axis="x"
         xmax={max}

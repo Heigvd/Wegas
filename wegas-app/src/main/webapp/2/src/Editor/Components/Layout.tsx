@@ -34,7 +34,7 @@ const Languages = React.lazy(() => import('./Languages/Languages'));
 const layout = css({
   display: 'flex',
   flexDirection: 'column',
-  height: '100vh',
+  height: '100%',
   backgroundColor: themeVar.colors.SecondaryBackgroundColor,
   padding: '0 2em 1em 2em',
   fontFamily: themeVar.others.TextFont2,

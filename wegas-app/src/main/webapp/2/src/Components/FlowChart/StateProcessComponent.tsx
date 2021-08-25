@@ -22,6 +22,7 @@ import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { classNameOrEmpty } from '../../Helper/className';
 import { themeVar } from '../Theme/ThemeVars';
+import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 
 const stateContainerStyle = css({
   display: 'inline-flex',
@@ -42,9 +43,6 @@ export const stateBoxStyle = css({
   color: themeVar.colors.ActiveColor,
   flexGrow: 0,
   maxHeight: '100px',
-  '&>*': {
-    marginRight: '15px',
-  },
   '& *': {
     whiteSpace: 'nowrap',
     maxHeight: '40px',
@@ -74,21 +72,26 @@ export const indexTagStyle = css({
   justifyContent: 'center',
   alignItems: 'center',
   fontSize: '12px',
+  marginRight: '10px',
 });
 
 const handleForTransition = css({
-  position: 'absolute',
-  backgroundColor: themeVar.colors.WarningColor,
+  display: 'flex',
   borderRadius: '50%',
-  minWidth: '20px',
-  height: '20px',
-  border: '1px solid #fff',
-  right: '-25px',
+  minWidth: '30px',
+  height: '30px',
+  border: '1px solid transparent',
+  marginLeft: 'auto',
+  justifyContent: 'center',
+  alignItems: 'center',
+  cursor: 'grab',
   '&:hover': {
-    minWidth: '30px',
-    height: '30px',
-    right: '-30px',
+    border: '1px solid ' + themeVar.colors.PrimaryColor,
+    color: themeVar.colors.PrimaryColor,
   },
+  '&:active': {
+    cursor: 'grabbing',
+  }
 });
 const stateMoreInfosStyle = css({
   position: 'absolute',
@@ -233,5 +236,7 @@ export function StateProcessHandle<F extends FlowLine, P extends Process<F>>({
       processes: { sourceProcess },
     },
   });
-  return <div ref={drag} className={handleForTransition} data-nodrag={true} />;
+  return <div ref={drag} className={handleForTransition} data-nodrag={true}>
+              <IconComp icon="project-diagram" />
+         </div>;
 }

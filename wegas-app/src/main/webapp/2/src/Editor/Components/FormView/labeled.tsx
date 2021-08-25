@@ -10,6 +10,7 @@ import { componentMarginLeft } from '../../../css/classes';
 export const titleStyle = css({
   margin: '5px 0px',
   display: 'flex',
+  fontWeight: 'bold',
   '[title]': {
     display: 'inline-block',
     borderBottom: '1px dotted',

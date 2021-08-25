@@ -27,6 +27,8 @@ import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { EditorTabsTranslations } from '../../../i18n/editorTabs/definitions';
+import { modalCloseDivStyle, modalContentStyle } from '../../../Components/Modal';
+import { IconComp } from '../Views/FontAwesome';
 
 const dropZoneFocus = hatchedBackground;
 
@@ -59,6 +61,18 @@ const dropBottomZone = css({
 });
 
 const dropTabZone = css({ width: '50px' });
+
+const fullScreenContentContainerStyle = css({
+    top: 0,
+    left: 0,
+    overflow: 'auto',
+    minWidth: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    zIndex: 1000,
+    position: 'fixed',
+    padding: '1.5em',
+});
 
 export interface ComponentMap {
   [name: string]: React.ReactNode;
@@ -100,6 +114,33 @@ export interface ClassNames {
   content?: string;
 }
 
+function Content({
+  components,
+  defaultActiveLabel,
+  loading,
+}: {
+  components: ComponentMap;
+  defaultActiveLabel: string | undefined;
+  loading: string;
+}) {
+  return (
+    <div className={cx(autoScroll, expandBoth, flex)}>
+      {defaultActiveLabel && components[defaultActiveLabel] && (
+        <Reparentable
+          id={defaultActiveLabel}
+          innerClassName={cx(flex, expandBoth)}
+          outerClassName={expandBoth}
+        >
+          <React.Suspense
+            fallback={<div className={MediumPadding}>{loading}...</div>}
+          >
+            {components[defaultActiveLabel]}
+          </React.Suspense>
+        </Reparentable>
+      )}
+    </div>
+  );
+}
 interface TabLayoutProps {
   /**
    * vertical - the orientation of the tab layout
@@ -176,6 +217,10 @@ export function DnDTabLayout({
   const { general, header, content } = classNames;
   const i18nValues = useInternalTranslate(commonTranslations);
   const i18nTabsNames = useInternalTranslate(editorTabsTranslations);
+  const [show, setShow] = React.useState(false);
+  const showModal = function () {
+    setShow(true);
+  };
   React.useEffect(() => {
     if (
       defaultActiveLabel === undefined ||
@@ -249,10 +294,12 @@ export function DnDTabLayout({
               onClick={() => {
                 onSelect && onSelect(label);
               }}
+              onDoubleClick={() => {
+                showModal();
+              }}
               layoutId={layoutId}
               CustomTab={CustomTab}
               isChild={areChildren}
-              //className={fullScreenTabStyle}
             >
               {translatedLabel}
               <IconButton
@@ -282,113 +329,121 @@ export function DnDTabLayout({
     }
     return tabs;
   };
-
   return (
-    <Toolbar
-      vertical={vertical}
-      className={cx(
-        relative,
-        general,
-        css({ backgroundColor: themeVar.colors.BackgroundColor }),
-      )}
-    >
-      <Toolbar.Header
-        className={cx(header, {
-          [childrenHeaderStyle]: areChildren !== undefined && areChildren,
-          [headerStyle]: !areChildren,
-        })}
+    <>
+      <Toolbar
+        vertical={vertical}
+        className={cx(
+          relative,
+          general,
+          css({ backgroundColor: themeVar.colors.BackgroundColor }),
+        )}
       >
-        <div ref={dropTabs} className={cx(flex, grow, autoScroll)}>
-          {renderTabs()}
-          {selectItems && Object.keys(selectItems).length > 0 && (
-            <CustomTab
-              key={'-1'}
-              className={cx({
-                [childrenPlusTabStyle]:
-                  areChildren !== undefined && areChildren,
-                [plusTabStyle]: !areChildren,
-              })}
-            >
-              <DropMenu
-                items={Object.keys(selectItems).map(label => {
-                  const translatedOrUndefLabel =
-                    i18nTabsNames.tabsNames[
-                      label as keyof EditorTabsTranslations['tabsNames']
-                    ];
-                  const translatedLabel = translatedOrUndefLabel
-                    ? translatedOrUndefLabel
-                    : label;
-                  return {
-                    label: translatedLabel,
-                    value: label,
-                  };
+        <Toolbar.Header
+          className={cx(header, {
+            [childrenHeaderStyle]: areChildren !== undefined && areChildren,
+            [headerStyle]: !areChildren,
+          })}
+        >
+          <div ref={dropTabs} className={cx(flex, grow, autoScroll)}>
+            {renderTabs()}
+            {selectItems && Object.keys(selectItems).length > 0 && (
+              <CustomTab
+                key={'-1'}
+                className={cx({
+                  [childrenPlusTabStyle]:
+                    areChildren !== undefined && areChildren,
+                  [plusTabStyle]: !areChildren,
                 })}
-                icon="plus"
-                onSelect={i => {
-                  onSelect && onSelect(i.value);
-                  onNewTab(String(i.value));
-                }}
-              />
-            </CustomTab>
-          )}
-        </div>
-      </Toolbar.Header>
-      <Toolbar.Content className={cx(relative, content)}>
-        <div className={cx(expandBoth, hideOverflow)}>
-          <div className={cx(autoScroll, absoute, expandBoth, flex)}>
-            {defaultActiveLabel && components[defaultActiveLabel] && (
-              <Reparentable
-                id={defaultActiveLabel}
-                innerClassName={cx(flex, expandBoth)}
-                outerClassName={expandBoth}
               >
-                <React.Suspense
-                  fallback={
-                    <div className={MediumPadding}>{i18nValues.loading}...</div>
-                  }
-                >
-                  {components[defaultActiveLabel]}
-                </React.Suspense>
-              </Reparentable>
+                <DropMenu
+                  items={Object.keys(selectItems).map(label => {
+                    const translatedOrUndefLabel =
+                      i18nTabsNames.tabsNames[
+                        label as keyof EditorTabsTranslations['tabsNames']
+                      ];
+                    const translatedLabel = translatedOrUndefLabel
+                      ? translatedOrUndefLabel
+                      : label;
+                    return {
+                      label: translatedLabel,
+                      value: label,
+                    };
+                  })}
+                  icon="plus"
+                  onSelect={i => {
+                    onSelect && onSelect(i.value);
+                    onNewTab(String(i.value));
+                  }}
+                />
+              </CustomTab>
             )}
           </div>
-          {(dropLeftProps.canDrop ||
-            dropRightProps.canDrop ||
-            dropTopProps.canDrop ||
-            dropBottomProps.canDrop) && (
-            <div className={cx(absoute, expandBoth)}>
-              <div
-                ref={dropLeft}
-                className={cx(
-                  dropLeftZone,
-                  dropLeftProps.isOver && dropZoneFocus,
-                )}
+        </Toolbar.Header>
+        <Toolbar.Content className={cx(relative, content)}>
+          <div className={cx(expandBoth, hideOverflow)}>
+            {!show && (
+              <Content
+                components={components}
+                defaultActiveLabel={defaultActiveLabel}
+                loading={i18nValues.loading}
               />
-              <div
-                ref={dropRight}
-                className={cx(
-                  dropRightZone,
-                  dropRightProps.isOver && dropZoneFocus,
-                )}
-              />
-              <div
-                ref={dropTop}
-                className={cx(
-                  dropTopZone,
-                  dropTopProps.isOver && dropZoneFocus,
-                )}
-              />
-              <div
-                ref={dropBottom}
-                className={cx(
-                  dropBottomZone,
-                  dropBottomProps.isOver && dropZoneFocus,
-                )}
-              />
+            )}
+            {(dropLeftProps.canDrop ||
+              dropRightProps.canDrop ||
+              dropTopProps.canDrop ||
+              dropBottomProps.canDrop) && (
+              <div className={cx(absoute, expandBoth)}>
+                <div
+                  ref={dropLeft}
+                  className={cx(
+                    dropLeftZone,
+                    dropLeftProps.isOver && dropZoneFocus,
+                  )}
+                />
+                <div
+                  ref={dropRight}
+                  className={cx(
+                    dropRightZone,
+                    dropRightProps.isOver && dropZoneFocus,
+                  )}
+                />
+                <div
+                  ref={dropTop}
+                  className={cx(
+                    dropTopZone,
+                    dropTopProps.isOver && dropZoneFocus,
+                  )}
+                />
+                <div
+                  ref={dropBottom}
+                  className={cx(
+                    dropBottomZone,
+                    dropBottomProps.isOver && dropZoneFocus,
+                  )}
+                />
+              </div>
+            )}
+          </div>
+        </Toolbar.Content>
+      </Toolbar>
+      {show && (
+        <div
+          className={fullScreenContentContainerStyle}>
+          <div className={cx(modalContentStyle,
+            css({height: '100%', position: 'relative'}))}>
+            <div className={modalCloseDivStyle} onClick={() => {show && setShow(false)}}>
+              <IconComp icon="times" />
             </div>
-          )}
+            <Content
+              components={components}
+              defaultActiveLabel={defaultActiveLabel}
+              loading={i18nValues.loading}
+            />
+          </div>
         </div>
-      </Toolbar.Content>
-    </Toolbar>
+      )}
+      {/* Créer une div qui reprend les fonctionnalités dre useModal. */}
+    </>
   );
 }

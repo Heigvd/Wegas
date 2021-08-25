@@ -1052,7 +1052,9 @@ export function MainLinearLayout<T extends ComponentMap>({
 
   return (
     <ReparentableRoot>
-      <div className={cx(flex, grow, expandHeight)}>{renderLayouts()}</div>
+      <div className={cx(flex, grow, expandHeight,
+      /* Do not delete this min-height: 0. It forces the content to respect parent height */
+        css({minHeight: 0}))}>{renderLayouts()}</div>
     </ReparentableRoot>
   );
 }

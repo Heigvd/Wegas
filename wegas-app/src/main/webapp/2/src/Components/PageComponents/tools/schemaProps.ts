@@ -23,6 +23,7 @@ import { CustomScriptProps } from '../../../Editor/Components/FormView/CustomScr
 import { IAbstractContentDescriptor, IScript } from 'wegas-ts-api';
 import { ScriptableStringProps } from '../../../Editor/Components/FormView/ScriptableString';
 import { ScriptableBooleanProps } from '../../../Editor/Components/FormView/ScriptableBoolean';
+import * as React from 'react';
 
 type TypedProps<T extends { view: {} }> = Schema<
   T['view'] & {
@@ -583,7 +584,7 @@ const simpleSchemaProps = {
     highlight = true,
     sortable = true,
     borderTop,
-    noMarginTop,
+    controls,
   }: {
     itemSchema: {};
     userOnChildAdd?: (value?: {}) => {};
@@ -591,7 +592,8 @@ const simpleSchemaProps = {
     itemType?: TYPESTRING;
     highlight?: boolean;
     sortable?: boolean;
-  } & CommonSchemaProps): TypedProps<IArrayProps> => ({
+    controls?: React.ReactNode;
+  } & Omit<CommonSchemaProps, "noMarginTop">): TypedProps<IArrayProps> => ({
     required,
     items: {
       properties: itemSchema,
@@ -602,7 +604,6 @@ const simpleSchemaProps = {
     index,
     view: {
       borderTop,
-      noMarginTop,
       index,
       featureLevel,
       label,
@@ -611,6 +612,7 @@ const simpleSchemaProps = {
       highlight,
       sortable,
       userOnChildAdd,
+      controls,
     },
   }),
   statement: ({

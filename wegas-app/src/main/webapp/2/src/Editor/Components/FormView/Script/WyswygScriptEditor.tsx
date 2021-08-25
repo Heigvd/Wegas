@@ -4,8 +4,6 @@ import { Statement, expressionStatement, booleanLiteral } from '@babel/types';
 import { emptyStatement } from '@babel/types';
 import Form from 'jsoninput';
 import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
-import { css } from 'emotion';
-import { themeVar } from '../../../../Components/Theme/ThemeVars';
 import generate from '@babel/generator';
 import { parse } from '@babel/parser';
 
@@ -27,12 +25,14 @@ function forceEmptyExpressions(
 interface WyswygScriptEditorProps extends ScriptView {
   expressions: Statement[] | null;
   onChange: (script: Statement[]) => void;
+  controls?: React.ReactNode;
 }
 
 export function WyswygScriptEditor({
   expressions,
   onChange,
   mode,
+  controls,
 }: WyswygScriptEditorProps) {
   // These state and effect are here just to avoid loosing focus when changes occures
   const [expr, setExpr] = React.useState(expressions);
@@ -41,13 +41,14 @@ export function WyswygScriptEditor({
   }, [expressions]);
 
   return (
-    <div className={css({border: `1px solid ${themeVar.colors.DisabledColor}`})}>
+    <>
       <Form
         schema={{
           description: 'multipleStatementForm',
           view: {noMarginTop: true},
           properties: {
             statements: schemaProps.array({
+              controls,
               itemSchema: {
                 statement: schemaProps.statement({ required: true, mode, noMarginTop: true }),
               },
@@ -74,6 +75,6 @@ export function WyswygScriptEditor({
           onChange(cleanValue);
         }}
       />
-    </div>
+    </>
   );
 }

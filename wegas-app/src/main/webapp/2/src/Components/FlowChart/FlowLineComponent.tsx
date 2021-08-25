@@ -35,6 +35,7 @@ export function ArrowDefs() {
         orient="auto"
         fill="transparent"
         stroke="rgb(128, 127, 127)"
+        className={hoverLineStyle}
       >
         <polyline points="0 0, 6 5, 0 10" />
       </marker>
@@ -49,19 +50,6 @@ export function ArrowDefs() {
         stroke="transparent"
       >
         <polygon points="0 0, 6 5, 0 10" />
-      </marker>
-
-      <marker
-        id="arrowtail"
-        markerWidth="15"
-        markerHeight="15"
-        refX="5"
-        refY="10"
-        orient="auto"
-        fill="rgb(128, 127, 127)"
-        stroke="transparent"
-      >
-        <circle cx="10" cy="10" r="5" />
       </marker>
       <marker
         id="selectedarrowtail"
@@ -83,6 +71,12 @@ const arrowCSS = (zoom: number) => ({
   stroke: 'rgb(128,127,127)',
   strokeWidth: 2 * zoom,
   fill: 'none',
+});
+
+const hoverLineStyle = css({
+'&:hover': {
+  stroke: themeVar.colors.PrimaryColor,
+}
 });
 
 export interface FlowLineProps {
@@ -433,8 +427,9 @@ export function StraitFlowLine({
     <line
       {...flowlineValues}
       {...arrowCSS(zoom)}
-      markerStart={`url(#${selected ? 'selectedarrowtail' : 'arrowtail'})`}
+      markerStart={`url(#${selected ? 'selectedarrowtail' : ''})`}
       markerEnd={`url(#${selected ? 'selectedarrowhead' : 'arrowhead'})`}
+      className={hoverLineStyle}
     />
   );
 }
@@ -526,7 +521,7 @@ export function CircularFlowLine({
         canvasLeft + (processBox.width * 4) / 3
       } ${canvasTop}`}
       {...arrowCSS(zoom)}
-      markerStart={`url(#${selected ? 'selectedarrowtail' : 'arrowtail'})`}
+      markerStart={`url(#${selected ? 'selectedarrowtail' : ''})`}
       markerEnd={`url(#${selected ? 'selectedarrowhead' : 'arrowhead'})`}
     />
   );
@@ -611,7 +606,7 @@ export function TempFlowLine({
       x2={endX}
       y2={endY}
       {...arrowCSS(zoom)}
-      markerStart={`url(#arrowtail)`}
+      //markerStart={`url(#arrowtail)`}
       markerEnd={`url(#arrowhead)`}
     />
   );
