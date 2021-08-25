@@ -29,7 +29,8 @@ export const editorTabsTranslationsIT: EditorTabsTranslations = {
     'Translation manager': 'Gestione delle traduzioni',
   },
   stateMachine: {
-    selectVariable: 'Selezionare una variabile da visualizzare',
+    selectVariable:
+      'Selezionare una macchina di stato o un dialogo da visualizzare',
     selectedNotStateMachine:
       'La variabile selezionata non è una specie di macchina di stato',
   },
@@ -78,7 +79,8 @@ export const editorTabsTranslationsIT: EditorTabsTranslations = {
     scriptSaved: 'Lo script viene salvato',
     createLibraryPlease: 'Crea una biblioteca premendo il pulsante +',
     canntoBeParsed: 'Lo script non può essere analizzato',
-    canntoBeParsedCondition: 'Lo script non può essere analizzato come condizione',
+    canntoBeParsedCondition:
+      'Lo script non può essere analizzato come condizione',
   },
   instanceProps: {
     noDescriptorEdited: 'Nessun descrittore è stato modificato',

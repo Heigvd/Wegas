@@ -10,7 +10,7 @@ import {
   grow,
   flex,
   relative,
-  absoute,
+  absolute,
   expandBoth,
   hidden,
   hideOverflow,
@@ -27,8 +27,30 @@ import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { EditorTabsTranslations } from '../../../i18n/editorTabs/definitions';
-import { modalCloseDivStyle, modalContentStyle } from '../../../Components/Modal';
+import {
+  modalCloseDivStyle,
+  modalContentStyle,
+} from '../../../Components/Modal';
 import { IconComp } from '../Views/FontAwesome';
+
+interface FullscreenContext {
+  fullscreen: boolean;
+  setFullscreen: (fullscreen: boolean) => void;
+}
+
+export const fullscreenCTX = React.createContext<FullscreenContext>({
+  fullscreen: false,
+  setFullscreen: () => {},
+});
+
+export function FullscreenProvider({ children }: React.PropsWithChildren<{}>) {
+  const [fullscreen, setFullscreen] = React.useState(false);
+  return (
+    <fullscreenCTX.Provider value={{ fullscreen, setFullscreen }}>
+      {children}
+    </fullscreenCTX.Provider>
+  );
+}
 
 const dropZoneFocus = hatchedBackground;
 
@@ -63,15 +85,15 @@ const dropBottomZone = css({
 const dropTabZone = css({ width: '50px' });
 
 const fullScreenContentContainerStyle = css({
-    top: 0,
-    left: 0,
-    overflow: 'auto',
-    minWidth: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    zIndex: 1000,
-    position: 'fixed',
-    padding: '1.5em',
+  top: 0,
+  left: 0,
+  overflow: 'auto',
+  minWidth: '100%',
+  height: '100%',
+  backgroundColor: 'rgba(0,0,0,0.2)',
+  zIndex: 1000,
+  position: 'fixed',
+  padding: '1.5em',
 });
 
 export interface ComponentMap {
@@ -97,15 +119,17 @@ export type DropAction = (item: { label: string; type: string }) => void;
  * @param action - the action to do when an element is dropped
  *
  */
-export const dropSpecsFactory = (action: DropAction, layoutAccept: string) => {
+export const dropSpecsFactory = (action: DropAction, dndAcceptType: string) => {
   return {
-    accept: layoutAccept,
+    accept: dndAcceptType,
     canDrop: () => true,
     drop: action,
-    collect: (mon: DropTargetMonitor) => ({
-      isOver: mon.isOver(),
-      canDrop: mon.canDrop(),
-    }),
+    collect: (mon: DropTargetMonitor) => {
+      return {
+        isOver: mon.isOver(),
+        canDrop: mon.canDrop(),
+      };
+    },
   };
 };
 export interface ClassNames {
@@ -179,9 +203,9 @@ interface TabLayoutProps {
    */
   onNewTab: (label: string) => void;
   /**
-   * layoutId - The token that filter the drop actions
+   * dndAcceptType - The token that filter the drop actions
    */
-  layoutId: string;
+  dndAcceptType: string;
   /**
    * The tab component to use in this layout
    */
@@ -209,7 +233,7 @@ export function DnDTabLayout({
   onDropTab,
   onDeleteTab,
   onNewTab,
-  layoutId,
+  dndAcceptType,
   CustomTab = Tab,
   classNames = {},
   areChildren,
@@ -217,7 +241,17 @@ export function DnDTabLayout({
   const { general, header, content } = classNames;
   const i18nValues = useInternalTranslate(commonTranslations);
   const i18nTabsNames = useInternalTranslate(editorTabsTranslations);
-  const [show, setShow] = React.useState(false);
+  const { setFullscreen } = React.useContext(fullscreenCTX);
+  const [show, setShowState] = React.useState(false);
+
+  const setShow = React.useCallback(
+    (show: boolean) => {
+      setShowState(show);
+      setFullscreen(show);
+    },
+    [setFullscreen],
+  );
+
   const showModal = function () {
     setShow(true);
   };
@@ -235,19 +269,19 @@ export function DnDTabLayout({
 
   // DnD hooks (for dropping tabs on the side of the layout)
   const [dropLeftProps, dropLeft] = useDrop(
-    dropSpecsFactory(onDrop('LEFT'), layoutId),
+    dropSpecsFactory(onDrop('LEFT'), dndAcceptType),
   );
   const [dropRightProps, dropRight] = useDrop(
-    dropSpecsFactory(onDrop('RIGHT'), layoutId),
+    dropSpecsFactory(onDrop('RIGHT'), dndAcceptType),
   );
   const [dropTopProps, dropTop] = useDrop(
-    dropSpecsFactory(onDrop('TOP'), layoutId),
+    dropSpecsFactory(onDrop('TOP'), dndAcceptType),
   );
   const [dropBottomProps, dropBottom] = useDrop(
-    dropSpecsFactory(onDrop('BOTTOM'), layoutId),
+    dropSpecsFactory(onDrop('BOTTOM'), dndAcceptType),
   );
   const [dropTabsProps, dropTabs] = useDrop({
-    accept: layoutId,
+    accept: dndAcceptType,
     canDrop: () => true,
     collect: (mon: DropTargetMonitor) => ({
       isOver: mon.isOver(),
@@ -284,7 +318,7 @@ export function DnDTabLayout({
               position: 'left',
               overviewNode: <div className={dropTabZone}></div>,
             }}
-            layoutId={layoutId}
+            dndAcceptType={dndAcceptType}
             CustomTab={CustomTab}
           >
             <DragTab
@@ -297,7 +331,7 @@ export function DnDTabLayout({
               onDoubleClick={() => {
                 showModal();
               }}
-              layoutId={layoutId}
+              dndAcceptType={dndAcceptType}
               CustomTab={CustomTab}
               isChild={areChildren}
             >
@@ -329,6 +363,7 @@ export function DnDTabLayout({
     }
     return tabs;
   };
+
   return (
     <>
       <Toolbar
@@ -393,7 +428,10 @@ export function DnDTabLayout({
               dropRightProps.canDrop ||
               dropTopProps.canDrop ||
               dropBottomProps.canDrop) && (
-              <div className={cx(absoute, expandBoth)}>
+              <div
+                style={{ top: 0, left: 0 }}
+                className={cx(absolute, expandBoth)}
+              >
                 <div
                   ref={dropLeft}
                   className={cx(
@@ -428,11 +466,19 @@ export function DnDTabLayout({
         </Toolbar.Content>
       </Toolbar>
       {show && (
-        <div
-          className={fullScreenContentContainerStyle}>
-          <div className={cx(modalContentStyle,
-            css({height: '100%', position: 'relative'}))}>
-            <div className={modalCloseDivStyle} onClick={() => {show && setShow(false)}}>
+        <div className={fullScreenContentContainerStyle}>
+          <div
+            className={cx(
+              modalContentStyle,
+              css({ height: '100%', position: 'relative' }),
+            )}
+          >
+            <div
+              className={modalCloseDivStyle}
+              onClick={() => {
+                show && setShow(false);
+              }}
+            >
               <IconComp icon="times" />
             </div>
             <Content

@@ -37,6 +37,7 @@ import { classNameOrEmpty } from '../../Helper/className';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { RawEditorSettings } from 'tinymce/tinymce';
 import { inputDefaultCSS, inputStyleCSS } from '../Inputs/SimpleInput';
+import { ErrorBoundary } from '../../Editor/Components/ErrorBoundary';
 
 const toolbar = css({
   width: '300px',
@@ -339,7 +340,6 @@ export default function HTMLEditor({
   }, []);
 
   const toolBarId = 'externalEditorToolbar' + String(HTMLEditorID++);
-
   return (
     <div
       className={editorStyle + classNameOrEmpty(className)}
@@ -366,22 +366,28 @@ export default function HTMLEditor({
             )}
           </div>
         )}
-        <TinyEditor
-          value={keepInternalValue ? internalValue : value}
-          init={config(toolBarId)}
-          onInit={editor => {
-            HTMLEditor.current = editor.target;
-          }}
-          onEditorChange={v => {
-            if (value !== v) {
-              onChange && onChange(v);
-            }
-            setInternalValue(v);
-          }}
-          onFocus={() => setEditorFocus(true)}
-          onBlur={() => setEditorFocus(false)}
-          disabled={disabled}
-        />
+        <ErrorBoundary>
+          <TinyEditor
+            value={keepInternalValue ? internalValue : value}
+            init={config(toolBarId)}
+            onInit={editor => {
+              HTMLEditor.current = editor.target;
+            }}
+            onEditorChange={v => {
+              if (
+                value !== v &&
+                !(value === '<p></p>' && v === '') &&
+                !(value === '' && v === '<p></p>')
+              ) {
+                onChange && onChange(v);
+              }
+              setInternalValue(v);
+            }}
+            onFocus={() => setEditorFocus(true)}
+            onBlur={() => setEditorFocus(false)}
+            disabled={disabled}
+          />
+        </ErrorBoundary>
       </div>
       {fileBrowsing.fn && (
         <Modal>

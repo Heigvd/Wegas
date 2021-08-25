@@ -73,9 +73,9 @@ interface DragTabProps extends TabProps {
    */
   onDrag?: (label: string) => void;
   /**
-   * layoutId - The token that filter the drop actions
+   * dndAcceptType - The token that filter the drop actions
    */
-  layoutId: string;
+  dndAcceptType: string;
   /**
    * The tab component to use in this component
    */
@@ -94,7 +94,7 @@ interface DnDItem {
 
 export function DragTab({
   label,
-  layoutId,
+  dndAcceptType,
   active,
   children,
   className,
@@ -107,7 +107,7 @@ export function DragTab({
   const [, drag] = useDrag<DnDItem, unknown, unknown>({
     item: {
       label: label,
-      type: layoutId,
+      type: dndAcceptType,
       children: children,
     },
     begin: () => onDrag && onDrag(label),
@@ -153,9 +153,9 @@ export interface DropTabProps extends TabProps {
     overviewNode: React.ReactNode;
   };
   /**
-   * layoutId - The token that filter the drop actions
+   * dndAcceptType - The token that filter the drop actions
    */
-  layoutId: string;
+  dndAcceptType: string;
   /**
    * The tab component to use in this component
    */
@@ -163,7 +163,7 @@ export interface DropTabProps extends TabProps {
 }
 
 export function DropTab({
-  layoutId,
+  dndAcceptType,
   active,
   children,
   className,
@@ -174,7 +174,7 @@ export function DropTab({
   CustomTab = Tab,
 }: DropTabProps) {
   const [dropTabProps, dropTab] = useDrop({
-    accept: layoutId,
+    accept: dndAcceptType,
     canDrop: () => true,
     drop: onDrop,
     collect: (mon: DropTargetMonitor) => ({

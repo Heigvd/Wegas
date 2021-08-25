@@ -449,10 +449,12 @@ function globalStateSelector(s: RState) {
 
 interface ConnectedStateMachineEditorProps extends DisabledReadonly {
   localDispatch?: StoreDispatch;
+  forceLocalDispatch?: boolean;
 }
 
 export function ConnectedStateMachineEditor({
   localDispatch,
+  forceLocalDispatch,
   ...options
 }: ConnectedStateMachineEditorProps) {
   const globalState = useStore(globalStateSelector);
@@ -476,9 +478,10 @@ export function ConnectedStateMachineEditor({
     return (
       <div className={grow}>
         <StateMachineEditor
+          localDispatch={localDispatch}
+          forceLocalDispatch={forceLocalDispatch}
           stateMachine={globalState.descriptor}
           stateMachineInstance={globalState.instance}
-          localDispatch={localDispatch}
           search={globalState.search}
           editPath={globalState.editPath}
           {...options}

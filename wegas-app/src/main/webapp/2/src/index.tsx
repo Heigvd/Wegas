@@ -12,6 +12,7 @@ import './css/global.css';
 import './data/Stores/store';
 import Layout from './Editor/Components/Layout';
 import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
+import { FullscreenProvider } from './Editor/Components/LinearTabLayout/DnDTabLayout';
 // import * as less from 'less';
 // import { wlog } from '../Helper/wegaslog';
 
@@ -54,19 +55,21 @@ importPageComponents();
 function mount() {
   render(
     <FeaturesProvider>
-      <LanguagesProvider>
-        <ClassesProvider>
-          <LibrariesLoader>
-            <RoleProvider>
-              <ThemeProvider contextName="editor">
-                <PopupManager>
-                  <Layout />
-                </PopupManager>
-              </ThemeProvider>
-            </RoleProvider>
-          </LibrariesLoader>
-        </ClassesProvider>
-      </LanguagesProvider>
+      <FullscreenProvider>
+        <LanguagesProvider>
+          <ClassesProvider>
+            <LibrariesLoader>
+              <RoleProvider>
+                <ThemeProvider contextName="editor">
+                  <PopupManager>
+                    <Layout />
+                  </PopupManager>
+                </ThemeProvider>
+              </RoleProvider>
+            </LibrariesLoader>
+          </ClassesProvider>
+        </LanguagesProvider>
+      </FullscreenProvider>
     </FeaturesProvider>,
     document.getElementById('root'),
   );

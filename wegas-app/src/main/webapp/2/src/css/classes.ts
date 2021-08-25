@@ -29,7 +29,7 @@ export const hiddenImportant = css({
 export const relative = css({
   position: 'relative',
 });
-export const absoute = css({
+export const absolute = css({
   position: 'absolute',
 });
 

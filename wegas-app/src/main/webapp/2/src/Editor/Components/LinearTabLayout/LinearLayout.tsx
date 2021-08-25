@@ -830,7 +830,7 @@ interface LinearLayoutProps<T extends ComponentMap> {
    */
   initialLayout?: LayoutItems<T>;
   /**
-   * layoutId - The token that filter the drop actions
+   * dndAcceptType - The token that filter the drop actions
    */
   layoutId: string;
   /**
@@ -973,7 +973,7 @@ export function MainLinearLayout<T extends ComponentMap>({
               onNewTab={onNewTab(currentLayoutKey)}
               defaultActiveLabel={currentLayout.defaultActive}
               onSelect={onSelect}
-              layoutId={layoutId}
+              dndAcceptType={layoutId}
               CustomTab={CustomTab}
               classNames={classNames}
               areChildren={areChildren}
@@ -1039,7 +1039,7 @@ export function MainLinearLayout<T extends ComponentMap>({
               onDeleteTab={onDeleteTab}
               onNewTab={onNewTab(currentLayoutKey)}
               onSelect={onSelect}
-              layoutId={layoutId}
+              dndAcceptType={layoutId}
               CustomTab={CustomTab}
               classNames={classNames}
               areChildren={areChildren}
@@ -1052,9 +1052,17 @@ export function MainLinearLayout<T extends ComponentMap>({
 
   return (
     <ReparentableRoot>
-      <div className={cx(flex, grow, expandHeight,
-      /* Do not delete this min-height: 0. It forces the content to respect parent height */
-        css({minHeight: 0}))}>{renderLayouts()}</div>
+      <div
+        className={cx(
+          flex,
+          grow,
+          expandHeight,
+          /* Do not delete this min-height: 0. It forces the content to respect parent height */
+          css({ minHeight: 0 }),
+        )}
+      >
+        {renderLayouts()}
+      </div>
     </ReparentableRoot>
   );
 }

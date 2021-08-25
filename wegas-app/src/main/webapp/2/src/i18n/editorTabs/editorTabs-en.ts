@@ -29,7 +29,7 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     'Translation manager': 'Translation manager',
   },
   stateMachine: {
-    selectVariable: 'Select a variable to display',
+    selectVariable: 'Select a state-machine or a dialogue to display',
     selectedNotStateMachine:
       'The selected variable is not some kind of state machine',
   },
@@ -175,5 +175,5 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     toggleCoding: 'Toggle coding console',
     runScripts: 'Run scripts',
     deleteGroup: 'Delete this group',
-  }
+  },
 };

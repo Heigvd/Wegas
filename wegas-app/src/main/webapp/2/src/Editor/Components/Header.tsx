@@ -61,6 +61,7 @@ const hideHeaderStyle = css({
 const showHeaderStyle = css({
   maxHeight: '200px',
   opacity: 1,
+  overflow: 'hidden',
   padding: '2em 0',
   transition: 'all .8s ease',
 });

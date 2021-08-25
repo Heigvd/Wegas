@@ -29,7 +29,8 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
     'Translation manager': 'Übersetzungsmanager',
   },
   stateMachine: {
-    selectVariable: 'Wählen Sie eine Variable zur Anzeige aus',
+    selectVariable:
+      'Wählen Sie eine Statusmaschine oder einen Dialog zur Anzeige',
     selectedNotStateMachine:
       'Die ausgewählte Variable ist keine Art von Zustandsmaschine',
   },
@@ -80,8 +81,9 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
     scriptSaved: 'Das Skript wird gespeichert',
     createLibraryPlease:
       'Bitte legen Sie eine Bibliothek an, indem Sie die Taste + drücken',
-      canntoBeParsed: 'Das Skript kann nicht geparst werden',
-    canntoBeParsedCondition: 'Das Skript kann nicht als Bedingung geparst werden',
+    canntoBeParsed: 'Das Skript kann nicht geparst werden',
+    canntoBeParsedCondition:
+      'Das Skript kann nicht als Bedingung geparst werden',
   },
   instanceProps: {
     noDescriptorEdited: 'Es wird kein Deskriptor bearbeitet',
@@ -179,6 +181,6 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
   variableProperties: {
     toggleCoding: 'Kodierkonsole umschalten',
     runScripts: 'Skripte ausführen',
-    deleteGroup: 'Diese Gruppe löschen'
-  }
+    deleteGroup: 'Diese Gruppe löschen',
+  },
 };

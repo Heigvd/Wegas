@@ -70,6 +70,8 @@ function scenaristPagesSelector(s: State) {
 }
 
 export default function Layout() {
+  const timer = React.useRef<NodeJS.Timeout | undefined>();
+  const [loading, setLoading] = React.useState(true);
   const { currentRole } = React.useContext(roleCTX);
   const i18nValues = useInternalTranslate(commonTranslations);
   const scenaristPages: ComponentMap = useStore(scenaristPagesSelector).reduce(
@@ -88,7 +90,6 @@ export default function Layout() {
   })
     .filter(([t]) => allowedPages === true || allowedPages.includes(t))
     .reduce((o, [k, v]) => ({ ...o, [k]: v }), {});
-  const loading = Object.keys(layoutPages).length === 0;
   const initTabs = ['Variables', 'Files', 'Page Editor'];
   const allowedInitTabs = initTabs.filter(
     t => allowedPages === true || allowedPages.includes(t),
@@ -97,6 +98,20 @@ export default function Layout() {
   const initialLayout = (
     allowedInitTabs.length > 0 ? allowedInitTabs : allowedInitTabs.slice(0)
   ) as (keyof typeof layoutPages)[];
+
+  React.useEffect(() => {
+    if (timer.current != null) {
+      clearTimeout(timer.current);
+    }
+    timer.current = setTimeout(() => {
+      setLoading(Object.keys(layoutPages).length === 0);
+    }, 2500);
+    return () => {
+      if (timer.current != null) {
+        clearTimeout(timer.current);
+      }
+    };
+  }, [layoutPages]);
 
   if (loading) {
     return <pre>{i18nValues.loading + '...'}</pre>;
