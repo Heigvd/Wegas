@@ -91,7 +91,7 @@ const handleForTransition = css({
   },
   '&:active': {
     cursor: 'grabbing',
-  }
+  },
 });
 const stateMoreInfosStyle = css({
   position: 'absolute',
@@ -178,21 +178,14 @@ export function StateBox({
         <div className={indexTagStyle}>
           <p>{state.id}</p>
         </div>
-        {/*  {/* {state.isDialogBox && (
-        <div className="speakerImg">
-          <img src="" alt="" />
-        </div>
-        )} */}
-        <div>
-          <p className="StateLabelTextStyle">
-            <HTMLText
-              text={
-                (entityIs(state.state, 'State')
-                  ? state.state.label
-                  : translate(state.state.text, lang)) || 'Empty'
-              }
-            />
-          </p>
+        <div className="StateLabelTextStyle">
+          <HTMLText
+            text={
+              (entityIs(state.state, 'State')
+                ? state.state.label
+                : translate(state.state.text, lang)) || 'Empty'
+            }
+          />
         </div>
         {isActionAllowed({ readOnly, disabled }) && (
           <StateProcessHandle sourceProcess={state} />
@@ -236,7 +229,9 @@ export function StateProcessHandle<F extends FlowLine, P extends Process<F>>({
       processes: { sourceProcess },
     },
   });
-  return <div ref={drag} className={handleForTransition} data-nodrag={true}>
-              <IconComp icon="project-diagram" />
-         </div>;
+  return (
+    <div ref={drag} className={handleForTransition} data-nodrag={true}>
+      <IconComp icon="project-diagram" />
+    </div>
+  );
 }

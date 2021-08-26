@@ -237,20 +237,6 @@ export function StateMachineEditor<
 
   const updateStatePosition = React.useCallback(
     (sourceState: StateProcess, position: XYPosition, e: MouseEvent) => {
-      // const newStateMachine = produce((stateMachine: IFSM) => {
-      //   stateMachine.states[Number(sourceState.id)].x =
-      //     position.x >= 10 ? position.x : 10;
-      //   stateMachine.states[Number(sourceState.id)].y =
-      //     position.y >= 10 ? position.y : 10;
-      // })(stateMachine);
-      // onStateClick(e, sourceState);
-      // dispatch(
-      //   Actions.VariableDescriptorActions.updateDescriptor(
-      //     newStateMachine,
-      //     false,
-      //   ),
-      // );
-
       const state = store.getState();
 
       const currentState =
