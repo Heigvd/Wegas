@@ -11,7 +11,7 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     Styles: 'Styles',
     Client: 'Client',
     Server: 'Server',
-    'Language Editor': 'Language Editor',
+    Languages: 'Language Editor',
     'Client Console': 'Client Console',
     'Server Console': 'Server Console',
     'Instances Editor': 'Instances Editor',
@@ -25,9 +25,11 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     'Pages Layout': 'Pages Layout',
     'Source Editor': 'Source Editor',
     'Component Properties': 'Component Properties',
+    'Language editor': 'Language editor',
+    'Translation manager': 'Translation manager',
   },
   stateMachine: {
-    selectVariable: 'Select a variable to display',
+    selectVariable: 'Select a state-machine or a dialogue to display',
     selectedNotStateMachine:
       'The selected variable is not some kind of state machine',
   },
@@ -75,6 +77,8 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     scriptNotSaved: 'The script is not saved',
     scriptSaved: 'The script is saved',
     createLibraryPlease: 'Please create a library by pressing the + button',
+    canntoBeParsed: 'The script cannot be parsed',
+    canntoBeParsedCondition: 'The script cannot be parsed as a condition',
   },
   instanceProps: {
     noDescriptorEdited: 'No descriptor is beeing edited',
@@ -87,6 +91,7 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     theme: t => `Theme: ${t}`,
     themeName: 'Theme Name',
     addTheme: 'Add a theme',
+    deleteTheme: 'Delete theme',
     modeAlreadyExists: 'The mode already exists',
     mode: m => `Mode: ${m}`,
     modeName: 'Mode name',
@@ -102,6 +107,8 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     someText: 'Some text',
     clickMe: 'Click me',
     nextMode: 'Next mode : ',
+    deleteMode: 'Delete mode',
+    setMainMode: 'Set as main mode',
     states: state => {
       if (state === 'disabled') return 'Disabled';
       else if (state === 'readOnly') return 'Read only';
@@ -163,5 +170,10 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
   },
   languageEditor: {
     languages: 'Languages',
+  },
+  variableProperties: {
+    toggleCoding: 'Toggle coding console',
+    runScripts: 'Run scripts',
+    deleteGroup: 'Delete this group',
   },
 };

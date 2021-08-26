@@ -63,6 +63,7 @@ registerComponent(
     componentType: 'Input',
     name: 'File input',
     icon: 'image',
+    illustration: 'fileInput',
     schema: {
       onVariableChange: onVariableChangeSchema('On file click actions'),
       pathScript: schemaProps.path({

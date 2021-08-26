@@ -89,6 +89,7 @@ registerComponent(
     componentType: 'Layout',
     name: PAGE_LOADER_COMPONENT_TYPE,
     icon: 'window-maximize',
+    illustration: 'pageLoader',
     schema: {
       initialSelectedPageId: schemaProps.pageSelect({ label: 'Page' }),
       loadTimer: schemaProps.number({ label: 'Loading timer (ms)' }),

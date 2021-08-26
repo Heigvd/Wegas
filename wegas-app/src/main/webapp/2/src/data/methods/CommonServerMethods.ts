@@ -18,6 +18,7 @@ export const commonServerMethods: ServerGlobalObject = {
             content: {
               type: 'string',
               view: {
+                label: 'Popup content',
                 type: 'html',
               },
             },
@@ -72,4 +73,44 @@ export const commonServerMethods: ServerGlobalObject = {
       ],
     },
   },
+  /**
+   * Test methods
+   */
+  // Test: {
+  //   sendMail: {
+  //     '@class': 'ServerGlobalMethod',
+  //     label: 'Send mail',
+  //     parameters: [
+  //       {
+  //         type: 'object',
+  //         required: true,
+  //         view: { label: 'To', type: 'i18nstring' },
+  //       },
+  //       {
+  //         type: 'object',
+  //         required: false,
+  //         view: { label: 'Subject', type: 'i18nstring' },
+  //       },
+  //       {
+  //         type: 'object',
+  //         required: false,
+  //         view: { label: 'MEssage', type: 'i18nhtml' },
+  //       },
+  //     ],
+  //   },
+  //   trad: {
+  //     '@class': 'ServerGlobalMethod',
+  //     label: 'Test trad',
+  //     parameters: [
+  //       {
+  //         type: 'string',
+  //         view: { label: 'String', type: 'string' },
+  //       },
+  //       {
+  //         type: 'object',
+  //         view: { label: 'I18n', type: 'i18nstring' },
+  //       },
+  //     ],
+  //   },
+  // },
 };

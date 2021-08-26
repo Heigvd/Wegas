@@ -24,12 +24,11 @@ export const transitionBoxStyle = css({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  padding: '20px 10px 20px 10px',
   boxSizing: 'border-box',
+  padding: '4px',
   background: themeVar.colors.PrimaryColor,
-  border: '1px solid transparent',
+  border: '1px solid ' + themeVar.colors.BackgroundColor,
   borderRadius: '8px',
-  boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.25)',
   color: themeVar.colors.LightTextColor,
   flexGrow: 0,
   '&>*': {
@@ -45,22 +44,26 @@ export const transitionBoxStyle = css({
     maxHeight: '30px',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    alignItems: 'center',
   },
 });
 
 export const transitionBoxActionStyle = css({
   cursor: 'pointer',
   '&:hover': {
-    background: themeVar.colors.BackgroundColor,
-    color: themeVar.colors.ActiveColor,
-    borderColor: themeVar.colors.ActiveColor,
+    background: themeVar.colors.ActiveColor,
+    boxShadow: '0px 0px 6px rgba(0, 0, 0, 0.3)',
+    borderColor: 'transparent',
   },
 });
 
 const selectedTransitionBoxStyle = css({
-  background: themeVar.colors.BackgroundColor,
+  background: themeVar.colors.ActiveColor,
   border: '4px solid ' + themeVar.colors.ActiveColor,
-  color: themeVar.colors.ActiveColor,
+  '&:hover': {
+    backgroundColor: themeVar.colors.ActiveColor,
+    border: '4px solid ' + themeVar.colors.ActiveColor,
+  }
 });
 
 const transitionMoreInfosStyle = css({
@@ -119,8 +122,7 @@ export function TransitionBox({
           <img src="" alt="" />
         </div>
         )} */}
-        <div>
-          <p className="StateLabelTextStyle">
+        <div className="StateLabelTextStyle">
             <HTMLText
               text={
                 (entityIs(transition.transition, 'Transition')
@@ -129,8 +131,6 @@ export function TransitionBox({
                 'Empty'
               }
             />
-          </p>
-          <p></p>
         </div>
       </div>
       {isShown &&
@@ -163,9 +163,14 @@ export function TransitionFlowLineComponent({
   readOnly,
   selected,
   position,
+  zoom,
 }: FlowLineComponentProps<TransitionFlowLine, StateProcess>) {
   return (
-    <CustomFlowLineComponent selected={selected} position={position}>
+    <CustomFlowLineComponent
+      selected={selected}
+      position={position}
+      zoom={zoom}
+    >
       <TransitionBox
         transition={flowline}
         onClick={e => onClick && onClick(e, startProcess, flowline)}

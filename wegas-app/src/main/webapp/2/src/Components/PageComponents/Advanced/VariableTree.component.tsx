@@ -5,7 +5,7 @@ import {
   ComponentWithFormFlexValues,
   flexValuesSchema,
 } from '../../../Editor/Components/FormView/ComponentWithForm';
-import { TreeView } from '../../../Editor/Components/Variable/VariableTree';
+import { VariableTreeView } from '../../../Editor/Components/Variable/VariableTreeView';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
 import {
@@ -30,9 +30,8 @@ export default function PlayerVariableTree({
   options,
 }: PlayerVariableTreeProps) {
   const rootDirectory = useScript<SListDescriptor>(list, context);
-  const rootDirectoryId = rootDirectory?.getId();
 
-  return rootDirectoryId == null ? (
+  return rootDirectory == null ? (
     <pre className={className} style={style} id={id}>
       File not found
     </pre>
@@ -45,8 +44,8 @@ export default function PlayerVariableTree({
     >
       {({ localDispatch, localState }) => {
         return (
-          <TreeView
-            variables={[rootDirectoryId]}
+          <VariableTreeView
+            root={rootDirectory.getEntity()}
             noHeader
             noVisibleRoot
             localState={localState}
@@ -67,6 +66,7 @@ registerComponent(
     componentType: 'Advanced',
     name: 'Variable tree',
     icon: 'atom',
+    illustration: 'variableTree',
     schema: {
       list: schemaProps.scriptVariable({
         label: 'Root dir',
@@ -82,5 +82,39 @@ registerComponent(
         overflow: 'auto',
       },
     }),
+  }),
+);
+
+//Obsolete component once named 'File browser'
+registerComponent(
+  pageComponentFactory({
+    component: PlayerVariableTree,
+    componentType: 'Advanced',
+    name: 'File browser',
+    icon: 'atom',
+    illustration: 'fileBrowser',
+    schema: {
+      list: schemaProps.scriptVariable({
+        label: 'Root dir',
+        required: true,
+        returnType: ['SListDescriptor'],
+      }),
+      flexValues: flexValuesSchema,
+    },
+    allowedVariables: ['ListDescriptor'],
+    getComputedPropsFromVariable: v => ({
+      list: createFindVariableScript(v),
+      style: {
+        overflow: 'auto',
+      },
+    }),
+    obsoleteComponent: {
+      keepDisplayingToPlayer: true,
+      isObsolete: oldComponent => oldComponent.type === 'File browser',
+      sanitizer: (oldComponent: WegasComponent) => {
+        oldComponent.type = 'Variable tree';
+        return oldComponent;
+      },
+    },
   }),
 );

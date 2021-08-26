@@ -10,7 +10,7 @@ import {
   grow,
   flex,
   relative,
-  absoute,
+  absolute,
   expandBoth,
   hidden,
   hideOverflow,
@@ -18,15 +18,39 @@ import {
   headerStyle,
   hatchedBackground,
   childrenHeaderStyle,
+  MediumPadding,
 } from '../../../css/classes';
 import { childrenPlusTabStyle, plusTabStyle } from '../../../Components/Tabs';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { EditorTabsTranslations } from '../../../i18n/editorTabs/definitions';
+import {
+  modalCloseDivStyle,
+  modalContentStyle,
+} from '../../../Components/Modal';
+import { IconComp } from '../Views/FontAwesome';
+
+interface FullscreenContext {
+  fullscreen: boolean;
+  setFullscreen: (fullscreen: boolean) => void;
+}
+
+export const fullscreenCTX = React.createContext<FullscreenContext>({
+  fullscreen: false,
+  setFullscreen: () => {},
+});
+
+export function FullscreenProvider({ children }: React.PropsWithChildren<{}>) {
+  const [fullscreen, setFullscreen] = React.useState(false);
+  return (
+    <fullscreenCTX.Provider value={{ fullscreen, setFullscreen }}>
+      {children}
+    </fullscreenCTX.Provider>
+  );
+}
 
 const dropZoneFocus = hatchedBackground;
 
@@ -60,6 +84,18 @@ const dropBottomZone = css({
 
 const dropTabZone = css({ width: '50px' });
 
+const fullScreenContentContainerStyle = css({
+  top: 0,
+  left: 0,
+  overflow: 'auto',
+  minWidth: '100%',
+  height: '100%',
+  backgroundColor: 'rgba(0,0,0,0.2)',
+  zIndex: 1000,
+  position: 'fixed',
+  padding: '1.5em',
+});
+
 export interface ComponentMap {
   [name: string]: React.ReactNode;
 }
@@ -83,15 +119,17 @@ export type DropAction = (item: { label: string; type: string }) => void;
  * @param action - the action to do when an element is dropped
  *
  */
-export const dropSpecsFactory = (action: DropAction, layoutAccept: string) => {
+export const dropSpecsFactory = (action: DropAction, dndAcceptType: string) => {
   return {
-    accept: layoutAccept,
+    accept: dndAcceptType,
     canDrop: () => true,
     drop: action,
-    collect: (mon: DropTargetMonitor) => ({
-      isOver: mon.isOver(),
-      canDrop: mon.canDrop(),
-    }),
+    collect: (mon: DropTargetMonitor) => {
+      return {
+        isOver: mon.isOver(),
+        canDrop: mon.canDrop(),
+      };
+    },
   };
 };
 export interface ClassNames {
@@ -100,6 +138,33 @@ export interface ClassNames {
   content?: string;
 }
 
+function Content({
+  components,
+  defaultActiveLabel,
+  loading,
+}: {
+  components: ComponentMap;
+  defaultActiveLabel: string | undefined;
+  loading: string;
+}) {
+  return (
+    <div className={cx(autoScroll, expandBoth, flex)}>
+      {defaultActiveLabel && components[defaultActiveLabel] && (
+        <Reparentable
+          id={defaultActiveLabel}
+          innerClassName={cx(flex, expandBoth)}
+          outerClassName={expandBoth}
+        >
+          <React.Suspense
+            fallback={<div className={MediumPadding}>{loading}...</div>}
+          >
+            {components[defaultActiveLabel]}
+          </React.Suspense>
+        </Reparentable>
+      )}
+    </div>
+  );
+}
 interface TabLayoutProps {
   /**
    * vertical - the orientation of the tab layout
@@ -138,9 +203,9 @@ interface TabLayoutProps {
    */
   onNewTab: (label: string) => void;
   /**
-   * layoutId - The token that filter the drop actions
+   * dndAcceptType - The token that filter the drop actions
    */
-  layoutId: string;
+  dndAcceptType: string;
   /**
    * The tab component to use in this layout
    */
@@ -168,40 +233,55 @@ export function DnDTabLayout({
   onDropTab,
   onDeleteTab,
   onNewTab,
-  layoutId,
+  dndAcceptType,
   CustomTab = Tab,
   classNames = {},
   areChildren,
 }: TabLayoutProps) {
   const { general, header, content } = classNames;
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
-  const i18nTabsNames = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
+  const i18nTabsNames = useInternalTranslate(editorTabsTranslations);
+  const { setFullscreen } = React.useContext(fullscreenCTX);
+  const [show, setShowState] = React.useState(false);
+
+  const setShow = React.useCallback(
+    (show: boolean) => {
+      setShowState(show);
+      setFullscreen(show);
+    },
+    [setFullscreen],
+  );
+
+  const showModal = function () {
+    setShow(true);
+  };
   React.useEffect(() => {
     if (
       defaultActiveLabel === undefined ||
       (components[defaultActiveLabel] === undefined &&
         Object.keys(components).length > 0)
     ) {
-      onSelect && onSelect(Object.keys(components)[0]);
+      onSelect &&
+        Object.keys(components)[0] != null &&
+        onSelect(Object.keys(components)[0]);
     }
   }, [components, defaultActiveLabel, onSelect]);
 
   // DnD hooks (for dropping tabs on the side of the layout)
   const [dropLeftProps, dropLeft] = useDrop(
-    dropSpecsFactory(onDrop('LEFT'), layoutId),
+    dropSpecsFactory(onDrop('LEFT'), dndAcceptType),
   );
   const [dropRightProps, dropRight] = useDrop(
-    dropSpecsFactory(onDrop('RIGHT'), layoutId),
+    dropSpecsFactory(onDrop('RIGHT'), dndAcceptType),
   );
   const [dropTopProps, dropTop] = useDrop(
-    dropSpecsFactory(onDrop('TOP'), layoutId),
+    dropSpecsFactory(onDrop('TOP'), dndAcceptType),
   );
   const [dropBottomProps, dropBottom] = useDrop(
-    dropSpecsFactory(onDrop('BOTTOM'), layoutId),
+    dropSpecsFactory(onDrop('BOTTOM'), dndAcceptType),
   );
   const [dropTabsProps, dropTabs] = useDrop({
-    accept: layoutId,
+    accept: dndAcceptType,
     canDrop: () => true,
     collect: (mon: DropTargetMonitor) => ({
       isOver: mon.isOver(),
@@ -218,47 +298,54 @@ export function DnDTabLayout({
     const componentsKeys = Object.keys(components);
     for (let i = 0; i < componentsKeys.length; i += 1) {
       const label = componentsKeys[i];
-      const translatedLabel = i18nTabsNames.tabsNames[
-        label as keyof EditorTabsTranslations['tabsNames']
-      ]
-        ? i18nTabsNames.tabsNames[
-            label as keyof EditorTabsTranslations['tabsNames']
-          ]
+      const translatedOrUndefLabel =
+        i18nTabsNames.tabsNames[
+          label as keyof EditorTabsTranslations['tabsNames']
+        ];
+      const translatedLabel = translatedOrUndefLabel
+        ? translatedOrUndefLabel
         : label;
 
       // Always put a dropTab on the left of a tab
-      tabs.push(
-        <DropTab
-          key={label + 'LEFTDROP'}
-          onDrop={onDropTab(i)}
-          disabled={!dropTabsProps.isOver}
-          overview={{
-            position: 'left',
-            overviewNode: <div className={dropTabZone}></div>,
-          }}
-          layoutId={layoutId}
-          CustomTab={CustomTab}
-        >
-          <DragTab
-            key={label}
-            label={label}
-            active={label === defaultActiveLabel}
-            onClick={() => {
-              onSelect && onSelect(label);
+
+      if (components[label] != null) {
+        tabs.push(
+          <DropTab
+            key={label + 'LEFTDROP'}
+            onDrop={onDropTab(i)}
+            disabled={!dropTabsProps.isOver}
+            overview={{
+              position: 'left',
+              overviewNode: <div className={dropTabZone}></div>,
             }}
-            layoutId={layoutId}
+            dndAcceptType={dndAcceptType}
             CustomTab={CustomTab}
-            isChild={areChildren}
           >
-            {translatedLabel}
-            <IconButton
-              icon="times"
-              tooltip="Remove tab"
-              onClick={() => onDeleteTab(label)}
-            />
-          </DragTab>
-        </DropTab>,
-      );
+            <DragTab
+              key={label}
+              label={label}
+              active={label === defaultActiveLabel}
+              onClick={() => {
+                onSelect && onSelect(label);
+              }}
+              onDoubleClick={() => {
+                showModal();
+              }}
+              dndAcceptType={dndAcceptType}
+              CustomTab={CustomTab}
+              isChild={areChildren}
+            >
+              {translatedLabel}
+              <IconButton
+                icon="times"
+                tooltip="Remove tab"
+                onClick={() => onDeleteTab(label)}
+                className={'close-btn'}
+              />
+            </DragTab>
+          </DropTab>,
+        );
+      }
 
       // At the end, don't forget to add a dropTab on the right of the last tab
       if (Number(i) === componentsKeys.length - 1) {
@@ -278,107 +365,131 @@ export function DnDTabLayout({
   };
 
   return (
-    <Toolbar
-      vertical={vertical}
-      className={cx(
-        relative,
-        general,
-        css({ backgroundColor: themeVar.colors.BackgroundColor }),
-      )}
-    >
-      <Toolbar.Header
-        className={cx(header, {
-          [childrenHeaderStyle]: areChildren !== undefined && areChildren,
-          [headerStyle]: !areChildren,
-        })}
+    <>
+      <Toolbar
+        vertical={vertical}
+        className={cx(
+          relative,
+          general,
+          css({ backgroundColor: themeVar.colors.BackgroundColor }),
+        )}
       >
-        <div ref={dropTabs} className={cx(flex, grow, autoScroll)}>
-          {renderTabs()}
-          {selectItems && Object.keys(selectItems).length > 0 && (
-            <CustomTab
-              key={'-1'}
-              className={cx({
-                [childrenPlusTabStyle]:
-                  areChildren !== undefined && areChildren,
-                [plusTabStyle]: !areChildren,
-              })}
-            >
-              <DropMenu
-                items={Object.keys(selectItems).map(label => {
-                  const translatedLabel = i18nTabsNames.tabsNames[
-                    label as keyof EditorTabsTranslations['tabsNames']
-                  ]
-                    ? i18nTabsNames.tabsNames[
-                        label as keyof EditorTabsTranslations['tabsNames']
-                      ]
-                    : label;
-                  return {
-                    label: translatedLabel,
-                    value: label,
-                  };
+        <Toolbar.Header
+          className={cx(header, {
+            [childrenHeaderStyle]: areChildren !== undefined && areChildren,
+            [headerStyle]: !areChildren,
+          })}
+        >
+          <div ref={dropTabs} className={cx(flex, grow, autoScroll)}>
+            {renderTabs()}
+            {selectItems && Object.keys(selectItems).length > 0 && (
+              <CustomTab
+                key={'-1'}
+                className={cx({
+                  [childrenPlusTabStyle]:
+                    areChildren !== undefined && areChildren,
+                  [plusTabStyle]: !areChildren,
                 })}
-                icon="plus"
-                onSelect={i => {
-                  onSelect && onSelect(i.value);
-                  onNewTab(String(i.value));
-                }}
-              />
-            </CustomTab>
-          )}
-        </div>
-      </Toolbar.Header>
-      <Toolbar.Content className={cx(relative, content)}>
-        <div className={cx(expandBoth, hideOverflow)}>
-          <div className={cx(autoScroll, absoute, expandBoth, flex)}>
-            {defaultActiveLabel && components[defaultActiveLabel] && (
-              <Reparentable
-                id={defaultActiveLabel}
-                innerClassName={cx(flex, expandBoth)}
-                outerClassName={expandBoth}
               >
-                <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
-                  {components[defaultActiveLabel]}
-                </React.Suspense>
-              </Reparentable>
+                <DropMenu
+                  items={Object.keys(selectItems).map(label => {
+                    const translatedOrUndefLabel =
+                      i18nTabsNames.tabsNames[
+                        label as keyof EditorTabsTranslations['tabsNames']
+                      ];
+                    const translatedLabel = translatedOrUndefLabel
+                      ? translatedOrUndefLabel
+                      : label;
+                    return {
+                      label: translatedLabel,
+                      value: label,
+                    };
+                  })}
+                  icon="plus"
+                  onSelect={i => {
+                    onSelect && onSelect(i.value);
+                    onNewTab(String(i.value));
+                  }}
+                />
+              </CustomTab>
             )}
           </div>
-          {(dropLeftProps.canDrop ||
-            dropRightProps.canDrop ||
-            dropTopProps.canDrop ||
-            dropBottomProps.canDrop) && (
-            <div className={cx(absoute, expandBoth)}>
-              <div
-                ref={dropLeft}
-                className={cx(
-                  dropLeftZone,
-                  dropLeftProps.isOver && dropZoneFocus,
-                )}
+        </Toolbar.Header>
+        <Toolbar.Content className={cx(relative, content)}>
+          <div className={cx(expandBoth, hideOverflow)}>
+            {!show && (
+              <Content
+                components={components}
+                defaultActiveLabel={defaultActiveLabel}
+                loading={i18nValues.loading}
               />
+            )}
+            {(dropLeftProps.canDrop ||
+              dropRightProps.canDrop ||
+              dropTopProps.canDrop ||
+              dropBottomProps.canDrop) && (
               <div
-                ref={dropRight}
-                className={cx(
-                  dropRightZone,
-                  dropRightProps.isOver && dropZoneFocus,
-                )}
-              />
-              <div
-                ref={dropTop}
-                className={cx(
-                  dropTopZone,
-                  dropTopProps.isOver && dropZoneFocus,
-                )}
-              />
-              <div
-                ref={dropBottom}
-                className={cx(
-                  dropBottomZone,
-                  dropBottomProps.isOver && dropZoneFocus,
-                )}
-              />
+                style={{ top: 0, left: 0 }}
+                className={cx(absolute, expandBoth)}
+              >
+                <div
+                  ref={dropLeft}
+                  className={cx(
+                    dropLeftZone,
+                    dropLeftProps.isOver && dropZoneFocus,
+                  )}
+                />
+                <div
+                  ref={dropRight}
+                  className={cx(
+                    dropRightZone,
+                    dropRightProps.isOver && dropZoneFocus,
+                  )}
+                />
+                <div
+                  ref={dropTop}
+                  className={cx(
+                    dropTopZone,
+                    dropTopProps.isOver && dropZoneFocus,
+                  )}
+                />
+                <div
+                  ref={dropBottom}
+                  className={cx(
+                    dropBottomZone,
+                    dropBottomProps.isOver && dropZoneFocus,
+                  )}
+                />
+              </div>
+            )}
+          </div>
+        </Toolbar.Content>
+      </Toolbar>
+      {show && (
+        <div className={fullScreenContentContainerStyle}>
+          <div
+            className={cx(
+              modalContentStyle,
+              css({ height: '100%', position: 'relative' }),
+            )}
+          >
+            <div
+              className={modalCloseDivStyle}
+              onClick={() => {
+                show && setShow(false);
+              }}
+            >
+              <IconComp icon="times" />
             </div>
-          )}
+            <Content
+              components={components}
+              defaultActiveLabel={defaultActiveLabel}
+              loading={i18nValues.loading}
+            />
+          </div>
         </div>
-      </Toolbar.Content>
-    </Toolbar>
+      )}
+      {/* Créer une div qui reprend les fonctionnalités dre useModal. */}
+    </>
   );
 }

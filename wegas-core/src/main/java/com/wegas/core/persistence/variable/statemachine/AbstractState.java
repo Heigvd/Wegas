@@ -130,7 +130,7 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(
         optional = false, nullable = false, proposal = EmptyScript.class,
-        view = @View(label = "On enter impact", value = ScriptView.Impact.class))
+        view = @View(label = "On enter impact", value = ScriptView.Impact.class, index = 602))
     private Script onEnterEvent;
 
     /**

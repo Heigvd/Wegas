@@ -2,6 +2,7 @@ import * as React from 'react';
 import { DropMenu, SelecteDropdMenuItem } from '../DropMenu';
 import { useGameModel } from '../Hooks/useGameModel';
 import { IGameModelLanguage } from 'wegas-ts-api';
+import { DropDownDirection } from '../DropDown';
 
 interface LanguagesProviderProps {
   lang?: string;
@@ -75,6 +76,9 @@ interface LanguageSelectorProps extends ClassStyleId {
     keyEvent: ModifierKeysEvent,
   ) => void;
   filterActiveLanguages?: boolean;
+  label?: string;
+  direction?: DropDownDirection;
+  buttonClassName?: string;
 }
 export function LanguageSelector({
   language,
@@ -82,6 +86,9 @@ export function LanguageSelector({
   filterActiveLanguages,
   style,
   className,
+  label,
+  direction,
+  buttonClassName,
 }: LanguageSelectorProps) {
   const { lang, availableLang } = React.useContext(languagesCTX);
   const [currentLanguage, setCurrentLang] = React.useState(
@@ -92,7 +99,7 @@ export function LanguageSelector({
     : availableLang;
   return (
     <DropMenu
-      label={currentLanguage}
+      label={`${label && label + ':'} ${currentLanguage}`}
       items={languages.map(language => ({
         value: language,
         label: `${language.code} : ${language.lang}`,
@@ -102,15 +109,22 @@ export function LanguageSelector({
         onSelect(item, keys);
       }}
       style={style}
+      buttonClassName={buttonClassName}
       containerClassName={className}
+      direction={direction && direction}
     />
   );
 }
 
+interface LangTogglerProps extends ClassStyleId {
+  label?: string;
+  direction?: DropDownDirection;
+  buttonClassName?: string;
+}
 /**
  * Language selector allows to select language inside the language context given by the LangProvider
  */
-export function LangToggler(props: ClassStyleId) {
+export function LangToggler(props: LangTogglerProps) {
   const { lang, selectLang } = React.useContext(languagesCTX);
   return (
     <LanguageSelector

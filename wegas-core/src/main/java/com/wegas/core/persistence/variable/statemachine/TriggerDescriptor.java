@@ -68,7 +68,7 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
     @WegasEntityProperty(
         nullable = false, optional = false, proposal = True.class,
         view = @View(
-            index = 602,
+            index = 601,
             label = "Disable itself",
             description = "Disable once triggered. May be rearmed afterwards"
         ))
@@ -83,7 +83,7 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
         view = @View(
             label = "Depends on strategy",
             value = ManualOrAutoSelectView.class,
-            index = -300
+            index = 602
         ))
     private DependsOnStrategy dependsOnStrategy;
 
@@ -109,7 +109,7 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
         nullable = false, optional = false, proposal = EmptyScript.class,
         view = @View(
             index = 603,
-            label = "Condition",
+            label = "Condition(s)",
             value = ScriptView.Condition.class
         ))
     private Script triggerEvent;
@@ -122,7 +122,7 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
         nullable = false, optional = false, proposal = EmptyScript.class,
         view = @View(
             index = 604,
-            label = "Impact",
+            label = "Impact(s)",
             value = ScriptView.Impact.class
         ))
     private Script postTriggerEvent;

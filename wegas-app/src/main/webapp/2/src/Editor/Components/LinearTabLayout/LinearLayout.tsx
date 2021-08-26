@@ -14,30 +14,32 @@ import {
 import { wlog, wwarn } from '../../../Helper/wegaslog';
 
 import 'react-reflex/styles.css';
-import { flex, noOverflow, grow, expandHeight } from '../../../css/classes';
+import {
+  flex,
+  noOverflow,
+  grow,
+  expandHeight,
+  MediumPadding,
+} from '../../../css/classes';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { TabComponent } from './DnDTabs';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
 import { internalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
+import { roleCTX } from '../../../Components/Contexts/RoleProvider';
+import { useStore } from '../../../data/Stores/store';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
-    backgroundColor: themeVar.colors.PrimaryColor,
+    backgroundColor: themeVar.colors.DisabledColor,
     zIndex: 1,
-  },
-  '&.reflex-container > .reflex-splitter:hover': {
-    backgroundColor: themeVar.colors.ActiveColor,
   },
   '&.reflex-container.vertical > .reflex-splitter': {
     width: '3px',
     border: 'none',
-    boxShadow: '2px 0 2px rgba(0, 0, 0, 0.25)',
   },
   '&.reflex-container.horizontal > .reflex-splitter': {
     height: '3px',
     border: 'none',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25)',
   },
   '&.reflex-container.vertical > .reflex-splitter:hover, &.reflex-container.horizontal > .reflex-splitter:hover':
     {
@@ -532,6 +534,11 @@ interface ActionFlexResize extends Action {
   flexValues: number[];
 }
 
+interface ActionReset extends Action {
+  type: 'RESET';
+  newLayout: ManagedLayoutMap;
+}
+
 type TabLayoutsAction<T extends ComponentMap> =
   | ActionDrop<T>
   | ActionDelete<T>
@@ -539,18 +546,22 @@ type TabLayoutsAction<T extends ComponentMap> =
   | ActionSelect<T>
   | ActionExternalSelect<T>
   | ActionResize
-  | ActionFlexResize;
+  | ActionFlexResize
+  | ActionReset;
 
 /**
  * setLayout is the reducer function for layout disposition management
  */
 const setLayout =
-  (layoutAccept: string) =>
+  (layoutId: string, role: string, rolesId: string) =>
   <T extends ManagedLayoutMap>(
     layouts: T,
     action: TabLayoutsAction<T['layoutMap']>,
   ) =>
     u(layouts, (layouts: ManagedLayoutMap) => {
+      if (action.type === 'RESET') {
+        return action.newLayout;
+      }
       let newLayouts = layouts;
       // If a layout has been resized, save it in the state
       if (action.type === 'RESIZE') {
@@ -752,7 +763,7 @@ const setLayout =
       }
       // Saving layout in local storage
       window.localStorage.setItem(
-        `DnDGridLayoutData.${layoutAccept}`,
+        `DnDGridLayoutData.${layoutId}.${rolesId}.${role}`,
         JSON.stringify(newLayouts),
       );
       return newLayouts;
@@ -779,6 +790,7 @@ const reduceChildren = <T extends ComponentMap>(
     ? layoutMap
     : // Deepcopy
       JSON.parse(JSON.stringify(defaultLayout));
+  // debugger;
   const key = newLayoutMap.lastKey;
   if (children && children.length > 0) {
     if (typeof children[0] === 'string') {
@@ -794,22 +806,18 @@ const reduceChildren = <T extends ComponentMap>(
         newLayoutMap = reduceChildren(child as LayoutItems<T>, newLayoutMap);
       }
     }
+  } else {
+    newLayoutMap = insertNewLayout(newLayoutMap, 'TabLayoutNode', key, []);
   }
   return newLayoutMap;
 };
 
-// const layoutTabMissing = (layout: LayoutMap | null, tabs: ComponentMap) =>
-//   !layout ||
-//   Object.values(layout).some(
-//     item =>
-//       item.type === 'TabLayoutNode' &&
-//       item.children.some(c => !Object.keys(tabs).includes(c)),
-//   );
-
 // eslint-disable-next-line
 interface LayoutItem<T extends ComponentMap>
   extends Array<LayoutItem<T> | keyof T> {}
-type LayoutItems<T extends ComponentMap> = LayoutItem<T> | LayoutItem<T>[];
+export type LayoutItems<T extends ComponentMap> =
+  | LayoutItem<T>
+  | LayoutItem<T>[];
 
 interface LinearLayoutProps<T extends ComponentMap> {
   /**
@@ -822,7 +830,7 @@ interface LinearLayoutProps<T extends ComponentMap> {
    */
   initialLayout?: LayoutItems<T>;
   /**
-   * layoutId - The token that filter the drop actions
+   * dndAcceptType - The token that filter the drop actions
    */
   layoutId: string;
   /**
@@ -855,21 +863,35 @@ export function MainLinearLayout<T extends ComponentMap>({
   classNames = {},
   areChildren,
 }: LinearLayoutProps<T>) {
-  // const tabs = React.useRef<ComponentMap>(tabs ? tabs : {});
-  const { lang } = React.useContext(languagesCTX);
+  const { currentRole } = React.useContext(roleCTX);
+  const { lang, rolesId } = useStore(s => ({
+    lang: s.global.currentEditorLanguageCode,
+    rolesId: s.global.roles.rolesId,
+  }));
+
   const i18nValues = internalTranslate(commonTranslations, lang);
-  const savedLayoutJSON = window.localStorage.getItem(
-    `DnDGridLayoutData.${layoutId}`,
-  );
-  const savedLayout = savedLayoutJSON
-    ? (JSON.parse(savedLayoutJSON) as ManagedLayoutMap)
-    : null;
+
   const [layout, dispatchLayout] = React.useReducer(
-    setLayout(layoutId),
-    savedLayout /*&& !layoutTabMissing(savedLayout.layoutMap, tabs)*/
-      ? savedLayout
-      : reduceChildren(initialLayout),
+    setLayout(layoutId, currentRole, rolesId),
+    reduceChildren(initialLayout),
   );
+
+  React.useEffect(() => {
+    const savedLayoutJSON = window.localStorage.getItem(
+      `DnDGridLayoutData.${layoutId}.${rolesId}.${currentRole}`,
+    );
+    const savedLayout = savedLayoutJSON
+      ? (JSON.parse(savedLayoutJSON) as ManagedLayoutMap)
+      : null;
+    if (savedLayout != null) {
+      dispatchLayout({ type: 'RESET', newLayout: savedLayout });
+    } else {
+      dispatchLayout({
+        type: 'RESET',
+        newLayout: reduceChildren(initialLayout),
+      });
+    }
+  }, [currentRole, initialLayout, layoutId, rolesId]);
 
   const onDrop =
     (layoutKey: string) =>
@@ -906,15 +928,19 @@ export function MainLinearLayout<T extends ComponentMap>({
       destTabLayoutKey: layoutKey,
     });
   };
-  const onSelect = (tabKey: string) =>
+  const onSelect = (tabKey: string) => {
     dispatchLayout({
       type: 'SELECT',
       tabKey: tabKey,
     });
+  };
 
-  const focusTab = React.useCallback((tabId: string) => {
-    dispatchLayout({ type: 'EXTERNALSELECT', tabKey: tabId });
-  }, []);
+  const focusTab = React.useCallback(
+    (tabId: string) => {
+      dispatchLayout({ type: 'EXTERNALSELECT', tabKey: tabId });
+    },
+    [dispatchLayout],
+  );
 
   tabLayouts[layoutId] = focusTab;
 
@@ -947,7 +973,7 @@ export function MainLinearLayout<T extends ComponentMap>({
               onNewTab={onNewTab(currentLayoutKey)}
               defaultActiveLabel={currentLayout.defaultActive}
               onSelect={onSelect}
-              layoutId={layoutId}
+              dndAcceptType={layoutId}
               CustomTab={CustomTab}
               classNames={classNames}
               areChildren={areChildren}
@@ -991,7 +1017,7 @@ export function MainLinearLayout<T extends ComponentMap>({
             >
               {rendered.length === 0 ? (
                 <ReflexElement>
-                  <div>{i18nValues.loading}...</div>
+                  <div className={MediumPadding}>{i18nValues.loading}...</div>
                 </ReflexElement>
               ) : (
                 rendered
@@ -1013,7 +1039,7 @@ export function MainLinearLayout<T extends ComponentMap>({
               onDeleteTab={onDeleteTab}
               onNewTab={onNewTab(currentLayoutKey)}
               onSelect={onSelect}
-              layoutId={layoutId}
+              dndAcceptType={layoutId}
               CustomTab={CustomTab}
               classNames={classNames}
               areChildren={areChildren}
@@ -1026,7 +1052,17 @@ export function MainLinearLayout<T extends ComponentMap>({
 
   return (
     <ReparentableRoot>
-      <div className={cx(flex, grow, expandHeight)}>{renderLayouts()}</div>
+      <div
+        className={cx(
+          flex,
+          grow,
+          expandHeight,
+          /* Do not delete this min-height: 0. It forces the content to respect parent height */
+          css({ minHeight: 0 }),
+        )}
+      >
+        {renderLayouts()}
+      </div>
     </ReparentableRoot>
   );
 }

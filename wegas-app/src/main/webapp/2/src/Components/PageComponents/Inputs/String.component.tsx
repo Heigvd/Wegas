@@ -120,6 +120,7 @@ registerComponent(
     componentType: 'Input',
     name: 'String input',
     icon: 'paragraph',
+    illustration: 'stringInput',
     schema: {
       script: schemaProps.scriptVariable({
         label: 'Variable',

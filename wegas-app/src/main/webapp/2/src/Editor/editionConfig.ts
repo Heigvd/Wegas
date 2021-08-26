@@ -261,7 +261,7 @@ export function getIcon<T extends IMergeable>(entity: T): Icons | undefined {
   }
 }
 
-export function getLabel<T extends IMergeable>(entity: T): string | undefined {
+export function getClassLabel<T extends IMergeable>(entity: T): string | undefined {
   switch (entity['@class'] as WegasClassNames) {
     case 'ChoiceDescriptor':
       return 'Conditional';

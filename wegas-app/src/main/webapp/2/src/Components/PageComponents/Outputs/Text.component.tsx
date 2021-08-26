@@ -44,6 +44,7 @@ registerComponent(
     componentType: 'Output',
     name: 'Text',
     icon: 'paragraph',
+    illustration: 'text',
     schema: {
       text: schemaProps.scriptString({ label: 'Text', richText: true }),
       ...classStyleIdShema,

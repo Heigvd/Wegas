@@ -21,8 +21,8 @@ import { useDrag } from 'react-dnd';
 import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { classNameOrEmpty } from '../../Helper/className';
-import { wlog } from '../../Helper/wegaslog';
 import { themeVar } from '../Theme/ThemeVars';
+import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 
 const stateContainerStyle = css({
   display: 'inline-flex',
@@ -36,16 +36,13 @@ export const stateBoxStyle = css({
   alignItems: 'center',
   padding: '15px 15px 15px 15px',
   boxSizing: 'border-box',
-  background: themeVar.colors.HeaderColor,
+  background: themeVar.colors.BackgroundColor,
   borderRadius: '8px',
-  border: '1px solid ' + themeVar.colors.PrimaryColor,
-  boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', //shadow theme var?
-  color: themeVar.colors.PrimaryColor,
+  border: '2px solid ' + themeVar.colors.DisabledColor,
+  boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.15)',
+  color: themeVar.colors.ActiveColor,
   flexGrow: 0,
   maxHeight: '100px',
-  '&>*': {
-    marginRight: '15px',
-  },
   '& *': {
     whiteSpace: 'nowrap',
     maxHeight: '40px',
@@ -62,32 +59,38 @@ export const stateBoxActionStyle = css({
   cursor: 'pointer',
   '&:hover': {
     background: themeVar.colors.BackgroundColor,
+    border: '2px solid ' + themeVar.colors.PrimaryColor,
   },
 });
 
 export const indexTagStyle = css({
   display: 'flex',
   borderRadius: '50%',
-  border: '1px solid ' + themeVar.colors.ActiveColor, //LightText theme var?
+  border: '1px solid ' + themeVar.colors.ActiveColor,
   minWidth: '23px',
   height: '23px',
   justifyContent: 'center',
   alignItems: 'center',
   fontSize: '12px',
+  marginRight: '10px',
 });
 
 const handleForTransition = css({
-  position: 'absolute',
-  backgroundColor: themeVar.colors.HighlightColor, //evidence color editor theme var?
+  display: 'flex',
   borderRadius: '50%',
-  minWidth: '20px',
-  height: '20px',
-  border: '1px solid #fff',
-  right: '-25px',
+  minWidth: '30px',
+  height: '30px',
+  border: '1px solid transparent',
+  marginLeft: 'auto',
+  justifyContent: 'center',
+  alignItems: 'center',
+  cursor: 'grab',
   '&:hover': {
-    minWidth: '30px',
-    height: '30px',
-    right: '-30px',
+    border: '1px solid ' + themeVar.colors.PrimaryColor,
+    color: themeVar.colors.PrimaryColor,
+  },
+  '&:active': {
+    cursor: 'grabbing',
   },
 });
 const stateMoreInfosStyle = css({
@@ -115,11 +118,12 @@ const stateMoreInfosStyle = css({
 });
 
 export const selectedStateBoxStyle = css({
-  background: themeVar.colors.BackgroundColor,
-  border: '4px solid ' + themeVar.colors.ActiveColor,
+  background: themeVar.colors.HeaderColor,
   color: themeVar.colors.ActiveColor,
+  borderColor: 'transparent',
+  boxShadow: 'none',
   '&:hover': {
-    background: themeVar.colors.BackgroundColor,
+    background: themeVar.colors.HeaderColor,
   },
   [`.${indexTagStyle}`]: {
     borderColor: themeVar.colors.ActiveColor,
@@ -156,10 +160,7 @@ export function StateBox({
       className={stateContainerStyle + classNameOrEmpty(state.className)}
       style={state.style}
       onClick={e =>
-        isActionAllowed({ disabled, readOnly }) &&
-        onClick &&
-        onClick(e, state) &&
-        wlog(selected)
+        isActionAllowed({ disabled, readOnly }) && onClick && onClick(e, state)
       }
     >
       <div
@@ -177,21 +178,14 @@ export function StateBox({
         <div className={indexTagStyle}>
           <p>{state.id}</p>
         </div>
-        {/*  {/* {state.isDialogBox && (
-        <div className="speakerImg">
-          <img src="" alt="" />
-        </div>
-        )} */}
-        <div>
-          <p className="StateLabelTextStyle">
-            <HTMLText
-              text={
-                (entityIs(state.state, 'State')
-                  ? state.state.label
-                  : translate(state.state.text, lang)) || 'Empty'
-              }
-            />
-          </p>
+        <div className="StateLabelTextStyle">
+          <HTMLText
+            text={
+              (entityIs(state.state, 'State')
+                ? state.state.label
+                : translate(state.state.text, lang)) || 'Empty'
+            }
+          />
         </div>
         {isActionAllowed({ readOnly, disabled }) && (
           <StateProcessHandle sourceProcess={state} />
@@ -235,5 +229,9 @@ export function StateProcessHandle<F extends FlowLine, P extends Process<F>>({
       processes: { sourceProcess },
     },
   });
-  return <div ref={drag} className={handleForTransition} data-nodrag={true} />;
+  return (
+    <div ref={drag} className={handleForTransition} data-nodrag={true}>
+      <IconComp icon="project-diagram" />
+    </div>
+  );
 }

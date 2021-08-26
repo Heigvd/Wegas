@@ -8,7 +8,6 @@ import {
 } from '../actions';
 import { VariableDescriptor } from '../selectors';
 import { ThunkResult, store } from '../Stores/store';
-import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { entityIsPersisted } from '../entities';
 import { Reducer } from 'redux';
 import { Schema } from 'jsoninput';
@@ -37,6 +36,26 @@ import {
 } from 'wegas-ts-api';
 import { cloneDeep } from 'lodash-es';
 import { commonServerMethods } from '../methods/CommonServerMethods';
+import {
+  EditorLanguageData,
+  EditorLanguagesCode,
+  getSavedLanguage,
+  getUserLanguage,
+} from '../i18n';
+import { Popup } from '../../Components/PopupManager';
+
+export const DEFAULT_ROLES = {
+  SCENARIO_EDITOR: {
+    id: 'SCENARIO_EDITOR',
+    label: {
+      EN: 'Scenario editor',
+      FR: 'Editeur de scenario',
+      IT: 'Editore di scenario',
+      DE: 'Redakteur für Szenario',
+    },
+    availableTabs: true,
+  },
+};
 
 export function isServerMethod(
   serverObject: ServerGlobalMethod | ServerGlobalObject | undefined,
@@ -80,10 +99,9 @@ export interface ActionsProps<T> {
   action: (entity: T, path?: (string | number)[]) => void;
   label: React.ReactNode;
   confirm?: boolean;
-  sorting: 'button' | 'toolbox' | 'close';
+  sorting: 'delete' | 'duplicate' | 'toolbox' | 'close' | 'findUsage';
 }
 
-//type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
   save?: (entity: T) => void;
   more?: {
@@ -92,7 +110,7 @@ export interface EditorAction<T extends IAbstractEntity> {
 }
 
 export interface EditionState {
-  unsaved: boolean;
+  newEntity?: IAbstractEntity;
 }
 
 export interface VariableEdition extends EditionState {
@@ -137,28 +155,15 @@ export interface EditingState {
   eventsHandlers: WegasEventHandlers;
 }
 export interface GlobalState extends EditingState {
+  currentEditorLanguageCode: EditorLanguagesCode;
   currentGameModelId: number;
   currentGameId: number;
   currentPlayerId: number;
   currentTeamId: number;
   currentUser: Readonly<IUser>;
   currentPageId?: string;
-  // pageEdit: Readonly<boolean>;
-  // pageSrc: Readonly<boolean>;
   pageError?: string;
-  search:
-    | {
-        type: 'GLOBAL';
-        value: string;
-        result: number[];
-      }
-    | {
-        type: 'USAGE';
-        value: number;
-        result: number[];
-      }
-    | { type: 'ONGOING' }
-    | { type: 'NONE' };
+  search: { value: string | undefined; deep: boolean };
   pusherStatus: {
     status: string;
     socket_id?: string;
@@ -179,6 +184,12 @@ export interface GlobalState extends EditingState {
   };
   pageLoaders: { [name: string]: IScript };
   locks: { [token: string]: boolean };
+  roles: {
+    rolesId: string;
+    defaultRoleId: string;
+    roles: { [id: string]: Role };
+  };
+  popups: { [id: string]: Popup };
 }
 
 export function eventHandlersManagement(
@@ -262,8 +273,15 @@ export function editorManagement(
         config: action.payload.config,
         path: action.payload.path,
         actions: action.payload.actions,
-        unsaved: false,
       };
+    case ActionType.EDITION_CHANGES:
+      if (
+        state.editing?.type === 'Variable' ||
+        state.editing?.type === 'VariableFSM'
+      ) {
+        state.editing.newEntity = action.payload.newEntity;
+      }
+      break;
     case ActionType.VARIABLE_CREATE:
       return {
         type: 'VariableCreate',
@@ -271,23 +289,26 @@ export function editorManagement(
         parentId: action.payload.parentId,
         parentType: action.payload.parentType,
         actions: action.payload.actions,
-        unsaved: false,
+        newEntity: undefined,
       };
     case ActionType.FILE_EDIT:
       return {
         type: 'File',
         ...action.payload,
-        unsaved: false,
+        newEntity: undefined,
       };
+    case ActionType.DISCARD_UNSAVED_CHANGES:
+      if (
+        state.editing?.type === 'Variable' ||
+        state.editing?.type === 'VariableFSM'
+      ) {
+        state.editing.newEntity = undefined;
+      }
+      break;
     case ActionType.CLOSE_EDITOR:
       return undefined;
-    case ActionType.UNSAVED_CHANGES:
-      return state.editing == null
-        ? state.editing
-        : { ...state.editing, ...action.payload };
-    default:
-      return state.editing;
   }
+  return state.editing;
 }
 
 /**
@@ -303,25 +324,15 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.PAGE_ERROR:
         state.pageError = action.payload.error;
         return;
-      case ActionType.SEARCH_CLEAR:
-        state.search = { type: 'NONE' };
+      case ActionType.SEARCH:
+        state.search.value = action.payload.searchString;
         return;
-      case ActionType.SEARCH_ONGOING:
-        state.search = { type: 'ONGOING' };
+      case ActionType.SEARCH_DEEP:
+        state.search.value = action.payload.searchString;
+        state.search.deep = true;
         return;
-      case ActionType.SEARCH_GLOBAL:
-        state.search = {
-          type: 'GLOBAL',
-          value: action.payload.search,
-          result: action.payload.result,
-        };
-        return;
-      case ActionType.SEARCH_USAGE:
-        state.search = {
-          type: 'USAGE',
-          value: action.payload.variableId,
-          result: action.payload.result,
-        };
+      case ActionType.SEARCH_SET_DEEP:
+        state.search.deep = action.payload.deep;
         return;
       case ActionType.PUSHER_SOCKET:
         state.pusherStatus = action.payload;
@@ -397,34 +408,41 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.EDITOR_UNREGISTER_PAGE_LOADER:
         delete state.pageLoaders[action.payload.name];
         return;
+      case ActionType.EDITOR_SET_LANGUAGE:
+        state.currentEditorLanguageCode = action.payload.language;
+        return;
+      case ActionType.EDITOR_SET_ROLES:
+        state.roles.roles = action.payload.roles;
+        state.roles.defaultRoleId = action.payload.defaultRoleId;
+        state.roles.rolesId = action.payload.rolesId;
+        return;
       case ActionType.LOCK_SET:
         state.locks[action.payload.token] = action.payload.locked;
         return;
-      // case ActionType.EDITOR_ADD_EVENT_HANDLER:
-      //   state.eventsHandlers[action.payload.type][action.payload.id] =
-      //     action.payload.cb;
-      //   return;
-      // case ActionType.EDITOR_REMOVE_EVENT_HANDLER:
-      //   state.eventsHandlers[action.payload.type] = omit(
-      //     state.eventsHandlers[action.payload.type],
-      //     action.payload.id,
-      //   );
-      //   return;
+      case ActionType.ADD_POPUP: {
+        state.popups[action.payload.id] = action.payload;
+        return;
+      }
+      case ActionType.REMOVE_POPUP: {
+        state.popups = omit(state.popups, action.payload.id);
+        return;
+      }
+
       default:
         state.eventsHandlers = eventHandlersManagement(state, action);
         state.events = eventManagement(state, action);
         state.editing = editorManagement(state, action);
     }
-    // return state;
   },
   {
+    currentEditorLanguageCode: 'EN',
     currentGameModelId: CurrentGM.id!,
     currentGameId: CurrentGame.id!,
     currentPlayerId: CurrentPlayerId,
     currentTeamId: CurrentTeamId,
     currentUser: CurrentUser,
     pusherStatus: { status: 'disconnected' },
-    search: { type: 'NONE' },
+    search: { value: undefined, deep: false },
     events: [],
     eventsHandlers: {
       ExceptionEvent: {},
@@ -444,6 +462,12 @@ const global: Reducer<Readonly<GlobalState>> = u(
     },
     pageLoaders: {},
     locks: {},
+    roles: {
+      rolesId: 'DEFAULT_ROLES',
+      defaultRoleId: DEFAULT_ROLES.SCENARIO_EDITOR.id,
+      roles: DEFAULT_ROLES,
+    },
+    popups: {},
   } as GlobalState,
 );
 export default global;
@@ -470,7 +494,7 @@ export function editVariable(
             more: {
               duplicate: {
                 label: 'Duplicate',
-                sorting: 'toolbox',
+                sorting: 'duplicate',
                 action: (entity: IVariableDescriptor) => {
                   dispatch(
                     Actions.VariableDescriptorActions.duplicateDescriptor(
@@ -481,7 +505,7 @@ export function editVariable(
               },
               delete: {
                 label: 'Delete',
-                sorting: 'button',
+                sorting: 'delete',
                 action: (entity: IVariableDescriptor, path?: string[]) => {
                   dispatch(
                     Actions.VariableDescriptorActions.deleteDescriptor(
@@ -494,10 +518,10 @@ export function editVariable(
               },
               findUsage: {
                 label: 'Find usage',
-                sorting: 'toolbox',
+                sorting: 'findUsage',
                 action: (entity: IVariableDescriptor) => {
-                  if (entityIsPersisted(entity)) {
-                    dispatch(Actions.EditorActions.searchUsage(entity));
+                  if (entityIsPersisted(entity) && entity.name != null) {
+                    dispatch(Actions.EditorActions.searchDeep(entity.name));
                   }
                 },
               },
@@ -555,29 +579,32 @@ export function editStateMachine(
         actions: actions || {
           more: {
             delete: {
-                label: 'Delete',
-                sorting: 'button',
-                confirm: true,
-                action: (entity: IFSMDescriptor, path?: string[]) => {
-                  if (
-                    path != null &&
-                    Number(path.length) === 2 &&
-                    Number(path.length) !== entity.defaultInstance.currentStateId
-                  ) {
-                    deleteState(entity, Number(path[1]));
-                  } else {
-                    dispatch(
-                      Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
-                    );
-                  }
-                },
+              label: 'Delete',
+              sorting: 'delete',
+              confirm: true,
+              action: (entity: IFSMDescriptor, path?: string[]) => {
+                if (
+                  path != null &&
+                  Number(path.length) === 2 &&
+                  Number(path.length) !== entity.defaultInstance.currentStateId
+                ) {
+                  deleteState(entity, Number(path[1]));
+                } else {
+                  dispatch(
+                    Actions.VariableDescriptorActions.deleteDescriptor(
+                      entity,
+                      path,
+                    ),
+                  );
+                }
+              },
             },
             findUsage: {
               label: 'Find usage',
-              sorting: 'toolbox',
+              sorting: 'findUsage',
               action: (entity: IFSMDescriptor) => {
-                if (entityIsPersisted(entity)) {
-                  dispatch(Actions.EditorActions.searchUsage(entity));
+                if (entityIsPersisted(entity) && entity.name != null) {
+                  dispatch(Actions.EditorActions.searchDeep(entity.name));
                 }
               },
             },
@@ -638,9 +665,12 @@ export function createVariable(
  * @param {IAbstractEntity} value
  * @returns {ThunkResult}
  */
-export function saveEditor(value: IMergeable): ThunkResult {
+export function saveEditor(
+  value: IMergeable,
+  selectUpdatedEntity: boolean = true,
+): ThunkResult {
   return function save(dispatch, getState) {
-    dispatch(setUnsavedChanges(false));
+    dispatch(discardUnsavedChanges());
     const editMode = getState().global.editing;
     if (editMode == null) {
       return;
@@ -651,6 +681,7 @@ export function saveEditor(value: IMergeable): ThunkResult {
         return dispatch(
           ACTIONS.VariableDescriptorActions.updateDescriptor(
             value as IVariableDescriptor,
+            selectUpdatedEntity,
           ),
         );
       case 'VariableCreate':
@@ -685,8 +716,8 @@ export function closeEditor() {
   return ActionCreator.CLOSE_EDITOR();
 }
 
-export function setUnsavedChanges(unsaved: boolean) {
-  return ActionCreator.USAVED_CHANGES(unsaved);
+export function discardUnsavedChanges() {
+  return ActionCreator.DISCARD_UNSAVED_CHANGES();
 }
 
 export function editorEvent(anyEvent: WegasEvents[keyof WegasEvents]) {
@@ -711,46 +742,20 @@ export function editorEventRead(timestamp: number) {
   return ActionCreator.EDITOR_EVENT_READ({ timestamp });
 }
 
-/**
- * Clear search values
- */
-export function searchClear() {
-  return ActionCreator.SEARCH_CLEAR();
+export function search(searchString: string) {
+  return ActionCreator.SEARCH({ searchString });
 }
-/**
- * globally search for a value
- * @param value the text to search for
- */
-export function searchGlobal(value: string): ThunkResult {
-  return function (dispatch) {
-    dispatch(ActionCreator.SEARCH_ONGOING());
-    const gameModelId = store.getState().global.currentGameModelId;
-    return VariableDescriptorAPI.contains(gameModelId, value)
-      .then(result => {
-        return dispatch(ActionCreator.SEARCH_GLOBAL({ search: value, result }));
-      })
-      .catch((res: Response) => dispatch(editorErrorEvent(res.statusText)));
-  };
+
+export function clearSearch() {
+  return ActionCreator.SEARCH({ searchString: undefined });
 }
-/**
- * Find usage of a given descriptor
- * @param variable persisted descriptor to search for
- */
-export function searchUsage(
-  variable: IVariableDescriptor & { id: number },
-): ThunkResult {
-  const search = `Variable.find(gameModel, "${variable.name}")`;
-  return function (dispatch) {
-    store.dispatch(ActionCreator.SEARCH_ONGOING());
-    const gameModelId = store.getState().global.currentGameModelId;
-    return VariableDescriptorAPI.contains(gameModelId, search)
-      .then(result => {
-        return store.dispatch(
-          ActionCreator.SEARCH_USAGE({ variableId: variable.id, result }),
-        );
-      })
-      .catch((res: Response) => dispatch(editorErrorEvent(res.statusText)));
-  };
+
+export function searchDeep(searchString: string) {
+  return ActionCreator.SEARCH_DEEP({ searchString });
+}
+
+export function searchSetDeep(deep: boolean) {
+  return ActionCreator.SEARCH_SET_DEEP({ deep });
 }
 
 /**
@@ -852,4 +857,16 @@ export function setLock(data: LockEventData) {
     token: data.token,
     locked: data.status === 'lock',
   });
+}
+export function getLanguage() {
+  const savedLanguage = getSavedLanguage();
+  const userLanguage = getUserLanguage();
+  return ActionCreator.EDITOR_SET_LANGUAGE({
+    language: savedLanguage ? savedLanguage : userLanguage,
+  });
+}
+
+export function setLanguage(lang: EditorLanguagesCode) {
+  window.localStorage.setItem(EditorLanguageData, lang);
+  return ActionCreator.EDITOR_SET_LANGUAGE({ language: lang });
 }

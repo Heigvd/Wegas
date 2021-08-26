@@ -53,6 +53,7 @@ registerComponent(
     componentType: 'Output',
     name: 'Image',
     icon: 'image',
+    illustration: 'image',
     schema: {
       script: schemaProps.path({
         label: 'Source',

@@ -12,8 +12,7 @@ import {
   SrcEditorAction,
 } from './editorHelpers';
 import { useJSONSchema } from './useJSONSchema';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 
 export interface SrcEditorProps {
@@ -149,8 +148,7 @@ function SrcEditor({
   const editorValue = React.useRef(value || '');
   const mounted = React.useRef<boolean>(false);
   const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
 
   React.useEffect(() => {
     mounted.current = true;
@@ -211,15 +209,13 @@ function SrcEditor({
   React.useEffect(() => {
     if (reactMonaco) {
       if (language === 'javascript') {
+        /*
         reactMonaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-          target: reactMonaco.languages.typescript.ScriptTarget.ES5,
+          source: reactMonaco.languages.typescript.ScriptTarget.ES5,
           noLib: true,
-          allowNonTsExtensions: true,
+          lib: ['es6'],
         });
-        addExtraLib(
-          reactMonaco.languages.typescript.javascriptDefaults,
-          extraLibs,
-        );
+        */
       } else if (language === 'typescript') {
         reactMonaco.languages.typescript.typescriptDefaults.setCompilerOptions({
           // noLib: true, //TODO: wait for the issue / stackoverflow solution :P
@@ -352,7 +348,7 @@ function SrcEditor({
             height={size ? size.height : undefined} // By default, it fully fits with its parent
             width={size ? size.width : undefined} // By default, it fully fits with its parent
             theme={'dark'}
-            language={language}
+            language={'javascript'}
             value={value}
             editorDidMount={handleEditorDidMount}
             loading={i18nValues.loading + '...'}

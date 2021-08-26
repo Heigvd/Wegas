@@ -1,4 +1,3 @@
-import { TranslatableObject } from '../internalTranslator';
 import { commonTranslationsDE } from './common-de';
 import { commonTranslationsEN } from './common-en';
 import { commonTranslationsFR } from './common-fr';

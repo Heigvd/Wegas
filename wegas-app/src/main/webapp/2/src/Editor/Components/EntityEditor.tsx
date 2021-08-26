@@ -2,25 +2,28 @@ import * as React from 'react';
 import { get, cloneDeep } from 'lodash-es';
 import { Schema } from 'jsoninput';
 import { State } from '../../data/Reducer/reducers';
-import { GameModel, Helper } from '../../data/selectors';
-import getEditionConfig from '../editionConfig';
+import { GameModel, Helper, VariableDescriptor } from '../../data/selectors';
+import getEditionConfig, { getClassLabel } from '../editionConfig';
 import { Actions } from '../../data';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
 import { StoreDispatch, store, useStore } from '../../data/Stores/store';
 import { AvailableViews } from './FormView';
 import { cx } from 'emotion';
-import { flex, grow, flexColumn } from '../../css/classes';
+import { flex, grow, flexColumn, MediumPadding } from '../../css/classes';
 import {
   ActionsProps,
   ComponentEdition,
   Edition,
-  setUnsavedChanges,
   VariableEdition,
 } from '../../data/Reducer/globalState';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { MessageString } from './MessageString';
 import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
+import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { commonTranslations } from '../../i18n/common/common';
+import { ActionCreator } from '../../data/actions';
 
 export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
@@ -201,6 +204,7 @@ async function WindowedEditor<T extends IMergeable>({
       break;
     }
   }
+
   return (
     <div className={cx(flex, grow, flexColumn)}>
       <MessageString
@@ -211,6 +215,15 @@ async function WindowedEditor<T extends IMergeable>({
       />
       <Form
         entity={pathEntity}
+        label={editorTitle({
+          label: entity
+            ? (entity as { label?: ITranslatableContent }).label
+            : undefined,
+          editorTag: entity
+            ? (entity as { editorTag?: string }).editorTag
+            : undefined,
+          name: getClassLabel(pathEntity),
+        })}
         update={update != null ? updatePath : update}
         actions={actions.map(action => ({
           ...action,
@@ -231,10 +244,18 @@ async function WindowedEditor<T extends IMergeable>({
 }
 export const AsyncVariableForm = asyncSFC<EditorProps<IMergeable>>(
   WindowedEditor,
-  () => <div>load...</div>,
-  ({ err }: { err: Error }) => (
-    <span>{err && err.message ? err.message : 'Something went wrong...'}</span>
-  ),
+  () => {
+    const i18nValues = useInternalTranslate(commonTranslations);
+    return <div className={MediumPadding}>{i18nValues.loading + '...'}</div>;
+  },
+  ({ err }: { err: Error }) => {
+    const i18nValues = useInternalTranslate(commonTranslations);
+    return (
+      <span>
+        {err && err.message ? err.message : i18nValues.someWentWrong + '...'}
+      </span>
+    );
+  },
 );
 
 /**
@@ -348,21 +369,23 @@ export function getUpdate(state: Readonly<Edition>, dispatch: StoreDispatch) {
       };
 }
 
-export function getEntity(state?: Readonly<Edition>) {
-  if (!state) {
+export function getEntity(editionState?: Readonly<Edition>) {
+  if (!editionState) {
     return undefined;
   }
-  switch (state.type) {
+  switch (editionState.type) {
     case 'VariableCreate':
       return {
-        '@class': state['@class'],
-        parentId: state.parentId,
-        parentType: state.parentType,
+        '@class': editionState['@class'],
+        parentId: editionState.parentId,
+        parentType: editionState.parentType,
       };
     case 'Variable':
-    case 'VariableFSM':
     case 'File':
-      return state.entity;
+      return editionState.entity;
+    case 'VariableFSM': {
+      return VariableDescriptor.select(editionState.entity.id);
+    }
     default:
       return undefined;
   }
@@ -379,12 +402,15 @@ export function editingGotPath(
 }
 
 export default function VariableForm() {
-  const editing = useStore((s: State) => s.global.editing, deepDifferent);
-  const entity = useStore(
-    (s: State) => s.global.editing && getEntity(s.global.editing),
+  const { editing, entity, events } = useStore(
+    (s: State) => ({
+      editing: s.global.editing,
+      entity: getEntity(s.global.editing),
+      events: s.global.events,
+    }),
     deepDifferent,
   );
-  const events = useStore((s: State) => s.global.events, deepDifferent);
+
   const path = React.useMemo(
     () => (editingGotPath(editing) ? editing.path : undefined),
     [editing],
@@ -415,8 +441,12 @@ export default function VariableForm() {
       update={update}
       actions={actions}
       entity={entity}
-      onChange={() => {
-        store.dispatch(setUnsavedChanges(true));
+      onChange={newEntity => {
+        store.dispatch(
+          ActionCreator.EDITION_CHANGES({
+            newEntity: newEntity as IAbstractEntity,
+          }),
+        );
       }}
       error={parseEventFromIndex(events)}
     />

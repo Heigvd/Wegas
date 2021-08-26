@@ -31,12 +31,13 @@ import { LabeledView, Labeled } from '../../Editor/Components/FormView/labeled';
 import { FileBrowser } from '../../Editor/Components/FileBrowser/FileBrowser';
 import { css, cx } from 'emotion';
 import { classesCTX } from '../Contexts/ClassesProvider';
-import { flexColumn, flex } from '../../css/classes';
+import { flexColumn, flex, defaultMarginTop } from '../../css/classes';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { classNameOrEmpty } from '../../Helper/className';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { RawEditorSettings } from 'tinymce/tinymce';
 import { inputDefaultCSS, inputStyleCSS } from '../Inputs/SimpleInput';
+import { ErrorBoundary } from '../../Editor/Components/ErrorBoundary';
 
 const toolbar = css({
   width: '300px',
@@ -191,6 +192,8 @@ export default function HTMLEditor({
         theme: 'silver',
         inline: inline,
         readonly: readOnly,
+        min_width: 464,
+        width: '100%',
         placeholder,
         browser_spellcheck: true,
         plugins: [
@@ -337,14 +340,18 @@ export default function HTMLEditor({
   }, []);
 
   const toolBarId = 'externalEditorToolbar' + String(HTMLEditorID++);
-
   return (
     <div
       className={editorStyle + classNameOrEmpty(className)}
       style={style}
       id={id}
     >
-      <div style={{ visibility: fileBrowsing.fn ? 'hidden' : 'visible' }}>
+      <div
+        style={{
+          visibility: fileBrowsing.fn ? 'hidden' : 'visible',
+          minWidth: 464,
+        }}
+      >
         {inline && (
           <div id={toolBarId} className={toolbar}>
             {!editorFocus && (
@@ -359,22 +366,28 @@ export default function HTMLEditor({
             )}
           </div>
         )}
-        <TinyEditor
-          value={keepInternalValue ? internalValue : value}
-          init={config(toolBarId)}
-          onInit={editor => {
-            HTMLEditor.current = editor.target;
-          }}
-          onEditorChange={v => {
-            if (value !== v) {
-              onChange && onChange(v);
-            }
-            setInternalValue(v);
-          }}
-          onFocus={() => setEditorFocus(true)}
-          onBlur={() => setEditorFocus(false)}
-          disabled={disabled}
-        />
+        <ErrorBoundary>
+          <TinyEditor
+            value={keepInternalValue ? internalValue : value}
+            init={config(toolBarId)}
+            onInit={editor => {
+              HTMLEditor.current = editor.target;
+            }}
+            onEditorChange={v => {
+              if (
+                value !== v &&
+                !(value === '<p></p>' && v === '') &&
+                !(value === '' && v === '<p></p>')
+              ) {
+                onChange && onChange(v);
+              }
+              setInternalValue(v);
+            }}
+            onFocus={() => setEditorFocus(true)}
+            onBlur={() => setEditorFocus(false)}
+            disabled={disabled}
+          />
+        </ErrorBoundary>
       </div>
       {fileBrowsing.fn && (
         <Modal>
@@ -436,7 +449,7 @@ export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
       >
         <Labeled {...this.props.view}>
           {({ labelNode, inputId }) => (
-            <div className={cx(flex, flexColumn)}>
+            <div className={cx(flex, flexColumn, defaultMarginTop)}>
               {labelNode}
               <HTMLEditor
                 value={this.state.value}

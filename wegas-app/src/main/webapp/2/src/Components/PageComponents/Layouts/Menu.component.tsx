@@ -47,6 +47,7 @@ registerComponent(
     dropzones: {},
     name: 'Menu',
     icon: 'bars',
+    illustration: 'menu',
     schema: { ...menuSchema, ...classStyleIdShema },
     getComputedPropsFromVariable: () => ({ children: [] }),
   }),

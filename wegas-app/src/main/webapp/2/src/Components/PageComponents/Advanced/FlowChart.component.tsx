@@ -92,6 +92,7 @@ registerComponent(
     componentType: 'Advanced',
     name: 'Flow chart',
     icon: 'atom',
+    illustration: 'flowChart',
     schema: {
       title: schemaProps.scriptString({ label: 'Title', richText: true }),
       processes: schemaProps.scriptVariable({

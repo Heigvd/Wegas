@@ -48,30 +48,9 @@ import { StateProcessComponent } from '../../Components/FlowChart/StateProcessCo
 import { TransitionFlowLineComponent } from '../../Components/FlowChart/TransitionFlowLineComponent';
 import { HTMLText } from '../../Components/Outputs/HTMLText';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
-import { internalTranslate } from '../../i18n/internalTranslator';
-//import { internalTranslate } from '../../i18n/internalTranslator';
-//import { commonTranslations } from '../../i18n/common/common';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
 
 const emptyPath: (string | number)[] = [];
-
-export function searchWithState(
-  search?: RState['global']['search'],
-  searched?: string,
-): boolean {
-  let value = '';
-  if (search == null || searched == null) {
-    return false;
-  }
-  if (search.type === 'GLOBAL') {
-    value = search.value;
-  } else if (search.type === 'USAGE') {
-    const variable = VariableDescriptor.select(search.value);
-    if (variable) {
-      value = `Variable.find(gameModel, "${variable.name}")`;
-    }
-  }
-  return value !== '' && searched.indexOf(value) >= 0;
-}
 
 function deleteTransition<T extends IFSMDescriptor | IDialogueDescriptor>(
   stateMachine: Immutable<T>,
@@ -149,26 +128,26 @@ export function StateMachineEditor<
 
   const createTransition: (nextStateId: number, index: number) => TTransition =
     React.useCallback(
-    (nextStateId, index) => {
-      return {
-        ...{
-          version: 0,
-          nextStateId,
-          preStateImpact: createScript(),
-          triggerCondition: createScript(),
-          dependencies: [],
-          index,
-        },
-        ...(entityIs(stateMachine, 'FSMDescriptor')
-          ? { '@class': 'Transition', label: '' }
-          : {
-              '@class': 'DialogueTransition',
-              actionText: createTranslatableContent(lang),
-            }),
-      };
-    },
-    [lang, stateMachine],
-  );
+      (nextStateId, index) => {
+        return {
+          ...{
+            version: 0,
+            nextStateId,
+            preStateImpact: createScript(),
+            triggerCondition: createScript(),
+            dependencies: [],
+            index,
+          },
+          ...(entityIs(stateMachine, 'FSMDescriptor')
+            ? { '@class': 'Transition', label: '' }
+            : {
+                '@class': 'DialogueTransition',
+                actionText: createTranslatableContent(lang),
+              }),
+        };
+      },
+      [lang, stateMachine],
+    );
 
   const connectState = React.useCallback(
     (
@@ -226,7 +205,7 @@ export function StateMachineEditor<
         actions.delete = {
           label: 'Delete',
           confirm: true,
-          sorting: 'button',
+          sorting: 'delete',
           action: (
             sm: IFSMDescriptor | IDialogueDescriptor,
             path?: (string | number)[],
@@ -258,21 +237,26 @@ export function StateMachineEditor<
 
   const updateStatePosition = React.useCallback(
     (sourceState: StateProcess, position: XYPosition, e: MouseEvent) => {
-      const newStateMachine = produce((stateMachine: IFSM) => {
-        stateMachine.states[Number(sourceState.id)].x =
-          position.x >= 10 ? position.x : 10;
-        stateMachine.states[Number(sourceState.id)].y =
-          position.y >= 10 ? position.y : 10;
-      })(stateMachine);
+      const state = store.getState();
+
+      const currentState =
+        state.global.editing?.type === 'VariableFSM' &&
+        state.global.editing.newEntity != null &&
+        state.global.editing.newEntity.id === sourceState.state.id
+          ? (state.global.editing.newEntity as unknown as StateProcess['state'])
+          : sourceState.state;
+
+      const newCurrentState = {
+        ...currentState,
+        x: position.x >= 10 ? position.x : 10,
+        y: position.y >= 10 ? position.y : 10,
+      };
+
       onStateClick(e, sourceState);
-      dispatch(
-        Actions.VariableDescriptorActions.updateDescriptor(
-          newStateMachine,
-          false,
-        ),
-      );
+
+      dispatch(Actions.EditorActions.saveEditor(newCurrentState, false));
     },
-    [dispatch, onStateClick, stateMachine],
+    [dispatch, onStateClick],
   );
 
   const createState = React.useCallback(
@@ -354,7 +338,7 @@ export function StateMachineEditor<
       actions.delete = {
         label: 'Delete',
         confirm: true,
-        sorting: 'button',
+        sorting: 'delete',
         action: (
           sm: IFSMDescriptor | IDialogueDescriptor,
           path?: (string | number)[],
@@ -470,15 +454,16 @@ function globalStateSelector(s: RState) {
 
 interface ConnectedStateMachineEditorProps extends DisabledReadonly {
   localDispatch?: StoreDispatch;
+  forceLocalDispatch?: boolean;
 }
 
 export function ConnectedStateMachineEditor({
   localDispatch,
+  forceLocalDispatch,
   ...options
 }: ConnectedStateMachineEditorProps) {
   const globalState = useStore(globalStateSelector);
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   if ('variable' in globalState) {
     if (globalState.variable == null) {
@@ -498,9 +483,10 @@ export function ConnectedStateMachineEditor({
     return (
       <div className={grow}>
         <StateMachineEditor
+          localDispatch={localDispatch}
+          forceLocalDispatch={forceLocalDispatch}
           stateMachine={globalState.descriptor}
           stateMachineInstance={globalState.instance}
-          localDispatch={localDispatch}
           search={globalState.search}
           editPath={globalState.editPath}
           {...options}

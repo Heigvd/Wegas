@@ -58,7 +58,7 @@ const header = (
           '',
         )
       : '';
-  return `/*\n *\tPlease always respect the return type : ${cleanReturnType}\n *\tPlease only write in JS even if the editor let you write in TS\n */\n(${cleanArgs}) : ${cleanReturnType} => {\n\t`;
+  return `/*\n *\tPlease always respect the return type : ${cleanReturnType}\n*/\n(${cleanArgs}) : ${cleanReturnType} => {\n\t`;
 };
 const headerSize = textToArray(header()).length;
 const footer = () => `\n};`;

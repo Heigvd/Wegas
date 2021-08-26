@@ -1,4 +1,4 @@
-import { cx } from 'emotion';
+import { css, cx } from 'emotion';
 import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import { globals } from '../../Components/Hooks/useScript';
@@ -148,6 +148,11 @@ export function TeamTD({ team, value, onShowOverlay }: TeamTDProps) {
 
   return (
     <td>
+      <div className={css({
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+      })}>
       {name}
       <Button
         ref={buttonRef}
@@ -162,6 +167,7 @@ export function TeamTD({ team, value, onShowOverlay }: TeamTDProps) {
           )
         }
       />
+      </div>
     </td>
   );
 }

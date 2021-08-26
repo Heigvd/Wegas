@@ -38,6 +38,7 @@ registerComponent(
     },
     name: 'Grid',
     icon: 'table',
+    illustration: 'grid',
     schema: { ...gridSchema, ...classStyleIdShema },
     getComputedPropsFromVariable: () => ({ children: [] }),
   }),

@@ -6,11 +6,12 @@ import {
   defaultPadding,
   expandBoth,
   flex,
+  flexBetween,
   flexColumn,
   flexRow,
   itemCenter,
   justifyCenter,
-  justifyEnd,
+  layoutStyle,
 } from '../../../css/classes';
 import { useThemeStore } from '../../../data/Stores/themeStore';
 import FileBrowser from '../../../Editor/Components/FileBrowser/FileBrowser';
@@ -18,8 +19,7 @@ import { borderBottom } from '../../../Editor/Components/FormView/commonView';
 import { Selector } from '../../../Editor/Components/FormView/Select';
 import { IconComp, icons } from '../../../Editor/Components/Views/FontAwesome';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
-import { internalTranslate } from '../../../i18n/internalTranslator';
-import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { DropMenu } from '../../DropMenu';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
@@ -32,7 +32,7 @@ import { SimpleInput } from '../../Inputs/SimpleInput';
 import { HTMLText } from '../../Outputs/HTMLText';
 import { StandardGauge } from '../../Outputs/StandardGauge';
 import { Toolbar } from '../../Toolbar';
-import { SelectedThemes, themeVar } from '../ThemeVars';
+import { SelectedThemes } from '../ThemeVars';
 
 const MIN_VALUE = 0;
 const MAX_VALUE = 10;
@@ -46,7 +46,6 @@ const previewPageHeaderStyle = css({
 
 const previewPageStyle = css({
   padding: '1em',
-  border: '2px solid ' + themeVar.colors.PrimaryColor,
 });
 
 interface PreviewState {
@@ -60,8 +59,7 @@ interface PreviewState {
 }
 
 export default function Preview() {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
   const [previewState, setPreviewState] = React.useState<PreviewState>({
     numericVar: 2,
     textVar: 'Lorem Ipsum',
@@ -81,7 +79,21 @@ export default function Preview() {
 
   return (
     <Toolbar className={defaultPadding}>
-      <Toolbar.Header className={cx(flex, justifyEnd, borderBottom)}>
+      <Toolbar.Header className={cx(flex, flexBetween, borderBottom)}>
+      <DropMenu
+          label= "Preview"
+          items={[
+            {
+              label: "GAME",
+              value: '1',
+            },
+            {
+              label: "PREVIEW",
+              value: '2',
+            }
+          ]}
+          onSelect={() => {}}
+        />
         <DropMenu
           icon="cog"
           items={[
@@ -116,11 +128,11 @@ export default function Preview() {
           onSelect={() => {}}
         />
       </Toolbar.Header>
-      <Toolbar.Content className={cx(flex, flexColumn)}>
+      <Toolbar.Content className={cx(flex, flexColumn, previewClassName)}>
         <div className={previewPageHeaderStyle}>
           <h2>{i18nValues.themeEditor.previewPage}</h2>
         </div>
-        <div className={cx(previewPageStyle, expandBoth)}>
+        <div className={cx(previewPageStyle, expandBoth, layoutStyle)}>
           <ReflexContainer orientation="vertical" className={previewClassName}>
             <ReflexElement>
               <ReflexContainer orientation="horizontal">
@@ -130,6 +142,7 @@ export default function Preview() {
                     min={MIN_VALUE}
                     max={MAX_VALUE}
                     disabled={disabled}
+                    className={css({height: '100%'})}
                   />
                 </ReflexElement>
                 <ReflexSplitter />

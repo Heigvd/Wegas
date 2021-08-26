@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { commonTranslations } from '../../i18n/common/common';
-import { internalTranslate } from '../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { DropMenu } from '../DropMenu';
-import { languagesCTX } from './LanguagesProvider';
 
 const availableFeatures: FeatureLevel[] = ['ADVANCED', 'INTERNAL'];
 
@@ -57,12 +56,14 @@ export const FeaturesProvider = React.memo(FeaturesContext);
 /**
  * Features selector allows to select features inside the feature context given by the FeatureProvider
  */
-export function FeatureToggler({ className, style }: ClassStyleId) {
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
-  const { currentFeatures, setFeature, removeFeature } = React.useContext(
-    featuresCTX,
-  );
+export function FeatureToggler({
+  buttonClassName,
+  className,
+  style,
+}: ClassStyleId & { buttonClassName?: string }) {
+  const i18nValues = useInternalTranslate(commonTranslations);
+  const { currentFeatures, setFeature, removeFeature } =
+    React.useContext(featuresCTX);
 
   const selectFeature = React.useCallback(
     (feature: FeatureLevel) => {
@@ -92,12 +93,22 @@ export function FeatureToggler({ className, style }: ClassStyleId) {
               {feature}
             </>
           ),
+          noCloseMenu: true,
         }))}
-        onSelect={({ value: feature }) => selectFeature(feature)}
         containerClassName={className}
+        onSelect={({ value: feature }) => selectFeature(feature)}
+        buttonClassName={buttonClassName}
         style={style}
+        direction="right"
       />
     ),
-    [i18nValues.features, className, style, currentFeatures, selectFeature],
+    [
+      i18nValues.features,
+      className,
+      buttonClassName,
+      style,
+      currentFeatures,
+      selectFeature,
+    ],
   );
 }

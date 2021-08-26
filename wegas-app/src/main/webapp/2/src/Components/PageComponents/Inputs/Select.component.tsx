@@ -115,6 +115,7 @@ registerComponent(
     componentType: 'Input',
     name: 'Select input',
     icon: 'list-ul',
+    illustration: 'selectInput',
     schema: {
       script: schemaProps.scriptVariable({
         label: 'Variable',

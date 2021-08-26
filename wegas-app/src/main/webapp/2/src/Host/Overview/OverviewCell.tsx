@@ -1,9 +1,9 @@
 import { css } from 'emotion';
 import * as React from 'react';
 import { globals } from '../../Components/Hooks/useScript';
-import { Button } from '../../Components/Inputs/Buttons/Button';
 import { HTMLText } from '../../Components/Outputs/HTMLText';
 import { themeVar } from '../../Components/Theme/ThemeVars';
+import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 import {
   componentOrRawHTML,
   components,
@@ -17,6 +17,7 @@ import {
   OverviewClickType,
 } from './Overview';
 import { OverviewButton } from './OverviewButton';
+import MailIcon from '../../pictures/icon_mail.svg';
 
 export const fixedCellStyle = css({
   position: 'absolute',
@@ -52,17 +53,17 @@ export function OverviewCell({
 
     const view = formatter ? 'formatter' : kind;
     const value = typeof data === 'object' ? data.body : data;
-
     switch (view) {
       case 'boolean':
         return (
           <td className={className} style={style} id={id}>
             <div>
-              <img
-                src={
-                  require(value === true
-                    ? '../../pictures/icon_ok.svg'
-                    : '../../pictures/icon_notok.svg').default
+              <IconComp
+                icon={value === true ? 'check' : 'times'}
+                className={
+                  value === true
+                    ? css({ color: themeVar.colors.SuccessColor })
+                    : css({ color: themeVar.colors.DisabledColor })
                 }
               />
             </div>
@@ -79,11 +80,11 @@ export function OverviewCell({
         return (
           <td className={className} style={style} id={id}>
             <div>
-              <Button
-                tooltip="Read mails"
-                src={require('../../pictures/icon_mail.svg').default}
-                onClick={() => setShowPopup(o => !o)}
-              />
+              <div
+                title="Read mails"
+                onClick={() => setShowPopup(o => !o)}>
+                  <MailIcon />
+              </div>
             </div>
             {showPopup && (
               <div

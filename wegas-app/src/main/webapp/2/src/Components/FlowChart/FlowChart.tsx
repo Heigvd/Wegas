@@ -26,11 +26,13 @@ import {
   FlowLineComponentProps,
 } from './FlowLineComponent';
 import { themeVar } from '../Theme/ThemeVars';
+import { defaultMarginLeft, flex, flexRow } from '../../css/classes';
+import { NumberSlider } from '../Inputs/Number/NumberSlider';
+import { useComparator } from '../../Helper/react.debug';
 
 const flowChartStyle = css({
   width: '100%',
   height: '100%',
-  border: '2px solid ' + themeVar.colors.ActiveColor,
 });
 
 const flowChartHeaderStyle = css({
@@ -91,6 +93,26 @@ interface Connection<F extends FlowLine, P extends Process<F>> {
    * the flowline object use for the connection
    */
   flowline: F;
+}
+
+interface FlowLineOptionalGroupedValues<
+  F extends FlowLine,
+  P extends Process<F>,
+> {
+  values: FlowLineComputedValues | undefined;
+  selected: boolean;
+  id: string;
+  startProcess: P;
+  endProcess: P;
+  flowline: F;
+  circular: boolean;
+  startProcessElement: HTMLElement | undefined;
+  offset: number;
+}
+
+interface FlowLineGroupedValues<F extends FlowLine, P extends Process<F>>
+  extends Exclude<FlowLineOptionalGroupedValues<F, P>, 'values'> {
+  values: FlowLineComputedValues;
 }
 
 export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
@@ -159,7 +181,6 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
 }
 
 const emptyProcesses: Process<FlowLine>[] = [];
-const emptyFlows = { flowlines: null, handles: null, labels: null };
 
 export function FlowChart<F extends FlowLine, P extends Process<F>>({
   title,
@@ -186,6 +207,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   const processesRef = React.useRef<{ [pid: string]: HTMLElement }>({});
 
   const [tempFlow, setTempFlow] = React.useState<TempFlowLineProps>();
+  const [zoom, setZoom] = React.useState<number>(1);
 
   const [, drop] = useDrop<DnDFlowchartHandle<F, P>, unknown, void>({
     accept: PROCESS_HANDLE_DND_TYPE,
@@ -223,6 +245,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
         setTempFlow({
           position: { x: newX - containerX, y: newY - containerY },
           processElements,
+          zoom,
         });
       } else {
         setTempFlow(undefined);
@@ -271,13 +294,9 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
     setInternalProcesses(processes.reduce((o, p) => ({ ...o, [p.id]: p }), {}));
   }, [processes]);
 
-  // Tricking the rendering to build flowline after the first render (onReady like move)
-  const [flows, setFlows] =
-    React.useState<{
-      flowlines: React.ReactNode;
-      handles: React.ReactNode;
-      labels: React.ReactNode;
-    }>(emptyFlows);
+  const [flowValues, setFlowValues] = React.useState<
+    FlowLineGroupedValues<F, P>[]
+  >([]);
 
   const drawFlows = React.useCallback(() => {
     try {
@@ -311,28 +330,13 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
         }, {}),
       );
 
-      interface FlowLineOptionalGroupedValues {
-        values: FlowLineComputedValues | undefined;
-        selected: boolean;
-        id: string;
-        startProcess: P;
-        endProcess: P;
-        flowline: F;
-        circular: boolean;
-        startProcessElement: HTMLElement | undefined;
-        offset: number;
-      }
-
-      interface FlowLineGroupedValues
-        extends Exclude<FlowLineOptionalGroupedValues, 'values'> {
-        values: FlowLineComputedValues;
-      }
-
-      const flowLineValues = groupedConnections.reduce<FlowLineGroupedValues[]>(
+      const flowLineValues = groupedConnections.reduce<
+        FlowLineGroupedValues<F, P>[]
+      >(
         (o, group) => [
           ...o,
           ...group
-            .map<FlowLineOptionalGroupedValues>((c, i, g) => {
+            .map<FlowLineOptionalGroupedValues<F, P>>((c, i, g) => {
               const circular = c.startProcess === c.endProcess;
               const startProcessElement =
                 processesRef.current[c.startProcess.id];
@@ -342,6 +346,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
                   startProcessElement,
                   processesRef.current[c.endProcess.id],
                   circular,
+                  zoom,
                   offset,
                 ),
                 selected: isFlowlineSelected(c.startProcess, c.flowline),
@@ -355,82 +360,37 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
               };
             })
             .filter(function (
-              v: FlowLineOptionalGroupedValues,
-            ): v is FlowLineGroupedValues {
+              v: FlowLineOptionalGroupedValues<F, P>,
+            ): v is FlowLineGroupedValues<F, P> {
               return v.values != null;
             }),
         ],
         [],
       );
 
-      const flowlines = flowLineValues.map(v => {
-        return v.circular ? (
-          <CircularFlowLine
-            key={v.id}
-            processElement={v.startProcessElement}
-            selected={v.selected}
-            positionOffset={v.offset}
-          />
-        ) : (
-          <StraitFlowLine
-            key={v.id}
-            flowlineValues={v.values.flowlineValues}
-            selected={v.selected}
-          />
-        );
-      });
-
-      const handles = flowLineValues.map(v => (
-        <FlowLineHandles
-          key={'Handle' + v.id}
-          {...v.values.handlesValues}
-          startProcess={v.startProcess}
-          endProcess={v.endProcess}
-          flowline={v.flowline}
-          selected={v.selected}
-        />
-      ));
-
-      const labels = flowLineValues.map(v => (
-        <Flowline
-          key={'Label' + v.id}
-          position={v.values.labelValues.position}
-          startProcess={v.startProcess}
-          flowline={v.flowline}
-          disabled={disabled}
-          readOnly={readOnly}
-          onClick={(e, p, f) =>
-            isActionAllowed({ disabled, readOnly }) &&
-            onFlowlineClick &&
-            onFlowlineClick(e, p, f)
-          }
-          selected={v.selected}
-        />
-      ));
-
-      setFlows({ flowlines, handles: actionsAllowed ? handles : null, labels });
+      setFlowValues(flowLineValues);
     } catch (e) {
-      setFlows(emptyFlows);
+      setFlowValues([]);
     }
-  }, [
-    actionsAllowed,
-    disabled,
-    internalProcesses,
-    isFlowlineSelected,
-    onFlowlineClick,
-    readOnly,
-  ]);
+  }, [internalProcesses, isFlowlineSelected, zoom]);
 
-  React.useEffect(() => {
+  useComparator(
+    { processes, internalProcesses, isFlowlineSelected, zoom },
+    'DEEP',
+  );
+
+  React.useLayoutEffect(() => {
     drawFlows();
   }, [drawFlows]);
 
   // Redraw when processes changes
-  const mo = new IntersectionObserver(() => {
-    if (flows === emptyFlows) {
-      drawFlows();
-    }
-  });
+  // const mo = new IntersectionObserver(() => {
+  //   debugger;
+  //   if (flowValues.length === 0) {
+  //     debugger;
+  //     drawFlows();
+  //   }
+  // });
 
   return (
     <Toolbar
@@ -441,17 +401,28 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
       style={style}
       id={id}
     >
-      <Toolbar.Header className={flowChartHeaderStyle}>
+      <Toolbar.Header className={cx(flex, flexRow, flowChartHeaderStyle)}>
         {typeof title === 'string' ? <HTMLText text={title} /> : title}
+        <NumberSlider
+          min={0.1}
+          max={1}
+          steps={100}
+          value={zoom}
+          onChange={value => {
+            setZoom(Number(value.toFixed(2)));
+          }}
+          className={defaultMarginLeft}
+          displayValues="External"
+        />
       </Toolbar.Header>
       <Toolbar.Content
         style={{ position: 'relative' }}
         ref={ref => {
           drop(ref);
-          if (ref != null) {
-            container.current = ref;
-            mo.observe(ref);
-          }
+          // if (ref != null) {
+          //   container.current = ref;
+          //   mo.observe(ref);
+          // }
         }}
       >
         <svg
@@ -477,28 +448,71 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
           }}
         >
           <ArrowDefs />
-          {flows.flowlines}
+          {flowValues.map(v => {
+            return v.circular ? (
+              <CircularFlowLine
+                key={v.id}
+                processElement={v.startProcessElement}
+                selected={v.selected}
+                positionOffset={v.offset}
+                zoom={zoom}
+              />
+            ) : (
+              <StraitFlowLine
+                key={v.id}
+                flowlineValues={v.values.flowlineValues}
+                selected={v.selected}
+                zoom={zoom}
+              />
+            );
+          })}
           {tempFlow != null && <TempFlowLine {...tempFlow} />}
         </svg>
-        {flows.handles}
-        {flows.labels}
-        {processes.map((process, i, a) => (
+        {flowValues.map(v => (
+          <FlowLineHandles
+            key={'Handle' + v.id}
+            {...v.values.handlesValues}
+            startProcess={v.startProcess}
+            endProcess={v.endProcess}
+            flowline={v.flowline}
+            selected={v.selected}
+          />
+        ))}
+        {flowValues.map(v => (
+          <Flowline
+            key={'Label' + v.id}
+            position={v.values.labelValues.position}
+            startProcess={v.startProcess}
+            flowline={v.flowline}
+            disabled={disabled}
+            readOnly={readOnly}
+            onClick={(e, p, f) =>
+              isActionAllowed({ disabled, readOnly }) &&
+              onFlowlineClick &&
+              onFlowlineClick(e, p, f)
+            }
+            selected={v.selected}
+            zoom={zoom}
+          />
+        ))}
+        {processes.map((process /*, i, a*/) => (
           <Process
             key={process.id + JSON.stringify(process.position)}
             process={process}
             onReady={ref => {
               processesRef.current[process.id] = ref;
-              if (i === a.length - 1) {
-                mo.observe(ref);
+              // if (i === a.length - 1) {
+              //   mo.observe(ref);
+              // }
+            }}
+            onMove={position => {
+              if (actionsAllowed) {
+                setInternalProcesses(op => ({
+                  ...op,
+                  [process.id]: { ...op[process.id], position },
+                }));
               }
             }}
-            onMove={position =>
-              actionsAllowed &&
-              setInternalProcesses(op => ({
-                ...op,
-                [process.id]: { ...op[process.id], position },
-              }))
-            }
             onMoveEnd={(position, e) =>
               actionsAllowed && onMove(process, position, e)
             }
@@ -518,6 +532,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
             isProcessSelected={isProcessSelected}
             disabled={disabled}
             readOnly={readOnly}
+            zoom={zoom}
           />
         ))}
       </Toolbar.Content>

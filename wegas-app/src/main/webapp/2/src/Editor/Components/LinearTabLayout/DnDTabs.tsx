@@ -4,12 +4,8 @@ import { useDrag, DropTargetMonitor, useDrop } from 'react-dnd';
 import { DropAction } from './DnDTabLayout';
 import { hidden, flex } from '../../../css/classes';
 import { dropZoneFocus } from '../../../Components/Contexts/DefaultDndProvider';
-import {
-  tabsStyle,
-  tabStyle,
-} from '../../../Components/Tabs';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { tabsStyle, tabStyle } from '../../../Components/Tabs';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 
 // export const dndAcceptType = 'DnDTab';
@@ -21,14 +17,14 @@ interface TabInternalProps {
    * active - the state of the tab
    */
   active?: boolean;
-  // /**
-  //  * children - the content of the tab
-  //  */
-  // children?: React.ReactChild | null;
   /**
    * onClick - the function to be called when the tab is clicked
    */
-  onClick?: () => void;
+  onClick?: React.DOMAttributes<HTMLDivElement>['onClick'];
+  /**
+   * onDoubleClick - the function to be called when the tab is double clicked
+   */
+  onDoubleClick?: React.DOMAttributes<HTMLDivElement>['onDoubleClick'];
   /**
    * className - the className to apply on the component
    */
@@ -41,25 +37,24 @@ interface TabInternalProps {
 
 export type TabProps = React.PropsWithChildren<TabInternalProps>;
 
-
 export const Tab = React.forwardRef<HTMLDivElement, TabProps>(
   (props: TabProps, ref: React.RefObject<HTMLDivElement>) => {
-    const { lang } = React.useContext(languagesCTX);
-    const i18nValues = internalTranslate(commonTranslations, lang);
+    const i18nValues = useInternalTranslate(commonTranslations);
     return (
-    <div
-      ref={ref}
-      className={cx(
-        props.className
-        ? props.className
-        : cx(tabStyle, tabsStyle(props.isChild, props.active)))
-      }
-      onClick={props.onClick}
-    >
-      <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
-        {props.children}
-      </React.Suspense>
-    </div>
+      <div
+        ref={ref}
+        className={cx(
+          props.className
+            ? props.className
+            : cx(tabStyle, tabsStyle(props.isChild, props.active)),
+        )}
+        onClick={props.onClick}
+        onDoubleClick={props.onDoubleClick}
+      >
+        <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
+          {props.children}
+        </React.Suspense>
+      </div>
     );
   },
 );
@@ -78,9 +73,9 @@ interface DragTabProps extends TabProps {
    */
   onDrag?: (label: string) => void;
   /**
-   * layoutId - The token that filter the drop actions
+   * dndAcceptType - The token that filter the drop actions
    */
-  layoutId: string;
+  dndAcceptType: string;
   /**
    * The tab component to use in this component
    */
@@ -99,11 +94,12 @@ interface DnDItem {
 
 export function DragTab({
   label,
-  layoutId,
+  dndAcceptType,
   active,
   children,
   className,
   onClick,
+  onDoubleClick,
   onDrag,
   CustomTab = Tab,
   isChild,
@@ -111,7 +107,7 @@ export function DragTab({
   const [, drag] = useDrag<DnDItem, unknown, unknown>({
     item: {
       label: label,
-      type: layoutId,
+      type: dndAcceptType,
       children: children,
     },
     begin: () => onDrag && onDrag(label),
@@ -126,6 +122,7 @@ export function DragTab({
       active={active}
       className={className}
       onClick={onClick}
+      onDoubleClick={onDoubleClick}
       isChild={isChild}
     >
       {children}
@@ -156,9 +153,9 @@ export interface DropTabProps extends TabProps {
     overviewNode: React.ReactNode;
   };
   /**
-   * layoutId - The token that filter the drop actions
+   * dndAcceptType - The token that filter the drop actions
    */
-  layoutId: string;
+  dndAcceptType: string;
   /**
    * The tab component to use in this component
    */
@@ -166,7 +163,7 @@ export interface DropTabProps extends TabProps {
 }
 
 export function DropTab({
-  layoutId,
+  dndAcceptType,
   active,
   children,
   className,
@@ -177,7 +174,7 @@ export function DropTab({
   CustomTab = Tab,
 }: DropTabProps) {
   const [dropTabProps, dropTab] = useDrop({
-    accept: layoutId,
+    accept: dndAcceptType,
     canDrop: () => true,
     drop: onDrop,
     collect: (mon: DropTargetMonitor) => ({
