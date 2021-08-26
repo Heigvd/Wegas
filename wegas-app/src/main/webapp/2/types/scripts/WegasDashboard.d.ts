@@ -11,8 +11,7 @@ type ValueKind = 'number' | 'string' | 'text' | 'boolean' | 'object' | 'inbox';
 interface WegasDashboardVariableConfig<T = null> extends WegasDashboardConfig {
   id?: string;
   kind?: ValueKind;
-  formatter?: (variable: T) => string;
-  transformer?: (variable: T) => string | { component: string; props: {} };
+  formatter?: (variable: T) => string | { component: string; props: {} };
   index?: number;
   active?: boolean;
   sortable?: boolean;

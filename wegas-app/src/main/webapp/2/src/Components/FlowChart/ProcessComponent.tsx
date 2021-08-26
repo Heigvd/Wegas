@@ -63,11 +63,12 @@ export function CustomProcessComponent<
   onMove,
   onMoveEnd,
   onConnect,
+  zoom,
   children,
   ...options
-}: React.PropsWithChildren<ProcessProps<F, P>>) {
+}: React.PropsWithChildren<ProcessProps<F, P>> & { zoom: number }) {
   const processElement = React.useRef<HTMLDivElement | null>(null);
-  const clickPosition = React.useRef<XYPosition>({ x: 0, y: 0 });
+  // const clickPosition = React.useRef<XYPosition>({ x: 0, y: 0 });
   const [, drop] = useDrop<DnDFlowchartHandle<F, P>, unknown, unknown>({
     accept: PROCESS_HANDLE_DND_TYPE,
     canDrop: () => isActionAllowed(options),
@@ -76,16 +77,21 @@ export function CustomProcessComponent<
     },
   });
 
-  const onDragStart = React.useCallback((e: MouseEvent) => {
-    const targetBox = (e.target as HTMLDivElement).getBoundingClientRect();
-    clickPosition.current = {
-      x: e.clientX - targetBox.left,
-      y: e.clientY - targetBox.top,
-    };
-  }, []);
+  // const onDragStart = React.useCallback(
+  //   (e: MouseEvent) => {
+  //     const targetBox = (e.target as HTMLDivElement).getBoundingClientRect();
+  //     clickPosition.current = {
+  //       x: (e.clientX - targetBox.left) / zoom,
+  //       y: (e.clientY - targetBox.top) / zoom,
+  //     };
+  //   },
+  //   [zoom],
+  // );
 
   const onDrag = React.useCallback(
-    (e: MouseEvent, position: XYPosition) => onMove(position, e),
+    (e: MouseEvent, position: XYPosition) => {
+      onMove({ x: position.x, y: position.y }, e);
+    },
     [onMove],
   );
 
@@ -105,12 +111,13 @@ export function CustomProcessComponent<
   useMouseEventDnd(
     processElement,
     {
-      onDragStart,
+      onDragStart: undefined,
       onDrag,
       onDragEnd,
     },
     true,
     !isActionAllowed(options) || process.undraggable,
+    zoom,
   );
 
   return (
@@ -122,7 +129,11 @@ export function CustomProcessComponent<
           onReady(ref);
         }
       }}
-      style={{ left: process.position.x, top: process.position.y }}
+      style={{
+        left: process.position.x * zoom,
+        top: process.position.y * zoom,
+        transform: `scale(${zoom})`,
+      }}
       className={processStyle}
       data-id={process.id}
     >
@@ -141,6 +152,10 @@ export interface ProcessComponentProps<F extends FlowLine, P extends Process<F>>
    * a callback triggered when a click occures on a process
    */
   onClick?: (e: ModifierKeysEvent, process: P) => void;
+  /**
+   * allows control the size and position of the component
+   */
+  zoom: number;
 }
 
 export function DefaultProcessComponent<

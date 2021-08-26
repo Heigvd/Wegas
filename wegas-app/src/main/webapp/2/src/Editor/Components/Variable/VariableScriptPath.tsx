@@ -17,9 +17,6 @@ const variableScriptPathStyle = css({
   fontSize: '0.8em',
   lineHeight: '0.8em',
   padding: '5px',
-  color: 'black',
-  borderRadius: '2px',
-  boxShadow: `0 0 5px grey`,
 });
 
 interface VariableScriptPathProps {

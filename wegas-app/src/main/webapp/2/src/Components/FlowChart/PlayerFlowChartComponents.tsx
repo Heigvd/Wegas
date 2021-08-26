@@ -35,7 +35,7 @@ export interface LabeledProcess<F extends LabeledFlowLine> extends Process<F> {
 
 export function LabeledFlowLineComponent<
   F extends LabeledFlowLine,
-  P extends LabeledProcess<F>
+  P extends LabeledProcess<F>,
 >({
   onClick,
   startProcess,
@@ -44,9 +44,14 @@ export function LabeledFlowLineComponent<
   readOnly,
   selected,
   position,
+  zoom,
 }: FlowLineComponentProps<F, P>) {
   return (
-    <CustomFlowLineComponent selected={selected} position={position}>
+    <CustomFlowLineComponent
+      selected={selected}
+      position={position}
+      zoom={zoom}
+    >
       {flowline.label && (
         <div
           onClick={e => onClick && onClick(e, startProcess, flowline)}
@@ -66,7 +71,7 @@ export function LabeledFlowLineComponent<
 
 interface PlayerFlowChartProcessBoxProps<
   F extends LabeledFlowLine,
-  P extends LabeledProcess<F>
+  P extends LabeledProcess<F>,
 > extends ClassStyleId {
   process: P;
   disabled?: boolean;
@@ -75,7 +80,7 @@ interface PlayerFlowChartProcessBoxProps<
 
 function PlayerFlowChartProcessBox<
   F extends LabeledFlowLine,
-  P extends LabeledProcess<F>
+  P extends LabeledProcess<F>,
 >({
   process,
   className,
@@ -101,15 +106,15 @@ function PlayerFlowChartProcessBox<
     >
       {process.icon && (
         <div className={indexTagStyle}>
-          <p>
+          <div>
             <IconComp icon={process.icon} />
-          </p>
+          </div>
         </div>
       )}
       <div>
-        <p className="StateLabelTextStyle">
+        <div className="StateLabelTextStyle">
           <HTMLText text={process.label} />
-        </p>
+        </div>
       </div>
       <StateProcessHandle sourceProcess={process} />
     </div>
@@ -118,7 +123,7 @@ function PlayerFlowChartProcessBox<
 
 export function PlayerFlowChartProcessComponent<
   F extends LabeledFlowLine,
-  P extends LabeledProcess<F>
+  P extends LabeledProcess<F>,
 >({
   isProcessSelected,
   onClick,

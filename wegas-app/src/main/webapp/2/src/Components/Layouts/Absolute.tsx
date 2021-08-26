@@ -4,15 +4,83 @@ import {
   WegasComponentItemProps,
 } from '../PageComponents/tools/EditableComponent';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
+import { pageCTX } from '../../Editor/Components/Page/PageEditor';
+import { classNameOrEmpty } from '../../Helper/className';
+import { cx, css } from 'emotion';
+import { isDnDComponent } from '../../Editor/Components/Page/ComponentPalette';
+import { isPageComponentNode } from '../../Editor/Components/Page/PagesLayout';
+import { wwarn } from '../../Helper/wegaslog';
+
+const absoluteLayoutDefaultStyle = css({
+  width: '100%',
+  height: '100%',
+});
+
+const highlightBorders = css({
+  borderStyle: 'solid',
+  borderWidth: '2px',
+});
 
 export function AbsoluteLayout({
   className,
   style,
   children,
+  path,
   id,
 }: WegasComponentProps) {
+  const container = React.useRef<HTMLDivElement>(null);
+  const [isOverCurrent, setIsOverCurrent] = React.useState(false);
+
+  const { onDrop } = React.useContext(pageCTX);
+
   return (
-    <div id={id} className={className} style={style}>
+    <div
+      ref={container}
+      id={id}
+      className={
+        classNameOrEmpty(className) +
+        cx({ [highlightBorders]: isOverCurrent }, absoluteLayoutDefaultStyle)
+      }
+      style={style}
+      onDragOver={e => {
+        e.stopPropagation();
+        e.preventDefault();
+        setIsOverCurrent(true);
+      }}
+      onDragLeave={_e => {
+        setIsOverCurrent(false);
+      }}
+      onDrop={e => {
+        e.preventDefault();
+        e.stopPropagation();
+        let fromData;
+        try {
+          fromData = JSON.parse(e.dataTransfer.getData('data'));
+        } catch (_e) {
+          fromData = undefined;
+        }
+
+        if (
+          fromData != null &&
+          (isDnDComponent(fromData) || isPageComponentNode(fromData))
+        ) {
+          if (container.current) {
+            // Get the bounding rectangle of target
+            const rect = e.currentTarget.getBoundingClientRect();
+
+            // Mouse position
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            onDrop(fromData, path, undefined, {
+              position: { left: x, top: y },
+            });
+          }
+        } else {
+          wwarn('Unmanaged component dropped');
+        }
+      }}
+    >
       {children}
     </div>
   );

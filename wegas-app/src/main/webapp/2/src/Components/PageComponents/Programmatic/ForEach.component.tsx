@@ -103,6 +103,7 @@ registerComponent(
     },
     name: 'For each',
     icon: 'code',
+    illustration: 'forEach',
     schema: {
       ...flexListSchema,
       getItemsFn: schemaProps.customScript({

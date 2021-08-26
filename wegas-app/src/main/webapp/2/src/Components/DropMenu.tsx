@@ -6,7 +6,7 @@ import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { themeVar } from './Theme/ThemeVars';
 import { classNameOrEmpty } from '../Helper/className';
 import { ConfirmButton } from './Inputs/Buttons/ConfirmButton';
-import { flexRow, flex, itemCenter } from '../css/classes';
+import { flexRow, flex, itemCenter, expandWidth } from '../css/classes';
 import { lastKeyboardEvents } from '../Helper/keyboardEvents';
 import { Button } from './Inputs/Buttons/Button';
 import { deepDifferent } from './Hooks/storeHookFactory';
@@ -26,6 +26,8 @@ const childDropMenuButtonStyle = css({
       color: 'inherit',
     },
 });
+
+const stringLabelStyle = css({ padding: '5px' });
 
 export type SelecteDropdMenuItem<
   T,
@@ -62,6 +64,7 @@ export interface DropMenuProps<
   noBackground?: boolean;
   style?: React.CSSProperties;
   selected?: T | T[];
+  tooltip?: string;
 }
 /**
  * returns an empty string
@@ -77,12 +80,13 @@ const subMenuItemContainer = (isSelected: boolean) =>
     itemCenter,
     css({
       cursor: 'pointer',
+      padding: '3px 10px',
+      width: '100%',
       userSelect: 'none',
-      backgroundColor: isSelected ? themeVar.colors.ActiveColor : undefined,
-      color: isSelected ? themeVar.colors.LightTextColor : undefined,
+      backgroundColor: isSelected ? themeVar.colors.HeaderColor : undefined,
       ':hover': {
-        backgroundColor: themeVar.colors.ActiveColor,
-        color: themeVar.colors.LightTextColor,
+        backgroundColor: themeVar.colors.HeaderColor,
+        color: themeVar.colors.DarkTextColor,
       },
     }),
   );
@@ -109,6 +113,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
   noBackground,
   style,
   selected,
+  tooltip,
 }: DropMenuProps<T, MItem>) {
   const onStateChange = React.useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -139,10 +144,17 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
     >
       {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
         <div id={id} className={containerClassName} style={style}>
-          <div className={itemStyle} onClick={() => toggleMenu()}>
+          <div
+            className={itemStyle}
+            onClick={ev => {
+              ev.stopPropagation();
+              toggleMenu();
+            }}
+          >
             <Button
               label={label}
               prefixedLabel={prefixedLabel}
+              tooltip={tooltip || undefined}
               icon={withDefault(
                 icon,
                 !adder && items.length === 0
@@ -153,7 +165,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                 ev.stopPropagation();
                 toggleMenu();
               }}
-              className={buttonClassName}
+              className={buttonClassName + " dropDownButton"}
               noBackground={noBackground}
             />
           </div>
@@ -164,7 +176,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                 contentContainerStyle + classNameOrEmpty(listClassName)
               }
               ref={n => {
-                justifyDropMenu(n, n?.parentElement, direction);
+                justifyDropMenu(n, n?.parentElement?.querySelector(".dropDownButton"), direction);
               }}
             >
               {adder && (
@@ -205,7 +217,9 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                     >
                       <DropMenu
                         onSelect={(v, e) => {
-                          closeMenu();
+                          if (!item.noCloseMenu) {
+                            closeMenu();
+                          }
                           if (onSelect) {
                             onSelect(v as SelecteDropdMenuItem<T, MItem>, e);
                           }
@@ -220,6 +234,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                         }
                         path={newPath}
                         buttonClassName={childDropMenuButtonStyle}
+                        containerClassName={expandWidth}
                       />
                       {trasher}
                     </div>
@@ -236,11 +251,15 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                         })
                       : undefined)}
                     className={
-                      subMenuItemContainer(isSelected) +
+                      cx(subMenuItemContainer(isSelected)) +
                       classNameOrEmpty(item.className)
                     }
                   >
-                    {item.label}
+                    {typeof item.label === 'string' ? (
+                      <div className={stringLabelStyle}>{item.label}</div>
+                    ) : (
+                      item.label
+                    )}
                     {trasher}
                   </div>
                 );

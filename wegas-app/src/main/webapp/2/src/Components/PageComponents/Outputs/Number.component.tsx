@@ -47,6 +47,7 @@ registerComponent(
     componentType: 'Output',
     name: 'Number',
     icon: 'calculator',
+    illustration: 'number',
     schema: {
       script: schemaProps.scriptVariable({
         label: 'Variable',

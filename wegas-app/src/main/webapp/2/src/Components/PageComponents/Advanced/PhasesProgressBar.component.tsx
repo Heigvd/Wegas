@@ -77,6 +77,7 @@ registerComponent(
     componentType: 'Advanced',
     name: 'Phases',
     icon: 'ellipsis-h',
+    illustration: 'phases',
     schema: {
       phase: schemaProps.scriptVariable({
         label: 'Phase',

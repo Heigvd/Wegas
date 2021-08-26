@@ -12,13 +12,8 @@
         "allowSyntheticDefaultImports": true,
         "suppressImplicitAnyIndexErrors": true
     },
-    "include": [
-        "src",
-        "typings"
-    ],
-    "exclude": [
-        "node_modules"
-    ],
+    "include": ["src", "typings"],
+    "exclude": ["node_modules"],
     "awesomeTypescriptLoaderOptions": {
         "useBabel": true,
         "useCache": true,

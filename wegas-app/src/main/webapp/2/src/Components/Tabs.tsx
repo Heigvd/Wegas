@@ -24,7 +24,7 @@ export const tabStyle = css({
   display: 'flex',
   alignItems: 'center',
   cursor: 'pointer',
-  marginLeft: '6px',
+  marginRight: '6px',
   padding: '10px 10px',
   borderRadius:
     themeVar.dimensions.BorderRadius +
@@ -35,9 +35,27 @@ export const tabStyle = css({
   fontSize: '13px',
   fontWeight: 600,
   lineHeight: '120%',
-  button: {
+  position: 'relative',
+  '& .close-btn': {
     padding: '0 0 0 10px',
   },
+  '& .fullscreen-btn': {
+    background: themeVar.colors.PrimaryColor,
+    borderRadius: themeVar.dimensions.BorderRadius + ' 0 4px 0',
+    opacity: 0,
+    height: 0,
+    padding: 0,
+    transition: 'all .5s',
+    position: 'absolute',
+    top:0,
+    left: 0,
+    color: themeVar.colors.LightTextColor,
+  },
+  '&:hover .fullscreen-btn': {
+    opacity: 1,
+    height: 'auto',
+    padding: '3px',
+  }
 });
 export const inactiveTabStyle = css({
   backgroundColor: themeVar.colors.BackgroundColor,
@@ -56,6 +74,7 @@ export const inactiveTabStyle = css({
 export const activeTabStyle = css({
   color: themeVar.colors.LightTextColor,
   backgroundColor: themeVar.colors.ActiveColor,
+  boxShadow: '2px 2px 6px rgba(0,0,0,0.2)',
   height: '52px',
   button: {
     color: themeVar.colors.LightTextColor,
@@ -78,6 +97,11 @@ export const childInactiveTabStyle = css({
     backgroundColor: themeVar.colors.PrimaryColor,
     border: '1px solid transparent',
   },
+  '&:hover .fullscreen-btn': {
+    opacity: 0,
+    height: '0',
+    padding: 0,
+  }
 });
 export const childActiveTabStyle = css({
   color: themeVar.colors.ActiveColor,
@@ -87,6 +111,11 @@ export const childActiveTabStyle = css({
   button: {
     color: themeVar.colors.DisabledColor,
   },
+  '&:hover .fullscreen-btn': {
+    opacity: 0,
+    height: '0',
+    padding: 0,
+  }
 });
 
 export const plusTabStyle = css({

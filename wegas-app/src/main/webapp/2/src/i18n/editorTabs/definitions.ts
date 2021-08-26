@@ -9,7 +9,7 @@ export interface EditorTabsTranslations {
     Styles: string;
     Client: string;
     Server: string;
-    'Language Editor': string;
+    Languages: string;
     'Client Console': string;
     'Server Console': string;
     'Instances Editor': string;
@@ -23,6 +23,8 @@ export interface EditorTabsTranslations {
     'Pages Layout': string;
     'Source Editor': string;
     'Component Properties': string;
+    'Language editor': string;
+    'Translation manager': string;
   };
   stateMachine: {
     selectVariable: string;
@@ -67,6 +69,8 @@ export interface EditorTabsTranslations {
     scriptNotSaved: string;
     scriptSaved: string;
     createLibraryPlease: string;
+    canntoBeParsed: string;
+    canntoBeParsedCondition: string;
   };
   instanceProps: {
     noDescriptorEdited: string;
@@ -79,6 +83,7 @@ export interface EditorTabsTranslations {
     theme: (t: string) => string;
     themeName: string;
     addTheme: string;
+    deleteTheme: string;
     modeAlreadyExists: string;
     mode: (m: string) => string;
     modeName: string;
@@ -94,6 +99,8 @@ export interface EditorTabsTranslations {
     someText: string;
     clickMe: string;
     nextMode: string;
+    deleteMode: string;
+    setMainMode: string;
     states: (state: string) => string;
     sections: (section: string) => string;
     themeColorShades: {
@@ -141,4 +148,9 @@ export interface EditorTabsTranslations {
   languageEditor: {
     languages: string;
   };
+  variableProperties: {
+    toggleCoding: string;
+    runScripts: string;
+    deleteGroup: string;
+  }
 }

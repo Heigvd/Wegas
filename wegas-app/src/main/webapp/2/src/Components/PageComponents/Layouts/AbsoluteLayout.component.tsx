@@ -31,6 +31,7 @@ registerComponent(
     },
     name: 'AbsoluteLayout',
     icon: 'images',
+    illustration: 'absoluteLayout',
     dropzones: {
       center: true,
     },

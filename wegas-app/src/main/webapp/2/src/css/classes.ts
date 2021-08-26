@@ -29,7 +29,7 @@ export const hiddenImportant = css({
 export const relative = css({
   position: 'relative',
 });
-export const absoute = css({
+export const absolute = css({
   position: 'absolute',
 });
 
@@ -210,24 +210,21 @@ export const button = css({
 
 // Editor
 export const localSelection = css({
-  backgroundColor: themeVar.colors.HeaderColor,
+  border: '1px dashed ' + themeVar.colors.PrimaryColor,
 });
 export const globalSelection = css({
-  //  borderStyle: 'solid',
-  //  borderWidth: '2px',
-  //  borderColor: themeVar.colors.BorderColor,
   borderRadius: themeVar.dimensions.BorderRadius,
-  boxShadow: `0px 0px 0px 1px ${themeVar.colors.PrimaryColor}`,
+  backgroundColor: themeVar.colors.HeaderColor,
 });
 export const searchSelection = css({
-  backgroundColor: themeVar.colors.HighlightColor,
+  border: '1px solid ' + themeVar.colors.HighlightColor,
 });
 
 // Layout base styles
 export const layoutStyle = css({
   color: themeVar.colors.DarkTextColor,
   backgroundColor: themeVar.colors.BackgroundColor,
-  fontFamily: themeVar.others.TextFont1,
+  fontFamily: themeVar.others.TextFont2,
 });
 export const headerStyle = css({
   backgroundColor: themeVar.colors.SecondaryBackgroundColor,

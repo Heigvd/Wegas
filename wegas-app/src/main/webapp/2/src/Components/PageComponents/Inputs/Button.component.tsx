@@ -43,14 +43,16 @@ function PlayerButton({
 
   const buttonProps: ButtonProps = React.useMemo(
     () => ({
-    id: id,
-    className: className,
-    style: { margin: 'auto', ...style },
-    icon: icon,
-    prefixedLabel: prefixedLabel,
-    label:
-      label && translation !== '' ? <HTMLText text={translation} /> : undefined,
-    tooltip,
+      id: id,
+      className: className,
+      style: { margin: 'auto', ...style },
+      icon: icon,
+      prefixedLabel: prefixedLabel,
+      label:
+        label && translation !== '' ? (
+          <HTMLText text={translation} />
+        ) : undefined,
+      tooltip,
       disabled: options.disabled || options.locked,
       readOnly: options.readOnly,
     }),
@@ -77,7 +79,7 @@ function PlayerButton({
   return confirm ? (
     <ConfirmButton
       onAction={(success, event) => {
-        if (success) {
+        if (success && event) {
           onClick(event);
         }
       }}
@@ -104,6 +106,7 @@ registerComponent(
     manageOnClick: true,
     name: 'Button',
     icon: 'hand-pointer',
+    illustration: 'button',
     schema: buttonSchema,
   }),
 );

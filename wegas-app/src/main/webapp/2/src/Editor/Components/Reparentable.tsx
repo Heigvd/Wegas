@@ -71,8 +71,8 @@ export function Reparentable({
       `${Reparentable.name} must be enclosed by a ${ReparentableRoot.name}`,
     );
   }
-  const node = getNode(children, id);
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
+    const node = getNode(children, id);
     const container = n.current;
     if (container) {
       node.className = innerClassName ? innerClassName : '';
@@ -83,6 +83,6 @@ export function Reparentable({
         }
       };
     }
-  }, [n, node, innerClassName]);
+  }, [n, innerClassName, getNode, children, id]);
   return <div ref={n} className={outerClassName} />;
 }

@@ -20,39 +20,29 @@ import { ThemeSelector } from './Theme/ThemeSelector';
 import { ModeSelector } from './Mode/ModeSelector';
 import { themeVar } from '../ThemeVars';
 import { outlineButtonStyle } from '../../Inputs/Buttons/Button';
-import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
+const addIconStyle = css({
+color: themeVar.colors.LightTextColor,
+marginRight: "10px",
+'&:hover': {
+  color: themeVar.colors.PrimaryColor,
+}
+});
 
 const themeEditorHeaderStyle = css({
   backgroundColor: themeVar.colors.ActiveColor,
   button: {
     fontSize: '13px',
-  },
-  ['button:not(.iconOnly)']: {
-    ...outlineButtonStyle,
-    marginLeft: '15px',
-  },
-  ['button.noOutline, .confirmBtn button:not(.dark)']: {
-    backgroundColor: themeVar.colors.PrimaryColor,
-    border: 'none',
-    marginLeft: '5px',
-  },
-  ['button.iconOnly']: {
-    color: themeVar.colors.HeaderColor,
-    ['&:hover']: {
-      color: themeVar.colors.PrimaryColor + '!important',
-    },
-  },
+  }
 });
 
 export default function ThemeEditor() {
   const { themes, selectedThemes } = useThemeStore(s => s);
   const dispatch = getThemeDispatch();
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(editorTabsTranslations, lang);
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   return (
     <Toolbar>
@@ -64,8 +54,8 @@ export default function ThemeEditor() {
           themeEditorHeaderStyle,
         )}
       >
-        <ThemeSelector />
-        <ModeSelector />
+        <ThemeSelector dropMenuClassName={css({...outlineButtonStyle})} addButtonClassName={addIconStyle}/>
+        <ModeSelector dropMenuClassName={css({...outlineButtonStyle})} addButtonClassName={addIconStyle}/>
         <DropMenu
           label={i18nValues.themeEditor.contexts}
           items={Object.keys(selectedThemes).map(
@@ -92,6 +82,7 @@ export default function ThemeEditor() {
             }),
           )}
           onSelect={() => {}}
+          buttonClassName={css({...outlineButtonStyle})}
         />
       </Toolbar.Header>
       <Toolbar.Content>

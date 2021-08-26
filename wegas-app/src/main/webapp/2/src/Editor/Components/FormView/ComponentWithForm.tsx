@@ -15,11 +15,10 @@ import { css, cx } from 'emotion';
 import {
   Edition,
   closeEditor,
-  setUnsavedChanges,
   EditingState,
   ActionsProps,
 } from '../../../data/Reducer/globalState';
-import { StoreDispatch } from '../../../data/Stores/store';
+import { StoreDispatch, store, useStore } from '../../../data/Stores/store';
 import { createStoreConnector } from '../../../data/connectStore';
 import { flex, grow, autoScroll, halfOpacity } from '../../../css/classes';
 import { InstancePropertiesProps } from '../Variable/InstanceProperties';
@@ -29,9 +28,10 @@ import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { Dispatch } from 'redux';
-import { StateActions } from '../../../data/actions';
+import { StateActions, ActionCreator } from '../../../data/actions';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { fullscreenCTX } from '../LinearTabLayout/DnDTabLayout';
 
 const growBig = css({
   flex: '30 1 auto',
@@ -107,10 +107,12 @@ function EmbeddedForm({
   localState,
   localDispatch,
   onInstanceEditorAction,
+  noClose,
 }: {
   localState: EditingState;
   localDispatch: Dispatch<StateActions>;
   onInstanceEditorAction?: () => void;
+  noClose?: boolean;
 }) {
   const { editing, events } = localState;
 
@@ -131,12 +133,14 @@ function EmbeddedForm({
         ? editing.actions.more
         : {},
     ),
-    {
+  ];
+  if (!noClose) {
+    actions.push({
       label: 'Close',
       sorting: 'close',
       action: () => localDispatch(closeEditor()),
-    },
-  ];
+    });
+  }
   if (onInstanceEditorAction) {
     actions.push({
       label: 'Instance',
@@ -144,7 +148,6 @@ function EmbeddedForm({
       action: onInstanceEditorAction,
     });
   }
-
   if (!editing || !config || !update) {
     return null;
   }
@@ -156,8 +159,12 @@ function EmbeddedForm({
       update={update}
       actions={actions}
       entity={entity}
-      onChange={() => {
-        localDispatch(setUnsavedChanges(true));
+      onChange={newEntity => {
+        localDispatch(
+          ActionCreator.EDITION_CHANGES({
+            newEntity: newEntity as IAbstractEntity,
+          }),
+        );
       }}
       error={parseEventFromIndex(events, localDispatch)}
     />
@@ -179,36 +186,22 @@ export function ComponentWithForm({
   disabled,
   flexValues = defaultFlexValues,
 }: ComponentWithFormProps) {
+  const { fullscreen } = React.useContext(fullscreenCTX);
+
   const { useStore: useLocalStore, getDispatch: getLocalDispatch } =
     React.useMemo(() => createStoreConnector(storeFactory()), []);
-  const localState = useLocalStore(
+
+  const globalState = useStore(state => state.global.editing);
+
+  const fullscreenFSM = globalState?.type === 'VariableFSM' && fullscreen;
+
+  const localState = (fullscreenFSM ? useStore : useLocalStore)(
     (state: LocalGlobalState) => state.global,
     shallowDifferent,
   );
   const [instanceView, setInstanceView] = React.useState(false);
-  const localDispatch = getLocalDispatch();
+  const localDispatch = fullscreenFSM ? store.dispatch : getLocalDispatch();
   const localEntity = getEntity(localState.editing);
-  const actions = [
-    ...Object.values(
-      localState.editing &&
-        'actions' in localState.editing &&
-        localState.editing.actions.more
-        ? localState.editing.actions.more
-        : {},
-    ),
-    {
-      label: 'Close',
-      sorting: 'close',
-      action: () => localDispatch(closeEditor()),
-    },
-  ];
-  if (entityEditor) {
-    actions.push({
-      label: 'Instance',
-      sorting: 'toolbox',
-      action: () => setInstanceView(show => !show),
-    });
-  }
 
   return (
     <ReflexContainer
@@ -242,6 +235,7 @@ export function ComponentWithForm({
             onInstanceEditorAction={
               entityEditor ? () => setInstanceView(show => !show) : undefined
             }
+            noClose={fullscreenFSM}
           />
         </ReflexElement>
       )}

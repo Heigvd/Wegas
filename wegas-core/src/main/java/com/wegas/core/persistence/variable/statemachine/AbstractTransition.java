@@ -149,7 +149,7 @@ public abstract class AbstractTransition extends AbstractEntity implements Broad
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(
         nullable = false, optional = false, proposal = EmptyScript.class,
-        view = @View(label = "Impact", value = ScriptView.Impact.class))
+        view = @View(label = "Impact(s)", value = ScriptView.Impact.class, index = 604))
     private Script preStateImpact;
 
     /**
@@ -158,7 +158,7 @@ public abstract class AbstractTransition extends AbstractEntity implements Broad
     @Embedded
     @WegasEntityProperty(
         nullable = false, optional = false, proposal = EmptyScript.class,
-        view = @View(label = "Condition", value = ScriptView.Condition.class))
+        view = @View(label = "Condition(s)", value = ScriptView.Condition.class, index = 603))
     private Script triggerCondition;
 
     /**
@@ -169,7 +169,7 @@ public abstract class AbstractTransition extends AbstractEntity implements Broad
         view = @View(
             label = "Depends on strategy",
             value = ManualOrAutoSelectView.class,
-            index = -300
+            index = 602
         ))
     @Column(length = 10, columnDefinition = "character varying(10) default 'AUTO'::character varying")
     @Enumerated(value = EnumType.STRING)

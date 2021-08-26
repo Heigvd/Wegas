@@ -28,7 +28,7 @@ public class DialogueTransition extends AbstractTransition {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Text", value = I18nHtmlView.class))
+            view = @View(label = "Text", value = I18nHtmlView.class, index = 500))
     private TranslatableContent actionText;
 
     /**

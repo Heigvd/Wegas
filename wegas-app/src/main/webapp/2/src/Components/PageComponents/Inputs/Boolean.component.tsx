@@ -92,6 +92,7 @@ registerComponent(
     componentType: 'Input',
     name: 'Boolean',
     icon: 'check-square',
+    illustration: 'boolean',
     schema: {
       script: schemaProps.scriptBoolean({
         label: 'Variable',

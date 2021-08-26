@@ -3,8 +3,7 @@ import { useOnClickOutside } from '../../Components/Hooks/useOnClickOutside';
 import { cx } from 'emotion';
 import { flex, flexRow } from '../../css/classes';
 import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
-import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
-import { internalTranslate } from '../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
 
 interface TextPromptProps extends ClassStyleId {
@@ -47,8 +46,7 @@ export function TextPrompt({
   const inputValue = React.useRef('');
   const input = React.useRef<HTMLInputElement>(null);
   const textPrompt = React.useRef<HTMLDivElement>(null);
-  const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(commonTranslations, lang);
+  const i18nValues = useInternalTranslate(commonTranslations);
 
   React.useEffect(() => {
     if (defaultFocus && input.current) {

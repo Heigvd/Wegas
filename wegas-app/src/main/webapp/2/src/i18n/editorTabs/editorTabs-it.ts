@@ -11,7 +11,7 @@ export const editorTabsTranslationsIT: EditorTabsTranslations = {
     Styles: 'Stili',
     Client: 'Cliente',
     Server: 'Server',
-    'Language Editor': 'Editore di lingue',
+    Languages: 'Lingue',
     'Client Console': 'Console client',
     'Server Console': 'Console server',
     'Instances Editor': 'Editor di istanze',
@@ -25,9 +25,12 @@ export const editorTabsTranslationsIT: EditorTabsTranslations = {
     'Pages Layout': 'Layout di pagine',
     'Source Editor': 'Editore di fonte',
     'Component Properties': 'Proprietà del componente',
+    'Language editor': 'Editore di lingue',
+    'Translation manager': 'Gestione delle traduzioni',
   },
   stateMachine: {
-    selectVariable: 'Selezionare una variabile da visualizzare',
+    selectVariable:
+      'Selezionare una macchina di stato o un dialogo da visualizzare',
     selectedNotStateMachine:
       'La variabile selezionata non è una specie di macchina di stato',
   },
@@ -75,6 +78,9 @@ export const editorTabsTranslationsIT: EditorTabsTranslations = {
     scriptNotSaved: 'Lo script non viene salvato',
     scriptSaved: 'Lo script viene salvato',
     createLibraryPlease: 'Crea una biblioteca premendo il pulsante +',
+    canntoBeParsed: 'Lo script non può essere analizzato',
+    canntoBeParsedCondition:
+      'Lo script non può essere analizzato come condizione',
   },
   instanceProps: {
     noDescriptorEdited: 'Nessun descrittore è stato modificato',
@@ -87,6 +93,7 @@ export const editorTabsTranslationsIT: EditorTabsTranslations = {
     theme: t => `Tema: ${t}`,
     themeName: 'Nome del tema',
     addTheme: 'Aggiungi un tema',
+    deleteTheme: 'Cancellare il tema',
     modeAlreadyExists: 'Il modo esiste già',
     mode: m => `Modo: ${m}`,
     modeName: 'Nome del modo',
@@ -102,6 +109,8 @@ export const editorTabsTranslationsIT: EditorTabsTranslations = {
     someText: 'Alcuni testi',
     clickMe: 'Cliccare qui',
     nextMode: 'Modo successivo : ',
+    deleteMode: 'Cancellare il modo',
+    setMainMode: 'Imposta come modalità principale',
     states: state => {
       if (state === 'disabled') return 'Disattivato';
       else if (state === 'readOnly') return 'Leggere solo';
@@ -165,5 +174,10 @@ export const editorTabsTranslationsIT: EditorTabsTranslations = {
   },
   languageEditor: {
     languages: 'Lingue',
+  },
+  variableProperties: {
+    toggleCoding: 'Alterna la console di codifica',
+    runScripts: 'Eseguire gli script',
+    deleteGroup: 'Cancellare questo gruppo',
   },
 };

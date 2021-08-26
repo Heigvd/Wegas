@@ -30,9 +30,11 @@ const listViewItemsStyle = css({
 
 const listViewItemSelectedStyle = css({
   cursor: 'pointer',
-  backgroundColor: themeVar.colors.HighlightColor,
+  color: themeVar.colors.LightTextColor,
+  backgroundColor: themeVar.colors.ActiveColor,
   ':hover': {
-    backgroundColor: themeVar.colors.HighlightColor,
+    backgroundColor: themeVar.colors.ActiveColor,
+    color: themeVar.colors.LightTextColor,
   },
 });
 
@@ -40,7 +42,7 @@ const listViewItemEnabledStyle = css({
   cursor: 'pointer',
   ':hover': {
     backgroundColor: themeVar.colors.HoverColor,
-    color: themeVar.colors.HoverTextColor,
+    color: themeVar.colors.DarkTextColor,
   },
 });
 

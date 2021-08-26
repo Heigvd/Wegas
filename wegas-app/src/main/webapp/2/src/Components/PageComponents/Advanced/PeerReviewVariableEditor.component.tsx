@@ -31,7 +31,7 @@ import {
   createTranslation,
 } from '../../../Editor/Components/FormView/translatable';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { internalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../../i18n/peerReview/peerReview';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
@@ -42,7 +42,7 @@ import { NumberInput } from '../../Inputs/Number/NumberInput';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';
 import { useOkCancelModal } from '../../Modal';
 import { HTMLText } from '../../Outputs/HTMLText';
-import { popupDispatch, addPopup } from '../../PopupManager';
+import { addPopup } from '../../PopupManager';
 import { themeVar } from '../../Theme/ThemeVars';
 import {
   pageComponentFactory,
@@ -75,7 +75,7 @@ export default function PeerReviewVariableEditor({
   const lastVal = React.useRef<string | number | undefined>();
   const timer = React.useRef<NodeJS.Timeout | null>();
   const { lang } = React.useContext(languagesCTX);
-  const i18nValues = internalTranslate(peerReviewTranslations, lang);
+  const i18nValues = useInternalTranslate(peerReviewTranslations);
   const sPR = useScript<SPeerReviewDescriptor | undefined>(peerReview, context);
   const reviewState = useStore(() =>
     sPR?.getInstance(Player.self()).getReviewState(),
@@ -93,8 +93,9 @@ export default function PeerReviewVariableEditor({
     deepDifferent,
   );
 
-  const [value, setValue] =
-    React.useState<string | number | undefined>(storeValue);
+  const [value, setValue] = React.useState<string | number | undefined>(
+    storeValue,
+  );
 
   React.useEffect(() => {
     setValue(storeValue);
@@ -121,7 +122,7 @@ export default function PeerReviewVariableEditor({
         )
           .catch(e => {
             e.json().then((error: WegasErrorMessage) => {
-              popupDispatch(
+              store.dispatch(
                 addPopup(
                   error.message + new Date().getTime(),
                   createTranslatableContent(lang, error.message),
@@ -273,6 +274,7 @@ registerComponent(
     componentType: 'Advanced',
     name: 'Peer Review variable editor',
     icon: 'pen-alt',
+    illustration: 'PRVariableEditor',
     schema: {
       peerReview: schemaProps.scriptVariable({
         label: 'Peer review',

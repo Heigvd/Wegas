@@ -9,30 +9,6 @@ export const iconButtonStyle = css({
   alignItems: 'center',
   color: themeVar.colors.PrimaryColor,
   backgroundColor: 'transparent',
-  ['&.dark']: {
-    backgroundColor: themeVar.colors.LightTextColor,
-    color: themeVar.colors.PrimaryColor,
-  },
-  ['&.chip']: {
-    margin: '0 3px',
-    height: '35px',
-    width: '35px',
-    justifyContent: 'center',
-    backgroundColor: themeVar.colors.PrimaryColor,
-    color: themeVar.colors.LightTextColor,
-    borderRadius: '50%',
-    ['&.disabled']: {
-      backgroundColor: themeVar.colors.DisabledColor,
-      color: themeVar.colors.LightTextColor,
-    },
-    ['&:not(.disabled):not(.readOnly):hover']: {
-      backgroundColor: themeVar.colors.ActiveColor,
-      color: themeVar.colors.LightTextColor,
-    },
-    ['&.shadow']: {
-      boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.15)',
-    },
-  },
   borderStyle: 'none',
   paddingLeft: '5px',
   paddingRight: '5px',
@@ -41,18 +17,25 @@ export const iconButtonStyle = css({
   cursor: 'pointer',
   fontFamily: themeVar.others.TextFont2,
   borderRadius: themeVar.dimensions.BorderRadius,
-  ['&:not(.disabled):not(.readOnly):hover']: {
+  ['&:hover']: {
     color: themeVar.colors.ActiveColor,
   },
   ['&:focus']: {
     outline: 'none',
+    color: themeVar.colors.ActiveColor,
   },
   ['&.readOnly']: {
     cursor: 'initial',
+    '&:hover': {
+      color: 'inherit',
+    }
   },
   ['&.disabled']: {
     cursor: 'initial',
     color: themeVar.colors.DisabledColor,
+    '&:hover': {
+      color: themeVar.colors.DisabledColor,
+    }
   },
   ['&.noClick']: {
     cursor: 'inherit',
@@ -70,6 +53,33 @@ export const iconButtonStyle = css({
   ['&.error']: {
     ['&.iconOnly']: {
       color: themeVar.colors.ErrorColor,
+    },
+  },
+  ['&.dark']: {
+    backgroundColor: themeVar.colors.LightTextColor,
+    color: themeVar.colors.PrimaryColor,
+  },
+  ['&.chip']: {
+    margin: '0 3px',
+    height: '33px',
+    minWidth: '33px',
+    width: '33px',
+    justifyContent: 'center',
+    backgroundColor: themeVar.colors.PrimaryColor,
+    color: themeVar.colors.LightTextColor,
+    borderRadius: '50%',
+    padding: 0,
+    fontSize: '14px',
+    ['&.disabled']: {
+      backgroundColor: themeVar.colors.DisabledColor,
+      color: themeVar.colors.LightTextColor,
+    },
+    ['&:not(.disabled):not(.readOnly):hover, &:not(.disabled):not(.readOnly):focus']: {
+      backgroundColor: themeVar.colors.ActiveColor,
+      color: themeVar.colors.LightTextColor,
+    },
+    ['&.shadow']: {
+      boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.15)',
     },
   },
 });

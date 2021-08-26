@@ -291,7 +291,7 @@ export default function ConnectedComponentProperties() {
           label: 'Delete',
           action: () => onDelete(editedPath),
           confirm: true,
-          sorting: 'button',
+          sorting: 'delete',
         },
         {
           label: 'Deselect',

@@ -131,14 +131,14 @@ export function createDescriptor(
             more: {
               duplicate: {
                 label: 'duplicate',
-                sorting: 'toolbox',
+                sorting: 'duplicate',
                 action: (entity: IVariableDescriptor) => {
                   dispatch(duplicateDescriptor(entity));
                 },
               },
               delete: {
                 label: 'delete',
-                sorting: 'button',
+                sorting: 'delete',
                 action: (entity: IVariableDescriptor, path?: string[]) => {
                   dispatch(deleteDescriptor(entity, path));
                 },
@@ -160,11 +160,9 @@ export function deleteDescriptor(
       return store.dispatch(updateDescriptor(vs));
     }
     const gameModelId = store.getState().global.currentGameModelId;
-    return VariableDescriptorAPI.delete(
-      gameModelId,
-      variableDescriptor,
-    ).then(res =>
-      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    return VariableDescriptorAPI.delete(gameModelId, variableDescriptor).then(
+      res =>
+        store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
 }

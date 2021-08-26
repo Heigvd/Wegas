@@ -2,6 +2,7 @@ import { setDefaultWidgets } from 'jsoninput';
 import hidden from './Hidden';
 import uneditable from './Uneditable';
 import StringInput from './String';
+import NumberInput from './Number';
 import ObjectView from './Object';
 import Textarea from './Textarea';
 import BooleanView from './Boolean';
@@ -49,7 +50,7 @@ export const DEFINED_VIEWS = {
   iconselect: IconSelect,
   questselect: QuestSelect,
   i18nstring: translatable(StringInput),
-  number: StringInput,
+  number: NumberInput,
   boolean: BooleanView,
   scriptableBoolean: ScriptableBoolean,
   textarea: Textarea,
