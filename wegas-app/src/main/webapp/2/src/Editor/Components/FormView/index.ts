@@ -35,6 +35,9 @@ import AttachmentSelector from './AttachmentSelector';
 import { ScriptableString } from './ScriptableString';
 import { ScriptablePath } from './ScriptablePath';
 import { ScriptableBoolean } from './ScriptableBoolean';
+import ColorPickerView from './ColorPickerView';
+import IconSelect from './IconSelect';
+import QuestSelect from './QuestSelect';
 
 export const DEFINED_VIEWS = {
   hidden,
@@ -42,6 +45,9 @@ export const DEFINED_VIEWS = {
   object: ObjectView,
   hashlist: HashListView,
   string: StringInput,
+  colorpicker: ColorPickerView,
+  iconselect: IconSelect,
+  questselect: QuestSelect,
   i18nstring: translatable(StringInput),
   number: StringInput,
   boolean: BooleanView,

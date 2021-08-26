@@ -12,6 +12,7 @@ import EntityArrayFieldSelect from './Views/Interacting/entityarrayfieldselect';
 import FlatVariableSelect from './Views/Interacting/flatvariableselect';
 import PageSelect from './Views/Interacting/pageselect';
 import EventSelect from './Views/Interacting/eventselect';
+import QuestSelect from './Views/Interacting/questselect';
 import PluginElement from './Views/Interacting/pluginelement';
 import TreeVariableSelect from './Views/Interacting/treevariableselect';
 import ObjectView from './Views/object';
@@ -49,6 +50,7 @@ setDefaultWidgets({
     pageloaderselect: PageLoaderSelect,
     pageselect: PageSelect,
     eventselect: EventSelect,
+    questselect: QuestSelect,
     plugin: PluginElement,
     script: MultiVariableMethod,
     scriptcondition: MultiVariableCondition,

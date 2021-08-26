@@ -29,6 +29,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor.Isolation;
+import com.wegas.core.persistence.variable.primitive.AchievementInstance;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.ObjectInstance;
@@ -139,6 +140,7 @@ import org.eclipse.persistence.config.QueryType;
 })
 //@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {
+    @JsonSubTypes.Type(name = "AchievementInstance", value = AchievementInstance.class),
     @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class),
     @JsonSubTypes.Type(name = "TextInstance", value = TextInstance.class),
     @JsonSubTypes.Type(name = "StaticTextInstance", value = StaticTextInstance.class),

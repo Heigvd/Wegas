@@ -180,6 +180,8 @@ export default function Overview() {
     setNewData(true);
   });
 
+  const isRealGame = GameModel.selectCurrent().type === 'PLAY';
+
   const i18nValues = useInternalTranslate(commonTranslations);
   const refreshOverview = React.useCallback(() => {
     setNewData(false);
@@ -328,7 +330,7 @@ export default function Overview() {
             />
             <tbody>
               {Object.entries(teams)
-                .filter(([, t]) => t['@class'] === 'Team')
+                .filter(([, t]) => !isRealGame || t['@class'] === 'Team')
                 .sort(sortFn)
                 .map(([id, t]) => {
                   const team = instantiate(t);

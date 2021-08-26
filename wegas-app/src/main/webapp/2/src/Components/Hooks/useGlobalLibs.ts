@@ -113,11 +113,11 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
             .join('\n')}
         }
 
-        type FindFN = 
+        type FindFN =
           | (<T extends keyof VariableClasses>(
           gameModel: SGameModel,
           name: T
-        ) => VariableClasses[T]) 
+        ) => VariableClasses[T])
 
         declare class Variable {
           static find: FindFN;
@@ -126,12 +126,12 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
               ? `static select: <T extends SVariableDescriptor>(
             _gm: unknown,
             id: number,
-          ) => T | undefined;        
+          ) => T | undefined;
           static getItems: <T = SVariableDescriptor>(
             itemsIds: number[],
           ) => Readonly<T[]>;`
               : ''
-          }       
+          }
         }
 
         ${
@@ -198,13 +198,13 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         declare const Context : {
           [id:string]:any;
         }
-        
+
         declare const APIMethods : APIMethodsClass;
 
         declare const Helpers : GlobalHelpersClass;
         `
             : `${buildGlobalServerMethods(globalServerMethods)}
-        
+
         declare class WegasDashboard {
           static registerVariable:
             <T extends keyof VariableClasses> (
@@ -212,7 +212,8 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
               config?: WegasDashboardVariableConfig<VariableClasses[T]>
             ) => void;
           static registerAction: WegasDashboardRegisterAction;
-        }   
+          static registerQuest: WegasDashboardRegisterQuest;
+        }
 
         declare class Team {
           static find(id:numnber): STeam;

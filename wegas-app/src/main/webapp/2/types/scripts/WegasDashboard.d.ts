@@ -49,3 +49,10 @@ type WegasDashboardRegisterAction = (
   actions: ModalAction,
   config?: WegasDashboardActionConfig,
 ) => void;
+
+type WegasDashboardRegisterQuest = (
+  questName: string, cfg: {
+    label: string,
+    react: true
+  }
+) => void;

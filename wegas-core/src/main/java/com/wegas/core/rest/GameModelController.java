@@ -334,7 +334,7 @@ public class GameModelController {
             gameModelFacade.createWithDebugGame(gameModel);
             return gameModel;
         } else if (details.getContentDisposition().getFileName().endsWith(".wgz")) {
-            try (ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
+            try ( ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
                 return gameModelFacade.unzip(zip);
             }
         } else {
@@ -355,7 +355,7 @@ public class GameModelController {
         if (details.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE)) {
             newVersion = JacksonMapperProvider.getMapper().readValue(file, GameModel.class);
         } else if (details.getContentDisposition().getFileName().endsWith(".wgz")) {
-            try (ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
+            try ( ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
                 newVersion = gameModelFacade.extractGameModelFromWGZ(zip);
             }
         }
@@ -380,7 +380,7 @@ public class GameModelController {
         if (details.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE)) {
             newVersion = JacksonMapperProvider.getMapper().readValue(file, GameModel.class);
         } else if (details.getContentDisposition().getFileName().endsWith(".wgz")) {
-            try (ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
+            try ( ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
                 newVersion = gameModelFacade.extractGameModelFromWGZ(zip);
             }
         }
@@ -649,6 +649,19 @@ public class GameModelController {
     @Path("{gameModelId: [1-9][0-9]*}/FindAllFiredEvents")
     public Set<String> findFiredEvents(@PathParam("gameModelId") Long gameModelId) {
         return gameModelFacade.findAllFiredEvents(gameModelId);
+    }
+
+    /**
+     * Find all quest defined in achievements of the given project
+     *
+     * @param gameModelId if of the gameModel
+     *
+     * @return set of quest name
+     */
+    @GET
+    @Path("{gameModelId: [1-9][0-9]*}/FindAllQuests")
+    public Set<String> findAllQuests(@PathParam("gameModelId") Long gameModelId) {
+        return gameModelFacade.findAllQuests(gameModelId);
     }
 
     @GET

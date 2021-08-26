@@ -116,6 +116,8 @@ YUI().use(function(Y) {
                 path: "js/persistence/wegas-variabledescriptor-entities-min.js",
                 requires: ["wegas-entity", "promise"],
                 ws_provides: [
+                    "AchievementDescriptor",
+                    "AchievementInstance",
                     "BooleanDescriptor",
                     "BooleantInstance",
                     "InboxDescriptor",
@@ -302,6 +304,14 @@ YUI().use(function(Y) {
             "wegas-image": {
                 path: "js/widget/wegas-image-min.js",
                 ws_provides: "Image"
+            },
+            "wegas-achievements": {
+                path: "js/widget/wegas-achievements-min.js",
+                ws_provides: ["QuestProgressBar", "AchievementPopup", "AchievementExhibition"],
+                requires: ["wegas-widget", "wegas-achievements-css"]
+            },
+            "wegas-achievements-css": {
+                type: CSS
             },
             "wegas-box": {
                 path: "js/widget/wegas-box-min.js",

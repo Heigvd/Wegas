@@ -401,7 +401,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         TranslatableContent trC = new TranslatableContent();
         for (Translation t : this.getRawTranslations()) {
             trC.getRawTranslations().add(
-                new Translation(t.getLang(), t.getTranslation(), 
+                new Translation(t.getLang(), t.getTranslation(),
                     t.getStatus(), trC));
         }
         return trC;
@@ -486,7 +486,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
 
     @Override
     public String toString() {
-        return this.translateOrEmpty((GameModel) null);
+        return "TrContent(" + this.translateOrEmpty((GameModel) null) +")";
     }
 
     public static class TranslatableCallback implements WegasCallback {

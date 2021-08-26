@@ -1,0 +1,45 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
+
+.yui3-skin-sam .wegas-achievements-progressbar-content:not(.showText) .progressbar__text{
+    display: none;
+}
+
+.yui3-skin-sam .wegas-achievements-progressbar-content:not(.showBar) .progressbar__container{
+    display: none;
+}
+
+.yui3-skin-sam .wegas-achievements-progressbar .progressbar__container {
+    height: 1em;
+    line-height: 1;
+    border-radius: 50px;
+    transition: all 0.5s;
+    box-shadow: 0 0 5px #69bd7f;
+    margin: 5px;
+}
+
+.yui3-skin-sam .wegas-achievements-progressbar .progressbar__bar {
+    border-radius: inherit;
+    height: inherit;
+    line-height: inherit;
+    text-align: center;
+    background-color: #69bd7f;
+    color: white;
+    transition: all 0.5s;
+    overflow: hidden;
+}
+
+.yui3-skin-sam .wegas-achievements-progressbar .progressbar__bar:before {
+    display: inline-block;
+    content: '';
+}
+
+.yui3-skin-sam .wegas-achievements-progressbar .progressbar__value {
+    display: inline-block;
+    white-space: nowrap;
+}

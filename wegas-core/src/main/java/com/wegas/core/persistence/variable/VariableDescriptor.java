@@ -44,6 +44,7 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.primitive.AchievementDescriptor;
 import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
@@ -237,7 +238,8 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "SurveyTextDescriptor", value = SurveyTextDescriptor.class),
     @JsonSubTypes.Type(name = "SurveyNumberDescriptor", value = SurveyNumberDescriptor.class),
     @JsonSubTypes.Type(name = "SurveyChoicesDescriptor", value = SurveyChoicesDescriptor.class),
-    @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
+    @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class),
+    @JsonSubTypes.Type(name = "AchievementDescriptor", value = AchievementDescriptor.class)
 })
 //@MappedSuperclass
 @WegasEntity(callback = VariableDescriptor.VdMergeCallback.class)

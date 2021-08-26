@@ -37,7 +37,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         CONTENT_TEMPLATE: "<div class=\"wegas-editor-variabletreeview\"></div>",
         // ** Lifecycle methods ** //
         renderUI: function() {
-            //var searchVal, searchRE, savedState, req, 
+            //var searchVal, searchRE, savedState, req,
             var checkReq;
             this._timer = new Y.Wegas.Timer({
                 duration: 300
@@ -78,7 +78,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
              searchVal = "";
              this._timer.reset();
              }
-             
+
              }, this)
              }
              });
@@ -366,6 +366,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 case 'ResourceDescriptor':
                 case 'BurndownDescriptor':
                 case 'DialogueDescriptor':
+                case 'AchievementDescriptor':
                     return {
                         type: 'TreeNode',
                         label: text,

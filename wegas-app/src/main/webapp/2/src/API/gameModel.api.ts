@@ -1,4 +1,4 @@
-import { managedModeRequest } from './rest';
+import { managedModeRequest, rest } from './rest';
 
 export const GameModelApi = {
   get(gameModelId: number | string) {
@@ -14,6 +14,11 @@ export const GameModelApi = {
         body: JSON.stringify(entity),
       },
       false,
+    );
+  },
+  getAllQuests(gameModelId: number): Promise<string[]> {
+    return rest('/GameModel/' + gameModelId + '/FindAllQuests').then(
+      res => res.json() as Promise<string[]>,
     );
   },
 };

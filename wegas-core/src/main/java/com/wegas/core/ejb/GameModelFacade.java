@@ -585,7 +585,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-                try (ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
+                try ( ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
 
                     // serialise the json
                     ZipEntry gameModelEntry = new ZipEntry("gamemodel.json");
@@ -1331,6 +1331,22 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     public String findAndReplace(Long gameModelId, FindAndReplacePayload payload) {
         return this.findAndReplace(this.find(gameModelId), payload);
+    }
+
+    /**
+     * Find all quest defined in achievements of the given project
+     *
+     * @param gameModelId if of the gameModel
+     *
+     * @return set of quest name
+     */
+    public Set<String> findAllQuests(Long gameModelId) {
+        TypedQuery<String> query = this.getEntityManager().createNamedQuery("Achievement.findDistinctQuests", String.class);
+        query.setParameter("gameModelId", gameModelId);
+
+        HashSet set = new HashSet();
+        set.addAll(query.getResultList());
+        return set;
     }
 
     public Set<String> findAllFiredEvents(Long gameModelId) {

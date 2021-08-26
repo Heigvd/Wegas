@@ -423,6 +423,39 @@ YUI.add("wegas-parent", function(Y) {
                                                         },
                                                         {
                                                             type: BUTTON,
+                                                            label: "Quest Progress Bar",
+                                                            cssClass: "wegas-advanced-feature",
+                                                            plugins: [{
+                                                                    fn: "AddChildWidgetAction",
+                                                                    cfg: {
+                                                                        childType: "QuestProgressBar"
+                                                                    }
+                                                                }]
+                                                        },
+                                                        {
+                                                            type: BUTTON,
+                                                            label: "Achievement Notification",
+                                                            cssClass: "wegas-advanced-feature",
+                                                            plugins: [{
+                                                                    fn: "AddChildWidgetAction",
+                                                                    cfg: {
+                                                                        childType: "AchievementPopup"
+                                                                    }
+                                                                }]
+                                                        },
+                                                        {
+                                                            type: BUTTON,
+                                                            label: "Achievement Exhibition",
+                                                            cssClass: "wegas-advanced-feature",
+                                                            plugins: [{
+                                                                    fn: "AddChildWidgetAction",
+                                                                    cfg: {
+                                                                        childType: "AchievementExhibition"
+                                                                    }
+                                                                }]
+                                                        },
+                                                        {
+                                                            type: BUTTON,
                                                             label: "Review",
                                                             cssClass: "wegas-advanced-feature",
                                                             plugins: [{

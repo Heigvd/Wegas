@@ -1,6 +1,7 @@
 import { IMergeable, MapOf } from 'wegas-ts-api';
 import * as WegasApiConnector from 'wegas-ts-api';
 
+import { SAchievementDescriptorImpl } from './impl/AchievementDescriptor';
 import { SBooleanDescriptorImpl } from './impl/BooleanDescriptor';
 import { SNumberDescriptorImpl } from './impl/NumberDescriptor';
 import { SWhQuestionDescriptorImpl } from './impl/WhQuestionDescriptor';
@@ -33,6 +34,7 @@ import {
 } from './impl/SurveyInputDescriptor';
 
 const apiConnector = new WegasApiConnector.WegasClient({
+  AchievementDescriptor: SAchievementDescriptorImpl,
   BooleanDescriptor: SBooleanDescriptorImpl,
   BurndownDescriptor: SBurndownDescriptorImpl,
   ChoiceDescriptor: SChoiceDescriptorImpl,
@@ -60,7 +62,7 @@ const apiConnector = new WegasApiConnector.WegasClient({
 });
 
 export function instantiate<
-  T extends IMergeable | IMergeable[] | MapOf<IMergeable> | null | undefined
+  T extends IMergeable | IMergeable[] | MapOf<IMergeable> | null | undefined,
 >(entity: T) {
   return apiConnector.instantiate(entity);
 }

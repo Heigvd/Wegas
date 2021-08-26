@@ -7,7 +7,7 @@ import { Cover } from '../Components/Cover';
 
 interface IColorProps {
     id: string;
-    value?: string;
+    value?: string| null;
     onChange: (value?: string) => void;
 }
 
@@ -27,7 +27,7 @@ class ColorPicker extends React.Component<IColorProps, { pick: boolean }> {
                 >
                     <ChromePicker
                         disableAlpha
-                        color={this.props.value}
+                        color={this.props.value || undefined}
                         onChange={color => this.props.onChange(color.hex)}
                     />
                 </Cover>
