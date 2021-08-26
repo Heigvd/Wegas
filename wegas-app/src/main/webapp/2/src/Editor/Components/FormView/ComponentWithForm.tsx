@@ -15,7 +15,6 @@ import { css, cx } from 'emotion';
 import {
   Edition,
   closeEditor,
-  setUnsavedChanges,
   EditingState,
   ActionsProps,
 } from '../../../data/Reducer/globalState';
@@ -29,7 +28,7 @@ import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { Dispatch } from 'redux';
-import { StateActions } from '../../../data/actions';
+import { StateActions, ActionCreator } from '../../../data/actions';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { fullscreenCTX } from '../LinearTabLayout/DnDTabLayout';
@@ -160,8 +159,12 @@ function EmbeddedForm({
       update={update}
       actions={actions}
       entity={entity}
-      onChange={() => {
-        localDispatch(setUnsavedChanges(true));
+      onChange={newEntity => {
+        localDispatch(
+          ActionCreator.EDITION_CHANGES({
+            newEntity: newEntity as IAbstractEntity,
+          }),
+        );
       }}
       error={parseEventFromIndex(events, localDispatch)}
     />

@@ -23,11 +23,12 @@ export const EDITOR_SET_ROLES = 'EDITOR/ROLES/SET';
 
 export const VARIABLE_EDIT = 'VARIABLE/EDIT';
 export const FSM_EDIT = 'FSM/EDIT';
+export const EDITION_CHANGES = 'EDITION/CHANGES';
 export const FILE_EDIT = 'FILE/EDIT';
 export const VARIABLE_CREATE = 'VARIABLE/CREATE';
 export const CLOSE_EDITOR = 'EDITOR/CLOSE';
 
-export const UNSAVED_CHANGES = 'EDITOR/UNSAVED';
+export const DISCARD_UNSAVED_CHANGES = 'EDITOR/UNSAVED/DISCARD';
 
 // export const PAGE_EDIT_MODE = 'PAGE/EDIT_MODE';
 // export const PAGE_SRC_MODE = 'PAGE/SRC_MODE';

@@ -216,8 +216,8 @@ export function CTree({
               if (actionAllowed) {
                 const unsaved =
                   forceLocalDispatch || e.ctrlKey
-                    ? localState?.unsaved
-                    : store.getState().global.editing?.unsaved;
+                    ? localState?.newEntity != null
+                    : store.getState().global.editing?.newEntity != null;
                 if (unsaved && onShowWarning) {
                   onShowWarning(() => onClickAction(e));
                 } else {

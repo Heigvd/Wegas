@@ -15,7 +15,6 @@ import {
   ActionsProps,
   ComponentEdition,
   Edition,
-  setUnsavedChanges,
   VariableEdition,
 } from '../../data/Reducer/globalState';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
@@ -24,6 +23,7 @@ import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
 import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
+import { ActionCreator } from '../../data/actions';
 
 export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
@@ -441,8 +441,12 @@ export default function VariableForm() {
       update={update}
       actions={actions}
       entity={entity}
-      onChange={() => {
-        store.dispatch(setUnsavedChanges(true));
+      onChange={newEntity => {
+        store.dispatch(
+          ActionCreator.EDITION_CHANGES({
+            newEntity: newEntity as IAbstractEntity,
+          }),
+        );
       }}
       error={parseEventFromIndex(events)}
     />

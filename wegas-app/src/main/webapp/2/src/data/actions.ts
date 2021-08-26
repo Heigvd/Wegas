@@ -103,6 +103,8 @@ export const ActionCreator = {
 
   VARIABLE_EDIT: variableEditAction(ActionType.VARIABLE_EDIT),
   FSM_EDIT: variableEditAction(ActionType.FSM_EDIT),
+  EDITION_CHANGES: (data: { newEntity: IAbstractEntity }) =>
+    createAction(ActionType.EDITION_CHANGES, data),
   FILE_EDIT: (data: {
     entity: IAbstractContentDescriptor;
     cb?: (newEntity: IAbstractContentDescriptor) => void;
@@ -119,8 +121,8 @@ export const ActionCreator = {
   }) => createAction(ActionType.VARIABLE_CREATE, data),
 
   CLOSE_EDITOR: () => createAction(ActionType.CLOSE_EDITOR, {}),
-  USAVED_CHANGES: (unsaved: boolean) =>
-    createAction(ActionType.UNSAVED_CHANGES, { unsaved }),
+  DISCARD_UNSAVED_CHANGES: () =>
+    createAction(ActionType.DISCARD_UNSAVED_CHANGES, {}),
 
   MANAGED_RESPONSE_ACTION: (data: {
     // Nearly empty shells

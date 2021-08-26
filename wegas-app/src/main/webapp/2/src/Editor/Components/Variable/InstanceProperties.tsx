@@ -28,16 +28,13 @@ import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { themeCTX, ThemeComponent } from '../../../Components/Theme/Theme';
 import { IVariableInstance } from 'wegas-ts-api';
 import { VariableDescriptor, VariableInstance } from '../../../data/selectors';
-import {
-  Edition,
-  setUnsavedChanges,
-  VariableEdition,
-} from '../../../data/Reducer/globalState';
+import { Edition, VariableEdition } from '../../../data/Reducer/globalState';
 // import { VariableTreeTitle } from './VariableTreeView.tsx.old';
 import { State } from '../../../data/Reducer/reducers';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { VariableTreeTitle } from './VariableTreeTitle';
+import { ActionCreator } from '../../../data/actions';
 
 const listBox = css({
   width: '100%',
@@ -166,7 +163,13 @@ export function InstanceProperties({
             entity={selectedInstance}
             error={parseEventFromIndex(events)}
             actions={actions}
-            onChange={() => dispatch(setUnsavedChanges(true))}
+            onChange={newEntity => {
+              dispatch(
+                ActionCreator.EDITION_CHANGES({
+                  newEntity: newEntity as IAbstractEntity,
+                }),
+              );
+            }}
             {...options}
           />
         )}

@@ -106,15 +106,15 @@ function PlayerFlowChartProcessBox<
     >
       {process.icon && (
         <div className={indexTagStyle}>
-          <p>
+          <div>
             <IconComp icon={process.icon} />
-          </p>
+          </div>
         </div>
       )}
       <div>
-        <p className="StateLabelTextStyle">
+        <div className="StateLabelTextStyle">
           <HTMLText text={process.label} />
-        </p>
+        </div>
       </div>
       <StateProcessHandle sourceProcess={process} />
     </div>

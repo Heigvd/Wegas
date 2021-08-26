@@ -110,7 +110,7 @@ export interface EditorAction<T extends IAbstractEntity> {
 }
 
 export interface EditionState {
-  unsaved: boolean;
+  newEntity?: IAbstractEntity;
 }
 
 export interface VariableEdition extends EditionState {
@@ -273,8 +273,15 @@ export function editorManagement(
         config: action.payload.config,
         path: action.payload.path,
         actions: action.payload.actions,
-        unsaved: false,
       };
+    case ActionType.EDITION_CHANGES:
+      if (
+        state.editing?.type === 'Variable' ||
+        state.editing?.type === 'VariableFSM'
+      ) {
+        state.editing.newEntity = action.payload.newEntity;
+      }
+      break;
     case ActionType.VARIABLE_CREATE:
       return {
         type: 'VariableCreate',
@@ -282,23 +289,26 @@ export function editorManagement(
         parentId: action.payload.parentId,
         parentType: action.payload.parentType,
         actions: action.payload.actions,
-        unsaved: false,
+        newEntity: undefined,
       };
     case ActionType.FILE_EDIT:
       return {
         type: 'File',
         ...action.payload,
-        unsaved: false,
+        newEntity: undefined,
       };
+    case ActionType.DISCARD_UNSAVED_CHANGES:
+      if (
+        state.editing?.type === 'Variable' ||
+        state.editing?.type === 'VariableFSM'
+      ) {
+        state.editing.newEntity = undefined;
+      }
+      break;
     case ActionType.CLOSE_EDITOR:
       return undefined;
-    case ActionType.UNSAVED_CHANGES:
-      return state.editing == null
-        ? state.editing
-        : { ...state.editing, ...action.payload };
-    default:
-      return state.editing;
   }
+  return state.editing;
 }
 
 /**
@@ -655,9 +665,12 @@ export function createVariable(
  * @param {IAbstractEntity} value
  * @returns {ThunkResult}
  */
-export function saveEditor(value: IMergeable): ThunkResult {
+export function saveEditor(
+  value: IMergeable,
+  selectUpdatedEntity: boolean = true,
+): ThunkResult {
   return function save(dispatch, getState) {
-    dispatch(setUnsavedChanges(false));
+    dispatch(discardUnsavedChanges());
     const editMode = getState().global.editing;
     if (editMode == null) {
       return;
@@ -668,6 +681,7 @@ export function saveEditor(value: IMergeable): ThunkResult {
         return dispatch(
           ACTIONS.VariableDescriptorActions.updateDescriptor(
             value as IVariableDescriptor,
+            selectUpdatedEntity,
           ),
         );
       case 'VariableCreate':
@@ -702,8 +716,8 @@ export function closeEditor() {
   return ActionCreator.CLOSE_EDITOR();
 }
 
-export function setUnsavedChanges(unsaved: boolean) {
-  return ActionCreator.USAVED_CHANGES(unsaved);
+export function discardUnsavedChanges() {
+  return ActionCreator.DISCARD_UNSAVED_CHANGES();
 }
 
 export function editorEvent(anyEvent: WegasEvents[keyof WegasEvents]) {

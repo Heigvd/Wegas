@@ -237,21 +237,40 @@ export function StateMachineEditor<
 
   const updateStatePosition = React.useCallback(
     (sourceState: StateProcess, position: XYPosition, e: MouseEvent) => {
-      const newStateMachine = produce((stateMachine: IFSM) => {
-        stateMachine.states[Number(sourceState.id)].x =
-          position.x >= 10 ? position.x : 10;
-        stateMachine.states[Number(sourceState.id)].y =
-          position.y >= 10 ? position.y : 10;
-      })(stateMachine);
+      // const newStateMachine = produce((stateMachine: IFSM) => {
+      //   stateMachine.states[Number(sourceState.id)].x =
+      //     position.x >= 10 ? position.x : 10;
+      //   stateMachine.states[Number(sourceState.id)].y =
+      //     position.y >= 10 ? position.y : 10;
+      // })(stateMachine);
+      // onStateClick(e, sourceState);
+      // dispatch(
+      //   Actions.VariableDescriptorActions.updateDescriptor(
+      //     newStateMachine,
+      //     false,
+      //   ),
+      // );
+
+      const state = store.getState();
+
+      const currentState =
+        state.global.editing?.type === 'VariableFSM' &&
+        state.global.editing.newEntity != null &&
+        state.global.editing.newEntity.id === sourceState.state.id
+          ? (state.global.editing.newEntity as unknown as StateProcess['state'])
+          : sourceState.state;
+
+      const newCurrentState = {
+        ...currentState,
+        x: position.x >= 10 ? position.x : 10,
+        y: position.y >= 10 ? position.y : 10,
+      };
+
       onStateClick(e, sourceState);
-      dispatch(
-        Actions.VariableDescriptorActions.updateDescriptor(
-          newStateMachine,
-          false,
-        ),
-      );
+
+      dispatch(Actions.EditorActions.saveEditor(newCurrentState, false));
     },
-    [dispatch, onStateClick, stateMachine],
+    [dispatch, onStateClick],
   );
 
   const createState = React.useCallback(
