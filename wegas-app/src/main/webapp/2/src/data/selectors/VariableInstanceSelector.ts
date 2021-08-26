@@ -3,10 +3,10 @@ import { isMatch } from 'lodash-es';
 import { IVariableInstance } from 'wegas-ts-api';
 
 /**
- * Find a variableDescriptor for an id
+ * Find a variableInstance for an id
  *
  * @export
- * @param {number} id variableDescriptor id
+ * @param {number} id variableInstance id
  * @returns {(Readonly<IVariableInstance> | undefined)}
  */
 export function select<T extends IVariableInstance = IVariableInstance>(
