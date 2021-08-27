@@ -161,7 +161,7 @@ export function useMouseEventDnd<T extends HTMLElement>(
         }, 50);
       }
     },
-    [disabled, onDragEnd, prenventClick],
+    [disabled, onDragEnd, prenventClick, zoom],
   );
 
   React.useEffect(() => {

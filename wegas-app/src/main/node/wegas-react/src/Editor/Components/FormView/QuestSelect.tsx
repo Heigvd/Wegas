@@ -5,7 +5,7 @@ import { CommonViewContainer, CommonView } from './commonView';
 import { GameModelApi } from '../../../API/gameModel.api';
 import { selectCurrent } from '../../../data/selectors/GameModel';
 import Creatable from 'react-select/creatable';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { selectStyles } from './Select';
 
 interface Option {
   value: string;
@@ -54,7 +54,7 @@ function QuestSelect({
     return () => {
       alive = false;
     };
-  }, [gameModel?.id]);
+  }, [gameModel.id]);
 
   const onChangeCb = React.useCallback(
     (option: { value: string } | null) => {
@@ -89,41 +89,7 @@ function QuestSelect({
                   value={makeOption(value || '')}
                   onChange={onChangeCb}
                   onCreateOption={createOptionCb}
-                  styles={{
-                    control: (provided, state) => {
-                      return {
-                        ...provided,
-                        border: `2px solid ${
-                          state.isFocused
-                            ? themeVar.colors.ActiveColor
-                            : themeVar.colors.PrimaryColor
-                        }`,
-                        borderRadius: themeVar.dimensions.BorderRadius,
-                        backgroundColor: themeVar.colors.BackgroundColor,
-                        ':hover': {
-                          border: '2px solid ' + themeVar.colors.PrimaryColor,
-                        },
-                        boxShadow: 'unset',
-                      };
-                    },
-                    option: (provided, state) => {
-                      if (state.isFocused) {
-                        return {
-                          ...provided,
-                          backgroundColor: themeVar.colors.HoverColor,
-                          color: themeVar.colors.PrimaryColorShade,
-                        };
-                      } else if (state.isSelected) {
-                        return {
-                          ...provided,
-                          backgroundColor: themeVar.colors.PrimaryColor,
-                          color: themeVar.colors.BackgroundColor,
-                        };
-                      } else {
-                        return { ...provided };
-                      }
-                    },
-                  }}
+                  styles={selectStyles}
                 />
               </>
             );

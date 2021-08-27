@@ -13,7 +13,6 @@ import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
-import { wlog } from '../../../Helper/wegaslog';
 import { flex } from '../../../css/classes';
 
 const transparentStyle = css({
@@ -247,7 +246,7 @@ export function DragDropArray<T>({
   controls,
 }: React.PropsWithChildren<DropArrayProps<T>>) {
   const valueLength = Array.isArray(array) ? array.length : 0;
-  wlog(label);
+  //wlog(label);
   return (
     <>
       {label}

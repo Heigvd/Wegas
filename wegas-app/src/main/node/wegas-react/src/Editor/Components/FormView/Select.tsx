@@ -39,10 +39,11 @@ export interface IAsyncSelectProps extends WidgetProps.BaseProps {
   } & CommonView &
   LabeledView;
 }
-export const selectStyle = css({
+const selectStyle = css({
   ...inputStyleCSS,
-  padding: '2px 30px 2px 4px',
   alignItems: 'center',
+  border: 'none',
+  borderRadius: 'unset',
 });
 
 export const selectArrowStyle = css({
@@ -72,7 +73,7 @@ const undefinedTitle: Choice = {
   value: undefined,
   label: '- undefined -',
   selected: true,
-  disabled: false,
+  disabled: true,
 };
 
 interface SelectorProps extends ClassStyleId, DisabledReadonly {
@@ -82,12 +83,19 @@ interface SelectorProps extends ClassStyleId, DisabledReadonly {
   allowUndefined?: boolean;
 }
 
+
+type SelectProps = React.ComponentProps<typeof Select>;
+
 interface Option {
   value: string;
   label: string;
+  color?: string;
+  isDisabled?: boolean;
+  isFixed?: boolean;
 }
 
 type Options = Option[];
+
 
 
 function buildOption(choice: string | Choice): Option {
@@ -95,7 +103,11 @@ function buildOption(choice: string | Choice): Option {
     return { value: choice, label: choice };
   } else {
     const strValue = typeof choice.value === 'string' ? choice.value : JSON.stringify(choice.value);
-    return { value: strValue, label: choice.label || strValue };
+    return {
+      value: strValue,
+      label: choice.label || strValue,
+      isDisabled: choice.disabled
+    };
   }
 }
 
@@ -107,11 +119,50 @@ function findOption(options: Options, value: string): Option | undefined {
   return options.find(opt => opt.value === value);
 }
 
+export const selectStyles: SelectProps['styles'] = {
+  control: (provided, state) => {
+    return {
+      ...provided,
+      border: `2px solid ${ state.isFocused
+        ? themeVar.colors.ActiveColor
+        : themeVar.colors.PrimaryColor
+        }`,
+      borderRadius: themeVar.dimensions.BorderRadius,
+      backgroundColor: themeVar.colors.BackgroundColor,
+      ':hover': {
+        border: '2px solid ' + themeVar.colors.PrimaryColor,
+      },
+      boxShadow: 'unset',
+    };
+  },
+  menu: (provided) => {
+    // the zIndex battle : Select VS tineMCE toolbar
+    return { ...provided, zIndex: 2 };
+  },
+  option: (provided, state) => {
+    if (state.isFocused) {
+      return {
+        ...provided,
+        backgroundColor: themeVar.colors.HoverColor,
+        color: themeVar.colors.PrimaryColorShade,
+      };
+    } else if (state.isSelected) {
+      return {
+        ...provided,
+        backgroundColor: themeVar.colors.PrimaryColor,
+        color: themeVar.colors.BackgroundColor,
+      };
+    } else {
+      return { ...provided };
+    }
+  },
+}
+
 export function Selector({
   choices,
   id,
   className,
-  style,
+  /*style,*/
   value = '',
   onChange,
   allowUndefined = false,
@@ -134,64 +185,19 @@ export function Selector({
 
   const currentOption = findOption(options, value);
 
-  if (!readOnly && !disabled) {
-    return (
-      <Select
-        id={ id }
-        className={ selectStyle + classNameOrEmpty(className) }
-        isClearable={ allowUndefined }
-        options={ options }
-        placeholder={placeholder}
-        value={ currentOption }
-        onChange={ onChangeCb }
-        styles={ {
-          control: (provided, state) => {
-            return {
-              ...provided,
-              border: `2px solid ${ state.isFocused
-                ? themeVar.colors.ActiveColor
-                : themeVar.colors.PrimaryColor
-                }`,
-              borderRadius: themeVar.dimensions.BorderRadius,
-              backgroundColor: themeVar.colors.BackgroundColor,
-              ':hover': {
-                border: '2px solid ' + themeVar.colors.PrimaryColor,
-              },
-              boxShadow: 'unset',
-            };
-          },
-          option: (provided, state) => {
-            if (state.isFocused) {
-              return {
-                ...provided,
-                backgroundColor: themeVar.colors.HoverColor,
-                color: themeVar.colors.PrimaryColorShade,
-              };
-            } else if (state.isSelected) {
-              return {
-                ...provided,
-                backgroundColor: themeVar.colors.PrimaryColor,
-                color: themeVar.colors.BackgroundColor,
-              };
-            } else {
-              return { ...provided };
-            }
-          },
-        } }
-      />
-
-    );
-  } else {
-    return (
-      <span className={ selectStyle + classNameOrEmpty(className) } style={ style }>
-        { value }
-      </span>
-    );
-  }
-}
-
-export function SearchableSelector() {
-  return <span>To implement</span>;
+  return (
+    <Select
+      id={ id }
+      isDisabled={ readOnly || disabled }
+      className={ selectStyle + classNameOrEmpty(className) }
+      isClearable={ allowUndefined }
+      options={ options }
+      placeholder={ placeholder }
+      value={ currentOption }
+      onChange={ onChangeCb }
+      styles={ selectStyles }
+    />
+  );
 }
 
 function SelectView(props: ISelectProps) {
@@ -241,7 +247,7 @@ function SelectView(props: ISelectProps) {
     <CommonViewContainer view={ props.view } errorMessage={ props.errorMessage }>
       <Labeled { ...props.view }>
         { ({ inputId, labelNode }) => (
-          <div className={ cx(flex, flexColumn, selectArrowStyle) }>
+          <div className={ cx(flex, flexColumn) }>
             { labelNode }
             <Selector
               id={ inputId }
