@@ -436,6 +436,7 @@
                         <configuration>
                             <executable>yarn</executable>
                             <arguments>
+                                <argument>workspaces</argument>
                                 <argument>run</argument>
                                 <argument>build</argument>
                             </arguments>

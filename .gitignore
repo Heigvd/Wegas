@@ -56,3 +56,4 @@ Thumbs.db
 /wegas-ts-api/src/main/webapp/typings/
 
 node_modules/
+/wegas-app/src/main/node/wegas-lobby/bower_components/

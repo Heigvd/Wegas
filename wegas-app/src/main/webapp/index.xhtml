@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    class="no-js" ng-app="Wegas">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Wegas - Web game authoring system</title>
+        <link rel="icon" href="#{request.contextPath}/${requestController.favicon}.ico" />
+        <link rel="icon" type="image/png" href="#{request.contextPath}/${requestController.favicon}.png" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width" />
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="assets/css/app-min.css">
+        <!-- @hack: injection does not close the link tag but xhtml requires such a closing tag -->
+        </link>
+    </head>
+    <body>
+        <!--[if lt IE 10]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <h:outputText escape="false" value="${requestController.flashMessageTag}"></h:outputText>
+        <div ui-view="main" class="view view--main view--background-default"></div>
+
+        <script src="wegas-lobby/js/vendor-min.js"></script>
+        <script src="wegas-lobby/js/app-min.js"></script>
+    </body>
+</html>
