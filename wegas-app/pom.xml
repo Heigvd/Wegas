@@ -442,6 +442,19 @@
                             </arguments>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>yarn gulp (minify)</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>yarn</executable>
+                            <arguments>
+                                <argument>gulp</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <!--<plugin>

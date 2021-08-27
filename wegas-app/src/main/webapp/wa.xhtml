@@ -72,7 +72,7 @@
     <h:body>
 
         <ui:fragment rendered="#{requestController.debugMode()}">
-            <script data-main="wegas-admin/js/loader" src="lib/require.js"></script>
+            <script data-main="wegas-admin/js/loader-bundle" src="lib/require.js"></script>
         </ui:fragment>
         <ui:fragment rendered="#{!requestController.debugMode()}">
             <script data-main="wegas-admin/js/loader-bundle-min" src="lib/require.js"></script>

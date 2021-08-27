@@ -1,8 +1,8 @@
 import React from 'react';
 import labeled from '../HOC/labeled';
-import { useAsync } from '../Hooks/async';
+import {useAsync} from '../Hooks/async';
 import commonView from '../HOC/commonView';
-import { css } from 'glamor';
+import {css} from 'glamor';
 
 interface Choice {
     value: {};
@@ -39,7 +39,7 @@ function genItems(o: string | Choice, i: number) {
             </option>
         );
     }
-    const { label = o.value, value, disabled } = o;
+    const {label = o.value, value, disabled} = o;
     return (
         <option key={`k-${value}`} value={JSON.stringify(value)} disabled={disabled}>
             {label}
@@ -61,18 +61,19 @@ function choiceResolve(choices: (() => Promise<Choices>) | Choices = []) {
 }
 function SelectView(props: SelectProps) {
     const result = useAsync(choiceResolve(props.view.choices), [props.view.choices]);
+
+    const onChange = React.useCallback((event: React.ChangeEvent<{value: string}>) => {
+        props.onChange(JSON.parse(event.target.value));
+    }, [props.onChange]);
+
+
     if (result.status === 'pending') {
         return null;
     }
     if (result.status === 'rejected') {
         throw result.error;
     }
-    const { data } = result;
-
-    const onChange = React.useCallback((event: React.ChangeEvent<{ value: string }>) => {
-        props.onChange(JSON.parse(event.target.value));
-    }, [props.onChange]);
-
+    const {data} = result;
     const choices: (Choice | string)[] = ([title] as (Choice | string)[]).concat(data);
     const menuItems = choices.map(genItems);
 

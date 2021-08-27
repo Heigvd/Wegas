@@ -49,8 +49,8 @@ const modules = {
     host: ['./src/host.tsx'],
   },
   output: {
-    path: path.join(__dirname, '../../../../target/Wegas/2/dist/'),
-    publicPath: 'dist',
+    path: path.join(__dirname, '../../../../target/Wegas/wegas-react/dist/'),
+    publicPath: 'dist/',
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json'],

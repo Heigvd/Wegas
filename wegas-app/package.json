@@ -1,20 +1,23 @@
 {
-  "name": "wegas-app",
-  "version": "1.0.0",
-  "private": true,
-  "workspaces": [
-    "src/main/node/wegas-react",
-    "src/main/node/wegas-admin",
-    "src/main/node/wegas-lobby",
-    "src/main/node/wegas-stats",
-    "src/main/node/wegas-react-form"
-  ],
-  "dependencies": {},
-  "scripts": {
-  },
-  "devDependencies": {
-  },
-  "engines": {
-    "node": "~11.10.1"
-  }
+    "name": "wegas-app",
+    "version": "1.0.0",
+    "private": true,
+    "workspaces": [
+        "src/main/node/wegas-react",
+        "src/main/node/wegas-admin",
+        "src/main/node/wegas-lobby",
+        "src/main/node/wegas-stats",
+        "src/main/node/wegas-react-form"
+    ],
+    "dependencies": {},
+    "scripts": {
+    },
+    "devDependencies": {
+        "gulp-chug": "^0.4.3",
+        "gulp-newer": "^1.1.0",
+            "gulp-replace": "^0.5.4"
+    },
+    "engines": {
+        "node": "~11.10.1"
+    }
 }
