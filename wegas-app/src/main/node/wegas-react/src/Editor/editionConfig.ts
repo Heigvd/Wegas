@@ -228,6 +228,8 @@ export function getIcon<T extends IMergeable>(entity: T): Icons | undefined {
       return 'check-square';
     case 'BooleanDescriptor':
       return 'toggle-on';
+    case 'AchievementDescriptor':
+      return 'certificate';
     case 'ObjectDescriptor':
       return 'shopping-bag';
     case 'StringDescriptor':
@@ -279,6 +281,8 @@ export function getClassLabel<T extends IMergeable>(entity: T): string | undefin
       return 'Standard';
     case 'BooleanDescriptor':
       return 'Boolean';
+    case 'AchievementDescriptor':
+      return 'Achievement';
     case 'ObjectDescriptor':
       return 'Object';
     case 'StringDescriptor':

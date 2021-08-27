@@ -25,4 +25,11 @@
             <column name="color" type="VARCHAR(255)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="maxence (generated)" id="1629827447299-3">
+        <createIndex indexName="index_achievementdescriptor_message_id" tableName="achievementdescriptor">
+            <column name="message_id"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

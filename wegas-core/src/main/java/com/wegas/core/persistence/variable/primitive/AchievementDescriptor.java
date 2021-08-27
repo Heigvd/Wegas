@@ -25,14 +25,19 @@ import com.wegas.editor.view.QuestSelect;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  *
  * @author maxence
  */
 @Entity
+@Table(indexes = {
+    @Index(columnList = "message_id")
+})
 @NamedQuery(
     name = "Achievement.findDistinctQuests",
     query = "SELECT distinct a.quest FROM AchievementDescriptor a WHERE a.gameModel.id = :gameModelId"
