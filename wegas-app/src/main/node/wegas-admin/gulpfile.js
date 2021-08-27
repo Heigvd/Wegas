@@ -6,21 +6,32 @@ var gulp = require('gulp'),
     uglify = require("gulp-uglify"),
     sourcemaps = require("gulp-sourcemaps");
 
+var targetDir = '../../../../target';
+var workdir = targetDir + '/wegas-admin-workdir';
+
 gulp.task("default", ["compile-template"], function() {
     "use strict";
 
     rjs({
-        baseUrl: "js",
+        baseUrl: workdir + "/js",
         name: "loader",
         mainConfigFile: "js/loader.js",
         out: "loader-bundle.js"
     })
-        .pipe(gulp.dest("../../../../target/Wegas/wegas-admin/js"));
+        .pipe(gulp.dest(targetDir + "/Wegas/wegas-admin/js"));
 });
 
-gulp.task("compile-template", function() {
+
+gulp.task('copy-sources', function() {
     "use strict";
-    return gulp.src('**/*.hbs', {cwd: "js/templates"})
+    return gulp.src('js/**')
+        .pipe(gulp.dest(workdir+ "/js"));
+});
+
+
+gulp.task("compile-template", ['copy-sources'], function() {
+    "use strict";
+    return gulp.src('./**/*.hbs', {cwd: workdir + "/js/templates"})
         .pipe(emberTemplates({
             compiler: require('./js/ember-template-compiler-min'),
             isHTMLBars: true,
@@ -32,11 +43,6 @@ gulp.task("compile-template", function() {
             moduleName: ""
         }))
         .pipe(rename({extname: ".js"}))
-        .pipe(gulp.dest("../../../../target/Wegas/wegas-admin/js/templates"));
+        .pipe(gulp.dest(workdir + "/js/templates"));
 });
-gulp.task("watch", function() {
-    "use strict";
-    return gulp.watch("./**/*.hbs", ["compile-template"]);
-});
-
 

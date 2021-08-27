@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "main": "src/index.js",
     "scripts": {
+        "clean": "rimraf ../../../../target/Wegas/wegas-stats",
         "start": "webpack --watch --mode development",
         "build": "cross-env NODE_ENV=production webpack --mode production"
     },

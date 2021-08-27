@@ -3,10 +3,10 @@
   "private": true,
   "version": "0.0.1",
   "scripts": {
+    "clean": "rimraf ../../../../target/Wegas/2",
     "start": "webpack-dev-server --hot --mode development",
     "start-no-unused": "cross-env TS_NODE_PROJECT=\"tsconfig-no-unused.json\" webpack-dev-server --hot --mode development",
     "start-pre-prod": "cross-env NODE_ENV=pre-production  webpack-dev-server --hot --mode production",
-    "clear": "rimraf dist",
     "build": "cross-env NODE_ENV=production webpack --mode production",
     "test": "jest",
     "lint": "eslint 'src' --ext '.js,.ts,.tsx'",
@@ -88,7 +88,7 @@
     "resize-observer-polyfill": "^1.5.0",
     "tinymce": "^5.7.1",
     "to-fast-properties": "^3.0.1",
-    "wegas-ts-api": "link:../wegas-ts-api/target/wegas-ts-api"
+    "wegas-ts-api": "link:../../../../../wegas-ts-api/target/wegas-ts-api"
   },
   "devDependencies": {
     "@svgr/webpack": "^5.5.0",

@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "private": true,
   "scripts": {
-    "clean": "rimraf dist",
+    "clean": "rimraf ../../../../target/Wegas/wegas-admin/; rimraf ../../../../target/wegas-admin-workdir/;",
     "lint": "",
     "build": "yarn gulp"
   },
@@ -14,6 +14,7 @@
   "dependencies": {
   },
   "devDependencies": {
+    "handlebars": "^4.7.3",
     "gulp": "3",
     "gulp-ember-templates": "^0.7.1",
     "gulp-rename": "^1.2.0",

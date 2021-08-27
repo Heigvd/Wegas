@@ -5,11 +5,10 @@
   "main": "src/index.js",
   "private": true,
   "scripts": {
+    "clean": "rimraf ../../../../target/Wegas/wegas-react-form",
     "start-dev": "webpack-dev-server --hot --mode development",
     "start": "webpack --watch --mode development",
-    "clean": "rimraf dist",
-    "build:webpack": "cross-env NODE_ENV=production webpack --mode production",
-    "build": "yarn run clean && yarn run lint && yarn run build:webpack",
+    "build": "cross-env NODE_ENV=production webpack --mode production",
     "lint": "tslint src/**/*.ts src/**/*.tsx",
     "eslint": "eslint src/**/*.js src/**/*.jsx",
     "dev:build": "webpack"
