@@ -135,7 +135,7 @@ function methodParameterParse(node: Node | null) {
       return typeMethods.parser(node, methodParameterParse);
     }
   }
-  throw Error(`Argument's node ${node?.type} cannot be parsed`);
+  throw Error(`Argument's node ${ node?.type } cannot be parsed`);
 }
 
 const generateMethodStatement = (
@@ -168,13 +168,23 @@ const generateMethodStatement = (
 // VARIABLES METHODS ////////////////////////
 /////////////////////////////////////////////
 
+/**
+ * Variable.find(gameModel, "x").getValue(self, "a", 2)
+ */
 type ImpactExpression = CallExpression & {
+  // Variable.find(gameModel, "x").getValue
   callee: MemberExpression & {
-    object: Identifier;
-    property: {
-      name: string;
+    // Variable.find(gameModel, "x")
+    object: CallExpression & {
+      // Variable.find
+      callee: MemberExpression;
+      // gameModel, "varName"
+      arguments: [Identifier, StringLiteral];
     };
+    // getValue
+    property: Identifier;
   };
+  // [self, "a", 2]
   arguments: Expression[];
 };
 
@@ -183,7 +193,7 @@ type ImpactStatement = Statement & {
 };
 
 type ConditionExpression = BinaryExpression & {
-  left: CallExpression & ImpactExpression;
+  left: ImpactExpression;
   right: {
     value: unknown;
   };
@@ -238,19 +248,32 @@ function isImpactStatement(
 ): statement is ImpactStatement {
   return (
     isExpressionStatement(statement) &&
+    // Variable.find(gm, "x").getValue(self)
     isCallExpression(statement.expression) &&
+    // Variable.find(gm, "x").getValue
     isMemberExpression(statement.expression.callee) &&
+    // getValue
+    isIdentifier(statement.expression.callee.property) &&
+    // Variable.find(gm, "x")
     isCallExpression(statement.expression.callee.object) &&
+    // Variable.find
     isMemberExpression(statement.expression.callee.object.callee) &&
+    // Variable
     isVariableObject(statement.expression.callee.object.callee.object) &&
-    isFindProperty(statement.expression.callee.object.callee.property)
+    // find
+    isFindProperty(statement.expression.callee.object.callee.property) &&
+    // [gameModel, 'varName']
+    statement.expression.callee.object.arguments.length >= 0 &&
+    // gameModel
+    isIdentifier(statement.expression.callee.object.arguments[0]) &&
+    // varName
+    isStringLiteral(statement.expression.callee.object.arguments[1])
   );
 }
 
 function getVariable(expression: ImpactExpression) {
-  wlog(expression);
-  return "DUMMYFUCKINGSTUFF";
-  //return expression.callee.object.arguments[1].value;
+  wlog("AST.getVariable: ", expression);
+  return expression.callee.object.arguments[1].value;
 }
 function getMethodName(expression: ImpactExpression) {
   return expression.callee.property.name;
@@ -364,9 +387,9 @@ function variableToASTNode(
       }
     } else {
       throw Error(
-        `The current variable (${variableType}) type doesn't match the allowed types (${JSON.stringify(
+        `The current variable (${ variableType }) type doesn't match the allowed types (${ JSON.stringify(
           type,
-        )})`,
+        ) })`,
       );
     }
   } else {
@@ -378,7 +401,7 @@ function variableToASTNode(
       usedType = variableType;
     } else {
       throw Error(
-        `The current variable (${variableType}) type doesn't match the allowed type (${type})`,
+        `The current variable (${ variableType }) type doesn't match the allowed type (${ type })`,
       );
     }
   }
@@ -409,7 +432,7 @@ function variableToASTNode(
       return identifier(usedType);
     default:
       throw Error(
-        `Type ${variableType} for method arguments not implemented yet`,
+        `Type ${ variableType } for method arguments not implemented yet`,
       );
   }
 }
@@ -551,9 +574,9 @@ export function parseStatement(
           variableName: getVariable(statement.expression),
           initExpression: {
             type: 'variable',
-            script: `Variable.find(gameModel,'${getVariable(
+            script: `Variable.find(gameModel,'${ getVariable(
               statement.expression,
-            )}')`,
+            ) }')`,
           },
           methodName: getMethodName(statement.expression),
           ...getParameters(statement.expression),
@@ -565,9 +588,9 @@ export function parseStatement(
         attributes: {
           initExpression: {
             type: 'variable',
-            script: `Variable.find(gameModel,'${getVariable(
+            script: `Variable.find(gameModel,'${ getVariable(
               statement.expression.left,
-            )}')`,
+            ) }')`,
           },
           methodName: getMethodName(statement.expression.left),
           ...getParameters(statement.expression.left),
@@ -585,9 +608,9 @@ export function parseStatement(
         attributes: {
           initExpression: {
             type: 'variable',
-            script: `Variable.find(gameModel,'${getVariable(
+            script: `Variable.find(gameModel,'${ getVariable(
               statement.expression,
-            )}')`,
+            ) }')`,
           },
           methodName: getMethodName(statement.expression),
           ...getParameters(statement.expression),
@@ -626,8 +649,8 @@ export function generateStatement(
             comparatorExpectedType
               ? comparatorExpectedType
               : isWegasMethodReturnType(comparatorCurrentType)
-              ? comparatorCurrentType
-              : 'string',
+                ? comparatorCurrentType
+                : 'string',
             true,
           );
         } else {
