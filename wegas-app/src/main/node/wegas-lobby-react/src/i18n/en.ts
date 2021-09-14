@@ -9,6 +9,7 @@
 export const en = {
   pleaseProvideData: 'Some data are missing',
   cancel: 'cancel',
+  agree: 'agree',
   config: 'confirm',
   emailAddress: 'e-mail address',
   emailAddressNotValid: 'e-mail address is not valid',
@@ -93,7 +94,7 @@ export const en = {
   //
   scenario: 'Scenario: ',
   Scenario: 'Scenario',
-  PlayScenario: 'Game\'s Scenario',
+  PlayScenario: "Game's Scenario",
   createdOn: 'Created on',
   by: 'by',
   display: 'display: ',
@@ -274,5 +275,5 @@ export const en = {
     2: 'Player',
     3: 'Guest',
     4: 'No role ???',
-  }
+  },
 };

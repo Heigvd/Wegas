@@ -157,8 +157,14 @@ export default function PlayerTab(): JSX.Element {
             />
           </Flex>
 
-          <WindowedContainer items={sorted}>{buildCardCb}</WindowedContainer>
-          {sorted.length <= 0 ? <i>{i18n.noPlayers}</i> : null}
+          {players.status === 'READY' ? (
+            <>
+              <WindowedContainer items={sorted}>{buildCardCb}</WindowedContainer>
+              {sorted.length <= 0 ? <i>{i18n.noPlayers}</i> : null}
+            </>
+          ) : (
+            <InlineLoading />
+          )}
         </FitSpace>
       </FitSpace>
     );

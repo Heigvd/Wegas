@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { isEqual } from 'lodash';
 import * as React from 'react';
 import { IJpaAccountWithId } from 'wegas-ts-api';
-import { getRestClient, updateJpaAccount, updateJpaPassword } from '../../API/api';
+import { getRestClient, updateAccount, updateJpaPassword } from '../../API/api';
 import useTranslations from '../../i18n/I18nContext';
 import { useCurrentUser } from '../../selectors/userSelector';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -163,7 +163,7 @@ export function EditJpaAccount({ account, close }: JpaAccountProps): JSX.Element
 
   const saveCb = React.useCallback(() => {
     if (unsaved) {
-      dispatch(updateJpaAccount(state)).then(action => {
+      dispatch(updateAccount(state)).then(action => {
         if (action.meta.requestStatus === 'fulfilled') {
           close();
         }

@@ -27,6 +27,7 @@ import OpenCloseModal from './common/OpenCloseModal';
 import Overlay from './common/Overlay';
 import PlayerTab from './player/PlayerTab';
 import ForgotPassword from './public/ForgotPassword';
+import PleaseAcceptPolicy from './public/PleaseAcceptPolicy';
 import SignInForm from './public/SignIn';
 import SignUpForm from './public/SignUp';
 import ScenaristTab from './scenarist/ScenaristTab';
@@ -132,6 +133,12 @@ export default function MainApp(): JSX.Element {
     );
   } else if (currentUser != null && currentAccount != null) {
     // user is authenticatd
+
+    if (currentAccount.agreedTime == null) {
+      // but user dit not accept term of uses
+      return <PleaseAcceptPolicy />;
+    }
+
     let borderColor = playerColor;
 
     if (location.pathname.startsWith('/admin')) {

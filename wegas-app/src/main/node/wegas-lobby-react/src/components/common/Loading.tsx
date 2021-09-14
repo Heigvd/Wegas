@@ -53,6 +53,7 @@ const loadingStyle = css({
   width: '100%',
   maxWidth: '200px',
   overflow: 'visible',
+  paddingLeft: '60px',
 });
 
 const animatedStyle = cx(
@@ -74,6 +75,7 @@ export default function Loading({
       <div
         className={css({
           margin: 'auto',
+          textAlign: 'center',
         })}
       >
         <Picto className={animated ? animatedStyle : loadingStyle} />

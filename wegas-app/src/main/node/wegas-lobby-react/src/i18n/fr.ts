@@ -6,11 +6,12 @@
  * Licensed under the MIT License
  */
 
-import {WegasTranslations} from "./I18nContext";
+import { WegasTranslations } from './I18nContext';
 
 export const fr: WegasTranslations = {
   pleaseProvideData: 'Merci de remplir tous les champs',
   cancel: 'annuler',
+  agree: 'Accepter',
   config: 'confirmer',
   emailAddress: 'adresse e-mail',
   emailAddressNotValid: 'adresse e-mail invalide',
@@ -34,9 +35,9 @@ export const fr: WegasTranslations = {
   missingLastname: 'Veuillez entrer votre nom de famille',
   agreementDisclaimer: "L'utilisation de ce service implique que vous en acceptez",
   iAccept: "J'accepte",
-  termOfUse: "les conditions générales",
-  and: "et",
-  dataPolicy: "la politique de gestion des données",
+  termOfUse: 'les conditions générales',
+  and: 'et',
+  dataPolicy: 'la politique de gestion des données',
   termOfUseUrl: 'https://www.albasim.ch/en/terms-of-use/',
   dataPolicyUrl: 'https://www.albasim.ch/en/data-policy/',
   notAgreed: 'vous devez accepter les conditions générales et la politique de gestion des données',
@@ -73,7 +74,7 @@ export const fr: WegasTranslations = {
   //
   teamName: "nom de l'équipe",
   teamSize: 'taille',
-  createTeam: "créer une équipe",
+  createTeam: 'créer une équipe',
   joinTeam: "Rejoindre l'équipe",
   join: 'Rejoidre',
   accessKey: "clé d'accès",
@@ -95,7 +96,7 @@ export const fr: WegasTranslations = {
   //
   scenario: 'Scénario: ',
   Scenario: 'Scenario',
-  PlayScenario: 'Scenario d\'une partie',
+  PlayScenario: "Scenario d'une partie",
   createdOn: 'Créé le ',
   by: 'par',
   display: 'afficher: ',
@@ -135,8 +136,9 @@ export const fr: WegasTranslations = {
 
   gameLinkTitle: "Lien d'accès direct",
   gameLinkTitleAsGuest: "Lien d'accès direct en tant qu'invité",
-  gameLink: "Des joueurs connectés peuvent avoir accès à la partie depuis le lien ci-dessous",
-  gameLinkGuest: "Des invités ou des joueurs connectés peuvent avoir accès à la partie depuis le lien ci-dessous",
+  gameLink: 'Des joueurs connectés peuvent avoir accès à la partie depuis le lien ci-dessous',
+  gameLinkGuest:
+    'Des invités ou des joueurs connectés peuvent avoir accès à la partie depuis le lien ci-dessous',
 
   gameType: 'Type de partie',
   individual: 'Individuel',
@@ -193,14 +195,14 @@ export const fr: WegasTranslations = {
   releaseScenario: 'Libérer le scénario',
 
   //ADMIN
-  adminConsole: 'Bienvenue dans la console d\'administration',
+  adminConsole: "Bienvenue dans la console d'administration",
   version: 'Version',
   deeplStatus: 'DeepL',
   deeplUsage: 'Utilisation du service de traduction: ',
   doAction: 'Effectuer une action',
 
   lastSeenAt: 'Vu pour la dernière fois.  ',
-  lastActivityDate: 'Date d\'activité: ',
+  lastActivityDate: "Date d'activité: ",
 
   adminPanel: 'Admin',
   who: 'Qui',
@@ -236,25 +238,26 @@ export const fr: WegasTranslations = {
 
   showRoles: 'voir les groupes',
 
-  editUser: 'éditer l\'utiliusateur',
+  editUser: "éditer l'utiliusateur",
 
-  noPlayers: 'Vous n\'avez par encore rejoint de partie',
+  noPlayers: "Vous n'avez par encore rejoint de partie",
   noGames: 'Aucune parties disponibles',
   noScenarios: 'Aucun scénario disponibles',
   noModels: 'Aucun modèle disponibles',
 
   WegasErrorMessage: {
     'IMPOSSIBLE-TO-UPDATE-PASSWORD': 'Vous ne pouvez pas mettre à jour votre mot de passe',
-    'COMMONS-SESSIONS-EMPTY-TOKEN-ERROR': 'La clé d\'accès ne peut pas être vide',
-    'COMMONS-SESSIONS-TAKEN-TOKEN-ERROR': 'Cette clé d\'accès est déjà utilisée',
-    'WEGAS-INVITE-SURVEY-NO-EMAIL': "Aucun joueur n'a encore rejoint le jeu<br>(ou alors ils n'ont pas enregistré d'adresse e-mail)",
+    'COMMONS-SESSIONS-EMPTY-TOKEN-ERROR': "La clé d'accès ne peut pas être vide",
+    'COMMONS-SESSIONS-TAKEN-TOKEN-ERROR': "Cette clé d'accès est déjà utilisée",
+    'WEGAS-INVITE-SURVEY-NO-EMAIL':
+      "Aucun joueur n'a encore rejoint le jeu<br>(ou alors ils n'ont pas enregistré d'adresse e-mail)",
     'CREATE-ACCOUNT-INVALID-EMAIL': 'Adresse e-mail invalide',
     'CREATE-ACCOUNT-TAKEN-EMAIL': 'Adresse e-mail déjà utilisée',
-    'CREATE-ACCOUNT-TAKEN-USERNAME': 'Nom d\'utilisateur déjà utilisé',
+    'CREATE-ACCOUNT-TAKEN-USERNAME': "Nom d'utilisateur déjà utilisé",
   },
   pleaseWait: 'Veuillet patienter...',
   autoplay: {
-    loginAsGuest: 'Préparation d\'un compte invité en cours...',
+    loginAsGuest: "Préparation d'un compte invité en cours...",
   },
   tokenNotFound: 'Jeton introuvable',
   youAreConnectedAsUser: (user: string) => `Vous êtes actuellement connecter en tant que "${user}"`,
@@ -276,5 +279,5 @@ export const fr: WegasTranslations = {
     2: 'Joueurs',
     3: 'Invités',
     4: 'Role inconnu ???',
-  }
+  },
 };

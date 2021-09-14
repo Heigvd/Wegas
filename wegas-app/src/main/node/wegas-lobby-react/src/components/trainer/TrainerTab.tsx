@@ -237,8 +237,14 @@ export default function TrainerTab(): JSX.Element {
             />
           </Flex>
 
-          <WindowedContainer items={sorted}>{buildCardCb}</WindowedContainer>
-          {sorted.length <= 0 ? <i>{i18n.noGames}</i> : null}
+          {status === 'READY' ? (
+            <>
+              <WindowedContainer items={sorted}>{buildCardCb}</WindowedContainer>
+              {sorted.length <= 0 ? <i>{i18n.noGames}</i> : null}
+            </>
+          ) : (
+            <InlineLoading />
+          )}
         </FitSpace>
       </FitSpace>
     );

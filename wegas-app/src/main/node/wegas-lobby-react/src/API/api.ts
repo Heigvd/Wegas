@@ -7,6 +7,7 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
+  IAbstractAccountWithId,
   IGameModelLanguageWithId,
   IGameModelWithId,
   IGameWithId,
@@ -122,7 +123,7 @@ async function signInJpa(a: { identifier: string; password: string; agreed?: boo
       login: a.identifier,
       remember: true,
       hashes: [],
-      agreed: true, // TODO
+      agreed: false,
     };
 
     authInfo.hashes.push(await hashPassword(method.mandatoryMethod, method.salt, a.password));
@@ -285,9 +286,9 @@ export const getUserByIds = createAsyncThunk('user/getByIds', async (ids: number
   return await restClient.UserController.getUserByIds(ids);
 });
 
-export const updateJpaAccount = createAsyncThunk(
+export const updateAccount = createAsyncThunk(
   'account/updateJpa',
-  async (account: IJpaAccountWithId) => {
+  async (account: IAbstractAccountWithId) => {
     return await restClient.UserController.updateAccount(account);
   },
 );
@@ -303,7 +304,8 @@ export const updateJpaPassword = createAsyncThunk(
     if (jpaMethods.length > 0) {
       const method = jpaMethods[0]! as IJpaAuthentication;
       const hash = await hashPassword(method.mandatoryMethod, method.salt, password);
-      return restClient.UserController.updateAccount({ ...account, password: hash });
+      const jpaAccount: IJpaAccountWithId = { ...account, password: hash };
+      return restClient.UserController.updateAccount(jpaAccount);
     } else {
       throw { '@class': 'WegasErrorMessage', messageId: 'IMPOSSIBLE-TO-UPDATE-PASSWORD' };
     }

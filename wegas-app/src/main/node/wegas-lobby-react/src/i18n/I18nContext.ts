@@ -8,7 +8,7 @@
 
 import * as React from 'react';
 import { en } from './en';
-import {fr} from './fr';
+import { fr } from './fr';
 
 export type Language = 'FR' | 'EN';
 

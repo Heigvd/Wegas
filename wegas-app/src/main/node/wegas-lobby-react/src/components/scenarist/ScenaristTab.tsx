@@ -277,10 +277,16 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
               onChange={onFilterChange}
             />
           </Flex>
-          <WindowedContainer items={sorted}>{buildCardCb}</WindowedContainer>
-          {sorted.length <= 0 ? (
-            <i>{gameModelType === 'SCENARIO' ? i18n.noScenarios : i18n.noModels}</i>
-          ) : null}
+          {status === 'READY' ? (
+            <>
+              <WindowedContainer items={sorted}>{buildCardCb}</WindowedContainer>
+              {sorted.length <= 0 ? (
+                <i>{gameModelType === 'SCENARIO' ? i18n.noScenarios : i18n.noModels}</i>
+              ) : null}
+            </>
+          ) : (
+            <InlineLoading />
+          )}
         </FitSpace>
       </FitSpace>
     );

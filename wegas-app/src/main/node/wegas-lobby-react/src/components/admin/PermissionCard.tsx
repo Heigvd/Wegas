@@ -19,7 +19,7 @@ import {
   updatePermission,
 } from '../../API/api';
 import { entityIs } from '../../API/entityHelper';
-import useTranslations, {WegasTranslations} from '../../i18n/I18nContext';
+import useTranslations, { WegasTranslations } from '../../i18n/I18nContext';
 import { useCurrentUser } from '../../selectors/userSelector';
 import {
   usePermissionObject,

@@ -220,7 +220,7 @@ const userSlice = createSlice({
           removeItem(rUsers, action.meta.arg.userId);
         }
       })
-      .addCase(API.updateJpaAccount.fulfilled, (state, action) => {
+      .addCase(API.updateAccount.fulfilled, (state, action) => {
         state.accounts[action.payload.id] = action.payload;
       })
       .addCase(API.runAs.fulfilled, () => {

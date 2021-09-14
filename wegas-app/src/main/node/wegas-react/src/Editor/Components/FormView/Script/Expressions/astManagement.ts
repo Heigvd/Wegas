@@ -63,7 +63,6 @@ import { isWegasMethodReturnType } from '../../../../editionConfig';
 import { isScriptCondition } from '../Script';
 import { isEmptyStatement } from '@babel/types';
 import { parse } from '@babel/parser';
-import { wlog } from '../../../../../Helper/wegaslog';
 
 /////////////////////////////////////////////
 // METHODS //////////////////////////////////
@@ -272,7 +271,6 @@ function isImpactStatement(
 }
 
 function getVariable(expression: ImpactExpression) {
-  wlog("AST.getVariable: ", expression);
   return expression.callee.object.arguments[1].value;
 }
 function getMethodName(expression: ImpactExpression) {

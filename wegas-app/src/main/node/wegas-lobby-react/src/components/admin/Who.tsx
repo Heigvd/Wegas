@@ -6,24 +6,24 @@
  * Licensed under the MIT License
  */
 
-import {css, cx} from '@emotion/css';
-import {faPlay, faSync} from '@fortawesome/free-solid-svg-icons';
-import {uniq} from 'lodash';
+import { css, cx } from '@emotion/css';
+import { faPlay, faSync } from '@fortawesome/free-solid-svg-icons';
+import { uniq } from 'lodash';
 import * as React from 'react';
-import {IUserWithId} from 'wegas-ts-api';
-import {getOnlineUsers, getUserByIds, syncOnlineUsers} from '../../API/api';
-import {OnlineUser} from '../../API/restClient';
+import { IUserWithId } from 'wegas-ts-api';
+import { getOnlineUsers, getUserByIds, syncOnlineUsers } from '../../API/api';
+import { OnlineUser } from '../../API/restClient';
 import useTranslations from '../../i18n/I18nContext';
-import {customStateEquals, shallowEqual, useAppDispatch, useAppSelector} from '../../store/hooks';
+import { customStateEquals, shallowEqual, useAppDispatch, useAppSelector } from '../../store/hooks';
 import ActionIconButton from '../common/ActionIconButton';
-import {CardMainButton, CardMainWifButton} from '../common/Card';
+import { CardMainButton, CardMainWifButton } from '../common/Card';
 import CardContainer from '../common/CardContainer';
 import DebouncedInput from '../common/DebouncedInput';
 import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import InlineLoading from '../common/InlineLoading';
-import SortBy, {SortByOption} from '../common/SortBy';
-import {cardDetailsStyle, panelPadding} from '../styling/style';
+import SortBy, { SortByOption } from '../common/SortBy';
+import { cardDetailsStyle, panelPadding } from '../styling/style';
 import UserCard from './UserCard';
 
 interface KnownUser {
@@ -31,10 +31,9 @@ interface KnownUser {
   onlineUser: OnlineUser;
 }
 
-const roleLevels = [0 ,1,2,3,4] as const;
+const roleLevels = [0, 1, 2, 3, 4] as const;
 
 type RoleLevelTypes = typeof roleLevels[number];
-
 
 const matchSearch = (search: string) => (data: KnownUser) => {
   const regex = new RegExp(search, 'i');
@@ -53,7 +52,7 @@ export default function Users(): JSX.Element {
   const [loadingUnknown, setLoadingUnknown] = React.useState<number[]>([]);
 
   const users = useAppSelector(state => {
-    const status: {known: KnownUser[]; unknown: number[]} = {
+    const status: { known: KnownUser[]; unknown: number[] } = {
       known: [],
       unknown: [],
     };
@@ -99,19 +98,19 @@ export default function Users(): JSX.Element {
     }
   }, [allUserStates, users.unknown, dispatch, loadingUnknown]);
 
-  const [sortBy, setSortBy] = React.useState<{key: keyof IUserWithId; asc: boolean}>({
+  const [sortBy, setSortBy] = React.useState<{ key: keyof IUserWithId; asc: boolean }>({
     key: 'lastSeenAt',
     asc: false,
   });
 
   const sortOptions: SortByOption<IUserWithId>[] = [
-    {key: 'lastSeenAt', label: i18n.lastSeenAt},
-    {key: 'name', label: i18n.name},
+    { key: 'lastSeenAt', label: i18n.lastSeenAt },
+    { key: 'name', label: i18n.name },
   ];
 
   const onSortChange = React.useCallback(
-    ({key, asc}: {key: keyof IUserWithId; asc: boolean}) => {
-      setSortBy({key, asc});
+    ({ key, asc }: { key: keyof IUserWithId; asc: boolean }) => {
+      setSortBy({ key, asc });
     },
     [],
   );
@@ -134,18 +133,21 @@ export default function Users(): JSX.Element {
       }
     });
 
-    const mappedByRoles = theUsers.reduce<Record<RoleLevelTypes, KnownUser[]>>((map, user) => {
-      const roleN = user.onlineUser.highestRole;
-      map[roleN] = map[roleN] || [];
-      map[roleN].push(user);
-      return map;
-    }, {0:[], 1:[], 2:[], 3:[], 4:[]});
+    const mappedByRoles = theUsers.reduce<Record<RoleLevelTypes, KnownUser[]>>(
+      (map, user) => {
+        const roleN = user.onlineUser.highestRole;
+        map[roleN] = map[roleN] || [];
+        map[roleN].push(user);
+        return map;
+      },
+      { 0: [], 1: [], 2: [], 3: [], 4: [] },
+    );
 
     return (
       <FitSpace
         direction="column"
         overflow="auto"
-        className={cx(panelPadding, css({position: 'relative'}))}
+        className={cx(panelPadding, css({ position: 'relative' }))}
       >
         <Flex
           justify="space-between"
@@ -179,7 +181,7 @@ export default function Users(): JSX.Element {
             return (
               <div key={level}>
                 <h4>{i18n.userLevels[level]}</h4>
-                {list.map(({user, onlineUser}) => (
+                {list.map(({ user, onlineUser }) => (
                   <UserCard
                     size="MEDIUM"
                     key={user.id}
