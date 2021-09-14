@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -33,6 +32,7 @@ import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.core.security.util.AuthenticationInformation;
@@ -42,6 +42,7 @@ import com.wegas.core.security.util.TokenInfo;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.mail.internet.AddressException;
@@ -155,14 +156,23 @@ public class UserController {
         return userFacade.find(entityId);
     }
 
+    @POST
+    @Path("ByIds")
+    public Collection<User> getByIds(List<Long> ids) {
+        SecurityUtils.getSubject().checkPermission("User:Edit");
+
+        return ids.stream()
+            .map(id -> userFacade.find(id)).collect(Collectors.toList());
+    }
+
     /**
-     * Returns the e-mail addresses of all players of the given game, with more relaxed security
+     * Returns the e-mail addresses of all rawPlayers of the given game, with more relaxed security
      * requirements than for getting the whole user profile: The caller must be trainer for the
      * given game.
      *
      * @param gameId
      *
-     * @return email of all players in the game
+     * @return email of all rawPlayers in the game
      */
     @GET
     @Path("Emails/{gameId : [1-9][0-9]*}")
@@ -182,14 +192,14 @@ public class UserController {
     }
 
     /**
-     * Returns the e-mail addresses of all players of the given team, with more relaxed security
+     * Returns the e-mail addresses of all rawPlayers of the given team, with more relaxed security
      * requirements than for getting the whole user profile: The caller must be trainer for the
      * given game and the team must belong to the same game.
      *
      * @param gameId
      * @param teamId
      *
-     * @return email of all players in the team
+     * @return email of all rawPlayers in the team
      */
     @GET
     @Path("Emails/{gameId : [1-9][0-9]*}/{teamId : [1-9][0-9]*}")
@@ -238,7 +248,7 @@ public class UserController {
      */
     @GET
     @Path("AutoComplete/{value}")
-    @Deprecated
+    @RequiresRoles("Administrator")
     public List<AbstractAccount> getAutoComplete(@PathParam("value") String value) {
         return accountFacade.getAutoComplete(value);
     }
@@ -259,7 +269,7 @@ public class UserController {
      */
     @GET
     @Path("AutoCompleteFull/{value}/{gameId : [1-9][0-9]*}")
-    @Deprecated
+    @RequiresRoles("Administrator")
     public List<AbstractAccount> getAutoCompleteFull(@PathParam("value") String value, @PathParam("gameId") Long gameId) {
         return accountFacade.getAutoCompleteFull(value, gameId);
     }
@@ -400,13 +410,12 @@ public class UserController {
     /**
      * Logout
      *
-     * @return 200 OK
+     * @return 204 OK No content
      */
     @GET
     @Path("Logout")
-    public Response logout() {
+    public void logout() {
         userFacade.logout();
-        return Response.status(Response.Status.OK).build();
     }
 
     /**
@@ -633,7 +642,7 @@ public class UserController {
     @POST
     @Path("SendMail")
     public void sendMail(Email email) {
-        // TODO Check persmissions !!! 
+        // TODO Check persmissions !!!
         // Current User should have each recipients registered in a game he leads or be such a superuser
         // well, such check is done by restricing access to account details
 
@@ -688,7 +697,11 @@ public class UserController {
     @GET
     @Path("Current")
     public User getCurrentUser() {
-        return userFacade.getCurrentUserOrNull();
+        User user = userFacade.getCurrentUserOrNull();
+        if (user != null) {
+            userFacade.touchLastSeenAt(user);
+        }
+        return user;
     }
 
     /**
@@ -703,7 +716,7 @@ public class UserController {
         User currentUser = userFacade.getCurrentUser();
         final List<Player> players = currentUser.getPlayers();
 
-        try (Sudoer root = requestManager.sudoer()) {
+        try ( Sudoer root = requestManager.sudoer()) {
             List<DatedEntity> queue = populatorFacade.getQueue();
 
             for (Player p : players) {
@@ -723,6 +736,32 @@ public class UserController {
     }
 
     /**
+     * Find all players for the current user. Also return team, game and gameModel in one shot
+     *
+     * @return list of {player, team, game, gameModel}
+     */
+    @GET
+    @Path("Current/Players")
+    public Collection<PlayerToGameModel> findPlayers() {
+        User currentUser = userFacade.getCurrentUser();
+        final List<Player> rawPlayers = currentUser.getPlayers();
+        Collection<PlayerToGameModel> players = new ArrayList<>();
+
+        try ( Sudoer root = requestManager.sudoer()) {
+            List<DatedEntity> queue = populatorFacade.getQueue();
+
+            for (Player p : rawPlayers) {
+                if (p.getStatus().equals(Populatable.Status.WAITING)
+                    || p.getStatus().equals(Populatable.Status.RESCHEDULED)) {
+                    p.setQueueSize(queue.indexOf(p) + 1);
+                }
+                players.add(PlayerToGameModel.build(p));
+            }
+        }
+        return players;
+    }
+
+    /**
      * Find a team for the current user.
      *
      * @param teamId the id of the team joined by the current user.
@@ -737,7 +776,7 @@ public class UserController {
         Player thePlayer = playerFacade.findPlayerInTeam(teamId, currentUser.getId());
 
         if (thePlayer != null) {
-            try (ActAsPlayer a = requestManager.actAsPlayer(thePlayer)) {
+            try ( ActAsPlayer a = requestManager.actAsPlayer(thePlayer)) {
                 return thePlayer.getTeam();
             }
         } else {
@@ -863,5 +902,44 @@ public class UserController {
             existingId = true;
         }
         return existingId;
+    }
+
+    @POST
+    @RequiresRoles("Administrator")
+    @Path("Permission/{userId : [1-9][0-9]*}")
+    public Permission createPermission(@PathParam("userId") Long userId, Permission permission) {
+        return userFacade.createPermission(userId, permission);
+    }
+
+    @PUT
+    @RequiresRoles("Administrator")
+    @Path("Permission")
+    public Permission updatePermission(Permission permission) {
+        return userFacade.updatePermission(permission);
+    }
+
+    @DELETE
+    @RequiresRoles("Administrator")
+    @Path("Permission/{id : [1-9][0-9]*}")
+    public Permission deletePermission(@PathParam("id") Long id) {
+        return userFacade.deletePermission(id);
+    }
+
+    @PUT
+    @RequiresRoles("Administrator")
+    @Path("{userId : [1-9][0-9]*}/Add/{roleId : [1-9][0-9]*}")
+    public User addUser(
+        @PathParam("roleId") Long roleId,
+        @PathParam("userId") Long userId) {
+        return userFacade.addRole(userId, roleId);
+    }
+
+    @PUT
+    @RequiresRoles("Administrator")
+    @Path("{userId : [1-9][0-9]*}/Remove/{roleId : [1-9][0-9]*}")
+    public User kickUser(
+        @PathParam("roleId") Long roleId,
+        @PathParam("userId") Long userId) {
+        return userFacade.removeRole(userId, roleId);
     }
 }

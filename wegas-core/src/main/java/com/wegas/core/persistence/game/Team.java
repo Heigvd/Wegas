@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -20,12 +19,15 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestManager.RequestContext;
+import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Game.GameAccess;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
@@ -38,8 +40,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -82,9 +86,13 @@ import javax.validation.constraints.NotNull;
 @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.gameTeams.game.id = :gameId")
 
 @NamedQuery(name = "Team.findToPopulate", query = "SELECT a FROM Team a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
-public class Team extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, Populatable {
+public class Team extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, Populatable, AcceptInjection {
 
     private static final long serialVersionUID = 1L;
+
+    @JsonIgnore
+    @Transient
+    protected Beanjection beans;
 
     /**
      *
@@ -377,13 +385,14 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     public Long getGameId() {
         return (getGame() != null ? getGame().getId() : null);
     }
-    
+
     /**
      * @return the game ui version
      */
+    @WegasExtraProperty
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public Integer getUiVersion() {
-        return getGameModel() != null ? getGameModel().getUIVersion() : null;
+        return getGameModel() != null ? getGameModel().getUiversion() : null;
     }
 
     /**
@@ -415,6 +424,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         this.status = status;
     }
 
+    @WegasExtraProperty
     public Integer getDeclaredSize() {
         if (declaredSize != null) {
             return declaredSize;
@@ -495,20 +505,56 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         this.invitations.remove(invitation);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
-        Game game = this.getGame();
-        if (game != null) {
-            String audience = game.getChannel();
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
 
-            Map<String, List<AbstractEntity>> map = new HashMap<>();
-            ArrayList<AbstractEntity> entities = new ArrayList<>();
-            entities.add(this);
-            map.put(audience, entities);
-            return map;
-        } else {
-            return null;
+        ArrayList<AbstractEntity> entities = new ArrayList<>();
+        entities.add(this);
+
+        // Fetch all user with any access to the game
+        Set<User> users = new HashSet<>();
+        Game game = this.getGame();
+        Game gameModel = this.getGame();
+
+        if (gameModel != null) {
+            // all scenarists
+            users.addAll(beans.getGameModelFacade().findScenarists(gameModel.getId()));
         }
+
+        if (game != null) {
+            // all trainers
+            users.addAll(beans.getGameFacade().findTrainers(this.getId()));
+
+            // and through the game channel
+            map.put(game.getChannel(), entities);
+        }
+
+        // all players
+        this.getPlayers().stream().forEach(p -> {
+            if (p.getUser() != null) {
+                users.add(p.getUser());
+            }
+        });
+
+        // Send update through each user channel
+        users.forEach(user -> {
+            map.put(user.getChannel(), entities);
+        });
+
+
+        //and send it to admins too
+        map.put(WebsocketFacade.ADMIN_LOBBY_CHANNEL, entities);
+
+        return map;
+    }
+
+    @Override
+    public void setBeanjection(Beanjection beanjection) {
+        this.beans = beanjection;
     }
 
     @Override
@@ -520,12 +566,12 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         /*
-         * since a player should be able to join a team by itself
-         * restricting update permission is not possible.
+         * since a player should be able to join a team by itself restricting update permission is
+         * not possible.
          *
-         * A player shouldn't be authorized to join a team by itself.
-         * A player should be able to create a team and a team member should be able 
-         * to invite other players in the team. Such behaviour allow to set an updatePermission
+         * A player shouldn't be authorized to join a team by itself. A player should be able to
+         * create a team and a team member should be able to invite other players in the team. Such
+         * behaviour allow to set an updatePermission
          */
         return WegasPermission.getAsCollection(this.getAssociatedReadPermission());
     }

@@ -50,7 +50,7 @@ const modules = {
   },
   output: {
     path: path.join(__dirname, '../../../../target/Wegas/wegas-react/dist/'),
-    publicPath: 'dist/',
+    publicPath: '../wegas-react/dist/',
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json'],
@@ -172,7 +172,7 @@ const modules = {
     stats: 'errors-warnings',
     port: PREPROD ? 4004 : 3003,
     overlay: true,
-    publicPath: '/Wegas/2/dist/',
+    publicPath: '/Wegas/wegas-react/',
     proxy: {
       '/Wegas': {
         target: 'http://localhost:8080',

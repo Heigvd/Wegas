@@ -135,9 +135,6 @@ public class RequestManager implements RequestManagerI {
     }
 
     // @Resource private TransactionSynchronizationRegistry txReg;
-
-    /**
-     * to manage locks
     /**
      * What kind of script is being executed
      */
@@ -146,6 +143,9 @@ public class RequestManager implements RequestManagerI {
         INTERNAL_SCRIPT
     }
 
+    /**
+     * to manage locks
+     */
     @Inject
     private ConcurrentHelper concurrentHelper;
 
@@ -597,6 +597,25 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
+    /**
+     * Get the currentAccount, based one the shiro login state. If shiro current principal does not
+     * equals {@link #currentPrincipal}, reset all transient permissions
+     *
+     * @return the account used by the current user to authenticate
+     */
+    public AbstractAccount getCurrentAccount() {
+        if (currentPrincipal == null) {
+            final Subject subject = SecurityUtils.getSubject();
+            Long principal = (Long) subject.getPrincipal();
+            if (principal != null) {
+                return accountFacade.find(principal);
+            }
+        } else if (this.currentPrincipal != null) {
+            return accountFacade.find(this.currentPrincipal);
+        }
+        return null;
+    }
+
     public User getLocalCurrentUser() {
         return this.currentUser;
     }
@@ -861,8 +880,11 @@ public class RequestManager implements RequestManagerI {
             if (entity instanceof Broadcastable
                 && (entity instanceof VariableDescriptor
                 || entity instanceof VariableInstance
+                || entity instanceof Player
+                || entity instanceof Team
                 || entity instanceof Game
-                || entity instanceof GameModel)) {
+                || entity instanceof GameModel
+                || entity instanceof Permission)) {
                 addAll(map, ((Broadcastable) entity).getEntities());
             }
         }
@@ -1023,7 +1045,7 @@ public class RequestManager implements RequestManagerI {
         this.view = view;
     }
 
-    public boolean isEditorView(){
+    public boolean isEditorView() {
         return Views.EditorI.class.isAssignableFrom(this.view);
     }
 

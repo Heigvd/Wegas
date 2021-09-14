@@ -1427,4 +1427,30 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
         return events;
     }
+
+    /**
+     * Find all users with a scenarist access
+     *
+     * @param gameModel
+     *
+     * @return
+     */
+    public List<User> findScenarists(Long id) {
+        TypedQuery<User> query = this.getEntityManager().createNamedQuery("User.findByTransitivePermission", User.class);
+        query.setParameter(1, "%:gm" + id);
+        return query.getResultList();
+    }
+
+    /**
+     * Ginf all permission related to a gameMdoel
+     *
+     * @param gmId
+     *
+     * @return
+     */
+    public List<Permission> getPermissions(Long gmId) {
+        TypedQuery<Permission> query = this.getEntityManager().createNamedQuery("GameModel.findByPermission", Permission.class);
+        query.setParameter("permission", "%:gm" +gmId);
+        return query.getResultList();
+    }
 }

@@ -1101,6 +1101,19 @@ public class SchemaGenerator extends AbstractMojo {
             .append(System.lineSeparator())
             .append(System.lineSeparator());
 
+        /**
+         * TS interfaces with mandatory id
+         */
+        sb.append(System.lineSeparator()).append(EXPORT_TOSTRIP + " interface WithId {id: number};");
+        intKeys.forEach(key -> {
+            sb.append(System.lineSeparator())
+                .append(EXPORT_TOSTRIP).append(" type I")
+                .append(key)
+                .append("WithId  = I")
+                .append(key)
+                .append(" & WithId;");
+        });
+
         writeInterfaces(sb, tsInterfaces, this.otherObjectsInterfaceTypeD);
 
         writeInterfacesToFile(typingsDirectory, sb, "WegasEntities.ts");

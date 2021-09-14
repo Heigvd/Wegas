@@ -930,29 +930,31 @@ YUI.add('wegas-datasource', function(Y) {
 
                 gm = Y.Wegas.Facade.GameModel.cache.find("id", entity.get("id"));
 
-                oldIds = gm.get("itemsIds");
-                newIds = entity.get("itemsIds");
+                if (gm != null) {
+                    oldIds = gm.get("itemsIds");
+                    newIds = entity.get("itemsIds");
 
-                if (oldIds.length === newIds.length) {
-                    for (i in oldIds) {
-                        if (oldIds[i] !== newIds[i]) {
-                            newRoot = true;
-                            break;
+                    if (oldIds.length === newIds.length) {
+                        for (i in oldIds) {
+                            if (oldIds[i] !== newIds[i]) {
+                                newRoot = true;
+                                break;
+                            }
                         }
+                    } else {
+                        newRoot = true;
                     }
-                } else {
-                    newRoot = true;
-                }
-                if (newRoot) {
-                    gm.set("itemsIds", entity.get("itemsIds"));
+                    if (newRoot) {
+                        gm.set("itemsIds", entity.get("itemsIds"));
 
-                    eventsCollector = eventsCollector || {};
-                    eventsCollector[dsid] = eventsCollector[dsid] || {ds: ds, events: {}};
+                        eventsCollector = eventsCollector || {};
+                        eventsCollector[dsid] = eventsCollector[dsid] || {ds: ds, events: {}};
 
-                    eventsCollector[dsid].events["rootUpdate"] = [{}];
-                    return Y.Wegas.Facade.Variable;
-                } else {
-                    return false;
+                        eventsCollector[dsid].events["rootUpdate"] = [{}];
+                        return Y.Wegas.Facade.Variable;
+                    } else {
+                        return false;
+                    }
                 }
             } else if (entity instanceof Wegas.persistence.VariableInstance) {
                 return Y.Wegas.Facade.Instance.cache.updateCache(method, entity, eventsCollector);

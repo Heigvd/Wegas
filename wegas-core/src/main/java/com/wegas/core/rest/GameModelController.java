@@ -21,6 +21,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.tools.FindAndReplacePayload;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +33,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -433,6 +435,12 @@ public class GameModelController {
     }
 
     @GET
+    @Path("ByIds/{ids}")
+    public List<GameModel> getByIds(@PathParam("ids") String ids) {
+        return getIdsFromString(ids).stream().map(id -> gameModelFacade.find(id)).collect(Collectors.toList());
+    }
+
+    @GET
     @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8") // @hack force utf-8 charset
     @Path("{entityId : [1-9][0-9]*}/{filename: .*\\.json}")
     public Response downloadJSON(@PathParam("entityId") Long entityId, @PathParam("filename") String filename) throws UnsupportedEncodingException {
@@ -687,5 +695,18 @@ public class GameModelController {
     @Path("LiveEdition/{channel}")
     public void propagateLiveEdition(@PathParam("channel") String channel, AbstractEntity entity) {
         gameModelFacade.liveUpdate(channel, entity);
+    }
+
+    /**
+     * Get all permission linked to a gameModel
+     *
+     * @param gmId
+     *
+     * @return list of permission
+     */
+    @GET
+    @Path("Permissions/{gmId}")
+    public List<Permission> getPermission(@PathParam("gmId") Long gmId) {
+        return gameModelFacade.getPermissions(gmId);
     }
 }

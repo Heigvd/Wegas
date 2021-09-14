@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestManager.RequestContext;
+import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.jta.JCRClient;
@@ -51,7 +52,6 @@ import com.wegas.editor.view.Hidden;
 import com.wegas.editor.view.NumberView;
 import com.wegas.editor.view.StringView;
 import com.wegas.editor.view.Textarea;
-import java.beans.Beans;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -183,7 +183,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @WegasEntityProperty(initOnly = true,
         optional = false, nullable = false,
         view = @View(label = "UI Version", readOnly = true, value = NumberView.class))
-    private Integer UIVersion;
+    private Integer uiversion;
 
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @WegasEntityProperty(includeByDefault = false,
@@ -430,8 +430,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @PrePersist
     public void prePersist() {
-        if (this.getUIVersion() == null) {
-            this.setUIVersion(1);
+        if (this.getUiversion() == null) {
+            this.setUiversion(1);
         }
         this.setCreatedTime(new Date());
     }
@@ -458,19 +458,19 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         this.name = name;
     }
 
-    public Integer getUIVersion() {
-        return UIVersion;
+    public Integer getUiversion() {
+        return uiversion;
     }
 
-    public void setUIVersion(Integer UIVersion) {
-        this.UIVersion = UIVersion;
+    public void setUiversion(Integer uiversion) {
+        this.uiversion = uiversion;
     }
 
     /**
      * @return Current GameModel's status
      */
     @WegasExtraProperty(
-        optional = true, nullable = false,
+        optional = false, nullable = false,
         view = @View(
             label = "Status",
             readOnly = true,
@@ -660,6 +660,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     /**
      * @return the createdTime
      */
+    @WegasExtraProperty(nullable = false, optional = false)
     public Date getCreatedTime() {
         return (createdTime != null ? new Date(createdTime.getTime()) : null);
     }
@@ -734,8 +735,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         List<GameModelContent> newLibs = new ArrayList<>();
         libraries
             .forEach((kLib, vLib) -> {
-            vLib.forEach((kEntry, vEntry) -> {
-                vEntry.setLibraryType(kLib);
+                vLib.forEach((kEntry, vEntry) -> {
+                    vEntry.setLibraryType(kLib);
                     vEntry.setContentKey(kEntry);
                     newLibs.add(vEntry);
                 });
@@ -921,12 +922,10 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         this.variableDescriptors.clear();
         this.propagateGameModel();
 
-        /*
-        this.items = new ArrayList<>();
-        for (VariableDescriptor vd : items) {
-            this.addItem(vd);
-        }
-         */
+//        this.items = new ArrayList<>();
+//        for (VariableDescriptor vd : items) {
+//            this.addItem(vd);
+//        }
     }
 
     @Override
@@ -1005,6 +1004,19 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
+     * @return name of the user who created this or null if user no longer exists
+     */
+    @WegasExtraProperty
+    //@JsonView({Views.EditorI.class, Views.LobbyI.class})
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public Long getCreatedById() {
+        if (this.getCreatedBy() != null) {
+            return this.getCreatedBy().getId();
+        }
+        return null;
+    }
+
+    /**
      * @param createdByName
      */
     public void setCreatedByName(String createdByName) {
@@ -1012,7 +1024,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     @WegasExtraProperty(
-        optional = true, nullable = false,
+        optional = false, nullable = false,
         view = @View(label = "Type", value = StringView.class))
     public GmType getType() {
         return type;
@@ -1171,6 +1183,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         return Helper.GAMEMODEL_CHANNEL_PREFIX + getId();
     }
 
+    @JsonIgnore
     public String getEditorChannel() {
         return Helper.GAMEMODEL_EDITOR_CHANNEL_PREFIX + getId();
     }
@@ -1290,10 +1303,36 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
-        Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
-        map.put(this.getChannel(), entities);
+
+        // Fetch all user who with any access to the gameModel
+        Set<User> users = new HashSet<>();
+
+        // all scenarists
+        users.addAll(beans.getGameModelFacade().findScenarists(this.getId()));
+
+        // all trainers
+        games.forEach(game -> {
+            users.addAll(beans.getGameFacade().findTrainers(game.getId()));
+        });
+
+        // all players
+        this.getPlayers().stream().forEach(p -> {
+            if (p.getUser() != null) {
+                users.add(p.getUser());
+            }
+        });
+
+        // Send update through each user channel
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+        users.forEach(user -> {
+            map.put(user.getChannel(), entities);
+        });
+
+        //and send it to admins too
+        map.put(WebsocketFacade.ADMIN_LOBBY_CHANNEL, entities);
+
         return map;
     }
 
@@ -1365,11 +1404,11 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         SUPPRESSED
     }
 
-    /* try transient anotation on field "pages". Problem with anotation mixin'
-     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-     in.defaultReadObject();
-     this.pages = new HashMap<>();
-     }*/
+//     /*try transient anotation on field "pages". Problem with anotation mixin'*/
+//     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+//       in.defaultReadObject();
+//       this.pages = new HashMap<>();
+//     }
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getType() + ", " + getName() + ")";

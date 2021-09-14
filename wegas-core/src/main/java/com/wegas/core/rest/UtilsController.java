@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -20,6 +19,7 @@ import com.wegas.core.ejb.ConcurrentHelper;
 import com.wegas.core.ejb.JPACacheHelper;
 import com.wegas.core.ejb.nashorn.NasHornMonitor;
 import com.wegas.core.jcr.JackrabbitConnector;
+import com.wegas.core.rest.util.LevelDescriptor;
 import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
 import java.io.ByteArrayOutputStream;
@@ -266,7 +266,7 @@ public class UtilsController {
             response.getEntity().writeTo(baos);
             String strResponse = baos.toString("UTF-8");
 
-            try (JsonReader reader = Json.createReader(new StringReader(strResponse))) {
+            try ( JsonReader reader = Json.createReader(new StringReader(strResponse))) {
                 JsonObject r = reader.readObject();
                 JsonArray builds = r.getJsonArray("workflow_runs");
 
@@ -314,6 +314,27 @@ public class UtilsController {
         sb.append("</ul>");
 
         return sb.toString();
+    }
+
+    /**
+     * Get the description of all known co.LAB logger by providing their current level.
+     *
+     * @return all known levelDescriptor mapped by the name of the logger
+     */
+    @GET
+    @Path("GetLoggerLevels")
+    public Map<String, LevelDescriptor> getLoggerLevels() {
+        Map<String, LevelDescriptor> loggers = new HashMap<>();
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+
+        loggerContext.getLoggerList().stream()
+            .filter(logger -> logger.getName().startsWith("com.wegas"))
+            .forEach(logger -> {
+                loggers.put(logger.getName(),
+                    LevelDescriptor.build(logger));
+            });
+
+        return loggers;
     }
 
     @GET

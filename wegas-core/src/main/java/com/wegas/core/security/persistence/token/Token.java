@@ -8,6 +8,7 @@
 
 package com.wegas.core.security.persistence.token;
 
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
@@ -130,6 +131,7 @@ public abstract class Token extends AbstractEntity {
      *
      * @return the account or null
      */
+    @WegasExtraProperty
     public AbstractAccount getAccount() {
         return account;
     }
@@ -138,6 +140,7 @@ public abstract class Token extends AbstractEntity {
         this.account = account;
     }
 
+    @WegasExtraProperty(nullable = false, optional = false)
     public boolean isAutoLogin() {
         return autoLogin;
     }
@@ -149,8 +152,9 @@ public abstract class Token extends AbstractEntity {
     /**
      * Get the expiryDate. null means infinity
      *
-     * @return the epiry date or null
+     * @return the expiry date or null
      */
+    @WegasExtraProperty
     public Date getExpiryDate() {
         if (expiryDate != null) {
             return new Date(expiryDate.getTime());
@@ -185,6 +189,7 @@ public abstract class Token extends AbstractEntity {
      *
      * @return new client location
      */
+    @WegasExtraProperty
     public abstract String getRedirectTo();
 
     /**

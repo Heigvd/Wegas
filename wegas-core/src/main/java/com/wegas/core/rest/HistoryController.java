@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -145,6 +144,7 @@ public class HistoryController {
      */
     @GET
     @Path("Restore/{path: .*}")
+    @Produces(MediaType.APPLICATION_JSON)
     public GameModel restoreVersion(@PathParam("gameModelId") Long gameModelId,
         @PathParam("path") String path) throws IOException {
 
@@ -162,6 +162,7 @@ public class HistoryController {
      */
     @GET
     @Path("CreateFromVersion/{path: .*}")
+    @Produces(MediaType.APPLICATION_JSON)
     public GameModel createFromVersion(@PathParam("gameModelId") Long gameModelId,
         @PathParam("path") String path) throws IOException {
 

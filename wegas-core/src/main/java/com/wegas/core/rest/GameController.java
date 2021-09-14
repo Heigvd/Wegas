@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -22,6 +21,7 @@ import com.wegas.core.persistence.game.Game.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,9 +29,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -110,6 +112,15 @@ public class GameController {
         Game g = gameFacade.find(entityId);
 
         return g; // was: gameFacade.find(entityId);
+    }
+
+    @GET
+    @Path("ByIds/{ids}")
+    public List<Game> getByIds(@PathParam("ids") String ids) {
+        return Arrays.stream(ids.split(","))
+            .map(Long::parseLong)
+            .map(gameFacade::find)
+            .collect(Collectors.toList());
     }
 
     /**
@@ -429,26 +440,27 @@ public class GameController {
      * Class common to all invitation methods for returning a JSON result.
      */
     public static final class InvitationResult {
+
         private List<String> invitedEmails = null;
         private String methodName = "";
-        
+
         public InvitationResult(String methodName, List<String> invitedEmails) {
             this.setMethodName(methodName);
             this.setInvitedEmails(invitedEmails);
         }
-       
+
         public void setInvitedEmails(List<String> invitedEmails) {
             this.invitedEmails = invitedEmails;
         }
-        
+
         public List<String> getInvitedEmails() {
             return invitedEmails;
         }
-        
+
         public void setMethodName(String methodName) {
             this.methodName = methodName;
         }
-        
+
         public String getMethodName() {
             return methodName;
         }
@@ -459,7 +471,8 @@ public class GameController {
      *
      * @param request
      * @param surveyIds ids of survey descriptors, comma separated list
-     * @param email structure containing the attributes recipients, sender, subject and body.
+     * @param email     structure containing the attributes recipients, sender, subject and body.
+     *
      * @return InvitationResult object
      *
      */
@@ -472,13 +485,14 @@ public class GameController {
         List<String> emails = gameFacade.sendSurveysInvitationToPlayers(request, surveyIds, email);
         return new InvitationResult("InvitePlayersInSurvey", emails);
     }
-    
+
     /**
      * Invite all LIVE player to participate in a survey anonymously
      *
      * @param request
      * @param surveyIds ids of survey descriptors, comma separated list
-     * @param email structure containing the attributes recipients, sender, subject and body.
+     * @param email     structure containing the attributes recipients, sender, subject and body.
+     *
      * @return InvitationResult object
      *
      */
@@ -497,7 +511,8 @@ public class GameController {
      *
      * @param request
      * @param surveyIds ids of survey descriptors, comma separated list
-     * @param email structure containing the attributes recipients, sender, subject and body.
+     * @param email     structure containing the attributes recipients, sender, subject and body.
+     *
      * @return InvitationResult object
      *
      */

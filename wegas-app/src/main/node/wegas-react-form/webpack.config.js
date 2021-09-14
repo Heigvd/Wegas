@@ -24,7 +24,7 @@ module.exports = {
         path: path.join(__dirname, '../../../../target/Wegas/wegas-react-form/dist'),
         // filename: '[name].js',
         // chunkFilename: '[name].js',
-        publicPath: 'wegas-react-form/dist/',
+        publicPath: './wegas-react-form/dist/',
     },
     resolve: {
         extensions: ['.ts', '.tsx', '.js', '.jsx'],

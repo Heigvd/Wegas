@@ -177,4 +177,14 @@ public class PlayerController {
     public Collection<String> getLocks(@PathParam("playerId") Long playerId) {
         return playerFacade.getLocks(playerId);
     }
+
+    @GET
+    @Path("ByGameId/{gameId : [1-9][0-9]*}")
+    public Player getByGameId(@PathParam("gameId") Long gameId) {
+        User currentUser = requestManager.getCurrentUser();
+        if (currentUser != null) {
+            return playerFacade.findPlayer(gameId, currentUser.getId());
+        }
+        return null;
+    }
 }

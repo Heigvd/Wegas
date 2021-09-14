@@ -23,7 +23,6 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
-import com.wegas.core.rest.util.Views;
 import com.wegas.survey.persistence.SurveyDescriptor;
 import com.wegas.survey.persistence.SurveyInstance;
 import java.util.ArrayList;
@@ -43,7 +42,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.commons.math3.geometry.spherical.twod.Edge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

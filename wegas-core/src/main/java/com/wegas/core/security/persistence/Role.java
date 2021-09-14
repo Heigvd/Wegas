@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -10,8 +9,10 @@ package com.wegas.core.security.persistence;
 
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.ejb.RequestManager.RequestContext;
+import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -89,6 +90,7 @@ public class Role extends AbstractEntity implements PermissionOwner {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "role")
     @WegasEntityProperty(
         optional = false, nullable = false, proposal = EmptyArray.class,
+        ignoreNull = true,
         view = @View(label = "Permissions"))
     private List<Permission> permissions = new ArrayList<>();
 
@@ -198,6 +200,7 @@ public class Role extends AbstractEntity implements PermissionOwner {
      *
      * @return member's count
      */
+    @WegasExtraProperty(nullable = false, optional = false)
     public int getNumberOfMember() {
         return users.size();
     }
@@ -254,6 +257,11 @@ public class Role extends AbstractEntity implements PermissionOwner {
         if (this.users.contains(user)) {
             this.users.remove(user);
         }
+    }
+
+    @JsonIgnore
+    public String getChannel() {
+        return WebsocketFacade.ROLE_CHANNEL_PREFIX + this.name;
     }
 
     @Override

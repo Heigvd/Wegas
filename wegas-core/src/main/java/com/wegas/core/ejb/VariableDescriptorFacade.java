@@ -23,6 +23,7 @@ import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.merge.utils.WegasFieldProperties;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.Game;
@@ -124,6 +125,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     @Inject
     private I18nFacade i18nFacade;
 
+    @Inject
+    private Beanjection beans;
+
     /**
      *
      */
@@ -173,7 +177,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             "VariableDescriptor.findReadableByRootGameModelId", VariableDescriptor.class);
         query.setParameter("gameModelId", gameModel.getId());
 
-        return query.getResultList();
+        return Helper.copyAndSortModifiable(query.getResultList(), new EntityComparators.OrderComparator<>());
     }
 
     public List<VariableDescriptor> getReadableChildren(ListDescriptor list) {
@@ -181,7 +185,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             "VariableDescriptor.findReadableByParentListId", VariableDescriptor.class);
         query.setParameter("parentId", list.getId());
 
-        return query.getResultList();
+        return Helper.copyAndSortModifiable(query.getResultList(), new EntityComparators.OrderComparator<>());
     }
 
     /**
@@ -307,7 +311,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
         // @TODO find a smarter way to decide to propagate or not to propatate...
         if (propagate) {
-            entity.getScope().setBeanjection(new Beanjection(variableInstanceFacade));
+            entity.getScope().setBeanjection(beans);
             gameModelFacade.resetAndReviveScopeInstances(entity);
         }
 

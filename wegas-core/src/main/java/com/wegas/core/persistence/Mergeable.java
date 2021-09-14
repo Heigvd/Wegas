@@ -133,8 +133,8 @@ public interface Mergeable extends IMergeable {
     <T extends Mergeable> T getMergeableParent();
 
     /**
-     * The parent entity, as viewd by the client. This is almost always the same as {@link #getMergeableParent()
-     * } exceèpt in some case where the internal structure differs from the one the client see it.
+     * The parent entity, as viewed by the client. This is almost always the same as {@link #getMergeableParent()
+     * } except in some case where the internal structure differs from the one the client see it.
      * For instance, this is the case for the link between a variable instance and its descriptor:
      * the scope is hidden to the client
      *

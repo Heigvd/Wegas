@@ -90,6 +90,14 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
+     * Get the current account
+     * @return  the current account or null
+     */
+    public AbstractAccount getCurrentAccount(){
+        return requestManager.getCurrentAccount();
+    }
+
+    /**
      * Update an account
      *
      * @param entityId id of account to update

@@ -1,0 +1,15 @@
+/**
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
+
+@font-face {
+  font-family: 'wegas-icon-font';
+  src: url(./wegas-icon-font/wegas-icon-font.woff2) format('woff2'),
+    url(./wegas-icon-font/wegas-icon-font.woff) format('woff');
+  font-weight: 400;
+  font-style: normal;
+}

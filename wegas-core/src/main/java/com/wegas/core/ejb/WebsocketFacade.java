@@ -75,7 +75,13 @@ public class WebsocketFacade {
     private Boolean maintainLocalListUpToDate;
 
     public final static String GLOBAL_CHANNEL = "global-channel";
-    public final static String ADMIN_CHANNEL = "private-Role-Administrator";
+
+    public final static String ROLE_CHANNEL_PREFIX = "private-Role-";
+    public final static String ADMIN_CHANNEL = ROLE_CHANNEL_PREFIX + "Administrator";
+    /**
+     * Channel to send lobby related to all admins
+     */
+    public final static String ADMIN_LOBBY_CHANNEL = "private-LobbyAdministrator";
 
     public static final Pattern USER_CHANNEL_PATTERN = Pattern.compile(Helper.USER_CHANNEL_PREFIX + "(\\d+)");
     public static final Pattern PRIVATE_CHANNEL_PATTERN = Pattern.compile("private-(User|Player|Team|Game|GameModel)-(\\d+)");
@@ -537,6 +543,7 @@ public class WebsocketFacade {
                             // serialise with jackson to exlude unneeded properties
                             toJson(newPlayer.getTeam()
                             )));
+                    this.propagate(newPlayer.getEntities(), null, EntityUpdatedEvent.class);
                 } catch (IOException ex) {
                     logger.error("Error while propagating player");
                 }
@@ -569,8 +576,12 @@ public class WebsocketFacade {
             User user = userFacade.getCurrentUser();
             userInfo.put("name", user.getName());
             return pusher.authenticate(socketId, channel, new PresenceUser(user.getId(), userInfo));
-        }
-        if (channel.startsWith("private") && requestManager.hasChannelPermission(channel)) {
+        } else if (channel.equals(ADMIN_LOBBY_CHANNEL)) {
+            // check authentication against std admin channel
+            if (requestManager.hasChannelPermission(ADMIN_CHANNEL)) {
+                return pusher.authenticate(socketId, channel);
+            }
+        } else if (channel.startsWith("private") && requestManager.hasChannelPermission(channel)) {
             return pusher.authenticate(socketId, channel);
         }
         return null;
@@ -808,7 +819,7 @@ public class WebsocketFacade {
      * Say to admin's who are currently logged in that some users connect or disconnect
      */
     private void propagateOnlineUsers() {
-        pusher.trigger(WebsocketFacade.ADMIN_CHANNEL, "online-users", "");
+        pusher.trigger(WebsocketFacade.ADMIN_LOBBY_CHANNEL, "online-users", "");
     }
 
     public void clearOnlineUsers() {

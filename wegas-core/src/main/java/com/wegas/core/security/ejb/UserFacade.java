@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -207,6 +206,9 @@ public class UserFacade extends BaseFacade<User> {
         } finally {
             requestManager.releaseSu();
         }
+        if (methods.isEmpty()) {
+            methods.add(this.getDefaultAuthMethod());
+        }
 
         return methods;
     }
@@ -371,9 +373,7 @@ public class UserFacade extends BaseFacade<User> {
     }
 
 
-    /*private void setCurrentUser(User user) {
-        requestManager.setCurrentUser(user);
-    }*/
+    /* private void setCurrentUser(User user) { requestManager.setCurrentUser(user); } */
     /**
      * @param username String representing the username
      *
@@ -407,20 +407,14 @@ public class UserFacade extends BaseFacade<User> {
     public void create(User user) {
 //        AbstractAccount account = user.getMainAccount();
         /*
-        // The following check is now done by caller UserController.signup()
-        try {
-            // @fixme This is only done to have a nice error and not the unparsable ConstraintViolationException
-            if (account instanceof JpaAccount)
-                String mail = ((JpaAccount) account).getEmail();
-                if (mail != null && !mail.isEmpty()) {
-                    accountFacade.findByEmail(mail);
-                    throw WegasErrorMessage.error("This email is already associated with an existing account.");
-                }
-            }
-        } catch (WegasNoResultException | InjectTransactionRolledbackException e) {
-            // GOTCHA
-            // E-Mail not yet registered -> proceed
-        }
+         * // The following check is now done by caller UserController.signup() try { // @fixme
+         * This is only done to have a nice error and not the unparsable
+         * ConstraintViolationException if (account instanceof JpaAccount) String mail =
+         * ((JpaAccount) account).getEmail(); if (mail != null && !mail.isEmpty()) {
+         * accountFacade.findByEmail(mail); throw WegasErrorMessage.error("This email is already
+         * associated with an existing account."); } } } catch (WegasNoResultException |
+         * InjectTransactionRolledbackException e) { // GOTCHA // E-Mail not yet registered ->
+         * proceed }
          */
         // setup shadow storage for each account
         for (AbstractAccount account : user.getAccounts()) {
@@ -450,7 +444,8 @@ public class UserFacade extends BaseFacade<User> {
 
         this.touchLastSeenAt(user);
         /*
-         * Very strange behaviour: without this flush, RequestManages faild to be injected within others beans...
+         * Very strange behaviour: without this flush, RequestManages faild to be injected within
+         * others beans...
          */
         this.getEntityManager().flush();
     }
@@ -618,8 +613,7 @@ public class UserFacade extends BaseFacade<User> {
      * @return all role members
      */
     public List<User> findUsersWithRole(Long role_id) {
-        /* Why not using JPA ?
-        return roleFacade.find(role_id).getUsers(); ??????
+        /* Why not using JPA ? return roleFacade.find(role_id).getUsers(); ??????
          */
         final TypedQuery<User> findWithRole = getEntityManager()
             .createNamedQuery("User.findUsersWithRole", User.class);
@@ -627,13 +621,14 @@ public class UserFacade extends BaseFacade<User> {
         return findWithRole.getResultList();
     }
 
-    private void deletePermission(Permission p) {
+    public void deletePermission(Permission p) {
         if (p.getUser() != null) {
             this.find(p.getUser().getId()).removePermission(p);
         }
         if (p.getRole() != null) {
             roleFacade.find(p.getRole().getId()).removePermission(p);
         }
+        this.getEntityManager().remove(p);
     }
 
     public List<Role> findRoles(User user) {
@@ -745,10 +740,12 @@ public class UserFacade extends BaseFacade<User> {
         // load the game to make sure it exists
         Game game = gameFacade.find(gameId);
         requestManager.assertGameTrainer(game);
-        try (Sudoer su = requestManager.sudoer()) {
+        try ( Sudoer su = requestManager.sudoer()) {
             if (game != null) {
                 User user = this.find(trainerId);
                 this.addUserPermission(user, "Game:View,Edit:g" + gameId);
+                // make sure to send game too
+                requestManager.addUpdatedEntity(game);
             }
         }
     }
@@ -757,7 +754,7 @@ public class UserFacade extends BaseFacade<User> {
         // load the game to make sure it exists
         Game game = gameFacade.find(gameId);
         requestManager.assertGameTrainer(game);
-        try (Sudoer su = requestManager.sudoer()) {
+        try ( Sudoer su = requestManager.sudoer()) {
             if (this.getCurrentUser().equals(trainer)) {
                 throw WegasErrorMessage.error("Cannot remove yourself");
             }
@@ -779,24 +776,26 @@ public class UserFacade extends BaseFacade<User> {
     public void grantGameModelPermissionToUser(Long userId, Long gameModelId, String permissions) {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
-        try (Sudoer su = requestManager.sudoer()) {
+        try ( Sudoer su = requestManager.sudoer()) {
             User user = this.find(userId);
 
             /*
-         * Revoke previous permissions (do not use removeScenarist method since
-         * this method prevents to remove one own permissions,
+             * Revoke previous permissions (do not use removeScenarist method since this method
+             * prevents to remove one own permissions,
              */
             this.deletePermissions(user, "GameModel:%:gm" + gameModelId);
 
             // Grant new permission
             this.addUserPermission(user, "GameModel:" + permissions + ":gm" + gameModelId);
+            // make sure to send the gameModel too
+            requestManager.addUpdatedEntity(gm);
         }
     }
 
     public void removeScenarist(Long gameModelId, User scenarist) {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
-        try (Sudoer su = requestManager.sudoer()) {
+        try ( Sudoer su = requestManager.sudoer()) {
             if (this.getCurrentUser().equals(scenarist)) {
                 throw WegasErrorMessage.error("Cannot remove yourself");
             }
@@ -942,9 +941,7 @@ public class UserFacade extends BaseFacade<User> {
         accountFacade.remove(guest.getId());
 
         this.refresh(user);
-        /*for (Player p : user.getPlayers()) {
-            p.setName(user.getName());
-        }*/
+        /* for (Player p : user.getPlayers()) { p.setName(user.getName()); } */
         return user;
     }
 
@@ -954,10 +951,69 @@ public class UserFacade extends BaseFacade<User> {
         //this.merge(u);
     }
 
-    public void addRole(Long uId, Long rId) {
+    public User addRole(Long uId, Long rId) {
         User u = this.find(uId);
         Role r = roleFacade.find(rId);
         this.addRole(u, r);
+        return u;
+    }
+
+    public void removeRole(User u, Role r) {
+        u.removeRole(r);
+        r.removeUser(u);
+        //this.merge(u);
+    }
+
+    public User removeRole(Long uId, Long rId) {
+        User u = this.find(uId);
+        Role r = roleFacade.find(rId);
+        this.removeRole(u, r);
+        return u;
+    }
+
+    /**
+     * Give a permission to the user identified by the given id
+     *
+     * @param userId     id of the user
+     * @param permission the permission
+     *
+     * @return the newly persisted permission
+     */
+    public Permission createPermission(Long userId, Permission permission) {
+        User user = this.find(userId);
+        permission.setUser(user);
+        permission.setRole(null);
+        user.addPermission(permission);
+        this.getEntityManager().persist(permission);
+
+        return permission;
+    }
+
+    /**
+     * Update a permission
+     *
+     * @param permission new value
+     *
+     * @return updated managed permission
+     */
+    public Permission updatePermission(Permission permission) {
+        Long id = permission.getId();
+        Permission p = this.getEntityManager().find(Permission.class, id);
+        p.setValue(permission.getValue());
+        return p;
+    }
+
+    /**
+     * Delete a permission
+     *
+     * @param id id of the permission to delete
+     *
+     * @return just deleted permission
+     */
+    public Permission deletePermission(Long id) {
+        Permission p = this.getEntityManager().find(Permission.class, id);
+        this.deletePermission(p);
+        return p;
     }
 
     /**

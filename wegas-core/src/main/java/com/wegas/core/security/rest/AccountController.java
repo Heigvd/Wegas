@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -76,6 +75,18 @@ public class AccountController {
         // logger.log(Level.INFO, "POST GameModel");
         accountFacade.create(entity);
         return entity.getUser();
+    }
+
+    /**
+     *
+     * Get the current account
+     *
+     * @return the current account or null if nobody is logged in
+     */
+    @GET
+    @Path("Current")
+    public AbstractAccount getCurrent() {
+        return accountFacade.getCurrentAccount();
     }
 
     /**

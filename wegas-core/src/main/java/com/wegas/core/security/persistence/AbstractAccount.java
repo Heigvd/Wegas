@@ -182,6 +182,7 @@ public abstract class AbstractAccount extends AbstractEntity {
      */
     @Override
     public Long getId() {
+        this.getMergeableParent();
         return id;
     }
 
@@ -409,6 +410,7 @@ public abstract class AbstractAccount extends AbstractEntity {
         this.emailDomain = emailDomain;
     }
 
+    @WegasExtraProperty
     public abstract Boolean isVerified();
 
     /**
@@ -516,7 +518,7 @@ public abstract class AbstractAccount extends AbstractEntity {
 
     @Override
     public WithPermission getMergeableParent() {
-        return null;
+        return this.user;
     }
 
     @Override

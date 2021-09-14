@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    >
+    <h:head>
+        <title>Wegas - Lobby</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="icon" href="#{request.contextPath}/${requestController.favicon}.ico" />
+        <link rel="icon" type="image/png" href="#{request.contextPath}/${requestController.favicon}.png" />
+        <style>
+            @import url("https://rsms.me/inter/inter.css");
+            html {
+                font-family: "Inter", sans-serif;
+            }
+            @supports (font-variation-settings: normal) {
+                html {
+                    font-family: "Inter var", sans-serif;
+                }
+            }
+        </style>
+    </h:head>
+    <h:body>
+        <div id='root'> </div>
+        <script type="application/javascript">
+            var APP_ENDPOINT = "#{request.contextPath}";
+            var API_ENDPOINT = "#{request.contextPath}" + "/rest";
+        </script>
+        <script src="./wegas-lobby-react/main.js"></script>
+    </h:body>
+</html>

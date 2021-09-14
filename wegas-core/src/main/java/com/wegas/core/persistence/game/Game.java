@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -18,12 +17,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestManager.RequestContext;
+import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -38,8 +40,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -60,6 +64,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -98,9 +103,13 @@ import javax.validation.constraints.Pattern;
     query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name"
 )
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Game extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, NamedEntity {
+public class Game extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, NamedEntity, AcceptInjection {
 
     private static final long serialVersionUID = 1L;
+
+    @JsonIgnore
+    @Transient
+    protected Beanjection beans;
 
     /**
      *
@@ -269,7 +278,13 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
         this.getGameTeams().setTeams(teams);
     }
 
-    @WegasExtraProperty(optional = false, nullable = false, view = @View(label = "Status", value = Hidden.class))
+    @WegasExtraProperty(
+        optional = false, nullable = false,
+        view = @View(
+            label = "Status",
+            value = Hidden.class
+        )
+    )
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public Status getStatus() {
         return status;
@@ -447,6 +462,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      * @return the createdTime
      */
     @Override
+    @WegasExtraProperty(nullable = false, optional = false)
     public Date getCreatedTime() {
         return createdTime != null ? new Date(createdTime.getTime()) : null;
     }
@@ -497,6 +513,21 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
         }
         return null;
     }
+
+    /**
+     * @return id of the user who created this or null if user no longer exists
+     */
+    @WegasExtraProperty
+    //@JsonView({Views.EditorI.class, Views.LobbyI.class})
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public Long getCreatedById() {
+        if (this.getCreatedBy() != null) {
+            return this.getCreatedBy().getId();
+        }
+        return null;
+    }
+
+
 
     /**
      * @return the gameModelId
@@ -635,19 +666,47 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
         SUPPRESSED
     }
 
-
-    /*
-     * Broadcastable mechanism
+    /**
+     * {@inheritDoc}
      */
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
-        String audience = this.getChannel();
-
-        Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
-        map.put(audience, entities);
+
+        // Fetch all user who with any access to the game
+        Set<User> users = new HashSet<>();
+
+        if (this.gameModel != null) {
+            // all scenarists
+            users.addAll(beans.getGameModelFacade().findScenarists(gameModel.getId()));
+        }
+
+        // all trainers
+        users.addAll(beans.getGameFacade().findTrainers(this.getId()));
+
+        // all players
+        this.getPlayers().stream().forEach(p -> {
+            if (p.getUser() != null) {
+                users.add(p.getUser());
+            }
+        });
+
+        // Send update through each user channel
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+        users.forEach(user -> {
+            map.put(user.getChannel(), entities);
+        });
+
+        //and send it to admins too
+        map.put(WebsocketFacade.ADMIN_LOBBY_CHANNEL, entities);
+
         return map;
+    }
+
+    @Override
+    public void setBeanjection(Beanjection beanjection) {
+        this.beans = beanjection;
     }
 
     @Override

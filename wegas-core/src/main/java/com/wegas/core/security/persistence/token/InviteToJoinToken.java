@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 @Entity
 public class InviteToJoinToken extends Token {
 
+    private static final long serialVersionUID = 1L;
+
     @JsonIgnore
     @ManyToOne
     private Game game;
@@ -58,7 +60,6 @@ public class InviteToJoinToken extends Token {
             if (game.getProperties().getFreeForAll()) {
                 return "game-play.html?gameId=" + game.getId();
             } else {
-                // strage configuration
                 // redirect to join team model
                 return "/#/play/" + game.getToken();
             }
