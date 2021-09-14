@@ -8,7 +8,7 @@
 
 import * as React from 'react';
 import { en } from './en';
-//import {fr} from './fr';
+import {fr} from './fr';
 
 export type Language = 'FR' | 'EN';
 
@@ -22,13 +22,13 @@ export const I18nCtx = React.createContext<I18nState>({
   setLang: () => {},
 });
 
-export interface WegasTranslations {}
+export type WegasTranslations = typeof en;
 
 export default function useTranslations(): typeof en {
   const { lang } = React.useContext(I18nCtx);
 
   if (lang === 'FR') {
-    return en;
+    return fr;
   } else {
     return en;
   }

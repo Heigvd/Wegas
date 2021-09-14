@@ -698,8 +698,11 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
             map.put(user.getChannel(), entities);
         });
 
-        //and send it to admins too
+        // send it to admins too
         map.put(WebsocketFacade.ADMIN_LOBBY_CHANNEL, entities);
+
+        // and eventually to the game channel
+        map.put(this.getChannel(), entities);
 
         return map;
     }

@@ -1330,9 +1330,11 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
             map.put(user.getChannel(), entities);
         });
 
-        //and send it to admins too
+        // send it to admins too
         map.put(WebsocketFacade.ADMIN_LOBBY_CHANNEL, entities);
 
+        // and eventually to the game model chanel
+        map.put(this.getChannel(), entities);
         return map;
     }
 

@@ -528,6 +528,9 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
         //and send it to admins too
         map.put(WebsocketFacade.ADMIN_LOBBY_CHANNEL, entities);
 
+        // and eventually to the player channel
+        map.put(this.getChannel(), entities);
+
         return map;
     }
 

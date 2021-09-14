@@ -40,7 +40,7 @@ export interface OnlineUser {
   lastActivityDate: number;
   userId: number;
   mainAccountId: number;
-  highestRole: number;
+  highestRole: 0 | 1 | 2 | 3 | 4;
   playerId: number;
 }
 
@@ -331,7 +331,7 @@ export const WegasLobbyRestClient = function (
     common: {
       getPusherAppKey: () => {
         const path = `${baseUrl}/Pusher/ApplicationKey`;
-        return sendJsonRequest<{ key: string; cluster: string }>(
+        return sendJsonRequest<{key: string; cluster: string}>(
           'GET',
           path,
           undefined,
@@ -342,7 +342,7 @@ export const WegasLobbyRestClient = function (
     AdminStuff: {
       getLoggerLevels: () => {
         const path = `${baseUrl}/Utils/GetLoggerLevels`;
-        return sendJsonRequest<{ [loggetName: string]: ILevelDescriptor }>(
+        return sendJsonRequest<{[loggetName: string]: ILevelDescriptor}>(
           'GET',
           path,
           undefined,
@@ -410,7 +410,7 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<IRoleWithPermissions[]>('GET', path, undefined, errorHandler);
       },
       create: (name: string) => {
-        const role = { '@class': 'Role', name: name };
+        const role = {'@class': 'Role', name: name};
         const path = `${baseUrl}/Role`;
         return sendJsonRequest<IRoleWithPermissions>('POST', path, role, errorHandler);
       },
@@ -483,7 +483,7 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<IAccountWithPerm[]>(
           'POST',
           path,
-          { rolesList: roles },
+          {rolesList: roles},
           errorHandler,
         );
       },
@@ -613,7 +613,7 @@ export const WegasLobbyRestClient = function (
       },
       getGames: (status: IGameWithId['status']) => {
         const path = `${baseUrl}/Lobby/GameModel/Game/status/${status}`;
-        return sendJsonRequest<(IGameWithId & { gameModel?: IGameModelWithId })[]>(
+        return sendJsonRequest<(IGameWithId & {gameModel?: IGameModelWithId})[]>(
           'GET',
           path,
           undefined,
@@ -635,7 +635,7 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<IGameModelWithId>(
           'POST',
           path,
-          { '@class': 'GameModel', name },
+          {'@class': 'GameModel', name},
           errorHandler,
         );
       },
@@ -644,7 +644,7 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<IGameModelWithId>(
           'POST',
           path,
-          { '@class': 'GameModel', name },
+          {'@class': 'GameModel', name},
           errorHandler,
         );
       },
@@ -653,7 +653,7 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<IGameModelWithId>(
           'POST',
           path,
-          { '@class': 'GameModel', name },
+          {'@class': 'GameModel', name},
           errorHandler,
         );
       },

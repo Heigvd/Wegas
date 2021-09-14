@@ -19,7 +19,7 @@ import {
   updatePermission,
 } from '../../API/api';
 import { entityIs } from '../../API/entityHelper';
-import useTranslations from '../../i18n/I18nContext';
+import useTranslations, {WegasTranslations} from '../../i18n/I18nContext';
 import { useCurrentUser } from '../../selectors/userSelector';
 import {
   usePermissionObject,
@@ -49,31 +49,16 @@ interface PermIdOption {
   label: string;
 }
 
-function prettyPrintType(gameModel: IGameModelWithId): string {
-  // TODO: i18n
+function prettyPrintType(gameModel: IGameModelWithId, i18n: WegasTranslations): string {
   switch (gameModel.type) {
     case 'MODEL':
-      return 'Model';
+      return i18n.Model;
     case 'REFERENCE':
-      return 'ModelReference';
+      return i18n.ModelRef;
     case 'SCENARIO':
-      return 'Scenario';
+      return i18n.Scenario;
     case 'PLAY':
-      return 'Scenario of game';
-  }
-}
-
-function prettyPrintStatus(gameModel: Pick<IGameModelWithId, 'status'>): string {
-  // TODO: i18n
-  switch (gameModel.status) {
-    case 'LIVE':
-      return 'Current';
-    case 'BIN':
-      return 'Archived';
-    case 'DELETE':
-      return 'Trash';
-    case 'SUPPRESSED':
-      return 'Definitively deleted';
+      return i18n.PlayScenario;
   }
 }
 
@@ -167,7 +152,7 @@ export function GameModelPermissionEditor({
     .map(gm => {
       return {
         value: gm.id,
-        label: `${gm.name}  [${prettyPrintStatus(gm)} ${prettyPrintType(gm)}]`,
+        label: `${gm.name}  [${i18n.status[gm.status]} ${prettyPrintType(gm, i18n)}]`,
       };
     })
     .sort((a, b) => a.label.localeCompare(b.label));
@@ -244,7 +229,7 @@ export function GamePermissionEditor({ id, onChange }: GmPermissionEditorProps):
     .map(g => {
       return {
         value: g.id,
-        label: `${g.name}  [${prettyPrintStatus(g)}]`,
+        label: `${g.name}  [${i18n.status[g.status]}]`,
       };
     })
     .sort((a, b) => a.label.localeCompare(b.label));

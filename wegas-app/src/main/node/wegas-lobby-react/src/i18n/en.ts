@@ -6,14 +6,12 @@
  * Licensed under the MIT License
  */
 
-//import {WegasTranslations} from "./I18nContext";
-
 export const en = {
   pleaseProvideData: 'Some data are missing',
   cancel: 'cancel',
   config: 'confirm',
   emailAddress: 'e-mail address',
-  emailAddressNotValid: 'e-mail address is not value',
+  emailAddressNotValid: 'e-mail address is not valid',
   emailShort: 'E-Mail',
   pleaseEnterId: 'Please enter an identifier',
   username: 'username',
@@ -60,7 +58,7 @@ export const en = {
   admin: 'administrator',
   search: 'search...',
   logout: 'logout',
-  changeLanguage: 'changeLanguage',
+  changeLanguage: 'change language',
   //
   Team: 'Team',
   failedToJoin: 'Error while joining session',
@@ -94,6 +92,8 @@ export const en = {
   date: 'date',
   //
   scenario: 'Scenario: ',
+  Scenario: 'Scenario',
+  PlayScenario: 'Game\'s Scenario',
   createdOn: 'Created on',
   by: 'by',
   display: 'display: ',
@@ -178,6 +178,7 @@ export const en = {
   exportWgz: 'Export',
   exportJson: 'JSON',
   Model: 'Model',
+  ModelRef: 'ModelRef',
 
   //
   ModelInstances: 'Model instances',
@@ -261,4 +262,17 @@ export const en = {
   invalidToken: 'Invalid Token',
   processing: 'processing...',
   andXMore: (x: number) => `and ${x} more...`,
+  status: {
+    LIVE: 'Current',
+    BIN: 'Archived',
+    DELETE: 'Trash',
+    SUPPRESSED: 'Definitively deleted',
+  },
+  userLevels: {
+    0: 'Administrators',
+    1: 'Scenarist/Trainer',
+    2: 'Player',
+    3: 'Guest',
+    4: 'No role ???',
+  }
 };

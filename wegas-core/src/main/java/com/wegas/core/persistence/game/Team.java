@@ -546,8 +546,11 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         });
 
 
-        //and send it to admins too
+        // send it to admins too
         map.put(WebsocketFacade.ADMIN_LOBBY_CHANNEL, entities);
+
+        // and eventually to the team channel
+        map.put(this.getChannel(), entities);
 
         return map;
     }

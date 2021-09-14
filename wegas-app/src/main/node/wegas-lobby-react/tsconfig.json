@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
+    "outDir": "../../../../target/Wegas/wegas-lobby-react/dist",
     "sourceMap": true,
     "noImplicitAny": true,
     "module": "esnext",
