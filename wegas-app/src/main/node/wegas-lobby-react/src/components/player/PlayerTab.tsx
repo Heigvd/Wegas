@@ -12,6 +12,7 @@ import * as React from 'react';
 import { useLocation } from 'react-router-dom';
 import { getPlayers } from '../../API/api';
 import { PlayerToGameModelLoading } from '../../API/restClient';
+import { match } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
 import { usePlayers } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
@@ -34,18 +35,18 @@ interface SortBy {
 }
 
 const matchSearch = (search: string) => (data: PlayerToGameModelLoading) => {
-  const regex = new RegExp(search, 'i');
-  if (search) {
+  return match(search, regex => {
     return (
-      (data.team &&
+      (data.team != null &&
         data.team != 'LOADING' &&
-        data.team.name &&
+        data.team.name != null &&
         data.team.name.match(regex) != null) ||
-      (data.game && data.game != 'LOADING' && data.game.name && data.game.name.match(regex) != null)
+      (data.game != null &&
+        data.game != 'LOADING' &&
+        data.game.name != null &&
+        data.game.name.match(regex) != null)
     );
-  } else {
-    return true;
-  }
+  });
 };
 
 export default function PlayerTab(): JSX.Element {

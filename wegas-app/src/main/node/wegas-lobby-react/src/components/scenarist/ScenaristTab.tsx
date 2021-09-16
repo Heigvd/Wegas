@@ -11,8 +11,8 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { uniq } from 'lodash';
 import * as React from 'react';
 import { IAbstractAccount, IGameModelWithId } from 'wegas-ts-api';
-import { getGameModels, getUserByIds } from '../../API/api';
-import { getDisplayName, mapByKey } from '../../helper';
+import { getGameModels, getShadowUserByIds } from '../../API/api';
+import { getDisplayName, mapByKey, match } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
 import { useAccountsByUserIds, useCurrentUser } from '../../selectors/userSelector';
 import { MINE_OR_ALL, useEditableGameModels } from '../../selectors/wegasSelector';
@@ -42,8 +42,7 @@ interface SortBy {
 const matchSearch =
   (accountMap: Record<number, IAbstractAccount>, search: string) =>
   (gameModel: IGameModelWithId | 'LOADING') => {
-    const regex = new RegExp(search, 'i');
-    if (search) {
+    return match(search, regex => {
       if (gameModel != 'LOADING') {
         const username =
           gameModel.createdById != null ? getDisplayName(accountMap[gameModel.createdById]) : '';
@@ -53,9 +52,7 @@ const matchSearch =
       } else {
         return false;
       }
-    } else {
-      return true;
-    }
+    });
   };
 
 export interface ScenaristTabProps {
@@ -124,7 +121,7 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
 
   React.useEffect(() => {
     if (isAdmin && accountsState.unknownUsers.length > 0) {
-      dispatch(getUserByIds(accountsState.unknownUsers));
+      dispatch(getShadowUserByIds(accountsState.unknownUsers));
     }
   }, [isAdmin, accountsState, dispatch]);
 

@@ -282,7 +282,7 @@ export const getFullUser = createAsyncThunk(
   },
 );
 
-export const getUserByIds = createAsyncThunk('user/getByIds', async (ids: number[]) => {
+export const getShadowUserByIds = createAsyncThunk('user/getByIds', async (ids: number[]) => {
   return await restClient.UserController.getUserByIds(ids);
 });
 

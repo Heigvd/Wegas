@@ -22,7 +22,7 @@ import { entityIs } from '../../API/entityHelper';
 import useTranslations from '../../i18n/I18nContext';
 import { useCurrentUser } from '../../selectors/userSelector';
 import { useTeams, useUserPlayerInGame } from '../../selectors/wegasSelector';
-import { useAppDispatch } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { addNotification } from '../../store/slices/notification';
 import { CHANNEL_PREFIX, useWebsocketChannel } from '../../websocket/websocket';
 import ActionButton from '../common/ActionButton';
@@ -251,15 +251,23 @@ export default function JoinGame({ gameToken, onClose }: JoinGameProps): JSX.Ele
 
   const existingPlayer = useUserPlayerInGame(game != null ? game.id : undefined, currentUserId);
 
+  const joinStatus = useAppSelector(state => {
+    if (game != null) {
+      return state.games.joinStatus[game.id];
+    } else {
+      return undefined;
+    }
+  });
+
   React.useEffect(() => {
-    if (game != null && gameModel != null) {
+    if (game != null && gameModel != null && joinStatus == undefined && existingPlayer == null) {
       if (gameModel.properties.freeForAll) {
         dispatch(joinIndividually(game)).then(() => {
           onClose();
         });
       }
     }
-  }, [game, gameModel, onClose, dispatch]);
+  }, [game, gameModel, onClose, dispatch, joinStatus]);
 
   React.useEffect(() => {
     if (gameToken != null) {
@@ -280,16 +288,22 @@ export default function JoinGame({ gameToken, onClose }: JoinGameProps): JSX.Ele
   } else if (gameModel == null || game == null) {
     return <FindGameByToken onSelect={setData} onCancel={onClose} />;
   } else if (existingPlayer != null) {
-    return (
-      <Flex direction="column" justify="center" align="center" grow={1}>
-        <div>{i18n.alreadyJoined}</div>
-        <CardMainButton
-          icon={faPlay}
-          title={i18n.openGameAsPlayer}
-          url={`./${gameModel.uiversion === 2 ? '2/player.html' : 'game-play.html'}?id=${existingPlayer.id}`}
-        />
-      </Flex>
-    );
+    if (existingPlayer.status === 'LIVE') {
+      return (
+        <Flex direction="column" justify="center" align="center" grow={1}>
+          <div className={css({ padding: '10px' })}>{i18n.alreadyJoined}</div>
+          <CardMainButton
+            icon={faPlay}
+            title={i18n.openGameAsPlayer}
+            url={`./${gameModel.uiversion === 2 ? '2/player.html' : 'game-play.html'}?id=${
+              existingPlayer.id
+            }`}
+          />
+        </Flex>
+      );
+    } else {
+      return <InlineLoading />;
+    }
   } else if (gameModel.properties.freeForAll) {
     return <InlineLoading />;
   } else {

@@ -60,7 +60,7 @@ function VersionCard({ gameModel, version, reload }: VersionCardProps): JSX.Elem
         onClick={restoreCb}
       />
       <ActionIconButton
-        shouldConfirm
+        shouldConfirm="SOFT_LEFT"
         className={cardSecButtonStyle}
         icon={faTrash}
         title={i18n.deleteVersion}
@@ -156,7 +156,7 @@ export default function GameModelVersioning({
           className={buttonStyle}
           icon={faDownload}
           onClick={() => {
-            window.open(`${API_ENDPOINT}/GameModel/${gameModel.id}.wgz`);
+            window.open(`${API_ENDPOINT}/ExportGameModel/${gameModel.id}.wgz`);
           }}
         >
           {i18n.exportWgz}
@@ -168,7 +168,7 @@ export default function GameModelVersioning({
           icon={faDownload}
           onClick={() => {
             window.open(
-              `${API_ENDPOINT}/GameModel/${gameModel.id}/${encodeURIComponent(
+              `${API_ENDPOINT}/Export/GameModel/${gameModel.id}/${encodeURIComponent(
                 gameModel.name,
               )}.json`,
             );

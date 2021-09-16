@@ -185,7 +185,7 @@ export function RoleMembers({ role }: { role: IRoleWithId }): JSX.Element {
         {members.users.map(user => (
           <UserCard key={user.id} user={user}>
             <ActionIconButton
-              shouldConfirm
+              shouldConfirm="SOFT_LEFT"
               className={cardSecButtonStyle}
               icon={faMinusCircle}
               title={i18n.removeRole}

@@ -17,6 +17,7 @@ export interface GameState {
   status: Record<IGameWithId['status'], LoadingStatus>;
   games: Record<number, IGameWithId | 'LOADING'>;
   teams: Record<number, 'LOADING' | number[]>;
+  joinStatus: Record<number, 'JOINING' | 'JOINED'>;
 }
 
 const initialState: GameState = {
@@ -29,6 +30,7 @@ const initialState: GameState = {
   },
   games: {},
   teams: {},
+  joinStatus: {},
 };
 
 const slice = createSlice({
@@ -112,6 +114,12 @@ const slice = createSlice({
       })
       .addCase(API.getPlayers.fulfilled, (state, action) => {
         state.games = { ...state.games, ...mapById(action.payload.map(data => data.game)) };
+      })
+      .addCase(API.joinIndividually.pending, (state, action) => {
+        state.joinStatus[action.meta.arg.id] = 'JOINING';
+      })
+      .addCase(API.joinIndividually.fulfilled, (state, action) => {
+        state.joinStatus[action.meta.arg.id] = 'JOINED';
       })
       .addCase(API.runAs.fulfilled, () => {
         return initialState;

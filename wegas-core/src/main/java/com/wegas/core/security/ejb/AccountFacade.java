@@ -135,22 +135,23 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
             oAccount.shadowEmail();
 
-            /*
-             * Only an administrator can modify memberships And only if given account contains roles
-             * by itself
-             */
-            if (requestManager.isAdmin() && account.getDeserialisedRoles() != null) {
-                Set<Role> revivedRoles = new HashSet<>();
-                for (Role r : account.getDeserialisedRoles()) {
-                    try {
-                        revivedRoles.add(roleFacade.find(r.getId()));
-                    } catch (EJBException e) {
-                        // not able to revive this role
-                        logger.error("Fails to add role {} to {}", r, account);
-                    }
-                }
-                oAccount.getUser().setRoles(revivedRoles);
-            }
+// @Deprecated: Admin shall update membershipness with dedicated methods
+//            /*
+//             * Only an administrator can modify memberships And only if given account contains roles
+//             * by itself
+//             */
+//            if (requestManager.isAdmin() && account.getDeserialisedRoles() != null) {
+//                Set<Role> revivedRoles = new HashSet<>();
+//                for (Role r : account.getDeserialisedRoles()) {
+//                    try {
+//                        revivedRoles.add(roleFacade.find(r.getId()));
+//                    } catch (EJBException e) {
+//                        // not able to revive this role
+//                        logger.error("Fails to add role {} to {}", r, account);
+//                    }
+//                }
+//                oAccount.getUser().setRoles(revivedRoles);
+//            }
         }
 
         return oAccount;

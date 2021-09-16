@@ -10,6 +10,7 @@ import { css, cx } from '@emotion/css';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons/';
+import { escapeRegExp } from 'lodash';
 import * as React from 'react';
 import useTranslations from '../../../i18n/I18nContext';
 import { illustrationColors, resolveColor } from '../../styling/color';
@@ -90,7 +91,7 @@ const roundIcon = (color: string) =>
   });
 
 const matchSearch = (search: string) => (data: IconDef) => {
-  const regex = new RegExp(search, 'i');
+  const regex = new RegExp(escapeRegExp(search), 'i');
   if (search) {
     return data.name.match(regex) != null;
   } else {

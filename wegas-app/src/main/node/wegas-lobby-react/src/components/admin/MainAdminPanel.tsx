@@ -172,11 +172,12 @@ export default function MainAdminPanel(): JSX.Element {
           pr_branch.data > 0 ? (
             <img
               alt="github status"
-              src={`https://github.com/Heigvd/Wegas/workflows/CI/badge.svg?event=push&branch=${branch.data}`}
+              src={`https://github.com/Heigvd/Wegas/workflows/CI/badge.svg?event=pull_request&branch=${pr_branch.data}`}
             />
           ) : (
             <img
-              src={`https://github.com/Heigvd/Wegas/workflows/CI/badge.svg?event=pull_request&branch=${pr_branch.data}}`}
+              alt="github status"
+              src={`https://github.com/Heigvd/Wegas/workflows/CI/badge.svg?event=push&branch=${branch.data}`}
             />
           )
         ) : (
@@ -199,7 +200,7 @@ export default function MainAdminPanel(): JSX.Element {
       <ActionIconButton
         title={i18n.clearCache}
         icon={faEraser}
-        shouldConfirm={true}
+        shouldConfirm="SOFT_RIGHT"
         onClick={clearCacheCb}
       >
         {i18n.clearCache}
@@ -207,7 +208,7 @@ export default function MainAdminPanel(): JSX.Element {
       <ActionIconButton
         title={i18n.createEmptyModel}
         icon={faCubes}
-        shouldConfirm={true}
+        shouldConfirm="SOFT_RIGHT"
         onClick={createModelCb}
       >
         {i18n.createEmptyModel}

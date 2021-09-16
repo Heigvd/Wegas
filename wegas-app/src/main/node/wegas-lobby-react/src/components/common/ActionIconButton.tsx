@@ -18,7 +18,7 @@ export interface ActionIconButton {
   className?: string;
   icon: IconProp;
   children?: React.ReactNode;
-  shouldConfirm?: boolean | 'HARD';
+  shouldConfirm?: boolean | 'HARD' | 'SOFT_LEFT' | 'SOFT_CENTER' | 'SOFT_RIGHT';
   delay?: number;
   confirmMessage?: React.ReactNode;
 }
@@ -65,9 +65,21 @@ export default function ActionIconButton({
   }, [state, delay]);
 
   if (state === 'IDLE') {
-    if (shouldConfirm === true) {
+    if (shouldConfirm === true || shouldConfirm === 'SOFT_CENTER') {
       return (
-        <ConfirmIconButton icon={icon} onConfirm={onClickCb} title={title}>
+        <ConfirmIconButton position={'CENTER'} icon={icon} onConfirm={onClickCb} title={title}>
+          {children}
+        </ConfirmIconButton>
+      );
+    } else if (shouldConfirm === 'SOFT_LEFT') {
+      return (
+        <ConfirmIconButton position={'LEFT'} icon={icon} onConfirm={onClickCb} title={title}>
+          {children}
+        </ConfirmIconButton>
+      );
+    } else if (shouldConfirm === 'SOFT_RIGHT') {
+      return (
+        <ConfirmIconButton position={'RIGHT'} icon={icon} onConfirm={onClickCb} title={title}>
           {children}
         </ConfirmIconButton>
       );

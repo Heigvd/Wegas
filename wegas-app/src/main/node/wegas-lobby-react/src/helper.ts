@@ -5,6 +5,7 @@
  * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+import { escapeRegExp } from 'lodash';
 import { IAbstractAccount, IAbstractEntity } from 'wegas-ts-api';
 import { entityIs } from './API/entityHelper';
 import { logger } from './logger';
@@ -114,4 +115,18 @@ export const removeItem = (array: unknown[], item: unknown): void => {
 
 export function checkUnreachable(x: never): void {
   logger.error(x);
+}
+
+export function match(search: string, match: (regex: RegExp) => boolean): boolean {
+  if (search.length <= 0) {
+    return true;
+  } else {
+    return search.split(/\s+/).reduce<boolean>((acc, current) => {
+      if (!acc) {
+        return false;
+      } else {
+        return match(new RegExp(escapeRegExp(current), 'i'));
+      }
+    }, true);
+  }
 }

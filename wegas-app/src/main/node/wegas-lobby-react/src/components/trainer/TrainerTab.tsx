@@ -11,8 +11,8 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { uniq } from 'lodash';
 import * as React from 'react';
 import { IAbstractAccount, IGameModelWithId, IGameWithId } from 'wegas-ts-api';
-import { getGames, getUserByIds } from '../../API/api';
-import { getDisplayName, mapByKey } from '../../helper';
+import { getGames, getShadowUserByIds } from '../../API/api';
+import { getDisplayName, mapByKey, match } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
 import { useAccountsByUserIds, useCurrentUser } from '../../selectors/userSelector';
 import { MINE_OR_ALL, useGames } from '../../selectors/wegasSelector';
@@ -39,14 +39,15 @@ interface SortBy {
 
 const matchSearch =
   (accountMap: Record<number, IAbstractAccount>, search: string) =>
-  ({ game }: { game: IGameWithId; gameModel: IGameModelWithId }) => {
-    const regex = new RegExp(search, 'i');
-    if (search) {
+  ({ game, gameModel }: { game: IGameWithId; gameModel: IGameModelWithId }) => {
+    return match(search, regex => {
       const username = game.createdById != null ? getDisplayName(accountMap[game.createdById]) : '';
-      return (game.name && game.name.match(regex) != null) || username.match(regex) != null;
-    } else {
-      return true;
-    }
+      return (
+        (gameModel.name && gameModel.name.match(regex) != null) ||
+        (game.name && game.name.match(regex) != null) ||
+        username.match(regex) != null
+      );
+    });
   };
 
 export default function TrainerTab(): JSX.Element {
@@ -118,7 +119,7 @@ export default function TrainerTab(): JSX.Element {
 
   React.useEffect(() => {
     if (isAdmin && accountsState.unknownUsers.length > 0) {
-      dispatch(getUserByIds(accountsState.unknownUsers));
+      dispatch(getShadowUserByIds(accountsState.unknownUsers));
     }
   }, [isAdmin, accountsState, dispatch]);
 

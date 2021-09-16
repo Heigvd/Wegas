@@ -320,7 +320,7 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<void>('POST', path, undefined, errorHandler);
       },
       agree: (accountId: number) => {
-        const path = `${baseUrl}/User/Account/SetAgreed/${accountId}`;
+        const path = `${baseUrl}/Extended/User/Account/SetAgreed/${accountId}`;
         return sendJsonRequest<IAbstractAccountWithId>('POST', path, undefined, errorHandler);
       },
       logout: () => {
@@ -382,25 +382,25 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<void>('DELETE', path, undefined, errorHandler);
       },
       createEmptyModel: () => {
-        const path = `${baseUrl}/Update/CreateEmptyModel`;
+        const path = `${baseUrl}/Lobby/Update/CreateEmptyModel`;
         return sendRawRequest('POST', path, undefined, errorHandler);
       },
     },
     PermissionController: {
       createPermissionForUser: (userId: number, permission: IPermission) => {
-        const path = `${baseUrl}/User/Permission/${userId}`;
+        const path = `${baseUrl}/Lobby/User/Permission/${userId}`;
         return sendJsonRequest<IPermissionWithId>('POST', path, permission, errorHandler);
       },
       createPermissionForRole: (roleId: number, permission: IPermission) => {
-        const path = `${baseUrl}/Role/Permission/${roleId}`;
+        const path = `${baseUrl}/Lobby/Role/Permission/${roleId}`;
         return sendJsonRequest<IPermissionWithId>('POST', path, permission, errorHandler);
       },
       updatePermission: (permission: IPermissionWithId) => {
-        const path = `${baseUrl}/User/Permission`;
+        const path = `${baseUrl}/Lobby/User/Permission`;
         return sendJsonRequest<IPermissionWithId>('PUT', path, permission, errorHandler);
       },
       deletePermission: (id: number) => {
-        const path = `${baseUrl}/User/Permission/${id}`;
+        const path = `${baseUrl}/Lobby/User/Permission/${id}`;
         return sendJsonRequest<IPermissionWithId>('DELETE', path, undefined, errorHandler);
       },
     },
@@ -423,21 +423,21 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<IRoleWithId>('DELETE', path, undefined, errorHandler);
       },
       shareGame: (gameId: number, roleId: number) => {
-        const path = `${baseUrl}/Role/ShareGame/${gameId}/${roleId}`;
+        const path = `${baseUrl}/Extended/Role/ShareGame/${gameId}/${roleId}`;
         return sendJsonRequest<IPermissionWithId>('POST', path, undefined, errorHandler);
       },
       unshareGame: (gameId: number, roleId: number) => {
-        const path = `${baseUrl}/Role/ShareGame/${gameId}/${roleId}`;
+        const path = `${baseUrl}/Extended/Role/ShareGame/${gameId}/${roleId}`;
         return sendJsonRequest<IPermissionWithId[]>('DELETE', path, undefined, errorHandler);
       },
       shareGameModel: (gameModelId: number, roleId: number, permissions: string[]) => {
-        const path = `${baseUrl}/Role/ShareGameModel/${gameModelId}/${permissions.join(
+        const path = `${baseUrl}/Extended/Role/ShareGameModel/${gameModelId}/${permissions.join(
           ',',
         )}/${roleId}`;
         return sendJsonRequest<IPermissionWithId>('POST', path, undefined, errorHandler);
       },
       unshareGameModel: (gameModelId: number, roleId: number) => {
-        const path = `${baseUrl}/Role/ShareGameModel/${gameModelId}/${roleId}`;
+        const path = `${baseUrl}/Extended/Role/ShareGameModel/${gameModelId}/${roleId}`;
         return sendJsonRequest<IPermissionWithId[]>('DELETE', path, undefined, errorHandler);
       },
     },
@@ -467,7 +467,7 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<IUserWithAccounts>('GET', path, undefined, errorHandler);
       },
       getUserByIds: (ids: number[]) => {
-        const path = `${baseUrl}/User/ByIds`;
+        const path = `${baseUrl}/Shadow/User/ByIds`;
         return sendJsonRequest<IUserWithAccounts[]>('POST', path, ids, errorHandler);
       },
       getCurrentUser: () => {
@@ -492,21 +492,21 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<IAccountWithPerm[]>('GET', path, undefined, errorHandler);
       },
       shareGame: (gameId: number, accountId: number) => {
-        const path = `${baseUrl}/User/ShareGame/${gameId}/${accountId}`;
+        const path = `${baseUrl}/Extended/User/ShareGame/${gameId}/${accountId}`;
         return sendJsonRequest<void>('POST', path, undefined, errorHandler);
       },
       unshareGame: (gameId: number, accountId: number) => {
-        const path = `${baseUrl}/User/ShareGame/${gameId}/${accountId}`;
+        const path = `${baseUrl}/Extended/User/ShareGame/${gameId}/${accountId}`;
         return sendJsonRequest<void>('DELETE', path, undefined, errorHandler);
       },
       shareGameModel: (gameModelId: number, accountId: number, permissions: string[]) => {
-        const path = `${baseUrl}/User/ShareGameModel/${gameModelId}/${permissions.join(
+        const path = `${baseUrl}/Extended/User/ShareGameModel/${gameModelId}/${permissions.join(
           ',',
         )}/${accountId}`;
         return sendJsonRequest<void>('POST', path, undefined, errorHandler);
       },
       unshareGameModel: (gameModelId: number, accountId: number) => {
-        const path = `${baseUrl}/User/ShareGameModel/${gameModelId}/${accountId}`;
+        const path = `${baseUrl}/Extended/User/ShareGameModel/${gameModelId}/${accountId}`;
         return sendJsonRequest<void>('DELETE', path, undefined, errorHandler);
       },
     },
@@ -552,7 +552,7 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<IPlayerWithId>('POST', path, undefined, errorHandler);
       },
       leave: (playerId: number) => {
-        const path = `${baseUrl}/GameModel/Game/Team/1/Player/${playerId}`;
+        const path = `${baseUrl}/Lobby/GameModel/Game/Team/1/Player/${playerId}`;
         return sendJsonRequest<IPlayerWithId>('DELETE', path, undefined, errorHandler);
       },
     },
@@ -574,7 +574,7 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<ITeamWithId>('POST', path, undefined, errorHandler);
       },
       deleteTeam: (teamId: number) => {
-        const path = `${baseUrl}/GameModel/Game/Team/${teamId}`;
+        const path = `${baseUrl}//GameModel/Game/Team/${teamId}`;
         return sendJsonRequest<void>('DELETE', path, undefined, errorHandler);
       },
     },
@@ -584,15 +584,15 @@ export const WegasLobbyRestClient = function (
           '@class': 'Game',
           name: name,
         };
-        const path = `${baseUrl}/GameModel/Game/${gameModelId}`;
+        const path = `${baseUrl}/Lobby/GameModel/Game/${gameModelId}`;
         return sendJsonRequest<IGameWithId>('POST', path, game, errorHandler);
       },
       getById: (id: number) => {
-        const path = `${baseUrl}/GameModel/Game/${id}`;
+        const path = `${baseUrl}/Lobby/GameModel/Game/${id}`;
         return sendJsonRequest<IGameWithId>('GET', path, undefined, errorHandler);
       },
       getByIds: (ids: number[]) => {
-        const path = `${baseUrl}/GameModel/Game/ByIds/${ids}`;
+        const path = `${baseUrl}/Lobby/GameModel/Game/ByIds/${ids}`;
         return sendJsonRequest<IGameWithId[]>('GET', path, undefined, errorHandler);
       },
       update: (game: IGameWithId) => {
@@ -600,11 +600,11 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<IGameWithId>('PUT', path, game, errorHandler);
       },
       findByToken: (token: string) => {
-        const path = `${baseUrl}/GameModel/Game/FindByToken/${token}`;
+        const path = `${baseUrl}/Lobby/GameModel/Game/FindByToken/${token}`;
         return sendJsonRequest<IGameWithId>('GET', path, undefined, errorHandler);
       },
       joinIndividually: (game: IGameWithId) => {
-        const path = `${baseUrl}/GameModel/Game/${game.id!}/Player`;
+        const path = `${baseUrl}/Lobby/GameModel/Game/${game.id!}/Player`;
         return sendJsonRequest<ITeamWithId>('POST', path, undefined, errorHandler);
       },
       getTeams: (gameId: number) => {
@@ -631,7 +631,7 @@ export const WegasLobbyRestClient = function (
     },
     GameModelController: {
       createScenario: (templateId: number, name: string) => {
-        const path = `${baseUrl}/GameModel/${templateId}`;
+        const path = `${baseUrl}/Lobby/GameModel/${templateId}`;
         return sendJsonRequest<IGameModelWithId>(
           'POST',
           path,
@@ -640,7 +640,7 @@ export const WegasLobbyRestClient = function (
         );
       },
       createModel: (templateId: number, name: string) => {
-        const path = `${baseUrl}/GameModel/model/${templateId}`;
+        const path = `${baseUrl}/Lobby/GameModel/model/${templateId}`;
         return sendJsonRequest<IGameModelWithId>(
           'POST',
           path,
@@ -649,7 +649,7 @@ export const WegasLobbyRestClient = function (
         );
       },
       inferModel: (gameModelIds: number[], name: string) => {
-        const path = `${baseUrl}/GameModel/extractModel/${gameModelIds.join(',')}`;
+        const path = `${baseUrl}/Lobby/GameModel/extractModel/${gameModelIds.join(',')}`;
         return sendJsonRequest<IGameModelWithId>(
           'POST',
           path,
@@ -658,11 +658,11 @@ export const WegasLobbyRestClient = function (
         );
       },
       getById: (id: number) => {
-        const path = `${baseUrl}/GameModel/${id}`;
+        const path = `${baseUrl}/Lobby/GameModel/${id}`;
         return sendJsonRequest<IGameModelWithId>('GET', path, undefined, errorHandler);
       },
       getByIds: (ids: number[]) => {
-        const path = `${baseUrl}/GameModel/ByIds/${ids}`;
+        const path = `${baseUrl}/Lobby/GameModel/ByIds/${ids}`;
         return sendJsonRequest<IGameModelWithId[]>('GET', path, undefined, errorHandler);
       },
       update: (gameModel: IGameModelWithId) => {
@@ -674,7 +674,7 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<IGameModelWithId>('POST', path, undefined, errorHandler);
       },
       updateLanguages: (langs: IGameModelLanguageWithId[]) => {
-        const path = `${baseUrl}/GameModel/I18n/Langs`;
+        const path = `${baseUrl}/Lobby/GameModel/I18n/Langs`;
         return sendJsonRequest<IGameModelLanguageWithId[]>('PUT', path, langs, errorHandler);
       },
       getGameModels: (gmType: IGameModelWithId['type'], status: IGameModelWithId['status']) => {
@@ -708,33 +708,33 @@ export const WegasLobbyRestClient = function (
         return sendFormRequest('POST', path, fd, errorHandler);
       },
       integrate: (modelId: number, scenarioId: number) => {
-        const path = `${baseUrl}/GameModel/${modelId}/Integrate/${scenarioId}`;
+        const path = `${baseUrl}/Lobby/GameModel/${modelId}/Integrate/${scenarioId}`;
         return sendJsonRequest<IGameModelWithId>('PUT', path, undefined, errorHandler);
       },
       release: (scenarioId: number) => {
-        const path = `${baseUrl}/GameModel/Release/${scenarioId}`;
+        const path = `${baseUrl}/Lobby/GameModel/Release/${scenarioId}`;
         return sendJsonRequest<IGameModelWithId>('GET', path, undefined, errorHandler);
       },
     },
     HistoryController: {
       getVersions: (gameModelId: number) => {
-        const path = `${baseUrl}/GameModel/${gameModelId}/History`;
+        const path = `${baseUrl}/Lobby/GameModel/${gameModelId}/History`;
         return sendJsonRequest<GameModelVersion[]>('GET', path, undefined, errorHandler);
       },
       createVersion: (gameModelId: number) => {
-        const path = `${baseUrl}/GameModel/${gameModelId}/History/CreateVersion`;
+        const path = `${baseUrl}/Lobby/GameModel/${gameModelId}/History/CreateVersion`;
         return sendJsonRequest<void>('POST', path, undefined, errorHandler);
       },
       createNamedVersion: (gameModelId: number, name: string) => {
-        const path = `${baseUrl}/GameModel/${gameModelId}/History/CreateVersion/${name}`;
+        const path = `${baseUrl}/Lobby/GameModel/${gameModelId}/History/CreateVersion/${name}`;
         return sendJsonRequest<void>('POST', path, undefined, errorHandler);
       },
       deleteVersion: (gameModelId: number, versionPath: string) => {
-        const path = `${baseUrl}/GameModel/${gameModelId}/History/${versionPath}`;
+        const path = `${baseUrl}/Lobby/GameModel/${gameModelId}/History/${versionPath}`;
         return sendJsonRequest<void>('DELETE', path, undefined, errorHandler);
       },
       restoreVersion: (gameModelId: number, versionPath: string) => {
-        const path = `${baseUrl}/GameModel/${gameModelId}/History/Restore/${versionPath}`;
+        const path = `${baseUrl}/Lobby/GameModel/${gameModelId}/History/Restore/${versionPath}`;
         return sendJsonRequest<IGameModelWithId>('GET', path, undefined, errorHandler);
       },
     },

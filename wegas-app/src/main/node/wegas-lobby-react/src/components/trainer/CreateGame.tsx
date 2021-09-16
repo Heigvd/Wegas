@@ -43,7 +43,11 @@ export default function CreateGame({ close }: CreateGameProps): JSX.Element {
           templateId: gameModelId,
           name: name,
         }),
-      ).then(() => close());
+      ).then(a => {
+        if (a.meta.requestStatus === 'fulfilled') {
+          close();
+        }
+      });
     }
   }, [dispatch, gameModelId, name, close]);
 

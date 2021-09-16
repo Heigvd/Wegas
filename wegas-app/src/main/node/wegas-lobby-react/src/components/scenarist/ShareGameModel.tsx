@@ -128,7 +128,7 @@ function UserCard({ account, gameModel, reload }: UserProps) {
       </FitSpace>
 
       <ActionIconButton
-        shouldConfirm
+        shouldConfirm="SOFT_LEFT"
         icon={faUserTimes}
         title={i18n.kickScenarist}
         onClick={async () =>

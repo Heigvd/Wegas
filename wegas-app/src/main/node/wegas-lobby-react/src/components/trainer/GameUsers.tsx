@@ -70,9 +70,14 @@ function TeamDetails({ team }: TeamDetailsProps): JSX.Element {
 
   return (
     <div className={css({ padding: '10px' })}>
-      <Flex direction="row">
+      <Flex direction="row" align="center">
         <h4>{teamName}</h4>
-        <ActionIconButton shouldConfirm title={i18n.kickTeam} icon={faTrash} onClick={deleteTeam} />
+        <ActionIconButton
+          shouldConfirm="SOFT_CENTER"
+          title={i18n.kickTeam}
+          icon={faTrash}
+          onClick={deleteTeam}
+        />
       </Flex>
       {theTeam.players.map(p => (
         <Card key={p.id} illustration="ICON_grey_user_fa">
@@ -81,7 +86,7 @@ function TeamDetails({ team }: TeamDetailsProps): JSX.Element {
           </FitSpace>
 
           <ActionIconButton
-            shouldConfirm
+            shouldConfirm="SOFT_LEFT"
             icon={faUserTimes}
             title={i18n.kickPlayer}
             onClick={async () => dispatch(leaveGame(p.id!))}
@@ -207,7 +212,7 @@ function ShareGame({ game }: GameProps) {
               </FitSpace>
 
               <ActionIconButton
-                shouldConfirm
+                shouldConfirm="SOFT_LEFT"
                 icon={faUserTimes}
                 title={i18n.kickTrainer}
                 onClick={async () =>

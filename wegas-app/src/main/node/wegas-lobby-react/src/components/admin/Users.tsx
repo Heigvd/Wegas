@@ -10,6 +10,7 @@ import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { IUserWithId } from 'wegas-ts-api';
 import { getAllUsers } from '../../API/api';
+import { match } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
 import { shallowEqual, useAppDispatch, useAppSelector } from '../../store/hooks';
 import { WindowedContainer } from '../common/CardContainer';
@@ -22,12 +23,9 @@ import { panelPadding } from '../styling/style';
 import UserCard from './UserCard';
 
 const matchSearch = (search: string) => (data: IUserWithId) => {
-  const regex = new RegExp(search, 'i');
-  if (search) {
+  return match(search, regex => {
     return data.name != null && data.name.match(regex) != null;
-  } else {
-    return true;
-  }
+  });
 };
 
 export default function Users(): JSX.Element {
@@ -67,7 +65,7 @@ export default function Users(): JSX.Element {
   const [filter, setFilter] = React.useState('');
 
   const createCardCb = React.useCallback(
-    (user: IUserWithId) => <UserCard size="SMALL" key={user.id} user={user} />,
+    (user: IUserWithId) => <UserCard size="SMALL" showEmail key={user.id} user={user} />,
     [],
   );
 

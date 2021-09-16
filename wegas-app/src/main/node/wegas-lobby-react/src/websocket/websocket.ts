@@ -166,6 +166,8 @@ export const decQueue = createAsyncThunk('wegas/decQueue', async (amount: number
   return amount;
 });
 
+export const reinitOnlineUsers = createAsyncThunk('admin/reinitOnlineUsers', async () => {});
+
 export interface EntityBag {
   players: IPlayerWithId[];
   teams: ITeamWithId[];
@@ -354,6 +356,8 @@ export class WebSocketListener {
       logger.info(`Population Queue -  ${amount}`);
       getStore().dispatch(decQueue(amount));
       return;
+    } else if (event === 'online-users') {
+      getStore().dispatch(reinitOnlineUsers());
     } else {
       if (!eventFound) {
         logger.error(`Event [${event}] unchecked`, data);

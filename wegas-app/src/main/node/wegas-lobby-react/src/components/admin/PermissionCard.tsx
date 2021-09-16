@@ -436,7 +436,7 @@ export function PermissionCard({ permission }: PermissionCardProps): JSX.Element
 
       <ActionIconButton
         title={i18n.deletePermission}
-        shouldConfirm
+        shouldConfirm="SOFT_LEFT"
         icon={faTrash}
         onClick={destroyCb}
       />

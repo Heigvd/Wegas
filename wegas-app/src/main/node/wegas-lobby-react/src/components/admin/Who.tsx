@@ -11,8 +11,9 @@ import { faEye, faSync } from '@fortawesome/free-solid-svg-icons';
 import { uniq } from 'lodash';
 import * as React from 'react';
 import { IUserWithId } from 'wegas-ts-api';
-import { getOnlineUsers, getUserByIds, syncOnlineUsers } from '../../API/api';
+import { getOnlineUsers, getShadowUserByIds, syncOnlineUsers } from '../../API/api';
 import { OnlineUser } from '../../API/restClient';
+import { match } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
 import { customStateEquals, shallowEqual, useAppDispatch, useAppSelector } from '../../store/hooks';
 import ActionIconButton from '../common/ActionIconButton';
@@ -23,7 +24,7 @@ import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import InlineLoading from '../common/InlineLoading';
 import SortBy, { SortByOption } from '../common/SortBy';
-import { cardDetailsStyle, panelPadding } from '../styling/style';
+import { cardSubDetailsStyle, panelPadding } from '../styling/style';
 import UserCard from './UserCard';
 
 interface KnownUser {
@@ -36,12 +37,12 @@ const roleLevels = [0, 1, 2, 3, 4] as const;
 type RoleLevelTypes = typeof roleLevels[number];
 
 const matchSearch = (search: string) => (data: KnownUser) => {
-  const regex = new RegExp(search, 'i');
-  if (search) {
-    return data.user.name != null && data.user.name.match(regex) != null;
-  } else {
-    return true;
-  }
+  return match(search, regex => {
+    return (
+      (data.user.name != null && data.user.name.match(regex) != null) ||
+      data.onlineUser.email.match(regex) != null
+    );
+  });
 };
 
 export default function Users(): JSX.Element {
@@ -88,7 +89,7 @@ export default function Users(): JSX.Element {
       setLoadingUnknown(current => uniq([...users.unknown, ...current]));
       const toLoad = users.unknown.filter(uId => loadingUnknown.indexOf(uId) < 0);
       if (toLoad.length > 0) {
-        dispatch(getUserByIds(toLoad)).then(action => {
+        dispatch(getShadowUserByIds(toLoad)).then(action => {
           if (action.meta.requestStatus === 'fulfilled') {
             // once fulfilles, remove just loaded is from loading state
             setLoadingUnknown(current => current.filter(uId => action.meta.arg.indexOf(uId) < 0));
@@ -179,41 +180,46 @@ export default function Users(): JSX.Element {
         <CardContainer>
           {roleLevels.map(level => {
             const list = mappedByRoles[level];
-            return (
-              <div key={level}>
-                <h4>{i18n.userLevels[level]}</h4>
-                {list.map(({ user, onlineUser }) => (
-                  <UserCard
-                    size="MEDIUM"
-                    key={user.id}
-                    user={user}
-                    extraDetails={
-                      <>
-                        <div className={cardDetailsStyle}>
-                          {i18n.lastActivityDate}{' '}
-                          {new Date(onlineUser.lastActivityDate || 0).toLocaleString()}
-                        </div>
-                      </>
-                    }
-                  >
-                    {onlineUser.playerId ? (
-                      <>
-                        <CardMainWifButton
-                          icon="trainer"
-                          title={i18n.openGameAsTrainer}
-                          url={`./host.html?id=${onlineUser.playerId}`}
-                        />
-                        <CardMainButton
-                          icon={faEye}
-                          title={i18n.spyPlayer}
-                          url={`./game-lock.html?id=${onlineUser.playerId}`}
-                        />
-                      </>
-                    ) : null}
-                  </UserCard>
-                ))}
-              </div>
-            );
+            if (list.length > 0) {
+              return (
+                <div key={level}>
+                  <h4>{i18n.userLevels[level]}</h4>
+                  {list.map(({ user, onlineUser }) => (
+                    <UserCard
+                      size="MEDIUM"
+                      key={user.id}
+                      user={user}
+                      extraDetails={
+                        <>
+                          <div className={cardSubDetailsStyle}>
+                            {i18n.lastActivityDate}{' '}
+                            {new Date(onlineUser.lastActivityDate || 0).toLocaleString()}
+                          </div>
+                          <div className={cardSubDetailsStyle}>{onlineUser.email}</div>
+                        </>
+                      }
+                    >
+                      {onlineUser.playerId ? (
+                        <>
+                          <CardMainWifButton
+                            icon="trainer"
+                            title={i18n.openGameAsTrainer}
+                            url={`./host.html?id=${onlineUser.playerId}`}
+                          />
+                          <CardMainButton
+                            icon={faEye}
+                            title={i18n.spyPlayer}
+                            url={`./game-lock.html?id=${onlineUser.playerId}`}
+                          />
+                        </>
+                      ) : null}
+                    </UserCard>
+                  ))}
+                </div>
+              );
+            } else {
+              return <></>;
+            }
           })}
         </CardContainer>
       </FitSpace>

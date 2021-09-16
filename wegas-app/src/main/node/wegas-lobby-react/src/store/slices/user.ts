@@ -153,12 +153,12 @@ const userSlice = createSlice({
       .addCase(API.getFullUser.fulfilled, (state, action) => {
         updateUser(state, action.payload);
       })
-      .addCase(API.getUserByIds.pending, (state, action) => {
+      .addCase(API.getShadowUserByIds.pending, (state, action) => {
         action.meta.arg.forEach(userId => {
           state.users[userId] = 'LOADING';
         });
       })
-      .addCase(API.getUserByIds.fulfilled, (state, action) => {
+      .addCase(API.getShadowUserByIds.fulfilled, (state, action) => {
         action.payload.forEach(user => {
           updateUser(state, user);
         });

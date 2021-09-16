@@ -48,9 +48,9 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
   );
   const gameModelId = entityIs(game, 'Game') ? game.parentId : undefined;
 
-  const [player, setPlayer] = React.useState<IPlayerWithId | 'NOT_FOUND' | 'NOT_INITIALIZED'>(
-    'NOT_INITIALIZED',
-  );
+  const [player, setPlayer] = React.useState<
+    IPlayerWithId | 'NOT_FOUND' | 'JOINING' | 'NOT_INITIALIZED'
+  >('NOT_INITIALIZED');
   const currentUser = useCurrentUser();
   const gameModel = useGameModel(gameModelId);
 
@@ -138,6 +138,7 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
   React.useEffect(() => {
     if (guestAllowed && currentUser.status === 'NOT_AUTHENTICATED') {
       logger.info('Sign up as guest');
+      setPlayer('JOINING');
       setLoadingMessage(i18n.autoplay.loginAsGuest);
       dispatch(signInAsGuest());
     }

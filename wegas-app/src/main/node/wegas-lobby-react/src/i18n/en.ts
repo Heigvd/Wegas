@@ -164,7 +164,7 @@ export const en = {
   addScenarist: 'add scenarist',
 
   logId: 'Log ID',
-  guestAllowed: 'Quests allowed',
+  guestAllowed: 'Guests allowed',
   serverScript: 'Server script',
   clientScript: 'Client script',
   css: 'Style sheets',

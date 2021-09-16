@@ -42,7 +42,12 @@ import IconButton from '../common/IconButton';
 import { SizeType } from '../common/illustrations/Illustration';
 import OpenCloseModal from '../common/OpenCloseModal';
 import { UserSettings } from '../settings/UserSettings';
-import { cardDetailsStyle, cardTitleStyle, upsideSelectStyles } from '../styling/style';
+import {
+  cardDetailsStyle,
+  cardSubDetailsStyle,
+  cardTitleStyle,
+  upsideSelectStyles,
+} from '../styling/style';
 import { PermissionCard, PermissionEditor } from './PermissionCard';
 import { RoleCard } from './RoleCard';
 
@@ -211,7 +216,7 @@ export function UserRoles({ userId }: { userId: number }): JSX.Element {
         {userRoles.roles.map(role => (
           <RoleCard key={role.id} role={role}>
             <ActionIconButton
-              shouldConfirm
+              shouldConfirm="SOFT_LEFT"
               className={cardSecButtonStyle}
               icon={faMinusCircle}
               title={i18n.deleteRole}
@@ -237,6 +242,7 @@ export interface UserCardProps {
   user: IUserWithId;
   children?: React.ReactNode;
   extraDetails?: React.ReactNode;
+  showEmail?: boolean;
   size?: SizeType;
 }
 
@@ -244,6 +250,7 @@ export default function UserCard({
   user,
   children,
   extraDetails,
+  showEmail = false,
   size = 'BIG',
 }: UserCardProps): JSX.Element {
   const dispatch = useAppDispatch();
@@ -255,7 +262,7 @@ export default function UserCard({
 
   const accountId = detail != null && detail !== 'LOADING' ? detail.mainAccount : undefined;
 
-  const account = useAccount(accountId);
+  const account = useAccount(user.id);
 
   const sudoCb = React.useCallback(() => {
     if (accountId != null) {
@@ -267,7 +274,14 @@ export default function UserCard({
     <Card key={user.id} size={size} illustration="ICON_grey_user_fa">
       <FitSpace direction="column">
         <div className={cardTitleStyle}>{user.name || ''}</div>
-        <div className={cardDetailsStyle}>
+        {showEmail ? (
+          <div className={cardDetailsStyle}>
+            {account != null && account != 'LOADING'
+              ? account.email || `@${account.emailDomain}`
+              : ''}
+          </div>
+        ) : null}
+        <div className={cardSubDetailsStyle}>
           {i18n.lastSeenAt} {new Date(user.lastSeenAt || 0).toLocaleString()}
         </div>
         {extraDetails}

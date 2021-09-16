@@ -10,6 +10,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import * as API from '../../API/api';
 import { ILevelDescriptor, OnlineUser } from '../../API/restClient';
 import { mapByKey } from '../../helper';
+import { reinitOnlineUsers } from '../../websocket/websocket';
 import { LoadingStatus } from '../store';
 
 export interface AdminState {
@@ -56,6 +57,9 @@ const adminSlice = createSlice({
       })
       .addCase(API.syncOnlineUsers.fulfilled, (state, action) => {
         state.onlineUsers = mapByKey(action.payload, 'userId');
+      })
+      .addCase(reinitOnlineUsers.fulfilled, state => {
+        state.onlineUsers = 'NOT_INITIALIZED';
       })
       .addCase(API.getLoggerLevels.pending, state => {
         // undefined means not-loaded

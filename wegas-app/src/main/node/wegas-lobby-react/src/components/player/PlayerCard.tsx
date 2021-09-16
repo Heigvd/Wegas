@@ -260,7 +260,9 @@ export default function PlayerCard({ player, team }: PlayerCardProps): JSX.Eleme
           <CardMainButton
             icon={faPlay}
             title={i18n.openGameAsPlayer}
-            url={`./${gameModel.uiversion === 2 ? '2/player.html' : 'game-play.html'}?id=${player.id}`}
+            url={`./${gameModel.uiversion === 2 ? '2/player.html' : 'game-play.html'}?id=${
+              player.id
+            }`}
           />
         ) : null}
       </Card>

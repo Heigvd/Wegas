@@ -10,7 +10,6 @@ import { css } from '@emotion/css';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
-import tinycolor from 'tinycolor2';
 import useTranslations from '../../i18n/I18nContext';
 import Clickable from './Clickable';
 import IconButton from './IconButton';
@@ -27,35 +26,60 @@ const relative = css({
   position: 'relative',
 });
 
-const bubbleStyle = css({
-  position: 'absolute',
-  '--fgColor': '#FEFEFE',
-  '--hoverFgColor': tinycolor('#fefefe').darken(10).toString(),
-  '--linkColor': '#fefefe',
-  '--bgColor': 'var(--blueColor)',
-  backgroundColor: 'var(--bgColor)',
-  display: 'flex',
-  borderRadius: '3px',
-  padding: '2px 4px',
-  left: '50%', // move to the right so the left side aligns with the middle of its parent
-  translate: '-50%', // then translate to align both middles
-  zIndex: 999,
-  '::after': {
-    content: '""',
+const bubbleStyle = (position: 'LEFT' | 'RIGHT' | 'CENTER') => {
+  const left = position === 'LEFT' ? '100%' : position === 'CENTER' ? '50%' : '0%';
+
+  const translate = position === 'LEFT' ? '-100%' : position === 'CENTER' ? '-50%' : '0%';
+
+  const caretLeft =
+    position === 'RIGHT'
+      ? '7px'
+      : position === 'CENTER'
+      ? 'calc(50%  - 10px)'
+      : 'calc(100% - 21px)';
+
+  return css({
     position: 'absolute',
-    top: '-5px',
-    width: '0',
-    height: '0',
-    borderLeft: '7px solid transparent',
-    borderRight: '7px solid transparent',
-    borderBottom: '5px solid var(--blueColor)',
-    left: 'calc(50% - 10px)',
-  },
-  '& > *': {
-    flexBasis: '1px',
-    width: '50%',
-  },
-});
+    '--fgColor': '#FEFEFE',
+    '--hoverFgColor': '#FEFEFE',
+    '--hoverBgColor': '#06b7e8',
+    '--linkColor': '#fefefe',
+    '--bgColor': 'var(--blueColor)',
+    backgroundColor: 'var(--bgColor)',
+    color: 'var(--fgColor)',
+    display: 'flex',
+    borderRadius: '3px',
+    //overflow: 'auto',
+    //    padding: '2px 4px',
+    top: 'calc(100% + 5px)',
+    left: left, // move to the right so the left side aligns with the middle of its parent
+    translate: translate, // then translate to align both middles
+    zIndex: 999,
+    '::after': {
+      content: '""',
+      position: 'absolute',
+      top: '-5px',
+      width: '0',
+      height: '0',
+      borderLeft: '7px solid transparent',
+      borderRight: '7px solid transparent',
+      borderBottom: '5px solid var(--blueColor)',
+      left: caretLeft,
+    },
+    '& > span:first-child': {
+      borderTopLeftRadius: '3px',
+      borderBottomLeftRadiusLeftRadius: '3px',
+    },
+    '& > span:last-child': {
+      borderTopRightRadius: '3px',
+      borderBottomRightRadiusLeftRadius: '3px',
+    },
+    '& > *': {
+      flexBasis: '1px',
+      width: '50%',
+    },
+  });
+};
 
 const bubbleItem = css({
   padding: '0 5px',
@@ -83,7 +107,7 @@ export function InlineConfirmIconButton({
   }, [onConfirm]);
 
   return (
-    <div title={title || 'destroy'}>
+    <div title={title || i18n.confirm}>
       {waitConfirm ? (
         <IconButton className={className} icon={icon}>
           <IconButton title={`${i18n.cancel} ${title}`} icon={faTimes} onClick={askConfirm} />
@@ -108,6 +132,7 @@ export interface BubbledProps {
   children?: React.ReactNode;
   confirmInvite?: string;
   cancelInvite?: string;
+  position?: 'LEFT' | 'CENTER' | 'RIGHT';
 }
 
 export function ConfirmIconButton({
@@ -118,6 +143,7 @@ export function ConfirmIconButton({
   title,
   cancelInvite,
   confirmInvite,
+  position = 'CENTER',
 }: BubbledProps): JSX.Element {
   const [waitConfirm, setConfirm] = React.useState(false);
   const i18n = useTranslations();
@@ -157,10 +183,11 @@ export function ConfirmIconButton({
         </IconButton>
       </div>
       {waitConfirm ? (
-        <div className={bubbleStyle}>
+        <div className={bubbleStyle(position)}>
           <Clickable title={`${i18n.cancel} ${title}`} onClick={askConfirm}>
             <span className={bubbleItem}>{cancelInvite || i18n.cancel}</span>
           </Clickable>
+          <span>|</span>
           <Clickable title={`${i18n.confirm} ${title}`} onClick={confirmedCb}>
             <span className={bubbleItem}>{confirmInvite || i18n.confirm}</span>
           </Clickable>
