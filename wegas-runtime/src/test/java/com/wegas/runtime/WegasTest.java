@@ -143,15 +143,14 @@ public class WegasTest {
         }
 
         User scenUser = client.get("/rest/User/" + scenarist.getUserId(), User.class);
-        scenUser.addRole(roles.get("Scenarist"));
-        scenUser.addRole(roles.get("Trainer"));
+        Role scenaristRole = roles.get("Scenarist");
+        Role trainerRole = roles.get("Trainer");
 
-        client.put("/rest/User/Account/" + scenUser.getMainAccount().getId(), scenUser.getMainAccount());
+        client.put("/rest/User/" + scenUser.getId() + "/Add/" + scenaristRole.getId());
+        client.put("/rest/User/" + scenUser.getId() + "/Add/" + trainerRole.getId());
 
         User trainerUser = client.get("/rest/User/" + trainer.getUserId(), User.class);
-        trainerUser.addRole(roles.get("Trainer"));
-
-        client.put("/rest/User/Account/" + trainerUser.getMainAccount().getId(), trainerUser.getMainAccount());
+        client.put("/rest/User/" + trainerUser.getId() + "/Add/" + trainerRole.getId());
     }
 
     private void loadArtos() throws IOException {
