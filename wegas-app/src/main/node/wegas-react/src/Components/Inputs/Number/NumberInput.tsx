@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { SimpleInput, InputProps } from '../SimpleInput';
 import { omit } from 'lodash-es';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 const numberInputStyle = css({
   textAlign: 'center',

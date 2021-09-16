@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Toolbar } from './Toolbar';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { childrenHeaderStyle, headerStyle } from '../css/classes';
 import { themeVar } from './Theme/ThemeVars';
 
@@ -47,7 +47,7 @@ export const tabStyle = css({
     padding: 0,
     transition: 'all .5s',
     position: 'absolute',
-    top:0,
+    top: 0,
     left: 0,
     color: themeVar.colors.LightTextColor,
   },
@@ -55,7 +55,7 @@ export const tabStyle = css({
     opacity: 1,
     height: 'auto',
     padding: '3px',
-  }
+  },
 });
 export const inactiveTabStyle = css({
   backgroundColor: themeVar.colors.BackgroundColor,
@@ -101,7 +101,7 @@ export const childInactiveTabStyle = css({
     opacity: 0,
     height: '0',
     padding: 0,
-  }
+  },
 });
 export const childActiveTabStyle = css({
   color: themeVar.colors.ActiveColor,
@@ -115,7 +115,7 @@ export const childActiveTabStyle = css({
     opacity: 0,
     height: '0',
     padding: 0,
-  }
+  },
 });
 
 export const plusTabStyle = css({

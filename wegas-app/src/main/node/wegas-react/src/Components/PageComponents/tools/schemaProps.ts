@@ -593,7 +593,7 @@ const simpleSchemaProps = {
     highlight?: boolean;
     sortable?: boolean;
     controls?: React.ReactNode;
-  } & Omit<CommonSchemaProps, "noMarginTop">): TypedProps<IArrayProps> => ({
+  } & Omit<CommonSchemaProps, 'noMarginTop'>): TypedProps<IArrayProps> => ({
     required,
     items: {
       properties: itemSchema,

@@ -8,7 +8,7 @@ import {
   globalSelection,
   defaultPadding,
 } from '../../../css/classes';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import { FontAwesome, IconComp, Icon, Icons } from '../Views/FontAwesome';
 import { omit } from 'lodash-es';
 import { DropMenu } from '../../../Components/DropMenu';

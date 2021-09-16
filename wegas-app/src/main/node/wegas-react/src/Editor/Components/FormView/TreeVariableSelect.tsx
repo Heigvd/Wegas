@@ -8,7 +8,7 @@ import { VariableDescriptor, GameModel } from '../../../data/selectors';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { CommonViewContainer, CommonView } from './commonView';
 import { LabeledView, Labeled } from './labeled';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import {
   scriptableClassNameToClassFilter,

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { XYPosition, useMouseEventDnd } from '../Hooks/useMouseEventDnd';
 import { FlowLine, Process, Processes } from './FlowChart';
 import { useDrop } from 'react-dnd';

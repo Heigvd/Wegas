@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import {
   ICategorizedEvaluationDescriptor,
@@ -47,9 +47,7 @@ import { store, useStore } from '../../../data/Stores/store';
 import { Selector } from '../../../Editor/Components/FormView/Select';
 import { translate } from '../../../Editor/Components/FormView/translatable';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import {
-  useInternalTranslate,
-} from '../../../i18n/internalTranslator';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { PeerReviewTranslations } from '../../../i18n/peerReview/definitions';
 import { peerReviewTranslations } from '../../../i18n/peerReview/peerReview';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
@@ -145,10 +143,10 @@ function PRPHaseComponent({ value, phase }: PhaseComponentProps) {
   const i18nValues = useInternalTranslate(peerReviewTranslations);
   return (
     <div
-      className={ cx(flex, flexColumn, justifyCenter, prPhaseComponentStyle, {
+      className={cx(flex, flexColumn, justifyCenter, prPhaseComponentStyle, {
         [prFinishedPhaseComponentStyle]: value > phase,
         [prActivePhaseComponentStyle]: value === phase,
-      }) }
+      })}
     >
       {
         i18nValues.orchestrator.state[
@@ -160,7 +158,7 @@ function PRPHaseComponent({ value, phase }: PhaseComponentProps) {
 }
 
 function PRInterPhasesComponent(_props: PhaseComponentProps) {
-  return <Button icon="arrow-right" disabled className={ 'phasePathStyle ' } />;
+  return <Button icon="arrow-right" disabled className={'phasePathStyle '} />;
 }
 
 const prTreeViewStyle = css({
@@ -190,13 +188,13 @@ function TreeViewReviewItem({
 }: TreeViewReviewItemProps) {
   return (
     <div
-      className={ cx(flex, flexRow, itemCenter, reviewItemStyle, {
+      className={cx(flex, flexRow, itemCenter, reviewItemStyle, {
         [selectedTreeviewItemStyle]: isSelected,
-      }) }
-      onClick={ onClick }
+      })}
+      onClick={onClick}
     >
       <Button icon="user-circle" />
-      { label }
+      {label}
     </div>
   );
 }
@@ -221,27 +219,27 @@ function TreeViewReviewSelector({
   onReviewClick,
 }: TreeViewReviewSelectorProps) {
   return (
-    <div className={ cx(flex, flexColumn) }>
-      <div className={ cx(flex, flexRow, defaultMarginTop) }>
+    <div className={cx(flex, flexColumn)}>
+      <div className={cx(flex, flexRow, defaultMarginTop)}>
         <Button
-          icon={ isOpen ? 'caret-down' : 'caret-right' }
-          onClick={ onCarretClick }
+          icon={isOpen ? 'caret-down' : 'caret-right'}
+          onClick={onCarretClick}
         />
-        <div className={ cx(flex, flexRow) }>
-          <Button icon="users" className={ css({ paddingTop: 0 }) } />
-          <strong>{ label }</strong>
+        <div className={cx(flex, flexRow)}>
+          <Button icon="users" className={css({ paddingTop: 0 })} />
+          <strong>{label}</strong>
         </div>
       </div>
 
-      { isOpen &&
+      {isOpen &&
         reviews.map((r, i) => (
           <TreeViewReviewItem
-            key={ r.getId() }
-            label={ itemLabel + (i + 1) }
-            isSelected={ r.getId() === selectedReviewId }
-            onClick={ () => onReviewClick(r, i) }
+            key={r.getId()}
+            label={itemLabel + (i + 1)}
+            isSelected={r.getId() === selectedReviewId}
+            onClick={() => onReviewClick(r, i)}
           />
-        )) }
+        ))}
     </div>
   );
 }
@@ -284,7 +282,7 @@ function EvalutationEditor({
     (val: string | number) => {
       if (iEvaluation.getJSONClassName() === 'TextEvaluationInstance') {
         store.dispatch(
-          liveEdition(`private-Team-${ Team.selectCurrent().id! }`, {
+          liveEdition(`private-Team-${Team.selectCurrent().id!}`, {
             ...iEvaluation.getEntity(),
             value: val,
           }),
@@ -307,47 +305,48 @@ function EvalutationEditor({
   let comp: JSX.Element | null = null;
 
   if (scriptableEntityIs(iEvaluation, 'TextEvaluationInstance')) {
-    comp = <HTMLEditor
-      value={ value == null ? undefined : String(value) }
-      onChange={ onChangeNotify }
-      disabled={ disabled || waitingState }
-      readOnly={ readOnly }
-    />
-
+    comp = (
+      <HTMLEditor
+        value={value == null ? undefined : String(value)}
+        onChange={onChangeNotify}
+        disabled={disabled || waitingState}
+        readOnly={readOnly}
+      />
+    );
   } else if (scriptableEntityIs(iEvaluation, 'GradeInstance')) {
-    comp = <NumberSlider
-      value={ numberValue }
-      onChange={ onChangeNotify }
-      min={ min }
-      max={ max }
-      steps={ max - min }
-      displayValues="NumberInput"
-      disabled={ disabled || waitingState }
-      readOnly={ readOnly }
-    />
-
+    comp = (
+      <NumberSlider
+        value={numberValue}
+        onChange={onChangeNotify}
+        min={min}
+        max={max}
+        steps={max - min}
+        displayValues="NumberInput"
+        disabled={disabled || waitingState}
+        readOnly={readOnly}
+      />
+    );
   } else if (
-    scriptableEntityIs(iEvaluation, 'CategorizedEvaluationInstance')
-    && scriptableEntityIs(dEvaluation, 'CategorizedEvaluationDescriptor')
+    scriptableEntityIs(iEvaluation, 'CategorizedEvaluationInstance') &&
+    scriptableEntityIs(dEvaluation, 'CategorizedEvaluationDescriptor')
   ) {
     const v = iEvaluation.getValue();
     <Selector
-      value={ v == null ? undefined : v }
-      onChange={ value => onChangeNotify(value) }
-      choices={ dEvaluation.getCategories().map(c => ({
+      value={v == null ? undefined : v}
+      onChange={value => onChangeNotify(value)}
+      choices={dEvaluation.getCategories().map(c => ({
         value: c.getName(),
         label: translate(c.getLabel(), lang),
-      })) }
-      disabled={ disabled || waitingState }
-      readOnly={ readOnly }
-    />
-
+      }))}
+      disabled={disabled || waitingState}
+      readOnly={readOnly}
+    />;
   }
 
   return (
-    <div className={ cx(flex, flexColumn) }>
-      <h3>{ translate(dEvaluation?.getLabel(), lang) }</h3>
-      { comp }
+    <div className={cx(flex, flexColumn)}>
+      <h3>{translate(dEvaluation?.getLabel(), lang)}</h3>
+      {comp}
     </div>
   );
 }
@@ -419,32 +418,32 @@ function EvalutationsEditor({
   );
 
   return (
-    <div className={ cx(flex, flexColumn) }>
-      { evaluations.map(e => (
+    <div className={cx(flex, flexColumn)}>
+      {evaluations.map(e => (
         <EvalutationEditor
-          key={ e.id }
-          iEvaluation={ instantiate(e) }
-          onChange={ (val, type) => sendValue(e.id!, val, type) }
-          onWaiting={ setWaitingState }
-          disabled={ disabled }
-          readOnly={ readOnly }
+          key={e.id}
+          iEvaluation={instantiate(e)}
+          onChange={(val, type) => sendValue(e.id!, val, type)}
+          onWaiting={setWaitingState}
+          disabled={disabled}
+          readOnly={readOnly}
         />
-      )) }
-      { displaySubmit && (
+      ))}
+      {displaySubmit && (
         <Button
-          label={ i18nValues.global.submit }
-          disabled={ waitingState || disabled }
-          onClick={ showModal }
-          className={ cx(defaultMarginTop, css({ alignSelf: 'flex-end' })) }
+          label={i18nValues.global.submit}
+          disabled={waitingState || disabled}
+          onClick={showModal}
+          className={cx(defaultMarginTop, css({ alignSelf: 'flex-end' }))}
         />
-      ) }
+      )}
       <OkCancelModal
-        onOk={ () => {
+        onOk={() => {
           store.dispatch(submitReview(modifiedReview.current));
-        } }
+        }}
       >
-        <p>{ i18nValues.global.confirmation.info }</p>
-        <p>{ i18nValues.global.confirmation.question }</p>
+        <p>{i18nValues.global.confirmation.info}</p>
+        <p>{i18nValues.global.confirmation.question}</p>
       </OkCancelModal>
     </div>
   );
@@ -465,23 +464,23 @@ function EvalutationDisplay({ iEvaluation }: EvalutationDisplayProps) {
     ).descriptor,
   );
   return (
-    <div className={ cx(flex, flexColumn) }>
-      <h3>{ translate(dEvaluation?.getLabel(), lang) }</h3>
+    <div className={cx(flex, flexColumn)}>
+      <h3>{translate(dEvaluation?.getLabel(), lang)}</h3>
       <HTMLText
         text={
           entityIs(iEvaluation, 'CategorizedEvaluationInstance')
             ? translate(
-              (
-                iEvaluation as ICategorizedEvaluationInstance & {
-                  descriptor: ICategorizedEvaluationDescriptor;
-                }
-              ).descriptor.categories.find(i => i.name === iEvaluation.value)
-                ?.label,
-              lang,
-            )
+                (
+                  iEvaluation as ICategorizedEvaluationInstance & {
+                    descriptor: ICategorizedEvaluationDescriptor;
+                  }
+                ).descriptor.categories.find(i => i.name === iEvaluation.value)
+                  ?.label,
+                lang,
+              )
             : String(
-              (iEvaluation as ITextEvaluationInstance | IGradeInstance).value,
-            )
+                (iEvaluation as ITextEvaluationInstance | IGradeInstance).value,
+              )
         }
       />
     </div>
@@ -494,10 +493,10 @@ interface EvalutationsDisplayProps {
 
 function EvalutationsDisplay({ evaluations }: EvalutationsDisplayProps) {
   return (
-    <div className={ cx(flex, flexColumn) }>
-      { evaluations.map(e => (
-        <EvalutationDisplay key={ e.id } iEvaluation={ e } />
-      )) }
+    <div className={cx(flex, flexColumn)}>
+      {evaluations.map(e => (
+        <EvalutationDisplay key={e.id} iEvaluation={e} />
+      ))}
     </div>
   );
 }
@@ -565,79 +564,80 @@ function ReviewEditor({
       : i18nValues.editor.author_comment;
 
   return (
-    <div className={ cx(flex, flexColumn, css({ padding: '1em' })) }>
-      <h3>{ rev.id }</h3>
+    <div className={cx(flex, flexColumn, css({ padding: '1em' }))}>
+      <h3>{rev.id}</h3>
       <h2
-        className={ css({
+        className={css({
           borderTop: '1px solid ' + themeVar.colors.DisabledColor,
           marginTop: 0,
           paddingTop: '1em',
-        }) }
+        })}
       >
-        { `${ reviewState.phase === 'reviews'
-          ? i18nValues.tabview.toReview
-          : i18nValues.tabview.toComment
-          } ${ i18nValues.editor.number }${ reviewState.index + 1 }` }
+        {`${
+          reviewState.phase === 'reviews'
+            ? i18nValues.tabview.toReview
+            : i18nValues.tabview.toComment
+        } ${i18nValues.editor.number}${reviewState.index + 1}`}
       </h2>
       <div
-        className={ cx({
+        className={cx({
           [reviewContainerStyle]: reviewState.phase === 'reviews',
           [reviewContainerUserStyle]: reviewState.phase === 'comments',
-        }) }
+        })}
       >
         <h3>
-          { reviewState.phase === 'reviews'
+          {reviewState.phase === 'reviews'
             ? i18nValues.editor.given_author
-            : i18nValues.editor.given }
+            : i18nValues.editor.given}
         </h3>
-        <div className={ ToBeReviewedStyle }>
-          <HTMLText text={ String(given) } />
+        <div className={ToBeReviewedStyle}>
+          <HTMLText text={String(given)} />
         </div>
       </div>
       <div
-        className={ cx({
+        className={cx({
           [reviewContainerStyle]: reviewState.phase === 'comments',
           [reviewContainerUserStyle]: reviewState.phase === 'reviews',
-        }) }
+        })}
       >
-        <h3>{ feedbackLabel }</h3>
-        { isReviewDispatched ? (
+        <h3>{feedbackLabel}</h3>
+        {isReviewDispatched ? (
           <EvalutationsEditor
-            review={ rev }
+            review={rev}
             phase="feedback"
-            displaySubmit={ displaySubmit }
-            disabled={ disabled }
-            readOnly={ readOnly }
+            displaySubmit={displaySubmit}
+            disabled={disabled}
+            readOnly={readOnly}
           />
         ) : (
-          <EvalutationsDisplay evaluations={ rev.feedback } />
-        ) }
+          <EvalutationsDisplay evaluations={rev.feedback} />
+        )}
       </div>
-      { (reviewStatus === 'COMPLETED' ||
+      {(reviewStatus === 'COMPLETED' ||
         (reviewState.phase === 'comments' && reviewStatus === 'NOTIFIED')) && (
-          <div
-            className={ cx({
-              [reviewContainerStyle]: reviewState.phase === 'reviews',
-              [reviewContainerUserStyle]: reviewState.phase === 'comments',
-            }) }
-          >
-            <h3>{ commentLabel }</h3>
+        <div
+          className={cx({
+            [reviewContainerStyle]: reviewState.phase === 'reviews',
+            [reviewContainerUserStyle]: reviewState.phase === 'comments',
+          })}
+        >
+          <h3>{commentLabel}</h3>
 
-            { reviewState.phase === 'comments' &&
-              reviewStatus === 'NOTIFIED' &&
-              rev.reviewState === 'NOTIFIED' ? (
-              <EvalutationsEditor
-                review={ rev }
-                phase="comments"
-                displaySubmit={ displaySubmit }
-                disabled={ disabled }
-                readOnly={ readOnly }
-              />
-            ) : (
-              <EvalutationsDisplay evaluations={ rev.comments } />
-            ) }
-          </div>
-        ) }
+          {reviewState.phase === 'comments' &&
+          reviewStatus === 'NOTIFIED' &&
+          rev.reviewState === 'NOTIFIED' ? (
+            <EvalutationsEditor
+              review={rev}
+              phase="comments"
+              displaySubmit={displaySubmit}
+              disabled={disabled}
+              readOnly={readOnly}
+            />
+          ) : (
+            <EvalutationsDisplay evaluations={rev.comments} />
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -699,7 +699,7 @@ export default function PeerReviewTreeViewDisplay({
 
   if (sPR == null || sPRinstance == null) {
     return (
-      <pre className={ className } style={ style } id={ id }>
+      <pre className={className} style={style} id={id}>
         Peer Descriptor not found
       </pre>
     );
@@ -727,64 +727,64 @@ export default function PeerReviewTreeViewDisplay({
 
     return (
       <Toolbar>
-        <Toolbar.Header className={ cx(flex, flexColumn, defaultMarginLeft) }>
-          <h1>{ i18nValues.orchestrator.state.reviewing.title }</h1>
+        <Toolbar.Header className={cx(flex, flexColumn, defaultMarginLeft)}>
+          <h1>{i18nValues.orchestrator.state.reviewing.title}</h1>
           <CustomPhasesProgressBar
-            value={ currentPhase }
-            phaseMin={ 0 }
-            phaseMax={ 3 }
-            PhaseComponent={ PRPHaseComponent }
-            InterPhaseComponent={ PRInterPhasesComponent }
-            className={ cx(prPhasesJustifyStyle, defaultMarginBottom) }
+            value={currentPhase}
+            phaseMin={0}
+            phaseMax={3}
+            PhaseComponent={PRPHaseComponent}
+            InterPhaseComponent={PRInterPhasesComponent}
+            className={cx(prPhasesJustifyStyle, defaultMarginBottom)}
           />
         </Toolbar.Header>
-        { currentPhase === 0 ? (
-          <h2>{ i18nValues.tabview.emptyness_message }</h2>
+        {currentPhase === 0 ? (
+          <h2>{i18nValues.tabview.emptyness_message}</h2>
         ) : (
           <Toolbar.Content>
-            <div className={ cx(flex, flexRow, expandWidth, itemStretch) }>
-              <div className={ prTreeViewStyle }>
-                { (reviewState === 'DISPATCHED' ||
+            <div className={cx(flex, flexRow, expandWidth, itemStretch)}>
+              <div className={prTreeViewStyle}>
+                {(reviewState === 'DISPATCHED' ||
                   reviewState === 'NOTIFIED' ||
                   reviewState === 'COMPLETED') && (
-                    <TreeViewReviewSelector
-                      label={ i18nValues.tabview.toReviewTitle }
-                      itemLabel={ `${ i18nValues.tabview.toReview } ${ i18nValues.editor.number }` }
-                      reviews={ sPRinstance.getToReview() }
-                      isOpen={ carretState.reviews }
-                      selectedReviewId={ selectedReview?.review.getId() }
-                      onCarretClick={ onCarretClick('reviews') }
-                      onReviewClick={ onReviewClick('reviews') }
-                    />
-                  ) }
-                { (reviewState === 'NOTIFIED' ||
-                  reviewState === 'COMPLETED') && (
-                    <TreeViewReviewSelector
-                      label={ i18nValues.tabview.toCommentTitle }
-                      itemLabel={ `${ i18nValues.tabview.toComment } ${ i18nValues.editor.number }` }
-                      reviews={ sPRinstance.getReviewed() }
-                      isOpen={ carretState.comments }
-                      selectedReviewId={ selectedReview?.review.getId() }
-                      onCarretClick={ onCarretClick('comments') }
-                      onReviewClick={ onReviewClick('comments') }
-                    />
-                  ) }
-              </div>
-              <div className={ cx(grow, autoScroll) }>
-                { selectedReview && (
-                  <ReviewEditor
-                    peerReview={ sPRinstance }
-                    reviewState={ selectedReview }
-                    reviewStatus={ reviewState }
-                    displaySubmit={ displaySubmit }
-                    disabled={ options.disabled || options.locked }
-                    readOnly={ options.readOnly }
+                  <TreeViewReviewSelector
+                    label={i18nValues.tabview.toReviewTitle}
+                    itemLabel={`${i18nValues.tabview.toReview} ${i18nValues.editor.number}`}
+                    reviews={sPRinstance.getToReview()}
+                    isOpen={carretState.reviews}
+                    selectedReviewId={selectedReview?.review.getId()}
+                    onCarretClick={onCarretClick('reviews')}
+                    onReviewClick={onReviewClick('reviews')}
                   />
-                ) }
+                )}
+                {(reviewState === 'NOTIFIED' ||
+                  reviewState === 'COMPLETED') && (
+                  <TreeViewReviewSelector
+                    label={i18nValues.tabview.toCommentTitle}
+                    itemLabel={`${i18nValues.tabview.toComment} ${i18nValues.editor.number}`}
+                    reviews={sPRinstance.getReviewed()}
+                    isOpen={carretState.comments}
+                    selectedReviewId={selectedReview?.review.getId()}
+                    onCarretClick={onCarretClick('comments')}
+                    onReviewClick={onReviewClick('comments')}
+                  />
+                )}
+              </div>
+              <div className={cx(grow, autoScroll)}>
+                {selectedReview && (
+                  <ReviewEditor
+                    peerReview={sPRinstance}
+                    reviewState={selectedReview}
+                    reviewStatus={reviewState}
+                    displaySubmit={displaySubmit}
+                    disabled={options.disabled || options.locked}
+                    readOnly={options.readOnly}
+                  />
+                )}
               </div>
             </div>
           </Toolbar.Content>
-        ) }
+        )}
       </Toolbar>
     );
   }

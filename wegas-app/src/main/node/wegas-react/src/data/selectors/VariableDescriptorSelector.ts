@@ -119,7 +119,7 @@ export function all<T extends IVariableDescriptor>(
  */
 export function flatten<
   T extends IVariableDescriptor,
-  E extends T['@class'][] = T['@class'][]
+  E extends T['@class'][] = T['@class'][],
 >(ld: IParentDescriptor | undefined, ...cls: E) {
   if (ld === undefined) {
     return [];

@@ -4,7 +4,7 @@ import { ThemeEdition } from './Theme/ThemeEdition';
 import { ModeEdition } from './Mode/ModeEdition';
 import Preview from './Preview';
 import { Toolbar } from '../../Toolbar';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import {
   defaultPaddingBottom,
   defaultPaddingLeft,
@@ -25,18 +25,18 @@ import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
 const addIconStyle = css({
-color: themeVar.colors.LightTextColor,
-marginRight: "10px",
-'&:hover': {
-  color: themeVar.colors.PrimaryColor,
-}
+  color: themeVar.colors.LightTextColor,
+  marginRight: '10px',
+  '&:hover': {
+    color: themeVar.colors.PrimaryColor,
+  },
 });
 
 const themeEditorHeaderStyle = css({
   backgroundColor: themeVar.colors.ActiveColor,
   button: {
     fontSize: '13px',
-  }
+  },
 });
 
 export default function ThemeEditor() {
@@ -54,8 +54,14 @@ export default function ThemeEditor() {
           themeEditorHeaderStyle,
         )}
       >
-        <ThemeSelector dropMenuClassName={css({...outlineButtonStyle})} addButtonClassName={addIconStyle}/>
-        <ModeSelector dropMenuClassName={css({...outlineButtonStyle})} addButtonClassName={addIconStyle}/>
+        <ThemeSelector
+          dropMenuClassName={css({ ...outlineButtonStyle })}
+          addButtonClassName={addIconStyle}
+        />
+        <ModeSelector
+          dropMenuClassName={css({ ...outlineButtonStyle })}
+          addButtonClassName={addIconStyle}
+        />
         <DropMenu
           label={i18nValues.themeEditor.contexts}
           items={Object.keys(selectedThemes).map(
@@ -82,7 +88,7 @@ export default function ThemeEditor() {
             }),
           )}
           onSelect={() => {}}
-          buttonClassName={css({...outlineButtonStyle})}
+          buttonClassName={css({ ...outlineButtonStyle })}
         />
       </Toolbar.Header>
       <Toolbar.Content>

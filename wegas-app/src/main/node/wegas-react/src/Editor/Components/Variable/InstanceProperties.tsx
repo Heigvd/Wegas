@@ -5,7 +5,7 @@ import {
   useStore,
   getDispatch,
 } from '../../../data/Stores/store';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods';
 import {
   AsyncVariableForm,
@@ -91,9 +91,8 @@ export function InstanceProperties({
   const editing = state.global.editing;
   const events = state.global.events;
 
-  const [selectedInstanceId, setSelectedInstanceId] = React.useState<
-    number | undefined
-  >();
+  const [selectedInstanceId, setSelectedInstanceId] =
+    React.useState<number | undefined>();
 
   const instances = useStore(instancesSelector);
 

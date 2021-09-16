@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import { flex, expandBoth, flexColumn, grow } from '../css/classes';
 import { TextLoader, TumbleLoader } from '../Components/Loader';
 

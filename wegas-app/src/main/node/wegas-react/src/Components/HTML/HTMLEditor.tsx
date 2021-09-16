@@ -29,7 +29,7 @@ import {
 } from '../../Editor/Components/FormView/commonView';
 import { LabeledView, Labeled } from '../../Editor/Components/FormView/labeled';
 import { FileBrowser } from '../../Editor/Components/FileBrowser/FileBrowser';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { classesCTX } from '../Contexts/ClassesProvider';
 import { flexColumn, flex, defaultMarginTop } from '../../css/classes';
 import { WidgetProps } from 'jsoninput/typings/types';
@@ -177,7 +177,7 @@ export default function HTMLEditor({
             setFileBrowsing({
               fn: path => {
                 editor.insertContent(
-                  `<div style="background-image:url(${ path }); width:100%; height:100%; background-position: center; background-size: contain; background-repeat: no-repeat;"></div>`,
+                  `<div style="background-image:url(${path}); width:100%; height:100%; background-position: center; background-size: contain; background-repeat: no-repeat;"></div>`,
                 );
               },
             });
@@ -197,19 +197,19 @@ export default function HTMLEditor({
         placeholder,
         browser_spellcheck: true,
         plugins: [
-          `${ onSave ? 'save' : '' } autolink link image lists code media table`,
+          `${onSave ? 'save' : ''} autolink link image lists code media table`,
           'paste advlist',
         ],
         toolbar: `${
           onSave && isActionAllowed({ disabled, readOnly }) ? 'save' : ''
-          } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link | ${ [
-            // ...extraStyleButton,
-            ...extraActionButton,
-          ]
-            .map(btn => btn.name)
-            .join(
-              ' ',
-            ) } | code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
+        } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link | ${[
+          // ...extraStyleButton,
+          ...extraActionButton,
+        ]
+          .map(btn => btn.name)
+          .join(
+            ' ',
+          )} | code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
         toolbar_drawer: 'floating',
         menubar: false,
         resize: disabled || noResize ? false : 'both',
@@ -304,7 +304,7 @@ export default function HTMLEditor({
               ...btn,
               onAction: api => btn.onAction(api, editor),
               onSetup: api =>
-                btn.onSetup ? btn.onSetup(api, editor) : () => { },
+                btn.onSetup ? btn.onSetup(api, editor) : () => {},
             });
           });
         },
@@ -342,38 +342,38 @@ export default function HTMLEditor({
   const toolBarId = 'externalEditorToolbar' + String(HTMLEditorID++);
   return (
     <div
-      className={ editorStyle + classNameOrEmpty(className) }
-      style={ style }
-      id={ id }
+      className={editorStyle + classNameOrEmpty(className)}
+      style={style}
+      id={id}
     >
       <div
-        style={ {
+        style={{
           visibility: fileBrowsing.fn ? 'hidden' : 'visible',
           minWidth: 464,
-        } }
+        }}
       >
-        { inline && (
-          <div id={ toolBarId } className={ toolbar }>
-            { !editorFocus && (
+        {inline && (
+          <div id={toolBarId} className={toolbar}>
+            {!editorFocus && (
               <img
                 src={
                   require(onSave
                     ? '../../pictures/tinymcetoolbar.png'
                     : '../../pictures/tinymcetoolbarnosave.png').default
                 }
-                onClick={ () => HTMLEditor.current && HTMLEditor.current.focus() }
+                onClick={() => HTMLEditor.current && HTMLEditor.current.focus()}
               />
-            ) }
+            )}
           </div>
-        ) }
+        )}
         <ErrorBoundary>
           <TinyEditor
-            value={ keepInternalValue ? internalValue : value }
-            init={ config(toolBarId) }
-            onInit={ editor => {
+            value={keepInternalValue ? internalValue : value}
+            init={config(toolBarId)}
+            onInit={editor => {
               HTMLEditor.current = editor.target;
-            } }
-            onEditorChange={ v => {
+            }}
+            onEditorChange={v => {
               if (
                 value !== v &&
                 !(value === '<p></p>' && v === '') &&
@@ -382,30 +382,30 @@ export default function HTMLEditor({
                 onChange && onChange(v);
               }
               setInternalValue(v);
-            } }
-            onFocus={ () => setEditorFocus(true) }
-            onBlur={ () => setEditorFocus(false) }
-            disabled={ disabled }
+            }}
+            onFocus={() => setEditorFocus(true)}
+            onBlur={() => setEditorFocus(false)}
+            disabled={disabled}
           />
         </ErrorBoundary>
       </div>
-      { fileBrowsing.fn && (
+      {fileBrowsing.fn && (
         <Modal>
           <FileBrowser
-            onFileClick={ file => {
+            onFileClick={file => {
               setFileBrowsing({});
               file &&
                 fileBrowsing.fn &&
                 fileBrowsing.fn(
                   document.location.origin +
-                  fileURL(generateAbsolutePath(file)),
+                    fileURL(generateAbsolutePath(file)),
                 );
-            } }
-            pickType={ 'FILE' }
-            filter={ { fileType: 'image', filterType: 'show' } }
+            }}
+            pickType={'FILE'}
+            filter={{ fileType: 'image', filterType: 'show' }}
           />
         </Modal>
-      ) }
+      )}
     </div>
   );
 }
@@ -416,7 +416,7 @@ const labeledHTMLEditorStyle = css({
 
 interface HtmlProps
   extends WidgetProps.BaseProps<
-  { placeholder?: string } & CommonView & LabeledView & { noResize?: boolean }
+    { placeholder?: string } & CommonView & LabeledView & { noResize?: boolean }
   > {
   value?: string;
 }
@@ -444,22 +444,22 @@ export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
   render() {
     return (
       <CommonViewContainer
-        view={ this.props.view }
-        errorMessage={ this.props.errorMessage }
+        view={this.props.view}
+        errorMessage={this.props.errorMessage}
       >
-        <Labeled { ...this.props.view }>
-          { ({ labelNode, inputId }) => (
-            <div className={ cx(flex, flexColumn, defaultMarginTop) }>
-              { labelNode }
+        <Labeled {...this.props.view}>
+          {({ labelNode, inputId }) => (
+            <div className={cx(flex, flexColumn, defaultMarginTop)}>
+              {labelNode}
               <HTMLEditor
-                value={ this.state.value }
-                onChange={ this.props.onChange }
-                className={ labeledHTMLEditorStyle }
-                id={ inputId }
-                noResize={ this.props.view.noResize }
+                value={this.state.value}
+                onChange={this.props.onChange}
+                className={labeledHTMLEditorStyle}
+                id={inputId}
+                noResize={this.props.view.noResize}
               />
             </div>
-          ) }
+          )}
         </Labeled>
       </CommonViewContainer>
     );

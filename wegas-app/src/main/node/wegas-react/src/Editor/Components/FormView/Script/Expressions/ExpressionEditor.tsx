@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ExpressionStatement } from '@babel/types';
 import generate from '@babel/generator';
 import Form from 'jsoninput';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import { parse } from '@babel/parser';
 import { WidgetProps } from 'jsoninput/typings/types';
 import {

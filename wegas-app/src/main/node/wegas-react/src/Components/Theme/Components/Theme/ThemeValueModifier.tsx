@@ -1,4 +1,4 @@
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import * as React from 'react';
 import {
   flex,

@@ -3,7 +3,7 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { Labeled, LabeledView } from './labeled';
 import { CommonViewContainer, CommonView } from './commonView';
 import { CheckBox } from '../../../Components/Inputs/Boolean/CheckBox';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 export interface BooleanProps
   extends WidgetProps.BaseProps<CommonView & LabeledView> {

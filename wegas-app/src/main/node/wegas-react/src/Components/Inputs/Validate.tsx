@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { flex, flexColumn, flexRow, grow, itemCenter } from '../../css/classes';
 import { runLoadedScript } from '../../data/Reducer/VariableInstanceReducer';

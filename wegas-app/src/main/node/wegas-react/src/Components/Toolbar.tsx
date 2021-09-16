@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { flex, grow } from '../css/classes';
 import { classNameOrEmpty } from '../Helper/className';
 

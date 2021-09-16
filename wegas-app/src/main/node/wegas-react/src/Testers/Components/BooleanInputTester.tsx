@@ -7,7 +7,7 @@ import {
   flexDistribute,
   flexColumn,
 } from '../../css/classes';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import { Toggler } from '../../Components/Inputs/Boolean/Toggler';
 import {
   CheckBox,

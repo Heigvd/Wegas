@@ -14,7 +14,7 @@ import { whQuestionInfo, WhQuestionDisplay } from './WhQuestionDisplay';
 import { getChoices } from '../../../data/scriptable/impl/QuestionDescriptor';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { CbxQuestionDisplay } from './CbxQuestion';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import { select } from '../../../data/selectors/VariableDescriptorSelector';
 
 export interface QuestionInfo {
@@ -62,9 +62,10 @@ export function ConnectedSimpleQuestionDisplay({
   entity,
   ...options
 }: ConnectedSimpleQuestionDisplayProps) {
-  const questionInfoSelector = React.useCallback(() => questionInfo(entity), [
-    entity,
-  ]);
+  const questionInfoSelector = React.useCallback(
+    () => questionInfo(entity),
+    [entity],
+  );
   const state = useStore(questionInfoSelector);
 
   return state.questionD.cbx ? (
@@ -83,9 +84,10 @@ export function ConnectedWhQuestionDisplay({
   disabled,
   readOnly,
 }: ConnectedWhQuestionDisplay) {
-  const questionInfoSelector = React.useCallback(() => whQuestionInfo(entity), [
-    entity,
-  ]);
+  const questionInfoSelector = React.useCallback(
+    () => whQuestionInfo(entity),
+    [entity],
+  );
   const state = useStore(questionInfoSelector);
   return (
     <WhQuestionDisplay

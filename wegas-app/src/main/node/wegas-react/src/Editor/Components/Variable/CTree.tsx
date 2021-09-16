@@ -4,7 +4,7 @@ import { varIsList, entityIs } from '../../../data/entities';
 import { get } from 'lodash-es';
 import { getEntityActions } from '../../editionConfig';
 import { useStore, store } from '../../../data/Stores/store';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { AddMenuParent, AddMenuChoice, AddMenuFeedback } from './AddMenu';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';

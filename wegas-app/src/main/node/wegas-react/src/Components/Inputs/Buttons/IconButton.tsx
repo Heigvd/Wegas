@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import { themeVar } from '../../Theme/ThemeVars';
 
 export const iconButtonStyle = css({
@@ -28,14 +28,14 @@ export const iconButtonStyle = css({
     cursor: 'initial',
     '&:hover': {
       color: 'inherit',
-    }
+    },
   },
   ['&.disabled']: {
     cursor: 'initial',
     color: themeVar.colors.DisabledColor,
     '&:hover': {
       color: themeVar.colors.DisabledColor,
-    }
+    },
   },
   ['&.noClick']: {
     cursor: 'inherit',
@@ -74,10 +74,11 @@ export const iconButtonStyle = css({
       backgroundColor: themeVar.colors.DisabledColor,
       color: themeVar.colors.LightTextColor,
     },
-    ['&:not(.disabled):not(.readOnly):hover, &:not(.disabled):not(.readOnly):focus']: {
-      backgroundColor: themeVar.colors.ActiveColor,
-      color: themeVar.colors.LightTextColor,
-    },
+    ['&:not(.disabled):not(.readOnly):hover, &:not(.disabled):not(.readOnly):focus']:
+      {
+        backgroundColor: themeVar.colors.ActiveColor,
+        color: themeVar.colors.LightTextColor,
+      },
     ['&.shadow']: {
       boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.15)',
     },

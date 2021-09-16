@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import {
   StateProcess,
   TransitionFlowLine,
@@ -63,7 +63,7 @@ const selectedTransitionBoxStyle = css({
   '&:hover': {
     backgroundColor: themeVar.colors.ActiveColor,
     border: '4px solid ' + themeVar.colors.ActiveColor,
-  }
+  },
 });
 
 const transitionMoreInfosStyle = css({
@@ -123,14 +123,13 @@ export function TransitionBox({
         </div>
         )} */}
         <div className="StateLabelTextStyle">
-            <HTMLText
-              text={
-                (entityIs(transition.transition, 'Transition')
-                  ? transition.transition.label
-                  : translate(transition.transition.actionText, lang)) ||
-                'Empty'
-              }
-            />
+          <HTMLText
+            text={
+              (entityIs(transition.transition, 'Transition')
+                ? transition.transition.label
+                : translate(transition.transition.actionText, lang)) || 'Empty'
+            }
+          />
         </div>
       </div>
       {isShown &&

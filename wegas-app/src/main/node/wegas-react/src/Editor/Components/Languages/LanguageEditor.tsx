@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { LanguagesAPI } from '../../../API/languages.api';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { GameModel } from '../../../data/selectors';
@@ -79,12 +79,10 @@ function LanguageEditForm({
   );
 }
 export default function LanguageEditor() {
-  const [selectedLanguageId, setSelectedLanguageId] = React.useState<
-    number | undefined
-  >(undefined);
-  const [selectedLanguage, setSelectedLanguage] = React.useState<
-    IGameModelLanguage | null | undefined
-  >();
+  const [selectedLanguageId, setSelectedLanguageId] =
+    React.useState<number | undefined>(undefined);
+  const [selectedLanguage, setSelectedLanguage] =
+    React.useState<IGameModelLanguage | null | undefined>();
 
   const languages = useGameModel().languages;
   const i18nEditorTabValues = useInternalTranslate(editorTabsTranslations);

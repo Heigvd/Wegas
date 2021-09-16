@@ -6,10 +6,10 @@
  * Licensed under the MIT License
  */
 
-import {IconProp} from '@fortawesome/fontawesome-svg-core';
-import {faCheck, faPlay, faSpinner} from '@fortawesome/free-solid-svg-icons';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { faCheck, faPlay, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
-import {ConfirmIconButton} from '../common/ConfirmIconButton';
+import { ConfirmIconButton } from '../common/ConfirmIconButton';
 import IconButton from '../common/IconButton';
 
 export interface ActionIconButton {
@@ -43,7 +43,7 @@ export default function ActionIconButton({
   }, [onClick]);
 
   const winConfirmCb = React.useCallback(() => {
-    const result = window.confirm("Confirm ?");
+    const result = window.confirm('Confirm ?');
     if (result) {
       onClickCb();
     }
@@ -72,9 +72,11 @@ export default function ActionIconButton({
         </ConfirmIconButton>
       );
     } else if (shouldConfirm === 'HARD') {
-      return (<IconButton className={className} icon={icon} onClick={winConfirmCb} title={title}>
-        {children}
-      </IconButton>);
+      return (
+        <IconButton className={className} icon={icon} onClick={winConfirmCb} title={title}>
+          {children}
+        </IconButton>
+      );
     } else {
       return (
         <IconButton className={className} icon={icon} onClick={onClickCb} title={title}>

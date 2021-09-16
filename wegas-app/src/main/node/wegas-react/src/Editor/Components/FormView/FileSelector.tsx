@@ -5,7 +5,7 @@ import { LabeledView, Labeled } from './labeled';
 import { FileBrowser } from '../FileBrowser/FileBrowser';
 import { generateAbsolutePath, FileAPI } from '../../../API/files.api';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import { flexRow, flex } from '../../../css/classes';
 import { wwarn } from '../../../Helper/wegaslog';
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
@@ -18,7 +18,7 @@ interface AllowedTypes {
 
 export interface CommonFileSelectProps<
   T extends keyof AllowedTypes,
-  VT extends AllowedTypes[T] = AllowedTypes[T]
+  VT extends AllowedTypes[T] = AllowedTypes[T],
 > {
   value?: VT;
   onChange: (code: VT) => void;
@@ -98,12 +98,12 @@ export function CustomFileSelector<T extends keyof AllowedTypes>({
   );
 }
 
-type LabeledCustomFileSelectProps<
-  T extends keyof AllowedTypes
-> = WidgetProps.BaseProps<
-  CommonView & LabeledView & { pickType?: FilePickingType; filter?: FileFilter }
-> &
-  CommonFileSelectProps<T>;
+type LabeledCustomFileSelectProps<T extends keyof AllowedTypes> =
+  WidgetProps.BaseProps<
+    CommonView &
+      LabeledView & { pickType?: FilePickingType; filter?: FileFilter }
+  > &
+    CommonFileSelectProps<T>;
 
 export function LabeledCustomFileSelector<T extends keyof AllowedTypes>(
   props: LabeledCustomFileSelectProps<T>,

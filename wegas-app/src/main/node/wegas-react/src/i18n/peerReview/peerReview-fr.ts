@@ -62,8 +62,7 @@ export const peerReviewTranslationsFR: PeerReviewTranslations = {
   global: {
     submit: 'Valider',
     confirmation: {
-      info:
-        'Une fois validées, vous ne pourrez plus modifier ces informations.',
+      info: 'Une fois validées, vous ne pourrez plus modifier ces informations.',
       question: 'Êtes-vous sûr de vouloir continuer ?',
     },
     save: 'Sauver',
@@ -77,7 +76,7 @@ export const peerReviewTranslationsFR: PeerReviewTranslations = {
   },
   editor: {
     given: 'Votre travail évalué: ',
-    given_author:"Travail d'un pair à évaluer",
+    given_author: "Travail d'un pair à évaluer",
     number: 'n°',
     ask_your_feedback: 'Donnez votre feedback',
     your_feedback: 'Votre feedback',

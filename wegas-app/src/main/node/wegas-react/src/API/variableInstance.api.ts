@@ -48,9 +48,9 @@ export const VariableInstanceAPI = {
     variableDescriptor: IVariableDescriptor,
     gameModelId?: number,
   ): Promise<IVariableInstance[]> {
-    return rest(
-      VI_BASE({ v: variableDescriptor, gameModelId }),
-    ).then((res: Response) => res.json());
+    return rest(VI_BASE({ v: variableDescriptor, gameModelId })).then(
+      (res: Response) => res.json(),
+    );
   },
   update(variableInstance: IVariableInstance, gameModelId?: number) {
     return managedModeRequest(

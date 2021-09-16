@@ -41,11 +41,8 @@ function PlayerBoxes({
   id,
   options,
 }: PlayerBoxesProps) {
-  const {
-    descriptor,
-    instance,
-    notFound,
-  } = useComponentScript<INumberDescriptor>(script);
+  const { descriptor, instance, notFound } =
+    useComponentScript<INumberDescriptor>(script);
 
   return notFound ? (
     <TumbleLoader />

@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { wlog } from '../../Helper/wegaslog';
 import { TreeNode } from './TreeNode';

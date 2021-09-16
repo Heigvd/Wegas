@@ -13,7 +13,7 @@ import {
 } from '../../../Helper/pages';
 import { useScript } from '../../../Components/Hooks/useScript';
 import { DropMenu } from '../../../Components/DropMenu';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import { flex, flexRow, grow } from '../../../css/classes';
 import { IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';

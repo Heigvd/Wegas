@@ -46,7 +46,7 @@ export interface ContainerComponent<P = {}> {
 
 export interface PageComponent<
   P extends WegasComponentProps = WegasComponentProps,
-  T extends IVariableDescriptor['@class'] = IVariableDescriptor['@class']
+  T extends IVariableDescriptor['@class'] = IVariableDescriptor['@class'],
 > {
   WegasComponent: React.FunctionComponent<P>;
   container?: ContainerComponent<P>;
@@ -98,7 +98,7 @@ export const PageComponentActionCreator = {
 };
 
 type PageComponentAction<
-  A extends keyof typeof PageComponentActionCreator = keyof typeof PageComponentActionCreator
+  A extends keyof typeof PageComponentActionCreator = keyof typeof PageComponentActionCreator,
 > = ReturnType<typeof PageComponentActionCreator[A]>;
 
 const pageComponentReducer: Reducer<
@@ -139,7 +139,7 @@ export const componentsStore = createStore(
 interface ComponentFactoryBasicParameters<
   C extends ContainerComponent<P> | undefined,
   P extends WegasComponentProps,
-  T extends IVariableDescriptor['@class']
+  T extends IVariableDescriptor['@class'],
 > {
   /**
    * The name of the component
@@ -203,7 +203,7 @@ interface ComponentFactoryBasicParameters<
 type ComponentFactoryParameters<
   C extends ContainerComponent<P> | undefined,
   P extends WegasComponentProps,
-  T extends IVariableDescriptor['@class']
+  T extends IVariableDescriptor['@class'],
 > = ComponentFactoryBasicParameters<C, P, T> &
   (C extends undefined
     ? {
@@ -239,7 +239,7 @@ export function usePageComponentStore<R>(
 export function pageComponentFactory<
   C extends ContainerComponent<P> | undefined,
   P extends WegasComponentProps,
-  T extends IVariableDescriptor['@class']
+  T extends IVariableDescriptor['@class'],
 >(param: ComponentFactoryParameters<C, P, T>): PageComponent<P> {
   return {
     WegasComponent: param.component,
@@ -247,7 +247,7 @@ export function pageComponentFactory<
     container: param.container,
     manageOnClick: param.manageOnClick,
     icon: param.icon,
-    illustration:param.illustration,
+    illustration: param.illustration,
     dropzones: param.dropzones,
     componentName: param.name,
     schema: {
@@ -270,16 +270,15 @@ export type PageComponentFactorySchemas = ReturnType<
  * @param componentName
  * @param component
  */
-export const registerComponent: (
-  component: PageComponent,
-) => void = component => {
-  componentsStore.dispatch(
-    PageComponentActionCreator.ADD_COMPONENT(
-      component.componentName,
-      component,
-    ),
-  );
-};
+export const registerComponent: (component: PageComponent) => void =
+  component => {
+    componentsStore.dispatch(
+      PageComponentActionCreator.ADD_COMPONENT(
+        component.componentName,
+        component,
+      ),
+    );
+  };
 
 /**
  * Importing all the files containing ".component.".

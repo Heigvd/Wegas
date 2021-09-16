@@ -71,9 +71,7 @@ function Integrator({ model }: IntegratorProps): JSX.Element {
   return (
     <>
       <h3>{i18n.integrateScenario}</h3>
-      <Select options={options} onChange={selectGameModelCb}
-            styles={defaultSelectStyles}
-       />
+      <Select options={options} onChange={selectGameModelCb} styles={defaultSelectStyles} />
       <Flex justify="flex-end">
         <Button className={mainButtonStyle} label={i18n.create} onClick={integrateCb} />
       </Flex>
@@ -171,10 +169,7 @@ export default function GameModelVersioning({
   const i18n = useTranslations();
   const { currentUserId } = useCurrentUser();
 
-  const instances = useModelInstances(
-    currentUserId,
-    gameModel.id,
-  );
+  const instances = useModelInstances(currentUserId, gameModel.id);
 
   const scenarioStatus = instances.status['SCENARIO']['LIVE'];
 

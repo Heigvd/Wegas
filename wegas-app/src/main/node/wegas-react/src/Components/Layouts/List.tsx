@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { Centered } from './Centered';
 import { classNameOrEmpty } from '../../Helper/className';
 import { themeVar } from '../Theme/ThemeVars';

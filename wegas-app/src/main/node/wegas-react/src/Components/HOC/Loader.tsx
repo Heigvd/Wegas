@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, cx, keyframes } from 'emotion';
+import { css, cx, keyframes } from '@emotion/css';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
 
 const loader = css({

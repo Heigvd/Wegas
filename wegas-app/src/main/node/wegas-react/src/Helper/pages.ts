@@ -1,4 +1,4 @@
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import { cloneDeep } from 'lodash-es';
 import { themeVar } from '../Components/Theme/ThemeVars';
 import { IScript } from 'wegas-ts-api';

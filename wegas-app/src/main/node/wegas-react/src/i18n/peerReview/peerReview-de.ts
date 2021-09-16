@@ -62,8 +62,7 @@ export const peerReviewTranslationsDE: PeerReviewTranslations = {
   global: {
     submit: 'einreichen',
     confirmation: {
-      info:
-        'Einmal validiert, können Sie diese Informationen nicht mehr ändern.',
+      info: 'Einmal validiert, können Sie diese Informationen nicht mehr ändern.',
       question: 'Sind Sie sicher, dass Sie fortfahren wollen?',
     },
     save: 'Speichern',

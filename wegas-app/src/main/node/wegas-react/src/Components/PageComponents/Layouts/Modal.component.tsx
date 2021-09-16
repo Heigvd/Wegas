@@ -19,7 +19,7 @@ import {
   classStyleIdShema,
   clientAndServerScriptChoices,
 } from '../tools/options';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import { Modal } from '../../Modal';
 import { childrenDeserializerFactory } from './FlexList.component';
 import { schemaProps } from '../tools/schemaProps';

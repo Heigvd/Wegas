@@ -1,13 +1,8 @@
 import * as React from 'react';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
-import {
-  shrinkWidth,
-  grow,
-  flex,
-  itemBottom,
-} from '../../../css/classes';
+import { shrinkWidth, grow, flex, itemBottom } from '../../../css/classes';
 import { classOrNothing, classNameOrEmpty } from '../../../Helper/className';
 import { themeVar } from '../../Theme/ThemeVars';
 
@@ -101,8 +96,7 @@ export function Toggler({
     <div
       id={id}
       className={
-        cx(flex, itemBottom, shrinkWidth) +
-        classNameOrEmpty(className)
+        cx(flex, itemBottom, shrinkWidth) + classNameOrEmpty(className)
       }
       style={style}
     >

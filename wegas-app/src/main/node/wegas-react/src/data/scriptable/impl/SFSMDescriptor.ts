@@ -1,13 +1,19 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
 
-import { SFSMDescriptor, SFSMInstance, SPlayer, STriggerDescriptor, SDialogueDescriptor } from 'wegas-ts-api';
+import {
+  SFSMDescriptor,
+  SFSMInstance,
+  SPlayer,
+  STriggerDescriptor,
+  SDialogueDescriptor,
+} from 'wegas-ts-api';
 
 export class SFSMDescriptorImpl extends SFSMDescriptor {
   public enable(_p: Readonly<SPlayer>): void {
-    throw new Error("This is readonly");
+    throw new Error('This is readonly');
   }
   public disable(_p: Readonly<SPlayer>): void {
-    throw new Error("This is readonly");
+    throw new Error('This is readonly');
   }
   public isEnabled(p: Readonly<SPlayer>): boolean {
     return this.getInstance(p).getEnabled();
@@ -29,10 +35,10 @@ export class SFSMDescriptorImpl extends SFSMDescriptor {
 
 export class STriggerDescriptorImpl extends STriggerDescriptor {
   public enable(_p: Readonly<SPlayer>): void {
-    throw new Error("This is readonly");
+    throw new Error('This is readonly');
   }
   public disable(_p: Readonly<SPlayer>): void {
-    throw new Error("This is readonly");
+    throw new Error('This is readonly');
   }
   public isEnabled(p: Readonly<SPlayer>): boolean {
     return this.getInstance(p).getEnabled();
@@ -54,10 +60,10 @@ export class STriggerDescriptorImpl extends STriggerDescriptor {
 
 export class SDialogueDescriptorImpl extends SDialogueDescriptor {
   public enable(_p: Readonly<SPlayer>): void {
-    throw new Error("This is readonly");
+    throw new Error('This is readonly');
   }
   public disable(_p: Readonly<SPlayer>): void {
-    throw new Error("This is readonly");
+    throw new Error('This is readonly');
   }
   public isEnabled(p: Readonly<SPlayer>): boolean {
     return this.getInstance(p).getEnabled();

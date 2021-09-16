@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { titleStyle } from '../../Editor/Components/FormView/labeled';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import { flexRow, flex } from '../../css/classes';
 
 export interface ValueProps extends ClassStyleId {

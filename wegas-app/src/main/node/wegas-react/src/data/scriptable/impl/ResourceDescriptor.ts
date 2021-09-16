@@ -1,13 +1,12 @@
-import { getInstance as rawGetInstance, getScriptableInstance } from '../../methods/VariableDescriptorMethods';
+import {
+  getInstance as rawGetInstance,
+  getScriptableInstance,
+} from '../../methods/VariableDescriptorMethods';
 import { IResourceDescriptor, IPlayer } from 'wegas-ts-api';
 import { SResourceDescriptor, SResourceInstance, SPlayer } from 'wegas-ts-api';
 
 export function addOccupation(_rd: IResourceDescriptor) {
-  return (
-    _self: IPlayer,
-    _time: number,
-    _editable: boolean,
-  ) => {
+  return (_self: IPlayer, _time: number, _editable: boolean) => {
     throw Error('This is readonly');
   };
 }
@@ -52,13 +51,15 @@ export function getStringInstanceProperty(rd: IResourceDescriptor) {
 }
 
 export function deactivate(_rd: IResourceDescriptor) {
-  return (_self: IPlayer) => {
-  };
+  return (_self: IPlayer) => {};
 }
 
-
 export class SResourceDescriptorImpl extends SResourceDescriptor {
-  public addOccupation(_p: Readonly<SPlayer>, _time: number, _editable: boolean): void {
+  public addOccupation(
+    _p: Readonly<SPlayer>,
+    _time: number,
+    _editable: boolean,
+  ): void {
     throw Error('This is readonly');
   }
   public activate(_p: Readonly<SPlayer>): void {
@@ -67,7 +68,11 @@ export class SResourceDescriptorImpl extends SResourceDescriptor {
   public getActive(p: Readonly<SPlayer>): boolean {
     return this.getInstance(p).getActive();
   }
-  public addNumberAtInstanceProperty(_p: Readonly<SPlayer>, _key: string, _value: string): void {
+  public addNumberAtInstanceProperty(
+    _p: Readonly<SPlayer>,
+    _key: string,
+    _value: string,
+  ): void {
     throw Error('This is readonly');
   }
   public deactivate(_p: Readonly<SPlayer>): void {
@@ -82,5 +87,4 @@ export class SResourceDescriptorImpl extends SResourceDescriptor {
   public getStringInstanceProperty(p: Readonly<SPlayer>, key: string): string {
     return this.getInstance(p).getProperties()[key];
   }
-
 }

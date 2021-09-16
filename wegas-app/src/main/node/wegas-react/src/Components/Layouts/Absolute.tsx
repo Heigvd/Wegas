@@ -6,7 +6,7 @@ import {
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 import { pageCTX } from '../../Editor/Components/Page/PageEditor';
 import { classNameOrEmpty } from '../../Helper/className';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import { isDnDComponent } from '../../Editor/Components/Page/ComponentPalette';
 import { isPageComponentNode } from '../../Editor/Components/Page/PagesLayout';
 import { wwarn } from '../../Helper/wegaslog';

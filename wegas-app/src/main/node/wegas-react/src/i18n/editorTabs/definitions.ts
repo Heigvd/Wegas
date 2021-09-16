@@ -152,5 +152,5 @@ export interface EditorTabsTranslations {
     toggleCoding: string;
     runScripts: string;
     deleteGroup: string;
-  }
+  };
 }

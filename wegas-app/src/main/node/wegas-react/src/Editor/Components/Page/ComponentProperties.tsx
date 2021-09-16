@@ -5,7 +5,7 @@ import {
   ContainerComponent,
   usePageComponentStore,
 } from '../../../Components/PageComponents/tools/componentFactory';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { BaseView, Schema } from 'jsoninput/typings/types';
 import { MessageString } from '../MessageString';
@@ -278,7 +278,9 @@ export default function ConnectedComponentProperties() {
   const { component, parent } = findComponent(selectedPage, editedPath);
 
   if (!component) {
-    return <pre className={defaultPadding}>Edited component not found in page</pre>;
+    return (
+      <pre className={defaultPadding}>Edited component not found in page</pre>
+    );
   }
 
   return (

@@ -1,4 +1,4 @@
-import { css, cx, Interpolation } from 'emotion';
+import { css, cx, CSSInterpolation } from '@emotion/css';
 import * as React from 'react';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
@@ -19,7 +19,7 @@ import { useWebsocketEvent } from '../../API/websocket';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { commonTranslations } from '../../i18n/common/common';
 
-export const trainerCellStyleI: Interpolation<undefined> = {
+export const trainerCellStyleI: CSSInterpolation = {
   justifyContent: 'center',
   alignItems: 'center',
   backgroundColor: '#fff',

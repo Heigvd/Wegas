@@ -12,7 +12,7 @@ const pagesContextActionCreator = {
 };
 
 type PagesContextActions<
-  A extends keyof typeof pagesContextActionCreator = keyof typeof pagesContextActionCreator
+  A extends keyof typeof pagesContextActionCreator = keyof typeof pagesContextActionCreator,
 > = ReturnType<typeof pagesContextActionCreator[A]>;
 
 interface PagesContextState {

@@ -146,8 +146,8 @@ export default function Form<T>({
           {field.showStrenghBar ? (
             <React.Suspense fallback={<InlineLoading />}>
               <PasswordStrengthBar
-                barColors={ ['#ddd', '#ef4836', 'rgb(118, 176, 232)', '#2b90ef', '#01f590']}
-                scoreWordStyle={{color: 'var(--fgColor)'}}
+                barColors={['#ddd', '#ef4836', 'rgb(118, 176, 232)', '#2b90ef', '#01f590']}
+                scoreWordStyle={{ color: 'var(--fgColor)' }}
                 onChangeScore={value => {
                   if (field.strengthProp != null) {
                     setFormValue(field.strengthProp, value);

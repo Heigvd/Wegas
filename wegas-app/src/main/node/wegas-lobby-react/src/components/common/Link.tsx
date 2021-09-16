@@ -304,7 +304,7 @@ export function MainMenu() {
   return (
     <DropDownMenu
       height={mainHeaderHeight}
-      idleHoverStyle='BACKGROUND'
+      idleHoverStyle="BACKGROUND"
       menuIcon="BURGER"
       entries={opts}
       value={current}

@@ -1,5 +1,5 @@
 import * as Color from 'color';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { RGBColor, ChromePicker } from 'react-color';
 import {

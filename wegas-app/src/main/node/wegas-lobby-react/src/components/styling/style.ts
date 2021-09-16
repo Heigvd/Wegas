@@ -6,8 +6,8 @@
  * Licensed under the MIT License
  */
 
-import {css, CSSObject, cx, keyframes} from '@emotion/css';
-import {dangerColor, successColor, warningColor, white} from './color';
+import { css, CSSObject, cx, keyframes } from '@emotion/css';
+import { dangerColor, successColor, warningColor, white } from './color';
 
 type SelectTypeKeys =
   | 'container'
@@ -23,17 +23,17 @@ type SelectStylesType = Record<SelectTypeKeys, (provided: CSSObject) => CSSObjec
 export const defaultSelectStyles: SelectStylesType = {
   container: provided => ({
     ...provided,
-    fontSize: "10pt",
+    fontSize: '10pt',
   }),
   singleValue: provided => ({
     ...provided,
-    color: "var(--fgColor)",
+    color: 'var(--fgColor)',
   }),
   control: provided => ({
     ...provided,
     //    lineHeight: "40px",
-    height: "50px",
-    marginTop: "2px",
+    height: '50px',
+    marginTop: '2px',
   }),
   placeholder: provided => ({
     ...provided,
@@ -41,18 +41,17 @@ export const defaultSelectStyles: SelectStylesType = {
   }),
   valueContainer: provided => ({
     ...provided,
-    padding: '0 20px'
+    padding: '0 20px',
   }),
   option: provided => ({
     ...provided,
-    fontSize: 'unset'
+    fontSize: 'unset',
   }),
   menu: provided => ({
     ...provided,
     marginTop: 0,
   }),
 };
-
 
 export const upsideSelectStyles: SelectStylesType = {
   ...defaultSelectStyles,
@@ -63,8 +62,8 @@ export const upsideSelectStyles: SelectStylesType = {
       bottom: '44px',
       marginTop: '0px',
     };
-  }
-}
+  },
+};
 
 export const pictoColours = css({
   '--pictoBlue': '#50BFD5', // main blue
@@ -77,7 +76,7 @@ export const pictoColours = css({
   '--errorColor': dangerColor.toString(),
   '--warningColor': warningColor.toString(),
   '--successColor': successColor.toString(),
-  '--blueColor' : '#41d2fa',
+  '--blueColor': '#41d2fa',
 });
 
 export const darkModeColors = css({
@@ -267,7 +266,7 @@ export const inactiveButtonStyle = cx(
     textTransform: 'uppercase',
     fontSize: '12px',
     backgroundColor: '#666',
-    opacity: "0.5",
+    opacity: '0.5',
     padding: '18px 24px',
   }),
 );
@@ -276,7 +275,7 @@ export const buttonStyle = cx(
   inactiveButtonStyle,
   css({
     cursor: 'pointer',
-    opacity: "1",
+    opacity: '1',
     transition: 'all .5s ease',
     ':hover': {
       color: 'var(--hoverFgColor)',

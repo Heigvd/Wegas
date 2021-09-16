@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { WidthProvider, Responsive } from 'react-grid-layout';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 

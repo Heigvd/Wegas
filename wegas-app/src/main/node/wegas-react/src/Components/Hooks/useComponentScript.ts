@@ -13,7 +13,7 @@ export function useComponentScript<T extends IVariableDescriptor>(
 ) {
   const descriptor = useScript<ScriptableEntity<T>>(script, context, catchCB);
   const instance = useVariableInstance<T>(
-    (descriptor?.getEntity() as unknown) as T,
+    descriptor?.getEntity() as unknown as T,
   );
   const notFound = descriptor == null || instance == null;
   if (notFound) {

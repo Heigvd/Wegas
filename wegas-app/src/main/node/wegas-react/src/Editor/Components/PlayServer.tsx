@@ -1,4 +1,4 @@
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import * as React from 'react';
 import { WegasScriptEditor } from './ScriptEditors/WegasScriptEditor';
 import { Button } from '../../Components/Inputs/Buttons/Button';
@@ -32,8 +32,8 @@ export default function PlayServer() {
           scriptContext="Server internal"
         />
         <div className={defaultMargin}>
-        <Button onClick={playScript} label="Run script" />
-        <div>{error}</div>
+          <Button onClick={playScript} label="Run script" />
+          <div>{error}</div>
         </div>
       </div>
     </div>

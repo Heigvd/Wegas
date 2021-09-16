@@ -13,7 +13,8 @@ export type SrcEditorLanguages =
   | 'typescript';
 export type MonacoEditor = Monaco;
 export type MonacoEditorProperties = Exclude<EditorProps['options'], undefined>;
-export type MonacoLangaugesServices = MonacoEditor['languages']['typescript']['typescriptDefaults'];
+export type MonacoLangaugesServices =
+  MonacoEditor['languages']['typescript']['typescriptDefaults'];
 export type MonacoSCodeEditor = Parameters<EditorDidMount>[1];
 export type MonacoSDiffEditor = Parameters<DiffEditorDidMount>[2];
 export type MonacoCodeEditor = Parameters<

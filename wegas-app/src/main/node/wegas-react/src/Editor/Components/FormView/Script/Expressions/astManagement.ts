@@ -134,7 +134,7 @@ function methodParameterParse(node: Node | null) {
       return typeMethods.parser(node, methodParameterParse);
     }
   }
-  throw Error(`Argument's node ${ node?.type } cannot be parsed`);
+  throw Error(`Argument's node ${node?.type} cannot be parsed`);
 }
 
 const generateMethodStatement = (
@@ -385,9 +385,9 @@ function variableToASTNode(
       }
     } else {
       throw Error(
-        `The current variable (${ variableType }) type doesn't match the allowed types (${ JSON.stringify(
+        `The current variable (${variableType}) type doesn't match the allowed types (${JSON.stringify(
           type,
-        ) })`,
+        )})`,
       );
     }
   } else {
@@ -399,7 +399,7 @@ function variableToASTNode(
       usedType = variableType;
     } else {
       throw Error(
-        `The current variable (${ variableType }) type doesn't match the allowed type (${ type })`,
+        `The current variable (${variableType}) type doesn't match the allowed type (${type})`,
       );
     }
   }
@@ -430,7 +430,7 @@ function variableToASTNode(
       return identifier(usedType);
     default:
       throw Error(
-        `Type ${ variableType } for method arguments not implemented yet`,
+        `Type ${variableType} for method arguments not implemented yet`,
       );
   }
 }
@@ -572,9 +572,9 @@ export function parseStatement(
           variableName: getVariable(statement.expression),
           initExpression: {
             type: 'variable',
-            script: `Variable.find(gameModel,'${ getVariable(
+            script: `Variable.find(gameModel,'${getVariable(
               statement.expression,
-            ) }')`,
+            )}')`,
           },
           methodName: getMethodName(statement.expression),
           ...getParameters(statement.expression),
@@ -586,9 +586,9 @@ export function parseStatement(
         attributes: {
           initExpression: {
             type: 'variable',
-            script: `Variable.find(gameModel,'${ getVariable(
+            script: `Variable.find(gameModel,'${getVariable(
               statement.expression.left,
-            ) }')`,
+            )}')`,
           },
           methodName: getMethodName(statement.expression.left),
           ...getParameters(statement.expression.left),
@@ -606,9 +606,9 @@ export function parseStatement(
         attributes: {
           initExpression: {
             type: 'variable',
-            script: `Variable.find(gameModel,'${ getVariable(
+            script: `Variable.find(gameModel,'${getVariable(
               statement.expression,
-            ) }')`,
+            )}')`,
           },
           methodName: getMethodName(statement.expression),
           ...getParameters(statement.expression),
@@ -647,8 +647,8 @@ export function generateStatement(
             comparatorExpectedType
               ? comparatorExpectedType
               : isWegasMethodReturnType(comparatorCurrentType)
-                ? comparatorCurrentType
-                : 'string',
+              ? comparatorCurrentType
+              : 'string',
             true,
           );
         } else {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import NumberBoxTester from './NumberBoxTester';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import NumberSliderTester from './NumberSliderTester';
 
 export const testerSectionStyle = css({

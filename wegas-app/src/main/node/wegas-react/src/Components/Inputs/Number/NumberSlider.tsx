@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Interpolation, css, cx } from 'emotion';
-import Slider from 'react-input-slider';
+import { CSSInterpolation, css, cx } from '@emotion/css';
+import Slider from './react-input-slider/react-number-slider';
 import {
   flex,
   flexColumn,
@@ -59,21 +59,21 @@ export interface NumberSliderProps
   /**
    * trackStyle - the style of the track
    */
-  rightPartStyle?: Interpolation;
+  rightPartStyle?: CSSInterpolation;
   /**
    * leftPartStyle - the style of the left part of the track
    */
-  leftPartStyle?: Interpolation;
+  leftPartStyle?: CSSInterpolation;
   /**
    * handleStyle - the style of the slider handle
    */
-  handleStyle?: Interpolation;
+  handleStyle?: CSSInterpolation;
 }
 
-const desinterpolate = (style?: Interpolation) =>
+const desinterpolate = (style?: CSSInterpolation) =>
   style
     ? Object.keys(style).reduce(
-        (o, k: keyof Interpolation) => ({
+        (o, k: keyof CSSInterpolation) => ({
           ...o,
           [k]: style[k],
         }),
@@ -129,7 +129,7 @@ export function NumberSlider({
       switch (displayValues) {
         case 'External':
           display = (
-            <div className={cx({[halfOpacity]: disabled })}>{value}</div>
+            <div className={cx({ [halfOpacity]: disabled })}>{value}</div>
           );
           break;
         case 'Internal':
@@ -192,13 +192,12 @@ export function NumberSlider({
             : desinterpolate({
                 backgroundColor: themeVar.colors.PrimaryColor,
               }),
-          thumb:
-            handleStyle
+          thumb: handleStyle
             ? desinterpolate(handleStyle)
             : isActionAllowed({ readOnly, disabled })
             ? desinterpolate({ cursor: 'pointer' })
             : {},
-          disabled: {opacity: 0.5}
+          disabled: { opacity: 0.5 },
         }}
         axis="x"
         xmax={max}

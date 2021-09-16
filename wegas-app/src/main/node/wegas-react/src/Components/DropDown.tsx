@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import { themeVar } from './Theme/ThemeVars';
 import { classNameOrEmpty } from '../Helper/className';
 import { useOnClickOutside } from './Hooks/useOnClickOutside';

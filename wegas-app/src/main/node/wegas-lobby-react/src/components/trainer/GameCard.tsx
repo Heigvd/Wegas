@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 
-import {css, cx} from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import {
   faArchive,
   faCog,
@@ -16,33 +16,33 @@ import {
   faTrashRestore,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
-import {IGameModelWithId, IGameWithId} from 'wegas-ts-api';
-import {changeGameStatus, getUser, updateGame} from '../../API/api';
-import {entityIs} from '../../API/entityHelper';
-import {getDisplayName} from '../../helper';
+import { IGameModelWithId, IGameWithId } from 'wegas-ts-api';
+import { changeGameStatus, getUser, updateGame } from '../../API/api';
+import { entityIs } from '../../API/entityHelper';
+import { getDisplayName } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
-import {useAccount, useCurrentUser} from '../../selectors/userSelector';
-import {useAppDispatch} from '../../store/hooks';
+import { useAccount, useCurrentUser } from '../../selectors/userSelector';
+import { useAppDispatch } from '../../store/hooks';
 import ActionIconButton from '../common/ActionIconButton';
-import Card, {CardMainWifButton, cardSecButtonStyle} from '../common/Card';
+import Card, { CardMainWifButton, cardSecButtonStyle } from '../common/Card';
 import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import OnBlurInput from '../common/OnBlurInput';
 import OpenCloseModal from '../common/OpenCloseModal';
 import Toggler from '../common/Toggler';
-import {cardDetailsStyle, cardSubDetailsStyle, cardTitleStyle} from '../styling/style';
+import { cardDetailsStyle, cardSubDetailsStyle, cardTitleStyle } from '../styling/style';
 import GameSettings from './GameSettings';
-import {GameUsers} from './GameUsers';
+import { GameUsers } from './GameUsers';
 
 const verySmallInput = css({
   '& input': {
     width: '130px',
     padding: '0 12px',
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
 });
 
@@ -56,7 +56,7 @@ const invisibleVerySmallInput = cx(
   }),
 );
 
-function EditKey({game}: {game: IGameWithId}) {
+function EditKey({ game }: { game: IGameWithId }) {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
 
@@ -65,7 +65,7 @@ function EditKey({game}: {game: IGameWithId}) {
 
   const updateCb = React.useCallback(
     (value: string) => {
-      dispatch(updateGame({...game, token: value}));
+      dispatch(updateGame({ ...game, token: value }));
     },
     [dispatch, game],
   );
@@ -77,10 +77,10 @@ function EditKey({game}: {game: IGameWithId}) {
         value={open}
         onChange={() => {
           //setOpen(!open);
-          dispatch(updateGame({...game, access: open ? 'CLOSE' : 'OPEN'}));
+          dispatch(updateGame({ ...game, access: open ? 'CLOSE' : 'OPEN' }));
         }}
       />
-      <FontAwesomeIcon className={css({paddingRight: '5px'})} icon={faKey} />
+      <FontAwesomeIcon className={css({ paddingRight: '5px' })} icon={faKey} />
       <OnBlurInput
         className={open ? verySmallInput : invisibleVerySmallInput}
         value={game.token}
@@ -96,21 +96,21 @@ interface GameCardProps {
   gameModel: IGameModelWithId;
 }
 
-export default function GameCard({game, gameModel}: GameCardProps): JSX.Element {
+export default function GameCard({ game, gameModel }: GameCardProps): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
-  const {isAdmin} = useCurrentUser();
+  const { isAdmin } = useCurrentUser();
 
   const archiveCb = React.useCallback(async () => {
-    return dispatch(changeGameStatus({gameId: game.id, status: 'BIN'}));
+    return dispatch(changeGameStatus({ gameId: game.id, status: 'BIN' }));
   }, [dispatch, game.id]);
 
   const restoreCb = React.useCallback(async () => {
-    return dispatch(changeGameStatus({gameId: game.id, status: 'LIVE'}));
+    return dispatch(changeGameStatus({ gameId: game.id, status: 'LIVE' }));
   }, [dispatch, game.id]);
 
   const deleteCb = React.useCallback(async () => {
-    return dispatch(changeGameStatus({gameId: game.id, status: 'DELETE'}));
+    return dispatch(changeGameStatus({ gameId: game.id, status: 'DELETE' }));
   }, [dispatch, game.id]);
 
   //  React.useEffect(() => {
@@ -136,7 +136,7 @@ export default function GameCard({game, gameModel}: GameCardProps): JSX.Element 
   const gameName = game.name ? `${i18n.Game} "${game.name}"` : i18n.Game;
   return (
     <Card illustration={gameModel.properties.iconUri}>
-      <FitSpace direction="column" className={css({flexBasis: '10px'})}>
+      <FitSpace direction="column" className={css({ flexBasis: '10px' })}>
         <div className={cardTitleStyle}>{game.name}</div>
         <div className={cardDetailsStyle}>
           {`${i18n.createdOn} "${new Date(game.createdTime).toLocaleDateString()}"`}
@@ -179,7 +179,7 @@ export default function GameCard({game, gameModel}: GameCardProps): JSX.Element 
 
       {game.status === 'LIVE' ? (
         <ActionIconButton
-          shouldConfirm='HARD'
+          shouldConfirm="HARD"
           className={cardSecButtonStyle}
           icon={faArchive}
           title={i18n.archive}

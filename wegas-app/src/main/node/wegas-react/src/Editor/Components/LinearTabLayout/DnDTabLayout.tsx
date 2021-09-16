@@ -4,7 +4,7 @@ import { Tab, DragTab, DropTab, TabComponent } from './DnDTabs';
 import { Toolbar } from '../../../Components/Toolbar';
 import { DropMenu } from '../../../Components/DropMenu';
 import { Reparentable } from '../Reparentable';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import { DropActionType } from './LinearLayout';
 import {
   grow,

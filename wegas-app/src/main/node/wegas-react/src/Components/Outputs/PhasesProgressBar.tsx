@@ -10,7 +10,7 @@ import {
   halfOpacity,
 } from '../../css/classes';
 import { Value } from './Value';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../../Helper/className';
 import { themeVar } from '../Theme/ThemeVars';

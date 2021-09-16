@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { defaultPadding, flex, flexColumn } from '../../../../css/classes';
 import { DropMenu } from '../../../DropMenu';

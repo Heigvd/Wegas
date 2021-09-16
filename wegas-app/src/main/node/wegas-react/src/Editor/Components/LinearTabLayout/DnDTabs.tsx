@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { useDrag, DropTargetMonitor, useDrop } from 'react-dnd';
 import { DropAction } from './DnDTabLayout';
 import { hidden, flex } from '../../../css/classes';

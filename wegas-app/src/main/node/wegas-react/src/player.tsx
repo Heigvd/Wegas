@@ -7,7 +7,7 @@ import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
 import { ThemeProvider } from './Components/Theme/Theme';
 import { PageAPI } from './API/pages.api';
-import 'emotion';
+import '@emotion/css';
 import { useWebsocketEvent } from './API/websocket';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
 import { PageLoader } from './Editor/Components/Page/PageLoader';
@@ -19,7 +19,7 @@ import {
   itemCenter,
   justifyCenter,
 } from './css/classes';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import { TumbleLoader } from './Components/Loader';
 
 importPageComponents();

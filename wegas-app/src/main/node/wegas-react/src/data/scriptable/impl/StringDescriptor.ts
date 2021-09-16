@@ -1,6 +1,11 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
 import { TranslatableContent } from '../../i18n';
-import { SStringDescriptor, SStringInstance, SPlayer, STranslatableContent } from 'wegas-ts-api';
+import {
+  SStringDescriptor,
+  SStringInstance,
+  SPlayer,
+  STranslatableContent,
+} from 'wegas-ts-api';
 
 export class SStringDescriptorImpl extends SStringDescriptor {
   public getValue(p: Readonly<SPlayer>): string {
@@ -30,7 +35,11 @@ export class SStringDescriptorImpl extends SStringDescriptor {
     return !this.isValueSelected(p, value);
   }
 
-  public areSelectedValues(p: Readonly<SPlayer>, expectedValues: readonly string[], strictOrder: boolean): boolean {
+  public areSelectedValues(
+    p: Readonly<SPlayer>,
+    expectedValues: readonly string[],
+    strictOrder: boolean,
+  ): boolean {
     const values = this.parseStringValues(p);
     if (values.length === expectedValues.length) {
       if (strictOrder) {
@@ -59,7 +68,10 @@ export class SStringDescriptorImpl extends SStringDescriptor {
     return this.parseStringValues(p).length;
   }
 
-  public getPositionOfValue(p: Readonly<SPlayer>, value: string): number | null {
+  public getPositionOfValue(
+    p: Readonly<SPlayer>,
+    value: string,
+  ): number | null {
     const position = this.parseStringValues(p).indexOf(value);
     if (position >= 0) {
       return position + 1;
@@ -68,7 +80,10 @@ export class SStringDescriptorImpl extends SStringDescriptor {
     }
   }
 
-  public setValue(_p: Readonly<SPlayer>, _value: Readonly<STranslatableContent>): void {
-    throw new Error("This is readonlyx");
+  public setValue(
+    _p: Readonly<SPlayer>,
+    _value: Readonly<STranslatableContent>,
+  ): void {
+    throw new Error('This is readonlyx');
   }
 }

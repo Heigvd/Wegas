@@ -3,7 +3,7 @@ import { ComponentType } from '../../../Components/PageComponents/tools/componen
 import { defaultMarginRight } from '../../../css/classes';
 import { IconComp } from '../Views/FontAwesome';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 /** Import of all svgs for compos icons */
 
@@ -44,60 +44,58 @@ import textInputIcon from '../../../pictures/componentsIcons/textInput.svg';
 import VariableTreeIcon from '../../../pictures/componentsIcons/variableTree.svg';
 import { SVGProps } from 'react';
 
-
 const iconComponents = {
-    absoluteLayout: AbsoluteLayoutIcon,
-    boolean:BooleanIcon,
-    boxes: BoxesIcon,
-    button:ButtonIcon,
-    dialogue:DialogueIcon,
-    fileBrowser:FileBrowserIcon,
-    fileInput:FileInputIcon,
-    fileList:FileListIcon,
-    flexList:FlexListIcon,
-    flowChart:FlowChartIcon,
-    forEach:ForEachIcon,
-    gauge:GaugeIcon,
-    grid:GridIcon,
-    icon:IconIcon,
-    ifElse:IfElseIcon,
-    image:ImageIcon,
-    inbox:InboxIcon,
-    linearLayout:LinearLayoutIcon,
-    menu:MenuIcon,
-    modal:ModalIcon,
-    number:NumberIcon,
-    numberSlider:NumberSliderIcon,
-    pageLoader:PageLoaderIcon,
-    phases:PhasesIcon,
-    PRTreeView:PRTreeIcon,
-    PRVariableEditor:PRVariableIcon,
-    question:QuestionIcon,
-    questionList:QuestionListIcon,
-    selectInput:SelectInputIcon,
-    state:StateIcon,
-    stateMachine:StateMachineIcon,
-    stringInput:StringInputIcon,
-    text:TextIcon,
-    textInput:textInputIcon,
-    variableTree:VariableTreeIcon,
-}
+  absoluteLayout: AbsoluteLayoutIcon,
+  boolean: BooleanIcon,
+  boxes: BoxesIcon,
+  button: ButtonIcon,
+  dialogue: DialogueIcon,
+  fileBrowser: FileBrowserIcon,
+  fileInput: FileInputIcon,
+  fileList: FileListIcon,
+  flexList: FlexListIcon,
+  flowChart: FlowChartIcon,
+  forEach: ForEachIcon,
+  gauge: GaugeIcon,
+  grid: GridIcon,
+  icon: IconIcon,
+  ifElse: IfElseIcon,
+  image: ImageIcon,
+  inbox: InboxIcon,
+  linearLayout: LinearLayoutIcon,
+  menu: MenuIcon,
+  modal: ModalIcon,
+  number: NumberIcon,
+  numberSlider: NumberSliderIcon,
+  pageLoader: PageLoaderIcon,
+  phases: PhasesIcon,
+  PRTreeView: PRTreeIcon,
+  PRVariableEditor: PRVariableIcon,
+  question: QuestionIcon,
+  questionList: QuestionListIcon,
+  selectInput: SelectInputIcon,
+  state: StateIcon,
+  stateMachine: StateMachineIcon,
+  stringInput: StringInputIcon,
+  text: TextIcon,
+  textInput: textInputIcon,
+  variableTree: VariableTreeIcon,
+};
 
 export type IconComponentType = keyof typeof iconComponents;
 
 const componentIconStyle = css({
-    fill: themeVar.colors.PrimaryColor,
-    width: '60px',
-  });
+  fill: themeVar.colors.PrimaryColor,
+  width: '60px',
+});
 
 interface ComponentTypeIconProps {
-    /**
-     * componentName - the name of the component
-     */
-     componentType: ComponentType;
-  }
-export function ComponentTypeIcon({
-    componentType,}: ComponentTypeIconProps) {
+  /**
+   * componentName - the name of the component
+   */
+  componentType: ComponentType;
+}
+export function ComponentTypeIcon({ componentType }: ComponentTypeIconProps) {
   function typeIcon(componentType: ComponentType) {
     switch (componentType) {
       case 'Layout':
@@ -118,15 +116,15 @@ export function ComponentTypeIcon({
 }
 
 interface ComponentIconProps extends SVGProps<SVGSVGElement> {
-    /**
-     * componentName - the name of the component
-     */
-    componentIllu: IconComponentType;
-  }
+  /**
+   * componentName - the name of the component
+   */
+  componentIllu: IconComponentType;
+}
 
-  export function ComponentIcon({ componentIllu, ...props }: ComponentIconProps)
-  {
-    const IconComponent = iconComponents[componentIllu] as React.FunctionComponent<SVGProps<SVGSVGElement>>;
-    return <IconComponent {...props} className={componentIconStyle}/>
-
-  }
+export function ComponentIcon({ componentIllu, ...props }: ComponentIconProps) {
+  const IconComponent = iconComponents[
+    componentIllu
+  ] as React.FunctionComponent<SVGProps<SVGSVGElement>>;
+  return <IconComponent {...props} className={componentIconStyle} />;
+}

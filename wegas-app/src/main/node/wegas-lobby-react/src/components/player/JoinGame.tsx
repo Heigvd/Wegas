@@ -6,11 +6,11 @@
  * Licensed under the MIT License
  */
 
-import {css} from '@emotion/css';
-import {faPlay} from '@fortawesome/free-solid-svg-icons';
+import { css } from '@emotion/css';
+import { faPlay } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import Select from 'react-select';
-import {IGameModelWithId, IGameWithId, ITeam, ITeamWithId} from 'wegas-ts-api';
+import { IGameModelWithId, IGameWithId, ITeam, ITeamWithId } from 'wegas-ts-api';
 import {
   createTeam,
   findGameByToken,
@@ -18,22 +18,27 @@ import {
   joinIndividually,
   joinTeam,
 } from '../../API/api';
-import {entityIs} from '../../API/entityHelper';
+import { entityIs } from '../../API/entityHelper';
 import useTranslations from '../../i18n/I18nContext';
-import {useCurrentUser} from '../../selectors/userSelector';
-import {useTeams, useUserPlayerInGame} from '../../selectors/wegasSelector';
-import {useAppDispatch} from '../../store/hooks';
-import {addNotification} from '../../store/slices/notification';
-import {CHANNEL_PREFIX, useWebsocketChannel} from '../../websocket/websocket';
+import { useCurrentUser } from '../../selectors/userSelector';
+import { useTeams, useUserPlayerInGame } from '../../selectors/wegasSelector';
+import { useAppDispatch } from '../../store/hooks';
+import { addNotification } from '../../store/slices/notification';
+import { CHANNEL_PREFIX, useWebsocketChannel } from '../../websocket/websocket';
 import ActionButton from '../common/ActionButton';
 import Button from '../common/Button';
-import Card, {CardMainButton} from '../common/Card';
+import Card, { CardMainButton } from '../common/Card';
 import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import InlineLoading from '../common/InlineLoading';
 //import Modal from '../common/Modal';
 import Input from '../common/Input';
-import {cardTitleStyle, defaultSelectStyles, mainButtonStyle, secButtonStyle} from '../styling/style';
+import {
+  cardTitleStyle,
+  defaultSelectStyles,
+  mainButtonStyle,
+  secButtonStyle,
+} from '../styling/style';
 
 interface Option {
   value: string;
@@ -46,30 +51,30 @@ interface Option {
 const sizeOptions = ((x: number) => {
   const opts: Option[] = [];
   for (let i = 1; i <= x; i++) {
-    opts.push({value: `${i}`, label: `${i}`});
+    opts.push({ value: `${i}`, label: `${i}` });
   }
   return opts;
 })(10);
 
-function TeamCreator({game}: {game: IGameWithId}): JSX.Element {
+function TeamCreator({ game }: { game: IGameWithId }): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
-  const [team, setTeam] = React.useState<ITeam>({'@class': 'Team', players: []});
+  const [team, setTeam] = React.useState<ITeam>({ '@class': 'Team', players: [] });
   const [visible, setVisible] = React.useState(true);
 
   const setName = React.useCallback((teamName: string) => {
-    setTeam(team => ({...team, name: teamName}));
+    setTeam(team => ({ ...team, name: teamName }));
   }, []);
-  const setSize = React.useCallback((option: {value: string} | null) => {
-    setTeam(team => ({...team, declaredSize: option ? +option.value : undefined}));
+  const setSize = React.useCallback((option: { value: string } | null) => {
+    setTeam(team => ({ ...team, declaredSize: option ? +option.value : undefined }));
   }, []);
 
   const createCb = React.useCallback(async () => {
-    return dispatch(createTeam({game, team})).then(action => {
+    return dispatch(createTeam({ game, team })).then(action => {
       if (action.meta.requestStatus === 'fulfilled') {
         setVisible(false);
       }
-    })
+    });
   }, [game, team, dispatch]);
 
   if (visible) {
@@ -90,14 +95,24 @@ function TeamCreator({game}: {game: IGameWithId}): JSX.Element {
             ...defaultSelectStyles,
             control: provided => ({
               ...provided,
-              height: "50px",
-              marginTop: "1px",
-            })
+              height: '50px',
+              marginTop: '1px',
+            }),
           }}
           options={sizeOptions}
           onChange={setSize}
         />
-        <ActionButton label={i18n.createTeam} onClick={team.name != null && team.name.length > 0 && team.declaredSize != null && team.declaredSize > 0 ? createCb : undefined} />
+        <ActionButton
+          label={i18n.createTeam}
+          onClick={
+            team.name != null &&
+            team.name.length > 0 &&
+            team.declaredSize != null &&
+            team.declaredSize > 0
+              ? createCb
+              : undefined
+          }
+        />
       </Flex>
     );
   } else {
@@ -109,7 +124,7 @@ interface TeamToJoinCardProps {
   closePanel: () => void;
 }
 
-function TeamToJoinCard({team, closePanel}: TeamToJoinCardProps): JSX.Element {
+function TeamToJoinCard({ team, closePanel }: TeamToJoinCardProps): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
 
@@ -134,7 +149,7 @@ interface ShowTeamsProps {
   closePanel: () => void;
 }
 
-function ShowTeams({closePanel, game}: ShowTeamsProps): JSX.Element {
+function ShowTeams({ closePanel, game }: ShowTeamsProps): JSX.Element {
   const teams = useTeams(game.id);
   const dispatch = useAppDispatch();
   useWebsocketChannel(`${CHANNEL_PREFIX.Game}${game.id}`);
@@ -178,7 +193,7 @@ interface LoadProps {
   onSelect: (data: GameAndGm) => void;
 }
 
-export function FindGameByToken({onSelect, onCancel}: LoadProps): JSX.Element {
+export function FindGameByToken({ onSelect, onCancel }: LoadProps): JSX.Element {
   const [key, setKey] = React.useState('');
 
   const i18n = useTranslations();
@@ -190,7 +205,7 @@ export function FindGameByToken({onSelect, onCancel}: LoadProps): JSX.Element {
       if (action.meta.requestStatus === 'fulfilled') {
         onSelect(action.payload as GameAndGm);
       } else if (action.meta.requestStatus === 'rejected') {
-        dispatch(addNotification({status: 'OPEN', type: 'ERROR', message: i18n.gameNotFound}));
+        dispatch(addNotification({ status: 'OPEN', type: 'ERROR', message: i18n.gameNotFound }));
       }
     });
   }, [key, dispatch, i18n.gameNotFound, onSelect]);
@@ -200,13 +215,17 @@ export function FindGameByToken({onSelect, onCancel}: LoadProps): JSX.Element {
       <h3>{i18n.joinGame}</h3>
       <Input
         placeholder={i18n.accessKey}
-        className={css({minWidth: '400px', paddingBottom: '20px'})}
+        className={css({ minWidth: '400px', paddingBottom: '20px' })}
         value={key}
         onChange={setKey}
       />
       <Flex justify="flex-end">
         <Button label={i18n.cancel} onClick={onCancel} />
-        <ActionButton className={mainButtonStyle} label={i18n.join} onClick={key.length > 0 ? onJoin : undefined} />
+        <ActionButton
+          className={mainButtonStyle}
+          label={i18n.join}
+          onClick={key.length > 0 ? onJoin : undefined}
+        />
       </Flex>
     </FitSpace>
   );
@@ -217,7 +236,7 @@ interface JoinGameProps {
   gameToken?: string;
 }
 
-export default function JoinGame({gameToken, onClose}: JoinGameProps): JSX.Element {
+export default function JoinGame({ gameToken, onClose }: JoinGameProps): JSX.Element {
   const i18n = useTranslations();
 
   const [data, setData] = React.useState<GameAndGm | undefined>();
@@ -226,7 +245,7 @@ export default function JoinGame({gameToken, onClose}: JoinGameProps): JSX.Eleme
   const game = data ? data.game : undefined;
   const gameModel = data ? data.gameModel : undefined;
 
-  const {currentUserId} = useCurrentUser();
+  const { currentUserId } = useCurrentUser();
 
   const dispatch = useAppDispatch();
 
@@ -249,7 +268,7 @@ export default function JoinGame({gameToken, onClose}: JoinGameProps): JSX.Eleme
           setData(action.payload as GameAndGm);
           setToken(undefined);
         } else if (action.meta.requestStatus === 'rejected') {
-          dispatch(addNotification({status: 'OPEN', type: 'ERROR', message: i18n.gameNotFound}));
+          dispatch(addNotification({ status: 'OPEN', type: 'ERROR', message: i18n.gameNotFound }));
           setToken(undefined);
         }
       });
@@ -262,7 +281,7 @@ export default function JoinGame({gameToken, onClose}: JoinGameProps): JSX.Eleme
     return <FindGameByToken onSelect={setData} onCancel={onClose} />;
   } else if (existingPlayer != null) {
     return (
-      <Flex direction='column' justify='center' align='center' grow={1}>
+      <Flex direction="column" justify="center" align="center" grow={1}>
         <div>{i18n.alreadyJoined}</div>
         <CardMainButton
           icon={faPlay}

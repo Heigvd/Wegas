@@ -11,7 +11,7 @@ import { far } from '@fortawesome/free-regular-svg-icons';
 import { omit } from 'lodash-es';
 import { halfOpacity } from '../../../css/classes';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 
 // These icon definitions MUST be added to library in order for React-Fontawsome to work properly
 library.add(fas, far);

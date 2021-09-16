@@ -1,4 +1,4 @@
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import * as React from 'react';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { flex, flexColumn } from '../../../css/classes';

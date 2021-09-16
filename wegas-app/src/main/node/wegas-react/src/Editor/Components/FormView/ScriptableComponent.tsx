@@ -5,7 +5,7 @@ import { CommonView, CommonViewContainer } from './commonView';
 import { LabeledView, Labeled } from './labeled';
 import { TreeVariableSelect } from './TreeVariableSelect';
 import { createScript } from '../../../Helper/wegasEntites';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import {
   flex,
   flexRow,
@@ -89,10 +89,8 @@ export function scriptableComponentFactory<BCT extends BaseComponentProps>(
                     isIdentifier(argumentName) &&
                     argumentName.text === 'find'
                   ) {
-                    const [
-                      findGameModel,
-                      findName,
-                    ] = toStringArgument.arguments;
+                    const [findGameModel, findName] =
+                      toStringArgument.arguments;
                     if (
                       findGameModel != null &&
                       isIdentifier(findGameModel) &&
@@ -118,7 +116,7 @@ export function scriptableComponentFactory<BCT extends BaseComponentProps>(
   }
 
   return function ScriptableComponent<
-    SCT extends ScriptableComponentProps & Omit<BCT, 'value' | 'onChange'>
+    SCT extends ScriptableComponentProps & Omit<BCT, 'value' | 'onChange'>,
   >(props: SCT): JSX.Element {
     const script = props.value ? props.value.content : '';
     const [inputMode, setInputMode] = React.useState<string>(
@@ -129,7 +127,8 @@ export function scriptableComponentFactory<BCT extends BaseComponentProps>(
 
     switch (inputMode) {
       case 'Variable': {
-        const regexStart = /^(I18n\.toString\(Variable\.find\(gameModel,("|')?)/;
+        const regexStart =
+          /^(I18n\.toString\(Variable\.find\(gameModel,("|')?)/;
         const regexEnd = /(("|')?\)\))(;?)$/;
         treeValue = script.replace(regexStart, '').replace(regexEnd, '');
         break;
@@ -199,7 +198,7 @@ export function scriptableComponentFactory<BCT extends BaseComponentProps>(
                 />
               ) : inputMode === componentLabel ? (
                 <BaseComponent
-                  {...((omit(props, ['value', 'onChange']) as unknown) as BCT)}
+                  {...(omit(props, ['value', 'onChange']) as unknown as BCT)}
                   value={textValue}
                   onChange={value => {
                     const stringified = JSON.stringify(value);

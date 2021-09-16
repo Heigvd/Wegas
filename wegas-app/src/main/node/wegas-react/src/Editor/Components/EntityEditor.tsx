@@ -9,7 +9,7 @@ import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
 import { StoreDispatch, store, useStore } from '../../data/Stores/store';
 import { AvailableViews } from './FormView';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import { flex, grow, flexColumn, MediumPadding } from '../../css/classes';
 import {
   ActionsProps,

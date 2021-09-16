@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, keyframes, cx } from 'emotion';
+import { css, keyframes, cx } from '@emotion/css';
 import { useScript } from '../../Hooks/useScript';
 import { themeVar } from '../../Theme/ThemeVars';
 import { IScript } from 'wegas-ts-api';

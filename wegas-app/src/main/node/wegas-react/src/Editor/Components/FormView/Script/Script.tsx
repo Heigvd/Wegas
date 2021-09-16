@@ -3,7 +3,7 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { LabeledView, Labeled } from '../labeled';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { store } from '../../../../data/Stores/store';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
@@ -32,11 +32,7 @@ import { ResizeHandle } from '../../ResizeHandle';
 import { createScript } from '../../../../Helper/wegasEntites';
 import { IScript, IVariableDescriptor, IVariableInstance } from 'wegas-ts-api';
 import { EmbeddedSrcEditor } from '../../ScriptEditors/EmbeddedSrcEditor';
-import {
-  flex,
-  grow,
-  justifyEnd,
-} from '../../../../css/classes';
+import { flex, grow, justifyEnd } from '../../../../css/classes';
 import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';

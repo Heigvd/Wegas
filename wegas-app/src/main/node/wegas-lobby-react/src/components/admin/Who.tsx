@@ -161,7 +161,7 @@ export default function Users(): JSX.Element {
             {Object.keys(onlineUsers).length} {i18n.connectedUsers}
           </h3>
           <ActionIconButton
-            title='sync'
+            title="sync"
             onClick={async () => {
               return dispatch(syncOnlineUsers());
             }}

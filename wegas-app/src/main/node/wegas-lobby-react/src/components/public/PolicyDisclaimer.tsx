@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 
-import {css} from '@emotion/css';
+import { css } from '@emotion/css';
 import * as React from 'react';
 import useTranslations from '../../i18n/I18nContext';
 
@@ -14,7 +14,7 @@ export default function PolicyDisclaimer(): JSX.Element {
   const i18n = useTranslations();
 
   return (
-    <i className={css({padding: "5px", maxWidth:"600px"})}>
+    <i className={css({ padding: '5px', maxWidth: '600px' })}>
       {`${i18n.agreementDisclaimer} `}
       <a target="_blank" rel="noreferrer" href={i18n.termOfUseUrl}>
         &nbsp;{i18n.termOfUse}

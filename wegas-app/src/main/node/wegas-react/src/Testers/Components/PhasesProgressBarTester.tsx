@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { expandBoth, flex, grow, flexRow, autoScroll } from '../../css/classes';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import { NumberSlider } from '../../Components/Inputs/Number/NumberSlider';
 import { PhasesProgressBar } from '../../Components/Outputs/PhasesProgressBar';
 

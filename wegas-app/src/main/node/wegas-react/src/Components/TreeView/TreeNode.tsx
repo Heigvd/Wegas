@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import { passedPropsCTX, TreeChildren } from './TreeChildren';
 import {
   DEFAULT_FILE_TYPE,

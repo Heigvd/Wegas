@@ -5,7 +5,7 @@ import {
 } from '../../Hooks/useVariable';
 import { TranslatableContent } from '../../../data/i18n';
 import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import { themeVar } from '../../Theme/ThemeVars';
 import { INumberDescriptor } from 'wegas-ts-api';
 import { TumbleLoader } from '../../Loader';

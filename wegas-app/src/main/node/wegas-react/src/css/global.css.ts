@@ -1,8 +1,8 @@
 /*
 KEEP THIS FILE MINIMAL !!!
 */
-import { injectGlobal } from 'emotion';
-const fontUrl = require("./fonts/Raleway-VariableFont_wght.ttf").default;
+import { injectGlobal } from '@emotion/css';
+const fontUrl = require('./fonts/Raleway-VariableFont_wght.ttf').default;
 
 injectGlobal`
   @font-face {

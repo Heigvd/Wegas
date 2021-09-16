@@ -5,7 +5,8 @@ import {
   WegasClassNamesAndClasses,
 } from 'wegas-ts-api';
 
-const InheritanceTable = require('wegas-ts-api/typings/Inheritance.json') as typeof import('wegas-ts-api/typings/Inheritance.json');
+const InheritanceTable =
+  require('wegas-ts-api/typings/Inheritance.json') as typeof import('wegas-ts-api/typings/Inheritance.json');
 
 type Mergeable = keyof typeof InheritanceTable;
 
@@ -39,7 +40,7 @@ export function inheritanceChain(type: string): Mergeable[] {
  */
 export const entityExtends = <
   Type extends IAbstractEntity,
-  SuperType extends IAbstractEntity
+  SuperType extends IAbstractEntity,
 >(
   variable: Type,
   type: Mergeable & SuperType['@class'],

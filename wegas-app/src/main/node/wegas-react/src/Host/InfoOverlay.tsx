@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { useOnClickOutside } from '../Components/Hooks/useOnClickOutside';
 import { HTMLText } from '../Components/Outputs/HTMLText';
@@ -33,7 +33,7 @@ const overlayStyle = css({
     zIndex: 1001,
     left: '-13px',
     top: '43px',
-  }
+  },
 });
 const overlayContentStyle = css({
   overflow: 'auto',

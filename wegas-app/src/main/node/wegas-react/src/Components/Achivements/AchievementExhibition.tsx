@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import { all } from '../../data/selectors/VariableDescriptorSelector';
 import { useStore } from '../../data/Stores/store';
 import { IAchievementDescriptor, IAchievementInstance } from 'wegas-ts-api';

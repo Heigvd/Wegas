@@ -6,7 +6,7 @@ import {
   useModeSwitch,
 } from '../Components/Theme/Theme';
 import { themeVar } from '../Components/Theme/ThemeVars';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import { classNameOrEmpty } from '../Helper/className';
 
 const divStyle = css({

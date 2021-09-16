@@ -5,7 +5,7 @@ import { CommonView, CommonViewContainer } from './commonView';
 import { LabeledView, Labeled } from './labeled';
 import { TreeVariableSelect } from './TreeVariableSelect';
 import { createScript } from '../../../Helper/wegasEntites';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import {
   flex,
   flexRow,

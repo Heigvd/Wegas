@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonViewContainer, CommonView } from './commonView';
 

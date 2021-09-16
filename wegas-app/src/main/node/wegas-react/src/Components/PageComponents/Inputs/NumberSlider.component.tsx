@@ -53,11 +53,8 @@ function PlayerNumberSlider({
   // const number = useScript<SNumberDescriptor>(script, context);
   // const player = useCurrentPlayer();
 
-  const {
-    descriptor,
-    instance,
-    notFound,
-  } = useComponentScript<INumberDescriptor>(script, context);
+  const { descriptor, instance, notFound } =
+    useComponentScript<INumberDescriptor>(script, context);
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 

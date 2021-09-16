@@ -11,7 +11,7 @@ import {
   getEntity,
   editingGotPath,
 } from '../EntityEditor';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import {
   Edition,
   closeEditor,

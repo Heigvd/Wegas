@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { Modal } from '../../../Components/Modal';
 import '../../../Editor/Components/FormView';

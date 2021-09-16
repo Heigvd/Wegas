@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
 import {

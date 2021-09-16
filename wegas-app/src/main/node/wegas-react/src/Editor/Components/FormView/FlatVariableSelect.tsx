@@ -74,13 +74,8 @@ function genChoices(
 }
 
 function FlatVariableSelect(props: IFlatVariableSelectProps) {
-  const {
-    maxLevel,
-    root,
-    classFilter,
-    selectableLevels,
-    ...restView
-  } = props.view;
+  const { maxLevel, root, classFilter, selectableLevels, ...restView } =
+    props.view;
 
   const filter: string[] = classFilter
     ? Array.isArray(classFilter)

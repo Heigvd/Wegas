@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { expandBoth, flex, flexColumn } from '../css/classes';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import { ValidationError } from 'jsonschema/lib';
 import { MessageString } from '../Editor/Components/MessageString';
 

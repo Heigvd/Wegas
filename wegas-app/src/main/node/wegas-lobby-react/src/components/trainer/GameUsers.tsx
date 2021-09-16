@@ -88,7 +88,9 @@ function TeamDetails({ team }: TeamDetailsProps): JSX.Element {
           />
         </Card>
       ))}
-      {theTeam.players.length === 0 ? <i className={css({marginLeft: "10px"})}>{i18n.teamIsEmpty}</i> : null}
+      {theTeam.players.length === 0 ? (
+        <i className={css({ marginLeft: '10px' })}>{i18n.teamIsEmpty}</i>
+      ) : null}
     </div>
   );
 }

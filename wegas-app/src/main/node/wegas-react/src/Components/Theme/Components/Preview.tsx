@@ -1,5 +1,5 @@
 import { IconName } from '@fortawesome/fontawesome-svg-core';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import {
@@ -80,17 +80,17 @@ export default function Preview() {
   return (
     <Toolbar className={defaultPadding}>
       <Toolbar.Header className={cx(flex, flexBetween, borderBottom)}>
-      <DropMenu
-          label= "Preview"
+        <DropMenu
+          label="Preview"
           items={[
             {
-              label: "GAME",
+              label: 'GAME',
               value: '1',
             },
             {
-              label: "PREVIEW",
+              label: 'PREVIEW',
               value: '2',
-            }
+            },
           ]}
           onSelect={() => {}}
         />
@@ -142,7 +142,7 @@ export default function Preview() {
                     min={MIN_VALUE}
                     max={MAX_VALUE}
                     disabled={disabled}
-                    className={css({height: '100%'})}
+                    className={css({ height: '100%' })}
                   />
                 </ReflexElement>
                 <ReflexSplitter />

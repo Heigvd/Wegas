@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import { MessageString, MessageStringStyle } from '../MessageString';
 import { EmbeddedSrcEditor } from './EmbeddedSrcEditor';
 import { WegasScriptEditor } from './WegasScriptEditor';
@@ -33,9 +33,8 @@ export function JSONandJSEditor({
 }: JSONandJSEditorProps) {
   const i18nValues = useInternalTranslate(commonTranslations);
   const editorContent = React.useRef<string>(content);
-  const [error, setError] = React.useState<OnSaveStatus | undefined | void>(
-    status,
-  );
+  const [error, setError] =
+    React.useState<OnSaveStatus | undefined | void>(status);
 
   React.useEffect(() => setError(status), [status]);
 
@@ -43,11 +42,15 @@ export function JSONandJSEditor({
     setError(onSave(editorContent.current));
   };
 
-
   return (
     <Toolbar className={fullHeight}>
       <Toolbar.Header className={defaultPadding}>
-        <IconButton icon="save" tooltip={i18nValues.save} chipStyle onClick={trySave} />
+        <IconButton
+          icon="save"
+          tooltip={i18nValues.save}
+          chipStyle
+          onClick={trySave}
+        />
         {error !== undefined && (
           <MessageString
             type={error.status}
@@ -61,7 +64,7 @@ export function JSONandJSEditor({
           value={content}
           defaultUri="internal://page.json"
           language="json"
-          onChange={val => editorContent.current = val}
+          onChange={val => (editorContent.current = val)}
           onSave={trySave}
           EmbeddedEditor={WegasScriptEditor}
         />

@@ -1,4 +1,4 @@
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import * as React from 'react';
 import { flex, flexRow, grow } from '../../../../css/classes';
 import {
@@ -21,7 +21,10 @@ interface ModeSelectorProps {
   addButtonClassName?: string;
 }
 
-export function ModeSelector({dropMenuClassName, addButtonClassName}: ModeSelectorProps) {
+export function ModeSelector({
+  dropMenuClassName,
+  addButtonClassName,
+}: ModeSelectorProps) {
   const { themes, editedThemeName, editedModeName } = useThemeStore(s => s);
   const dispatch = getThemeDispatch();
 
@@ -46,18 +49,18 @@ export function ModeSelector({dropMenuClassName, addButtonClassName}: ModeSelect
         label: (
           <div className={cx(flex, flexRow, grow)}>
             <div className={grow}>{k}</div>
-            {(k !== currentTheme.baseMode && k !== "light" && k !== "dark") && (
+            {k !== currentTheme.baseMode && k !== 'light' && k !== 'dark' && (
               <Button
-              icon={{
-                icon: 'trash',
-              }}
-              tooltip={i18nValues.themeEditor.deleteMode}
-              onClick={sucess => {
-                if (sucess) {
-                  dispatch(deleteMode(k));
-                }
-              }}
-            />
+                icon={{
+                  icon: 'trash',
+                }}
+                tooltip={i18nValues.themeEditor.deleteMode}
+                onClick={sucess => {
+                  if (sucess) {
+                    dispatch(deleteMode(k));
+                  }
+                }}
+              />
             )}
             <Button
               icon={{

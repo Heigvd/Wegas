@@ -3,7 +3,7 @@ import { debounce } from 'lodash-es';
 
 import { classNameOrEmpty } from '../../Helper/className';
 
-import { css, ObjectInterpolation } from 'emotion';
+import { css, CSSObject } from '@emotion/css';
 import { themeVar } from '../Theme/ThemeVars';
 
 export const inputDefaultCSS = {
@@ -11,7 +11,7 @@ export const inputDefaultCSS = {
   minHeight: '1.9em',
 };
 
-export const inputStyleCSS: ObjectInterpolation<undefined> = {
+export const inputStyleCSS: CSSObject = {
   ...inputDefaultCSS,
   width: '100%',
   resize: 'vertical',

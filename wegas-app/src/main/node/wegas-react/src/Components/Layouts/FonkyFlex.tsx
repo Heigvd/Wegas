@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import { classNameOrEmpty } from '../../Helper/className';
 import { flex, flexColumn, flexRow } from '../../css/classes';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';

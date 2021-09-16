@@ -5,7 +5,7 @@
  * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-import {createAsyncThunk} from '@reduxjs/toolkit';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
   IAbstractAccountWithId,
   IGameModelLanguageWithId,
@@ -19,12 +19,12 @@ import {
   ITeam,
   IUserWithId,
 } from 'wegas-ts-api';
-import getLogger, {INFO} from '../logger';
-import {hashPassword} from '../SecurityHelper';
-import {addNotification} from '../store/slices/notification';
-import {getStore, WegasLobbyState} from '../store/store';
-import {CHANNEL_PREFIX, getPusherClient, initPusherSocket} from '../websocket/websocket';
-import {entityIs, entityIsException} from './entityHelper';
+import getLogger, { INFO } from '../logger';
+import { hashPassword } from '../SecurityHelper';
+import { addNotification } from '../store/slices/notification';
+import { getStore, WegasLobbyState } from '../store/store';
+import { CHANNEL_PREFIX, getPusherClient, initPusherSocket } from '../websocket/websocket';
+import { entityIs, entityIsException } from './entityHelper';
 import {
   IAccountWithPerm,
   IAuthenticationInformation,
@@ -87,7 +87,7 @@ export const getLoggerLevels = createAsyncThunk('admin/getLoggerLevels', async (
 
 export const changeLoggerLevel = createAsyncThunk(
   'admin/setLoggerLevel',
-  async (payload: {loggerName: string; loggerLevel: string}, thunkApi) => {
+  async (payload: { loggerName: string; loggerLevel: string }, thunkApi) => {
     await restClient.AdminStuff.setLoggerLevel(payload.loggerName, payload.loggerLevel);
     thunkApi.dispatch(getLoggerLevels());
     return payload;
@@ -104,12 +104,12 @@ export const getAaiConfig = createAsyncThunk('auth/getAaiConfig', async () => {
 
 export const requestPasswordReset = createAsyncThunk(
   'auth/resetPassword',
-  async (a: {email: string}) => {
+  async (a: { email: string }) => {
     await restClient.Authentication.forgetPassword(a.email);
   },
 );
 
-async function signInJpa(a: {identifier: string; password: string; agreed?: boolean}) {
+async function signInJpa(a: { identifier: string; password: string; agreed?: boolean }) {
   // first, fetch an authenatication method
   const authMethods = await restClient.Authentication.getAuthMethod(a.identifier);
   const jpaMethods = authMethods.filter(
@@ -145,7 +145,7 @@ export const signInAsGuest = createAsyncThunk(
 
 export const signInWithToken = createAsyncThunk(
   'auth/signInWithToken',
-  async (payload: {accountId: number; token: string}, thunkApi) => {
+  async (payload: { accountId: number; token: string }, thunkApi) => {
     await restClient.Token.loginWithToken(payload.accountId, payload.token);
     thunkApi.dispatch(reloadCurrentUser());
   },
@@ -168,13 +168,13 @@ export const signInWithJpaAccount = createAsyncThunk(
 );
 
 export const signOut = createAsyncThunk('auth/signout', async () => {
-    const client = getPusherClient();
-    if (client != null) {
-      logger.info('API Sign out');
-      client.unbindAllChannels();
-    }
+  const client = getPusherClient();
+  if (client != null) {
+    logger.info('API Sign out');
+    client.unbindAllChannels();
+  }
   return await restClient.Authentication.logout();
-  });
+});
 
 export const signUp = createAsyncThunk(
   'auth/signup',
@@ -227,7 +227,7 @@ export const reloadCurrentUser = createAsyncThunk(
   async (
     _noPayload: void,
     thunkApi,
-  ): Promise<{currentUser: IUserWithAccounts; currentAccount: IAccountWithPerm}> => {
+  ): Promise<{ currentUser: IUserWithAccounts; currentAccount: IAccountWithPerm }> => {
     // one would like to await both query result later, but as those requests are most likely
     // the very firsts to be sent to the server, it should be avoided to prevent creatiing two
     // session_id cookie
@@ -264,7 +264,7 @@ export const reloadCurrentUser = createAsyncThunk(
       }
     }
 
-    return {currentUser: currentUser, currentAccount: currentAccount};
+    return { currentUser: currentUser, currentAccount: currentAccount };
   },
 );
 
@@ -295,7 +295,7 @@ export const updateAccount = createAsyncThunk(
 
 export const updateJpaPassword = createAsyncThunk(
   'account/updateJpa',
-  async ({account, password}: {account: IJpaAccountWithId; password: string}) => {
+  async ({ account, password }: { account: IJpaAccountWithId; password: string }) => {
     const authMethods = await restClient.Authentication.getAuthMethod(account.email);
     const jpaMethods = authMethods.filter(
       method => method != null && method['@class'] === 'JpaAuthentication',
@@ -304,10 +304,10 @@ export const updateJpaPassword = createAsyncThunk(
     if (jpaMethods.length > 0) {
       const method = jpaMethods[0]! as IJpaAuthentication;
       const hash = await hashPassword(method.mandatoryMethod, method.salt, password);
-      const jpaAccount: IJpaAccountWithId = {...account, password: hash};
+      const jpaAccount: IJpaAccountWithId = { ...account, password: hash };
       return restClient.UserController.updateAccount(jpaAccount);
     } else {
-      throw {'@class': 'WegasErrorMessage', messageId: 'IMPOSSIBLE-TO-UPDATE-PASSWORD'};
+      throw { '@class': 'WegasErrorMessage', messageId: 'IMPOSSIBLE-TO-UPDATE-PASSWORD' };
     }
   },
 );
@@ -349,28 +349,28 @@ export const deleteRole = createAsyncThunk(
 
 export const giveRoleToUser = createAsyncThunk(
   'roles/give',
-  async (payload: {userId: number; roleId: number}) => {
+  async (payload: { userId: number; roleId: number }) => {
     return await restClient.UserController.giveRole(payload.userId, payload.roleId);
   },
 );
 
 export const removeRoleFromUser = createAsyncThunk(
   'roles/kick',
-  async (payload: {userId: number; roleId: number}) => {
+  async (payload: { userId: number; roleId: number }) => {
     return await restClient.UserController.removeRole(payload.userId, payload.roleId);
   },
 );
 
 export const createPermissionForRole = createAsyncThunk(
   'permission/createForRole',
-  async ({id, permission}: {id: number; permission: IPermission}) => {
+  async ({ id, permission }: { id: number; permission: IPermission }) => {
     return await restClient.PermissionController.createPermissionForRole(id, permission);
   },
 );
 
 export const createPermissionForUser = createAsyncThunk(
   'permission/createForUser',
-  async ({id, permission}: {id: number; permission: IPermission}) => {
+  async ({ id, permission }: { id: number; permission: IPermission }) => {
     return await restClient.PermissionController.createPermissionForUser(id, permission);
   },
 );
@@ -425,7 +425,7 @@ export const initPusher = createAsyncThunk(
   'pusher/init',
   async (_payload, thunkApi): Promise<string> => {
     const state = thunkApi.getState() as WegasLobbyState;
-    const {appId, cluster} = state.pusher;
+    const { appId, cluster } = state.pusher;
     if (appId != null && cluster != null) {
       const socketId = initPusherSocket(appId, `${API_ENDPOINT}/Pusher/auth`, cluster).socketId;
       const pusherClient = getPusherClient();
@@ -472,7 +472,7 @@ export const findGameByToken = createAsyncThunk(
     const game = await restClient.GameController.findByToken(token);
     if (game != null && game.parentId != null) {
       const gameModel = await restClient.GameModelController.getById(game.parentId);
-      return {game, gameModel};
+      return { game, gameModel };
     } else {
       throw 'GAME_NOT_FOUND';
     }
@@ -494,7 +494,7 @@ export const joinIndividually = createAsyncThunk('game/joinIndiv', async (game: 
 
 export const createTeam = createAsyncThunk(
   'team/create',
-  async ({team, game}: {game: IGameWithId; team: ITeam}) => {
+  async ({ team, game }: { game: IGameWithId; team: ITeam }) => {
     return await restClient.TeamController.createTeam(game.id, team);
   },
 );
@@ -521,7 +521,7 @@ export const getTeamById = createAsyncThunk('team/byId', async (id: number) => {
 
 export const createGame = createAsyncThunk(
   'game/create',
-  async ({templateId, name}: {templateId: number; name: string}) => {
+  async ({ templateId, name }: { templateId: number; name: string }) => {
     return await restClient.GameController.create(templateId, name);
   },
 );
@@ -548,7 +548,7 @@ export const getGames = createAsyncThunk('game/getGames', async (status: IGameWi
 
 export const changeGameStatus = createAsyncThunk(
   'game/changeStatus',
-  async ({gameId, status}: {gameId: number; status: IGameWithId['status']}) => {
+  async ({ gameId, status }: { gameId: number; status: IGameWithId['status'] }) => {
     return await restClient.GameController.changeStatus(gameId, status);
   },
 );
@@ -559,28 +559,28 @@ export const updateGame = createAsyncThunk('game/updateGame', async (game: IGame
 
 export const shareGame = createAsyncThunk(
   'game/shareGame',
-  async (payload: {gameId: number; accountId: number}) => {
+  async (payload: { gameId: number; accountId: number }) => {
     return await restClient.UserController.shareGame(payload.gameId, payload.accountId);
   },
 );
 
 export const unshareGame = createAsyncThunk(
   'game/unshareGame',
-  async (payload: {gameId: number; accountId: number}) => {
+  async (payload: { gameId: number; accountId: number }) => {
     return await restClient.UserController.unshareGame(payload.gameId, payload.accountId);
   },
 );
 
 export const shareGameToRole = createAsyncThunk(
   'game/shareGameToRole',
-  async (payload: {gameId: number; roleId: number}) => {
+  async (payload: { gameId: number; roleId: number }) => {
     return await restClient.RoleController.shareGame(payload.gameId, payload.roleId);
   },
 );
 
 export const unshareGameFromRole = createAsyncThunk(
   'game/unshareGameFromRole',
-  async (payload: {gameId: number; roleId: number}) => {
+  async (payload: { gameId: number; roleId: number }) => {
     return await restClient.RoleController.unshareGame(payload.gameId, payload.roleId);
   },
 );
@@ -591,7 +591,7 @@ export const unshareGameFromRole = createAsyncThunk(
 
 export const createScenario = createAsyncThunk(
   'gameModel/createScenario',
-  async ({templateId, name}: {templateId: number; name: string}) => {
+  async ({ templateId, name }: { templateId: number; name: string }) => {
     return await restClient.GameModelController.createScenario(templateId, name);
   },
 );
@@ -626,14 +626,14 @@ export const duplicateGameModel = createAsyncThunk(
 
 export const changeGameModelStatus = createAsyncThunk(
   'gameModel/changeStatus',
-  async ({gameModelId, status}: {gameModelId: number; status: IGameModelWithId['status']}) => {
+  async ({ gameModelId, status }: { gameModelId: number; status: IGameModelWithId['status'] }) => {
     return await restClient.GameModelController.changeStatus(gameModelId, status);
   },
 );
 
 export const shareGameModel = createAsyncThunk(
   'gameModel/share',
-  async (payload: {gameModelId: number; accountId: number; permissions: string[]}) => {
+  async (payload: { gameModelId: number; accountId: number; permissions: string[] }) => {
     return await restClient.UserController.shareGameModel(
       payload.gameModelId,
       payload.accountId,
@@ -644,14 +644,14 @@ export const shareGameModel = createAsyncThunk(
 
 export const unshareGameModel = createAsyncThunk(
   'gameModel/unshare',
-  async (payload: {gameModelId: number; accountId: number}) => {
+  async (payload: { gameModelId: number; accountId: number }) => {
     return await restClient.UserController.unshareGameModel(payload.gameModelId, payload.accountId);
   },
 );
 
 export const shareGameModelToRole = createAsyncThunk(
   'gameModel/shareToRole',
-  async (payload: {gameModelId: number; roleId: number; permissions: string[]}) => {
+  async (payload: { gameModelId: number; roleId: number; permissions: string[] }) => {
     return await restClient.RoleController.shareGameModel(
       payload.gameModelId,
       payload.roleId,
@@ -662,7 +662,7 @@ export const shareGameModelToRole = createAsyncThunk(
 
 export const unshareGameModelFromRole = createAsyncThunk(
   'gameModel/unshareRole',
-  async (payload: {gameModelId: number; roleId: number}) => {
+  async (payload: { gameModelId: number; roleId: number }) => {
     return await restClient.RoleController.unshareGameModel(payload.gameModelId, payload.roleId);
   },
 );
@@ -672,21 +672,21 @@ export const unshareGameModelFromRole = createAsyncThunk(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 export const createModel = createAsyncThunk(
   'gameModel/model/create',
-  async ({templateId, name}: {templateId: number; name: string}) => {
+  async ({ templateId, name }: { templateId: number; name: string }) => {
     return await restClient.GameModelController.createModel(templateId, name);
   },
 );
 
 export const inferModel = createAsyncThunk(
   'gameModel/model/infer',
-  async ({gmIds, name}: {gmIds: number[]; name: string}) => {
+  async ({ gmIds, name }: { gmIds: number[]; name: string }) => {
     return await restClient.GameModelController.inferModel(gmIds, name);
   },
 );
 
 export const integrateScenario = createAsyncThunk(
   'gameModel/integrate',
-  async ({modelId, scenarioId}: {modelId: number; scenarioId: number}) => {
+  async ({ modelId, scenarioId }: { modelId: number; scenarioId: number }) => {
     return await restClient.GameModelController.integrate(modelId, scenarioId);
   },
 );
@@ -703,39 +703,39 @@ export const releaseScenario = createAsyncThunk(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 export const getVersions = createAsyncThunk(
   'gameModel/version/getAll',
-  async ({gameModelId}: {gameModelId: number}) => {
+  async ({ gameModelId }: { gameModelId: number }) => {
     return await restClient.HistoryController.getVersions(gameModelId);
   },
 );
 
 export const createVersion = createAsyncThunk(
   'gameModel/version/create',
-  async ({gameModelId}: {gameModelId: number}) => {
+  async ({ gameModelId }: { gameModelId: number }) => {
     return await restClient.HistoryController.createVersion(gameModelId);
   },
 );
 
 export const createNamedVersion = createAsyncThunk(
   'gameModel/version/createNamed',
-  async ({gameModelId, name}: {gameModelId: number; name: string}) => {
+  async ({ gameModelId, name }: { gameModelId: number; name: string }) => {
     return await restClient.HistoryController.createNamedVersion(gameModelId, name);
   },
 );
 
 export const deleteVersion = createAsyncThunk(
   'gameModel/version/delete',
-  async ({gameModelId, name}: {gameModelId: number; name: string}) => {
+  async ({ gameModelId, name }: { gameModelId: number; name: string }) => {
     return await restClient.HistoryController.deleteVersion(gameModelId, name);
   },
 );
 
 export const restoreVersion = createAsyncThunk(
   'gameModel/version/restore',
-  async ({gameModelId, name}: {gameModelId: number; name: string}) => {
+  async ({ gameModelId, name }: { gameModelId: number; name: string }) => {
     return await restClient.HistoryController.restoreVersion(gameModelId, name);
   },
 );
 
-export const uploadJson = createAsyncThunk('gameModel/upload', async ({file}: {file: File}) => {
+export const uploadJson = createAsyncThunk('gameModel/upload', async ({ file }: { file: File }) => {
   return await restClient.GameModelController.uploadJSON(file);
 });

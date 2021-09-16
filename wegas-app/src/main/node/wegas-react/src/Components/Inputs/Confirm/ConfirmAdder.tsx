@@ -7,7 +7,7 @@ import {
   itemCenter,
   layoutStyle,
 } from '../../../css/classes';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 // import { MessageString } from '../../../Editor/Components/MessageString';
 import { themeVar } from '../../Theme/ThemeVars';
 import { useOnClickOutside } from '../../Hooks/useOnClickOutside';

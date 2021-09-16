@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import {
   flex,
@@ -68,7 +68,7 @@ export function AdderSelector({
                 setValue(undefined);
                 setEditing(false);
               }}
-              className={cx(css({padding: 0}), defaultMarginLeft)}
+              className={cx(css({ padding: 0 }), defaultMarginLeft)}
               chipStyle
             />
             <IconButton
@@ -82,7 +82,7 @@ export function AdderSelector({
                   setEditing(false);
                 }
               }}
-              className={cx(css({padding: 0}), defaultMarginLeft)}
+              className={cx(css({ padding: 0 }), defaultMarginLeft)}
               chipStyle
             />
           </div>

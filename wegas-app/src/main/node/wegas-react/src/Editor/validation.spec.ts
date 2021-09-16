@@ -124,9 +124,10 @@ test('Number comparison', () => {
   expect(gteValidation(1, {})).toBe(false);
 });
 test('Unknown validation', () => {
-
-  expect(()=>jsoninputValidator({
-    // @ts-ignore
-    u: [],
-  })).toThrow(/^Unhandled schema: /);
+  expect(() =>
+    jsoninputValidator({
+      // @ts-ignore
+      u: [],
+    }),
+  ).toThrow(/^Unhandled schema: /);
 });

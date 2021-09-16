@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { grow, halfOpacity, MediumPadding } from '../../../css/classes';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { IAbstractContentDescriptor } from 'wegas-ts-api';

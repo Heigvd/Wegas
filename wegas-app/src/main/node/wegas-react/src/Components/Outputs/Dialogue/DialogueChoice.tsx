@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { Button } from '../../Inputs/Buttons/Button';
 import { TranslatableText } from '../HTMLText';
@@ -14,7 +14,7 @@ const choiceButtonStyle = css({
   margin: '5px',
   '&:hover': {
     color: themeVar.colors.LightTextColor,
-  }
+  },
 });
 
 const choiceButtonText = css({
@@ -49,7 +49,6 @@ export function DialogueChoice({
       disabled={disabled}
       readOnly={readOnly}
     >
-
       <TranslatableText className={choiceButtonText} content={label} />
       <div className={choiceButtonIcon}>
         <ChatIcon />

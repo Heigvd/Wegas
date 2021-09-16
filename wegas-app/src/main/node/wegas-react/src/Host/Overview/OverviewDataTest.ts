@@ -34,8 +34,7 @@ export const test: OverviewData = {
           itemType: 'action',
           label: 'Single impact',
           icon: 'ambulance',
-          do:
-            '{"type":"ModalAction","actions":[{"doFn":"function (team, payload) {\\n        Variable.find(gameModel, \\"number\\").add(self, payload.val1)\\n      }","schemaFn":"function () {\\n        return {\\n          description: \\"Modify variable number\\",\\n          properties: {\\n            val1: schemaProps.number({ label: \\"Add value\\", value: 0 })\\n          }\\n        }\\n      }"}]}',
+          do: '{"type":"ModalAction","actions":[{"doFn":"function (team, payload) {\\n        Variable.find(gameModel, \\"number\\").add(self, payload.val1)\\n      }","schemaFn":"function () {\\n        return {\\n          description: \\"Modify variable number\\",\\n          properties: {\\n            val1: schemaProps.number({ label: \\"Add value\\", value: 0 })\\n          }\\n        }\\n      }"}]}',
         },
         {
           id: '1010',
@@ -43,8 +42,7 @@ export const test: OverviewData = {
           itemType: 'action',
           label: 'Multiple impact',
           icon: 'pen',
-          do:
-            '{"type":"ModalAction","actions":[{"doFn":"function (team, payload) {\\n        Variable.find(gameModel, \\"number\\").add(self, payload.val1)\\n      }","schemaFn":"function () {\\n        return {\\n          description: \\"Modify variable number\\",\\n          properties: {\\n            val1: schemaProps.number({ label: \\"Add value\\" })\\n          }\\n        }\\n      }"},{"doFn":"function (team, payload) {\\n        Variable.find(gameModel, \\"number\\").setValue(self, payload.val1)\\n      }","schemaFn":"function () {\\n        return {\\n          description: \\"Modify variable number\\",\\n          properties: {\\n            val1: schemaProps.number({ label: \\"Set value\\" })\\n          }\\n        }\\n      }"}],"showAdvancedImpact":true}',
+          do: '{"type":"ModalAction","actions":[{"doFn":"function (team, payload) {\\n        Variable.find(gameModel, \\"number\\").add(self, payload.val1)\\n      }","schemaFn":"function () {\\n        return {\\n          description: \\"Modify variable number\\",\\n          properties: {\\n            val1: schemaProps.number({ label: \\"Add value\\" })\\n          }\\n        }\\n      }"},{"doFn":"function (team, payload) {\\n        Variable.find(gameModel, \\"number\\").setValue(self, payload.val1)\\n      }","schemaFn":"function () {\\n        return {\\n          description: \\"Modify variable number\\",\\n          properties: {\\n            val1: schemaProps.number({ label: \\"Set value\\" })\\n          }\\n        }\\n      }"}],"showAdvancedImpact":true}',
           hasGlobal: true,
         },
       ],

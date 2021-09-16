@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { LanguagesAPI } from '../../../API/languages.api';
 import { DropMenu } from '../../../Components/DropMenu';

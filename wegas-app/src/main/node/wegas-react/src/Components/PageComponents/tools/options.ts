@@ -76,16 +76,17 @@ export interface WegasComponentOptionsActions {
   printVariable?: PrintVariableAction & WegasComponentOptionsAction;
 }
 
-export const defaultWegasComponentOptionsActions: WegasComponentOptionsActions = {
-  impactVariable: undefined,
-  localScriptEval: undefined,
-  openFile: undefined,
-  openPage: undefined,
-  openPopupPage: undefined,
-  openUrl: undefined,
-  playSound: undefined,
-  printVariable: undefined,
-};
+export const defaultWegasComponentOptionsActions: WegasComponentOptionsActions =
+  {
+    impactVariable: undefined,
+    localScriptEval: undefined,
+    openFile: undefined,
+    openPage: undefined,
+    openPopupPage: undefined,
+    openUrl: undefined,
+    playSound: undefined,
+    printVariable: undefined,
+  };
 
 export interface WegasComponentActionsProperties {
   confirmClick?: string;

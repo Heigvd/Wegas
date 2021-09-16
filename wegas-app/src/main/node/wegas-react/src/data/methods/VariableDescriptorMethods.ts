@@ -40,16 +40,22 @@ export function editorTitle(vd?: {
 }) {
   const label = TranslatableContent.toString(vd?.label);
   if (vd && vd.editorTag && label) {
-    return `${vd.editorTag} - ${label} ${vd.name && " - " + vd.name}`;
+    return `${vd.editorTag} - ${label} ${vd.name && ' - ' + vd.name}`;
   }
-  return (vd && `${vd.editorTag && vd.editorTag} ${(label && vd.editorTag && " - " + label) || label && label} ${vd.name && " - " + vd.name}`) || '';
+  return (
+    (vd &&
+      `${vd.editorTag && vd.editorTag} ${
+        (label && vd.editorTag && ' - ' + label) || (label && label)
+      } ${vd.name && ' - ' + vd.name}`) ||
+    ''
+  );
 }
 
 export function getParent(vd: IVariableDescriptor): IParentDescriptor {
   if (vd.parentType!.endsWith('Descriptor')) {
-    return (VariableDescriptor.select(
+    return VariableDescriptor.select(
       vd.parentId,
-    ) as unknown) as IParentDescriptor;
+    ) as unknown as IParentDescriptor;
   }
   return GameModel.select(vd.parentId!);
 }
@@ -66,7 +72,7 @@ export function getScriptableInstance<T extends SVariableInstance>(
   const instance = instantiate(getInstance(vd.getEntity(), player.getEntity()));
   if (instance) {
     // Should be typed better but we know it works
-    return (instance as unknown) as T;
+    return instance as unknown as T;
   } else {
     throw Error('No Instance found');
   }
@@ -132,7 +138,7 @@ export function getScopeEntity(
 export function getItems<T = SVariableDescriptor<SVariableInstance>>(
   itemsIds: number[],
 ): Readonly<T[]> {
-  return (itemsIds
+  return itemsIds
     .map(itemId => instantiate(VariableDescriptor.select(itemId)))
-    .filter(items => items != null) as unknown) as Readonly<T[]>;
+    .filter(items => items != null) as unknown as Readonly<T[]>;
 }

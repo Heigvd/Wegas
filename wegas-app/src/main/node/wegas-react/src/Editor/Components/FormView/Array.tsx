@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { WidgetProps, TYPESTRING } from 'jsoninput/typings/types';
 import { DropMenu, SelecteDropdMenuItem } from '../../../Components/DropMenu';
 import { CommonViewContainer, CommonView } from './commonView';
@@ -203,7 +203,7 @@ export interface IArrayProps
       highlight?: boolean;
       sortable?: boolean;
       controls?: React.ReactNode;
-    } & Omit<CommonView, "noMarginTop"> &
+    } & Omit<CommonView, 'noMarginTop'> &
       LabeledView
   > {
   value?: {}[];
@@ -343,7 +343,10 @@ function ArrayWidget({
     onChange(newValue);
   };
   return (
-    <CommonViewContainer errorMessage={errorMessage} view={{...view, noMarginTop : true}}>
+    <CommonViewContainer
+      errorMessage={errorMessage}
+      view={{ ...view, noMarginTop: true }}
+    >
       <Labeled label={label} description={description}>
         {({ inputId, labelNode }) => (
           <DragDropArray

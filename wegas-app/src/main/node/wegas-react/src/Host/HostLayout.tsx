@@ -1,5 +1,5 @@
 /* global module*/
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import * as React from 'react';
 import { IPeerReviewDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 import { languagesCTX } from '../Components/Contexts/LanguagesProvider';

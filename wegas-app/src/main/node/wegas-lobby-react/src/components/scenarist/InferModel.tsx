@@ -76,8 +76,11 @@ export default function InferModel({ close }: InferModelProps): JSX.Element {
           onChange={setName}
         />
 
-        <Select isMulti closeMenuOnSelect={false} options={options} onChange={selectGameModelCb}
-
+        <Select
+          isMulti
+          closeMenuOnSelect={false}
+          options={options}
+          onChange={selectGameModelCb}
           styles={defaultSelectStyles}
         />
 

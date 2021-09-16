@@ -7,7 +7,7 @@ import {
   grow,
   flexColumn,
 } from '../css/classes';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import { Toggler } from '../Components/Inputs/Boolean/Toggler';
 import { wlog } from '../Helper/wegaslog';
 

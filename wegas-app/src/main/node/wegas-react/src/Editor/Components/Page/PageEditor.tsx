@@ -15,7 +15,7 @@ import {
 import { MainLinearLayout } from '../LinearTabLayout/LinearLayout';
 import ComponentProperties from './ComponentProperties';
 import { PageLoader } from './PageLoader';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { noop } from 'lodash-es';
 import { PagesLayout, PageComponentNode } from './PagesLayout';
 import { store, useStore } from '../../../data/Stores/store';

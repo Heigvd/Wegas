@@ -1,4 +1,4 @@
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import * as React from 'react';
 import { globals } from '../../Components/Hooks/useScript';
 import { HTMLText } from '../../Components/Outputs/HTMLText';
@@ -80,10 +80,8 @@ export function OverviewCell({
         return (
           <td className={className} style={style} id={id}>
             <div>
-              <div
-                title="Read mails"
-                onClick={() => setShowPopup(o => !o)}>
-                  <MailIcon />
+              <div title="Read mails" onClick={() => setShowPopup(o => !o)}>
+                <MailIcon />
               </div>
             </div>
             {showPopup && (

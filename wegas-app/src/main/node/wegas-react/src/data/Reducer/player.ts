@@ -37,12 +37,9 @@ const players: Reducer<Readonly<PlayerState>> = u(
     }
     return state;
   },
-  CurrentGame.teams.reduce(
-    (prev, t) => {
-      t.players.forEach(p => (prev[p.id!] = p));
-      return prev;
-    },
-    {} as PlayerState,
-  ),
+  CurrentGame.teams.reduce((prev, t) => {
+    t.players.forEach(p => (prev[p.id!] = p));
+    return prev;
+  }, {} as PlayerState),
 );
 export default players;

@@ -6,10 +6,10 @@
  * Licensed under the MIT License
  */
 
-import {css, cx} from '@emotion/css';
-import {faCheck, faSpinner} from '@fortawesome/free-solid-svg-icons';
+import { css, cx } from '@emotion/css';
+import { faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
-import {buttonStyle, inactiveButtonStyle} from '../styling/style';
+import { buttonStyle, inactiveButtonStyle } from '../styling/style';
 import Clickable from './Clickable';
 import IconButton from './IconButton';
 
@@ -26,20 +26,25 @@ const hiddenLabel = css({
   visibility: 'hidden',
 });
 
-
 const loadingIconStyle = css({
   position: 'absolute',
-  left: "calc(50% - 16px)",
+  left: 'calc(50% - 16px)',
 });
 
-const relativeButtonStyle= cx(buttonStyle, css({
-  position: "relative"
-}))
+const relativeButtonStyle = cx(
+  buttonStyle,
+  css({
+    position: 'relative',
+  }),
+);
 
-
-
-export default function Button({onClick, label, className, disabledClassName, delay = 1000}: ButtonProps): JSX.Element {
-
+export default function Button({
+  onClick,
+  label,
+  className,
+  disabledClassName,
+  delay = 1000,
+}: ButtonProps): JSX.Element {
   const [state, setState] = React.useState<'IDLE' | 'PENDING' | 'DONE'>('IDLE');
 
   const onClickCb = React.useCallback(() => {
@@ -55,9 +60,9 @@ export default function Button({onClick, label, className, disabledClassName, de
     let tId: number | undefined;
     if (state === 'DONE') {
       //setState('FADING_OUT');
-//      tId = window.setTimeout(() => {
-        setState('IDLE');
-//      }, delay);
+      //      tId = window.setTimeout(() => {
+      setState('IDLE');
+      //      }, delay);
     }
     return () => {
       if (tId != null) {
@@ -78,22 +83,18 @@ export default function Button({onClick, label, className, disabledClassName, de
       </Clickable>
     );
   } else if (state === 'PENDING') {
-    return (<Clickable
-      title={label}
-      className={cx(relativeButtonStyle, className)}
-    >
-      <span className={hiddenLabel}>{label}</span>
-      <IconButton className={cx(loadingIconStyle)} icon={faSpinner} pulse />
-    </Clickable >);
+    return (
+      <Clickable title={label} className={cx(relativeButtonStyle, className)}>
+        <span className={hiddenLabel}>{label}</span>
+        <IconButton className={cx(loadingIconStyle)} icon={faSpinner} pulse />
+      </Clickable>
+    );
   } else {
     return (
-      <Clickable
-        title={label}
-        className={cx(relativeButtonStyle, className)}
-      >
+      <Clickable title={label} className={cx(relativeButtonStyle, className)}>
         <span className={hiddenLabel}>{label}</span>
         <IconButton className={cx(loadingIconStyle, className)} icon={faCheck} />
-      </Clickable >
+      </Clickable>
     );
   }
 }

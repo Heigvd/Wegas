@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Downshift, { StateChangeOptions } from 'downshift';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { themeVar } from './Theme/ThemeVars';
@@ -165,7 +165,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                 ev.stopPropagation();
                 toggleMenu();
               }}
-              className={buttonClassName + " dropDownButton"}
+              className={buttonClassName + ' dropDownButton'}
               noBackground={noBackground}
             />
           </div>
@@ -176,7 +176,11 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                 contentContainerStyle + classNameOrEmpty(listClassName)
               }
               ref={n => {
-                justifyDropMenu(n, n?.parentElement?.querySelector(".dropDownButton"), direction);
+                justifyDropMenu(
+                  n,
+                  n?.parentElement?.querySelector('.dropDownButton'),
+                  direction,
+                );
               }}
             >
               {adder && (

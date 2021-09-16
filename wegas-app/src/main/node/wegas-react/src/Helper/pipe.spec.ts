@@ -12,13 +12,7 @@ test('Should pipe', () => {
     return String(x);
   }
   expect(pipe(f)(3)).toBe(f(3));
-  expect(
-    pipe(
-      f,
-      f,
-      g,
-    )(3),
-  ).toBe('27');
+  expect(pipe(f, f, g)(3)).toBe('27');
 });
 test('Ordering should count', () => {
   function f(x: number) {
@@ -27,29 +21,14 @@ test('Ordering should count', () => {
   function g(x: number) {
     return x + 1;
   }
-  expect(
-    pipe(
-      f,
-      g,
-    )(3),
-  ).toBe(g(f(3)));
-  expect(
-    pipe(
-      f,
-      g,
-    )(3),
-  ).toBe(10);
-  expect(
-    pipe(
-      g,
-      f,
-    )(3),
-  ).toBe(12);
+  expect(pipe(f, g)(3)).toBe(g(f(3)));
+  expect(pipe(f, g)(3)).toBe(10);
+  expect(pipe(g, f)(3)).toBe(12);
 });
 
 test('Should handle async code', async () => {
   function wait(t: number) {
-    return new Promise(function(resolve) {
+    return new Promise(function (resolve) {
       setTimeout(resolve, t);
     });
   }
@@ -59,10 +38,7 @@ test('Should handle async code', async () => {
     return x + 1;
   }
   expect(await pipe(add1)(3)).toBe(3 + 1);
-  expect(
-    await pipe(
-      add1,
-      async x => (await x) * (await x),
-    )(3),
-  ).toBe((3 + 1) ** 2);
+  expect(await pipe(add1, async x => (await x) * (await x))(3)).toBe(
+    (3 + 1) ** 2,
+  );
 });

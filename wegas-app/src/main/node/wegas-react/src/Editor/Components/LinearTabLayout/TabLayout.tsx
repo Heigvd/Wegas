@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Tab, TabComponent } from './DnDTabs';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Reparentable } from '../Reparentable';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import {
   grow,
   flex,
@@ -40,7 +40,7 @@ interface TabLayoutProps {
   /**
    * The className for general styling
    */
-  classNames?: ClassNames
+  classNames?: ClassNames;
 }
 
 /**
@@ -54,40 +54,41 @@ export function TabLayout({
   CustomTab = Tab,
   classNames = {},
 }: TabLayoutProps) {
-  const {general, header, content} = classNames;
-  const[activeLabel, setActiveLabel] = React.useState(defaultActiveLabel);
+  const { general, header, content } = classNames;
+  const [activeLabel, setActiveLabel] = React.useState(defaultActiveLabel);
   const i18nValues = useInternalTranslate(commonTranslations);
 
   return (
     <Toolbar vertical={vertical} className={cx(relative, general)}>
       <Toolbar.Header className={cx(headerStyle, header)}>
         <div className={cx(flex, grow, autoScroll)}>
-          {Object.keys(components).map(label =>
-          <CustomTab
-            key={label}
-            active={label === activeLabel}
-            onClick={() => {
-              setActiveLabel(label);
-              onSelect && onSelect(label);
-            }}
-          >
-            {label}
-          </CustomTab>)}
+          {Object.keys(components).map(label => (
+            <CustomTab
+              key={label}
+              active={label === activeLabel}
+              onClick={() => {
+                setActiveLabel(label);
+                onSelect && onSelect(label);
+              }}
+            >
+              {label}
+            </CustomTab>
+          ))}
         </div>
       </Toolbar.Header>
       <Toolbar.Content className={cx(relative, content)}>
         <div className={cx(expandBoth, hideOverflow, flex)}>
-            {activeLabel && (
-              <Reparentable
-                id={activeLabel}
-                innerClassName={cx(flex, expandBoth)}
-                outerClassName={expandBoth}
-              >
-                <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
-                  {components[activeLabel]}
-                </React.Suspense>
-              </Reparentable>
-            )}
+          {activeLabel && (
+            <Reparentable
+              id={activeLabel}
+              innerClassName={cx(flex, expandBoth)}
+              outerClassName={expandBoth}
+            >
+              <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
+                {components[activeLabel]}
+              </React.Suspense>
+            </Reparentable>
+          )}
         </div>
       </Toolbar.Content>
     </Toolbar>

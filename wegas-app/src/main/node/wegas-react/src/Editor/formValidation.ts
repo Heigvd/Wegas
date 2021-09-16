@@ -38,9 +38,8 @@ function formLeaf(
           }
           return formVal;
         }
-        const parent:
-          | (IAbstractEntity & { [key: string]: {} })
-          | undefined = findNearestParent(formVal, path, ref.classFilter);
+        const parent: (IAbstractEntity & { [key: string]: {} }) | undefined =
+          findNearestParent(formVal, path, ref.classFilter);
         if (ref.fieldName != null) {
           return parent ? parent[ref.fieldName] : undefined;
         } else {

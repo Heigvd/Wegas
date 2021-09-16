@@ -1,4 +1,4 @@
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import * as React from 'react';
 import { TranslatableText } from '../HTMLText';
 import { themeVar } from '../../Theme/ThemeVars';
@@ -51,10 +51,7 @@ export function ChoiceContainer({
   return (
     <div className={choiceContainerStyle + (canReply ? '' : ' disabled')}>
       {label && (
-        <TranslatableText
-          className={choiceLabelStyle}
-          content={label}
-        />
+        <TranslatableText className={choiceLabelStyle} content={label} />
       )}
       {description && (
         <TranslatableText

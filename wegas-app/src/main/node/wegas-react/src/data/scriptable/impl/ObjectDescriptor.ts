@@ -11,8 +11,11 @@ export class SObjectDescriptorImpl extends SObjectDescriptor {
   public size(p: Readonly<SPlayer>): number {
     return Object.keys(this.getInstance(p).getProperties()).length;
   }
-  public setProperty(_p: Readonly<SPlayer>, _key: string, _value: string): void {
+  public setProperty(
+    _p: Readonly<SPlayer>,
+    _key: string,
+    _value: string,
+  ): void {
     throw Error('This is readonly');
   }
-
 }

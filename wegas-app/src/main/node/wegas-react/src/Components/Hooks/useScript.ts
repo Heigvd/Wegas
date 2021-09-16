@@ -548,9 +548,10 @@ export function useScript<T extends ScriptReturnType>(
   },
   catchCB?: (e: Error) => void,
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
-  const oldContext = React.useRef<{
-    [name: string]: unknown;
-  }>();
+  const oldContext =
+    React.useRef<{
+      [name: string]: unknown;
+    }>();
 
   const newContext = React.useMemo(() => {
     if (deepDifferent(context, oldContext.current)) {

@@ -45,12 +45,16 @@ export function WyswygScriptEditor({
       <Form
         schema={{
           description: 'multipleStatementForm',
-          view: {noMarginTop: true},
+          view: { noMarginTop: true },
           properties: {
             statements: schemaProps.array({
               controls,
               itemSchema: {
-                statement: schemaProps.statement({ required: true, mode, noMarginTop: true }),
+                statement: schemaProps.statement({
+                  required: true,
+                  mode,
+                  noMarginTop: true,
+                }),
               },
               userOnChildAdd: () => ({
                 statement: mode === 'GET' ? 'true' : ';',

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { FontAwesome } from './FontAwesome';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 interface TreeProps {
   expanded?: boolean;

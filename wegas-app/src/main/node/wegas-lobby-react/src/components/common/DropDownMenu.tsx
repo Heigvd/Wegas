@@ -114,7 +114,7 @@ export default function DropDownMenu<T extends string | number | symbol>({
   icon,
   height,
   menuIcon,
-  idleHoverStyle ='FOREGROUND'
+  idleHoverStyle = 'FOREGROUND',
 }: Props<T>): JSX.Element {
   const [open, setOpen] = React.useState<boolean>(false);
 
@@ -166,7 +166,11 @@ export default function DropDownMenu<T extends string | number | symbol>({
     return (
       <div onClick={clickIn} className={css({ cursor: 'pointer' })}>
         <Flex direction="column" className={css({ overflow: 'visible' })}>
-          <Flex align="center" onClick={toggle} className={idleHoverStyle === 'BACKGROUND' ? hoverStyle : linkStyle}>
+          <Flex
+            align="center"
+            onClick={toggle}
+            className={idleHoverStyle === 'BACKGROUND' ? hoverStyle : linkStyle}
+          >
             {menuIcon === 'BURGER' ? (
               <span className={open ? openButtonStyle : buttonStyle}></span>
             ) : null}

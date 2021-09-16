@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import HTMLEditor from '../../Components/HTML/HTMLEditor';
@@ -96,10 +96,15 @@ export function OverviewRow({
         <td>
           <div className={cx(flex, itemCenter, justifyCenter)}>
             <div
-              className={css({'&:hover svg': {fill: themeVar.colors.ActiveColor}})}
+              className={css({
+                '&:hover svg': { fill: themeVar.colors.ActiveColor },
+              })}
               title="View playing session"
-              onClick={() => onClick('Watch team')}>
-                <EyeIcon className={css({fill: themeVar.colors.PrimaryColor})}/>
+              onClick={() => onClick('Watch team')}
+            >
+              <EyeIcon
+                className={css({ fill: themeVar.colors.PrimaryColor })}
+              />
             </div>
           </div>
         </td>

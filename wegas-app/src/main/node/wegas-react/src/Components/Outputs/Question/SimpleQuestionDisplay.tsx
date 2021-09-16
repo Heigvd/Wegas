@@ -1,4 +1,4 @@
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import * as React from 'react';
 import { IChoiceDescriptor, IChoiceInstance } from 'wegas-ts-api';
 import { halfOpacity } from '../../../css/classes';
@@ -86,9 +86,7 @@ export function SimpleQuestionDisplay({
         [halfOpacity]: options.disabled,
       })}
     >
-      <TranslatableText
-        content= {questionD.description}
-      />
+      <TranslatableText content={questionD.description} />
       {choicesD.map((choiceD, i) => {
         const choiceI = choicesI[i];
         if (choiceI == null) {

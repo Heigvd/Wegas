@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import {
   INumberDescriptor,
@@ -93,9 +93,8 @@ export default function PeerReviewVariableEditor({
     deepDifferent,
   );
 
-  const [value, setValue] = React.useState<string | number | undefined>(
-    storeValue,
-  );
+  const [value, setValue] =
+    React.useState<string | number | undefined>(storeValue);
 
   React.useEffect(() => {
     setValue(storeValue);

@@ -6,30 +6,30 @@
  * Licensed under the MIT License
  */
 
-import {css} from '@emotion/css';
+import { css } from '@emotion/css';
 import * as React from 'react';
 import Select from 'react-select';
-import {createScenario, getGameModels} from '../../API/api';
+import { createScenario, getGameModels } from '../../API/api';
 import useTranslations from '../../i18n/I18nContext';
-import {useCurrentUser} from '../../selectors/userSelector';
-import {useDuplicatableGameModels} from '../../selectors/wegasSelector';
-import {useAppDispatch} from '../../store/hooks';
+import { useCurrentUser } from '../../selectors/userSelector';
+import { useDuplicatableGameModels } from '../../selectors/wegasSelector';
+import { useAppDispatch } from '../../store/hooks';
 import ActionButton from '../common/ActionButton';
 import Button from '../common/Button';
 import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import InlineLoading from '../common/InlineLoading';
 import Input from '../common/Input';
-import {defaultSelectStyles, mainButtonStyle} from '../styling/style';
+import { defaultSelectStyles, mainButtonStyle } from '../styling/style';
 
 interface CreateScenarioProps {
   close: () => void;
 }
 
-export default function CreateScenario({close}: CreateScenarioProps): JSX.Element {
+export default function CreateScenario({ close }: CreateScenarioProps): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
-  const {currentUser} = useCurrentUser();
+  const { currentUser } = useCurrentUser();
 
   const gameModels = useDuplicatableGameModels(currentUser != null ? currentUser.id : undefined);
 
@@ -47,7 +47,7 @@ export default function CreateScenario({close}: CreateScenarioProps): JSX.Elemen
     }
   }, [dispatch, gameModelId, name, close]);
 
-  const selectGameModelCb = React.useCallback((value: {value: number} | null) => {
+  const selectGameModelCb = React.useCallback((value: { value: number } | null) => {
     if (value != null) {
       setGameModelId(value.value);
     } else {
@@ -60,11 +60,11 @@ export default function CreateScenario({close}: CreateScenarioProps): JSX.Elemen
 
   React.useEffect(() => {
     if (sStatus == 'NOT_INITIALIZED') {
-      dispatch(getGameModels({status: 'LIVE', type: 'SCENARIO'}));
+      dispatch(getGameModels({ status: 'LIVE', type: 'SCENARIO' }));
     }
 
     if (mStatus == 'NOT_INITIALIZED') {
-      dispatch(getGameModels({status: 'LIVE', type: 'MODEL'}));
+      dispatch(getGameModels({ status: 'LIVE', type: 'MODEL' }));
     }
   }, [sStatus, mStatus, dispatch]);
 
@@ -74,7 +74,7 @@ export default function CreateScenario({close}: CreateScenarioProps): JSX.Elemen
     const options = gameModels.gamemodels
       .map(gm => {
         const name = gm.type === 'MODEL' ? `[${i18n.Model}] ${gm.name}` : gm.name;
-        return {value: gm.id, label: name};
+        return { value: gm.id, label: name };
       })
       .sort((a, b) => a.label.localeCompare(b.label));
 
@@ -83,20 +83,20 @@ export default function CreateScenario({close}: CreateScenarioProps): JSX.Elemen
         <h3>{i18n.createGameModel}</h3>
         <Input
           placeholder={i18n.gameModelName}
-          className={css({minWidth: '400px', paddingBottom: '20px'})}
+          className={css({ minWidth: '400px', paddingBottom: '20px' })}
           value={name}
           onChange={setName}
         />
 
-        <Select
-          options={options} onChange={selectGameModelCb}
-          styles={defaultSelectStyles}
-        />
+        <Select options={options} onChange={selectGameModelCb} styles={defaultSelectStyles} />
 
         <Flex justify="flex-end">
           <Button label={i18n.cancel} onClick={close} />
-          <ActionButton className={mainButtonStyle} label={i18n.create}
-            onClick={gameModelId != null && name.length > 0 ? onCreateCb : undefined} />
+          <ActionButton
+            className={mainButtonStyle}
+            label={i18n.create}
+            onClick={gameModelId != null && name.length > 0 ? onCreateCb : undefined}
+          />
         </Flex>
       </FitSpace>
     );

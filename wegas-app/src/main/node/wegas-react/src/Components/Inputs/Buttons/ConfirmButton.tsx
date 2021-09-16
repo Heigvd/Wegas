@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import { Button, ButtonProps, disableBorderToSelector } from './Button';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { inlineFlex } from '../../../css/classes';
 import { IconButton } from './IconButton';
 import { themeVar } from '../../Theme/ThemeVars';

@@ -4,7 +4,7 @@ import { Toolbar } from '../../../Components/Toolbar';
 import { moveDescriptor } from '../../../data/Reducer/VariableDescriptorReducer';
 import { getIcon, getClassLabel, getChildren } from '../../editionConfig';
 import { StoreDispatch, useStore, store } from '../../../data/Stores/store';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { DropMenu } from '../../../Components/DropMenu';
 import { withDefault, IconComp } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';

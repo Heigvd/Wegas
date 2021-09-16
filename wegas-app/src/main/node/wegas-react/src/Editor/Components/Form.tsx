@@ -18,7 +18,7 @@ import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { isActionAllowed } from '../../Components/PageComponents/tools/options';
 import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { DropMenu } from '../../Components/DropMenu';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { ActionsProps } from '../../data/Reducer/globalState';
 import { IconComp } from './Views/FontAwesome';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
@@ -164,17 +164,17 @@ export function Form<T>({
                       className={expandHeight}
                     />
                   );
-                  case 'findUsage':
-                    return (
-                      <IconButton
-                        icon="search"
-                        chipStyle
-                        tooltip={String(a.label)}
-                        key={i}
-                        onClick={() => val != null && a.action(val, path)}
-                        className={closeButtonStyle}
-                      />
-                    );
+                case 'findUsage':
+                  return (
+                    <IconButton
+                      icon="search"
+                      chipStyle
+                      tooltip={String(a.label)}
+                      key={i}
+                      onClick={() => val != null && a.action(val, path)}
+                      className={closeButtonStyle}
+                    />
+                  );
                 case 'close':
                   return (
                     <IconButton
@@ -203,18 +203,14 @@ export function Form<T>({
           </>
         )}
         {deepDifferent(val, entity) ? (
-            <MessageString
-              type="warning"
-              value={i18nValues.changesNotSaved}
-            />
-          ) : (
-            <MessageString
-              type="succes"
-              value={i18nValues.changesSaved}
-              duration={3000}
-            />
-          )
-        }
+          <MessageString type="warning" value={i18nValues.changesNotSaved} />
+        ) : (
+          <MessageString
+            type="succes"
+            value={i18nValues.changesSaved}
+            duration={3000}
+          />
+        )}
       </Toolbar.Header>
       <Toolbar.Content className={noOverflow}>
         <div className={defaultMargin}>

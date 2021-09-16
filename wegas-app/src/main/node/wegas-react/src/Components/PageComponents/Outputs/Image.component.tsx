@@ -8,7 +8,7 @@ import { schemaProps } from '../tools/schemaProps';
 import { classStyleIdShema } from '../tools/options';
 import { IScript } from 'wegas-ts-api';
 import { useScript } from '../../Hooks/useScript';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import { fileURL } from '../../../API/files.api';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 

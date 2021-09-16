@@ -13,7 +13,7 @@ import {
   flexRow,
   expandBoth,
 } from '../css/classes';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import { useDrag, useDrop } from 'react-dnd';
 import { wlog } from '../Helper/wegaslog';
 

@@ -1,4 +1,4 @@
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import * as React from 'react';
 import { IReply, IChoiceDescriptor } from 'wegas-ts-api';
 import { TranslatableContent } from '../../../data/i18n';

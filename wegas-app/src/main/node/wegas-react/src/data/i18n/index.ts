@@ -12,7 +12,7 @@ export const editorLanguages = {
 export type EditorLanguages = typeof editorLanguages;
 export type EditorLanguagesCode = keyof EditorLanguages;
 
-export const EditorLanguageData =  `EditorLanguageData.${CurrentGM.id}`;
+export const EditorLanguageData = `EditorLanguageData.${CurrentGM.id}`;
 
 export function getSavedLanguage() {
   return window.localStorage.getItem(
@@ -22,7 +22,10 @@ export function getSavedLanguage() {
 export function getUserLanguage(): EditorLanguagesCode {
   const wegasConfig = window.localStorage.getItem(`wegas-config`);
   if (wegasConfig == null) return 'EN';
-  else return String(JSON.parse(wegasConfig).commons.language).toUpperCase() as EditorLanguagesCode;
+  else
+    return String(
+      JSON.parse(wegasConfig).commons.language,
+    ).toUpperCase() as EditorLanguagesCode;
 }
 
 export const TranslatableContent = {

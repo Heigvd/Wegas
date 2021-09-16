@@ -5,9 +5,10 @@
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 
-const ctx = React.createContext<
-  undefined | ((children: React.ReactNode, id: string) => HTMLDivElement)
->(undefined);
+const ctx =
+  React.createContext<
+    undefined | ((children: React.ReactNode, id: string) => HTMLDivElement)
+  >(undefined);
 /**
  * React Component.
  *

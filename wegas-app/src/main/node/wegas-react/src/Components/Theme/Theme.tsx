@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { defaultThemesState, SelectedThemes, ThemesState } from './ThemeVars';
 import { expandBoth } from '../../css/classes';
 import { useThemeStore } from '../../data/Stores/themeStore';

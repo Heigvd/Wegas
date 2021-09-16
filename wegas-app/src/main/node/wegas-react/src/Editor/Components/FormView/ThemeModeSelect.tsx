@@ -2,7 +2,7 @@ import * as React from 'react';
 import { CommonView, CommonViewContainer } from './commonView';
 import { LabeledView, Labeled } from './labeled';
 import { DropMenu } from '../../../Components/DropMenu';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import { flex, flexRow, grow } from '../../../css/classes';
 import { themeCTX } from '../../../Components/Theme/Theme';
 import { WidgetProps } from 'jsoninput/typings/types';

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useDrop, DropTargetMonitor } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import {
   flex,
   grow,

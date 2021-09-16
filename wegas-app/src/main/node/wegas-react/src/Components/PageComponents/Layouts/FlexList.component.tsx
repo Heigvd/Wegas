@@ -24,7 +24,7 @@ import {
 } from '../tools/PageDeserializer';
 import { classStyleIdShema } from '../tools/options';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 export const emptyLayoutItemStyle = css({
   display: 'flex',

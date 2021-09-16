@@ -14,7 +14,7 @@ import {
 } from '../../../Helper/pages';
 import { useScript } from '../../../Components/Hooks/useScript';
 import { DropMenu } from '../../../Components/DropMenu';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import { flex, flexRow, grow } from '../../../css/classes';
 import { MessageString } from '../MessageString';
 import { IScript } from 'wegas-ts-api';
@@ -34,9 +34,8 @@ export interface PageSelectProps extends WidgetProps.BaseProps {
 }
 
 function pageLoadersSelector(s: State) {
-  const loaders: DropMenuItem<
-    { pageId: string } & PageLoaderComponentProps
-  >[] = [];
+  const loaders: DropMenuItem<{ pageId: string } & PageLoaderComponentProps>[] =
+    [];
   Object.entries(s.pages)
     .filter(([, v]) => isWegasComponent(v))
     .map(([k, v]) =>

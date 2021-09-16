@@ -1,4 +1,4 @@
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import * as React from 'react';
 import { Icon, IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../../Helper/className';

@@ -12,7 +12,7 @@ function id<T>(x: T) {
 
 export function createStoreConnector<
   SS,
-  SA extends AnyAction
+  SA extends AnyAction,
   // S extends Store<SS, SA>
 >(store: StoreType<SS, SA>) {
   type S = StoreType<SS, SA>;

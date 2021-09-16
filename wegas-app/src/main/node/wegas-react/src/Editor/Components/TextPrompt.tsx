@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useOnClickOutside } from '../../Components/Hooks/useOnClickOutside';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import { flex, flexRow } from '../../css/classes';
 import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
@@ -78,7 +78,7 @@ export function TextPrompt({
         }}
       />
       <div className={cx(flex, flexRow)}>
-      <IconButton
+        <IconButton
           icon={'times'}
           tooltip={i18nValues.cancel}
           onClick={event => {

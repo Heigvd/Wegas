@@ -84,10 +84,10 @@ export function ReactFnCompPropsChecker<T extends { [id: string]: unknown }>(
   props: PropsCheckerProps<T> & T,
 ) {
   const { children, compType = 'SIMPLE', verbose } = props;
-  const childrenProps = (omit(
+  const childrenProps = omit(
     props,
     Object.keys(defaultPropsCheckerProps),
-  ) as unknown) as T;
+  ) as unknown as T;
   const oldPropsRef = React.useRef<T>();
   React.useEffect(() => {
     const oldProps = oldPropsRef.current;

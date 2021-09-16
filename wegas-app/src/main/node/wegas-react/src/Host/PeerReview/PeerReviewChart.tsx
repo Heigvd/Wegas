@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { flex, flexWrap } from '../../css/classes';
 import { PeerReviewData } from './PeerReviewPage';

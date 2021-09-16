@@ -5,7 +5,7 @@ import {
   DragSourceOptions,
   DropTarget,
 } from 'react-dnd';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { DropZoneFactory, ItemDescription, Outcome } from './DropZone';
 import { FontAwesome } from '../FontAwesome';
 import { DefaultDndProvider } from '../../../../Components/Contexts/DefaultDndProvider';

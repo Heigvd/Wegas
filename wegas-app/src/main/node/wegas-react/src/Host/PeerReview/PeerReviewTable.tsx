@@ -1,4 +1,4 @@
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import * as React from 'react';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { store } from '../../data/Stores/store';

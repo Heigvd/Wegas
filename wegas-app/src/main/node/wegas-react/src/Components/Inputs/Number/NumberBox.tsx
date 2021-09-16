@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { debounce } from 'lodash-es';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import {
   flex,
   flexColumn,

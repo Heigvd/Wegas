@@ -22,7 +22,7 @@ import {
 
 interface PlayerFlowChartProps<
   F extends LabeledFlowLine,
-  P extends LabeledProcess<F>
+  P extends LabeledProcess<F>,
 > extends WegasComponentProps,
     Omit<FlowChartProps<F, P>, 'processes' | 'onMove' | 'onNew' | 'onConnect'> {
   title?: IScript;
@@ -34,7 +34,7 @@ interface PlayerFlowChartProps<
 
 export default function PlayerFlowChart<
   F extends LabeledFlowLine,
-  P extends LabeledProcess<F>
+  P extends LabeledProcess<F>,
 >({
   title,
   processes,

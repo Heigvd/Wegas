@@ -5,13 +5,21 @@ export class STaskDescriptorImpl extends STaskDescriptor {
   public activate(_p: Readonly<SPlayer>): void {
     throw Error('This is readonly');
   }
-  public setInstanceProperty(_p: Readonly<SPlayer>, _key: string, _value: string): void {
+  public setInstanceProperty(
+    _p: Readonly<SPlayer>,
+    _key: string,
+    _value: string,
+  ): void {
     throw Error('This is readonly');
   }
   public getActive(p: Readonly<SPlayer>): boolean {
     return this.getInstance(p).getActive();
   }
-  public addNumberAtInstanceProperty(_p: Readonly<SPlayer>, _key: string, _value: string): void {
+  public addNumberAtInstanceProperty(
+    _p: Readonly<SPlayer>,
+    _key: string,
+    _value: string,
+  ): void {
     throw Error('This is readonly');
   }
   public getInstance(player: Readonly<SPlayer>): Readonly<STaskInstance> {

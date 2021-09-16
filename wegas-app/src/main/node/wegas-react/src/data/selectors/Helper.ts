@@ -20,7 +20,7 @@ import { IAbstractEntity } from 'wegas-ts-api';
 import { entityIs } from '../entities';
 
 function findNearestParentInFormVal<
-  T extends IAbstractEntity = IAbstractEntity
+  T extends IAbstractEntity = IAbstractEntity,
 >(
   formVal: IAbstractEntity,
   path: string[],
@@ -68,24 +68,24 @@ export function getParent<T extends IAbstractEntity = IAbstractEntity>(
   if (val.parentType) {
     switch (discriminant({ '@class': val.parentType })) {
       case 'variableDescriptors':
-        return (VariableDescriptor.select(val.parentId) as unknown) as T;
+        return VariableDescriptor.select(val.parentId) as unknown as T;
       case 'variableInstances':
-        return (VariableInstance.select(val.parentId) as unknown) as T;
+        return VariableInstance.select(val.parentId) as unknown as T;
       case 'gameModels':
-        return (GameModel.select(val.parentId!) as unknown) as T;
+        return GameModel.select(val.parentId!) as unknown as T;
       case 'games':
-        return (Game.select(val.parentId!) as unknown) as T;
+        return Game.select(val.parentId!) as unknown as T;
       case 'teams':
-        return (Team.select(val.parentId!) as unknown) as T;
+        return Team.select(val.parentId!) as unknown as T;
       case 'players':
-        return (Player.select(val.parentId!) as unknown) as T;
+        return Player.select(val.parentId!) as unknown as T;
     }
     return undefined;
   }
 }
 
 export function findFirstParentMatch<
-  T extends IAbstractEntity = IAbstractEntity
+  T extends IAbstractEntity = IAbstractEntity,
 >(entity: IAbstractEntity, o: Partial<T>): Readonly<T> | undefined {
   let p = getParent(entity);
   while (p) {

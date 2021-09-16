@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 const absolute = css({ position: 'absolute', zIndex: 1 });
 

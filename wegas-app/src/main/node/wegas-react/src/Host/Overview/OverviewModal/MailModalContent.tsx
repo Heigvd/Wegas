@@ -1,4 +1,4 @@
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import * as React from 'react';
 import { TeamAPI } from '../../../API/teams.api';
 import { UserAPI } from '../../../API/user.api';
@@ -116,7 +116,6 @@ export function MailModalContent({ team, onExit }: MailModalContentProps) {
       All the user of this team or the game choosed to hide their e-mail adress
     </pre>
   ) : (
-
     <div className={cx(flex, flexColumn)}>
       <h2>Send e-mail</h2>
       <JSONForm

@@ -1,4 +1,4 @@
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
 import Editor, { Monaco, monaco } from '@monaco-editor/react';

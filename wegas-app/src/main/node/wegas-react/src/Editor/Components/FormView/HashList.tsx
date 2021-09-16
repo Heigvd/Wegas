@@ -12,7 +12,7 @@ import { LabeledView, Labeled } from './labeled';
 import { DragDropArray } from './Array';
 import { setEntry, getEntry } from '../../../Helper/tools';
 import { legendStyle, reset, borderTopStyle } from './Object';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 interface ObjectValues {
@@ -28,9 +28,9 @@ function isHashListValue(item: HashListItem): item is HashListValue {
   return 'schema' in item && item.schema != null;
 }
 
-export function hashListChoicesToSchema(
-  choices?: HashListChoices,
-): { [prop: string]: SchemaPropsSchemas } {
+export function hashListChoicesToSchema(choices?: HashListChoices): {
+  [prop: string]: SchemaPropsSchemas;
+} {
   return choices
     ? choices.reduce(
         (o, choice) => ({
@@ -117,28 +117,28 @@ export function EntryView<T>({
 }
 
 export type ImprovedValues = { [prop: string]: ImprovedObjectValue };
-const normalizeValues = (nv: object, choices?: HashListChoices) => (
-  ov?: ImprovedValues,
-): ImprovedValues =>
-  Object.entries(nv).reduce((o, [k, v], i) => {
-    const [isIntermediate, itemChoices] = isIntermediateKey(k, choices);
-    return {
-      ...o,
-      [k]: {
-        value: isIntermediate
-          ? normalizeValues(
-              v,
-              itemChoices,
-            )(
-              ov == null || ov[k] == null
-                ? undefined
-                : (ov[k].value as ImprovedValues),
-            )
-          : v,
-        index: ov != null && ov[k] != null ? ov[k].index : i,
-      },
-    };
-  }, {});
+const normalizeValues =
+  (nv: object, choices?: HashListChoices) =>
+  (ov?: ImprovedValues): ImprovedValues =>
+    Object.entries(nv).reduce((o, [k, v], i) => {
+      const [isIntermediate, itemChoices] = isIntermediateKey(k, choices);
+      return {
+        ...o,
+        [k]: {
+          value: isIntermediate
+            ? normalizeValues(
+                v,
+                itemChoices,
+              )(
+                ov == null || ov[k] == null
+                  ? undefined
+                  : (ov[k].value as ImprovedValues),
+              )
+            : v,
+          index: ov != null && ov[k] != null ? ov[k].index : i,
+        },
+      };
+    }, {});
 
 const extractValues = (
   values: ImprovedValues,

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { CommonViewContainer, CommonView } from './commonView';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { Labeled, LabeledView } from './labeled';
@@ -29,7 +29,7 @@ interface ISelectProps extends WidgetProps.BaseProps {
     choices: Choices;
     undefined?: boolean;
   } & CommonView &
-  LabeledView;
+    LabeledView;
 }
 export interface IAsyncSelectProps extends WidgetProps.BaseProps {
   view: {
@@ -37,7 +37,7 @@ export interface IAsyncSelectProps extends WidgetProps.BaseProps {
     undefined?: boolean;
     openChoices?: boolean;
   } & CommonView &
-  LabeledView;
+    LabeledView;
 }
 const selectStyle = css({
   ...inputStyleCSS,
@@ -83,7 +83,6 @@ interface SelectorProps extends ClassStyleId, DisabledReadonly {
   allowUndefined?: boolean;
 }
 
-
 type SelectProps = React.ComponentProps<typeof Select>;
 
 interface Option {
@@ -96,17 +95,18 @@ interface Option {
 
 type Options = Option[];
 
-
-
 function buildOption(choice: string | Choice): Option {
   if (typeof choice === 'string') {
     return { value: choice, label: choice };
   } else {
-    const strValue = typeof choice.value === 'string' ? choice.value : JSON.stringify(choice.value);
+    const strValue =
+      typeof choice.value === 'string'
+        ? choice.value
+        : JSON.stringify(choice.value);
     return {
       value: strValue,
       label: choice.label || strValue,
-      isDisabled: choice.disabled
+      isDisabled: choice.disabled,
     };
   }
 }
@@ -123,10 +123,11 @@ export const selectStyles: SelectProps['styles'] = {
   control: (provided, state) => {
     return {
       ...provided,
-      border: `2px solid ${ state.isFocused
-        ? themeVar.colors.ActiveColor
-        : themeVar.colors.PrimaryColor
-        }`,
+      border: `2px solid ${
+        state.isFocused
+          ? themeVar.colors.ActiveColor
+          : themeVar.colors.PrimaryColor
+      }`,
       borderRadius: themeVar.dimensions.BorderRadius,
       backgroundColor: themeVar.colors.BackgroundColor,
       ':hover': {
@@ -135,7 +136,7 @@ export const selectStyles: SelectProps['styles'] = {
       boxShadow: 'unset',
     };
   },
-  menu: (provided) => {
+  menu: provided => {
     // the zIndex battle : Select VS tineMCE toolbar
     return { ...provided, zIndex: 2 };
   },
@@ -156,7 +157,7 @@ export const selectStyles: SelectProps['styles'] = {
       return { ...provided };
     }
   },
-}
+};
 
 export function Selector({
   choices,
@@ -187,15 +188,15 @@ export function Selector({
 
   return (
     <Select
-      id={ id }
-      isDisabled={ readOnly || disabled }
-      className={ selectStyle + classNameOrEmpty(className) }
-      isClearable={ allowUndefined }
-      options={ options }
-      placeholder={ placeholder }
-      value={ currentOption }
-      onChange={ onChangeCb }
-      styles={ selectStyles }
+      id={id}
+      isDisabled={readOnly || disabled}
+      className={selectStyle + classNameOrEmpty(className)}
+      isClearable={allowUndefined}
+      options={options}
+      placeholder={placeholder}
+      value={currentOption}
+      onChange={onChangeCb}
+      styles={selectStyles}
     />
   );
 }
@@ -208,8 +209,8 @@ function SelectView(props: ISelectProps) {
     } catch (_e) {
       parsedValue =
         typeof parsedValue === 'string' ||
-          typeof parsedValue === 'number' ||
-          typeof parsedValue === 'boolean'
+        typeof parsedValue === 'number' ||
+        typeof parsedValue === 'boolean'
           ? String(parsedValue)
           : undefined;
     } finally {
@@ -244,20 +245,20 @@ function SelectView(props: ISelectProps) {
       : JSON.stringify(props.value) || JSON.stringify(defaultTitle.value);
 
   return (
-    <CommonViewContainer view={ props.view } errorMessage={ props.errorMessage }>
-      <Labeled { ...props.view }>
-        { ({ inputId, labelNode }) => (
-          <div className={ cx(flex, flexColumn) }>
-            { labelNode }
+    <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
+      <Labeled {...props.view}>
+        {({ inputId, labelNode }) => (
+          <div className={cx(flex, flexColumn)}>
+            {labelNode}
             <Selector
-              id={ inputId }
-              value={ value }
-              choices={ selectChoices }
-              onChange={ onChange }
-              readOnly={ props.view.readOnly }
+              id={inputId}
+              value={value}
+              choices={selectChoices}
+              onChange={onChange}
+              readOnly={props.view.readOnly}
             />
           </div>
-        ) }
+        )}
       </Labeled>
     </CommonViewContainer>
   );
@@ -270,11 +271,11 @@ interface ListChildrenSelectViewProps extends WidgetProps.BaseProps {
 export function ListChildrenSelectView(props: ListChildrenSelectViewProps) {
   return (
     <SelectView
-      { ...props }
-      view={ {
+      {...props}
+      view={{
         ...props.view,
         choices: [...(ListDescriptorChild as unknown as string[])],
-      } }
+      }}
     />
   );
 }
@@ -282,14 +283,14 @@ export function ListChildrenSelectView(props: ListChildrenSelectViewProps) {
 export function ListChildrenNullSelectView(props: ListChildrenSelectViewProps) {
   return (
     <SelectView
-      { ...props }
-      view={ {
+      {...props}
+      view={{
         ...props.view,
         choices: [
           { label: 'None', value: '' },
           ...(ListDescriptorChild as unknown as string[]),
         ],
-      } }
+      }}
     />
   );
 }
@@ -299,6 +300,6 @@ function Sel(props: IAsyncSelectProps) {
   const { choices } = view;
   return Promise.resolve(
     typeof choices === 'function' ? choices() : choices,
-  ).then(ch => <SelectView { ...props } view={ { ...view, choices: ch } } />);
+  ).then(ch => <SelectView {...props} view={{ ...view, choices: ch }} />);
 }
 export default asyncSFC(Sel);

@@ -9,7 +9,11 @@ interface OverviewButtonProps {
   className?: string;
 }
 
-export function OverviewButton({ item, className, onClick }: OverviewButtonProps) {
+export function OverviewButton({
+  item,
+  className,
+  onClick,
+}: OverviewButtonProps) {
   const { label, icon } = item;
 
   return (
@@ -18,10 +22,8 @@ export function OverviewButton({ item, className, onClick }: OverviewButtonProps
       icon={
         icon == null || icon === 'fa fa-pencil' ? 'pen' : (icon as IconName)
       }
-      onClick={() =>
-        onClick && onClick('Impact', item)
-      }
-      className= {className}
+      onClick={() => onClick && onClick('Impact', item)}
+      className={className}
     />
   );
 }

@@ -32,10 +32,7 @@ interface TranslatableTextProps extends ClassStyleId {
 /**
  * Provide a convinent way to translate and display a TranslatableContent
  */
-export function TranslatableText({
-  content,
-  ...props
-}: TranslatableTextProps) {
+export function TranslatableText({ content, ...props }: TranslatableTextProps) {
   const translatedContent = useTranslate(content);
   return <HTMLText {...props} text={translatedContent} />;
 }

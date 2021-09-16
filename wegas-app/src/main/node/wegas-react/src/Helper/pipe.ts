@@ -32,7 +32,7 @@ export function pipe<A, B, C, D, E, F, R>(
   fn5: (e: E) => F,
   fn6: (e: F) => R,
 ): (a: A) => R;
-export function pipe<A>(...fns: ((a: A) => A)[]):(a:A)=>A
+export function pipe<A>(...fns: ((a: A) => A)[]): (a: A) => A;
 // Could add some more... default to same type going through
 export function pipe<A>(...fns: ((a: A) => A)[]) {
   return (arg: A) => fns.reduce((p, f) => f(p), arg);

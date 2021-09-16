@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { NumberBox } from '../../Components/Inputs/Number/NumberBox';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 
 export default function NumberBoxTester({
   value = 5,

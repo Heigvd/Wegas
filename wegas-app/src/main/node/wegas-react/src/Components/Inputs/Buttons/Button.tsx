@@ -2,7 +2,7 @@ import * as React from 'react';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
 import { arrayRemoveDuplicates } from '../../../Helper/tools';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import { themeVar } from '../../Theme/ThemeVars';
 import { secondaryButtonCSS } from '../../Modal';
 

@@ -243,12 +243,14 @@ class WebSocketListener {
           manageResponseHandler(
             {
               '@class': 'ManagedResponse',
-              deletedEntities: (data as {
-                deletedEntities: {
-                  '@class': IAbstractEntity['@class'];
-                  id: number;
-                }[];
-              }).deletedEntities,
+              deletedEntities: (
+                data as {
+                  deletedEntities: {
+                    '@class': IAbstractEntity['@class'];
+                    id: number;
+                  }[];
+                }
+              ).deletedEntities,
               updatedEntities: [],
               events: [],
             },

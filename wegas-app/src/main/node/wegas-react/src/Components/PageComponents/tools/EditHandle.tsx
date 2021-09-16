@@ -5,7 +5,7 @@ import {
   // pageEditorCTX,
 } from '../../../Editor/Components/Page/PageEditor';
 // import { useComponentDrag } from '../../../Editor/Components/Page/ComponentPalette';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import { flex, flexColumn, flexRow, textCenter } from '../../../css/classes';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 import { MessageString } from '../../../Editor/Components/MessageString';

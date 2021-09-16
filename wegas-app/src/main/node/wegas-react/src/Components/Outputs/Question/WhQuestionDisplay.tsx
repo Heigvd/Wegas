@@ -1,4 +1,4 @@
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import { cloneDeep } from 'lodash-es';
 import * as React from 'react';
 import {
@@ -172,10 +172,7 @@ export function WhQuestionDisplay({
         [halfOpacity]: disabled,
       })}
     >
-
-      <TranslatableText
-          content={questionD.description}
-      />
+      <TranslatableText content={questionD.description} />
       {choicesD.map((choiceD, i) => {
         const choiceI = choicesI[i];
         if (choiceI == null) {

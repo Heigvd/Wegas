@@ -6,9 +6,9 @@
  * Licensed under the MIT License
  */
 
-import {css} from '@emotion/css';
-import {IconProp} from '@fortawesome/fontawesome-svg-core';
-import {faCheck, faTimes} from '@fortawesome/free-solid-svg-icons';
+import { css } from '@emotion/css';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import tinycolor from 'tinycolor2';
 import useTranslations from '../../i18n/I18nContext';
@@ -24,46 +24,44 @@ export interface Props {
 }
 
 const relative = css({
-  position: "relative"
-})
-
+  position: 'relative',
+});
 
 const bubbleStyle = css({
-  position: "absolute",
-  "--fgColor": "#FEFEFE",
-  "--hoverFgColor": tinycolor("#fefefe").darken(10).toString(),
-  "--linkColor": "#fefefe",
-  "--bgColor": "var(--blueColor)",
-  backgroundColor: "var(--bgColor)",
-  display: "flex",
-  borderRadius: "3px",
-  padding: "2px 4px",
-  left: "50%", // move to the right so the left side aligns with the middle of its parent
-  translate: "-50%", // then translate to align both middles
+  position: 'absolute',
+  '--fgColor': '#FEFEFE',
+  '--hoverFgColor': tinycolor('#fefefe').darken(10).toString(),
+  '--linkColor': '#fefefe',
+  '--bgColor': 'var(--blueColor)',
+  backgroundColor: 'var(--bgColor)',
+  display: 'flex',
+  borderRadius: '3px',
+  padding: '2px 4px',
+  left: '50%', // move to the right so the left side aligns with the middle of its parent
+  translate: '-50%', // then translate to align both middles
   zIndex: 999,
-  "::after": {
+  '::after': {
     content: '""',
     position: 'absolute',
     top: '-5px',
-    width: "0",
-    height: "0",
-    borderLeft: "7px solid transparent",
-    borderRight: "7px solid transparent",
-    borderBottom: "5px solid var(--blueColor)",
-    left: "calc(50% - 10px)",
+    width: '0',
+    height: '0',
+    borderLeft: '7px solid transparent',
+    borderRight: '7px solid transparent',
+    borderBottom: '5px solid var(--blueColor)',
+    left: 'calc(50% - 10px)',
   },
-  "& > *": {
-    flexBasis: "1px",
+  '& > *': {
+    flexBasis: '1px',
     width: '50%',
-  }
-})
-
+  },
+});
 
 const bubbleItem = css({
   padding: '0 5px',
   textTransform: 'uppercase',
-  fontSize: "0.8em",
-})
+  fontSize: '0.8em',
+});
 
 export function InlineConfirmIconButton({
   children,
@@ -102,7 +100,6 @@ export function InlineConfirmIconButton({
   );
 }
 
-
 export interface BubbledProps {
   icon: IconProp;
   title: string;
@@ -112,7 +109,6 @@ export interface BubbledProps {
   confirmInvite?: string;
   cancelInvite?: string;
 }
-
 
 export function ConfirmIconButton({
   children,
@@ -141,11 +137,9 @@ export function ConfirmIconButton({
     }
   }, []);
 
-
   const clickOut = React.useCallback(() => {
     askConfirm();
   }, [askConfirm]);
-
 
   React.useEffect(() => {
     const body = document.getElementsByTagName('body')[0];
@@ -154,8 +148,6 @@ export function ConfirmIconButton({
       body.removeEventListener('click', clickOut);
     };
   }, [clickOut]);
-
-
 
   return (
     <div className={relative} title={title} onClick={clickIn}>
@@ -166,19 +158,17 @@ export function ConfirmIconButton({
       </div>
       {waitConfirm ? (
         <div className={bubbleStyle}>
-          <Clickable title={`${i18n.cancel} ${title}`} onClick={askConfirm} >
+          <Clickable title={`${i18n.cancel} ${title}`} onClick={askConfirm}>
             <span className={bubbleItem}>{cancelInvite || i18n.cancel}</span>
           </Clickable>
-          <Clickable title={`${i18n.confirm} ${title}`} onClick={confirmedCb} >
+          <Clickable title={`${i18n.confirm} ${title}`} onClick={confirmedCb}>
             <span className={bubbleItem}>{confirmInvite || i18n.confirm}</span>
           </Clickable>
         </div>
-      ) : null
-      }
-    </div >
+      ) : null}
+    </div>
   );
 }
-
 
 //  WITH ICONS:
 //        <div className={bubbleStyle}>

@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import { globals } from '../../Components/Hooks/useScript';
@@ -148,25 +148,27 @@ export function TeamTD({ team, value, onShowOverlay }: TeamTDProps) {
 
   return (
     <td>
-      <div className={css({
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-      })}>
-      {name}
-      <Button
-        ref={buttonRef}
-        icon="info-circle"
-        onClick={() =>
-          onShowOverlay(
-            playerTeam
-              ? i18nValues.orchestrator.playerData(name)
-              : i18nValues.orchestrator.teamData(name),
-            value,
-            buttonRef,
-          )
-        }
-      />
+      <div
+        className={css({
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+        })}
+      >
+        {name}
+        <Button
+          ref={buttonRef}
+          icon="info-circle"
+          onClick={() =>
+            onShowOverlay(
+              playerTeam
+                ? i18nValues.orchestrator.playerData(name)
+                : i18nValues.orchestrator.teamData(name),
+              value,
+              buttonRef,
+            )
+          }
+        />
       </div>
     </td>
   );

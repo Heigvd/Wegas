@@ -10,7 +10,7 @@ import {
 } from '../../css/classes';
 import { PieChart, PieChartSection, NeedleStyle } from './PieChart';
 import { Value } from './Value';
-import { cx } from 'emotion';
+import { cx } from '@emotion/css';
 import { classNameOrEmpty } from '../../Helper/className';
 
 const valueToAngle = (

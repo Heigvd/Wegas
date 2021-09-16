@@ -7,7 +7,7 @@ import SrcEditor, { SrcEditorProps } from './SrcEditor';
 
 type EmbeddedSrcEditorProps<
   P extends SrcEditorProps,
-  EP extends SrcEditorProps
+  EP extends SrcEditorProps,
 > = P & {
   Editor?: React.FunctionComponent<P>;
   embeddedProps?: EP;
@@ -17,7 +17,7 @@ type EmbeddedSrcEditorProps<
 
 export function EmbeddedSrcEditor<
   P extends SrcEditorProps,
-  EP extends SrcEditorProps
+  EP extends SrcEditorProps,
 >({
   value,
   onChange,

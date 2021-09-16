@@ -33,7 +33,7 @@ export function isScript(tested: any): tested is IScript {
 }
 
 export function createFindVariableScript<
-  T extends Readonly<SVariableDescriptor> | undefined
+  T extends Readonly<SVariableDescriptor> | undefined,
 >(variable?: T): T extends undefined ? undefined : IScript {
   return variable
     ? ({

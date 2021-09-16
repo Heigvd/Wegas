@@ -25,78 +25,78 @@ export default function NumberSliderTester({
   ) {
     const { label, ...restProps } = props;
     return (
-      <div className={ testerSectionStyle }>
-        { props.label }
+      <div className={testerSectionStyle}>
+        {props.label}
         <NumberSlider
           label="simple"
-          value={ currentValue }
-          onChange={ v => {
+          value={currentValue}
+          onChange={v => {
             setValue(v);
             onChange && onChange(v);
-          } }
-          { ...restProps }
+          }}
+          {...restProps}
         />
         <NumberSlider
           label="number input"
-          value={ currentValue }
-          onChange={ v => {
+          value={currentValue}
+          onChange={v => {
             setValue(v);
             onChange && onChange(v);
-          } }
-          { ...restProps }
+          }}
+          {...restProps}
           displayValues="NumberInput"
         />
         <NumberSlider
           label="display none"
-          value={ currentValue }
-          onChange={ v => {
+          value={currentValue}
+          onChange={v => {
             setValue(v);
             onChange && onChange(v);
-          } }
+          }}
           displayValues="None"
-          { ...restProps }
+          {...restProps}
         />
         <NumberSlider
           label="display external"
-          value={ currentValue }
-          onChange={ v => {
+          value={currentValue}
+          onChange={v => {
             setValue(v);
             onChange && onChange(v);
-          } }
+          }}
           displayValues="External"
-          { ...restProps }
+          {...restProps}
         />
         <NumberSlider
           label="display internal"
-          value={ currentValue }
-          onChange={ v => {
+          value={currentValue}
+          onChange={v => {
             setValue(v);
             onChange && onChange(v);
-          } }
+          }}
           displayValues="Internal"
-          { ...restProps }
+          {...restProps}
         />
         <NumberSlider
           label="display both"
-          value={ currentValue }
-          onChange={ v => {
+          value={currentValue}
+          onChange={v => {
             setValue(v);
             onChange && onChange(v);
-          } }
+          }}
           displayValues="Both"
-          { ...restProps }
+          {...restProps}
         />
         <NumberSlider
           label="display function"
-          value={ currentValue }
-          onChange={ v => {
+          value={currentValue}
+          onChange={v => {
             setValue(v);
             onChange && onChange(v);
-          } }
-          displayValues={ (iv, v) => (
-            <div>{ `Testing displayer\n - value:${ v }\n - internal:${ iv }` }</div>
-          ) }
-          { ...restProps }
+          }}
+          displayValues={(iv, v) => (
+            <div>{`Testing displayer\n - value:${v}\n - internal:${iv}`}</div>
+          )}
+          {...restProps}
         />
       </div>
     );
@@ -104,34 +104,34 @@ export default function NumberSliderTester({
 
   return (
     <div>
-      <NumberSliderPack label="Simple" min={ 0 } max={ 10 } />
-      <NumberSliderPack label="Steps 10" min={ 0 } max={ 10 } steps={ 10 } />
-      <NumberSliderPack label="Steps 1000" min={ 0 } max={ 10 } steps={ 1000 } />
-      <NumberSliderPack label="Disabled" min={ 0 } max={ 10 } disabled />
+      <NumberSliderPack label="Simple" min={0} max={10} />
+      <NumberSliderPack label="Steps 10" min={0} max={10} steps={10} />
+      <NumberSliderPack label="Steps 1000" min={0} max={10} steps={1000} />
+      <NumberSliderPack label="Disabled" min={0} max={10} disabled />
       <NumberSliderPack
         label="Disabled + disabledStyle"
-        min={ 0 }
-        max={ 10 }
+        min={0}
+        max={10}
         disabled
-      // disabledStyle={{ backgroundColor: 'red' }}
+        // disabledStyle={{ backgroundColor: 'red' }}
       />
       <NumberSliderPack
         label="Handlestyle"
-        min={ 0 }
-        max={ 10 }
-        handleStyle={ { backgroundColor: 'red' } }
+        min={0}
+        max={10}
+        handleStyle={{ backgroundColor: 'red' }}
       />
       <NumberSliderPack
         label="LeftPartStyle"
-        min={ 0 }
-        max={ 10 }
-        leftPartStyle={ { backgroundColor: 'red' } }
+        min={0}
+        max={10}
+        leftPartStyle={{ backgroundColor: 'red' }}
       />
       <NumberSliderPack
         label="RightPartStyle"
-        min={ 0 }
-        max={ 10 }
-        rightPartStyle={ { backgroundColor: 'red' } }
+        min={0}
+        max={10}
+        rightPartStyle={{ backgroundColor: 'red' }}
       />
     </div>
   );

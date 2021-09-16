@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useStore, store } from '../data/Stores/store';
 import { flexColumn, flex, itemCenter, flexRow } from '../css/classes';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import { ITranslatableContent } from 'wegas-ts-api';
 import { translate } from '../Editor/Components/FormView/translatable';
 import { languagesCTX } from './Contexts/LanguagesProvider';

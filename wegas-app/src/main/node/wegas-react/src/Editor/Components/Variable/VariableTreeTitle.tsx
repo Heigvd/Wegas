@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { entityIs } from '../../../data/entities';
 import { getIcon } from '../../editionConfig';
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import { withDefault, IconComp } from '../Views/FontAwesome';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import {

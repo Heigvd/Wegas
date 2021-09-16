@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import { get } from 'lodash-es';
 import * as React from 'react';
 import { IResult, IEvaluationDescriptorContainer } from 'wegas-ts-api';

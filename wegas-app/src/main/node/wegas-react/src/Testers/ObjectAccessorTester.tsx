@@ -1,22 +1,25 @@
 import * as React from 'react';
 import { expandBoth, flex, flexColumn, grow } from '../css/classes';
-import { cx, css } from 'emotion';
+import { cx, css } from '@emotion/css';
 import { WegasScriptEditor } from '../Editor/Components/ScriptEditors/WegasScriptEditor';
 import { createSandbox } from '../Components/Hooks/useScript';
 import { transpile } from 'typescript';
 import { getEntry, setEntry } from '../Helper/tools';
 
-const { sandbox, globals } = createSandbox<{
-  getEntry: typeof getEntry;
-  setEntry: typeof setEntry;
-}>();
+const { sandbox, globals } =
+  createSandbox<{
+    getEntry: typeof getEntry;
+    setEntry: typeof setEntry;
+  }>();
 
 function evaluate(script: string) {
   try {
     return (
-      ((sandbox.contentWindow as unknown) as {
-        eval: (code: string) => unknown;
-      })
+      (
+        sandbox.contentWindow as unknown as {
+          eval: (code: string) => unknown;
+        }
+      )
         // 'undefined' so that an empty script don't return '"use strict"'
         .eval('"use strict";undefined;' + transpile(script))
     );

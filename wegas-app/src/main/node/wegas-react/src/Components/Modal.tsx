@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import {
@@ -64,7 +64,7 @@ export const modalCloseDivStyle = css({
   fontSize: '18px',
   '&:hover': {
     color: themeVar.colors.PrimaryColor,
-  }
+  },
 });
 
 const modalCloseButtonStyle = css({
@@ -72,19 +72,17 @@ const modalCloseButtonStyle = css({
 });
 
 export const secondaryButtonCSS = {
-  '&.wegas-btn':{
+  '&.wegas-btn': {
     backgroundColor: 'transparent',
     color: themeVar.colors.PrimaryColor,
     border: '1px solid ' + themeVar.colors.PrimaryColor,
     '&:hover, &:focus': {
       backgroundColor: themeVar.colors.HeaderColor,
-    }
-  }
+    },
+  },
 };
 
-export const secondaryButtonStyle = css(
-  secondaryButtonCSS
-);
+export const secondaryButtonStyle = css(secondaryButtonCSS);
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
 // React element
@@ -303,12 +301,7 @@ export function useModal() {
   };
   const ModalComp = React.useCallback(
     (props: React.PropsWithChildren<ModalProps>) => {
-      return show ? (
-        <Modal
-          {...props}
-          onExit={() => setShow(false)}
-        />
-      ) : null;
+      return show ? <Modal {...props} onExit={() => setShow(false)} /> : null;
     },
     [show],
   );

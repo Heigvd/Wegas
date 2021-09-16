@@ -13,7 +13,7 @@ const pagesActionCreator = {
 };
 
 type PagesActions<
-  A extends keyof typeof pagesActionCreator = keyof typeof pagesActionCreator
+  A extends keyof typeof pagesActionCreator = keyof typeof pagesActionCreator,
 > = ReturnType<typeof pagesActionCreator[A]>;
 
 export const PageStateAction = {
@@ -45,9 +45,8 @@ export const pagesStateStore = createStore(
   ),
 );
 
-export const { useStore: usePagesStateStore } = createStoreConnector(
-  pagesStateStore,
-);
+export const { useStore: usePagesStateStore } =
+  createStoreConnector(pagesStateStore);
 
 export function isComponentFocused(
   editMode: boolean,

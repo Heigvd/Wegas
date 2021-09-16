@@ -6,16 +6,25 @@
  * Licensed under the MIT License
  */
 
-import {isEqual, uniq} from 'lodash';
-import {IGame, IGameModel, IGameModelWithId, IGameWithId, IPermission, IPlayerWithId} from 'wegas-ts-api';
-import {entityIs} from '../API/entityHelper';
-import {PlayerToGameModelLoading} from '../API/restClient';
-import {customStateEquals, shallowEqual, useAppSelector} from '../store/hooks';
-import {WegasLobbyState} from '../store/store';
-import {getRolePermissions, getUserPermissions} from './userSelector';
+import { isEqual, uniq } from 'lodash';
+import {
+  IGame,
+  IGameModel,
+  IGameModelWithId,
+  IGameWithId,
+  IPermission,
+  IPlayerWithId,
+} from 'wegas-ts-api';
+import { entityIs } from '../API/entityHelper';
+import { PlayerToGameModelLoading } from '../API/restClient';
+import { customStateEquals, shallowEqual, useAppSelector } from '../store/hooks';
+import { WegasLobbyState } from '../store/store';
+import { getRolePermissions, getUserPermissions } from './userSelector';
 
-
-function getUserPlayers(state: WegasLobbyState, userId: number | undefined | null): IPlayerWithId[] {
+function getUserPlayers(
+  state: WegasLobbyState,
+  userId: number | undefined | null,
+): IPlayerWithId[] {
   if (userId != null) {
     return Object.values(state.players.players).filter(player => player.userId === userId);
   } else {
@@ -117,7 +126,6 @@ export const useGame = (gameId?: number) => {
   }, customStateEquals);
 };
 
-
 export const useUserPlayerInGame = (gameId: number | undefined, userId: number | undefined) => {
   return useAppSelector(state => {
     if (gameId != null && userId != null) {
@@ -129,14 +137,12 @@ export const useUserPlayerInGame = (gameId: number | undefined, userId: number |
             return gameId === team.parentId;
           }
         }
-      })
+      });
     } else {
       return undefined;
     }
   }, customStateEquals);
 };
-
-
 
 export const useGameModel = (gameModelId?: number) => {
   return useAppSelector(state => {
@@ -573,17 +579,17 @@ export const useShareableGames = (userId: number | undefined) => {
 
 type PermissionObject =
   | {
-    type: 'GameModel';
-    id: number | undefined;
-    gameModel: IGameModelWithId | 'LOADING' | undefined;
-  }
+      type: 'GameModel';
+      id: number | undefined;
+      gameModel: IGameModelWithId | 'LOADING' | undefined;
+    }
   | {
-    type: 'Game';
-    id: number | undefined;
-    game: IGameWithId | 'LOADING' | undefined;
-  }
-  | {type: 'WILDCARD'}
-  | {type: 'DUMMY'};
+      type: 'Game';
+      id: number | undefined;
+      game: IGameWithId | 'LOADING' | undefined;
+    }
+  | { type: 'WILDCARD' }
+  | { type: 'DUMMY' };
 
 export const usePermissionObject = (permissionId: string): PermissionObject => {
   return useAppSelector(state => {
