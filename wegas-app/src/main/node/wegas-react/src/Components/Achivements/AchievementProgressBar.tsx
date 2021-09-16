@@ -27,7 +27,7 @@ const barStyle = css({
   overflow: 'hidden',
   ':before': {
     display: 'inline-block',
-    content: '',
+    content: '""',
   },
 });
 

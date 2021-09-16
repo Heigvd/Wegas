@@ -172,7 +172,7 @@ const modules = {
     stats: 'errors-warnings',
     port: PREPROD ? 4004 : 3003,
     overlay: true,
-    publicPath: '/Wegas/wegas-react/',
+    publicPath: '/Wegas/wegas-react/dist',
     proxy: {
       '/Wegas': {
         target: 'http://localhost:8080',
