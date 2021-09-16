@@ -7,7 +7,7 @@
  */
 
 import { css } from '@emotion/css';
-import { faCheckSquare, faSquare } from '@fortawesome/free-solid-svg-icons';
+import {faCheckSquare, faSquare} from '@fortawesome/free-regular-svg-icons';
 import * as React from 'react';
 import { errorStyle, warningStyle } from '../styling/style';
 import Flex from './Flex';

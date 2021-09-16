@@ -125,7 +125,7 @@ export function WindowedContainer<T>({ items, children }: WCardContainerProps<T>
         css({
           display: 'flex',
           flexDirection: 'column',
-          overflow: 'scroll',
+          overflow: 'auto',
           flexShrink: 1,
         }),
       )}
