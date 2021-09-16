@@ -286,7 +286,7 @@ export default function JoinGame({ gameToken, onClose }: JoinGameProps): JSX.Ele
         <CardMainButton
           icon={faPlay}
           title={i18n.openGameAsPlayer}
-          url={`./${gameModel.uiversion === 2 ? '2/' : ''}game-play.html?id=${existingPlayer.id}`}
+          url={`./${gameModel.uiversion === 2 ? '2/player.html' : 'game-play.html'}?id=${existingPlayer.id}`}
         />
       </Flex>
     );
