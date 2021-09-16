@@ -61,6 +61,7 @@ function LoggerGrid({ title, levels, changeLevel }: LoggerGridProps) {
       <div
         className={css({
           display: 'grid',
+          overflow:'auto',
           gridTemplateColumns: 'repeat(7, max-content)',
           '& div div': {
             paddingRight: '10px',

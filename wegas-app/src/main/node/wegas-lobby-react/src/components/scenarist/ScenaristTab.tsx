@@ -6,28 +6,28 @@
  * Licensed under the MIT License
  */
 
-import { css } from '@emotion/css';
-import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
-import { uniq } from 'lodash';
+import {css} from '@emotion/css';
+import {faPlusCircle} from '@fortawesome/free-solid-svg-icons';
+import {uniq} from 'lodash';
 import * as React from 'react';
-import { IAbstractAccount, IGameModelWithId } from 'wegas-ts-api';
-import { getGameModels, getUserByIds } from '../../API/api';
-import { getDisplayName, mapByKey } from '../../helper';
+import {IAbstractAccount, IGameModelWithId} from 'wegas-ts-api';
+import {getGameModels, getUserByIds} from '../../API/api';
+import {getDisplayName, mapByKey} from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
-import { useAccountsByUserIds, useCurrentUser } from '../../selectors/userSelector';
-import { MINE_OR_ALL, useEditableGameModels } from '../../selectors/wegasSelector';
-import { useAppDispatch } from '../../store/hooks';
-import { WindowedContainer } from '../common/CardContainer';
+import {useAccountsByUserIds, useCurrentUser} from '../../selectors/userSelector';
+import {MINE_OR_ALL, useEditableGameModels} from '../../selectors/wegasSelector';
+import {useAppDispatch} from '../../store/hooks';
+import {WindowedContainer} from '../common/CardContainer';
 import DebouncedInput from '../common/DebouncedInput';
-import DropDownMenu, { itemStyle } from '../common/DropDownMenu';
+import DropDownMenu, {itemStyle} from '../common/DropDownMenu';
 import DropDownPanel from '../common/DropDownPanel';
 import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import IconButton from '../common/IconButton';
 import InlineLoading from '../common/InlineLoading';
-import SortBy, { SortByOption } from '../common/SortBy';
-import { successColor } from '../styling/color';
-import { panelPadding } from '../styling/style';
+import SortBy, {SortByOption} from '../common/SortBy';
+import {successColor} from '../styling/color';
+import {panelPadding} from '../styling/style';
 import CreateModel from './CreateModel';
 import CreateScenario from './CreateScenario';
 import GameModelCard from './GameModelCard';
@@ -41,31 +41,31 @@ interface SortBy {
 
 const matchSearch =
   (accountMap: Record<number, IAbstractAccount>, search: string) =>
-  (gameModel: IGameModelWithId | 'LOADING') => {
-    const regex = new RegExp(search, 'i');
-    if (search) {
-      if (gameModel != 'LOADING') {
-        const username =
-          gameModel.createdById != null ? getDisplayName(accountMap[gameModel.createdById]) : '';
-        return (
-          (gameModel.name && gameModel.name.match(regex) != null) || username.match(regex) != null
-        );
+    (gameModel: IGameModelWithId | 'LOADING') => {
+      const regex = new RegExp(search, 'i');
+      if (search) {
+        if (gameModel != 'LOADING') {
+          const username =
+            gameModel.createdById != null ? getDisplayName(accountMap[gameModel.createdById]) : '';
+          return (
+            (gameModel.name && gameModel.name.match(regex) != null) || username.match(regex) != null
+          );
+        } else {
+          return false;
+        }
       } else {
-        return false;
+        return true;
       }
-    } else {
-      return true;
-    }
-  };
+    };
 
 export interface ScenaristTabProps {
   gameModelType: IGameModelWithId['type'];
 }
 
-export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.Element {
+export default function ScenaristTab({gameModelType}: ScenaristTabProps): JSX.Element {
   const i18n = useTranslations();
   const dispatch = useAppDispatch();
-  const { currentUser, isAdmin } = useCurrentUser();
+  const {currentUser, isAdmin} = useCurrentUser();
   const currentUserId = currentUser != null ? currentUser.id : undefined;
 
   const [statusFilter, setStatusFilter] = React.useState<IGameModelWithId['status']>('LIVE');
@@ -80,13 +80,13 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
     'COLLAPSED',
   );
 
-  const [sortBy, setSortBy] = React.useState<{ key: keyof SortBy; asc: boolean }>({
+  const [sortBy, setSortBy] = React.useState<{key: keyof SortBy; asc: boolean}>({
     key: 'createdTime',
     asc: false,
   });
 
-  const onSortChange = React.useCallback(({ key, asc }: { key: keyof SortBy; asc: boolean }) => {
-    setSortBy({ key, asc });
+  const onSortChange = React.useCallback(({key, asc}: {key: keyof SortBy; asc: boolean}) => {
+    setSortBy({key, asc});
   }, []);
 
   const [filter, setFilter] = React.useState('');
@@ -96,18 +96,18 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
   }, []);
 
   const sortOptions: SortByOption<SortBy>[] = [
-    { key: 'createdTime', label: i18n.date },
-    { key: 'name', label: i18n.name },
+    {key: 'createdTime', label: i18n.date},
+    {key: 'name', label: i18n.name},
   ];
   if (isAdmin) {
-    sortOptions.push({ key: 'createdByName', label: i18n.createdBy });
+    sortOptions.push({key: 'createdByName', label: i18n.createdBy});
   }
 
   const status = gamemodels.status[gameModelType][statusFilter];
 
   React.useEffect(() => {
     if (status === 'NOT_INITIALIZED') {
-      dispatch(getGameModels({ status: statusFilter, type: gameModelType }));
+      dispatch(getGameModels({status: statusFilter, type: gameModelType}));
     }
   }, [statusFilter, gameModelType, status, dispatch]);
 
@@ -150,7 +150,7 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
       return 0;
     });
 
-    const statusFilterEntries: { value: IGameModelWithId['status']; label: React.ReactNode }[] = [
+    const statusFilterEntries: {value: IGameModelWithId['status']; label: React.ReactNode}[] = [
       {
         value: 'LIVE',
         label: <div className={itemStyle}>{i18n.liveGameModels}</div>,
@@ -176,7 +176,7 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
       />
     );
 
-    const mineFilterEntries: { value: MINE_OR_ALL; label: React.ReactNode }[] = [
+    const mineFilterEntries: {value: MINE_OR_ALL; label: React.ReactNode}[] = [
       {
         value: 'MINE',
         label: <div className={itemStyle}>{i18n.mine}</div>,
@@ -197,26 +197,28 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
     ) : null;
 
     return (
-      <FitSpace direction="column" overflow="auto" className={css({ position: 'relative' })}>
+      <FitSpace direction="column" overflow="auto" className={css({position: 'relative'})}>
         <DropDownPanel
           state={createPanelViewMode}
           onClose={() => {
             setCreatePanelViewMode('COLLAPSED');
           }}
         >
-          {gameModelType === 'SCENARIO' ? (
-            <CreateScenario
-              close={() => {
-                setCreatePanelViewMode('COLLAPSED');
-              }}
-            />
-          ) : (
-            <CreateModel
-              close={() => {
-                setCreatePanelViewMode('COLLAPSED');
-              }}
-            />
-          )}
+          {createPanelViewMode === 'EXPANDED' ?
+            gameModelType === 'SCENARIO' ? (
+              <CreateScenario
+                close={() => {
+                  setCreatePanelViewMode('COLLAPSED');
+                }}
+              />
+            ) : (
+              <CreateModel
+                close={() => {
+                  setCreatePanelViewMode('COLLAPSED');
+                }}
+              />
+            )
+            : null}
         </DropDownPanel>
 
         {gameModelType === 'MODEL' ? (
@@ -226,11 +228,14 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
               setInferModelViewMode('COLLAPSED');
             }}
           >
-            <InferModel
-              close={() => {
-                setInferModelViewMode('COLLAPSED');
-              }}
-            />
+            {inferModelViewMode === 'EXPANDED' ?
+              <InferModel
+                close={() => {
+                  setInferModelViewMode('COLLAPSED');
+                }}
+              />
+              : null
+            }
           </DropDownPanel>
         ) : null}
 

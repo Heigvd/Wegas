@@ -6,8 +6,65 @@
  * Licensed under the MIT License
  */
 
-import { css, cx, keyframes } from '@emotion/css';
-import { dangerColor, successColor, warningColor, white } from './color';
+import {css, CSSObject, cx, keyframes} from '@emotion/css';
+import {dangerColor, successColor, warningColor, white} from './color';
+
+type SelectTypeKeys =
+  | 'container'
+  | 'control'
+  | 'placeholder'
+  | 'valueContainer'
+  | 'option'
+  | 'singleValue'
+  | 'menu';
+
+type SelectStylesType = Record<SelectTypeKeys, (provided: CSSObject) => CSSObject>;
+
+export const defaultSelectStyles: SelectStylesType = {
+  container: provided => ({
+    ...provided,
+    fontSize: "10pt",
+  }),
+  singleValue: provided => ({
+    ...provided,
+    color: "var(--fgColor)",
+  }),
+  control: provided => ({
+    ...provided,
+    //    lineHeight: "40px",
+    height: "50px",
+    marginTop: "2px",
+  }),
+  placeholder: provided => ({
+    ...provided,
+    color: 'silver',
+  }),
+  valueContainer: provided => ({
+    ...provided,
+    padding: '0 20px'
+  }),
+  option: provided => ({
+    ...provided,
+    fontSize: 'unset'
+  }),
+  menu: provided => ({
+    ...provided,
+    marginTop: 0,
+  }),
+};
+
+
+export const upsideSelectStyles: SelectStylesType = {
+  ...defaultSelectStyles,
+  menu: provided => {
+    return {
+      ...provided,
+      top: 'unset',
+      bottom: '44px',
+      marginTop: '0px',
+    };
+  }
+}
 
 export const pictoColours = css({
   '--pictoBlue': '#50BFD5', // main blue
@@ -20,6 +77,7 @@ export const pictoColours = css({
   '--errorColor': dangerColor.toString(),
   '--warningColor': warningColor.toString(),
   '--successColor': successColor.toString(),
+  '--blueColor' : '#41d2fa',
 });
 
 export const darkModeColors = css({
@@ -208,6 +266,8 @@ export const inactiveButtonStyle = cx(
     margin: '10px',
     textTransform: 'uppercase',
     fontSize: '12px',
+    backgroundColor: '#666',
+    opacity: "0.5",
     padding: '18px 24px',
   }),
 );
@@ -216,8 +276,9 @@ export const buttonStyle = cx(
   inactiveButtonStyle,
   css({
     cursor: 'pointer',
+    opacity: "1",
+    transition: 'all .5s ease',
     ':hover': {
-      transition: 'all .5s ease',
       color: 'var(--hoverFgColor)',
       backgroundColor: 'var(--hoverBgColor)',
     },
@@ -353,6 +414,7 @@ export const errorStyle = css({
 
 export const labelStyle = css({
   fontWeight: 500,
+  textTransform: 'capitalize',
 });
 
 export const mainHeaderHeight = '48px';

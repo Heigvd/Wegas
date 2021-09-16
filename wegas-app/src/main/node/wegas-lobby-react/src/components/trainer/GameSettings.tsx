@@ -136,7 +136,7 @@ function GameAdvancedSettings({ game, gameModel, onGameModelUpdate }: SettingsPr
         />
         <div>{playUrl}</div>
         <ActionIconButton
-          delay={500}
+          title={i18n.copyToClipboard}
           confirmMessage={i18n.copiedToClipboard}
           icon={faClipboard}
           onClick={async () => {

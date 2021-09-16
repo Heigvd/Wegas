@@ -10,7 +10,7 @@ export const en = {
   pleaseProvideData: 'Some data are missing',
   cancel: 'cancel',
   agree: 'agree',
-  config: 'confirm',
+  confirm: 'confirm',
   emailAddress: 'e-mail address',
   emailAddressNotValid: 'e-mail address is not valid',
   emailShort: 'E-Mail',
@@ -51,6 +51,7 @@ export const en = {
 
   // common
   copiedToClipboard: 'copied to clipboard',
+  copyToClipboard: 'copy to clipboard',
   reconnecting: 'reconnecting...',
   player: 'player',
   trainer: 'trainer',
@@ -74,6 +75,8 @@ export const en = {
   teamSize: 'size',
   createTeam: 'create team',
   joinTeam: 'Join Team',
+  joinOrCreateATeam: 'Join an existing team or create a new one',
+  alreadyJoined: 'You have already joined the game',
   join: 'Join',
   accessKey: 'access key',
   gameNotFound: 'This is not a valid access key',
@@ -119,6 +122,7 @@ export const en = {
   teams: 'Players',
 
   createGame: 'Add session',
+  selectGame: 'select a game...',
   gameName: 'Session name',
   basedOnScenario: 'based on scenario',
 
@@ -198,6 +202,7 @@ export const en = {
   deeplUsage: 'Translation service usage: ',
   doAction: 'Perform an action',
 
+  lastSeenAtKey: 'last seen',
   lastSeenAt: 'Last seen: ',
   lastActivityDate: 'Activity date: ',
 
@@ -230,6 +235,7 @@ export const en = {
   adminLevelSettins: 'Admin Level Settings',
   createPermission: 'Create permission',
   editPermission: 'Edit permission',
+  deletePermission: 'Remove permission',
   none: 'not set',
   unknown: 'unknown',
 

@@ -33,6 +33,7 @@ export default function LanguageSelector() {
       valueComp={valueComp}
       entries={entries}
       onSelect={setLang}
+      idleHoverStyle='BACKGROUND'
     />
   );
 }

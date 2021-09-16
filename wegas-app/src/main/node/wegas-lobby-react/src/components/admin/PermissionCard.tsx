@@ -6,10 +6,10 @@
  * Licensed under the MIT License
  */
 
-import { faCheckSquare, faPen, faSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
+import {faCheckCircle, faCircle, faPen, faTrash} from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import Select from 'react-select';
-import { IGameModelWithId, IPermission, IPermissionWithId } from 'wegas-ts-api';
+import {IGameModelWithId, IPermission, IPermissionWithId} from 'wegas-ts-api';
 import {
   deletePermission,
   getGameById,
@@ -18,15 +18,15 @@ import {
   getGames,
   updatePermission,
 } from '../../API/api';
-import { entityIs } from '../../API/entityHelper';
-import useTranslations, { WegasTranslations } from '../../i18n/I18nContext';
-import { useCurrentUser } from '../../selectors/userSelector';
+import {entityIs} from '../../API/entityHelper';
+import useTranslations, {WegasTranslations} from '../../i18n/I18nContext';
+import {useCurrentUser} from '../../selectors/userSelector';
 import {
   usePermissionObject,
   useShareableGameModels,
   useShareableGames,
 } from '../../selectors/wegasSelector';
-import { useAppDispatch } from '../../store/hooks';
+import {useAppDispatch} from '../../store/hooks';
 import ActionIconButton from '../common/ActionIconButton';
 import Button from '../common/Button';
 import Card from '../common/Card';
@@ -36,12 +36,12 @@ import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import IconButton from '../common/IconButton';
 import OpenCloseModal from '../common/OpenCloseModal';
-import { cardDetailsStyle, cardTitleStyle, mainButtonStyle } from '../styling/style';
+import {cardDetailsStyle, cardTitleStyle, defaultSelectStyles, mainButtonStyle} from '../styling/style';
 
 interface GmPermissionEditorProps {
   value: string;
   id: number | '*' | undefined;
-  onChange: (value: { value: string; id: number | '*' }) => void;
+  onChange: (value: {value: string; id: number | '*'}) => void;
 }
 
 interface PermIdOption {
@@ -72,7 +72,7 @@ export function GameModelPermissionEditor({
 }: GmPermissionEditorProps): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
-  const { currentUser } = useCurrentUser();
+  const {currentUser} = useCurrentUser();
 
   const userId = currentUser != null ? currentUser.id : undefined;
 
@@ -105,9 +105,9 @@ export function GameModelPermissionEditor({
   }, [gameModel]);
 
   React.useEffect(() => {
-    if (permState['Edit']) {
+    if (permState['Edit'] && gmPerm.find(perm => (!permState[perm]))) {
       setPermState(current => {
-        const newState = { ...current };
+        const newState = {...current};
         gmPerm.forEach(perm => (newState[perm] = true));
         return newState;
       });
@@ -132,11 +132,11 @@ export function GameModelPermissionEditor({
 
   React.useEffect(() => {
     if (sStatus == 'NOT_INITIALIZED') {
-      dispatch(getGameModels({ status: 'LIVE', type: 'SCENARIO' }));
+      dispatch(getGameModels({status: 'LIVE', type: 'SCENARIO'}));
     }
 
     if (mStatus == 'NOT_INITIALIZED') {
-      dispatch(getGameModels({ status: 'LIVE', type: 'MODEL' }));
+      dispatch(getGameModels({status: 'LIVE', type: 'MODEL'}));
     }
   }, [sStatus, mStatus, dispatch]);
 
@@ -167,7 +167,7 @@ export function GameModelPermissionEditor({
   const togglePermCb = React.useCallback(
     (perm: string) => {
       setPermState(state => {
-        const newState = { ...state, [perm]: !state[perm] };
+        const newState = {...state, [perm]: !state[perm]};
         if (newState['Edit']) {
           gmPerm.forEach(perm => (newState[perm] = true));
         }
@@ -193,16 +193,22 @@ export function GameModelPermissionEditor({
 
   return (
     <>
-      <Select options={options} isClearable={false} value={current} onChange={selectGameModelCb} />
+      <Select
+        options={options}
+        isClearable={false}
+        value={current}
+        onChange={selectGameModelCb}
+        styles={defaultSelectStyles}
+      />
       {gmPerm.map(perm => createCheckBox(perm))}
     </>
   );
 }
 
-export function GamePermissionEditor({ id, onChange }: GmPermissionEditorProps): JSX.Element {
+export function GamePermissionEditor({id, onChange}: GmPermissionEditorProps): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
-  const { currentUser } = useCurrentUser();
+  const {currentUser} = useCurrentUser();
 
   const userId = currentUser != null ? currentUser.id : undefined;
 
@@ -219,7 +225,7 @@ export function GamePermissionEditor({ id, onChange }: GmPermissionEditorProps):
   const selectGameCb = React.useCallback(
     (value: PermIdOption | null) => {
       if (value != null) {
-        onChange({ value: 'View,Edit', id: value.value });
+        onChange({value: 'View,Edit', id: value.value});
       }
     },
     [onChange],
@@ -279,15 +285,17 @@ export function PermissionEditor({
   return (
     <FitSpace direction="column">
       <CardContainer>
-        <IconButton
-          icon={typeState === 'GameModel' ? faCheckSquare : faSquare}
-          onClick={toggleType}
-        >
-          GameModel
-        </IconButton>
-        <IconButton icon={typeState === 'Game' ? faCheckSquare : faSquare} onClick={toggleType}>
-          Game
-        </IconButton>
+        <Flex>
+          <IconButton
+            icon={typeState === 'GameModel' ? faCheckCircle : faCircle}
+            onClick={toggleType}
+          >
+            GameModel
+          </IconButton>
+          <IconButton icon={typeState === 'Game' ? faCheckCircle : faCircle} onClick={toggleType}>
+            Game
+          </IconButton>
+        </Flex>
         {typeState === 'GameModel' ? (
           <GameModelPermissionEditor
             value={valueState}
@@ -317,7 +325,7 @@ export function PermissionEditor({
                 typeState === 'GameModel'
                   ? `${typeState}:${valueState}:gm${gmIdState}`
                   : `${typeState}:${valueState}:g${gIdState}`;
-              onSave({ ...permission, value: newPerm });
+              onSave({...permission, value: newPerm});
             }}
           />
         </Flex>
@@ -330,7 +338,7 @@ interface PermissionCardProps {
   permission: IPermissionWithId;
 }
 
-export function PermissionCard({ permission }: PermissionCardProps): JSX.Element {
+export function PermissionCard({permission}: PermissionCardProps): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
 
@@ -361,10 +369,9 @@ export function PermissionCard({ permission }: PermissionCardProps): JSX.Element
   }, [permission.id, dispatch]);
 
   const name = entityIs(gameModel, 'GameModel') ? (
-    `${
-      gameModel.type === 'MODEL'
-        ? i18n.Model
-        : gameModel.type === 'SCENARIO'
+    `${gameModel.type === 'MODEL'
+      ? i18n.Model
+      : gameModel.type === 'SCENARIO'
         ? i18n.GameModel
         : gameModel.type
     } "${gameModel.name}"`
@@ -421,7 +428,7 @@ export function PermissionCard({ permission }: PermissionCardProps): JSX.Element
         </OpenCloseModal>
       ) : null}
 
-      <ActionIconButton shouldConfirm icon={faTrash} onClick={destroyCb} />
+      <ActionIconButton title={i18n.deletePermission} shouldConfirm icon={faTrash} onClick={destroyCb} />
     </Card>
   );
 }

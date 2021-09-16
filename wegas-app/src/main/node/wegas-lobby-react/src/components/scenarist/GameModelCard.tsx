@@ -48,11 +48,11 @@ export default function GameModelCard({ gameModel }: GameModelCardProps): JSX.El
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
   const gameModelId = gameModel.id;
-  const { currentUser, isAdmin } = useCurrentUser();
+  const { currentUserId, isAdmin } = useCurrentUser();
 
   const permission = useGameModelPermission(
     gameModelId,
-    currentUser != null ? currentUser.id : undefined,
+    currentUserId,
   );
 
   const duplicateCb = React.useCallback(async () => {

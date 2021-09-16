@@ -10,19 +10,19 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { WegasErrorMessage } from '../../API/restClient';
 //import * as API from '../API/api';
 
-export interface ColabNotification {
+export interface WegasNotification {
   status: 'OPEN' | 'CLOSED';
   type: 'ERROR' | 'INFO' | 'WARN';
   message: WegasErrorMessage | string;
 }
 
-const initialState: ColabNotification[] = [];
+const initialState: WegasNotification[] = [];
 
 const slice = createSlice({
   name: 'notifications',
   initialState,
   reducers: {
-    addNotification: (state, action: PayloadAction<ColabNotification>) => {
+    addNotification: (state, action: PayloadAction<WegasNotification>) => {
       state.push(action.payload);
     },
     closeNotification: (state, action: PayloadAction<number>) => {

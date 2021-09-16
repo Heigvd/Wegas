@@ -6,21 +6,21 @@
  * Licensed under the MIT License
  */
 
-import { css, cx } from '@emotion/css';
-import { faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons';
+import {css, cx} from '@emotion/css';
+import {faSignOutAlt, faUser} from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
-import { Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom';
+import {Redirect, Route, Switch, useHistory, useLocation} from 'react-router-dom';
 import * as API from '../API/api';
-import { getDisplayName } from '../helper';
+import {getDisplayName} from '../helper';
 import useTranslations from '../i18n/I18nContext';
 import LanguageSelector from '../i18n/LanguageSelector';
-import { useCurrentUser } from '../selectors/userSelector';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
+import {useCurrentUser} from '../selectors/userSelector';
+import {useAppDispatch, useAppSelector} from '../store/hooks';
 import Admin from './admin/Admin';
 import FitSpace from './common/FitSpace';
 import IconButton from './common/IconButton';
 import InlineLoading from './common/InlineLoading';
-import { MainMenu } from './common/Link';
+import {MainMenu} from './common/Link';
 import Loading from './common/Loading';
 import Modal from './common/Modal';
 import OpenCloseModal from './common/OpenCloseModal';
@@ -31,7 +31,7 @@ import PleaseAcceptPolicy from './public/PleaseAcceptPolicy';
 import SignInForm from './public/SignIn';
 import SignUpForm from './public/SignUp';
 import ScenaristTab from './scenarist/ScenaristTab';
-import { UserSettings } from './settings/UserSettings';
+import {UserSettings} from './settings/UserSettings';
 import {
   adminColor,
   modelerColor,
@@ -39,7 +39,7 @@ import {
   scenaristColor,
   trainerColor,
 } from './styling/color';
-import { fullPageStyle, mainHeaderHeight } from './styling/style';
+import {fullPageStyle, mainHeaderHeight} from './styling/style';
 import TrainerTab from './trainer/TrainerTab';
 
 // A custom hook that builds on useLocation to parse
@@ -191,7 +191,10 @@ export default function MainApp(): JSX.Element {
                 color: 'var(--linkColor)',
                 textTransform: 'uppercase',
                 fontSize: '12px',
-                padding: '10px 20px 10px 5px',
+                padding: '18px 20px 15px 5px',
+                ":hover": {
+                  backgroundColor: '#e6e6e6',
+                }
               })}
               showCloseButton={true}
               title={i18n.settings}
@@ -201,7 +204,16 @@ export default function MainApp(): JSX.Element {
 
             <LanguageSelector />
 
-            <IconButton onClick={logout} icon={faSignOutAlt} />
+            <IconButton className={css({
+              padding: '15px 5px 14px 0px',
+              ":hover": {
+                backgroundColor: '#e6e6e6',
+              }
+            })}
+              iconColor='#666'
+              onClick={logout}
+              icon={faSignOutAlt}
+            />
           </div>
 
           <div

@@ -139,7 +139,7 @@ export default (props: Props): JSX.Element => {
   );
 
   return (
-    <MelonContainer footer={<PolicyDisclaimer />}>
+    <MelonContainer below={<PolicyDisclaimer />}>
       <Form fields={fields} value={defData} submitLabel={i18n.createAnAccount} onSubmit={createCb}>
         <InlineLink
           className={css({ alignSelf: 'flex-end' })}

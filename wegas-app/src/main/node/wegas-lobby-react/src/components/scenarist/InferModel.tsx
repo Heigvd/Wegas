@@ -19,7 +19,7 @@ import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import InlineLoading from '../common/InlineLoading';
 import Input from '../common/Input';
-import { mainButtonStyle } from '../styling/style';
+import { defaultSelectStyles, mainButtonStyle } from '../styling/style';
 
 interface InferModelProps {
   close: () => void;
@@ -76,7 +76,10 @@ export default function InferModel({ close }: InferModelProps): JSX.Element {
           onChange={setName}
         />
 
-        <Select isMulti closeMenuOnSelect={false} options={options} onChange={selectGameModelCb} />
+        <Select isMulti closeMenuOnSelect={false} options={options} onChange={selectGameModelCb}
+
+          styles={defaultSelectStyles}
+        />
 
         <Flex justify="flex-end">
           <Button label={i18n.cancel} onClick={close} />

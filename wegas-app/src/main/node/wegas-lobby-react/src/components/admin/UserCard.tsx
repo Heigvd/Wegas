@@ -6,19 +6,19 @@
  * Licensed under the MIT License
  */
 
-import { css } from '@emotion/css';
+import {css} from '@emotion/css';
 import {
   faKey,
   faMinusCircle,
   faPen,
-  faPlay,
   faPlusCircle,
   faUsers,
+  faUserSecret,
 } from '@fortawesome/free-solid-svg-icons';
-import { uniq } from 'lodash';
+import {uniq} from 'lodash';
 import * as React from 'react';
 import Select from 'react-select';
-import { IPermission, IUserWithId } from 'wegas-ts-api';
+import {IPermission, IUserWithId} from 'wegas-ts-api';
 import {
   createPermissionForUser,
   getAllRoles,
@@ -29,29 +29,29 @@ import {
   removeRoleFromUser,
   runAs,
 } from '../../API/api';
-import { getDisplayName } from '../../helper';
+import {getDisplayName} from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
-import { useAccount, useUserPermissions, useUserRoles } from '../../selectors/userSelector';
-import { customStateEquals, shallowEqual, useAppDispatch, useAppSelector } from '../../store/hooks';
+import {useAccount, useUserPermissions, useUserRoles} from '../../selectors/userSelector';
+import {customStateEquals, shallowEqual, useAppDispatch, useAppSelector} from '../../store/hooks';
 import ActionIconButton from '../common/ActionIconButton';
-import Card, { cardSecButtonStyle } from '../common/Card';
-import CardContainer, { WindowedContainer } from '../common/CardContainer';
+import Card, {cardSecButtonStyle} from '../common/Card';
+import CardContainer, {WindowedContainer} from '../common/CardContainer';
 import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import IconButton from '../common/IconButton';
-import { SizeType } from '../common/illustrations/Illustration';
+import {SizeType} from '../common/illustrations/Illustration';
 import OpenCloseModal from '../common/OpenCloseModal';
-import { UserSettings } from '../settings/UserSettings';
-import { cardDetailsStyle, cardTitleStyle } from '../styling/style';
-import { PermissionCard, PermissionEditor } from './PermissionCard';
-import { RoleCard } from './RoleCard';
+import {UserSettings} from '../settings/UserSettings';
+import {cardDetailsStyle, cardTitleStyle, upsideSelectStyles} from '../styling/style';
+import {PermissionCard, PermissionEditor} from './PermissionCard';
+import {RoleCard} from './RoleCard';
 
 const emptyPermission: IPermission = {
   '@class': 'Permission',
   value: '',
 };
 
-export function UserPermissions({ userId }: { userId: number }): JSX.Element {
+export function UserPermissions({userId}: {userId: number}): JSX.Element {
   const i18n = useTranslations();
 
   const dispatch = useAppDispatch();
@@ -134,7 +134,7 @@ export function UserPermissions({ userId }: { userId: number }): JSX.Element {
               value={'Edit'}
               id={undefined}
               onSave={p => {
-                dispatch(createPermissionForUser({ id: userId, permission: p })).then(a => {
+                dispatch(createPermissionForUser({id: userId, permission: p})).then(a => {
                   if (a.meta.requestStatus === 'fulfilled') {
                     close();
                   }
@@ -149,7 +149,7 @@ export function UserPermissions({ userId }: { userId: number }): JSX.Element {
   );
 }
 
-export function UserRoles({ userId }: { userId: number }): JSX.Element {
+export function UserRoles({userId}: {userId: number}): JSX.Element {
   const i18n = useTranslations();
   const dispatch = useAppDispatch();
 
@@ -175,7 +175,7 @@ export function UserRoles({ userId }: { userId: number }): JSX.Element {
   }, [userRoles.status, userId, dispatch]);
 
   const addUserToGroup = React.useCallback(
-    (option: { value: number } | null) => {
+    (option: {value: number} | null) => {
       if (option != null) {
         dispatch(
           giveRoleToUser({
@@ -222,32 +222,11 @@ export function UserRoles({ userId }: { userId: number }): JSX.Element {
       </CardContainer>
       <Flex direction="row" justify="space-between" align="center">
         <Select
-          className={css({ flexGrow: 1 })}
+          className={css({flexGrow: 1})}
           onChange={addUserToGroup}
           placeholder={i18n.name}
           options={options}
-          styles={{
-            container: provided => {
-              return {
-                ...provided,
-              };
-            },
-            control: provided => {
-              return {
-                ...provided,
-                marginTop: '2px',
-                height: '50px',
-              };
-            },
-            menu: provided => {
-              return {
-                ...provided,
-                top: 'unset',
-                bottom: '44px',
-                marginTop: '0px',
-              };
-            },
-          }}
+          styles={upsideSelectStyles}
         />
       </Flex>
     </FitSpace>
@@ -328,7 +307,7 @@ export default function UserCard({
         {() => <UserPermissions userId={user.id} />}
       </OpenCloseModal>
 
-      <IconButton icon={faPlay} onClick={sudoCb} />
+      <IconButton icon={faUserSecret} onClick={sudoCb} />
 
       {children}
     </Card>

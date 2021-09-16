@@ -6,19 +6,19 @@
  * Licensed under the MIT License
  */
 
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { faCheck, faPlay, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import {IconProp} from '@fortawesome/fontawesome-svg-core';
+import {faCheck, faPlay, faSpinner} from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
-import { ConfirmIconButton } from '../common/ConfirmIconButton';
+import {ConfirmIconButton} from '../common/ConfirmIconButton';
 import IconButton from '../common/IconButton';
 
 export interface ActionIconButton {
   onClick: () => Promise<unknown>;
-  title?: string;
+  title: string;
   className?: string;
   icon: IconProp;
   children?: React.ReactNode;
-  shouldConfirm?: boolean;
+  shouldConfirm?: boolean | 'HARD';
   delay?: number;
   confirmMessage?: React.ReactNode;
 }
@@ -42,6 +42,13 @@ export default function ActionIconButton({
     });
   }, [onClick]);
 
+  const winConfirmCb = React.useCallback(() => {
+    const result = window.confirm("Confirm ?");
+    if (result) {
+      onClickCb();
+    }
+  }, [onClickCb]);
+
   React.useEffect(() => {
     let tId: number | undefined;
     if (state === 'DONE') {
@@ -58,15 +65,19 @@ export default function ActionIconButton({
   }, [state, delay]);
 
   if (state === 'IDLE') {
-    if (shouldConfirm) {
+    if (shouldConfirm === true) {
       return (
         <ConfirmIconButton icon={icon} onConfirm={onClickCb} title={title}>
           {children}
         </ConfirmIconButton>
       );
+    } else if (shouldConfirm === 'HARD') {
+      return (<IconButton className={className} icon={icon} onClick={winConfirmCb} title={title}>
+        {children}
+      </IconButton>);
     } else {
       return (
-        <IconButton className={className} icon={icon} onClick={onClickCb}>
+        <IconButton className={className} icon={icon} onClick={onClickCb} title={title}>
           {children}
         </IconButton>
       );

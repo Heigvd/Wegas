@@ -6,19 +6,19 @@
  * Licensed under the MIT License
  */
 
-import { css, cx } from '@emotion/css';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { far } from '@fortawesome/free-regular-svg-icons';
-import { fas } from '@fortawesome/free-solid-svg-icons/';
+import {css, cx} from '@emotion/css';
+import {library} from '@fortawesome/fontawesome-svg-core';
+import {far} from '@fortawesome/free-regular-svg-icons';
+import {fas} from '@fortawesome/free-solid-svg-icons/';
 import * as React from 'react';
 import useTranslations from '../../../i18n/I18nContext';
-import { illustrationColors, resolveColor } from '../../styling/color';
+import {illustrationColors, resolveColor} from '../../styling/color';
 import DebouncedInput from '../DebouncedInput';
 import FitSpace from '../FitSpace';
 import Flex from '../Flex';
 import './fontello.css';
-import { IconDisplay } from './Illustration';
-import { getIconDef, IconDef, icons } from './illustrationHelper';
+import {IconDisplay} from './Illustration';
+import {getIconDef, IconDef, icons} from './illustrationHelper';
 
 library.add(fas, far);
 
@@ -36,11 +36,20 @@ const colorStyle = css({
   width: '4%',
   height: '32px',
   boxSizing: 'border-box',
+  cursor: 'pointer',
+  ":hover": {
+    border: '2px solid white',
+  }
 });
 
-const selectedColor = cx(colorStyle, css({ border: '5px solid white' }));
+const selectedColor = cx(colorStyle, css({
+  border: '5px solid white',
+  ":hover": {
+    border: '5px solid white',
+  }
+}));
 
-export function ColorPicker({ color, onChange }: ColorPickerProps): JSX.Element {
+export function ColorPicker({color, onChange}: ColorPickerProps): JSX.Element {
   return (
     <Flex wrap="wrap">
       {Object.entries(illustrationColors).map(entry => {
@@ -52,7 +61,7 @@ export function ColorPicker({ color, onChange }: ColorPickerProps): JSX.Element 
             }}
             className={cx(
               color === entry[0] ? selectedColor : colorStyle,
-              css({ backgroundColor: entry[1].toString() }),
+              css({backgroundColor: entry[1].toString()}),
             )}
           ></span>
         );
@@ -67,9 +76,13 @@ interface IconPickerProps {
   onChange: (icon: IconDef) => void;
 }
 
-const roundIcon = css({
+const roundIcon = (color: string) => css({
   borderRadius: '100%',
   overflow: 'hidden',
+  margin: "1px",
+  ":hover": {
+    boxShadow: `0 0 1px 2px ${color}`
+  }
 });
 
 const matchSearch = (search: string) => (data: IconDef) => {
@@ -81,7 +94,7 @@ const matchSearch = (search: string) => (data: IconDef) => {
   }
 };
 
-export function IconPicker({ icon, color, onChange }: IconPickerProps): JSX.Element {
+export function IconPicker({icon, color, onChange}: IconPickerProps): JSX.Element {
   const i18n = useTranslations();
 
   const [filter, setFilter] = React.useState('');
@@ -90,7 +103,9 @@ export function IconPicker({ icon, color, onChange }: IconPickerProps): JSX.Elem
 
   return (
     <FitSpace direction="column" overflow="auto">
-      <DebouncedInput size="SMALL" value={filter} placeholder={i18n.search} onChange={setFilter} />
+      <div className={css({padding: '10px'})}>
+        <DebouncedInput size="SMALL" value={filter} placeholder={i18n.search} onChange={setFilter} />
+      </div>
       <Flex wrap="wrap" overflow="auto">
         {filteredIconds.map(iconDef => {
           const selected = iconDef === icon;
@@ -101,7 +116,7 @@ export function IconPicker({ icon, color, onChange }: IconPickerProps): JSX.Elem
               onClick={() => {
                 onChange(iconDef);
               }}
-              className={roundIcon}
+              className={roundIcon(color)}
             >
               <IconDisplay
                 icon={iconDef}
@@ -117,7 +132,7 @@ export function IconPicker({ icon, color, onChange }: IconPickerProps): JSX.Elem
   );
 }
 
-export default function IllustrationPicker({ value, onChange }: Props): JSX.Element {
+export default function IllustrationPicker({value, onChange}: Props): JSX.Element {
   const [, color = 'orange', key = 'gamepad', library = 'fa'] = value.split('_');
 
   //const state = React.useState<>({color, key, library});

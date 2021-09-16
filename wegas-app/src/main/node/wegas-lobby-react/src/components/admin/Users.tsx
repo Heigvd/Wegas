@@ -53,7 +53,7 @@ export default function Users(): JSX.Element {
   });
 
   const sortOptions: SortByOption<IUserWithId>[] = [
-    { key: 'lastSeenAt', label: i18n.lastSeenAt },
+    { key: 'lastSeenAt', label: i18n.lastSeenAtKey },
     { key: 'name', label: i18n.name },
   ];
 

@@ -10,12 +10,12 @@ import {
   ITeamWithId,
 } from 'wegas-ts-api';
 import { entityIs } from '../API/entityHelper';
-import getLogger, { INFO } from '../logger';
+import getLogger from '../logger';
 import { getStore, WegasLobbyState } from '../store/store';
 
 const logger = getLogger('pusher');
 
-logger.setLevel(INFO);
+//logger.setLevel(INFO);
 
 export const CHANNEL_PREFIX = {
   Admin: 'private-LobbyAdministrator',

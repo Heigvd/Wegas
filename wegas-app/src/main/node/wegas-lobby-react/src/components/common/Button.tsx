@@ -6,18 +6,18 @@
  * Licensed under the MIT License
  */
 
-import { cx } from '@emotion/css';
+import {cx} from '@emotion/css';
 import * as React from 'react';
-import { buttonStyle, inactiveButtonStyle } from '../styling/style';
+import {buttonStyle, inactiveButtonStyle} from '../styling/style';
 import Clickable from './Clickable';
 
-export interface IconButtonProps {
+export interface ButtonProps {
   onClick?: () => void;
   label: string;
   className?: string;
 }
 
-export default function IconButton({ onClick, label, className }: IconButtonProps): JSX.Element {
+export default function Button({onClick, label, className}: ButtonProps): JSX.Element {
   return (
     <Clickable
       onClick={onClick}

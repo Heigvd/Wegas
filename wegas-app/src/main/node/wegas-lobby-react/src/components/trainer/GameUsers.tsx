@@ -31,7 +31,7 @@ import Flex from '../common/Flex';
 import IconButton from '../common/IconButton';
 import InlineLoading from '../common/InlineLoading';
 import Tabs, { Tab } from '../common/Tabs';
-import { cardDetailsStyle, cardTitleStyle } from '../styling/style';
+import { cardDetailsStyle, cardTitleStyle, upsideSelectStyles } from '../styling/style';
 
 interface TeamDetailsProps {
   team: ITeamWithId;
@@ -69,9 +69,9 @@ function TeamDetails({ team }: TeamDetailsProps): JSX.Element {
   const teamName = team.name ? `${i18n.Team} "${team.name}"` : i18n.Team;
 
   return (
-    <div>
-      <Flex direction="row" className={css({ padding: '10px' })}>
-        <div>{teamName}</div>
+    <div className={css({ padding: '10px' })}>
+      <Flex direction="row">
+        <h4>{teamName}</h4>
         <ActionIconButton shouldConfirm title={i18n.kickTeam} icon={faTrash} onClick={deleteTeam} />
       </Flex>
       {theTeam.players.map(p => (
@@ -88,7 +88,7 @@ function TeamDetails({ team }: TeamDetailsProps): JSX.Element {
           />
         </Card>
       ))}
-      {theTeam.players.length === 0 ? <i>{i18n.teamIsEmpty}</i> : null}
+      {theTeam.players.length === 0 ? <i className={css({marginLeft: "10px"})}>{i18n.teamIsEmpty}</i> : null}
     </div>
   );
 }
@@ -222,28 +222,7 @@ function ShareGame({ game }: GameProps) {
             className={css({ flexGrow: 1 })}
             onChange={inviteCb}
             placeholder={i18n.addTrainer}
-            styles={{
-              container: provided => {
-                return {
-                  ...provided,
-                };
-              },
-              control: provided => {
-                return {
-                  ...provided,
-                  marginTop: '2px',
-                  height: '50px',
-                };
-              },
-              menu: provided => {
-                return {
-                  ...provided,
-                  top: 'unset',
-                  bottom: '44px',
-                  marginTop: '0px',
-                };
-              },
-            }}
+            styles={upsideSelectStyles}
             cacheOptions
             defaultOptions
             loadOptions={promiseOptions}

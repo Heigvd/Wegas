@@ -30,6 +30,7 @@ export function getUserPermissions(state: WegasLobbyState, userId: number): IPer
 }
 
 export const useCurrentUser = (): {
+  currentUserId: number | undefined;
   currentUser: IUserWithId | null;
   currentAccount: IAbstractAccountWithId | null;
   status: WegasLobbyState['auth']['status'];
@@ -47,6 +48,7 @@ export const useCurrentUser = (): {
         : null;
 
     return {
+      currentUserId: state.auth.currentUserId || undefined,
       currentUser: user != null && user != 'LOADING' ? user.user : null,
       currentAccount: account || null,
       status: state.auth.status,

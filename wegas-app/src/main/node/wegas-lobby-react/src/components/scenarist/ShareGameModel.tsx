@@ -6,15 +6,15 @@
  * Licensed under the MIT License
  */
 
-import { css } from '@emotion/css';
-import { faSync, faUserTimes } from '@fortawesome/free-solid-svg-icons';
+import {css} from '@emotion/css';
+import {faSync, faUserTimes} from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import AsyncSelect from 'react-select/async';
-import { IGameModelWithId, IPermission } from 'wegas-ts-api';
-import { getRestClient, shareGameModel, unshareGameModel } from '../../API/api';
-import { IAccountWithPerm } from '../../API/restClient';
+import {IGameModelWithId, IPermission} from 'wegas-ts-api';
+import {getRestClient, shareGameModel, unshareGameModel} from '../../API/api';
+import {IAccountWithPerm} from '../../API/restClient';
 import useTranslations from '../../i18n/I18nContext';
-import { useAppDispatch } from '../../store/hooks';
+import {useAppDispatch} from '../../store/hooks';
 import ActionIconButton from '../common/ActionIconButton';
 import Card from '../common/Card';
 import CardContainer from '../common/CardContainer';
@@ -23,7 +23,7 @@ import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import IconButton from '../common/IconButton';
 import InlineLoading from '../common/InlineLoading';
-import { cardDetailsStyle, cardTitleStyle } from '../styling/style';
+import {cardDetailsStyle, cardTitleStyle, upsideSelectStyles} from '../styling/style';
 
 interface GameModelProps {
   gameModel: IGameModelWithId;
@@ -57,7 +57,7 @@ function processPermission(gameModel: IGameModelWithId, permission?: IPermission
   return map;
 }
 
-function UserCard({ account, gameModel, reload }: UserProps) {
+function UserCard({account, gameModel, reload}: UserProps) {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
 
@@ -70,7 +70,7 @@ function UserCard({ account, gameModel, reload }: UserProps) {
   const toggle = React.useCallback(
     (perm: string) => {
       setState(state => {
-        const newState = { ...state, [perm]: !state[perm] };
+        const newState = {...state, [perm]: !state[perm]};
         const toSet: string[] = [];
         if (newState['Edit']) {
           Object.keys(newState).forEach(key => (newState[key] = true));
@@ -120,7 +120,7 @@ function UserCard({ account, gameModel, reload }: UserProps) {
         <div className={cardDetailsStyle}>••••@{account.emailDomain}</div>
       </FitSpace>
 
-      <FitSpace direction="column" className={css({ flexWrap: 'wrap' })}>
+      <FitSpace direction="column" className={css({flexWrap: 'wrap'})}>
         {createCheckBox('Edit')}
         {createCheckBox('Duplicate')}
         {createCheckBox('Instantiate')}
@@ -132,7 +132,7 @@ function UserCard({ account, gameModel, reload }: UserProps) {
         icon={faUserTimes}
         title={i18n.kickScenarist}
         onClick={async () =>
-          dispatch(unshareGameModel({ gameModelId: gameModel.id, accountId: account.id })).then(
+          dispatch(unshareGameModel({gameModelId: gameModel.id, accountId: account.id})).then(
             () => reload(),
           )
         }
@@ -141,7 +141,7 @@ function UserCard({ account, gameModel, reload }: UserProps) {
   );
 }
 
-export default function ShareGameModel({ gameModel }: GameModelProps) {
+export default function ShareGameModel({gameModel}: GameModelProps) {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
 
@@ -194,7 +194,7 @@ export default function ShareGameModel({ gameModel }: GameModelProps) {
   };
 
   const inviteCb = React.useCallback(
-    (option: { value: number } | null) => {
+    (option: {value: number} | null) => {
       if (option != null) {
         dispatch(
           shareGameModel({
@@ -220,31 +220,10 @@ export default function ShareGameModel({ gameModel }: GameModelProps) {
         </CardContainer>
         <Flex direction="row" justify="space-between" align="center">
           <AsyncSelect
-            className={css({ flexGrow: 1 })}
+            className={css({flexGrow: 1})}
             onChange={inviteCb}
             placeholder={i18n.addScenarist}
-            styles={{
-              container: provided => {
-                return {
-                  ...provided,
-                };
-              },
-              control: provided => {
-                return {
-                  ...provided,
-                  marginTop: '2px',
-                  height: '50px',
-                };
-              },
-              menu: provided => {
-                return {
-                  ...provided,
-                  top: 'unset',
-                  bottom: '44px',
-                  marginTop: '0px',
-                };
-              },
-            }}
+            styles={upsideSelectStyles}
             cacheOptions
             defaultOptions
             loadOptions={promiseOptions}

@@ -12,7 +12,7 @@ export const fr: WegasTranslations = {
   pleaseProvideData: 'Merci de remplir tous les champs',
   cancel: 'annuler',
   agree: 'Accepter',
-  config: 'confirmer',
+  confirm: 'confirmer',
   emailAddress: 'adresse e-mail',
   emailAddressNotValid: 'adresse e-mail invalide',
   emailShort: 'E-Mail',
@@ -52,7 +52,8 @@ export const fr: WegasTranslations = {
   passwordEditionImpossible: 'Vous ne pouvez pas mettre à jour votre mot de passe',
 
   // common
-  copiedToClipboard: 'copier dans le presse papier',
+  copiedToClipboard: 'copié dans le presse papier',
+  copyToClipboard: 'copier dans le presse papier',
   reconnecting: 'reconnexion en cours..',
   player: 'joueur',
   trainer: 'animateur',
@@ -76,6 +77,8 @@ export const fr: WegasTranslations = {
   teamSize: 'taille',
   createTeam: 'créer une équipe',
   joinTeam: "Rejoindre l'équipe",
+  joinOrCreateATeam: "Vous pouvez rejoindre une équipe existante ou en créer une nouvelle",
+  alreadyJoined: 'Vous avez déjà rejoint la partie',
   join: 'Rejoidre',
   accessKey: "clé d'accès",
   gameNotFound: "clé d'accès invalide",
@@ -121,6 +124,7 @@ export const fr: WegasTranslations = {
   teams: 'Joueurs',
 
   createGame: 'Ajouter une partie',
+  selectGame: 'sélectionner une partie...',
   gameName: 'Nom de la partie',
   basedOnScenario: 'baseée sur le scénario',
 
@@ -201,8 +205,9 @@ export const fr: WegasTranslations = {
   deeplUsage: 'Utilisation du service de traduction: ',
   doAction: 'Effectuer une action',
 
-  lastSeenAt: 'Vu pour la dernière fois.  ',
-  lastActivityDate: "Date d'activité: ",
+  lastSeenAtKey: 'Vu pour la dernière fois',
+  lastSeenAt: 'Vu pour la dernière fois :',
+  lastActivityDate: "Date d'activité :",
 
   adminPanel: 'Admin',
   who: 'Qui',
@@ -228,17 +233,18 @@ export const fr: WegasTranslations = {
   removeRole: 'Retirer du groupe',
   addMemberInvite: 'rechercher un utilisateur à ajouter',
 
-  showPermissions: 'voi les permissions',
+  showPermissions: 'voir les permissions',
   permissions: 'Permissions',
   adminLevelSettins: 'Paramètres visible des administrateurs',
   createPermission: 'Accorder une permission',
   editPermission: 'Éditer la permission',
+  deletePermission: 'Retirer la permission',
   none: 'N/A',
   unknown: 'Inconnu',
 
   showRoles: 'voir les groupes',
 
-  editUser: "éditer l'utiliusateur",
+  editUser: "éditer l'utilisateur",
 
   noPlayers: "Vous n'avez par encore rejoint de partie",
   noGames: 'Aucune parties disponibles',

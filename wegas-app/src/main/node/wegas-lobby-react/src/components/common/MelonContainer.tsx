@@ -16,20 +16,9 @@ import Flex from './Flex';
 export interface MelonProps {
   children: React.ReactNode;
   below?: React.ReactNode;
-  footer?: React.ReactNode;
 }
 
-const footerStyle = css({
-  position: 'absolute',
-  display: 'flex',
-  bottom: 0,
-  left: 0,
-  right: 0,
-  justifyContent: 'center',
-  paddingBottom: '10px',
-});
-
-export default function MelonContainer({ children, below, footer }: MelonProps): JSX.Element {
+export default function MelonContainer({ children, below }: MelonProps): JSX.Element {
   return (
     <div className={cx(fullPageStyle)}>
       <Flex
@@ -37,6 +26,7 @@ export default function MelonContainer({ children, below, footer }: MelonProps):
         className={cx(
           css({
             margin: 'auto',
+            overflow: 'auto',
           }),
         )}
       >
@@ -47,6 +37,7 @@ export default function MelonContainer({ children, below, footer }: MelonProps):
           className={cx(
             melonMode,
             css({
+              overflow: "auto",
               padding: '32px 32px',
               borderRadius: '6px',
             }),
@@ -71,7 +62,6 @@ export default function MelonContainer({ children, below, footer }: MelonProps):
         </div>
         {below}
       </Flex>
-      <div className={footerStyle}>{footer}</div>
     </div>
   );
 }

@@ -21,7 +21,7 @@ export default function Clickable({
   onClick,
   title,
   children,
-  className = '',
+  className,
   clickableClassName = linkStyle,
 }: ClickablenProps): JSX.Element {
   /**

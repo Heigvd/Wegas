@@ -11,7 +11,7 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
-import { lightMode } from '../styling/style';
+import { lightMode, linkStyle } from '../styling/style';
 import Flex from './Flex';
 
 export const itemStyle = css({
@@ -26,6 +26,7 @@ interface Entry<T> {
 interface Props<T> {
   icon?: IconProp;
   menuIcon?: 'BURGER' | 'CARET';
+  idleHoverStyle?: 'BACKGROUND' | 'FOREGROUND';
   entries: Entry<T>[];
   value: T;
   height?: string;
@@ -72,7 +73,7 @@ const closedStyle = cx(
 const dashStyle = css({
   width: '26px',
   height: '2px',
-  background: '#272727',
+  background: '#666',
   display: 'block',
   position: 'relative',
   transition: 'all .3s ease-in-out',
@@ -113,6 +114,7 @@ export default function DropDownMenu<T extends string | number | symbol>({
   icon,
   height,
   menuIcon,
+  idleHoverStyle ='FOREGROUND'
 }: Props<T>): JSX.Element {
   const [open, setOpen] = React.useState<boolean>(false);
 
@@ -164,7 +166,7 @@ export default function DropDownMenu<T extends string | number | symbol>({
     return (
       <div onClick={clickIn} className={css({ cursor: 'pointer' })}>
         <Flex direction="column" className={css({ overflow: 'visible' })}>
-          <Flex align="center" onClick={toggle} className={hoverStyle}>
+          <Flex align="center" onClick={toggle} className={idleHoverStyle === 'BACKGROUND' ? hoverStyle : linkStyle}>
             {menuIcon === 'BURGER' ? (
               <span className={open ? openButtonStyle : buttonStyle}></span>
             ) : null}

@@ -29,6 +29,7 @@ import {
   cardDetailsStyle,
   cardSubDetailsStyle,
   cardTitleStyle,
+  defaultSelectStyles,
   mainButtonStyle,
 } from '../styling/style';
 import GameModelSettings from './GameModelSettings';
@@ -41,11 +42,11 @@ interface IntegratorProps {
 function Integrator({ model }: IntegratorProps): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
-  const { currentUser } = useCurrentUser();
+  const { currentUserId } = useCurrentUser();
 
   const [gameModelId, setGameModelId] = React.useState<number | null>(null);
 
-  const gameModels = useIntegratableScenarios(currentUser != null ? currentUser.id : undefined);
+  const gameModels = useIntegratableScenarios(currentUserId);
 
   const selectGameModelCb = React.useCallback((value: { value: number } | null) => {
     if (value != null) {
@@ -70,7 +71,9 @@ function Integrator({ model }: IntegratorProps): JSX.Element {
   return (
     <>
       <h3>{i18n.integrateScenario}</h3>
-      <Select options={options} onChange={selectGameModelCb} />
+      <Select options={options} onChange={selectGameModelCb}
+            styles={defaultSelectStyles}
+       />
       <Flex justify="flex-end">
         <Button className={mainButtonStyle} label={i18n.create} onClick={integrateCb} />
       </Flex>
@@ -166,10 +169,10 @@ export default function GameModelVersioning({
 }: GameModelVersioningProps): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
-  const { currentUser } = useCurrentUser();
+  const { currentUserId } = useCurrentUser();
 
   const instances = useModelInstances(
-    currentUser != null ? currentUser.id : undefined,
+    currentUserId,
     gameModel.id,
   );
 

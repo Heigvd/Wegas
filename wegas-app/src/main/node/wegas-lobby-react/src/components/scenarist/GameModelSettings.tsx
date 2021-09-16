@@ -22,6 +22,7 @@ import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import Form, { Field } from '../common/Form';
 import IllustrationPicker from '../common/illustrations/IllustrationPicker';
+import {modalSeparatorBorder} from '../common/Modal';
 import Tabs, { Tab } from '../common/Tabs';
 import { labelStyle, mainButtonStyle } from '../styling/style';
 
@@ -156,7 +157,7 @@ function GameModelAdvancedSettings({ gameModel, onGameModelUpdate }: SettingsPro
 
   return (
     <CardContainer>
-      <span>
+      <span className={css({color:'red'})}>
         <FontAwesomeIcon icon={faExclamationTriangle} /> {i18n.disclaimer}{' '}
       </span>
       <GameModelAdvancedSettingsForm gameModel={gameModel} onGameModelUpdate={onGameModelUpdate} />
@@ -230,7 +231,9 @@ export default function GameModelSettings({ gameModel, onClose }: GameModelSetti
           </Tab>
         </Tabs>
       </FitSpace>
-      <Flex justify="space-between" align="center">
+      <Flex className={css({
+        borderTop: modalSeparatorBorder
+      })} justify="space-between" align="center">
         <div className={css({ margin: '10px', color: 'var(--warningColor)' })}>
           {gameModelUnsaved ? (
             <>

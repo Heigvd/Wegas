@@ -6,10 +6,11 @@
  * Licensed under the MIT License
  */
 
-import { css } from '@emotion/css';
+import {css} from '@emotion/css';
+import {faPlay} from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import Select from 'react-select';
-import { IGameModelWithId, IGameWithId, ITeam, ITeamWithId } from 'wegas-ts-api';
+import {IGameModelWithId, IGameWithId, ITeam, ITeamWithId} from 'wegas-ts-api';
 import {
   createTeam,
   findGameByToken,
@@ -17,20 +18,22 @@ import {
   joinIndividually,
   joinTeam,
 } from '../../API/api';
-import { entityIs } from '../../API/entityHelper';
+import {entityIs} from '../../API/entityHelper';
 import useTranslations from '../../i18n/I18nContext';
-import { useTeams } from '../../selectors/wegasSelector';
-import { useAppDispatch } from '../../store/hooks';
-import { addNotification } from '../../store/slices/notification';
-import { CHANNEL_PREFIX, useWebsocketChannel } from '../../websocket/websocket';
+import {useCurrentUser} from '../../selectors/userSelector';
+import {useTeams, useUserPlayerInGame} from '../../selectors/wegasSelector';
+import {useAppDispatch} from '../../store/hooks';
+import {addNotification} from '../../store/slices/notification';
+import {CHANNEL_PREFIX, useWebsocketChannel} from '../../websocket/websocket';
+import ActionButton from '../common/ActionButton';
 import Button from '../common/Button';
-import Card from '../common/Card';
+import Card, {CardMainButton} from '../common/Card';
 import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import InlineLoading from '../common/InlineLoading';
 //import Modal from '../common/Modal';
 import Input from '../common/Input';
-import { cardTitleStyle, mainButtonStyle, secButtonStyle } from '../styling/style';
+import {cardTitleStyle, defaultSelectStyles, mainButtonStyle, secButtonStyle} from '../styling/style';
 
 interface Option {
   value: string;
@@ -43,82 +46,75 @@ interface Option {
 const sizeOptions = ((x: number) => {
   const opts: Option[] = [];
   for (let i = 1; i <= x; i++) {
-    opts.push({ value: `${i}`, label: `${i}` });
+    opts.push({value: `${i}`, label: `${i}`});
   }
   return opts;
 })(10);
 
-function TeamCreator({ game }: { game: IGameWithId }): JSX.Element {
+function TeamCreator({game}: {game: IGameWithId}): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
-  const [team, setTeam] = React.useState<ITeam>({ '@class': 'Team', players: [] });
+  const [team, setTeam] = React.useState<ITeam>({'@class': 'Team', players: []});
+  const [visible, setVisible] = React.useState(true);
 
   const setName = React.useCallback((teamName: string) => {
-    setTeam(team => ({ ...team, name: teamName }));
+    setTeam(team => ({...team, name: teamName}));
   }, []);
-  const setSize = React.useCallback((option: { value: string } | null) => {
-    setTeam(team => ({ ...team, declaredSize: option ? +option.value : undefined }));
+  const setSize = React.useCallback((option: {value: string} | null) => {
+    setTeam(team => ({...team, declaredSize: option ? +option.value : undefined}));
   }, []);
 
-  const createCb = React.useCallback(() => {
-    dispatch(createTeam({ game, team }));
+  const createCb = React.useCallback(async () => {
+    return dispatch(createTeam({game, team})).then(action => {
+      if (action.meta.requestStatus === 'fulfilled') {
+        setVisible(false);
+      }
+    })
   }, [game, team, dispatch]);
 
-  return (
-    <Flex
-      direction="row"
-      align="center"
-      className={css({
-        padding: '10px',
-      })}
-    >
-      <FitSpace direction="column">
-        <Input placeholder={i18n.teamName} onChange={setName} value={team.name || ''} />
-      </FitSpace>
-      <Select
-        placeholder={i18n.teamSize}
-        styles={{
-          container: provided => {
-            return {
+  if (visible) {
+    return (
+      <Flex
+        direction="row"
+        align="center"
+        className={css({
+          padding: '10px',
+        })}
+      >
+        <FitSpace direction="column">
+          <Input placeholder={i18n.teamName} onChange={setName} value={team.name || ''} />
+        </FitSpace>
+        <Select
+          placeholder={i18n.teamSize}
+          styles={{
+            ...defaultSelectStyles,
+            control: provided => ({
               ...provided,
-              width: '140px',
-            };
-          },
-          control: provided => {
-            return {
-              ...provided,
-              marginTop: '1px',
-              height: '50px',
-            };
-          },
-          menu: provided => {
-            return {
-              ...provided,
-              top: 'unset',
-              marginTop: '0px',
-              bottom: '44px',
-              width: '140px',
-            };
-          },
-        }}
-        options={sizeOptions}
-        onChange={setSize}
-      />
-      <Button label={i18n.createTeam} onClick={createCb} />
-    </Flex>
-  );
+              height: "50px",
+              marginTop: "1px",
+            })
+          }}
+          options={sizeOptions}
+          onChange={setSize}
+        />
+        <ActionButton label={i18n.createTeam} onClick={team.name != null && team.name.length > 0 && team.declaredSize != null && team.declaredSize > 0 ? createCb : undefined} />
+      </Flex>
+    );
+  } else {
+    return <></>;
+  }
 }
 interface TeamToJoinCardProps {
   team: ITeamWithId;
   closePanel: () => void;
 }
 
-function TeamToJoinCard({ team, closePanel }: TeamToJoinCardProps): JSX.Element {
+function TeamToJoinCard({team, closePanel}: TeamToJoinCardProps): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
 
-  const joinCb = React.useCallback(() => {
-    dispatch(joinTeam(team.id)).then(() => {
+  const joinCb = React.useCallback(async () => {
+    return dispatch(joinTeam(team.id)).then(() => {
       closePanel();
     });
   }, [team.id, dispatch, closePanel]);
@@ -128,7 +124,7 @@ function TeamToJoinCard({ team, closePanel }: TeamToJoinCardProps): JSX.Element 
       <FitSpace direction="column">
         <div className={cardTitleStyle}>{team.name}</div>
       </FitSpace>
-      <Button className={secButtonStyle} label={i18n.joinTeam} onClick={joinCb} />
+      <ActionButton className={secButtonStyle} label={i18n.joinTeam} onClick={joinCb} />
     </Card>
   );
 }
@@ -138,7 +134,7 @@ interface ShowTeamsProps {
   closePanel: () => void;
 }
 
-function ShowTeams({ closePanel, game }: ShowTeamsProps): JSX.Element {
+function ShowTeams({closePanel, game}: ShowTeamsProps): JSX.Element {
   const teams = useTeams(game.id);
   const dispatch = useAppDispatch();
   useWebsocketChannel(`${CHANNEL_PREFIX.Game}${game.id}`);
@@ -158,13 +154,13 @@ function ShowTeams({ closePanel, game }: ShowTeamsProps): JSX.Element {
       ) : (
         <>
           <span>Join an existing team or create a new one</span>
-          <FitSpace direction="column" overflow="auto">
+          <Flex direction="column" overflow="auto">
             {teams
               .filter(t => !entityIs(t, 'DebugTeam'))
               .map(t => (
                 <TeamToJoinCard key={t.id} closePanel={closePanel} team={t} />
               ))}
-          </FitSpace>
+          </Flex>
         </>
       )}
       <TeamCreator game={game} />
@@ -182,19 +178,19 @@ interface LoadProps {
   onSelect: (data: GameAndGm) => void;
 }
 
-export function FindGameByToken({ onSelect, onCancel }: LoadProps): JSX.Element {
+export function FindGameByToken({onSelect, onCancel}: LoadProps): JSX.Element {
   const [key, setKey] = React.useState('');
 
   const i18n = useTranslations();
 
   const dispatch = useAppDispatch();
 
-  const onJoin = React.useCallback(() => {
-    dispatch(findGameByToken(key)).then(action => {
+  const onJoin = React.useCallback(async () => {
+    return dispatch(findGameByToken(key)).then(action => {
       if (action.meta.requestStatus === 'fulfilled') {
         onSelect(action.payload as GameAndGm);
       } else if (action.meta.requestStatus === 'rejected') {
-        dispatch(addNotification({ status: 'OPEN', type: 'ERROR', message: i18n.gameNotFound }));
+        dispatch(addNotification({status: 'OPEN', type: 'ERROR', message: i18n.gameNotFound}));
       }
     });
   }, [key, dispatch, i18n.gameNotFound, onSelect]);
@@ -204,13 +200,13 @@ export function FindGameByToken({ onSelect, onCancel }: LoadProps): JSX.Element 
       <h3>{i18n.joinGame}</h3>
       <Input
         placeholder={i18n.accessKey}
-        className={css({ minWidth: '400px', paddingBottom: '20px' })}
+        className={css({minWidth: '400px', paddingBottom: '20px'})}
         value={key}
         onChange={setKey}
       />
       <Flex justify="flex-end">
         <Button label={i18n.cancel} onClick={onCancel} />
-        <Button className={mainButtonStyle} label={i18n.join} onClick={onJoin} />
+        <ActionButton className={mainButtonStyle} label={i18n.join} onClick={key.length > 0 ? onJoin : undefined} />
       </Flex>
     </FitSpace>
   );
@@ -221,7 +217,7 @@ interface JoinGameProps {
   gameToken?: string;
 }
 
-export default function JoinGame({ gameToken, onClose }: JoinGameProps): JSX.Element {
+export default function JoinGame({gameToken, onClose}: JoinGameProps): JSX.Element {
   const i18n = useTranslations();
 
   const [data, setData] = React.useState<GameAndGm | undefined>();
@@ -229,7 +225,12 @@ export default function JoinGame({ gameToken, onClose }: JoinGameProps): JSX.Ele
 
   const game = data ? data.game : undefined;
   const gameModel = data ? data.gameModel : undefined;
+
+  const {currentUserId} = useCurrentUser();
+
   const dispatch = useAppDispatch();
+
+  const existingPlayer = useUserPlayerInGame(game != null ? game.id : undefined, currentUserId);
 
   React.useEffect(() => {
     if (game != null && gameModel != null) {
@@ -248,7 +249,7 @@ export default function JoinGame({ gameToken, onClose }: JoinGameProps): JSX.Ele
           setData(action.payload as GameAndGm);
           setToken(undefined);
         } else if (action.meta.requestStatus === 'rejected') {
-          dispatch(addNotification({ status: 'OPEN', type: 'ERROR', message: i18n.gameNotFound }));
+          dispatch(addNotification({status: 'OPEN', type: 'ERROR', message: i18n.gameNotFound}));
           setToken(undefined);
         }
       });
@@ -259,6 +260,17 @@ export default function JoinGame({ gameToken, onClose }: JoinGameProps): JSX.Ele
     return <InlineLoading />;
   } else if (gameModel == null || game == null) {
     return <FindGameByToken onSelect={setData} onCancel={onClose} />;
+  } else if (existingPlayer != null) {
+    return (
+      <Flex direction='column' justify='center' align='center' grow={1}>
+        <div>{i18n.alreadyJoined}</div>
+        <CardMainButton
+          icon={faPlay}
+          title={i18n.openGameAsPlayer}
+          url={`./${gameModel.uiversion === 2 ? '2/' : ''}game-play.html?id=${existingPlayer.id}`}
+        />
+      </Flex>
+    );
   } else if (gameModel.properties.freeForAll) {
     return <InlineLoading />;
   } else {

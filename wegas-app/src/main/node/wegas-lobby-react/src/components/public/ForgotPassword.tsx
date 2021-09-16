@@ -48,7 +48,7 @@ export default (props: Props): JSX.Element => {
   ];
 
   return (
-    <MelonContainer footer={<PolicyDisclaimer />}>
+    <MelonContainer below={<PolicyDisclaimer />}>
       <Form
         onSubmit={onSubmitCb}
         value={{ email: '' }}

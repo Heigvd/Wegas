@@ -7,7 +7,7 @@
  */
 
 import { css, cx } from '@emotion/css';
-import { faPlay, faSync } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faSync } from '@fortawesome/free-solid-svg-icons';
 import { uniq } from 'lodash';
 import * as React from 'react';
 import { IUserWithId } from 'wegas-ts-api';
@@ -104,7 +104,7 @@ export default function Users(): JSX.Element {
   });
 
   const sortOptions: SortByOption<IUserWithId>[] = [
-    { key: 'lastSeenAt', label: i18n.lastSeenAt },
+    { key: 'lastSeenAt', label: i18n.lastSeenAtKey },
     { key: 'name', label: i18n.name },
   ];
 
@@ -161,6 +161,7 @@ export default function Users(): JSX.Element {
             {Object.keys(onlineUsers).length} {i18n.connectedUsers}
           </h3>
           <ActionIconButton
+            title='sync'
             onClick={async () => {
               return dispatch(syncOnlineUsers());
             }}
@@ -203,7 +204,7 @@ export default function Users(): JSX.Element {
                           url={`./host.html?id=${onlineUser.playerId}`}
                         />
                         <CardMainButton
-                          icon={faPlay}
+                          icon={faEye}
                           title={i18n.spyPlayer}
                           url={`./game-lock.html?id=${onlineUser.playerId}`}
                         />
