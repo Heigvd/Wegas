@@ -179,7 +179,7 @@ export default function GameCard({ game, gameModel }: GameCardProps): JSX.Elemen
 
       {game.status === 'LIVE' ? (
         <ActionIconButton
-          shouldConfirm="HARD"
+          shouldConfirm="SOFT_CENTER"
           className={cardSecButtonStyle}
           icon={faArchive}
           title={i18n.archive}
