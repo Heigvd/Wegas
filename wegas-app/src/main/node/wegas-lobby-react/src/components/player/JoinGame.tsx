@@ -28,6 +28,7 @@ import { CHANNEL_PREFIX, useWebsocketChannel } from '../../websocket/websocket';
 import ActionButton from '../common/ActionButton';
 import Button from '../common/Button';
 import Card, { CardMainButton } from '../common/Card';
+import { WindowedContainer } from '../common/CardContainer';
 import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import InlineLoading from '../common/InlineLoading';
@@ -152,6 +153,7 @@ interface ShowTeamsProps {
 function ShowTeams({ closePanel, game }: ShowTeamsProps): JSX.Element {
   const teams = useTeams(game.id);
   const dispatch = useAppDispatch();
+  const i18n = useTranslations();
   useWebsocketChannel(`${CHANNEL_PREFIX.Game}${game.id}`);
 
   React.useEffect(() => {
@@ -163,19 +165,20 @@ function ShowTeams({ closePanel, game }: ShowTeamsProps): JSX.Element {
   }, [teams, dispatch, game.id]);
 
   return (
-    <FitSpace direction="column" overflow="auto">
+    <FitSpace className={css({ width: '80%' })} direction="column" overflow="auto">
       {typeof teams === 'string' ? (
         <InlineLoading />
       ) : (
         <>
-          <span>Join an existing team or create a new one</span>
-          <Flex direction="column" overflow="auto">
-            {teams
-              .filter(t => !entityIs(t, 'DebugTeam'))
-              .map(t => (
-                <TeamToJoinCard key={t.id} closePanel={closePanel} team={t} />
-              ))}
-          </Flex>
+          <span>{i18n.joinOrCreateATeam}</span>
+          <WindowedContainer
+            gradientHeight={100}
+            bgColor="var(--bgColor)"
+            grow={0}
+            items={teams.filter(t => !entityIs(t, 'DebugTeam'))}
+          >
+            {t => <TeamToJoinCard key={t.id} closePanel={closePanel} team={t} />}
+          </WindowedContainer>
         </>
       )}
       <TeamCreator game={game} />

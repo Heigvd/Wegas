@@ -50,7 +50,12 @@ const slice = createSlice({
   extraReducers: builder =>
     builder
       .addCase(processUpdatedEntities.fulfilled, (state, action) => {
-        state.teams = merge(state.teams, action.payload.teams);
+        action.payload.teams.forEach(team => {
+          state.teams[team.id] = team;
+          state.players[team.id] = team.players.map(p => p.id!);
+        });
+
+        //state.teams = merge(state.teams, action.payload.teams);
         action.payload.players.forEach(p => {
           const parentId = p.parentId;
           if (parentId != null) {

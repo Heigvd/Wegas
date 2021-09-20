@@ -19,7 +19,7 @@ import {
   ITeam,
   IUserWithId,
 } from 'wegas-ts-api';
-import getLogger, { INFO } from '../logger';
+import getLogger from '../logger';
 import { hashPassword } from '../SecurityHelper';
 import { addNotification } from '../store/slices/notification';
 import { getStore, WegasLobbyState } from '../store/store';
@@ -36,7 +36,7 @@ import {
 } from './restClient';
 
 const logger = getLogger('api');
-logger.setLevel(INFO);
+//logger.setLevel(INFO);
 
 const restClient = WegasLobbyRestClient(API_ENDPOINT, error => {
   if (entityIsException(error)) {
@@ -471,7 +471,7 @@ export const findGameByToken = createAsyncThunk(
   }> => {
     const game = await restClient.GameController.findByToken(token);
     if (game != null && game.parentId != null) {
-      const gameModel = await restClient.GameModelController.getById(game.parentId);
+      const gameModel = await restClient.GameModelController.getById(game.parentId, 'Extended');
       return { game, gameModel };
     } else {
       throw 'GAME_NOT_FOUND';
@@ -526,17 +526,23 @@ export const createGame = createAsyncThunk(
   },
 );
 
-export const getGameById = createAsyncThunk('game/byId', async (id: number) => {
-  return await restClient.GameController.getById(id);
-});
+export const getGameById = createAsyncThunk(
+  'game/byId',
+  async ({ id, view }: { id: number; view: 'Lobby' | 'Extended' }) => {
+    return await restClient.GameController.getById(id, view);
+  },
+);
 
 export const getGameByIds = createAsyncThunk('game/byIds', async (ids: number[]) => {
   return await restClient.GameController.getByIds(ids);
 });
 
-export const getGameModelById = createAsyncThunk('gameModel/byId', async (id: number) => {
-  return await restClient.GameModelController.getById(id);
-});
+export const getGameModelById = createAsyncThunk(
+  'gameModel/byId',
+  async ({ id, view }: { id: number; view: 'Lobby' | 'Extended' }) => {
+    return await restClient.GameModelController.getById(id, view);
+  },
+);
 
 export const getGameModelByIds = createAsyncThunk('gameModel/byIds', async (ids: number[]) => {
   return await restClient.GameModelController.getByIds(ids);

@@ -10,7 +10,13 @@ import { css } from '@emotion/css';
 import { faSync, faTrash, faUserTimes } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import AsyncSelect from 'react-select/async';
-import { IAbstractAccountWithId, IGameWithId, ITeamWithId } from 'wegas-ts-api';
+import {
+  IAbstractAccountWithId,
+  IGameWithId,
+  IPlayer,
+  IPlayerWithId,
+  ITeamWithId,
+} from 'wegas-ts-api';
 import {
   getAllTeams,
   getRestClient,
@@ -33,6 +39,46 @@ import InlineLoading from '../common/InlineLoading';
 import Tabs, { Tab } from '../common/Tabs';
 import { cardDetailsStyle, cardTitleStyle, upsideSelectStyles } from '../styling/style';
 
+interface PlayerDetailsProps {
+  player: IPlayer;
+}
+
+function PlayerDetails({ player }: PlayerDetailsProps) {
+  const i18n = useTranslations();
+  const dispatch = useAppDispatch();
+
+  const [extPlayer, setExtPlayer] = React.useState<'UNSET' | IPlayerWithId>('UNSET');
+
+  React.useEffect(() => {
+    //let abort = false;
+    const load = async () => {
+      const extendedPlayer = await getRestClient().PlayerController.getEditorPlayerById(player.id!);
+      //if (!abort) {
+      setExtPlayer(extendedPlayer);
+      //}
+    };
+    if (extPlayer === 'UNSET') {
+      load();
+    }
+    //return () => {abort = true}
+  }, [extPlayer, player.id]);
+
+  const playerName = entityIs(extPlayer, 'Player') ? extPlayer.name : <InlineLoading />;
+
+  return (
+    <Card illustration="ICON_grey_user_fa">
+      <FitSpace direction="column">{playerName}</FitSpace>
+
+      <ActionIconButton
+        shouldConfirm="SOFT_LEFT"
+        icon={faUserTimes}
+        title={i18n.kickPlayer}
+        onClick={async () => dispatch(leaveGame(player.id!))}
+      />
+    </Card>
+  );
+}
+
 interface TeamDetailsProps {
   team: ITeamWithId;
 }
@@ -43,28 +89,13 @@ interface TeamDetailsProps {
 function TeamDetails({ team }: TeamDetailsProps): JSX.Element {
   const i18n = useTranslations();
   const dispatch = useAppDispatch();
-  const [extTeam, setExtTeam] = React.useState<'UNSET' | 'LOADING' | ITeamWithId>('UNSET');
-
-  React.useEffect(() => {
-    //let abort = false;
-    const load = async () => {
-      const extendedTeam = await getRestClient().TeamController.getEditorTeamById(team.id);
-      //if (!abort) {
-      setExtTeam(extendedTeam);
-      //}
-    };
-    if (extTeam === 'UNSET') {
-      setExtTeam('LOADING');
-      load();
-    }
-    //return () => {abort = true}
-  }, [extTeam, team.id]);
 
   const deleteTeam = React.useCallback(async () => {
     return dispatch(kickTeam(team.id));
   }, [dispatch, team.id]);
 
-  const theTeam = typeof extTeam !== 'string' ? extTeam : team;
+  //  const theTeam = typeof extTeam !== 'string' ? extTeam : team;
+  const theTeam = team;
 
   const teamName = team.name ? `${i18n.Team} "${team.name}"` : i18n.Team;
 
@@ -80,18 +111,7 @@ function TeamDetails({ team }: TeamDetailsProps): JSX.Element {
         />
       </Flex>
       {theTeam.players.map(p => (
-        <Card key={p.id} illustration="ICON_grey_user_fa">
-          <FitSpace direction="column">
-            {extTeam === 'LOADING' || extTeam === 'UNSET' ? <InlineLoading /> : p.name}
-          </FitSpace>
-
-          <ActionIconButton
-            shouldConfirm="SOFT_LEFT"
-            icon={faUserTimes}
-            title={i18n.kickPlayer}
-            onClick={async () => dispatch(leaveGame(p.id!))}
-          />
-        </Card>
+        <PlayerDetails key={p.id} player={p} />
       ))}
       {theTeam.players.length === 0 ? (
         <i className={css({ marginLeft: '10px' })}>{i18n.teamIsEmpty}</i>

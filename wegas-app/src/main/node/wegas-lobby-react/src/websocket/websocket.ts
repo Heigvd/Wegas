@@ -15,7 +15,7 @@ import { getStore, WegasLobbyState } from '../store/store';
 
 const logger = getLogger('pusher');
 
-//logger.setLevel(INFO);
+logger.setLevel(3);
 
 export const CHANNEL_PREFIX = {
   Admin: 'private-LobbyAdministrator',

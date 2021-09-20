@@ -527,7 +527,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
 
         if (game != null) {
             // all trainers
-            users.addAll(beans.getGameFacade().findTrainers(this.getId()));
+            users.addAll(beans.getGameFacade().findTrainers(game.getId()));
 
             // and through the game channel
             map.put(game.getChannel(), entities);
