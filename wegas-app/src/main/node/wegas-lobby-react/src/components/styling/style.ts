@@ -6,8 +6,8 @@
  * Licensed under the MIT License
  */
 
-import {css, CSSObject, cx, keyframes} from '@emotion/css';
-import {dangerColor, successColor, warningColor, white} from './color';
+import { css, CSSObject, cx, keyframes } from '@emotion/css';
+import { dangerColor, successColor, warningColor, white } from './color';
 
 type SelectTypeKeys =
   | 'container'
@@ -20,7 +20,7 @@ type SelectTypeKeys =
 
 type SelectStylesType = Record<SelectTypeKeys, (provided: CSSObject) => CSSObject>;
 
-const min600 =  `@media (min-width: 600px)`;
+const min600 = `@media (min-width: 600px)`;
 
 export const defaultSelectStyles: SelectStylesType = {
   container: provided => ({
@@ -404,7 +404,7 @@ export const smallInputStyle = cx(
 export const panelPadding = css({
   [min600]: {
     padding: '0 48px 20px 48px',
-  }
+  },
 });
 
 export const warningStyle = css({

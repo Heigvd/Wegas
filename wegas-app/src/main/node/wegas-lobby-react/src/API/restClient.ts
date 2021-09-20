@@ -552,7 +552,7 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<IPlayerWithId>('POST', path, undefined, errorHandler);
       },
       leave: (playerId: number) => {
-        const path = `${baseUrl}/Lobby/GameModel/Game/Team/1/Player/${playerId}`;
+        const path = `${baseUrl}/Extended/GameModel/Game/Team/1/Player/${playerId}`;
         return sendJsonRequest<IPlayerWithId>('DELETE', path, undefined, errorHandler);
       },
     },
@@ -587,8 +587,8 @@ export const WegasLobbyRestClient = function (
         const path = `${baseUrl}/Lobby/GameModel/Game/${gameModelId}`;
         return sendJsonRequest<IGameWithId>('POST', path, game, errorHandler);
       },
-      getById: (id: number) => {
-        const path = `${baseUrl}/Lobby/GameModel/Game/${id}`;
+      getById: (id: number, view: 'Lobby' | 'Extended') => {
+        const path = `${baseUrl}/${view}/GameModel/Game/${id}`;
         return sendJsonRequest<IGameWithId>('GET', path, undefined, errorHandler);
       },
       getByIds: (ids: number[]) => {
@@ -600,11 +600,11 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<IGameWithId>('PUT', path, game, errorHandler);
       },
       findByToken: (token: string) => {
-        const path = `${baseUrl}/Lobby/GameModel/Game/FindByToken/${token}`;
+        const path = `${baseUrl}/Extended/GameModel/Game/FindByToken/${token}`;
         return sendJsonRequest<IGameWithId>('GET', path, undefined, errorHandler);
       },
       joinIndividually: (game: IGameWithId) => {
-        const path = `${baseUrl}/Lobby/GameModel/Game/${game.id!}/Player`;
+        const path = `${baseUrl}/Extended/GameModel/Game/${game.id!}/Player`;
         return sendJsonRequest<ITeamWithId>('POST', path, undefined, errorHandler);
       },
       getTeams: (gameId: number) => {
@@ -657,8 +657,8 @@ export const WegasLobbyRestClient = function (
           errorHandler,
         );
       },
-      getById: (id: number) => {
-        const path = `${baseUrl}/Lobby/GameModel/${id}`;
+      getById: (id: number, view: 'Lobby' | 'Extended') => {
+        const path = `${baseUrl}/${view}/GameModel/${id}`;
         return sendJsonRequest<IGameModelWithId>('GET', path, undefined, errorHandler);
       },
       getByIds: (ids: number[]) => {

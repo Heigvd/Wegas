@@ -156,7 +156,7 @@ export default function PlayerCard({ player, team }: PlayerCardProps): JSX.Eleme
       team.parentId != null
     ) {
       // Load game
-      dispatch(getGameById(team.parentId));
+      dispatch(getGameById({id: team.parentId, view: 'Extended'}));
     }
   }, [team, game, dispatch]);
 
@@ -169,7 +169,7 @@ export default function PlayerCard({ player, team }: PlayerCardProps): JSX.Eleme
       game.parentId != null
     ) {
       // Load gameModel !
-      dispatch(getGameModelById(game.parentId));
+      dispatch(getGameModelById({id: game.parentId, view: 'Extended'}));
     }
   }, [game, gameModel, dispatch]);
 

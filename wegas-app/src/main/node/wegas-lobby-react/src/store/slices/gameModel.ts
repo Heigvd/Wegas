@@ -88,7 +88,7 @@ const slice = createSlice({
           : undefined;
       })
       .addCase(API.getGameModelById.pending, (state, action) => {
-        state.gameModels[action.meta.arg] = 'LOADING';
+        state.gameModels[action.meta.arg.id] = 'LOADING';
       })
       .addCase(API.getGameModelById.fulfilled, (state, action) => {
         state.gameModels[action.payload.id] = action.payload;

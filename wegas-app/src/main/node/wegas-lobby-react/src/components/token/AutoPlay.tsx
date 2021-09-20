@@ -73,7 +73,7 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
   React.useEffect(() => {
     if (gameModelId != null && gameModel == null) {
       logger.info('load gameModel ', gameModelId);
-      dispatch(getGameModelById(gameModelId));
+      dispatch(getGameModelById({id: gameModelId, view: 'Extended'}));
     }
   }, [gameModelId, gameModel, dispatch]);
 

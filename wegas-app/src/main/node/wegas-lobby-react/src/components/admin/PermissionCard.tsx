@@ -361,11 +361,11 @@ export function PermissionCard({ permission }: PermissionCardProps): JSX.Element
 
   React.useEffect(() => {
     if (data.type === 'GameModel' && gameModel == null && oId != null) {
-      dispatch(getGameModelById(oId));
+      dispatch(getGameModelById({id: oId, view: 'Lobby'}));
     }
 
     if (data.type === 'Game' && game == null && oId != null) {
-      dispatch(getGameById(oId));
+      dispatch(getGameById({id: oId, view: 'Lobby'}));
     }
   }, [dispatch, game, gameModel, data.type, oId]);
 

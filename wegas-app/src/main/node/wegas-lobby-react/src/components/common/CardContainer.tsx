@@ -11,6 +11,7 @@ import { debounce } from 'lodash';
 import * as React from 'react';
 import { cardContainerStyle } from '../styling/style';
 import FitSpace from './FitSpace';
+import Flex from './Flex';
 
 export interface CardContainerProps {
   className?: string;
@@ -30,17 +31,76 @@ export interface WCardContainerProps<T> {
    * list of all items
    */
   items: T[];
+  grow?: React.ComponentProps<typeof Flex>['grow'];
+  bgColor?: string;
+  gradientHeight?: number;
   /**
    * build a comp for a given children
    */
   children: (item: T) => React.ReactNode;
 }
 
-export function WindowedContainer<T>({ items, children }: WCardContainerProps<T>): JSX.Element {
+const windowedContainerStyle = cx(
+  cardContainerStyle,
+  css({
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'auto',
+    flexShrink: 1,
+  }),
+);
+
+const containerStyle = css({
+  position: 'relative',
+});
+
+const gradient = (bgColor: string, gradientHeight: number) =>
+  css({
+    pointerEvents: 'none',
+    height: `${gradientHeight}px`,
+    background: `linear-gradient(#FFF0, ${bgColor} 100%)`,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    transition: 'height 0.3s',
+  });
+
+const hideGradientStyle = css({
+  height: 0,
+});
+
+export function WindowedContainer<T>({
+  items,
+  children,
+  grow = 1,
+  bgColor = '#F9F9F9',
+  gradientHeight = 150,
+}: WCardContainerProps<T>): JSX.Element {
   const divRef = React.useRef<HTMLDivElement>(null);
 
   const data = React.useRef({ numberOfItem: 5, sizePerItem: 0, paddingTop: 0, paddingBottom: 0 });
   const [padding, setPadding] = React.useState({ top: 0, bottom: 0, offset: 0 });
+
+  const [showGradient, setShowGradient] = React.useState(true);
+
+  const checkGradient = React.useCallback(() => {
+    if (divRef.current != null) {
+      const scrollBottom = divRef.current.scrollTop + divRef.current.offsetHeight;
+      setShowGradient(divRef.current.scrollHeight - scrollBottom > 0);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    checkGradient();
+  }, [padding]);
+
+  React.useEffect(() => {
+    window.addEventListener('resize', checkGradient);
+    () => {
+      window.removeEventListener('resize', checkGradient);
+    };
+  }, [padding]);
 
   //  // reset everything whene items change
   //  React.useEffect((
@@ -108,32 +168,34 @@ export function WindowedContainer<T>({ items, children }: WCardContainerProps<T>
     }
   }, [items, rebuildPaddings]);
 
-  const scrollCb = React.useCallback(
+  const debScrollCb = React.useCallback(
     debounce(() => {
       rebuildPaddings(items);
     }, 100),
     [items],
   );
+
+  const scrollCb = React.useCallback(() => {
+    checkGradient();
+    debScrollCb();
+  }, [debScrollCb]);
+
   const cards = items
     .slice(padding.offset, padding.offset + data.current.numberOfItem)
     .map(item => children(item));
   return (
-    <div
-      ref={divRef}
-      className={cx(
-        cardContainerStyle,
-        css({
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'auto',
-          flexShrink: 1,
-        }),
-      )}
-      onScroll={scrollCb}
-    >
-      <div style={{ height: `${padding.top}px`, flexShrink: 0 }}></div>
-      {cards}
-      <div style={{ height: `${padding.bottom}px`, flexShrink: 0 }}></div>
-    </div>
+    <Flex className={containerStyle} shrink={1} grow={grow} direction="column" overflow="auto">
+      <div ref={divRef} className={windowedContainerStyle} onScroll={scrollCb}>
+        <div style={{ height: `${padding.top}px`, flexShrink: 0 }}></div>
+        {cards}
+        <div style={{ height: `${padding.bottom}px`, flexShrink: 0 }}></div>
+      </div>
+      <div
+        className={cx(
+          gradient(bgColor, gradientHeight),
+          !showGradient ? hideGradientStyle : undefined,
+        )}
+      ></div>
+    </Flex>
   );
 }

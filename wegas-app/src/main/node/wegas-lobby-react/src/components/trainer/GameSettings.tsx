@@ -232,7 +232,7 @@ export default function GameSettings({ game, onClose }: GameSettingsProps) {
 
   React.useEffect(() => {
     if (gameModel == undefined && game.parentId) {
-      dispatch(getGameModelById(game.parentId));
+      dispatch(getGameModelById({id: game.parentId, view: 'Lobby'}));
     }
   }, [gameModel, game.parentId, dispatch]);
 
