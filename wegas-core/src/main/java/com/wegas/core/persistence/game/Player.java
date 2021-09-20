@@ -511,10 +511,10 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
         if (game != null) {
             // all trainers
-            users.addAll(beans.getGameFacade().findTrainers(this.getId()));
+            users.addAll(beans.getGameFacade().findTrainers(game.getId()));
         }
 
-        // all players
+        // the player ownwer
         if (user != null) {
             users.add(this.user);
         }
