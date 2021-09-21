@@ -30,6 +30,7 @@ import WegasIcon, { WegasIconType } from './illustrations/WegasIcon';
 export const linkStyle = css({
   textDecoration: 'none',
   color: 'var(--linkColor)',
+  fontSize: '14px',
   ':hover': {
     backgroundColor: 'var(--linkHoverBgColor)',
     color: 'var(--linkHoverColor)',
@@ -99,7 +100,6 @@ const secondLevelLink = cx(
 const inlineLink = cx(
   linkStyle,
   css({
-    fontSize: '12px',
     textDecoration: 'none',
   }),
 );

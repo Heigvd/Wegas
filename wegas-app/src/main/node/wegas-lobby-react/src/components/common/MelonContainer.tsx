@@ -9,7 +9,7 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import LanguageSelector from '../../i18n/LanguageSelector';
-import { fullPageStyle, melonMode } from '../styling/style';
+import { fullPageStyle, melonMode, panelPadding } from '../styling/style';
 import Logo from '../styling/WhiteLogo';
 import Flex from './Flex';
 
@@ -20,13 +20,13 @@ export interface MelonProps {
 
 export default function MelonContainer({ children, below }: MelonProps): JSX.Element {
   return (
-    <div className={cx(fullPageStyle)}>
+    <div className={cx(fullPageStyle, panelPadding, css({overflow: 'auto'}))}>
       <Flex
         direction="column"
         className={cx(
           css({
             margin: 'auto',
-            overflow: 'auto',
+            width: '80%', maxWidth: '600px'
           }),
         )}
       >
@@ -54,7 +54,8 @@ export default function MelonContainer({ children, below }: MelonProps): JSX.Ele
             <Logo
               className={css({
                 height: 'auto',
-                width: '300px',
+                width: '200px',
+                margin: 'auto',
               })}
             />
             {children}

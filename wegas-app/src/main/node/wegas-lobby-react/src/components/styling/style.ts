@@ -153,6 +153,9 @@ export const melonMode = cx(
     color: 'var(--fgColor)',
     '& a': {
       color: 'var(--linkColor)',
+      '&:hover': {
+        textDecoration: 'underline',
+      }
     },
   }),
 );
@@ -381,15 +384,17 @@ export const textareaStyle = css({
 
 export const inputStyle = css({
   outline: 'none',
-  border: 'solid 1px #d7d7d7',
+  border: 'none',
   color: 'var(--secFgColor)',
   backgroundColor: 'var(--secBgColor)',
   borderRadius: '6px',
   boxSizing: 'border-box',
-  //  margin: "2px 2px 2px 8px",
   transition: '.8s',
   padding: '0 24px',
   lineHeight: '48px',
+  '&:focus': {
+    boxShadow: 'inset 0px 0px 6px rgba(0, 0, 0, 0.3)',
+  }
 });
 
 export const smallInputStyle = cx(

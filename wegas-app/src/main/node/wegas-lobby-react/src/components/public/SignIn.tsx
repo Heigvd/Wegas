@@ -7,7 +7,7 @@
  */
 
 import { css } from '@emotion/css';
-import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { faPlusCircle, faUnlockAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
@@ -85,10 +85,13 @@ export default function SignInForm({ username, redirectTo }: Props): JSX.Element
       showStrenghBar: false,
       fieldFooter: (
         <InlineLink
-          className={css({ alignSelf: 'flex-start' })}
+          className={css({ lineHeight: '230%', '&:hover': {
+            textDecoration: 'underline',
+          } })}
           to={buildLinkWithQueryParam('/ForgotPassword', { redirectTo: redirectTo })}
         >
-          {i18n.forgottenPassword}
+         <FontAwesomeIcon icon={faUnlockAlt} className={css({ marginRight: '5px'})}/>
+         {i18n.forgottenPassword}
         </InlineLink>
       ),
     },
@@ -128,12 +131,12 @@ export default function SignInForm({ username, redirectTo }: Props): JSX.Element
           submitLabel={i18n.login}
         >
           <InlineLink
-            className={css({ alignSelf: 'center' })}
+            className={css({ alignSelf: 'center'})}
             to={buildLinkWithQueryParam('/SignUp', { redirectTo: redirectTo })}
           >
             {!signWithUsernameOnly ? (
               <>
-                <FontAwesomeIcon icon={faPlusCircle} /> {i18n.createAnAccount}{' '}
+                <FontAwesomeIcon icon={faPlusCircle} className={css({ marginRight: '5px'})}/>{i18n.createAnAccount}{' '}
               </>
             ) : null}
           </InlineLink>

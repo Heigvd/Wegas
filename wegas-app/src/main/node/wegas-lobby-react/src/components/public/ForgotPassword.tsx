@@ -56,7 +56,7 @@ export default (props: Props): JSX.Element => {
         submitLabel={i18n.sendMePassword}
       >
         <InlineLink
-          className={css({ alignSelf: 'center' })}
+          className={css({ alignSelf: 'end' })}
           to={buildLinkWithQueryParam('/SignIn', { redirectTo: props.redirectTo })}
         >
           {i18n.cancel}

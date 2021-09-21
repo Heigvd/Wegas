@@ -79,7 +79,7 @@ export const fr: WegasTranslations = {
   joinTeam: "Rejoindre l'équipe",
   joinOrCreateATeam: 'Vous pouvez rejoindre une équipe existante ou en créer une nouvelle',
   alreadyJoined: 'Vous avez déjà rejoint la partie',
-  join: 'Rejoidre',
+  join: 'Rejoindre',
   accessKey: "clé d'accès",
   gameNotFound: "clé d'accès invalide",
   //

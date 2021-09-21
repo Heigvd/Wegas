@@ -22,7 +22,7 @@ export const en = {
   password_again: 'password again',
   passwordsMismatch: 'passwords do not match',
   login: 'login',
-  forgottenPassword: 'FORGOTTEN PASSWORD?',
+  forgottenPassword: 'Forgotten password?',
   createAnAccount: 'create an account',
   sendMePassword: 'send me a new password',
   unverifiedEmail: 'unverified e-mail',

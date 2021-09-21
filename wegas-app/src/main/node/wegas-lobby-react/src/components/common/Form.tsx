@@ -203,7 +203,7 @@ export default function Form<T>({
         <Button
           key="submit"
           label={submitLabel || i18n.submit}
-          className={css({ alignSelf: 'flex-end' })}
+          className={css({ alignSelf: 'flex-end', margin: 'auto 0 0 0' })}
           onClick={submitCb}
         />
       )}
