@@ -286,4 +286,7 @@ export const fr: WegasTranslations = {
     3: 'Invités',
     4: 'Role inconnu ???',
   },
+  aaiAccount: 'Compte AAI',
+  aaiAffiliation: 'Etablissement',
+  aaiNotEditable: 'Les données personnelles ne sont pas éditables',
 };

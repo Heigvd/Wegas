@@ -282,4 +282,7 @@ export const en = {
     3: 'Guest',
     4: 'No role ???',
   },
+  aaiAccount: 'AAI Account',
+  aaiAffiliation: 'Affiliation',
+  aaiNotEditable: ' Personal data are not editable',
 };

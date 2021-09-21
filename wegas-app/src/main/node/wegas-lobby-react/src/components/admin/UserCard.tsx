@@ -29,6 +29,7 @@ import {
   removeRoleFromUser,
   runAs,
 } from '../../API/api';
+import {entityIs} from '../../API/entityHelper';
 import { getDisplayName } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
 import { useAccount, useUserPermissions, useUserRoles } from '../../selectors/userSelector';
@@ -271,7 +272,7 @@ export default function UserCard({
   }, [dispatch, accountId]);
 
   return (
-    <Card key={user.id} size={size} illustration="ICON_grey_user_fa">
+    <Card key={user.id} size={size} illustration={entityIs(account, 'AaiAccount')? "ICON_grey_id-card_far" : "ICON_grey_user_fa"}>
       <FitSpace direction="column">
         <div className={cardTitleStyle}>{user.name || ''}</div>
         {showEmail ? (

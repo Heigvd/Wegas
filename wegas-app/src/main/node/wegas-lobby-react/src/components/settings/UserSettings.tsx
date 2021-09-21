@@ -42,7 +42,7 @@ export function UserSettings({
     const account = state.accounts != null ? state.accounts[0] : undefined;
 
     if (entityIs(account, 'AaiAccount')) {
-      return <AaiAccount account={account as IAaiAccountWithId} />;
+      return <AaiAccount close={close} account={account as IAaiAccountWithId} />;
     } else if (entityIs(account, 'JpaAccount')) {
       return <JpaAccount close={close} account={account as IJpaAccountWithId} />;
     }
