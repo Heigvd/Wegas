@@ -954,7 +954,7 @@ public class GameFacade extends BaseFacade<Game> {
                             currentCol++;
                         }
                     }
-                    if (currentCol > startGroupCol) {
+                    if (currentCol - 1 > startGroupCol) {
                         Cell groupName = firstRow.createCell(startGroupCol);
                         groupName.setCellValue(title);
                         groupName.setCellStyle(titleStyle);

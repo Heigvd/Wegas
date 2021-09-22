@@ -1,23 +1,23 @@
-import { css, cx, CSSInterpolation } from '@emotion/css';
+import { css, CSSInterpolation, cx } from '@emotion/css';
 import * as React from 'react';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
+import { useWebsocketEvent } from '../../API/websocket';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import { expandWidth } from '../../css/classes';
-import { GameModel, Player } from '../../data/selectors';
-import { store } from '../../data/Stores/store';
-import { createScript } from '../../Helper/wegasEntites';
-import { OverviewHeader } from './OverviewHeader';
-import { OverviewRow } from './OverviewRow';
-import '../../Editor/Components/FormView';
-import { ModalState, OverviewModal } from './OverviewModal/OverviewModal';
 import { instantiate } from '../../data/scriptable';
-import { themeVar } from '../../Components/Theme/ThemeVars';
-import { sortFnFactory, SortState } from '../TableSorter';
-import { FilterState } from './OverviewModal/FilterModalContent';
-import { useWebsocketEvent } from '../../API/websocket';
-import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { Game, GameModel, Player } from '../../data/selectors';
+import { store } from '../../data/Stores/store';
+import '../../Editor/Components/FormView';
+import { createScript } from '../../Helper/wegasEntites';
 import { commonTranslations } from '../../i18n/common/common';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { sortFnFactory, SortState } from '../TableSorter';
+import { OverviewHeader } from './OverviewHeader';
+import { FilterState } from './OverviewModal/FilterModalContent';
+import { ModalState, OverviewModal } from './OverviewModal/OverviewModal';
+import { OverviewRow } from './OverviewRow';
 
 export const trainerCellStyleI: CSSInterpolation = {
   justifyContent: 'center',
@@ -309,6 +309,16 @@ export default function Overview() {
           icon="undo"
           onClick={refreshOverview}
           className={cx({ [newDataStyle]: newData })}
+        />
+        <Button
+          icon="file-excel"
+          onClick={() => {
+            window.open(
+              `${API_ENDPOINT}/GameModel/Game/${Game.selectCurrent()
+                .id!}/ExportMembers.xlsx`,
+              '_blank',
+            );
+          }}
         />
       </Toolbar.Header>
       <Toolbar.Content className={flexAuto}>
