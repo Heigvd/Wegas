@@ -141,17 +141,17 @@ export const selectStyles: SelectProps['styles'] = {
     return { ...provided, zIndex: 2 };
   },
   option: (provided, state) => {
-    if (state.isFocused) {
-      return {
-        ...provided,
-        backgroundColor: themeVar.colors.HoverColor,
-        color: themeVar.colors.PrimaryColorShade,
-      };
-    } else if (state.isSelected) {
+    if (state.isSelected) {
       return {
         ...provided,
         backgroundColor: themeVar.colors.PrimaryColor,
-        color: themeVar.colors.BackgroundColor,
+        color: themeVar.colors.LightTextColor,
+      };
+    } else if (state.isFocused) {
+      return {
+        ...provided,
+        backgroundColor: themeVar.colors.HoverColor,
+        color: themeVar.colors.DarkTextColor,
       };
     } else {
       return { ...provided };
