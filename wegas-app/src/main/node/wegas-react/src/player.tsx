@@ -8,6 +8,7 @@ import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
 import { ThemeProvider } from './Components/Theme/Theme';
 import { PageAPI } from './API/pages.api';
 import '@emotion/css';
+import './css/global.css';
 import { useWebsocketEvent } from './API/websocket';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
 import { PageLoader } from './Editor/Components/Page/PageLoader';
