@@ -4,13 +4,13 @@ import Header from './Header';
 import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
 import { useStore } from '../../data/Stores/store';
 import { visitIndex } from '../../Helper/pages';
-import { PageLoader } from './Page/PageLoader';
+import { fullScreenLoaderStyle, PageLoader } from './Page/PageLoader';
 import { ComponentMap } from './LinearTabLayout/DnDTabLayout';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { State } from '../../data/Reducer/reducers';
 import { roleCTX } from '../../Components/Contexts/RoleProvider';
-import { useInternalTranslate } from '../../i18n/internalTranslator';
-import { commonTranslations } from '../../i18n/common/common';
+import { TumbleLoader } from '../../Components/Loader';
+import { wlog } from '../../Helper/wegaslog';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageEditor = React.lazy(() => import('./Page/PageEditor'));
@@ -73,7 +73,6 @@ export default function Layout() {
   const timer = React.useRef<NodeJS.Timeout | undefined>();
   const [loading, setLoading] = React.useState(true);
   const { currentRole } = React.useContext(roleCTX);
-  const i18nValues = useInternalTranslate(commonTranslations);
   const scenaristPages: ComponentMap = useStore(scenaristPagesSelector).reduce(
     (o, i) => ({ ...o, [i.name]: <PageLoader selectedPageId={i.id} /> }),
     {},
@@ -103,6 +102,7 @@ export default function Layout() {
     if (timer.current != null) {
       clearTimeout(timer.current);
     }
+    wlog("SCENARIST" + Object.keys(layoutPages).length);
     timer.current = setTimeout(() => {
       setLoading(Object.keys(layoutPages).length === 0);
     }, 2500);
@@ -114,7 +114,7 @@ export default function Layout() {
   }, [layoutPages]);
 
   if (loading) {
-    return <pre>{i18nValues.loading + '...'}</pre>;
+    return <div className={fullScreenLoaderStyle}><TumbleLoader /></div>;
   }
 
   return (

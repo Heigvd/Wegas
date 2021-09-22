@@ -81,6 +81,7 @@ function tumbleLoaderStyle(containerSize: number) {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    minWidth: '40px',
     width: size,
     maxWidth: '200px',
   });
