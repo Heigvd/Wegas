@@ -49,6 +49,7 @@ import { TransitionFlowLineComponent } from '../../Components/FlowChart/Transiti
 import { HTMLText } from '../../Components/Outputs/HTMLText';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { cloneDeep } from 'lodash';
 
 const emptyPath: (string | number)[] = [];
 
@@ -246,7 +247,7 @@ export function StateMachineEditor<
           ? (state.global.editing.newEntity as unknown as StateProcess['state'])
           : sourceState.state;
 
-      const newCurrentState = {
+      const newCurrentState : IState | IDialogueState = {
         ...currentState,
         x: position.x >= 10 ? position.x : 10,
         y: position.y >= 10 ? position.y : 10,
@@ -254,7 +255,10 @@ export function StateMachineEditor<
 
       onStateClick(e, sourceState);
 
-      dispatch(Actions.EditorActions.saveEditor(newCurrentState, false));
+      const oldFSM = cloneDeep(store.getState().variableDescriptors[newCurrentState.parentId!]!) as IFSMDescriptor;
+      oldFSM.states[newCurrentState.index!] = newCurrentState as IState;
+
+      dispatch(Actions.EditorActions.saveEditor(oldFSM, false));
     },
     [dispatch, onStateClick],
   );
