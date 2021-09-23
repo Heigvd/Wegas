@@ -481,9 +481,9 @@ YUI.add('wegas-dashboard', function(Y) {
             }
         },
         completePreferences: function() {
-            if (this.preferencesInitialized) {
-                return;
-            }
+//            if (this.preferencesInitialized) {
+//                return;
+//            }
             var prefs = this.preferences,
                 structure = this._monitoredData.structure;
             for (var tableName in structure) {
@@ -511,7 +511,7 @@ YUI.add('wegas-dashboard', function(Y) {
                     }
                 }
             }
-            this.preferencesInitialized = true;
+//            this.preferencesInitialized = true;
         },
 
         syncTable: function() {
