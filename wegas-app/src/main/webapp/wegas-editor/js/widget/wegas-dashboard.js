@@ -907,7 +907,10 @@ YUI.add('wegas-dashboard', function(Y) {
                         }
                     }
                 }
+                body += '</div>';
+                body += '<div class="customize-footer">';
                 body += '<button class="customize-group-submit-button">OK</button></div>';
+                body += '</div>';
                 this._display(title, body, true, Y.bind(function() {
                     this.syncUI();
                 }, this));
@@ -934,7 +937,10 @@ YUI.add('wegas-dashboard', function(Y) {
                         body += '<div class="checkbox' + (items[j].active ? ' selected' : '') + '" data-group="' + group + '" data-cbx="' + items[j].id + '">' + items[j].label + "</div>";
                     }
                 }
-                body += '<button class="customize-group-submit-button">OK</button></div>';
+                body += '</div>';
+                body += '<div class="customize-footer">';
+                body += '<button class="customize-group-submit-button">OK</button>';
+                body += '</div>';
                 this._display(title, body, true, Y.bind(function() {
                     this.syncUI();
                 }, this));
