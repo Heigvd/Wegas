@@ -1,16 +1,15 @@
-import * as React from 'react';
 import { css } from '@emotion/css';
-import Header from './Header';
-import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
-import { useStore } from '../../data/Stores/store';
-import { visitIndex } from '../../Helper/pages';
-import { fullScreenLoaderStyle, PageLoader } from './Page/PageLoader';
-import { ComponentMap } from './LinearTabLayout/DnDTabLayout';
-import { themeVar } from '../../Components/Theme/ThemeVars';
-import { State } from '../../data/Reducer/reducers';
+import * as React from 'react';
 import { roleCTX } from '../../Components/Contexts/RoleProvider';
 import { TumbleLoader } from '../../Components/Loader';
-import { wlog } from '../../Helper/wegaslog';
+import { themeVar } from '../../Components/Theme/ThemeVars';
+import { State } from '../../data/Reducer/reducers';
+import { useStore } from '../../data/Stores/store';
+import { visitIndex } from '../../Helper/pages';
+import Header from './Header';
+import { ComponentMap } from './LinearTabLayout/DnDTabLayout';
+import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
+import { fullScreenLoaderStyle, PageLoader } from './Page/PageLoader';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageEditor = React.lazy(() => import('./Page/PageEditor'));
@@ -102,7 +101,7 @@ export default function Layout() {
     if (timer.current != null) {
       clearTimeout(timer.current);
     }
-    wlog("SCENARIST" + Object.keys(layoutPages).length);
+
     timer.current = setTimeout(() => {
       setLoading(Object.keys(layoutPages).length === 0);
     }, 2500);
@@ -114,7 +113,11 @@ export default function Layout() {
   }, [layoutPages]);
 
   if (loading) {
-    return <div className={fullScreenLoaderStyle}><TumbleLoader /></div>;
+    return (
+      <div className={fullScreenLoaderStyle}>
+        <TumbleLoader />
+      </div>
+    );
   }
 
   return (
