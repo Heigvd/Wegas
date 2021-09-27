@@ -1,7 +1,7 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { IChoiceDescriptor, IChoiceInstance } from 'wegas-ts-api';
-import { autoMargin, flex, halfOpacity } from '../../../css/classes';
+import { autoMargin, halfOpacity } from '../../../css/classes';
 import {
   selectChoice,
   toggleReply,
@@ -18,6 +18,10 @@ import { RepliesDisplay } from './Reply';
 import { TranslatableText } from '../HTMLText';
 import { themeVar } from '../../Theme/ThemeVars';
 
+const cbxChoiceContainerStyle = css({
+  cursor: 'pointer',
+  display: 'flex',
+});
 const cbxContainerStyle = css({
   padding: 0,
   width: '3rem',
@@ -67,7 +71,7 @@ function CbxChoiceDisplay({
   }
 
   return (
-    <ChoiceContainer active={active} descriptor={choiceD} canReply={!disabled} hasBeenSelected={questionChoosed} className={cx(flex, css({cursor: 'pointer'}))} inputClassName={cbxContainerStyle} onClick={() => {
+    <ChoiceContainer active={active} descriptor={choiceD} canReply={!disabled} hasBeenSelected={questionChoosed} className={cbxChoiceContainerStyle} inputClassName={cbxContainerStyle} onClick={() => {
       if (enableValidate) {
         onValidate(choiceD);
       }

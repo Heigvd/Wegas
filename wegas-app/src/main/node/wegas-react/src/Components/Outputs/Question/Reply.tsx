@@ -12,7 +12,6 @@ import {
   choiceDescriptionStyle,
 } from './ChoiceContainer';
 import { TranslatableText } from '../HTMLText';
-import { MediumPadding } from '../../../css/classes';
 
 const repliesContainer = css({
   marginTop: '5px',

@@ -17,6 +17,7 @@ export const choiceContainerStyle = css({
     backgroundColor: themeVar.colors.BackgroundColor,
     opacity: '0.7',
     cursor: 'default',
+    pointerEvents: 'none',
     '&:hover': {
       backgroundColor: themeVar.colors.BackgroundColor,
       color: themeVar.colors.DarkTextColor,
@@ -24,6 +25,9 @@ export const choiceContainerStyle = css({
     '&.selected': {
       backgroundColor: themeVar.colors.PrimaryColor,
       color: themeVar.colors.LightTextColor,
+      '&:hover': {
+        backgroundColor: themeVar.colors.PrimaryColor,
+      },
     },
   },
 });
