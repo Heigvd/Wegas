@@ -184,7 +184,7 @@ var WegasDashboard = (function() {
 
     function overview(name, doNotStringify) {
         name = name || "overview";
-        overview = {};
+        var overview = {};
 
         if (dashConfigs[name]) {
 

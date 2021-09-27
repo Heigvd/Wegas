@@ -504,7 +504,7 @@ export const joinTeam = createAsyncThunk('team/join', async (teamId: number) => 
 });
 
 export const retryToJoinTeam = createAsyncThunk('team/retry', async (playerId: number) => {
-  return await restClient.TeamController.joinTeam(playerId);
+  return await restClient.PlayerController.retry(playerId);
 });
 
 export const getPlayerById = createAsyncThunk('player/byId', async (id: number) => {

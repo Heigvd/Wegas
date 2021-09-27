@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Wegas lobby react",
   "repository": "http://www.github.com/Heigvd/Wegas.git",
-  "author": "Maxence Laurent <maxence.laurent@gmail.com>",
+  "author": "Albasim <albasim@heig-vd.ch>",
   "license": "MIT",
   "private": true,
   "main": "src/index.ts",

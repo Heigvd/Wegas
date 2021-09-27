@@ -553,7 +553,7 @@ export const WegasLobbyRestClient = function (
       },
       retry: (playerId: number) => {
         const path = `${baseUrl}/GameModel/Game/Team/1/Player/${playerId}/RetryJoin`;
-        return sendJsonRequest<IPlayerWithId>('POST', path, undefined, errorHandler);
+        return sendJsonRequest<IPlayerWithId>('PUT', path, undefined, errorHandler);
       },
       leave: (playerId: number) => {
         const path = `${baseUrl}/Extended/GameModel/Game/Team/1/Player/${playerId}`;
