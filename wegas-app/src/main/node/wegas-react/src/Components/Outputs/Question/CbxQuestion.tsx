@@ -1,7 +1,7 @@
-import { cx } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { IChoiceDescriptor, IChoiceInstance } from 'wegas-ts-api';
-import { autoMargin, halfOpacity } from '../../../css/classes';
+import { autoMargin, flex, halfOpacity } from '../../../css/classes';
 import {
   selectChoice,
   toggleReply,
@@ -16,7 +16,29 @@ import { ChoiceContainer, choiceInputStyle } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
 import { RepliesDisplay } from './Reply';
 import { TranslatableText } from '../HTMLText';
+import { themeVar } from '../../Theme/ThemeVars';
 
+const cbxContainerStyle = css({
+  padding: 0,
+  width: '3rem',
+  backgroundColor: themeVar.colors.PrimaryColor,
+  color: themeVar.colors.LightTextColor,
+  justifyContent: 'center',
+  borderRadius: '0px ' + themeVar.dimensions.BorderRadius + ' ' + themeVar.dimensions.BorderRadius + ' 0px',
+  borderLeft: '1px solid ' + themeVar.colors.HeaderColor,
+  '&:hover': {
+    backgroundColor: themeVar.colors.ActiveColor,
+    borderLeft: '1px solid ' + themeVar.colors.ActiveColor,
+  }
+});
+const cbxStyle = css({
+  '&.wegas.wegas-btn':{
+      color: themeVar.colors.LightTextColor,
+    '&:hover': {
+      color: themeVar.colors.LightTextColor,
+    }
+  }
+});
 interface CbxChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
   choiceI: IChoiceInstance;
@@ -35,7 +57,6 @@ function CbxChoiceDisplay({
   radioButton,
 }: CbxChoiceDisplayProps) {
   const { active, replies } = choiceI;
-
   const questionChoosed = replies.filter(r => !r.ignored).length > 0;
   const disabled =
     !replyAllowed || (maxReplyReached && !questionChoosed && !radioButton);
@@ -46,7 +67,11 @@ function CbxChoiceDisplay({
   }
 
   return (
-    <ChoiceContainer active={active} descriptor={choiceD} canReply={!disabled}>
+    <ChoiceContainer active={active} descriptor={choiceD} canReply={!disabled} hasBeenSelected={questionChoosed} className={cx(flex, css({cursor: 'pointer'}))} inputClassName={cbxContainerStyle} onClick={() => {
+      if (enableValidate) {
+        onValidate(choiceD);
+      }
+    }}>
       {
         <CheckBox
           className={autoMargin}
@@ -58,6 +83,7 @@ function CbxChoiceDisplay({
           }}
           disabled={disabled}
           radio={radioButton}
+          checkBoxClassName={cbxStyle}
         />
       }
     </ChoiceContainer>

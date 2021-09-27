@@ -1,4 +1,4 @@
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { IReply, IChoiceDescriptor } from 'wegas-ts-api';
 import { TranslatableContent } from '../../../data/i18n';
@@ -12,6 +12,7 @@ import {
   choiceDescriptionStyle,
 } from './ChoiceContainer';
 import { TranslatableText } from '../HTMLText';
+import { MediumPadding } from '../../../css/classes';
 
 const repliesContainer = css({
   marginTop: '5px',
@@ -29,7 +30,7 @@ function ReplyDisplay({ reply }: ReplyDisplayProps) {
   const answer = reply.answer;
 
   return (
-    <div className={choiceContainerStyle}>
+    <div className={cx(choiceContainerStyle, css({padding: '15px'}))}>
       <StoreConsumer
         selector={() =>
           VariableDescriptor.firstMatch<IChoiceDescriptor>({

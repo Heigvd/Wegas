@@ -39,6 +39,12 @@ export class SChoiceDescriptorImpl extends SChoiceDescriptor {
       }
     }
   }
+  public isSelectable(p: Readonly<SPlayer>): boolean {
+    const maxReplies = this.getMaxReplies();
+    return maxReplies == null || this.getInstance(p)
+      .getReplies()
+      .filter(r => !r.getIgnored()).length < maxReplies;
+  }
   public activate(_p: Readonly<SPlayer>): void {
     throw new Error('This is readonly');
   }
@@ -75,6 +81,12 @@ export class SSingleResultChoiceDescriptorImpl extends SSingleResultChoiceDescri
   }
   public hasNotBeenSelected(p: Readonly<SPlayer>): boolean {
     return !this.hasBeenSelected(p);
+  }
+  public isSelectable(p: Readonly<SPlayer>): boolean {
+    const maxReplies = this.getMaxReplies();
+    return maxReplies == null || this.getInstance(p)
+      .getReplies()
+      .filter(r => !r.getIgnored()).length < maxReplies;
   }
   public hasBeenIgnored(p: Readonly<SPlayer>): boolean {
     if (this.hasBeenSelected(p)) {

@@ -414,6 +414,9 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Scriptable(dependsOn = DependencyScope.CHILDREN)
     public boolean isStillAnswerabled(Player p) {
+        if (this.getValidated(p)){
+            return false;
+        }
         if (this.getMaxReplies() != null) {
             QuestionInstance qi = this.getInstance(p);
             // there is maximum number of choice at the question level
