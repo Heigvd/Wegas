@@ -1,17 +1,16 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
-import { XYPosition, useMouseEventDnd } from '../Hooks/useMouseEventDnd';
+import * as React from 'react';
+import { classNameOrEmpty } from '../../Helper/className';
+import { useMouseEventDnd, XYPosition } from '../Hooks/useMouseEventDnd';
+import { isActionAllowed } from '../PageComponents/tools/options';
+import { themeVar } from '../Theme/ThemeVars';
 import { FlowLine, Process, Processes } from './FlowChart';
-import { useDrop } from 'react-dnd';
-import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './Handles';
+import { DnDFlowchartHandle } from './Handles';
 import {
   selectedStateBoxStyle,
   stateBoxActionStyle,
   stateBoxStyle,
 } from './StateProcessComponent';
-import { themeVar } from '../Theme/ThemeVars';
-import { isActionAllowed } from '../PageComponents/tools/options';
-import { classNameOrEmpty } from '../../Helper/className';
 
 const processStyle = css({
   position: 'absolute',
@@ -52,6 +51,22 @@ export interface ProcessProps<F extends FlowLine, P extends Process<F>>
    * a callback triggered when a handle is dropped on the process component
    */
   onConnect: (processes: Processes<F, P>, flowline?: F) => void;
+  /**
+   * a callback triggered when a handle is been dragged
+   */
+  onHandleMove: (
+    position: XYPosition,
+    item: DnDFlowchartHandle<F, P>,
+    event: MouseEvent,
+  ) => void;
+  /**
+   * a callback triggered when a dragged handle is released
+   */
+  onHandleMoveEnd: (
+    position: XYPosition,
+    item: DnDFlowchartHandle<F, P>,
+    event: MouseEvent,
+  ) => void;
 }
 
 export function CustomProcessComponent<
@@ -69,13 +84,20 @@ export function CustomProcessComponent<
 }: React.PropsWithChildren<ProcessProps<F, P>> & { zoom: number }) {
   const processElement = React.useRef<HTMLDivElement | null>(null);
   // const clickPosition = React.useRef<XYPosition>({ x: 0, y: 0 });
-  const [, drop] = useDrop<DnDFlowchartHandle<F, P>, unknown, unknown>({
-    accept: PROCESS_HANDLE_DND_TYPE,
-    canDrop: () => isActionAllowed(options),
-    drop: ({ processes, flowline }) => {
-      onConnect(processes, flowline);
-    },
-  });
+  // const [{ isDragging }, drop] = useDrop<
+  //   DnDFlowchartHandle<F, P>,
+  //   void,
+  //   { isDragging: boolean }
+  // >({
+  //   accept: PROCESS_HANDLE_DND_TYPE,
+  //   canDrop: () => isActionAllowed(options),
+  //   drop: ({ processes, flowline }) => {
+  //     onConnect(processes, flowline);
+  //   },
+  //   collect: mon => ({
+  //     isDragging: mon.isOver(),
+  //   }),
+  // });
 
   // const onDragStart = React.useCallback(
   //   (e: MouseEvent) => {
@@ -123,7 +145,7 @@ export function CustomProcessComponent<
   return (
     <div
       ref={ref => {
-        drop(ref);
+        // drop(ref);
         if (ref != null) {
           processElement.current = ref;
           onReady(ref);

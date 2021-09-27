@@ -1,28 +1,27 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
-import { FlowLine, Process } from './FlowChart';
-import {
-  CustomProcessComponent,
-  ProcessComponentProps,
-} from './ProcessComponent';
+import * as React from 'react';
+import { entityIs } from '../../data/entities';
+import { translate } from '../../Editor/Components/FormView/translatable';
 import {
   StateProcess,
   TransitionFlowLine,
 } from '../../Editor/Components/StateMachineEditor';
-import { entityIs } from '../../data/entities';
-import { translate } from '../../Editor/Components/FormView/translatable';
+import { IconComp } from '../../Editor/Components/Views/FontAwesome';
+import { classNameOrEmpty } from '../../Helper/className';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
-import {
-  DnDFlowchartHandle,
-  ProcessHandleProps,
-  PROCESS_HANDLE_DND_TYPE,
-} from './Handles';
-import { useDrag } from 'react-dnd';
 import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
-import { classNameOrEmpty } from '../../Helper/className';
 import { themeVar } from '../Theme/ThemeVars';
-import { IconComp } from '../../Editor/Components/Views/FontAwesome';
+import { FlowLine, Process } from './FlowChart';
+import {
+  ProcessHandleProps,
+  PROCESS_HANDLE_DND_TYPE,
+  useHandleManagement,
+} from './Handles';
+import {
+  CustomProcessComponent,
+  ProcessComponentProps,
+} from './ProcessComponent';
 
 const stateContainerStyle = css({
   display: 'inline-flex',
@@ -136,7 +135,11 @@ const dragAndHoverStyle = css({
   background: themeVar.colors.HighlightColor, // add a third color? "evidence color shaded" editor theme var
 });
 
-interface StateBoxProps {
+interface StateBoxProps
+  extends Pick<
+    ProcessComponentProps<TransitionFlowLine, StateProcess>,
+    'zoom' | 'onHandleMove' | 'onHandleMoveEnd'
+  > {
   state: StateProcess;
   className?: string;
   onClick?: (e: ModifierKeysEvent, process: StateProcess) => void;
@@ -152,6 +155,9 @@ export function StateBox({
   selected,
   disabled,
   readOnly,
+  zoom,
+  onHandleMove,
+  onHandleMoveEnd,
 }: StateBoxProps) {
   const [isShown, setIsShown] = React.useState(false);
   const { lang } = React.useContext(languagesCTX);
@@ -188,7 +194,12 @@ export function StateBox({
           />
         </div>
         {isActionAllowed({ readOnly, disabled }) && (
-          <StateProcessHandle sourceProcess={state} />
+          <StateProcessHandle
+            sourceProcess={state}
+            zoom={zoom}
+            onHandleMove={onHandleMove}
+            onHandleMoveEnd={onHandleMoveEnd}
+          />
         )}
       </div>
       {isShown && state.state.onEnterEvent.content != '' && (
@@ -206,7 +217,8 @@ export function StateProcessComponent({
   onClick,
   ...processProps
 }: ProcessComponentProps<TransitionFlowLine, StateProcess>) {
-  const { disabled, readOnly, process } = processProps;
+  const { disabled, readOnly, process, zoom, onHandleMove, onHandleMoveEnd } =
+    processProps;
   return (
     <CustomProcessComponent {...processProps}>
       <StateBox
@@ -215,6 +227,9 @@ export function StateProcessComponent({
         selected={isProcessSelected && isProcessSelected(process)}
         disabled={disabled}
         readOnly={readOnly}
+        zoom={zoom}
+        onHandleMove={onHandleMove}
+        onHandleMoveEnd={onHandleMoveEnd}
       />
     </CustomProcessComponent>
   );
@@ -222,15 +237,31 @@ export function StateProcessComponent({
 
 export function StateProcessHandle<F extends FlowLine, P extends Process<F>>({
   sourceProcess,
+  zoom,
+  onHandleMove,
+  onHandleMoveEnd,
 }: ProcessHandleProps<F, P>) {
-  const [, drag] = useDrag<DnDFlowchartHandle<F, P>, unknown, unknown>({
-    item: {
-      type: PROCESS_HANDLE_DND_TYPE,
-      processes: { sourceProcess },
-    },
-  });
+  // const [, drag] = useDrag<DnDFlowchartHandle<F, P>, unknown, unknown>({
+  //   item: {
+  //     type: PROCESS_HANDLE_DND_TYPE,
+  //     processes: { sourceProcess },
+  //   },
+  // });
+
+  const handleElement = useHandleManagement(
+    onHandleMove,
+    onHandleMoveEnd,
+    sourceProcess,
+    zoom,
+  );
+
   return (
-    <div ref={drag} className={handleForTransition} data-nodrag={true}>
+    <div
+      // ref={drag}
+      ref={handleElement}
+      className={handleForTransition + ' ' + PROCESS_HANDLE_DND_TYPE}
+      data-nodrag={true}
+    >
       <IconComp icon="project-diagram" />
     </div>
   );

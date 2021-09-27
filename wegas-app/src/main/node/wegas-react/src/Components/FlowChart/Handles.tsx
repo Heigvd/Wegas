@@ -1,10 +1,10 @@
-import * as React from 'react';
 import { css } from '@emotion/css';
-import { themeVar } from '../Theme/ThemeVars';
-import { useDrag } from 'react-dnd';
-import { FlowLine, Process, Processes } from './FlowChart';
-import { XYPosition } from '../Hooks/useMouseEventDnd';
+import * as React from 'react';
 import { classNameOrEmpty } from '../../Helper/className';
+import { useMouseEventDnd, XYPosition } from '../Hooks/useMouseEventDnd';
+import { themeVar } from '../Theme/ThemeVars';
+import { FlowLine, Process, Processes } from './FlowChart';
+import { ProcessComponentProps } from './ProcessComponent';
 
 export const PROCESS_HANDLE_DND_TYPE = 'DND_PROCESS_HANDLE';
 
@@ -28,26 +28,104 @@ const processHandleStyle = css({
   ':hover': { opacity: 1 },
 });
 
-export interface ProcessHandleProps<F extends FlowLine, P extends Process<F>> {
+export function useHandleManagement<F extends FlowLine, P extends Process<F>>(
+  onHandleMove: (
+    position: XYPosition,
+    item: DnDFlowchartHandle<F, P>,
+    event: MouseEvent,
+  ) => void,
+  onHandleMoveEnd: (
+    position: XYPosition,
+    item: DnDFlowchartHandle<F, P>,
+    event: MouseEvent,
+  ) => void,
+  sourceProcess: P,
+  zoom: number,
+) {
+  const handleElement = React.useRef<HTMLDivElement>(null);
+  const onDrag = React.useCallback(
+    (e: MouseEvent, position: XYPosition) => {
+      onHandleMove(
+        { x: position.x, y: position.y },
+        {
+          type: PROCESS_HANDLE_DND_TYPE,
+          processes: { sourceProcess },
+        },
+        e,
+      );
+    },
+    [onHandleMove, sourceProcess],
+  );
+
+  const onDragEnd = React.useCallback(
+    (e: MouseEvent, position: XYPosition) => {
+      onHandleMoveEnd(
+        {
+          x: Math.max(position.x, 0),
+          y: Math.max(position.y, 0),
+        },
+        {
+          type: PROCESS_HANDLE_DND_TYPE,
+          processes: { sourceProcess },
+        },
+        e,
+      );
+    },
+    [onHandleMoveEnd, sourceProcess],
+  );
+
+  useMouseEventDnd(
+    handleElement,
+    {
+      onDragStart: undefined,
+      onDrag,
+      onDragEnd,
+    },
+    true,
+    true,
+    zoom,
+  );
+
+  return handleElement;
+}
+
+export interface ProcessHandleProps<F extends FlowLine, P extends Process<F>>
+  extends Pick<
+    ProcessComponentProps<F, P>,
+    'zoom' | 'onHandleMove' | 'onHandleMoveEnd'
+  > {
   /**
    * the process from which the flowline is comming
    */
   sourceProcess: P;
+  /**
+   * a function that is called when a handle is moved
+   */
 }
 
 export function DefaultProcessHandle<F extends FlowLine, P extends Process<F>>({
   sourceProcess,
+  onHandleMove,
+  onHandleMoveEnd,
+  zoom,
 }: ProcessHandleProps<F, P>) {
-  const [, drag] = useDrag<DnDFlowchartHandle<F, P>, unknown, unknown>({
-    item: {
-      type: PROCESS_HANDLE_DND_TYPE,
-      processes: { sourceProcess },
-    },
-  });
+  // const [, drag] = useDrag<DnDFlowchartHandle<F, P>, unknown, unknown>({
+  //   item: {
+  //     type: PROCESS_HANDLE_DND_TYPE,
+  //     processes: { sourceProcess },
+  //   },
+  // });
+
+  const handleElement = useHandleManagement(
+    onHandleMove,
+    onHandleMoveEnd,
+    sourceProcess,
+    zoom,
+  );
 
   return (
     <div
-      ref={drag}
+      ref={handleElement}
       style={{
         right: `${-PROCESS_HANDLE_SIDE / 2}px`,
         top: `calc(50% - ${PROCESS_HANDLE_SIDE / 2}px)`,
@@ -126,9 +204,16 @@ export function FlowLineHandle<F extends FlowLine, P extends Process<F>>({
     },
   });
 
+  // const handleElement = useHandleManagement(
+  //   onHandleMove,
+  //   onHandleMoveEnd,
+  //   sourceProcess,
+  //   zoom,
+  // );
+
   return (
     <div
-      ref={drag}
+      // ref={drag}
       id={id}
       style={{
         left: position.x,

@@ -1,34 +1,32 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
+import * as React from 'react';
+import { defaultMarginLeft, flex, flexRow } from '../../css/classes';
+import { classNameOrEmpty } from '../../Helper/className';
+import { useComparator } from '../../Helper/react.debug';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
+import { NumberSlider } from '../Inputs/Number/NumberSlider';
+import { HTMLText } from '../Outputs/HTMLText';
+import { isActionAllowed } from '../PageComponents/tools/options';
+import { themeVar } from '../Theme/ThemeVars';
 import { Toolbar } from '../Toolbar';
-
+import {
+  ArrowDefs,
+  CircularFlowLine,
+  computeFlowlineValues,
+  DefaultFlowLineComponent,
+  defaultSelect,
+  FlowLineComponentProps,
+  FlowLineComputedValues,
+  FlowLineHandles,
+  StraitFlowLine,
+  TempFlowLine,
+  TempFlowLineProps,
+} from './FlowLineComponent';
+import { DnDFlowchartHandle } from './Handles';
 import {
   DefaultProcessComponent,
   ProcessComponentProps,
 } from './ProcessComponent';
-import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './Handles';
-import { useDrop } from 'react-dnd';
-import { classNameOrEmpty } from '../../Helper/className';
-import { HTMLText } from '../Outputs/HTMLText';
-import { isActionAllowed } from '../PageComponents/tools/options';
-import {
-  computeFlowlineValues,
-  StraitFlowLine,
-  DefaultFlowLineComponent,
-  defaultSelect,
-  FlowLineComputedValues,
-  FlowLineHandles,
-  TempFlowLine,
-  TempFlowLineProps,
-  CircularFlowLine,
-  ArrowDefs,
-  FlowLineComponentProps,
-} from './FlowLineComponent';
-import { themeVar } from '../Theme/ThemeVars';
-import { defaultMarginLeft, flex, flexRow } from '../../css/classes';
-import { NumberSlider } from '../Inputs/Number/NumberSlider';
-import { useComparator } from '../../Helper/react.debug';
 
 const flowChartStyle = css({
   width: '100%',
@@ -209,19 +207,17 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   const [tempFlow, setTempFlow] = React.useState<TempFlowLineProps>();
   const [zoom, setZoom] = React.useState<number>(1);
 
-  const [, drop] = useDrop<DnDFlowchartHandle<F, P>, unknown, void>({
-    accept: PROCESS_HANDLE_DND_TYPE,
-    collect: monitor => {
-      if (monitor.getItem() == null) {
-        setTempFlow(undefined);
-      }
-    },
-    hover: (item, mon) => {
-      const newX = mon.getClientOffset()?.x;
-      const newY = mon.getClientOffset()?.y;
+  const onHandleMove = React.useCallback(
+    (
+      position: XYPosition,
+      item: DnDFlowchartHandle<F, P>,
+      // event: MouseEvent,
+    ) => {
+      // const newX = mon.getClientOffset()?.x;
+      // const newY = mon.getClientOffset()?.y;
 
-      const containerX = container.current?.getBoundingClientRect().x;
-      const containerY = container.current?.getBoundingClientRect().y;
+      // const containerX = container.current?.getBoundingClientRect().x;
+      // const containerY = container.current?.getBoundingClientRect().y;
 
       let processElements: TempFlowLineProps['processElements'];
       if ('targetProcess' in item.processes) {
@@ -236,55 +232,131 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
         };
       }
 
-      if (
-        newX != null &&
-        newY != null &&
-        containerX != null &&
-        containerY != null
-      ) {
-        setTempFlow({
-          position: { x: newX - containerX, y: newY - containerY },
-          processElements,
-          zoom,
-        });
-      } else {
+      setTempFlow({
+        position,
+        processElements,
+        zoom,
+      });
+    },
+    [zoom],
+  );
+
+  const onHandleMoveEnd = React.useCallback(
+    (
+      position: XYPosition,
+      { processes, flowline, backward }: DnDFlowchartHandle<F, P>,
+    ) =>
+      // event: MouseEvent,
+      {
         setTempFlow(undefined);
-      }
-    },
-    canDrop: (_item, mon) => {
-      return mon.isOver({ shallow: true });
-    },
-    drop: ({ processes, flowline, backward }, mon) => {
-      setTempFlow(undefined);
-      if (actionsAllowed) {
-        const newX = mon.getClientOffset()?.x;
-        const newY = mon.getClientOffset()?.y;
+        if (actionsAllowed) {
+          onNew(processes.sourceProcess, position, flowline, backward);
+          // const newX = mon.getClientOffset()?.x;
+          // const newY = mon.getClientOffset()?.y;
 
-        const containerX = container.current?.getBoundingClientRect().x;
-        const containerY = container.current?.getBoundingClientRect().y;
+          // const containerX = container.current?.getBoundingClientRect().x;
+          // const containerY = container.current?.getBoundingClientRect().y;
 
-        const scrollX = container.current?.scrollLeft;
-        const scrollY = container.current?.scrollTop;
+          // const scrollX = container.current?.scrollLeft;
+          // const scrollY = container.current?.scrollTop;
 
-        onNew(
-          processes.sourceProcess,
-          newX != null &&
-            newY != null &&
-            containerX != null &&
-            containerY != null &&
-            scrollX != null &&
-            scrollY != null
-            ? {
-                x: newX - containerX + scrollX,
-                y: newY - containerY + scrollY,
-              }
-            : { x: 0, y: 0 },
-          flowline,
-          backward,
-        );
-      }
-    },
-  });
+          // onNew(
+          //   processes.sourceProcess,
+          //   newX != null &&
+          //     newY != null &&
+          //     containerX != null &&
+          //     containerY != null &&
+          //     scrollX != null &&
+          //     scrollY != null
+          //     ? {
+          //         x: newX - containerX + scrollX,
+          //         y: newY - containerY + scrollY,
+          //       }
+          //     : { x: 0, y: 0 },
+          //   flowline,
+          //   backward,
+          // );
+        }
+      },
+    [actionsAllowed, onNew],
+  );
+
+  // const [, drop] = useDrop<DnDFlowchartHandle<F, P>, unknown, void>({
+  //   accept: PROCESS_HANDLE_DND_TYPE,
+  //   collect: monitor => {
+  //     if (monitor.getItem() == null) {
+  //       setTempFlow(undefined);
+  //     }
+  //   },
+  //   hover: (item, mon) => {
+  //     const newX = mon.getClientOffset()?.x;
+  //     const newY = mon.getClientOffset()?.y;
+
+  //     const containerX = container.current?.getBoundingClientRect().x;
+  //     const containerY = container.current?.getBoundingClientRect().y;
+
+  //     let processElements: TempFlowLineProps['processElements'];
+  //     if ('targetProcess' in item.processes) {
+  //       processElements = {
+  //         endProcessElement:
+  //           processesRef.current[item.processes.targetProcess!.id],
+  //       };
+  //     } else {
+  //       processElements = {
+  //         startProcessElement:
+  //           processesRef.current[item.processes.sourceProcess.id],
+  //       };
+  //     }
+
+  //     if (
+  //       newX != null &&
+  //       newY != null &&
+  //       containerX != null &&
+  //       containerY != null
+  //     ) {
+  //       setTempFlow({
+  //         position: { x: newX - containerX, y: newY - containerY },
+  //         processElements,
+  //         zoom,
+  //       });
+  //     } else {
+  //       setTempFlow(undefined);
+  //     }
+  //   },
+  //   canDrop: (_item, mon) => {
+  //     return mon.isOver({ shallow: true });
+  //   },
+  //   drop: ({ processes, flowline, backward }, mon) => {
+  //     setTempFlow(undefined);
+  //     if (actionsAllowed) {
+  //       const newX = mon.getClientOffset()?.x;
+  //       const newY = mon.getClientOffset()?.y;
+
+  //       const containerX = container.current?.getBoundingClientRect().x;
+  //       const containerY = container.current?.getBoundingClientRect().y;
+
+  //       const scrollX = container.current?.scrollLeft;
+  //       const scrollY = container.current?.scrollTop;
+
+  //       onNew(
+  //         processes.sourceProcess,
+  //         newX != null &&
+  //           newY != null &&
+  //           containerX != null &&
+  //           containerY != null &&
+  //           scrollX != null &&
+  //           scrollY != null
+  //           ? {
+  //               x: newX - containerX + scrollX,
+  //               y: newY - containerY + scrollY,
+  //             }
+  //           : { x: 0, y: 0 },
+  //         flowline,
+  //         backward,
+  //       );
+  //     }
+  //   },
+  // });
 
   const [internalProcesses, setInternalProcesses] = React.useState<{
     [pid: string]: P;
@@ -418,11 +490,11 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
       <Toolbar.Content
         style={{ position: 'relative' }}
         ref={ref => {
-          drop(ref);
-          // if (ref != null) {
-          //   container.current = ref;
-          //   mo.observe(ref);
-          // }
+          // drop(ref);
+          if (ref != null) {
+            container.current = ref;
+            // mo.observe(ref);
+          }
         }}
       >
         <svg
@@ -533,6 +605,8 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
             disabled={disabled}
             readOnly={readOnly}
             zoom={zoom}
+            onHandleMove={onHandleMove}
+            onHandleMoveEnd={onHandleMoveEnd}
           />
         ))}
       </Toolbar.Content>
