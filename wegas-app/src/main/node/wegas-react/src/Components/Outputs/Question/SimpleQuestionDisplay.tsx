@@ -1,15 +1,25 @@
-import { cx } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { IChoiceDescriptor, IChoiceInstance } from 'wegas-ts-api';
 import { halfOpacity } from '../../../css/classes';
 import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
+import { instantiate } from '../../../data/scriptable';
+import { Player } from '../../../data/selectors';
 import { StoreDispatch } from '../../../data/Stores/store';
-import { Button } from '../../Inputs/Buttons/Button';
 import { isActionAllowed } from '../../PageComponents/tools/options';
+import { themeVar } from '../../Theme/ThemeVars';
+import { TranslatableText } from '../HTMLText';
 import { ChoiceContainer } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
 import { RepliesDisplay } from './Reply';
-import { TranslatableText } from '../HTMLText';
+
+const simpleChoiceHoverStyle = css({
+  '&:hover': {
+    backgroundColor: themeVar.colors.ActiveColor,
+    color: themeVar.colors.LightTextColor,
+    cursor: 'pointer',
+  },
+});
 
 interface SimpleChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
@@ -26,26 +36,24 @@ function SimpleChoiceDisplay({
 }: SimpleChoiceDisplayProps) {
   const { active, replies } = choiceI;
   const { maxReplies } = choiceD;
+  const hasBeenValidated = instantiate(choiceD).hasBeenSelected(Player.self());
 
   const validatedReplies = replies.filter(r => r.validated);
   const canReply =
     replyAllowed && (!maxReplies || validatedReplies.length < maxReplies);
-
   if (!active) {
     return null;
   }
 
   return (
-    <ChoiceContainer active={active} descriptor={choiceD} canReply={canReply}>
-      {(replyAllowed || validatedReplies.length > 0) && (
-        <Button
-          icon="check"
-          onClick={() => onValidate(choiceD)}
-          disabled={!canReply}
-          label={validatedReplies.length ? validatedReplies.length : undefined}
-        />
-      )}
-    </ChoiceContainer>
+    <ChoiceContainer
+      active={active}
+      descriptor={choiceD}
+      canReply={canReply}
+      onClick={() => onValidate(choiceD)}
+      className={simpleChoiceHoverStyle}
+      hasBeenSelected={hasBeenValidated}
+    />
   );
 }
 

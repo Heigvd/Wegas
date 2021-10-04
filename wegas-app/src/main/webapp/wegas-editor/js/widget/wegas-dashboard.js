@@ -481,9 +481,9 @@ YUI.add('wegas-dashboard', function(Y) {
             }
         },
         completePreferences: function() {
-            if (this.preferencesInitialized) {
-                return;
-            }
+//            if (this.preferencesInitialized) {
+//                return;
+//            }
             var prefs = this.preferences,
                 structure = this._monitoredData.structure;
             for (var tableName in structure) {
@@ -511,7 +511,7 @@ YUI.add('wegas-dashboard', function(Y) {
                     }
                 }
             }
-            this.preferencesInitialized = true;
+//            this.preferencesInitialized = true;
         },
 
         syncTable: function() {
@@ -907,7 +907,10 @@ YUI.add('wegas-dashboard', function(Y) {
                         }
                     }
                 }
+                body += '</div>';
+                body += '<div class="customize-footer">';
                 body += '<button class="customize-group-submit-button">OK</button></div>';
+                body += '</div>';
                 this._display(title, body, true, Y.bind(function() {
                     this.syncUI();
                 }, this));
@@ -934,7 +937,10 @@ YUI.add('wegas-dashboard', function(Y) {
                         body += '<div class="checkbox' + (items[j].active ? ' selected' : '') + '" data-group="' + group + '" data-cbx="' + items[j].id + '">' + items[j].label + "</div>";
                     }
                 }
-                body += '<button class="customize-group-submit-button">OK</button></div>';
+                body += '</div>';
+                body += '<div class="customize-footer">';
+                body += '<button class="customize-group-submit-button">OK</button>';
+                body += '</div>';
                 this._display(title, body, true, Y.bind(function() {
                     this.syncUI();
                 }, this));

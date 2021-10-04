@@ -15,7 +15,7 @@ export const inputStyleCSS: CSSObject = {
   ...inputDefaultCSS,
   width: '100%',
   resize: 'vertical',
-  border: '2px solid ' + themeVar.colors.PrimaryColor,
+  border: '1px solid ' + themeVar.colors.DisabledColor,
   borderRadius: themeVar.dimensions.BorderRadius,
   backgroundColor: themeVar.colors.BackgroundColor,
   fontFamily: themeVar.others.TextFont2,
@@ -25,7 +25,10 @@ export const inputStyleCSS: CSSObject = {
     opacity: '0.5',
   },
   ':focus': {
-    border: '2px solid ' + themeVar.colors.ActiveColor,
+    border: '1px solid ' + themeVar.colors.PrimaryColor,
+  },
+  ':hover': {
+    border: '1px solid ' + themeVar.colors.PrimaryColor,
   },
   '&[readonly]': {
     color: themeVar.colors.DisabledColor,

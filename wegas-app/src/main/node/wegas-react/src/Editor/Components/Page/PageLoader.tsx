@@ -15,7 +15,7 @@ import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { pagesTranslations } from '../../../i18n/pages/pages';
 
-const modalStyle = css({
+export const fullScreenLoaderStyle = css({
   zIndex: 10000,
   position: 'absolute',
   left: 0,
@@ -26,13 +26,8 @@ const modalStyle = css({
   flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
-  backgroundColor: 'rgba(255,255,255,0.9)',
+  backgroundColor: '#FFF',
   transition: '2s background-color',
-});
-
-const loaderStyle = css({
-  width: '200px',
-  height: '200px',
 });
 
 const editStyle = css({
@@ -120,10 +115,8 @@ export function PageLoader({
             {((waiting && loadTimer != null) ||
               // Petit tweak pour laisser la page se charger (si un scénario à un problème par contre, on verra le loader tourner éternellement)
               !selectedPage) && (
-              <div className={modalStyle}>
-                <div className={loaderStyle}>
+              <div className={fullScreenLoaderStyle}>
                   <TumbleLoader />
-                </div>
               </div>
             )}
           </div>

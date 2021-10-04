@@ -13,7 +13,7 @@ const togglerStyle = css({
   boxSizing: 'border-box',
   borderRadius: '24px',
   color: themeVar.colors.LightTextColor,
-  backgroundColor: themeVar.colors.ErrorColor,
+  backgroundColor: themeVar.colors.DisabledColor,
   cursor: 'pointer',
   marginLeft: '5px',
   marginTop: '5px',

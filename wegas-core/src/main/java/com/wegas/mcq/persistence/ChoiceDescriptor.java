@@ -340,6 +340,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @return
      */
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean isSelectable(Player p) {
         if (this.getMaxReplies() != null) {
             // maximum limit reached ?

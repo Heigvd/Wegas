@@ -470,7 +470,8 @@ YUI.add('wegas-scripteval', function(Y) {
                         cache: {
                             // one cache find variables and their parent
                             find: bind(Y.Wegas.Facade.Variable.cache, "find"), // safe
-                            findParentDescriptor: bind(Y.Wegas.Facade.Variable.cache, "findParentDescriptor") // safe
+                            findParentDescriptor: bind(Y.Wegas.Facade.Variable.cache, "findParentDescriptor"), // safe
+                            findAll: bind(Y.Wegas.Facade.Variable.cache, "findAll") // safe
                         },
                         script: {
                             // Calling remote script from client scripts is usually a bad practive, but it's safe
