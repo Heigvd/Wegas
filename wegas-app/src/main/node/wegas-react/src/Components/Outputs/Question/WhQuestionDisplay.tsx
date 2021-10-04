@@ -79,6 +79,7 @@ function WhChoiceDisplay({
       active
       descriptor={choiceD}
       canReply={!questionI.validated && isActionAllowed({ disabled, readOnly })}
+      hasBeenSelected={false}
     >
       {choiceD['@class'] === 'BooleanDescriptor' ? (
         <CheckBox

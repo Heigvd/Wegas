@@ -3,15 +3,17 @@ import { css } from '@emotion/css';
 import * as React from 'react';
 import { IPeerReviewDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 import { languagesCTX } from '../Components/Contexts/LanguagesProvider';
+import { TumbleLoader } from '../Components/Loader';
 import { themeVar } from '../Components/Theme/ThemeVars';
 import { entityIs } from '../data/entities';
 import { State } from '../data/Reducer/reducers';
 import { useStore } from '../data/Stores/store';
 import { translate } from '../Editor/Components/FormView/translatable';
 import { TabLayout } from '../Editor/Components/LinearTabLayout/TabLayout';
-import { PageLoader } from '../Editor/Components/Page/PageLoader';
+import { fullScreenLoaderStyle, PageLoader } from '../Editor/Components/Page/PageLoader';
 import { ReparentableRoot } from '../Editor/Components/Reparentable';
 import { visitIndex } from '../Helper/pages';
+import { wlog } from '../Helper/wegaslog';
 import HostHeader from './HostHeader';
 import { OverviewTab } from './Overview/OverviewTab';
 
@@ -40,34 +42,6 @@ export const tabsLineStyle = css({
   backgroundColor: themeVar.colors.BackgroundColor,
 });
 
-/*const trainerButtonsStyle = css({
-  button: {
-    display: 'flex',
-    alignItems: 'center',
-    backgroundColor: trainerTheme.colors.PrimaryColor,
-    color: trainerTheme.colors.LightTextColor,
-    borderStyle: 'none',
-    padding: '10px',
-    cursor: 'pointer',
-    borderRadius: trainerTheme.borders.ButtonsBorderRadius,
-    ['&.iconOnly']: {
-      backgroundColor: 'transparent',
-      color: trainerTheme.colors.MainTextColor,
-      padding: 0,
-    },
-       .css-${modalCloseDivStyle.name}: {
-      color: trainerTheme.colors.PrimaryColor
-    }
-    ['&:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):not(.confirmBtn):not(.tox-tbtn):hover']: {
-      color: trainerTheme.colors.LightTextColor,
-      backgroundColor: trainerTheme.colors.DarkPrimaryColor,
-    },
-  },
-  'svg.fa-window-close': {
-    color: trainerTheme.colors.PrimaryColor
-  },
-}); */
-
 export const trainerLayoutId = 'TrainerLayout';
 
 interface TrainerPagesSelector {
@@ -93,8 +67,9 @@ const availableLayoutTabs = {
 } as const;
 
 export default function HostLayout() {
+  const timer = React.useRef<NodeJS.Timeout | undefined>();
   const { lang } = React.useContext(languagesCTX);
-
+  const [loading, setLoading] = React.useState(true);
   const { trainerPages, peerReviews } =
     useStore<TrainerPagesSelector>(trainerPagesSelector);
   const trainerTabs = trainerPages.reduce(
@@ -111,6 +86,23 @@ export default function HostLayout() {
     {},
   );
 
+  React.useEffect(() => {
+    if (timer.current != null) {
+      clearTimeout(timer.current);
+    }
+    wlog(Object.keys(OverviewTab).length);
+    timer.current = setTimeout(() => {
+      setLoading(Object.keys(OverviewTab).length === 0);
+    }, 2500);
+    return () => {
+      if (timer.current != null) {
+        clearTimeout(timer.current);
+      }
+    };
+  }, []);
+  if (loading) {
+    return <div className={fullScreenLoaderStyle}><TumbleLoader /></div>;
+  }
   return (
     <div id="WegasLayout" className={layoutStyle}>
       <HostHeader />

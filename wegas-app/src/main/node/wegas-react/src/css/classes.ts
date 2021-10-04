@@ -315,6 +315,17 @@ export const unreadSpaceStyle = css({
   alignItems: 'center',
 });
 
+export const fullPageStyle = css({
+    backgroundColor: '#F9F9F9',
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'fixed',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+  });
+
 // Others
 
 export const pointer = css({
