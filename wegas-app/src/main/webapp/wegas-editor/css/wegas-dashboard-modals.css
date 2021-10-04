@@ -200,6 +200,8 @@
     min-width: 600px;
     max-width: 600px;
     max-height: 600px;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
 }
 
@@ -271,4 +273,7 @@
 
 .wegas-dashboard-monitor--popup-overlay .yui3-widget-bd {
     padding:16px 24px 12px 24px;
+    display: flex;
+    overflow: auto;
+    flex-direction: column;
 }

@@ -44,6 +44,9 @@ const selectStyle = css({
   alignItems: 'center',
   border: 'none',
   borderRadius: 'unset',
+  ':hover': {
+    border: 'none',
+  },
 });
 
 export const selectArrowStyle = css({
@@ -123,15 +126,15 @@ export const selectStyles: SelectProps['styles'] = {
   control: (provided, state) => {
     return {
       ...provided,
-      border: `2px solid ${
+      border: `1px solid ${
         state.isFocused
-          ? themeVar.colors.ActiveColor
-          : themeVar.colors.PrimaryColor
+          ? themeVar.colors.PrimaryColor
+          : themeVar.colors.DisabledColor
       }`,
       borderRadius: themeVar.dimensions.BorderRadius,
       backgroundColor: themeVar.colors.BackgroundColor,
       ':hover': {
-        border: '2px solid ' + themeVar.colors.PrimaryColor,
+        border: '1px solid ' + themeVar.colors.PrimaryColor,
       },
       boxShadow: 'unset',
     };
@@ -141,17 +144,17 @@ export const selectStyles: SelectProps['styles'] = {
     return { ...provided, zIndex: 2 };
   },
   option: (provided, state) => {
-    if (state.isFocused) {
-      return {
-        ...provided,
-        backgroundColor: themeVar.colors.HoverColor,
-        color: themeVar.colors.PrimaryColorShade,
-      };
-    } else if (state.isSelected) {
+    if (state.isSelected) {
       return {
         ...provided,
         backgroundColor: themeVar.colors.PrimaryColor,
-        color: themeVar.colors.BackgroundColor,
+        color: themeVar.colors.LightTextColor,
+      };
+    } else if (state.isFocused) {
+      return {
+        ...provided,
+        backgroundColor: themeVar.colors.HoverColor,
+        color: themeVar.colors.DarkTextColor,
       };
     } else {
       return { ...provided };

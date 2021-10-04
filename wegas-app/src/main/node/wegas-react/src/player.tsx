@@ -11,16 +11,8 @@ import '@emotion/css';
 import './css/global.css';
 import { useWebsocketEvent } from './API/websocket';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
-import { PageLoader } from './Editor/Components/Page/PageLoader';
+import { fullScreenLoaderStyle, PageLoader } from './Editor/Components/Page/PageLoader';
 import { pageCTX, defaultPageCTX } from './Editor/Components/Page/PageEditor';
-import {
-  expandBoth,
-  flex,
-  flexColumn,
-  itemCenter,
-  justifyCenter,
-} from './css/classes';
-import { cx } from '@emotion/css';
 import { TumbleLoader } from './Components/Loader';
 
 importPageComponents();
@@ -42,10 +34,7 @@ function PlayerPageLoader() {
 
   if (selectedPageId == null) {
     return (
-      <div
-        className={cx(flex, flexColumn, justifyCenter, itemCenter, expandBoth)}
-      >
-        <h2>The game is loading</h2>
+      <div className={fullScreenLoaderStyle}>
         <TumbleLoader />
       </div>
     );

@@ -1,5 +1,6 @@
-import { css, keyframes } from '@emotion/css';
+import { css, cx, keyframes } from '@emotion/css';
 import * as React from 'react';
+import Picto from './Theme/Picto';
 import { themeVar } from './Theme/ThemeVars';
 
 const anim = keyframes({
@@ -19,6 +20,39 @@ const anim = keyframes({
     borderBottomColor: themeVar.colors.PrimaryColor,
   },
 });
+
+const pulseKeyframes = keyframes`
+  0% {
+    transform: translate(-93px, 47px);
+  }
+  30% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(360deg);
+  }
+  70% {
+    transform: rotate(720deg);
+  }
+  100% {
+    transform: translate(-93px, 47px);
+  }
+`;
+const pulseEase = css`
+  animation: ${pulseKeyframes} 2s ease infinite;
+  transform-origin: 435px 70px;
+`;
+const loadingStyle = css({
+  width: '100%',
+  overflow: 'visible',
+});
+const animatedStyle = cx(
+  loadingStyle,
+  css({
+    '& g': pulseEase,
+  }),
+);
+
 const loaderStyle = css({
   position: 'relative',
   padding: '0 10px',
@@ -40,45 +74,23 @@ export function TextLoader({ text = 'Loading...' }: { text?: string }) {
   return <span className={loaderStyle}>{text}</span>;
 }
 
-const tumbleLoaderAnimation = keyframes({
-  '0% ': {
-    transform: 'rotate(0deg)',
-  },
-  '100%': {
-    transform: 'rotate(360deg)',
-  },
-});
-
-function tumbleLoaderStyle(containerSize: number, color: string = '#fff') {
-  const size = Math.min(containerSize, 100);
-  const sideSize = (size * 6) / 8 + 'px';
-  const margin = size / 8 + 'px';
-  const border = (size / 32) * 3 + 'px';
+function tumbleLoaderStyle(containerSize: number) {
+  const size = Math.min(containerSize, 200);
   return css({
     zIndex: 10000,
-    display: 'inline-block',
-    width: sideSize,
-    height: sideSize,
-    margin: margin,
-    '&:after': {
-      content: '""',
-      display: 'block',
-      width: sideSize,
-      height: sideSize,
-      borderRadius: '50%',
-      border: `${border} solid ${color}`,
-      borderColor: `${color} transparent ${color} transparent`,
-      animation: `${tumbleLoaderAnimation} 1.2s steps(16) infinite`,
-    },
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: '40px',
+    width: size,
+    maxWidth: '200px',
   });
 }
 interface TumblerLoaderProps {
-  color?: string;
   size?: number;
 }
 
 export function TumbleLoader({
-  color = themeVar.colors.ActiveColor,
   size,
 }: TumblerLoaderProps) {
   const container = React.useRef<HTMLDivElement>(null);
@@ -90,12 +102,10 @@ export function TumbleLoader({
       setComputedSize(Math.min(parentBox.height - 25, parentBox.width - 25));
     }
   }, []);
-
   return (
-    <div
-      ref={container}
-      className={tumbleLoaderStyle(size == null ? computedSize : size, color)}
-    />
+    <div ref={container} className={tumbleLoaderStyle(size == null ? computedSize : size)}>
+      <Picto className={animatedStyle} />
+    </div>
   );
 }
 
