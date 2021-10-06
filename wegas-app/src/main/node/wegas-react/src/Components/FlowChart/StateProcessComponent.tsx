@@ -1,28 +1,28 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
-import { FlowLine, Process } from './FlowChart';
-import {
-  CustomProcessComponent,
-  ProcessComponentProps,
-} from './ProcessComponent';
+import * as React from 'react';
+import { useDrag } from 'react-dnd';
+import { entityIs } from '../../data/entities';
+import { translate } from '../../Editor/Components/FormView/translatable';
 import {
   StateProcess,
   TransitionFlowLine,
 } from '../../Editor/Components/StateMachineEditor';
-import { entityIs } from '../../data/entities';
-import { translate } from '../../Editor/Components/FormView/translatable';
+import { IconComp } from '../../Editor/Components/Views/FontAwesome';
+import { classNameOrEmpty } from '../../Helper/className';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
+import { HTMLText } from '../Outputs/HTMLText';
+import { isActionAllowed } from '../PageComponents/tools/options';
+import { themeVar } from '../Theme/ThemeVars';
+import { FlowLine, Process } from './FlowChart';
 import {
   DnDFlowchartHandle,
   ProcessHandleProps,
   PROCESS_HANDLE_DND_TYPE,
 } from './Handles';
-import { useDrag } from 'react-dnd';
-import { HTMLText } from '../Outputs/HTMLText';
-import { isActionAllowed } from '../PageComponents/tools/options';
-import { classNameOrEmpty } from '../../Helper/className';
-import { themeVar } from '../Theme/ThemeVars';
-import { IconComp } from '../../Editor/Components/Views/FontAwesome';
+import {
+  CustomProcessComponent,
+  ProcessComponentProps,
+} from './ProcessComponent';
 
 const stateContainerStyle = css({
   display: 'inline-flex',
