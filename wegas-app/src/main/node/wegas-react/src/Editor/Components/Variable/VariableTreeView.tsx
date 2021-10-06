@@ -18,6 +18,7 @@ import {
   toolboxHeaderStyle,
   flexRow,
   flexBetween,
+  defaultPadding,
 } from '../../../css/classes';
 import { IVariableDescriptor } from 'wegas-ts-api';
 import { focusTab } from '../LinearTabLayout/LinearLayout';
@@ -32,6 +33,18 @@ import { OnMoveFn, TreeView } from '../../../Components/TreeView/TreeView';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { CTree } from './CTree';
 
+const addVariableContainerStyle = css({
+ position: 'absolute',
+ left: 0,
+ bottom: 0,
+ width: '100%',
+ zIndex: 1,
+});
+const addVariableButtonStyle = css({
+  width: '100%',
+  borderRadius: 0,
+  height: '2rem',
+});
 export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_VARIABLE_ITEM';
 
 const TREECONTENTID = 'TREECONTENT';
@@ -47,7 +60,7 @@ const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
               icon={withDefault(getIcon(entity), 'question')}
               className={css({ marginRight: '3px' })}
             />
-            {getClassLabel(entity)}
+            <p>{getClassLabel(entity)}</p>
           </>
         );
       });
@@ -139,39 +152,27 @@ export function VariableTreeView({
   );
 
   return (
-    <Toolbar className={css({ padding: '1.5em' })}>
-      <Toolbar.Header className={cx(toolboxHeaderStyle, flexBetween)}>
+    <Toolbar>
+      <Toolbar.Header className={cx(toolboxHeaderStyle, flexBetween, defaultPadding)}>
         {!noHeader && actionAllowed && (
           <>
-            <DropMenu
-              tooltip={i18nValues.add}
-              items={data || []}
-              icon="plus"
-              onSelect={(i, e) => {
-                if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
-                  localDispatch(Actions.EditorActions.createVariable(i.value));
-                } else {
-                  globalDispatch(Actions.EditorActions.createVariable(i.value));
-                  focusTab(mainLayoutId, 'Variable Properties');
-                }
-              }}
-            />
-            <div className={cx(flex, flexRow)}>
+            <div className={cx(flex, flexRow, flexBetween)}>
               <SimpleInput
                 value={value}
                 placeholder={i18nValues.filter}
                 aria-label="Filter"
                 onChange={ev => searchFn(String(ev))}
               />
-              <Toggler
+               <Toggler
                 className={css({
-                  fontSize: '14px',
+                  fontSize: '24px',
                   lineHeight: '100%',
                   justifyContent: 'flex-end',
-                  marginLeft: '5px',
+                  marginLeft: '10px',
                 })}
-                label={i18nValues.deepSearch}
+                label={<IconComp icon="search" mask="folder" transform="shrink-9 down-1" disabled/>}
                 value={deep}
+                tooltip={i18nValues.deepSearch}
                 onChange={value =>
                   globalDispatch(Actions.EditorActions.searchSetDeep(value))
                 }
@@ -180,7 +181,24 @@ export function VariableTreeView({
           </>
         )}
       </Toolbar.Header>
-      <Toolbar.Content id={TREECONTENTID} className={css({ padding: '1px' })}>
+      <Toolbar.Content id={TREECONTENTID} className={css({ padding: '1px', marginBottom: '2rem' })}>
+      <DropMenu
+              tooltip={i18nValues.add}
+              items={data || []}
+              prefixedLabel
+              icon="plus"
+              label="Add new variable"
+              onSelect={(i, e) => {
+                if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
+                  localDispatch(Actions.EditorActions.createVariable(i.value));
+                } else {
+                  globalDispatch(Actions.EditorActions.createVariable(i.value));
+                  focusTab(mainLayoutId, 'Variable Properties');
+                }
+              }}
+              containerClassName={addVariableContainerStyle}
+              buttonClassName={addVariableButtonStyle}
+            />
         <OkCancelModal onOk={onAccept}>
           <p>{i18nValues.changesWillBeLost}</p>
           <p>{i18nValues.areYouSure}</p>

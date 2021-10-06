@@ -60,10 +60,11 @@ export function TreeNode<T = unknown>({
   const [dragging, setDragging] = React.useState(false);
 
   const {
-    minimumNodeHeight,
+    //minimumNodeHeight,
     minimumLabelWidth,
     keepOpenOnDrag,
     openCloseButtons,
+    levelIcon,
     designParams,
     openNodes,
     toggleNode,
@@ -121,7 +122,7 @@ export function TreeNode<T = unknown>({
       className={className}
       id={id}
     >
-      {children != null && (
+      {children != null ? (
         <div
           style={{
             ...{
@@ -129,7 +130,11 @@ export function TreeNode<T = unknown>({
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              minHeight: minimumNodeHeight,
+              height: '1.8rem',
+              width: '1rem',
+              opacity: 0.5,
+              margin: '0 3px 0 6px',
+              //minHeight: minimumNodeHeight,
             },
             ...(forceOpenClose != null && forceOpenClose !== open
               ? { opacity: 0.5 }
@@ -150,12 +155,26 @@ export function TreeNode<T = unknown>({
         >
           {open ? openCloseButtons.open : openCloseButtons.close}
         </div>
+      ): (
+        <div style={{
+          ...{
+            display: 'flex',
+            height: '1.8rem',
+            width: '1rem',
+            alignItems: 'center',
+            opacity: 0.1,
+            color: 'black',
+            margin: '0 3px',
+          },
+        }}>
+          {levelIcon}
+        </div>
       )}
       <div
         draggable={!notDraggable}
         style={{
           minWidth: minimumLabelWidth,
-          gridColumn: children == null ? 'span 2' : 'initial',
+          gridColumn: 'initial',
         }}
         className={cx(nodeStyle, {
           [dragOverStyle]: dragIn,

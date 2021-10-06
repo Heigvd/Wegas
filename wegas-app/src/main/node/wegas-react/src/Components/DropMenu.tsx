@@ -260,7 +260,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                     }
                   >
                     {typeof item.label === 'string' ? (
-                      <div className={stringLabelStyle}>{item.label}</div>
+                      <div className={stringLabelStyle}><p>{item.label}</p></div>
                     ) : (
                       item.label
                     )}
