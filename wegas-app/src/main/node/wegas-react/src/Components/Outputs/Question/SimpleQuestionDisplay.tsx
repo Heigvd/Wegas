@@ -3,24 +3,23 @@ import * as React from 'react';
 import { IChoiceDescriptor, IChoiceInstance } from 'wegas-ts-api';
 import { halfOpacity } from '../../../css/classes';
 import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
+import { instantiate } from '../../../data/scriptable';
+import { Player } from '../../../data/selectors';
 import { StoreDispatch } from '../../../data/Stores/store';
 import { isActionAllowed } from '../../PageComponents/tools/options';
+import { themeVar } from '../../Theme/ThemeVars';
+import { TranslatableText } from '../HTMLText';
 import { ChoiceContainer } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
 import { RepliesDisplay } from './Reply';
-import { TranslatableText } from '../HTMLText';
-import { themeVar } from '../../Theme/ThemeVars';
-import { instantiate } from '../../../data/scriptable';
-import { Player } from '../../../data/selectors';
 
 const simpleChoiceHoverStyle = css({
-'&:hover': {
-  backgroundColor: themeVar.colors.ActiveColor,
-  color:themeVar.colors.LightTextColor,
-  cursor: 'pointer',
-}
+  '&:hover': {
+    backgroundColor: themeVar.colors.ActiveColor,
+    color: themeVar.colors.LightTextColor,
+    cursor: 'pointer',
+  },
 });
-
 
 interface SimpleChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
@@ -48,22 +47,13 @@ function SimpleChoiceDisplay({
 
   return (
     <ChoiceContainer
-    active={active}
-    descriptor={choiceD}
-    canReply={canReply}
-    onClick={() => onValidate(choiceD)}
-    className={simpleChoiceHoverStyle}
-    hasBeenSelected={hasBeenValidated}
-    >
-      {/* {(replyAllowed || validatedReplies.length > 0) && (
-        <Button
-          icon="check"
-          onClick={() => onValidate(choiceD)}
-          disabled={!canReply}
-          label={validatedReplies.length ? validatedReplies.length : undefined}
-        />
-      )} */}
-    </ChoiceContainer>
+      active={active}
+      descriptor={choiceD}
+      canReply={canReply}
+      onClick={() => onValidate(choiceD)}
+      className={simpleChoiceHoverStyle}
+      hasBeenSelected={hasBeenValidated}
+    />
   );
 }
 
