@@ -1,17 +1,17 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
-import { XYPosition, useMouseEventDnd } from '../Hooks/useMouseEventDnd';
-import { FlowLine, Process, Processes } from './FlowChart';
+import * as React from 'react';
 import { useDrop } from 'react-dnd';
+import { classNameOrEmpty } from '../../Helper/className';
+import { useMouseEventDnd, XYPosition } from '../Hooks/useMouseEventDnd';
+import { isActionAllowed } from '../PageComponents/tools/options';
+import { themeVar } from '../Theme/ThemeVars';
+import { FlowLine, Process, Processes } from './FlowChart';
 import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './Handles';
 import {
   selectedStateBoxStyle,
   stateBoxActionStyle,
   stateBoxStyle,
 } from './StateProcessComponent';
-import { themeVar } from '../Theme/ThemeVars';
-import { isActionAllowed } from '../PageComponents/tools/options';
-import { classNameOrEmpty } from '../../Helper/className';
 
 const processStyle = css({
   position: 'absolute',
@@ -68,7 +68,6 @@ export function CustomProcessComponent<
   ...options
 }: React.PropsWithChildren<ProcessProps<F, P>> & { zoom: number }) {
   const processElement = React.useRef<HTMLDivElement | null>(null);
-  // const clickPosition = React.useRef<XYPosition>({ x: 0, y: 0 });
   const [, drop] = useDrop<DnDFlowchartHandle<F, P>, unknown, unknown>({
     accept: PROCESS_HANDLE_DND_TYPE,
     canDrop: () => isActionAllowed(options),
@@ -76,17 +75,6 @@ export function CustomProcessComponent<
       onConnect(processes, flowline);
     },
   });
-
-  // const onDragStart = React.useCallback(
-  //   (e: MouseEvent) => {
-  //     const targetBox = (e.target as HTMLDivElement).getBoundingClientRect();
-  //     clickPosition.current = {
-  //       x: (e.clientX - targetBox.left) / zoom,
-  //       y: (e.clientY - targetBox.top) / zoom,
-  //     };
-  //   },
-  //   [zoom],
-  // );
 
   const onDrag = React.useCallback(
     (e: MouseEvent, position: XYPosition) => {

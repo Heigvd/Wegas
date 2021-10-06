@@ -33,6 +33,7 @@ function PlayerText({
       id={id}
       text={content}
       style={style}
+      className={className}
       disabled={options.disabled || options.locked}
     />
   );

@@ -1,34 +1,32 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
+import * as React from 'react';
+import { useDrop } from 'react-dnd';
+import { defaultMarginLeft, flex, flexRow } from '../../css/classes';
+import { classNameOrEmpty } from '../../Helper/className';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
+import { NumberSlider } from '../Inputs/Number/NumberSlider';
+import { HTMLText } from '../Outputs/HTMLText';
+import { isActionAllowed } from '../PageComponents/tools/options';
+import { themeVar } from '../Theme/ThemeVars';
 import { Toolbar } from '../Toolbar';
-
+import {
+  ArrowDefs,
+  CircularFlowLine,
+  computeFlowlineValues,
+  DefaultFlowLineComponent,
+  defaultSelect,
+  FlowLineComponentProps,
+  FlowLineComputedValues,
+  FlowLineHandles,
+  StraitFlowLine,
+  TempFlowLine,
+  TempFlowLineProps,
+} from './FlowLineComponent';
+import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './Handles';
 import {
   DefaultProcessComponent,
   ProcessComponentProps,
 } from './ProcessComponent';
-import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './Handles';
-import { useDrop } from 'react-dnd';
-import { classNameOrEmpty } from '../../Helper/className';
-import { HTMLText } from '../Outputs/HTMLText';
-import { isActionAllowed } from '../PageComponents/tools/options';
-import {
-  computeFlowlineValues,
-  StraitFlowLine,
-  DefaultFlowLineComponent,
-  defaultSelect,
-  FlowLineComputedValues,
-  FlowLineHandles,
-  TempFlowLine,
-  TempFlowLineProps,
-  CircularFlowLine,
-  ArrowDefs,
-  FlowLineComponentProps,
-} from './FlowLineComponent';
-import { themeVar } from '../Theme/ThemeVars';
-import { defaultMarginLeft, flex, flexRow } from '../../css/classes';
-import { NumberSlider } from '../Inputs/Number/NumberSlider';
-import { useComparator } from '../../Helper/react.debug';
 
 const flowChartStyle = css({
   width: '100%',
@@ -374,23 +372,9 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
     }
   }, [internalProcesses, isFlowlineSelected, zoom]);
 
-  useComparator(
-    { processes, internalProcesses, isFlowlineSelected, zoom },
-    'DEEP',
-  );
-
   React.useLayoutEffect(() => {
     drawFlows();
   }, [drawFlows]);
-
-  // Redraw when processes changes
-  // const mo = new IntersectionObserver(() => {
-  //   debugger;
-  //   if (flowValues.length === 0) {
-  //     debugger;
-  //     drawFlows();
-  //   }
-  // });
 
   return (
     <Toolbar
@@ -419,10 +403,10 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
         style={{ position: 'relative' }}
         ref={ref => {
           drop(ref);
-          // if (ref != null) {
-          //   container.current = ref;
-          //   mo.observe(ref);
-          // }
+          if (ref != null) {
+            container.current = ref;
+            // mo.observe(ref);
+          }
         }}
       >
         <svg

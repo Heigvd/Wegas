@@ -54,11 +54,19 @@ export function useMouseEventDnd<T extends HTMLElement>(
   const onMouseDown = React.useCallback(
     (e: MouseEvent) => {
       e.stopPropagation();
-      if (
-        !disabled &&
-        ref.current != null &&
-        !(e.target as HTMLElement).getAttribute('data-nodrag')
-      ) {
+
+      let target = e.target as HTMLElement | null;
+      let noDrag = false;
+
+      while (target != null && target !== e.currentTarget) {
+        if (target.dataset.nodrag) {
+          noDrag = true;
+          break;
+        }
+        target = target.parentElement;
+      }
+
+      if (!disabled && ref.current != null && !noDrag) {
         const target = ref.current as T;
 
         draggingTarget.current = target;
@@ -152,6 +160,7 @@ export function useMouseEventDnd<T extends HTMLElement>(
           );
         }
       }
+
       draggingTarget.current = null;
       draggingStarted.current = false;
 

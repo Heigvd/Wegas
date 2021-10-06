@@ -193,6 +193,7 @@ export function VariableTreeView({
             openNodes,
             setOpenNodes,
           }}
+          acceptTypes={[TREEVIEW_ITEM_TYPE]}  
         >
           {root.itemsIds ? (
             root.itemsIds.map(id => (
