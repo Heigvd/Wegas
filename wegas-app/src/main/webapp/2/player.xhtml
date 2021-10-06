@@ -4,6 +4,7 @@
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://xmlns.jcp.org/jsf/core"
+  style="height: 100%"
 >
   <f:event
     type="preRenderView"
@@ -39,7 +40,7 @@
     <link rel="icon" type="image/ico" href="/Wegas/favicon_orange.ico" />
     <link rel="preload" href="../wegas-react/dist/player.js" as="script" />
   </h:head>
-  <h:body>
+  <h:body style="height: 100%; margin: 0">
     <div id="root" />
     <script type="application/javascript">
       var API_ENDPOINT = "#{request.contextPath}" + "/rest/";
