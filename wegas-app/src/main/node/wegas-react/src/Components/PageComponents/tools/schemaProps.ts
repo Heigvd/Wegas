@@ -1,29 +1,27 @@
-import { ScriptProps } from '../../../Editor/Components/FormView/Script/Script';
-import { TYPESTRING, Schema, WidgetProps } from 'jsoninput/typings/types';
-import { DEFINED_VIEWS } from '../../../Editor/Components/FormView';
-import { WegasMethod } from '../../../Editor/editionConfig';
 import { emptyStatement, Statement } from '@babel/types';
+import { Schema, TYPESTRING, WidgetProps } from 'jsoninput/typings/types';
+import * as React from 'react';
+import { IAbstractContentDescriptor, IScript } from 'wegas-ts-api';
+import { DEFINED_VIEWS } from '../../../Editor/Components/FormView';
+import { IArrayProps } from '../../../Editor/Components/FormView/Array';
 import { BooleanProps } from '../../../Editor/Components/FormView/Boolean';
-import { StringInputProps } from '../../../Editor/Components/FormView/String';
 import { CodeProps } from '../../../Editor/Components/FormView/Code';
-import {
-  Choices,
-  IAsyncSelectProps,
-} from '../../../Editor/Components/FormView/Select';
+import { CustomScriptProps } from '../../../Editor/Components/FormView/CustomScript';
 import { PageSelectProps } from '../../../Editor/Components/FormView/PageSelect';
+import { StatementViewProps } from '../../../Editor/Components/FormView/Script/Expressions/ExpressionEditor';
+import { ScriptProps } from '../../../Editor/Components/FormView/Script/Script';
+import { ScriptableBooleanProps } from '../../../Editor/Components/FormView/ScriptableBoolean';
+import { ScriptableStringProps } from '../../../Editor/Components/FormView/ScriptableString';
+import { IAsyncSelectProps } from '../../../Editor/Components/FormView/Select';
+import { StringInputProps } from '../../../Editor/Components/FormView/String';
 import {
-  TreeVariableSelectProps,
   ScripableVariableSelectProps,
+  TreeVariableSelectProps,
   TreeVSelectProps,
 } from '../../../Editor/Components/FormView/TreeVariableSelect';
-import { IArrayProps } from '../../../Editor/Components/FormView/Array';
-import { StatementViewProps } from '../../../Editor/Components/FormView/Script/Expressions/ExpressionEditor';
+import { WegasMethod } from '../../../Editor/editionConfig';
 import { createScript } from '../../../Helper/wegasEntites';
-import { CustomScriptProps } from '../../../Editor/Components/FormView/CustomScript';
-import { IAbstractContentDescriptor, IScript } from 'wegas-ts-api';
-import { ScriptableStringProps } from '../../../Editor/Components/FormView/ScriptableString';
-import { ScriptableBooleanProps } from '../../../Editor/Components/FormView/ScriptableBoolean';
-import * as React from 'react';
+import { Choices } from '../../Selector';
 
 type TypedProps<T extends { view: {} }> = Schema<
   T['view'] & {

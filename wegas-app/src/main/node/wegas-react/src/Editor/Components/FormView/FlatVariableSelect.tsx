@@ -1,13 +1,14 @@
-import * as React from 'react';
-import { Choices, default as Select } from './Select';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { LabeledView } from './labeled';
-import { CommonView } from './commonView';
-import * as VariableDescriptor from '../../../data/selectors/VariableDescriptorSelector';
-import * as GameModel from '../../../data/selectors/GameModel';
-import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import { entityIs } from '../../../data/entities';
+import * as React from 'react';
 import { IVariableDescriptor } from 'wegas-ts-api';
+import { Choices } from '../../../Components/Selector';
+import { entityIs } from '../../../data/entities';
+import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
+import * as GameModel from '../../../data/selectors/GameModel';
+import * as VariableDescriptor from '../../../data/selectors/VariableDescriptorSelector';
+import { CommonView } from './commonView';
+import { LabeledView } from './labeled';
+import { default as Select } from './Select';
 
 interface IFlatVariableSelectProps extends WidgetProps.BaseProps {
   view: {

@@ -1,28 +1,28 @@
 import * as React from 'react';
-import {
-  registerComponent,
-  pageComponentFactory,
-} from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
-import { store, useStore } from '../../../data/Stores/store';
-import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, SNumberDescriptor, SStringDescriptor } from 'wegas-ts-api';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { classStyleIdShema } from '../tools/options';
+import { entityIs } from '../../../data/entities';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
+import { Player } from '../../../data/selectors';
+import { store, useStore } from '../../../data/Stores/store';
+import { translate } from '../../../Editor/Components/FormView/translatable';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { wwarn } from '../../../Helper/wegaslog';
+import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { useScript } from '../../Hooks/useScript';
+import { TumbleLoader } from '../../Loader';
+import { Choice, Selector } from '../../Selector';
+import {
+  pageComponentFactory,
+  registerComponent,
+} from '../tools/componentFactory';
+import { WegasComponentProps } from '../tools/EditableComponent';
+import { classStyleIdShema } from '../tools/options';
+import { schemaProps } from '../tools/schemaProps';
 import {
   OnVariableChange,
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
-import { Choice, Selector } from '../../../Editor/Components/FormView/Select';
-import { entityIs } from '../../../data/entities';
-import { translate } from '../../../Editor/Components/FormView/translatable';
-import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import { TumbleLoader } from '../../Loader';
-import { useScript } from '../../Hooks/useScript';
-import { wwarn } from '../../../Helper/wegaslog';
-import { Player } from '../../../data/selectors';
 
 interface PlayerSelectInputProps extends WegasComponentProps {
   /**

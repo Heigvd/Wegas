@@ -44,7 +44,6 @@ import { instantiate } from '../../../data/scriptable';
 import { Player, Team } from '../../../data/selectors';
 import * as VariableDescriptorSelector from '../../../data/selectors/VariableDescriptorSelector';
 import { store, useStore } from '../../../data/Stores/store';
-import { Selector } from '../../../Editor/Components/FormView/Select';
 import { translate } from '../../../Editor/Components/FormView/translatable';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -61,6 +60,7 @@ import {
   CustomPhasesProgressBar,
   PhaseComponentProps,
 } from '../../Outputs/PhasesProgressBar';
+import { Selector } from '../../Selector';
 import { themeVar } from '../../Theme/ThemeVars';
 import { Toolbar } from '../../Toolbar';
 import {
@@ -675,8 +675,9 @@ export default function PeerReviewTreeViewDisplay({
     reviews: false,
     comments: false,
   });
-  const [selectedReview, setSelectedReview] =
-    React.useState<ReviewState | undefined>();
+  const [selectedReview, setSelectedReview] = React.useState<
+    ReviewState | undefined
+  >();
 
   const onCarretClick = React.useCallback(
     (type: keyof CarretState) => () =>
