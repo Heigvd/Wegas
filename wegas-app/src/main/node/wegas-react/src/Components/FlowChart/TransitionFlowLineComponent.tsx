@@ -51,8 +51,7 @@ export const transitionBoxStyle = css({
 export const transitionBoxActionStyle = css({
   cursor: 'pointer',
   '&:hover': {
-    background: themeVar.colors.ActiveColor,
-    boxShadow: '0px 0px 6px rgba(0, 0, 0, 0.3)',
+    boxShadow: '0px 0px 6px rgba(0, 0, 0, 0.2)',
     borderColor: 'transparent',
   },
 });
