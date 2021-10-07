@@ -1,53 +1,53 @@
+import generate from '@babel/generator';
+import { parse } from '@babel/parser';
+import { program } from '@babel/types';
 import { css, cx } from '@emotion/css';
+import { isArray } from 'lodash-es';
 import * as React from 'react';
 import { LanguagesAPI } from '../../../API/languages.api';
 import { DropMenu } from '../../../Components/DropMenu';
+import { asyncSFC } from '../../../Components/HOC/asyncSFC';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import HTMLEditor from '../../../Components/HTML/HTMLEditor';
 import { CheckBox } from '../../../Components/Inputs/Boolean/CheckBox';
+import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { useOkCancelModal } from '../../../Components/Modal';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
 import {
   defaultMargin,
-  defaultPadding,
+  defaultMarginRight,
   defaultMarginTop,
+  defaultPadding,
   expandWidth,
   flex,
+  flexBetween,
   flexColumn,
   flexRow,
   grow,
   itemCenter,
-  MediumPadding,
-  flexBetween,
-  defaultMarginRight,
   layoutStyle,
+  MediumPadding,
 } from '../../../css/classes';
 import { manageResponseHandler } from '../../../data/actions';
 import { entityIs } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { GameModel, VariableDescriptor } from '../../../data/selectors';
 import { store, useStore } from '../../../data/Stores/store';
-import getEditionConfig, { getIcon } from '../../editionConfig';
-import { IconComp, withDefault } from '../Views/FontAwesome';
-import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
-import { unsafeTranslate } from '../FormView/translatable';
-import { LightWeightHTMLEditor } from '../../../Components/HTML/LightWeightHTMLEditor';
-import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
-import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { isArray } from 'lodash-es';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { languagesTranslations } from '../../../i18n/languages/languages';
+import getEditionConfig, { getIcon } from '../../editionConfig';
 import {
   generateSchema,
   IAttributes,
   testCode,
 } from '../FormView/Script/Expressions/expressionEditorHelpers';
-import { asyncSFC } from '../../../Components/HOC/asyncSFC';
-import { parse } from '@babel/parser';
-import { program } from '@babel/types';
-import generate from '@babel/generator';
+import { unsafeTranslate } from '../FormView/translatable';
+import { IconComp, withDefault } from '../Views/FontAwesome';
 
 const langaugeVisitorHeaderStyle = css({
   borderBottom: `solid 1px ${themeVar.colors.PrimaryColor}`,
@@ -145,7 +145,7 @@ function TranslationItemView({
         </div>
       </div>
       {view === 'html' ? (
-        <LightWeightHTMLEditor value={value} onChange={onValueChange} />
+        <HTMLEditor value={value} onChange={onValueChange} />
       ) : (
         <SimpleInput
           value={value}

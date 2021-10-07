@@ -255,8 +255,8 @@ export const themeVar = Object.entries(defaultLightMode.values).reduce(
   defaultLightMode.values,
 );
 
-export function modeClass(themeValues: ThemeValues, mode: Mode): string {
-  return css({
+export function modeStyle(themeValues: ThemeValues, mode: Mode) {
+  return {
     '--current-mode-name': mode.modeName,
     '--next-mode-name': mode.nextModeName,
     ...Object.entries(mode.values).reduce(
@@ -276,7 +276,11 @@ export function modeClass(themeValues: ThemeValues, mode: Mode): string {
       }),
       {},
     ),
-  });
+  };
+}
+
+export function modeClass(themeValues: ThemeValues, mode: Mode): string {
+  return css(modeStyle(themeValues, mode));
 }
 
 export const defaultThemeValues: ThemeValues = {
