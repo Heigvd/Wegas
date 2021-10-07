@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cx, css } from '@emotion/css';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
-import { shrinkWidth, grow, flex, itemBottom } from '../../../css/classes';
+import { shrinkWidth, grow, flex, itemCenter } from '../../../css/classes';
 import { classOrNothing, classNameOrEmpty } from '../../../Helper/className';
 import { themeVar } from '../../Theme/ThemeVars';
 
@@ -16,7 +16,6 @@ const togglerStyle = css({
   backgroundColor: themeVar.colors.DisabledColor,
   cursor: 'pointer',
   marginLeft: '5px',
-  marginTop: '5px',
   flexDirection: 'row',
   ['&.disabled']: {
     opacity: '50%',
@@ -76,6 +75,7 @@ export interface TogglerProps extends InputProps<boolean> {
    * hint - the hint that will be displayed when the mouse hover the component
    */
   hint?: string;
+  tooltip?: string;
 }
 
 export function Toggler({
@@ -91,14 +91,16 @@ export function Toggler({
   className,
   style,
   id,
+  tooltip,
 }: TogglerProps) {
   return (
     <div
       id={id}
       className={
-        cx(flex, itemBottom, shrinkWidth) + classNameOrEmpty(className)
+        cx(flex, itemCenter, shrinkWidth) + classNameOrEmpty(className)
       }
       style={style}
+      title={tooltip}
     >
       {typeof label === 'string' ? <Value value={label} /> : label}
       <div

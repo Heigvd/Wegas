@@ -185,7 +185,7 @@ export default function LanguageEditor() {
                 className={secondaryButtonStyle}
               />
               <Button
-                label={i18nCommonValues.accept}
+                label={i18nCommonValues.save}
                 onClick={() => {
                   if (selectedLanguage.id === -1) {
                     LanguagesAPI.updateLanguage(selectedLanguage).then(

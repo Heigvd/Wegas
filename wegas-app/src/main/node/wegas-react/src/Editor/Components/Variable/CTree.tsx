@@ -14,8 +14,8 @@ import { themeVar } from '../../../Components/Theme/ThemeVars';
 import {
   globalSelection,
   localSelection,
-  componentMarginLeft,
   flex,
+  flexBetween,
 } from '../../../css/classes';
 import {
   IVariableDescriptor,
@@ -35,23 +35,25 @@ const nodeStyle = css({
   borderStyle: 'solid',
   borderWidth: '1px',
   borderColor: 'transparent',
-  borderRadius: themeVar.dimensions.BorderRadius,
+  borderRadius: themeVar.dimensions.BorderRadius + "0 0 " + themeVar.dimensions.BorderRadius,
   padding: '2px',
   alignItems: 'center',
+  flex: '1 1 auto',
+  height: '1.5rem',
+  fontSize: '0.95em',
 });
-
-const nodeContentStyle = cx(
-  css({
-    marginRight: '5px',
-  }),
-  componentMarginLeft,
-);
 
 export const actionNodeContentStyle = cx(
   css({
     cursor: 'pointer',
+    'button': {
+      opacity: 0,
+    },
     ':hover': {
       border: '1px solid ' + themeVar.colors.PrimaryColor,
+      'button': {
+        opacity: 1,
+      },
     },
   }),
 );
@@ -207,7 +209,7 @@ export function CTree({
         notDroppable={!actionAllowed}
         label={
           <div
-            className={cx(flex, nodeStyle, {
+            className={cx(flex, flexBetween, nodeStyle, {
               [globalSelection]: editing,
               [localSelection]: localEditing,
               [actionNodeContentStyle]: actionAllowed,
@@ -230,7 +232,6 @@ export function CTree({
               <VariableTreeTitle
                 variable={variable}
                 subPath={subPath}
-                className={nodeContentStyle}
               />
             )}
             {actionAllowed &&

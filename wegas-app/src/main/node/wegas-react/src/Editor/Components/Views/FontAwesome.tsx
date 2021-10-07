@@ -4,6 +4,8 @@ import {
   IconPrefix,
   IconDefinition,
   IconName,
+  IconProp,
+  Transform,
 } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon, Props } from '@fortawesome/react-fontawesome';
@@ -56,15 +58,19 @@ interface IconDisplayProps extends Omit<ClassStyleId, 'id'> {
    * disabled - if true, displayed as disabled
    */
   disabled?: boolean;
+  mask?: IconProp;
+  transform?: string | Transform;
 }
 
-function IconDisplay({ icon, style, className, disabled }: IconDisplayProps) {
+function IconDisplay({ icon, mask, transform, style, className, disabled }: IconDisplayProps) {
   return isProps(icon) ? (
     <FontAwesome
       fixedWidth
       {...icon}
       style={style}
       className={cx({ [halfOpacity]: disabled }) + classNameOrEmpty(className)}
+      mask={mask}
+      transform={transform}
     />
   ) : isIconString(icon) ? (
     <div
@@ -85,6 +91,8 @@ function IconDisplay({ icon, style, className, disabled }: IconDisplayProps) {
     <FontAwesome
       fixedWidth
       icon={icon}
+      mask={mask}
+      transform={transform}
       style={style}
       className={cx({ [halfOpacity]: disabled }) + classNameOrEmpty(className)}
     />
@@ -97,9 +105,18 @@ interface IconCompProps extends Omit<ClassStyleId, 'id'> {
    * disabled - if true, displayed as disabled
    */
   disabled?: boolean;
+  /**
+   * mask - icon name or [prefix, icon name] given to mask the icon prop
+   */
+  mask?: IconProp;
+/**
+   * transform - transform the icon given for icon prop.
+   * Easiest is to use "shrink-n down-n left-n" for example: "shrink-9 down-1.5"
+   */
+  transform?: string | Transform;
 }
 
-export function IconComp({ icon, style, className, disabled }: IconCompProps) {
+export function IconComp({ icon, mask, transform, style, className, disabled }: IconCompProps) {
   return icon == null ? (
     <pre style={style} className={className}>
       No icon
@@ -118,6 +135,8 @@ export function IconComp({ icon, style, className, disabled }: IconCompProps) {
   ) : (
     <IconDisplay
       icon={icon}
+      mask={mask}
+      transform={transform}
       style={style}
       className={className}
       disabled={disabled}

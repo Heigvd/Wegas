@@ -113,6 +113,9 @@ export function Form<T>({
                 className={expandHeight}
               />
             )}
+            {/*
+            Undo button in forms.
+            Leaving it as a comment as it may be asked to re-add it.
             <ConfirmButton
               icon="undo"
               chipStyle
@@ -125,7 +128,7 @@ export function Form<T>({
                 right: actions.length > 0,
               }}
               buttonClassName={expandHeight}
-            />
+            /> */}
             {actions.map((a, i) => {
               switch (a.sorting) {
                 case 'toolbox':
