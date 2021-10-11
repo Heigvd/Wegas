@@ -2,9 +2,14 @@ import generate from '@babel/generator';
 import { parse } from '@babel/parser';
 import { program } from '@babel/types';
 import { css, cx } from '@emotion/css';
+import u from 'immer';
 import { isArray } from 'lodash-es';
 import * as React from 'react';
-import { LanguagesAPI } from '../../../API/languages.api';
+import {
+  IInScriptUpdate,
+  ITranslationUpdate,
+  LanguagesAPI,
+} from '../../../API/languages.api';
 import { DropMenu } from '../../../Components/DropMenu';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
@@ -190,18 +195,32 @@ interface TranslationViewItemProps extends SharedItemViewProps {
   selectedLanguages: IGameModelLanguage[];
 }
 
+interface TranslatableScript {
+  fieldName: string;
+  index: number;
+  parentClass: string;
+  parentId: number;
+}
+
+interface PartialTranslationUpdate extends Omit<ITranslationUpdate, 'value'> {
+  value: string | undefined;
+}
+
+interface PartialScriptUpdate extends Omit<IInScriptUpdate, 'value'> {
+  value: string | undefined;
+}
+
+type UpdateTranslationsFN = (
+  translationObject: PartialTranslationUpdate | PartialScriptUpdate,
+) => void;
+
 interface TranslatableContentViewProps extends TranslationViewItemProps {
-  value: ITranslatableContent;
-  script?: {
-    fieldName: string;
-    index: number;
-    parentClass: string;
-    parentId: number;
-  };
+  trContent: ITranslatableContent;
+  script?: TranslatableScript;
 }
 
 function TranslatableContentView({
-  value,
+  trContent,
   label,
   language,
   depth,
@@ -211,41 +230,79 @@ function TranslatableContentView({
   script,
 }: TranslatableContentViewProps) {
   const languageCode = language.code;
-  const translation = unsafeTranslate(value, languageCode);
+  const translation = unsafeTranslate(trContent, languageCode);
+  const { editedTranslations, updateTranslations } =
+    React.useContext(translationCTX);
 
-  const [editedTranslation, setEditedTranslation] = React.useState<{
-    [code: string]: string | undefined;
-  }>({});
+  let editedTranslation: ITranslationUpdate | IInScriptUpdate | undefined;
+  debugger;
+  if (script == null) {
+    editedTranslation =
+      editedTranslations[languageCode]?.TranslationUpdate[
+        String(trContent.id!)
+      ];
+  } else {
+    editedTranslation =
+      editedTranslations[languageCode]?.InScriptUpdate[
+        String(script.index) + String(script.parentId)
+      ];
+  }
 
   const getValue = React.useCallback(
-    (value: string | undefined, languageCode: string): string => {
-      const editedValue = editedTranslation[languageCode];
-      return editedValue == null ? (value == null ? '' : value) : editedValue;
+    (value: string | undefined): string => {
+      return editedTranslation?.value == null
+        ? value == null
+          ? ''
+          : value
+        : editedTranslation.value;
     },
     [editedTranslation],
   );
 
   function setValue(languageCode: string) {
     return function (value: string | undefined) {
-      setEditedTranslation(ot => {
-        return {
-          ...(ot || {}),
-          [languageCode]: value === '' ? undefined : value,
-        };
-      });
+      updateTranslations(
+        script
+          ? {
+              '@class': 'InScriptUpdate',
+              code: languageCode,
+              value,
+              ...script,
+            }
+          : {
+              '@class': 'TranslationUpdate',
+              code: languageCode,
+              trId: trContent.id!,
+              value,
+            },
+      );
     };
   }
 
   const upToDate =
-    value.translations[languageCode] == null ||
-    value.translations[languageCode].status == null
+    trContent.translations[languageCode] == null ||
+    trContent.translations[languageCode].status == null
       ? true
-      : !value.translations[languageCode].status!.includes('outdate');
+      : !trContent.translations[languageCode].status!.includes('outdate');
+
+  const translationObject: ITranslationUpdate | IInScriptUpdate = script
+    ? {
+        '@class': 'InScriptUpdate',
+        code: languageCode,
+        value: getValue(translation),
+        ...script,
+      }
+    : {
+        '@class': 'TranslationUpdate',
+        code: languageCode,
+        trId: trContent.id!,
+        value: getValue(translation),
+      };
 
   return (
     <TranslationItemView
       label={label}
-      value={getValue(translation, languageCode)}
+      value={getValue(translation)}
       upToDate={upToDate}
       showOptions={showOptions}
       itemClassName={
@@ -254,80 +311,28 @@ function TranslatableContentView({
           : undefined
       }
       rowSpanClassName={rowSpanStyle(selectedLanguages.length)}
-      disabledButtons={editedTranslation[languageCode] == null}
+      disabledButtons={editedTranslation == null}
       view={view}
       onUndo={() => setValue(languageCode)(undefined)}
       onSave={() => {
-        if (script != null) {
-          LanguagesAPI.updateScript(
-            languageCode,
-            script.fieldName,
-            script.index,
-            script.parentClass,
-            script.parentId,
-            getValue(translation, languageCode),
-          ).then(res => {
-            setValue(languageCode)(undefined);
-            store.dispatch(manageResponseHandler(res));
-          });
-        } else {
-          LanguagesAPI.updateTranslation(
-            languageCode,
-            value.id!,
-            getValue(translation, languageCode),
-          ).then(res => {
-            setValue(languageCode)(undefined);
-            store.dispatch(manageResponseHandler(res));
-          });
-        }
+        LanguagesAPI.updateTranslation(translationObject).then(res => {
+          setValue(languageCode)(undefined);
+          store.dispatch(manageResponseHandler(res));
+        });
       }}
       onValueChange={setValue(languageCode)}
       onOutdateOthers={() => {
-        if (script != null) {
-          LanguagesAPI.outdateScripts(
-            languageCode,
-            script.fieldName,
-            script.index,
-            script.parentClass,
-            script.parentId,
-            getValue(translation, languageCode),
-          ).then(res => {
-            setValue(languageCode)(undefined);
-            store.dispatch(manageResponseHandler(res));
-          });
-        } else {
-          LanguagesAPI.outdateTranslations(
-            languageCode,
-            value.id!,
-            getValue(translation, languageCode),
-          ).then(res => {
-            store.dispatch(manageResponseHandler(res));
-          });
-        }
+        LanguagesAPI.outdateTranslations(translationObject).then(res => {
+          setValue(languageCode)(undefined);
+          store.dispatch(manageResponseHandler(res));
+        });
       }}
       onOutdate={outdate => {
-        if (script != null) {
-          LanguagesAPI.setScriptStatus(
-            languageCode,
-            script.fieldName,
-            script.index,
-            script.parentClass,
-            script.parentId,
-            getValue(translation, languageCode),
-            !outdate,
-          ).then(res => {
+        LanguagesAPI.setTranslationStatus(translationObject, !outdate).then(
+          res => {
             store.dispatch(manageResponseHandler(res));
-          });
-        } else {
-          LanguagesAPI.setTranslationStatus(
-            languageCode,
-            value.id!,
-            getValue(translation, languageCode),
-            !outdate,
-          ).then(res => {
-            store.dispatch(manageResponseHandler(res));
-          });
-        }
+          },
+        );
       }}
     />
   );
@@ -359,7 +364,7 @@ interface ExpressionViewProps
   indexOffset: number;
 }
 
-async function AsyncExpressionView({
+function ExpressionView({
   expression,
   fieldName,
   parentDescriptor,
@@ -390,7 +395,7 @@ async function AsyncExpressionView({
             <TranslatableContentView
               key={String(parentDescriptor.id!) + fieldName + index + k}
               label={viewLabel}
-              value={translatable}
+              trContent={translatable}
               language={language}
               selectedLanguages={selectedLanguages}
               showOptions={showOptions}
@@ -408,8 +413,6 @@ async function AsyncExpressionView({
     </div>
   );
 }
-
-const ExpressionView = asyncSFC<ExpressionViewProps>(AsyncExpressionView);
 
 interface ScriptViewProps extends Omit<TranslationViewItemProps, 'view'> {
   value: IScript;
@@ -529,7 +532,7 @@ async function AsyncTranslationView({
                 <TranslatableContentView
                   key={language.id!}
                   label={k}
-                  value={v}
+                  trContent={v}
                   language={language}
                   depth={index === 0 ? depth : undefined}
                   selectedLanguages={selectedLanguages}
@@ -688,6 +691,24 @@ interface LanguageCopyAction {
   sourceLanguage: IGameModelLanguage;
 }
 
+interface DefaultItem extends DropMenuItem<unknown> {
+  type:
+    | 'SAVE_TRANSLATIONS'
+    | 'CLEAR_TRANSLATIONS'
+    | 'CLEAR_OUTDATED'
+    | 'CLEAR_ALL'
+    | 'COPY_TRANSLATIONS';
+  label: string;
+}
+
+interface CopyItem extends DropMenuItem<unknown> {
+  type: 'COPY';
+  label: string;
+  language: IGameModelLanguage;
+}
+
+type TranslationHeaderMenuItem = CopyItem | DefaultItem;
+
 type LanguageAction = LanguageClearAction | LanguageCopyAction;
 
 interface TranslationHeaderProps {
@@ -701,43 +722,47 @@ function TranslationHeader({
   languages,
   onSelect,
 }: TranslationHeaderProps) {
+  const { editedTranslations, resetLanguage } =
+    React.useContext(translationCTX);
   const i18nValues = useInternalTranslate(languagesTranslations);
   return (
     <div className={cx(flex, flexRow, columnMargin, itemCenter)}>
       <h3>{languageLabel(language)}</h3>
       <DropMenu
         icon="cog"
-        items={[
-          {
-            label: i18nValues.clearTranslations,
-            type: 'CLEAR_TRANSLATIONS',
-            language,
-            items: [
-              {
-                label: i18nValues.outdatedTranslations,
-                language,
-                type: 'CLEAR_OUTDATED',
-              },
-              {
-                label: i18nValues.allTranslations,
-                language,
-                type: 'CLEAR_ALL',
-              },
-            ],
-          },
-          {
-            label: i18nValues.copyTranslations,
-            type: 'COPY_TRANSLATIONS',
-            language,
-            items: languages
-              .filter(lang => lang.id !== language.id)
-              .map(lang => ({
-                label: languageLabel(lang),
-                language: lang,
-                type: 'COPY',
-              })),
-          },
-        ]}
+        items={
+          [
+            {
+              label: i18nValues.saveTranslations,
+              type: 'SAVE_TRANSLATIONS',
+            },
+            {
+              label: i18nValues.clearTranslations,
+              type: 'CLEAR_TRANSLATIONS',
+              items: [
+                {
+                  label: i18nValues.outdatedTranslations,
+                  type: 'CLEAR_OUTDATED',
+                },
+                {
+                  label: i18nValues.allTranslations,
+                  type: 'CLEAR_ALL',
+                },
+              ],
+            },
+            {
+              label: i18nValues.copyTranslations,
+              type: 'COPY_TRANSLATIONS',
+              items: languages
+                .filter(lang => lang.id !== language.id)
+                .map(lang => ({
+                  label: languageLabel(lang),
+                  language: lang,
+                  type: 'COPY',
+                })),
+            },
+          ] as TranslationHeaderMenuItem[]
+        }
         onSelect={item => {
           if (item.type === 'COPY') {
             onSelect({
@@ -753,6 +778,15 @@ function TranslationHeader({
               type: item.type as LanguageClearAction['type'],
               language: language,
             });
+          } else if (item.type === 'SAVE_TRANSLATIONS') {
+            const languageEditedTranslation = editedTranslations[language.code];
+            LanguagesAPI.batchUpdateTranslations([
+              ...Object.values(languageEditedTranslation.TranslationUpdate),
+              ...Object.values(languageEditedTranslation.InScriptUpdate),
+            ]).then(res => {
+              resetLanguage(language.code);
+              store.dispatch(manageResponseHandler(res));
+            });
           }
         }}
         containerClassName={cx(flex, itemCenter)}
@@ -761,7 +795,26 @@ function TranslationHeader({
   );
 }
 
+interface EditedTranslations {
+  [languageCode: string]: {
+    TranslationUpdate: { [key: string]: ITranslationUpdate };
+    InScriptUpdate: { [key: string]: IInScriptUpdate };
+  };
+}
+
+export const translationCTX = React.createContext<{
+  editedTranslations: EditedTranslations;
+  updateTranslations: UpdateTranslationsFN;
+  resetLanguage: (language: string) => void;
+}>({
+  editedTranslations: {},
+  updateTranslations: () => {},
+  resetLanguage: () => {},
+});
+
 export function TranslationEditor() {
+  const [editedTranslations, setEditedTranslations] =
+    React.useState<EditedTranslations>({});
   const [languageAction, setLanguageAction] = React.useState<LanguageAction>();
   const [showOptions, setShowOptions] = React.useState(false);
   const { languages, root } = useStore(() => {
@@ -795,106 +848,156 @@ export function TranslationEditor() {
   }
 
   return (
-    <Toolbar className={cx(expandWidth, MediumPadding)}>
-      <Toolbar.Header>
-        <h2 className={grow}>{i18nValues.translationManagement}</h2>
-        <DropMenu
-          icon="cog"
-          items={[
-            {
-              label: i18nValues.allTranslations,
-              items: languages.map(language => ({
+    <translationCTX.Provider
+      value={{
+        editedTranslations,
+        updateTranslations: translationObject => {
+          setEditedTranslations(oet =>
+            u(oet, oet => {
+              if (translationObject.value == null) {
+                if (translationObject['@class'] === 'TranslationUpdate') {
+                  delete oet[translationObject.code].TranslationUpdate[
+                    String(translationObject.trId)
+                  ];
+                } else {
+                  delete oet[translationObject.code].InScriptUpdate[
+                    String(translationObject.index) +
+                      String(translationObject.index)
+                  ];
+                }
+              } else {
+                if (oet[translationObject.code] == null) {
+                  oet[translationObject.code] = {
+                    TranslationUpdate: {},
+                    InScriptUpdate: {},
+                  };
+                }
+                if (translationObject['@class'] === 'TranslationUpdate') {
+                  oet[translationObject.code].TranslationUpdate[
+                    String(translationObject.trId)
+                  ] = translationObject as ITranslationUpdate;
+                } else {
+                  oet[translationObject.code].InScriptUpdate[
+                    String(translationObject.index) +
+                      String(translationObject.parentId)
+                  ] = translationObject as IInScriptUpdate;
+                }
+              }
+              return oet;
+            }),
+          );
+        },
+        resetLanguage: code => {
+          setEditedTranslations(oet =>
+            u(oet, oet => {
+              oet[code] = { TranslationUpdate: {}, InScriptUpdate: {} };
+              return oet;
+            }),
+          );
+        },
+      }}
+    >
+      <Toolbar className={cx(expandWidth, MediumPadding)}>
+        <Toolbar.Header>
+          <h2 className={grow}>{i18nValues.translationManagement}</h2>
+          <DropMenu
+            icon="cog"
+            items={[
+              {
+                label: i18nValues.allTranslations,
+                items: languages.map(language => ({
+                  label: (
+                    <div className={cx(flex, flexRow, grow)}>
+                      <div className={grow}>{languageLabel(language)}</div>
+                      <CheckBox
+                        value={selectedLanguages.includes(language)}
+                        onChange={() => {
+                          toggleLanguage(language);
+                        }}
+                      />
+                    </div>
+                  ),
+                  language,
+                })),
+                onSelect: (language: IGameModelLanguage) =>
+                  toggleLanguage(language),
+              },
+              {
                 label: (
-                  <div className={cx(flex, flexRow, grow)}>
-                    <div className={grow}>{languageLabel(language)}</div>
-                    <CheckBox
-                      value={selectedLanguages.includes(language)}
-                      onChange={() => {
-                        toggleLanguage(language);
-                      }}
+                  <div
+                    className={css({ padding: '5px', width: '100%' })}
+                    onClick={() => setShowOptions(showOptions => !showOptions)}
+                  >
+                    <IconComp
+                      icon={showOptions ? 'eye-slash' : 'eye'}
+                      className={defaultMarginRight}
                     />
+                    {showOptions
+                      ? i18nValues.hideOptions
+                      : i18nValues.showOptions}
                   </div>
                 ),
-                language,
-              })),
-              onSelect: (language: IGameModelLanguage) =>
-                toggleLanguage(language),
-            },
-            {
-              label: (
-                <div
-                  className={css({ padding: '5px', width: '100%' })}
-                  onClick={() => setShowOptions(showOptions => !showOptions)}
-                >
-                  <IconComp
-                    icon={showOptions ? 'eye-slash' : 'eye'}
-                    className={defaultMarginRight}
-                  />
-                  {showOptions
-                    ? i18nValues.hideOptions
-                    : i18nValues.showOptions}
-                </div>
-              ),
-            },
-          ]}
-        />
-      </Toolbar.Header>
-      <Toolbar.Content
-        className={translationContainerStyle(selectedLanguages.length)}
-      >
-        {selectedLanguages.map(language => (
-          <TranslationHeader
-            key={language.id!}
-            language={language}
-            languages={languages}
-            onSelect={action => {
-              showModal();
-              setLanguageAction(action);
-            }}
+              },
+            ]}
           />
-        ))}
-        {root.itemsIds.map(itemId => (
-          <LanguagesVisitor
-            key={itemId}
-            itemId={itemId}
-            selectedLanguages={selectedLanguages}
-            showOptions={showOptions}
-          />
-        ))}
-        {languageAction && (
-          <OkCancelModal
-            onOk={() => {
-              if (languageAction.type === 'COPY') {
-                LanguagesAPI.copyTranslations(
-                  languageAction.language,
-                  languageAction.sourceLanguage,
-                ).then(res => {
-                  store.dispatch(manageResponseHandler(res));
-                });
-              } else {
-                LanguagesAPI.clearTranslations(
-                  languageAction.language,
-                  languageAction.type === 'CLEAR_OUTDATED',
-                ).then(res => {
-                  store.dispatch(manageResponseHandler(res));
-                });
-              }
+        </Toolbar.Header>
+        <Toolbar.Content
+          className={translationContainerStyle(selectedLanguages.length)}
+        >
+          {selectedLanguages.map(language => (
+            <TranslationHeader
+              key={language.id!}
+              language={language}
+              languages={languages}
+              onSelect={action => {
+                showModal();
+                setLanguageAction(action);
+              }}
+            />
+          ))}
+          {root.itemsIds.map(itemId => (
+            <LanguagesVisitor
+              key={itemId}
+              itemId={itemId}
+              selectedLanguages={selectedLanguages}
+              showOptions={showOptions}
+            />
+          ))}
+          {languageAction && (
+            <OkCancelModal
+              onOk={() => {
+                if (languageAction.type === 'COPY') {
+                  LanguagesAPI.copyTranslations(
+                    languageAction.language,
+                    languageAction.sourceLanguage,
+                  ).then(res => {
+                    store.dispatch(manageResponseHandler(res));
+                  });
+                } else {
+                  LanguagesAPI.clearTranslations(
+                    languageAction.language,
+                    languageAction.type === 'CLEAR_OUTDATED',
+                  ).then(res => {
+                    store.dispatch(manageResponseHandler(res));
+                  });
+                }
 
-              setLanguageAction(undefined);
-            }}
-          >
-            {languageAction.type === 'COPY'
-              ? i18nValues.warningCopy(
-                  languageLabel(languageAction.sourceLanguage),
-                  languageLabel(languageAction.language),
-                )
-              : i18nValues.warningDelete(
-                  languageLabel(languageAction.language),
-                  languageAction.type === 'CLEAR_OUTDATED',
-                )}
-          </OkCancelModal>
-        )}
-      </Toolbar.Content>
-    </Toolbar>
+                setLanguageAction(undefined);
+              }}
+            >
+              {languageAction.type === 'COPY'
+                ? i18nValues.warningCopy(
+                    languageLabel(languageAction.sourceLanguage),
+                    languageLabel(languageAction.language),
+                  )
+                : i18nValues.warningDelete(
+                    languageLabel(languageAction.language),
+                    languageAction.type === 'CLEAR_OUTDATED',
+                  )}
+            </OkCancelModal>
+          )}
+        </Toolbar.Content>
+      </Toolbar>
+    </translationCTX.Provider>
   );
 }

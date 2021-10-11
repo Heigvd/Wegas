@@ -1,6 +1,6 @@
-import { managedModeRequest, rest } from './rest';
+import { IGameModel, IGameModelLanguage } from 'wegas-ts-api';
 import { GameModel } from '../data/selectors';
-import { IGameModelLanguage, IGameModel } from 'wegas-ts-api';
+import { managedModeRequest, rest } from './rest';
 
 /*
 PUT     /Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}I18n/BatchUpdate
@@ -18,6 +18,23 @@ PUT     /Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}I18n/Tr/{mod
 PUT     /Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}I18n/Translate/{source: [a-zA-Z]+}/{target: [a-zA-Z]+}
 GET     /Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}I18n/Usage
 */
+
+export interface IInScriptUpdate {
+  '@class': 'InScriptUpdate';
+  code: string;
+  fieldName: string;
+  index: number;
+  parentClass: string;
+  parentId: number;
+  value: string;
+}
+
+export interface ITranslationUpdate {
+  '@class': 'TranslationUpdate';
+  code: string;
+  trId: number;
+  value: string;
+}
 
 const LANGUAGES_BASE = (gameModelId?: number) =>
   `GameModel/${
@@ -130,166 +147,51 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
 
     /**
      * Change the value of a translation
-     * @param languageCode The code of the tranlations's language
-     * @param translationId The id of the translation to update
-     * @param translationValue The value to set in the translation
+     * @param translationUpdate the translation object to update
      */
-    updateTranslation(
-      languageCode: string,
-      translationId: number,
-      translationValue: string,
-    ) {
+    updateTranslation(translationUpdate: ITranslationUpdate | IInScriptUpdate) {
       return managedModeRequest(LANGUAGES_BASE(gameModelId) + 'Tr/MINOR', {
         method: 'PUT',
-        body: JSON.stringify({
-          '@class': 'TranslationUpdate',
-          code: languageCode,
-          trId: translationId,
-          value: translationValue,
-        }),
-      });
-    },
-    /**
-     * Change the value of a translation in a script
-     * @param languageCode The code of the tranlations's language
-     * @param fieldName The name of the script method
-     * @param index The index of the modified argument
-     * @param parentClass The class of the parent of the script field
-     * @param parentId THe id of the parent
-     * @param translationValue The value to set in the translation
-     * @returns
-     */
-    updateScript(
-      languageCode: string,
-      fieldName: string,
-      index: number,
-      parentClass: string,
-      parentId: number,
-      translationValue: string,
-    ) {
-      return managedModeRequest(LANGUAGES_BASE(gameModelId) + 'Tr/MINOR', {
-        method: 'PUT',
-        body: JSON.stringify({
-          '@class': 'InScriptUpdate',
-          code: languageCode,
-          fieldName,
-          index,
-          parentClass,
-          parentId,
-          value: translationValue,
-        }),
+        body: JSON.stringify(translationUpdate),
       });
     },
     /**
      * Change the outadated status of a translation
-     * @param languageCode The code of the tranlations's language
-     * @param translationId The id of the translation to update
-     * @param translationValue The value to set in the translation
+     * @param translationUpdate the translation object to update
      * @param outdate if true, set the translation as outdated, if false, set translation as up to date
      */
     setTranslationStatus(
-      languageCode: string,
-      translationId: number,
-      translationValue: string,
+      translationUpdate: IInScriptUpdate | ITranslationUpdate,
       outdate: boolean,
     ) {
       return managedModeRequest(
         LANGUAGES_BASE(gameModelId) + `Tr/${outdate ? 'OUTDATE' : 'CATCH_UP'}`,
         {
           method: 'PUT',
-          body: JSON.stringify({
-            '@class': 'TranslationUpdate',
-            code: languageCode,
-            trId: translationId,
-            value: translationValue,
-          }),
+          body: JSON.stringify(translationUpdate),
         },
       );
     },
-    /**
-     * Change the outadated status of a translation
-     * @param languageCode The code of the tranlations's language
-     * @param fieldName The name of the script method
-     * @param index The index of the modified argument
-     * @param parentClass The class of the parent of the script field
-     * @param parentId THe id of the parent
-     * @param translationValue The value to set in the translation
-     * @param outdate if true, set the translation as outdated, if false, set translation as up to date
-     */
-    setScriptStatus(
-      languageCode: string,
-      fieldName: string,
-      index: number,
-      parentClass: string,
-      parentId: number,
-      translationValue: string,
-      outdate: boolean,
-    ) {
-      return managedModeRequest(
-        LANGUAGES_BASE(gameModelId) + `Tr/${outdate ? 'OUTDATE' : 'CATCH_UP'}`,
-        {
-          method: 'PUT',
-          body: JSON.stringify({
-            '@class': 'InScriptUpdate',
-            code: languageCode,
-            fieldName,
-            index,
-            parentClass,
-            parentId,
-            value: translationValue,
-          }),
-        },
-      );
-    },
-
     /**
      * Set all other translations status to outdated
-     * @param languageCode The code of the tranlations's language
-     * @param translationId The id of the translation to update
-     * @param translationValue The value to set in the translation
+     * @param translationUpdate the translation object to update
      */
-    outdateTranslations(
-      languageCode: string,
-      translationId: number,
-      translationValue: string,
-    ) {
+    outdateTranslations(scriptUpdate: IInScriptUpdate | ITranslationUpdate) {
       return managedModeRequest(LANGUAGES_BASE(gameModelId) + 'Tr/MAJOR', {
         method: 'PUT',
-        body: JSON.stringify({
-          '@class': 'TranslationUpdate',
-          code: languageCode,
-          trId: translationId,
-          value: translationValue,
-        }),
+        body: JSON.stringify(scriptUpdate),
       });
     },
     /**
      * Set all other translations status to outdated
-     * @param languageCode The code of the tranlations's language
-     * @param fieldName The name of the script method
-     * @param index The index of the modified argument
-     * @param parentClass The class of the parent of the script field
-     * @param parentId THe id of the parent
-     * @param translationValue The value to set in the translation
-     */ outdateScripts(
-      languageCode: string,
-      fieldName: string,
-      index: number,
-      parentClass: string,
-      parentId: number,
-      translationValue: string,
+     * @param translationUpdate the translation object to update
+     */
+    batchUpdateTranslations(
+      translations: (IInScriptUpdate | ITranslationUpdate)[],
     ) {
-      return managedModeRequest(LANGUAGES_BASE(gameModelId) + 'Tr/MAJOR', {
+      return managedModeRequest(LANGUAGES_BASE(gameModelId) + 'BatchUpdate', {
         method: 'PUT',
-        body: JSON.stringify({
-          '@class': 'InScriptUpdate',
-          code: languageCode,
-          fieldName,
-          index,
-          parentClass,
-          parentId,
-          value: translationValue,
-        }),
+        body: JSON.stringify(translations),
       });
     },
   };
