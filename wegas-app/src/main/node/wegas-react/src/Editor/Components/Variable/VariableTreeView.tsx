@@ -27,11 +27,12 @@ import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { useOkCancelModal } from '../../../Components/Modal';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
-import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { useDebounceFn } from '../../../Components/Hooks/useDebounce';
 import { OnMoveFn, TreeView } from '../../../Components/TreeView/TreeView';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { CTree } from './CTree';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 
 const addVariableContainerStyle = css({
  position: 'absolute',
@@ -44,6 +45,10 @@ const addVariableButtonStyle = css({
   width: '100%',
   borderRadius: 0,
   height: '2rem',
+});
+const deepSearchButtonOffStyle = css({
+  color: themeVar.colors.DisabledColor,
+  '&:hover, &:focus': { color: themeVar.colors.DisabledColor}
 });
 export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_VARIABLE_ITEM';
 
@@ -115,7 +120,6 @@ export function VariableTreeView({
     }),
     deepDifferent,
   );
-
   const searchFn = useDebounceFn(
     (value: string) =>
       globalDispatch(
@@ -163,20 +167,15 @@ export function VariableTreeView({
                 aria-label="Filter"
                 onChange={ev => searchFn(String(ev))}
               />
-               <Toggler
-                className={css({
-                  fontSize: '24px',
-                  lineHeight: '100%',
-                  justifyContent: 'flex-end',
-                  marginLeft: '10px',
-                })}
-                label={<IconComp icon="search" mask="folder" transform="shrink-9 down-1" disabled/>}
-                value={deep}
-                tooltip={i18nValues.deepSearch}
-                onChange={value =>
-                  globalDispatch(Actions.EditorActions.searchSetDeep(value))
-                }
-              />
+              <IconButton icon="search" mask="folder" transform="shrink-9 down-1"
+              className={cx(
+                css({fontSize: '28px', color: themeVar.colors.SuccessColor, '&:hover, &:focus': { color: themeVar.colors.SuccessColor}}),
+                {[deepSearchButtonOffStyle]: !deep},
+              )}
+              tooltip={i18nValues.deepSearch}
+              onClick={() =>{
+                globalDispatch(Actions.EditorActions.searchSetDeep(!deep));
+              }} />
             </div>
           </>
         )}

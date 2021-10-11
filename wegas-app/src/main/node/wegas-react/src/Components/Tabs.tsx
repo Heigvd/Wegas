@@ -81,6 +81,9 @@ export const activeTabStyle = css({
     '&.wegas.wegas-iconbtn:hover': {
       color: themeVar.colors.DisabledColor,
     },
+    '&:focus': {
+      color: themeVar.colors.DisabledColor,
+    }
   },
 });
 export const childInactiveTabStyle = css({
