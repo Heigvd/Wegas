@@ -235,7 +235,6 @@ function TranslatableContentView({
     React.useContext(translationCTX);
 
   let editedTranslation: ITranslationUpdate | IInScriptUpdate | undefined;
-  debugger;
   if (script == null) {
     editedTranslation =
       editedTranslations[languageCode]?.TranslationUpdate[
@@ -725,6 +724,12 @@ function TranslationHeader({
   const { editedTranslations, resetLanguage } =
     React.useContext(translationCTX);
   const i18nValues = useInternalTranslate(languagesTranslations);
+  const languageEditedTranslation = editedTranslations[language.code];
+  const editedValues = [
+    ...Object.values(languageEditedTranslation?.TranslationUpdate || []),
+    ...Object.values(languageEditedTranslation?.InScriptUpdate || []),
+  ];
+
   return (
     <div className={cx(flex, flexRow, columnMargin, itemCenter)}>
       <h3>{languageLabel(language)}</h3>
@@ -735,6 +740,7 @@ function TranslationHeader({
             {
               label: i18nValues.saveTranslations,
               type: 'SAVE_TRANSLATIONS',
+              disabled: editedValues.length === 0,
             },
             {
               label: i18nValues.clearTranslations,
@@ -779,11 +785,7 @@ function TranslationHeader({
               language: language,
             });
           } else if (item.type === 'SAVE_TRANSLATIONS') {
-            const languageEditedTranslation = editedTranslations[language.code];
-            LanguagesAPI.batchUpdateTranslations([
-              ...Object.values(languageEditedTranslation.TranslationUpdate),
-              ...Object.values(languageEditedTranslation.InScriptUpdate),
-            ]).then(res => {
+            LanguagesAPI.batchUpdateTranslations(editedValues).then(res => {
               resetLanguage(language.code);
               store.dispatch(manageResponseHandler(res));
             });

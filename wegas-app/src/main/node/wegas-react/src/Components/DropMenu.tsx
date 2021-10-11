@@ -1,21 +1,21 @@
-import * as React from 'react';
-import Downshift, { StateChangeOptions } from 'downshift';
 import { css, cx } from '@emotion/css';
-import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
-import { themeVar } from './Theme/ThemeVars';
+import Downshift, { StateChangeOptions } from 'downshift';
+import * as React from 'react';
+import { expandWidth, flex, flexRow, itemCenter } from '../css/classes';
+import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../Helper/className';
-import { ConfirmButton } from './Inputs/Buttons/ConfirmButton';
-import { flexRow, flex, itemCenter, expandWidth } from '../css/classes';
 import { lastKeyboardEvents } from '../Helper/keyboardEvents';
-import { Button } from './Inputs/Buttons/Button';
-import { deepDifferent } from './Hooks/storeHookFactory';
 import {
   contentContainerStyle,
   DropDownDirection,
   itemStyle,
   justifyDropMenu,
 } from './DropDown';
+import { deepDifferent } from './Hooks/storeHookFactory';
+import { Button } from './Inputs/Buttons/Button';
+import { ConfirmButton } from './Inputs/Buttons/ConfirmButton';
+import { themeVar } from './Theme/ThemeVars';
 
 const childDropMenuButtonStyle = css({
   backgroundColor: 'inherit',
@@ -73,7 +73,10 @@ function emtpyStr(): '' {
   return '';
 }
 
-const subMenuItemContainer = (isSelected: boolean) =>
+const subMenuItemContainer = (
+  isSelected: boolean,
+  isDisabled: boolean | undefined,
+) =>
   cx(
     flex,
     flexRow,
@@ -83,7 +86,12 @@ const subMenuItemContainer = (isSelected: boolean) =>
       padding: '3px 10px',
       width: '100%',
       userSelect: 'none',
-      backgroundColor: isSelected ? themeVar.colors.HeaderColor : undefined,
+      pointerEvents: isDisabled ? 'none' : 'initial',
+      backgroundColor: isDisabled
+        ? themeVar.colors.DisabledColor
+        : isSelected
+        ? themeVar.colors.HeaderColor
+        : undefined,
       ':hover': {
         backgroundColor: themeVar.colors.HeaderColor,
         color: themeVar.colors.DarkTextColor,
@@ -184,7 +192,9 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
               }}
             >
               {adder && (
-                <div className={subMenuItemContainer(false)}>{adder}</div>
+                <div className={subMenuItemContainer(false, false)}>
+                  {adder}
+                </div>
               )}
               {items.map((item: MItem, index: number) => {
                 const newPath = [...(path ? path : []), index];
@@ -214,7 +224,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                           })
                         : undefined)}
                       className={
-                        subMenuItemContainer(isSelected) +
+                        subMenuItemContainer(isSelected, item.disabled) +
                         classNameOrEmpty(item.className)
                       }
                       style={item.style}
@@ -255,12 +265,14 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                         })
                       : undefined)}
                     className={
-                      cx(subMenuItemContainer(isSelected)) +
+                      cx(subMenuItemContainer(isSelected, item.disabled)) +
                       classNameOrEmpty(item.className)
                     }
                   >
                     {typeof item.label === 'string' ? (
-                      <div className={stringLabelStyle}><p>{item.label}</p></div>
+                      <div className={stringLabelStyle}>
+                        <p>{item.label}</p>
+                      </div>
                     ) : (
                       item.label
                     )}
