@@ -1,40 +1,41 @@
-import * as React from 'react';
-import { GameModel, Global } from '../../data/selectors';
 import { css, cx } from '@emotion/css';
-import { useStore, store } from '../../data/Stores/store';
-import { Actions } from '../../data';
-import { FontAwesome, IconComp } from './Views/FontAwesome';
+import * as React from 'react';
 import {
-  FeatureToggler,
   featuresCTX,
+  FeatureToggler,
   isFeatureEnabled,
 } from '../../Components/Contexts/FeaturesProvider';
 import { LangToggler } from '../../Components/Contexts/LanguagesProvider';
+import { roleCTX, RoleSelector } from '../../Components/Contexts/RoleProvider';
+import { DropMenu } from '../../Components/DropMenu';
+import { Button } from '../../Components/Inputs/Buttons/Button';
+import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
+import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import {
-  flex,
-  itemCenter,
-  foregroundContent,
-  flexRow,
   componentMarginLeft,
   componentMarginRight,
-  flexBetween,
-  itemsTop,
   defaultMarginLeft,
   expandWidth,
+  flex,
+  flexBetween,
+  flexRow,
+  foregroundContent,
+  itemCenter,
+  itemsTop,
 } from '../../css/classes';
-import { mainLayoutId } from './Layout';
-import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
-import { DropMenu } from '../../Components/DropMenu';
-import { parseEvent } from './EntityEditor';
-import { editorEventRemove } from '../../data/Reducer/globalState';
-import { Button } from '../../Components/Inputs/Buttons/Button';
-import { State } from '../../data/Reducer/reducers';
-import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
-import { useInternalTranslate } from '../../i18n/internalTranslator';
-import { commonTranslations } from '../../i18n/common/common';
+import { Actions } from '../../data';
 import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
-import { RoleSelector, roleCTX } from '../../Components/Contexts/RoleProvider';
-import { themeVar } from '../../Components/Theme/ThemeVars';
+import { editorEventRemove } from '../../data/Reducer/globalState';
+import { State } from '../../data/Reducer/reducers';
+import { GameModel, Global } from '../../data/selectors';
+import { selectCurrentEditorLanguage } from '../../data/selectors/Languages';
+import { store, useStore } from '../../data/Stores/store';
+import { commonTranslations } from '../../i18n/common/common';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { parseEvent } from './EntityEditor';
+import { mainLayoutId } from './Layout';
+import { FontAwesome, IconComp } from './Views/FontAwesome';
 
 const transparentDropDownButton = css({
   backgroundColor: 'transparent',
@@ -145,7 +146,7 @@ export default function Header() {
   const { gameModel, user, userLanguage } = useStore(s => ({
     gameModel: GameModel.selectCurrent(),
     user: Global.selectCurrentUser(),
-    userLanguage: s.global.currentEditorLanguageCode,
+    userLanguage: selectCurrentEditorLanguage(s),
   }));
   const dispatch = store.dispatch;
   return (
@@ -206,7 +207,7 @@ export default function Header() {
                     )}
                     onSelect={item => {
                       dispatch(
-                        Actions.EditorActions.setLanguage(
+                        Actions.EditorActions.setEditorLanguage(
                           item.id as EditorLanguagesCode,
                         ),
                       );

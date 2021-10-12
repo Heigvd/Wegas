@@ -13,6 +13,10 @@ import {
 import { DropMenu } from '../../../Components/DropMenu';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import {
+  useEditableLanguages,
+  useTranslatableLanguages,
+} from '../../../Components/Hooks/useLanguages';
 import HTMLEditor from '../../../Components/HTML/HTMLEditor';
 import { CheckBox } from '../../../Components/Inputs/Boolean/CheckBox';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
@@ -41,6 +45,7 @@ import {
 import { manageResponseHandler } from '../../../data/actions';
 import { entityIs } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
+import { GlobalState } from '../../../data/Reducer/globalState';
 import { GameModel, VariableDescriptor } from '../../../data/selectors';
 import { store, useStore } from '../../../data/Stores/store';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -58,6 +63,11 @@ const langaugeVisitorHeaderStyle = css({
   borderBottom: `solid 1px ${themeVar.colors.PrimaryColor}`,
   marginTop: '0.5em',
   fontWeight: 700,
+});
+
+const selectedLangaugeVisitorHeaderStyle = css({
+  backgroundColor: themeVar.colors.HoverColor,
+  color: themeVar.colors.HoverTextColor,
 });
 
 const columnMargin = css({
@@ -86,6 +96,16 @@ const inputStyle = css({
   backgroundColor: themeVar.colors.SecondaryBackgroundColor,
 });
 
+function isLanguageEditable(
+  languageCode: string,
+  editableLanguages: GlobalState['languages']['editableLanguages'],
+) {
+  return (
+    editableLanguages != null &&
+    (editableLanguages === 'all' || editableLanguages.includes(languageCode))
+  );
+}
+
 interface SharedItemViewProps {
   label: string;
   showOptions: boolean;
@@ -98,6 +118,7 @@ interface TranslationItemViewProps extends SharedItemViewProps {
   itemClassName?: string;
   rowSpanClassName: string;
   disabledButtons: boolean;
+  disabled: boolean;
   onUndo: () => void;
   onSave: () => void;
   onValueChange: (value: string) => void;
@@ -112,6 +133,7 @@ function TranslationItemView({
   showOptions,
   itemClassName,
   disabledButtons,
+  disabled,
   view,
   onUndo,
   onSave,
@@ -138,23 +160,28 @@ function TranslationItemView({
           <Button
             icon="undo"
             tooltip={i18nValues.undoModifications}
-            disabled={disabledButtons}
+            disabled={disabledButtons || disabled}
             onClick={onUndo}
           />
           <Button
             icon="save"
             tooltip={i18nValues.saveModifications}
-            disabled={disabledButtons}
+            disabled={disabledButtons || disabled}
             onClick={onSave}
           />
         </div>
       </div>
       {view === 'html' ? (
-        <HTMLEditor value={value} onChange={onValueChange} />
+        <HTMLEditor
+          value={value}
+          onChange={onValueChange}
+          disabled={disabled}
+        />
       ) : (
         <SimpleInput
           value={value}
           onChange={value => onValueChange(String(value))}
+          disabled={disabled}
         />
       )}
       <div className={cx(flex, flexRow)}>
@@ -169,6 +196,7 @@ function TranslationItemView({
                   onOutdateOthers();
                 }
               }}
+              disabled={disabled}
             />
             <Toggler
               value={upToDate}
@@ -181,6 +209,7 @@ function TranslationItemView({
                 fontSize: '14px',
                 color: themeVar.colors.DisabledColor,
               })}
+              disabled={disabled}
             />
           </>
         )}
@@ -231,6 +260,7 @@ function TranslatableContentView({
 }: TranslatableContentViewProps) {
   const languageCode = language.code;
   const translation = unsafeTranslate(trContent, languageCode);
+  const editableLanguages = useEditableLanguages();
   const { editedTranslations, updateTranslations } =
     React.useContext(translationCTX);
 
@@ -260,21 +290,23 @@ function TranslatableContentView({
 
   function setValue(languageCode: string) {
     return function (value: string | undefined) {
-      updateTranslations(
-        script
-          ? {
-              '@class': 'InScriptUpdate',
-              code: languageCode,
-              value,
-              ...script,
-            }
-          : {
-              '@class': 'TranslationUpdate',
-              code: languageCode,
-              trId: trContent.id!,
-              value,
-            },
-      );
+      if (value !== getValue(translation)) {
+        updateTranslations(
+          script
+            ? {
+                '@class': 'InScriptUpdate',
+                code: languageCode,
+                value,
+                ...script,
+              }
+            : {
+                '@class': 'TranslationUpdate',
+                code: languageCode,
+                trId: trContent.id!,
+                value,
+              },
+        );
+      }
     };
   }
 
@@ -310,6 +342,7 @@ function TranslatableContentView({
           : undefined
       }
       rowSpanClassName={rowSpanStyle(selectedLanguages.length)}
+      disabled={!isLanguageEditable(languageCode, editableLanguages)}
       disabledButtons={editedTranslation == null}
       view={view}
       onUndo={() => setValue(languageCode)(undefined)}
@@ -613,6 +646,7 @@ function variableIsList(
 
 interface LanguagesVisitorProps {
   itemId: number | undefined;
+  parentIds: number[];
   selectedLanguages: IGameModelLanguage[];
   depth?: number;
   showOptions: boolean;
@@ -620,12 +654,33 @@ interface LanguagesVisitorProps {
 
 function LanguagesVisitor({
   itemId,
+  parentIds,
   selectedLanguages,
   depth = 0,
   showOptions,
 }: LanguagesVisitorProps) {
-  const item = useStore(() => VariableDescriptor.select(itemId), deepDifferent);
+  const translatableViewElement = React.useRef<HTMLDivElement>(null);
+  const { item, editing } = useStore(s => {
+    return {
+      item: VariableDescriptor.select(itemId),
+      editing:
+        s.global.editing !== undefined &&
+        (s.global.editing.type === 'Variable' ||
+          s.global.editing.type === 'VariableFSM') &&
+        s.global.editing.entity &&
+        itemId === s.global.editing.entity.id,
+    };
+  }, deepDifferent);
+
+  React.useEffect(() => {
+    if (editing) {
+      translatableViewElement.current?.scrollIntoView();
+    }
+  }, [editing]);
+
   const [show, setShow] = React.useState(false);
+  const open = show || (itemId && parentIds.includes(itemId));
+
   if (item == null) {
     return null;
   }
@@ -633,6 +688,7 @@ function LanguagesVisitor({
   return (
     <>
       <div
+        ref={translatableViewElement}
         className={cx(
           flex,
           flexRow,
@@ -640,6 +696,7 @@ function LanguagesVisitor({
           langaugeVisitorHeaderStyle,
           rowSpanStyle(selectedLanguages.length),
           depthMarginStyle(depth),
+          { [selectedLangaugeVisitorHeaderStyle]: editing },
         )}
       >
         <IconComp
@@ -649,7 +706,7 @@ function LanguagesVisitor({
         {editorLabel(item)}
         {variableIsList(item) && (
           <IconButton
-            icon={show ? 'caret-down' : 'caret-right'}
+            icon={open ? 'caret-down' : 'caret-right'}
             onClick={() => setShow(os => !os)}
           />
         )}
@@ -660,12 +717,13 @@ function LanguagesVisitor({
         showOptions={showOptions}
         depth={depth}
       />
-      {show &&
+      {open &&
         variableIsList(item) &&
         item.itemsIds.map(childrenId => (
           <LanguagesVisitor
             key={childrenId}
             itemId={childrenId}
+            parentIds={parentIds}
             selectedLanguages={selectedLanguages}
             depth={depth + 1}
             showOptions={showOptions}
@@ -685,7 +743,7 @@ interface LanguageClearAction {
 }
 
 interface LanguageCopyAction {
-  type: 'COPY';
+  type: 'COPY' | 'TRANSLATE';
   language: IGameModelLanguage;
   sourceLanguage: IGameModelLanguage;
 }
@@ -696,12 +754,13 @@ interface DefaultItem extends DropMenuItem<unknown> {
     | 'CLEAR_TRANSLATIONS'
     | 'CLEAR_OUTDATED'
     | 'CLEAR_ALL'
-    | 'COPY_TRANSLATIONS';
+    | 'COPY_TRANSLATIONS'
+    | 'AUTO_TRANSLATE';
   label: string;
 }
 
 interface CopyItem extends DropMenuItem<unknown> {
-  type: 'COPY';
+  type: 'COPY' | 'TRANSLATE';
   label: string;
   language: IGameModelLanguage;
 }
@@ -713,86 +772,118 @@ type LanguageAction = LanguageClearAction | LanguageCopyAction;
 interface TranslationHeaderProps {
   language: IGameModelLanguage;
   languages: IGameModelLanguage[];
+  translatableLanguages: string[];
   onSelect: (action: LanguageAction) => void;
 }
 
 function TranslationHeader({
   language,
   languages,
+  translatableLanguages,
   onSelect,
 }: TranslationHeaderProps) {
   const { editedTranslations, resetLanguage } =
     React.useContext(translationCTX);
   const i18nValues = useInternalTranslate(languagesTranslations);
+  const editableLanguages = useEditableLanguages();
+
   const languageEditedTranslation = editedTranslations[language.code];
   const editedValues = [
     ...Object.values(languageEditedTranslation?.TranslationUpdate || []),
     ...Object.values(languageEditedTranslation?.InScriptUpdate || []),
   ];
 
+  const availableLanguagesForTranslation = languages.filter(
+    lang =>
+      translatableLanguages.includes(language.code) &&
+      lang.code !== language.code &&
+      translatableLanguages.includes(lang.code.toUpperCase()),
+  );
+
+  const enabled = isLanguageEditable(language.code, editableLanguages);
+
   return (
     <div className={cx(flex, flexRow, columnMargin, itemCenter)}>
       <h3>{languageLabel(language)}</h3>
-      <DropMenu
-        icon="cog"
-        items={
-          [
-            {
-              label: i18nValues.saveTranslations,
-              type: 'SAVE_TRANSLATIONS',
-              disabled: editedValues.length === 0,
-            },
-            {
-              label: i18nValues.clearTranslations,
-              type: 'CLEAR_TRANSLATIONS',
-              items: [
-                {
-                  label: i18nValues.outdatedTranslations,
-                  type: 'CLEAR_OUTDATED',
-                },
-                {
-                  label: i18nValues.allTranslations,
-                  type: 'CLEAR_ALL',
-                },
-              ],
-            },
-            {
-              label: i18nValues.copyTranslations,
-              type: 'COPY_TRANSLATIONS',
-              items: languages
-                .filter(lang => lang.id !== language.id)
-                .map(lang => ({
-                  label: languageLabel(lang),
+      {enabled && (
+        <DropMenu
+          icon="cog"
+          items={
+            [
+              {
+                label: i18nValues.saveTranslations,
+                type: 'SAVE_TRANSLATIONS',
+                disabled: editedValues.length === 0,
+              },
+              {
+                label: i18nValues.clearTranslations,
+                type: 'CLEAR_TRANSLATIONS',
+                items: [
+                  {
+                    label: i18nValues.outdatedTranslations,
+                    type: 'CLEAR_OUTDATED',
+                  },
+                  {
+                    label: i18nValues.allTranslations,
+                    type: 'CLEAR_ALL',
+                  },
+                ],
+              },
+              {
+                label: i18nValues.translateFrom,
+                type: 'AUTO_TRANSLATE',
+                disabled: availableLanguagesForTranslation.length === 0,
+                items: availableLanguagesForTranslation.map(lang => ({
+                  label: lang.lang,
+                  type: 'TRANSLATE',
                   language: lang,
-                  type: 'COPY',
                 })),
-            },
-          ] as TranslationHeaderMenuItem[]
-        }
-        onSelect={item => {
-          if (item.type === 'COPY') {
-            onSelect({
-              type: 'COPY',
-              language: language,
-              sourceLanguage: item.language,
-            });
-          } else if (
-            item.type === 'CLEAR_OUTDATED' ||
-            item.type === 'CLEAR_ALL'
-          ) {
-            onSelect({
-              type: item.type as LanguageClearAction['type'],
-              language: language,
-            });
-          } else if (item.type === 'SAVE_TRANSLATIONS') {
-            LanguagesAPI.batchUpdateTranslations(editedValues).then(res => {
-              resetLanguage(language.code);
-              store.dispatch(manageResponseHandler(res));
-            });
+              },
+              {
+                label: i18nValues.copyTranslations,
+                type: 'COPY_TRANSLATIONS',
+                items: languages
+                  .filter(lang => lang.id !== language.id)
+                  .map(lang => ({
+                    label: languageLabel(lang),
+                    language: lang,
+                    type: 'COPY',
+                  })),
+              },
+            ] as TranslationHeaderMenuItem[]
           }
-        }}
-        containerClassName={cx(flex, itemCenter)}
-      />
+          onSelect={item => {
+            if (item.type === 'COPY') {
+              onSelect({
+                type: 'COPY',
+                language: language,
+                sourceLanguage: item.language,
+              });
+            } else if (item.type === 'TRANSLATE') {
+              LanguagesAPI.initLanguage(item.language.code, language.code).then(
+                res => {
+                  resetLanguage(language.code);
+                  store.dispatch(manageResponseHandler(res));
+                },
+              );
+            } else if (
+              item.type === 'CLEAR_OUTDATED' ||
+              item.type === 'CLEAR_ALL'
+            ) {
+              onSelect({
+                type: item.type as LanguageClearAction['type'],
+                language: language,
+              });
+            } else if (item.type === 'SAVE_TRANSLATIONS') {
+              LanguagesAPI.batchUpdateTranslations(editedValues).then(res => {
+                resetLanguage(language.code);
+                store.dispatch(manageResponseHandler(res));
+              });
+            }
+          }}
+          containerClassName={cx(flex, itemCenter)}
+        />
+      )}
     </div>
   );
 }
@@ -819,18 +910,34 @@ export function TranslationEditor() {
     React.useState<EditedTranslations>({});
   const [languageAction, setLanguageAction] = React.useState<LanguageAction>();
   const [showOptions, setShowOptions] = React.useState(false);
-  const { languages, root } = useStore(() => {
+  const { root, parentIds } = useStore(s => {
+    const parentIds: number[] = [];
+
+    if (
+      s.global.editing !== undefined &&
+      (s.global.editing.type === 'Variable' ||
+        s.global.editing.type === 'VariableFSM') &&
+      s.global.editing.entity
+    ) {
+      let parentId = s.global.editing.entity.parentId;
+      while (parentId != null) {
+        parentIds.push(parentId);
+        parentId = s.variableDescriptors[parentId]?.parentId;
+      }
+    }
+
     return {
-      languages: GameModel.selectCurrent().languages,
+      parentIds,
       root: GameModel.selectCurrent(),
     };
-  });
+  }, deepDifferent);
+  const languages = root.languages;
   const i18nValues = useInternalTranslate(languagesTranslations);
-
   const [selectedLanguages, setSelectedLanguages] = React.useState(
     languages.filter(language => language.active),
   );
   const { showModal, OkCancelModal } = useOkCancelModal();
+  const translatableLanguages = useTranslatableLanguages();
 
   function toggleLanguage(language: IGameModelLanguage) {
     setSelectedLanguages(selectedLanguages =>
@@ -951,6 +1058,11 @@ export function TranslationEditor() {
               key={language.id!}
               language={language}
               languages={languages}
+              translatableLanguages={
+                Array.isArray(translatableLanguages)
+                  ? translatableLanguages
+                  : []
+              }
               onSelect={action => {
                 showModal();
                 setLanguageAction(action);
@@ -961,6 +1073,7 @@ export function TranslationEditor() {
             <LanguagesVisitor
               key={itemId}
               itemId={itemId}
+              parentIds={parentIds}
               selectedLanguages={selectedLanguages}
               showOptions={showOptions}
             />

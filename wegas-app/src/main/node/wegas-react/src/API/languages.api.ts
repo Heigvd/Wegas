@@ -44,20 +44,10 @@ const LANGUAGES_BASE = (gameModelId?: number) =>
 const LanguagesAPIFactory = (gameModelId?: number) => {
   return {
     /**
-     * List all languages of a game model
-     */
-    getDeeplAvailableLanguageList(): Promise<IGameModelLanguage[]> {
-      return rest(LANGUAGES_BASE(gameModelId) + 'AvailableLanguages').then(
-        (res: Response) => {
-          return res.json();
-        },
-      );
-    },
-    /**
      * Get the list of editable languages
      * if anwser is ["*"] everything is editable and a new language can be created
      */
-    getEditableLanguages(): Promise<(IGameModelLanguage | '*')[]> {
+    getEditableLanguages(): Promise<(string | '*')[]> {
       return rest(LANGUAGES_BASE(gameModelId) + 'EditableLanguages').then(
         (res: Response) => {
           return res.json();
@@ -193,6 +183,33 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
         method: 'PUT',
         body: JSON.stringify(translations),
       });
+    },
+
+    /**
+     * Ask the server which language is supported for translation
+     * @returns a list of the available language codes
+     */
+    getAvailableLanguages(): Promise<string[]> {
+      return rest(LANGUAGES_BASE(gameModelId) + 'AvailableLanguages', {
+        method: 'GET',
+      }).then((res: Response) => {
+        return res.json();
+      });
+    },
+
+    /**
+     *
+     * @param fromLanguageCode the source language code to be translated
+     * @param toLanguageCode the target language code
+     */
+    initLanguage(fromLanguageCode: string, toLanguageCode: string) {
+      return managedModeRequest(
+        LANGUAGES_BASE(gameModelId) +
+          `InitLanguage/${fromLanguageCode}/${toLanguageCode}`,
+        {
+          method: 'PUT',
+        },
+      );
     },
   };
 };

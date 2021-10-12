@@ -1,32 +1,32 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
-import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
-import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
-import { omit } from 'lodash';
 import u from 'immer';
+import { omit } from 'lodash';
+import * as React from 'react';
+import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
+import 'react-reflex/styles.css';
+import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
+import { roleCTX } from '../../../Components/Contexts/RoleProvider';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
+import {
+  expandHeight,
+  flex,
+  grow,
+  MediumPadding,
+  noOverflow,
+} from '../../../css/classes';
+import { selectCurrentEditorLanguage } from '../../../data/selectors/Languages';
+import { useStore } from '../../../data/Stores/store';
+import { wlog, wwarn } from '../../../Helper/wegaslog';
+import { commonTranslations } from '../../../i18n/common/common';
+import { internalTranslate } from '../../../i18n/internalTranslator';
 import { ReparentableRoot } from '../Reparentable';
 import {
-  DnDTabLayout,
-  ComponentMap,
-  filterMap,
   ClassNames,
+  ComponentMap,
+  DnDTabLayout,
+  filterMap,
 } from './DnDTabLayout';
-import { wlog, wwarn } from '../../../Helper/wegaslog';
-
-import 'react-reflex/styles.css';
-import {
-  flex,
-  noOverflow,
-  grow,
-  expandHeight,
-  MediumPadding,
-} from '../../../css/classes';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { TabComponent } from './DnDTabs';
-import { internalTranslate } from '../../../i18n/internalTranslator';
-import { commonTranslations } from '../../../i18n/common/common';
-import { roleCTX } from '../../../Components/Contexts/RoleProvider';
-import { useStore } from '../../../data/Stores/store';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
@@ -865,7 +865,7 @@ export function MainLinearLayout<T extends ComponentMap>({
 }: LinearLayoutProps<T>) {
   const { currentRole } = React.useContext(roleCTX);
   const { lang, rolesId } = useStore(s => ({
-    lang: s.global.currentEditorLanguageCode,
+    lang: selectCurrentEditorLanguage(s),
     rolesId: s.global.roles.rolesId,
   }));
 

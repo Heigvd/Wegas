@@ -87,6 +87,7 @@ const subMenuItemContainer = (
       width: '100%',
       userSelect: 'none',
       pointerEvents: isDisabled ? 'none' : 'initial',
+      opacity: isDisabled ? 0.5 : 1,
       backgroundColor: isDisabled
         ? themeVar.colors.DisabledColor
         : isSelected

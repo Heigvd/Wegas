@@ -7,6 +7,7 @@ export interface LanguagesTranslations {
   clearTranslations: string;
   outdatedTranslations: string;
   allTranslations: string;
+  translateFrom: string;
   copyTranslations: string;
   CONTENT_EDITOR: string;
   SCENARIO_EDITOR: string;

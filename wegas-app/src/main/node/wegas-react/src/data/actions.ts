@@ -11,6 +11,7 @@ import {
 } from 'wegas-ts-api';
 import { IManagedResponse } from '../API/rest';
 import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
+import { Popup } from '../Components/PopupManager';
 import { AvailableViews } from '../Editor/Components/FormView';
 import { getEntityActions } from '../Editor/editionConfig';
 import * as ActionType from './actionTypes';
@@ -21,10 +22,10 @@ import {
   EditingState,
   Edition,
   EditorAction,
+  GlobalState,
 } from './Reducer/globalState';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
-import { StoreDispatch, store } from './Stores/store';
-import { Popup } from '../Components/PopupManager';
+import { store, StoreDispatch } from './Stores/store';
 
 export { ActionType };
 export type ActionTypeValues = ValueOf<typeof ActionType>;
@@ -152,10 +153,10 @@ export const ActionCreator = {
   GAMEMODEL_EDIT: (data: { gameModel: IGameModel; gameModelId: string }) =>
     createAction(ActionType.GAMEMODEL_EDIT, data),
 
-  LANGUAGE_EDIT: (data: {
+  GAMEMODEL_LANGUAGE_EDIT: (data: {
     gameModelLanguage: IGameModelLanguage;
     gameModelId: string;
-  }) => createAction(ActionType.LANGUAGE_EDIT, data),
+  }) => createAction(ActionType.GAMEMODEL_LANGUAGE_EDIT, data),
 
   TEAM_FETCH_ALL: (data: { teams: ITeam[] }) =>
     createAction(ActionType.TEAM_FETCH_ALL, data),
@@ -172,6 +173,13 @@ export const ActionCreator = {
     createAction(ActionType.ADD_POPUP, data),
   REMOVE_POPUP: (data: { id: string }) =>
     createAction(ActionType.REMOVE_POPUP, data),
+
+  LANGUAGES_TRANSLATION_AVAILABLE: (data: {
+    translatableLanguages: GlobalState['languages']['translatableLanguages'];
+  }) => createAction(ActionType.LANGUAGES_TRANSLATION_AVAILABLE, data),
+  LANGUAGES_EDITON_ALLOWED: (data: {
+    editableLanguages: GlobalState['languages']['editableLanguages'];
+  }) => createAction(ActionType.LANGUAGES_EDITON_ALLOWED, data),
 };
 
 export type StateActions<

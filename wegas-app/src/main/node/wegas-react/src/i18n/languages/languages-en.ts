@@ -13,6 +13,7 @@ export const languagesTranslationsEN: LanguagesTranslations = {
   clearTranslations: 'Clear translations',
   outdatedTranslations: 'Outdated translations',
   allTranslations: 'All translations',
+  translateFrom: 'Translate from',
   copyTranslations: 'Copy translations',
   CONTENT_EDITOR: 'Content editor',
   SCENARIO_EDITOR: 'Scenario editor',

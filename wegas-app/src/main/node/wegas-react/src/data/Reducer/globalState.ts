@@ -1,48 +1,48 @@
 import u, { Immutable, produce } from 'immer';
+import { Schema } from 'jsoninput';
+import { omit } from 'lodash';
+import { cloneDeep } from 'lodash-es';
+import { Reducer } from 'redux';
+import {
+  IAbstractContentDescriptor,
+  IAbstractEntity,
+  IAbstractState,
+  IAbstractStateMachineDescriptor,
+  IAbstractTransition,
+  IChoiceDescriptor,
+  IDialogueDescriptor,
+  IFSMDescriptor,
+  IListDescriptor,
+  IPeerReviewDescriptor,
+  IQuestionDescriptor,
+  IScript,
+  IUser,
+  IVariableDescriptor,
+  IWhQuestionDescriptor,
+  WegasClassNames,
+} from 'wegas-ts-api';
 import { Actions as ACTIONS, Actions } from '..';
+import { FileAPI } from '../../API/files.api';
+import { LockEventData } from '../../API/websocket';
+import { Popup } from '../../Components/PopupManager';
+import { AvailableViews } from '../../Editor/Components/FormView';
+import { WegasMethodParameter } from '../../Editor/editionConfig';
 import {
   ActionCreator,
   ActionType,
   StateActions,
   triggerEventHandlers,
 } from '../actions';
-import { VariableDescriptor } from '../selectors';
-import { ThunkResult, store } from '../Stores/store';
 import { entityIsPersisted } from '../entities';
-import { Reducer } from 'redux';
-import { Schema } from 'jsoninput';
-import { AvailableViews } from '../../Editor/Components/FormView';
-import { FileAPI } from '../../API/files.api';
-import { omit } from 'lodash';
-import { LockEventData } from '../../API/websocket';
-import { WegasMethodParameter } from '../../Editor/editionConfig';
-import {
-  IAbstractEntity,
-  IAbstractContentDescriptor,
-  IUser,
-  IScript,
-  IVariableDescriptor,
-  IFSMDescriptor,
-  IListDescriptor,
-  IQuestionDescriptor,
-  IChoiceDescriptor,
-  IWhQuestionDescriptor,
-  IPeerReviewDescriptor,
-  WegasClassNames,
-  IAbstractStateMachineDescriptor,
-  IAbstractState,
-  IAbstractTransition,
-  IDialogueDescriptor,
-} from 'wegas-ts-api';
-import { cloneDeep } from 'lodash-es';
-import { commonServerMethods } from '../methods/CommonServerMethods';
 import {
   EditorLanguageData,
   EditorLanguagesCode,
   getSavedLanguage,
   getUserLanguage,
 } from '../i18n';
-import { Popup } from '../../Components/PopupManager';
+import { commonServerMethods } from '../methods/CommonServerMethods';
+import { VariableDescriptor } from '../selectors';
+import { store, ThunkResult } from '../Stores/store';
 
 export const DEFAULT_ROLES = {
   SCENARIO_EDITOR: {
@@ -155,7 +155,6 @@ export interface EditingState {
   eventsHandlers: WegasEventHandlers;
 }
 export interface GlobalState extends EditingState {
-  currentEditorLanguageCode: EditorLanguagesCode;
   currentGameModelId: number;
   currentGameId: number;
   currentPlayerId: number;
@@ -190,6 +189,11 @@ export interface GlobalState extends EditingState {
     roles: { [id: string]: Role };
   };
   popups: { [id: string]: Popup };
+  languages: {
+    currentEditorLanguageCode: EditorLanguagesCode;
+    translatableLanguages: undefined | 'loading' | string[];
+    editableLanguages: undefined | 'loading' | 'all' | string[];
+  };
 }
 
 export function eventHandlersManagement(
@@ -409,7 +413,7 @@ const global: Reducer<Readonly<GlobalState>> = u(
         delete state.pageLoaders[action.payload.name];
         return;
       case ActionType.EDITOR_SET_LANGUAGE:
-        state.currentEditorLanguageCode = action.payload.language;
+        state.languages.currentEditorLanguageCode = action.payload.language;
         return;
       case ActionType.EDITOR_SET_ROLES:
         state.roles.roles = action.payload.roles;
@@ -428,6 +432,16 @@ const global: Reducer<Readonly<GlobalState>> = u(
         return;
       }
 
+      case ActionType.LANGUAGES_EDITON_ALLOWED: {
+        state.languages.editableLanguages = action.payload.editableLanguages;
+        return;
+      }
+      case ActionType.LANGUAGES_TRANSLATION_AVAILABLE: {
+        state.languages.translatableLanguages =
+          action.payload.translatableLanguages;
+        return;
+      }
+
       default:
         state.eventsHandlers = eventHandlersManagement(state, action);
         state.events = eventManagement(state, action);
@@ -435,7 +449,6 @@ const global: Reducer<Readonly<GlobalState>> = u(
     }
   },
   {
-    currentEditorLanguageCode: 'EN',
     currentGameModelId: CurrentGM.id!,
     currentGameId: CurrentGame.id!,
     currentPlayerId: CurrentPlayerId,
@@ -468,6 +481,11 @@ const global: Reducer<Readonly<GlobalState>> = u(
       roles: DEFAULT_ROLES,
     },
     popups: {},
+    languages: {
+      currentEditorLanguageCode: 'EN',
+      editableLanguages: undefined,
+      translatableLanguages: undefined,
+    },
   } as GlobalState,
 );
 export default global;
@@ -858,7 +876,7 @@ export function setLock(data: LockEventData) {
     locked: data.status === 'lock',
   });
 }
-export function getLanguage() {
+export function getEditorLanguage() {
   const savedLanguage = getSavedLanguage();
   const userLanguage = getUserLanguage();
   return ActionCreator.EDITOR_SET_LANGUAGE({
@@ -866,7 +884,7 @@ export function getLanguage() {
   });
 }
 
-export function setLanguage(lang: EditorLanguagesCode) {
+export function setEditorLanguage(lang: EditorLanguagesCode) {
   window.localStorage.setItem(EditorLanguageData, lang);
   return ActionCreator.EDITOR_SET_LANGUAGE({ language: lang });
 }
