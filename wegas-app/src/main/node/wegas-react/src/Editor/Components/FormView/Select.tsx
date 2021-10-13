@@ -8,10 +8,12 @@ import { ListDescriptorChild } from '../../editionConfig';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 
-interface ISelectProps extends WidgetProps.BaseProps {
+export interface ISelectProps extends WidgetProps.BaseProps {
   view: {
     choices: Choices;
     undefined?: boolean;
+    allowUndefined?: boolean;
+    allowAnyValue?: boolean;
   } & CommonView &
     LabeledView;
 }
@@ -20,6 +22,8 @@ export interface IAsyncSelectProps extends WidgetProps.BaseProps {
     choices: (() => Promise<Choices>) | Choices;
     undefined?: boolean;
     openChoices?: boolean;
+    allowUndefined?: boolean;
+    allowAnyValue?: boolean;
   } & CommonView &
     LabeledView;
 }
@@ -77,6 +81,8 @@ function SelectView(props: ISelectProps) {
               choices={selectChoices}
               onChange={onChange}
               readOnly={props.view.readOnly}
+              allowUndefined={props.view.allowUndefined}
+              allowAnyValue={props.view.allowAnyValue}
             />
           </div>
         )}

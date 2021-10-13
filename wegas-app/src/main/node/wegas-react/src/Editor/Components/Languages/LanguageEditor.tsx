@@ -1,34 +1,35 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
+import JSONForm, { Schema } from 'jsoninput';
+import { cloneDeep } from 'lodash';
+import * as React from 'react';
+import { IGameModel, IGameModelLanguage } from 'wegas-ts-api';
+import * as gameModelLanguageSchema from 'wegas-ts-api/src/generated/schemas/GameModelLanguage.json';
 import { LanguagesAPI } from '../../../API/languages.api';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
+import { useTranslatableLanguages } from '../../../Components/Hooks/useLanguages';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { ListView } from '../../../Components/ListView';
+import { secondaryButtonStyle } from '../../../Components/Modal';
+import {
+  defaultMarginLeft,
+  flex,
+  flexColumn,
+  flexDistribute,
+  flexRow,
+  grow,
+  itemCenter,
+} from '../../../css/classes';
+import { Actions } from '../../../data';
+import { manageResponseHandler } from '../../../data/actions';
 import { GameModel } from '../../../data/selectors';
 import { getDispatch } from '../../../data/Stores/store';
-import { Actions } from '../../../data';
-import { Schema } from 'jsoninput';
-import { AvailableViews } from '../FormView';
-import { overrideSchema } from '../EntityEditor';
-import {
-  flex,
-  grow,
-  flexColumn,
-  flexRow,
-  itemCenter,
-  flexDistribute,
-  defaultMarginLeft,
-} from '../../../css/classes';
-import { IGameModel, IGameModelLanguage } from 'wegas-ts-api';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
-import JSONForm from 'jsoninput';
-import '../FormView';
-import * as gameModelLanguageSchema from 'wegas-ts-api/src/generated/schemas/GameModelLanguage.json';
-import { cloneDeep } from 'lodash';
-import { ListView } from '../../../Components/ListView';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { commonTranslations } from '../../../i18n/common/common';
-import { manageResponseHandler } from '../../../data/actions';
-import { secondaryButtonStyle } from '../../../Components/Modal';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { overrideSchema } from '../EntityEditor';
+import '../FormView';
+import { AvailableViews } from '../FormView';
+import { ISelectProps } from '../FormView/Select';
 
 const languagePanelStyle = css({ width: '50%' });
 const languageInnerPanelStyle = css({ width: '80%' });
@@ -79,14 +80,34 @@ function LanguageEditForm({
   );
 }
 export default function LanguageEditor() {
-  const [selectedLanguageId, setSelectedLanguageId] =
-    React.useState<number | undefined>(undefined);
-  const [selectedLanguage, setSelectedLanguage] =
-    React.useState<IGameModelLanguage | null | undefined>();
+  const [selectedLanguageId, setSelectedLanguageId] = React.useState<
+    number | undefined
+  >(undefined);
+  const [selectedLanguage, setSelectedLanguage] = React.useState<
+    IGameModelLanguage | null | undefined
+  >();
 
   const languages = useGameModel().languages;
   const i18nEditorTabValues = useInternalTranslate(editorTabsTranslations);
   const i18nCommonValues = useInternalTranslate(commonTranslations);
+  const translatableLanguages = useTranslatableLanguages();
+
+  const schema =
+    selectedLanguageId === -1 ? createLanguageSchema : editLanguageSchema;
+
+  if (
+    Array.isArray(translatableLanguages) &&
+    schema.properties != null &&
+    schema.properties['code'] != null &&
+    schema.properties['code']['view'] != null
+  ) {
+    schema.properties.code.view.type = 'select';
+    (schema.properties.code as ISelectProps).view.choices =
+      translatableLanguages.filter(
+        code => !languages.map(lang => lang.code).includes(code),
+      );
+    (schema.properties.code as ISelectProps).view.allowAnyValue = true;
+  }
 
   React.useEffect(() => {
     setSelectedLanguage(
@@ -163,11 +184,7 @@ export default function LanguageEditor() {
             <LanguageEditForm
               language={selectedLanguage}
               onChange={setSelectedLanguage}
-              schema={
-                selectedLanguageId === -1
-                  ? createLanguageSchema
-                  : editLanguageSchema
-              }
+              schema={schema}
             />
             <div
               className={cx(

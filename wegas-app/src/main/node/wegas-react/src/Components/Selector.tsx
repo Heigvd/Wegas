@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import * as React from 'react';
 import Select from 'react-select';
+import CreatableSelect from 'react-select/creatable';
 import { classNameOrEmpty } from '../Helper/className';
 import { commonTranslations } from '../i18n/common/common';
 import { useInternalTranslate } from '../i18n/internalTranslator';
@@ -128,6 +129,7 @@ interface SelectorProps extends ClassStyleId, DisabledReadonly {
   value: string | undefined;
   onChange?: (value: string) => void;
   allowUndefined?: boolean;
+  allowAnyValue?: boolean;
 }
 
 export function Selector({
@@ -138,6 +140,7 @@ export function Selector({
   value = '',
   onChange,
   allowUndefined = false,
+  allowAnyValue = false,
   readOnly,
   disabled,
 }: SelectorProps): JSX.Element {
@@ -157,8 +160,13 @@ export function Selector({
 
   const currentOption = findOption(options, value);
 
+  const Comp = React.useMemo(
+    () => (allowAnyValue ? CreatableSelect : Select),
+    [allowAnyValue],
+  ) as typeof Select;
+
   return (
-    <Select
+    <Comp
       id={id}
       isDisabled={readOnly || disabled}
       className={selectStyle + classNameOrEmpty(className)}
