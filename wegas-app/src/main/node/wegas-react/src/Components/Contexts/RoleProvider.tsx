@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { defaultPaddingLeft } from '../../css/classes';
+import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
+import { selectCurrentEditorLanguage } from '../../data/selectors/Languages';
+import { useStore } from '../../data/Stores/store';
 import { internalTranslate } from '../../i18n/internalTranslator';
 import { DropMenu } from '../DropMenu';
 import { CheckBox } from '../Inputs/Boolean/CheckBox';
-import { useStore } from '../../data/Stores/store';
-import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 
 export const EditorRoleData = 'WEGAS_USER_ROLE';
 
@@ -52,7 +53,7 @@ export function RoleSelector({
   style,
 }: ClassStyleId & { buttonClassName?: string }) {
   const availableRoles = useStore(s => s.global.roles.roles);
-  const lang = useStore(s => s.global.currentEditorLanguageCode);
+  const lang = useStore(selectCurrentEditorLanguage);
   const { currentRole, setRole } = React.useContext(roleCTX);
 
   return React.useMemo(

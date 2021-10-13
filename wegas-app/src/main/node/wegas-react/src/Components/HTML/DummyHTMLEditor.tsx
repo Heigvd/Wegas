@@ -33,6 +33,7 @@ export function DummyHTMLEditor({ value }: DummyHTMLEditorProps) {
           width: '462px',
           height: '141px',
           overflow: 'hidden',
+          padding: '.5rem',
         }}
         text={value == null ? '' : value}
       />

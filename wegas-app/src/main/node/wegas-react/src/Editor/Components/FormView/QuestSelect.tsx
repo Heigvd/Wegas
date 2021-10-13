@@ -1,11 +1,11 @@
-import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { Labeled, LabeledView } from './labeled';
-import { CommonViewContainer, CommonView } from './commonView';
-import { GameModelApi } from '../../../API/gameModel.api';
-import { selectCurrent } from '../../../data/selectors/GameModel';
+import * as React from 'react';
 import Creatable from 'react-select/creatable';
-import { selectStyles } from './Select';
+import { GameModelApi } from '../../../API/gameModel.api';
+import { selectStyles } from '../../../Components/Selector';
+import { selectCurrent } from '../../../data/selectors/GameModel';
+import { CommonView, CommonViewContainer } from './commonView';
+import { Labeled, LabeledView } from './labeled';
 
 interface Option {
   value: string;

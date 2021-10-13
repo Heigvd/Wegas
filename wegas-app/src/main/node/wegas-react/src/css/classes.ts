@@ -213,7 +213,6 @@ export const localSelection = css({
   border: '1px dashed ' + themeVar.colors.PrimaryColor,
 });
 export const globalSelection = css({
-  borderRadius: themeVar.dimensions.BorderRadius,
   backgroundColor: themeVar.colors.HeaderColor,
 });
 export const searchSelection = css({

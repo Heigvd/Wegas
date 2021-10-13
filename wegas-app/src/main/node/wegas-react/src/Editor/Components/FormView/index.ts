@@ -1,44 +1,44 @@
 import { setDefaultWidgets } from 'jsoninput';
+import ArrayWidget from './Array';
+import AttachmentSelector from './AttachmentSelector';
+import BooleanView from './Boolean';
+import { Code } from './Code';
+import ColorPickerView from './ColorPickerView';
+import { CustomScript } from './CustomScript';
+import EntityArrayFieldSelect from './EntityArrayFieldSelect';
+import FileSelector from './FileSelector';
+import FlatVariableSelect from './FlatVariableSelect';
+import HashListView from './HashList';
 import hidden from './Hidden';
-import uneditable from './Uneditable';
-import StringInput from './String';
+import IconSelect from './IconSelect';
+import { LabeledHTMLEditor } from './LabeledHTMLEditor';
 import NumberInput from './Number';
 import ObjectView from './Object';
-import Textarea from './Textarea';
-import BooleanView from './Boolean';
-import Select, {
-  ListChildrenSelectView,
-  ListChildrenNullSelectView,
-} from './Select';
-import ArrayWidget from './Array';
+import PageLoaderSelect from './PageLoaderSelect';
+import PageSelect from './PageSelect';
+import PathSelector from './PathSelector';
+import QuestSelect from './QuestSelect';
+import StatementView from './Script/Expressions/ExpressionEditor';
 import { Script } from './Script/Script';
-import { Code } from './Code';
+import { VariableInput } from './Script/VariableInput';
+import { ScriptableBoolean } from './ScriptableBoolean';
+import { ScriptablePath } from './ScriptablePath';
+import { ScriptableString } from './ScriptableString';
+import Select, {
+  ListChildrenNullSelectView,
+  ListChildrenSelectView,
+} from './Select';
+import StringInput from './String';
+import Textarea from './Textarea';
+import ThemeModeSelect from './ThemeModeSelect';
+import { TimestampView } from './Timestamp';
+import translatable from './translatable';
 import {
+  LabeledScripableVariableSelect,
   TreeVariableSelect,
   TreeVSelect,
-  LabeledScripableVariableSelect,
 } from './TreeVariableSelect';
-import translatable from './translatable';
-import EntityArrayFieldSelect from './EntityArrayFieldSelect';
-import FlatVariableSelect from './FlatVariableSelect';
-import { LabeledHTMLEditor } from '../../../Components/HTML/HTMLEditor';
-import { TimestampView } from './Timestamp';
-import { VariableInput } from './Script/VariableInput';
-import PageSelect from './PageSelect';
-import StatementView from './Script/Expressions/ExpressionEditor';
-import HashListView from './HashList';
-import PageLoaderSelect from './PageLoaderSelect';
-import FileSelector from './FileSelector';
-import { CustomScript } from './CustomScript';
-import ThemeModeSelect from './ThemeModeSelect';
-import PathSelector from './PathSelector';
-import AttachmentSelector from './AttachmentSelector';
-import { ScriptableString } from './ScriptableString';
-import { ScriptablePath } from './ScriptablePath';
-import { ScriptableBoolean } from './ScriptableBoolean';
-import ColorPickerView from './ColorPickerView';
-import IconSelect from './IconSelect';
-import QuestSelect from './QuestSelect';
+import uneditable from './Uneditable';
 
 export const DEFINED_VIEWS = {
   hidden,

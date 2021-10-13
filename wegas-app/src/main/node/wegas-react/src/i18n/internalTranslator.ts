@@ -1,4 +1,5 @@
 import { EditorLanguagesCode } from '../data/i18n';
+import { selectCurrentEditorLanguage } from '../data/selectors/Languages';
 import { useStore } from '../data/Stores/store';
 
 export function internalTranslate<Translations>(
@@ -15,6 +16,6 @@ export function internalTranslate<Translations>(
 export function useInternalTranslate<Translations>(
   translatableObject: TranslatableObject<Translations>,
 ): Translations {
-  const lang = useStore(s => s.global.currentEditorLanguageCode);
+  const lang = useStore(selectCurrentEditorLanguage);
   return internalTranslate(translatableObject, lang);
 }

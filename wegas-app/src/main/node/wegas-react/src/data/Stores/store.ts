@@ -1,10 +1,10 @@
-import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import thunk, { ThunkMiddleware, ThunkAction } from 'redux-thunk';
-import reducers, { State } from '../Reducer/reducers';
+import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
+import thunk, { ThunkAction, ThunkMiddleware } from 'redux-thunk';
 import { Actions } from '..';
+import '../../API/websocket';
 import { StateActions } from '../actions';
 import { createStoreConnector } from '../connectStore';
-import '../../API/websocket';
+import reducers, { State } from '../Reducer/reducers';
 
 // Used by redux dev tool extension
 export const composeEnhancers: typeof compose =
@@ -21,7 +21,7 @@ function storeInit() {
   store.dispatch(Actions.PageActions.getAll());
   store.dispatch(Actions.GameActions.getGame());
   store.dispatch(Actions.TeamActions.getTeams());
-  store.dispatch(Actions.EditorActions.getLanguage());
+  store.dispatch(Actions.EditorActions.getEditorLanguage());
   store.dispatch(Actions.GameModelActions.getGameModel(CurrentGM.id!));
 }
 storeInit();

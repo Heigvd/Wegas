@@ -1,43 +1,21 @@
-import * as React from 'react';
-
-// Import TinyMCE
-import 'tinymce/tinymce';
-// A theme is also required
-import 'tinymce/themes/silver';
-// Any plugins you want to use has to be imported
-import 'tinymce/plugins/save';
-import 'tinymce/plugins/autolink';
-import 'tinymce/plugins/link';
-import 'tinymce/plugins/lists';
-import 'tinymce/plugins/image';
-import 'tinymce/plugins/media';
-import 'tinymce/plugins/code';
-import 'tinymce/plugins/table';
-import 'tinymce/plugins/paste';
-import 'tinymce/plugins/advlist';
-// Skin must also be imported
-import 'tinymce/skins/ui/oxide/skin.min.css';
-// Icons are imported too
-import 'tinymce/icons/default';
-
+import { css } from '@emotion/css';
 import { Editor as TinyEditor } from '@tinymce/tinymce-react';
-import { Modal } from '../Modal';
-import { generateAbsolutePath, fileURL } from '../../API/files.api';
-import {
-  CommonView,
-  CommonViewContainer,
-} from '../../Editor/Components/FormView/commonView';
-import { LabeledView, Labeled } from '../../Editor/Components/FormView/labeled';
-import { FileBrowser } from '../../Editor/Components/FileBrowser/FileBrowser';
-import { css, cx } from '@emotion/css';
-import { classesCTX } from '../Contexts/ClassesProvider';
-import { flexColumn, flex, defaultMarginTop } from '../../css/classes';
-import { WidgetProps } from 'jsoninput/typings/types';
-import { classNameOrEmpty } from '../../Helper/className';
-import { isActionAllowed } from '../PageComponents/tools/options';
+import * as React from 'react';
 import { RawEditorSettings } from 'tinymce/tinymce';
-import { inputDefaultCSS, inputStyleCSS } from '../Inputs/SimpleInput';
+import { fileURL, generateAbsolutePath } from '../../API/files.api';
+import { useThemeStore } from '../../data/Stores/themeStore';
 import { ErrorBoundary } from '../../Editor/Components/ErrorBoundary';
+import { FileBrowser } from '../../Editor/Components/FileBrowser/FileBrowser';
+import { classNameOrEmpty } from '../../Helper/className';
+import { classesCTX } from '../Contexts/ClassesProvider';
+import { inputDefaultCSS, inputStyleCSS } from '../Inputs/SimpleInput';
+import { Modal } from '../Modal';
+import { isActionAllowed } from '../PageComponents/tools/options';
+import { themeCTX } from '../Theme/Theme';
+import { defaultLightMode, modeStyle, themeVar } from '../Theme/ThemeVars';
+
+const fontUrl =
+  require('../../css/fonts/Raleway-VariableFont_wght.ttf').default;
 
 const toolbar = css({
   width: '300px',
@@ -153,6 +131,15 @@ export default function HTMLEditor({
   const HTMLContent = React.useRef('');
   const HTMLEditor = React.useRef<{ focus: () => void; destroy: () => void }>();
   const { classes } = React.useContext(classesCTX);
+
+  const themesState = useThemeStore(s => s);
+  const { currentContext, currentMode } = React.useContext(themeCTX);
+  const currentTheme =
+    themesState.themes[themesState.selectedThemes[currentContext]];
+  const wegasStyle = modeStyle(
+    currentTheme.values,
+    (currentMode && currentTheme.modes[currentMode]) || defaultLightMode,
+  );
 
   //Internal value management
   const [internalValue, setInternalValue] = React.useState(value);
@@ -308,6 +295,22 @@ export default function HTMLEditor({
             });
           });
         },
+        content_style: `
+        @font-face {
+          font-family: "Raleway";
+          src: url("${fontUrl}") format('ttf supports variations'),
+               url("${fontUrl}") format('ttf-variations'),
+               url("${fontUrl}");
+          font-weight: 100 800;
+          font-stretch: 25% 151%;
+          }
+
+        body {
+          ${Object.entries(wegasStyle)
+            .map(([k, v]) => k + ':' + v)
+            .join(';')}  ;
+          font-family: ${themeVar.others.TextFont2}; 
+        }`,
       };
       return config;
     },
@@ -320,6 +323,7 @@ export default function HTMLEditor({
       noResize,
       noRootBlock,
       classes,
+      wegasStyle,
     ],
   );
 
@@ -368,6 +372,7 @@ export default function HTMLEditor({
         )}
         <ErrorBoundary>
           <TinyEditor
+            apiKey="xkafxh5bjijfa83806ycen9yltz2aw447z0lwlgkn319sk6p"
             value={keepInternalValue ? internalValue : value}
             init={config(toolBarId)}
             onInit={editor => {
@@ -408,60 +413,4 @@ export default function HTMLEditor({
       )}
     </div>
   );
-}
-
-const labeledHTMLEditorStyle = css({
-  display: 'inline-block',
-});
-
-interface HtmlProps
-  extends WidgetProps.BaseProps<
-    { placeholder?: string } & CommonView & LabeledView & { noResize?: boolean }
-  > {
-  value?: string;
-}
-interface HtmlState {
-  value: string;
-  oldProps: HtmlProps;
-}
-export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
-  static getDerivedStateFromProps(nextProps: HtmlProps, state: HtmlState) {
-    if (state.oldProps === nextProps) {
-      return null;
-    }
-    if (state.value !== nextProps.value) {
-      return {
-        oldProps: nextProps,
-        value: nextProps.value,
-      };
-    }
-    return { oldProps: nextProps };
-  }
-  state = {
-    oldProps: this.props,
-    value: this.props.value || '<p></p>',
-  };
-  render() {
-    return (
-      <CommonViewContainer
-        view={this.props.view}
-        errorMessage={this.props.errorMessage}
-      >
-        <Labeled {...this.props.view}>
-          {({ labelNode, inputId }) => (
-            <div className={cx(flex, flexColumn, defaultMarginTop)}>
-              {labelNode}
-              <HTMLEditor
-                value={this.state.value}
-                onChange={this.props.onChange}
-                className={labeledHTMLEditorStyle}
-                id={inputId}
-                noResize={this.props.view.noResize}
-              />
-            </div>
-          )}
-        </Labeled>
-      </CommonViewContainer>
-    );
-  }
 }

@@ -1,5 +1,5 @@
-import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { css, cx } from '@emotion/css';
+import { IconName } from '@fortawesome/fontawesome-svg-core';
 import * as React from 'react';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import {
@@ -16,7 +16,6 @@ import {
 import { useThemeStore } from '../../../data/Stores/themeStore';
 import FileBrowser from '../../../Editor/Components/FileBrowser/FileBrowser';
 import { borderBottom } from '../../../Editor/Components/FormView/commonView';
-import { Selector } from '../../../Editor/Components/FormView/Select';
 import { IconComp, icons } from '../../../Editor/Components/Views/FontAwesome';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -31,6 +30,7 @@ import { NumberSlider } from '../../Inputs/Number/NumberSlider';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { HTMLText } from '../../Outputs/HTMLText';
 import { StandardGauge } from '../../Outputs/StandardGauge';
+import { Selector } from '../../Selector';
 import { Toolbar } from '../../Toolbar';
 import { SelectedThemes } from '../ThemeVars';
 
