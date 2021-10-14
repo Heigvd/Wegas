@@ -1,7 +1,5 @@
 import { cx } from '@emotion/css';
 import * as React from 'react';
-import { Loader } from '../../../Components/HOC/Loader';
-import { Toolbar } from '../../../Components/Toolbar';
 import {
   autoScroll,
   expandBoth,
@@ -10,14 +8,52 @@ import {
   headerStyle,
   hideOverflow,
   relative,
-} from '../../../css/classes';
-import { commonTranslations } from '../../../i18n/common/common';
-import { EditorTabsTranslations } from '../../../i18n/editorTabs/definitions';
-import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { Reparentable } from '../Reparentable';
-import { ClassNames } from './DnDTabLayout';
-import { Tab, TabComponent } from './DnDTabs';
+} from '../../css/classes';
+import { Reparentable } from '../../Editor/Components/Reparentable';
+import { commonTranslations } from '../../i18n/common/common';
+import { EditorTabsTranslations } from '../../i18n/editorTabs/definitions';
+import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { Loader } from '../HOC/Loader';
+import { Toolbar } from '../Toolbar';
+import { tabsStyle } from './tabLayoutStyles';
+
+interface TabInternalProps extends ClassStyleId {
+  /**
+   * onClick - the function to be called when the tab is clicked
+   */
+  onClick?: React.DOMAttributes<HTMLDivElement>['onClick'];
+  /**
+   * onDoubleClick - the function to be called when the tab is double clicked
+   */
+  onDoubleClick?: React.DOMAttributes<HTMLDivElement>['onDoubleClick'];
+}
+
+export type TabProps = React.PropsWithChildren<TabInternalProps>;
+
+export const Tab = React.forwardRef<HTMLDivElement, TabProps>(
+  (
+    { onClick, onDoubleClick, id, style, className, children }: TabProps,
+    ref: React.RefObject<HTMLDivElement>,
+  ) => {
+    return (
+      <div
+        ref={ref}
+        id={id}
+        style={style}
+        className={className}
+        onClick={onClick}
+        onDoubleClick={onDoubleClick}
+      >
+        {children}
+      </div>
+    );
+  },
+);
+
+Tab.displayName = 'Tab';
+
+export type TabComponent = typeof Tab;
 
 export interface TabLayoutComponent {
   tabId: string;
@@ -35,7 +71,7 @@ interface TabLayoutStateProps {
   onSelect?: (label: string) => void;
 }
 
-interface TabLayoutHeaderProps {
+interface TabLayoutSharedProps {
   /**
    * components - the components to be displayed in the tabLayout
    */
@@ -46,13 +82,21 @@ interface TabLayoutHeaderProps {
   CustomTab?: TabComponent;
 }
 
+interface TabLayoutHeaderProps
+  extends TabLayoutSharedProps,
+    TabLayoutStateProps {
+  tabsClassName?: (active: boolean) => string;
+}
+
 export function TabLayoutHeader({
   components,
   CustomTab = Tab,
   activeTab,
   onSelect,
-}: TabLayoutHeaderProps & TabLayoutStateProps) {
+  tabsClassName,
+}: TabLayoutHeaderProps) {
   const i18nTabsNames = useInternalTranslate(editorTabsTranslations);
+  const classNameFn = tabsClassName ? tabsClassName : tabsStyle;
 
   return (
     <div className={cx(flex, grow, autoScroll)}>
@@ -60,10 +104,10 @@ export function TabLayoutHeader({
         return (
           <CustomTab
             key={tabId}
-            active={tabId === activeTab}
             onClick={() => {
               onSelect && onSelect(tabId);
             }}
+            className={classNameFn(activeTab === tabId)}
           >
             {i18nTabsNames.tabsNames[
               tabId as keyof EditorTabsTranslations['tabsNames']
@@ -101,6 +145,13 @@ export function TabLayoutContent({
   );
 }
 
+export interface ClassNames
+  extends Pick<TabLayoutHeaderProps, 'tabsClassName'> {
+  general?: string;
+  header?: string;
+  content?: string;
+}
+
 interface TabLayoutProps extends TabLayoutHeaderProps {
   /**
    * vertical - the orientation of the tab layout
@@ -120,7 +171,7 @@ export function StatelessTabLayout({
   CustomTab = Tab,
   classNames = {},
 }: TabLayoutProps & TabLayoutStateProps) {
-  const { general, header, content } = classNames;
+  const { general, header, content, tabsClassName } = classNames;
   return (
     <Toolbar vertical={vertical} className={cx(relative, general)}>
       <Toolbar.Header className={cx(headerStyle, header)}>
@@ -129,6 +180,7 @@ export function StatelessTabLayout({
           CustomTab={CustomTab}
           activeTab={activeTab}
           onSelect={onSelect}
+          tabsClassName={tabsClassName}
         />
       </Toolbar.Header>
       <Toolbar.Content className={cx(relative, content)}>

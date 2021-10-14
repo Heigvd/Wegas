@@ -4,15 +4,15 @@ import * as React from 'react';
 import { IPeerReviewDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 import { languagesCTX } from '../Components/Contexts/LanguagesProvider';
 import { TumbleLoader } from '../Components/Loader';
+import {
+  TabLayout,
+  TabLayoutComponent,
+} from '../Components/TabLayout/TabLayout';
 import { themeVar } from '../Components/Theme/ThemeVars';
 import { entityIs } from '../data/entities';
 import { State } from '../data/Reducer/reducers';
 import { useStore } from '../data/Stores/store';
 import { translate } from '../Editor/Components/FormView/translatable';
-import {
-  TabLayout,
-  TabLayoutComponent,
-} from '../Editor/Components/LinearTabLayout/TabLayout';
 import {
   fullScreenLoaderStyle,
   PageLoader,

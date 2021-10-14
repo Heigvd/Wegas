@@ -1,35 +1,43 @@
-import * as React from 'react';
-import { TabLayout } from '../../../Components/Tabs';
-import { Toolbar } from '../../../Components/Toolbar';
-import {
-  LibraryAPI,
-  NewLibErrors,
-  LibType,
-  ILibraries,
-} from '../../../API/library.api';
-import { GameModel } from '../../../data/selectors';
-import { omit } from 'lodash-es';
 import u from 'immer';
-import { WebSocketEvent, useWebsocketEvent } from '../../../API/websocket';
-import SrcEditor, { SrcEditorProps } from './SrcEditor';
-import MergeEditor from './MergeEditor';
-import { TextPrompt } from '../TextPrompt';
-import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
-import { WegasScriptEditor } from './WegasScriptEditor';
+import { omit } from 'lodash-es';
+import * as React from 'react';
+import { IAbstractContentDescriptor, IGameModelContent } from 'wegas-ts-api';
+import {
+  ILibraries,
+  LibraryAPI,
+  LibType,
+  NewLibErrors,
+} from '../../../API/library.api';
+import { useWebsocketEvent, WebSocketEvent } from '../../../API/websocket';
+import { DropMenu } from '../../../Components/DropMenu';
 import {
   clientScriptEval,
   setGlobals,
   useGlobalContexts,
 } from '../../../Components/Hooks/useScript';
-import { DropMenu } from '../../../Components/DropMenu';
-import { MessageString } from '../MessageString';
-import { IAbstractContentDescriptor, IGameModelContent } from 'wegas-ts-api';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { librariesCTX } from '../LibrariesLoader';
+import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
+import {
+  TabLayout,
+  TabLayoutComponent,
+} from '../../../Components/TabLayout/TabLayout';
+import { childTabsStyle } from '../../../Components/TabLayout/tabLayoutStyles';
+import { Toolbar } from '../../../Components/Toolbar';
+import {
+  childrenHeaderStyle,
+  defaultMarginRight,
+  defaultPadding,
+} from '../../../css/classes';
+import { GameModel } from '../../../data/selectors';
 import { store } from '../../../data/Stores/store';
-import { defaultMarginRight, defaultPadding } from '../../../css/classes';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { librariesCTX } from '../LibrariesLoader';
+import { MessageString } from '../MessageString';
+import { TextPrompt } from '../TextPrompt';
+import MergeEditor from './MergeEditor';
+import SrcEditor, { SrcEditorProps } from './SrcEditor';
+import { WegasScriptEditor } from './WegasScriptEditor';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [
@@ -761,11 +769,27 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
 }
 
 export default function LibraryEditor() {
+  const components: TabLayoutComponent[] = [
+    {
+      tabId: 'Styles',
+      content: <ScriptEditor scriptType="CSS" />,
+    },
+    {
+      tabId: 'Client',
+      content: <ScriptEditor scriptType="ClientScript" />,
+    },
+    {
+      tabId: 'Server',
+      content: <ScriptEditor scriptType="ServerScript" />,
+    },
+  ];
   return (
-    <TabLayout tabs={['Styles', 'Client', 'Server']} areChildren>
-      <ScriptEditor scriptType="CSS" />
-      <ScriptEditor scriptType="ClientScript" />
-      <ScriptEditor scriptType="ServerScript" />
-    </TabLayout>
+    <TabLayout
+      components={components}
+      classNames={{
+        header: childrenHeaderStyle,
+        tabsClassName: childTabsStyle,
+      }}
+    />
   );
 }

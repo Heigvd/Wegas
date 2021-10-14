@@ -1,37 +1,40 @@
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { useDrop, DropTargetMonitor } from 'react-dnd';
-import { Tab, DragTab, DropTab, TabComponent } from './DnDTabs';
-import { Toolbar } from '../../../Components/Toolbar';
+import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { DropMenu } from '../../../Components/DropMenu';
-import { Reparentable } from '../Reparentable';
-import { cx, css } from '@emotion/css';
-import { DropActionType } from './LinearLayout';
-import {
-  grow,
-  flex,
-  relative,
-  absolute,
-  expandBoth,
-  hidden,
-  hideOverflow,
-  autoScroll,
-  headerStyle,
-  hatchedBackground,
-  childrenHeaderStyle,
-  MediumPadding,
-} from '../../../css/classes';
-import { childrenPlusTabStyle, plusTabStyle } from '../../../Components/Tabs';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { commonTranslations } from '../../../i18n/common/common';
-import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
-import { EditorTabsTranslations } from '../../../i18n/editorTabs/definitions';
 import {
   modalCloseDivStyle,
   modalContentStyle,
 } from '../../../Components/Modal';
+import {
+  childrenPlusTabStyle,
+  plusTabStyle,
+} from '../../../Components/TabLayout/tabLayoutStyles';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { Toolbar } from '../../../Components/Toolbar';
+import {
+  absolute,
+  autoScroll,
+  childrenHeaderStyle,
+  expandBoth,
+  flex,
+  grow,
+  hatchedBackground,
+  headerStyle,
+  hidden,
+  hideOverflow,
+  MediumPadding,
+  relative,
+} from '../../../css/classes';
+import { commonTranslations } from '../../../i18n/common/common';
+import { EditorTabsTranslations } from '../../../i18n/editorTabs/definitions';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { Reparentable } from '../Reparentable';
 import { IconComp } from '../Views/FontAwesome';
+import { DragTab, DropTab, Tab, TabComponent } from './DnDTabs';
+import { DropActionType } from './LinearLayout';
 
 interface FullscreenContext {
   fullscreen: boolean;

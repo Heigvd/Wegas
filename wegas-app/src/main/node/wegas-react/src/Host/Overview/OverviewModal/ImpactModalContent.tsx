@@ -5,6 +5,7 @@ import { IPlayer } from 'wegas-ts-api';
 import { globals } from '../../../Components/Hooks/useScript';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
+import { TabLayout } from '../../../Components/TabLayout/TabLayout';
 import {
   autoScroll,
   expandWidth,
@@ -16,7 +17,6 @@ import {
 } from '../../../css/classes';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Game } from '../../../data/selectors';
-import { TabLayout } from '../../../Editor/Components/LinearTabLayout/TabLayout';
 import { ReparentableRoot } from '../../../Editor/Components/Reparentable';
 import { wwarn } from '../../../Helper/wegaslog';
 import { tabsLineStyle } from '../../HostLayout';

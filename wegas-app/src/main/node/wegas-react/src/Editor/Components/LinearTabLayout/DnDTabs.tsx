@@ -1,12 +1,15 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
-import { useDrag, DropTargetMonitor, useDrop } from 'react-dnd';
-import { DropAction } from './DnDTabLayout';
-import { hidden, flex } from '../../../css/classes';
+import * as React from 'react';
+import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
 import { dropZoneFocus } from '../../../Components/Contexts/DefaultDndProvider';
-import { tabsStyle, tabStyle } from '../../../Components/Tabs';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import {
+  childTabsStyle,
+  tabsStyle,
+} from '../../../Components/TabLayout/tabLayoutStyles';
+import { flex, hidden } from '../../../css/classes';
 import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { DropAction } from './DnDTabLayout';
 
 // export const dndAcceptType = 'DnDTab';
 
@@ -46,7 +49,9 @@ export const Tab = React.forwardRef<HTMLDivElement, TabProps>(
         className={cx(
           props.className
             ? props.className
-            : cx(tabStyle, tabsStyle(props.isChild, props.active)),
+            : props.isChild
+            ? childTabsStyle(props.active)
+            : tabsStyle(props.active),
         )}
         onClick={props.onClick}
         onDoubleClick={props.onDoubleClick}
