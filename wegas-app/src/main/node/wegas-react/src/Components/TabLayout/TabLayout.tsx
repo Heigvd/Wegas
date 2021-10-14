@@ -1,59 +1,27 @@
-import { cx } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import {
   autoScroll,
   expandBoth,
   flex,
+  fullScreenContentContainerStyle,
   grow,
   headerStyle,
   hideOverflow,
   relative,
 } from '../../css/classes';
+import { TabComponent } from '../../Editor/Components/LinearTabLayout/DnDTabs';
 import { Reparentable } from '../../Editor/Components/Reparentable';
+import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { commonTranslations } from '../../i18n/common/common';
 import { EditorTabsTranslations } from '../../i18n/editorTabs/definitions';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { Loader } from '../HOC/Loader';
+import { modalCloseDivStyle, modalContentStyle } from '../Modal';
 import { Toolbar } from '../Toolbar';
+import { Tab } from './Tab';
 import { tabsStyle } from './tabLayoutStyles';
-
-interface TabInternalProps extends ClassStyleId {
-  /**
-   * onClick - the function to be called when the tab is clicked
-   */
-  onClick?: React.DOMAttributes<HTMLDivElement>['onClick'];
-  /**
-   * onDoubleClick - the function to be called when the tab is double clicked
-   */
-  onDoubleClick?: React.DOMAttributes<HTMLDivElement>['onDoubleClick'];
-}
-
-export type TabProps = React.PropsWithChildren<TabInternalProps>;
-
-export const Tab = React.forwardRef<HTMLDivElement, TabProps>(
-  (
-    { onClick, onDoubleClick, id, style, className, children }: TabProps,
-    ref: React.RefObject<HTMLDivElement>,
-  ) => {
-    return (
-      <div
-        ref={ref}
-        id={id}
-        style={style}
-        className={className}
-        onClick={onClick}
-        onDoubleClick={onDoubleClick}
-      >
-        {children}
-      </div>
-    );
-  },
-);
-
-Tab.displayName = 'Tab';
-
-export type TabComponent = typeof Tab;
 
 export interface TabLayoutComponent {
   tabId: string;
@@ -71,7 +39,7 @@ interface TabLayoutStateProps {
   onSelect?: (label: string) => void;
 }
 
-interface TabLayoutSharedProps {
+export interface TabLayoutSharedProps {
   /**
    * components - the components to be displayed in the tabLayout
    */
@@ -86,6 +54,7 @@ interface TabLayoutHeaderProps
   extends TabLayoutSharedProps,
     TabLayoutStateProps {
   tabsClassName?: (active: boolean) => string;
+  onFullScreen: () => void;
 }
 
 export function TabLayoutHeader({
@@ -93,10 +62,11 @@ export function TabLayoutHeader({
   CustomTab = Tab,
   activeTab,
   onSelect,
+  onFullScreen,
   tabsClassName,
 }: TabLayoutHeaderProps) {
   const i18nTabsNames = useInternalTranslate(editorTabsTranslations);
-  const classNameFn = tabsClassName ? tabsClassName : tabsStyle;
+  const tabsClassNameFn = tabsClassName ? tabsClassName : tabsStyle;
 
   return (
     <div className={cx(flex, grow, autoScroll)}>
@@ -104,10 +74,11 @@ export function TabLayoutHeader({
         return (
           <CustomTab
             key={tabId}
+            className={tabsClassNameFn(activeTab === tabId)}
             onClick={() => {
               onSelect && onSelect(tabId);
             }}
-            className={classNameFn(activeTab === tabId)}
+            onDoubleClick={onFullScreen}
           >
             {i18nTabsNames.tabsNames[
               tabId as keyof EditorTabsTranslations['tabsNames']
@@ -152,25 +123,37 @@ export interface ClassNames
   content?: string;
 }
 
-interface TabLayoutProps extends TabLayoutHeaderProps {
+interface TabLayoutProps
+  extends Omit<
+    TabLayoutHeaderProps,
+    keyof TabLayoutStateProps | 'onFullScreen'
+  > {
   /**
-   * vertical - the orientation of the tab layout
+   * The orientation of the tab layout
    */
   vertical?: boolean;
+  /**
+   * Prevent the user to set the content fullscreen with a doubleclick on a tab
+   */
+  preventFullScreen?: boolean;
   /**
    * The className for general styling
    */
   classNames?: ClassNames;
 }
 
+export type StatelessTabLayoutProps = TabLayoutProps & TabLayoutStateProps;
+
 export function StatelessTabLayout({
   vertical,
+  preventFullScreen,
   components,
   activeTab,
   onSelect,
   CustomTab = Tab,
   classNames = {},
-}: TabLayoutProps & TabLayoutStateProps) {
+}: StatelessTabLayoutProps) {
+  const [fullScreen, setFullScreen] = React.useState(false);
   const { general, header, content, tabsClassName } = classNames;
   return (
     <Toolbar vertical={vertical} className={cx(relative, general)}>
@@ -180,11 +163,33 @@ export function StatelessTabLayout({
           CustomTab={CustomTab}
           activeTab={activeTab}
           onSelect={onSelect}
+          onFullScreen={() => setFullScreen(true)}
           tabsClassName={tabsClassName}
         />
       </Toolbar.Header>
       <Toolbar.Content className={cx(relative, content)}>
-        <TabLayoutContent activeTab={activeTab} components={components} />
+        {fullScreen && !preventFullScreen ? (
+          <div className={fullScreenContentContainerStyle}>
+            <div
+              className={cx(
+                modalContentStyle,
+                css({ height: '100%', position: 'relative' }),
+              )}
+            >
+              <div
+                className={modalCloseDivStyle}
+                onClick={() => {
+                  setFullScreen(false);
+                }}
+              >
+                <IconComp icon="times" />
+              </div>
+              <TabLayoutContent activeTab={activeTab} components={components} />{' '}
+            </div>
+          </div>
+        ) : (
+          <TabLayoutContent activeTab={activeTab} components={components} />
+        )}
       </Toolbar.Content>
     </Toolbar>
   );
