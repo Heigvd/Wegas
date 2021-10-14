@@ -9,8 +9,14 @@ import { entityIs } from '../data/entities';
 import { State } from '../data/Reducer/reducers';
 import { useStore } from '../data/Stores/store';
 import { translate } from '../Editor/Components/FormView/translatable';
-import { TabLayout } from '../Editor/Components/LinearTabLayout/TabLayout';
-import { fullScreenLoaderStyle, PageLoader } from '../Editor/Components/Page/PageLoader';
+import {
+  TabLayout,
+  TabLayoutComponent,
+} from '../Editor/Components/LinearTabLayout/TabLayout';
+import {
+  fullScreenLoaderStyle,
+  PageLoader,
+} from '../Editor/Components/Page/PageLoader';
 import { ReparentableRoot } from '../Editor/Components/Reparentable';
 import { visitIndex } from '../Helper/pages';
 import { wlog } from '../Helper/wegaslog';
@@ -62,9 +68,12 @@ function trainerPagesSelector(s: State): TrainerPagesSelector {
   };
 }
 
-const availableLayoutTabs = {
-  Overview: <Overview />,
-} as const;
+const availableLayoutTabs: TabLayoutComponent[] = [
+  {
+    tabId: 'Overview',
+    content: <Overview />,
+  },
+];
 
 export default function HostLayout() {
   const timer = React.useRef<NodeJS.Timeout | undefined>();
@@ -72,19 +81,14 @@ export default function HostLayout() {
   const [loading, setLoading] = React.useState(true);
   const { trainerPages, peerReviews } =
     useStore<TrainerPagesSelector>(trainerPagesSelector);
-  const trainerTabs = trainerPages.reduce(
-    (o, i) => ({ ...o, [i.name]: <PageLoader selectedPageId={i.id} /> }),
-    {},
-  );
-  const peerReviewTabs = peerReviews.reduce(
-    (o, peerReview) => ({
-      ...o,
-      [`Peer review ${translate(peerReview?.label, lang)}`]: (
-        <PeerReviewPage peerReview={peerReview} />
-      ),
-    }),
-    {},
-  );
+  const trainerTabs = trainerPages.map<TabLayoutComponent>(page => ({
+    tabId: page.name,
+    content: <PageLoader selectedPageId={page.id} />,
+  }));
+  const peerReviewTabs = peerReviews.map<TabLayoutComponent>(peerReview => ({
+    tabId: `Peer review ${translate(peerReview?.label, lang)}`,
+    content: <PeerReviewPage peerReview={peerReview} />,
+  }));
 
   React.useEffect(() => {
     if (timer.current != null) {
@@ -101,23 +105,26 @@ export default function HostLayout() {
     };
   }, []);
   if (loading) {
-    return <div className={fullScreenLoaderStyle}><TumbleLoader /></div>;
+    return (
+      <div className={fullScreenLoaderStyle}>
+        <TumbleLoader />
+      </div>
+    );
   }
   return (
     <div id="WegasLayout" className={layoutStyle}>
       <HostHeader />
       <ReparentableRoot>
         <TabLayout
-          components={{
+          components={[
             ...availableLayoutTabs,
             ...trainerTabs,
             ...peerReviewTabs,
-          }}
+          ]}
           CustomTab={OverviewTab}
           classNames={{
             header: tabsLineStyle,
           }}
-          defaultActiveLabel={'Overview'}
         />
       </ReparentableRoot>
     </div>

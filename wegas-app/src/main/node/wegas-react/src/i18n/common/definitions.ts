@@ -31,4 +31,6 @@ export interface CommonTranslations {
     resetLayout: string;
     notifications: string;
   };
+  noContent: string;
+  noSelectedTab: string;
 }

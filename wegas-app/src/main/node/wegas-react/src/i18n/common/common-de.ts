@@ -33,4 +33,6 @@ export const commonTranslationsDE: CommonTranslations = {
     resetLayout: 'Layout zurücksetzen',
     notifications: 'Benachrichtigungen',
   },
+  noContent: 'Kein Inhalt',
+  noSelectedTab: 'Kein Tab ausgewählt',
 };

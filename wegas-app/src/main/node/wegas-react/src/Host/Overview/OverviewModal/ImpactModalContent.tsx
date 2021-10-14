@@ -1,28 +1,28 @@
 import { css, cx } from '@emotion/css';
+import JSONForm from 'jsoninput';
 import * as React from 'react';
 import { IPlayer } from 'wegas-ts-api';
 import { globals } from '../../../Components/Hooks/useScript';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import {
+  autoScroll,
+  expandWidth,
   flex,
   flexColumn,
-  flexRow,
   flexDistribute,
+  flexRow,
   grow,
-  expandWidth,
-  autoScroll,
 } from '../../../css/classes';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Game } from '../../../data/selectors';
-import { wwarn } from '../../../Helper/wegaslog';
-import { ActionItem } from '../Overview';
-import JSONForm from 'jsoninput';
-import { modalButtonsContainer } from './OverviewModal';
 import { TabLayout } from '../../../Editor/Components/LinearTabLayout/TabLayout';
 import { ReparentableRoot } from '../../../Editor/Components/Reparentable';
+import { wwarn } from '../../../Helper/wegaslog';
 import { tabsLineStyle } from '../../HostLayout';
-import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
+import { ActionItem } from '../Overview';
 import { OverviewTab } from '../OverviewTab';
+import { modalButtonsContainer } from './OverviewModal';
 
 const impactContainerStyle = css({
   //padding: '10px',
@@ -240,27 +240,32 @@ export function ImpactModalContent({
     return showAdvancedImpact ? (
       <ReparentableRoot>
         <TabLayout
-          components={{
-            Impacts: (
-              <ImpactModalComputedContent
-                team={team}
-                actions={actions}
-                onExit={onExit}
-                refreshOverview={refreshOverview}
-              />
-            ),
-            'Advanced impacts': (
-              <ImpactModalAdvancedContent
-                team={team}
-                onExit={onExit}
-                refreshOverview={refreshOverview}
-              />
-            ),
-          }}
+          components={[
+            {
+              tabId: 'Impacts',
+              content: (
+                <ImpactModalComputedContent
+                  team={team}
+                  actions={actions}
+                  onExit={onExit}
+                  refreshOverview={refreshOverview}
+                />
+              ),
+            },
+            {
+              tabId: 'Advanced impacts',
+              content: (
+                <ImpactModalAdvancedContent
+                  team={team}
+                  onExit={onExit}
+                  refreshOverview={refreshOverview}
+                />
+              ),
+            },
+          ]}
           classNames={{
             header: tabsLineStyle,
           }}
-          defaultActiveLabel="Impacts"
           CustomTab={OverviewTab}
         />
       </ReparentableRoot>

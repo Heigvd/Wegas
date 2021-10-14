@@ -28,7 +28,9 @@ const ThemeEditor = React.lazy(
   () => import('../../Components/Theme/Components/ThemeEditor'),
 );
 const Languages = React.lazy(() => import('./Languages/Languages'));
-// const Tester = React.lazy(() => import('../../Testers/FlowchartTester'));
+// const Tester = React.lazy(
+//   () => import('../../Testers/Components/TabLayoutTester'),
+// );
 
 const layout = css({
   display: 'flex',
