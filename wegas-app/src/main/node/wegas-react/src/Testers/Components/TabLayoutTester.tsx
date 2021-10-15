@@ -1,15 +1,14 @@
 import * as React from 'react';
 import { TabLayoutComponent } from '../../Components/TabLayout/TabLayout';
-import { childTabsStyle } from '../../Components/TabLayout/tabLayoutStyles';
-import { childrenHeaderStyle } from '../../css/classes';
+import { tabLayoutChildrenClassNames } from '../../Components/TabLayout/tabLayoutStyles';
 import FileBrowserWithMeta from '../../Editor/Components/FileBrowser/FileBrowser';
 import LanguageEditor from '../../Editor/Components/Languages/LanguageEditor';
 import { TranslationEditor } from '../../Editor/Components/Languages/TranslationsEditor';
-import { DnDTabLayout } from '../../Editor/Components/LinearTabLayout/DnDTabLayout2';
+import { DnDTabLayout } from '../../Editor/Components/LinearTabLayout/DnDTabLayout';
 import {
   DndLinearLayout,
   LinearLayoutComponents,
-} from '../../Editor/Components/LinearTabLayout/LinearLayout2';
+} from '../../Editor/Components/LinearTabLayout/LinearLayout';
 import LibraryEditor from '../../Editor/Components/ScriptEditors/LibraryEditor';
 import { wlog } from '../../Helper/wegaslog';
 
@@ -51,10 +50,7 @@ export function TabLayoutTester() {
       otherTabs={otherTabs}
       activeTab={activeTab}
       onSelect={setActiveTab}
-      classNames={{
-        header: childrenHeaderStyle,
-        tabsClassName: childTabsStyle,
-      }}
+      classNames={tabLayoutChildrenClassNames}
       dndAcceptType="TEST_COMPONENT"
       onDeleteTab={() => wlog('delete')}
       onDrop={onDrop}
@@ -84,10 +80,7 @@ export default function LinearLayoutTester() {
       tabs={availableLayoutTabs}
       initialLayout={initTabs}
       layoutId={'TestLayoutEditor'}
-      classNames={{
-        header: childrenHeaderStyle,
-        tabsClassName: childTabsStyle,
-      }}
+      classNames={tabLayoutChildrenClassNames}
     />
   );
 }

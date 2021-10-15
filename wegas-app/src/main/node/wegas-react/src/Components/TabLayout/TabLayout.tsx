@@ -10,7 +10,6 @@ import {
   hideOverflow,
   relative,
 } from '../../css/classes';
-import { TabComponent } from '../../Editor/Components/LinearTabLayout/DnDTabs';
 import { Reparentable } from '../../Editor/Components/Reparentable';
 import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { commonTranslations } from '../../i18n/common/common';
@@ -20,7 +19,7 @@ import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { Loader } from '../HOC/Loader';
 import { modalCloseDivStyle, modalContentStyle } from '../Modal';
 import { Toolbar } from '../Toolbar';
-import { Tab } from './Tab';
+import { Tab, TabComponent } from './Tab';
 import { tabsStyle } from './tabLayoutStyles';
 
 export interface TabLayoutComponent {

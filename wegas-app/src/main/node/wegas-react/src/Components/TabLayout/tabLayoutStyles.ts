@@ -1,4 +1,6 @@
 import { css, cx } from '@emotion/css';
+import { childrenHeaderStyle } from '../../css/classes';
+import { DnDClassNames } from '../../Editor/Components/LinearTabLayout/DnDTabLayout';
 import { themeVar } from '../Theme/ThemeVars';
 
 const inactiveTabStyle = css({
@@ -76,7 +78,8 @@ export const plusTabStyle = css({
     color: themeVar.colors.DisabledColor,
   },
 });
-export const childrenPlusTabStyle = css({
+
+const childrenPlusTabStyle = css({
   backgroundColor: 'transparent',
   display: 'flex',
   alignItems: 'center',
@@ -134,9 +137,15 @@ export function tabsStyle(isActive: boolean | undefined) {
   });
 }
 
-export function childTabsStyle(isActive: boolean | undefined) {
+function childTabsStyle(isActive: boolean | undefined) {
   return cx(tabStyle, {
     [childActiveTabStyle]: isActive,
     [childInactiveTabStyle]: !isActive,
   });
 }
+
+export const tabLayoutChildrenClassNames: DnDClassNames = {
+  header: childrenHeaderStyle,
+  tabsClassName: childTabsStyle,
+  plusTabClassName: childrenPlusTabStyle,
+};

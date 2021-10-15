@@ -19,9 +19,8 @@ import {
 } from '../Editor/Components/Page/PageLoader';
 import { ReparentableRoot } from '../Editor/Components/Reparentable';
 import { visitIndex } from '../Helper/pages';
-import { wlog } from '../Helper/wegaslog';
 import HostHeader from './HostHeader';
-import { OverviewTab } from './Overview/OverviewTab';
+import { OverviewTab, overviewTabStyle } from './Overview/OverviewTab';
 
 const Overview = React.lazy(() => import('./Overview/Overview'));
 const PeerReviewPage = React.lazy(() => import('./PeerReview/PeerReviewPage'));
@@ -94,7 +93,7 @@ export default function HostLayout() {
     if (timer.current != null) {
       clearTimeout(timer.current);
     }
-    wlog(Object.keys(OverviewTab).length);
+
     timer.current = setTimeout(() => {
       setLoading(Object.keys(OverviewTab).length === 0);
     }, 2500);
@@ -124,6 +123,7 @@ export default function HostLayout() {
           CustomTab={OverviewTab}
           classNames={{
             header: tabsLineStyle,
+            tabsClassName: overviewTabStyle,
           }}
         />
       </ReparentableRoot>

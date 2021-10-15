@@ -1,45 +1,45 @@
-import * as React from 'react';
-import { Actions } from '../../../data';
-import { Toolbar } from '../../../Components/Toolbar';
-import { moveDescriptor } from '../../../data/Reducer/VariableDescriptorReducer';
-import { getIcon, getClassLabel, getChildren } from '../../editionConfig';
-import { StoreDispatch, useStore, store } from '../../../data/Stores/store';
 import { css, cx } from '@emotion/css';
-import { DropMenu } from '../../../Components/DropMenu';
-import { withDefault, IconComp } from '../Views/FontAwesome';
-import { asyncSFC } from '../../../Components/HOC/asyncSFC';
-import { useAsync } from '../../../Components/Hooks/useAsync';
-import { ComponentWithForm } from '../FormView/ComponentWithForm';
-import { useGameModel } from '../../../Components/Hooks/useGameModel';
-import { Edition } from '../../../data/Reducer/globalState';
-import { mainLayoutId } from '../Layout';
-import {
-  flex,
-  toolboxHeaderStyle,
-  flexRow,
-  flexBetween,
-  defaultPadding,
-} from '../../../css/classes';
+import * as React from 'react';
 import { IVariableDescriptor } from 'wegas-ts-api';
-import { focusTab } from '../LinearTabLayout/LinearLayout';
-import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
+import { DropMenu } from '../../../Components/DropMenu';
+import { asyncSFC } from '../../../Components/HOC/asyncSFC';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { useAsync } from '../../../Components/Hooks/useAsync';
+import { useDebounceFn } from '../../../Components/Hooks/useDebounce';
+import { useGameModel } from '../../../Components/Hooks/useGameModel';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { useOkCancelModal } from '../../../Components/Modal';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { commonTranslations } from '../../../i18n/common/common';
-import { useDebounceFn } from '../../../Components/Hooks/useDebounce';
-import { OnMoveFn, TreeView } from '../../../Components/TreeView/TreeView';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { CTree } from './CTree';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { Toolbar } from '../../../Components/Toolbar';
+import { OnMoveFn, TreeView } from '../../../Components/TreeView/TreeView';
+import {
+  defaultPadding,
+  flex,
+  flexBetween,
+  flexRow,
+  toolboxHeaderStyle,
+} from '../../../css/classes';
+import { Actions } from '../../../data';
+import { Edition } from '../../../data/Reducer/globalState';
+import { moveDescriptor } from '../../../data/Reducer/VariableDescriptorReducer';
+import { store, StoreDispatch, useStore } from '../../../data/Stores/store';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { getChildren, getClassLabel, getIcon } from '../../editionConfig';
+import { ComponentWithForm } from '../FormView/ComponentWithForm';
+import { mainLayoutId } from '../Layout';
+import { focusTab } from '../LinearTabLayout/LinearLayout';
+import { IconComp, withDefault } from '../Views/FontAwesome';
+import { CTree } from './CTree';
 
 const addVariableContainerStyle = css({
- position: 'absolute',
- left: 0,
- bottom: 0,
- width: '100%',
- zIndex: 1,
+  position: 'absolute',
+  left: 0,
+  bottom: 0,
+  width: '100%',
+  zIndex: 1,
 });
 const addVariableButtonStyle = css({
   width: '100%',
@@ -48,7 +48,7 @@ const addVariableButtonStyle = css({
 });
 const deepSearchButtonOffStyle = css({
   color: themeVar.colors.DisabledColor,
-  '&:hover, &:focus': { color: themeVar.colors.DisabledColor}
+  '&:hover, &:focus': { color: themeVar.colors.DisabledColor },
 });
 export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_VARIABLE_ITEM';
 
@@ -157,7 +157,9 @@ export function VariableTreeView({
 
   return (
     <Toolbar>
-      <Toolbar.Header className={cx(toolboxHeaderStyle, flexBetween, defaultPadding)}>
+      <Toolbar.Header
+        className={cx(toolboxHeaderStyle, flexBetween, defaultPadding)}
+      >
         {!noHeader && actionAllowed && (
           <>
             <div className={cx(flex, flexRow, flexBetween)}>
@@ -167,37 +169,48 @@ export function VariableTreeView({
                 aria-label="Filter"
                 onChange={ev => searchFn(String(ev))}
               />
-              <IconButton icon="search" mask="folder" transform="shrink-9 down-1"
-              className={cx(
-                css({fontSize: '28px', color: themeVar.colors.SuccessColor, '&:hover, &:focus': { color: themeVar.colors.SuccessColor}}),
-                {[deepSearchButtonOffStyle]: !deep},
-              )}
-              tooltip={i18nValues.deepSearch}
-              onClick={() =>{
-                globalDispatch(Actions.EditorActions.searchSetDeep(!deep));
-              }} />
+              <IconButton
+                icon="search"
+                mask="folder"
+                transform="shrink-9 down-1"
+                className={cx(
+                  css({
+                    fontSize: '28px',
+                    color: themeVar.colors.SuccessColor,
+                    '&:hover, &:focus': { color: themeVar.colors.SuccessColor },
+                  }),
+                  { [deepSearchButtonOffStyle]: !deep },
+                )}
+                tooltip={i18nValues.deepSearch}
+                onClick={() => {
+                  globalDispatch(Actions.EditorActions.searchSetDeep(!deep));
+                }}
+              />
             </div>
           </>
         )}
       </Toolbar.Header>
-      <Toolbar.Content id={TREECONTENTID} className={css({ padding: '1px', marginBottom: '2rem' })}>
-      <DropMenu
-              tooltip={i18nValues.add}
-              items={data || []}
-              prefixedLabel
-              icon="plus"
-              label="Add new variable"
-              onSelect={(i, e) => {
-                if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
-                  localDispatch(Actions.EditorActions.createVariable(i.value));
-                } else {
-                  globalDispatch(Actions.EditorActions.createVariable(i.value));
-                  focusTab(mainLayoutId, 'Variable Properties');
-                }
-              }}
-              containerClassName={addVariableContainerStyle}
-              buttonClassName={addVariableButtonStyle}
-            />
+      <Toolbar.Content
+        id={TREECONTENTID}
+        className={css({ padding: '1px', marginBottom: '2rem' })}
+      >
+        <DropMenu
+          tooltip={i18nValues.add}
+          items={data || []}
+          prefixedLabel
+          icon="plus"
+          label="Add new variable"
+          onSelect={(i, e) => {
+            if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
+              localDispatch(Actions.EditorActions.createVariable(i.value));
+            } else {
+              globalDispatch(Actions.EditorActions.createVariable(i.value));
+              focusTab(mainLayoutId, 'Variable Properties');
+            }
+          }}
+          containerClassName={addVariableContainerStyle}
+          buttonClassName={addVariableButtonStyle}
+        />
         <OkCancelModal onOk={onAccept}>
           <p>{i18nValues.changesWillBeLost}</p>
           <p>{i18nValues.areYouSure}</p>
@@ -210,7 +223,7 @@ export function VariableTreeView({
             openNodes,
             setOpenNodes,
           }}
-          acceptTypes={[TREEVIEW_ITEM_TYPE]}  
+          acceptTypes={[TREEVIEW_ITEM_TYPE]}
         >
           {root.itemsIds ? (
             root.itemsIds.map(id => (

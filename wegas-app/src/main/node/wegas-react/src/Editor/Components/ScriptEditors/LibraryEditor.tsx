@@ -21,13 +21,9 @@ import {
   TabLayout,
   TabLayoutComponent,
 } from '../../../Components/TabLayout/TabLayout';
-import { childTabsStyle } from '../../../Components/TabLayout/tabLayoutStyles';
+import { tabLayoutChildrenClassNames } from '../../../Components/TabLayout/tabLayoutStyles';
 import { Toolbar } from '../../../Components/Toolbar';
-import {
-  childrenHeaderStyle,
-  defaultMarginRight,
-  defaultPadding,
-} from '../../../css/classes';
+import { defaultMarginRight, defaultPadding } from '../../../css/classes';
 import { GameModel } from '../../../data/selectors';
 import { store } from '../../../data/Stores/store';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
@@ -786,10 +782,7 @@ export default function LibraryEditor() {
   return (
     <TabLayout
       components={components}
-      classNames={{
-        header: childrenHeaderStyle,
-        tabsClassName: childTabsStyle,
-      }}
+      classNames={tabLayoutChildrenClassNames}
     />
   );
 }

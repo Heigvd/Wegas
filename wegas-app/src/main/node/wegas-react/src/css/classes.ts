@@ -236,6 +236,7 @@ export const contentStyle = css({
 
 export const childrenHeaderStyle = css({
   backgroundColor: themeVar.colors.ActiveColor,
+  borderBottom: 'none',
   padding: '0 1em',
 });
 

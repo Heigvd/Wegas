@@ -6,6 +6,8 @@ import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import 'react-reflex/styles.css';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
 import { roleCTX } from '../../../Components/Contexts/RoleProvider';
+import { TabComponent } from '../../../Components/TabLayout/Tab';
+import { TabLayoutComponent } from '../../../Components/TabLayout/TabLayout';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import {
   expandHeight,
@@ -20,13 +22,7 @@ import { wlog, wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { internalTranslate } from '../../../i18n/internalTranslator';
 import { ReparentableRoot } from '../Reparentable';
-import {
-  ClassNames,
-  ComponentMap,
-  DnDTabLayout,
-  filterMap,
-} from './DnDTabLayout';
-import { TabComponent } from './DnDTabs';
+import { DnDClassNames, DnDTabLayout, DnDTabs } from './DnDTabLayout';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
@@ -117,6 +113,84 @@ interface ManagedLayoutMap {
   layoutMap: LayoutMap;
 }
 
+// const filterMap = (
+//   map: TabLayoutComponent[],
+//   filterFN: (k: string, i: number) => boolean,
+// ) =>
+//   Object.keys(map)
+//     .filter(filterFN)
+//     .reduce<ComponentMap>(
+//       (newComponents, k) => ({ ...newComponents, [k]: map[k] }),
+//       {},
+//     );
+
+//     function visitLayoutMap(
+//       data: LayoutMap,
+//       visitFN: (item: LayoutNode) => 'STOP' | 'CONTINUE',
+//     ) {
+//       for (const key in data) {
+//         const item = data[key];
+//         if (visitFN(item) === 'STOP') {
+//           return;
+//         }
+//       if (item.type === "ReflexLayoutNode") {
+//         visitLayoutMap(item.children)
+//       }
+//     }
+
+interface LinearLayoutItemComponent {
+  tabId: string;
+  content: React.ReactNode;
+}
+
+interface LinearLayoutContentComponent {
+  tabId: string;
+  items: LinearLayoutComponents;
+}
+
+export type LinearLayoutComponents = (
+  | LinearLayoutItemComponent
+  | LinearLayoutContentComponent
+)[];
+
+function visitLinearLayoutComponents(
+  data: LinearLayoutComponents,
+  visitFN: (
+    item: LinearLayoutItemComponent | LinearLayoutContentComponent,
+  ) => 'STOP' | 'CONTINUE',
+) {
+  for (const item of data) {
+    if (visitFN(item) === 'STOP') {
+      return;
+    }
+    if ('items' in item) {
+      visitLinearLayoutComponents(item.items, visitFN);
+    }
+  }
+}
+
+function populateDndTabs(
+  tabs: LinearLayoutComponents,
+  filterFn: (
+    item: LinearLayoutItemComponent | LinearLayoutContentComponent,
+  ) => boolean = () => true,
+): DnDTabs {
+  const dndTabs: DnDTabs = [];
+  for (const item of tabs) {
+    if (filterFn(item)) {
+      if ('items' in item) {
+        dndTabs.push({
+          label: item.tabId,
+          items: populateDndTabs(item.items, filterFn),
+        });
+      } else {
+        dndTabs.push({ label: item.tabId, value: item.tabId });
+      }
+    }
+  }
+  return dndTabs;
+}
+
 /**
  * getUnusedTabs allows to find all unused tabs in the linearLayout
  *
@@ -125,17 +199,19 @@ interface ManagedLayoutMap {
  *
  * @returns every unused tabs in a tabMap
  */
-const getUnusedTabs = (layouts: LayoutMap, tabs: ComponentMap) => {
-  return filterMap(tabs, label => {
-    return (
-      Object.keys(layouts).filter(layoutKey => {
-        const layout = layouts[layoutKey];
-        return (
-          layout.type === 'TabLayoutNode' && layout.children.indexOf(label) >= 0
-        );
-      }).length === 0
-    );
-  });
+const getUnusedTabs = (
+  layouts: LayoutMap,
+  tabs: LinearLayoutComponents,
+): DnDTabs => {
+  let usedTabs: string[] = [];
+  for (const key in layouts) {
+    const item = layouts[key];
+    if (item.type === 'TabLayoutNode') {
+      usedTabs = usedTabs.concat(item.children);
+    }
+  }
+
+  return populateDndTabs(tabs, item => !usedTabs.includes(item.tabId));
 };
 
 /**
@@ -146,12 +222,18 @@ const getUnusedTabs = (layouts: LayoutMap, tabs: ComponentMap) => {
  *
  * @returns a map of the tabs corresponding to the given labels
  */
-const makeTabMap = (labels: string[], tabs: ComponentMap) => {
-  const newTabs: ComponentMap = {};
-  for (const label of labels) {
-    newTabs[label] = tabs[label];
-  }
-  return newTabs;
+const makeTabMap = (
+  labels: string[],
+  tabs: LinearLayoutComponents,
+): TabLayoutComponent[] => {
+  const components: TabLayoutComponent[] = [];
+  visitLinearLayoutComponents(tabs, item => {
+    if ('content' in item && labels.includes(item.tabId)) {
+      components.push(item);
+    }
+    return 'CONTINUE';
+  });
+  return components;
 };
 
 /**
@@ -493,30 +575,30 @@ interface Action {
   type: string;
 }
 
-interface TabAction<T extends ComponentMap> extends Action {
-  tabKey: keyof T;
+interface TabAction extends Action {
+  tabKey: string;
 }
 
-interface ActionDelete<T extends ComponentMap> extends TabAction<T> {
+interface ActionDelete extends TabAction {
   type: 'DELETE';
 }
 
-interface ActionSelect<T extends ComponentMap> extends TabAction<T> {
+interface ActionSelect extends TabAction {
   type: 'SELECT';
 }
 
-interface ActionExternalSelect<T extends ComponentMap> extends TabAction<T> {
+interface ActionExternalSelect extends TabAction {
   type: 'EXTERNALSELECT';
 }
 
 export type DropActionType = 'LEFT' | 'RIGHT' | 'TOP' | 'BOTTOM' | 'NEW';
 
-interface ActionDrop<T extends ComponentMap> extends TabAction<T> {
+interface ActionDrop extends TabAction {
   type: DropActionType;
   destTabLayoutKey: string;
 }
 
-interface ActionDropTab<T extends ComponentMap> extends TabAction<T> {
+interface ActionDropTab extends TabAction {
   type: 'TAB';
   parentKey: string;
   tabIndex: number;
@@ -539,12 +621,12 @@ interface ActionReset extends Action {
   newLayout: ManagedLayoutMap;
 }
 
-type TabLayoutsAction<T extends ComponentMap> =
-  | ActionDrop<T>
-  | ActionDelete<T>
-  | ActionDropTab<T>
-  | ActionSelect<T>
-  | ActionExternalSelect<T>
+type TabLayoutsAction =
+  | ActionDrop
+  | ActionDelete
+  | ActionDropTab
+  | ActionSelect
+  | ActionExternalSelect
   | ActionResize
   | ActionFlexResize
   | ActionReset;
@@ -554,10 +636,7 @@ type TabLayoutsAction<T extends ComponentMap> =
  */
 const setLayout =
   (layoutId: string, role: string, rolesId: string) =>
-  <T extends ManagedLayoutMap>(
-    layouts: T,
-    action: TabLayoutsAction<T['layoutMap']>,
-  ) =>
+  <T extends ManagedLayoutMap>(layouts: T, action: TabLayoutsAction) =>
     u(layouts, (layouts: ManagedLayoutMap) => {
       if (action.type === 'RESET') {
         return action.newLayout;
@@ -782,8 +861,8 @@ const defaultLayout: ManagedLayoutMap = {
   rootKey: '0',
 };
 
-const reduceChildren = <T extends ComponentMap>(
-  children?: LayoutItems<T>,
+const reduceChildren = (
+  children?: LayoutItems,
   layoutMap?: ManagedLayoutMap,
 ) => {
   let newLayoutMap: ManagedLayoutMap = layoutMap
@@ -803,7 +882,7 @@ const reduceChildren = <T extends ComponentMap>(
     } else {
       for (const child of children) {
         newLayoutMap = insertNewLayout(newLayoutMap, 'ReflexLayoutNode', key);
-        newLayoutMap = reduceChildren(child as LayoutItems<T>, newLayoutMap);
+        newLayoutMap = reduceChildren(child as LayoutItems, newLayoutMap);
       }
     }
   } else {
@@ -813,22 +892,24 @@ const reduceChildren = <T extends ComponentMap>(
 };
 
 // eslint-disable-next-line
-interface LayoutItem<T extends ComponentMap>
-  extends Array<LayoutItem<T> | keyof T> {}
-export type LayoutItems<T extends ComponentMap> =
-  | LayoutItem<T>
-  | LayoutItem<T>[];
+interface LayoutItem extends Array<LayoutItem | string> {}
+export type LayoutItems = LayoutItem | LayoutItem[];
 
-interface LinearLayoutProps<T extends ComponentMap> {
+export interface TabStructure {
+  label: string;
+  items?: TabStructure[];
+}
+
+interface LinearLayoutProps {
   /**
    * tabs - The tabs that can be used in the layout (You must include all the tabs that you use in the children)
    */
-  tabs: T;
+  tabs: LinearLayoutComponents;
   /**
    * initialLayout - the layout initial disposition
    * If a layout is saved in the browser, this won't be taken in account unless the saved layout is reset
    */
-  initialLayout?: LayoutItems<T>;
+  initialLayout?: LayoutItems;
   /**
    * dndAcceptType - The token that filter the drop actions
    */
@@ -844,25 +925,20 @@ interface LinearLayoutProps<T extends ComponentMap> {
   /**
    * The className for general styling
    */
-  classNames?: ClassNames;
-  /**
-   * If tabs are children of other tabs (styling purpose mainly).
-   */
-  areChildren?: boolean;
+  classNames?: DnDClassNames;
 }
 
 /**
  * MainLinearLayout is a component that allows to chose the position and size of its children
  */
-export function MainLinearLayout<T extends ComponentMap>({
+export function MainLinearLayout({
   layoutId,
   initialLayout,
   tabs,
   onFocusTab,
   CustomTab,
   classNames = {},
-  areChildren,
-}: LinearLayoutProps<T>) {
+}: LinearLayoutProps) {
   const { currentRole } = React.useContext(roleCTX);
   const { lang, rolesId } = useStore(s => ({
     lang: selectCurrentEditorLanguage(s),
@@ -965,18 +1041,17 @@ export function MainLinearLayout<T extends ComponentMap>({
             <DnDTabLayout
               key={currentLayoutKey}
               components={makeTabMap(currentLayout.children, tabs)}
-              selectItems={getUnusedTabs(layout.layoutMap, tabs)}
+              otherTabs={getUnusedTabs(layout.layoutMap, tabs)}
               vertical={currentLayout.vertical}
               onDrop={onDrop(currentLayoutKey)}
               onDropTab={onDropTab(currentLayoutKey)}
               onDeleteTab={onDeleteTab}
               onNewTab={onNewTab(currentLayoutKey)}
-              defaultActiveLabel={currentLayout.defaultActive}
+              activeTab={currentLayout.defaultActive}
               onSelect={onSelect}
               dndAcceptType={layoutId}
               CustomTab={CustomTab}
               classNames={classNames}
-              areChildren={areChildren}
             />
           );
         }
@@ -1033,7 +1108,7 @@ export function MainLinearLayout<T extends ComponentMap>({
             <DnDTabLayout
               key={currentLayoutKey}
               components={makeTabMap([], tabs)}
-              selectItems={getUnusedTabs(layout.layoutMap, tabs)}
+              otherTabs={getUnusedTabs(layout.layoutMap, tabs)}
               onDrop={onDrop(currentLayoutKey)}
               onDropTab={onDropTab(currentLayoutKey)}
               onDeleteTab={onDeleteTab}
@@ -1042,7 +1117,6 @@ export function MainLinearLayout<T extends ComponentMap>({
               dndAcceptType={layoutId}
               CustomTab={CustomTab}
               classNames={classNames}
-              areChildren={areChildren}
             />
           </ReflexElement>
         </ReflexContainer>
@@ -1071,9 +1145,7 @@ export function MainLinearLayout<T extends ComponentMap>({
  * DndLinearLayout is a wrapper that calls the MainLinearLayout in the shared HTML5 context
  * Multiple context for react-dnd is not allowed
  */
-export function DndLinearLayout<T extends ComponentMap>(
-  props: LinearLayoutProps<T>,
-) {
+export function DndLinearLayout(props: LinearLayoutProps) {
   return (
     <DefaultDndProvider>
       <MainLinearLayout {...props} />

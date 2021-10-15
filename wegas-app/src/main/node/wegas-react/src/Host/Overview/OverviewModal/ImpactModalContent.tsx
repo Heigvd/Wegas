@@ -21,7 +21,7 @@ import { ReparentableRoot } from '../../../Editor/Components/Reparentable';
 import { wwarn } from '../../../Helper/wegaslog';
 import { tabsLineStyle } from '../../HostLayout';
 import { ActionItem } from '../Overview';
-import { OverviewTab } from '../OverviewTab';
+import { OverviewTab, overviewTabStyle } from '../OverviewTab';
 import { modalButtonsContainer } from './OverviewModal';
 
 const impactContainerStyle = css({
@@ -265,6 +265,7 @@ export function ImpactModalContent({
           ]}
           classNames={{
             header: tabsLineStyle,
+            tabsClassName: overviewTabStyle,
           }}
           CustomTab={OverviewTab}
         />

@@ -1,55 +1,55 @@
 import { css, cx } from '@emotion/css';
+import produce, { Immutable } from 'immer';
+import { cloneDeep } from 'lodash';
 import * as React from 'react';
-// import * as ReactDOMServer from 'react-dom/server';
-import { VariableDescriptor } from '../../data/selectors';
-import { entityIs } from '../../data/entities';
 import {
-  editorLabel,
-  getInstance,
-} from '../../data/methods/VariableDescriptorMethods';
-import { State as RState } from '../../data/Reducer/reducers';
-import { ComponentWithForm } from './FormView/ComponentWithForm';
-import {
-  grow,
-  flex,
-  flexRow,
-  flexColumn,
-  MediumPadding,
-} from '../../css/classes';
-import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
-import {
-  IDialogueDescriptor,
-  IFSMDescriptor,
   IAbstractTransition,
-  ITransition,
-  IDialogueTransition,
-  IState,
+  IDialogueDescriptor,
   IDialogueState,
+  IDialogueTransition,
+  IFSMDescriptor,
+  IState,
+  ITransition,
 } from 'wegas-ts-api';
-import { Button } from '../../Components/Inputs/Buttons/Button';
-import { SimpleInput } from '../../Components/Inputs/SimpleInput';
-import HTMLEditor from '../../Components/HTML/HTMLEditor';
+import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import {
   FlowChart,
   FlowLine,
   Process,
 } from '../../Components/FlowChart/FlowChart';
-import { store, StoreDispatch, useStore } from '../../data/Stores/store';
-import { Actions } from '../../data';
-import { createScript } from '../../Helper/wegasEntites';
-import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
-import { createTranslatableContent } from './FormView/translatable';
-import { XYPosition } from '../../Components/Hooks/useMouseEventDnd';
-import { deleteState, EditorAction } from '../../data/Reducer/globalState';
-import { mainLayoutId } from './Layout';
-import { focusTab } from './LinearTabLayout/LinearLayout';
-import produce, { Immutable } from 'immer';
 import { StateProcessComponent } from '../../Components/FlowChart/StateProcessComponent';
 import { TransitionFlowLineComponent } from '../../Components/FlowChart/TransitionFlowLineComponent';
+import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
+import { XYPosition } from '../../Components/Hooks/useMouseEventDnd';
+import HTMLEditor from '../../Components/HTML/HTMLEditor';
+import { Button } from '../../Components/Inputs/Buttons/Button';
+import { SimpleInput } from '../../Components/Inputs/SimpleInput';
 import { HTMLText } from '../../Components/Outputs/HTMLText';
+import {
+  flex,
+  flexColumn,
+  flexRow,
+  grow,
+  MediumPadding,
+} from '../../css/classes';
+import { Actions } from '../../data';
+import { entityIs } from '../../data/entities';
+import {
+  editorLabel,
+  getInstance,
+} from '../../data/methods/VariableDescriptorMethods';
+import { deleteState, EditorAction } from '../../data/Reducer/globalState';
+import { State as RState } from '../../data/Reducer/reducers';
+// import * as ReactDOMServer from 'react-dom/server';
+import { VariableDescriptor } from '../../data/selectors';
+import { store, StoreDispatch, useStore } from '../../data/Stores/store';
+import { createScript } from '../../Helper/wegasEntites';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
-import { cloneDeep } from 'lodash';
+import { ComponentWithForm } from './FormView/ComponentWithForm';
+import { createTranslatableContent } from './FormView/translatable';
+import { mainLayoutId } from './Layout';
+import { focusTab } from './LinearTabLayout/LinearLayout';
 
 const emptyPath: (string | number)[] = [];
 
@@ -247,7 +247,7 @@ export function StateMachineEditor<
           ? (state.global.editing.newEntity as unknown as StateProcess['state'])
           : sourceState.state;
 
-      const newCurrentState : IState | IDialogueState = {
+      const newCurrentState: IState | IDialogueState = {
         ...currentState,
         x: position.x >= 10 ? position.x : 10,
         y: position.y >= 10 ? position.y : 10,
@@ -255,7 +255,9 @@ export function StateMachineEditor<
 
       onStateClick(e, sourceState);
 
-      const oldFSM = cloneDeep(store.getState().variableDescriptors[newCurrentState.parentId!]!) as IFSMDescriptor;
+      const oldFSM = cloneDeep(
+        store.getState().variableDescriptors[newCurrentState.parentId!]!,
+      ) as IFSMDescriptor;
       oldFSM.states[newCurrentState.index!] = newCurrentState as IState;
 
       dispatch(Actions.EditorActions.saveEditor(oldFSM, false));
