@@ -1,19 +1,14 @@
-import { css, cx } from '@emotion/css';
+import { cx } from '@emotion/css';
 import * as React from 'react';
 import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
-import { dropZoneFocus } from '../../../Components/Contexts/DefaultDndProvider';
 import {
   childTabsStyle,
   tabsStyle,
 } from '../../../Components/TabLayout/tabLayoutStyles';
-import { flex, hidden } from '../../../css/classes';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { DropAction } from './DnDTabLayout';
-
-// export const dndAcceptType = 'DnDTab';
-
-const dropZone = cx(dropZoneFocus, css({ width: '50px' }));
 
 interface TabInternalProps {
   /**
@@ -135,105 +130,53 @@ export function DragTab({
   );
 }
 
-export interface DropTabProps extends TabProps {
-  /**
-   * onDrop - The function to call when a drop occures on this tab
-   */
-  onDrop?: DropAction;
-  /**
-   * disabled - Allows to disable de component
-   */
-  disabled?: boolean;
-  /**
-   * overview - An object to configure how to display the overview and what to display (by default, no overview is displayed)
-   */
-  overview?: {
-    /**
-     * position - The position where the overview should be displayed (by default, override the content)
-     */
-    position?: 'left' | 'right' | 'over';
-    /**
-     * overviewNode - An element to display when a dragged item is over the target zone
-     */
-    overviewNode: React.ReactNode;
-  };
+export interface DropTabProps {
   /**
    * dndAcceptType - The token that filter the drop actions
    */
   dndAcceptType: string;
   /**
-   * The tab component to use in this component
+   * position - the position of the tab in the header
    */
-  CustomTab?: TabComponent;
+  position: 'FIRST' | 'MIDDLE' | 'LAST';
+  /**
+   * onDrop - The function to call when a drop occures on this tab
+   */
+  onDrop?: DropAction;
 }
 
-export function DropTab({
-  dndAcceptType,
-  active,
-  children,
-  className,
-  disabled,
-  onClick,
-  onDrop,
-  overview,
-  CustomTab = Tab,
-}: DropTabProps) {
-  const [dropTabProps, dropTab] = useDrop({
+export function DropTab({ dndAcceptType, onDrop, position }: DropTabProps) {
+  const [{ isOverCurrent, canDrop }, dropTab] = useDrop({
     accept: dndAcceptType,
     canDrop: () => true,
     drop: onDrop,
     collect: (mon: DropTargetMonitor) => ({
-      isOverCurrent: mon.isOver({ shallow: true }),
+      isOverCurrent: mon.isOver({ shallow: false }),
       canDrop: mon.canDrop(),
       item: mon.getItem() as DnDItem | null,
     }),
   });
 
-  const [style, setStyle] = React.useState(hidden);
-
-  React.useEffect(() => {
-    /* Delaying action on purpose to avoid DnD loosing drop target while dropping */
-    setTimeout(() => {
-      setStyle(
-        dropTabProps.canDrop && dropTabProps.isOverCurrent && !disabled
-          ? dropZone
-          : hidden,
-      );
-    }, 50);
-  }, [dropTabProps.canDrop, dropTabProps.isOverCurrent, disabled]);
-
-  const renderTab = (): JSX.Element => {
-    if (overview) {
-      switch (overview.position) {
-        case 'left':
-          return (
-            <>
-              <div className={style}>{overview.overviewNode}</div>
-              {children}
-            </>
-          );
-        case 'right':
-          return (
-            <div className={style}>
-              {children}
-              {overview.overviewNode}
-            </div>
-          );
-        default:
-          return <div className={style}>{overview.overviewNode}</div>;
-      }
-    }
-    return <div className={style}>{children}</div>;
-  };
-
   return (
-    <CustomTab
-      active={active}
-      onClick={onClick}
+    <div
       ref={dropTab}
-      className={cx(className, flex)}
-    >
-      {renderTab()}
-    </CustomTab>
+      style={{
+        zIndex: isOverCurrent ? 10 : 'initial',
+        backgroundColor: isOverCurrent
+          ? 'red'
+          : canDrop
+          ? 'salmon'
+          : 'transparent',
+        width: position === 'MIDDLE' ? '26px' : '16px',
+        borderRadius:
+          position === 'FIRST'
+            ? `${themeVar.dimensions.BorderRadius} 0 0 0`
+            : position === 'LAST'
+            ? `0 ${themeVar.dimensions.BorderRadius} 0 0`
+            : 'initial',
+        marginLeft: position === 'FIRST' ? '0px' : '-16px',
+        marginRight: position === 'LAST' ? 'initial' : '-10px',
+      }}
+    />
   );
 }

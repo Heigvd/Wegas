@@ -49,6 +49,7 @@ const childInactiveTabStyle = css({
     padding: 0,
   },
 });
+
 const childActiveTabStyle = css({
   color: themeVar.colors.ActiveColor,
   backgroundColor: themeVar.colors.BackgroundColor,

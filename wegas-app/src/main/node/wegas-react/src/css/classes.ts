@@ -319,6 +319,7 @@ export const fullScreenContentContainerStyle = css({
   left: 0,
   overflow: 'auto',
   minWidth: '100%',
+  maxWidth: '100%',
   height: '100%',
   backgroundColor: 'rgba(0,0,0,0.2)',
   zIndex: 1000,

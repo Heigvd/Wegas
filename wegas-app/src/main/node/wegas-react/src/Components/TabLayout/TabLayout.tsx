@@ -116,6 +116,46 @@ export function TabLayoutContent({
   );
 }
 
+interface TabLayoutContentWithFullScreenProps
+  extends TabLayoutContentProps,
+    Pick<TabLayoutProps, 'preventFullScreen'> {
+  /**
+   * allows to display the content in fullscreen mode
+   */
+  fullScreen: boolean;
+  /**
+   * allows to close the fullscreen
+   */
+  closeFullScreen: () => void;
+}
+
+export function TabLayoutContentWithFullScreen({
+  preventFullScreen,
+  fullScreen,
+  closeFullScreen,
+  ...contentProps
+}: TabLayoutContentWithFullScreenProps) {
+  if (fullScreen && !preventFullScreen) {
+    return (
+      <div className={fullScreenContentContainerStyle}>
+        <div
+          className={cx(
+            modalContentStyle,
+            css({ height: '100%', position: 'relative' }),
+          )}
+        >
+          <div className={modalCloseDivStyle} onClick={closeFullScreen}>
+            <IconComp icon="times" />
+          </div>
+          <TabLayoutContent {...contentProps} />
+        </div>
+      </div>
+    );
+  } else {
+    return <TabLayoutContent {...contentProps} />;
+  }
+}
+
 export interface ClassNames
   extends Pick<TabLayoutHeaderProps, 'tabsClassName'> {
   general?: string;
@@ -168,28 +208,13 @@ export function StatelessTabLayout({
         />
       </Toolbar.Header>
       <Toolbar.Content className={cx(relative, content)}>
-        {fullScreen && !preventFullScreen ? (
-          <div className={fullScreenContentContainerStyle}>
-            <div
-              className={cx(
-                modalContentStyle,
-                css({ height: '100%', position: 'relative' }),
-              )}
-            >
-              <div
-                className={modalCloseDivStyle}
-                onClick={() => {
-                  setFullScreen(false);
-                }}
-              >
-                <IconComp icon="times" />
-              </div>
-              <TabLayoutContent activeTab={activeTab} components={components} />{' '}
-            </div>
-          </div>
-        ) : (
-          <TabLayoutContent activeTab={activeTab} components={components} />
-        )}
+        <TabLayoutContentWithFullScreen
+          activeTab={activeTab}
+          components={components}
+          preventFullScreen={preventFullScreen}
+          fullScreen={fullScreen}
+          closeFullScreen={() => setFullScreen(false)}
+        />
       </Toolbar.Content>
     </Toolbar>
   );
