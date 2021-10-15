@@ -158,10 +158,7 @@ function DnDTabLayoutHeader({
                   onDrop={onDropTab(i + 1)}
                 />
                 {otherTabs && otherTabs.length > 0 && (
-                  <CustomTab
-                    key={'-1'}
-                    className={tabsClassName && tabsClassName(false)}
-                  >
+                  <CustomTab key={'ADDER_TAB'}>
                     <DropMenu
                       items={otherTabs}
                       icon="plus"
