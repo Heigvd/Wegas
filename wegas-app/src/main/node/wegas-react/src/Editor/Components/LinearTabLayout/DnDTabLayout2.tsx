@@ -3,11 +3,13 @@ import * as React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { DropMenu } from '../../../Components/DropMenu';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { Tab } from '../../../Components/TabLayout/Tab';
 import {
   ClassNames,
   StatelessTabLayoutProps,
   TabLayoutContentWithFullScreen,
 } from '../../../Components/TabLayout/TabLayout';
+import { tabsStyle } from '../../../Components/TabLayout/tabLayoutStyles';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
 import {
@@ -23,7 +25,7 @@ import {
 import { EditorTabsTranslations } from '../../../i18n/editorTabs/definitions';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { DragTab, DropTab, Tab } from './DnDTabs2';
+import { DragTab, DropTab } from './DnDTabs2';
 import { DropActionType } from './LinearLayout';
 
 const dropZoneFocus = hatchedBackground;
@@ -109,6 +111,7 @@ function DnDTabLayoutHeader({
   tabsClassName,
 }: DnDTabLayoutHeaderProps) {
   const i18nTabsNames = useInternalTranslate(editorTabsTranslations);
+  const tabsClassNameFn = tabsClassName ? tabsClassName : tabsStyle;
 
   return (
     <div className={cx(flex, grow, autoScroll)}>
@@ -131,7 +134,7 @@ function DnDTabLayoutHeader({
             <DragTab
               key={label}
               label={label}
-              active={label === activeTab}
+              className={tabsClassNameFn(activeTab === label)}
               onClick={() => {
                 onSelect && onSelect(label);
               }}
@@ -178,11 +181,13 @@ function DnDTabLayoutHeader({
   );
 }
 
+export type DnDTabs = DropMenuItem<string>[];
+
 interface DnDTabLayoutProps extends StatelessTabLayoutProps {
   /**
    * selectItems - the components that can be added in the tabLayout
    */
-  otherTabs?: DropMenuItem<string>[];
+  otherTabs?: DnDTabs;
   /**
    * onDrop - The function to call when a drop occures on the side
    */

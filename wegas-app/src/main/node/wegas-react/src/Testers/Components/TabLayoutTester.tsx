@@ -2,10 +2,18 @@ import * as React from 'react';
 import { TabLayoutComponent } from '../../Components/TabLayout/TabLayout';
 import { childTabsStyle } from '../../Components/TabLayout/tabLayoutStyles';
 import { childrenHeaderStyle } from '../../css/classes';
+import FileBrowserWithMeta from '../../Editor/Components/FileBrowser/FileBrowser';
+import LanguageEditor from '../../Editor/Components/Languages/LanguageEditor';
+import { TranslationEditor } from '../../Editor/Components/Languages/TranslationsEditor';
 import { DnDTabLayout } from '../../Editor/Components/LinearTabLayout/DnDTabLayout2';
+import {
+  DndLinearLayout,
+  LinearLayoutComponents,
+} from '../../Editor/Components/LinearTabLayout/LinearLayout2';
+import LibraryEditor from '../../Editor/Components/ScriptEditors/LibraryEditor';
 import { wlog } from '../../Helper/wegaslog';
 
-export default function TabLayoutTester() {
+export function TabLayoutTester() {
   const vertical = false;
 
   const components: TabLayoutComponent[] = [
@@ -52,6 +60,34 @@ export default function TabLayoutTester() {
       onDrop={onDrop}
       onDropTab={onDrop}
       onNewTab={() => wlog('new tab')}
+    />
+  );
+}
+
+export default function LinearLayoutTester() {
+  const availableLayoutTabs: LinearLayoutComponents = [
+    { tabId: 'Files', content: <FileBrowserWithMeta /> },
+    { tabId: 'Scripts', content: <LibraryEditor /> },
+    {
+      tabId: 'Languages',
+      items: [
+        { tabId: 'Language editor', content: <LanguageEditor /> },
+        { tabId: 'Translation manager', content: <TranslationEditor /> },
+      ],
+    },
+  ];
+
+  const initTabs = ['Variables', 'Files', 'Page Editor'];
+
+  return (
+    <DndLinearLayout
+      tabs={availableLayoutTabs}
+      initialLayout={initTabs}
+      layoutId={'TestLayoutEditor'}
+      classNames={{
+        header: childrenHeaderStyle,
+        tabsClassName: childTabsStyle,
+      }}
     />
   );
 }

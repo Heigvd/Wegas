@@ -1,67 +1,8 @@
-import { cx } from '@emotion/css';
 import * as React from 'react';
 import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
-import {
-  childTabsStyle,
-  tabsStyle,
-} from '../../../Components/TabLayout/tabLayoutStyles';
+import { Tab, TabComponent, TabProps } from '../../../Components/TabLayout/Tab';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
-import { commonTranslations } from '../../../i18n/common/common';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { DropAction } from './DnDTabLayout';
-
-interface TabInternalProps {
-  /**
-   * active - the state of the tab
-   */
-  active?: boolean;
-  /**
-   * onClick - the function to be called when the tab is clicked
-   */
-  onClick?: React.DOMAttributes<HTMLDivElement>['onClick'];
-  /**
-   * onDoubleClick - the function to be called when the tab is double clicked
-   */
-  onDoubleClick?: React.DOMAttributes<HTMLDivElement>['onDoubleClick'];
-  /**
-   * className - the className to apply on the component
-   */
-  className?: string;
-  /**
-   * If tab is child of other tabs (styling purpose mainly).
-   */
-  isChild?: boolean;
-}
-
-export type TabProps = React.PropsWithChildren<TabInternalProps>;
-
-export const Tab = React.forwardRef<HTMLDivElement, TabProps>(
-  (props: TabProps, ref: React.RefObject<HTMLDivElement>) => {
-    const i18nValues = useInternalTranslate(commonTranslations);
-    return (
-      <div
-        ref={ref}
-        className={cx(
-          props.className
-            ? props.className
-            : props.isChild
-            ? childTabsStyle(props.active)
-            : tabsStyle(props.active),
-        )}
-        onClick={props.onClick}
-        onDoubleClick={props.onDoubleClick}
-      >
-        <React.Suspense fallback={<div>{i18nValues.loading}...</div>}>
-          {props.children}
-        </React.Suspense>
-      </div>
-    );
-  },
-);
-
-Tab.displayName = 'Tab';
-
-export type TabComponent = typeof Tab;
 
 interface DragTabProps extends TabProps {
   /**
@@ -80,10 +21,6 @@ interface DragTabProps extends TabProps {
    * The tab component to use in this component
    */
   CustomTab?: TabComponent;
-  /**
-   * If tab is child of other tabs (styling purpose mainly).
-   */
-  isChild?: boolean;
 }
 
 export interface DnDItem {
@@ -95,14 +32,12 @@ export interface DnDItem {
 export function DragTab({
   label,
   dndAcceptType,
-  active,
   children,
   className,
   onClick,
   onDoubleClick,
   onDrag,
   CustomTab = Tab,
-  isChild,
 }: DragTabProps) {
   const [, drag] = useDrag<DnDItem, unknown, unknown>({
     item: {
@@ -119,11 +54,9 @@ export function DragTab({
   return (
     <CustomTab
       ref={drag}
-      active={active}
       className={className}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
-      isChild={isChild}
     >
       {children}
     </CustomTab>

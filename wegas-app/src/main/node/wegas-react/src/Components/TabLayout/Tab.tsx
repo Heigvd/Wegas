@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type TabProps = React.PropsWithChildren<
+export type TabProps = React.PropsWithChildren<
   ClassStyleId &
     Pick<React.DOMAttributes<HTMLDivElement>, 'onClick' | 'onDoubleClick'>
 >;
