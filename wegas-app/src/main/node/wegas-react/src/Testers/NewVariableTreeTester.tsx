@@ -1,7 +1,7 @@
 import { css, cx } from '@emotion/css';
 import { get } from 'lodash-es';
 import * as React from 'react';
-import { IResult, IEvaluationDescriptorContainer } from 'wegas-ts-api';
+import { IEvaluationDescriptorContainer, IResult } from 'wegas-ts-api';
 import { DropMenu } from '../Components/DropMenu';
 import { asyncSFC } from '../Components/HOC/asyncSFC';
 import { deepDifferent } from '../Components/Hooks/storeHookFactory';
@@ -18,12 +18,12 @@ import { TreeNode } from '../Components/TreeView/TreeNode';
 import { TreeView } from '../Components/TreeView/TreeView';
 import {
   componentMarginLeft,
-  toolboxHeaderStyle,
-  flexBetween,
   flex,
+  flexBetween,
   flexRow,
   globalSelection,
   localSelection,
+  toolboxHeaderStyle,
 } from '../css/classes';
 import { Actions } from '../data';
 import { entityIs, varIsList } from '../data/entities';
@@ -32,21 +32,21 @@ import { Edition } from '../data/Reducer/globalState';
 import { State } from '../data/Reducer/reducers';
 import { moveDescriptor } from '../data/Reducer/VariableDescriptorReducer';
 import { VariableDescriptor } from '../data/selectors';
-import { StoreDispatch, store, useStore } from '../data/Stores/store';
+import { store, StoreDispatch, useStore } from '../data/Stores/store';
 import { ComponentWithForm } from '../Editor/Components/FormView/ComponentWithForm';
 import { mainLayoutId } from '../Editor/Components/Layout';
 import { focusTab } from '../Editor/Components/LinearTabLayout/LinearLayout';
 import {
-  AddMenuParent,
   AddMenuChoice,
   AddMenuFeedback,
+  AddMenuParent,
 } from '../Editor/Components/Variable/AddMenu';
 import { IconComp, withDefault } from '../Editor/Components/Views/FontAwesome';
 import {
   getChildren,
-  getIcon,
   getClassLabel,
   getEntityActions,
+  getIcon,
 } from '../Editor/editionConfig';
 import { shallowIs } from '../Helper/shallowIs';
 import { commonTranslations } from '../i18n/common/common';

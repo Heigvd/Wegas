@@ -33,4 +33,6 @@ export const commonTranslationsFR: CommonTranslations = {
     resetLayout: 'Réinitialiser mise en page',
     notifications: 'Notifications',
   },
+  noContent: 'Aucun contenu',
+  noSelectedTab: 'Aucun onglet selectionné',
 };

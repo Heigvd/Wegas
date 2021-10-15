@@ -7,7 +7,6 @@ import { State } from '../../data/Reducer/reducers';
 import { useStore } from '../../data/Stores/store';
 import { visitIndex } from '../../Helper/pages';
 import Header from './Header';
-import { ComponentMap } from './LinearTabLayout/DnDTabLayout';
 import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
 import { fullScreenLoaderStyle, PageLoader } from './Page/PageLoader';
 
@@ -28,7 +27,9 @@ const ThemeEditor = React.lazy(
   () => import('../../Components/Theme/Components/ThemeEditor'),
 );
 const Languages = React.lazy(() => import('./Languages/Languages'));
-// const Tester = React.lazy(() => import('../../Testers/FlowchartTester'));
+const Tester = React.lazy(
+  () => import('../../Testers/Components/TabLayoutTester'),
+);
 
 const layout = css({
   display: 'flex',
@@ -40,23 +41,56 @@ const layout = css({
   color: themeVar.colors.DarkTextColor,
 });
 
-export const availableLayoutTabs = {
-  // Tester: <Tester />,
-  Variables: <TreeView />,
-  'State Machine': <StateMachineEditor />,
-  'Variable Properties': <EntityEditor />,
-  Files: <FileBrowserWithMeta />,
-  Scripts: <LibraryEditor />,
-  Languages: <Languages />,
-  'Client Console': <PlayLocal />,
-  'Server Console': <PlayServer />,
-  'Instances Editor': <InstancesEditor />,
-  'Theme Editor': <ThemeEditor />,
-  'Page Editor': <PageEditor />,
-  // Tester: <Tester />,
-} as const;
-
-export type AvailableLayoutTab = keyof typeof availableLayoutTabs;
+export const availableLayoutTabs = [
+  {
+    tabId: 'Tester',
+    content: <Tester />,
+  },
+  {
+    tabId: 'Variables',
+    content: <TreeView />,
+  },
+  {
+    tabId: 'State Machine',
+    content: <StateMachineEditor />,
+  },
+  {
+    tabId: 'Variable Properties',
+    content: <EntityEditor />,
+  },
+  {
+    tabId: 'Files',
+    content: <FileBrowserWithMeta />,
+  },
+  {
+    tabId: 'Scripts',
+    content: <LibraryEditor />,
+  },
+  {
+    tabId: 'Languages',
+    content: <Languages />,
+  },
+  {
+    tabId: 'Client Console',
+    content: <PlayLocal />,
+  },
+  {
+    tabId: 'Server Console',
+    content: <PlayServer />,
+  },
+  {
+    tabId: 'Instances Editor',
+    content: <InstancesEditor />,
+  },
+  {
+    tabId: 'Theme Editor',
+    content: <ThemeEditor />,
+  },
+  {
+    tabId: 'Page Editor',
+    content: <PageEditor />,
+  },
+] as const;
 
 export const mainLayoutId = 'MainEditorLayout';
 
@@ -72,9 +106,12 @@ export default function Layout() {
   const timer = React.useRef<NodeJS.Timeout | undefined>();
   const [loading, setLoading] = React.useState(true);
   const { currentRole } = React.useContext(roleCTX);
-  const scenaristPages: ComponentMap = useStore(scenaristPagesSelector).reduce(
-    (o, i) => ({ ...o, [i.name]: <PageLoader selectedPageId={i.id} /> }),
-    {},
+
+  const scenaristPages = useStore(scenaristPagesSelector).map(
+    ({ name, id }) => ({
+      tabId: name,
+      content: <PageLoader selectedPageId={id} />,
+    }),
   );
 
   const allowedPages = useStore(s => {
@@ -82,20 +119,17 @@ export default function Layout() {
     return role == null || role.availableTabs;
   });
 
-  const layoutPages = Object.entries({
-    ...availableLayoutTabs,
-    ...scenaristPages,
-  })
-    .filter(([t]) => allowedPages === true || allowedPages.includes(t))
-    .reduce((o, [k, v]) => ({ ...o, [k]: v }), {});
+  const layoutPages = [...availableLayoutTabs, ...scenaristPages].filter(
+    ({ tabId }) => allowedPages === true || allowedPages.includes(tabId),
+  );
+
   const initTabs = ['Variables', 'Files', 'Page Editor'];
   const allowedInitTabs = initTabs.filter(
     t => allowedPages === true || allowedPages.includes(t),
   );
 
-  const initialLayout = (
-    allowedInitTabs.length > 0 ? allowedInitTabs : allowedInitTabs.slice(0)
-  ) as (keyof typeof layoutPages)[];
+  const initialLayout =
+    allowedInitTabs.length > 0 ? allowedInitTabs : allowedInitTabs.slice(0);
 
   React.useEffect(() => {
     if (timer.current != null) {

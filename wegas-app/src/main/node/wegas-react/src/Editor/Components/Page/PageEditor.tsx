@@ -1,48 +1,49 @@
-import * as React from 'react';
-import { Toolbar } from '../../../Components/Toolbar';
-import { JSONandJSEditor } from '../ScriptEditors/JSONandJSEditor';
+import { css, cx } from '@emotion/css';
 import { deepClone } from 'fast-json-patch';
+import { noop } from 'lodash-es';
+import * as React from 'react';
+import {
+  IVariableDescriptor,
+  WegasClassNameAndScriptableTypes,
+} from 'wegas-ts-api';
+import { DropMenu } from '../../../Components/DropMenu';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
+import {
+  componentsStore,
+  PageComponent,
+  usePageComponentStore,
+} from '../../../Components/PageComponents/tools/componentFactory';
+import { tabLayoutChildrenClassNames } from '../../../Components/TabLayout/tabLayoutStyles';
+import { Toolbar } from '../../../Components/Toolbar';
+import {
+  defaultPadding,
+  expandBoth,
+  flex,
+  flexColumn,
+  grow,
+  itemCenter,
+  justifyCenter,
+} from '../../../css/classes';
+import { Actions } from '../../../data';
+import { State } from '../../../data/Reducer/reducers';
+import { store, useStore } from '../../../data/Stores/store';
+import { findComponent, isPageItem } from '../../../Helper/pages';
+import { mergeDeep } from '../../../Helper/tools';
+import { commonTranslations } from '../../../i18n/common/common';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { pagesTranslations } from '../../../i18n/pages/pages';
+import { MainLinearLayout } from '../LinearTabLayout/LinearLayout';
+import { JSONandJSEditor } from '../ScriptEditors/JSONandJSEditor';
 import {
   ComponentPalette,
   DnDComponent,
   isDnDComponent,
 } from './ComponentPalette';
-import {
-  usePageComponentStore,
-  PageComponent,
-  componentsStore,
-} from '../../../Components/PageComponents/tools/componentFactory';
-import { MainLinearLayout } from '../LinearTabLayout/LinearLayout';
 import ComponentProperties from './ComponentProperties';
 import { PageLoader } from './PageLoader';
-import { css, cx } from '@emotion/css';
-import { noop } from 'lodash-es';
-import { PagesLayout, PageComponentNode } from './PagesLayout';
-import { store, useStore } from '../../../data/Stores/store';
-import { Actions } from '../../../data';
-import {
-  flex,
-  grow,
-  expandBoth,
-  defaultPadding,
-  flexColumn,
-  itemCenter,
-  justifyCenter,
-} from '../../../css/classes';
-import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
-import { mergeDeep } from '../../../Helper/tools';
-import { findComponent, isPageItem } from '../../../Helper/pages';
-import {
-  WegasClassNameAndScriptableTypes,
-  IVariableDescriptor,
-} from 'wegas-ts-api';
-import { State } from '../../../data/Reducer/reducers';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { commonTranslations } from '../../../i18n/common/common';
-import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
-import { DropMenu } from '../../../Components/DropMenu';
-import { pagesTranslations } from '../../../i18n/pages/pages';
+import { PageComponentNode, PagesLayout } from './PagesLayout';
 
 const toggleButtonStyle = css({
   display: 'flex',
@@ -662,28 +663,37 @@ export default function PageEditor() {
   );
 
   const availableLayoutTabs = React.useMemo(
-    () => ({
-      'Pages Layout': (
-        <Layout
-          onDeleteLayoutComponent={onDeleteLayoutComponent}
-          onEdit={onEdit}
-          onMoveLayoutComponent={onMoveLayoutComponent}
-          onNewLayoutComponent={onNewLayoutComponent}
-          onDuplicateLayoutComponent={onDuplicateLayoutComponent}
-          setPageEditorState={setPageEditorState}
-        />
-      ),
-      'Component Palette': <ComponentPalette setEditMode={setEditMode} />,
-      'Page Display': (
-        <PageDisplay
-          setEditMode={setEditMode}
-          setShowBorders={setShowBorders}
-          setShowControls={setShowControls}
-        />
-      ),
-      'Source Editor': <SourceEditor />,
-      'Component Properties': <ComponentProperties />,
-    }),
+    () => [
+      {
+        tabId: 'Pages Layout',
+        content: (
+          <Layout
+            onDeleteLayoutComponent={onDeleteLayoutComponent}
+            onEdit={onEdit}
+            onMoveLayoutComponent={onMoveLayoutComponent}
+            onNewLayoutComponent={onNewLayoutComponent}
+            onDuplicateLayoutComponent={onDuplicateLayoutComponent}
+            setPageEditorState={setPageEditorState}
+          />
+        ),
+      },
+      {
+        tabId: 'Component Palette',
+        content: <ComponentPalette setEditMode={setEditMode} />,
+      },
+      {
+        tabId: 'Page Display',
+        content: (
+          <PageDisplay
+            setEditMode={setEditMode}
+            setShowBorders={setShowBorders}
+            setShowControls={setShowControls}
+          />
+        ),
+      },
+      { tabId: 'Source Editor', content: <SourceEditor /> },
+      { tabId: 'Component Properties', content: <ComponentProperties /> },
+    ],
     [
       onDeleteLayoutComponent,
       onDuplicateLayoutComponent,
@@ -775,7 +785,7 @@ export default function PageEditor() {
               onFocusTab={ft => {
                 focusTab.current = ft;
               }}
-              areChildren
+              classNames={tabLayoutChildrenClassNames}
             />
           )}
         </pageCTX.Provider>

@@ -1,20 +1,19 @@
-import * as React from 'react';
-
 import { css, cx } from '@emotion/css';
-import { grow, halfOpacity, MediumPadding } from '../../../css/classes';
-import { classNameOrEmpty } from '../../../Helper/className';
+import * as React from 'react';
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
-import { StoreDispatch, useStore } from '../../../data/Stores/store';
+import { FileAPI, generateAbsolutePath } from '../../../API/files.api';
+import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
+import { grow, halfOpacity, MediumPadding } from '../../../css/classes';
 import { State } from '../../../data/Reducer/reducers';
+import { StoreDispatch, useStore } from '../../../data/Stores/store';
+import { classNameOrEmpty } from '../../../Helper/className';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { mainLayoutId } from '../Layout';
 import { focusTab } from '../LinearTabLayout/LinearLayout';
-import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
-import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { MessageString } from '../MessageString';
-import { generateAbsolutePath, FileAPI } from '../../../API/files.api';
 import { FileBrowserNode, FileBrowserNodeProps } from './FileBrowserNode';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { commonTranslations } from '../../../i18n/common/common';
 
 const fileBrowserStyle = css({
   paddingRight: '5px',

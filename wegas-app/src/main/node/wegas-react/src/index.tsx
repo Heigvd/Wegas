@@ -3,6 +3,7 @@ import * as React from 'react';
 import { render } from 'react-dom';
 import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
+import { FullscreenProvider } from './Components/Contexts/FullscreenContext';
 import { LanguagesProvider } from './Components/Contexts/LanguagesProvider';
 import { RoleProvider } from './Components/Contexts/RoleProvider';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
@@ -12,7 +13,6 @@ import './css/global.css';
 import './data/Stores/store';
 import Layout from './Editor/Components/Layout';
 import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
-import { FullscreenProvider } from './Editor/Components/LinearTabLayout/DnDTabLayout';
 // import * as less from 'less';
 // import { wlog } from '../Helper/wegaslog';
 
