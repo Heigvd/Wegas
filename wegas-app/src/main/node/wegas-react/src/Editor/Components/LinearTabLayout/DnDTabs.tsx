@@ -1,8 +1,34 @@
+import { css } from '@emotion/css';
 import * as React from 'react';
 import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
 import { Tab, TabComponent, TabProps } from '../../../Components/TabLayout/Tab';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { DropAction } from './DnDTabLayout';
+
+function triangleDropStyle(canDrop: boolean, isOverCurrent: boolean, position:'FIRST' | 'MIDDLE' | 'LAST') {
+  return css({
+    '&:before': {
+      content: '""',
+      display: 'block',
+      width: 0,
+      height: 0,
+      position: 'relative',
+      zIndex: 10,
+      top: '-20px',
+      borderLeft: position ==='FIRST'
+      ? 'none'
+      : '10px solid transparent',
+      borderRight: position ==='LAST'
+      ? 'none'
+      :'10px solid transparent',
+      borderTop: isOverCurrent
+      ? '20px solid ' + themeVar.colors.HighlightColor
+      : canDrop
+      ? '20px solid ' + themeVar.colors.DisabledColor
+      : 'transparent',
+    }
+  })
+}
 
 interface DragTabProps extends TabProps {
   /**
@@ -94,12 +120,7 @@ export function DropTab({ dndAcceptType, onDrop, position }: DropTabProps) {
     <div
       ref={dropTab}
       style={{
-        zIndex: isOverCurrent ? 10 : 'initial',
-        backgroundColor: isOverCurrent
-          ? 'red'
-          : canDrop
-          ? 'salmon'
-          : 'transparent',
+        zIndex: 10,
         width: position === 'MIDDLE' ? '26px' : '16px',
         borderRadius:
           position === 'FIRST'
@@ -107,9 +128,10 @@ export function DropTab({ dndAcceptType, onDrop, position }: DropTabProps) {
             : position === 'LAST'
             ? `0 ${themeVar.dimensions.BorderRadius} 0 0`
             : 'initial',
-        marginLeft: position === 'FIRST' ? '0px' : '-16px',
-        marginRight: position === 'LAST' ? 'initial' : '-10px',
+        marginLeft: position === 'FIRST' ? '0px' : position === "LAST" ? '-16px' :'-13px',
+        marginRight: position === 'LAST' ? '0px' : position === "FIRST" ? '-16px': '-13px',
       }}
+      className={triangleDropStyle(canDrop, isOverCurrent, position)}
     />
   );
 }

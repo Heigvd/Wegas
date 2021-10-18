@@ -2,14 +2,13 @@ import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
 import {
-  noOverflow,
   expandHeight,
   defaultMargin,
   defaultMarginBottom,
-  defaultPaddingBottom,
   defaultPaddingLeft,
   defaultPaddingRight,
   toolboxHeaderStyle,
+  autoScroll,
 } from '../../css/classes';
 import './FormView';
 import { wwarn } from '../../Helper/wegaslog';
@@ -34,7 +33,7 @@ const toolboxContainerStyle = css({
   position: 'sticky',
   top: 0,
   zIndex: 10,
-  padding: '1em 0',
+  padding: '1em',
   backgroundColor: themeVar.colors.BackgroundColor,
 });
 const toolboxButtonStyle = css({
@@ -82,11 +81,7 @@ export function Form<T>({
 
   return (
     <Toolbar
-      className={cx(
-        defaultPaddingBottom,
-        defaultPaddingLeft,
-        defaultPaddingRight,
-      )}
+      className={autoScroll}
     >
       <Toolbar.Header className={cx(toolboxContainerStyle, toolboxHeaderStyle)}>
         {isActionAllowed({
@@ -215,7 +210,7 @@ export function Form<T>({
           />
         )}
       </Toolbar.Header>
-      <Toolbar.Content className={noOverflow}>
+      <Toolbar.Content className={cx(autoScroll, defaultPaddingLeft, defaultPaddingRight)}>
         <div className={defaultMargin}>
           <h3 className={defaultMarginBottom}>{label}</h3>
           <JSONForm
