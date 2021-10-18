@@ -1,53 +1,53 @@
-import * as React from 'react';
-import { Toolbar } from '../../../Components/Toolbar';
-import {
-  flex,
-  grow,
-  itemCenter,
-  expandBoth,
-  globalSelection,
-  defaultPadding,
-} from '../../../css/classes';
-import { cx, css } from '@emotion/css';
-import { FontAwesome, IconComp, Icon, Icons } from '../Views/FontAwesome';
+import { css, cx } from '@emotion/css';
 import { omit } from 'lodash-es';
-import { DropMenu } from '../../../Components/DropMenu';
-import { TextPrompt } from '../TextPrompt';
-import { isPageItem, isFolderItem } from '../../../Helper/pages';
-import { useStore, store } from '../../../data/Stores/store';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { Actions } from '../../../data';
-import { MessageString } from '../MessageString';
-import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
+import * as React from 'react';
 import {
   featuresCTX,
   isFeatureEnabled,
 } from '../../../Components/Contexts/FeaturesProvider';
-import { pageEditorCTX, pageCTX } from './PageEditor';
+import { DropMenu } from '../../../Components/DropMenu';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
+import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { Toolbar } from '../../../Components/Toolbar';
+import { TreeNode } from '../../../Components/TreeView/TreeNode';
+import { OnMoveFn, TreeView } from '../../../Components/TreeView/TreeView';
+import {
+  defaultPadding,
+  expandBoth,
+  flex,
+  globalSelection,
+  grow,
+  itemCenter,
+} from '../../../css/classes';
+import { Actions } from '../../../data';
+import { State } from '../../../data/Reducer/reducers';
 // import { ItemDescription, isItemDescription } from '../Views/TreeView/TreeView';
 import {
-  usePagesStateStore,
   isComponentFocused,
   pagesStateStore,
   PageStateAction,
+  usePagesStateStore,
 } from '../../../data/Stores/pageStore';
+import { store, useStore } from '../../../data/Stores/store';
+import { isFolderItem, isPageItem } from '../../../Helper/pages';
+import { wlog } from '../../../Helper/wegaslog';
+import { commonTranslations } from '../../../i18n/common/common';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { MessageString } from '../MessageString';
+import { TextPrompt } from '../TextPrompt';
+import { actionNodeContentStyle } from '../Variable/CTree';
+import { TREEVIEW_ITEM_TYPE } from '../Variable/VariableTreeView';
+import { FontAwesome, Icon, IconComp, Icons } from '../Views/FontAwesome';
 import {
   DnDComponent,
   isDnDComponent,
   PAGEEDITOR_COMPONENT_TYPE,
 } from './ComponentPalette';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
-import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { State } from '../../../data/Reducer/reducers';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { commonTranslations } from '../../../i18n/common/common';
-import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
-import { actionNodeContentStyle } from '../Variable/CTree';
-import { TREEVIEW_ITEM_TYPE } from '../Variable/VariableTreeView';
-import { TreeNode } from '../../../Components/TreeView/TreeNode';
-import { OnMoveFn, TreeView } from '../../../Components/TreeView/TreeView';
-import { wlog } from '../../../Helper/wegaslog';
+import { pageCTX, pageEditorCTX } from './PageEditor';
 
 interface NodeBasicInfo<T> {
   parent?: T;
