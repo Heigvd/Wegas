@@ -228,8 +228,9 @@ const makeTabMap = (
 ): TabLayoutComponent[] => {
   const components: TabLayoutComponent[] = [];
   visitLinearLayoutComponents(tabs, item => {
-    if ('content' in item && labels.includes(item.tabId)) {
-      components.push(item);
+    const indexOfTab = labels.indexOf(item.tabId);
+    if ('content' in item && indexOfTab !== -1) {
+      components[indexOfTab] = item;
     }
     return 'CONTINUE';
   });
@@ -845,6 +846,7 @@ const setLayout =
         `DnDGridLayoutData.${layoutId}.${rolesId}.${role}`,
         JSON.stringify(newLayouts),
       );
+      wlog(JSON.stringify(newLayouts.layoutMap));
       return newLayouts;
     });
 

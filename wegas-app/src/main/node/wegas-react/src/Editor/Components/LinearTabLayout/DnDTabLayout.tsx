@@ -26,6 +26,7 @@ import {
   hideOverflow,
   relative,
 } from '../../../css/classes';
+import { wlog } from '../../../Helper/wegaslog';
 import { EditorTabsTranslations } from '../../../i18n/editorTabs/definitions';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -117,7 +118,7 @@ function DnDTabLayoutHeader({
 }: DnDTabLayoutHeaderProps) {
   const i18nTabsNames = useInternalTranslate(editorTabsTranslations);
   const tabsClassNameFn = tabsClassName ? tabsClassName : tabsStyle;
-
+  wlog(components);
   return (
     <div className={cx(flex, grow, autoScroll)}>
       {components.map(({ tabId: label }, i, array) => {
@@ -130,7 +131,7 @@ function DnDTabLayoutHeader({
           : label;
 
         return (
-          <React.Fragment key={`DnDTab-#${i}`}>
+          <React.Fragment key={`DnDTab-${label}#${i}`}>
             <DropTab
               dndAcceptType={dndAcceptType}
               position={i === 0 ? 'FIRST' : 'MIDDLE'}
