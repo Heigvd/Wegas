@@ -117,7 +117,6 @@ function DnDTabLayoutHeader({
 }: DnDTabLayoutHeaderProps) {
   const i18nTabsNames = useInternalTranslate(editorTabsTranslations);
   const tabsClassNameFn = tabsClassName ? tabsClassName : tabsStyle;
-
   return (
     <div className={cx(flex, grow, autoScroll)}>
       {components.map(({ tabId: label }, i, array) => {
@@ -130,7 +129,7 @@ function DnDTabLayoutHeader({
           : label;
 
         return (
-          <React.Fragment key={`DnDTab-#${i}`}>
+          <React.Fragment key={`DnDTab-${label}#${i}`}>
             <DropTab
               dndAcceptType={dndAcceptType}
               position={i === 0 ? 'FIRST' : 'MIDDLE'}
