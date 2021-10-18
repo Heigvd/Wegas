@@ -65,6 +65,8 @@ export interface DropMenuProps<
   style?: React.CSSProperties;
   selected?: T | T[];
   tooltip?: string;
+  openOnHover?: boolean;
+  openOnHoverChildren?: boolean;
 }
 /**
  * returns an empty string
@@ -123,7 +125,10 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
   style,
   selected,
   tooltip,
+  openOnHover,
+  openOnHoverChildren = true,
 }: DropMenuProps<T, MItem>) {
+  const timer = React.useRef<NodeJS.Timeout>();
   const onStateChange = React.useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (changes: StateChangeOptions<any>) => {
@@ -151,8 +156,30 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
       }}
       itemToString={emtpyStr}
     >
-      {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
-        <div id={id} className={containerClassName} style={style}>
+      {({ getItemProps, isOpen, toggleMenu, closeMenu, openMenu }) => (
+        <div
+          id={id}
+          className={containerClassName}
+          style={style}
+          onMouseOver={() => {
+            if (openOnHover) {
+              if (timer.current != null) {
+                clearTimeout(timer.current);
+              }
+              timer.current = setTimeout(() => {
+                openMenu();
+              }, 200);
+            }
+          }}
+          onMouseLeave={() => {
+            if (openOnHover || openOnHoverChildren) {
+              if (timer.current != null) {
+                clearTimeout(timer.current);
+              }
+              closeMenu();
+            }
+          }}
+        >
           <div
             className={itemStyle}
             onClick={ev => {
@@ -250,6 +277,8 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                         path={newPath}
                         buttonClassName={childDropMenuButtonStyle}
                         containerClassName={expandWidth}
+                        openOnHover={openOnHoverChildren}
+                        openOnHoverChildren={openOnHoverChildren}
                       />
                       {trasher}
                     </div>
