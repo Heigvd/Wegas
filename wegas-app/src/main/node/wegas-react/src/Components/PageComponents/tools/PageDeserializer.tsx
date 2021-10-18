@@ -1,4 +1,13 @@
+import { cloneDeep, pick } from 'lodash-es';
 import * as React from 'react';
+import { grow } from '../../../css/classes';
+import { State } from '../../../data/Reducer/reducers';
+import { useStore } from '../../../data/Stores/store';
+import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import { classNameOrEmpty } from '../../../Helper/className';
+import { deepDifferent, shallowDifferent } from '../../Hooks/storeHookFactory';
+import { useDeepMemo } from '../../Hooks/useDeepMemo';
+import { TumbleLoader } from '../../Loader';
 import {
   PageComponent,
   PageComponentsState,
@@ -6,28 +15,19 @@ import {
 } from './componentFactory';
 import {
   ComponentContainer,
-  WegasComponentProps,
   ItemContainer,
+  WegasComponentProps,
 } from './EditableComponent';
-import { deepDifferent, shallowDifferent } from '../../Hooks/storeHookFactory';
-import { useStore } from '../../../data/Stores/store';
-import { cloneDeep, pick } from 'lodash-es';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import {
+  displayObsoleteComponentManager,
+  ObsoleteComponentManager,
+} from './ObsoleteComponentManager';
 import {
   defaultOptionsKeys,
   HeritableOptionsState,
   heritableOptionsStateKeys,
   useOptions,
 } from './OptionsComponent';
-import { classNameOrEmpty } from '../../../Helper/className';
-import { State } from '../../../data/Reducer/reducers';
-import {
-  displayObsoleteComponentManager,
-  ObsoleteComponentManager,
-} from './ObsoleteComponentManager';
-import { useDeepMemo } from '../../Hooks/useDeepMemo';
-import { grow } from '../../../css/classes';
-import { TumbleLoader } from '../../Loader';
 
 const emptyPath: number[] = [];
 const emptyObject: any = {};

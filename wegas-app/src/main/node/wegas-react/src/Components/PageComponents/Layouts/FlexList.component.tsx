@@ -1,30 +1,30 @@
+import { css } from '@emotion/css';
 import * as React from 'react';
+import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import {
+  defaultFlexLayoutOptionsKeys,
+  FlexItem,
+  flexlayoutChoices,
+  FlexList,
+  FlexListProps,
+  flexListSchema,
+  isVertical,
+} from '../../Layouts/FlexList';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import {
-  FlexListProps,
-  FlexList,
-  flexListSchema,
-  isVertical,
-  FlexItem,
-  flexlayoutChoices,
-  defaultFlexLayoutOptionsKeys,
-} from '../../Layouts/FlexList';
 import {
   ComponentDropZone,
   DropZones,
   ItemContainer,
   WegasComponentProps,
 } from '../tools/EditableComponent';
+import { classStyleIdShema } from '../tools/options';
 import {
   ChildrenDeserializerProps,
   PageDeserializer,
 } from '../tools/PageDeserializer';
-import { classStyleIdShema } from '../tools/options';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
-import { css } from '@emotion/css';
 
 export const emptyLayoutItemStyle = css({
   display: 'flex',

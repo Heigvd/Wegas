@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { store } from '../../../data/Stores/store';
 import {
-  updateComponent,
   patchPage,
+  updateComponent,
 } from '../../../Editor/Components/Page/PageEditor';
 import { wwarn } from '../../../Helper/wegaslog';
 import { Button } from '../../Inputs/Buttons/Button';
