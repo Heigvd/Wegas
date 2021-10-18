@@ -846,7 +846,6 @@ const setLayout =
         `DnDGridLayoutData.${layoutId}.${rolesId}.${role}`,
         JSON.stringify(newLayouts),
       );
-      wlog(JSON.stringify(newLayouts.layoutMap));
       return newLayouts;
     });
 
