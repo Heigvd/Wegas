@@ -1,39 +1,39 @@
-import * as React from 'react';
-import { defaultPadding, flex, flexColumn, grow } from '../../../css/classes';
-import { asyncSFC } from '../../../Components/HOC/asyncSFC';
-import {
-  ContainerComponent,
-  usePageComponentStore,
-} from '../../../Components/PageComponents/tools/componentFactory';
 import { cx } from '@emotion/css';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { BaseView, Schema } from 'jsoninput/typings/types';
-import { MessageString } from '../MessageString';
-import { pageEditorCTX, pageCTX } from './PageEditor';
-import { findComponent } from '../../../Helper/pages';
-import {
-  wegasComponentExtraSchema,
-  WegasComponentLayoutCommonOptions,
-  WegasComponentLayoutConditionnalOptions,
-  WegasComponentOptionsActions,
-  WegasComponentActionsProperties,
-  WegasComponentDecorations,
-} from '../../../Components/PageComponents/tools/options';
-import {
-  schemaProps,
-  SimpleSchemaPropsSchemas,
-  SchemaPropsSchemas,
-} from '../../../Components/PageComponents/tools/schemaProps';
-import {
-  FlexItemLayoutProps,
-  defaultFlexLayoutOptionsKeys,
-} from '../../../Components/Layouts/FlexList';
+import { omit, pick } from 'lodash-es';
+import * as React from 'react';
+import { asyncSFC } from '../../../Components/HOC/asyncSFC';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import {
   AbsoluteItemLayoutProps,
   defaultAbsoluteLayoutPropsKeys,
 } from '../../../Components/Layouts/Absolute';
-import { pick, omit } from 'lodash-es';
+import {
+  defaultFlexLayoutOptionsKeys,
+  FlexItemLayoutProps,
+} from '../../../Components/Layouts/FlexList';
+import {
+  ContainerComponent,
+  usePageComponentStore,
+} from '../../../Components/PageComponents/tools/componentFactory';
+import {
+  WegasComponentActionsProperties,
+  WegasComponentDecorations,
+  wegasComponentExtraSchema,
+  WegasComponentLayoutCommonOptions,
+  WegasComponentLayoutConditionnalOptions,
+  WegasComponentOptionsActions,
+} from '../../../Components/PageComponents/tools/options';
+import {
+  schemaProps,
+  SchemaPropsSchemas,
+  SimpleSchemaPropsSchemas,
+} from '../../../Components/PageComponents/tools/schemaProps';
+import { defaultPadding, flex, flexColumn, grow } from '../../../css/classes';
 import { ActionsProps } from '../../../data/Reducer/globalState';
+import { findComponent } from '../../../Helper/pages';
+import { MessageString } from '../MessageString';
+import { pageCTX } from './PageEditor';
 
 /**
  * wegasComponentCommonSchema - defines the minimum schema for every WegasComponent
@@ -266,8 +266,8 @@ export function ComponentProperties({
 }
 
 export default function ConnectedComponentProperties() {
-  const { editedPath, selectedPage } = React.useContext(pageEditorCTX);
-  const { onUpdate, onDelete, onEdit } = React.useContext(pageCTX);
+  const { editedPath, selectedPage, onUpdate, onDelete, onEdit } =
+    React.useContext(pageCTX);
 
   if (!editedPath) {
     return <pre className={defaultPadding}>No component selected yet</pre>;

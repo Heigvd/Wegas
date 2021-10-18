@@ -33,7 +33,6 @@ import {
 } from '../../../data/Stores/pageStore';
 import { store, useStore } from '../../../data/Stores/store';
 import { isFolderItem, isPageItem } from '../../../Helper/pages';
-import { wlog } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -42,12 +41,8 @@ import { TextPrompt } from '../TextPrompt';
 import { actionNodeContentStyle } from '../Variable/CTree';
 import { TREEVIEW_ITEM_TYPE } from '../Variable/VariableTreeView';
 import { FontAwesome, Icon, IconComp, Icons } from '../Views/FontAwesome';
-import {
-  DnDComponent,
-  isDnDComponent,
-  PAGEEDITOR_COMPONENT_TYPE,
-} from './ComponentPalette';
-import { pageCTX, pageEditorCTX } from './PageEditor';
+import { DnDComponent, isDnDComponent } from './ComponentPalette';
+import { pageCTX } from './PageEditor';
 
 interface NodeBasicInfo<T> {
   parent?: T;
@@ -62,6 +57,7 @@ const CONTROLS_CLASSNAME = 'page-index-item-controls';
 
 const PAGE_LAYOUT_ITEM = 'PAGE_LAYOUT_ITEM';
 export const PAGE_LAYOUT_COMPONENT = 'PAGE_LAYOUT_COMPONENT';
+export const PAGEEDITOR_COMPONENT_TYPE = 'dndComponnent';
 export const ALLOWED_PAGE_EDITOR_COMPONENTS = [
   PAGE_LAYOUT_COMPONENT,
   TREEVIEW_ITEM_TYPE,
@@ -82,16 +78,9 @@ const titleStyle = css({
   },
 });
 
-// const selectedIndexItemStyle = css({
-//   borderColor: themeVar.colors.BorderColor,
-// });
-
-// const selectedComponentStyle = css({
-//   borderColor: themeVar.colors.BorderColor,
-// });
-
 const focusedComponentStyle = css({
   backgroundColor: themeVar.colors.HeaderColor,
+  border: 'solid black',
 });
 
 const defaultPage = {
@@ -161,23 +150,9 @@ function isWegasComponent(component: unknown): component is WegasComponent {
   return true;
 }
 
-// function isComponentNodeId(nodeId: PageNode): nodeId is PageComponentNode {
-//   return 'pageId' in nodeId;
-// }
-
-// export type LayoutDndComponent = ItemDescription<PageComponentNode>;
-
-// export function isLayoutDndComponent(
-//   item?: Partial<LayoutDndComponent>,
-// ): item is LayoutDndComponent {
-//   return isItemDescription(item) && isComponentNodeId(item.id);
-// }
-
 interface LayoutButtonProps extends ClassStyleId {
   tooltip?: string;
 }
-
-// TODO : Generalize the 2 following component ( (IndexItemAdder,IndexItemModifer) => TextPrompter)
 
 interface IndexItemAdderProps extends LayoutButtonProps {
   path: string[];
@@ -449,7 +424,6 @@ interface WegasComponentTitleProps {
   selectedPageId?: string;
   componentPath: number[];
   selectedComponentPath?: number[];
-  componentControls: ComponentControls;
 }
 
 function WegasComponentTitle({
@@ -458,13 +432,17 @@ function WegasComponentTitle({
   selectedPageId,
   componentPath,
   selectedComponentPath,
-  componentControls,
 }: WegasComponentTitleProps) {
+  const {
+    onDeleteLayoutComponent,
+    onEditComponent,
+    onNewLayoutComponent,
+    onDuplicateLayoutComponent,
+    editMode,
+  } = React.useContext(pageCTX);
+
   const i18nValues = useInternalTranslate(editorTabsTranslations);
   const registeredComponent = usePageComponentStore(s => s[component.type]);
-  const { editMode } = React.useContext(pageCTX);
-
-  const { onDelete, onEdit, onNew, onDuplicate } = componentControls;
 
   let icon: Icon;
   if (registeredComponent != null) {
@@ -495,7 +473,7 @@ function WegasComponentTitle({
           ? i18nValues.pageEditor.unknownComponent
           : undefined
       }
-      onMouseUp={() => onEdit(pageId, componentPath)}
+      onMouseUp={() => onEditComponent(pageId, componentPath)}
       onMouseOver={e => {
         if (editMode /*&& !isDragging*/) {
           e.stopPropagation();
@@ -517,7 +495,7 @@ function WegasComponentTitle({
         <ComponentAdder
           tooltip={i18nValues.pageEditor.addComponent}
           onSelect={componentType => {
-            onNew(
+            onNewLayoutComponent(
               pageId,
               store.getState().pages[pageId],
               componentPath,
@@ -534,7 +512,11 @@ function WegasComponentTitle({
             icon="trash"
             onAction={success =>
               success &&
-              onDelete(pageId, store.getState().pages[pageId], componentPath)
+              onDeleteLayoutComponent(
+                pageId,
+                store.getState().pages[pageId],
+                componentPath,
+              )
             }
             disabled={componentPath.length === 0}
             tooltip={
@@ -547,7 +529,11 @@ function WegasComponentTitle({
           <Button
             icon="copy"
             onClick={() =>
-              onDuplicate(pageId, store.getState().pages[pageId], componentPath)
+              onDuplicateLayoutComponent(
+                pageId,
+                store.getState().pages[pageId],
+                componentPath,
+              )
             }
             disabled={componentPath.length === 0}
             tooltip={i18nValues.pageEditor.copyComponent}
@@ -561,22 +547,18 @@ function WegasComponentTitle({
 
 interface WegasComponentNodeProps {
   component: WegasComponent;
-  // getParentProps: GetParentPropsFn<NodeId>;
   pageId: string;
   selectedPageId?: string;
   componentPath: number[];
   selectedComponentPath?: number[];
-  componentControls: ComponentControls;
 }
 
 function WegasComponentNode({
   component,
-  // getParentProps,
   pageId,
   selectedPageId,
   componentPath,
   selectedComponentPath,
-  componentControls,
 }: WegasComponentNodeProps) {
   const i18nValues = useInternalTranslate(editorTabsTranslations);
   const data: PageComponentNode = { pageId, componentPath };
@@ -605,7 +587,6 @@ function WegasComponentNode({
       label={
         <WegasComponentTitle
           component={computedComponent}
-          componentControls={componentControls}
           componentPath={componentPath}
           pageId={pageId}
           selectedComponentPath={selectedComponentPath}
@@ -632,7 +613,6 @@ function WegasComponentNode({
               selectedPageId={selectedPageId}
               componentPath={[...componentPath, i]}
               selectedComponentPath={selectedComponentPath}
-              componentControls={componentControls}
             />
           ))
         : null}
@@ -643,18 +623,16 @@ function WegasComponentNode({
 interface PageIndexTitleProps {
   newPath: string[];
   indexItem: PageIndexItem;
-  onPageClick: (selectedPageId: string) => void;
   defaultPageId: string;
 }
 
 function PageIndexTitle({
   newPath,
   indexItem,
-  onPageClick,
   defaultPageId,
 }: PageIndexTitleProps) {
   const i18nValues = useInternalTranslate(editorTabsTranslations);
-  const { selectedPageId } = React.useContext(pageEditorCTX);
+  const { onPageClick, selectedPageId } = React.useContext(pageCTX);
   const { dispatch } = store;
   const folderIsNotEmpty =
     isFolderItem(indexItem) && indexItem.items.length > 0;
@@ -783,7 +761,7 @@ function PageIndexTitle({
   );
 }
 
-interface PagesLayoutNodeProps extends PagesLayoutProps {
+interface PagesLayoutNodeProps {
   indexItem: PageIndexItem;
   path: string[];
   defaultPageId: string;
@@ -793,11 +771,10 @@ function PageIndexItemNode({
   indexItem,
   path,
   defaultPageId,
-  onPageClick,
-  componentControls,
 }: PagesLayoutNodeProps): JSX.Element | null {
   const i18nValues = useInternalTranslate(commonTranslations);
-  const { selectedPageId, editedPath } = React.useContext(pageEditorCTX);
+  const { selectedPageId, editedPath } = React.useContext(pageCTX);
+
   const pageSelector = React.useCallback(
     (s: State) => {
       if (isPageItem(indexItem)) {
@@ -821,7 +798,6 @@ function PageIndexItemNode({
           <PageIndexTitle
             newPath={newPath}
             indexItem={indexItem}
-            onPageClick={onPageClick}
             defaultPageId={defaultPageId}
           />
         }
@@ -838,7 +814,6 @@ function PageIndexItemNode({
           selectedPageId={selectedPageId}
           componentPath={[]}
           selectedComponentPath={editedPath}
-          componentControls={componentControls}
         />
       </TreeNode>
     ) : (
@@ -850,7 +825,6 @@ function PageIndexItemNode({
         <PageIndexTitle
           newPath={newPath}
           indexItem={indexItem}
-          onPageClick={onPageClick}
           defaultPageId={defaultPageId}
         />
       }
@@ -864,62 +838,21 @@ function PageIndexItemNode({
           key={v.name}
           indexItem={v}
           path={newPath}
-          componentControls={componentControls}
           defaultPageId={defaultPageId}
-          onPageClick={onPageClick}
         />
       ))}
     </TreeNode>
   );
 }
 
-interface ComponentControls {
-  onNew: (
-    pageId: string,
-    page: WegasComponent,
-    componentPath: number[],
-    componentType: string,
-    index: number,
-  ) => void;
-  onDuplicate: (
-    pageId: string,
-    page: WegasComponent,
-    componentPath: number[],
-  ) => void;
-  onDelete: (
-    pageId: string,
-    page: WegasComponent,
-    compoentPath: number[],
-  ) => void;
-  onEdit: (pageId?: string, componentPath?: number[]) => void;
-  onMove: (
-    sourcePageId: string,
-    destPageId: string,
-    sourcePage: WegasComponent,
-    destPage: WegasComponent,
-    sourcePath: number[],
-    destPath: number[],
-    destIndex: number,
-  ) => void;
-}
-
-interface PagesLayoutProps {
-  onPageClick: (selectedPageId: string) => void;
-  componentControls: ComponentControls;
-}
-
-export function PagesLayout(props: PagesLayoutProps) {
+export default function PagesLayout() {
+  const { onMoveLayoutComponent, onNewLayoutComponent } =
+    React.useContext(pageCTX);
   const [openNodes, setOpenNodes] = React.useState<{
     [path: string]: boolean | undefined;
   }>({});
 
-  React.useEffect(() => {
-    wlog(openNodes);
-  }, [openNodes]);
-
   const index = useStore(s => s.pages.index, deepDifferent);
-  const { componentControls } = props;
-  const { onMove, onNew } = componentControls;
   const i18nValues = useInternalTranslate(commonTranslations);
 
   const rootData: NodeBasicInfo<PageNode> = {
@@ -948,7 +881,7 @@ export function PagesLayout(props: PagesLayoutProps) {
             const sourcePath = from.data.componentPath;
             const destPath = to.data.componentPath;
 
-            onMove(
+            onMoveLayoutComponent(
               sourcePageId,
               destPageId,
               sourcePage,
@@ -977,12 +910,18 @@ export function PagesLayout(props: PagesLayoutProps) {
             const destPageId = to.data.pageId;
             const destPage = pages[destPageId];
             const destPath = to.data.componentPath;
-            onNew(destPageId, destPage, destPath, sourceType, index);
+            onNewLayoutComponent(
+              destPageId,
+              destPage,
+              destPath,
+              sourceType,
+              index,
+            );
           }
         }
       }
     },
-    [onMove, onNew],
+    [onMoveLayoutComponent, onNewLayoutComponent],
   );
 
   return (
@@ -1008,7 +947,6 @@ export function PagesLayout(props: PagesLayoutProps) {
                 indexItem={v}
                 path={[]}
                 defaultPageId={index.defaultPageId}
-                {...props}
               />
             ))
           ) : (

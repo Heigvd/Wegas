@@ -1,15 +1,15 @@
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
+import { isDnDComponent } from '../../Editor/Components/Page/ComponentPalette';
+import { pageCTX } from '../../Editor/Components/Page/PageEditor';
+import { isPageComponentNode } from '../../Editor/Components/Page/PagesLayout';
+import { classNameOrEmpty } from '../../Helper/className';
+import { wwarn } from '../../Helper/wegaslog';
 import {
-  WegasComponentProps,
   WegasComponentItemProps,
+  WegasComponentProps,
 } from '../PageComponents/tools/EditableComponent';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
-import { pageCTX } from '../../Editor/Components/Page/PageEditor';
-import { classNameOrEmpty } from '../../Helper/className';
-import { cx, css } from '@emotion/css';
-import { isDnDComponent } from '../../Editor/Components/Page/ComponentPalette';
-import { isPageComponentNode } from '../../Editor/Components/Page/PagesLayout';
-import { wwarn } from '../../Helper/wegaslog';
 
 const absoluteLayoutDefaultStyle = css({
   width: '100%',

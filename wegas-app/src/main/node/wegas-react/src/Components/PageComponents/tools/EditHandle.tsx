@@ -1,18 +1,16 @@
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { WegasComponentProps } from './EditableComponent';
-import {
-  pageCTX,
-  // pageEditorCTX,
-} from '../../../Editor/Components/Page/PageEditor';
-// import { useComponentDrag } from '../../../Editor/Components/Page/ComponentPalette';
-import { cx, css } from '@emotion/css';
 import { flex, flexColumn, flexRow, textCenter } from '../../../css/classes';
-import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 import { MessageString } from '../../../Editor/Components/MessageString';
-import { themeVar } from '../../Theme/ThemeVars';
+import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import {
+  PageComponentNode,
+  PAGEEDITOR_COMPONENT_TYPE,
+} from '../../../Editor/Components/Page/PagesLayout';
 import { Button } from '../../Inputs/Buttons/Button';
-import { PAGEEDITOR_COMPONENT_TYPE } from '../../../Editor/Components/Page/ComponentPalette';
-import { PageComponentNode } from '../../../Editor/Components/Page/PagesLayout';
+import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
+import { themeVar } from '../../Theme/ThemeVars';
+import { WegasComponentProps } from './EditableComponent';
 
 const handleContentStyle = css({
   borderRadius: themeVar.dimensions.BorderRadius,
@@ -20,13 +18,6 @@ const handleContentStyle = css({
   borderColor: themeVar.colors.PrimaryColor,
   backgroundColor: themeVar.colors.BackgroundColor,
 });
-
-//TODO : Find a way to hide all the handles when dragging
-// const desapearingStyle = css({
-//   //transition: 'all 1s',
-//   opacity: 0,
-//   zIndex: -1000,
-// });
 
 interface EditorHandleProps {
   /**

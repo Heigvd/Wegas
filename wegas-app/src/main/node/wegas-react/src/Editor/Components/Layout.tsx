@@ -11,11 +11,11 @@ import {
   DndLinearLayout,
   LinearLayoutComponents,
 } from './LinearTabLayout/LinearLayout';
-import { PageContextProvider } from './Page/PageEditor2';
+import { PageContextProvider } from './Page/PageEditor';
 import { fullScreenLoaderStyle, PageLoader } from './Page/PageLoader';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
-const PageEditor = React.lazy(() => import('./Page/PageEditor2'));
+const PageEditor = React.lazy(() => import('./Page/PageEditor'));
 const TreeView = React.lazy(() => import('./Variable/VariableTreeView'));
 const EntityEditor = React.lazy(() => import('./EntityEditor'));
 const FileBrowserWithMeta = React.lazy(
@@ -35,12 +35,12 @@ const Tester = React.lazy(
   () => import('../../Testers/Components/TabLayoutTester'),
 );
 
-const ComponentPalette = React.lazy(() => import('./Page/ComponentPalette2'));
+const ComponentPalette = React.lazy(() => import('./Page/ComponentPalette'));
 const ConnectedComponentProperties = React.lazy(
   () => import('./Languages/Languages'),
 );
 const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
-const PagesLayout = React.lazy(() => import('./Page/PagesLayout2'));
+const PagesLayout = React.lazy(() => import('./Page/PagesLayout'));
 const SourceEditor = React.lazy(() => import('./Page/SourceEditor'));
 
 const layout = css({

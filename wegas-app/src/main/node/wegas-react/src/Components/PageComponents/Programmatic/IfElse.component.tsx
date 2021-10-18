@@ -5,24 +5,24 @@ import {
   deleteComponent,
   pageCTX,
 } from '../../../Editor/Components/Page/PageEditor';
+import { findComponent } from '../../../Helper/pages';
 import { useScript } from '../../Hooks/useScript';
+import { defaultFlexLayoutOptionsKeys, FlexItem } from '../../Layouts/FlexList';
 import { emptyLayoutItemStyle } from '../Layouts/FlexList.component';
 import {
-  registerComponent,
   pageComponentFactory,
+  registerComponent,
 } from '../tools/componentFactory';
 import {
   ComponentDropZone,
-  WegasComponentProps,
   useDndComponentIsOverFactory,
+  WegasComponentProps,
 } from '../tools/EditableComponent';
 import {
   ChildrenDeserializerProps,
   PageDeserializer,
 } from '../tools/PageDeserializer';
 import { schemaProps } from '../tools/schemaProps';
-import { FlexItem, defaultFlexLayoutOptionsKeys } from '../../Layouts/FlexList';
-import { findComponent } from '../../../Helper/pages';
 
 const IfChildrenType = 'If component';
 const emptyIfChildren: WegasComponent = {
