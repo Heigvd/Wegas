@@ -33,8 +33,8 @@ import { selectCurrentEditorLanguage } from '../../data/selectors/Languages';
 import { store, useStore } from '../../data/Stores/store';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { mainLayoutId } from '../layouts';
 import { parseEvent } from './EntityEditor';
-import { mainLayoutId } from './Layout';
 import { FontAwesome, IconComp } from './Views/FontAwesome';
 
 const transparentDropDownButton = css({
