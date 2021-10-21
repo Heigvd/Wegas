@@ -186,10 +186,10 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
         requestManager.flush();
         Set<AbstractEntity> touched = requestManager.getJustUpdatedEntities();
 
-        Set<VariableDescriptor> desc = touched.stream()
+        Set<VariableDescriptor> desc = !forceEvalAll ? touched.stream()
             .map(entity -> entity.findFirstOfType(VariableDescriptor.class))
             .filter(entity -> entity != null)
-            .collect(Collectors.toSet());
+            .collect(Collectors.toSet()) : Set.of();
 
         for (AbstractStateMachineDescriptor sm : stateMachineDescriptors) {
             logger.trace("Process FSM {}", sm);
