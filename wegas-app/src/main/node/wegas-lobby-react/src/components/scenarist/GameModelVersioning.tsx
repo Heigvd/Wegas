@@ -156,7 +156,7 @@ export default function GameModelVersioning({
           className={buttonStyle}
           icon={faDownload}
           onClick={() => {
-            window.open(`${API_ENDPOINT}/ExportGameModel/${gameModel.id}.wgz`);
+            window.open(`${API_ENDPOINT}/Export/GameModel/${gameModel.id}.wgz`);
           }}
         >
           {i18n.exportWgz}
