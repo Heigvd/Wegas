@@ -130,3 +130,7 @@ export function match(search: string, match: (regex: RegExp) => boolean): boolea
     }, true);
   }
 }
+
+export function optionSelectMatch(option: { label: string }, search: string): boolean {
+  return match(search, regex => option.label.match(regex) != null);
+}

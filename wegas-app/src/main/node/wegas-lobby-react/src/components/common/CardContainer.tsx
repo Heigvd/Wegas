@@ -93,14 +93,14 @@ export function WindowedContainer<T>({
 
   React.useEffect(() => {
     checkGradient();
-  }, [padding]);
+  }, [padding, checkGradient]);
 
   React.useEffect(() => {
     window.addEventListener('resize', checkGradient);
     () => {
       window.removeEventListener('resize', checkGradient);
     };
-  }, [padding]);
+  }, [checkGradient]);
 
   //  // reset everything whene items change
   //  React.useEffect((
@@ -178,7 +178,7 @@ export function WindowedContainer<T>({
   const scrollCb = React.useCallback(() => {
     checkGradient();
     debScrollCb();
-  }, [debScrollCb]);
+  }, [debScrollCb, checkGradient]);
 
   const cards = items
     .slice(padding.offset, padding.offset + data.current.numberOfItem)

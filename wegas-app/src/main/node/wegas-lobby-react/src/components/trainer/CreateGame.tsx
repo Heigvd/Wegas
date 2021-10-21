@@ -10,6 +10,7 @@ import { css } from '@emotion/css';
 import * as React from 'react';
 import Select from 'react-select';
 import { createGame, getGameModels } from '../../API/api';
+import { optionSelectMatch } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
 import { useCurrentUser } from '../../selectors/userSelector';
 import { useInstantiableGameModels } from '../../selectors/wegasSelector';
@@ -96,6 +97,7 @@ export default function CreateGame({ close }: CreateGameProps): JSX.Element {
           onChange={selectGameModelCb}
           placeholder={i18n.selectGame}
           styles={defaultSelectStyles}
+          filterOption={optionSelectMatch}
         />
 
         <Flex justify="flex-end">
