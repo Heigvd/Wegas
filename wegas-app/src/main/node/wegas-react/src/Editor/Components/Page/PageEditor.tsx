@@ -1,53 +1,44 @@
-import * as React from 'react';
-import { Toolbar } from '../../../Components/Toolbar';
-import { JSONandJSEditor } from '../ScriptEditors/JSONandJSEditor';
+import { cx } from '@emotion/css';
 import { deepClone } from 'fast-json-patch';
-import {
-  ComponentPalette,
-  DnDComponent,
-  isDnDComponent,
-} from './ComponentPalette';
-import {
-  usePageComponentStore,
-  PageComponent,
-  componentsStore,
-} from '../../../Components/PageComponents/tools/componentFactory';
-import { MainLinearLayout } from '../LinearTabLayout/LinearLayout';
-import ComponentProperties from './ComponentProperties';
-import { PageLoader } from './PageLoader';
-import { css, cx } from '@emotion/css';
 import { noop } from 'lodash-es';
-import { PagesLayout, PageComponentNode } from './PagesLayout';
-import { store, useStore } from '../../../data/Stores/store';
-import { Actions } from '../../../data';
+import * as React from 'react';
 import {
-  flex,
-  grow,
+  IVariableDescriptor,
+  WegasClassNameAndScriptableTypes,
+} from 'wegas-ts-api';
+import { DropMenu } from '../../../Components/DropMenu';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import {
+  componentsStore,
+  PageComponent,
+  usePageComponentStore,
+} from '../../../Components/PageComponents/tools/componentFactory';
+import { tabLayoutChildrenClassNames } from '../../../Components/TabLayout/tabLayoutStyles';
+import {
   expandBoth,
-  defaultPadding,
+  flex,
   flexColumn,
+  grow,
   itemCenter,
   justifyCenter,
 } from '../../../css/classes';
-import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
-import { mergeDeep } from '../../../Helper/tools';
-import { findComponent, isPageItem } from '../../../Helper/pages';
-import {
-  WegasClassNameAndScriptableTypes,
-  IVariableDescriptor,
-} from 'wegas-ts-api';
+import { Actions } from '../../../data';
 import { State } from '../../../data/Reducer/reducers';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { store, useStore } from '../../../data/Stores/store';
+import { findComponent, isPageItem } from '../../../Helper/pages';
+import { mergeDeep } from '../../../Helper/tools';
 import { commonTranslations } from '../../../i18n/common/common';
-import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
-import { DropMenu } from '../../../Components/DropMenu';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { pagesTranslations } from '../../../i18n/pages/pages';
-
-const toggleButtonStyle = css({
-  display: 'flex',
-  padding: '0 15px 0 15px',
-});
+import { focusTab, MainLinearLayout } from '../LinearTabLayout/LinearLayout';
+import ComponentPalette, {
+  DnDComponent,
+  isDnDComponent,
+} from './ComponentPalette';
+import ConnectedComponentProperties from './ComponentProperties';
+import PageDisplay from './PageDisplay';
+import PagesLayout, { PageComponentNode } from './PagesLayout';
+import SourceEditor from './SourceEditor';
 
 export interface Handles {
   [path: string]: { jsx: JSX.Element; dom: React.RefObject<HTMLDivElement> };
@@ -60,12 +51,22 @@ export interface FocusedComponent {
 
 export type PageEditorComponent = DnDComponent | PageComponentNode;
 
-export interface PageContext {
+interface PageEditorState {
+  selectedPageId?: string;
+  editedPath?: number[];
+}
+
+export interface PageContext extends PageEditorState {
+  loading: boolean;
+  selectedPage?: WegasComponent;
   editMode: boolean;
   showBorders: boolean;
   showControls: boolean;
   pageIdPath: string[];
   handles: Handles;
+  setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowBorders: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowControls: React.Dispatch<React.SetStateAction<boolean>>;
   onDrop: (
     dndComponent: PageEditorComponent,
     path: number[],
@@ -76,46 +77,63 @@ export interface PageContext {
   onDelete: (path: number[]) => void;
   onEdit: (path: number[] | undefined) => void;
   onUpdate: (value: WegasComponent, path?: number[], patch?: boolean) => void;
+  onMoveLayoutComponent: (
+    sourcePageId: string,
+    destPageId: string,
+    sourcePage: WegasComponent,
+    destPage: WegasComponent,
+    sourcePath: number[],
+    destPath: number[],
+    destIndex: number,
+    props?: WegasComponent['props'],
+  ) => void;
+  onNewLayoutComponent: (
+    pageId: string,
+    page: WegasComponent,
+    path: number[],
+    type: string,
+    index: number,
+  ) => void;
+  onDuplicateLayoutComponent: (
+    pageId: string,
+    page: WegasComponent,
+    path: number[],
+  ) => void;
+  onDeleteLayoutComponent: (
+    pageId: string,
+    page: WegasComponent,
+    path: number[],
+  ) => void;
+  onEditComponent: (selectedPageId?: string, path?: number[]) => void;
+  onPageClick: (selectedPageId: string) => void;
 }
 
 export const defaultPageCTX: PageContext = {
+  selectedPageId: undefined,
+  loading: true,
+  editedPath: undefined,
+  selectedPage: undefined,
   editMode: false,
   showBorders: false,
   showControls: true,
   pageIdPath: [],
   handles: {},
+  setEditMode: noop,
+  setShowControls: noop,
+  setShowBorders: noop,
   onDrop: noop,
   onEdit: noop,
   onDelete: noop,
   onUpdate: noop,
+  onDeleteLayoutComponent: noop,
+  onDuplicateLayoutComponent: noop,
+  onEditComponent: noop,
+  onMoveLayoutComponent: noop,
+  onNewLayoutComponent: noop,
+  onPageClick: noop,
 };
 
 export const pageCTX = React.createContext<PageContext>(defaultPageCTX);
-
-interface PageEditorState {
-  selectedPageId?: string;
-  editedPath?: number[];
-}
-
-interface PageEditorContext extends PageEditorState {
-  loading: boolean;
-  selectedPage?: WegasComponent;
-}
-export const pageEditorCTX = React.createContext<PageEditorContext>({
-  loading: false,
-});
-
-// const returnPages = (pages: Pages, item?: PageIndexItem): PagesWithName => {
-//   if (item == null) {
-//     return {};
-//   }
-//   if (item['@class'] === 'Folder') {
-//     return {
-//       ...item.items.reduce((o, i) => ({ ...o, ...returnPages(pages, i) }), {}),
-//     };
-//   }
-//   return { [item.id!]: { name: item.name, page: pages[item.id!] } };
-// }
 
 export function patchPage(selectedPageId: string, page: WegasComponent) {
   store.dispatch(Actions.PageActions.patch(selectedPageId, page));
@@ -199,165 +217,6 @@ export function updateComponent(
   }
 }
 
-function SourceEditor() {
-  const i18nValues = useInternalTranslate(pagesTranslations);
-  return (
-    <pageEditorCTX.Consumer>
-      {({ selectedPageId, selectedPage, loading }) =>
-        loading ? (
-          <pre>{i18nValues.loadingPages}</pre>
-        ) : (
-          <JSONandJSEditor
-            content={JSON.stringify(selectedPage, null, 2)}
-            onSave={content => {
-              try {
-                if (selectedPageId) {
-                  patchPage(selectedPageId, JSON.parse(content));
-                } else {
-                  throw Error(i18nValues.noSelectedPage);
-                }
-              } catch (e) {
-                return { status: 'error', text: (e as Error).message };
-              }
-            }}
-          />
-        )
-      }
-    </pageEditorCTX.Consumer>
-  );
-}
-
-interface PageDisplayProps {
-  setShowControls: React.Dispatch<React.SetStateAction<boolean>>;
-  setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowBorders: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-function PageEditionToolbar({
-  setShowBorders,
-  setEditMode,
-  setShowControls,
-}: Partial<PageDisplayProps>) {
-  const i18nValues = useInternalTranslate(editorTabsTranslations);
-  const { editMode, showControls, showBorders } = React.useContext(pageCTX);
-  return (
-    <div className={flex}>
-      {setShowControls && editMode && (
-        <Toggler
-          className={toggleButtonStyle}
-          label={i18nValues.pageEditor.showControls}
-          value={showControls}
-          onChange={() => setShowControls(c => !c)}
-        />
-      )}
-
-      {setEditMode && (
-        <Toggler
-          className={toggleButtonStyle}
-          label={i18nValues.pageEditor.editMode}
-          value={editMode}
-          onChange={() => setEditMode(!editMode)}
-        />
-      )}
-      {setShowBorders && editMode && (
-        <Toggler
-          className={toggleButtonStyle}
-          label={i18nValues.pageEditor.toggleBorders}
-          value={showBorders}
-          onChange={() => setShowBorders(b => !b)}
-        />
-      )}
-    </div>
-  );
-}
-
-function PageDisplay({
-  setShowBorders,
-  setEditMode,
-  setShowControls,
-}: PageDisplayProps) {
-  const { selectedPageId, loading } = React.useContext(pageEditorCTX);
-  const i18nValues = useInternalTranslate(pagesTranslations);
-
-  if (loading) {
-    return <pre>{i18nValues.loadingPages}</pre>;
-  }
-  return (
-    <Toolbar className={expandBoth + ' PAGE-DISPLAY'}>
-      <Toolbar.Header className={defaultPadding}>
-        <PageEditionToolbar
-          setShowBorders={setShowBorders}
-          setShowControls={setShowControls}
-          setEditMode={setEditMode}
-        />
-      </Toolbar.Header>
-      <Toolbar.Content>
-        <PageLoader selectedPageId={selectedPageId} displayFrame />
-      </Toolbar.Content>
-    </Toolbar>
-  );
-}
-
-interface LayoutProps {
-  setPageEditorState: React.Dispatch<React.SetStateAction<PageEditorState>>;
-  onMoveLayoutComponent: (
-    sourcePageId: string,
-    destPageId: string,
-    sourcePage: WegasComponent,
-    destPage: WegasComponent,
-    sourcePath: number[],
-    destPath: number[],
-    destIndex: number,
-    props?: WegasComponent['props'],
-  ) => void;
-  onNewLayoutComponent: (
-    pageId: string,
-    page: WegasComponent,
-    path: number[],
-    type: string,
-    index: number,
-  ) => void;
-  onDuplicateLayoutComponent: (
-    pageId: string,
-    page: WegasComponent,
-    path: number[],
-  ) => void;
-  onDeleteLayoutComponent: (
-    pageId: string,
-    page: WegasComponent,
-    path: number[],
-  ) => void;
-  onEdit: (selectedPageId?: string, path?: number[]) => void;
-}
-
-function Layout({
-  onDeleteLayoutComponent,
-  onEdit,
-  onMoveLayoutComponent,
-  onNewLayoutComponent,
-  onDuplicateLayoutComponent,
-  setPageEditorState,
-}: LayoutProps) {
-  return (
-    <PagesLayout
-      onPageClick={pageId =>
-        setPageEditorState(ops => ({
-          ...ops,
-          selectedPageId: pageId,
-          editedPath: undefined,
-        }))
-      }
-      componentControls={{
-        onNew: onNewLayoutComponent,
-        onDuplicate: onDuplicateLayoutComponent,
-        onDelete: onDeleteLayoutComponent,
-        onEdit: onEdit,
-        onMove: onMoveLayoutComponent,
-      }}
-    />
-  );
-}
-
 function pageFolderToDropMenuItems(
   folder: PageIndexFolder,
 ): DropMenuItem<undefined>[] {
@@ -372,11 +231,18 @@ function pageFolderToDropMenuItems(
 
 export const PAGE_EDITOR_LAYOUT_ID = 'PageEditorLayout';
 
-export default function PageEditor() {
-  const i18nCommonValues = useInternalTranslate(commonTranslations);
-  const i18nPagesValues = useInternalTranslate(pagesTranslations);
+interface PageContextProviderProps {
+  /**
+   * The layoutId in witch the page windows are added
+   */
+  layoutId: string;
+}
+
+export function PageContextProvider({
+  layoutId,
+  children,
+}: React.PropsWithChildren<PageContextProviderProps>) {
   const handles = React.useRef({});
-  const focusTab = React.useRef<(tabId: string, layoutId: string) => void>();
   const [{ selectedPageId, editedPath }, setPageEditorState] =
     React.useState<PageEditorState>({
       selectedPageId: store.getState().pages.index
@@ -398,9 +264,7 @@ export default function PageEditor() {
     }),
     [selectedPageId],
   );
-  const { selectedPage, defaultPageId, loading, pages } =
-    useStore(pageInfoSelector);
-  const { dispatch } = store;
+  const { selectedPage, defaultPageId, loading } = useStore(pageInfoSelector);
 
   React.useEffect(() => {
     if (selectedPageId == null && defaultPageId != null) {
@@ -414,12 +278,11 @@ export default function PageEditor() {
   const onEdit = React.useCallback(
     (selectedPageId?: string, path?: number[]) => {
       if (path != null) {
-        focusTab.current &&
-          focusTab.current('Component Properties', PAGE_EDITOR_LAYOUT_ID);
+        focusTab(layoutId, 'Component Properties');
       }
       setPageEditorState(o => ({ ...o, editedPath: path, selectedPageId }));
     },
-    [],
+    [layoutId],
   );
 
   const onMoveLayoutComponent = React.useCallback(
@@ -661,36 +524,94 @@ export default function PageEditor() {
     [],
   );
 
-  const availableLayoutTabs = React.useMemo(
-    () => ({
-      'Pages Layout': (
-        <Layout
-          onDeleteLayoutComponent={onDeleteLayoutComponent}
-          onEdit={onEdit}
-          onMoveLayoutComponent={onMoveLayoutComponent}
-          onNewLayoutComponent={onNewLayoutComponent}
-          onDuplicateLayoutComponent={onDuplicateLayoutComponent}
-          setPageEditorState={setPageEditorState}
-        />
-      ),
-      'Component Palette': <ComponentPalette setEditMode={setEditMode} />,
-      'Page Display': (
-        <PageDisplay
-          setEditMode={setEditMode}
-          setShowBorders={setShowBorders}
-          setShowControls={setShowControls}
-        />
-      ),
-      'Source Editor': <SourceEditor />,
-      'Component Properties': <ComponentProperties />,
+  const onPageClick = React.useCallback(
+    (pageId: string | undefined) =>
+      setPageEditorState(ops => ({
+        ...ops,
+        selectedPageId: pageId,
+        editedPath: undefined,
+      })),
+    [],
+  );
+
+  return (
+    <pageCTX.Provider
+      value={{
+        selectedPageId,
+        selectedPage,
+        editedPath,
+        loading,
+        editMode,
+        showControls,
+        showBorders: showBorders /*|| (editMode && isAnythingDragged)*/,
+        pageIdPath: selectedPageId
+          ? [selectedPageId]
+          : defaultPageId
+          ? [defaultPageId]
+          : [],
+        handles: handles.current,
+        setEditMode,
+        setShowBorders,
+        setShowControls,
+        onDrop,
+        onDelete,
+        onEdit: path => onEdit(selectedPageId, path),
+        onUpdate,
+        onDeleteLayoutComponent,
+        onDuplicateLayoutComponent,
+        onEditComponent: onEdit,
+        onMoveLayoutComponent,
+        onNewLayoutComponent,
+        onPageClick,
+      }}
+    >
+      {children}
+    </pageCTX.Provider>
+  );
+}
+
+export default function PageEditor({
+  layoutId = PAGE_EDITOR_LAYOUT_ID,
+}: Partial<PageContextProviderProps>) {
+  const i18nCommonValues = useInternalTranslate(commonTranslations);
+  const i18nPagesValues = useInternalTranslate(pagesTranslations);
+  const focusTab = React.useRef<(tabId: string, layoutId: string) => void>();
+
+  const { selectedPageId, onPageClick } = React.useContext(pageCTX);
+
+  const pageInfoSelector = React.useCallback(
+    (s: State) => ({
+      selectedPage: selectedPageId ? s.pages[selectedPageId] : undefined,
+      defaultPageId: s.pages.index ? s.pages.index.defaultPageId : undefined,
+      loading: selectedPageId == null || s.pages.index == null,
+      pages: s.pages,
     }),
-    [
-      onDeleteLayoutComponent,
-      onDuplicateLayoutComponent,
-      onEdit,
-      onMoveLayoutComponent,
-      onNewLayoutComponent,
+    [selectedPageId],
+  );
+  const { defaultPageId, pages } = useStore(pageInfoSelector);
+  const { dispatch } = store;
+
+  const availableLayoutTabs = React.useMemo(
+    () => [
+      {
+        tabId: 'Pages Layout',
+        content: <PagesLayout />,
+      },
+      {
+        tabId: 'Component Palette',
+        content: <ComponentPalette />,
+      },
+      {
+        tabId: 'Page Display',
+        content: <PageDisplay />,
+      },
+      { tabId: 'Source Editor', content: <SourceEditor /> },
+      {
+        tabId: 'Component Properties',
+        content: <ConnectedComponentProperties />,
+      },
     ],
+    [],
   );
 
   // If the default page does not exists
@@ -707,7 +628,7 @@ export default function PageEditor() {
           onSelect={item => {
             if (item.id != null) {
               dispatch(Actions.PageActions.setDefault(item.id));
-              setPageEditorState(os => ({ ...os, selectedPageId: item.id }));
+              onPageClick(item.id);
             }
           }}
         />
@@ -719,67 +640,33 @@ export default function PageEditor() {
     <pre>{i18nCommonValues.loading}...</pre>
   ) : (
     <div className={cx(flex, grow) + ' PAGE-EDITOR'}>
-      <pageEditorCTX.Provider
-        value={{
-          selectedPageId,
-          selectedPage,
-          editedPath,
-          loading,
-        }}
-      >
-        <pageCTX.Provider
-          value={{
-            editMode,
-            showControls,
-            showBorders: showBorders /*|| (editMode && isAnythingDragged)*/,
-            pageIdPath: selectedPageId
-              ? [selectedPageId]
-              : defaultPageId
-              ? [defaultPageId]
-              : [],
-            handles: handles.current,
-            onDrop,
-            onDelete,
-            onEdit: path => onEdit(selectedPageId, path),
-            onUpdate,
-          }}
-        >
-          {Object.keys(pages).length === 1 ? (
-            <div
-              className={cx(
-                expandBoth,
-                flex,
-                flexColumn,
-                itemCenter,
-                justifyCenter,
-              )}
-            >
-              <p>{i18nPagesValues.noPages}</p>
-              <Layout
-                onDeleteLayoutComponent={onDeleteLayoutComponent}
-                onEdit={onEdit}
-                onMoveLayoutComponent={onMoveLayoutComponent}
-                onNewLayoutComponent={onNewLayoutComponent}
-                onDuplicateLayoutComponent={onDuplicateLayoutComponent}
-                setPageEditorState={setPageEditorState}
-              />
-            </div>
-          ) : (
-            <MainLinearLayout
-              tabs={availableLayoutTabs}
-              initialLayout={[
-                [['Pages Layout'], ['Component Palette']],
-                ['Page Display'],
-              ]}
-              layoutId={PAGE_EDITOR_LAYOUT_ID}
-              onFocusTab={ft => {
-                focusTab.current = ft;
-              }}
-              areChildren
-            />
+      {Object.keys(pages).length === 1 ? (
+        <div
+          className={cx(
+            expandBoth,
+            flex,
+            flexColumn,
+            itemCenter,
+            justifyCenter,
           )}
-        </pageCTX.Provider>
-      </pageEditorCTX.Provider>
+        >
+          <p>{i18nPagesValues.noPages}</p>
+          <PagesLayout />
+        </div>
+      ) : (
+        <MainLinearLayout
+          tabs={availableLayoutTabs}
+          initialLayout={[
+            [['Pages Layout'], ['Component Palette']],
+            ['Page Display'],
+          ]}
+          layoutId={layoutId}
+          onFocusTab={ft => {
+            focusTab.current = ft;
+          }}
+          classNames={tabLayoutChildrenClassNames}
+        />
+      )}
     </div>
   );
 }

@@ -1,60 +1,56 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
-import {
-  dropZoneHover,
-  dropZoneFocus,
-} from '../../Contexts/DefaultDndProvider';
-import {
-  DnDComponent,
-  isDnDComponent,
-} from '../../../Editor/Components/Page/ComponentPalette';
-import {
-  pageCTX,
-  Handles,
-  pageEditorCTX,
-} from '../../../Editor/Components/Page/PageEditor';
+import { pick } from 'lodash-es';
+import * as React from 'react';
 import {
   flex,
   foregroundContent,
   hoverColorInsetShadow,
   thinHoverColorInsetShadow,
 } from '../../../css/classes';
-import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
-import { pick } from 'lodash-es';
-import { classNameOrEmpty } from '../../../Helper/className';
+import { manageResponseHandler } from '../../../data/actions';
+import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
+import { pagesContextStateStore } from '../../../data/Stores/pageContextStore';
 import {
-  pagesStateStore,
-  usePagesStateStore,
   isComponentFocused,
+  pagesStateStore,
   PageStateAction,
+  usePagesStateStore,
 } from '../../../data/Stores/pageStore';
+import { store, ThunkResult } from '../../../data/Stores/store';
+import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import {
-  WegasComponentOptionsActions,
+  DnDComponent,
+  isDnDComponent,
+} from '../../../Editor/Components/Page/ComponentPalette';
+import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
+import { Handles, pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import {
+  ALLOWED_PAGE_EDITOR_COMPONENTS,
+  isPageComponentNode,
+  PageComponentNode,
+} from '../../../Editor/Components/Page/PagesLayout';
+import { classNameOrEmpty } from '../../../Helper/className';
+import { wwarn } from '../../../Helper/wegaslog';
+import {
+  dropZoneFocus,
+  dropZoneHover,
+} from '../../Contexts/DefaultDndProvider';
+import { addSetterToState } from '../../Hooks/useScript';
+import { TumbleLoader } from '../../Loader';
+import { themeVar } from '../../Theme/ThemeVars';
+import { allowDrag } from '../../TreeView/TreeView';
+import { EditHandle } from './EditHandle';
+import { PlayerInfoBullet } from './InfoBullet';
+import {
+  defaultWegasComponentOptionsActions,
+  PageComponentContext,
+  wegasComponentActions,
   WegasComponentActionsProperties,
   WegasComponentExtra,
-  defaultWegasComponentOptionsActions,
   WegasComponentOptionsAction,
-  wegasComponentActions,
-  PageComponentContext,
+  WegasComponentOptionsActions,
 } from './options';
-import { PlayerInfoBullet } from './InfoBullet';
-import { EditHandle } from './EditHandle';
-import {
-  PageComponentNode,
-  isPageComponentNode,
-  ALLOWED_PAGE_EDITOR_COMPONENTS,
-} from '../../../Editor/Components/Page/PagesLayout';
 import { OptionsState } from './OptionsComponent';
-import { themeVar } from '../../Theme/ThemeVars';
-import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
-import { TumbleLoader } from '../../Loader';
-import { ThunkResult, store } from '../../../data/Stores/store';
-import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
-import { manageResponseHandler } from '../../../data/actions';
-import { pagesContextStateStore } from '../../../data/Stores/pageContextStore';
-import { addSetterToState } from '../../Hooks/useScript';
-import { wwarn } from '../../../Helper/wegaslog';
-import { allowDrag } from '../../TreeView/TreeView';
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {
@@ -637,10 +633,8 @@ export function ComponentContainer({
   const [dragHoverState, setDragHoverState] = React.useState<boolean>(false);
   const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
 
-  const { onDrop, editMode, handles, pageIdPath, showBorders } =
+  const { onDrop, editMode, handles, pageIdPath, showBorders, editedPath } =
     React.useContext(pageCTX);
-
-  const { editedPath } = React.useContext(pageEditorCTX);
 
   const pageId = pageIdPath.slice(0, 1)[0];
   const containerPath = [...path];

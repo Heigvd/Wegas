@@ -36,7 +36,6 @@ export const nodeStyle = css({
   cursor: 'pointer',
   textAlign: 'left',
   width: '100%',
-  paddingLeft: '5px',
 });
 
 export const emptyNodeStyle = css({

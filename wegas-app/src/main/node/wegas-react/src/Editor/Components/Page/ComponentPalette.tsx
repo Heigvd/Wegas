@@ -1,32 +1,33 @@
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { cx, css } from '@emotion/css';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 import {
-  flex,
-  flexWrap,
-  flexColumn,
-  expandWidth,
-  grow,
-  flexDistribute,
+  ComponentType,
+  componentTypes,
+  usePageComponentStore,
+} from '../../../Components/PageComponents/tools/componentFactory';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
+import {
+  defaultMargin,
+  defaultMarginTop,
   expandBoth,
+  expandWidth,
+  flex,
+  flexBetween,
+  flexColumn,
+  flexDistribute,
+  flexWrap,
+  grow,
   itemCenter,
   textCenter,
-  defaultMargin,
-  flexBetween,
-  defaultMarginTop,
 } from '../../../css/classes';
-import {
-  usePageComponentStore,
-  componentTypes,
-  ComponentType,
-} from '../../../Components/PageComponents/tools/componentFactory';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
-import { IconComp } from '../Views/FontAwesome';
-import { pageCTX } from './PageEditor';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { IconComp } from '../Views/FontAwesome';
 import { ComponentIcon, ComponentTypeIcon } from './ComponentIcon';
+import { pageCTX } from './PageEditor';
+import { PAGEEDITOR_COMPONENT_TYPE } from './PagesLayout';
 
 const headerStyle = css({
   padding: '20px',
@@ -120,8 +121,6 @@ export function isDnDComponent(
     typeof item.componentName === 'string'
   );
 }
-
-export const PAGEEDITOR_COMPONENT_TYPE = 'dndComponnent';
 
 export interface DragMonitor {
   handlerId: string | symbol | null;
@@ -230,14 +229,10 @@ function ComponentElement({
   );
 }
 
-export function ComponentPalette({
-  setEditMode,
-}: {
-  setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
+export default function ComponentPalette() {
   const i18nValues = useInternalTranslate(editorTabsTranslations);
 
-  const { editMode } = React.useContext(pageCTX);
+  const { editMode, setEditMode } = React.useContext(pageCTX);
 
   const componentNames = usePageComponentStore(
     s => Object.keys(s),

@@ -1,33 +1,33 @@
-import * as React from 'react';
-import { VariableDescriptor } from '../../../data/selectors';
-import { varIsList, entityIs } from '../../../data/entities';
-import { get } from 'lodash-es';
-import { getEntityActions } from '../../editionConfig';
-import { useStore, store } from '../../../data/Stores/store';
 import { css, cx } from '@emotion/css';
-import { shallowIs } from '../../../Helper/shallowIs';
-import { AddMenuParent, AddMenuChoice, AddMenuFeedback } from './AddMenu';
-import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import { Edition } from '../../../data/Reducer/globalState';
-import { mainLayoutId } from '../Layout';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { get } from 'lodash-es';
+import * as React from 'react';
 import {
-  globalSelection,
-  localSelection,
-  componentMarginLeft,
-  flex,
-} from '../../../css/classes';
-import {
-  IVariableDescriptor,
   IEvaluationDescriptorContainer,
   IResult,
+  IVariableDescriptor,
 } from 'wegas-ts-api';
-import { focusTab } from '../LinearTabLayout/LinearLayout';
-import { State } from '../../../data/Reducer/reducers';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { commonTranslations } from '../../../i18n/common/common';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { TreeNode } from '../../../Components/TreeView/TreeNode';
+import {
+  flex,
+  flexBetween,
+  globalSelection,
+  localSelection,
+} from '../../../css/classes';
+import { entityIs, varIsList } from '../../../data/entities';
+import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
+import { Edition } from '../../../data/Reducer/globalState';
+import { State } from '../../../data/Reducer/reducers';
+import { VariableDescriptor } from '../../../data/selectors';
+import { store, useStore } from '../../../data/Stores/store';
+import { shallowIs } from '../../../Helper/shallowIs';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { getEntityActions } from '../../editionConfig';
+import { mainLayoutId } from '../Layout';
+import { focusTab } from '../LinearTabLayout/LinearLayout';
+import { AddMenuChoice, AddMenuFeedback, AddMenuParent } from './AddMenu';
 import { VariableTreeTitle } from './VariableTreeTitle';
 import { SharedTreeProps, TREEVIEW_ITEM_TYPE } from './VariableTreeView';
 
@@ -35,23 +35,28 @@ const nodeStyle = css({
   borderStyle: 'solid',
   borderWidth: '1px',
   borderColor: 'transparent',
-  borderRadius: themeVar.dimensions.BorderRadius,
+  borderRadius:
+    themeVar.dimensions.BorderRadius +
+    '0 0 ' +
+    themeVar.dimensions.BorderRadius,
   padding: '2px',
   alignItems: 'center',
+  flex: '1 1 auto',
+  height: '1.5rem',
+  fontSize: '0.95em',
 });
-
-const nodeContentStyle = cx(
-  css({
-    marginRight: '5px',
-  }),
-  componentMarginLeft,
-);
 
 export const actionNodeContentStyle = cx(
   css({
     cursor: 'pointer',
+    button: {
+      opacity: 0,
+    },
     ':hover': {
       border: '1px solid ' + themeVar.colors.PrimaryColor,
+      button: {
+        opacity: 1,
+      },
     },
   }),
 );
@@ -187,6 +192,7 @@ export function CTree({
         }
         focusTab(mainLayoutId, 'Variable Properties');
       }
+
       getEntityActions(variable!).then(({ edit }) =>
         dispatch(edit(VariableDescriptor.select(variableId)!, subPath)),
       );
@@ -207,7 +213,7 @@ export function CTree({
         notDroppable={!actionAllowed}
         label={
           <div
-            className={cx(flex, nodeStyle, {
+            className={cx(flex, flexBetween, nodeStyle, {
               [globalSelection]: editing,
               [localSelection]: localEditing,
               [actionNodeContentStyle]: actionAllowed,
@@ -227,11 +233,7 @@ export function CTree({
             }}
           >
             {!noVisibleRoot && (
-              <VariableTreeTitle
-                variable={variable}
-                subPath={subPath}
-                className={nodeContentStyle}
-              />
+              <VariableTreeTitle variable={variable} subPath={subPath} />
             )}
             {actionAllowed &&
               (entityIs(variable, 'ListDescriptor') ||

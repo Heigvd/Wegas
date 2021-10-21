@@ -1,37 +1,37 @@
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
+import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
+import { Dispatch } from 'redux';
+import { fullscreenCTX } from '../../../Components/Contexts/FullscreenContext';
+import { asyncSFC } from '../../../Components/HOC/asyncSFC';
+import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { Toolbar } from '../../../Components/Toolbar';
+import { autoScroll, flex, grow, halfOpacity } from '../../../css/classes';
+import { ActionCreator, StateActions } from '../../../data/actions';
+import { createStoreConnector } from '../../../data/connectStore';
 import {
-  storeFactory,
+  ActionsProps,
+  closeEditor,
+  EditingState,
+  Edition,
+} from '../../../data/Reducer/globalState';
+import { store, StoreDispatch, useStore } from '../../../data/Stores/store';
+import {
   LocalGlobalState,
+  storeFactory,
 } from '../../../data/Stores/storeFactory';
 import {
   AsyncVariableForm,
-  parseEventFromIndex,
-  getConfig,
-  getUpdate,
-  getEntity,
   editingGotPath,
+  getConfig,
+  getEntity,
+  getUpdate,
+  parseEventFromIndex,
 } from '../EntityEditor';
-import { css, cx } from '@emotion/css';
-import {
-  Edition,
-  closeEditor,
-  EditingState,
-  ActionsProps,
-} from '../../../data/Reducer/globalState';
-import { StoreDispatch, store, useStore } from '../../../data/Stores/store';
-import { createStoreConnector } from '../../../data/connectStore';
-import { flex, grow, autoScroll, halfOpacity } from '../../../css/classes';
 import { InstancePropertiesProps } from '../Variable/InstanceProperties';
-import { asyncSFC } from '../../../Components/HOC/asyncSFC';
-import { Toolbar } from '../../../Components/Toolbar';
-import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
-import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
-import { Dispatch } from 'redux';
-import { StateActions, ActionCreator } from '../../../data/actions';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
-import { fullscreenCTX } from '../LinearTabLayout/DnDTabLayout';
 
 const growBig = css({
   flex: '30 1 auto',

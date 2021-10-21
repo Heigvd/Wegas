@@ -1,14 +1,14 @@
-import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import { cloneDeep } from 'lodash-es';
-import { SchemaPropsSchemas } from '../../../Components/PageComponents/tools/schemaProps';
-import { wegasComponentCommonSchema } from '../Page/ComponentProperties';
-import { hashListChoicesToSchema } from '../FormView/HashList';
+import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import {
-  layoutCommonChoices,
-  layoutConditionnalChoices,
   actionsChoices,
   decorationsChoices,
+  layoutCommonChoices,
+  layoutConditionnalChoices,
 } from '../../../Components/PageComponents/tools/options';
+import { SchemaPropsSchemas } from '../../../Components/PageComponents/tools/schemaProps';
+import { hashListChoicesToSchema } from '../FormView/HashList';
+import { wegasComponentCommonSchema } from '../Page/ComponentProperties';
 
 const emptySchema = {};
 

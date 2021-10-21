@@ -4,18 +4,23 @@ import * as React from 'react';
 import { IPeerReviewDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 import { languagesCTX } from '../Components/Contexts/LanguagesProvider';
 import { TumbleLoader } from '../Components/Loader';
+import {
+  TabLayout,
+  TabLayoutComponent,
+} from '../Components/TabLayout/TabLayout';
 import { themeVar } from '../Components/Theme/ThemeVars';
 import { entityIs } from '../data/entities';
 import { State } from '../data/Reducer/reducers';
 import { useStore } from '../data/Stores/store';
 import { translate } from '../Editor/Components/FormView/translatable';
-import { TabLayout } from '../Editor/Components/LinearTabLayout/TabLayout';
-import { fullScreenLoaderStyle, PageLoader } from '../Editor/Components/Page/PageLoader';
+import {
+  fullScreenLoaderStyle,
+  PageLoader,
+} from '../Editor/Components/Page/PageLoader';
 import { ReparentableRoot } from '../Editor/Components/Reparentable';
 import { visitIndex } from '../Helper/pages';
-import { wlog } from '../Helper/wegaslog';
 import HostHeader from './HostHeader';
-import { OverviewTab } from './Overview/OverviewTab';
+import { OverviewTab, overviewTabStyle } from './Overview/OverviewTab';
 
 const Overview = React.lazy(() => import('./Overview/Overview'));
 const PeerReviewPage = React.lazy(() => import('./PeerReview/PeerReviewPage'));
@@ -62,9 +67,12 @@ function trainerPagesSelector(s: State): TrainerPagesSelector {
   };
 }
 
-const availableLayoutTabs = {
-  Overview: <Overview />,
-} as const;
+const availableLayoutTabs: TabLayoutComponent[] = [
+  {
+    tabId: 'Overview',
+    content: <Overview />,
+  },
+];
 
 export default function HostLayout() {
   const timer = React.useRef<NodeJS.Timeout | undefined>();
@@ -72,25 +80,20 @@ export default function HostLayout() {
   const [loading, setLoading] = React.useState(true);
   const { trainerPages, peerReviews } =
     useStore<TrainerPagesSelector>(trainerPagesSelector);
-  const trainerTabs = trainerPages.reduce(
-    (o, i) => ({ ...o, [i.name]: <PageLoader selectedPageId={i.id} /> }),
-    {},
-  );
-  const peerReviewTabs = peerReviews.reduce(
-    (o, peerReview) => ({
-      ...o,
-      [`Peer review ${translate(peerReview?.label, lang)}`]: (
-        <PeerReviewPage peerReview={peerReview} />
-      ),
-    }),
-    {},
-  );
+  const trainerTabs = trainerPages.map<TabLayoutComponent>(page => ({
+    tabId: page.name,
+    content: <PageLoader selectedPageId={page.id} />,
+  }));
+  const peerReviewTabs = peerReviews.map<TabLayoutComponent>(peerReview => ({
+    tabId: `Peer review ${translate(peerReview?.label, lang)}`,
+    content: <PeerReviewPage peerReview={peerReview} />,
+  }));
 
   React.useEffect(() => {
     if (timer.current != null) {
       clearTimeout(timer.current);
     }
-    wlog(Object.keys(OverviewTab).length);
+
     timer.current = setTimeout(() => {
       setLoading(Object.keys(OverviewTab).length === 0);
     }, 2500);
@@ -101,23 +104,27 @@ export default function HostLayout() {
     };
   }, []);
   if (loading) {
-    return <div className={fullScreenLoaderStyle}><TumbleLoader /></div>;
+    return (
+      <div className={fullScreenLoaderStyle}>
+        <TumbleLoader />
+      </div>
+    );
   }
   return (
     <div id="WegasLayout" className={layoutStyle}>
       <HostHeader />
       <ReparentableRoot>
         <TabLayout
-          components={{
+          components={[
             ...availableLayoutTabs,
             ...trainerTabs,
             ...peerReviewTabs,
-          }}
+          ]}
           CustomTab={OverviewTab}
           classNames={{
             header: tabsLineStyle,
+            tabsClassName: overviewTabStyle,
           }}
-          defaultActiveLabel={'Overview'}
         />
       </ReparentableRoot>
     </div>

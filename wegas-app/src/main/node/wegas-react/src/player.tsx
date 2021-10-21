@@ -1,19 +1,22 @@
 /* global module*/
+import '@emotion/css';
 import * as React from 'react';
 import { render } from 'react-dom';
+import { PageAPI } from './API/pages.api';
+import { useWebsocketEvent } from './API/websocket';
+import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
 import { LanguagesProvider } from './Components/Contexts/LanguagesProvider';
-import { ClassesProvider } from './Components/Contexts/ClassesProvider';
-import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
-import { ThemeProvider } from './Components/Theme/Theme';
-import { PageAPI } from './API/pages.api';
-import '@emotion/css';
-import './css/global.css';
-import { useWebsocketEvent } from './API/websocket';
-import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
-import { fullScreenLoaderStyle, PageLoader } from './Editor/Components/Page/PageLoader';
-import { pageCTX, defaultPageCTX } from './Editor/Components/Page/PageEditor';
 import { TumbleLoader } from './Components/Loader';
+import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
+import { ThemeProvider } from './Components/Theme/Theme';
+import './css/global.css';
+import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
+import { defaultPageCTX, pageCTX } from './Editor/Components/Page/PageEditor';
+import {
+  fullScreenLoaderStyle,
+  PageLoader,
+} from './Editor/Components/Page/PageLoader';
 
 importPageComponents();
 

@@ -1,27 +1,28 @@
-import * as React from 'react';
-import { MainLinearLayout } from '../../../Editor/Components/LinearTabLayout/LinearLayout';
-import { ThemeEdition } from './Theme/ThemeEdition';
-import { ModeEdition } from './Mode/ModeEdition';
-import Preview from './Preview';
-import { Toolbar } from '../../Toolbar';
 import { css, cx } from '@emotion/css';
+import * as React from 'react';
 import {
   defaultPaddingBottom,
   defaultPaddingLeft,
   flex,
 } from '../../../css/classes';
 import {
-  setSelectedTheme,
   getThemeDispatch,
+  setSelectedTheme,
   useThemeStore,
 } from '../../../data/Stores/themeStore';
-import { DropMenu } from '../../DropMenu';
-import { ThemeSelector } from './Theme/ThemeSelector';
-import { ModeSelector } from './Mode/ModeSelector';
-import { themeVar } from '../ThemeVars';
-import { outlineButtonStyle } from '../../Inputs/Buttons/Button';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { MainLinearLayout } from '../../../Editor/Components/LinearTabLayout/LinearLayout';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { DropMenu } from '../../DropMenu';
+import { outlineButtonStyle } from '../../Inputs/Buttons/Button';
+import { tabLayoutChildrenClassNames } from '../../TabLayout/tabLayoutStyles';
+import { Toolbar } from '../../Toolbar';
+import { themeVar } from '../ThemeVars';
+import { ModeEdition } from './Mode/ModeEdition';
+import { ModeSelector } from './Mode/ModeSelector';
+import Preview from './Preview';
+import { ThemeEdition } from './Theme/ThemeEdition';
+import { ThemeSelector } from './Theme/ThemeSelector';
 
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
 const addIconStyle = css({
@@ -93,14 +94,14 @@ export default function ThemeEditor() {
       </Toolbar.Header>
       <Toolbar.Content>
         <MainLinearLayout
-          tabs={{
-            Theme: <ThemeEdition />,
-            Modes: <ModeEdition />,
-            Preview: <Preview />,
-          }}
+          tabs={[
+            { tabId: 'Theme', content: <ThemeEdition /> },
+            { tabId: 'Modes', content: <ModeEdition /> },
+            { tabId: 'Preview', content: <Preview /> },
+          ]}
           initialLayout={[['Theme'], ['Preview']]}
           layoutId={THEME_EDITOR_LAYOUT_ID}
-          areChildren
+          classNames={tabLayoutChildrenClassNames}
         />
       </Toolbar.Content>
     </Toolbar>

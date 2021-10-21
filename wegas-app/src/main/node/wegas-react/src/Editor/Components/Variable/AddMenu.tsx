@@ -1,25 +1,24 @@
-import * as React from 'react';
 import produce from 'immer';
-import { Actions } from '../../../data';
-import { getIcon, getClassLabel, getChildren } from '../../editionConfig';
-import { StoreDispatch, store } from '../../../data/Stores/store';
-import { DropMenu, DropMenuProps } from '../../../Components/DropMenu';
-import { withDefault, IconComp } from '../Views/FontAwesome';
-import { asyncSFC } from '../../../Components/HOC/asyncSFC';
-import { VariableDescriptor } from '../../../data/selectors';
+import * as React from 'react';
 import {
   IAbstractEntity,
-  IListDescriptor,
-  IQuestionDescriptor,
-  IWhQuestionDescriptor,
   IChoiceDescriptor,
-  IResult,
-  IEvaluationDescriptorContainer,
-  IPeerReviewDescriptor,
   IEvaluationDescriptor,
+  IEvaluationDescriptorContainer,
+  IListDescriptor,
+  IPeerReviewDescriptor,
+  IQuestionDescriptor,
+  IResult,
+  IWhQuestionDescriptor,
 } from 'wegas-ts-api';
-import { AvailableLayoutTab } from '../Layout';
+import { DropMenu, DropMenuProps } from '../../../Components/DropMenu';
+import { asyncSFC } from '../../../Components/HOC/asyncSFC';
+import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
+import { VariableDescriptor } from '../../../data/selectors';
+import { store, StoreDispatch } from '../../../data/Stores/store';
+import { getChildren, getClassLabel, getIcon } from '../../editionConfig';
+import { IconComp, withDefault } from '../Views/FontAwesome';
 
 function buildMenuItems(
   variable: IAbstractEntity,
@@ -56,7 +55,7 @@ interface AddMenuProps {
   localDispatch?: StoreDispatch;
   forceLocalDispatch?: boolean;
   onSelect?: DropMenuProps<string, DropMenuItem<string>>['onSelect'];
-  focusTab?: (tab: AvailableLayoutTab) => void;
+  focusTab?: (tab: string) => void;
   style?: React.CSSProperties;
 }
 

@@ -1,31 +1,31 @@
 import * as React from 'react';
-import {
-  pageComponentFactory,
-  registerComponent,
-} from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
 import 'react-reflex/styles.css';
+import { expandBoth } from '../../../css/classes';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
-import {
-  ComponentDropZone,
-  // useDndComponentDrop,
-  WegasComponentProps,
-  useDndComponentIsOverFactory,
-} from '../tools/EditableComponent';
-import {
-  ChildrenDeserializerProps,
-  PageDeserializer,
-} from '../tools/PageDeserializer';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { emptyLayoutItemStyle } from './FlexList.component';
 import {
   FonkyFlexContainer,
   FonkyFlexContainerProps,
   FonkyFlexContent,
   FonkyFlexSplitter,
 } from '../../Layouts/FonkyFlex';
-import { expandBoth } from '../../../css/classes';
 import { themeCTX } from '../../Theme/Theme';
+import {
+  pageComponentFactory,
+  registerComponent,
+} from '../tools/componentFactory';
+import {
+  ComponentDropZone,
+  useDndComponentIsOverFactory,
+  // useDndComponentDrop,
+  WegasComponentProps,
+} from '../tools/EditableComponent';
+import {
+  ChildrenDeserializerProps,
+  PageDeserializer,
+} from '../tools/PageDeserializer';
+import { schemaProps } from '../tools/schemaProps';
+import { emptyLayoutItemStyle } from './FlexList.component';
 
 const CONTENT_TYPE = 'LinearLayout';
 

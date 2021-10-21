@@ -44,9 +44,9 @@ function DefaultCarret({ icon }: { icon: string }) {
   );
 }
 
-const DEFAULT_TOP_PADDING = 5;
-const DEFAULT_LEFT_PADDING = 10;
-const DEFAULT_BOTTOM_PADDING = 10;
+//const DEFAULT_TOP_PADDING = 5;
+//const DEFAULT_LEFT_PADDING = 10;
+//const DEFAULT_BOTTOM_PADDING = 10;
 const MINIMUM_NODE_LABEL_HEIGHT = 30;
 const MINIMUM_NODE_LABEL_WIDTH = 100;
 const KEEP_OPEN_ON_DRAG = false;
@@ -54,6 +54,7 @@ const OPEN_CLOSE_BUTTONS = {
   open: <DefaultCarret icon="▾" />,
   close: <DefaultCarret icon="▸" />,
 };
+const LEVEL_ICON = "└";
 const DESIGN_PARAMS: DesignParams = {
   nodeStyle,
   emptyNodeStyle,
@@ -80,6 +81,7 @@ interface TreeViewContextParameters {
     open: React.ReactNode;
     close: React.ReactNode;
   };
+  levelIcon: string;
   designParams: DesignParams;
   openOnDrag: null | number;
 }
@@ -121,6 +123,7 @@ export const treeviewCTX = React.createContext<TreeViewContext>({
   minimumLabelWidth: MINIMUM_NODE_LABEL_WIDTH,
   keepOpenOnDrag: KEEP_OPEN_ON_DRAG,
   openCloseButtons: OPEN_CLOSE_BUTTONS,
+  levelIcon: LEVEL_ICON,
   designParams: DESIGN_PARAMS,
   openOnDrag: null,
   openNodes: {},
@@ -166,6 +169,7 @@ export function TreeView<T = unknown>({
     minimumLabelWidth = MINIMUM_NODE_LABEL_WIDTH,
     keepOpenOnDrag = KEEP_OPEN_ON_DRAG,
     openCloseButtons = OPEN_CLOSE_BUTTONS,
+    levelIcon = LEVEL_ICON,
     designParams = {},
     openOnDrag = null,
   } = parameters || {};
@@ -420,10 +424,11 @@ export function TreeView<T = unknown>({
   return (
     <div
       style={{
-        paddingTop: DEFAULT_TOP_PADDING,
-        paddingLeft: DEFAULT_LEFT_PADDING,
-        paddingBottom: DEFAULT_BOTTOM_PADDING,
+        //paddingTop: DEFAULT_TOP_PADDING,
+        //paddingLeft: DEFAULT_LEFT_PADDING,
+        //paddingBottom: DEFAULT_BOTTOM_PADDING,
         ...style,
+        flex: '1 1 auto',
       }}
       className={className}
       id={rootId}
@@ -451,6 +456,7 @@ export function TreeView<T = unknown>({
           minimumLabelWidth,
           keepOpenOnDrag,
           openCloseButtons,
+          levelIcon,
           designParams: { ...DESIGN_PARAMS, ...designParams },
           openOnDrag,
           openNodes,

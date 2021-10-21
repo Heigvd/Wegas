@@ -1,14 +1,14 @@
-import { Reducer } from 'redux';
 import u from 'immer';
-import {
-  ActionType,
-  StateActions,
-  ActionCreator,
-  manageResponseHandler,
-} from '../actions';
 import { omit } from 'lodash-es';
+import { Reducer } from 'redux';
 import { IGameModel, IGameModelLanguage } from 'wegas-ts-api';
 import { GameModelApi } from '../../API/gameModel.api';
+import {
+  ActionCreator,
+  ActionType,
+  manageResponseHandler,
+  StateActions,
+} from '../actions';
 import { store, ThunkResult } from '../Stores/store';
 
 export interface GameModelState {
@@ -30,7 +30,7 @@ const gameModels: Reducer<Readonly<GameModelState>> = u(
       case ActionType.GAMEMODEL_EDIT:
         state[action.payload.gameModelId] = action.payload.gameModel;
         return;
-      case ActionType.LANGUAGE_EDIT: {
+      case ActionType.GAMEMODEL_LANGUAGE_EDIT: {
         const newLanguages = state[action.payload.gameModelId].languages;
         const langIndex = newLanguages.findIndex(
           language => language.code === action.payload.gameModelLanguage.code,
@@ -69,7 +69,10 @@ export function editLanguage(
   gameModelLanguage: IGameModelLanguage,
   gameModelId: string,
 ) {
-  return ActionCreator.LANGUAGE_EDIT({ gameModelLanguage, gameModelId });
+  return ActionCreator.GAMEMODEL_LANGUAGE_EDIT({
+    gameModelLanguage,
+    gameModelId,
+  });
 }
 
 export function liveEdition<T extends IMergeable>(

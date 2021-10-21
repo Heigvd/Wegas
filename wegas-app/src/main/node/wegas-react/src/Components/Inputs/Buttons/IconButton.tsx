@@ -3,6 +3,7 @@ import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
 import { css } from '@emotion/css';
 import { themeVar } from '../../Theme/ThemeVars';
+import { IconProp, Transform } from '@fortawesome/fontawesome-svg-core';
 
 export const iconButtonStyle = css({
   display: 'flex',
@@ -21,7 +22,6 @@ export const iconButtonStyle = css({
     color: themeVar.colors.ActiveColor,
   },
   ['&:focus']: {
-    outline: 'none',
     color: themeVar.colors.ActiveColor,
   },
   ['&.readOnly']: {
@@ -74,7 +74,7 @@ export const iconButtonStyle = css({
       backgroundColor: themeVar.colors.DisabledColor,
       color: themeVar.colors.LightTextColor,
     },
-    ['&:not(.disabled):not(.readOnly):hover, &:not(.disabled):not(.readOnly):focus']:
+   ['&:not(.disabled):not(.readOnly):hover']:
       {
         backgroundColor: themeVar.colors.ActiveColor,
         color: themeVar.colors.LightTextColor,
@@ -93,6 +93,8 @@ export interface IconButtonProps extends ClassStyleId, DisabledReadonly {
   type?: 'submit' | 'reset' | 'button';
   id?: string;
   icon: Icons;
+  mask?: IconProp;
+  transform?: string | Transform;
   src?: string;
   pressed?: boolean;
   mode?: 'active' | 'success' | 'warning' | 'error';
@@ -118,6 +120,8 @@ export const IconButton = React.forwardRef<
       type,
       id,
       icon,
+      mask,
+      transform,
       src,
       pressed,
       mode: buttonModes,
@@ -154,7 +158,7 @@ export const IconButton = React.forwardRef<
         aria-pressed={pressed}
         type={type}
       >
-        {<IconComp icon={icon} />}
+        {<IconComp icon={icon} mask={mask} transform={transform}/>}
         {src && <img alt={tooltip} src={src} />}
       </button>
     );

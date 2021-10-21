@@ -213,7 +213,6 @@ export const localSelection = css({
   border: '1px dashed ' + themeVar.colors.PrimaryColor,
 });
 export const globalSelection = css({
-  borderRadius: themeVar.dimensions.BorderRadius,
   backgroundColor: themeVar.colors.HeaderColor,
 });
 export const searchSelection = css({
@@ -237,6 +236,7 @@ export const contentStyle = css({
 
 export const childrenHeaderStyle = css({
   backgroundColor: themeVar.colors.ActiveColor,
+  borderBottom: 'none',
   padding: '0 1em',
 });
 
@@ -315,16 +315,18 @@ export const unreadSpaceStyle = css({
   alignItems: 'center',
 });
 
-export const fullPageStyle = css({
-    backgroundColor: '#F9F9F9',
-    display: 'flex',
-    flexDirection: 'column',
-    position: 'fixed',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-  });
+export const fullScreenContentContainerStyle = css({
+  top: 0,
+  left: 0,
+  overflow: 'auto',
+  minWidth: '100%',
+  maxWidth: '100%',
+  height: '100%',
+  backgroundColor: 'rgba(0,0,0,0.2)',
+  zIndex: 1000,
+  position: 'fixed',
+  padding: '1.5em',
+});
 
 // Others
 

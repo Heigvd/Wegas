@@ -1,25 +1,25 @@
 import * as React from 'react';
+import { ActionCreator } from '../../../data/actions';
+import { State } from '../../../data/Reducer/reducers';
+import { store, useStore } from '../../../data/Stores/store';
 import {
-  pageComponentFactory,
-  registerComponent,
-} from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
-import { useScript } from '../../Hooks/useScript';
+  defaultPageCTX,
+  pageCTX,
+} from '../../../Editor/Components/Page/PageEditor';
 import { PageLoader } from '../../../Editor/Components/Page/PageLoader';
 import {
   PageLoaderComponentProps,
   PAGE_LOADER_COMPONENT_TYPE,
 } from '../../../Helper/pages';
-import {
-  pageCTX,
-  defaultPageCTX,
-} from '../../../Editor/Components/Page/PageEditor';
-import { useStore, store } from '../../../data/Stores/store';
-import { ActionCreator } from '../../../data/actions';
 import { createScript } from '../../../Helper/wegasEntites';
+import { useScript } from '../../Hooks/useScript';
+import {
+  pageComponentFactory,
+  registerComponent,
+} from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { classStyleIdShema } from '../tools/options';
-import { State } from '../../../data/Reducer/reducers';
+import { schemaProps } from '../tools/schemaProps';
 
 type PlayerPageLoaderProps = WegasComponentProps & PageLoaderComponentProps;
 
