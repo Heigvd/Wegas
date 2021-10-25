@@ -36,6 +36,7 @@ import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TransitionDependency;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
+import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.core.security.util.ScriptExecutionContext;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -144,18 +145,20 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
     }
 
     private void runForPlayer(Player player, boolean forceEvalAll) throws WegasScriptException {
-        // State machine only contains internal scripts
-        try ( ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
-            List<AbstractStateMachineDescriptor> statemachines = this.getAllStateMachines(player.getGameModel());
-            List<AbstractTransition> passed = new ArrayList<>();
-            //stateMachineEventsCounter = new InternalStateMachineEventCounter();
-            Integer steps = this.doSteps(player, passed, statemachines, 0, forceEvalAll);
-            logger.info("#steps[{}] - Player {} triggered transition(s):{}", steps, player.getName(), passed);
-            //stateMachineEventsCounter = null;
-            /*
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            // State machine only contains internal scripts
+            try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
+                List<AbstractStateMachineDescriptor> statemachines = this.getAllStateMachines(player.getGameModel());
+                List<AbstractTransition> passed = new ArrayList<>();
+                //stateMachineEventsCounter = new InternalStateMachineEventCounter();
+                Integer steps = this.doSteps(player, passed, statemachines, 0, forceEvalAll);
+                logger.info("#steps[{}] - Player {} triggered transition(s):{}", steps, player.getName(), passed);
+                //stateMachineEventsCounter = null;
+                /*
              * Force resources release
-             */
-            //getEntityManager().flush();
+                 */
+                //getEntityManager().flush();
+            }
         }
     }
 
@@ -183,10 +186,10 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
         requestManager.flush();
         Set<AbstractEntity> touched = requestManager.getJustUpdatedEntities();
 
-        Set<VariableDescriptor> desc = touched.stream()
+        Set<VariableDescriptor> desc = !forceEvalAll ? touched.stream()
             .map(entity -> entity.findFirstOfType(VariableDescriptor.class))
             .filter(entity -> entity != null)
-            .collect(Collectors.toSet());
+            .collect(Collectors.toSet()) : Set.of();
 
         for (AbstractStateMachineDescriptor sm : stateMachineDescriptors) {
             logger.trace("Process FSM {}", sm);
@@ -440,7 +443,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
     @Override
     public long countValidTransition(DialogueDescriptor dialogueDescriptor, Player currentPlayer) {
         long count = 0;
-        try ( ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
+        try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
             DialogueState currentState = (DialogueState) dialogueDescriptor.getInstance(currentPlayer).getCurrentState();
             for (DialogueTransition transition : currentState.getTransitions()) {
                 if (isTransitionValid(transition, currentPlayer.getId(), dialogueDescriptor)) {

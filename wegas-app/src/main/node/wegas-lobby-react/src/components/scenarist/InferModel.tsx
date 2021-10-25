@@ -10,6 +10,7 @@ import { css } from '@emotion/css';
 import * as React from 'react';
 import Select from 'react-select';
 import { getGameModels, inferModel } from '../../API/api';
+import { optionSelectMatch } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
 import { useCurrentUser } from '../../selectors/userSelector';
 import { useIntegratableScenarios } from '../../selectors/wegasSelector';
@@ -82,6 +83,7 @@ export default function InferModel({ close }: InferModelProps): JSX.Element {
           options={options}
           onChange={selectGameModelCb}
           styles={defaultSelectStyles}
+          filterOption={optionSelectMatch}
         />
 
         <Flex justify="flex-end">

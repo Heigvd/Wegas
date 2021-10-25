@@ -6,34 +6,34 @@
  * Licensed under the MIT License
  */
 
-import {css} from '@emotion/css';
-import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import { css } from '@emotion/css';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
-import {IAaiAccountWithId} from 'wegas-ts-api';
-import {updateAccount} from '../../API/api';
+import { IAaiAccountWithId } from 'wegas-ts-api';
+import { updateAccount } from '../../API/api';
 import useTranslations from '../../i18n/I18nContext';
-import {useCurrentUser} from '../../selectors/userSelector';
-import {useAppDispatch, useAppSelector} from '../../store/hooks';
+import { useCurrentUser } from '../../selectors/userSelector';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import Button from '../common/Button';
 import CardContainer from '../common/CardContainer';
 import Flex from '../common/Flex';
-import Form, {Field} from '../common/Form';
+import Form, { Field } from '../common/Form';
 import InlineLoading from '../common/InlineLoading';
-import {mainButtonStyle} from '../styling/style';
+import { mainButtonStyle } from '../styling/style';
 
 interface AaiAccountProps {
   account: IAaiAccountWithId;
   close: () => void;
 }
 
-export default function AaiAccount({account, close}: AaiAccountProps): JSX.Element {
+export default function AaiAccount({ account, close }: AaiAccountProps): JSX.Element {
   const i18n = useTranslations();
   const dispatch = useAppDispatch();
   const userId = account.parentId!;
   const user = useAppSelector(state => state.users.users[userId]);
 
-  const {isAdmin} = useCurrentUser();
+  const { isAdmin } = useCurrentUser();
 
   const aaiFields: Field<IAaiAccountWithId>[] = [
     {
@@ -76,7 +76,6 @@ export default function AaiAccount({account, close}: AaiAccountProps): JSX.Eleme
       isMandatory: false,
     },
   ];
-
 
   if (isAdmin) {
     aaiFields.push({
@@ -138,9 +137,9 @@ export default function AaiAccount({account, close}: AaiAccountProps): JSX.Eleme
             </>
           ) : undefined}
         </Form>
-        {isAdmin  && false?
+        {isAdmin ? (
           <Flex align="center">
-            <Flex grow={1} className={css({margin: '10px', color: 'var(--warningColor)'})}>
+            <Flex grow={1} className={css({ margin: '10px', color: 'var(--warningColor)' })}>
               {unsaved ? (
                 <>
                   <FontAwesomeIcon icon={faExclamationTriangle} /> {i18n.pendingChanges}{' '}
@@ -148,9 +147,13 @@ export default function AaiAccount({account, close}: AaiAccountProps): JSX.Eleme
               ) : null}
             </Flex>
             <Button label={i18n.cancel} onClick={close} />
-            <Button className={mainButtonStyle} label={i18n.save} onClick={unsaved ? saveCb : undefined} />
+            <Button
+              className={mainButtonStyle}
+              label={i18n.save}
+              onClick={unsaved ? saveCb : undefined}
+            />
           </Flex>
-          : null}
+        ) : null}
       </CardContainer>
     );
   }
