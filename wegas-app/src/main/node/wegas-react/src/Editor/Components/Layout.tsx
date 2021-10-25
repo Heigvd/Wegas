@@ -6,6 +6,7 @@ import { themeVar } from '../../Components/Theme/ThemeVars';
 import { State } from '../../data/Reducer/reducers';
 import { useStore } from '../../data/Stores/store';
 import { visitIndex } from '../../Helper/pages';
+import { mainLayoutId } from '../layouts';
 import Header from './Header';
 import {
   DndLinearLayout,
@@ -53,7 +54,7 @@ const layout = css({
   color: themeVar.colors.DarkTextColor,
 });
 
-export const availableLayoutTabs: LinearLayoutComponents = [
+const availableLayoutTabs: LinearLayoutComponents = [
   {
     tabId: 'Tester',
     content: <Tester />,
@@ -125,8 +126,6 @@ export const availableLayoutTabs: LinearLayoutComponents = [
     ],
   },
 ];
-
-export const mainLayoutId = 'MainEditorLayout';
 
 function scenaristPagesSelector(s: State) {
   return s.pages.index

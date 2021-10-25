@@ -235,7 +235,7 @@ interface PageContextProviderProps {
   /**
    * The layoutId in witch the page windows are added
    */
-  layoutId: string;
+  layoutId?: string;
 }
 
 export function PageContextProvider({
@@ -277,7 +277,7 @@ export function PageContextProvider({
 
   const onEdit = React.useCallback(
     (selectedPageId?: string, path?: number[]) => {
-      if (path != null) {
+      if (path != null && layoutId != null) {
         focusTab(layoutId, 'Component Properties');
       }
       setPageEditorState(o => ({ ...o, editedPath: path, selectedPageId }));

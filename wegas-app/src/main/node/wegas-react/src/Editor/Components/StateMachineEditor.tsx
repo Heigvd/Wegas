@@ -46,9 +46,9 @@ import { store, StoreDispatch, useStore } from '../../data/Stores/store';
 import { createScript } from '../../Helper/wegasEntites';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { mainLayoutId } from '../layouts';
 import { ComponentWithForm } from './FormView/ComponentWithForm';
 import { createTranslatableContent } from './FormView/translatable';
-import { mainLayoutId } from './Layout';
 import { focusTab } from './LinearTabLayout/LinearLayout';
 
 const emptyPath: (string | number)[] = [];
