@@ -116,6 +116,9 @@ export interface EditionState {
 export interface VariableEdition extends EditionState {
   type: 'Variable' | 'VariableFSM';
   entity: IAbstractEntity;
+  instanceEditing?: {
+    editedInstance?: { instance: IAbstractEntity; saved: boolean };
+  };
   config?: Schema<AvailableViews>;
   path?: (string | number)[];
   actions: EditorAction<IAbstractEntity>;
@@ -277,7 +280,39 @@ export function editorManagement(
         config: action.payload.config,
         path: action.payload.path,
         actions: action.payload.actions,
+        newEntity:
+          state.editing?.newEntity?.id === action.payload.entity.id
+            ? state.editing?.newEntity
+            : undefined,
       };
+    case ActionType.INSTANCE_EDITOR:
+      if (
+        state.editing?.type === 'Variable' ||
+        state.editing?.type === 'VariableFSM'
+      ) {
+        state.editing.instanceEditing = action.payload.open ? {} : undefined;
+      }
+      break;
+    case ActionType.INSTANCE_EDIT:
+      if (
+        action.payload.instance != null &&
+        (state.editing?.type === 'Variable' ||
+          state.editing?.type === 'VariableFSM')
+      ) {
+        state.editing.instanceEditing = {
+          editedInstance: { instance: action.payload.instance, saved: false },
+        };
+      }
+      break;
+    case ActionType.INSTANCE_SAVE:
+      if (
+        (state.editing?.type === 'Variable' ||
+          state.editing?.type === 'VariableFSM') &&
+        state.editing.instanceEditing?.editedInstance != null
+      ) {
+        state.editing.instanceEditing.editedInstance.saved = true;
+      }
+      break;
     case ActionType.EDITION_CHANGES:
       if (
         state.editing?.type === 'Variable' ||
@@ -542,6 +577,12 @@ export function editVariable(
                     dispatch(Actions.EditorActions.searchDeep(entity.name));
                   }
                 },
+              },
+              Instance: {
+                label: 'Instance',
+                sorting: 'toolbox',
+                action: () =>
+                  dispatch(ActionCreator.INSTANCE_EDITOR({ open: true })),
               },
             },
           };
@@ -887,4 +928,13 @@ export function getEditorLanguage() {
 export function setEditorLanguage(lang: EditorLanguagesCode) {
   window.localStorage.setItem(EditorLanguageData, lang);
   return ActionCreator.EDITOR_SET_LANGUAGE({ language: lang });
+}
+
+export function isEditingVariable(
+  edition: Edition | undefined,
+): edition is VariableEdition {
+  return (
+    edition != null &&
+    (edition.type === 'Variable' || edition.type === 'VariableFSM')
+  );
 }

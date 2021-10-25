@@ -9,7 +9,6 @@ import { useDebounceFn } from '../../../Components/Hooks/useDebounce';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
-import { useOkCancelModal } from '../../../Components/Modal';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
@@ -102,13 +101,16 @@ export function VariableTreeView({
   forceLocalDispatch,
   ...options
 }: TreeProps) {
-  const [onAccept, setOnAccept] = React.useState(() => () => {});
+  // const { showModal } = React.useContext(modalCTX);
+  // const [onAccept, setOnAccept] = React.useState(() => () => {});
   const [openNodes, setOpenNodes] = React.useState<{
     [path: string]: boolean | undefined;
   }>({});
 
   const { data } = useAsync(itemsPromise);
-  const { showModal, OkCancelModal } = useOkCancelModal(TREECONTENTID);
+  // const { showModal, OkCancelModal } = useOkCancelModal(TREECONTENTID);
+  // const { showModal, closeModal, Modal } = useModal();
+
   const i18nValues = useInternalTranslate(commonTranslations);
 
   const globalDispatch = store.dispatch;
@@ -211,10 +213,51 @@ export function VariableTreeView({
           containerClassName={addVariableContainerStyle}
           buttonClassName={addVariableButtonStyle}
         />
-        <OkCancelModal onOk={onAccept}>
-          <p>{i18nValues.changesWillBeLost}</p>
-          <p>{i18nValues.areYouSure}</p>
-        </OkCancelModal>
+        {/* <Modal>
+          <div className={cx(flex, flexColumn)}>
+            <p>{i18nValues.changesWillBeLost}</p>
+            <p>{i18nValues.whatDoYouWantToDo}</p>
+            <div className={cx(flex, flexRow, justifyCenter, defaultMarginTop)}>
+              <Button
+                label={i18nValues.save}
+                onClick={() => {
+                  const editing = store.getState().global.editing;
+                  if (isEditingVariable(editing)) {
+                    store.dispatch(
+                      ActionCreator.EDITION_CHANGES({
+                        newEntity: editing.entity,
+                      }),
+                    );
+                    closeModal();
+                  }
+                }}
+              />
+              <Button
+                label={i18nValues.deleteChanges}
+                onClick={() => {
+                  closeModal();
+                  onAccept();
+                }}
+                className={componentMarginLeft}
+              />
+              <Button
+                label={i18nValues.seeChanges}
+                onClick={() => {
+                  const editing = store.getState().global.editing;
+                  if (isEditingVariable(editing) && editing.newEntity) {
+                    if (editing.newEntity['@class'].includes('Descriptor')) {
+                      focusTab(mainLayoutId, 'Variable Properties');
+                    } else {
+                      focusTab(mainLayoutId, 'InstancesEditor');
+                    }
+                    closeModal();
+                  }
+                }}
+                className={componentMarginLeft}
+              />
+            </div>
+          </div>
+        </Modal> */}
         <TreeView
           rootId={String(root.id)}
           rootData={root as unknown as IVariableDescriptor}
@@ -228,10 +271,9 @@ export function VariableTreeView({
           {root.itemsIds ? (
             root.itemsIds.map(id => (
               <CTree
-                onShowWarning={onOk => {
-                  setOnAccept(() => onOk);
-                  showModal();
-                }}
+                // onShowWarning={controls => {
+                //   showModal(<EditionModal {...controls} />);
+                // }}
                 key={id}
                 variableId={id}
                 noVisibleRoot={noVisibleRoot}

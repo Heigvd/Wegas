@@ -1,29 +1,32 @@
-import * as React from 'react';
-import { get, cloneDeep } from 'lodash-es';
-import { Schema } from 'jsoninput';
-import { State } from '../../data/Reducer/reducers';
-import { GameModel, Helper, VariableDescriptor } from '../../data/selectors';
-import getEditionConfig, { getClassLabel } from '../editionConfig';
-import { Actions } from '../../data';
-import { asyncSFC } from '../../Components/HOC/asyncSFC';
-import { deepUpdate } from '../../data/updateUtils';
-import { StoreDispatch, store, useStore } from '../../data/Stores/store';
-import { AvailableViews } from './FormView';
 import { cx } from '@emotion/css';
-import { flex, grow, flexColumn, MediumPadding } from '../../css/classes';
+import { Schema } from 'jsoninput';
+import { cloneDeep, get } from 'lodash-es';
+import * as React from 'react';
+import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
+import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
+import { asyncSFC } from '../../Components/HOC/asyncSFC';
+import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
+import { flex, flexColumn, grow, MediumPadding } from '../../css/classes';
+import { Actions } from '../../data';
+import { ActionCreator } from '../../data/actions';
+import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
 import {
   ActionsProps,
   ComponentEdition,
   Edition,
+  isEditingVariable,
   VariableEdition,
 } from '../../data/Reducer/globalState';
-import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
-import { MessageString } from './MessageString';
-import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
-import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
-import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { State } from '../../data/Reducer/reducers';
+import { GameModel, Helper, VariableDescriptor } from '../../data/selectors';
+import { store, StoreDispatch, useStore } from '../../data/Stores/store';
+import { deepUpdate } from '../../data/updateUtils';
 import { commonTranslations } from '../../i18n/common/common';
-import { ActionCreator } from '../../data/actions';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
+import getEditionConfig, { getClassLabel } from '../editionConfig';
+import { AvailableViews } from './FormView';
+import { MessageString } from './MessageString';
+import { InstanceProperties } from './Variable/InstanceProperties';
 
 export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
@@ -402,8 +405,9 @@ export function editingGotPath(
 }
 
 export default function VariableForm() {
-  const { editing, entity, events } = useStore(
+  const { state, editing, entity, events } = useStore(
     (s: State) => ({
+      state: s,
       editing: s.global.editing,
       entity: getEntity(s.global.editing),
       events: s.global.events,
@@ -434,21 +438,34 @@ export default function VariableForm() {
     return null;
   }
 
+  const instanceEditing =
+    isEditingVariable(editing) && editing.instanceEditing != null;
+
   return (
-    <AsyncVariableForm
-      path={path}
-      getConfig={config}
-      update={update}
-      actions={actions}
-      entity={entity}
-      onChange={newEntity => {
-        store.dispatch(
-          ActionCreator.EDITION_CHANGES({
-            newEntity: newEntity as IAbstractEntity,
-          }),
-        );
-      }}
-      error={parseEventFromIndex(events)}
-    />
+    <ReflexContainer orientation="vertical">
+      <ReflexElement>
+        <AsyncVariableForm
+          path={path}
+          getConfig={config}
+          update={update}
+          actions={actions}
+          entity={entity}
+          onChange={newEntity => {
+            store.dispatch(
+              ActionCreator.EDITION_CHANGES({
+                newEntity: newEntity as IAbstractEntity,
+              }),
+            );
+          }}
+          error={parseEventFromIndex(events)}
+        />
+      </ReflexElement>
+      {instanceEditing && <ReflexSplitter />}
+      {instanceEditing && (
+        <ReflexElement>
+          <InstanceProperties state={state} dispatch={store.dispatch} />
+        </ReflexElement>
+      )}
+    </ReflexContainer>
   );
 }

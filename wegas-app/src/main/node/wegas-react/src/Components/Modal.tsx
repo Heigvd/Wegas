@@ -2,6 +2,7 @@ import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import {
+  componentMarginLeft,
   contentCenter,
   defaultMarginLeft,
   defaultMarginTop,
@@ -12,8 +13,14 @@ import {
   layoutStyle,
   pointer,
 } from '../css/classes';
+import { isEditingVariable } from '../data/Reducer/globalState';
+import { store } from '../data/Stores/store';
+import { getUpdate } from '../Editor/Components/EntityEditor';
+import { CTreeProps } from '../Editor/Components/Variable/CTree';
+import { SharedTreeProps } from '../Editor/Components/Variable/VariableTreeView';
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../Helper/className';
+import { commonTranslations } from '../i18n/common/common';
 import { useInternalTranslate } from '../i18n/internalTranslator';
 import { modalTranslations } from '../i18n/modal/modal';
 import { Button } from './Inputs/Buttons/Button';
@@ -299,11 +306,140 @@ export function useModal() {
   const showModal = function () {
     setShow(true);
   };
+  const closeModal = function () {
+    setShow(false);
+  };
   const ModalComp = React.useCallback(
     (props: React.PropsWithChildren<ModalProps>) => {
       return show ? <Modal {...props} onExit={() => setShow(false)} /> : null;
     },
     [show],
   );
-  return { showModal, show, Modal: ModalComp };
+  return { showModal, closeModal, show, Modal: ModalComp };
+}
+
+interface ModalContext {
+  showModal: (element: React.ReactNode) => void;
+  closeModal: () => void;
+}
+
+export const modalCTX = React.createContext<ModalContext>({
+  showModal: () => {},
+  closeModal: () => {},
+});
+
+export function ModalProvider({ children }: React.PropsWithChildren<{}>) {
+  const { showModal, closeModal, Modal } = useModal();
+  const [modalContent, setModalContent] = React.useState<React.ReactNode>(null);
+
+  return (
+    <modalCTX.Provider
+      value={{
+        showModal: element => {
+          setModalContent(element);
+          showModal();
+        },
+        closeModal,
+      }}
+    >
+      {children}
+      <Modal>{modalContent}</Modal>
+    </modalCTX.Provider>
+  );
+}
+
+export interface EditionModalProps {
+  onSaveChanges: () => void;
+  onDeleteChanges: () => void;
+  onShowChanges: () => void;
+}
+
+export function EditionModal({
+  onSaveChanges,
+  onDeleteChanges,
+  onShowChanges,
+}: EditionModalProps) {
+  const { closeModal } = React.useContext(modalCTX);
+  const i18nValues = useInternalTranslate(commonTranslations);
+  return (
+    <div className={cx(flex, flexColumn)}>
+      <p>{i18nValues.changesWillBeLost}</p>
+      <p>{i18nValues.whatDoYouWantToDo}</p>
+      <div className={cx(flex, flexRow, justifyCenter, defaultMarginTop)}>
+        <Button
+          label={i18nValues.save}
+          onClick={() => {
+            onSaveChanges();
+            closeModal();
+          }}
+        />
+        <Button
+          label={i18nValues.deleteChanges}
+          onClick={() => {
+            onDeleteChanges();
+            closeModal();
+          }}
+          className={componentMarginLeft}
+        />
+        <Button
+          label={i18nValues.seeChanges}
+          onClick={() => {
+            onShowChanges();
+            closeModal();
+          }}
+          className={componentMarginLeft}
+        />
+      </div>
+    </div>
+  );
+}
+
+export function useOnEditionChanges(
+  variableId: CTreeProps['variableId'],
+  forceLocalDispatch: SharedTreeProps['forceLocalDispatch'],
+  localState: SharedTreeProps['localState'],
+  localDispatch: SharedTreeProps['localDispatch'],
+) {
+  const { showModal } = React.useContext(modalCTX);
+
+  return function (
+    e: ModifierKeysEvent,
+    onClickAction: (e: ModifierKeysEvent) => void,
+  ) {
+    const globalState = store.getState().global.editing;
+    const localChanges = forceLocalDispatch || e.ctrlKey;
+    const state = localChanges ? localState : globalState;
+    const dispatch = localChanges ? localDispatch : store.dispatch;
+    const unsaved =
+      isEditingVariable(state) &&
+      ((state.newEntity != null && state.newEntity.id !== variableId) ||
+        (state.instanceEditing?.editedInstance != null &&
+          state.instanceEditing.editedInstance.saved));
+
+    if (unsaved) {
+      showModal(
+        <EditionModal
+          onSaveChanges={() => {
+            if (
+              state != null &&
+              state.newEntity != null &&
+              isEditingVariable(state) &&
+              dispatch != null
+            ) {
+              getUpdate(state, dispatch)(state.newEntity);
+              onClickAction(e);
+            }
+          }}
+          onDeleteChanges={() => {
+            onClickAction(e);
+          }}
+          onShowChanges={() => {
+            debugger;
+          }}
+        />,
+      );
+    } else {
+      onClickAction(e);
+    }
+  };
 }

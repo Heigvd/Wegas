@@ -25,6 +25,9 @@ export const VARIABLE_EDIT = 'VARIABLE/EDIT';
 export const FSM_EDIT = 'FSM/EDIT';
 export const EDITION_CHANGES = 'EDITION/CHANGES';
 export const FILE_EDIT = 'FILE/EDIT';
+export const INSTANCE_EDIT = 'INSTANCE/EDIT';
+export const INSTANCE_SAVE = 'INSTANCE/SAVE';
+export const INSTANCE_EDITOR = 'INSTANCE/EDITOR';
 export const VARIABLE_CREATE = 'VARIABLE/CREATE';
 export const CLOSE_EDITOR = 'EDITOR/CLOSE';
 

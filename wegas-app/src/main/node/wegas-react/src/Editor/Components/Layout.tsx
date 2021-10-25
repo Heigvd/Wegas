@@ -38,7 +38,7 @@ const Tester = React.lazy(
 
 const ComponentPalette = React.lazy(() => import('./Page/ComponentPalette'));
 const ConnectedComponentProperties = React.lazy(
-  () => import('./Languages/Languages'),
+  () => import('./Page/ComponentProperties'),
 );
 const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
 const PagesLayout = React.lazy(() => import('./Page/PagesLayout'));
