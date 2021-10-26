@@ -27,8 +27,6 @@ const childDropMenuButtonStyle = css({
     },
 });
 
-const stringLabelStyle = css({ padding: '5px' });
-
 export type SelecteDropdMenuItem<
   T,
   MItem extends DropMenuItem<T> = DropMenuItem<T>,
@@ -85,7 +83,8 @@ const subMenuItemContainer = (
     itemCenter,
     css({
       cursor: 'pointer',
-      padding: '3px 10px',
+      padding: '8px 10px',
+      height: '35px',
       width: '100%',
       userSelect: 'none',
       pointerEvents: isDisabled ? 'none' : 'initial',
@@ -95,6 +94,10 @@ const subMenuItemContainer = (
         : isSelected
         ? themeVar.colors.HeaderColor
         : undefined,
+      '> *': {
+        padding: 0,
+        margin: 0,
+      },
       ':hover': {
         backgroundColor: themeVar.colors.HeaderColor,
         color: themeVar.colors.DarkTextColor,
@@ -299,13 +302,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                       classNameOrEmpty(item.className)
                     }
                   >
-                    {typeof item.label === 'string' ? (
-                      <div className={stringLabelStyle}>
-                        <p>{item.label}</p>
-                      </div>
-                    ) : (
-                      item.label
-                    )}
+                    {item.label}
                     {trasher}
                   </div>
                 );

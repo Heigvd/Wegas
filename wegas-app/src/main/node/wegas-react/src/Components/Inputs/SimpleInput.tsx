@@ -30,8 +30,9 @@ export const inputStyleCSS: CSSObject = {
   ':hover': {
     border: '1px solid ' + themeVar.colors.PrimaryColor,
   },
-  '&[readonly]': {
+  '&[readonly], &[disabled]': {
     color: themeVar.colors.DisabledColor,
+    pointerEvents: 'none',
   },
 };
 
