@@ -14,6 +14,9 @@ const containerStyle = css({
 const marginTopStyle = css({
   marginTop: '15px',
 });
+const marginBottomStyle = css({
+  marginBottom: '15px',
+});
 const errorStyle = css({
   color: themeVar.colors.WarningColor,
   fontSize: '75%',
@@ -81,7 +84,7 @@ export function CommonViewContainer({
   ) {
     return (
       <div
-        className={cx(containerStyle, layout, classNameOrEmpty(className), {
+        className={cx(containerStyle, layout, marginBottomStyle, classNameOrEmpty(className), {
           [`${borderTop}`]: Boolean(view.borderTop),
           [`${borderBottom}`]: Boolean(view.borderBottom),
           [marginTopStyle]: !view.noMarginTop,
@@ -94,3 +97,4 @@ export function CommonViewContainer({
   }
   return null;
 }
+
