@@ -13,7 +13,7 @@ import { mainMenuLink } from '../components/common/Link';
 import { mainHeaderHeight } from '../components/styling/style';
 import { I18nCtx, Language } from './I18nContext';
 
-export default function LanguageSelector() {
+export default function LanguageSelector(): JSX.Element {
   const { lang, setLang } = React.useContext(I18nCtx);
 
   const entries: { value: Language; label: React.ReactNode }[] = [

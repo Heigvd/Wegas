@@ -270,7 +270,7 @@ export default function JoinGame({ gameToken, onClose }: JoinGameProps): JSX.Ele
         });
       }
     }
-  }, [game, gameModel, onClose, dispatch, joinStatus]);
+  }, [game, gameModel, onClose, dispatch, joinStatus, existingPlayer]);
 
   React.useEffect(() => {
     if (gameToken != null) {

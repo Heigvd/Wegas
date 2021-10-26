@@ -79,7 +79,7 @@ export default function OptionCloseModal({
   } else {
     return (
       <OpenClose
-        collaspedChildren={
+        collapsedChildren={
           <IconButton className={iconClassName} title={iconTitle} icon={icon}>
             {iconChildren}
           </IconButton>

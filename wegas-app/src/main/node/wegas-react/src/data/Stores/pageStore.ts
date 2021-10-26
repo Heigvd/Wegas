@@ -1,9 +1,9 @@
-import { FocusedComponent } from '../../Editor/Components/Page/PageEditor';
-import { createStore, applyMiddleware, Reducer } from 'redux';
-import { composeEnhancers } from './store';
-import thunk, { ThunkMiddleware } from 'redux-thunk';
-import { createStoreConnector } from '../connectStore';
 import u from 'immer';
+import { applyMiddleware, createStore, Reducer } from 'redux';
+import thunk, { ThunkMiddleware } from 'redux-thunk';
+import { FocusedComponent } from '../../Editor/Components/Page/PageEditor';
+import { createStoreConnector } from '../connectStore';
+import { composeEnhancers } from './store';
 
 const pagesActionCreator = {
   COMPONENT_SET_FOCUSED: (data?: FocusedComponent) => ({

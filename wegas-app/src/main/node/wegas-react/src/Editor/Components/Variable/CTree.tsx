@@ -25,7 +25,7 @@ import { shallowIs } from '../../../Helper/shallowIs';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { getEntityActions } from '../../editionConfig';
-import { mainLayoutId } from '../Layout';
+import { mainLayoutId } from '../../layouts';
 import { focusTab } from '../LinearTabLayout/LinearLayout';
 import { AddMenuChoice, AddMenuFeedback, AddMenuParent } from './AddMenu';
 import { VariableTreeTitle } from './VariableTreeTitle';

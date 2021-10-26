@@ -6,8 +6,13 @@ import { themeVar } from '../../Components/Theme/ThemeVars';
 import { State } from '../../data/Reducer/reducers';
 import { useStore } from '../../data/Stores/store';
 import { visitIndex } from '../../Helper/pages';
+import { mainLayoutId } from '../layouts';
 import Header from './Header';
-import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
+import {
+  DndLinearLayout,
+  LinearLayoutComponents,
+} from './LinearTabLayout/LinearLayout';
+import { PageContextProvider } from './Page/PageEditor';
 import { fullScreenLoaderStyle, PageLoader } from './Page/PageLoader';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
@@ -31,6 +36,14 @@ const Tester = React.lazy(
   () => import('../../Testers/Components/TabLayoutTester'),
 );
 
+const ComponentPalette = React.lazy(() => import('./Page/ComponentPalette'));
+const ConnectedComponentProperties = React.lazy(
+  () => import('./Languages/Languages'),
+);
+const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
+const PagesLayout = React.lazy(() => import('./Page/PagesLayout'));
+const SourceEditor = React.lazy(() => import('./Page/SourceEditor'));
+
 const layout = css({
   display: 'flex',
   flexDirection: 'column',
@@ -41,7 +54,7 @@ const layout = css({
   color: themeVar.colors.DarkTextColor,
 });
 
-export const availableLayoutTabs = [
+const availableLayoutTabs: LinearLayoutComponents = [
   {
     tabId: 'Tester',
     content: <Tester />,
@@ -90,9 +103,29 @@ export const availableLayoutTabs = [
     tabId: 'Page Editor',
     content: <PageEditor />,
   },
-] as const;
-
-export const mainLayoutId = 'MainEditorLayout';
+  {
+    tabId: 'Pages',
+    items: [
+      {
+        tabId: 'Pages Layout',
+        content: <PagesLayout />,
+      },
+      {
+        tabId: 'Component Palette',
+        content: <ComponentPalette />,
+      },
+      {
+        tabId: 'Page Display',
+        content: <PageDisplay />,
+      },
+      { tabId: 'Source Editor', content: <SourceEditor /> },
+      {
+        tabId: 'Component Properties',
+        content: <ConnectedComponentProperties />,
+      },
+    ],
+  },
+];
 
 function scenaristPagesSelector(s: State) {
   return s.pages.index
@@ -157,11 +190,13 @@ export default function Layout() {
   return (
     <div className={layout} id="WegasLayout">
       <Header />
-      <DndLinearLayout
-        tabs={layoutPages}
-        initialLayout={initialLayout}
-        layoutId={mainLayoutId}
-      />
+      <PageContextProvider layoutId={mainLayoutId}>
+        <DndLinearLayout
+          tabs={layoutPages}
+          initialLayout={initialLayout}
+          layoutId={mainLayoutId}
+        />
+      </PageContextProvider>
     </div>
   );
 }

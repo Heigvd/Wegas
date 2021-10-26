@@ -34,7 +34,6 @@ import { moveDescriptor } from '../data/Reducer/VariableDescriptorReducer';
 import { VariableDescriptor } from '../data/selectors';
 import { store, StoreDispatch, useStore } from '../data/Stores/store';
 import { ComponentWithForm } from '../Editor/Components/FormView/ComponentWithForm';
-import { mainLayoutId } from '../Editor/Components/Layout';
 import { focusTab } from '../Editor/Components/LinearTabLayout/LinearLayout';
 import {
   AddMenuChoice,
@@ -48,6 +47,7 @@ import {
   getEntityActions,
   getIcon,
 } from '../Editor/editionConfig';
+import { mainLayoutId } from '../Editor/layouts';
 import { shallowIs } from '../Helper/shallowIs';
 import { commonTranslations } from '../i18n/common/common';
 import { useInternalTranslate } from '../i18n/internalTranslator';

@@ -20,7 +20,7 @@ type State = {
 export interface Props {
   closeIcon?: IconProp;
   showCloseIcon?: 'ICON' | 'NONE' | 'KEEP_CHILD';
-  collaspedChildren: JSX.Element;
+  collapsedChildren: JSX.Element;
   children: (collapse: () => void) => JSX.Element;
 }
 
@@ -35,7 +35,7 @@ const topRightAbs = css({
 });
 
 export default function OpenClose({
-  collaspedChildren,
+  collapsedChildren,
   children,
   closeIcon = faTimes,
   showCloseIcon = 'ICON',
@@ -51,7 +51,7 @@ export default function OpenClose({
   if (state.status === 'EXPANDED') {
     return (
       <div className={relative}>
-        {showCloseIcon == 'KEEP_CHILD' ? collaspedChildren : null}
+        {showCloseIcon == 'KEEP_CHILD' ? collapsedChildren : null}
         {children(collapse)}
         {showCloseIcon == 'ICON' ? (
           <IconButton
@@ -77,7 +77,7 @@ export default function OpenClose({
             });
           }}
         >
-          {collaspedChildren}
+          {collapsedChildren}
         </Clickable>
       </div>
     );

@@ -51,7 +51,7 @@ function Notification({ notification, index }: NotifProps) {
 
   const closeCb = React.useCallback(() => {
     dispatch(closeNotification(index));
-  }, [index]);
+  }, [index, dispatch]);
 
   React.useEffect(() => {
     let abort = false;

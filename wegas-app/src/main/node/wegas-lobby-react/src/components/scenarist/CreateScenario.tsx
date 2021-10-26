@@ -10,6 +10,7 @@ import { css } from '@emotion/css';
 import * as React from 'react';
 import Select from 'react-select';
 import { createScenario, getGameModels } from '../../API/api';
+import { optionSelectMatch } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
 import { useCurrentUser } from '../../selectors/userSelector';
 import { useDuplicatableGameModels } from '../../selectors/wegasSelector';
@@ -88,7 +89,12 @@ export default function CreateScenario({ close }: CreateScenarioProps): JSX.Elem
           onChange={setName}
         />
 
-        <Select options={options} onChange={selectGameModelCb} styles={defaultSelectStyles} />
+        <Select
+          options={options}
+          onChange={selectGameModelCb}
+          styles={defaultSelectStyles}
+          filterOption={optionSelectMatch}
+        />
 
         <Flex justify="flex-end">
           <Button label={i18n.cancel} onClick={close} />
