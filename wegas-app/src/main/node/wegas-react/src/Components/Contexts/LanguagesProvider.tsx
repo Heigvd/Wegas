@@ -1,8 +1,11 @@
 import * as React from 'react';
+import { IGameModelLanguage } from 'wegas-ts-api';
+import { commonTranslations } from '../../i18n/common/common';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { DropDownDirection } from '../DropDown';
 import { DropMenu, SelecteDropdMenuItem } from '../DropMenu';
 import { useGameModel } from '../Hooks/useGameModel';
-import { IGameModelLanguage } from 'wegas-ts-api';
-import { DropDownDirection } from '../DropDown';
+import { CheckBox } from '../Inputs/Boolean/CheckBox';
 
 interface LanguagesProviderProps {
   lang?: string;
@@ -115,22 +118,28 @@ export function LanguageSelector({
     />
   );
 }
-
-interface LangTogglerProps extends ClassStyleId {
-  label?: string;
-  direction?: DropDownDirection;
-  buttonClassName?: string;
-}
-/**
- * Language selector allows to select language inside the language context given by the LangProvider
- */
-export function LangToggler(props: LangTogglerProps) {
-  const { lang, selectLang } = React.useContext(languagesCTX);
-  return (
-    <LanguageSelector
-      {...props}
-      language={lang}
-      onSelect={({ value }) => selectLang(value.code)}
-    />
-  );
+export function useLangToggler() {
+  const i18nValues = useInternalTranslate(commonTranslations);
+  const { lang, availableLang, selectLang } = React.useContext(languagesCTX);
+  return {
+      label: i18nValues.language + ' : ' + lang,
+      items: availableLang.map(language => ({
+        value: language,
+        label: (
+          <div
+            onClick={e => {
+              e.stopPropagation();
+              selectLang(language.code);
+              }}>
+            <CheckBox
+              value={language.code === lang}
+              onChange={() => {selectLang(language.code);
+              }}
+              label={language.code + ' : ' + language.lang}
+              horizontal
+            />
+          </div>
+        ),
+      })),
+  };
 }

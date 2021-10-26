@@ -5,7 +5,7 @@ import {
   isFeatureEnabled,
   useFeatures,
 } from '../../Components/Contexts/FeaturesProvider';
-import { LangToggler } from '../../Components/Contexts/LanguagesProvider';
+import { useLangToggler } from '../../Components/Contexts/LanguagesProvider';
 import {
   roleCTX,
   useRolesToggler,
@@ -20,7 +20,6 @@ import {
   componentMarginLeft,
   componentMarginRight,
   defaultMarginLeft,
-  expandWidth,
   flex,
   flexBetween,
   flexRow,
@@ -155,6 +154,7 @@ export default function Header() {
   const dispatch = store.dispatch;
   const featuresToggler = useFeatures();
   const roleToggler = useRolesToggler();
+  const langSelector = useLangToggler();
   return (
     <>
       <Button
@@ -245,17 +245,7 @@ export default function Header() {
         <DropMenu
           label={<IconComp icon="gamepad" />}
           items={[
-            {
-              label: (
-                <LangToggler
-                  label={i18nValues.language}
-                  className={expandWidth}
-                  buttonClassName={transparentDropDownButton}
-                  direction="right"
-                />
-              ),
-              value: 'selectGameLanguage',
-            },
+            langSelector,
             {
               label: (
                 <ConfirmButton
