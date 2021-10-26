@@ -97,7 +97,7 @@ export function TabLayoutContent({
   activeTab,
 }: TabLayoutContentProps) {
   const i18nValues = useInternalTranslate(commonTranslations);
-  const component = components.find(comp => comp.tabId === activeTab)?.content;
+  const component = components.find(comp => comp != null && comp.tabId === activeTab)?.content;
   return component == null ? (
     <div>{i18nValues.noContent}</div>
   ) : activeTab == null ? (

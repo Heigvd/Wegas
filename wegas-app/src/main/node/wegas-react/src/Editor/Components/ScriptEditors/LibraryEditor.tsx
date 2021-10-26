@@ -1,3 +1,4 @@
+import { css, cx } from '@emotion/css';
 import u from 'immer';
 import { omit } from 'lodash-es';
 import * as React from 'react';
@@ -9,7 +10,6 @@ import {
   NewLibErrors,
 } from '../../../API/library.api';
 import { useWebsocketEvent, WebSocketEvent } from '../../../API/websocket';
-import { DropMenu } from '../../../Components/DropMenu';
 import {
   clientScriptEval,
   setGlobals,
@@ -17,6 +17,7 @@ import {
 } from '../../../Components/Hooks/useScript';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
+import { Selector } from '../../../Components/Selector';
 import {
   TabLayout,
   TabLayoutComponent,
@@ -636,40 +637,41 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             />
             {librariesState.selected && (
               <>
-                <DropMenu
-                  containerClassName={defaultMarginRight}
-                  label={
+                <Selector
+                  value={
                     librariesState.selected
                       ? librariesState.selected
                       : i18nValues.scripts.noLibrarySelected
                   }
-                  items={Object.keys(librariesState.libraries).map(
+                  choices={Object.keys(librariesState.libraries).map(
                     (name: string) => ({
                       value: name,
                       label: name,
                     }),
                   )}
-                  onSelect={({ value }) =>
+                    onChange={(value) =>
                     dispatchStateAction({
                       type: 'SelectLibrary',
                       name: value,
                     })
                   }
+                  className={cx(defaultMarginRight, css({width: '10em'}))}
                 />
-                <DropMenu
-                  label={getLibraryVisibility(librariesState)}
-                  items={visibilities
+                <Selector
+                  value={getLibraryVisibility(librariesState)}
+                  choices={visibilities
                     .filter(v => isVisibilityAllowed(librariesState, v))
                     .map(v => ({
                       value: v,
                       label: v,
                     }))}
-                  onSelect={({ value }) =>
+                    onChange={(value) =>
                     dispatchStateAction({
                       type: 'SetLibraryVisibility',
                       visibility: value as IVisibility,
                     })
                   }
+                  className={cx(defaultMarginRight, css({width: '10em'}))}
                 />
                 {!isLibraryOutdated(libEntry) && (
                   <>
