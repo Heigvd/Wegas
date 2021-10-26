@@ -48,6 +48,7 @@ import { State as RState } from '../../data/Reducer/reducers';
 // import * as ReactDOMServer from 'react-dom/server';
 import { VariableDescriptor } from '../../data/selectors';
 import { store, StoreDispatch, useStore } from '../../data/Stores/store';
+import { lastKeyboardEvents } from '../../Helper/keyboardEvents';
 import { createScript } from '../../Helper/wegasEntites';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
@@ -296,6 +297,7 @@ export function StateMachineEditor<
     (
       sourceProcess: StateProcess,
       position: XYPosition,
+      e: ModifierKeysEvent,
       transition?: TransitionFlowLine,
       backward?: boolean,
     ) => {
@@ -346,6 +348,15 @@ export function StateMachineEditor<
         }
       })(stateMachine);
 
+      const dispatchLocal =
+        (e.ctrlKey === true || forceLocalDispatch === true) &&
+        localDispatch != null;
+      const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
+
+      if (!dispatchLocal) {
+        focusTab(mainLayoutId, 'Variable Properties');
+      }
+
       dispatch(
         Actions.EditorActions.editStateMachine(stateMachine, [
           'states',
@@ -356,7 +367,27 @@ export function StateMachineEditor<
         Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
       );
     },
-    [createTransition, dispatch, lang, stateMachine],
+    [createTransition, forceLocalDispatch, lang, localDispatch, stateMachine],
+  );
+
+  const safeCreateState = React.useCallback(
+    (
+      sourceProcess: StateProcess,
+      position: XYPosition,
+      transition?: TransitionFlowLine,
+      backward?: boolean,
+    ) => {
+      onEditionChanges(0, lastKeyboardEvents, lastKeyboardEvents =>
+        createState(
+          sourceProcess,
+          position,
+          lastKeyboardEvents,
+          transition,
+          backward,
+        ),
+      );
+    },
+    [createState, onEditionChanges],
   );
 
   const onFlowlineClick = React.useCallback(
@@ -403,6 +434,19 @@ export function StateMachineEditor<
     [forceLocalDispatch, localDispatch, stateMachine],
   );
 
+  const onSafeFlowlineClick = React.useCallback(
+    (
+      e: ModifierKeysEvent,
+      startProcess: StateProcess,
+      flowline: TransitionFlowLine,
+    ) => {
+      onEditionChanges(flowline.transition.id!, e, e =>
+        onFlowlineClick(e, startProcess, flowline),
+      );
+    },
+    [onEditionChanges, onFlowlineClick],
+  );
+
   const isFlowlineSelected = React.useCallback(
     (sourceProcess: StateProcess, flowline: TransitionFlowLine) => {
       return (
@@ -433,8 +477,8 @@ export function StateMachineEditor<
       processes={processes}
       onConnect={connectState}
       onMove={safeUpdateStatePosition}
-      onNew={createState}
-      onFlowlineClick={onFlowlineClick}
+      onNew={safeCreateState}
+      onFlowlineClick={onSafeFlowlineClick}
       onProcessClick={onSafeStateClick}
       isFlowlineSelected={isFlowlineSelected}
       isProcessSelected={isProcessSelected}
