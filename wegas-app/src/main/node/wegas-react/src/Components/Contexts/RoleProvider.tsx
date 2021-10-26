@@ -3,8 +3,8 @@ import { defaultPaddingLeft } from '../../css/classes';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { selectCurrentEditorLanguage } from '../../data/selectors/Languages';
 import { useStore } from '../../data/Stores/store';
-import { internalTranslate } from '../../i18n/internalTranslator';
-import { DropMenu } from '../DropMenu';
+import { commonTranslations } from '../../i18n/common/common';
+import { internalTranslate, useInternalTranslate } from '../../i18n/internalTranslator';
 import { CheckBox } from '../Inputs/Boolean/CheckBox';
 
 export const EditorRoleData = 'WEGAS_USER_ROLE';
@@ -22,10 +22,8 @@ export const roleCTX = React.createContext<RoleContext>({
 });
 
 function RoleContext({ children }: React.PropsWithChildren<{}>) {
-  // const [availableRoles, setAvailableRoles] = React.useState(DEFAULT_ROLES);
 
   const defaultRoleId = useStore(s => s.global.roles.defaultRoleId);
-
   const [currentRole, setRole] = React.useState<string>(
     window.localStorage.getItem(EditorRoleData) || defaultRoleId,
   );
@@ -47,20 +45,14 @@ function RoleContext({ children }: React.PropsWithChildren<{}>) {
 
 export const RoleProvider = React.memo(RoleContext);
 
-export function RoleSelector({
-  buttonClassName,
-  className,
-  style,
-}: ClassStyleId & { buttonClassName?: string }) {
+export function useRolesToggler() {
   const availableRoles = useStore(s => s.global.roles.roles);
-  const lang = useStore(selectCurrentEditorLanguage);
   const { currentRole, setRole } = React.useContext(roleCTX);
-
-  return React.useMemo(
-    () => (
-      <DropMenu
-        label={internalTranslate(availableRoles[currentRole].label, lang)}
-        items={Object.values(availableRoles).map(role => ({
+  const lang = useStore(selectCurrentEditorLanguage);
+  const i18nValues = useInternalTranslate(commonTranslations);
+  return {
+    label: i18nValues.role,
+    items: Object.values(availableRoles).map(role => ({
           value: role.id,
           label: (
             <div
@@ -81,21 +73,5 @@ export function RoleSelector({
             </div>
           ),
           noCloseMenu: true,
-        }))}
-        containerClassName={className}
-        buttonClassName={buttonClassName}
-        style={style}
-        direction="right"
-      />
-    ),
-    [
-      availableRoles,
-      currentRole,
-      lang,
-      className,
-      buttonClassName,
-      style,
-      setRole,
-    ],
-  );
-}
+        }))
+}}

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
-import { DropMenu } from '../DropMenu';
+import { CheckBox } from '../Inputs/Boolean/CheckBox';
 
 const availableFeatures: FeatureLevel[] = ['ADVANCED', 'INTERNAL'];
 
@@ -53,18 +53,10 @@ function FeaturesContext({ children }: React.PropsWithChildren<{}>) {
  */
 export const FeaturesProvider = React.memo(FeaturesContext);
 
-/**
- * Features selector allows to select features inside the feature context given by the FeatureProvider
- */
-export function FeatureToggler({
-  buttonClassName,
-  className,
-  style,
-}: ClassStyleId & { buttonClassName?: string }) {
+export function useFeatures() {
   const i18nValues = useInternalTranslate(commonTranslations);
   const { currentFeatures, setFeature, removeFeature } =
     React.useContext(featuresCTX);
-
   const selectFeature = React.useCallback(
     (feature: FeatureLevel) => {
       if (isFeatureEnabled(currentFeatures, feature)) {
@@ -75,40 +67,26 @@ export function FeatureToggler({
     },
     [currentFeatures, setFeature, removeFeature],
   );
-
-  return React.useMemo(
-    () => (
-      <DropMenu
-        label={i18nValues.features}
-        items={availableFeatures.map(feature => ({
-          value: feature,
-          label: (
-            <>
-              <input
-                type="checkbox"
-                defaultChecked={isFeatureEnabled(currentFeatures, feature)}
-                onChange={() => selectFeature(feature)}
-                onClick={e => e.stopPropagation()}
-              />
-              {feature}
-            </>
-          ),
-          noCloseMenu: true,
-        }))}
-        containerClassName={className}
-        onSelect={({ value: feature }) => selectFeature(feature)}
-        buttonClassName={buttonClassName}
-        style={style}
-        direction="right"
-      />
-    ),
-    [
-      i18nValues.features,
-      className,
-      buttonClassName,
-      style,
-      currentFeatures,
-      selectFeature,
-    ],
-  );
+  return {
+    label: i18nValues.features,
+    items: availableFeatures.map(feature => ({
+      value: feature,
+      label: (
+        <div
+          onClick={e => {
+            e.stopPropagation();
+            selectFeature(feature);
+          }}
+        >
+           <CheckBox
+              value={isFeatureEnabled(currentFeatures, feature)}
+              onChange={() => selectFeature(feature)}
+              label={feature}
+              horizontal
+          />
+        </div>
+      ),
+      noCloseMenu: true,
+    })),
+  };
 }

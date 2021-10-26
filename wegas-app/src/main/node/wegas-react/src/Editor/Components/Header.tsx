@@ -2,12 +2,16 @@ import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import {
   featuresCTX,
-  FeatureToggler,
   isFeatureEnabled,
+  useFeatures,
 } from '../../Components/Contexts/FeaturesProvider';
 import { LangToggler } from '../../Components/Contexts/LanguagesProvider';
-import { roleCTX, RoleSelector } from '../../Components/Contexts/RoleProvider';
+import {
+  roleCTX,
+  useRolesToggler,
+} from '../../Components/Contexts/RoleProvider';
 import { DropMenu } from '../../Components/DropMenu';
+import { CheckBox } from '../../Components/Inputs/Boolean/CheckBox';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
@@ -149,6 +153,8 @@ export default function Header() {
     userLanguage: selectCurrentEditorLanguage(s),
   }));
   const dispatch = store.dispatch;
+  const featuresToggler = useFeatures();
+  const roleToggler = useRolesToggler();
   return (
     <>
       <Button
@@ -179,44 +185,39 @@ export default function Header() {
           <DropMenu
             label={<IconComp icon="cog" />}
             items={[
+              roleToggler,
+              featuresToggler,
               {
-                label: (
-                  <RoleSelector
-                    buttonClassName={transparentDropDownButton}
-                    className={expandWidth}
-                  />
-                ),
-              },
-              {
-                label: (
-                  <FeatureToggler
-                    buttonClassName={transparentDropDownButton}
-                    className={expandWidth}
-                  />
-                ),
-              },
-              {
-                label: (
-                  <DropMenu
-                    label={i18nValues.language + ': ' + userLanguage}
-                    items={Object.entries(editorLanguages).map(
-                      ([key, value]) => ({
-                        label: key + ': ' + value,
-                        id: key,
-                      }),
-                    )}
-                    onSelect={item => {
-                      dispatch(
-                        Actions.EditorActions.setEditorLanguage(
-                          item.id as EditorLanguagesCode,
-                        ),
-                      );
-                    }}
-                    direction="right"
-                    buttonClassName={transparentDropDownButton}
-                    style={{ width: '100%' }}
-                  />
-                ),
+                label: i18nValues.language + ': ' + userLanguage,
+                items: Object.entries(editorLanguages).map(([key, value]) => ({
+                  value: key,
+                  label: (
+                    <div
+                      onClick={() => {
+                        dispatch(
+                          Actions.EditorActions.setEditorLanguage(
+                            key as EditorLanguagesCode,
+                          ),
+                        );
+                      }}
+                      className={cx(flex, flexRow, itemCenter)}
+                    >
+                      <CheckBox
+                        value={Actions.EditorActions.getEditorLanguage().payload.language === key}
+                        onChange={() => {
+                          dispatch(
+                            Actions.EditorActions.setEditorLanguage(
+                              key as EditorLanguagesCode,
+                            ),
+                          );
+                        }}
+                        label={key + ' : ' + value}
+                        horizontal
+                      />
+                    </div>
+                  ),
+                  id: key,
+                })),
               },
               {
                 label: (
