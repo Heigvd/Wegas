@@ -24,6 +24,7 @@ export const EDITOR_SET_ROLES = 'EDITOR/ROLES/SET';
 export const VARIABLE_EDIT = 'VARIABLE/EDIT';
 export const FSM_EDIT = 'FSM/EDIT';
 export const EDITION_CHANGES = 'EDITION/CHANGES';
+export const EDITION_HIGHLIGHT = 'EDITION/HIGHLIGHT';
 export const FILE_EDIT = 'FILE/EDIT';
 export const INSTANCE_EDIT = 'INSTANCE/EDIT';
 export const INSTANCE_SAVE = 'INSTANCE/SAVE';

@@ -3,7 +3,7 @@ import { Schema } from 'jsoninput';
 import * as React from 'react';
 import { IVariableInstance } from 'wegas-ts-api';
 import { VariableInstanceAPI } from '../../../API/variableInstance.api';
-import { ThemeComponent, themeCTX } from '../../../Components/Theme/Theme';
+import { ThemeComponent } from '../../../Components/Theme/Theme';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
 import {
@@ -16,16 +16,9 @@ import {
 import { ActionCreator } from '../../../data/actions';
 import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods';
 import { Edition, VariableEdition } from '../../../data/Reducer/globalState';
-// import { VariableTreeTitle } from './VariableTreeView.tsx.old';
-import { State } from '../../../data/Reducer/reducers';
 import { updateInstance } from '../../../data/Reducer/VariableInstanceReducer';
 import { VariableDescriptor } from '../../../data/selectors';
-import {
-  getDispatch,
-  StoreDispatch,
-  useStore,
-} from '../../../data/Stores/store';
-import { LocalGlobalState } from '../../../data/Stores/storeFactory';
+import { StoreDispatch } from '../../../data/Stores/store';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import getEditionConfig from '../../editionConfig';
@@ -70,27 +63,28 @@ function isEditingVariable(editing?: Edition): editing is VariableEdition {
 export interface InstancePropertiesProps
   extends ThemeComponent,
     DisabledReadonly {
-  state: LocalGlobalState;
+  editing: Edition;
+  events: WegasEvent[];
   dispatch: StoreDispatch;
   actions?: EditorProps<IVariableInstance>['actions'];
+  highlight?: boolean;
 }
 
 export function InstanceProperties({
-  state,
+  editing,
+  events,
   dispatch,
   actions,
+  highlight,
   ...options
 }: InstancePropertiesProps) {
   const mounted = React.useRef(false);
   const i18nValues = useInternalTranslate(editorTabsTranslations);
-  const editing = state.global.editing;
-  const events = state.global.events;
-  const instanceState = isEditingVariable(state.global.editing)
-    ? state.global.editing.instanceEditing?.editedInstance
+  const instanceState = isEditingVariable(editing)
+    ? editing.instanceEditing?.editedInstance
     : undefined;
 
   const selectedInstance = instanceState?.instance;
-  // const saved = instanceState?.saved === true;
 
   const [instances, setInstances] = React.useState<IVariableInstance[]>([]);
   const instance = instances.find(i => i.id === selectedInstance?.id);
@@ -115,7 +109,7 @@ export function InstanceProperties({
     return () => {
       mounted.current = false;
     };
-  }, []);
+  }, [descriptor, getInstances]);
 
   const subpath = isEditingVariable(editing) ? editing.path : undefined;
   const title = descriptor ? (
@@ -180,39 +174,11 @@ export function InstanceProperties({
                 instance: newEntity as IVariableInstance,
               });
             }}
+            highlight={highlight}
             {...options}
           />
         )}
       </Toolbar.Content>
     </Toolbar>
-  );
-}
-
-function stateSelector(s: State) {
-  const editing = s.global.editing;
-  if (!editing) {
-    return null;
-  } else {
-    return {
-      global: {
-        editing,
-        events: s.global.events,
-        eventsHandlers: s.global.eventsHandlers,
-      },
-    };
-  }
-}
-
-export default function ConnectedInstancesEditor() {
-  const state = useStore(stateSelector);
-
-  const { themesState } = React.useContext(themeCTX);
-  const modeName =
-    themesState.themes[themesState.selectedThemes.editor].baseMode;
-
-  const dispatch = getDispatch();
-
-  return state == null || dispatch == null ? null : (
-    <InstanceProperties state={state} dispatch={dispatch} modeName={modeName} />
   );
 }

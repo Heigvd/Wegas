@@ -103,7 +103,7 @@ export interface ActionsProps<T> {
 }
 
 export interface EditorAction<T extends IAbstractEntity> {
-  save?: (entity: T) => void;
+  save?: (entity: T, selectUpdatedEntity?: boolean) => void;
   more?: {
     [id: string]: ActionsProps<T>;
   };
@@ -111,6 +111,7 @@ export interface EditorAction<T extends IAbstractEntity> {
 
 export interface EditionState {
   newEntity?: IAbstractEntity;
+  highlight?: boolean;
 }
 
 export interface VariableEdition extends EditionState {
@@ -315,13 +316,16 @@ export function editorManagement(
       }
       break;
     case ActionType.EDITION_CHANGES:
-      if (
-        state.editing?.type === 'Variable' ||
-        state.editing?.type === 'VariableFSM'
-      ) {
+      if (state.editing != null) {
         state.editing.newEntity = action.payload.newEntity;
       }
       break;
+    case ActionType.EDITION_HIGHLIGHT:
+      if (state.editing != null) {
+        state.editing.highlight = action.payload.highlight;
+      }
+      break;
+
     case ActionType.VARIABLE_CREATE:
       return {
         type: 'VariableCreate',
@@ -757,7 +761,9 @@ export function saveEditor(
         return dispatch(dispatch => {
           return FileAPI.updateMetadata(value as IAbstractContentDescriptor)
             .then((res: IAbstractContentDescriptor) => {
-              dispatch(ACTIONS.EditorActions.editFile(res));
+              if (selectUpdatedEntity) {
+                dispatch(ACTIONS.EditorActions.editFile(res));
+              }
               editMode.cb && editMode.cb(res);
             })
             .catch((res: Error) => {

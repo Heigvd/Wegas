@@ -1,4 +1,4 @@
-import { cx } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { Schema } from 'jsoninput';
 import { cloneDeep, get } from 'lodash-es';
 import * as React from 'react';
@@ -28,6 +28,11 @@ import { AvailableViews } from './FormView';
 import { MessageString } from './MessageString';
 import { InstanceProperties } from './Variable/InstanceProperties';
 
+export const highlightStyle = css({
+  border: 'solid red 2px',
+  margin: '-2px',
+});
+
 export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
   update?: (variable: T) => void;
@@ -39,6 +44,7 @@ export interface EditorProps<T> extends DisabledReadonly {
     onRead: () => void;
   };
   onChange?: (newEntity: T) => void;
+  highlight?: boolean;
 }
 
 type VISIBILITY = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE';
@@ -166,6 +172,7 @@ async function WindowedEditor<T extends IMergeable>({
   path,
   error,
   onChange,
+  highlight,
   ...options
 }: EditorProps<T>) {
   let pathEntity = entity;
@@ -209,7 +216,12 @@ async function WindowedEditor<T extends IMergeable>({
   }
 
   return (
-    <div className={cx(flex, grow, flexColumn)}>
+    <div
+      className={cx(flex, grow, flexColumn, { [highlightStyle]: highlight })}
+      onMouseOver={() =>
+        store.dispatch(ActionCreator.EDITION_HIGHLIGHT({ highlight: false }))
+      }
+    >
       <MessageString
         value={error && error.message}
         type={'error'}
@@ -366,11 +378,15 @@ export function getConfig(state: Readonly<Edition>) {
   return (entity: IVariableDescriptor) => getStateConfig(state, entity);
 }
 
-export function getUpdate(state: Readonly<Edition>, dispatch: StoreDispatch) {
+export function getUpdate(
+  state: Readonly<Edition>,
+  dispatch: StoreDispatch,
+  selectUpdatedEntity: boolean = true,
+) {
   return 'actions' in state && state.actions.save
     ? state.actions.save
     : (entity: IAbstractEntity) => {
-        dispatch(Actions.EditorActions.saveEditor(entity));
+        dispatch(Actions.EditorActions.saveEditor(entity, selectUpdatedEntity));
       };
 }
 
@@ -406,16 +422,18 @@ export function editingGotPath(
   );
 }
 
-export default function VariableForm() {
-  const { state, editing, entity, events } = useStore(
-    (s: State) => ({
-      state: s,
-      editing: s.global.editing,
-      entity: getEntity(s.global.editing),
-      events: s.global.events,
-    }),
-    deepDifferent,
-  );
+interface VariableFormProps {
+  editing: Edition | undefined;
+  entity: IAbstractEntity | IAbstractContentDescriptor | undefined;
+  events: WegasEvent[];
+}
+
+export function VariableForm({ editing, entity, events }: VariableFormProps) {
+  const highlightInstance =
+    editing?.highlight &&
+    (editing?.type === 'Variable' || editing?.type === 'VariableFSM') &&
+    editing?.instanceEditing?.editedInstance != null &&
+    !editing.instanceEditing.editedInstance.saved;
 
   const path = React.useMemo(
     () => (editingGotPath(editing) ? editing.path : undefined),
@@ -460,14 +478,32 @@ export default function VariableForm() {
             );
           }}
           error={parseEventFromIndex(events)}
+          highlight={editing?.highlight && !highlightInstance}
         />
       </ReflexElement>
       {instanceEditing && <ReflexSplitter />}
       {instanceEditing && (
         <ReflexElement>
-          <InstanceProperties state={state} dispatch={store.dispatch} />
+          <InstanceProperties
+            editing={editing}
+            events={events}
+            dispatch={store.dispatch}
+            highlight={highlightInstance}
+          />
         </ReflexElement>
       )}
     </ReflexContainer>
   );
+}
+
+export default function ConnectedVariableForm() {
+  const storeProps = useStore(
+    (s: State) => ({
+      editing: s.global.editing,
+      entity: getEntity(s.global.editing),
+      events: s.global.events,
+    }),
+    deepDifferent,
+  );
+  return <VariableForm {...storeProps} />;
 }

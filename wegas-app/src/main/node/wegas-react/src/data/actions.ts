@@ -111,6 +111,8 @@ export const ActionCreator = {
     createAction(ActionType.INSTANCE_EDITOR, data),
   EDITION_CHANGES: (data: { newEntity: IAbstractEntity }) =>
     createAction(ActionType.EDITION_CHANGES, data),
+  EDITION_HIGHLIGHT: (data: { highlight: boolean }) =>
+    createAction(ActionType.EDITION_HIGHLIGHT, data),
   FILE_EDIT: (data: {
     entity: IAbstractContentDescriptor;
     cb?: (newEntity: IAbstractContentDescriptor) => void;

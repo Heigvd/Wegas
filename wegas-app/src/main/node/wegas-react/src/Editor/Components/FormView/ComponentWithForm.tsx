@@ -1,14 +1,12 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
+import { ReflexContainer, ReflexElement } from 'react-reflex';
 import { Dispatch } from 'redux';
 import { fullscreenCTX } from '../../../Components/Contexts/FullscreenContext';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
-import { Toolbar } from '../../../Components/Toolbar';
 import { autoScroll, flex, grow, halfOpacity } from '../../../css/classes';
 import { ActionCreator, StateActions } from '../../../data/actions';
 import { createStoreConnector } from '../../../data/connectStore';
@@ -30,6 +28,7 @@ import {
   getEntity,
   getUpdate,
   parseEventFromIndex,
+  VariableForm,
 } from '../EntityEditor';
 import { InstancePropertiesProps } from '../Variable/InstanceProperties';
 
@@ -199,7 +198,6 @@ export function ComponentWithForm({
     (state: LocalGlobalState) => state.global,
     shallowDifferent,
   );
-  const [instanceView, setInstanceView] = React.useState(false);
   const localDispatch = fullscreenFSM ? store.dispatch : getLocalDispatch();
   const localEntity = getEntity(localState.editing);
 
@@ -219,55 +217,12 @@ export function ComponentWithForm({
           localDispatch,
         })}
       </ReflexElement>
-      {localState.editing && localEntity && <ReflexSplitter />}
       {localState.editing && localEntity && (
-        <ReflexElement
-          flex={
-            flexValues.descriptor == null
-              ? defaultFlexValues.descriptor
-              : flexValues.descriptor
-          }
-          className={cx(flex)}
-        >
-          <EmbeddedForm
-            localState={localState}
-            localDispatch={localDispatch}
-            onInstanceEditorAction={
-              entityEditor ? () => setInstanceView(show => !show) : undefined
-            }
-            noClose={fullscreenFSM}
-          />
-        </ReflexElement>
-      )}
-      {instanceView && entityEditor && <ReflexSplitter />}
-      {instanceView && entityEditor && (
-        <ReflexElement
-          flex={
-            flexValues.instance == null
-              ? defaultFlexValues.instance
-              : flexValues.instance
-          }
-          className={cx(flex)}
-        >
-          <Toolbar>
-            <Toolbar.Header>
-              <IconButton
-                icon="times"
-                tooltip="Close instance editor"
-                className={closeButtonStyle}
-                onClick={() => setInstanceView(false)}
-              />
-            </Toolbar.Header>
-            <Toolbar.Content>
-              <AsyncInstancesEditor
-                state={{ global: localState }}
-                dispatch={localDispatch}
-                disabled={disabled}
-                readOnly={readOnly}
-              />
-            </Toolbar.Content>
-          </Toolbar>
-        </ReflexElement>
+        <VariableForm
+          editing={localState.editing}
+          entity={getEntity(localState.editing)}
+          events={localState.events}
+        />
       )}
     </ReflexContainer>
   );

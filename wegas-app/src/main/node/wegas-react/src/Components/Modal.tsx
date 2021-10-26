@@ -14,12 +14,15 @@ import {
   layoutStyle,
   pointer,
 } from '../css/classes';
+import { ActionCreator } from '../data/actions';
 import { isEditingVariable } from '../data/Reducer/globalState';
 import { store } from '../data/Stores/store';
 import { getUpdate } from '../Editor/Components/EntityEditor';
+import { focusTab } from '../Editor/Components/LinearTabLayout/LinearLayout';
 import { CTreeProps } from '../Editor/Components/Variable/CTree';
 import { SharedTreeProps } from '../Editor/Components/Variable/VariableTreeView';
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
+import { mainLayoutId } from '../Editor/layouts';
 import { classNameOrEmpty } from '../Helper/className';
 import { commonTranslations } from '../i18n/common/common';
 import { useInternalTranslate } from '../i18n/internalTranslator';
@@ -420,22 +423,17 @@ export function useOnEditionChangesModal(
     }
 
     const unsaved =
-      isEditingVariable(state) &&
-      ((pathEntity != null && pathEntity.id !== variableId) ||
-        (state.instanceEditing?.editedInstance != null &&
-          state.instanceEditing.editedInstance.saved));
+      (pathEntity != null && pathEntity.id !== variableId) ||
+      (isEditingVariable(state) &&
+        state.instanceEditing?.editedInstance != null &&
+        state.instanceEditing.editedInstance.saved);
 
     if (unsaved) {
       showModal(
         <EditionModal
           onSaveChanges={() => {
-            if (
-              state != null &&
-              state?.newEntity != null &&
-              isEditingVariable(state) &&
-              dispatch != null
-            ) {
-              getUpdate(state, dispatch)(state?.newEntity);
+            if (state != null && state?.newEntity != null && dispatch != null) {
+              getUpdate(state, dispatch, false)(state?.newEntity);
               onClickAction(e);
             }
           }}
@@ -443,7 +441,12 @@ export function useOnEditionChangesModal(
             onClickAction(e);
           }}
           onShowChanges={() => {
-            debugger;
+            if (dispatch != null) {
+              dispatch(ActionCreator.EDITION_HIGHLIGHT({ highlight: true }));
+            }
+            if (!localChanges) {
+              focusTab(mainLayoutId, 'Variable Properties');
+            }
           }}
         />,
       );
