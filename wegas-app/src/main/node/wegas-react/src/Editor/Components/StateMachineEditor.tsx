@@ -24,6 +24,7 @@ import { XYPosition } from '../../Components/Hooks/useMouseEventDnd';
 import HTMLEditor from '../../Components/HTML/HTMLEditor';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { SimpleInput } from '../../Components/Inputs/SimpleInput';
+import { useOnEditionChangesModal } from '../../Components/Modal';
 import { HTMLText } from '../../Components/Outputs/HTMLText';
 import {
   flex,
@@ -38,7 +39,11 @@ import {
   editorLabel,
   getInstance,
 } from '../../data/methods/VariableDescriptorMethods';
-import { deleteState, EditorAction } from '../../data/Reducer/globalState';
+import {
+  deleteState,
+  Edition,
+  EditorAction,
+} from '../../data/Reducer/globalState';
 import { State as RState } from '../../data/Reducer/reducers';
 // import * as ReactDOMServer from 'react-dom/server';
 import { VariableDescriptor } from '../../data/selectors';
@@ -80,6 +85,8 @@ interface StateMachineEditorProps<
 > extends DisabledReadonly {
   stateMachine: Immutable<IFSM>;
   stateMachineInstance: IFSM['defaultInstance'];
+  localState?: Readonly<Edition> | undefined;
+
   localDispatch?: StoreDispatch;
   forceLocalDispatch?: boolean;
   search?: RState['global']['search'];
@@ -91,6 +98,7 @@ export function StateMachineEditor<
 >({
   title,
   stateMachine,
+  localState,
   localDispatch,
   forceLocalDispatch,
   editPath = emptyPath,
@@ -101,6 +109,11 @@ export function StateMachineEditor<
   type TTransition = TState['transitions'][0];
 
   const { lang } = React.useContext(languagesCTX);
+  const onEditionChanges = useOnEditionChangesModal(
+    forceLocalDispatch,
+    localState,
+    localDispatch,
+  );
 
   const dispatch = React.useMemo(
     () =>
@@ -236,8 +249,15 @@ export function StateMachineEditor<
     [forceLocalDispatch, localDispatch, stateMachine],
   );
 
+  const onSafeStateClick = React.useCallback(
+    (e: ModifierKeysEvent, state: StateProcess) => {
+      onEditionChanges(state.state.id!, e, e => onStateClick(e, state));
+    },
+    [onEditionChanges, onStateClick],
+  );
+
   const updateStatePosition = React.useCallback(
-    (sourceState: StateProcess, position: XYPosition, e: MouseEvent) => {
+    (sourceState: StateProcess, position: XYPosition) => {
       const state = store.getState();
 
       const currentState =
@@ -253,8 +273,6 @@ export function StateMachineEditor<
         y: position.y >= 10 ? position.y : 10,
       };
 
-      onStateClick(e, sourceState);
-
       const oldFSM = cloneDeep(
         store.getState().variableDescriptors[newCurrentState.parentId!]!,
       ) as IFSMDescriptor;
@@ -262,7 +280,16 @@ export function StateMachineEditor<
 
       dispatch(Actions.EditorActions.saveEditor(oldFSM, false));
     },
-    [dispatch, onStateClick],
+    [dispatch],
+  );
+
+  const safeUpdateStatePosition = React.useCallback(
+    (sourceState: StateProcess, position: XYPosition, e: MouseEvent) => {
+      onEditionChanges(sourceState.state.id!, e, () =>
+        updateStatePosition(sourceState, position),
+      );
+    },
+    [onEditionChanges, updateStatePosition],
   );
 
   const createState = React.useCallback(
@@ -405,10 +432,10 @@ export function StateMachineEditor<
       title={title || <h3>{editorLabel(stateMachine)}</h3>}
       processes={processes}
       onConnect={connectState}
-      onMove={updateStatePosition}
+      onMove={safeUpdateStatePosition}
       onNew={createState}
       onFlowlineClick={onFlowlineClick}
-      onProcessClick={onStateClick}
+      onProcessClick={onSafeStateClick}
       isFlowlineSelected={isFlowlineSelected}
       isProcessSelected={isProcessSelected}
       Process={StateProcessComponent}
@@ -459,11 +486,13 @@ function globalStateSelector(s: RState) {
 }
 
 interface ConnectedStateMachineEditorProps extends DisabledReadonly {
+  localState?: Readonly<Edition> | undefined;
   localDispatch?: StoreDispatch;
   forceLocalDispatch?: boolean;
 }
 
 export function ConnectedStateMachineEditor({
+  localState,
   localDispatch,
   forceLocalDispatch,
   ...options
@@ -489,6 +518,7 @@ export function ConnectedStateMachineEditor({
     return (
       <div className={grow}>
         <StateMachineEditor
+          localState={localState}
           localDispatch={localDispatch}
           forceLocalDispatch={forceLocalDispatch}
           stateMachine={globalState.descriptor}
@@ -508,9 +538,10 @@ export default function StateMachineEditorWithMeta({
 }: DisabledReadonly) {
   return (
     <ComponentWithForm entityEditor disabled={disabled} readOnly={readOnly}>
-      {({ localDispatch }) => {
+      {({ localDispatch, localState }) => {
         return (
           <ConnectedStateMachineEditor
+            localState={localState}
             localDispatch={localDispatch}
             disabled={disabled}
             readOnly={readOnly}

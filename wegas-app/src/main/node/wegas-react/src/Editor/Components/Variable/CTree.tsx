@@ -9,7 +9,7 @@ import {
   IResult,
   IVariableDescriptor,
 } from 'wegas-ts-api';
-import { useOnEditionChanges } from '../../../Components/Modal';
+import { useOnEditionChangesModal } from '../../../Components/Modal';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { TreeNode } from '../../../Components/TreeView/TreeNode';
@@ -185,8 +185,7 @@ export function CTree({
 
   const localEditing = isEditing(variableId, subPath, localState);
 
-  const onEditionChanges = useOnEditionChanges(
-    variableId,
+  const onEditionChanges = useOnEditionChangesModal(
     forceLocalDispatch,
     localState,
     localDispatch,
@@ -330,7 +329,7 @@ export function CTree({
             })}
             onClick={(e: ModifierKeysEvent) => {
               if (actionAllowed) {
-                onEditionChanges(e, onClickAction);
+                onEditionChanges(variableId, e, onClickAction);
               }
             }}
           >
@@ -347,21 +346,27 @@ export function CTree({
                   variable={variable}
                   style={noVisibleRoot ? { marginBottom: '10px' } : undefined}
                   onSelect={(i, e) => {
-                    onEditionChanges(e, e => onMenuParentSelect(i, e));
+                    onEditionChanges(variableId, e, e =>
+                      onMenuParentSelect(i, e),
+                    );
                   }}
                 />
               ) : entityIs(variable, 'ChoiceDescriptor') ? (
                 <AddMenuChoice
                   variable={variable}
                   onSelect={(i, e) => {
-                    onEditionChanges(e, e => onMenuChoiceSelect(i, e));
+                    onEditionChanges(variableId, e, e =>
+                      onMenuChoiceSelect(i, e),
+                    );
                   }}
                 />
               ) : entityIs(variable, 'EvaluationDescriptorContainer') ? (
                 <AddMenuFeedback
                   variable={variable}
                   onSelect={(i, e) => {
-                    onEditionChanges(e, e => onMenuFeedbackSelect(i, e));
+                    onEditionChanges(variableId, e, e =>
+                      onMenuFeedbackSelect(i, e),
+                    );
                   }}
                 />
               ) : null)}

@@ -281,6 +281,7 @@ export function editorManagement(
         path: action.payload.path,
         actions: action.payload.actions,
         newEntity:
+          state.editing?.newEntity == null ||
           state.editing?.newEntity?.id === action.payload.entity.id
             ? state.editing?.newEntity
             : undefined,

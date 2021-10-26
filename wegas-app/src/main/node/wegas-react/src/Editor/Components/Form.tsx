@@ -22,7 +22,6 @@ import { wwarn } from '../../Helper/wegaslog';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import './FormView';
-import { MessageString } from './MessageString';
 import { IconComp } from './Views/FontAwesome';
 
 const toolboxContainerStyle = css({
@@ -80,6 +79,7 @@ export function Form<T>({
   const deleteAction = actions.find(a => a.sorting === 'delete');
   const duplicateAction = actions.find(a => a.sorting === 'duplicate');
   const findUsageAction = actions.find(a => a.sorting === 'findUsage');
+
   return (
     <Toolbar className={autoScroll}>
       <Toolbar.Header className={cx(toolboxContainerStyle, toolboxHeaderStyle)}>
@@ -123,7 +123,6 @@ export function Form<T>({
               }}
               buttonClassName={expandHeight}
             /> */}
-
             {deleteAction != null && deleteAction.confirm ? (
               <ConfirmButton
                 icon="trash"
@@ -172,15 +171,6 @@ export function Form<T>({
               />
             )}
           </>
-        )}
-        {deepDifferent(val, entity) ? (
-          <MessageString type="warning" value={i18nValues.changesNotSaved} />
-        ) : (
-          <MessageString
-            type="succes"
-            value={i18nValues.changesSaved}
-            duration={3000}
-          />
         )}
         {isActionAllowed({
           disabled,

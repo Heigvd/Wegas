@@ -239,7 +239,9 @@ async function WindowedEditor<T extends IMergeable>({
           entity,
           customSchema !== undefined ? customSchema : schema,
         )}
-        onChange={onChange}
+        onChange={(val: {}) => {
+          onChange && onChange(deepUpdate(entity, path, val) as T);
+        }}
         {...options}
       />
     </div>

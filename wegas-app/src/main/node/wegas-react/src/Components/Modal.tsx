@@ -1,4 +1,5 @@
 import { css, cx } from '@emotion/css';
+import { get } from 'lodash-es';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import {
@@ -394,8 +395,7 @@ export function EditionModal({
   );
 }
 
-export function useOnEditionChanges(
-  variableId: CTreeProps['variableId'],
+export function useOnEditionChangesModal(
   forceLocalDispatch: SharedTreeProps['forceLocalDispatch'],
   localState: SharedTreeProps['localState'],
   localDispatch: SharedTreeProps['localDispatch'],
@@ -403,6 +403,7 @@ export function useOnEditionChanges(
   const { showModal } = React.useContext(modalCTX);
 
   return function (
+    variableId: CTreeProps['variableId'],
     e: ModifierKeysEvent,
     onClickAction: (e: ModifierKeysEvent) => void,
   ) {
@@ -410,9 +411,17 @@ export function useOnEditionChanges(
     const localChanges = forceLocalDispatch || e.ctrlKey;
     const state = localChanges ? localState : globalState;
     const dispatch = localChanges ? localDispatch : store.dispatch;
+    let pathEntity = state?.newEntity;
+
+    if (isEditingVariable(state)) {
+      if (Array.isArray(state.path) && state.path.length > 0) {
+        pathEntity = get(pathEntity, state.path);
+      }
+    }
+
     const unsaved =
       isEditingVariable(state) &&
-      ((state.newEntity != null && state.newEntity.id !== variableId) ||
+      ((pathEntity != null && pathEntity.id !== variableId) ||
         (state.instanceEditing?.editedInstance != null &&
           state.instanceEditing.editedInstance.saved));
 
@@ -422,11 +431,11 @@ export function useOnEditionChanges(
           onSaveChanges={() => {
             if (
               state != null &&
-              state.newEntity != null &&
+              state?.newEntity != null &&
               isEditingVariable(state) &&
               dispatch != null
             ) {
-              getUpdate(state, dispatch)(state.newEntity);
+              getUpdate(state, dispatch)(state?.newEntity);
               onClickAction(e);
             }
           }}
