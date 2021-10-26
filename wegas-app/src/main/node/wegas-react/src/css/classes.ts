@@ -241,7 +241,6 @@ export const childrenHeaderStyle = css({
 });
 
 export const toolboxHeaderStyle = css({
-  marginBottom: '10px',
   paddingBottom: '10px',
   borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
 });
