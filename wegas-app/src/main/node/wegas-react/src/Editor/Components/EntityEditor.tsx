@@ -1,4 +1,3 @@
-import { css, cx } from '@emotion/css';
 import { Schema } from 'jsoninput';
 import { cloneDeep, get } from 'lodash-es';
 import * as React from 'react';
@@ -6,7 +5,7 @@ import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
-import { flex, flexColumn, grow, MediumPadding } from '../../css/classes';
+import { MediumPadding } from '../../css/classes';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
 import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
@@ -25,13 +24,7 @@ import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import getEditionConfig, { getClassLabel } from '../editionConfig';
 import { AvailableViews } from './FormView';
-import { MessageString } from './MessageString';
 import { InstanceProperties } from './Variable/InstanceProperties';
-
-export const highlightStyle = css({
-  border: 'solid red 2px',
-  margin: '-2px',
-});
 
 export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
@@ -45,6 +38,7 @@ export interface EditorProps<T> extends DisabledReadonly {
   };
   onChange?: (newEntity: T) => void;
   highlight?: boolean;
+  localDispatch: StoreDispatch | undefined;
 }
 
 type VISIBILITY = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE';
@@ -173,6 +167,7 @@ async function WindowedEditor<T extends IMergeable>({
   error,
   onChange,
   highlight,
+  localDispatch,
   ...options
 }: EditorProps<T>) {
   let pathEntity = entity;
@@ -216,47 +211,38 @@ async function WindowedEditor<T extends IMergeable>({
   }
 
   return (
-    <div
-      className={cx(flex, grow, flexColumn, { [highlightStyle]: highlight })}
-      onMouseOver={() =>
-        store.dispatch(ActionCreator.EDITION_HIGHLIGHT({ highlight: false }))
-      }
-    >
-      <MessageString
-        value={error && error.message}
-        type={'error'}
-        duration={3000}
-        onLabelVanish={error && error.onRead}
-      />
-      <Form
-        entity={pathEntity}
-        label={editorTitle({
-          label: entity
-            ? (entity as { label?: ITranslatableContent }).label
-            : undefined,
-          editorTag: entity
-            ? (entity as { editorTag?: string }).editorTag
-            : undefined,
-          name: getClassLabel(pathEntity),
-        })}
-        update={update != null ? updatePath : update}
-        actions={actions.map(action => ({
-          ...action,
-          action: function (e: T) {
-            action.action(deepUpdate(entity, path, e) as T, path);
-          },
-        }))}
-        path={path}
-        config={overrideSchema(
-          entity,
-          customSchema !== undefined ? customSchema : schema,
-        )}
-        onChange={(val: {}) => {
-          onChange && onChange(deepUpdate(entity, path, val) as T);
-        }}
-        {...options}
-      />
-    </div>
+    // <div className={cx(flex, grow, flexColumn)}>
+    <Form
+      entity={pathEntity}
+      label={editorTitle({
+        label: entity
+          ? (entity as { label?: ITranslatableContent }).label
+          : undefined,
+        editorTag: entity
+          ? (entity as { editorTag?: string }).editorTag
+          : undefined,
+        name: getClassLabel(pathEntity),
+      })}
+      update={update != null ? updatePath : update}
+      actions={actions.map(action => ({
+        ...action,
+        action: function (e: T) {
+          action.action(deepUpdate(entity, path, e) as T, path);
+        },
+      }))}
+      path={path}
+      config={overrideSchema(
+        entity,
+        customSchema !== undefined ? customSchema : schema,
+      )}
+      onChange={(val: {}) => {
+        onChange && onChange(deepUpdate(entity, path, val) as T);
+      }}
+      highlight={highlight}
+      localDispatch={localDispatch}
+      {...options}
+    />
+    // </div>
   );
 }
 export const AsyncVariableForm = asyncSFC<EditorProps<IMergeable>>(
@@ -426,9 +412,17 @@ interface VariableFormProps {
   editing: Edition | undefined;
   entity: IAbstractEntity | IAbstractContentDescriptor | undefined;
   events: WegasEvent[];
+  readOnly?: boolean;
+  localDispatch: StoreDispatch | undefined;
 }
 
-export function VariableForm({ editing, entity, events }: VariableFormProps) {
+export function VariableForm({
+  editing,
+  entity,
+  events,
+  readOnly,
+  localDispatch,
+}: VariableFormProps) {
   const highlightInstance =
     editing?.highlight &&
     (editing?.type === 'Variable' || editing?.type === 'VariableFSM') &&
@@ -471,7 +465,7 @@ export function VariableForm({ editing, entity, events }: VariableFormProps) {
           actions={actions}
           entity={entity}
           onChange={newEntity => {
-            store.dispatch(
+            (localDispatch || store.dispatch)(
               ActionCreator.EDITION_CHANGES({
                 newEntity: newEntity as IAbstractEntity,
               }),
@@ -479,6 +473,8 @@ export function VariableForm({ editing, entity, events }: VariableFormProps) {
           }}
           error={parseEventFromIndex(events)}
           highlight={editing?.highlight && !highlightInstance}
+          readOnly={readOnly}
+          localDispatch={localDispatch}
         />
       </ReflexElement>
       {instanceEditing && <ReflexSplitter />}
@@ -487,8 +483,9 @@ export function VariableForm({ editing, entity, events }: VariableFormProps) {
           <InstanceProperties
             editing={editing}
             events={events}
-            dispatch={store.dispatch}
+            dispatch={localDispatch || store.dispatch}
             highlight={highlightInstance}
+            readOnly={readOnly}
           />
         </ReflexElement>
       )}
@@ -505,5 +502,5 @@ export default function ConnectedVariableForm() {
     }),
     deepDifferent,
   );
-  return <VariableForm {...storeProps} />;
+  return <VariableForm {...storeProps} localDispatch={undefined} />;
 }

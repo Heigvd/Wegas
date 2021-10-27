@@ -346,27 +346,21 @@ export function CTree({
                   variable={variable}
                   style={noVisibleRoot ? { marginBottom: '10px' } : undefined}
                   onSelect={(i, e) => {
-                    onEditionChanges(variableId, e, e =>
-                      onMenuParentSelect(i, e),
-                    );
+                    onEditionChanges(0, e, e => onMenuParentSelect(i, e));
                   }}
                 />
               ) : entityIs(variable, 'ChoiceDescriptor') ? (
                 <AddMenuChoice
                   variable={variable}
                   onSelect={(i, e) => {
-                    onEditionChanges(variableId, e, e =>
-                      onMenuChoiceSelect(i, e),
-                    );
+                    onEditionChanges(0, e, e => onMenuChoiceSelect(i, e));
                   }}
                 />
               ) : entityIs(variable, 'EvaluationDescriptorContainer') ? (
                 <AddMenuFeedback
                   variable={variable}
                   onSelect={(i, e) => {
-                    onEditionChanges(variableId, e, e =>
-                      onMenuFeedbackSelect(i, e),
-                    );
+                    onEditionChanges(0, e, e => onMenuFeedbackSelect(i, e));
                   }}
                 />
               ) : null)}

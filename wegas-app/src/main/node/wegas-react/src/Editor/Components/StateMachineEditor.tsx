@@ -581,7 +581,7 @@ export default function StateMachineEditorWithMeta({
   readOnly,
 }: DisabledReadonly) {
   return (
-    <ComponentWithForm entityEditor disabled={disabled} readOnly={readOnly}>
+    <ComponentWithForm disabled={disabled} readOnly={readOnly}>
       {({ localDispatch, localState }) => {
         return (
           <ConnectedStateMachineEditor

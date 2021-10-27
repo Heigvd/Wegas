@@ -3,6 +3,7 @@ import { Schema } from 'jsoninput';
 import * as React from 'react';
 import { IVariableInstance } from 'wegas-ts-api';
 import { VariableInstanceAPI } from '../../../API/variableInstance.api';
+import { useOnEditionChangesModal } from '../../../Components/Modal';
 import { ThemeComponent } from '../../../Components/Theme/Theme';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
@@ -18,7 +19,7 @@ import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods'
 import { Edition, VariableEdition } from '../../../data/Reducer/globalState';
 import { updateInstance } from '../../../data/Reducer/VariableInstanceReducer';
 import { VariableDescriptor } from '../../../data/selectors';
-import { StoreDispatch } from '../../../data/Stores/store';
+import { store, StoreDispatch } from '../../../data/Stores/store';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import getEditionConfig from '../../editionConfig';
@@ -65,7 +66,7 @@ export interface InstancePropertiesProps
     DisabledReadonly {
   editing: Edition;
   events: WegasEvent[];
-  dispatch: StoreDispatch;
+  dispatch: StoreDispatch | undefined;
   actions?: EditorProps<IVariableInstance>['actions'];
   highlight?: boolean;
 }
@@ -122,6 +123,12 @@ export function InstanceProperties({
     i18nValues.instanceProps.noDescriptorEdited
   );
 
+  const onEditionChanges = useOnEditionChangesModal(
+    dispatch != null,
+    editing,
+    dispatch || store.dispatch,
+  );
+
   return (
     <Toolbar className={MediumPadding}>
       <Toolbar.Header>
@@ -138,8 +145,12 @@ export function InstanceProperties({
                       listItem,
                       i.id === selectedInstance?.id && localSelection,
                     )}
-                    onClick={() => {
-                      dispatch(ActionCreator.INSTANCE_EDIT({ instance: i }));
+                    onClick={e => {
+                      onEditionChanges(i.id!, e, () => {
+                        (dispatch || store.dispatch)(
+                          ActionCreator.INSTANCE_EDIT({ instance: i }),
+                        );
+                      });
                     }}
                   >
                     {`#${i.id} - ${
@@ -161,9 +172,9 @@ export function InstanceProperties({
               getEditionConfig(si) as Promise<Schema<AvailableViews>>
             }
             update={(entity: IVariableInstance) =>
-              dispatch(updateInstance(entity)).then(() => {
+              (dispatch || store.dispatch)(updateInstance(entity)).then(() => {
                 getInstances(descriptor);
-                dispatch(ActionCreator.INSTANCE_SAVE());
+                (dispatch || store.dispatch)(ActionCreator.INSTANCE_SAVE());
               })
             }
             entity={instance}
@@ -175,6 +186,7 @@ export function InstanceProperties({
               });
             }}
             highlight={highlight}
+            localDispatch={dispatch}
             {...options}
           />
         )}

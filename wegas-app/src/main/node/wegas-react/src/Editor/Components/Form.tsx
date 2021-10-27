@@ -9,19 +9,25 @@ import { isActionAllowed } from '../../Components/PageComponents/tools/options';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import {
-  autoScroll,
   defaultMargin,
   defaultMarginBottom,
   defaultPaddingLeft,
   defaultPaddingRight,
   expandHeight,
+  flex,
+  flexColumn,
+  flexRow,
+  grow,
   toolboxHeaderStyle,
 } from '../../css/classes';
+import { ActionCreator } from '../../data/actions';
 import { ActionsProps } from '../../data/Reducer/globalState';
+import { store, StoreDispatch } from '../../data/Stores/store';
 import { wwarn } from '../../Helper/wegaslog';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import './FormView';
+import { MessageString } from './MessageString';
 import { IconComp } from './Views/FontAwesome';
 
 const toolboxContainerStyle = css({
@@ -36,6 +42,13 @@ const toolboxButtonStyle = css({
   height: '35px',
   padding: '0 6px',
 });
+const noHighlightStyle = css({
+  boxShadow: 'initial',
+  transition: '0.5s',
+});
+const highlightStyle = css({
+  boxShadow: `inset 0px 0px 0px 10px ${themeVar.colors.HighlightColor}`,
+});
 
 interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
@@ -45,6 +58,12 @@ interface EditorProps<T> extends DisabledReadonly {
   config?: Schema;
   onChange?: (newEntity: T) => void;
   label?: React.ReactNode;
+  highlight?: boolean;
+  localDispatch: StoreDispatch | undefined;
+  error?: {
+    message: string;
+    onRead: () => void;
+  };
 }
 
 export type IForm = typeof Form;
@@ -59,6 +78,9 @@ export function Form<T>({
   disabled,
   readOnly,
   label,
+  highlight,
+  localDispatch,
+  error,
 }: EditorProps<T>) {
   const oldReceivedEntity = React.useRef(entity);
   const form = React.useRef<JSONForm>(null);
@@ -81,33 +103,34 @@ export function Form<T>({
   const findUsageAction = actions.find(a => a.sorting === 'findUsage');
 
   return (
-    <Toolbar className={autoScroll}>
-      <Toolbar.Header className={cx(toolboxContainerStyle, toolboxHeaderStyle)}>
-        {isActionAllowed({
-          disabled,
-          readOnly,
-        }) && (
-          <>
-            {update && (
-              <IconButton
-                icon="save"
-                chipStyle
-                tooltip={i18nValues.save}
-                disabled={!deepDifferent(val, entity)}
-                onClick={() => {
-                  if (form.current != null) {
-                    const validation = form.current.validate();
-                    if (validation.length) {
-                      wwarn(val, JSON.stringify(validation, null, 2));
-                    } else if (val != null) {
-                      update(val);
+    <Toolbar className={expandHeight}>
+      <Toolbar.Header className={cx(flex, flexColumn, toolboxHeaderStyle)}>
+        <div className={cx(flex, flexRow, toolboxContainerStyle)}>
+          {isActionAllowed({
+            disabled,
+            readOnly,
+          }) && (
+            <>
+              {update && (
+                <IconButton
+                  icon="save"
+                  chipStyle
+                  tooltip={i18nValues.save}
+                  disabled={!deepDifferent(val, entity)}
+                  onClick={() => {
+                    if (form.current != null) {
+                      const validation = form.current.validate();
+                      if (validation.length) {
+                        wwarn(val, JSON.stringify(validation, null, 2));
+                      } else if (val != null) {
+                        update(val);
+                      }
                     }
-                  }
-                }}
-                className={expandHeight}
-              />
-            )}
-            {/*
+                  }}
+                  className={expandHeight}
+                />
+              )}
+              {/*
             Undo button in forms.
             Leaving it as a comment as it may be asked to re-add it.
             <ConfirmButton
@@ -123,69 +146,92 @@ export function Form<T>({
               }}
               buttonClassName={expandHeight}
             /> */}
-            {deleteAction != null && deleteAction.confirm ? (
-              <ConfirmButton
-                icon="trash"
-                chipStyle
-                tooltip={i18nValues.delete}
-                onAction={succes =>
-                  succes && val != null && deleteAction.action(val, path)
-                }
-                buttonClassName={expandHeight}
-              />
-            ) : (
-              <IconButton
-                icon="trash"
-                chipStyle
-                tooltip={i18nValues.delete}
-                onClick={() => val != null && deleteAction?.action(val, path)}
-                className={expandHeight}
-              />
-            )}
-            {duplicateAction != null && (
-              <IconButton
-                icon="clone"
-                chipStyle
-                tooltip={i18nValues.duplicate}
-                onClick={() => val != null && duplicateAction.action(val, path)}
-                className={expandHeight}
-              />
-            )}
-            {findUsageAction != null && (
-              <IconButton
-                icon="search"
-                chipStyle
-                tooltip={String(findUsageAction.label)}
-                onClick={() => val != null && findUsageAction.action(val, path)}
-                className={expandHeight}
-              />
-            )}
-            {toolbox.length > 0 && (
-              <DropMenu
-                items={toolbox || []}
-                label={<IconComp icon="cog" />}
-                onSelect={i => {
-                  val != null && i.action(val, path);
-                }}
-                buttonClassName={toolboxButtonStyle}
-              />
-            )}
-          </>
-        )}
-        {isActionAllowed({
-          disabled,
-          readOnly,
-        }) &&
-          closeAction != null && (
-            <IconButton
-              icon="times"
-              tooltip={i18nValues.close}
-              onClick={() => val != null && closeAction.action(val, path)}
-            />
+              {deleteAction != null && deleteAction.confirm ? (
+                <ConfirmButton
+                  icon="trash"
+                  chipStyle
+                  tooltip={i18nValues.delete}
+                  onAction={succes =>
+                    succes && val != null && deleteAction.action(val, path)
+                  }
+                  buttonClassName={expandHeight}
+                />
+              ) : (
+                <IconButton
+                  icon="trash"
+                  chipStyle
+                  tooltip={i18nValues.delete}
+                  onClick={() => val != null && deleteAction?.action(val, path)}
+                  className={expandHeight}
+                />
+              )}
+              {duplicateAction != null && (
+                <IconButton
+                  icon="clone"
+                  chipStyle
+                  tooltip={i18nValues.duplicate}
+                  onClick={() =>
+                    val != null && duplicateAction.action(val, path)
+                  }
+                  className={expandHeight}
+                />
+              )}
+              {findUsageAction != null && (
+                <IconButton
+                  icon="search"
+                  chipStyle
+                  tooltip={String(findUsageAction.label)}
+                  onClick={() =>
+                    val != null && findUsageAction.action(val, path)
+                  }
+                  className={expandHeight}
+                />
+              )}
+              {toolbox.length > 0 && (
+                <DropMenu
+                  items={toolbox || []}
+                  label={<IconComp icon="cog" />}
+                  onSelect={i => {
+                    val != null && i.action(val, path);
+                  }}
+                  buttonClassName={toolboxButtonStyle}
+                />
+              )}
+            </>
           )}
+          {isActionAllowed({
+            disabled,
+            readOnly,
+          }) &&
+            closeAction != null && (
+              <IconButton
+                icon="times"
+                tooltip={i18nValues.close}
+                onClick={() => val != null && closeAction.action(val, path)}
+              />
+            )}
+        </div>
+        {error && (
+          <MessageString
+            value={error.message}
+            type={'error'}
+            duration={3000}
+            onLabelVanish={error.onRead}
+          />
+        )}{' '}
       </Toolbar.Header>
       <Toolbar.Content
-        className={cx(autoScroll, defaultPaddingLeft, defaultPaddingRight)}
+        className={cx(grow, defaultPaddingLeft, defaultPaddingRight, {
+          [highlightStyle]: highlight,
+          [noHighlightStyle]: !highlight,
+        })}
+        onMouseMove={() => {
+          if (highlight) {
+            (localDispatch || store.dispatch)(
+              ActionCreator.EDITION_HIGHLIGHT({ highlight: false }),
+            );
+          }
+        }}
       >
         <div className={defaultMargin}>
           <h3 className={defaultMarginBottom}>{label}</h3>
