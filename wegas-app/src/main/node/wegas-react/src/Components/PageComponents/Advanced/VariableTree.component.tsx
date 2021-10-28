@@ -38,7 +38,6 @@ export default function PlayerVariableTree({
   ) : (
     <ComponentWithForm
       flexValues={flexValues}
-      entityEditor
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
     >

@@ -63,8 +63,8 @@ const dropBottomZone = css({
 });
 
 const headerTabStyle = css({
-paddingTop: '20px',
-columnGap: '6px',
+  paddingTop: '20px',
+  columnGap: '6px',
 });
 
 export type DropAction = (item: { label: string; type: string }) => void;
@@ -253,7 +253,8 @@ export function DnDTabLayout({
   React.useEffect(() => {
     if (
       activeTab === undefined ||
-      (components.find(comp => comp.tabId === activeTab) === undefined &&
+      (components.find(comp => comp != null && comp.tabId === activeTab) ===
+        undefined &&
         components.length > 0)
     ) {
       onSelect && components[0] != null && onSelect(components[0].tabId);

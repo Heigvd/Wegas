@@ -9,7 +9,7 @@ import { useDebounceFn } from '../../../Components/Hooks/useDebounce';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
-import { useOkCancelModal } from '../../../Components/Modal';
+import { useOnEditionChangesModal } from '../../../Components/Modal';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
@@ -102,13 +102,12 @@ export function VariableTreeView({
   forceLocalDispatch,
   ...options
 }: TreeProps) {
-  const [onAccept, setOnAccept] = React.useState(() => () => {});
   const [openNodes, setOpenNodes] = React.useState<{
     [path: string]: boolean | undefined;
   }>({});
 
   const { data } = useAsync(itemsPromise);
-  const { showModal, OkCancelModal } = useOkCancelModal(TREECONTENTID);
+
   const i18nValues = useInternalTranslate(commonTranslations);
 
   const globalDispatch = store.dispatch;
@@ -155,6 +154,12 @@ export function VariableTreeView({
     [forceLocalDispatch, localDispatch, root.id],
   );
 
+  const onEditionChanges = useOnEditionChangesModal(
+    forceLocalDispatch,
+    localState,
+    localDispatch,
+  );
+
   return (
     <Toolbar>
       <Toolbar.Header
@@ -194,27 +199,6 @@ export function VariableTreeView({
         id={TREECONTENTID}
         className={css({ padding: '1px', marginBottom: '2rem' })}
       >
-        <DropMenu
-          tooltip={i18nValues.add}
-          items={data || []}
-          prefixedLabel
-          icon="plus"
-          label="Add new variable"
-          onSelect={(i, e) => {
-            if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
-              localDispatch(Actions.EditorActions.createVariable(i.value));
-            } else {
-              globalDispatch(Actions.EditorActions.createVariable(i.value));
-              focusTab(mainLayoutId, 'Variable Properties');
-            }
-          }}
-          containerClassName={addVariableContainerStyle}
-          buttonClassName={addVariableButtonStyle}
-        />
-        <OkCancelModal onOk={onAccept}>
-          <p>{i18nValues.changesWillBeLost}</p>
-          <p>{i18nValues.areYouSure}</p>
-        </OkCancelModal>
         <TreeView
           rootId={String(root.id)}
           rootData={root as unknown as IVariableDescriptor}
@@ -228,10 +212,6 @@ export function VariableTreeView({
           {root.itemsIds ? (
             root.itemsIds.map(id => (
               <CTree
-                onShowWarning={onOk => {
-                  setOnAccept(() => onOk);
-                  showModal();
-                }}
                 key={id}
                 variableId={id}
                 noVisibleRoot={noVisibleRoot}
@@ -245,6 +225,25 @@ export function VariableTreeView({
             <span>{`${i18nValues.loading} ...`}</span>
           )}
         </TreeView>
+        <DropMenu
+          tooltip={i18nValues.add}
+          items={data || []}
+          prefixedLabel
+          icon="plus"
+          label="Add new variable"
+          onSelect={(i, e) => {
+            onEditionChanges(0, e, e => {
+              if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
+                localDispatch(Actions.EditorActions.createVariable(i.value));
+              } else {
+                globalDispatch(Actions.EditorActions.createVariable(i.value));
+                focusTab(mainLayoutId, 'Variable Properties');
+              }
+            });
+          }}
+          containerClassName={addVariableContainerStyle}
+          buttonClassName={addVariableButtonStyle}
+        />
       </Toolbar.Content>
     </Toolbar>
   );
@@ -253,7 +252,7 @@ export function VariableTreeView({
 export default function TreeWithMeta() {
   const root = useGameModel();
   return (
-    <ComponentWithForm entityEditor>
+    <ComponentWithForm>
       {({ localState, localDispatch }) => {
         return (
           <VariableTreeView

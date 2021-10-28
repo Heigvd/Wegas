@@ -1,5 +1,5 @@
-import { managedModeRequest, rest } from './rest';
 import { IVariableDescriptor, IVariableInstance } from 'wegas-ts-api';
+import { managedModeRequest, rest } from './rest';
 
 /*
 GET	/Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescriptor/{variableDescriptorId : ([1-9][0-9]*)?}{sep2: /?}VariableInstance
@@ -52,6 +52,12 @@ export const VariableInstanceAPI = {
       (res: Response) => res.json(),
     );
   },
+  // getByDescriptor(
+  //   variableDescriptor: IVariableDescriptor,
+  //   gameModelId?: number,
+  // ) {
+  //   return managedModeRequest(VI_BASE({ v: variableDescriptor, gameModelId }));
+  // },
   update(variableInstance: IVariableInstance, gameModelId?: number) {
     return managedModeRequest(
       `${VI_BASE({ v: variableInstance, gameModelId })}`,
