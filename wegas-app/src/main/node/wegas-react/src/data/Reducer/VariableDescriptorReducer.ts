@@ -1,16 +1,16 @@
-import { Reducer } from 'redux';
 import u from 'immer';
-import { manageResponseHandler, StateActions, ActionType } from '../actions';
-import { Actions as Act } from '..';
-import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
-import { deepRemove } from '../updateUtils';
-import { ThunkResult, store } from '../Stores/store';
+import { Reducer } from 'redux';
 import { IReview, IVariableDescriptor } from 'wegas-ts-api';
+import { Actions as Act } from '..';
 import {
   PeerReviewDescriptorAPI,
   PeerReviewStateSelector,
 } from '../../API/peerReview.api';
+import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
+import { ActionType, manageResponseHandler, StateActions } from '../actions';
 import { Game, GameModel, Player } from '../selectors';
+import { store, ThunkResult } from '../Stores/store';
+import { deepRemove } from '../updateUtils';
 
 export interface VariableDescriptorState {
   [id: string]: Readonly<IVariableDescriptor> | undefined;

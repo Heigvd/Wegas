@@ -33,8 +33,8 @@ import { selectCurrentEditorLanguage } from '../../data/selectors/Languages';
 import { store, useStore } from '../../data/Stores/store';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { mainLayoutId } from '../layouts';
 import { parseEvent } from './EntityEditor';
-import { mainLayoutId } from './Layout';
 import { FontAwesome, IconComp } from './Views/FontAwesome';
 
 const transparentDropDownButton = css({
@@ -143,12 +143,14 @@ export default function Header() {
   const { currentRole } = React.useContext(roleCTX);
   const i18nValues = useInternalTranslate(commonTranslations);
   const [showHeader, setShowHeader] = React.useState(true);
-  const { gameModel, user, userLanguage } = useStore(s => ({
+  const { gameModel, user, userLanguage, editing } = useStore(s => ({
     gameModel: GameModel.selectCurrent(),
     user: Global.selectCurrentUser(),
     userLanguage: selectCurrentEditorLanguage(s),
+    editing: s.global.editing,
   }));
   const dispatch = store.dispatch;
+
   return (
     <>
       <Button
@@ -174,6 +176,7 @@ export default function Header() {
         )}
       >
         <div className={cx(flex, itemCenter)}>
+          {JSON.stringify(editing?.type)}
           <FontAwesome icon="user" />
           <span className={componentMarginLeft}>{user.name}</span>
           <DropMenu

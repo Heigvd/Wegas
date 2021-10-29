@@ -96,7 +96,6 @@ const tabStyle = css({
   display: 'flex',
   alignItems: 'center',
   cursor: 'pointer',
-  marginRight: '6px',
   padding: '10px 10px',
   borderRadius:
     themeVar.dimensions.BorderRadius +

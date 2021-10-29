@@ -1,11 +1,15 @@
 import { css, cx } from '@emotion/css';
+import produce from 'immer';
 import { get } from 'lodash-es';
 import * as React from 'react';
 import {
+  IEvaluationDescriptor,
   IEvaluationDescriptorContainer,
+  IPeerReviewDescriptor,
   IResult,
   IVariableDescriptor,
 } from 'wegas-ts-api';
+import { useOnEditionChangesModal } from '../../../Components/Modal';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { TreeNode } from '../../../Components/TreeView/TreeNode';
@@ -15,9 +19,10 @@ import {
   globalSelection,
   localSelection,
 } from '../../../css/classes';
+import { Actions } from '../../../data';
 import { entityIs, varIsList } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import { Edition } from '../../../data/Reducer/globalState';
+import { Edition, VariableEdition } from '../../../data/Reducer/globalState';
 import { State } from '../../../data/Reducer/reducers';
 import { VariableDescriptor } from '../../../data/selectors';
 import { store, useStore } from '../../../data/Stores/store';
@@ -25,9 +30,14 @@ import { shallowIs } from '../../../Helper/shallowIs';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { getEntityActions } from '../../editionConfig';
-import { mainLayoutId } from '../Layout';
+import { mainLayoutId } from '../../layouts';
 import { focusTab } from '../LinearTabLayout/LinearLayout';
-import { AddMenuChoice, AddMenuFeedback, AddMenuParent } from './AddMenu';
+import {
+  AddMenuChoice,
+  AddMenuFeedback,
+  AddMenuParent,
+  AddMenuProps,
+} from './AddMenu';
 import { VariableTreeTitle } from './VariableTreeTitle';
 import { SharedTreeProps, TREEVIEW_ITEM_TYPE } from './VariableTreeView';
 
@@ -104,7 +114,7 @@ function isEditing(
   variableId: number,
   subPath?: string[],
   editing?: Readonly<Edition>,
-) {
+): editing is Readonly<VariableEdition> {
   return (
     editing !== undefined &&
     (editing.type === 'Variable' || editing.type === 'VariableFSM') &&
@@ -113,11 +123,9 @@ function isEditing(
     shallowIs(subPath || [], editing.path)
   );
 }
-
-interface CTreeProps {
+export interface CTreeProps {
   variableId: number;
   subPath?: string[];
-  onShowWarning?: (onAccept: () => void) => void;
 }
 
 export function CTree({
@@ -127,7 +135,6 @@ export function CTree({
   localDispatch,
   localState,
   noVisibleRoot,
-  onShowWarning,
   readOnly,
   subPath,
 }: Omit<
@@ -178,6 +185,12 @@ export function CTree({
 
   const localEditing = isEditing(variableId, subPath, localState);
 
+  const onEditionChanges = useOnEditionChangesModal(
+    forceLocalDispatch,
+    localState,
+    localDispatch,
+  );
+
   const onClickAction = React.useCallback(
     (e: ModifierKeysEvent) => {
       let dispatch = store.dispatch;
@@ -199,6 +212,102 @@ export function CTree({
     },
     [forceLocalDispatch, localDispatch, subPath, variableId, variable],
   );
+  const onMenuParentSelect = React.useCallback<
+    Exclude<AddMenuProps['onSelect'], undefined>
+  >((i, e) => {
+    if (
+      entityIs(variable, 'ListDescriptor') ||
+      entityIs(variable, 'QuestionDescriptor') ||
+      entityIs(variable, 'WhQuestionDescriptor')
+    ) {
+      let dispatch = store.dispatch;
+
+      if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
+        dispatch = localDispatch;
+      } else {
+        focusTab(mainLayoutId, 'Variable Properties');
+      }
+
+      dispatch(Actions.EditorActions.createVariable(i.value, variable));
+    }
+  }, []);
+
+  const onMenuChoiceSelect = React.useCallback<
+    Exclude<AddMenuProps['onSelect'], undefined>
+  >((i, e) => {
+    if (entityIs(variable, 'ChoiceDescriptor')) {
+      const globalDispatch = store.dispatch;
+      let dispatch = globalDispatch;
+      if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
+        dispatch = localDispatch;
+      } else {
+        focusTab(mainLayoutId, 'Variable Properties');
+      }
+
+      dispatch(
+        Actions.EditorActions.createVariable(i.value, variable, {
+          save: (entity: IResult) => {
+            const newChoice = produce(variable, v => {
+              v.results.push(entity);
+            });
+            const index = newChoice.results.length - 1;
+            globalDispatch(
+              Actions.VariableDescriptorActions.updateDescriptor(newChoice),
+            ).then(() =>
+              dispatch(
+                Actions.EditorActions.editVariable(newChoice, [
+                  'results',
+                  String(index),
+                ]),
+              ),
+            );
+          },
+        }),
+      );
+    }
+  }, []);
+
+  const onMenuFeedbackSelect = React.useCallback<
+    Exclude<AddMenuProps['onSelect'], undefined>
+  >((i, e) => {
+    if (entityIs(variable, 'EvaluationDescriptorContainer')) {
+      const globalDispatch = store.dispatch;
+      let dispatch = globalDispatch;
+      if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
+        dispatch = localDispatch;
+      } else {
+        focusTab(mainLayoutId, 'Variable Properties');
+      }
+
+      const parent = VariableDescriptor.select(
+        variable.parentId,
+      ) as IPeerReviewDescriptor;
+
+      const path = subPath![0] as 'feedback' | 'fbComments';
+
+      dispatch(
+        Actions.EditorActions.createVariable(i.value, parent, {
+          save: (entity: IEvaluationDescriptor) => {
+            const newChoice = produce(parent, v => {
+              v[path].evaluations.push(entity);
+            });
+            const index = newChoice[path].evaluations.length - 1;
+            globalDispatch(
+              Actions.VariableDescriptorActions.updateDescriptor(newChoice),
+            ).then(() =>
+              dispatch(
+                Actions.EditorActions.editVariable(newChoice, [
+                  path,
+                  'evaluations',
+                  String(index),
+                ]),
+              ),
+            );
+          },
+        }),
+      );
+    }
+  }, []);
 
   if (variable) {
     if (!match) {
@@ -220,15 +329,7 @@ export function CTree({
             })}
             onClick={(e: ModifierKeysEvent) => {
               if (actionAllowed) {
-                const unsaved =
-                  forceLocalDispatch || e.ctrlKey
-                    ? localState?.newEntity != null
-                    : store.getState().global.editing?.newEntity != null;
-                if (unsaved && onShowWarning) {
-                  onShowWarning(() => onClickAction(e));
-                } else {
-                  onClickAction(e);
-                }
+                onEditionChanges(variableId, e, onClickAction);
               }
             }}
           >
@@ -243,25 +344,24 @@ export function CTree({
                   label={noVisibleRoot ? 'Add' : undefined}
                   prefixedLabel={!noVisibleRoot}
                   variable={variable}
-                  localDispatch={localDispatch}
-                  focusTab={tabId => focusTab(mainLayoutId, tabId)}
-                  forceLocalDispatch={forceLocalDispatch}
                   style={noVisibleRoot ? { marginBottom: '10px' } : undefined}
+                  onSelect={(i, e) => {
+                    onEditionChanges(0, e, e => onMenuParentSelect(i, e));
+                  }}
                 />
               ) : entityIs(variable, 'ChoiceDescriptor') ? (
                 <AddMenuChoice
                   variable={variable}
-                  localDispatch={localDispatch}
-                  focusTab={tabId => focusTab(mainLayoutId, tabId)}
-                  forceLocalDispatch={forceLocalDispatch}
+                  onSelect={(i, e) => {
+                    onEditionChanges(0, e, e => onMenuChoiceSelect(i, e));
+                  }}
                 />
               ) : entityIs(variable, 'EvaluationDescriptorContainer') ? (
                 <AddMenuFeedback
                   variable={variable}
-                  localDispatch={localDispatch}
-                  focusTab={tabId => focusTab(mainLayoutId, tabId)}
-                  path={subPath![0] as 'feedback' | 'fbComments'}
-                  forceLocalDispatch={forceLocalDispatch}
+                  onSelect={(i, e) => {
+                    onEditionChanges(0, e, e => onMenuFeedbackSelect(i, e));
+                  }}
                 />
               ) : null)}
           </div>
@@ -279,7 +379,6 @@ export function CTree({
                 forceLocalDispatch={forceLocalDispatch}
                 disabled={disabled}
                 readOnly={readOnly}
-                onShowWarning={onShowWarning}
               />
             ))
           : entityIs(variable, 'ChoiceDescriptor')
@@ -293,7 +392,6 @@ export function CTree({
                 forceLocalDispatch={forceLocalDispatch}
                 disabled={disabled}
                 readOnly={readOnly}
-                onShowWarning={onShowWarning}
               />
             ))
           : entityIs(variable, 'PeerReviewDescriptor')
@@ -307,7 +405,6 @@ export function CTree({
                 forceLocalDispatch={forceLocalDispatch}
                 disabled={disabled}
                 readOnly={readOnly}
-                onShowWarning={onShowWarning}
               />,
               <CTree
                 key={1}
@@ -318,7 +415,6 @@ export function CTree({
                 forceLocalDispatch={forceLocalDispatch}
                 disabled={disabled}
                 readOnly={readOnly}
-                onShowWarning={onShowWarning}
               />,
             ]
           : entityIs(variable, 'EvaluationDescriptorContainer')
@@ -336,7 +432,6 @@ export function CTree({
                 forceLocalDispatch={forceLocalDispatch}
                 disabled={disabled}
                 readOnly={readOnly}
-                onShowWarning={onShowWarning}
               />
             ))
           : null}

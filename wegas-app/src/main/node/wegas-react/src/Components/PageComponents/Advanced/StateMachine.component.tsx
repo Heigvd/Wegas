@@ -1,19 +1,19 @@
 import * as React from 'react';
-import {
-  pageComponentFactory,
-  registerComponent,
-} from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
-import { WegasComponentProps } from '../tools/EditableComponent';
-import { useScript } from '../../Hooks/useScript';
 import { IScript, SFSMDescriptor } from 'wegas-ts-api';
-import { StateMachineEditor } from '../../../Editor/Components/StateMachineEditor';
+import { Player } from '../../../data/selectors';
 import {
   ComponentWithForm,
   ComponentWithFormFlexValues,
   flexValuesSchema,
 } from '../../../Editor/Components/FormView/ComponentWithForm';
-import { Player } from '../../../data/selectors';
+import { StateMachineEditor } from '../../../Editor/Components/StateMachineEditor';
+import { useScript } from '../../Hooks/useScript';
+import {
+  pageComponentFactory,
+  registerComponent,
+} from '../tools/componentFactory';
+import { WegasComponentProps } from '../tools/EditableComponent';
+import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerStateMachineProps extends WegasComponentProps {
   stateMachine?: IScript;
@@ -43,7 +43,6 @@ export default function PlayerStateMachine({
   ) : (
     <ComponentWithForm
       flexValues={flexValues}
-      entityEditor
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
     >

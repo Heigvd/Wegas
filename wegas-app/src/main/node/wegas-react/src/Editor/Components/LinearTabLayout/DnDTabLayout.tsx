@@ -62,6 +62,11 @@ const dropBottomZone = css({
   bottom: 0,
 });
 
+const headerTabStyle = css({
+  paddingTop: '20px',
+  columnGap: '6px',
+});
+
 export type DropAction = (item: { label: string; type: string }) => void;
 
 /**
@@ -118,7 +123,7 @@ function DnDTabLayoutHeader({
   const i18nTabsNames = useInternalTranslate(editorTabsTranslations);
   const tabsClassNameFn = tabsClassName ? tabsClassName : tabsStyle;
   return (
-    <div className={cx(flex, grow, autoScroll)}>
+    <div className={cx(flex, grow, autoScroll, headerTabStyle)}>
       {components.map(({ tabId: label }, i, array) => {
         const translatedOrUndefLabel =
           i18nTabsNames.tabsNames[
@@ -248,7 +253,8 @@ export function DnDTabLayout({
   React.useEffect(() => {
     if (
       activeTab === undefined ||
-      (components.find(comp => comp.tabId === activeTab) === undefined &&
+      (components.find(comp => comp != null && comp.tabId === activeTab) ===
+        undefined &&
         components.length > 0)
     ) {
       onSelect && components[0] != null && onSelect(components[0].tabId);

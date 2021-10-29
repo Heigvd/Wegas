@@ -27,8 +27,6 @@ const childDropMenuButtonStyle = css({
     },
 });
 
-const stringLabelStyle = css({ padding: '5px' });
-
 export type SelecteDropdMenuItem<
   T,
   MItem extends DropMenuItem<T> = DropMenuItem<T>,
@@ -65,6 +63,8 @@ export interface DropMenuProps<
   style?: React.CSSProperties;
   selected?: T | T[];
   tooltip?: string;
+  openOnHover?: boolean;
+  openOnHoverChildren?: boolean;
 }
 /**
  * returns an empty string
@@ -83,7 +83,8 @@ const subMenuItemContainer = (
     itemCenter,
     css({
       cursor: 'pointer',
-      padding: '3px 10px',
+      padding: '8px 10px',
+      height: '35px',
       width: '100%',
       userSelect: 'none',
       pointerEvents: isDisabled ? 'none' : 'initial',
@@ -93,6 +94,10 @@ const subMenuItemContainer = (
         : isSelected
         ? themeVar.colors.HeaderColor
         : undefined,
+      '> *': {
+        padding: 0,
+        margin: 0,
+      },
       ':hover': {
         backgroundColor: themeVar.colors.HeaderColor,
         color: themeVar.colors.DarkTextColor,
@@ -123,7 +128,10 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
   style,
   selected,
   tooltip,
+  openOnHover,
+  openOnHoverChildren = true,
 }: DropMenuProps<T, MItem>) {
+  const timer = React.useRef<NodeJS.Timeout>();
   const onStateChange = React.useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (changes: StateChangeOptions<any>) => {
@@ -151,8 +159,30 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
       }}
       itemToString={emtpyStr}
     >
-      {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
-        <div id={id} className={containerClassName} style={style}>
+      {({ getItemProps, isOpen, toggleMenu, closeMenu, openMenu }) => (
+        <div
+          id={id}
+          className={containerClassName}
+          style={style}
+          onMouseOver={() => {
+            if (openOnHover) {
+              if (timer.current != null) {
+                clearTimeout(timer.current);
+              }
+              timer.current = setTimeout(() => {
+                openMenu();
+              }, 200);
+            }
+          }}
+          onMouseLeave={() => {
+            if (openOnHover || openOnHoverChildren) {
+              if (timer.current != null) {
+                clearTimeout(timer.current);
+              }
+              closeMenu();
+            }
+          }}
+        >
           <div
             className={itemStyle}
             onClick={ev => {
@@ -250,6 +280,8 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                         path={newPath}
                         buttonClassName={childDropMenuButtonStyle}
                         containerClassName={expandWidth}
+                        openOnHover={openOnHoverChildren}
+                        openOnHoverChildren={openOnHoverChildren}
                       />
                       {trasher}
                     </div>
@@ -270,13 +302,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                       classNameOrEmpty(item.className)
                     }
                   >
-                    {typeof item.label === 'string' ? (
-                      <div className={stringLabelStyle}>
-                        <p>{item.label}</p>
-                      </div>
-                    ) : (
-                      item.label
-                    )}
+                    {item.label}
                     {trasher}
                   </div>
                 );

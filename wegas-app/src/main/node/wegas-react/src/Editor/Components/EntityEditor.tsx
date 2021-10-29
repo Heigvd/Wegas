@@ -1,29 +1,30 @@
-import * as React from 'react';
-import { get, cloneDeep } from 'lodash-es';
 import { Schema } from 'jsoninput';
-import { State } from '../../data/Reducer/reducers';
-import { GameModel, Helper, VariableDescriptor } from '../../data/selectors';
-import getEditionConfig, { getClassLabel } from '../editionConfig';
-import { Actions } from '../../data';
+import { cloneDeep, get } from 'lodash-es';
+import * as React from 'react';
+import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
+import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
-import { deepUpdate } from '../../data/updateUtils';
-import { StoreDispatch, store, useStore } from '../../data/Stores/store';
-import { AvailableViews } from './FormView';
-import { cx } from '@emotion/css';
-import { flex, grow, flexColumn, MediumPadding } from '../../css/classes';
+import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
+import { MediumPadding } from '../../css/classes';
+import { Actions } from '../../data';
+import { ActionCreator } from '../../data/actions';
+import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
 import {
   ActionsProps,
   ComponentEdition,
   Edition,
+  isEditingVariable,
   VariableEdition,
 } from '../../data/Reducer/globalState';
-import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
-import { MessageString } from './MessageString';
-import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
-import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
-import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { State } from '../../data/Reducer/reducers';
+import { GameModel, Helper, VariableDescriptor } from '../../data/selectors';
+import { store, StoreDispatch, useStore } from '../../data/Stores/store';
+import { deepUpdate } from '../../data/updateUtils';
 import { commonTranslations } from '../../i18n/common/common';
-import { ActionCreator } from '../../data/actions';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
+import getEditionConfig, { getClassLabel } from '../editionConfig';
+import { AvailableViews } from './FormView';
+import { InstanceProperties } from './Variable/InstanceProperties';
 
 export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
@@ -36,6 +37,8 @@ export interface EditorProps<T> extends DisabledReadonly {
     onRead: () => void;
   };
   onChange?: (newEntity: T) => void;
+  highlight?: boolean;
+  localDispatch: StoreDispatch | undefined;
 }
 
 type VISIBILITY = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE';
@@ -163,6 +166,8 @@ async function WindowedEditor<T extends IMergeable>({
   path,
   error,
   onChange,
+  highlight,
+  localDispatch,
   ...options
 }: EditorProps<T>) {
   let pathEntity = entity;
@@ -206,40 +211,38 @@ async function WindowedEditor<T extends IMergeable>({
   }
 
   return (
-    <div className={cx(flex, grow, flexColumn)}>
-      <MessageString
-        value={error && error.message}
-        type={'error'}
-        duration={3000}
-        onLabelVanish={error && error.onRead}
-      />
-      <Form
-        entity={pathEntity}
-        label={editorTitle({
-          label: entity
-            ? (entity as { label?: ITranslatableContent }).label
-            : undefined,
-          editorTag: entity
-            ? (entity as { editorTag?: string }).editorTag
-            : undefined,
-          name: getClassLabel(pathEntity),
-        })}
-        update={update != null ? updatePath : update}
-        actions={actions.map(action => ({
-          ...action,
-          action: function (e: T) {
-            action.action(deepUpdate(entity, path, e) as T, path);
-          },
-        }))}
-        path={path}
-        config={overrideSchema(
-          entity,
-          customSchema !== undefined ? customSchema : schema,
-        )}
-        onChange={onChange}
-        {...options}
-      />
-    </div>
+    // <div className={cx(flex, grow, flexColumn)}>
+    <Form
+      entity={pathEntity}
+      label={editorTitle({
+        label: entity
+          ? (entity as { label?: ITranslatableContent }).label
+          : undefined,
+        editorTag: entity
+          ? (entity as { editorTag?: string }).editorTag
+          : undefined,
+        name: getClassLabel(pathEntity),
+      })}
+      update={update != null ? updatePath : update}
+      actions={actions.map(action => ({
+        ...action,
+        action: function (e: T) {
+          action.action(deepUpdate(entity, path, e) as T, path);
+        },
+      }))}
+      path={path}
+      config={overrideSchema(
+        entity,
+        customSchema !== undefined ? customSchema : schema,
+      )}
+      onChange={(val: {}) => {
+        onChange && onChange(deepUpdate(entity, path, val) as T);
+      }}
+      highlight={highlight}
+      localDispatch={localDispatch}
+      {...options}
+    />
+    // </div>
   );
 }
 export const AsyncVariableForm = asyncSFC<EditorProps<IMergeable>>(
@@ -361,11 +364,15 @@ export function getConfig(state: Readonly<Edition>) {
   return (entity: IVariableDescriptor) => getStateConfig(state, entity);
 }
 
-export function getUpdate(state: Readonly<Edition>, dispatch: StoreDispatch) {
+export function getUpdate(
+  state: Readonly<Edition>,
+  dispatch: StoreDispatch,
+  selectUpdatedEntity: boolean = true,
+) {
   return 'actions' in state && state.actions.save
     ? state.actions.save
     : (entity: IAbstractEntity) => {
-        dispatch(Actions.EditorActions.saveEditor(entity));
+        dispatch(Actions.EditorActions.saveEditor(entity, selectUpdatedEntity));
       };
 }
 
@@ -401,15 +408,26 @@ export function editingGotPath(
   );
 }
 
-export default function VariableForm() {
-  const { editing, entity, events } = useStore(
-    (s: State) => ({
-      editing: s.global.editing,
-      entity: getEntity(s.global.editing),
-      events: s.global.events,
-    }),
-    deepDifferent,
-  );
+interface VariableFormProps {
+  editing: Edition | undefined;
+  entity: IAbstractEntity | IAbstractContentDescriptor | undefined;
+  events: WegasEvent[];
+  readOnly?: boolean;
+  localDispatch: StoreDispatch | undefined;
+}
+
+export function VariableForm({
+  editing,
+  entity,
+  events,
+  readOnly,
+  localDispatch,
+}: VariableFormProps) {
+  const highlightInstance =
+    editing?.highlight &&
+    (editing?.type === 'Variable' || editing?.type === 'VariableFSM') &&
+    editing?.instanceEditing?.editedInstance != null &&
+    !editing.instanceEditing.editedInstance.saved;
 
   const path = React.useMemo(
     () => (editingGotPath(editing) ? editing.path : undefined),
@@ -434,21 +452,55 @@ export default function VariableForm() {
     return null;
   }
 
+  const instanceEditing =
+    isEditingVariable(editing) && editing.instanceEditing != null;
+
   return (
-    <AsyncVariableForm
-      path={path}
-      getConfig={config}
-      update={update}
-      actions={actions}
-      entity={entity}
-      onChange={newEntity => {
-        store.dispatch(
-          ActionCreator.EDITION_CHANGES({
-            newEntity: newEntity as IAbstractEntity,
-          }),
-        );
-      }}
-      error={parseEventFromIndex(events)}
-    />
+    <ReflexContainer orientation="vertical">
+      <ReflexElement>
+        <AsyncVariableForm
+          path={path}
+          getConfig={config}
+          update={update}
+          actions={actions}
+          entity={entity}
+          onChange={newEntity => {
+            (localDispatch || store.dispatch)(
+              ActionCreator.EDITION_CHANGES({
+                newEntity: newEntity as IAbstractEntity,
+              }),
+            );
+          }}
+          error={parseEventFromIndex(events)}
+          highlight={editing?.highlight && !highlightInstance}
+          readOnly={readOnly}
+          localDispatch={localDispatch}
+        />
+      </ReflexElement>
+      {instanceEditing && <ReflexSplitter />}
+      {instanceEditing && (
+        <ReflexElement>
+          <InstanceProperties
+            editing={editing}
+            events={events}
+            dispatch={localDispatch || store.dispatch}
+            highlight={highlightInstance}
+            readOnly={readOnly}
+          />
+        </ReflexElement>
+      )}
+    </ReflexContainer>
   );
+}
+
+export default function ConnectedVariableForm() {
+  const storeProps = useStore(
+    (s: State) => ({
+      editing: s.global.editing,
+      entity: getEntity(s.global.editing),
+      events: s.global.events,
+    }),
+    deepDifferent,
+  );
+  return <VariableForm {...storeProps} localDispatch={undefined} />;
 }

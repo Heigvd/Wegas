@@ -4,12 +4,14 @@ export interface CommonTranslations {
   changesNotSaved: string;
   changesSaved: string;
   changesWillBeLost: string;
+  whatDoYouWantToDo: string;
   areYouSure: string;
   loading: string;
   loadingFiles: string;
   someWentWrong: string;
   accept: string;
   cancel: string;
+  deleteChanges: string;
   delete: string;
   reset: string;
   restart: string;
@@ -21,6 +23,7 @@ export interface CommonTranslations {
   filter: string;
   empty: string;
   forceDelete: string;
+  seeChanges: string;
   buildingWorld: string;
   features: string;
   language: string;

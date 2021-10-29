@@ -6,6 +6,7 @@ import { themeVar } from '../../Components/Theme/ThemeVars';
 import { State } from '../../data/Reducer/reducers';
 import { useStore } from '../../data/Stores/store';
 import { visitIndex } from '../../Helper/pages';
+import { mainLayoutId } from '../layouts';
 import Header from './Header';
 import {
   DndLinearLayout,
@@ -24,9 +25,6 @@ const FileBrowserWithMeta = React.lazy(
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
 const PlayLocal = React.lazy(() => import('./PlayLocal'));
 const PlayServer = React.lazy(() => import('./PlayServer'));
-const InstancesEditor = React.lazy(
-  () => import('./Variable/InstanceProperties'),
-);
 const ThemeEditor = React.lazy(
   () => import('../../Components/Theme/Components/ThemeEditor'),
 );
@@ -37,7 +35,7 @@ const Tester = React.lazy(
 
 const ComponentPalette = React.lazy(() => import('./Page/ComponentPalette'));
 const ConnectedComponentProperties = React.lazy(
-  () => import('./Languages/Languages'),
+  () => import('./Page/ComponentProperties'),
 );
 const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
 const PagesLayout = React.lazy(() => import('./Page/PagesLayout'));
@@ -53,7 +51,7 @@ const layout = css({
   color: themeVar.colors.DarkTextColor,
 });
 
-export const availableLayoutTabs: LinearLayoutComponents = [
+const availableLayoutTabs: LinearLayoutComponents = [
   {
     tabId: 'Tester',
     content: <Tester />,
@@ -91,10 +89,6 @@ export const availableLayoutTabs: LinearLayoutComponents = [
     content: <PlayServer />,
   },
   {
-    tabId: 'Instances Editor',
-    content: <InstancesEditor />,
-  },
-  {
     tabId: 'Theme Editor',
     content: <ThemeEditor />,
   },
@@ -125,8 +119,6 @@ export const availableLayoutTabs: LinearLayoutComponents = [
     ],
   },
 ];
-
-export const mainLayoutId = 'MainEditorLayout';
 
 function scenaristPagesSelector(s: State) {
   return s.pages.index

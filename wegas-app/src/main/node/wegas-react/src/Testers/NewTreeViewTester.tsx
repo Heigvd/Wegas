@@ -1,20 +1,20 @@
+import { cx } from '@emotion/css';
 import * as React from 'react';
+import { useDrag, useDrop } from 'react-dnd';
 import {
+  expandBoth,
+  flex,
+  flexColumn,
+  flexDistribute,
+  flexRow,
+  grow,
+  itemCenter,
+} from '../css/classes';
+import {
+  DropResult,
   Tree,
   TreeNode,
-  DropResult,
 } from '../Editor/Components/Views/TreeView/TreeView';
-import {
-  flexColumn,
-  flex,
-  grow,
-  flexDistribute,
-  itemCenter,
-  flexRow,
-  expandBoth,
-} from '../css/classes';
-import { cx } from '@emotion/css';
-import { useDrag, useDrop } from 'react-dnd';
 import { wlog } from '../Helper/wegaslog';
 
 const TREENODE_TEST_TYPE = 'TEST_TYPE';
