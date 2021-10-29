@@ -451,7 +451,7 @@ export const useGames = (
       for (const i in a.gamesAndGameModels) {
         const ai = a.gamesAndGameModels[i];
         const bi = b.gamesAndGameModels[i];
-        if (ai.gameModel != bi.gameModel || ai.gameModel != bi.gameModel) {
+        if (ai.gameModel != bi.gameModel || ai.game != bi.game) {
           return false;
         }
       }
