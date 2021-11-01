@@ -70,6 +70,22 @@ const showHeaderStyle = css({
   transition: 'all .8s ease',
 });
 
+const headerElementsStyle = css({
+  flex: 1,
+  justifyContent:'center',
+  display: 'flex',
+  '& > span': {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  '&:first-child > span': {
+    marginRight: 'auto',
+  },
+  '&:last-child > span': {
+    marginLeft: 'auto',
+  }
+});
+
 function wegasEventSelector(s: State) {
   return s.global.events;
 }
@@ -179,96 +195,111 @@ export default function Header() {
           },
         )}
       >
-        <div className={cx(flex, itemCenter)}>
-          <FontAwesome icon="user" />
-          <span className={componentMarginLeft}>{user.name}</span>
-          <DropMenu
-            label={<IconComp icon="cog" />}
-            items={[
-              roleToggler,
-              featuresToggler,
-              {
-                label: i18nValues.language + ': ' + userLanguage,
-                items: Object.entries(editorLanguages).map(([key, value]) => ({
-                  value: key,
-                  label: (
-                    <div
-                      onClick={() => {
-                        dispatch(
-                          Actions.EditorActions.setEditorLanguage(
-                            key as EditorLanguagesCode,
-                          ),
-                        );
-                      }}
-                      className={cx(flex, flexRow, itemCenter)}
-                    >
-                      <CheckBox
-                        value={Actions.EditorActions.getEditorLanguage().payload.language === key}
-                        onChange={() => {
-                          dispatch(
-                            Actions.EditorActions.setEditorLanguage(
-                              key as EditorLanguagesCode,
-                            ),
+          <div className={headerElementsStyle}>
+            <span>
+              <FontAwesome icon="user" />
+              <span className={componentMarginLeft}>{user.name}</span>
+              <DropMenu
+                label={<IconComp icon="cog" />}
+                items={[
+                  roleToggler,
+                  featuresToggler,
+                  {
+                    label: i18nValues.language + ': ' + userLanguage,
+                    items: Object.entries(editorLanguages).map(
+                      ([key, value]) => ({
+                        value: key,
+                        label: (
+                          <div
+                            onClick={() => {
+                              dispatch(
+                                Actions.EditorActions.setEditorLanguage(
+                                  key as EditorLanguagesCode,
+                                ),
+                              );
+                            }}
+                            className={cx(flex, flexRow, itemCenter)}
+                          >
+                            <CheckBox
+                              value={
+                                Actions.EditorActions.getEditorLanguage().payload
+                                  .language === key
+                              }
+                              onChange={() => {
+                                dispatch(
+                                  Actions.EditorActions.setEditorLanguage(
+                                    key as EditorLanguagesCode,
+                                  ),
+                                );
+                              }}
+                              label={key + ' : ' + value}
+                              horizontal
+                            />
+                          </div>
+                        ),
+                        id: key,
+                      }),
+                    ),
+                  },
+                  {
+                    label: (
+                      <div
+                        onClick={() => {
+                          window.localStorage.removeItem(
+                            `DnDGridLayoutData.${mainLayoutId}.${
+                              store.getState().global.roles.rolesId
+                            }.${currentRole}`,
                           );
+                          window.location.reload();
                         }}
-                        label={key + ' : ' + value}
-                        horizontal
-                      />
-                    </div>
+                        className={css({ padding: '5px 10px' })}
+                      >
+                        <IconComp icon="undo" /> {i18nValues.header.resetLayout}
+                      </div>
+                    ),
+                  },
+                ]}
+                buttonClassName={cx(
+                  defaultMarginLeft,
+                  css({ padding: '5px 5px' }),
+                )}
+              />
+            </span>
+          </div>
+          <div className={headerElementsStyle}>
+            <span><h1 className={css({ margin: 0 })}>{gameModel.name}</h1></span>
+          </div>
+          <div className={headerElementsStyle}>
+            <span>
+            {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
+              <NotificationMenu className={componentMarginRight} />
+            )}
+            <DropMenu
+              label={<IconComp icon="gamepad" />}
+              items={[
+                langSelector,
+                {
+                  label: (
+                    <ConfirmButton
+                      label={i18nValues.restart}
+                      icon="fast-backward"
+                      onAction={success => {
+                        if (success) {
+                          dispatch(Actions.VariableDescriptorActions.reset());
+                          dispatch(Actions.EditorActions.resetPageLoader());
+                        }
+                      }}
+                      buttonClassName={transparentDropDownButton}
+                      modalDisplay
+                      modalMessage={i18nValues.header.restartGame + '?'}
+                    />
                   ),
-                  id: key,
-                })),
-              },
-              {
-                label: (
-                  <div
-                    onClick={() => {
-                      window.localStorage.removeItem(
-                        `DnDGridLayoutData.${mainLayoutId}.${
-                          store.getState().global.roles.rolesId
-                        }.${currentRole}`,
-                      );
-                      window.location.reload();
-                    }}
-                    className={css({ padding: '5px 10px' })}
-                  >
-                    <IconComp icon="undo" /> {i18nValues.header.resetLayout}
-                  </div>
-                ),
-              },
-            ]}
-            buttonClassName={cx(defaultMarginLeft, css({ padding: '5px 5px' }))}
-          />
-        </div>
-        <h1 className={css({ margin: 0 })}>{gameModel.name}</h1>
-
-        <DropMenu
-          label={<IconComp icon="gamepad" />}
-          items={[
-            langSelector,
-            {
-              label: (
-                <ConfirmButton
-                  label={i18nValues.restart}
-                  icon="fast-backward"
-                  onAction={success => {
-                    if (success) {
-                      dispatch(Actions.VariableDescriptorActions.reset());
-                      dispatch(Actions.EditorActions.resetPageLoader());
-                    }
-                  }}
-                  buttonClassName={transparentDropDownButton}
-                  modalDisplay
-                  modalMessage={i18nValues.header.restartGame + '?'}
-                />
-              ),
-              value: 'restartGame',
-            },
-          ]}
-        />
-        {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
-          <NotificationMenu className={componentMarginRight} />
-        )}
+                  value: 'restartGame',
+                },
+              ]}
+            />
+            </span>
+          </div>
       </div>
     </>
   );

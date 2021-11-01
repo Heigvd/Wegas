@@ -30,6 +30,7 @@ registerComponent(
     componentType: 'Advanced',
     name: 'Quest Progress Bar',
     icon: 'certificate',
+    illustration: 'questProgressBar',
     schema: {
       quest: {
         type: 'string',

@@ -84,6 +84,7 @@ function tumbleLoaderStyle(containerSize: number) {
     minWidth: '40px',
     width: size,
     maxWidth: '200px',
+    margin: 'auto',
   });
 }
 interface TumblerLoaderProps {

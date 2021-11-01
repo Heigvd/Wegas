@@ -8,6 +8,7 @@ import { css } from '@emotion/css';
 /** Import of all svgs for compos icons */
 
 import AbsoluteLayoutIcon from '../../../pictures/componentsIcons/absoluteLayout.svg';
+import AchievementExhibition from '../../../pictures/componentsIcons/achievementExhibitions.svg';
 import BooleanIcon from '../../../pictures/componentsIcons/boolean.svg';
 import BoxesIcon from '../../../pictures/componentsIcons/boxes.svg';
 import ButtonIcon from '../../../pictures/componentsIcons/button.svg';
@@ -35,6 +36,7 @@ import PRTreeIcon from '../../../pictures/componentsIcons/PRTreeView.svg';
 import PRVariableIcon from '../../../pictures/componentsIcons/PRVariableEditor.svg';
 import QuestionIcon from '../../../pictures/componentsIcons/question.svg';
 import QuestionListIcon from '../../../pictures/componentsIcons/questionList.svg';
+import QuestProgressBar from '../../../pictures/componentsIcons/questProgressBar.svg';
 import SelectInputIcon from '../../../pictures/componentsIcons/selectInput.svg';
 import StateIcon from '../../../pictures/componentsIcons/state.svg';
 import StateMachineIcon from '../../../pictures/componentsIcons/stateMachine.svg';
@@ -44,8 +46,15 @@ import textInputIcon from '../../../pictures/componentsIcons/textInput.svg';
 import VariableTreeIcon from '../../../pictures/componentsIcons/variableTree.svg';
 import { SVGProps } from 'react';
 
+/**
+ * To import new or updated Icon:
+ * - Use Figma template for size and style. Export in SVG.
+ * - IMPORTANT Import in Wegas, open file. Delete width + height + fill attributes in tags.
+ * - Add the import above, use it in the list below.
+ */
 const iconComponents = {
   absoluteLayout: AbsoluteLayoutIcon,
+  achievementExhibition: AchievementExhibition,
   boolean: BooleanIcon,
   boxes: BoxesIcon,
   button: ButtonIcon,
@@ -73,6 +82,7 @@ const iconComponents = {
   PRVariableEditor: PRVariableIcon,
   question: QuestionIcon,
   questionList: QuestionListIcon,
+  questProgressBar: QuestProgressBar,
   selectInput: SelectInputIcon,
   state: StateIcon,
   stateMachine: StateMachineIcon,
