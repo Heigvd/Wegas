@@ -916,6 +916,8 @@ public class ModelFacade {
         variableDescriptorFacade.flush();
 
         variableDescriptorFacade.reviveItems(scenario, scenario, false);
+        variableDescriptorFacade.flush();
+        variableDescriptorFacade.reviveAllScopedInstances(scenario);
         //gameModelFacade.reset(scenario); // too much work...
         this.registerPagesPropagates(scenario);
 
@@ -1283,6 +1285,10 @@ public class ModelFacade {
                         variableDescriptorFacade.flush();
 
                         variableDescriptorFacade.reviveItems(scenario, scenario, false);
+
+                        variableDescriptorFacade.flush();
+
+                        variableDescriptorFacade.reviveAllScopedInstances(gameModel);
 
                         for (GameModelLanguage lang : gameModel.getRawLanguages()) {
                             i18nFacade.importTranslations(scenario, gameModel, reference, lang.getCode());
