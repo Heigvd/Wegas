@@ -435,8 +435,8 @@ export function VariableForm({
   );
   const config = React.useMemo(() => editing && getConfig(editing), [editing]);
   const update = React.useMemo(
-    () => editing && getUpdate(editing, store.dispatch),
-    [editing],
+    () => editing && getUpdate(editing, localDispatch || store.dispatch),
+    [editing, localDispatch],
   );
   const actions = React.useMemo(
     () =>
