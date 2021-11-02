@@ -13,9 +13,9 @@ import { entityIs } from '../API/entityHelper';
 import getLogger from '../logger';
 import { getStore, WegasLobbyState } from '../store/store';
 
-const logger = getLogger('pusher');
+const logger = getLogger('websockets');
 
-logger.setLevel(3);
+//logger.setLevel(3);
 
 export const CHANNEL_PREFIX = {
   Admin: 'private-LobbyAdministrator',
