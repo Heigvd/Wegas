@@ -103,7 +103,7 @@ export interface ActionsProps<T> {
 }
 
 export interface EditorAction<T extends IAbstractEntity> {
-  save?: (entity: T) => void;
+  save?: (entity: T, selectUpdatedEntity?: boolean) => void;
   more?: {
     [id: string]: ActionsProps<T>;
   };
@@ -111,11 +111,15 @@ export interface EditorAction<T extends IAbstractEntity> {
 
 export interface EditionState {
   newEntity?: IAbstractEntity;
+  highlight?: boolean;
 }
 
 export interface VariableEdition extends EditionState {
   type: 'Variable' | 'VariableFSM';
   entity: IAbstractEntity;
+  instanceEditing?: {
+    editedInstance?: { instance: IAbstractEntity; saved: boolean };
+  };
   config?: Schema<AvailableViews>;
   path?: (string | number)[];
   actions: EditorAction<IAbstractEntity>;
@@ -277,15 +281,51 @@ export function editorManagement(
         config: action.payload.config,
         path: action.payload.path,
         actions: action.payload.actions,
+        newEntity:
+          state.editing?.newEntity == null ||
+          state.editing?.newEntity?.id === action.payload.entity.id
+            ? state.editing?.newEntity
+            : undefined,
       };
-    case ActionType.EDITION_CHANGES:
+    case ActionType.INSTANCE_EDITOR:
       if (
         state.editing?.type === 'Variable' ||
         state.editing?.type === 'VariableFSM'
       ) {
+        state.editing.instanceEditing = action.payload.open ? {} : undefined;
+      }
+      break;
+    case ActionType.INSTANCE_EDIT:
+      if (
+        action.payload.instance != null &&
+        (state.editing?.type === 'Variable' ||
+          state.editing?.type === 'VariableFSM')
+      ) {
+        state.editing.instanceEditing = {
+          editedInstance: { instance: action.payload.instance, saved: false },
+        };
+      }
+      break;
+    case ActionType.INSTANCE_SAVE:
+      if (
+        (state.editing?.type === 'Variable' ||
+          state.editing?.type === 'VariableFSM') &&
+        state.editing.instanceEditing?.editedInstance != null
+      ) {
+        state.editing.instanceEditing.editedInstance.saved = true;
+      }
+      break;
+    case ActionType.EDITION_CHANGES:
+      if (state.editing != null) {
         state.editing.newEntity = action.payload.newEntity;
       }
       break;
+    case ActionType.EDITION_HIGHLIGHT:
+      if (state.editing != null) {
+        state.editing.highlight = action.payload.highlight;
+      }
+      break;
+
     case ActionType.VARIABLE_CREATE:
       return {
         type: 'VariableCreate',
@@ -543,6 +583,12 @@ export function editVariable(
                   }
                 },
               },
+              Instance: {
+                label: 'Instance',
+                sorting: 'toolbox',
+                action: () =>
+                  dispatch(ActionCreator.INSTANCE_EDITOR({ open: true })),
+              },
             },
           };
     dispatch(
@@ -715,7 +761,9 @@ export function saveEditor(
         return dispatch(dispatch => {
           return FileAPI.updateMetadata(value as IAbstractContentDescriptor)
             .then((res: IAbstractContentDescriptor) => {
-              dispatch(ACTIONS.EditorActions.editFile(res));
+              if (selectUpdatedEntity) {
+                dispatch(ACTIONS.EditorActions.editFile(res));
+              }
               editMode.cb && editMode.cb(res);
             })
             .catch((res: Error) => {
@@ -887,4 +935,13 @@ export function getEditorLanguage() {
 export function setEditorLanguage(lang: EditorLanguagesCode) {
   window.localStorage.setItem(EditorLanguageData, lang);
   return ActionCreator.EDITOR_SET_LANGUAGE({ language: lang });
+}
+
+export function isEditingVariable(
+  edition: Edition | undefined,
+): edition is VariableEdition {
+  return (
+    edition != null &&
+    (edition.type === 'Variable' || edition.type === 'VariableFSM')
+  );
 }

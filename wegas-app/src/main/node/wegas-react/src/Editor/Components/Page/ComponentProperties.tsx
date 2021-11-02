@@ -31,6 +31,7 @@ import {
 } from '../../../Components/PageComponents/tools/schemaProps';
 import { defaultPadding, flex, flexColumn, grow } from '../../../css/classes';
 import { ActionsProps } from '../../../data/Reducer/globalState';
+import { StoreDispatch } from '../../../data/Stores/store';
 import { findComponent } from '../../../Helper/pages';
 import { MessageString } from '../MessageString';
 import { pageCTX } from './PageEditor';
@@ -55,6 +56,7 @@ interface EditorProps<T = WegasComponentForm> {
     message: string;
     onVanish: () => void;
   };
+  localDispatch: StoreDispatch | undefined;
 }
 
 async function WindowedEditor({
@@ -63,6 +65,7 @@ async function WindowedEditor({
   update,
   actions = [],
   error,
+  localDispatch,
 }: EditorProps) {
   const [Form] = await Promise.all<typeof import('../Form')['Form']>([
     import('../Form').then(m => m.Form),
@@ -80,6 +83,7 @@ async function WindowedEditor({
         update={value => update && update(value)}
         actions={actions}
         config={schema}
+        localDispatch={localDispatch}
       />
     </div>
   );
@@ -231,6 +235,7 @@ export interface ComponentPropertiesProps {
   parent?: WegasComponent;
   update?: (variable: WegasComponent) => void;
   actions?: EditorProps['actions'];
+  localDispatch: StoreDispatch | undefined;
 }
 
 export function ComponentProperties({
@@ -238,6 +243,7 @@ export function ComponentProperties({
   parent,
   update,
   actions,
+  localDispatch,
 }: ComponentPropertiesProps) {
   const schema = usePageComponentStore(s => {
     const baseSchema =
@@ -261,6 +267,7 @@ export function ComponentProperties({
         update && update({ ...entity, props: formToWegasComponent(value) })
       }
       actions={actions}
+      localDispatch={localDispatch}
     />
   );
 }
@@ -301,6 +308,7 @@ export default function ConnectedComponentProperties() {
           sorting: 'toolbox',
         },
       ]}
+      localDispatch={undefined}
     />
   );
 }

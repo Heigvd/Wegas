@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
+import * as React from 'react';
 import { flex, grow } from '../css/classes';
 import { classNameOrEmpty } from '../Helper/className';
 
@@ -63,16 +63,17 @@ export const Toolbar = Object.assign(
     },
     Content: React.forwardRef<
       HTMLDivElement,
-      { children?: React.ReactNode } & ClassStyleId
-    >((props, ref) => {
+      { children?: React.ReactNode } & React.HTMLAttributes<HTMLDivElement>
+    >(({ id, className, style, children, ...others }, ref) => {
       return (
         <div
-          id={props.id}
-          className={cx(flex, content) + classNameOrEmpty(props.className)}
-          style={props.style}
+          id={id}
+          className={cx(flex, content) + classNameOrEmpty(className)}
+          style={style}
           ref={ref}
+          {...others}
         >
-          {props.children}
+          {children}
         </div>
       );
     }),

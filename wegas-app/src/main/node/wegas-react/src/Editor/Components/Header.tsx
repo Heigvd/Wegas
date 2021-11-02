@@ -162,10 +162,11 @@ export default function Header() {
   const { currentRole } = React.useContext(roleCTX);
   const i18nValues = useInternalTranslate(commonTranslations);
   const [showHeader, setShowHeader] = React.useState(true);
-  const { gameModel, user, userLanguage } = useStore(s => ({
+  const { gameModel, user, userLanguage, editing } = useStore(s => ({
     gameModel: GameModel.selectCurrent(),
     user: Global.selectCurrentUser(),
     userLanguage: selectCurrentEditorLanguage(s),
+    editing: s.global.editing,
   }));
   const dispatch = store.dispatch;
   const featuresToggler = useFeatures();
@@ -197,6 +198,7 @@ export default function Header() {
       >
           <div className={headerElementsStyle}>
             <span>
+              {JSON.stringify(editing?.type)}
               <FontAwesome icon="user" />
               <span className={componentMarginLeft}>{user.name}</span>
               <DropMenu

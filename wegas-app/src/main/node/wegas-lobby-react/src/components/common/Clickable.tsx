@@ -47,7 +47,7 @@ export default function Clickable({
 
   return (
     <span
-      tabIndex={0}
+      tabIndex={onClick != null ? 0 : -1}
       className={onClick != null ? clickableClassName : className}
       onClick={onClickCb}
       onKeyDown={keyDownCb}

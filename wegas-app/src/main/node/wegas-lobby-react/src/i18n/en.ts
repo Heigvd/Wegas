@@ -285,4 +285,5 @@ export const en = {
   aaiAccount: 'AAI Account',
   aaiAffiliation: 'Affiliation',
   aaiNotEditable: ' Personal data are not editable',
+  refresh: 'refresh',
 };

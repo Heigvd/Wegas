@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -478,6 +477,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     @JsonIgnore
     @OneToMany(mappedBy = "variable", cascade = CascadeType.ALL)
     private Set<TransitionDependency> mayTrigger = new HashSet<>();
+
     /**
      *
      */
@@ -715,26 +715,48 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     @JsonIgnore
     public T findInstance(VariableInstance variableInstance, User user) {
 
-        // if the given VariableInstance is a default instance, return the descripto default instance
+        // if the given VariableInstance is a default instance, return the descriptor default instance
         if (variableInstance.isDefaultInstance()) {
             return this.getDefaultInstance();
         }
 
-        InstanceOwner owner = variableInstance.getOwner();
-        List<Player> players = owner.getLivePlayers();
-
-        if (players == null || players.isEmpty()) {
-            return null;
+        if (scope instanceof GameModelScope) {
+            //this scope is the global scope : same instance for everybody
+            return (T) ((GameModelScope) scope).getVariableInstance();
         } else {
-            if (user != null) {
-                for (Player p : players) {
-                    if (user.equals(p.getUser())) {
-                        return (T) scope.getVariableInstance(p);
+            InstanceOwner owner = variableInstance.getOwner();
+            if (owner instanceof Team && scope instanceof TeamScope) {
+                // team looks for its instance
+                return (T) scope.getVariableInstance((Team) owner);
+            } else if (owner instanceof Player && scope instanceof TeamScope) {
+                // player looks for its team instance
+                return (T) scope.getVariableInstance(((Player) owner).getTeam());
+            } else if (owner instanceof Player && scope instanceof PlayerScope) {
+                // player looks for its instance
+                return (T) scope.getVariableInstance((Player) owner);
+            }
+
+            // effective owner is unpredictable
+            // first find a LIVE player which match the user
+            List<Player> players = owner.getLivePlayers();
+
+            if (players == null || players.isEmpty()) {
+                return null;
+            } else {
+                if (user != null) {
+                    for (Player p : players) {
+                        if (user.equals(p.getUser())) {
+                            return (T) scope.getVariableInstance(p);
+                        }
                     }
                 }
             }
+
+            // fallback => try with the first player
+            // This case is dedicated to trainer/scenarist and admin
+            // AccessDenied will be thrown to std player
+            return (T) scope.getVariableInstance(players.get(0));
         }
-        return (T) scope.getVariableInstance(players.get(0));
     }
 
     /**

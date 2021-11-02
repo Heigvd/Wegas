@@ -578,7 +578,7 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<ITeamWithId>('POST', path, undefined, errorHandler);
       },
       deleteTeam: (teamId: number) => {
-        const path = `${baseUrl}//GameModel/Game/Team/${teamId}`;
+        const path = `${baseUrl}/GameModel/Game/Team/${teamId}`;
         return sendJsonRequest<void>('DELETE', path, undefined, errorHandler);
       },
     },

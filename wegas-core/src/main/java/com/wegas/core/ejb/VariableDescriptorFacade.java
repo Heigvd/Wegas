@@ -160,6 +160,10 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
         // flush
         this.revive(vd.getGameModel(), vd, false);
+
+        this.getEntityManager().flush();
+
+        this.reviveScopedInstancesRecursively(vd);
         return vd;
     }
 
@@ -262,7 +266,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         this.getEntityManager().flush();
 
         this.revive(gameModel, entity, true);
-
+        this.getEntityManager().flush();
+        this.reviveScopedInstancesRecursively(entity);
         return entity;
     }
 
@@ -312,7 +317,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         // @TODO find a smarter way to decide to propagate or not to propatate...
         if (propagate) {
             entity.getScope().setBeanjection(beans);
-            gameModelFacade.resetAndReviveScopeInstances(entity);
+            gameModelFacade.resetScopedInstances(entity);
+            //gameModelFacade.resetAndReviveScopeInstances(entity);
         }
 
         if (gameModel != null) {
@@ -537,7 +543,23 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
     public VariableDescriptor changeScopeRecursively(Long vdId,
         AbstractScope.ScopeType newScopeType) {
-        return this.changeScopeRecursively(this.find(vdId), newScopeType);
+        VariableDescriptor vd = this.changeScopeRecursively(this.find(vdId), newScopeType);
+        this.reviveScopedInstancesRecursively(vd);
+
+        return vd;
+    }
+
+    private void reviveScopedInstancesRecursively(VariableDescriptor vd) {
+        gameModelFacade.reviveScopedInstances(vd);
+        if (vd instanceof DescriptorListI) {
+            for (VariableDescriptor child : (List<? extends VariableDescriptor>) ((DescriptorListI) vd).getItems()) {
+                this.reviveScopedInstancesRecursively(child);
+            }
+        }
+    }
+
+    public void reviveAllScopedInstances(GameModel gameModel) {
+        gameModel.getVariableDescriptors().forEach(vd -> this.reviveScopedInstancesRecursively(vd));
     }
 
     public VariableDescriptor convertToStaticText(VariableDescriptor vd) {
@@ -1013,7 +1035,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         vd.setScope(newScope);
         this.getEntityManager().persist(vd);
         vd = this.find(vd.getId());
-        gameModelFacade.resetAndReviveScopeInstances(vd);
+        gameModelFacade.resetScopedInstances(vd);
+        //gameModelFacade.resetAndReviveScopeInstances(vd);
     }
 
     /**
@@ -1073,7 +1096,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             if (theVar != null) {
                 // update ???
                 if (newScopeType != null) {
-                    this.changeScopeRecursively(theVar, newScopeType);
+                    this.changeScopeRecursively(theVar.getId(), newScopeType);
                 }
                 throw WegasErrorMessage.error("Patch not yet implemented");
             } else {

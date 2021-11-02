@@ -6,6 +6,7 @@ import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
 import { FullscreenProvider } from './Components/Contexts/FullscreenContext';
 import { LanguagesProvider } from './Components/Contexts/LanguagesProvider';
 import { RoleProvider } from './Components/Contexts/RoleProvider';
+import { ModalProvider } from './Components/Modal';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
 import { PopupManager } from './Components/PopupManager';
 import { ThemeProvider } from './Components/Theme/Theme';
@@ -62,7 +63,9 @@ function mount() {
               <RoleProvider>
                 <ThemeProvider contextName="editor">
                   <PopupManager>
-                    <Layout />
+                    <ModalProvider>
+                      <Layout />
+                    </ModalProvider>
                   </PopupManager>
                 </ThemeProvider>
               </RoleProvider>

@@ -104,13 +104,19 @@ export const ActionCreator = {
 
   VARIABLE_EDIT: variableEditAction(ActionType.VARIABLE_EDIT),
   FSM_EDIT: variableEditAction(ActionType.FSM_EDIT),
+  INSTANCE_EDIT: (data: { instance?: IAbstractEntity }) =>
+    createAction(ActionType.INSTANCE_EDIT, data),
+  INSTANCE_SAVE: () => createAction(ActionType.INSTANCE_SAVE, {}),
+  INSTANCE_EDITOR: (data: { open: boolean }) =>
+    createAction(ActionType.INSTANCE_EDITOR, data),
   EDITION_CHANGES: (data: { newEntity: IAbstractEntity }) =>
     createAction(ActionType.EDITION_CHANGES, data),
+  EDITION_HIGHLIGHT: (data: { highlight: boolean }) =>
+    createAction(ActionType.EDITION_HIGHLIGHT, data),
   FILE_EDIT: (data: {
     entity: IAbstractContentDescriptor;
     cb?: (newEntity: IAbstractContentDescriptor) => void;
   }) => createAction(ActionType.FILE_EDIT, data),
-
   VARIABLE_CREATE: <T extends IAbstractEntity>(data: {
     '@class': IAbstractEntity['@class'];
     parentId?: number;

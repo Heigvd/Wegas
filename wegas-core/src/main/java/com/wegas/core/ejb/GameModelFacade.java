@@ -220,6 +220,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         variableDescriptorFacade.flush();
 
         variableDescriptorFacade.reviveItems(entity, entity, true); // brand new GameModel -> revive all descriptor
+
+        variableDescriptorFacade.flush();
+
+        variableDescriptorFacade.reviveAllScopedInstances(entity);
+
         createdGameModelEvent.fire(new EntityCreated<>(entity));
     }
 
@@ -247,6 +252,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         // revive descriptor & propagate default instances
         variableDescriptorFacade.reviveItems(gameModel, gameModel, false);
 
+        this.getEntityManager().flush();
+        variableDescriptorFacade.reviveAllScopedInstances(gameModel);
         return gameModel;
     }
 
@@ -327,14 +334,19 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     /**
      * Reset instances with {@link AbstractScope#propagateDefaultInstance(com.wegas.core.persistence.InstanceOwner, boolean)
-     * and fire {@link InstanceRevivedEvent} for each reset instances
      *
      * @param vd the variable descriptor to reset the variable for
      */
-    public void resetAndReviveScopeInstances(VariableDescriptor vd) {
+    public void resetScopedInstances(VariableDescriptor vd) {
         vd.getScope().propagateDefaultInstance(null, true);
-        this.getEntityManager().flush();
-        // revive just propagated instances
+    }
+
+    /**
+     * Revive scoped instances
+     *
+     * @param vd the variable descriptor to reset the variable for
+     */
+    public void reviveScopedInstances(VariableDescriptor vd) {
         for (VariableInstance vi : (Collection<VariableInstance>) variableDescriptorFacade.getInstances(vd).values()) {
             variableInstanceFacade.reviveInstance(vi);
         }
@@ -390,7 +402,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
                 VariableInstance dest = vd.getDefaultInstance();
                 dest.merge(srcVi);
+            }
 
+            for (VariableDescriptor vd : toUpdate.getVariableDescriptors()) {
+                vd = variableDescriptorFacade.find(vd.getId());
+                VariableInstance dest = vd.getDefaultInstance();
                 variableInstanceFacade.reviveInstance(dest);
             }
             return toUpdate;
@@ -424,7 +440,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             Player player = playerFacade.findLive(playerId);
             setDefaultInstancesFromPlayer(duplicata, source, player);
 
+            duplicata.setOnGoingPropagation(true);
             this.addDebugGame(duplicata);
+            duplicata.setOnGoingPropagation(false);
 
             return duplicata;
         } catch (CloneNotSupportedException ex) {
@@ -585,7 +603,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-                try ( ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
+                try (ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
 
                     // serialise the json
                     ZipEntry gameModelEntry = new ZipEntry("gamemodel.json");
@@ -1450,7 +1468,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      */
     public List<Permission> getPermissions(Long gmId) {
         TypedQuery<Permission> query = this.getEntityManager().createNamedQuery("GameModel.findByPermission", Permission.class);
-        query.setParameter("permission", "%:gm" +gmId);
+        query.setParameter("permission", "%:gm" + gmId);
         return query.getResultList();
     }
 }

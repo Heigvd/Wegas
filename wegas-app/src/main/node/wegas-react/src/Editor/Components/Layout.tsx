@@ -25,9 +25,6 @@ const FileBrowserWithMeta = React.lazy(
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
 const PlayLocal = React.lazy(() => import('./PlayLocal'));
 const PlayServer = React.lazy(() => import('./PlayServer'));
-const InstancesEditor = React.lazy(
-  () => import('./Variable/InstanceProperties'),
-);
 const ThemeEditor = React.lazy(
   () => import('../../Components/Theme/Components/ThemeEditor'),
 );
@@ -90,10 +87,6 @@ const availableLayoutTabs: LinearLayoutComponents = [
   {
     tabId: 'Server Console',
     content: <PlayServer />,
-  },
-  {
-    tabId: 'Instances Editor',
-    content: <InstancesEditor />,
   },
   {
     tabId: 'Theme Editor',

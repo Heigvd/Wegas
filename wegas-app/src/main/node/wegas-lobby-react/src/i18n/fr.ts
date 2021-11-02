@@ -289,4 +289,5 @@ export const fr: WegasTranslations = {
   aaiAccount: 'Compte AAI',
   aaiAffiliation: 'Etablissement',
   aaiNotEditable: 'Les données personnelles ne sont pas éditables',
+  refresh: 'rafraichir',
 };

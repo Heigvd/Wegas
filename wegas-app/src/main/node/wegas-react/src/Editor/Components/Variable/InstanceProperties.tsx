@@ -1,22 +1,12 @@
-import * as React from 'react';
-import { Toolbar } from '../../../Components/Toolbar';
-import {
-  StoreDispatch,
-  useStore,
-  getDispatch,
-} from '../../../data/Stores/store';
 import { css, cx } from '@emotion/css';
-import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods';
-import {
-  AsyncVariableForm,
-  parseEventFromIndex,
-  EditorProps,
-} from '../EntityEditor';
-import getEditionConfig from '../../editionConfig';
 import { Schema } from 'jsoninput';
-import { AvailableViews } from '../FormView';
-import { LocalGlobalState } from '../../../data/Stores/storeFactory';
-import { updateInstance } from '../../../data/Reducer/VariableInstanceReducer';
+import * as React from 'react';
+import { IVariableInstance } from 'wegas-ts-api';
+import { VariableInstanceAPI } from '../../../API/variableInstance.api';
+import { useOnEditionChangesModal } from '../../../Components/Modal';
+import { ThemeComponent } from '../../../Components/Theme/Theme';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { Toolbar } from '../../../Components/Toolbar';
 import {
   flex,
   flexColumn,
@@ -24,17 +14,22 @@ import {
   localSelection,
   MediumPadding,
 } from '../../../css/classes';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
-import { themeCTX, ThemeComponent } from '../../../Components/Theme/Theme';
-import { IVariableInstance } from 'wegas-ts-api';
-import { VariableDescriptor, VariableInstance } from '../../../data/selectors';
-import { Edition, VariableEdition } from '../../../data/Reducer/globalState';
-// import { VariableTreeTitle } from './VariableTreeView.tsx.old';
-import { State } from '../../../data/Reducer/reducers';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
-import { VariableTreeTitle } from './VariableTreeTitle';
 import { ActionCreator } from '../../../data/actions';
+import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods';
+import { Edition, VariableEdition } from '../../../data/Reducer/globalState';
+import { updateInstance } from '../../../data/Reducer/VariableInstanceReducer';
+import { VariableDescriptor } from '../../../data/selectors';
+import { store, StoreDispatch } from '../../../data/Stores/store';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import getEditionConfig from '../../editionConfig';
+import {
+  AsyncVariableForm,
+  EditorProps,
+  parseEventFromIndex,
+} from '../EntityEditor';
+import { AvailableViews } from '../FormView';
+import { VariableTreeTitle } from './VariableTreeTitle';
 
 const listBox = css({
   width: '100%',
@@ -69,41 +64,53 @@ function isEditingVariable(editing?: Edition): editing is VariableEdition {
 export interface InstancePropertiesProps
   extends ThemeComponent,
     DisabledReadonly {
-  state: LocalGlobalState;
-  dispatch: StoreDispatch;
+  editing: Edition;
+  events: WegasEvent[];
+  dispatch: StoreDispatch | undefined;
   actions?: EditorProps<IVariableInstance>['actions'];
-}
-
-function instancesSelector(s: State) {
-  if (isEditingVariable(s.global.editing)) {
-    return VariableInstance.all('parentId', s.global.editing.entity.id);
-  }
-  return [];
+  highlight?: boolean;
 }
 
 export function InstanceProperties({
-  state,
+  editing,
+  events,
   dispatch,
   actions,
+  highlight,
   ...options
 }: InstancePropertiesProps) {
+  const mounted = React.useRef(false);
   const i18nValues = useInternalTranslate(editorTabsTranslations);
-  const editing = state.global.editing;
-  const events = state.global.events;
+  const instanceState = isEditingVariable(editing)
+    ? editing.instanceEditing?.editedInstance
+    : undefined;
 
-  const [selectedInstanceId, setSelectedInstanceId] =
-    React.useState<number | undefined>();
+  const selectedInstance = instanceState?.instance;
 
-  const instances = useStore(instancesSelector);
-
-  const selectedInstance =
-    selectedInstanceId != null
-      ? instances.find(i => i.id === selectedInstanceId)
-      : undefined;
+  const [instances, setInstances] = React.useState<IVariableInstance[]>([]);
+  const instance = instances.find(i => i.id === selectedInstance?.id);
 
   const descriptor = isEditingVariable(editing)
     ? VariableDescriptor.select(editing.entity.id)
     : undefined;
+
+  const getInstances = React.useCallback((descriptor?: IVariableDescriptor) => {
+    if (descriptor != null) {
+      VariableInstanceAPI.getByDescriptor(descriptor).then(res => {
+        if (mounted.current) {
+          setInstances(res);
+        }
+      });
+    }
+  }, []);
+
+  React.useEffect(() => {
+    mounted.current = true;
+    getInstances(descriptor);
+    return () => {
+      mounted.current = false;
+    };
+  }, [descriptor, getInstances]);
 
   const subpath = isEditingVariable(editing) ? editing.path : undefined;
   const title = descriptor ? (
@@ -116,10 +123,16 @@ export function InstanceProperties({
     i18nValues.instanceProps.noDescriptorEdited
   );
 
+  const onEditionChanges = useOnEditionChangesModal(
+    dispatch != null,
+    editing,
+    dispatch || store.dispatch,
+  );
+
   return (
     <Toolbar className={MediumPadding}>
       <Toolbar.Header>
-        <div className={cx(flex, flexColumn)}>
+        <div className={cx(grow, flex, flexColumn)}>
           <div>{title}</div>
           <div className={cx(listBox, grow)}>
             {instances.map(i => {
@@ -130,13 +143,15 @@ export function InstanceProperties({
                     key={i.id}
                     className={cx(
                       listItem,
-                      i.id === selectedInstanceId && localSelection,
+                      i.id === selectedInstance?.id && localSelection,
                     )}
-                    onClick={() =>
-                      setSelectedInstanceId(oldState =>
-                        oldState === i.id ? undefined : i.id,
-                      )
-                    }
+                    onClick={e => {
+                      onEditionChanges(i.id!, e, () => {
+                        (dispatch || store.dispatch)(
+                          ActionCreator.INSTANCE_EDIT({ instance: i }),
+                        );
+                      });
+                    }}
                   >
                     {`#${i.id} - ${
                       scope
@@ -151,57 +166,31 @@ export function InstanceProperties({
         </div>
       </Toolbar.Header>
       <Toolbar.Content>
-        {selectedInstance != null && (
+        {instance != null && (
           <AsyncVariableForm
             getConfig={si =>
               getEditionConfig(si) as Promise<Schema<AvailableViews>>
             }
             update={(entity: IVariableInstance) =>
-              dispatch(updateInstance(entity))
+              (dispatch || store.dispatch)(updateInstance(entity)).then(() => {
+                getInstances(descriptor);
+                (dispatch || store.dispatch)(ActionCreator.INSTANCE_SAVE());
+              })
             }
-            entity={selectedInstance}
+            entity={instance}
             error={parseEventFromIndex(events)}
             actions={actions}
             onChange={newEntity => {
-              dispatch(
-                ActionCreator.EDITION_CHANGES({
-                  newEntity: newEntity as IAbstractEntity,
-                }),
-              );
+              ActionCreator.INSTANCE_EDIT({
+                instance: newEntity as IVariableInstance,
+              });
             }}
+            highlight={highlight}
+            localDispatch={dispatch}
             {...options}
           />
         )}
       </Toolbar.Content>
     </Toolbar>
-  );
-}
-
-function stateSelector(s: State) {
-  const editing = s.global.editing;
-  if (!editing) {
-    return null;
-  } else {
-    return {
-      global: {
-        editing,
-        events: s.global.events,
-        eventsHandlers: s.global.eventsHandlers,
-      },
-    };
-  }
-}
-
-export default function ConnectedInstancesEditor() {
-  const state = useStore(stateSelector);
-
-  const { themesState } = React.useContext(themeCTX);
-  const modeName =
-    themesState.themes[themesState.selectedThemes.editor].baseMode;
-
-  const dispatch = getDispatch();
-
-  return state == null || dispatch == null ? null : (
-    <InstanceProperties state={state} dispatch={dispatch} modeName={modeName} />
   );
 }
