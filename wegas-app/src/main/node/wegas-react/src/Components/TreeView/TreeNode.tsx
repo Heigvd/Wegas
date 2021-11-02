@@ -60,7 +60,6 @@ export function TreeNode<T = unknown>({
   const [dragging, setDragging] = React.useState(false);
 
   const {
-    //minimumNodeHeight,
     minimumLabelWidth,
     keepOpenOnDrag,
     openCloseButtons,
@@ -134,7 +133,6 @@ export function TreeNode<T = unknown>({
               width: '1rem',
               opacity: 0.5,
               margin: '0 3px 0 6px',
-              //minHeight: minimumNodeHeight,
             },
             ...(forceOpenClose != null && forceOpenClose !== open
               ? { opacity: 0.5 }

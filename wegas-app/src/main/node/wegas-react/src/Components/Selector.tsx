@@ -103,8 +103,14 @@ export const selectStyles: SelectProps['styles'] = {
   },
   menu: provided => {
     // the zIndex battle : Select VS tineMCE toolbar
-    return { ...provided, zIndex: 2 };
+    return { ...provided, zIndex: 2, marginTop: 0 };
   },
+  menuList: provided =>{return {
+    ...provided,
+    paddingTop: 0,
+    paddingBottom: 0,
+    borderRadius: '4px',
+  }},
   option: (provided, state) => {
     if (state.isSelected) {
       return {

@@ -43,10 +43,6 @@ function DefaultCarret({ icon }: { icon: string }) {
     </div>
   );
 }
-
-//const DEFAULT_TOP_PADDING = 5;
-//const DEFAULT_LEFT_PADDING = 10;
-//const DEFAULT_BOTTOM_PADDING = 10;
 const MINIMUM_NODE_LABEL_HEIGHT = 30;
 const MINIMUM_NODE_LABEL_WIDTH = 100;
 const KEEP_OPEN_ON_DRAG = false;
@@ -424,9 +420,6 @@ export function TreeView<T = unknown>({
   return (
     <div
       style={{
-        //paddingTop: DEFAULT_TOP_PADDING,
-        //paddingLeft: DEFAULT_LEFT_PADDING,
-        //paddingBottom: DEFAULT_BOTTOM_PADDING,
         ...style,
         flex: '1 1 auto',
       }}
@@ -453,7 +446,7 @@ export function TreeView<T = unknown>({
         value={{
           dragState,
           minimumNodeHeight: minimumNodeHeight,
-          minimumLabelWidth,
+          minimumLabelWidth: minimumLabelWidth,
           keepOpenOnDrag,
           openCloseButtons,
           levelIcon,

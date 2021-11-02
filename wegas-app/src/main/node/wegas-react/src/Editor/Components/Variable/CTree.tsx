@@ -54,7 +54,15 @@ const nodeStyle = css({
   flex: '1 1 auto',
   height: '1.5rem',
   fontSize: '0.95em',
+  width: '100%',
 });
+const nodeLabelStyle = css({
+minWidth: '100px',
+maxWidth: '100%',
+overflow: 'hidden',
+whiteSpace: 'nowrap',
+textOverflow: 'ellipsis',
+})
 
 export const actionNodeContentStyle = cx(
   css({
@@ -334,7 +342,7 @@ export function CTree({
             }}
           >
             {!noVisibleRoot && (
-              <VariableTreeTitle variable={variable} subPath={subPath} />
+              <VariableTreeTitle variable={variable} subPath={subPath} className={nodeLabelStyle} />
             )}
             {actionAllowed &&
               (entityIs(variable, 'ListDescriptor') ||

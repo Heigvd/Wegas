@@ -197,7 +197,7 @@ export function VariableTreeView({
       </Toolbar.Header>
       <Toolbar.Content
         id={TREECONTENTID}
-        className={css({ padding: '1px', marginBottom: '2rem' })}
+        className={css({ padding: '1px', marginBottom: '2rem', overflowY: 'auto', overflowX: 'hidden' })}
       >
         <TreeView
           rootId={String(root.id)}

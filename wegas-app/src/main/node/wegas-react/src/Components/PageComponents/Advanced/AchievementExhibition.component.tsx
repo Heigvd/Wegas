@@ -23,6 +23,7 @@ registerComponent(
     componentType: 'Advanced',
     name: 'Achievement Exhibitions',
     icon: 'star',
+    illustration: 'achievementExhibition',
     schema: {
       quest: {
         type: 'string',
