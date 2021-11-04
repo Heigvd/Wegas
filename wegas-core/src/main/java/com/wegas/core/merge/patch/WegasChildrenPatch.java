@@ -414,7 +414,9 @@ public final class WegasChildrenPatch extends WegasPatch {
             }
         }
         if (!subs.isEmpty()) {
-            return new WegasEntityPatch.DiffCollection(null, subs);
+            return new WegasEntityPatch.DiffCollection(
+                this.identifier != null ? identifier.toString() : null,
+                 subs);
         } else {
             return null;
         }
