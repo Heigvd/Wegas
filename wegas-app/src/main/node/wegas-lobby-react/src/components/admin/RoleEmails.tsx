@@ -36,7 +36,7 @@ export default function RoleEmails({ role }: RoleEmailsProps) {
 
   // comma-separated list of bcc is spec-compliant but outlook does not undestand it
   //const href = `mailto:?bcc=${emails.join(';')}`;
-  
+
   // semicolon separated list of bcc makes outlook and most other clients happy
   // let's use it
   const href = `mailto:?bcc=${emails.join(';')}`;

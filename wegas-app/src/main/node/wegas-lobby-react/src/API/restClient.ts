@@ -88,6 +88,8 @@ export interface IAaiConfigInfo {
   showButton: boolean;
   server: string;
   loginUrl: string;
+  eduIdEnabled: boolean;
+  eduIdUrl: string;
 }
 
 export type IAuthenticationInformation = WithAtClass & {
