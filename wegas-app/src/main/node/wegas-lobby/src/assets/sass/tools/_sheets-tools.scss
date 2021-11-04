@@ -1,9 +1,0 @@
-@mixin set-sheet($bg, $z){
-    background:$bg;
-    z-index:$z;
-}
-
-@mixin move-sheet($direction:bottom, $position:0, $duration: 0.5s){
-    #{$direction}:$position;
-    transition:$duration;
-}

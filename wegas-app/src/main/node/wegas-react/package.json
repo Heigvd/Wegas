@@ -138,8 +138,5 @@
     "webpack-dev-server": "^3.8.0",
     "webpack-node-externals": "^1.7.2"
   },
-  "peerDependencies": {},
-  "engines": {
-    "node": "~11.10.1"
-  }
+  "peerDependencies": {}
 }

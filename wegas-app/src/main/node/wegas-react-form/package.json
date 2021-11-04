@@ -77,8 +77,5 @@
     "url-loader": "^3.0.0",
     "webpack": "^4.39.2",
     "webpack-cli": "^3.3.6"
-  },
-  "engines": {
-    "node": "~11.10.1"
   }
 }

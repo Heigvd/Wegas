@@ -47,8 +47,5 @@
         "webpack-cli": "^3.3.6",
         "webpack-dev-server": "^3.8.0"
     },
-    "description": "",
-    "engines": {
-        "node": "~11.10.1"
-    }
+    "description": ""
 }
