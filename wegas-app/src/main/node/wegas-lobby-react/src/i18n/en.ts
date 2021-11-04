@@ -6,7 +6,10 @@
  * Licensed under the MIT License
  */
 
+import { IGameModel } from 'wegas-ts-api';
+
 export const en = {
+  formatDate: (timestamp: number) => new Date(timestamp).toLocaleDateString('en'),
   pleaseProvideData: 'Some data are missing',
   cancel: 'cancel',
   agree: 'agree',
@@ -70,6 +73,7 @@ export const en = {
   openGameAsPlayer: 'Open session',
   spyPlayer: 'Spy the player session',
   joinGame: 'Join a session',
+  joinedOn: 'Joined on',
   //
   teamName: 'team name',
   teamSize: 'size',
@@ -95,9 +99,10 @@ export const en = {
   name: 'name',
   date: 'date',
   //
-  scenario: 'Scenario: ',
+  basedOnScenario: 'Scenario: ',
   Scenario: 'Scenario',
-  PlayScenario: "Game's Scenario",
+  scenario: 'scenario',
+  playScenario: 'session',
   createdOn: 'Created on',
   by: 'by',
   display: 'display: ',
@@ -124,13 +129,13 @@ export const en = {
   createGame: 'Add session',
   selectGame: 'select a game...',
   gameName: 'Session name',
-  basedOnScenario: 'based on scenario',
 
   settings: 'settings',
   basicSettings: 'Basic parameters',
   nameIsRequired: 'Name is required',
   accessKeyIsRequiered: 'access key is required',
   advancedSettings: 'Advanced parameters',
+  importExport: 'Export',
   langSettings: 'Languages',
   submit: 'submit',
   comments: 'comments',
@@ -160,6 +165,7 @@ export const en = {
   iconSettings: 'icon',
   disclaimer: 'Warning! Update these values only if you know what you are doing',
 
+  coScenarist: 'Co-scenarists',
   kickScenarist: 'remove access to scenarist',
   addScenarist: 'add scenarist',
 
@@ -179,11 +185,34 @@ export const en = {
   restoreVersion: 'restore version',
   deleteVersion: 'delete version',
   createVersion: 'create version',
-  pdf: 'PDF',
-  exportWgz: 'Export',
+  pdf: 'Download PDF',
+  pdfTooltip: (gm: IGameModel) =>
+    `A ${en.prettyPrintType(gm)} PDF allows to proofread the content in a (almost) convenient way`,
+  exportWgz: 'Export to WGZ',
+  wgzTooltip: (gm: IGameModel) => `Download a WGZ export of your ${en.prettyPrintType(gm)}`,
   exportJson: 'JSON',
+  jsonTooltip: (gm: IGameModel) => `Download a JSON export of your ${en.prettyPrintType(gm)}`,
   Model: 'Model',
+  model: 'model',
   ModelRef: 'ModelRef',
+  modelRef: 'internal model reference',
+  prettyPrintType: (gameModel: IGameModel) => {
+    switch (gameModel.type) {
+      case 'MODEL':
+        return en.model;
+      case 'REFERENCE':
+        return en.modelRef;
+      case 'SCENARIO':
+        return en.scenario;
+      case 'PLAY':
+        return en.playScenario;
+    }
+  },
+
+  // Diff & Patch
+  diff: 'Update from wgz',
+  patch: 'Do patch',
+  restart: 'Cancel patch',
 
   //
   ModelInstances: 'Model instances',
@@ -216,6 +245,7 @@ export const en = {
   gameAdmins: 'Sessions',
   stats: 'Stats',
   createEmptyModel: 'Create an empty Model',
+  requestClientReload: 'Ask users to reload the page (e.g after a big update)',
   clearCache: 'Clear JPA cache',
 
   userIsMemberOf: (user: string) => `"${user}" is member of these groups`,
@@ -230,6 +260,7 @@ export const en = {
   removeRole: 'Remove from group',
   addMemberInvite: 'search for a user to add',
 
+  AllScenariosAndModels: 'All scenarios and models',
   showPermissions: 'show permissions',
   permissions: 'Permissions',
   adminLevelSettins: 'Admin Level Settings',
@@ -240,6 +271,7 @@ export const en = {
   unknown: 'unknown',
 
   showRoles: 'show groups',
+  memberAddresses: 'Member addresses',
 
   editUser: 'edit user',
 
@@ -257,6 +289,9 @@ export const en = {
     'CREATE-ACCOUNT-TAKEN-EMAIL': 'This email address is already taken',
     'CREATE-ACCOUNT-TAKEN-USERNAME': 'This username is already taken',
   },
+  outadateMessagePart1: 'Some of your data are outdated, please ',
+  outadateMessagePart2: 'reload',
+  outadateMessagePart3: ' the page',
   pleaseWait: 'Please wait...',
   autoplay: {
     loginAsGuest: 'Preparation of anonymous guest account ...',

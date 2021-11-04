@@ -22,6 +22,7 @@ import Checkbox from '../common/Checkbox';
 import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import IconButton from '../common/IconButton';
+import { userIllu, verifiedIllu } from '../common/illustrations/illustrationHelper';
 import InlineLoading from '../common/InlineLoading';
 import { cardDetailsStyle, cardTitleStyle, upsideSelectStyles } from '../styling/style';
 
@@ -33,6 +34,7 @@ interface UserProps {
   gameModel: IGameModelWithId;
   account: IAccountWithPerm;
   reload: () => void;
+  showDeleteButton: boolean;
 }
 
 function processPermission(gameModel: IGameModelWithId, permission?: IPermission) {
@@ -57,7 +59,7 @@ function processPermission(gameModel: IGameModelWithId, permission?: IPermission
   return map;
 }
 
-function UserCard({ account, gameModel, reload }: UserProps) {
+function UserCard({ account, gameModel, reload, showDeleteButton }: UserProps) {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
 
@@ -112,7 +114,7 @@ function UserCard({ account, gameModel, reload }: UserProps) {
   }
 
   return (
-    <Card illustration="ICON_grey_user_fa">
+    <Card illustration={account.verified ? verifiedIllu : userIllu}>
       <FitSpace direction="column">
         <div className={cardTitleStyle}>
           {account.firstname} {account.lastname}
@@ -127,16 +129,18 @@ function UserCard({ account, gameModel, reload }: UserProps) {
         {gameModel.languages.map(lang => createCheckBox(`Translate-${lang.code}`))}
       </FitSpace>
 
-      <ActionIconButton
-        shouldConfirm="SOFT_LEFT"
-        icon={faUserTimes}
-        title={i18n.kickScenarist}
-        onClick={async () =>
-          dispatch(unshareGameModel({ gameModelId: gameModel.id, accountId: account.id })).then(
-            () => reload(),
-          )
-        }
-      />
+      {showDeleteButton ? (
+        <ActionIconButton
+          shouldConfirm="SOFT_LEFT"
+          icon={faUserTimes}
+          title={i18n.kickScenarist}
+          onClick={async () =>
+            dispatch(unshareGameModel({ gameModelId: gameModel.id, accountId: account.id })).then(
+              () => reload(),
+            )
+          }
+        />
+      ) : null}
     </Card>
   );
 }
@@ -214,8 +218,15 @@ export default function ShareGameModel({ gameModel }: GameModelProps) {
     return (
       <FitSpace direction="column">
         <CardContainer>
+          <h4>{i18n.coScenarist}</h4>
           {scenarists.map(a => (
-            <UserCard key={a.id} account={a} gameModel={gameModel} reload={reload} />
+            <UserCard
+              key={a.id}
+              account={a}
+              gameModel={gameModel}
+              reload={reload}
+              showDeleteButton={scenarists.length > 1}
+            />
           ))}
         </CardContainer>
         <Flex direction="row" justify="space-between" align="center">

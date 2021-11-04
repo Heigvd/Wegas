@@ -59,9 +59,9 @@ const cardMainButtonStyle = (bgColor: string) =>
     ':hover': {
       color: '#06b7e8',
     },
-//    ':focus': {
-//      color: '#06b7e8',
-//    },
+    //    ':focus': {
+    //      color: '#06b7e8',
+    //    },
   });
 
 export function CardMainButton({

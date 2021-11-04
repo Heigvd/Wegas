@@ -41,6 +41,7 @@ import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import IconButton from '../common/IconButton';
 import { SizeType } from '../common/illustrations/Illustration';
+import { userIllu, verifiedIllu } from '../common/illustrations/illustrationHelper';
 import OpenCloseModal from '../common/OpenCloseModal';
 import { UserSettings } from '../settings/UserSettings';
 import {
@@ -136,7 +137,7 @@ export function UserPermissions({ userId }: { userId: number }): JSX.Element {
           {close => (
             <PermissionEditor
               permission={emptyPermission}
-              pType={'GameModel'}
+              pType={'SCENARIO'}
               value={'Edit'}
               id={undefined}
               onSave={p => {
@@ -275,7 +276,9 @@ export default function UserCard({
     <Card
       key={user.id}
       size={size}
-      illustration={entityIs(account, 'AaiAccount') ? 'ICON_grey_id-card_far' : 'ICON_grey_user_fa'}
+      illustration={
+        entityIs(account, 'AbstractAccount', true) && account.verified ? verifiedIllu : userIllu
+      }
     >
       <FitSpace direction="column">
         <div className={cardTitleStyle}>{user.name || ''}</div>

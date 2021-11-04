@@ -9,7 +9,7 @@
 import { faCheckCircle, faCircle, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import Select from 'react-select';
-import { IGameModelWithId, IPermission, IPermissionWithId } from 'wegas-ts-api';
+import { IPermission, IPermissionWithId } from 'wegas-ts-api';
 import {
   deletePermission,
   getGameById,
@@ -19,7 +19,7 @@ import {
   updatePermission,
 } from '../../API/api';
 import { entityIs } from '../../API/entityHelper';
-import useTranslations, { WegasTranslations } from '../../i18n/I18nContext';
+import useTranslations from '../../i18n/I18nContext';
 import { useCurrentUser } from '../../selectors/userSelector';
 import {
   usePermissionObject,
@@ -46,6 +46,7 @@ import {
 interface GmPermissionEditorProps {
   value: string;
   id: number | '*' | undefined;
+  gmType: 'MODEL' | 'SCENARIO' | 'ALL_GM';
   onChange: (value: { value: string; id: number | '*' }) => void;
 }
 
@@ -54,25 +55,13 @@ interface PermIdOption {
   label: string;
 }
 
-function prettyPrintType(gameModel: IGameModelWithId, i18n: WegasTranslations): string {
-  switch (gameModel.type) {
-    case 'MODEL':
-      return i18n.Model;
-    case 'REFERENCE':
-      return i18n.ModelRef;
-    case 'SCENARIO':
-      return i18n.Scenario;
-    case 'PLAY':
-      return i18n.PlayScenario;
-  }
-}
-
 const baseGmPerm = ['Edit', 'Duplicate', 'Instantiate'];
 const allGmPerm = 'View,Edit,Delete,Duplicate,Instantiate';
 
 export function GameModelPermissionEditor({
   value,
   id,
+  gmType,
   onChange,
 }: GmPermissionEditorProps): JSX.Element {
   const dispatch = useAppDispatch();
@@ -81,10 +70,13 @@ export function GameModelPermissionEditor({
 
   const userId = currentUser != null ? currentUser.id : undefined;
 
-  const gameModels = useShareableGameModels(userId);
+  // quick and ugly hack to hangle wildcard
+  const hackType = gmType === 'ALL_GM' ? 'MODEL' : gmType;
+  const wildcard = gmType === 'ALL_GM';
 
-  const mStatus = gameModels.status.MODEL.LIVE;
-  const sStatus = gameModels.status.SCENARIO.LIVE;
+  const gameModels = useShareableGameModels(userId, hackType);
+
+  const status = gameModels.status[hackType].LIVE;
 
   const [gameModelId, setGameModelId] = React.useState<number | '*' | undefined>(id);
 
@@ -136,14 +128,10 @@ export function GameModelPermissionEditor({
   }, [permState, gmPerm, gameModelId, onChange]);
 
   React.useEffect(() => {
-    if (sStatus == 'NOT_INITIALIZED') {
-      dispatch(getGameModels({ status: 'LIVE', type: 'SCENARIO' }));
+    if (status == 'NOT_INITIALIZED') {
+      dispatch(getGameModels({ status: 'LIVE', type: hackType }));
     }
-
-    if (mStatus == 'NOT_INITIALIZED') {
-      dispatch(getGameModels({ status: 'LIVE', type: 'MODEL' }));
-    }
-  }, [sStatus, mStatus, dispatch]);
+  }, [status, hackType, dispatch]);
 
   const selectGameModelCb = React.useCallback((value: PermIdOption | null) => {
     if (value != null) {
@@ -157,17 +145,17 @@ export function GameModelPermissionEditor({
     .map(gm => {
       return {
         value: gm.id,
-        label: `${gm.name}  [${i18n.status[gm.status]} ${prettyPrintType(gm, i18n)}]`,
+        label: `${gm.name}  [${i18n.status[gm.status]}]`,
       };
     })
     .sort((a, b) => a.label.localeCompare(b.label));
 
-  options.unshift({
-    value: '*',
-    label: i18n.all,
-  });
+  //  options.unshift({
+  //    value: '*',
+  //    label: i18n.all,
+  //  });
 
-  const current = options.find(opt => opt.value === gameModelId);
+  const current = options.find(opt => opt.value === gameModelId) || null;
 
   const togglePermCb = React.useCallback(
     (perm: string) => {
@@ -198,19 +186,29 @@ export function GameModelPermissionEditor({
 
   return (
     <>
-      <Select
-        options={options}
-        isClearable={false}
-        value={current}
-        onChange={selectGameModelCb}
-        styles={defaultSelectStyles}
-      />
+      {wildcard ? null : (
+        <>
+          <Select
+            options={options}
+            isClearable={false}
+            value={current}
+            onChange={selectGameModelCb}
+            styles={defaultSelectStyles}
+          />
+        </>
+      )}
       {gmPerm.map(perm => createCheckBox(perm))}
     </>
   );
 }
 
-export function GamePermissionEditor({ id, onChange }: GmPermissionEditorProps): JSX.Element {
+interface GamePermissionEditorProps {
+  value: string;
+  id: number | '*' | undefined;
+  onChange: (value: { value: string; id: number | '*' }) => void;
+}
+
+export function GamePermissionEditor({ id, onChange }: GamePermissionEditorProps): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
   const { currentUser } = useCurrentUser();
@@ -261,7 +259,7 @@ export function GamePermissionEditor({ id, onChange }: GmPermissionEditorProps):
 
 interface PermissionEditorProps {
   permission: IPermission;
-  pType: 'Game' | 'GameModel';
+  pType: 'GAME' | 'SCENARIO' | 'MODEL' | 'ALL_GM';
   value: string;
   id: number | '*' | undefined;
   close: () => void;
@@ -273,64 +271,82 @@ export function PermissionEditor({
   pType,
   value,
   id,
+  close,
   onSave,
 }: PermissionEditorProps): JSX.Element {
   const i18n = useTranslations();
 
-  const [typeState, setType] = React.useState<'Game' | 'GameModel'>(pType);
+  const [typeState, setType] = React.useState(pType);
 
   const [valueState, setValue] = React.useState(value);
-  const [gmIdState, setGmId] = React.useState(pType === 'GameModel' ? id : undefined);
-  const [gIdState, setGId] = React.useState(pType === 'Game' ? id : undefined);
-
-  const toggleType = React.useCallback(() => {
-    setType(current => (current === 'Game' ? 'GameModel' : 'Game'));
-  }, []);
+  const [gmIdState, setGmId] = React.useState(pType !== 'GAME' ? id : undefined);
+  const [gIdState, setGId] = React.useState(pType === 'GAME' ? id : undefined);
 
   return (
     <FitSpace direction="column">
       <CardContainer>
         <Flex>
           <IconButton
-            icon={typeState === 'GameModel' ? faCheckCircle : faCircle}
-            onClick={toggleType}
+            icon={typeState === 'GAME' ? faCheckCircle : faCircle}
+            onClick={() => setType('GAME')}
           >
-            GameModel
+            {i18n.Game}
           </IconButton>
-          <IconButton icon={typeState === 'Game' ? faCheckCircle : faCircle} onClick={toggleType}>
-            Game
+          <IconButton
+            icon={typeState === 'SCENARIO' ? faCheckCircle : faCircle}
+            onClick={() => setType('SCENARIO')}
+          >
+            {i18n.GameModel}
+          </IconButton>
+          <IconButton
+            icon={typeState === 'MODEL' ? faCheckCircle : faCircle}
+            onClick={() => setType('MODEL')}
+          >
+            {i18n.Model}
+          </IconButton>
+          <IconButton
+            icon={typeState === 'ALL_GM' ? faCheckCircle : faCircle}
+            onClick={() => setType('ALL_GM')}
+          >
+            {i18n.AllScenariosAndModels}
           </IconButton>
         </Flex>
-        {typeState === 'GameModel' ? (
-          <GameModelPermissionEditor
-            value={valueState}
-            id={gmIdState}
-            onChange={v => {
-              setValue(v.value);
-              setGmId(v.id);
-            }}
-          />
-        ) : (
-          <GamePermissionEditor
-            value={valueState}
-            id={gIdState}
-            onChange={v => {
-              setValue(v.value);
-              setGId(v.id);
-            }}
-          />
-        )}
+        <FitSpace direction="column">
+          {typeState === 'SCENARIO' || typeState === 'MODEL' || typeState === 'ALL_GM' ? (
+            <GameModelPermissionEditor
+              value={valueState}
+              id={gmIdState}
+              gmType={typeState}
+              onChange={v => {
+                setValue(v.value);
+                setGmId(v.id);
+              }}
+            />
+          ) : (
+            <GamePermissionEditor
+              value={valueState}
+              id={gIdState}
+              onChange={v => {
+                setValue(v.value);
+                setGId(v.id);
+              }}
+            />
+          )}
+        </FitSpace>
         <Flex justify="flex-end">
-          <i>{`${typeState}:${valueState}:${gmIdState}|${gIdState}`}</i>
+          {/*<i>{`${typeState}:${valueState}:${gmIdState}|${gIdState}`}</i>*/}
+          <Button label={i18n.cancel} onClick={close} />
           <Button
             className={mainButtonStyle}
             label={i18n.save}
             onClick={() => {
-              const newPerm =
-                typeState === 'GameModel'
-                  ? `${typeState}:${valueState}:gm${gmIdState}`
-                  : `${typeState}:${valueState}:g${gIdState}`;
-              onSave({ ...permission, value: newPerm });
+              if (typeState === 'ALL_GM') {
+                onSave({ ...permission, value: `GameModel:${valueState}:*` });
+              } else if (typeState === 'SCENARIO' || typeState === 'MODEL') {
+                onSave({ ...permission, value: `GameModel:${valueState}:gm${gmIdState}` });
+              } else {
+                onSave({ ...permission, value: `Game:${valueState}:g${gIdState}` });
+              }
             }}
           />
         </Flex>
@@ -397,6 +413,19 @@ export function PermissionCard({ permission }: PermissionCardProps): JSX.Element
     </i>
   );
 
+  const eType =
+    data.type === 'WILDCARD' && pType === 'GameModel'
+      ? 'ALL_GM'
+      : data.type === 'WILDCARD' && pType === 'Game'
+      ? 'GAME'
+      : entityIs(gameModel, 'GameModel')
+      ? gameModel.type === 'MODEL' || gameModel.type === 'SCENARIO'
+        ? gameModel.type
+        : null
+      : entityIs(game, 'Game')
+      ? 'GAME'
+      : undefined;
+
   return (
     <Card size="SMALL" key={permission.id} illustration="ICON_grey_key_fa">
       <FitSpace direction="column">
@@ -404,7 +433,7 @@ export function PermissionCard({ permission }: PermissionCardProps): JSX.Element
         <div className={cardDetailsStyle}>{value}</div>
       </FitSpace>
 
-      {pType === 'Game' || pType === 'GameModel' ? (
+      {eType != null ? (
         <OpenCloseModal
           icon={faPen}
           iconTitle={i18n.editPermission}
@@ -416,9 +445,9 @@ export function PermissionCard({ permission }: PermissionCardProps): JSX.Element
           {close => (
             <PermissionEditor
               permission={permission}
-              pType={pType}
+              pType={eType}
               value={value}
-              id={oId}
+              id={data.type === 'WILDCARD' ? '*' : oId}
               onSave={p => {
                 if (p.id != null) {
                   dispatch(updatePermission(p as IPermissionWithId)).then(a => {

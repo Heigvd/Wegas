@@ -11,7 +11,7 @@ import * as API from '../../API/api';
 import { setApiStatus } from '../../websocket/websocket';
 
 export interface WegasState {
-  apiStatus: 'UP' | 'DOWN';
+  apiStatus: 'UP' | 'DOWN' | 'OUTDATED';
 }
 
 const initialState: WegasState = {

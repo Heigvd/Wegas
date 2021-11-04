@@ -7,7 +7,7 @@
  */
 
 import { css, cx } from '@emotion/css';
-import { faCodeBranch, faDownload, faRedo, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCodeBranch, faRedo, faTrash } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import { IGameModelWithId } from 'wegas-ts-api';
 import { createVersion, deleteVersion, getRestClient, restoreVersion } from '../../API/api';
@@ -21,7 +21,7 @@ import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import IconButton from '../common/IconButton';
 import InlineLoading from '../common/InlineLoading';
-import { buttonStyle, cardDetailsStyle, cardTitleStyle, secButtonStyle } from '../styling/style';
+import { cardDetailsStyle, cardTitleStyle, secButtonStyle } from '../styling/style';
 
 interface VersionCardProps {
   gameModel: IGameModelWithId;
@@ -137,45 +137,6 @@ export default function GameModelVersioning({
             {i18n.createVersion}
           </IconButton>
         </FitSpace>
-
-        <IconButton
-          title={i18n.pdf}
-          className={buttonStyle}
-          icon={faDownload}
-          onClick={() => {
-            window.open(
-              `${APP_ENDPOINT}/print.html?gameModelId=${gameModel.id}&outputType=pdf&mode=editor&defaultValues=true`,
-            );
-          }}
-        >
-          {i18n.pdf}
-        </IconButton>
-
-        <IconButton
-          title={i18n.exportWgz}
-          className={buttonStyle}
-          icon={faDownload}
-          onClick={() => {
-            window.open(`${API_ENDPOINT}/Export/GameModel/${gameModel.id}.wgz`);
-          }}
-        >
-          {i18n.exportWgz}
-        </IconButton>
-
-        <IconButton
-          title={i18n.exportJson}
-          className={buttonStyle}
-          icon={faDownload}
-          onClick={() => {
-            window.open(
-              `${API_ENDPOINT}/Export/GameModel/${gameModel.id}/${encodeURIComponent(
-                gameModel.name,
-              )}.json`,
-            );
-          }}
-        >
-          {i18n.exportJson}
-        </IconButton>
       </Flex>
     </FitSpace>
   );

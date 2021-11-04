@@ -222,6 +222,22 @@ export const fullPageOverlayStyle = cx(
   }),
 );
 
+export const fullWidthBanner = css({
+  width: '100%',
+  padding: '10px',
+  fontSize: '1.3em',
+  fontWeight: 300,
+  textAlign: 'center',
+});
+
+export const fullWidthWarningBanner = cx(
+  fullWidthBanner,
+  css({
+    color: white.toString(),
+    backgroundColor: 'var(--warningColor)',
+  }),
+);
+
 const pulseKeyframes = keyframes`
   0% {
    transform: rotate(0deg);
@@ -247,6 +263,7 @@ export const pulseEase = css`
 
 export const linkStyle = css({
   color: 'var(--linkColor)',
+  textDecorationLine: 'none',
   cursor: 'pointer',
   ':hover': {
     color: 'var(--hoverFgColor)',
@@ -412,12 +429,14 @@ export const warningStyle = css({
 });
 
 export const errorStyle = css({
-  color: 'var(--danderColor)',
+  color: 'var(--dangerColor)',
 });
 
 export const labelStyle = css({
   fontWeight: 500,
-  textTransform: 'capitalize',
+  '&::first-letter': {
+    textTransform: 'capitalize',
+  },
 });
 
 export const mainHeaderHeight = '48px';

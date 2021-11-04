@@ -13,6 +13,9 @@ import { IconName } from '@fortawesome/free-solid-svg-icons';
 //
 //export type IconColor = typeof colors[number];
 
+export const verifiedIllu = 'ICON_grey_id-card_far';
+export const userIllu = 'ICON_grey_user_fa';
+
 export const fontelloName = [
   'emo-angry',
   'emo-grin',

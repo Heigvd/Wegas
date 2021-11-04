@@ -337,13 +337,14 @@ export default function GameSettings({ game, onClose }: GameSettingsProps) {
           </Tabs>
         </FitSpace>
         <Flex justify="space-between" align="center">
-          <div className={css({ margin: '10px', color: 'var(--warningColor)' })}>
+          <div className={css({ flexGrow: 1, margin: '10px', color: 'var(--warningColor)' })}>
             {gameUnsaved || gameModelUnsaved || langsUnsaved ? (
               <>
                 <FontAwesomeIcon icon={faExclamationTriangle} /> {i18n.pendingChanges}{' '}
               </>
             ) : null}
           </div>
+          <Button label={i18n.cancel} onClick={onClose} />
           <Button className={mainButtonStyle} label={i18n.save} onClick={saveCb} />
         </Flex>
       </FitSpace>

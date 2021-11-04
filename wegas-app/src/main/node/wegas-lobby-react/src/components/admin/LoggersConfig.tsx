@@ -6,19 +6,19 @@
  * Licensed under the MIT License
  */
 
-import {css, cx} from '@emotion/css';
-import {faSearch, faSync} from '@fortawesome/free-solid-svg-icons';
+import { css, cx } from '@emotion/css';
+import { faSearch, faSync } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
-import {changeLoggerLevel, getLoggerLevels} from '../../API/api';
-import {ILevelDescriptor} from '../../API/restClient';
+import { changeLoggerLevel, getLoggerLevels } from '../../API/api';
+import { ILevelDescriptor } from '../../API/restClient';
 import useTranslations from '../../i18n/I18nContext';
-import getLogger, {LoggerLevel, loggers as clientLoggers} from '../../logger';
-import {shallowEqual, useAppDispatch, useAppSelector} from '../../store/hooks';
+import getLogger, { LoggerLevel, loggers as clientLoggers } from '../../logger';
+import { shallowEqual, useAppDispatch, useAppSelector } from '../../store/hooks';
 import ActionIconButton from '../common/ActionIconButton';
 import FitSpace from '../common/FitSpace';
 import IconButton from '../common/IconButton';
 import InlineLoading from '../common/InlineLoading';
-import {linkStyle, panelPadding} from '../styling/style';
+import { linkStyle, panelPadding } from '../styling/style';
 
 const LEVELS = ['OFF', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE'];
 
@@ -45,7 +45,7 @@ interface LoggerGridProps {
   className?: string;
 }
 
-function LoggerGrid({title, levels, changeLevel, className}: LoggerGridProps) {
+function LoggerGrid({ title, levels, changeLevel, className }: LoggerGridProps) {
   const [search, setSearch] = React.useState('');
 
   const keys = Object.keys(levels)
@@ -92,7 +92,7 @@ function LoggerGrid({title, levels, changeLevel, className}: LoggerGridProps) {
                   const item = (
                     <span
                       onClick={() => changeLevel(loggerName, lvl)}
-                      className={cx(linkStyle, css({marginLeft: '5px'}))}
+                      className={cx(linkStyle, css({ marginLeft: '5px' }))}
                     >
                       {lvl}
                     </span>
@@ -132,7 +132,7 @@ function isClientLevel(level: number): level is LoggerLevel {
   return level >= 0 && level <= 5;
 }
 
-function computeClientState(): {[key: string]: ILevelDescriptor} {
+function computeClientState(): { [key: string]: ILevelDescriptor } {
   const state: Record<string, ILevelDescriptor> = {};
 
   Object.entries(clientLoggers).forEach(([name, logger]) => {
@@ -147,7 +147,7 @@ function computeClientState(): {[key: string]: ILevelDescriptor} {
   return state;
 }
 
-const noShrink = css({flexShrink: 0});
+const noShrink = css({ flexShrink: 0 });
 
 export default function (): JSX.Element {
   const serverLevels = useAppSelector(state => state.admin.loggers, shallowEqual);
@@ -192,17 +192,18 @@ export default function (): JSX.Element {
       <FitSpace direction="column" overflow="auto" className={panelPadding}>
         {clientLoggers}
         <LoggerGrid
-          title={<div>
-            <span>"Server Loggers"</span>
-            <ActionIconButton
-              title={i18n.refresh}
-              icon={faSync}
-              onClick={() => {
-                return dispatch(getLoggerLevels());
-              }}
-            />
-          </div>}
-
+          title={
+            <div>
+              <span>"Server Loggers"</span>
+              <ActionIconButton
+                title={i18n.refresh}
+                icon={faSync}
+                onClick={() => {
+                  return dispatch(getLoggerLevels());
+                }}
+              />
+            </div>
+          }
           levels={serverLevels}
           changeLevel={(loggerName, level) => {
             dispatch(

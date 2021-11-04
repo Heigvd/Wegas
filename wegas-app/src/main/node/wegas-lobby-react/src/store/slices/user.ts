@@ -176,6 +176,9 @@ const userSlice = createSlice({
       .addCase(API.deleteRole.fulfilled, (state, action) => {
         deleteRole(state, action.payload);
       })
+      .addCase(API.updateRole.fulfilled, (state, action) => {
+        updateRole(state, action.payload as IRoleWithPermissions);
+      })
       .addCase(API.getRoleMembers.pending, (state, action) => {
         state.roleUsers[action.meta.arg] = 'LOADING';
       })

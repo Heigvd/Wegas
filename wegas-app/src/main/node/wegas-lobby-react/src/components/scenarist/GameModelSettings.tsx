@@ -25,6 +25,7 @@ import IllustrationPicker from '../common/illustrations/IllustrationPicker';
 import { modalSeparatorBorder } from '../common/Modal';
 import Tabs, { Tab } from '../common/Tabs';
 import { labelStyle, mainButtonStyle } from '../styling/style';
+import GameModelExport from './GameModelExport';
 
 interface SettingsProps {
   gameModel: IGameModelWithId;
@@ -140,6 +141,13 @@ export function GameModelAdvancedSettingsForm({ gameModel, onGameModelUpdate }: 
     },
     {
       type: 'text',
+      key: 'cssUri',
+      label: i18n.css,
+      placeholder: i18n.css,
+      isMandatory: false,
+    },
+    {
+      type: 'text',
       key: 'pagesUri',
       label: i18n.pages,
       placeholder: i18n.pages,
@@ -210,10 +218,12 @@ export default function GameModelSettings({ gameModel, onClose }: GameModelSetti
     onClose();
   }, [state, gameModelUnsaved, dispatch, onClose]);
 
+  const [tab, setTab] = React.useState('basic');
+
   return (
     <FitSpace direction="column" overflow="auto">
       <FitSpace direction="column" overflow="auto">
-        <Tabs>
+        <Tabs onSelect={setTab}>
           <Tab name="basic" label={i18n.basicSettings}>
             <GameModelBasicSettings gameModel={gameModel} onGameModelUpdate={updateGameModelCb} />
           </Tab>
@@ -229,24 +239,30 @@ export default function GameModelSettings({ gameModel, onClose }: GameModelSetti
               onGameModelUpdate={updateGameModelCb}
             />
           </Tab>
+          <Tab name="export" label={i18n.importExport}>
+            <GameModelExport gameModel={gameModel} onClose={onClose} />
+          </Tab>
         </Tabs>
       </FitSpace>
-      <Flex
-        className={css({
-          borderTop: modalSeparatorBorder,
-        })}
-        justify="space-between"
-        align="center"
-      >
-        <div className={css({ margin: '10px', color: 'var(--warningColor)' })}>
-          {gameModelUnsaved ? (
-            <>
-              <FontAwesomeIcon icon={faExclamationTriangle} /> {i18n.pendingChanges}{' '}
-            </>
-          ) : null}
-        </div>
-        <Button className={mainButtonStyle} label={i18n.save} onClick={saveCb} />
-      </Flex>
+      {tab != 'export' ? (
+        <Flex
+          className={css({
+            borderTop: modalSeparatorBorder,
+          })}
+          justify="space-between"
+          align="center"
+        >
+          <div className={css({ flexGrow: 1, margin: '10px', color: 'var(--warningColor)' })}>
+            {gameModelUnsaved ? (
+              <>
+                <FontAwesomeIcon icon={faExclamationTriangle} /> {i18n.pendingChanges}{' '}
+              </>
+            ) : null}
+          </div>
+          <Button label={i18n.cancel} onClick={onClose} />
+          <Button className={mainButtonStyle} label={i18n.save} onClick={saveCb} />
+        </Flex>
+      ) : null}
     </FitSpace>
   );
 }

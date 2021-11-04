@@ -20,6 +20,7 @@ import {
 import {
   getAllTeams,
   getRestClient,
+  getUser,
   kickTeam,
   leaveGame,
   shareGame,
@@ -27,6 +28,7 @@ import {
 } from '../../API/api';
 import { entityIs } from '../../API/entityHelper';
 import useTranslations from '../../i18n/I18nContext';
+import { useAccount } from '../../selectors/userSelector';
 import { useTeams } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
 import ActionIconButton from '../common/ActionIconButton';
@@ -35,6 +37,7 @@ import CardContainer from '../common/CardContainer';
 import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import IconButton from '../common/IconButton';
+import { userIllu, verifiedIllu } from '../common/illustrations/illustrationHelper';
 import InlineLoading from '../common/InlineLoading';
 import Tabs, { Tab } from '../common/Tabs';
 import { cardDetailsStyle, cardTitleStyle, upsideSelectStyles } from '../styling/style';
@@ -48,6 +51,15 @@ function PlayerDetails({ player }: PlayerDetailsProps) {
   const dispatch = useAppDispatch();
 
   const [extPlayer, setExtPlayer] = React.useState<'UNSET' | IPlayerWithId>('UNSET');
+
+  const account = useAccount(player.userId);
+  const verified = entityIs(account, 'AbstractAccount', true) ? account.verified : false;
+
+  React.useEffect(() => {
+    if (player.userId != null && account === undefined) {
+      dispatch(getUser(player.userId));
+    }
+  }, [account, dispatch, player.userId]);
 
   React.useEffect(() => {
     //let abort = false;
@@ -66,7 +78,7 @@ function PlayerDetails({ player }: PlayerDetailsProps) {
   const playerName = entityIs(extPlayer, 'Player') ? extPlayer.name : <InlineLoading />;
 
   return (
-    <Card illustration="ICON_grey_user_fa">
+    <Card illustration={verified ? verifiedIllu : userIllu}>
       <FitSpace direction="column">{playerName}</FitSpace>
 
       <ActionIconButton
@@ -223,7 +235,7 @@ function ShareGame({ game }: GameProps) {
       <FitSpace direction="column">
         <CardContainer>
           {trainers.map(a => (
-            <Card key={a.id} illustration="ICON_grey_user_fa">
+            <Card key={a.id} illustration={a.verified ? verifiedIllu : userIllu}>
               <FitSpace direction="column">
                 <div className={cardTitleStyle}>
                   {a.firstname} {a.lastname}
@@ -231,16 +243,18 @@ function ShareGame({ game }: GameProps) {
                 <div className={cardDetailsStyle}>••••@{a.emailDomain}</div>
               </FitSpace>
 
-              <ActionIconButton
-                shouldConfirm="SOFT_LEFT"
-                icon={faUserTimes}
-                title={i18n.kickTrainer}
-                onClick={async () =>
-                  dispatch(unshareGame({ gameId: game.id, accountId: a.id })).then(() =>
-                    setTrainers('UNSET'),
-                  )
-                }
-              />
+              {trainers.length > 1 ? (
+                <ActionIconButton
+                  shouldConfirm="SOFT_LEFT"
+                  icon={faUserTimes}
+                  title={i18n.kickTrainer}
+                  onClick={async () =>
+                    dispatch(unshareGame({ gameId: game.id, accountId: a.id })).then(() =>
+                      setTrainers('UNSET'),
+                    )
+                  }
+                />
+              ) : null}
             </Card>
           ))}
         </CardContainer>

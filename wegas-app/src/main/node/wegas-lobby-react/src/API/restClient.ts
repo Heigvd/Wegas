@@ -133,6 +133,32 @@ export interface DeeplUsage {
   character_limit: number;
 }
 
+/** PatchDiff and changes */
+export interface LineChange {
+  lineNumber: number;
+  tag: string;
+  content: string;
+}
+
+export interface SideBySideChange {
+  oldValue: string;
+  newValue: string;
+}
+
+export type Change = LineChange | SideBySideChange;
+
+export interface DiffCollection {
+  title: string;
+  diffs: PatchDiff[];
+}
+
+export interface PrimitiveDiff {
+  title: string;
+  changes: Change[];
+}
+
+export type PatchDiff = DiffCollection | PrimitiveDiff;
+
 /**
  * build fetch options
  */
@@ -355,7 +381,7 @@ export const WegasLobbyRestClient = function (
       },
       requestClientReload: () => {
         const path = `${baseUrl}/Pusher/RequestClientReload`;
-        return sendJsonRequest<void>('GET', path, undefined, errorHandler);
+        return sendJsonRequest<void>('POST', path, undefined, errorHandler);
       },
       getBuildDetails: () => {
         const path = `${baseUrl}/Utils/build_details`;
@@ -417,6 +443,10 @@ export const WegasLobbyRestClient = function (
       getMembers: (roleId: number) => {
         const path = `${baseUrl}/Shadow/User/FindUsersWithRole/${roleId}`;
         return sendJsonRequest<IUserWithAccounts[]>('GET', path, undefined, errorHandler);
+      },
+      updateRole: (role: IRoleWithId) => {
+        const path = `${baseUrl}/Role/${role.id}`;
+        return sendJsonRequest<IRoleWithId>('PUT', path, role, errorHandler);
       },
       deleteRole: (roleId: number) => {
         const path = `${baseUrl}/Role/${roleId}`;
@@ -697,7 +727,7 @@ export const WegasLobbyRestClient = function (
         const path = `${baseUrl}/Lobby/GameModel/${gameModelId}/PatchDiff`;
         const fd = new FormData();
         fd.append('file', file);
-        return sendFormRequest('PUT', path, fd, errorHandler);
+        return sendFormRequest<PatchDiff>('PUT', path, fd, errorHandler);
       },
       patchFromFile: (file: File, gameModelId: number) => {
         const path = `${baseUrl}/Lobby/GameModel/${gameModelId}/Patch`;

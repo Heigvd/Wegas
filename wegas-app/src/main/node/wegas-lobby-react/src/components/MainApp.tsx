@@ -39,7 +39,7 @@ import {
   scenaristColor,
   trainerColor,
 } from './styling/color';
-import { fullPageStyle, mainHeaderHeight } from './styling/style';
+import { fullPageStyle, fullWidthWarningBanner, mainHeaderHeight } from './styling/style';
 import TrainerTab from './trainer/TrainerTab';
 
 // A custom hook that builds on useLocation to parse
@@ -163,6 +163,15 @@ export default function MainApp(): JSX.Element {
             marginRight: 'auto',
           })}
         >
+          {wegasStatus === 'OUTDATED' ? (
+            <div className={fullWidthWarningBanner}>
+              {i18n.outadateMessagePart1}
+              <a href="#" onClick={() => window.location.reload()}>
+                {i18n.outadateMessagePart2}
+              </a>
+              {i18n.outadateMessagePart3}
+            </div>
+          ) : null}
           <div
             className={cx(
               css({

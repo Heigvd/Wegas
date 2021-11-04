@@ -11,7 +11,7 @@ import {
   faArchive,
   faCog,
   faKey,
-  faRedo,
+  faLevelUpAlt,
   faTrash,
   faTrashRestore,
   faUsers,
@@ -147,7 +147,7 @@ export default function GameCard({ game, gameModel }: GameCardProps): JSX.Elemen
             </>
           ) : null}
         </div>
-        <div className={cardDetailsStyle}>{`${i18n.scenario} "${gameModel.name}"`}</div>
+        <div className={cardDetailsStyle}>{`${i18n.basedOnScenario} "${gameModel.name}"`}</div>
         <div className={cardSubDetailsStyle}>{gameModel.comments}</div>
       </FitSpace>
 
@@ -191,7 +191,8 @@ export default function GameCard({ game, gameModel }: GameCardProps): JSX.Elemen
         <>
           <ActionIconButton
             className={cardSecButtonStyle}
-            icon={faRedo}
+            icon={faLevelUpAlt}
+            flip="horizontal"
             title={i18n.restore}
             onClick={restoreCb}
           />

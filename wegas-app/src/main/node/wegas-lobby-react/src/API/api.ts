@@ -347,6 +347,13 @@ export const deleteRole = createAsyncThunk(
   },
 );
 
+export const updateRole = createAsyncThunk(
+  'roles/update',
+  async (role: IRoleWithId): Promise<IRoleWithId> => {
+    return await restClient.RoleController.updateRole(role);
+  },
+);
+
 export const giveRoleToUser = createAsyncThunk(
   'roles/give',
   async (payload: { userId: number; roleId: number }) => {
