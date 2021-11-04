@@ -192,7 +192,7 @@ public class UserFacade extends BaseFacade<User> {
         try {
             requestManager.su();
 
-            for (AbstractAccount account : accountFacade.findAllByEmailOrUsername(username)) {
+            for (AbstractAccount account : accountFacade.findAllByEmailOrUsernameCaseSensitive(username)) {
                 AuthenticationMethod m = account.getAuthenticationMethod();
                 if (m != null) {
                     methods.add(m);
