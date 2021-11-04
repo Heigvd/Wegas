@@ -128,18 +128,14 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * Check is username is already in use
+     * Check is username is already in use (case-insensitive !)
      *
      * @param username username to check
      *
      * @return true is username is already in use
      */
     public boolean checkExistingUsername(String username) {
-        try {
-            return this.getUserByUsername(username) != null;
-        } catch (RuntimeException ex) {
-            return true;
-        }
+        return !accountFacade.findAllByEmailOrUsername(username).isEmpty();
     }
 
     /**
@@ -740,7 +736,7 @@ public class UserFacade extends BaseFacade<User> {
         // load the game to make sure it exists
         Game game = gameFacade.find(gameId);
         requestManager.assertGameTrainer(game);
-        try ( Sudoer su = requestManager.sudoer()) {
+        try (Sudoer su = requestManager.sudoer()) {
             if (game != null) {
                 User user = this.find(trainerId);
                 this.addUserPermission(user, "Game:View,Edit:g" + gameId);
@@ -754,7 +750,7 @@ public class UserFacade extends BaseFacade<User> {
         // load the game to make sure it exists
         Game game = gameFacade.find(gameId);
         requestManager.assertGameTrainer(game);
-        try ( Sudoer su = requestManager.sudoer()) {
+        try (Sudoer su = requestManager.sudoer()) {
             if (this.getCurrentUser().equals(trainer)) {
                 throw WegasErrorMessage.error("Cannot remove yourself");
             }
@@ -776,7 +772,7 @@ public class UserFacade extends BaseFacade<User> {
     public void grantGameModelPermissionToUser(Long userId, Long gameModelId, String permissions) {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
-        try ( Sudoer su = requestManager.sudoer()) {
+        try (Sudoer su = requestManager.sudoer()) {
             User user = this.find(userId);
 
             /*
@@ -795,7 +791,7 @@ public class UserFacade extends BaseFacade<User> {
     public void removeScenarist(Long gameModelId, User scenarist) {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
-        try ( Sudoer su = requestManager.sudoer()) {
+        try (Sudoer su = requestManager.sudoer()) {
             if (this.getCurrentUser().equals(scenarist)) {
                 throw WegasErrorMessage.error("Cannot remove yourself");
             }

@@ -389,8 +389,7 @@ public class UserController {
      */
     @GET
     @Path("AuthMethod/{username}")
-    public List<AuthenticationMethod> getAuthMethod(AuthenticationInformation authInfo,
-        @PathParam("username") String username) {
+    public List<AuthenticationMethod> getAuthMethod(@PathParam("username") String username) {
         return userFacade.getAuthMethods(username);
     }
 
@@ -409,8 +408,6 @@ public class UserController {
 
     /**
      * Logout
-     *
-     * @return 204 OK No content
      */
     @GET
     @Path("Logout")
