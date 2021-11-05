@@ -300,6 +300,7 @@ export const en = {
   emptyTeam: 'empty team',
   declared: 'declared',
   effective: 'effective',
+  invoiceDiff: 'delta',
 
   WegasErrorMessage: {
     'IMPOSSIBLE-TO-UPDATE-PASSWORD': 'Password update is forbidden',

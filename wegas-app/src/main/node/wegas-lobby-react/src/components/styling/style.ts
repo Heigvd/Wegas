@@ -55,18 +55,6 @@ export const defaultSelectStyles: SelectStylesType = {
   }),
 };
 
-export const upsideSelectStyles: SelectStylesType = {
-  ...defaultSelectStyles,
-  menu: provided => {
-    return {
-      ...provided,
-      top: 'unset',
-      bottom: '44px',
-      marginTop: '0px',
-    };
-  },
-};
-
 export const pictoColours = css({
   '--pictoBlue': '#50BFD5', // main blue
   '--pictoOrange': '#E36D28', // main orange
@@ -343,6 +331,10 @@ export const disabledIconStyle = iconStyle;
 
 export const cardShadow = '0px 1px 3px rgba(0, 0, 0, 0.12)';
 export const cardShadowHover = '0 3px 6px rgba(0,0,0,.16)';
+
+export const cardFooterPadding = css({
+  padding: '10px 5px 20px 5px',
+});
 
 export const cardContainerStyle = css({
   margin: '10px',

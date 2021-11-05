@@ -40,7 +40,13 @@ import IconButton from '../common/IconButton';
 import { userIllu, verifiedIllu } from '../common/illustrations/illustrationHelper';
 import InlineLoading from '../common/InlineLoading';
 import Tabs, { Tab } from '../common/Tabs';
-import { cardDetailsStyle, cardTitleStyle, upsideSelectStyles } from '../styling/style';
+import { TeamCreator } from '../player/JoinGame';
+import {
+  cardDetailsStyle,
+  cardFooterPadding,
+  cardTitleStyle,
+  defaultSelectStyles,
+} from '../styling/style';
 
 interface PlayerDetailsProps {
   player: IPlayer;
@@ -157,11 +163,14 @@ function GameComposition({ game }: GameProps): JSX.Element {
   } else {
     const realTeams = teams.filter(team => team != null && !entityIs(team, 'DebugTeam'));
     return (
-      <CardContainer>
-        {realTeams.map(team => (
-          <TeamDetails key={team.id} team={team} />
-        ))}
-      </CardContainer>
+      <FitSpace direction="column" overflow="auto">
+        <CardContainer>
+          {realTeams.map(team => (
+            <TeamDetails key={team.id} team={team} />
+          ))}
+        </CardContainer>
+        <TeamCreator game={game} hideAfterCreation={false} />
+      </FitSpace>
     );
   }
 }
@@ -258,12 +267,13 @@ function ShareGame({ game }: GameProps) {
             </Card>
           ))}
         </CardContainer>
-        <Flex direction="row" justify="space-between" align="center">
+        <Flex className={cardFooterPadding} direction="row" justify="space-between" align="center">
           <AsyncSelect
             className={css({ flexGrow: 1 })}
             onChange={inviteCb}
             placeholder={i18n.addTrainer}
-            styles={upsideSelectStyles}
+            menuPlacement="top"
+            style={defaultSelectStyles}
             cacheOptions
             defaultOptions
             loadOptions={promiseOptions}

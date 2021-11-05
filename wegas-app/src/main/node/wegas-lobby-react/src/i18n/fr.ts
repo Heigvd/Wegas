@@ -169,7 +169,7 @@ export const fr: WegasTranslations = {
 
   coScenarist: 'Co-Scénaristes',
   kickScenarist: 'supprimer les accès de scénariste',
-  addScenarist: 'ajouer un scénariste',
+  addScenarist: 'ajouter un scénariste',
 
   logId: 'Log ID',
   guestAllowed: 'Invité autorisés',
@@ -297,6 +297,8 @@ export const fr: WegasTranslations = {
   invoiceTodo: 'A traiter',
   invoiceFree: 'Ne pas facturer',
   invoiceCharged: 'Facturer',
+  invoiceDiff: 'delta',
+
   countMismatch: (declared: number, effective: number) =>
     `${declared} joueurs ont été déclarés mais ${effective} ont été trouvés !`,
   emptyGame: 'aucune équipe',

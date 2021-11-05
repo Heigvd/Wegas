@@ -23,6 +23,7 @@ export type SizeType = 'BIG' | 'MEDIUM' | 'SMALL';
 export interface Props {
   value: string | null | undefined;
   size: SizeType;
+  className?: string;
 }
 
 function getSize(s: SizeType) {
@@ -59,10 +60,11 @@ const illustrationStyle = (color: string, backgroundColor: string, size: SizeTyp
     width: getSize(size),
     minWidth: getSize(size),
     minHeight: getSize(size),
-    height: '100%',
+    //    height: '100%',
     lineHeight: getSize(size),
     fontSize: getIconSize(size),
     textAlign: 'center',
+    alignSelf: 'normal',
   });
 
 export function IconDisplay({

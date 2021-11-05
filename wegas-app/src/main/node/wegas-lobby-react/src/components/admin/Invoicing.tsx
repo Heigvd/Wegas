@@ -16,7 +16,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
-import { IGameAdmin } from 'wegas-ts-api';
 import * as API from '../../API/api';
 import { IGameAdminWithTeams } from '../../API/restClient';
 import { match } from '../../helper';
@@ -34,33 +33,11 @@ import IconButton, { LayeredIconButton } from '../common/IconButton';
 import InlineLoading from '../common/InlineLoading';
 import OpenCloseModal from '../common/OpenCloseModal';
 import SortBy, { SortByOption } from '../common/SortBy';
-import {
-  cardDetailsStyle,
-  cardSubDetailsStyle,
-  cardTitleStyle,
-  mainButtonStyle,
-  panelPadding,
-} from '../styling/style';
+import { cardSubDetailsStyle, mainButtonStyle, panelPadding } from '../styling/style';
 
 interface GameAdminModalProps {
   gameAdmin: IGameAdminWithTeams;
   close: () => void;
-}
-
-function getDeclaredCount(gameAdmin: IGameAdminWithTeams) {
-  return (gameAdmin.teams || []).reduce((acc, cur) => {
-    if (cur.declaredSize) {
-      return acc + cur.declaredSize;
-    } else {
-      return acc;
-    }
-  }, 0);
-}
-
-function getEffectiveCount(gameAdmin: IGameAdminWithTeams) {
-  return (gameAdmin.teams || []).reduce((acc, t) => {
-    return acc + (t.players || []).length;
-  }, 0);
 }
 
 function GameAdminDetails({ gameAdmin, close }: GameAdminModalProps): JSX.Element {
@@ -81,7 +58,7 @@ function GameAdminDetails({ gameAdmin, close }: GameAdminModalProps): JSX.Elemen
     }
   }, [state, close, dispatch, gameAdmin.comments]);
 
-  const fields: Field<IGameAdmin>[] = [
+  const fields: Field<IGameAdminWithTeams>[] = [
     {
       key: 'comments',
       type: 'textarea',
@@ -109,18 +86,15 @@ function GameAdminDetails({ gameAdmin, close }: GameAdminModalProps): JSX.Elemen
   );
 }
 
-function GameAdminUsers({ gameAdmin }: GameAdminCardProps): JSX.Element {
+function GameAdminUsers({ gameAdmin }: GameAdminModalProps): JSX.Element {
   const i18n = useTranslations();
-
-  const declared = getDeclaredCount(gameAdmin);
-  const effective = getEffectiveCount(gameAdmin);
 
   return (
     <CardContainer>
       {(gameAdmin.teams || []).length === 0 ? (
         <h3>{i18n.emptyGame}</h3>
       ) : (
-        <h3>{`${declared} ${i18n.declared}; ${effective} ${i18n.effective}`}</h3>
+        <h3>{`${gameAdmin.declaredCount} ${i18n.declared}; ${gameAdmin.effectiveCount} ${i18n.effective}`}</h3>
       )}
       {(gameAdmin.teams || []).map((team, i) => {
         const count = (team.players || []).length;
@@ -145,6 +119,8 @@ function GameAdminUsers({ gameAdmin }: GameAdminCardProps): JSX.Element {
 
 interface GameAdminCardProps {
   gameAdmin: IGameAdminWithTeams;
+  sortKey: keyof IGameAdminWithTeams;
+  touch: (ga: IGameAdminWithTeams) => void;
 }
 
 const hoverStyle = css({
@@ -154,33 +130,61 @@ const hoverStyle = css({
   },
 });
 
-function GameAdminCard({ gameAdmin }: GameAdminCardProps): JSX.Element {
+const attentionStyle = (diff: number) => {
+  if (diff <= 1) {
+    return css({ visibility: 'hidden' });
+  } else if (diff < 5) {
+    return css({ color: 'var(--warningColor)' });
+  } else {
+    return css({ color: 'var(--errorColor)' });
+  }
+};
+
+const shortCellStyle = css({
+  flexGrow: 1,
+  flexBasis: '10px',
+  padding: '0 10px',
+});
+
+const cellStyle = css({
+  //  width: 'min-content',
+  flexBasis: '10px',
+  flexGrow: 4,
+  padding: '0 10px',
+});
+
+const sortedBy = css({ fontWeight: 550 });
+
+function GameAdminCard({ gameAdmin, sortKey, touch }: GameAdminCardProps): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
 
-  const declaredSize = getDeclaredCount(gameAdmin);
+  const declaredCount = gameAdmin.declaredCount;
 
-  const allPlayersCount = getEffectiveCount(gameAdmin);
+  const effectiveCount = gameAdmin.effectiveCount;
 
-  const countDiff = Math.abs(allPlayersCount - declaredSize);
+  const countDiff = gameAdmin.diff;
 
   const setStatusTodo = React.useCallback(() => {
     if (gameAdmin.status !== 'TODO') {
+      touch(gameAdmin);
       dispatch(API.updateAdminGame({ ...gameAdmin, status: 'TODO' }));
     }
-  }, [gameAdmin, dispatch]);
+  }, [gameAdmin, dispatch, touch]);
 
   const setStatusCharged = React.useCallback(() => {
     if (gameAdmin.status !== 'CHARGED') {
+      touch(gameAdmin);
       dispatch(API.updateAdminGame({ ...gameAdmin, status: 'CHARGED' }));
     }
-  }, [gameAdmin, dispatch]);
+  }, [gameAdmin, dispatch, touch]);
 
   const setStatusProcessed = React.useCallback(() => {
     if (gameAdmin.status !== 'PROCESSED') {
+      touch(gameAdmin);
       dispatch(API.updateAdminGame({ ...gameAdmin, status: 'PROCESSED' }));
     }
-  }, [gameAdmin, dispatch]);
+  }, [gameAdmin, dispatch, touch]);
 
   const chargedIcon = React.useMemo(() => {
     if (gameAdmin.status !== 'CHARGED') {
@@ -222,37 +226,41 @@ function GameAdminCard({ gameAdmin }: GameAdminCardProps): JSX.Element {
 
   return (
     <Card size="MEDIUM" illustration="ICON_grey_receipt_fa">
-      <FitSpace direction="column">
-        <div className={cardTitleStyle}>
-          {gameAdmin.gameName || ''} [{i18n.status[gameAdmin.gameStatus || 'LIVE']}]
-        </div>
-        <div className={cardDetailsStyle}>
-          {`${i18n.createdOn} "${i18n.formatDate(gameAdmin.createdTime || 0)}" ${i18n.by} ${
-            gameAdmin.creator
-          }`}
-        </div>
-        <div
-          className={cardDetailsStyle}
-        >{`${i18n.basedOnScenario} "${gameAdmin.gameModelName}"`}</div>
+      <FitSpace direction="column" justify="space-between">
+        <FitSpace direction="row" justify="space-between" align="center">
+          <div className={cx(shortCellStyle, { [sortedBy]: sortKey === 'createdTime' })}>
+            {i18n.formatDate(gameAdmin.createdTime || 0)}
+          </div>
+          <div className={cx(cellStyle, { [sortedBy]: sortKey === 'creator' })}>
+            {gameAdmin.creator}
+          </div>
+          <div className={cx(cellStyle, { [sortedBy]: sortKey === 'gameModelName' })}>
+            {gameAdmin.gameModelName}
+          </div>
+          <div className={cx(cellStyle, { [sortedBy]: sortKey === 'gameName' })}>
+            {gameAdmin.gameName || ''}
+          </div>
+          <div className={cx(shortCellStyle, { [sortedBy]: sortKey === 'status' })}>
+            {i18n.status[gameAdmin.gameStatus || 'LIVE']}
+          </div>
+
+          <div className={cx(shortCellStyle, { [sortedBy]: sortKey === 'effectiveCount' })}>
+            {gameAdmin.effectiveCount}
+          </div>
+          <div className={cx(shortCellStyle, { [sortedBy]: sortKey === 'declaredCount' })}>
+            {gameAdmin.declaredCount}
+          </div>
+        </FitSpace>
         {gameAdmin.comments ? (
           <div className={cardSubDetailsStyle}>{gameAdmin.comments}</div>
         ) : null}
       </FitSpace>
 
-      {countDiff > 1 && countDiff < 4 ? (
-        <FontAwesomeIcon
-          title={i18n.countMismatch(declaredSize, allPlayersCount)}
-          icon={faExclamationTriangle}
-          color="orange"
-        />
-      ) : null}
-      {countDiff > 4 ? (
-        <FontAwesomeIcon
-          title={i18n.countMismatch(declaredSize, allPlayersCount)}
-          icon={faExclamationTriangle}
-          color="red"
-        />
-      ) : null}
+      <FontAwesomeIcon
+        className={attentionStyle(countDiff)}
+        title={i18n.countMismatch(declaredCount, effectiveCount)}
+        icon={faExclamationTriangle}
+      />
 
       <OpenCloseModal
         icon={faUsers}
@@ -262,7 +270,7 @@ function GameAdminCard({ gameAdmin }: GameAdminCardProps): JSX.Element {
         showCloseButton={true}
         route={`/${gameAdmin.id}/users`}
       >
-        {() => <GameAdminUsers gameAdmin={gameAdmin} />}
+        {close => <GameAdminUsers gameAdmin={gameAdmin} close={close} />}
       </OpenCloseModal>
 
       <OpenCloseModal
@@ -282,7 +290,7 @@ function GameAdminCard({ gameAdmin }: GameAdminCardProps): JSX.Element {
   );
 }
 
-const matchSearch = (search: string) => (data: IGameAdmin) => {
+const matchSearch = (search: string) => (data: IGameAdminWithTeams) => {
   return match(search, regex => {
     return (
       (data.creator != null && data.creator.match(regex) != null) ||
@@ -293,16 +301,36 @@ const matchSearch = (search: string) => (data: IGameAdmin) => {
   });
 };
 
+const fullWidthHack = css({
+  position: 'fixed',
+  display: 'flex',
+  top: '200px',
+  left: 0,
+  right: 0,
+  bottom: 0,
+});
+
 export default function Invoicing(): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
 
-  const [statusFilter, setStatusFilter] = React.useState<NonNullable<IGameAdmin['status']>>('TODO');
+  const [statusFilter, setStatusFilter] =
+    React.useState<NonNullable<IGameAdminWithTeams['status']>>('TODO');
+
+  const setStatusFilterCb = React.useCallback((s: NonNullable<IGameAdminWithTeams['status']>) => {
+    setStatusFilter(s);
+    setTouched([]);
+  }, []);
+
+  // keep references to just updated games
+  const [touched, setTouched] = React.useState<number[]>([]);
 
   const { gameAdmins, status } = useAppSelector(
     state => {
       return {
-        gameAdmins: Object.values(state.invoices.games).filter(ga => ga.status === statusFilter),
+        gameAdmins: Object.values(state.invoices.games).filter(
+          ga => ga.status === statusFilter || touched.includes(ga.id),
+        ),
         status: state.invoices.status,
       };
     },
@@ -323,19 +351,22 @@ export default function Invoicing(): JSX.Element {
     }
   }, [status, statusFilter, dispatch]);
 
-  const [sortBy, setSortBy] = React.useState<{ key: keyof IGameAdmin; asc: boolean }>({
+  const [sortBy, setSortBy] = React.useState<{ key: keyof IGameAdminWithTeams; asc: boolean }>({
     key: 'createdTime',
     asc: false,
   });
 
-  const sortOptions: SortByOption<IGameAdmin>[] = [
-    { key: 'createdTime', label: i18n.createdOn },
-    { key: 'creator', label: i18n.createdBy },
+  const sortOptions: SortByOption<IGameAdminWithTeams>[] = [
     { key: 'gameModelName', label: i18n.scenario },
+    { key: 'creator', label: i18n.createdBy },
+    { key: 'createdTime', label: i18n.createdOn },
+    { key: 'declaredCount', label: i18n.declared },
+    { key: 'effectiveCount', label: i18n.effective },
+    { key: 'diff', label: i18n.invoiceDiff },
   ];
 
   const onSortChange = React.useCallback(
-    ({ key, asc }: { key: keyof IGameAdmin; asc: boolean }) => {
+    ({ key, asc }: { key: keyof IGameAdminWithTeams; asc: boolean }) => {
       setSortBy({ key, asc });
     },
     [],
@@ -343,9 +374,20 @@ export default function Invoicing(): JSX.Element {
 
   const [filter, setFilter] = React.useState('');
 
+  const onTouch = React.useCallback((ga: IGameAdminWithTeams) => {
+    setTouched(state => {
+      if (!state.includes(ga.id)) {
+        return [...state, ga.id];
+      }
+      return state;
+    });
+  }, []);
+
   const createCardCb = React.useCallback(
-    (ga: IGameAdminWithTeams) => <GameAdminCard key={ga.id} gameAdmin={ga} />,
-    [],
+    (ga: IGameAdminWithTeams) => (
+      <GameAdminCard key={ga.id} gameAdmin={ga} sortKey={sortBy.key} touch={onTouch} />
+    ),
+    [sortBy.key, onTouch],
   );
 
   const notReady = status[statusFilter] != 'READY';
@@ -358,7 +400,8 @@ export default function Invoicing(): JSX.Element {
       </div>
     );
   } else {
-    const filtered = filter ? gameAdmins.filter(matchSearch(filter)) : gameAdmins;
+    const all = gameAdmins;
+    const filtered = filter ? all.filter(matchSearch(filter)) : all;
 
     const sorted = filtered.sort((a, b) => {
       const reverse = sortBy.asc ? 1 : -1;
@@ -368,12 +411,21 @@ export default function Invoicing(): JSX.Element {
         return reverse * (a.creator || '').localeCompare(b.creator || '');
       } else if (sortBy.key === 'gameModelName') {
         return reverse * (a.gameModelName || '').localeCompare(b.gameModelName || '');
+      } else if (sortBy.key === 'diff') {
+        return reverse * (a.diff - b.diff);
+      } else if (sortBy.key === 'effectiveCount') {
+        return reverse * (a.effectiveCount - b.effectiveCount);
+      } else if (sortBy.key === 'declaredCount') {
+        return reverse * (a.declaredCount - b.declaredCount);
       } else {
         return 0;
       }
     });
 
-    const filterEntries: { value: NonNullable<IGameAdmin['status']>; label: React.ReactNode }[] = [
+    const filterEntries: {
+      value: NonNullable<IGameAdminWithTeams['status']>;
+      label: React.ReactNode;
+    }[] = [
       {
         value: 'TODO',
         label: <div className={itemStyle}>{i18n.invoiceTodo}</div>,
@@ -402,7 +454,7 @@ export default function Invoicing(): JSX.Element {
             menuIcon="CARET"
             entries={filterEntries}
             value={statusFilter}
-            onSelect={setStatusFilter}
+            onSelect={setStatusFilterCb}
           />
           <DebouncedInput
             size="SMALL"
@@ -412,12 +464,14 @@ export default function Invoicing(): JSX.Element {
           />
         </Flex>
 
-        <WindowedContainer
-          items={sorted}
-          emptyMessage={<i>{filter ? i18n.noGamesFound : i18n.noGames}</i>}
-        >
-          {createCardCb}
-        </WindowedContainer>
+        <div className={fullWidthHack}>
+          <WindowedContainer
+            items={sorted}
+            emptyMessage={<i>{filter ? i18n.noGamesFound : i18n.noGames}</i>}
+          >
+            {createCardCb}
+          </WindowedContainer>
+        </div>
       </FitSpace>
     );
   }

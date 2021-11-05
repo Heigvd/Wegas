@@ -48,7 +48,7 @@ import {
   cardDetailsStyle,
   cardSubDetailsStyle,
   cardTitleStyle,
-  upsideSelectStyles,
+  defaultSelectStyles,
 } from '../styling/style';
 import { PermissionCard, PermissionEditor } from './PermissionCard';
 import { RoleCard } from './RoleCard';
@@ -233,7 +233,8 @@ export function UserRoles({ userId }: { userId: number }): JSX.Element {
           onChange={addUserToGroup}
           placeholder={i18n.name}
           options={options}
-          styles={upsideSelectStyles}
+          menuPlacement="top"
+          style={defaultSelectStyles}
         />
       </Flex>
     </FitSpace>

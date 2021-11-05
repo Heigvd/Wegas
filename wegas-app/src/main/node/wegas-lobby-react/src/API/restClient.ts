@@ -177,6 +177,9 @@ export interface IGameAdminTeam {
 }
 export interface IGameAdminWithTeams extends IGameAdminWithId {
   teams?: IGameAdminTeam[];
+  effectiveCount: number;
+  declaredCount: number;
+  diff: number;
 }
 
 /**
@@ -452,6 +455,10 @@ export const WegasLobbyRestClient = function (
       createEmptyModel: () => {
         const path = `${baseUrl}/Lobby/Update/CreateEmptyModel`;
         return sendRawRequest('POST', path, undefined, errorHandler);
+      },
+      getLocks: () => {
+        const path = `${baseUrl}/Utils/Locks`;
+        return sendRawRequest('GET', path, undefined, errorHandler);
       },
     },
     PermissionController: {

@@ -24,7 +24,12 @@ import Flex from '../common/Flex';
 import IconButton from '../common/IconButton';
 import { userIllu, verifiedIllu } from '../common/illustrations/illustrationHelper';
 import InlineLoading from '../common/InlineLoading';
-import { cardDetailsStyle, cardTitleStyle, upsideSelectStyles } from '../styling/style';
+import {
+  cardDetailsStyle,
+  cardFooterPadding,
+  cardTitleStyle,
+  defaultSelectStyles,
+} from '../styling/style';
 
 interface GameModelProps {
   gameModel: IGameModelWithId;
@@ -216,7 +221,7 @@ export default function ShareGameModel({ gameModel }: GameModelProps) {
     return <InlineLoading />;
   } else {
     return (
-      <FitSpace direction="column">
+      <FitSpace direction="column" overflow="auto">
         <CardContainer>
           <h4>{i18n.coScenarist}</h4>
           {scenarists.map(a => (
@@ -229,12 +234,13 @@ export default function ShareGameModel({ gameModel }: GameModelProps) {
             />
           ))}
         </CardContainer>
-        <Flex direction="row" justify="space-between" align="center">
+        <Flex className={cardFooterPadding} direction="row" justify="space-between" align="center">
           <AsyncSelect
             className={css({ flexGrow: 1 })}
             onChange={inviteCb}
             placeholder={i18n.addScenarist}
-            styles={upsideSelectStyles}
+            menuPlacement="top"
+            style={defaultSelectStyles}
             cacheOptions
             defaultOptions
             loadOptions={promiseOptions}
