@@ -244,7 +244,7 @@ export const fr: WegasTranslations = {
   roles: 'Groupes',
   loggers: 'Loggers',
   locks: 'Verroux',
-  gameAdmins: 'Parties',
+  gameAdmins: 'Facturation',
   stats: 'Stats',
   createEmptyModel: 'Créer un modèle vide',
   clearCache: 'Vider le cache JPA',
@@ -278,10 +278,31 @@ export const fr: WegasTranslations = {
 
   editUser: "éditer l'utilisateur",
 
-  noPlayers: "Vous n'avez par encore rejoint de partie",
-  noGames: 'Aucune parties disponibles',
-  noScenarios: 'Aucun scénario disponibles',
-  noModels: 'Aucun modèle disponibles',
+  noPlayers: "Vous n'avez pas encore rejoint de partie",
+  noGames: 'Aucunes parties disponibles',
+  noScenarios: 'Aucuns scénarios disponibles',
+  noModels: 'Aucuns modèles disponibles',
+  noPermissions: 'Aucune permission',
+  noUsers: 'Aucun utilisateur',
+  pleaseCreateTeam: 'Veuillez créer un équipe',
+
+  noResults: 'Aucun résultat',
+  noPlayersFound: 'Aucune partie trouvée',
+  noGamesFound: 'Aucune partie trouvée',
+  noScenariosFound: 'Aucun scénario trouvé',
+  noModelsFound: 'Aucun modèle trouvé',
+
+  // Invoices
+  invoicing: 'Invoicing',
+  invoiceTodo: 'A traiter',
+  invoiceFree: 'Ne pas facturer',
+  invoiceCharged: 'Facturer',
+  countMismatch: (declared: number, effective: number) =>
+    `${declared} joueurs ont été déclarés mais ${effective} ont été trouvés !`,
+  emptyGame: 'aucune équipe',
+  emptyTeam: 'équipe vide',
+  declared: 'déclarés',
+  effective: 'comptés',
 
   WegasErrorMessage: {
     'IMPOSSIBLE-TO-UPDATE-PASSWORD': 'Vous ne pouvez pas mettre à jour votre mot de passe',
@@ -309,10 +330,10 @@ export const fr: WegasTranslations = {
   processing: 'en cours...',
   andXMore: (x: number) => `et ${x} autres...`,
   status: {
-    LIVE: 'Actuel',
-    BIN: 'Archivé',
-    DELETE: 'Supprimé',
-    SUPPRESSED: 'Définitivement supprimé',
+    LIVE: 'actuel',
+    BIN: 'archivé',
+    DELETE: 'supprimé',
+    SUPPRESSED: 'définitivement supprimé',
   },
   userLevels: {
     0: 'Administrateurs',

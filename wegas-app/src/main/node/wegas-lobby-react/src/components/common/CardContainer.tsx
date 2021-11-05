@@ -39,6 +39,7 @@ export interface WCardContainerProps<T> {
    * build a comp for a given children
    */
   children: (item: T) => React.ReactNode;
+  emptyMessage: React.ReactNode;
 }
 
 const windowedContainerStyle = cx(
@@ -78,6 +79,7 @@ export function WindowedContainer<T>({
   bgColor = '#F9F9F9',
   gradientHeight = 150,
   scrollTo,
+  emptyMessage,
 }: WCardContainerProps<T>): JSX.Element {
   const divRef = React.useRef<HTMLDivElement>(null);
 
@@ -213,6 +215,7 @@ export function WindowedContainer<T>({
     .map(item => children(item));
   return (
     <Flex className={containerStyle} shrink={1} grow={grow} direction="column" overflow="auto">
+      {items.length === 0 ? emptyMessage : null}
       <div ref={divRef} className={windowedContainerStyle} onScroll={scrollCb}>
         <div style={{ height: `${padding.top}px`, flexShrink: 0 }}></div>
         {cards}

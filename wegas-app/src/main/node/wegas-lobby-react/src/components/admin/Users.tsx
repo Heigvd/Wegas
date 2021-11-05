@@ -124,7 +124,9 @@ export default function Users(): JSX.Element {
           />
         </Flex>
 
-        <WindowedContainer items={theUsers}>{createCardCb}</WindowedContainer>
+        <WindowedContainer emptyMessage={<i>{i18n.noUsers}</i>} items={theUsers}>
+          {createCardCb}
+        </WindowedContainer>
       </FitSpace>
     );
   }

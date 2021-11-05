@@ -265,10 +265,13 @@ export default function TrainerTab(): JSX.Element {
 
           {status === 'READY' ? (
             <>
-              <WindowedContainer items={sorted} scrollTo={selected}>
+              <WindowedContainer
+                items={sorted}
+                scrollTo={selected}
+                emptyMessage={<i>{filter ? i18n.noGamesFound : i18n.noGames}</i>}
+              >
                 {buildCardCb}
               </WindowedContainer>
-              {sorted.length <= 0 ? <i>{i18n.noGames}</i> : null}
             </>
           ) : (
             <InlineLoading />

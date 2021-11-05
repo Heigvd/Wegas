@@ -411,6 +411,8 @@ export const icons: IconDef[] = [
   { name: 'Doctor', key: 'user-md', library: 'fa' },
   { name: 'Medical kit', key: 'medkit', library: 'fa' },
   { name: 'ID card', key: 'id-card', library: 'far' },
+  { name: 'Invoice', key: 'file-invoice', library: 'fa' },
+  { name: 'Receipt', key: 'receipt', library: 'fa' },
   { name: 'User', key: 'user', library: 'fa' },
   { name: 'Users', key: 'users', library: 'fa' },
   { name: 'Emo ungry', key: 'emo-angry', library: 'icon' },

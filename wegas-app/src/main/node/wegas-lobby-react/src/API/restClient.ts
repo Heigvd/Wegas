@@ -8,6 +8,8 @@
 
 import {
   IAbstractAccountWithId,
+  IGameAdmin,
+  IGameAdminWithId,
   IGameModelLanguageWithId,
   IGameModelWithId,
   IGameWithId,
@@ -15,6 +17,7 @@ import {
   IJpaAccountWithId,
   IPermission,
   IPermissionWithId,
+  IPlayer,
   IPlayerWithId,
   IRoleWithId,
   ITeam,
@@ -160,6 +163,21 @@ export interface PrimitiveDiff {
 }
 
 export type PatchDiff = DiffCollection | PrimitiveDiff;
+
+export interface IGameAdminPlayer {
+  name: string;
+  status: IPlayer['status'];
+}
+
+export interface IGameAdminTeam {
+  name: string;
+  status: ITeam['status'];
+  declaredSize: number;
+  players?: IGameAdminPlayer[];
+}
+export interface IGameAdminWithTeams extends IGameAdminWithId {
+  teams?: IGameAdminTeam[];
+}
 
 /**
  * build fetch options
@@ -368,6 +386,28 @@ export const WegasLobbyRestClient = function (
       },
     },
     AdminStuff: {
+      Invoice: {
+        getGameAdmins: (gType: IGameAdmin['status']) => {
+          const path = `${baseUrl}/Admin/Game?type=${gType}`;
+          return sendJsonRequest<IGameAdminWithTeams[]>('GET', path, undefined, errorHandler);
+        },
+        getGameAdmin: (id: number) => {
+          const path = `${baseUrl}/Admin/Game/${id}`;
+          return sendJsonRequest<IGameAdminWithTeams>('GET', path, undefined, errorHandler);
+        },
+        updateGameAdmin: (ga: IGameAdminWithTeams) => {
+          const path = `${baseUrl}/Admin/Game/${ga.id}`;
+          return sendJsonRequest<IGameAdminWithTeams>('PUT', path, ga, errorHandler);
+        },
+      },
+      emptyGameBin: () => {
+        const path = `${baseUrl}/Admin/deleteAll`;
+        return sendJsonRequest<void>('PUT', path, undefined, errorHandler);
+      },
+      deleteGame: (id: number) => {
+        const path = `${baseUrl}/Admin/Game/delete/${id}`;
+        return sendJsonRequest<IGameAdminWithTeams>('DELETE', path, undefined, errorHandler);
+      },
       getLoggerLevels: () => {
         const path = `${baseUrl}/Utils/GetLoggerLevels`;
         return sendJsonRequest<{ [loggetName: string]: ILevelDescriptor }>(

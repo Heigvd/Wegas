@@ -164,8 +164,12 @@ export default function PlayerTab(): JSX.Element {
 
           {players.status === 'READY' ? (
             <>
-              <WindowedContainer items={sorted}>{buildCardCb}</WindowedContainer>
-              {sorted.length <= 0 ? <i>{i18n.noPlayers}</i> : null}
+              <WindowedContainer
+                items={sorted}
+                emptyMessage={<i>{filter ? i18n.noPlayersFound : i18n.noPlayers}</i>}
+              >
+                {buildCardCb}
+              </WindowedContainer>
             </>
           ) : (
             <InlineLoading />

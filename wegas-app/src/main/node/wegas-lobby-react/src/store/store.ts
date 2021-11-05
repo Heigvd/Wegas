@@ -12,6 +12,7 @@ import adminReducer from './slices/admin';
 import authReducer from './slices/auth';
 import gameReducer from './slices/game';
 import gameModelReducer from './slices/gameModel';
+import invoiceReducer from './slices/invoice';
 import notificationReducer from './slices/notification';
 import playerReducer from './slices/player';
 import teamReducer from './slices/team';
@@ -22,6 +23,7 @@ import wegasReducer from './slices/wegas';
 const rootReducer = combineReducers({
   auth: authReducer,
   admin: adminReducer,
+  invoices: invoiceReducer,
   players: playerReducer,
   teams: teamReducer,
   games: gameReducer,

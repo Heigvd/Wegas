@@ -176,6 +176,7 @@ function ShowTeams({ closePanel, game }: ShowTeamsProps): JSX.Element {
             bgColor="var(--bgColor)"
             grow={0}
             items={teams.filter(t => !entityIs(t, 'DebugTeam'))}
+            emptyMessage={<i>{i18n.pleaseCreateTeam}</i>}
           >
             {t => <TeamToJoinCard key={t.id} closePanel={closePanel} team={t} />}
           </WindowedContainer>

@@ -45,6 +45,7 @@ export default function ActionIconButton({
   }, [onClick]);
 
   const winConfirmCb = React.useCallback(() => {
+    // eslint-disable-next-line no-alert
     const result = window.confirm('Confirm ?');
     if (result) {
       onClickCb();

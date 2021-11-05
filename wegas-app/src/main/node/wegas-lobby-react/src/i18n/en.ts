@@ -242,7 +242,7 @@ export const en = {
   roles: 'Groups',
   loggers: 'Loggers',
   locks: 'Locks',
-  gameAdmins: 'Sessions',
+  gameAdmins: 'Invoicing',
   stats: 'Stats',
   createEmptyModel: 'Create an empty Model',
   requestClientReload: 'Ask users to reload the page (e.g after a big update)',
@@ -275,10 +275,31 @@ export const en = {
 
   editUser: 'edit user',
 
-  noPlayers: 'You have joined no session yet.',
+  noPlayers: 'You have joined no session yet',
   noGames: 'You have no session yet',
   noScenarios: 'You have no scenario yet',
   noModels: 'You have no model yet',
+  noPermissions: 'No permissions',
+  noUsers: 'No Users',
+  pleaseCreateTeam: 'Please create a team',
+
+  noResults: 'No results found',
+  noPlayersFound: 'No session found',
+  noGamesFound: 'No sessions found',
+  noScenariosFound: 'No scenarios found',
+  noModelsFound: 'no models found',
+
+  // Invoices
+  invoicing: 'Invoicing',
+  invoiceTodo: 'Todo',
+  invoiceFree: 'No need to charge',
+  invoiceCharged: 'Charged',
+  countMismatch: (declared: number, effective: number) =>
+    `${declared} players were declared but ${effective} were found!`,
+  emptyGame: 'no teams',
+  emptyTeam: 'empty team',
+  declared: 'declared',
+  effective: 'effective',
 
   WegasErrorMessage: {
     'IMPOSSIBLE-TO-UPDATE-PASSWORD': 'Password update is forbidden',
@@ -305,10 +326,10 @@ export const en = {
   processing: 'processing...',
   andXMore: (x: number) => `and ${x} more...`,
   status: {
-    LIVE: 'Current',
-    BIN: 'Archived',
-    DELETE: 'Trash',
-    SUPPRESSED: 'Definitively deleted',
+    LIVE: 'current',
+    BIN: 'archived',
+    DELETE: 'deleted',
+    SUPPRESSED: 'definitively deleted',
   },
   userLevels: {
     0: 'Administrators',

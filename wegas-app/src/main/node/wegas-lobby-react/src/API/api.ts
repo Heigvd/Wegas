@@ -8,6 +8,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
   IAbstractAccountWithId,
+  IGameAdmin,
   IGameModelLanguageWithId,
   IGameModelWithId,
   IGameWithId,
@@ -28,6 +29,7 @@ import { entityIs, entityIsException } from './entityHelper';
 import {
   IAccountWithPerm,
   IAuthenticationInformation,
+  IGameAdminWithTeams,
   IJpaAuthentication,
   IRoleWithPermissions,
   IUserWithAccounts,
@@ -91,6 +93,38 @@ export const changeLoggerLevel = createAsyncThunk(
     await restClient.AdminStuff.setLoggerLevel(payload.loggerName, payload.loggerLevel);
     thunkApi.dispatch(getLoggerLevels());
     return payload;
+  },
+);
+
+export const emptyGameBin = createAsyncThunk('admin/emptyGameBin', async () => {
+  return await restClient.AdminStuff.emptyGameBin();
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Invoices
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const getAdminGames = createAsyncThunk(
+  'invoices/getByType',
+  async (gType: NonNullable<IGameAdmin['status']>) => {
+    return await restClient.AdminStuff.Invoice.getGameAdmins(gType);
+  },
+);
+
+export const getAdminGame = createAsyncThunk('invoices/get', async (id: number) => {
+  return await restClient.AdminStuff.Invoice.getGameAdmin(id);
+});
+
+export const updateAdminGame = createAsyncThunk(
+  'invoices/update',
+  async (ga: IGameAdminWithTeams) => {
+    return await restClient.AdminStuff.Invoice.updateGameAdmin(ga);
+  },
+);
+export const deleteGameByGameAdmin = createAsyncThunk(
+  'admin/deleteGameByGameAdmin',
+  async (ga: IGameAdminWithTeams) => {
+    return await restClient.AdminStuff.deleteGame(ga.id);
   },
 );
 

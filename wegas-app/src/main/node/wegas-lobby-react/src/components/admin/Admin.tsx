@@ -15,6 +15,7 @@ import Flex from '../common/Flex';
 import { SecondLevelLink } from '../common/Link';
 import { adminColor } from '../styling/color';
 import { panelPadding } from '../styling/style';
+import Invoicing from './Invoicing';
 import LoggersConfig from './LoggersConfig';
 import MainAdminPanel from './MainAdminPanel';
 import Roles from './Roles';
@@ -74,9 +75,7 @@ export default function Admin(): JSX.Element {
             </Route>
             <Route path={`${path}/invoices`}>
               <FitSpace direction="column" overflow="auto" className={panelPadding}>
-                <a target="_blank" rel="noreferrer" href={'./wa.html'}>
-                  {i18n.gameAdmins}
-                </a>
+                <Invoicing />
               </FitSpace>
             </Route>
             <Route path={`${path}/stats`}>
