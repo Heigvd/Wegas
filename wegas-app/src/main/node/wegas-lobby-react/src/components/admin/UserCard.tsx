@@ -48,7 +48,7 @@ import {
   cardDetailsStyle,
   cardSubDetailsStyle,
   cardTitleStyle,
-  upsideSelectStyles,
+  defaultSelectStyles,
 } from '../styling/style';
 import { PermissionCard, PermissionEditor } from './PermissionCard';
 import { RoleCard } from './RoleCard';
@@ -123,7 +123,7 @@ export function UserPermissions({ userId }: { userId: number }): JSX.Element {
 
   return (
     <FitSpace direction="column" overflow="auto">
-      <WindowedContainer items={perms}>
+      <WindowedContainer items={perms} emptyMessage={<i>{i18n.noPermissions}</i>}>
         {p => <PermissionCard key={p.id} permission={p} />}
       </WindowedContainer>
 
@@ -233,7 +233,8 @@ export function UserRoles({ userId }: { userId: number }): JSX.Element {
           onChange={addUserToGroup}
           placeholder={i18n.name}
           options={options}
-          styles={upsideSelectStyles}
+          menuPlacement="top"
+          style={defaultSelectStyles}
         />
       </Flex>
     </FitSpace>

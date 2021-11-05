@@ -68,6 +68,7 @@ export interface LayeredIconButtonProps {
     icon: IconProp;
     transform?: Transform | string;
     color?: string;
+    className?: string;
   }[];
   title?: string;
   children?: React.ReactNode;
@@ -91,11 +92,11 @@ export function LayeredIconButton({
       clickableClassName={cx(linkStyle, className)}
     >
       {reverseOrder ? children : null}
-      <span className="fa-layers fa-fw">
+      <span className={`fa-layers fa-fw ${css({ padding: '0 5px' })}`}>
         {icons.map((ic, i) => (
           <FontAwesomeIcon
             key={i}
-            className={css({ padding: '0 5px' })}
+            className={ic.className}
             icon={ic.icon}
             color={ic.color}
             transform={ic.transform}

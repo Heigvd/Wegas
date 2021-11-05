@@ -415,6 +415,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     @Override
+    @WegasExtraProperty
     public Status getStatus() {
         return status;
     }

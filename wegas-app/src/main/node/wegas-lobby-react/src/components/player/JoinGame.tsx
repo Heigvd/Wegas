@@ -57,7 +57,12 @@ const sizeOptions = ((x: number) => {
   return opts;
 })(10);
 
-function TeamCreator({ game }: { game: IGameWithId }): JSX.Element {
+interface TeamCreatorProps {
+  game: IGameWithId;
+  hideAfterCreation?: boolean;
+}
+
+export function TeamCreator({ game, hideAfterCreation = true }: TeamCreatorProps): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
   const [team, setTeam] = React.useState<ITeam>({ '@class': 'Team', players: [] });
@@ -72,11 +77,11 @@ function TeamCreator({ game }: { game: IGameWithId }): JSX.Element {
 
   const createCb = React.useCallback(async () => {
     return dispatch(createTeam({ game, team })).then(action => {
-      if (action.meta.requestStatus === 'fulfilled') {
+      if (hideAfterCreation && action.meta.requestStatus === 'fulfilled') {
         setVisible(false);
       }
     });
-  }, [game, team, dispatch]);
+  }, [game, team, dispatch, hideAfterCreation]);
 
   if (visible) {
     return (
@@ -92,6 +97,7 @@ function TeamCreator({ game }: { game: IGameWithId }): JSX.Element {
         </FitSpace>
         <Select
           placeholder={i18n.teamSize}
+          menuPlacement="auto"
           styles={{
             ...defaultSelectStyles,
             control: provided => ({
@@ -176,6 +182,7 @@ function ShowTeams({ closePanel, game }: ShowTeamsProps): JSX.Element {
             bgColor="var(--bgColor)"
             grow={0}
             items={teams.filter(t => !entityIs(t, 'DebugTeam'))}
+            emptyMessage={<i>{i18n.pleaseCreateTeam}</i>}
           >
             {t => <TeamToJoinCard key={t.id} closePanel={closePanel} team={t} />}
           </WindowedContainer>

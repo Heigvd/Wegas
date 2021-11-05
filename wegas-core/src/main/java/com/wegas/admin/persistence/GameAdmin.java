@@ -9,6 +9,7 @@
 package com.wegas.admin.persistence;
 
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.admin.persistence.data.GameAdminTeam;
@@ -44,6 +45,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,6 +151,7 @@ public class GameAdmin extends AbstractEntity {
         this.game = game;
     }
 
+    @WegasExtraProperty
     public Game.Status getGameStatus() {
         if (this.getGame() != null) {
             return this.getGame().getStatus();
@@ -162,6 +165,7 @@ public class GameAdmin extends AbstractEntity {
 //    public void setPrevTeamCount(Long prevTeamCount) {
 //        this.prevTeamCount = prevTeamCount;
 //    }
+    @WegasExtraProperty
     public Long getGameId() {
         if (this.getGame() != null) {
             return this.getGame().getId();
@@ -170,10 +174,12 @@ public class GameAdmin extends AbstractEntity {
         }
     }
 
+    @WegasExtraProperty
     public Date getCreatedTime() {
         return createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
+    @WegasExtraProperty
     public String getCreator() {
         return this.creator;
     }
@@ -192,6 +198,7 @@ public class GameAdmin extends AbstractEntity {
         }
     }
 
+    @WegasExtraProperty
     public String getGameModelName() {
         if (this.getGame() != null) {
             return this.getGame().getGameModelName();
@@ -205,6 +212,7 @@ public class GameAdmin extends AbstractEntity {
 //        this.prevName = prevName;
 //    }
 
+    @WegasExtraProperty
     public String getGameName() {
 
         if (this.getGame() != null) {
@@ -220,6 +228,7 @@ public class GameAdmin extends AbstractEntity {
 //        this.prevGameModel = prevGameModel;
 //    }
 //
+    @WegasExtraProperty
     public Integer getTeamCount() {
         if (this.getGame() != null) {
             int counter = 0;

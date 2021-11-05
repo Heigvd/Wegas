@@ -309,12 +309,23 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
           </Flex>
           {status === 'READY' ? (
             <>
-              <WindowedContainer items={sorted} scrollTo={selected}>
+              <WindowedContainer
+                items={sorted}
+                scrollTo={selected}
+                emptyMessage={
+                  <i>
+                    {filter
+                      ? gameModelType === 'SCENARIO'
+                        ? i18n.noScenariosFound
+                        : i18n.noModelsFound
+                      : gameModelType === 'SCENARIO'
+                      ? i18n.noScenarios
+                      : i18n.noModels}
+                  </i>
+                }
+              >
                 {buildCardCb}
               </WindowedContainer>
-              {sorted.length <= 0 ? (
-                <i>{gameModelType === 'SCENARIO' ? i18n.noScenarios : i18n.noModels}</i>
-              ) : null}
             </>
           ) : (
             <InlineLoading />

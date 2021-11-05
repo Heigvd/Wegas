@@ -91,9 +91,10 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
     /**
      * Get the current account
-     * @return  the current account or null
+     *
+     * @return the current account or null
      */
-    public AbstractAccount getCurrentAccount(){
+    public AbstractAccount getCurrentAccount() {
         return requestManager.getCurrentAccount();
     }
 
@@ -278,12 +279,26 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     /**
      * @param name
      *
-     * @return all accounts which match the given name
+     * @return all accounts which match the given name (case-insensitive)
      *
      */
     public List<AbstractAccount> findAllByEmailOrUsername(String name) {
         TypedQuery<AbstractAccount> query = getEntityManager()
             .createNamedQuery("AbstractAccount.findByEmailOrUserName",
+                AbstractAccount.class);
+        query.setParameter("name", name);
+        return query.getResultList();
+    }
+
+    /**
+     * @param name
+     *
+     * @return all accounts which match the given name (case sensitive)
+     *
+     */
+    public List<AbstractAccount> findAllByEmailOrUsernameCaseSensitive(String name) {
+        TypedQuery<AbstractAccount> query = getEntityManager()
+            .createNamedQuery("AbstractAccount.findByEmailOrUserNameSensitive",
                 AbstractAccount.class);
         query.setParameter("name", name);
         return query.getResultList();
