@@ -7,12 +7,13 @@
  */
 
 import * as React from 'react';
-import { IAaiAccountWithId, IJpaAccountWithId } from 'wegas-ts-api';
-import { getRestClient } from '../../API/api';
-import { entityIs } from '../../API/entityHelper';
-import { IUserWithAccounts } from '../../API/restClient';
+import {IAaiAccountWithId, IGuestJpaAccountWithId, IJpaAccountWithId} from 'wegas-ts-api';
+import {getRestClient} from '../../API/api';
+import {entityIs} from '../../API/entityHelper';
+import {IUserWithAccounts} from '../../API/restClient';
 import InlineLoading from '../common/InlineLoading';
 import AaiAccount from './AaiAccount';
+import GuestAccount from './GuestAccount';
 import JpaAccount from './JpaAccount';
 
 export function UserSettings({
@@ -45,7 +46,10 @@ export function UserSettings({
       return <AaiAccount close={close} account={account as IAaiAccountWithId} />;
     } else if (entityIs(account, 'JpaAccount')) {
       return <JpaAccount close={close} account={account as IJpaAccountWithId} />;
+    } else if (entityIs(account, 'GuestJpaAccount')) {
+      return <GuestAccount close={close} account={account as IGuestJpaAccountWithId} />;
+    } else {
+      return <i>Not yet implemented</i>;
     }
-    return <i>Not yet implemented</i>;
   }
 }

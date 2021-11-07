@@ -136,9 +136,9 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
 
   // GameModel Is known, Guest are allowed and user is not authenticated => loginAsGuest
   React.useEffect(() => {
-    if (guestAllowed && currentUser.status === 'NOT_AUTHENTICATED') {
+    if (guestAllowed === true && currentUser.status === 'NOT_AUTHENTICATED') {
       logger.info('Sign up as guest');
-      setPlayer('JOINING');
+//      setPlayer('JOINING');
       setLoadingMessage(i18n.autoplay.loginAsGuest);
       dispatch(signInAsGuest());
     }
@@ -147,12 +147,13 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
   // current_user is konwn, no player and game played individually
   React.useEffect(() => {
     if (
-      playIndividually &&
+      playIndividually === true &&
       entityIs(game, 'Game') &&
       player === 'NOT_FOUND' &&
       currentUser.status === 'AUTHENTICATED'
     ) {
       logger.info('Join individually');
+      setPlayer('JOINING');
       dispatch(joinIndividually(game)).then(a => {
         if (a.meta.requestStatus === 'fulfilled') {
           // force player reload
@@ -169,12 +170,12 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
     return <Loading>{loadingMessage ? <div>{loadingMessage}</div> : null}</Loading>;
   } else if (
     player === 'NOT_FOUND' &&
-    !playIndividually &&
+    playIndividually === false &&
     currentUser.status === 'AUTHENTICATED'
   ) {
     logger.info('No player, shall play in team => go to join team screen');
     return <Redirect to={`/player/join/${token}`} />;
-  } else if (!guestAllowed && currentUser.status === 'NOT_AUTHENTICATED') {
+  } else if (guestAllowed === false && currentUser.status === 'NOT_AUTHENTICATED') {
     // User not authenticated, guest are allowed
     return (
       <Loading animated={false}>
