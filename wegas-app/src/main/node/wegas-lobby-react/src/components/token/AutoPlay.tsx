@@ -138,7 +138,7 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
   React.useEffect(() => {
     if (guestAllowed === true && currentUser.status === 'NOT_AUTHENTICATED') {
       logger.info('Sign up as guest');
-//      setPlayer('JOINING');
+      //      setPlayer('JOINING');
       setLoadingMessage(i18n.autoplay.loginAsGuest);
       dispatch(signInAsGuest());
     }

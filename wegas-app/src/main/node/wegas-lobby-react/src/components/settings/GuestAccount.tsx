@@ -7,9 +7,9 @@
  */
 
 import * as React from 'react';
-import { IGuestJpaAccountWithId} from 'wegas-ts-api';
+import { IGuestJpaAccountWithId } from 'wegas-ts-api';
 import useTranslations from '../../i18n/I18nContext';
-import { useAppSelector} from '../../store/hooks';
+import { useAppSelector } from '../../store/hooks';
 import CardContainer from '../common/CardContainer';
 import InlineLoading from '../common/InlineLoading';
 
@@ -18,7 +18,7 @@ interface GuestAccountProps {
   close: () => void;
 }
 
-export default function GuestAccount({account}: GuestAccountProps): JSX.Element {
+export default function GuestAccount({ account }: GuestAccountProps): JSX.Element {
   const i18n = useTranslations();
   const userId = account.parentId!;
   const user = useAppSelector(state => state.users.users[userId]);
@@ -36,9 +36,7 @@ export default function GuestAccount({account}: GuestAccountProps): JSX.Element 
         </div>
         <div>
           {i18n.lastSeenAt}{' '}
-          {user.user.lastSeenAt
-            ? new Date(user.user.lastSeenAt).toLocaleDateString()
-            : i18n.never}
+          {user.user.lastSeenAt ? new Date(user.user.lastSeenAt).toLocaleDateString() : i18n.never}
         </div>
       </CardContainer>
     );

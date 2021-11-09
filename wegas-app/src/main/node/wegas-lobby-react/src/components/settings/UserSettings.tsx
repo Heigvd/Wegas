@@ -7,10 +7,10 @@
  */
 
 import * as React from 'react';
-import {IAaiAccountWithId, IGuestJpaAccountWithId, IJpaAccountWithId} from 'wegas-ts-api';
-import {getRestClient} from '../../API/api';
-import {entityIs} from '../../API/entityHelper';
-import {IUserWithAccounts} from '../../API/restClient';
+import { IAaiAccountWithId, IGuestJpaAccountWithId, IJpaAccountWithId } from 'wegas-ts-api';
+import { getRestClient } from '../../API/api';
+import { entityIs } from '../../API/entityHelper';
+import { IUserWithAccounts } from '../../API/restClient';
 import InlineLoading from '../common/InlineLoading';
 import AaiAccount from './AaiAccount';
 import GuestAccount from './GuestAccount';

@@ -11,7 +11,7 @@ import { faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import { Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom';
 import * as API from '../API/api';
-import {entityIs} from '../API/entityHelper';
+import { entityIs } from '../API/entityHelper';
 import { getDisplayName } from '../helper';
 import useTranslations from '../i18n/I18nContext';
 import LanguageSelector from '../i18n/LanguageSelector';
