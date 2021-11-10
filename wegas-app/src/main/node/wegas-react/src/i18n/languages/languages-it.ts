@@ -23,6 +23,6 @@ export const languagesTranslationsIT: LanguagesTranslations = {
   markAsUpToDate: 'Impostare aggiornato',
   undoModifications: 'Annullare le modifiche',
   saveModifications: 'Salvare le modifiche',
-  hideOptions: 'Nascondi le opzioni',
-  showOptions: 'Mostra altre opzioni',
+  hideOptions: 'Nascondi opzioni',
+  showOptions: 'Mostra opzioni',
 };

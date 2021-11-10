@@ -24,5 +24,5 @@ export const languagesTranslationsDE: LanguagesTranslations = {
   undoModifications: 'Änderungen zurücknehmen',
   saveModifications: 'Änderungen speichern',
   hideOptions: 'Optionen ausblenden',
-  showOptions: 'Weitere Optionen anzeigen',
+  showOptions: 'Optionen anzeigen',
 };

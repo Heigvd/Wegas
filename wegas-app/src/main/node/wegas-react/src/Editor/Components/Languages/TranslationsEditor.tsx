@@ -28,19 +28,26 @@ import { useOkCancelModal } from '../../../Components/Modal';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
 import {
+  componentMarginRight,
   defaultMargin,
-  defaultMarginRight,
+  defaultMarginLeft,
   defaultMarginTop,
   defaultPadding,
+  defaultPaddingLeft,
+  defaultPaddingRight,
   expandWidth,
   flex,
   flexBetween,
   flexColumn,
   flexRow,
+  forceScrollY,
   grow,
   itemCenter,
+  justifyStart,
   layoutStyle,
-  MediumPadding,
+  MediumPadding_notBottom,
+  MediumPadding_sides,
+  secondaryButtonStyle,
 } from '../../../css/classes';
 import { manageResponseHandler } from '../../../data/actions';
 import { entityIs } from '../../../data/entities';
@@ -48,9 +55,11 @@ import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { GlobalState } from '../../../data/Reducer/globalState';
 import { GameModel, VariableDescriptor } from '../../../data/selectors';
 import { store, useStore } from '../../../data/Stores/store';
+import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { languagesTranslations } from '../../../i18n/languages/languages';
 import getEditionConfig, { getIcon } from '../../editionConfig';
+import { borderBottom } from '../FormView/commonView';
 import {
   generateSchema,
   IAttributes,
@@ -70,8 +79,12 @@ const selectedLangaugeVisitorHeaderStyle = css({
   color: themeVar.colors.HoverTextColor,
 });
 
-const columnMargin = css({
-  margin: '1em',
+const languageChoiceCbxStyle = css({
+  textTransform: 'capitalize',
+  margin: '.5rem 1rem',
+  padding: '5px 10px',
+  border: '1px solid ' + themeVar.colors.DisabledColor,
+  borderRadius: themeVar.dimensions.BorderRadius,
 });
 
 const translationContainerStyle = (nbLanguages: number) => {
@@ -785,6 +798,7 @@ function TranslationHeader({
   const { editedTranslations, resetLanguage } =
     React.useContext(translationCTX);
   const i18nValues = useInternalTranslate(languagesTranslations);
+  const i18nValues_basics = useInternalTranslate(commonTranslations);
   const editableLanguages = useEditableLanguages();
 
   const languageEditedTranslation = editedTranslations[language.code];
@@ -803,86 +817,91 @@ function TranslationHeader({
   const enabled = isLanguageEditable(language.code, editableLanguages);
 
   return (
-    <div className={cx(flex, flexRow, columnMargin, itemCenter)}>
-      <h3>{languageLabel(language)}</h3>
+    <div className={cx(flex, flexRow, itemCenter)}>
+      <h3 className={css({ margin: '.5rem 0' })}>{languageLabel(language)}</h3>
       {enabled && (
-        <DropMenu
-          icon="cog"
-          items={
-            [
-              {
-                label: i18nValues.saveTranslations,
-                type: 'SAVE_TRANSLATIONS',
-                disabled: editedValues.length === 0,
-              },
-              {
-                label: i18nValues.clearTranslations,
-                type: 'CLEAR_TRANSLATIONS',
-                items: [
-                  {
-                    label: i18nValues.outdatedTranslations,
-                    type: 'CLEAR_OUTDATED',
-                  },
-                  {
-                    label: i18nValues.allTranslations,
-                    type: 'CLEAR_ALL',
-                  },
-                ],
-              },
-              {
-                label: i18nValues.translateFrom,
-                type: 'AUTO_TRANSLATE',
-                disabled: availableLanguagesForTranslation.length === 0,
-                items: availableLanguagesForTranslation.map(lang => ({
-                  label: lang.lang,
-                  type: 'TRANSLATE',
-                  language: lang,
-                })),
-              },
-              {
-                label: i18nValues.copyTranslations,
-                type: 'COPY_TRANSLATIONS',
-                items: languages
-                  .filter(lang => lang.id !== language.id)
-                  .map(lang => ({
-                    label: languageLabel(lang),
+        <>
+          <DropMenu
+            icon="ellipsis-h"
+            items={
+              [
+                {
+                  label: i18nValues.clearTranslations,
+                  type: 'CLEAR_TRANSLATIONS',
+                  items: [
+                    {
+                      label: i18nValues.outdatedTranslations,
+                      type: 'CLEAR_OUTDATED',
+                    },
+                    {
+                      label: i18nValues.allTranslations,
+                      type: 'CLEAR_ALL',
+                    },
+                  ],
+                },
+                {
+                  label: i18nValues.translateFrom,
+                  type: 'AUTO_TRANSLATE',
+                  disabled: availableLanguagesForTranslation.length === 0,
+                  items: availableLanguagesForTranslation.map(lang => ({
+                    label: lang.lang,
+                    type: 'TRANSLATE',
                     language: lang,
-                    type: 'COPY',
                   })),
-              },
-            ] as TranslationHeaderMenuItem[]
-          }
-          onSelect={item => {
-            if (item.type === 'COPY') {
-              onSelect({
-                type: 'COPY',
-                language: language,
-                sourceLanguage: item.language,
-              });
-            } else if (item.type === 'TRANSLATE') {
-              LanguagesAPI.initLanguage(item.language.code, language.code).then(
-                res => {
+                },
+                {
+                  label: i18nValues.copyTranslations,
+                  type: 'COPY_TRANSLATIONS',
+                  items: languages
+                    .filter(lang => lang.id !== language.id)
+                    .map(lang => ({
+                      label: languageLabel(lang),
+                      language: lang,
+                      type: 'COPY',
+                    })),
+                },
+              ] as TranslationHeaderMenuItem[]
+            }
+            onSelect={item => {
+              if (item.type === 'COPY') {
+                onSelect({
+                  type: 'COPY',
+                  language: language,
+                  sourceLanguage: item.language,
+                });
+              } else if (item.type === 'TRANSLATE') {
+                LanguagesAPI.initLanguage(
+                  item.language.code,
+                  language.code,
+                ).then(res => {
                   resetLanguage(language.code);
                   store.dispatch(manageResponseHandler(res));
-                },
-              );
-            } else if (
-              item.type === 'CLEAR_OUTDATED' ||
-              item.type === 'CLEAR_ALL'
-            ) {
-              onSelect({
-                type: item.type as LanguageClearAction['type'],
-                language: language,
-              });
-            } else if (item.type === 'SAVE_TRANSLATIONS') {
+                });
+              } else if (
+                item.type === 'CLEAR_OUTDATED' ||
+                item.type === 'CLEAR_ALL'
+              ) {
+                onSelect({
+                  type: item.type as LanguageClearAction['type'],
+                  language: language,
+                });
+              }
+            }}
+            containerClassName={cx(flex, itemCenter)}
+          />
+          <IconButton
+            icon="save"
+            tooltip={i18nValues_basics.save}
+            disabled={editedValues.length === 0}
+            onClick={() => {
               LanguagesAPI.batchUpdateTranslations(editedValues).then(res => {
                 resetLanguage(language.code);
                 store.dispatch(manageResponseHandler(res));
               });
-            }
-          }}
-          containerClassName={cx(flex, itemCenter)}
-        />
+            }}
+            className={cx(itemCenter, css({ padding: 0 }))}
+          />
+        </>
       )}
     </div>
   );
@@ -1006,111 +1025,114 @@ export function TranslationEditor() {
         },
       }}
     >
-      <Toolbar className={cx(expandWidth, MediumPadding)}>
-        <Toolbar.Header>
-          <h2 className={grow}>{i18nValues.translationManagement}</h2>
-          <DropMenu
-            icon="cog"
-            items={[
-              {
-                label: i18nValues.allTranslations,
-                items: languages.map(language => ({
-                  label: (
-                    <div className={cx(flex, flexRow, grow)}>
-                      <div className={grow}>{languageLabel(language)}</div>
-                      <CheckBox
-                        value={selectedLanguages.includes(language)}
-                        onChange={() => {
-                          toggleLanguage(language);
-                        }}
-                      />
-                    </div>
-                  ),
-                  language,
-                })),
-                onSelect: (language: IGameModelLanguage) =>
-                  toggleLanguage(language),
-              },
-              {
-                label: (
-                  <div
-                    className={css({ padding: '5px', width: '100%' })}
-                    onClick={() => setShowOptions(showOptions => !showOptions)}
-                  >
-                    <IconComp
-                      icon={showOptions ? 'eye-slash' : 'eye'}
-                      className={defaultMarginRight}
-                    />
-                    {showOptions
-                      ? i18nValues.hideOptions
-                      : i18nValues.showOptions}
-                  </div>
-                ),
-              },
-            ]}
-          />
-        </Toolbar.Header>
-        <Toolbar.Content
-          className={translationContainerStyle(selectedLanguages.length)}
-        >
-          {selectedLanguages.map(language => (
-            <TranslationHeader
-              key={language.id!}
-              language={language}
-              languages={languages}
-              translatableLanguages={
-                Array.isArray(translatableLanguages)
-                  ? translatableLanguages
-                  : []
-              }
-              onSelect={action => {
-                showModal();
-                setLanguageAction(action);
-              }}
-            />
-          ))}
-          {root.itemsIds.map(itemId => (
-            <LanguagesVisitor
-              key={itemId}
-              itemId={itemId}
-              parentIds={parentIds}
-              selectedLanguages={selectedLanguages}
-              showOptions={showOptions}
-            />
-          ))}
-          {languageAction && (
-            <OkCancelModal
-              onOk={() => {
-                if (languageAction.type === 'COPY') {
-                  LanguagesAPI.copyTranslations(
-                    languageAction.language,
-                    languageAction.sourceLanguage,
-                  ).then(res => {
-                    store.dispatch(manageResponseHandler(res));
-                  });
-                } else {
-                  LanguagesAPI.clearTranslations(
-                    languageAction.language,
-                    languageAction.type === 'CLEAR_OUTDATED',
-                  ).then(res => {
-                    store.dispatch(manageResponseHandler(res));
-                  });
-                }
-
-                setLanguageAction(undefined);
-              }}
+      <Toolbar className={expandWidth}>
+        <Toolbar.Header className={cx(justifyStart, flexColumn)}>
+          <div className={cx(flex, expandWidth, itemCenter, MediumPadding_notBottom)}>
+            <h2 className={css({ margin: 0 })}>
+              {i18nValues.translationManagement}
+            </h2>
+            <Button
+              onClick={() => setShowOptions(showOptions => !showOptions)}
+              className={cx(css({fontSize: '13px'}), secondaryButtonStyle, defaultMarginLeft)}
             >
-              {languageAction.type === 'COPY'
-                ? i18nValues.warningCopy(
-                    languageLabel(languageAction.sourceLanguage),
-                    languageLabel(languageAction.language),
-                  )
-                : i18nValues.warningDelete(
-                    languageLabel(languageAction.language),
-                    languageAction.type === 'CLEAR_OUTDATED',
-                  )}
-            </OkCancelModal>
-          )}
+              <IconComp
+                icon={showOptions ? 'eye-slash' : 'eye'}
+                className={componentMarginRight}
+              />
+              {showOptions ? i18nValues.hideOptions : i18nValues.showOptions}
+            </Button>
+          </div>
+          <div className={cx(flex, expandWidth, borderBottom, defaultPaddingLeft, defaultPaddingRight, defaultMarginTop)}>
+            {languages.map(language => (
+              <CheckBox
+                value={selectedLanguages.includes(language)}
+                onChange={() => {
+                  toggleLanguage(language);
+                }}
+                label={languageLabel(language)}
+                className={languageChoiceCbxStyle}
+                checkBoxClassName={cx(css({padding: 0}), componentMarginRight)}
+                key={language.code}
+                horizontal
+              />
+            ))}
+          </div>
+        </Toolbar.Header>
+        <Toolbar.Content className={cx(flex, flexColumn)}>
+          <div
+            className={cx(
+              translationContainerStyle(selectedLanguages.length),
+              MediumPadding_sides,
+              borderBottom,
+            )}
+          >
+            {selectedLanguages.map(language => (
+              <TranslationHeader
+                key={language.id!}
+                language={language}
+                languages={languages}
+                translatableLanguages={
+                  Array.isArray(translatableLanguages)
+                    ? translatableLanguages
+                    : []
+                }
+                onSelect={action => {
+                  showModal();
+                  setLanguageAction(action);
+                }}
+              />
+            ))}
+          </div>
+          <div
+            className={cx(
+              translationContainerStyle(selectedLanguages.length),
+              forceScrollY,
+              MediumPadding_sides,
+            )}
+          >
+            {root.itemsIds.map(itemId => (
+              <LanguagesVisitor
+                key={itemId}
+                itemId={itemId}
+                parentIds={parentIds}
+                selectedLanguages={selectedLanguages}
+                showOptions={showOptions}
+              />
+            ))}
+            {languageAction && (
+              <OkCancelModal
+                onOk={() => {
+                  if (languageAction.type === 'COPY') {
+                    LanguagesAPI.copyTranslations(
+                      languageAction.language,
+                      languageAction.sourceLanguage,
+                    ).then(res => {
+                      store.dispatch(manageResponseHandler(res));
+                    });
+                  } else {
+                    LanguagesAPI.clearTranslations(
+                      languageAction.language,
+                      languageAction.type === 'CLEAR_OUTDATED',
+                    ).then(res => {
+                      store.dispatch(manageResponseHandler(res));
+                    });
+                  }
+
+                  setLanguageAction(undefined);
+                }}
+              >
+                {languageAction.type === 'COPY'
+                  ? i18nValues.warningCopy(
+                      languageLabel(languageAction.sourceLanguage),
+                      languageLabel(languageAction.language),
+                    )
+                  : i18nValues.warningDelete(
+                      languageLabel(languageAction.language),
+                      languageAction.type === 'CLEAR_OUTDATED',
+                    )}
+              </OkCancelModal>
+            )}
+          </div>
         </Toolbar.Content>
       </Toolbar>
     </translationCTX.Provider>

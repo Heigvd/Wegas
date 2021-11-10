@@ -24,5 +24,5 @@ export const languagesTranslationsEN: LanguagesTranslations = {
   undoModifications: 'Undo modifications',
   saveModifications: 'Save modifications',
   hideOptions: 'Hide options',
-  showOptions: 'Show more options',
+  showOptions: 'Show options',
 };
