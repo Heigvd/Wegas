@@ -1,9 +1,5 @@
-import {
-  Monaco,
-  EditorProps,
-  DiffEditorDidMount,
-  EditorDidMount,
-} from '@monaco-editor/react';
+import { EditorProps, Monaco } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 export type SrcEditorLanguages =
   | 'javascript'
@@ -15,8 +11,8 @@ export type MonacoEditor = Monaco;
 export type MonacoEditorProperties = Exclude<EditorProps['options'], undefined>;
 export type MonacoLangaugesServices =
   MonacoEditor['languages']['typescript']['typescriptDefaults'];
-export type MonacoSCodeEditor = Parameters<EditorDidMount>[1];
-export type MonacoSDiffEditor = Parameters<DiffEditorDidMount>[2];
+export type MonacoSCodeEditor = monaco.editor.IStandaloneCodeEditor;
+export type MonacoSDiffEditor = monaco.editor.IStandaloneDiffEditor;
 export type MonacoCodeEditor = Parameters<
   Parameters<MonacoSCodeEditor['addAction']>[0]['run']
 >[0];
