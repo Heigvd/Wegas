@@ -14,7 +14,7 @@ export const languagesTranslationsDE: LanguagesTranslations = {
   outdatedTranslations: 'Veraltete Übersetzungen',
   allTranslations: 'Alle Übersetzungen',
   translateFrom: 'Übersetzen von',
-  copyTranslations: 'Übersetzungen kopieren',
+  copyFrom: 'Kopieren von',
   CONTENT_EDITOR: 'Redakteur für Inhalte',
   SCENARIO_EDITOR: 'Redakteur für Szenario',
   translationManagement: 'Übersetzungsmanagement',

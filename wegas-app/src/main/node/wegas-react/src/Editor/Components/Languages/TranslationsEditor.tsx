@@ -202,7 +202,9 @@ function TranslationItemView({
           <>
             <ConfirmButton
               className={grow}
-              icon="outdent"
+              buttonClassName={cx(secondaryButtonStyle, css({fontSize: '13px', marginTop: '4px'}))}
+              icon={'clock'}
+              label={i18nValues.outdateOtherLanguages}
               tooltip={i18nValues.outdateOtherLanguages}
               onAction={success => {
                 if (success) {
@@ -850,7 +852,7 @@ function TranslationHeader({
                   })),
                 },
                 {
-                  label: i18nValues.copyTranslations,
+                  label: i18nValues.copyFrom,
                   type: 'COPY_TRANSLATIONS',
                   items: languages
                     .filter(lang => lang.id !== language.id)

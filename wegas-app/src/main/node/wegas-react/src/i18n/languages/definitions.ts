@@ -8,7 +8,7 @@ export interface LanguagesTranslations {
   outdatedTranslations: string;
   allTranslations: string;
   translateFrom: string;
-  copyTranslations: string;
+  copyFrom: string;
   CONTENT_EDITOR: string;
   SCENARIO_EDITOR: string;
   translationManagement: string;
