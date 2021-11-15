@@ -41,7 +41,6 @@ import {
   flexColumn,
   flexRow,
   forceScrollY,
-  grow,
   itemCenter,
   justifyStart,
   layoutStyle,
@@ -170,6 +169,12 @@ function TranslationItemView({
       <div className={cx(flex, flexBetween)}>
         {label}
         <div className={flex}>
+          <IconButton
+            icon="globe"
+            tooltip={i18nValues.translateWithDeepl}
+            disabled={disabled}
+            onClick={() => {}}
+          />
           <Button
             icon="undo"
             tooltip={i18nValues.undoModifications}
@@ -197,12 +202,14 @@ function TranslationItemView({
           disabled={disabled}
         />
       )}
-      <div className={cx(flex, flexRow)}>
+      <div className={cx(flex, flexRow, flexBetween)}>
         {showOptions && (
           <>
             <ConfirmButton
-              className={grow}
-              buttonClassName={cx(secondaryButtonStyle, css({fontSize: '13px', marginTop: '4px'}))}
+              buttonClassName={cx(
+                secondaryButtonStyle,
+                css({ fontSize: '13px', marginTop: '4px' }),
+              )}
               icon={'clock'}
               label={i18nValues.outdateOtherLanguages}
               tooltip={i18nValues.outdateOtherLanguages}
@@ -1029,13 +1036,24 @@ export function TranslationEditor() {
     >
       <Toolbar className={expandWidth}>
         <Toolbar.Header className={cx(justifyStart, flexColumn)}>
-          <div className={cx(flex, expandWidth, itemCenter, MediumPadding_notBottom)}>
+          <div
+            className={cx(
+              flex,
+              expandWidth,
+              itemCenter,
+              MediumPadding_notBottom,
+            )}
+          >
             <h2 className={css({ margin: 0 })}>
               {i18nValues.translationManagement}
             </h2>
             <Button
               onClick={() => setShowOptions(showOptions => !showOptions)}
-              className={cx(css({fontSize: '13px'}), secondaryButtonStyle, defaultMarginLeft)}
+              className={cx(
+                css({ fontSize: '13px' }),
+                secondaryButtonStyle,
+                defaultMarginLeft,
+              )}
             >
               <IconComp
                 icon={showOptions ? 'eye-slash' : 'eye'}
@@ -1044,19 +1062,37 @@ export function TranslationEditor() {
               {showOptions ? i18nValues.hideOptions : i18nValues.showOptions}
             </Button>
           </div>
-          <div className={cx(flex, expandWidth, borderBottom, defaultPaddingLeft, defaultPaddingRight, defaultMarginTop)}>
+          <div
+            className={cx(
+              flex,
+              expandWidth,
+              borderBottom,
+              defaultPaddingLeft,
+              defaultPaddingRight,
+              defaultMarginTop,
+            )}
+          >
             {languages.map(language => (
-              <CheckBox
-                value={selectedLanguages.includes(language)}
-                onChange={() => {
-                  toggleLanguage(language);
-                }}
-                label={languageLabel(language)}
-                className={languageChoiceCbxStyle}
-                checkBoxClassName={cx(css({padding: 0}), componentMarginRight)}
-                key={language.code}
-                horizontal
-              />
+              <>
+                <CheckBox
+                  value={selectedLanguages.includes(language)}
+                  onChange={() => {
+                    toggleLanguage(language);
+                  }}
+                  label={languageLabel(language)}
+                  className={languageChoiceCbxStyle}
+                  checkBoxClassName={cx(
+                    css({ padding: 0 }),
+                    componentMarginRight,
+                  )}
+                  key={language.code}
+                  horizontal
+                />
+                {false &&
+                <IconButton
+                  icon="arrows-alt-h"
+                  onClick={()=>{}}/>}
+              </>
             ))}
           </div>
         </Toolbar.Header>
