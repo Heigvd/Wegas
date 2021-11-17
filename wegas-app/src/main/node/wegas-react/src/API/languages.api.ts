@@ -58,11 +58,11 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
      * Increase a language priority
      * @param language The language to priorize
      */
-    upLanguage(language: IGameModelLanguage) {
+    upLanguage(language: IGameModelLanguage): Promise<IGameModel> {
       return rest(LANGUAGES_BASE(gameModelId) + 'Lang/' + language.id + '/Up', {
         method: 'PUT',
       }).then((res: Response) => {
-        return res.json() as Promise<IGameModel>;
+        return res.json();
       });
     },
     /**

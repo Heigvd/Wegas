@@ -48,12 +48,13 @@ import {
   MediumPadding_sides,
   secondaryButtonStyle,
 } from '../../../css/classes';
+import { Actions } from '../../../data';
 import { manageResponseHandler } from '../../../data/actions';
 import { entityIs } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { GlobalState } from '../../../data/Reducer/globalState';
 import { GameModel, VariableDescriptor } from '../../../data/selectors';
-import { store, useStore } from '../../../data/Stores/store';
+import { getDispatch, store, useStore } from '../../../data/Stores/store';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { languagesTranslations } from '../../../i18n/languages/languages';
@@ -933,12 +934,14 @@ export const translationCTX = React.createContext<{
   resetLanguage: () => {},
 });
 
+// const abs: string = 123;
+
 export function TranslationEditor() {
   const [editedTranslations, setEditedTranslations] =
     React.useState<EditedTranslations>({});
   const [languageAction, setLanguageAction] = React.useState<LanguageAction>();
   const [showOptions, setShowOptions] = React.useState(false);
-  const { root, parentIds } = useStore(s => {
+  const { root /*, languages*/, parentIds } = useStore(s => {
     const parentIds: number[] = [];
 
     if (
@@ -961,28 +964,23 @@ export function TranslationEditor() {
   }, deepDifferent);
   const languages = root.languages;
   const i18nValues = useInternalTranslate(languagesTranslations);
-  const [selectedLanguages, setSelectedLanguages] = React.useState(
-    languages.filter(language => language.active),
+  const [selectedLanguagesIds, setSelectedLanguagesIds] = React.useState(
+    languages.filter(language => language.active).map(lang => lang.id!),
   );
   const { showModal, OkCancelModal } = useOkCancelModal();
   const translatableLanguages = useTranslatableLanguages();
 
   function toggleLanguage(language: IGameModelLanguage) {
-    setSelectedLanguages(selectedLanguages =>
-      selectedLanguages.find(lang => lang.id === language.id)
-        ? selectedLanguages.filter(lang => lang.id !== language.id)
-        : [
-            ...selectedLanguages.slice(
-              0,
-              languages.findIndex(l => l.id === language.id),
-            ),
-            language,
-            ...selectedLanguages.slice(
-              languages.findIndex(l => l.id === language.id),
-            ),
-          ],
+    setSelectedLanguagesIds(osli =>
+      osli.find(id => id === language.id)
+        ? osli.filter(id => id !== language.id)
+        : [...osli, language.id!],
     );
   }
+
+  const selectedLanguages = languages.filter(lang =>
+    selectedLanguagesIds.includes(lang.id!),
+  );
 
   return (
     <translationCTX.Provider
@@ -1072,10 +1070,27 @@ export function TranslationEditor() {
               defaultMarginTop,
             )}
           >
-            {languages.map(language => (
-              <>
+            {languages.map((language, i) => (
+              <React.Fragment key={language.id!}>
+                {i !== 0 && (
+                  <IconButton
+                    icon="arrows-alt-h"
+                    onClick={() => {
+                      LanguagesAPI.upLanguage(language).then(res =>
+                        getDispatch()(
+                          Actions.GameModelActions.editGameModel(
+                            res,
+                            String(GameModel.selectCurrent().id),
+                          ),
+                        ),
+                      );
+                    }}
+                  />
+                )}
                 <CheckBox
-                  value={selectedLanguages.includes(language)}
+                  value={
+                    selectedLanguagesIds.find(id => id === language.id) != null
+                  }
                   onChange={() => {
                     toggleLanguage(language);
                   }}
@@ -1088,18 +1103,14 @@ export function TranslationEditor() {
                   key={language.code}
                   horizontal
                 />
-                {false &&
-                <IconButton
-                  icon="arrows-alt-h"
-                  onClick={()=>{}}/>}
-              </>
+              </React.Fragment>
             ))}
           </div>
         </Toolbar.Header>
         <Toolbar.Content className={cx(flex, flexColumn)}>
           <div
             className={cx(
-              translationContainerStyle(selectedLanguages.length),
+              translationContainerStyle(selectedLanguagesIds.length),
               MediumPadding_sides,
               borderBottom,
             )}
@@ -1123,7 +1134,7 @@ export function TranslationEditor() {
           </div>
           <div
             className={cx(
-              translationContainerStyle(selectedLanguages.length),
+              translationContainerStyle(selectedLanguagesIds.length),
               forceScrollY,
               MediumPadding_sides,
             )}

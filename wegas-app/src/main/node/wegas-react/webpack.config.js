@@ -62,41 +62,47 @@ const modules = {
     exprContextCritical: false,
     rules: [
       {
-        test: /\.tsx?$/,
+        // Include ts, tsx, js, and jsx files.
+        test: /\.(ts)x?$/,
         exclude: /node_modules/,
-        oneOf: [
-          {
-            test: /\.build\.tsx?$/,
-            use: [
-              { loader: 'val-loader' },
-              {
-                loader: 'ts-loader',
-                options: {
-                  compilerOptions: {
-                    target: 'es2018',
-                    module: 'commonjs',
-                    noEmit: false,
-                  },
-                  transpileOnly: true,
-                  instance: 'node',
-                  onlyCompileBundledFiles: true,
-                },
-              },
-            ],
-          },
-          {
-            loader: 'ts-loader',
-            options: {
-              compilerOptions: {
-                noEmit: false,
-              },
-              transpileOnly: true,
-              instance: 'web',
-              onlyCompileBundledFiles: true,
-            },
-          },
-        ],
+        loader: 'babel-loader',
       },
+      // {
+      //   test: /\.tsx?$/,
+      //   exclude: /node_modules/,
+      //   oneOf: [
+      //     {
+      //       test: /\.build\.tsx?$/,
+      //       use: [
+      //         { loader: 'val-loader' },
+      //         {
+      //           loader: 'ts-loader',
+      //           options: {
+      //             compilerOptions: {
+      //               target: 'es2018',
+      //               module: 'commonjs',
+      //               noEmit: false,
+      //             },
+      //             transpileOnly: true,
+      //             instance: 'node',
+      //             onlyCompileBundledFiles: true,
+      //           },
+      //         },
+      //       ],
+      //     },
+      //     {
+      //       loader: 'ts-loader',
+      //       options: {
+      //         compilerOptions: {
+      //           noEmit: false,
+      //         },
+      //         transpileOnly: true,
+      //         instance: 'web',
+      //         onlyCompileBundledFiles: true,
+      //       },
+      //     },
+      //   ],
+      // },
       // {
       //   test: /\.tsx?$/,
       //   loader: 'awesome-typescript-loader',
@@ -105,11 +111,6 @@ const modules = {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
       },
-      // {
-      //   test: /\.js$/,
-      //   use: ['source-map-loader'],
-      //   enforce: 'pre',
-      // },
       {
         test: /\.(png|jp(e*)g)$/,
         use: [

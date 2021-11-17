@@ -41,9 +41,6 @@ const languageSchema =
 const createLanguageSchema = cloneDeep(languageSchema);
 createLanguageSchema.properties!['visibility'].view!.type = 'hidden';
 createLanguageSchema.properties!['active'].view!.type = 'hidden';
-(
-  createLanguageSchema.properties!['code'].view! as { readOnly: boolean }
-).readOnly = false;
 const editLanguageSchema = cloneDeep(languageSchema);
 editLanguageSchema.properties!['indexOrder'] = { view: { type: 'hidden' } };
 editLanguageSchema.properties!['visibility'].view!.type = 'hidden';
@@ -55,6 +52,35 @@ const defaultLanguage: IGameModelLanguage = {
   lang: 'Default language',
   visibility: 'PRIVATE',
 };
+
+function moveLanguage(
+  up: boolean,
+  language: IGameModelLanguage | undefined | null,
+  languages: IGameModelLanguage[],
+) {
+  function dispatch(gameModel: IGameModel) {
+    getDispatch()(
+      Actions.GameModelActions.editGameModel(
+        gameModel,
+        String(GameModel.selectCurrent().id),
+      ),
+    );
+  }
+
+  if (language != null) {
+    if (up) {
+      LanguagesAPI.upLanguage(language).then(dispatch);
+    } else {
+      const previousLanguage = languages.find(
+        (lang: ISortedGameModelLanguage) =>
+          lang.indexOrder === (language.indexOrder || 0) + 1,
+      );
+      if (previousLanguage != null) {
+        LanguagesAPI.upLanguage(previousLanguage).then(dispatch);
+      }
+    }
+  }
+}
 
 interface ISortedGameModelLanguage extends IGameModelLanguage {
   indexOrder: number;
@@ -132,48 +158,23 @@ export default function LanguageEditor() {
           onSelect={id => {
             setSelectedLanguageId(id);
           }}
-          onMove={up => {
-            function dispatch(gameModel: IGameModel) {
-              getDispatch()(
-                Actions.GameModelActions.editGameModel(
-                  gameModel,
-                  String(GameModel.selectCurrent().id),
-                ),
-              );
-            }
-
-            const language = selectedLanguage as
-              | ISortedGameModelLanguage
-              | undefined;
-            if (language != null) {
-              if (up) {
-                LanguagesAPI.upLanguage(language).then(dispatch);
-              } else {
-                const previousLanguage = languages.find(
-                  (lang: ISortedGameModelLanguage) =>
-                    lang.indexOrder === language.indexOrder + 1,
-                );
-                if (previousLanguage != null) {
-                  LanguagesAPI.upLanguage(previousLanguage).then(dispatch);
-                }
-              }
-            }
-          }}
-          onTrash={() => {
-            if (selectedLanguage) {
-              LanguagesAPI.deleteLanguage(selectedLanguage.code).then(
-                gameModel => {
-                  getDispatch()(
-                    Actions.GameModelActions.editGameModel(
-                      gameModel,
-                      String(GameModel.selectCurrent().id),
-                    ),
-                  );
-                },
-              );
-            }
-          }}
+          onMove={up => moveLanguage(up, selectedLanguage, languages)}
           onNew={() => setSelectedLanguageId(-1)}
+          // NOT IMPLENTED YET
+          // onTrash={() => {
+          //   if (selectedLanguage) {
+          //     LanguagesAPI.deleteLanguage(selectedLanguage.code).then(
+          //       gameModel => {
+          //         getDispatch()(
+          //           Actions.GameModelActions.editGameModel(
+          //             gameModel,
+          //             String(GameModel.selectCurrent().id),
+          //           ),
+          //         );
+          //       },
+          //     );
+          //   }
+          // }}
         />
       </div>
       <div

@@ -10,6 +10,7 @@ package com.wegas.core.persistence.game;
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -72,7 +73,6 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
             optional = false, nullable = false,
             view = @View(
                     label = "Language code",
-                    readOnly = true,
                     value = StringView.class
             ))
     private String code;
@@ -151,6 +151,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
         return indexOrder;
     }
 
+    @WegasExtraProperty
     public Integer getIndexOrder() {
         return indexOrder;
     }
