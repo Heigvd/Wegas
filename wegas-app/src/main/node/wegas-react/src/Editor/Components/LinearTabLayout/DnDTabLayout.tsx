@@ -64,7 +64,7 @@ const dropBottomZone = css({
 
 const headerTabStyle = css({
   paddingTop: '20px',
-  columnGap: '6px',
+  columnGap: '5px',
 });
 
 export type DropAction = (item: { label: string; type: string }) => void;

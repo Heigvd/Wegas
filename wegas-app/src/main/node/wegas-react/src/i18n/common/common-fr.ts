@@ -14,7 +14,6 @@ export const commonTranslationsFR: CommonTranslations = {
   accept: 'Accepter',
   cancel: 'Annuler',
   delete: 'Supprimer',
-  deleteChanges: 'Supprimer les modifications',
   reset: 'Réinitialiser',
   restart: 'Recommencer',
   save: 'Sauvegarder',
@@ -31,6 +30,7 @@ export const commonTranslationsFR: CommonTranslations = {
   features: 'Fonctionnalités',
   language: 'Langue',
   deepSearch: 'Recherche approfondie',
+  addVariable: 'Ajouter une variable',
   role: "Rôle de l'utilisateur",
   header: {
     restartGame: 'Recommence le jeu (appliqué à tous les scénaristes)',

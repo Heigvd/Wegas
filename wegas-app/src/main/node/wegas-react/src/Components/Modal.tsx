@@ -357,7 +357,6 @@ export function EditionModal({
   return (
     <div className={cx(flex, flexColumn)}>
       <p>{i18nValues.changesWillBeLost}</p>
-      <p>{i18nValues.whatDoYouWantToDo}</p>
       <div className={cx(flex, flexRow, justifyCenter, defaultMarginTop)}>
         <Button
           label={i18nValues.save}
@@ -367,7 +366,7 @@ export function EditionModal({
           }}
         />
         <Button
-          label={i18nValues.deleteChanges}
+          label={i18nValues.doNotSave}
           onClick={() => {
             onDeleteChanges();
             closeModal();
