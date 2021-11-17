@@ -1,6 +1,5 @@
-import { css, cx, keyframes } from '@emotion/css';
+import { css, keyframes } from '@emotion/css';
 import * as React from 'react';
-import Picto from './Theme/Picto';
 import { themeVar } from './Theme/ThemeVars';
 
 const anim = keyframes({
@@ -21,39 +20,7 @@ const anim = keyframes({
   },
 });
 
-const pulseKeyframes = keyframes`
-  0% {
-    transform: translate(-93px, 47px);
-  }
-  30% {
-    transform: rotate(0deg);
-  }
-  50% {
-    transform: rotate(360deg);
-  }
-  70% {
-    transform: rotate(720deg);
-  }
-  100% {
-    transform: translate(-93px, 47px);
-  }
-`;
-const pulseEase = css`
-  animation: ${pulseKeyframes} 2s ease infinite;
-  transform-origin: 435px 70px;
-`;
-const loadingStyle = css({
-  width: '100%',
-  overflow: 'visible',
-});
-const animatedStyle = cx(
-  loadingStyle,
-  css({
-    '& g': pulseEase,
-  }),
-);
-
-const loaderStyle = css({
+const textLoaderStyle = css({
   position: 'relative',
   padding: '0 10px',
   '&:after': {
@@ -71,44 +38,41 @@ const loaderStyle = css({
 });
 
 export function TextLoader({ text = 'Loading...' }: { text?: string }) {
-  return <span className={loaderStyle}>{text}</span>;
+  return <span className={textLoaderStyle}>{text}</span>;
 }
 
-function tumbleLoaderStyle(containerSize: number) {
-  const size = Math.min(containerSize, 200);
-  return css({
-    zIndex: 10000,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: '40px',
-    width: size,
-    maxWidth: '200px',
-    margin: 'auto',
+const animationMoves = keyframes`
+  0%,
+  100% { box-shadow: 4em -2em 0 0 rgba(0, 0, 0, 1), 6em 0 0 0 rgba(0, 0, 0, 0), 4em 2em 0 0 rgba(0, 0, 0, 0), 2em 0 0 0 rgba(0, 0, 0, 0);}
+  20% { box-shadow: 4em -2em 0 0 rgba(0, 0, 0, 1), 6em 0em 0 0 rgba(0, 0, 0, 1), 4em 2em 0 0 rgba(0, 0, 0, 0), 2em 0 0 0 rgba(0, 0, 0, 0); }
+  40% { box-shadow: 4em -2em 0 0 rgba(0, 0, 0, 0), 6em 0em 0 0 rgba(0, 0, 0, 1), 4em 2em 0 0 rgba(0, 0, 0, 1), 2em 0 0 0 rgba(0, 0, 0, 0); }
+  60% { box-shadow: 4em -2em 0 0 rgba(0, 0, 0, 0), 6em 0em 0 0 rgba(0, 0, 0, 0), 4em 2em 0 0 rgba(0, 0, 0, 1), 2em 0 0 0 rgba(0, 0, 0, 1); }
+  80% { box-shadow: 4em -2em 0 0 rgba(0, 0, 0, 1), 6em 0em 0 0 rgba(0, 0, 0, 0), 4em 2em 0 0 rgba(0, 0, 0, 0), 2em 0 0 0 rgba(0, 0, 0, 1); }`;
+
+const tumbleLoaderStyle = css({
+    color: '#000000',
+    fontSize: '10px',
+    margin: '80px auto',
+    position: 'relative',
+    textIndent: '-9999em',
+    transform: 'translateZ(0)',
+    width: '2em',
+    height: '2em',
+    animationFillMode: 'both',
+    animation: `${animationMoves} 3.5s infinite ease-in-out`,
   });
-}
-interface TumblerLoaderProps {
-  size?: number;
-}
 
-export function TumbleLoader({
-  size,
-}: TumblerLoaderProps) {
-  const container = React.useRef<HTMLDivElement>(null);
-  const [computedSize, setComputedSize] = React.useState(5);
 
-  React.useEffect(() => {
-    const parentBox = container.current?.parentElement?.getBoundingClientRect();
-    if (parentBox) {
-      setComputedSize(Math.min(parentBox.height - 25, parentBox.width - 25));
-    }
-  }, []);
+export function TumbleLoader() {
+  const container = React.useRef<HTMLDivElement>(null)
   return (
-    <div ref={container} className={tumbleLoaderStyle(size == null ? computedSize : size)}>
-      <Picto className={animatedStyle} />
-    </div>
+    <div
+      ref={container}
+      className={tumbleLoaderStyle}
+    ></div>
   );
 }
+
 
 const dotLoaderAnimation1 = keyframes({
   '0%': {
