@@ -1,41 +1,44 @@
-import * as React from 'react';
-import { ExpressionStatement } from '@babel/types';
 import generate from '@babel/generator';
-import Form from 'jsoninput';
-import { css } from '@emotion/css';
 import { parse } from '@babel/parser';
-import { WidgetProps } from 'jsoninput/typings/types';
 import {
-  IConditionAttributes,
-  IInitAttributes,
-  WyiswygExpressionSchema,
-  isConditionSchemaAttributes,
-  IParameterAttributes,
-  IParameterSchemaAtributes,
-  typeCleaner,
-  generateSchema,
-  PartialAttributes,
-  makeItems,
-  SelectOperator,
-  testCode,
-} from './expressionEditorHelpers';
-import { ScriptView, scriptEditStyle, returnTypes } from '../Script';
-import { useStore } from '../../../../../data/Stores/store';
+  CallExpression,
+  ExpressionStatement,
+  StringLiteral,
+} from '@babel/types';
+import { css } from '@emotion/css';
+import u from 'immer';
+import Form from 'jsoninput';
+import { WidgetProps } from 'jsoninput/typings/types';
+import { isArray, pick } from 'lodash-es';
+import * as React from 'react';
+import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
+import { Button } from '../../../../../Components/Inputs/Buttons/Button';
+import { themeVar } from '../../../../../Components/Theme/ThemeVars';
+import { State } from '../../../../../data/Reducer/reducers';
 import { GameModel } from '../../../../../data/selectors';
-import { parseStatement, generateStatement } from './astManagement';
+import { useStore } from '../../../../../data/Stores/store';
 import { MessageString } from '../../../MessageString';
+import { EmbeddedSrcEditor } from '../../../ScriptEditors/EmbeddedSrcEditor';
 import { WegasScriptEditor } from '../../../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
-import { LabeledView, Labeled } from '../../labeled';
-import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
-import { isArray, pick } from 'lodash-es';
-import { CallExpression, StringLiteral } from '@babel/types';
-import { themeVar } from '../../../../../Components/Theme/ThemeVars';
-import { Button } from '../../../../../Components/Inputs/Buttons/Button';
-import { EmbeddedSrcEditor } from '../../../ScriptEditors/EmbeddedSrcEditor';
-import { State } from '../../../../../data/Reducer/reducers';
-import u from 'immer';
+import { Labeled, LabeledView } from '../../labeled';
 import { genVarItems } from '../../TreeVariableSelect';
+import { returnTypes, scriptEditStyle, ScriptView } from '../Script';
+import { generateStatement, parseStatement } from './astManagement';
+import {
+  generateSchema,
+  IConditionAttributes,
+  IInitAttributes,
+  IParameterAttributes,
+  IParameterSchemaAtributes,
+  isConditionSchemaAttributes,
+  makeItems,
+  PartialAttributes,
+  SelectOperator,
+  testCode,
+  typeCleaner,
+  WyiswygExpressionSchema,
+} from './expressionEditorHelpers';
 
 const expressionEditorStyle = css({
   backgroundColor: themeVar.colors.HeaderColor,
@@ -58,6 +61,13 @@ function variableIdsSelector(s: State) {
     .map(Number)
     .filter(k => !isNaN(k))
     .filter(k => GameModel.selectCurrent().itemsIds.includes(k));
+}
+
+/**
+ * Should be done by looking at json files and prevent selection from variables without methods
+ */
+function selectableFn(item: IVariableDescriptor, _mode?: ScriptMode) {
+  return item['@class'] !== 'ListDescriptor';
 }
 
 type FormStateActions =
@@ -90,7 +100,7 @@ export function ExpressionEditor({
   const [srcMode, setSrcMode] = React.useState(false);
 
   const variablesItems = useStore(s => {
-    return genVarItems(variableIdsSelector(s), undefined, undefined, value =>
+    return genVarItems(variableIdsSelector(s), selectableFn, undefined, value =>
       makeItems(value, 'variable'),
     );
   }, deepDifferent);
