@@ -13,6 +13,7 @@ import {
   justifyCenter,
   layoutStyle,
   pointer,
+  secondaryButtonStyle,
 } from '../css/classes';
 import { ActionCreator } from '../data/actions';
 import { isEditingVariable } from '../data/Reducer/globalState';
@@ -82,18 +83,6 @@ const modalCloseButtonStyle = css({
   margin: 'auto',
 });
 
-export const secondaryButtonCSS = {
-  '&.wegas-btn': {
-    backgroundColor: 'transparent',
-    color: themeVar.colors.PrimaryColor,
-    border: '1px solid ' + themeVar.colors.PrimaryColor,
-    '&:hover, &:focus': {
-      backgroundColor: themeVar.colors.HeaderColor,
-    },
-  },
-};
-
-export const secondaryButtonStyle = css(secondaryButtonCSS);
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
 // React element
@@ -258,14 +247,14 @@ export function OkCancelModal({
         {children}
         <div className={cx(flex, flexRow, justifyCenter, defaultMarginTop)}>
           <Button
-            label={i18nValues.cancel}
-            onClick={onCancel}
-            className={secondaryButtonStyle}
-          />
-          <Button
             label={i18nValues.ok}
             onClick={onOk}
             className={defaultMarginLeft}
+          />
+          <Button
+            label={i18nValues.cancel}
+            onClick={onCancel}
+            className={secondaryButtonStyle}
           />
         </div>
       </div>
@@ -384,6 +373,7 @@ export function EditionModal({
             closeModal();
           }}
           className={componentMarginLeft}
+          dark
         />
         <Button
           label={i18nValues.seeChanges}
@@ -392,6 +382,7 @@ export function EditionModal({
             closeModal();
           }}
           className={componentMarginLeft}
+          dark
         />
       </div>
     </div>

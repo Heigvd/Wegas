@@ -18,6 +18,7 @@ export const commonTranslationsFR: CommonTranslations = {
   reset: 'Réinitialiser',
   restart: 'Recommencer',
   save: 'Sauvegarder',
+  doNotSave: 'Ne pas sauvegarder',
   edit: 'Editer',
   duplicate: 'Dupliquer',
   close: 'Fermer',

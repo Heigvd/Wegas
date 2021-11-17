@@ -32,12 +32,11 @@ import { ResizeHandle } from '../../ResizeHandle';
 import { createScript } from '../../../../Helper/wegasEntites';
 import { IScript, IVariableDescriptor, IVariableInstance } from 'wegas-ts-api';
 import { EmbeddedSrcEditor } from '../../ScriptEditors/EmbeddedSrcEditor';
-import { flex, grow, justifyEnd } from '../../../../css/classes';
+import { flex, grow, justifyEnd, secondaryButtonStyle } from '../../../../css/classes';
 import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { themeVar } from '../../../../Components/Theme/ThemeVars';
-import { secondaryButtonStyle } from '../../../../Components/Modal';
 
 export const scriptEditStyle = css({
   minHeight: '5em',

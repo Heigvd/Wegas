@@ -16,6 +16,7 @@ export interface CommonTranslations {
   reset: string;
   restart: string;
   save: string;
+  doNotSave: string;
   edit: string;
   duplicate: string;
   close: string;
