@@ -13,6 +13,7 @@ import {
 import { DropMenu } from '../../../Components/DropMenu';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import {
   useEditableLanguages,
   useTranslatableLanguages,
@@ -120,6 +121,7 @@ function isLanguageEditable(
 }
 
 interface SharedItemViewProps {
+  language: IGameModelLanguage;
   label: string;
   showOptions: boolean;
   view: 'string' | 'html';
@@ -131,6 +133,7 @@ interface TranslationItemViewProps extends SharedItemViewProps {
   itemClassName?: string;
   rowSpanClassName: string;
   disabledButtons: boolean;
+  translations: ITranslatableContent;
   disabled: boolean;
   onUndo: () => void;
   onSave: () => void;
@@ -142,6 +145,8 @@ interface TranslationItemViewProps extends SharedItemViewProps {
 function TranslationItemView({
   label,
   value,
+  language,
+  translations,
   upToDate,
   showOptions,
   itemClassName,
@@ -155,6 +160,18 @@ function TranslationItemView({
   onOutdate,
 }: TranslationItemViewProps) {
   const i18nValues = useInternalTranslate(languagesTranslations);
+  const translatableLanguages = useTranslatableLanguages();
+  const languages = useGameModel().languages;
+  const availableLanguagesForTranslation = getAvailableLanguagesForTranslation(
+    language,
+    languages,
+    Array.isArray(translatableLanguages) ? translatableLanguages : [],
+  )
+    .filter(language => translations.translations[language.code] != null)
+    .map(language => ({
+      language,
+      translation: translations.translations[language.code].translation,
+    }));
 
   return (
     <div
@@ -170,12 +187,25 @@ function TranslationItemView({
       <div className={cx(flex, flexBetween)}>
         {label}
         <div className={flex}>
-          <IconButton
-            icon="globe"
-            tooltip={i18nValues.translateWithDeepl}
-            disabled={disabled}
-            onClick={() => {}}
-          />
+          {!disabled && availableLanguagesForTranslation.length > 0 && (
+            <DropMenu
+              icon="globe"
+              tooltip={i18nValues.translateWithDeepl}
+              items={availableLanguagesForTranslation.map(lang => ({
+                label: lang.language.lang,
+                language: lang,
+              }))}
+              onSelect={item => {
+                LanguagesAPI.translateText(
+                  item.language.language.code,
+                  language.code,
+                  item.language.translation,
+                ).then(res => {
+                  onValueChange(String(res.text));
+                });
+              }}
+            />
+          )}
           <Button
             icon="undo"
             tooltip={i18nValues.undoModifications}
@@ -361,6 +391,8 @@ function TranslatableContentView({
 
   return (
     <TranslationItemView
+      language={language}
+      translations={trContent}
       label={label}
       value={getValue(translation)}
       upToDate={upToDate}
@@ -765,6 +797,19 @@ function languageLabel(language: IGameModelLanguage) {
   return `${language.lang} (${language.code})`;
 }
 
+function getAvailableLanguagesForTranslation(
+  currentLanguage: IGameModelLanguage,
+  languages: IGameModelLanguage[],
+  translatableCodes: string[],
+) {
+  return languages.filter(
+    lang =>
+      translatableCodes.includes(currentLanguage.code) &&
+      lang.code !== currentLanguage.code &&
+      translatableCodes.includes(lang.code.toUpperCase()),
+  );
+}
+
 interface LanguageClearAction {
   type: 'CLEAR_OUTDATED' | 'CLEAR_ALL';
   language: IGameModelLanguage;
@@ -822,11 +867,10 @@ function TranslationHeader({
     ...Object.values(languageEditedTranslation?.InScriptUpdate || []),
   ];
 
-  const availableLanguagesForTranslation = languages.filter(
-    lang =>
-      translatableLanguages.includes(language.code) &&
-      lang.code !== language.code &&
-      translatableLanguages.includes(lang.code.toUpperCase()),
+  const availableLanguagesForTranslation = getAvailableLanguagesForTranslation(
+    language,
+    languages,
+    translatableLanguages,
   );
 
   const enabled = isLanguageEditable(language.code, editableLanguages);
