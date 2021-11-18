@@ -131,6 +131,7 @@ export function OverviewRow({
                   value={team.getNotes() || ''}
                   noResize
                   onSave={editTeam}
+                  keepInternalValue
                 />
               </div>
             </div>

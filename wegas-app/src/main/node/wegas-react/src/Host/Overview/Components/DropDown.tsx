@@ -23,6 +23,12 @@ export function TrainerDropDown<K extends TrainerComponentKey>({
       label={componentOrRawHTML(label)}
       content={componentOrRawHTML(content)}
       listClassName={cx(MediumPadding, css({borderRadius: themeVar.dimensions.BorderRadius, marginTop: '5px'}))}
+      containerClassName={css({
+        '.open': {
+          fontWeight: 700,
+          boxShadow: 'inset 0 0 8px 1px rgba(0, 0, 0, 0.2)',
+        }
+      })}
     />
   );
 }
