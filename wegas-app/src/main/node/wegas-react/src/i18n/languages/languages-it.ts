@@ -9,6 +9,7 @@ export const languagesTranslationsIT: LanguagesTranslations = {
     } di ${language}?`,
   outdated: 'obsoleto',
   upToDate: 'aggiornato',
+  noTranslation: 'niente tranduzione',
   saveTranslations: 'Salvare le traduzioni',
   clearTranslations: 'Cancellare le traduzioni',
   outdatedTranslations: 'Traduzioni obsolete',

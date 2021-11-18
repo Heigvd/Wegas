@@ -9,6 +9,7 @@ export const languagesTranslationsFR: LanguagesTranslations = {
     } de ${language}?`,
   outdated: 'obsolète',
   upToDate: 'a jour',
+  noTranslation: 'aucune traduction',
   saveTranslations: 'Sauvegarder les traductions',
   clearTranslations: 'Supprimer les traductions',
   outdatedTranslations: 'Traductions obsolètes',
@@ -25,5 +26,5 @@ export const languagesTranslationsFR: LanguagesTranslations = {
   undoModifications: 'Annuler les modifications',
   saveModifications: 'Sauvegarder les modifications',
   hideOptions: 'Masquer options',
-  showOptions: "Montrer options",
+  showOptions: 'Montrer options',
 };

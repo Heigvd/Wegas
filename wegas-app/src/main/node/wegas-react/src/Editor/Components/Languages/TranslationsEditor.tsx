@@ -126,7 +126,7 @@ interface SharedItemViewProps {
 }
 
 interface TranslationItemViewProps extends SharedItemViewProps {
-  value: string;
+  value: string | null;
   upToDate: boolean;
   itemClassName?: string;
   rowSpanClassName: string;
@@ -192,13 +192,13 @@ function TranslationItemView({
       </div>
       {view === 'html' ? (
         <HTMLEditor
-          value={value}
+          value={value || ''}
           onChange={onValueChange}
           disabled={disabled}
         />
       ) : (
         <SimpleInput
-          value={value}
+          value={value || ''}
           onChange={value => onValueChange(String(value))}
           disabled={disabled}
         />
@@ -222,17 +222,23 @@ function TranslationItemView({
               disabled={disabled}
             />
             <Toggler
-              value={upToDate}
+              value={value != null && upToDate}
               onChange={onOutdate}
               hint={
                 upToDate ? i18nValues.markAsOutdated : i18nValues.markAsUpToDate
               }
-              label={upToDate ? i18nValues.upToDate : i18nValues.outdated}
+              label={
+                value == null
+                  ? i18nValues.noTranslation
+                  : upToDate
+                  ? i18nValues.upToDate
+                  : i18nValues.outdated
+              }
               className={css({
                 fontSize: '14px',
                 color: themeVar.colors.DisabledColor,
               })}
-              disabled={disabled}
+              disabled={value == null || disabled}
             />
           </>
         )}
@@ -301,10 +307,10 @@ function TranslatableContentView({
   }
 
   const getValue = React.useCallback(
-    (value: string | undefined): string => {
+    (value: string | undefined): string | null => {
       return editedTranslation?.value == null
         ? value == null
-          ? ''
+          ? null
           : value
         : editedTranslation.value;
     },
@@ -343,14 +349,14 @@ function TranslatableContentView({
     ? {
         '@class': 'InScriptUpdate',
         code: languageCode,
-        value: getValue(translation),
+        value: getValue(translation) || '',
         ...script,
       }
     : {
         '@class': 'TranslationUpdate',
         code: languageCode,
         trId: trContent.id!,
-        value: getValue(translation),
+        value: getValue(translation) || '',
       };
 
   return (
@@ -378,7 +384,6 @@ function TranslatableContentView({
       onValueChange={setValue(languageCode)}
       onOutdateOthers={() => {
         LanguagesAPI.outdateTranslations(translationObject).then(res => {
-          setValue(languageCode)(undefined);
           store.dispatch(manageResponseHandler(res));
         });
       }}
