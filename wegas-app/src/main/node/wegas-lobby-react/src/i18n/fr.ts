@@ -6,9 +6,11 @@
  * Licensed under the MIT License
  */
 
+import { IGameModel } from 'wegas-ts-api';
 import { WegasTranslations } from './I18nContext';
 
 export const fr: WegasTranslations = {
+  formatDate: (timestamp: number) => new Date(timestamp).toLocaleDateString('fr'),
   pleaseProvideData: 'Merci de remplir tous les champs',
   cancel: 'annuler',
   agree: 'Accepter',
@@ -72,6 +74,7 @@ export const fr: WegasTranslations = {
   openGameAsPlayer: 'Jouer',
   spyPlayer: 'Espionner le joueur',
   joinGame: 'Rejoindre une partie',
+  joinedOn: 'Rejoint le',
   //
   teamName: "nom de l'équipe",
   teamSize: 'taille',
@@ -97,9 +100,10 @@ export const fr: WegasTranslations = {
   name: 'nom',
   date: 'date',
   //
-  scenario: 'Scénario: ',
-  Scenario: 'Scenario',
-  PlayScenario: "Scenario d'une partie",
+  basedOnScenario: 'Scénario: ',
+  Scenario: 'Scénario',
+  scenario: 'scénario',
+  playScenario: 'partie',
   createdOn: 'Créé le ',
   by: 'par',
   display: 'afficher: ',
@@ -126,13 +130,13 @@ export const fr: WegasTranslations = {
   createGame: 'Ajouter une partie',
   selectGame: 'sélectionner une partie...',
   gameName: 'Nom de la partie',
-  basedOnScenario: 'baseée sur le scénario',
 
   settings: 'paramètres',
   basicSettings: 'Paramètres',
   nameIsRequired: 'le nom est requis',
   accessKeyIsRequiered: "clé d'accès requise",
   advancedSettings: 'Paramètres avancés',
+  importExport: 'Export',
   langSettings: 'Langues',
   submit: 'sauver',
   comments: 'commentaires',
@@ -144,7 +148,7 @@ export const fr: WegasTranslations = {
   gameLinkGuest:
     'Des invités ou des joueurs connectés peuvent avoir accès à la partie depuis le lien ci-dessous',
 
-  gameType: 'Type de partie',
+  gameType: 'Mode de jeu',
   individual: 'Individuel',
   inTeam: 'En équipe',
 
@@ -163,8 +167,9 @@ export const fr: WegasTranslations = {
   iconSettings: 'icône',
   disclaimer: "Attention! Ne modifier les paramètres avancés qu'en connaissance de cause",
 
+  coScenarist: 'Co-Scénaristes',
   kickScenarist: 'supprimer les accès de scénariste',
-  addScenarist: 'ajouer un scénariste',
+  addScenarist: 'ajouter un scénariste',
 
   logId: 'Log ID',
   guestAllowed: 'Invité autorisés',
@@ -182,11 +187,34 @@ export const fr: WegasTranslations = {
   restoreVersion: 'restaurer la version',
   deleteVersion: 'supprimer la version',
   createVersion: 'créer une version',
-  pdf: 'PDF',
-  exportWgz: 'Export',
-  exportJson: 'JSON',
+  pdf: 'Télécharger un PDF',
+  pdfTooltip: (gm: IGameModel) =>
+    `Le PDF d'un ${fr.prettyPrintType(gm)} liste tout son contenu dans format imprimable`,
+  exportWgz: 'Exporter au format WGZ',
+  wgzTooltip: (gm: IGameModel) => `Un export de votre ${fr.prettyPrintType(gm)}`,
+  exportJson: 'Exporter en JSON',
+  jsonTooltip: (gm: IGameModel) => `Un export de votre ${fr.prettyPrintType(gm)} au format JSON`,
   Model: 'Modèle',
-  ModelRef: 'ModelRef',
+  model: 'modèle',
+  ModelRef: 'Reference interne au modèle',
+  modelRef: 'reference interne au modèle',
+  prettyPrintType: (gameModel: IGameModel) => {
+    switch (gameModel.type) {
+      case 'MODEL':
+        return fr.model;
+      case 'REFERENCE':
+        return fr.modelRef;
+      case 'SCENARIO':
+        return fr.scenario;
+      case 'PLAY':
+        return fr.playScenario;
+    }
+  },
+
+  // Diff & Patch
+  diff: 'Mettre à jour',
+  patch: 'Accepter la mise à jour',
+  restart: 'Refuser la mise à jour',
 
   //
   ModelInstances: 'Instances du modèle',
@@ -216,10 +244,12 @@ export const fr: WegasTranslations = {
   roles: 'Groupes',
   loggers: 'Loggers',
   locks: 'Verroux',
-  gameAdmins: 'Parties',
+  gameAdmins: 'Facturation',
   stats: 'Stats',
   createEmptyModel: 'Créer un modèle vide',
   clearCache: 'Vider le cache JPA',
+  requestClientReload:
+    'Demander aux utilisateurs de recharger la (p.e après une grosse mise à jour)',
 
   userIsMemberOf: (user: string) => `"${user}" est membre de ces groupes`,
   userPermissions: (user: string) => `Permissions accordées à "${user}"`,
@@ -233,6 +263,7 @@ export const fr: WegasTranslations = {
   removeRole: 'Retirer du groupe',
   addMemberInvite: 'rechercher un utilisateur à ajouter',
 
+  AllScenariosAndModels: 'Tous les scénarios et modèles',
   showPermissions: 'voir les permissions',
   permissions: 'Permissions',
   adminLevelSettins: 'Paramètres visible des administrateurs',
@@ -243,13 +274,37 @@ export const fr: WegasTranslations = {
   unknown: 'Inconnu',
 
   showRoles: 'voir les groupes',
+  memberAddresses: 'Adresses e-mail des membres du groupe',
 
   editUser: "éditer l'utilisateur",
 
-  noPlayers: "Vous n'avez par encore rejoint de partie",
-  noGames: 'Aucune parties disponibles',
-  noScenarios: 'Aucun scénario disponibles',
-  noModels: 'Aucun modèle disponibles',
+  noPlayers: "Vous n'avez pas encore rejoint de partie",
+  noGames: 'Aucunes parties disponibles',
+  noScenarios: 'Aucuns scénarios disponibles',
+  noModels: 'Aucuns modèles disponibles',
+  noPermissions: 'Aucune permission',
+  noUsers: 'Aucun utilisateur',
+  pleaseCreateTeam: 'Veuillez créer un équipe',
+
+  noResults: 'Aucun résultat',
+  noPlayersFound: 'Aucune partie trouvée',
+  noGamesFound: 'Aucune partie trouvée',
+  noScenariosFound: 'Aucun scénario trouvé',
+  noModelsFound: 'Aucun modèle trouvé',
+
+  // Invoices
+  invoicing: 'Invoicing',
+  invoiceTodo: 'A traiter',
+  invoiceFree: 'Ne pas facturer',
+  invoiceCharged: 'Facturer',
+  invoiceDiff: 'delta',
+
+  countMismatch: (declared: number, effective: number) =>
+    `${declared} joueurs ont été déclarés mais ${effective} ont été trouvés !`,
+  emptyGame: 'aucune équipe',
+  emptyTeam: 'équipe vide',
+  declared: 'déclarés',
+  effective: 'comptés',
 
   WegasErrorMessage: {
     'IMPOSSIBLE-TO-UPDATE-PASSWORD': 'Vous ne pouvez pas mettre à jour votre mot de passe',
@@ -261,6 +316,9 @@ export const fr: WegasTranslations = {
     'CREATE-ACCOUNT-TAKEN-EMAIL': 'Adresse e-mail déjà utilisée',
     'CREATE-ACCOUNT-TAKEN-USERNAME': "Nom d'utilisateur déjà utilisé",
   },
+  outadateMessagePart1: 'Vos données ne sont plus à jour. Merci de ',
+  outadateMessagePart2: 'recharger',
+  outadateMessagePart3: ' la page',
   pleaseWait: 'Veuillet patienter...',
   autoplay: {
     loginAsGuest: "Préparation d'un compte invité en cours...",
@@ -274,10 +332,10 @@ export const fr: WegasTranslations = {
   processing: 'en cours...',
   andXMore: (x: number) => `et ${x} autres...`,
   status: {
-    LIVE: 'Actuel',
-    BIN: 'Archivé',
-    DELETE: 'Supprimé',
-    SUPPRESSED: 'Définitivement supprimé',
+    LIVE: 'actuel',
+    BIN: 'archivé',
+    DELETE: 'supprimé',
+    SUPPRESSED: 'définitivement supprimé',
   },
   userLevels: {
     0: 'Administrateurs',

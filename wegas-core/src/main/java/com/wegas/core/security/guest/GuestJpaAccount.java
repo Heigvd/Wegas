@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.guest;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.util.AuthenticationMethod;
 import javax.persistence.Entity;
@@ -30,6 +31,7 @@ public class GuestJpaAccount extends AbstractAccount {
     }
 
     @Override
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public Boolean isVerified() {
         return false;
     }

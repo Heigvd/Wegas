@@ -8,12 +8,12 @@
 
 import {
   faArchive,
-  faArrowUp,
   faCodeBranch,
   faCog,
   faCopy,
   faCubes,
   faLanguage,
+  faLevelUpAlt,
   faMagic,
   faPlug,
   faTrash,
@@ -32,7 +32,6 @@ import { useAppDispatch } from '../../store/hooks';
 import ActionIconButton from '../common/ActionIconButton';
 import Card, { CardMainButton, cardSecButtonStyle } from '../common/Card';
 import FitSpace from '../common/FitSpace';
-import { LayeredIconButton } from '../common/IconButton';
 import OpenCloseModal from '../common/OpenCloseModal';
 import { cardDetailsStyle, cardSubDetailsStyle, cardTitleStyle } from '../styling/style';
 import GameModelSettings from './GameModelSettings';
@@ -168,12 +167,10 @@ export default function GameModelCard({ gameModel }: GameModelCardProps): JSX.El
 
           {gameModel.status === 'BIN' ? (
             <>
-              <LayeredIconButton
+              <ActionIconButton
                 className={cardSecButtonStyle}
-                icons={[
-                  { icon: faArchive },
-                  { icon: faArrowUp, color: 'white', transform: 'shrink-8' },
-                ]}
+                icon={faLevelUpAlt}
+                flip="horizontal"
                 title={i18n.restore}
                 onClick={restoreCb}
               />

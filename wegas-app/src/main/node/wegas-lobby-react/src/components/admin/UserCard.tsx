@@ -41,13 +41,14 @@ import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import IconButton from '../common/IconButton';
 import { SizeType } from '../common/illustrations/Illustration';
+import { userIllu, verifiedIllu } from '../common/illustrations/illustrationHelper';
 import OpenCloseModal from '../common/OpenCloseModal';
 import { UserSettings } from '../settings/UserSettings';
 import {
   cardDetailsStyle,
   cardSubDetailsStyle,
   cardTitleStyle,
-  upsideSelectStyles,
+  defaultSelectStyles,
 } from '../styling/style';
 import { PermissionCard, PermissionEditor } from './PermissionCard';
 import { RoleCard } from './RoleCard';
@@ -122,7 +123,7 @@ export function UserPermissions({ userId }: { userId: number }): JSX.Element {
 
   return (
     <FitSpace direction="column" overflow="auto">
-      <WindowedContainer items={perms}>
+      <WindowedContainer items={perms} emptyMessage={<i>{i18n.noPermissions}</i>}>
         {p => <PermissionCard key={p.id} permission={p} />}
       </WindowedContainer>
 
@@ -136,7 +137,7 @@ export function UserPermissions({ userId }: { userId: number }): JSX.Element {
           {close => (
             <PermissionEditor
               permission={emptyPermission}
-              pType={'GameModel'}
+              pType={'SCENARIO'}
               value={'Edit'}
               id={undefined}
               onSave={p => {
@@ -232,7 +233,8 @@ export function UserRoles({ userId }: { userId: number }): JSX.Element {
           onChange={addUserToGroup}
           placeholder={i18n.name}
           options={options}
-          styles={upsideSelectStyles}
+          menuPlacement="top"
+          style={defaultSelectStyles}
         />
       </Flex>
     </FitSpace>
@@ -275,7 +277,9 @@ export default function UserCard({
     <Card
       key={user.id}
       size={size}
-      illustration={entityIs(account, 'AaiAccount') ? 'ICON_grey_id-card_far' : 'ICON_grey_user_fa'}
+      illustration={
+        entityIs(account, 'AbstractAccount', true) && account.verified ? verifiedIllu : userIllu
+      }
     >
       <FitSpace direction="column">
         <div className={cardTitleStyle}>{user.name || ''}</div>

@@ -11,6 +11,7 @@ import { faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import { Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom';
 import * as API from '../API/api';
+import { entityIs } from '../API/entityHelper';
 import { getDisplayName } from '../helper';
 import useTranslations from '../i18n/I18nContext';
 import LanguageSelector from '../i18n/LanguageSelector';
@@ -39,7 +40,7 @@ import {
   scenaristColor,
   trainerColor,
 } from './styling/color';
-import { fullPageStyle, mainHeaderHeight } from './styling/style';
+import { fullPageStyle, fullWidthWarningBanner, mainHeaderHeight } from './styling/style';
 import TrainerTab from './trainer/TrainerTab';
 
 // A custom hook that builds on useLocation to parse
@@ -134,7 +135,7 @@ export default function MainApp(): JSX.Element {
   } else if (currentUser != null && currentAccount != null) {
     // user is authenticatd
 
-    if (currentAccount.agreedTime == null) {
+    if (currentAccount.agreedTime == null && !entityIs(currentAccount, 'GuestJpaAccount')) {
       // but user dit not accept term of uses
       return <PleaseAcceptPolicy />;
     }
@@ -163,6 +164,15 @@ export default function MainApp(): JSX.Element {
             marginRight: 'auto',
           })}
         >
+          {wegasStatus === 'OUTDATED' ? (
+            <div className={fullWidthWarningBanner}>
+              {i18n.outadateMessagePart1}
+              <a href="#" onClick={() => window.location.reload()}>
+                {i18n.outadateMessagePart2}
+              </a>
+              {i18n.outadateMessagePart3}
+            </div>
+          ) : null}
           <div
             className={cx(
               css({

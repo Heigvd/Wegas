@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 
-import { faCheck, faCubes, faEraser } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faCubes, faEraser, faSync } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
 import { getRestClient, uploadJson } from '../../API/api';
@@ -52,6 +52,7 @@ function GameModelUploader(): JSX.Element {
     };
   }, [state]);
 
+  // TODO: track Window.showOpenFilePicker() support !
   return (
     <>
       <h4>{i18n.uploadGameModel}</h4>
@@ -162,6 +163,10 @@ export default function MainAdminPanel(): JSX.Element {
     return getRestClient().AdminStuff.createEmptyModel();
   }, []);
 
+  const requestReloadCb = React.useCallback(async () => {
+    return getRestClient().AdminStuff.requestClientReload();
+  }, []);
+
   return (
     <FitSpace direction="column" overflow="auto" align="flex-start" className={panelPadding}>
       <h3>{i18n.adminConsole}</h3>
@@ -204,6 +209,15 @@ export default function MainAdminPanel(): JSX.Element {
         onClick={clearCacheCb}
       >
         {i18n.clearCache}
+      </ActionIconButton>
+
+      <ActionIconButton
+        title={i18n.requestClientReload}
+        icon={faSync}
+        shouldConfirm="SOFT_RIGHT"
+        onClick={requestReloadCb}
+      >
+        {i18n.requestClientReload}
       </ActionIconButton>
       <ActionIconButton
         title={i18n.createEmptyModel}

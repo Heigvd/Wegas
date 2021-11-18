@@ -8,6 +8,8 @@
 
 import {
   IAbstractAccountWithId,
+  IGameAdmin,
+  IGameAdminWithId,
   IGameModelLanguageWithId,
   IGameModelWithId,
   IGameWithId,
@@ -15,6 +17,7 @@ import {
   IJpaAccountWithId,
   IPermission,
   IPermissionWithId,
+  IPlayer,
   IPlayerWithId,
   IRoleWithId,
   ITeam,
@@ -88,6 +91,8 @@ export interface IAaiConfigInfo {
   showButton: boolean;
   server: string;
   loginUrl: string;
+  eduIdEnabled: boolean;
+  eduIdUrl: string;
 }
 
 export type IAuthenticationInformation = WithAtClass & {
@@ -131,6 +136,50 @@ export interface GameModelVersion {
 export interface DeeplUsage {
   character_count: number;
   character_limit: number;
+}
+
+/** PatchDiff and changes */
+export interface LineChange {
+  lineNumber: number;
+  tag: string;
+  content: string;
+}
+
+export interface SideBySideChange {
+  oldValue: string;
+  newValue: string;
+}
+
+export type Change = LineChange | SideBySideChange;
+
+export interface DiffCollection {
+  title: string;
+  diffs: PatchDiff[];
+}
+
+export interface PrimitiveDiff {
+  title: string;
+  changes: Change[];
+}
+
+export type PatchDiff = DiffCollection | PrimitiveDiff;
+
+export interface IGameAdminPlayer {
+  name: string;
+  status: IPlayer['status'];
+}
+
+export interface IGameAdminTeam {
+  name: string;
+  status: ITeam['status'];
+  declaredSize: number;
+  players?: IGameAdminPlayer[];
+}
+export interface IGameAdminWithTeams extends IGameAdminWithId {
+  teams?: IGameAdminTeam[];
+  effectiveCount: number;
+  declaredCount: number;
+  diff: number;
 }
 
 /**
@@ -340,6 +389,28 @@ export const WegasLobbyRestClient = function (
       },
     },
     AdminStuff: {
+      Invoice: {
+        getGameAdmins: (gType: IGameAdmin['status']) => {
+          const path = `${baseUrl}/Admin/Game?type=${gType}`;
+          return sendJsonRequest<IGameAdminWithTeams[]>('GET', path, undefined, errorHandler);
+        },
+        getGameAdmin: (id: number) => {
+          const path = `${baseUrl}/Admin/Game/${id}`;
+          return sendJsonRequest<IGameAdminWithTeams>('GET', path, undefined, errorHandler);
+        },
+        updateGameAdmin: (ga: IGameAdminWithTeams) => {
+          const path = `${baseUrl}/Admin/Game/${ga.id}`;
+          return sendJsonRequest<IGameAdminWithTeams>('PUT', path, ga, errorHandler);
+        },
+      },
+      emptyGameBin: () => {
+        const path = `${baseUrl}/Admin/deleteAll`;
+        return sendJsonRequest<void>('PUT', path, undefined, errorHandler);
+      },
+      deleteGame: (id: number) => {
+        const path = `${baseUrl}/Admin/Game/delete/${id}`;
+        return sendJsonRequest<IGameAdminWithTeams>('DELETE', path, undefined, errorHandler);
+      },
       getLoggerLevels: () => {
         const path = `${baseUrl}/Utils/GetLoggerLevels`;
         return sendJsonRequest<{ [loggetName: string]: ILevelDescriptor }>(
@@ -355,7 +426,7 @@ export const WegasLobbyRestClient = function (
       },
       requestClientReload: () => {
         const path = `${baseUrl}/Pusher/RequestClientReload`;
-        return sendJsonRequest<void>('GET', path, undefined, errorHandler);
+        return sendJsonRequest<void>('POST', path, undefined, errorHandler);
       },
       getBuildDetails: () => {
         const path = `${baseUrl}/Utils/build_details`;
@@ -384,6 +455,10 @@ export const WegasLobbyRestClient = function (
       createEmptyModel: () => {
         const path = `${baseUrl}/Lobby/Update/CreateEmptyModel`;
         return sendRawRequest('POST', path, undefined, errorHandler);
+      },
+      getLocks: () => {
+        const path = `${baseUrl}/Utils/Locks`;
+        return sendRawRequest('GET', path, undefined, errorHandler);
       },
     },
     PermissionController: {
@@ -417,6 +492,10 @@ export const WegasLobbyRestClient = function (
       getMembers: (roleId: number) => {
         const path = `${baseUrl}/Shadow/User/FindUsersWithRole/${roleId}`;
         return sendJsonRequest<IUserWithAccounts[]>('GET', path, undefined, errorHandler);
+      },
+      updateRole: (role: IRoleWithId) => {
+        const path = `${baseUrl}/Role/${role.id}`;
+        return sendJsonRequest<IRoleWithId>('PUT', path, role, errorHandler);
       },
       deleteRole: (roleId: number) => {
         const path = `${baseUrl}/Role/${roleId}`;
@@ -697,7 +776,7 @@ export const WegasLobbyRestClient = function (
         const path = `${baseUrl}/Lobby/GameModel/${gameModelId}/PatchDiff`;
         const fd = new FormData();
         fd.append('file', file);
-        return sendFormRequest('PUT', path, fd, errorHandler);
+        return sendFormRequest<PatchDiff>('PUT', path, fd, errorHandler);
       },
       patchFromFile: (file: File, gameModelId: number) => {
         const path = `${baseUrl}/Lobby/GameModel/${gameModelId}/Patch`;

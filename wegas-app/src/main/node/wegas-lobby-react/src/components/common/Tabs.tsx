@@ -26,6 +26,7 @@ export function Tab({ children }: TabProps): JSX.Element {
 export interface TabsProps {
   className?: string;
   children: React.ReactElement<TabProps>[] | React.ReactElement<TabProps>;
+  onSelect?: (name: string) => void;
 }
 
 const headerStyle = css({
@@ -59,7 +60,7 @@ const selectedStyle = cx(
   }),
 );
 
-export default function Tabs({ className, children }: TabsProps): JSX.Element {
+export default function Tabs({ className, children, onSelect }: TabsProps): JSX.Element {
   const mappedChildren: Record<string, { label: string; child: React.ReactElement<TabProps> }> = {};
   const names: string[] = [];
 
@@ -70,6 +71,16 @@ export default function Tabs({ className, children }: TabsProps): JSX.Element {
 
   const [selectedTab, setTab] = React.useState<string>(names[0] || '');
 
+  const onSelectTab = React.useCallback(
+    (name: string) => {
+      setTab(name);
+      if (onSelect) {
+        onSelect(name);
+      }
+    },
+    [onSelect],
+  );
+
   const child = mappedChildren[selectedTab].child;
 
   return (
@@ -79,7 +90,7 @@ export default function Tabs({ className, children }: TabsProps): JSX.Element {
           <Clickable
             key={name}
             clickableClassName={name === selectedTab ? selectedStyle : notSelectedStyle}
-            onClick={() => setTab(name)}
+            onClick={() => onSelectTab(name)}
           >
             {mappedChildren[name].label}
           </Clickable>

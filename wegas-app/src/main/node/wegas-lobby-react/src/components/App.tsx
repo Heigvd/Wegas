@@ -12,6 +12,7 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { HashRouter, Route, Switch, useParams } from 'react-router-dom';
 import { I18nCtx, Language } from '../i18n/I18nContext';
+import { useLocalStorageState } from '../preferences';
 import { getStore } from '../store/store';
 import ErrorBoundary from './common/ErrorBoundary';
 import Loading from './common/Loading';
@@ -39,7 +40,7 @@ function PlayWrapper() {
 }
 
 function App() {
-  const [lang, setLang] = React.useState<Language>('EN');
+  const [lang, setLang] = useLocalStorageState<Language>('wegas-ui-language', 'EN');
   const setLangCb = React.useCallback(setLang, []);
 
   return (

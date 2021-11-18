@@ -6,15 +6,19 @@
  * Licensed under the MIT License
  */
 
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
+import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 import useTranslations from '../../i18n/I18nContext';
 import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
-import { SecondLevelLink } from '../common/Link';
+import IconButton from '../common/IconButton';
+import { adminButtonStyle, SecondLevelLink } from '../common/Link';
 import { adminColor } from '../styling/color';
 import { panelPadding } from '../styling/style';
+import Invoicing from './Invoicing';
+import { Locks } from './Locks';
 import LoggersConfig from './LoggersConfig';
 import MainAdminPanel from './MainAdminPanel';
 import Roles from './Roles';
@@ -38,10 +42,19 @@ export default function Admin(): JSX.Element {
           <SecondLevelLink to={`${path}/who`}>{i18n.who}</SecondLevelLink>
           <SecondLevelLink to={`${path}/users`}>{i18n.users}</SecondLevelLink>
           <SecondLevelLink to={`${path}/roles`}>{i18n.roles}</SecondLevelLink>
+          <SecondLevelLink to={`${path}/invoices`}>{i18n.gameAdmins}</SecondLevelLink>
           <SecondLevelLink to={`${path}/loggers`}>{i18n.loggers}</SecondLevelLink>
           <SecondLevelLink to={`${path}/locks`}>{i18n.locks}</SecondLevelLink>
-          <SecondLevelLink to={`${path}/invoices`}>{i18n.gameAdmins}</SecondLevelLink>
-          <SecondLevelLink to={`${path}/stats`}>{i18n.stats}</SecondLevelLink>
+          <IconButton
+            title={i18n.stats}
+            className={cx(adminButtonStyle, css({ display: 'flex' }))}
+            icon={faExternalLinkAlt}
+            onClick={() => {
+              window.open('./stats.html');
+            }}
+          >
+            {i18n.stats}
+          </IconButton>
         </Flex>
         <FitSpace direction="column" overflow="auto">
           <Switch>
@@ -67,23 +80,12 @@ export default function Admin(): JSX.Element {
             </Route>
             <Route path={`${path}/locks`}>
               <FitSpace direction="column" overflow="auto" className={panelPadding}>
-                <a target="_blank" rel="noreferrer" href={'./rest/Utils/Locks'}>
-                  {i18n.locks}
-                </a>
+                <Locks />
               </FitSpace>
             </Route>
             <Route path={`${path}/invoices`}>
               <FitSpace direction="column" overflow="auto" className={panelPadding}>
-                <a target="_blank" rel="noreferrer" href={'./wa.html'}>
-                  {i18n.gameAdmins}
-                </a>
-              </FitSpace>
-            </Route>
-            <Route path={`${path}/stats`}>
-              <FitSpace direction="column" overflow="auto" className={panelPadding}>
-                <a target="_blank" rel="noreferrer" href={'./stats.html'}>
-                  {i18n.stats}
-                </a>
+                <Invoicing />
               </FitSpace>
             </Route>
             <Route>

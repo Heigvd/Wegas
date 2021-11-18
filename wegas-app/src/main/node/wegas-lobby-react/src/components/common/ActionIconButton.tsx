@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { FlipProp, IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faCheck, faPlay, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import { ConfirmIconButton } from '../common/ConfirmIconButton';
@@ -17,6 +17,7 @@ export interface ActionIconButton {
   title: string;
   className?: string;
   icon: IconProp;
+  flip?: FlipProp;
   children?: React.ReactNode;
   shouldConfirm?: boolean | 'HARD' | 'SOFT_LEFT' | 'SOFT_CENTER' | 'SOFT_RIGHT';
   delay?: number;
@@ -27,6 +28,7 @@ export default function ActionIconButton({
   shouldConfirm = false,
   className,
   icon = faPlay,
+  flip,
   onClick,
   children,
   delay = 1500,
@@ -43,6 +45,7 @@ export default function ActionIconButton({
   }, [onClick]);
 
   const winConfirmCb = React.useCallback(() => {
+    // eslint-disable-next-line no-alert
     const result = window.confirm('Confirm ?');
     if (result) {
       onClickCb();
@@ -67,31 +70,55 @@ export default function ActionIconButton({
   if (state === 'IDLE') {
     if (shouldConfirm === true || shouldConfirm === 'SOFT_CENTER') {
       return (
-        <ConfirmIconButton position={'CENTER'} icon={icon} onConfirm={onClickCb} title={title}>
+        <ConfirmIconButton
+          position={'CENTER'}
+          icon={icon}
+          flip={flip}
+          onConfirm={onClickCb}
+          title={title}
+        >
           {children}
         </ConfirmIconButton>
       );
     } else if (shouldConfirm === 'SOFT_LEFT') {
       return (
-        <ConfirmIconButton position={'LEFT'} icon={icon} onConfirm={onClickCb} title={title}>
+        <ConfirmIconButton
+          position={'LEFT'}
+          icon={icon}
+          flip={flip}
+          onConfirm={onClickCb}
+          title={title}
+        >
           {children}
         </ConfirmIconButton>
       );
     } else if (shouldConfirm === 'SOFT_RIGHT') {
       return (
-        <ConfirmIconButton position={'RIGHT'} icon={icon} onConfirm={onClickCb} title={title}>
+        <ConfirmIconButton
+          position={'RIGHT'}
+          icon={icon}
+          flip={flip}
+          onConfirm={onClickCb}
+          title={title}
+        >
           {children}
         </ConfirmIconButton>
       );
     } else if (shouldConfirm === 'HARD') {
       return (
-        <IconButton className={className} icon={icon} onClick={winConfirmCb} title={title}>
+        <IconButton
+          className={className}
+          icon={icon}
+          flip={flip}
+          onClick={winConfirmCb}
+          title={title}
+        >
           {children}
         </IconButton>
       );
     } else {
       return (
-        <IconButton className={className} icon={icon} onClick={onClickCb} title={title}>
+        <IconButton className={className} icon={icon} flip={flip} onClick={onClickCb} title={title}>
           {children}
         </IconButton>
       );

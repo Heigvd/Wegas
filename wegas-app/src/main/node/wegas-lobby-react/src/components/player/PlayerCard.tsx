@@ -34,9 +34,10 @@ import Card, { CardMainButton, cardSecButtonStyle } from '../common/Card';
 import CardContainer from '../common/CardContainer';
 import FitSpace from '../common/FitSpace';
 import IconButton from '../common/IconButton';
+import { userIllu } from '../common/illustrations/illustrationHelper';
 import InlineLoading from '../common/InlineLoading';
 import OpenCloseModal from '../common/OpenCloseModal';
-import { cardDetailsStyle, cardTitleStyle } from '../styling/style';
+import { cardDetailsStyle, cardSubDetailsStyle, cardTitleStyle } from '../styling/style';
 
 interface TeamDetailsProps {
   team: ITeamWithId;
@@ -65,7 +66,7 @@ function TeamDetails({ team }: TeamDetailsProps): JSX.Element {
   return (
     <CardContainer>
       {theTeam.players.map(p => (
-        <Card key={p.id} illustration="ICON_grey_user_fa">
+        <Card key={p.id} illustration={userIllu}>
           {extTeam === 'LOADING' || extTeam === 'UNSET' ? <InlineLoading /> : p.name}
         </Card>
       ))}
@@ -194,6 +195,9 @@ export default function PlayerCard({ player, team }: PlayerCardProps): JSX.Eleme
           {gameModel.properties.freeForAll ? null : (
             <div className={cardDetailsStyle}>{teamName}</div>
           )}
+          <div className={cardSubDetailsStyle}>{`${i18n.joinedOn} ${i18n.formatDate(
+            player.joinTime!,
+          )}`}</div>
         </FitSpace>
         {gameModel.properties.freeForAll ? null : (
           <OpenCloseModal

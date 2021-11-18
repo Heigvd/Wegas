@@ -31,6 +31,7 @@ export interface WCardContainerProps<T> {
    * list of all items
    */
   items: T[];
+  scrollTo?: T | undefined;
   grow?: React.ComponentProps<typeof Flex>['grow'];
   bgColor?: string;
   gradientHeight?: number;
@@ -38,6 +39,7 @@ export interface WCardContainerProps<T> {
    * build a comp for a given children
    */
   children: (item: T) => React.ReactNode;
+  emptyMessage: React.ReactNode;
 }
 
 const windowedContainerStyle = cx(
@@ -76,6 +78,8 @@ export function WindowedContainer<T>({
   grow = 1,
   bgColor = '#F9F9F9',
   gradientHeight = 150,
+  scrollTo,
+  emptyMessage,
 }: WCardContainerProps<T>): JSX.Element {
   const divRef = React.useRef<HTMLDivElement>(null);
 
@@ -113,21 +117,12 @@ export function WindowedContainer<T>({
   //    setPadding({top: 0, bottom: 0, offset: 0});
   //  }, [items]);
 
-  const rebuildPaddings = React.useCallback((items: T[]) => {
-    const total = items.length;
-    if (data.current.numberOfItem >= total) {
-      // numberofitem to display not reache: do not window ever
-      data.current.paddingTop = 0;
-      data.current.paddingBottom = 0;
-      setPadding({
-        top: 0,
-        bottom: 0,
-        offset: 0,
-      });
-    } else {
+  const build = React.useCallback(
+    (nbAboveParam: number) => {
       if (divRef.current) {
+        let nbAbove = nbAboveParam;
+        const total = items.length;
         const perItem = data.current.sizePerItem;
-        let nbAbove = Math.floor(divRef.current.scrollTop / perItem);
         let nbBelow = total - nbAbove - data.current.numberOfItem;
 
         if (nbAbove > total - data.current.numberOfItem) {
@@ -147,8 +142,43 @@ export function WindowedContainer<T>({
           bottom: data.current.paddingBottom,
         });
       }
+    },
+    [items.length],
+  );
+
+  // force effect when sizePerItem change
+  const itemSize = data.current.sizePerItem;
+  React.useEffect(() => {
+    if (scrollTo != null) {
+      const i = items.indexOf(scrollTo);
+      if (i != null) {
+        build(i);
+      }
     }
-  }, []);
+  }, [scrollTo, items, build, itemSize]);
+
+  const rebuildPaddings = React.useCallback(
+    (items: T[]) => {
+      const total = items.length;
+      if (data.current.numberOfItem >= total) {
+        // numberofitem to display not reache: do not window ever
+        data.current.paddingTop = 0;
+        data.current.paddingBottom = 0;
+        setPadding({
+          top: 0,
+          bottom: 0,
+          offset: 0,
+        });
+      } else {
+        if (divRef.current) {
+          const perItem = data.current.sizePerItem;
+          const nbAbove = Math.floor(divRef.current.scrollTop / perItem);
+          build(nbAbove);
+        }
+      }
+    },
+    [build],
+  );
 
   React.useEffect(() => {
     if (divRef.current != null) {
@@ -185,6 +215,7 @@ export function WindowedContainer<T>({
     .map(item => children(item));
   return (
     <Flex className={containerStyle} shrink={1} grow={grow} direction="column" overflow="auto">
+      {items.length === 0 ? emptyMessage : null}
       <div ref={divRef} className={windowedContainerStyle} onScroll={scrollCb}>
         <div style={{ height: `${padding.top}px`, flexShrink: 0 }}></div>
         {cards}

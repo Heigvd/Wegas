@@ -22,11 +22,11 @@ export interface ButtonProps {
   confirmMessage?: React.ReactNode;
 }
 
-const hiddenLabel = css({
+const invisible = css({
   visibility: 'hidden',
 });
 
-const loadingIconStyle = css({
+export const loadingIconStyle = css({
   position: 'absolute',
   left: 'calc(50% - 16px)',
 });
@@ -85,14 +85,14 @@ export default function Button({
   } else if (state === 'PENDING') {
     return (
       <Clickable title={label} className={cx(relativeButtonStyle, className)}>
-        <span className={hiddenLabel}>{label}</span>
+        <span className={invisible}>{label}</span>
         <IconButton className={cx(loadingIconStyle)} icon={faSpinner} pulse />
       </Clickable>
     );
   } else {
     return (
       <Clickable title={label} className={cx(relativeButtonStyle, className)}>
-        <span className={hiddenLabel}>{label}</span>
+        <span className={invisible}>{label}</span>
         <IconButton className={cx(loadingIconStyle, className)} icon={faCheck} />
       </Clickable>
     );

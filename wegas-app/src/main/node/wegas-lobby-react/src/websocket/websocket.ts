@@ -157,7 +157,7 @@ export const setPusherStatus = createAsyncThunk(
 
 export const setApiStatus = createAsyncThunk(
   'wegas/setApiStatus',
-  async (payload: { status: 'UP' | 'DOWN' }) => {
+  async (payload: { status: 'UP' | 'DOWN' | 'OUTDATED' }) => {
     return payload;
   },
 );
@@ -347,7 +347,7 @@ export class WebSocketListener {
       getStore().dispatch(processDeletedEntities(dData.deletedEntities));
       return;
     } else if (event === 'LifeCycleEvent') {
-      const apiStatus = data as { status: 'UP' | 'DOWN' };
+      const apiStatus = data as { status: 'UP' | 'DOWN' | 'OUTDATED' };
       getStore().dispatch(setApiStatus(apiStatus));
       logger.info('Lifecycle: ', apiStatus);
       return;

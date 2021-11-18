@@ -524,7 +524,10 @@ export const useIntegratableScenarios = (userId: number | undefined) => {
   );
 };
 
-export const useShareableGameModels = (userId: number | undefined) => {
+export const useShareableGameModels = (
+  userId: number | undefined,
+  gmType: 'MODEL' | 'SCENARIO',
+) => {
   return useAppSelector(
     state => {
       if (userId != null) {
@@ -533,7 +536,7 @@ export const useShareableGameModels = (userId: number | undefined) => {
           userId,
           'ALL',
           ['Edit'],
-          ['SCENARIO', 'MODEL'],
+          [gmType],
           ['LIVE', 'BIN', 'DELETE'],
         );
 

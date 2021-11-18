@@ -10,10 +10,12 @@ import { css } from '@emotion/css';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { uniq } from 'lodash';
 import * as React from 'react';
+import { useLocation, useRouteMatch } from 'react-router-dom';
 import { IAbstractAccount, IGameModelWithId, IGameWithId } from 'wegas-ts-api';
 import { getGames, getShadowUserByIds } from '../../API/api';
 import { getDisplayName, mapByKey, match } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
+import { useLocalStorageState } from '../../preferences';
 import { useAccountsByUserIds, useCurrentUser } from '../../selectors/userSelector';
 import { MINE_OR_ALL, useGames } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
@@ -45,6 +47,7 @@ const matchSearch =
       return (
         (gameModel.name && gameModel.name.match(regex) != null) ||
         (game.name && game.name.match(regex) != null) ||
+        (game.token && game.token.match(regex) != null) ||
         username.match(regex) != null
       );
     });
@@ -55,25 +58,40 @@ export default function TrainerTab(): JSX.Element {
   const dispatch = useAppDispatch();
   const { currentUser, isAdmin } = useCurrentUser();
 
-  const [statusFilter, setStatusFilter] = React.useState<IGameWithId['status']>('LIVE');
-  const [mineFilter, setMineFilter] = React.useState<MINE_OR_ALL>('MINE');
+  const [statusFilter, setStatusFilter] = useLocalStorageState<IGameWithId['status']>(
+    'trainer.status',
+    'LIVE',
+  );
+  const [mineFilter, setMineFilter] = useLocalStorageState<MINE_OR_ALL>(
+    'trainer-mineOrAll',
+    'MINE',
+  );
+
+  React.useEffect(() => {
+    if (!isAdmin && statusFilter === 'DELETE') {
+      setStatusFilter('BIN');
+    }
+  }, [isAdmin, statusFilter, setStatusFilter]);
 
   const games = useGames(
-    statusFilter,
+    !isAdmin && statusFilter === 'DELETE' ? 'BIN' : statusFilter, //non-admin should never sees deleteds
     currentUser != null ? currentUser.id : undefined,
-    mineFilter,
+    isAdmin ? mineFilter : 'MINE', // non-admin only see theirs
   );
 
   const [viewMode, setViewMode] = React.useState<'EXPANDED' | 'COLLAPSED'>('COLLAPSED');
 
-  const [sortBy, setSortBy] = React.useState<{ key: keyof SortBy; asc: boolean }>({
-    key: 'createdTime',
-    asc: false,
-  });
+  const [sortBy, setSortBy] = useLocalStorageState<{ key: keyof SortBy; asc: boolean }>(
+    'trainer-sortby',
+    {
+      key: 'createdTime',
+      asc: false,
+    },
+  );
 
-  const onSortChange = React.useCallback(({ key, asc }: { key: keyof SortBy; asc: boolean }) => {
-    setSortBy({ key, asc });
-  }, []);
+  //  const onSortChange = React.useCallback(({ key, asc }: { key: keyof SortBy; asc: boolean }) => {
+  //    setSortBy({ key, asc });
+  //  }, []);
 
   const [filter, setFilter] = React.useState('');
 
@@ -123,9 +141,17 @@ export default function TrainerTab(): JSX.Element {
     }
   }, [isAdmin, accountsState, dispatch]);
 
+  // Detect any gameModel id in URL
+  const location = useLocation();
+  const match = useRouteMatch();
+
+  const selectedId = Number.parseInt(location.pathname.replace(match.path + '/', ''));
+
   if (games.status[statusFilter] === 'NOT_INITIALIZED') {
     return <InlineLoading />;
   } else {
+    const selected = games.gamesAndGameModels.find(ggm => ggm.gameModel.id === selectedId);
+
     const filtered = filter
       ? games.gamesAndGameModels.filter(matchSearch(accounts, filter))
       : games.gamesAndGameModels;
@@ -225,7 +251,7 @@ export default function TrainerTab(): JSX.Element {
             >
               {i18n.createGame}
             </IconButton>
-            <SortBy options={sortOptions} current={sortBy} onChange={onSortChange} />
+            <SortBy options={sortOptions} current={sortBy} onChange={setSortBy} />
 
             {dropDownStatus}
             {dropDownMine}
@@ -240,8 +266,13 @@ export default function TrainerTab(): JSX.Element {
 
           {status === 'READY' ? (
             <>
-              <WindowedContainer items={sorted}>{buildCardCb}</WindowedContainer>
-              {sorted.length <= 0 ? <i>{i18n.noGames}</i> : null}
+              <WindowedContainer
+                items={sorted}
+                scrollTo={selected}
+                emptyMessage={<i>{filter ? i18n.noGamesFound : i18n.noGames}</i>}
+              >
+                {buildCardCb}
+              </WindowedContainer>
             </>
           ) : (
             <InlineLoading />

@@ -55,18 +55,6 @@ export const defaultSelectStyles: SelectStylesType = {
   }),
 };
 
-export const upsideSelectStyles: SelectStylesType = {
-  ...defaultSelectStyles,
-  menu: provided => {
-    return {
-      ...provided,
-      top: 'unset',
-      bottom: '44px',
-      marginTop: '0px',
-    };
-  },
-};
-
 export const pictoColours = css({
   '--pictoBlue': '#50BFD5', // main blue
   '--pictoOrange': '#E36D28', // main orange
@@ -222,6 +210,22 @@ export const fullPageOverlayStyle = cx(
   }),
 );
 
+export const fullWidthBanner = css({
+  width: '100%',
+  padding: '10px',
+  fontSize: '1.3em',
+  fontWeight: 300,
+  textAlign: 'center',
+});
+
+export const fullWidthWarningBanner = cx(
+  fullWidthBanner,
+  css({
+    color: white.toString(),
+    backgroundColor: 'var(--warningColor)',
+  }),
+);
+
 const pulseKeyframes = keyframes`
   0% {
    transform: rotate(0deg);
@@ -247,6 +251,7 @@ export const pulseEase = css`
 
 export const linkStyle = css({
   color: 'var(--linkColor)',
+  textDecorationLine: 'none',
   cursor: 'pointer',
   ':hover': {
     color: 'var(--hoverFgColor)',
@@ -326,6 +331,10 @@ export const disabledIconStyle = iconStyle;
 
 export const cardShadow = '0px 1px 3px rgba(0, 0, 0, 0.12)';
 export const cardShadowHover = '0 3px 6px rgba(0,0,0,.16)';
+
+export const cardFooterPadding = css({
+  padding: '10px 5px 20px 5px',
+});
 
 export const cardContainerStyle = css({
   margin: '10px',
@@ -412,12 +421,14 @@ export const warningStyle = css({
 });
 
 export const errorStyle = css({
-  color: 'var(--danderColor)',
+  color: 'var(--dangerColor)',
 });
 
 export const labelStyle = css({
   fontWeight: 500,
-  textTransform: 'capitalize',
+  '&::first-letter': {
+    textTransform: 'capitalize',
+  },
 });
 
 export const mainHeaderHeight = '48px';

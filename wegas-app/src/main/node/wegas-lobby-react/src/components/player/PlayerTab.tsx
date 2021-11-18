@@ -14,6 +14,7 @@ import { getPlayers } from '../../API/api';
 import { PlayerToGameModelLoading } from '../../API/restClient';
 import { match } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
+import { useLocalStorageState } from '../../preferences';
 import { usePlayers } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
 import { WindowedContainer } from '../common/CardContainer';
@@ -64,14 +65,17 @@ export default function PlayerTab(): JSX.Element {
     tokenState != null ? 'EXPANDED' : 'COLLAPSED',
   );
 
-  const [sortBy, setSortBy] = React.useState<{ key: keyof SortBy; asc: boolean }>({
-    key: 'date',
-    asc: false,
-  });
+  const [sortBy, setSortBy] = useLocalStorageState<{ key: keyof SortBy; asc: boolean }>(
+    'player-sortby',
+    {
+      key: 'date',
+      asc: false,
+    },
+  );
 
-  const onSortChange = React.useCallback(({ key, asc }: { key: keyof SortBy; asc: boolean }) => {
-    setSortBy({ key, asc });
-  }, []);
+  //  const onSortChange = React.useCallback(({ key, asc }: { key: keyof SortBy; asc: boolean }) => {
+  //    setSortBy({ key, asc });
+  //  }, [setSortBy]);
 
   const [filter, setFilter] = React.useState('');
 
@@ -149,7 +153,7 @@ export default function PlayerTab(): JSX.Element {
             >
               {i18n.joinGame}
             </IconButton>
-            <SortBy options={sortOptions} current={sortBy} onChange={onSortChange} />
+            <SortBy options={sortOptions} current={sortBy} onChange={setSortBy} />
             <DebouncedInput
               size="SMALL"
               value={filter}
@@ -160,8 +164,12 @@ export default function PlayerTab(): JSX.Element {
 
           {players.status === 'READY' ? (
             <>
-              <WindowedContainer items={sorted}>{buildCardCb}</WindowedContainer>
-              {sorted.length <= 0 ? <i>{i18n.noPlayers}</i> : null}
+              <WindowedContainer
+                items={sorted}
+                emptyMessage={<i>{filter ? i18n.noPlayersFound : i18n.noPlayers}</i>}
+              >
+                {buildCardCb}
+              </WindowedContainer>
             </>
           ) : (
             <InlineLoading />

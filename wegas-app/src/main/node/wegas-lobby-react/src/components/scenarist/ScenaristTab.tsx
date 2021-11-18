@@ -10,10 +10,12 @@ import { css } from '@emotion/css';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { uniq } from 'lodash';
 import * as React from 'react';
+import { useLocation, useRouteMatch } from 'react-router-dom';
 import { IAbstractAccount, IGameModelWithId } from 'wegas-ts-api';
 import { getGameModels, getShadowUserByIds } from '../../API/api';
 import { getDisplayName, mapByKey, match } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
+import { useLocalStorageState } from '../../preferences';
 import { useAccountsByUserIds, useCurrentUser } from '../../selectors/userSelector';
 import { MINE_OR_ALL, useEditableGameModels } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
@@ -65,10 +67,27 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
   const { currentUser, isAdmin } = useCurrentUser();
   const currentUserId = currentUser != null ? currentUser.id : undefined;
 
-  const [statusFilter, setStatusFilter] = React.useState<IGameModelWithId['status']>('LIVE');
-  const [mineFilter, setMineFilter] = React.useState<MINE_OR_ALL>(isAdmin ? 'MINE' : 'ALL');
+  const [statusFilter, setStatusFilter] = useLocalStorageState<IGameModelWithId['status']>(
+    'scenarist-status',
+    'LIVE',
+  );
+  const [mineFilter, setMineFilter] = useLocalStorageState<MINE_OR_ALL>(
+    'scenarist-mineOrAll',
+    isAdmin ? 'MINE' : 'ALL',
+  );
 
-  const gamemodels = useEditableGameModels(currentUserId, gameModelType, statusFilter, mineFilter);
+  const gamemodels = useEditableGameModels(
+    currentUserId,
+    gameModelType,
+    !isAdmin && statusFilter === 'DELETE' ? 'BIN' : statusFilter,
+    isAdmin ? mineFilter : 'MINE',
+  );
+
+  React.useEffect(() => {
+    if (!isAdmin && statusFilter === 'DELETE') {
+      setStatusFilter('BIN');
+    }
+  }, [isAdmin, statusFilter, setStatusFilter]);
 
   const [createPanelViewMode, setCreatePanelViewMode] = React.useState<'EXPANDED' | 'COLLAPSED'>(
     'COLLAPSED',
@@ -77,14 +96,17 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
     'COLLAPSED',
   );
 
-  const [sortBy, setSortBy] = React.useState<{ key: keyof SortBy; asc: boolean }>({
-    key: 'createdTime',
-    asc: false,
-  });
+  const [sortBy, setSortBy] = useLocalStorageState<{ key: keyof SortBy; asc: boolean }>(
+    'scenarist-sortby',
+    {
+      key: 'createdTime',
+      asc: false,
+    },
+  );
 
-  const onSortChange = React.useCallback(({ key, asc }: { key: keyof SortBy; asc: boolean }) => {
-    setSortBy({ key, asc });
-  }, []);
+  //  const onSortChange = React.useCallback(({ key, asc }: { key: keyof SortBy; asc: boolean }) => {
+  //    setSortBy({ key, asc });
+  //  }, []);
 
   const [filter, setFilter] = React.useState('');
 
@@ -125,9 +147,16 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
     }
   }, [isAdmin, accountsState, dispatch]);
 
+  // Detect any gameModel id in URL
+  const location = useLocation();
+  const match = useRouteMatch();
+
+  const selectedId = Number.parseInt(location.pathname.replace(match.path + '/', ''));
+
   if (gamemodels.status[gameModelType][statusFilter] === 'NOT_INITIALIZED') {
     return <InlineLoading />;
   } else {
+    const selected = gamemodels.gamemodels.find(gm => gm.id === selectedId);
     const filtered = filter
       ? gamemodels.gamemodels.filter(matchSearch(accounts, filter))
       : gamemodels.gamemodels;
@@ -266,7 +295,7 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
               </IconButton>
             ) : null}
 
-            <SortBy options={sortOptions} current={sortBy} onChange={onSortChange} />
+            <SortBy options={sortOptions} current={sortBy} onChange={setSortBy} />
 
             {dropDownStatus}
             {dropDownMine}
@@ -280,10 +309,23 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
           </Flex>
           {status === 'READY' ? (
             <>
-              <WindowedContainer items={sorted}>{buildCardCb}</WindowedContainer>
-              {sorted.length <= 0 ? (
-                <i>{gameModelType === 'SCENARIO' ? i18n.noScenarios : i18n.noModels}</i>
-              ) : null}
+              <WindowedContainer
+                items={sorted}
+                scrollTo={selected}
+                emptyMessage={
+                  <i>
+                    {filter
+                      ? gameModelType === 'SCENARIO'
+                        ? i18n.noScenariosFound
+                        : i18n.noModelsFound
+                      : gameModelType === 'SCENARIO'
+                      ? i18n.noScenarios
+                      : i18n.noModels}
+                  </i>
+                }
+              >
+                {buildCardCb}
+              </WindowedContainer>
             </>
           ) : (
             <InlineLoading />

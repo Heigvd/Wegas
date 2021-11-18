@@ -48,7 +48,11 @@ export default function Overlay({ children, backgroundStyle, clickOutside }: Pro
       onClick={clickOut}
       tabIndex={0}
       //      onKeyDown={keyDownCb}
-      className={cx(fullPageOverlayStyle, css({ zIndex: 999 }), backgroundStyle)}
+      className={cx(
+        fullPageOverlayStyle,
+        css({ zIndex: 999, '& *': { overscrollBehavior: 'contain' } }),
+        backgroundStyle,
+      )}
     >
       <div
         onClick={clickIn}

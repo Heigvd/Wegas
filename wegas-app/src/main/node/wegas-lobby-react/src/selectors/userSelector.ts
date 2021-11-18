@@ -150,7 +150,9 @@ export const useAccountsByUserIds = (userIds: number[]) => {
   }, customStateEquals);
 };
 
-export const useRoleMembers = (roleId: number): { status: LoadingStatus; users: IUserWithId[] } => {
+export const useRoleMembers = (
+  roleId: number,
+): { status: LoadingStatus; users: IUserWithId[]; accounts: IAbstractAccountWithId[] } => {
   return useAppSelector(state => {
     const members = state.users.roleUsers[roleId];
 
@@ -158,11 +160,13 @@ export const useRoleMembers = (roleId: number): { status: LoadingStatus; users: 
       return {
         status: 'NOT_INITIALIZED',
         users: [],
+        accounts: [],
       };
     } else if (members === 'LOADING') {
       return {
         status: 'LOADING',
         users: [],
+        accounts: [],
       };
     } else {
       const users = members.flatMap(userId => {
@@ -174,9 +178,19 @@ export const useRoleMembers = (roleId: number): { status: LoadingStatus; users: 
         }
       });
 
+      const accounts = members.flatMap(userId => {
+        const user = state.users.users[userId];
+        if (user != null && user != 'LOADING' && user.mainAccount != null) {
+          return [state.users.accounts[user.mainAccount]];
+        } else {
+          return [];
+        }
+      });
+
       return {
         status: 'READY',
         users: users,
+        accounts: accounts,
       };
     }
   }, customStateEquals);

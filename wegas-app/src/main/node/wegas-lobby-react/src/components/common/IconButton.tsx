@@ -7,7 +7,7 @@
  */
 
 import { css, cx } from '@emotion/css';
-import { IconProp, SizeProp, Transform } from '@fortawesome/fontawesome-svg-core';
+import { FlipProp, IconProp, SizeProp, Transform } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
 import { iconStyle, linkStyle } from '../styling/style';
@@ -24,6 +24,7 @@ export interface IconButtonProps {
   iconColor?: string;
   pulse?: boolean;
   spin?: boolean;
+  flip?: FlipProp;
 }
 
 export default function IconButton({
@@ -37,6 +38,7 @@ export default function IconButton({
   iconSize,
   spin,
   pulse,
+  flip,
 }: IconButtonProps): JSX.Element {
   return (
     <Clickable
@@ -49,6 +51,7 @@ export default function IconButton({
       <FontAwesomeIcon
         className={css({ padding: '0 5px' })}
         icon={icon}
+        flip={flip}
         color={iconColor}
         size={iconSize}
         spin={spin}
@@ -65,6 +68,7 @@ export interface LayeredIconButtonProps {
     icon: IconProp;
     transform?: Transform | string;
     color?: string;
+    className?: string;
   }[];
   title?: string;
   children?: React.ReactNode;
@@ -88,11 +92,11 @@ export function LayeredIconButton({
       clickableClassName={cx(linkStyle, className)}
     >
       {reverseOrder ? children : null}
-      <span className="fa-layers fa-fw">
+      <span className={`fa-layers fa-fw ${css({ padding: '0 5px' })}`}>
         {icons.map((ic, i) => (
           <FontAwesomeIcon
             key={i}
-            className={css({ padding: '0 5px' })}
+            className={ic.className}
             icon={ic.icon}
             color={ic.color}
             transform={ic.transform}

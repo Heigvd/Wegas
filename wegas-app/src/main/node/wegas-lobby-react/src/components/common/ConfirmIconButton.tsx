@@ -7,7 +7,7 @@
  */
 
 import { css } from '@emotion/css';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { FlipProp, IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import useTranslations from '../../i18n/I18nContext';
@@ -133,6 +133,7 @@ export interface BubbledProps {
   confirmInvite?: string;
   cancelInvite?: string;
   position?: 'LEFT' | 'CENTER' | 'RIGHT';
+  flip?: FlipProp;
 }
 
 export function ConfirmIconButton({
@@ -144,6 +145,7 @@ export function ConfirmIconButton({
   cancelInvite,
   confirmInvite,
   position = 'CENTER',
+  flip,
 }: BubbledProps): JSX.Element {
   const [waitConfirm, setConfirm] = React.useState(false);
   const i18n = useTranslations();
@@ -178,7 +180,7 @@ export function ConfirmIconButton({
   return (
     <div className={relative} title={title} onClick={clickIn}>
       <div>
-        <IconButton className={className} icon={icon} onClick={() => setConfirm(true)}>
+        <IconButton className={className} icon={icon} flip={flip} onClick={() => setConfirm(true)}>
           {children}
         </IconButton>
       </div>

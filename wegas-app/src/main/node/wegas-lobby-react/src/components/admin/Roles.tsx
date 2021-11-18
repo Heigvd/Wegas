@@ -8,6 +8,7 @@
 
 import { css } from '@emotion/css';
 import {
+  faCog,
   faKey,
   faMinusCircle,
   faPlusCircle,
@@ -44,6 +45,8 @@ import OpenCloseModal from '../common/OpenCloseModal';
 import { successColor } from '../styling/color';
 import { cardDetailsStyle, cardTitleStyle, mainButtonStyle, panelPadding } from '../styling/style';
 import { PermissionCard, PermissionEditor } from './PermissionCard';
+import RoleEmails from './RoleEmails';
+import RoleSettings from './RoleSettings';
 import UserCard from './UserCard';
 
 interface CreateRoleProps {
@@ -109,7 +112,7 @@ export function RolePermissions({ role }: { role: IRoleWithId }): JSX.Element {
           {close => (
             <PermissionEditor
               permission={emptyPermission}
-              pType={'GameModel'}
+              pType={'SCENARIO'}
               value={'Edit'}
               id={undefined}
               onSave={p => {
@@ -243,13 +246,28 @@ export function RoleCard({ role }: { role: IRoleWithId }): JSX.Element {
     role.name === 'Administrator' || role.name === 'Scenarist' || role.name === 'Trainer';
 
   return (
-    <Card illustration="ICON_dark-blue_users_fa">
+    <Card illustration="ICON_grey_users_fa">
       <FitSpace direction="column">
         <div className={cardTitleStyle}>{role.name}</div>
         <div className={cardDetailsStyle}>
           {i18n.numberOfMembers} {role.numberOfMember}
         </div>
       </FitSpace>
+
+      {!isProtected ? (
+        <OpenCloseModal
+          icon={faCog}
+          iconTitle={i18n.settings}
+          title={role.name}
+          illustration={'ICON_grey_users_fa'}
+          showCloseButton={true}
+          route={`/${role.id}/settings`}
+        >
+          {close => <RoleSettings role={role} onClose={close} />}
+        </OpenCloseModal>
+      ) : null}
+
+      <RoleEmails role={role} />
 
       <OpenCloseModal
         icon={faUsers}

@@ -15,7 +15,9 @@ import { getAaiConfig, signInWithJpaAccount } from '../../API/api';
 import { buildLinkWithQueryParam } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
 import AAILogo from '../../images/aai.svg';
+import EduIDLogo from '../../images/eduID.svg';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import Flex from '../common/Flex';
 import Form, { Field } from '../common/Form';
 import { InlineLink } from '../common/Link';
 import MelonContainer from '../common/MelonContainer';
@@ -41,6 +43,10 @@ const aaiStyle = css({
   paddingRight: '5px',
 });
 
+const eduIDStyle = css({
+  height: '24px',
+});
+
 const aaiLinkStyle = css({
   alignSelf: 'center',
   display: 'flex',
@@ -60,6 +66,10 @@ export default function SignInForm({ username, redirectTo }: Props): JSX.Element
 
   const showAaiButton = typeof aaiConfig === 'object' && aaiConfig.enabled && aaiConfig.showButton;
   const aaiUrl = typeof aaiConfig === 'object' ? aaiConfig.loginUrl : '';
+
+  const showEduIdButton =
+    typeof aaiConfig === 'object' && aaiConfig.eduIdEnabled && aaiConfig.eduIdUrl.length > 0;
+  const eduIdUrl = typeof aaiConfig === 'object' ? aaiConfig.eduIdUrl : '';
 
   React.useEffect(() => {
     if (aaiConfig === 'UNKNOWN') {
@@ -111,12 +121,19 @@ export default function SignInForm({ username, redirectTo }: Props): JSX.Element
       <MelonContainer
         below={
           <>
-            {showAaiButton ? (
-              <a className={aaiLinkStyle} href={aaiUrl} rel="noreferer">
-                <AAILogo className={aaiStyle} />
-                AAI Login
-              </a>
-            ) : null}
+            <Flex justify="space-evenly">
+              {showAaiButton ? (
+                <a className={aaiLinkStyle} href={aaiUrl} rel="noreferer">
+                  <AAILogo className={aaiStyle} />
+                  AAI Login
+                </a>
+              ) : null}
+              {showEduIdButton ? (
+                <a className={aaiLinkStyle} href={eduIdUrl} rel="noreferer">
+                  <EduIDLogo className={eduIDStyle} />
+                </a>
+              ) : null}
+            </Flex>
             <PolicyDisclaimer />
           </>
         }
