@@ -1,6 +1,6 @@
 import { Editor } from '@tinymce/tinymce-react';
 import { css } from 'glamor';
-//import { debounce } from 'lodash-es';
+// import { debounce } from 'lodash-es';
 import PropTypes from 'prop-types';
 import React from 'react';
 import commonView from '../HOC/commonView';
@@ -8,7 +8,7 @@ import labeled from '../HOC/labeled';
 import { getY } from '../index';
 import FormStyles from './form-styles';
 
-const {Wegas} = getY();
+const { Wegas } = getY();
 
 const tinymceStyle = css({
     '& .mce-tinymce': {
@@ -27,21 +27,21 @@ const tinymceStyle = css({
     // '& > .tinymce-toolbar > div': {display: 'block !important'}
 });
 
-tinymce.PluginManager.add('dynamic_toolbar', function(editor) {
-    var first = true;
+tinymce.PluginManager.add('dynamic_toolbar', function (editor) {
+    let first = true;
     function showHideToolbar() {
-        var toolbar = editor.theme.panel.find('toolbar');
-        var resizeY = 0;
-        var fullHeight = 26;
+        const toolbar = editor.theme.panel.find('toolbar');
+        let resizeY = 0;
+        let fullHeight = 26;
         if (first) {
             this.active(false);
             first = false;
         } else {
             this.active(!this.active());
         }
-        var state = this.active(),
-            i,
-            barToHide = editor.settings.hidden_tootlbar;
+        const state = this.active();
+        let i;
+        let barToHide = editor.settings.hidden_tootlbar;
 
         if (!barToHide) {
             barToHide = [2];
@@ -63,8 +63,8 @@ tinymce.PluginManager.add('dynamic_toolbar', function(editor) {
                 editor.theme.panel.resizeBy(0, resizeY);
                 editor.theme.panel.moveBy(0, -resizeY);
             } else {
-                editor.theme.panel.getEl().style.height = fullHeight + "px";
-                editor.theme.panel.getEl().firstChild.style.height = fullHeight + "px";
+                editor.theme.panel.getEl().style.height = fullHeight + 'px';
+                editor.theme.panel.getEl().firstChild.style.height = fullHeight + 'px';
             }
         }
     }
@@ -73,12 +73,9 @@ tinymce.PluginManager.add('dynamic_toolbar', function(editor) {
         icon: ' fa fa-angle-double-down',
         title: 'More options',
         onclick: showHideToolbar,
-        onPostRender: showHideToolbar
+        onPostRender: showHideToolbar,
     });
 });
-
-
-
 
 function onFileBrowserClick(fieldName, url, type, win) {
     const filePanel = new Wegas.FileSelect();
@@ -120,9 +117,9 @@ function getTinyConfig(fixedToolbar) {
         plugins: [
             'autolink link image lists code media table',
             'paste advlist textcolor dynamic_toolbar',
-                // textcolor wordcount autosave contextmenu
-                // advlist charmap print preview hr anchor pagebreak spellchecker
-                // directionality
+            // textcolor wordcount autosave contextmenu
+            // advlist charmap print preview hr anchor pagebreak spellchecker
+            // directionality
         ],
         toolbar1: 'bold italic bullist | link image media code addToolbarButton',
         toolbar2: `forecolor backcolor underline
@@ -193,7 +190,7 @@ function getTinyConfig(fixedToolbar) {
     if (extraButtons) {
         /* config example :
          Y.namespace("Wegas.Config").TinyExtraButtons = {
-
+         
          className : "off-game",
          cssIcon: "fa fa-asterisk",
          tooltip : "off-game information style"
@@ -274,7 +271,7 @@ function toTinyMCE(content) {
             new RegExp('data-file="([^"]*)"', 'gi'),
             `src="${Wegas.Facade.File.getPath()}$1"
              href="${Wegas.Facade.File.getPath()}$1"`,
-            ); // @hack Place both href and src so it
+        ); // @hack Place both href and src so it
         // will work for both <a> and <img>
         // elements
     }
@@ -295,15 +292,15 @@ function toInjectorStyle(content) {
 
     return Wegas.App.sanitize(
         root.innerHTML
-        .replace(
-            new RegExp('((src|href)="[^"]*/rest/File/GameModelId/[^"]*/read([^"]*)")', 'gi'),
-            'data-file="$3"',
+            .replace(
+                new RegExp('((src|href)="[^"]*/rest/File/GameModelId/[^"]*/read([^"]*)")', 'gi'),
+                'data-file="$3"',
             ) // Replace absolute path with injector style path (old version)
-        .replace(
-            new RegExp('((src|href)="[^"]*/rest/GameModel/[^"]*/File/read([^"]*)")', 'gi'),
-            'data-file="$3"',
-            ) // Replace absolute path with injector style path
-        );
+            .replace(
+                new RegExp('((src|href)="[^"]*/rest/GameModel/[^"]*/File/read([^"]*)")', 'gi'),
+                'data-file="$3"',
+            ), // Replace absolute path with injector style path
+    );
 }
 
 let id = 0;
@@ -312,20 +309,25 @@ function toolbarIdGenerator() {
     return 'generated-tinymce-toolbar-id--' + gid;
 }
 
+function tinySanitze(value) {
+    return new tinymce.html.Serializer().serialize(new tinymce.html.DomParser().parse(value));
+}
 
 class HTMLView extends React.Component {
     static getDerivedStateFromProps(nextProps, state) {
         if (state.oldProps === nextProps) {
             return null;
         }
-        if (nextProps.value !== state.sent) {
+        const nextSent = toInjectorStyle(nextProps.value);
+        if (nextSent !== state.sent) {
             return {
                 oldProps: nextProps,
-                sent: nextProps.value,
+                sent: nextSent,
+                previousTinyValue: null,
                 content: toTinyMCE(nextProps.value) || '',
             };
         }
-        return {oldProps: nextProps};
+        return { oldProps: nextProps };
     }
 
     constructor(props) {
@@ -334,25 +336,46 @@ class HTMLView extends React.Component {
         this.state = {
             // eslint-disable-next-line
             oldProps: props,
-            sent: props.value,
+            sent: toInjectorStyle(props.value),
+            previousTinyValue: null,
             content: toTinyMCE(props.value) || '',
         };
         //this.onChangeHandler = debounce(this.onChangeHandler.bind(this), 200);
     }
 
-//    componentWillUnmount() {
-//        this.onChangeHandler.flush();
-//    }
+    //    componentWillUnmount() {
+    //        this.onChangeHandler.flush();
+    //    }
 
-    onChangeHandler = (content) => {
+    onChangeHandler = content => {
+        if (this.state.previousTinyValue !== null && this.state.previousTinyValue === content) {
+            // new value (internal tiny format) equals previous one,
+            // Don't do anything
+            return;
+        }
+        if (this.state.previousTinyValue === null) {
+            // first change is fired right after first mount
+            // null previousTinyValue allows to identify such a first call
+            // in this case, no need to fire props.onChange
+            // but keep track of the previousTinyValue (tiny may change internal HTML event if user did
+            // nothing)
+            this.state.previousTinyValue = content;
+            return;
+        }
+        // keep track of internal tiny value
+        this.state.previousTinyValue = content;
+
         const oldContent = this.state.sent;
+        // convert new content to wegas injector format
         const newContent = toInjectorStyle(content);
+
+        // and compare to value which has already been sent
         if (oldContent !== newContent) {
-            this.setState({content, sent: newContent}, () => {
+            this.setState({ content, sent: newContent }, () => {
                 this.props.onChange(newContent);
             });
         }
-    }
+    };
 
     render() {
         if (this.props.view.readOnly) {
@@ -360,21 +383,21 @@ class HTMLView extends React.Component {
                 <div
                     className={FormStyles.disabled.toString()}
                     dangerouslySetInnerHTML={{
-                            __html: this.state.content,
-                        }}
-                    />
-                );
+                        __html: this.state.content,
+                    }}
+                />
+            );
         } else {
             return (
                 <div {...tinymceStyle}>
-                    <div id={this.id} className="tinymce-toolbar" />
+                    <div id={this.id} className="tinymce-toolbar"></div>
                     <Editor
                         value={this.state.content}
                         init={getTinyConfig('#' + this.id)}
                         onEditorChange={this.onChangeHandler}
-                        />
+                    />
                 </div>
-                );
+            );
         }
     }
 }
