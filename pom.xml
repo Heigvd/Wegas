@@ -480,6 +480,13 @@
         <pluginManagement>
             <plugins>
 
+                <!-- clean -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+
                 <!-- Compilation -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

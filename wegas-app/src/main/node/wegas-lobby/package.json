@@ -1,14 +1,14 @@
 {
-  "name": "wegas-lobby-react",
+  "name": "wegas-lobby",
   "version": "1.0.0",
-  "description": "Wegas lobby react",
+  "description": "Wegas lobby",
   "repository": "http://www.github.com/Heigvd/Wegas.git",
   "author": "Albasim <albasim@heig-vd.ch>",
   "license": "MIT",
   "private": true,
   "main": "src/index.ts",
   "scripts": {
-    "clean": "rimraf ../../../../target/Wegas/wegas-lobby-react",
+    "clean": "rimraf ../../../../target/Wegas/wegas-lobby",
     "test": "jest",
     "lint": "eslint -c .eslintrc.js --ext .ts,.tsx ./src",
     "build": "webpack --mode=production",

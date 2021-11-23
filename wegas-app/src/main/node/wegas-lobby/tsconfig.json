@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "outDir": "../../../../target/Wegas/wegas-lobby-react/dist",
+    "target": "es2018",
+    "module": "esnext",
+    "outDir": "../../../../target/Wegas/wegas-lobby/dist",
     "sourceMap": true,
     "noImplicitAny": true,
-    "module": "esnext",
-    "target": "es2020",
     "jsx": "react",
     "allowJs": false,
     "resolveJsonModule": true,

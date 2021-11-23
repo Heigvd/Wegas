@@ -162,6 +162,7 @@ export default function GameModelCard({ gameModel }: GameModelCardProps): JSX.El
               icon={faArchive}
               title={i18n.archive}
               onClick={archiveCb}
+              shouldConfirm='SOFT_CENTER'
             />
           ) : null}
 
@@ -176,7 +177,7 @@ export default function GameModelCard({ gameModel }: GameModelCardProps): JSX.El
               />
               <ActionIconButton
                 className={cardSecButtonStyle}
-                shouldConfirm
+                shouldConfirm='HARD'
                 icon={faTrash}
                 title={i18n.moveToTrash}
                 onClick={deleteCb}

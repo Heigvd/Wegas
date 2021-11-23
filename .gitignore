@@ -50,10 +50,8 @@ Thumbs.db
 
 .vscode
 /wegas-ts-api/target/
-/wegas-app/src/main/webapp/wegas-lobby/bower_components/
 
 /wegas-ts-api/src/main/webapp/src/generated/
 /wegas-ts-api/src/main/webapp/typings/
 
 node_modules/
-/wegas-app/src/main/node/wegas-lobby/bower_components/

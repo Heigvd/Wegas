@@ -2,6 +2,7 @@
 
 const gulp = require("gulp"),
   //chug = require('gulp-chug'),
+  //babel = require("gulp-babel"),
   uglify = require("gulp-uglify"),
   minifycss = require("gulp-csso"),
   sourcemaps = require("gulp-sourcemaps"),
@@ -22,7 +23,6 @@ function compress_css(done) {
         "!target/Wegas/lib/**",
         "!**/node_modules/**",
         "!target/Wegas/wegas-lobby/**",
-        "!target/Wegas/wegas-lobby-react/**",
         "!target/Wegas/wegas-react/**",
         "!target/Wegas/wegas-react-form/**",
         "!target/Wegas/2/**",
@@ -88,9 +88,8 @@ function compress_js(done) {
         "!**/gulpfile.js",
         "!**/node_modules/**",
         "!target/**/dist/**",
-        "!target/Wegas/wegas-react/**",
         "!target/Wegas/wegas-lobby/**",
-        "!target/Wegas/wegas-lobby-react/**",
+        "!target/Wegas/wegas-react/**",
         "!target/Wegas/wegas-react-form/**",
         "!target/Wegas/wegas-stats/**",
         "!target/Wegas/2/**",
@@ -114,6 +113,10 @@ function compress_js(done) {
       log("JS : Making snapshot for sourcemaps");
     })
     .pipe(sourcemaps.init())
+    /*.pipe(babel({
+      presets: ['@babel/env'],
+      plugins: ['@babel/transform-runtime']
+    }))*/
     .on("end", function () {
       log("JS : Minifying");
     })

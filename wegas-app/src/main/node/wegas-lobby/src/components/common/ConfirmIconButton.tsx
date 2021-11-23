@@ -29,7 +29,7 @@ const relative = css({
 const bubbleStyle = (position: 'LEFT' | 'RIGHT' | 'CENTER') => {
   const left = position === 'LEFT' ? '100%' : position === 'CENTER' ? '50%' : '0%';
 
-  const translate = position === 'LEFT' ? '-100%' : position === 'CENTER' ? '-50%' : '0%';
+  const translate = position === 'LEFT' ? 'translate(-100%, 0)' : position === 'CENTER' ? 'translate(-50%, 0)' : 'translate(0%, 0)';
 
   const caretLeft =
     position === 'RIGHT'
@@ -53,7 +53,7 @@ const bubbleStyle = (position: 'LEFT' | 'RIGHT' | 'CENTER') => {
     //    padding: '2px 4px',
     top: 'calc(100% + 5px)',
     left: left, // move to the right so the left side aligns with the middle of its parent
-    translate: translate, // then translate to align both middles
+    transform: translate, // then translate to align both middles
     zIndex: 999,
     '::after': {
       content: '""',

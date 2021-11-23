@@ -37,14 +37,14 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.js']
     },
     output: {
-        path: path.resolve(__dirname, '../../../../target/Wegas/wegas-lobby-react'),
-        publicPath: './wegas-lobby-react/'
+        path: path.resolve(__dirname, '../../../../target/Wegas/wegas-lobby'),
+        publicPath: './wegas-lobby/'
     },
     devServer: {
         stats: 'errors-warnings',
         port: 3003,
         overlay: true,
-        publicPath: '/Wegas/wegas-lobby-react',
+        publicPath: '/Wegas/wegas-lobby',
         proxy: {
             '/Wegas': 'http://localhost:8080',
         }

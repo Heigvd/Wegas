@@ -40,6 +40,50 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>clean-node-modules</id>
+            <activation>
+                <property>
+                    <name>cleanNode</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>clean-node-modules</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <configuration>
+                                    <excludeDefaultDirectoriest>true</excludeDefaultDirectoriest>
+                                    <filesets>
+                                        <fileset>
+                                            <directory>node_modules</directory>
+                                        </fileset>
+                                        <fileset>
+                                            <directory>src/main/node/wegas-react/node_modules</directory>
+                                        </fileset>
+                                        <fileset>
+                                            <directory>src/main/node/wegas-react-form/node_modules</directory>
+                                        </fileset>
+                                        <fileset>
+                                            <directory>src/main/node/wegas-lobby/node_modules</directory>
+                                        </fileset>
+                                        <fileset>
+                                            <directory>src/main/node/wegas-stats/node_modules</directory>
+                                        </fileset>
+                                    </filesets>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <dependencies>

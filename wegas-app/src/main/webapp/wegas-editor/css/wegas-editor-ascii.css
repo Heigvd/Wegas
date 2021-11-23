@@ -116,15 +116,6 @@ body.wegas-ascii *:before {
     font-family: courier, monospace!important;
     line-height: 39px;
 }
-.wegas-ascii .wegas-lobby-datatable tr.wegas-datatable-selected,
-.wegas-ascii .wegas-lobby-datatable tr.wegas-datatable-selected .yui3-button {
-    background: rgb(123, 224, 14) !important;
-    color: black !important;
-    border: 1px solid black !important;
-}
-.wegas-ascii .wegas-lobby-datatable tr.wegas-datatable-selected * {
-    color: black !important;
-}
 .wegas-ascii .wegas-panel-content {
     border: 1px solid !important;
     background-color: black !important;

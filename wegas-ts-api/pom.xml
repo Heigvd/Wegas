@@ -27,42 +27,71 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>clean-node-modules</id>
+            <activation>
+                <property>
+                    <name>cleanNode</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>clean-node-modules</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <configuration>
+                                    <excludeDefaultDirectoriest>true</excludeDefaultDirectoriest>
+                                    <filesets>
+                                        <fileset>
+                                            <directory>node_modules</directory>
+                                        </fileset>
+                                    </filesets>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <finalName>wegas-ts-api</finalName>
-
         <plugins>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>clean-generated</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDefaultDirectoriest>true</excludeDefaultDirectoriest>
+                            <filesets>
+                                <fileset>
+                                    <directory>src/main/webapp/src/generated</directory>
+                                </fileset>
+                                <fileset>
+                                    <directory>src/main/webapp/typings</directory>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
-                    <execution>
-                        <id>yarn install for clean</id>
-                        <phase>pre-clean</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>yarn</executable>
-                            <arguments>
-                                <argument>install</argument>
-                                <argument>--frozen-lockfile</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>yarn clean</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>yarn</executable>
-                            <arguments>
-                                <argument>clean</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
                     <execution>
                         <id>yarn install</id>
                         <phase>initialize</phase>

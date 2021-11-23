@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
-        "target": "esnext",
+        "target": "es2018",
+        "module": "esnext",
         "jsx": "preserve",
         "allowJs": true,
-        "module": "esnext",
         "outDir": "dist",
         "strict": true,
         "noUnusedLocals": true,
