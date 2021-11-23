@@ -7,8 +7,9 @@ module.exports = {
         rules: [
             {
                 test: /\.tsx?$/,
-                use: 'ts-loader',
-                exclude: /node_modules/
+                loader: 'babel-loader',
+                exclude: /node_modules/,
+                options: {rootMode: "upward"},
             }, {
                 test: /\.svg$/,
                 use: ['@svgr/webpack']

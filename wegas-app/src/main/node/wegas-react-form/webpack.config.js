@@ -33,22 +33,10 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
+                test: /\.(js|mjs|jsx|ts|tsx)$/,
                 include: [path.resolve(__dirname, 'src')],
-                use: [
-                    'babel-loader',
-                    {
-                        loader: 'ts-loader',
-                        options: {
-                            compilerOptions: { noEmit: false },
-                        },
-                    },
-                ],
-            },
-            {
-                test: /\.jsx?$/,
-                loaders: ['babel-loader'],
-                include: [path.join(__dirname, 'src')],
+                loader: 'babel-loader',
+                options: {rootMode: "upward"},
             },
             {
                 test: /\.css$/,

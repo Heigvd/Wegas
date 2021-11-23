@@ -64,38 +64,8 @@ const modules = {
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        oneOf: [
-          {
-            test: /\.build\.tsx?$/,
-            use: [
-              { loader: 'val-loader' },
-              {
-                loader: 'ts-loader',
-                options: {
-                  compilerOptions: {
-                    target: 'es2018',
-                    module: 'commonjs',
-                    noEmit: false,
-                  },
-                  transpileOnly: true,
-                  instance: 'node',
-                  onlyCompileBundledFiles: true,
-                },
-              },
-            ],
-          },
-          {
-            loader: 'ts-loader',
-            options: {
-              compilerOptions: {
-                noEmit: false,
-              },
-              transpileOnly: true,
-              instance: 'web',
-              onlyCompileBundledFiles: true,
-            },
-          },
-        ],
+        loader: 'babel-loader',
+        options: {rootMode: "upward"},
       },
       // {
       //   test: /\.tsx?$/,
