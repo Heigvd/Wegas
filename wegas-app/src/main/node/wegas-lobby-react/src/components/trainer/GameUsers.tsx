@@ -20,7 +20,6 @@ import {
 import {
   getAllTeams,
   getRestClient,
-  getUser,
   kickTeam,
   leaveGame,
   shareGame,
@@ -28,7 +27,6 @@ import {
 } from '../../API/api';
 import { entityIs } from '../../API/entityHelper';
 import useTranslations from '../../i18n/I18nContext';
-import { useAccount } from '../../selectors/userSelector';
 import { useTeams } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
 import ActionIconButton from '../common/ActionIconButton';
@@ -58,14 +56,8 @@ function PlayerDetails({ player }: PlayerDetailsProps) {
 
   const [extPlayer, setExtPlayer] = React.useState<'UNSET' | IPlayerWithId>('UNSET');
 
-  const account = useAccount(player.userId);
-  const verified = entityIs(account, 'AbstractAccount', true) ? account.verified : false;
-
-  React.useEffect(() => {
-    if (player.userId != null && account === undefined) {
-      dispatch(getUser(player.userId));
-    }
-  }, [account, dispatch, player.userId]);
+  const verified = entityIs(extPlayer, 'Player') ? extPlayer.verifiedId : false;
+  const org = entityIs(extPlayer, 'Player') ? extPlayer.homeOrg : false;
 
   React.useEffect(() => {
     //let abort = false;
@@ -84,7 +76,10 @@ function PlayerDetails({ player }: PlayerDetailsProps) {
   const playerName = entityIs(extPlayer, 'Player') ? extPlayer.name : <InlineLoading />;
 
   return (
-    <Card illustration={verified ? verifiedIllu : userIllu}>
+    <Card
+      title={org ? i18n.verified(org) : undefined}
+      illustration={verified ? verifiedIllu : userIllu}
+    >
       <FitSpace direction="column">{playerName}</FitSpace>
 
       <ActionIconButton

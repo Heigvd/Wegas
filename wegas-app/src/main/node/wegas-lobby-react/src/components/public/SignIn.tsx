@@ -44,7 +44,7 @@ const aaiStyle = css({
 });
 
 const eduIDStyle = css({
-  height: '14px',
+  height: '24px',
 });
 
 const aaiLinkStyle = css({

@@ -47,6 +47,7 @@ const matchSearch =
       return (
         (gameModel.name && gameModel.name.match(regex) != null) ||
         (game.name && game.name.match(regex) != null) ||
+        (game.token && game.token.match(regex) != null) ||
         username.match(regex) != null
       );
     });

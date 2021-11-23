@@ -11,6 +11,7 @@ import { faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import { Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom';
 import * as API from '../API/api';
+import { entityIs } from '../API/entityHelper';
 import { getDisplayName } from '../helper';
 import useTranslations from '../i18n/I18nContext';
 import LanguageSelector from '../i18n/LanguageSelector';
@@ -134,7 +135,7 @@ export default function MainApp(): JSX.Element {
   } else if (currentUser != null && currentAccount != null) {
     // user is authenticatd
 
-    if (currentAccount.agreedTime == null) {
+    if (currentAccount.agreedTime == null && !entityIs(currentAccount, 'GuestJpaAccount')) {
       // but user dit not accept term of uses
       return <PleaseAcceptPolicy />;
     }

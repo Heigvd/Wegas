@@ -9,7 +9,7 @@
 #Install node and change version to 11.10.1
 brew install node
 npm install -g n 
-n 11.10.1
+sudo n 11.10.1
 
 #Install yarn
 brew install yarn
@@ -19,11 +19,15 @@ brew install maven
 
 #Install docker
 brew cask install docker
+or
+brew install --cask docker
 #Press ⌘ + Space to bring up Spotlight Search and enter "Docker" to launch Docker
 
 #Install OpenJDK 11
 brew tap AdoptOpenJDK/openjdk
 brew cask install adoptopenjdk11
+or
+brew install --cask adoptopenjdk11
 ```
 
 ## Install services

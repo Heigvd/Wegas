@@ -11,6 +11,7 @@ import {
   faBan,
   faCommentDots,
   faExclamationTriangle,
+  faFileExcel,
   faMoneyBillWave,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons';
@@ -310,6 +311,11 @@ const fullWidthHack = css({
   bottom: 0,
 });
 
+function encodeCsvCell(content: string | number | null | undefined): string {
+  const toStr = `${content}`;
+  return `"${toStr.replace('"', '')}"`;
+}
+
 export default function Invoicing(): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
@@ -363,6 +369,7 @@ export default function Invoicing(): JSX.Element {
     { key: 'declaredCount', label: i18n.declared },
     { key: 'effectiveCount', label: i18n.effective },
     { key: 'diff', label: i18n.invoiceDiff },
+    { key: 'gameStatus', label: 'game status' },
   ];
 
   const onSortChange = React.useCallback(
@@ -392,6 +399,32 @@ export default function Invoicing(): JSX.Element {
 
   const notReady = status[statusFilter] != 'READY';
 
+  const toCsv = React.useCallback(
+    (games: IGameAdminWithTeams[]) => {
+      const headers = 'date, by, Scenario, Game name, status, effective count, declared count';
+
+      const data = games
+        .map(
+          g =>
+            `${encodeCsvCell(i18n.formatDate(g.createdTime || 0))}, ${encodeCsvCell(
+              g.creator,
+            )}, ${encodeCsvCell(g.gameModelName)}, ${encodeCsvCell(g.gameName)}, ${encodeCsvCell(
+              g.status,
+            )}, ${encodeCsvCell(g.effectiveCount)}, ${encodeCsvCell(g.declaredCount)}`,
+        )
+        .join('\n');
+
+      const csv = `${headers}\n${data}`;
+      navigator.clipboard.writeText(csv);
+
+      const pom: HTMLAnchorElement = document.createElement('a');
+      pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(csv));
+      pom.setAttribute('download', 'export.csv');
+      pom.click();
+    },
+    [i18n],
+  );
+
   if (notReady) {
     return (
       <div>
@@ -417,6 +450,8 @@ export default function Invoicing(): JSX.Element {
         return reverse * (a.effectiveCount - b.effectiveCount);
       } else if (sortBy.key === 'declaredCount') {
         return reverse * (a.declaredCount - b.declaredCount);
+      } else if (sortBy.key === 'gameStatus') {
+        return reverse * (a.gameStatus || '').localeCompare(b.gameStatus || '');
       } else {
         return 0;
       }
@@ -462,6 +497,7 @@ export default function Invoicing(): JSX.Element {
             placeholder={i18n.search}
             onChange={setFilter}
           />
+          <IconButton icon={faFileExcel} onClick={() => toCsv(filtered)} />
         </Flex>
 
         <div className={fullWidthHack}>
