@@ -124,6 +124,9 @@ export default function HTMLEditor({
   noRootBlock,
   keepInternalValue,
 }: HTMLEditorProps) {
+  const toolBarIdRef = React.useRef(
+    'externalEditorToolbar' + String(HTMLEditorID++),
+  );
   const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>(
     {},
   );
@@ -147,155 +150,153 @@ export default function HTMLEditor({
     setInternalValue(value);
   }, [value]);
 
-  const config = React.useMemo(
-    () => (toolBarContainerId: string) => {
-      // const extraStyleButton: StyleButton[] = [
-      //   {
-      //     name: 'testbutton',
-      //     text: 'test',
-      //     className: 'testclass',
-      //   },
-      // ];
-      const extraActionButton: ActionButton[] = [
-        {
-          name: 'addDivImage',
-          icon: 'image',
-          onAction: (_api, editor) => {
-            setFileBrowsing({
-              fn: path => {
-                editor.insertContent(
-                  `<div style="background-image:url(${path}); width:100%; height:100%; background-position: center; background-size: contain; background-repeat: no-repeat;"></div>`,
-                );
-              },
-            });
-          },
-        },
-      ];
-
-      const config: RawEditorSettings & {
-        selector?: undefined;
-        target?: undefined;
-      } = {
-        theme: 'silver',
-        inline: inline,
-        readonly: readOnly,
-        min_width: 464,
-        width: '100%',
-        placeholder,
-        browser_spellcheck: true,
-        plugins: [
-          `${onSave ? 'save' : ''} autolink link image lists code media table`,
-          'paste advlist',
-        ],
-        toolbar: `${
-          onSave && isActionAllowed({ disabled, readOnly }) ? 'save' : ''
-        } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link | ${[
-          // ...extraStyleButton,
-          ...extraActionButton,
-        ]
-          .map(btn => btn.name)
-          .join(
-            ' ',
-          )} | code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
-        toolbar_drawer: 'floating',
-        menubar: false,
-        resize: disabled || noResize ? false : 'both',
-        statusbar: true,
-        branding: false,
-        relative_urls: false,
-        toolbar_items_size: 'small',
-        ...(noRootBlock ? { forced_root_block: '' } : {}),
-        file_picker_callback: (callback: CallbackFN) =>
-          setFileBrowsing({ fn: callback }),
-        save_onsavecallback: () =>
-          onSave &&
-          isActionAllowed({ disabled, readOnly }) &&
-          onSave(HTMLContent.current),
-        fixed_toolbar_container: '#' + toolBarContainerId,
-        style_formats: [
-          {
-            title: 'Headers',
-            items: [
-              { title: 'h1', block: 'h1' },
-              { title: 'h2', block: 'h2' },
-              { title: 'h3', block: 'h3' },
-              { title: 'h4', block: 'h4' },
-              { title: 'h5', block: 'h5' },
-              { title: 'h6', block: 'h6' },
-            ],
-          },
-          {
-            title: 'Containers',
-            items: [
-              { title: 'div', block: 'div' },
-              { title: 'span', block: 'span' },
-            ],
-          },
-          {
-            title: 'Wegas styles',
-            items: classes.map(c => ({ title: c, block: 'div', classes: c })),
-          },
-          // {
-          //   title: 'User styles',
-          //   items: extraStyleButton.map(btn => ({
-          //     title: btn.name,
-          //     block: btn.block ? btn.block : 'span',
-          //     classes: btn.className,
-          //   })),
-          // },
-        ],
-        // forced_root_block: '',
-        setup: function (editor: TinyMCEEditor) {
-          // let formatter: EditorFormatter | undefined;
-          // editor.on('init', () => {
-          //   formatter = editor.formatter;
-          // });
-          // editor.on('blur', () => {
-          //   // TODO : find a way to close the expended toolbar to avoid bug
-          //   // editor.execCommand('commandName');
-          //   // wlog(e);
-          //   // debugger;
-          // });
-          // extraStyleButton.forEach(btn => {
-          //   editor.ui.registry.addToggleButton(btn.name, {
-          //     text: btn.text,
-          //     icon: btn.icon,
-          //     tooltip: btn.tooltip,
-          //     onAction: () => {
-          //       formatter && formatter.toggle(`custom-${btn.name}`);
-          //       editor.fire('change', {
-          //         event: {
-          //           target: {
-          //             getContent: editor.getContent,
-          //           },
-          //         },
-          //       });
-          //     },
-          //     onSetup: (buttonApi: TinyMCEToggleButtonAPI) => {
-          //       // Getting the class of the current token to define button state
-          //       const editorEventCallback = (
-          //         eventApi: TinyMCENodeChangeEvent,
-          //       ) => {
-          //         buttonApi.setActive(
-          //           eventApi.element.className.includes(btn.className),
-          //         );
-          //       };
-          //       editor.on('nodechange', editorEventCallback);
-          //       return () => editor.off('nodechange', editorEventCallback);
-          //     },
-          //   });
-          // });
-
-          extraActionButton.forEach(btn => {
-            editor.ui.registry.addButton(btn.name, {
-              ...btn,
-              onAction: api => btn.onAction(api, editor),
-              onSetup: api =>
-                btn.onSetup ? btn.onSetup(api, editor) : () => {},
-            });
+  const config = React.useMemo(() => {
+    // const extraStyleButton: StyleButton[] = [
+    //   {
+    //     name: 'testbutton',
+    //     text: 'test',
+    //     className: 'testclass',
+    //   },
+    // ];
+    const extraActionButton: ActionButton[] = [
+      {
+        name: 'addDivImage',
+        icon: 'image',
+        onAction: (_api, editor) => {
+          setFileBrowsing({
+            fn: path => {
+              editor.insertContent(
+                `<div style="background-image:url(${path}); width:100%; height:100%; background-position: center; background-size: contain; background-repeat: no-repeat;"></div>`,
+              );
+            },
           });
         },
-        content_style: `
+      },
+    ];
+
+    const config: RawEditorSettings & {
+      selector?: undefined;
+      target?: undefined;
+    } = {
+      theme: 'silver',
+      inline: inline,
+      readonly: readOnly,
+      min_width: 464,
+      width: '100%',
+      placeholder,
+      browser_spellcheck: true,
+      plugins: [
+        `${onSave ? 'save' : ''} autolink link image lists code media table`,
+        'paste advlist',
+      ],
+      toolbar: `${
+        onSave && isActionAllowed({ disabled, readOnly }) ? 'save' : ''
+      } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link | ${[
+        // ...extraStyleButton,
+        ...extraActionButton,
+      ]
+        .map(btn => btn.name)
+        .join(
+          ' ',
+        )} | code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
+      toolbar_drawer: 'floating',
+      menubar: false,
+      resize: disabled || noResize ? false : 'both',
+      statusbar: true,
+      branding: false,
+      relative_urls: false,
+      toolbar_items_size: 'small',
+      ...(noRootBlock ? { forced_root_block: '' } : {}),
+      file_picker_callback: (callback: CallbackFN) =>
+        setFileBrowsing({ fn: callback }),
+      save_onsavecallback: () =>
+        onSave &&
+        isActionAllowed({ disabled, readOnly }) &&
+        onSave(HTMLContent.current),
+      fixed_toolbar_container: '#' + toolBarIdRef.current,
+      style_formats: [
+        {
+          title: 'Headers',
+          items: [
+            { title: 'h1', block: 'h1' },
+            { title: 'h2', block: 'h2' },
+            { title: 'h3', block: 'h3' },
+            { title: 'h4', block: 'h4' },
+            { title: 'h5', block: 'h5' },
+            { title: 'h6', block: 'h6' },
+          ],
+        },
+        {
+          title: 'Containers',
+          items: [
+            { title: 'div', block: 'div' },
+            { title: 'span', block: 'span' },
+          ],
+        },
+        {
+          title: 'Wegas styles',
+          items: classes.map(c => ({ title: c, block: 'div', classes: c })),
+        },
+        // {
+        //   title: 'User styles',
+        //   items: extraStyleButton.map(btn => ({
+        //     title: btn.name,
+        //     block: btn.block ? btn.block : 'span',
+        //     classes: btn.className,
+        //   })),
+        // },
+      ],
+      // forced_root_block: '',
+      setup: function (editor: TinyMCEEditor) {
+        // let formatter: EditorFormatter | undefined;
+        // editor.on('init', () => {
+        //   formatter = editor.formatter;
+        // });
+        // editor.on('blur', () => {
+        //   // TODO : find a way to close the expended toolbar to avoid bug
+        //   // editor.execCommand('commandName');
+        //   // wlog(e);
+        //   // debugger;
+        // });
+        // extraStyleButton.forEach(btn => {
+        //   editor.ui.registry.addToggleButton(btn.name, {
+        //     text: btn.text,
+        //     icon: btn.icon,
+        //     tooltip: btn.tooltip,
+        //     onAction: () => {
+        //       formatter && formatter.toggle(`custom-${btn.name}`);
+        //       editor.fire('change', {
+        //         event: {
+        //           target: {
+        //             getContent: editor.getContent,
+        //           },
+        //         },
+        //       });
+        //     },
+        //     onSetup: (buttonApi: TinyMCEToggleButtonAPI) => {
+        //       // Getting the class of the current token to define button state
+        //       const editorEventCallback = (
+        //         eventApi: TinyMCENodeChangeEvent,
+        //       ) => {
+        //         buttonApi.setActive(
+        //           eventApi.element.className.includes(btn.className),
+        //         );
+        //       };
+        //       editor.on('nodechange', editorEventCallback);
+        //       return () => editor.off('nodechange', editorEventCallback);
+        //     },
+        //   });
+        // });
+
+        extraActionButton.forEach(btn => {
+          editor.ui.registry.addButton(btn.name, {
+            ...btn,
+            onAction: api => btn.onAction(api, editor),
+            onSetup: api => (btn.onSetup ? btn.onSetup(api, editor) : () => {}),
+          });
+        });
+      },
+      content_style: `
         @font-face {
           font-family: "Raleway";
           src: url("${fontUrl}") format('ttf supports variations'),
@@ -311,21 +312,19 @@ export default function HTMLEditor({
             .join(';')}  ;
           font-family: ${themeVar.others.TextFont2}; 
         }`,
-      };
-      return config;
-    },
-    [
-      inline,
-      readOnly,
-      placeholder,
-      onSave,
-      disabled,
-      noResize,
-      noRootBlock,
-      classes,
-      wegasStyle,
-    ],
-  );
+    };
+    return config;
+  }, [
+    inline,
+    readOnly,
+    placeholder,
+    onSave,
+    disabled,
+    noResize,
+    noRootBlock,
+    classes,
+    wegasStyle,
+  ]);
 
   React.useEffect(() => {
     // Ugly workaround...
@@ -343,7 +342,6 @@ export default function HTMLEditor({
     };
   }, []);
 
-  const toolBarId = 'externalEditorToolbar' + String(HTMLEditorID++);
   return (
     <div
       className={editorStyle + classNameOrEmpty(className)}
@@ -357,7 +355,7 @@ export default function HTMLEditor({
         }}
       >
         {inline && (
-          <div id={toolBarId} className={toolbar}>
+          <div id={toolBarIdRef.current} className={toolbar}>
             {!editorFocus && (
               <img
                 src={
@@ -374,7 +372,7 @@ export default function HTMLEditor({
           <TinyEditor
             apiKey="xkafxh5bjijfa83806ycen9yltz2aw447z0lwlgkn319sk6p"
             value={keepInternalValue ? internalValue : value}
-            init={config(toolBarId)}
+            init={config}
             onInit={editor => {
               HTMLEditor.current = editor.target;
             }}

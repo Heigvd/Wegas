@@ -56,6 +56,7 @@ import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { GlobalState } from '../../../data/Reducer/globalState';
 import { GameModel, VariableDescriptor } from '../../../data/selectors';
 import { getDispatch, store, useStore } from '../../../data/Stores/store';
+import { wlog } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { languagesTranslations } from '../../../i18n/languages/languages';
@@ -120,11 +121,13 @@ function isLanguageEditable(
   );
 }
 
+type I18nViewType = 'i18nstring' | 'i18nhtml';
+
 interface SharedItemViewProps {
   language: IGameModelLanguage;
   label: string;
   showOptions: boolean;
-  view: 'string' | 'html';
+  view: I18nViewType;
 }
 
 interface TranslationItemViewProps extends SharedItemViewProps {
@@ -220,11 +223,12 @@ function TranslationItemView({
           />
         </div>
       </div>
-      {view === 'html' ? (
+      {view === 'i18nhtml' ? (
         <HTMLEditor
           value={value || ''}
           onChange={onValueChange}
           disabled={disabled}
+          // keepInternalValue
         />
       ) : (
         <SimpleInput
@@ -347,27 +351,30 @@ function TranslatableContentView({
     [editedTranslation],
   );
 
-  function setValue(languageCode: string) {
-    return function (value: string | undefined) {
-      if (value !== getValue(translation)) {
-        updateTranslations(
-          script
-            ? {
-                '@class': 'InScriptUpdate',
-                code: languageCode,
-                value,
-                ...script,
-              }
-            : {
-                '@class': 'TranslationUpdate',
-                code: languageCode,
-                trId: trContent.id!,
-                value,
-              },
-        );
-      }
-    };
-  }
+  const setValue = React.useCallback(
+    (languageCode: string) => {
+      return function (value: string | undefined) {
+        if (value !== getValue(translation)) {
+          updateTranslations(
+            script
+              ? {
+                  '@class': 'InScriptUpdate',
+                  code: languageCode,
+                  value,
+                  ...script,
+                }
+              : {
+                  '@class': 'TranslationUpdate',
+                  code: languageCode,
+                  trId: trContent.id!,
+                  value,
+                },
+          );
+        }
+      };
+    },
+    [getValue, script, trContent.id, translation, updateTranslations],
+  );
 
   const upToDate =
     trContent.translations[languageCode] == null ||
@@ -436,7 +443,7 @@ type ExtractedAttributes = {
 
 type TranslatableEntry = [
   string,
-  { view?: { label?: string; type?: string } } | undefined,
+  { view?: { label?: string; type?: I18nViewType } } | undefined,
 ];
 
 interface TranslatableExpression {
@@ -480,7 +487,7 @@ function ExpressionView({
           const translatable = expression.attributes[k];
           const viewLabel =
             v?.view?.label || expression.attributes.methodName || k;
-          const view = v?.view?.type === 'i18nhtml' ? 'html' : 'string';
+          const view = v?.view?.type || 'i18nstring';
           const index = i + expression.offsetIndex;
 
           return (
@@ -507,11 +514,13 @@ function ExpressionView({
 }
 
 interface ScriptViewProps extends Omit<TranslationViewItemProps, 'view'> {
+  fieldName: string;
   value: IScript;
 }
 
 async function AsyncScriptView({
   value,
+  fieldName,
   label,
   language,
   depth,
@@ -522,8 +531,7 @@ async function AsyncScriptView({
   const parentSchema = (await getEditionConfig(parentDescriptor)) as {
     properties: { [key: string]: { view: { mode: ScriptMode } } };
   };
-  const mode = parentSchema.properties[label].view.mode;
-
+  const mode = parentSchema.properties[fieldName].view.mode;
   const parsedExpressions = parse(value.content, { sourceType: 'script' })
     .program.body;
 
@@ -579,7 +587,7 @@ async function AsyncScriptView({
             e.offsetIndex
           }
           expression={e}
-          fieldName={label}
+          fieldName={fieldName}
           language={language}
           parentDescriptor={parentDescriptor}
           selectedLanguages={selectedLanguages}
@@ -600,53 +608,45 @@ interface SharedTranslationViewProps {
 }
 
 interface AsyncTranslationViewProps extends SharedTranslationViewProps {
-  variable: IMergeable;
-  translations: { [key: string]: ITranslatableContent | IScript };
+  translations: Translations;
 }
-async function AsyncTranslationView({
-  variable,
+
+function TranslationsView({
   translations,
   selectedLanguages,
   depth,
   showOptions,
 }: AsyncTranslationViewProps) {
-  const schema = (await getEditionConfig(variable)) as {
-    properties: { [key: string]: { view: { type: string } } };
-  };
-
   return (
     <>
       {Object.entries(translations).map(([k, v]) => {
         return (
           <React.Fragment key={k}>
-            {selectedLanguages.map((language, index) => {
-              return entityIs(v, 'TranslatableContent') ? (
-                <TranslatableContentView
-                  key={language.id!}
-                  label={k}
-                  trContent={v}
-                  language={language}
-                  depth={index === 0 ? depth : undefined}
-                  selectedLanguages={selectedLanguages}
-                  showOptions={showOptions}
-                  view={
-                    schema.properties[k].view.type === 'i18nhtml'
-                      ? 'html'
-                      : 'string'
-                  }
-                />
-              ) : (
+            {selectedLanguages.map((language, index) =>
+              v.type === 'script' ? (
                 <ScriptView
                   key={language.id!}
-                  label={k}
-                  value={v}
+                  fieldName={k}
+                  label={v.label}
+                  value={v.value}
                   language={language}
                   depth={index === 0 ? depth : undefined}
                   selectedLanguages={selectedLanguages}
                   showOptions={showOptions}
                 />
-              );
-            })}
+              ) : (
+                <TranslatableContentView
+                  key={language.id!}
+                  label={v.label}
+                  trContent={v.value}
+                  language={language}
+                  depth={index === 0 ? depth : undefined}
+                  selectedLanguages={selectedLanguages}
+                  showOptions={showOptions}
+                  view={v.type}
+                />
+              ),
+            )}
           </React.Fragment>
         );
       })}
@@ -654,8 +654,80 @@ async function AsyncTranslationView({
   );
 }
 
-const TranslationsView =
-  asyncSFC<AsyncTranslationViewProps>(AsyncTranslationView);
+interface TranslationSchema {
+  properties: {
+    [key: string]: {
+      view: { type: string; label?: string };
+    } & TranslationSchema;
+  };
+}
+
+interface StringTranslationEntry {
+  type: I18nViewType;
+  label: string;
+  key: string;
+  value: ITranslatableContent;
+}
+
+interface ScriptTranslationEntry {
+  type: 'script';
+  label: string;
+  key: string;
+  value: IScript;
+}
+
+type TranslationEntry = StringTranslationEntry | ScriptTranslationEntry;
+
+interface Translations {
+  [key: string]: TranslationEntry;
+}
+
+function visitFilter(
+  entry: null | TranslationEntry,
+): entry is TranslationEntry {
+  return entry != null;
+}
+
+function visitProperties<T extends IMergeable>(
+  object: T,
+  schema: TranslationSchema,
+): TranslationEntry[] {
+  return Object.entries(object)
+    .flatMap((entry: [string, IMergeable]) => {
+      if (
+        entityIs(entry[1], 'TranslatableContent') ||
+        entityIs(entry[1], 'Script')
+      ) {
+        return {
+          type: schema.properties[entry[0]].view.type,
+          label: schema.properties[entry[0]].view.label || entry[0],
+          key: entry[0],
+          value: entry[1] as ITranslatableContent | IScript,
+        };
+      } else if (entityIs(entry[1], 'VariableInstance', true)) {
+        return visitProperties(entry[1], schema.properties[entry[0]]);
+      } else {
+        return null;
+      }
+    })
+    .filter(visitFilter);
+}
+
+async function getTranslatableProperties<T extends IMergeable>(
+  entity: T | undefined,
+): Promise<Translations> {
+  if (entity == null) {
+    return {};
+  } else {
+    const schema = (await getEditionConfig(entity)) as TranslationSchema;
+    wlog(visitProperties(entity, schema));
+
+    return visitProperties(entity, schema).reduce((o, entry) => {
+      const { key, value, type, label } = entry;
+      return { ...o, [key]: { type, value, label } };
+    }, {});
+  }
+}
 
 interface TranslationViewProps extends SharedTranslationViewProps {
   variableId: number;
@@ -667,29 +739,21 @@ function TranslationView({
   showOptions,
   depth,
 }: TranslationViewProps) {
+  const [translations, setTranslations] = React.useState<Translations>({});
   const variable = useStore(
     s => s.variableDescriptors[variableId],
     deepDifferent,
   );
 
-  const translations: { [key: string]: ITranslatableContent | IScript } =
-    React.useMemo(
-      () =>
-        Object.entries(variable || {})
-          .filter(
-            ([, v]) =>
-              entityIs(v, 'TranslatableContent') || entityIs(v, 'Script'),
-          )
-          .reduce((o, [k, v]) => ({ ...o, [k]: v }), {}),
-      [variable],
-    );
+  React.useEffect(() => {
+    getTranslatableProperties(variable).then(setTranslations);
+  }, [variable]);
 
   return variable ? (
     <TranslationsView
       depth={depth}
       selectedLanguages={selectedLanguages}
       showOptions={showOptions}
-      variable={variable}
       translations={translations}
     />
   ) : null;

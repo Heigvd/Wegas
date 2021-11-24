@@ -1,18 +1,16 @@
-import * as React from 'react';
 import { cx } from '@emotion/css';
-import { flex, expandBoth, flexColumn } from '../css/classes';
+import * as React from 'react';
 import HTMLEditor from '../Components/HTML/HTMLEditor';
 import { Toggler } from '../Components/Inputs/Boolean/Toggler';
+import { expandBoth, flex, flexColumn } from '../css/classes';
 
 export default function WegasScriptEditorTester() {
-  const [show, setShow] = React.useState(false);
+  const [enabled, setEnabled] = React.useState(true);
   return (
     <div className={cx(flex, expandBoth, flexColumn)}>
       <div style={{ height: '100%' }}>
-        <HTMLEditor />
-        <Toggler value={show} onChange={setShow} />
-        <HTMLEditor value={String(show)} />
-        {show && <HTMLEditor value={String(show)} />}
+        <Toggler value={enabled} onChange={setEnabled} />
+        <HTMLEditor disabled={!enabled} />
       </div>
     </div>
   );
