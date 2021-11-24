@@ -11,7 +11,6 @@ brew tap AdoptOpenJDK/openjdk
 brew cask install adoptopenjdk11
 or
 brew install --cask adoptopenjdk11
-```
 
 #Install node and change version to 11.10.1
 brew install node
@@ -29,6 +28,7 @@ brew cask install docker
 or
 brew install --cask docker
 #Press ⌘ + Space to bring up Spotlight Search and enter "Docker" to launch Docker
+```
 
 ## Install services
 
