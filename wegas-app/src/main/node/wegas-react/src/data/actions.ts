@@ -284,5 +284,7 @@ export function manageResponseHandler(
   localDispatch &&
     localDispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
 
-  return ActionCreator.MANAGED_RESPONSE_ACTION(managedValuesOnly);
+  return ActionCreator.MANAGED_RESPONSE_ACTION(
+    localDispatch ? managedValuesOnly : managedValues,
+  );
 }

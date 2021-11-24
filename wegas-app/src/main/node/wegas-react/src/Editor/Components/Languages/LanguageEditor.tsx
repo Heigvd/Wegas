@@ -5,6 +5,7 @@ import * as React from 'react';
 import { IGameModel, IGameModelLanguage } from 'wegas-ts-api';
 import * as gameModelLanguageSchema from 'wegas-ts-api/src/generated/schemas/GameModelLanguage.json';
 import { LanguagesAPI } from '../../../API/languages.api';
+import { IManagedResponse } from '../../../API/rest';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { useTranslatableLanguages } from '../../../Components/Hooks/useLanguages';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
@@ -23,13 +24,15 @@ import { Actions } from '../../../data';
 import { manageResponseHandler } from '../../../data/actions';
 import { GameModel } from '../../../data/selectors';
 import { getDispatch } from '../../../data/Stores/store';
+import { wlog } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { overrideSchema } from '../EntityEditor';
+import { overrideSchema, parseEvent } from '../EntityEditor';
 import '../FormView';
 import { AvailableViews } from '../FormView';
 import { ISelectProps } from '../FormView/Select';
+import { MessageString } from '../MessageString';
 
 const languagePanelStyle = css({ width: '50%' });
 const languageInnerPanelStyle = css({ width: '80%' });
@@ -37,13 +40,18 @@ const languageFormButtonsStyle = css({ width: '30%', marginTop: '2em' });
 
 const languageSchema =
   gameModelLanguageSchema.schema as Schema.Object<AvailableViews>;
+languageSchema.properties!['indexOrder'] = { view: { type: 'hidden' } };
 
 const createLanguageSchema = cloneDeep(languageSchema);
 createLanguageSchema.properties!['visibility'].view!.type = 'hidden';
 createLanguageSchema.properties!['active'].view!.type = 'hidden';
+
 const editLanguageSchema = cloneDeep(languageSchema);
-editLanguageSchema.properties!['indexOrder'] = { view: { type: 'hidden' } };
 editLanguageSchema.properties!['visibility'].view!.type = 'hidden';
+editLanguageSchema.properties!['visibility'].view!.type = 'hidden';
+(
+  editLanguageSchema.properties!['code'].view! as { readOnly: boolean }
+).readOnly = true;
 
 const defaultLanguage: IGameModelLanguage = {
   '@class': 'GameModelLanguage',
@@ -112,6 +120,8 @@ export default function LanguageEditor() {
   const [selectedLanguage, setSelectedLanguage] = React.useState<
     IGameModelLanguage | null | undefined
   >();
+
+  const [error, setError] = React.useState<string | undefined>();
 
   const languages = useGameModel().languages;
   const i18nEditorTabValues = useInternalTranslate(editorTabsTranslations);
@@ -182,6 +192,12 @@ export default function LanguageEditor() {
       >
         {selectedLanguage && (
           <>
+            <MessageString
+              type="warning"
+              duration={5000}
+              value={error}
+              onLabelVanish={() => setError(undefined)}
+            />
             <LanguageEditForm
               language={selectedLanguage}
               onChange={setSelectedLanguage}
@@ -206,20 +222,39 @@ export default function LanguageEditor() {
                 label={i18nCommonValues.save}
                 onClick={() => {
                   if (selectedLanguage.id === -1) {
-                    LanguagesAPI.updateLanguage(selectedLanguage).then(
-                      gameModelLanguage => {
+                    LanguagesAPI.updateLanguage(selectedLanguage)
+                      .then(gameModelLanguage => {
                         getDispatch()(
                           Actions.GameModelActions.editLanguage(
                             gameModelLanguage,
                             String(GameModel.selectCurrent().id),
                           ),
                         );
+                      })
+                      .catch(e => {
+                        wlog(e);
+                        debugger;
+                      });
+                  } else {
+                    LanguagesAPI.addLanguage(selectedLanguage).then(
+                      (res: IManagedResponse) => {
+                        const { deletedEntities, events, updatedEntities } =
+                          res;
+                        setError(
+                          events
+                            .map(event => parseEvent(event).message)
+                            .join('\n'),
+                        );
+                        getDispatch()(
+                          manageResponseHandler({
+                            '@class': 'ManagedResponse',
+                            deletedEntities,
+                            updatedEntities,
+                            events: [],
+                          }),
+                        );
                       },
                     );
-                  } else {
-                    LanguagesAPI.addLanguage(selectedLanguage).then(res => {
-                      getDispatch()(manageResponseHandler(res));
-                    });
                   }
                 }}
                 className={defaultMarginLeft}

@@ -105,12 +105,14 @@ export const selectStyles: SelectProps['styles'] = {
     // the zIndex battle : Select VS tineMCE toolbar
     return { ...provided, zIndex: 2, marginTop: 0 };
   },
-  menuList: provided =>{return {
-    ...provided,
-    paddingTop: 0,
-    paddingBottom: 0,
-    borderRadius: '4px',
-  }},
+  menuList: provided => {
+    return {
+      ...provided,
+      paddingTop: 0,
+      paddingBottom: 0,
+      borderRadius: '4px',
+    };
+  },
   option: (provided, state) => {
     if (state.isSelected) {
       return {
@@ -164,7 +166,7 @@ export function Selector({
     [onChange],
   );
 
-  const currentOption = findOption(options, value);
+  const currentOption = findOption(options, value) || { label: value, value };
 
   const Comp = React.useMemo(
     () => (allowAnyValue ? CreatableSelect : Select),

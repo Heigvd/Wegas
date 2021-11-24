@@ -56,7 +56,6 @@ import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { GlobalState } from '../../../data/Reducer/globalState';
 import { GameModel, VariableDescriptor } from '../../../data/selectors';
 import { getDispatch, store, useStore } from '../../../data/Stores/store';
-import { wlog } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { languagesTranslations } from '../../../i18n/languages/languages';
@@ -720,8 +719,6 @@ async function getTranslatableProperties<T extends IMergeable>(
     return {};
   } else {
     const schema = (await getEditionConfig(entity)) as TranslationSchema;
-    wlog(visitProperties(entity, schema));
-
     return visitProperties(entity, schema).reduce((o, entry) => {
       const { key, value, type, label } = entry;
       return { ...o, [key]: { type, value, label } };
