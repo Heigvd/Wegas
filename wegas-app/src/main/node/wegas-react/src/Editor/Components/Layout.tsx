@@ -95,12 +95,12 @@ const availableLayoutTabs: LinearLayoutComponents = [
     content: <PageEditor />,
   },
   {
+    tabId: 'Pages Layout',
+    content: <PagesLayout />,
+  },
+  {
     tabId: 'Pages',
     items: [
-      {
-        tabId: 'Pages Layout',
-        content: <PagesLayout />,
-      },
       {
         tabId: 'Component Palette',
         content: <ComponentPalette />,
