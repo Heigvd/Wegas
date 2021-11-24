@@ -334,7 +334,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
         Views.EditorI.class
     /* Views.LobbyI.class */
     })
-    @WegasExtraProperty
+    @WegasExtraProperty(nullable = false, optional = false)
     public String getName() {
         if (this.getUser() != null) {
             AbstractAccount account = this.getUser().getMainAccount();
@@ -380,6 +380,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      */
     @JsonProperty
     @JsonView(Views.EditorI.class)
+    @WegasExtraProperty(nullable = false, optional = false)
     public Boolean isVerifiedId() {
         if (this.user != null) {
             return user.getMainAccount().isVerified();
@@ -393,6 +394,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      * empty string
      */
     @JsonView(Views.EditorI.class)
+    @WegasExtraProperty(nullable = false, optional = false)
     public String getHomeOrg() {
         if (this.user != null) {
             AbstractAccount account = user.getMainAccount();

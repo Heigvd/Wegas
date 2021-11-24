@@ -29,6 +29,7 @@ export const en = {
   createAnAccount: 'create an account',
   sendMePassword: 'send me a new password',
   unverifiedEmail: 'unverified e-mail',
+  verified: (org: string) => `verified user (${org})`,
   verifyEmail: 'click to verify your e-mail address',
   firstname: 'firstname',
   missingFirstname: 'please enter your firstname',

@@ -126,12 +126,12 @@ export function WindowedContainer<T>({
         let nbBelow = total - nbAbove - data.current.numberOfItem;
 
         if (nbAbove > total - data.current.numberOfItem) {
-          nbAbove = total - data.current.numberOfItem;
+          nbAbove = Math.max(0, total - data.current.numberOfItem);
           nbBelow = 0;
         }
 
         if (nbBelow > total) {
-          nbAbove = total - data.current.numberOfItem;
+          nbAbove = Math.max(0, total - data.current.numberOfItem)
         }
 
         data.current.paddingTop = nbAbove * perItem;
