@@ -24,6 +24,7 @@ export interface Props {
   value: string | null | undefined;
   size: SizeType;
   className?: string;
+  title?: string;
 }
 
 function getSize(s: SizeType) {
@@ -72,22 +73,24 @@ export function IconDisplay({
   size,
   fgColor,
   bgColor,
+  title,
 }: {
   bgColor: string;
   fgColor: string;
   icon: IconDef;
   size: SizeType;
+  title?: string;
 }): JSX.Element {
   if (icon.library === 'icon') {
     return (
-      <div className={illustrationStyle(fgColor, bgColor, size)}>
+      <div title={title} className={illustrationStyle(fgColor, bgColor, size)}>
         <i className={`${icon.library} ${icon.library}-${icon.key}`} />
       </div>
     );
   } else if (icon.library === 'fa' || icon.library === 'far') {
     const lib = icon.library === 'fa' ? 'fas' : icon.library;
     return (
-      <div className={illustrationStyle(fgColor, bgColor, size)}>
+      <div title={title} className={illustrationStyle(fgColor, bgColor, size)}>
         <FontAwesomeIcon icon={[lib, icon.key]} />
       </div>
     );
@@ -96,7 +99,7 @@ export function IconDisplay({
   }
 }
 
-export default function Illustration({ value, size = 'BIG' }: Props): JSX.Element {
+export default function Illustration({ value, size = 'BIG', title }: Props): JSX.Element {
   if (value != null) {
     const [type = 'ICON', color = 'orange', key = 'gamepad', library = 'fa'] = value.split('_');
 
@@ -105,7 +108,15 @@ export default function Illustration({ value, size = 'BIG' }: Props): JSX.Elemen
     if (type === 'ICON') {
       const iconDef = getIconDef(library, key);
       if (iconDef != null) {
-        return <IconDisplay fgColor={whiteColor} bgColor={theColor} size={size} icon={iconDef} />;
+        return (
+          <IconDisplay
+            title={title}
+            fgColor={whiteColor}
+            bgColor={theColor}
+            size={size}
+            icon={iconDef}
+          />
+        );
       }
     }
     // broken

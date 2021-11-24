@@ -30,6 +30,7 @@ export const fr: WegasTranslations = {
   createAnAccount: 'créer un compte',
   sendMePassword: 'Envoyez-moi un nouveau mot de passe',
   unverifiedEmail: 'e-mail non vérifié',
+  verified: org => `identitée verifiée (${org})`,
   verifyEmail: 'Cliquez ici pour vérifier votre mot de passe',
   firstname: 'prénom',
   missingFirstname: 'Veuillez entrer votre prénom',

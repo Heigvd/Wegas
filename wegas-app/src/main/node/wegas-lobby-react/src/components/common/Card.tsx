@@ -21,6 +21,7 @@ export interface CardProps {
   children?: React.ReactNode;
   className?: string;
   size?: SizeType;
+  title?: string;
 }
 
 const cardContentStyle = css({
@@ -32,11 +33,12 @@ export default function Card({
   children,
   className,
   illustration = 'ICON_black-blue_cogs_fa',
+  title,
   size = 'BIG',
 }: CardProps): JSX.Element {
   return (
     <div className={cx(cardStyle, className)}>
-      <Illustration value={illustration} size={size} />
+      <Illustration title={title} value={illustration} size={size} />
       <FitSpace direction="row" className={cardContentStyle}>
         {children}
       </FitSpace>
