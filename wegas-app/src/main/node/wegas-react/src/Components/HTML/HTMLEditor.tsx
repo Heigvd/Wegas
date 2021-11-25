@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { Editor as TinyEditor } from '@tinymce/tinymce-react';
+import { ITinyEvents } from '@tinymce/tinymce-react/lib/cjs/main/ts/Events';
 import * as React from 'react';
 import { RawEditorSettings } from 'tinymce/tinymce';
 import { fileURL, generateAbsolutePath } from '../../API/files.api';
@@ -13,6 +14,9 @@ import { Modal } from '../Modal';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { themeCTX } from '../Theme/Theme';
 import { defaultLightMode, modeStyle, themeVar } from '../Theme/ThemeVars';
+
+// tinymce.EditorManager.execCommand('mceRemoveEditor', false, 'myEditor');
+// tinymce.EditorManager.execCommand('mceAddEditor', false, 'myEditor');
 
 const fontUrl =
   require('../../css/fonts/Raleway-VariableFont_wght.ttf').default;
@@ -149,6 +153,36 @@ export default function HTMLEditor({
   React.useEffect(() => {
     setInternalValue(value);
   }, [value]);
+
+  const onIniteditor = React.useCallback<ITinyEvents['onInit']>(
+    (event, _editor) => {
+      HTMLEditor.current = event.target;
+    },
+    [],
+  );
+
+  const onEditorChanges = React.useCallback(
+    (v: string) => {
+      if (
+        value !== v &&
+        !(value === '<p></p>' && v === '') &&
+        !(value === '' && v === '<p></p>')
+      ) {
+        onChange && onChange(v);
+      }
+      setInternalValue(v);
+      HTMLContent.current = v;
+    },
+    [onChange, value],
+  );
+
+  function onFocus() {
+    setEditorFocus(true);
+  }
+
+  function onBlur() {
+    setEditorFocus(false);
+  }
 
   const config = React.useMemo(() => {
     // const extraStyleButton: StyleButton[] = [
@@ -312,6 +346,12 @@ export default function HTMLEditor({
             .join(';')}  ;
           font-family: ${themeVar.others.TextFont2}; 
         }`,
+      // init_instance_callback: function (editor) {
+      //   editor.on('ExecCommand', function (e) {
+      //     wlog('The ' + e.command + ' command was fired.');
+      //     debugger;
+      //   });
+      // },
     };
     return config;
   }, [
@@ -337,7 +377,9 @@ export default function HTMLEditor({
   }, [fileBrowsing.fn]);
 
   React.useEffect(() => {
+    // wlog('START');
     return () => {
+      // wlog('DESTROY');
       HTMLEditor.current?.destroy();
     };
   }, []);
@@ -373,21 +415,10 @@ export default function HTMLEditor({
             apiKey="xkafxh5bjijfa83806ycen9yltz2aw447z0lwlgkn319sk6p"
             value={keepInternalValue ? internalValue : value}
             init={config}
-            onInit={editor => {
-              HTMLEditor.current = editor.target;
-            }}
-            onEditorChange={v => {
-              if (
-                value !== v &&
-                !(value === '<p></p>' && v === '') &&
-                !(value === '' && v === '<p></p>')
-              ) {
-                onChange && onChange(v);
-              }
-              setInternalValue(v);
-            }}
-            onFocus={() => setEditorFocus(true)}
-            onBlur={() => setEditorFocus(false)}
+            onInit={onIniteditor}
+            onEditorChange={onEditorChanges}
+            onFocus={onFocus}
+            onBlur={onBlur}
             disabled={disabled}
           />
         </ErrorBoundary>

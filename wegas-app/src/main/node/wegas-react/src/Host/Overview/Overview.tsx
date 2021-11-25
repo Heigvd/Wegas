@@ -2,13 +2,14 @@ import { css, CSSInterpolation, cx } from '@emotion/css';
 import * as React from 'react';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { useWebsocketEvent } from '../../API/websocket';
+import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import { expandWidth } from '../../css/classes';
 import { instantiate } from '../../data/scriptable';
 import { Game, GameModel, Player } from '../../data/selectors';
-import { store } from '../../data/Stores/store';
+import { useStore } from '../../data/Stores/store';
 import '../../Editor/Components/FormView';
 import { createScript } from '../../Helper/wegasEntites';
 import { commonTranslations } from '../../i18n/common/common';
@@ -184,6 +185,8 @@ export default function Overview() {
 
   const i18nValues = useInternalTranslate(commonTranslations);
   const i18nValuesTrainer = useInternalTranslate(trainerTranslations);
+  const teams = useStore(s => s.teams, deepDifferent);
+
   const refreshOverview = React.useCallback(() => {
     setNewData(false);
     VariableDescriptorAPI.runScript(
@@ -230,8 +233,6 @@ export default function Overview() {
       mounted.current = false;
     };
   }, [refreshOverview]);
-
-  const teams = store.getState().teams;
 
   const onRowClick = React.useCallback(
     (team?: STeam | STeam[]) => (type: OverviewClickType, item?: ActionItem) => {
@@ -287,7 +288,7 @@ export default function Overview() {
   return (
     <Toolbar className={expandWidth}>
       <Toolbar.Header className={css({ justifyContent: 'flex-end' })}>
-      {newData && (
+        {newData && (
           <span
             className={cx(
               css({ fontSize: '14px', margin: '5px -5px 5px 0' }),
