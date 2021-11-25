@@ -1,5 +1,6 @@
 import { cx } from '@emotion/css';
 import * as React from 'react';
+import { classNameOrEmpty } from '../../Helper/className';
 import { treeviewCTX } from './TreeView';
 
 export interface PassePropsContext {
@@ -26,6 +27,7 @@ interface TreeChildrenProps<T = unknown> {
   path: number[];
   notDroppable?: boolean;
   acceptTypes: string[];
+  className?: string;
 }
 
 export function TreeChildren<T = unknown>({
@@ -34,6 +36,7 @@ export function TreeChildren<T = unknown>({
   path,
   notDroppable,
   children,
+  className,
   acceptTypes,
 }: React.PropsWithChildren<TreeChildrenProps<T>>) {
   const { minimumNodeHeight, minimumLabelWidth, designParams, dragState } =
@@ -54,7 +57,7 @@ export function TreeChildren<T = unknown>({
         display: 'flex',
         flexDirection: 'column',
       }}
-      className={cx({
+      className={classNameOrEmpty(className) + cx({
         [dragDownStyle]: dragMargin,
       })}
     >

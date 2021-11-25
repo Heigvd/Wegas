@@ -14,7 +14,8 @@ export const languagesTranslationsDE: LanguagesTranslations = {
   outdatedTranslations: 'Veraltete Übersetzungen',
   allTranslations: 'Alle Übersetzungen',
   translateFrom: 'Übersetzen von',
-  copyTranslations: 'Übersetzungen kopieren',
+  translateWithDeepl: 'Übersetzen mit DeepL',
+  copyFrom: 'Kopieren von',
   CONTENT_EDITOR: 'Redakteur für Inhalte',
   SCENARIO_EDITOR: 'Redakteur für Szenario',
   translationManagement: 'Übersetzungsmanagement',
@@ -24,5 +25,5 @@ export const languagesTranslationsDE: LanguagesTranslations = {
   undoModifications: 'Änderungen zurücknehmen',
   saveModifications: 'Änderungen speichern',
   hideOptions: 'Optionen ausblenden',
-  showOptions: 'Weitere Optionen anzeigen',
+  showOptions: 'Optionen anzeigen',
 };

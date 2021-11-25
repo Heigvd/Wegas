@@ -7,27 +7,28 @@ import {
   itemCenter,
   grow,
   foregroundContent,
-  flexRow,
-  itemBottom,
   componentMarginLeft,
+  flexColumn,
+  justifyStart,
   // defaultMarginRight,
 } from '../css/classes';
 import { Title } from '../Components/Inputs/String/Title';
 import { Button } from '../Components/Inputs/Buttons/Button';
 
 const headerStyle = css({
-  marginBottom: '30px',
+  marginBottom: '10px',
 });
 const TitleStyle = css({
-  marginRight: '20px',
+  margin: '5px 0',
+  lineHeight: '100%',
 });
 
 export default function HostHeader() {
   return (
     <div className={cx(flex, itemCenter, foregroundContent, headerStyle)}>
-      <div className={cx(flex, grow, flexRow, itemBottom)}>
-        <Title className={TitleStyle}>{CurrentGame.name}</Title>
-        <Title level={'3'}>{CurrentGM.name}</Title>
+      <div className={cx(flex, grow, flexColumn, justifyStart)}>
+        <Title level={'2'} className={TitleStyle}>{CurrentGame.name}</Title>
+        <p className={TitleStyle}>Scenario: {CurrentGM.name}</p>
       </div>
       {/* <LangToggler className={defaultMarginRight}/> */}
       {/* <FeatureToggler

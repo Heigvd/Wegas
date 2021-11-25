@@ -11,11 +11,11 @@ export interface CommonTranslations {
   someWentWrong: string;
   accept: string;
   cancel: string;
-  deleteChanges: string;
   delete: string;
   reset: string;
   restart: string;
   save: string;
+  doNotSave: string;
   edit: string;
   duplicate: string;
   close: string;
@@ -28,6 +28,7 @@ export interface CommonTranslations {
   features: string;
   language: string;
   deepSearch: string;
+  addVariable: string;
   role: string;
   header: {
     restartGame: string;

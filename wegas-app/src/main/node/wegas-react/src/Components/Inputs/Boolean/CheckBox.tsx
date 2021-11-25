@@ -66,7 +66,6 @@ export function CheckBox({
       style={style}
       title={hint}
     >
-      {label && <Value value={label} />}
       <Button
         icon={
           radio
@@ -113,8 +112,8 @@ export function CheckBox({
         }
         disabled={disabled}
         readOnly={readOnly}
-        // noHover={disabled}
       />
+      {label && <Value value={label} />}
     </div>
   );
 }

@@ -43,6 +43,9 @@ export const autoScroll = css({
 export const forceScroll = css({
   overflow: 'scroll',
 });
+export const forceScrollY = css({
+  overflowY: 'scroll',
+});
 export const hideOverflow = css({
   overflow: 'hidden',
 });
@@ -176,6 +179,12 @@ export const XLPadding = css({
 export const MediumPadding = css({
   padding: '1.5em',
 });
+export const MediumPadding_notBottom = css({
+  padding: '1.5em 1.5em 0 1.5em',
+});
+export const MediumPadding_sides = css({
+  padding: '0 1.5em',
+});
 export const defaultPaddingLeft = css({
   paddingLeft: '10px',
 });
@@ -207,6 +216,19 @@ export const button = css({
     outline: 'none',
   },
 });
+
+export const secondaryButtonCSS = {
+  '&.wegas-btn': {
+    backgroundColor: 'transparent',
+    color: themeVar.colors.PrimaryColor,
+    border: '1px solid ' + themeVar.colors.PrimaryColor,
+    '&:hover, &:focus-visible': {
+      backgroundColor: themeVar.colors.HeaderColor,
+    },
+  },
+};
+
+export const secondaryButtonStyle = css(secondaryButtonCSS);
 
 // Editor
 export const localSelection = css({

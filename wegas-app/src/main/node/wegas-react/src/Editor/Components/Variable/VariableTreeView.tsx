@@ -36,15 +36,14 @@ import { CTree } from './CTree';
 
 const addVariableContainerStyle = css({
   position: 'absolute',
-  left: 0,
-  bottom: 0,
-  width: '100%',
+  left:'1.5rem',
+  bottom: '5px',
   zIndex: 1,
 });
 const addVariableButtonStyle = css({
-  width: '100%',
-  borderRadius: 0,
   height: '2rem',
+  boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.5)',
+  padding: '5px 5px',
 });
 const deepSearchButtonOffStyle = css({
   color: themeVar.colors.DisabledColor,
@@ -181,8 +180,8 @@ export function VariableTreeView({
                 className={cx(
                   css({
                     fontSize: '28px',
-                    color: themeVar.colors.SuccessColor,
-                    '&:hover, &:focus': { color: themeVar.colors.SuccessColor },
+                    color: themeVar.colors.PrimaryColor,
+                    '&:hover, &:focus': { color: themeVar.colors.PrimaryColor },
                   }),
                   { [deepSearchButtonOffStyle]: !deep },
                 )}
@@ -197,9 +196,14 @@ export function VariableTreeView({
       </Toolbar.Header>
       <Toolbar.Content
         id={TREECONTENTID}
-        className={css({ padding: '1px', marginBottom: '2rem', overflowY: 'auto', overflowX: 'hidden' })}
+        className={css({
+          padding: '1px',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+        })}
       >
         <TreeView
+          className={css({ paddingBottom: '3rem' })}
           rootId={String(root.id)}
           rootData={root as unknown as IVariableDescriptor}
           onMove={onMove}
@@ -226,11 +230,9 @@ export function VariableTreeView({
           )}
         </TreeView>
         <DropMenu
-          tooltip={i18nValues.add}
+          tooltip={i18nValues.addVariable}
           items={data || []}
-          prefixedLabel
-          icon="plus"
-          label="Add new variable"
+          label={<IconComp icon="plus" />}
           onSelect={(i, e) => {
             onEditionChanges(0, e, e => {
               if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {

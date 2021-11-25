@@ -9,7 +9,6 @@ import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { useTranslatableLanguages } from '../../../Components/Hooks/useLanguages';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ListView } from '../../../Components/ListView';
-import { secondaryButtonStyle } from '../../../Components/Modal';
 import {
   defaultMarginLeft,
   flex,
@@ -18,6 +17,7 @@ import {
   flexRow,
   grow,
   itemCenter,
+  secondaryButtonStyle,
 } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { manageResponseHandler } from '../../../data/actions';

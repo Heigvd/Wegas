@@ -156,20 +156,20 @@ export function ConfirmButton({
             }
           >
             <Button
-              label={i18nValues.cancel}
-              onClick={onConfirm(false)}
-              disabled={disabled}
-              readOnly={readOnly}
-              noHover={noHover != null ? noHover : true}
-              dark
-            />
-            <Button
               label={i18nValues.accept}
               onClick={onConfirm(true)}
               disabled={disabled}
               readOnly={readOnly}
               noHover={noHover != null ? noHover : true}
               type={type}
+            />
+            <Button
+              label={i18nValues.cancel}
+              onClick={onConfirm(false)}
+              disabled={disabled}
+              readOnly={readOnly}
+              noHover={noHover != null ? noHover : true}
+              dark
             />
           </div>
         ))}

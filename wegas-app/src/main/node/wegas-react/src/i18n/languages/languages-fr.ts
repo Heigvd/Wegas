@@ -14,7 +14,8 @@ export const languagesTranslationsFR: LanguagesTranslations = {
   outdatedTranslations: 'Traductions obsolètes',
   allTranslations: 'Toutes les traductions',
   translateFrom: 'Traduire depuis',
-  copyTranslations: 'Copier les traductions',
+  translateWithDeepl: 'Traduire avec DeepL',
+  copyFrom: 'Copier à partir de',
   CONTENT_EDITOR: 'Editeur de contenu',
   SCENARIO_EDITOR: 'Editeur de scénario',
   translationManagement: 'Gestion de la traduction',
@@ -23,6 +24,6 @@ export const languagesTranslationsFR: LanguagesTranslations = {
   markAsUpToDate: 'Marquer comme à jour',
   undoModifications: 'Annuler les modifications',
   saveModifications: 'Sauvegarder les modifications',
-  hideOptions: 'Masquer les options',
-  showOptions: "Montrer plus d'options",
+  hideOptions: 'Masquer options',
+  showOptions: "Montrer options",
 };
