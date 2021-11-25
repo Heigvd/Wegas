@@ -9,6 +9,7 @@ export const languagesTranslationsEN: LanguagesTranslations = {
     }translations of ${language}?`,
   outdated: 'outdated',
   upToDate: 'up to date',
+  noTranslation: 'no translation',
   saveTranslations: 'Save translations',
   clearTranslations: 'Clear translations',
   outdatedTranslations: 'Outdated translations',

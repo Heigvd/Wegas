@@ -3,6 +3,7 @@ import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import HTMLEditor from '../../Components/HTML/HTMLEditor';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import {
   flex,
   flexRow,
@@ -12,14 +13,13 @@ import {
 } from '../../css/classes';
 import { Actions } from '../../data';
 import { store } from '../../data/Stores/store';
-import { OverviewClickType, ActionItem, DataItem, DataType } from './Overview';
+import EyeIcon from '../../pictures/icon_eye.svg';
+import { ActionItem, DataItem, DataType, OverviewClickType } from './Overview';
 import {
   firstScrollCellStyle,
   fixedCellStyle,
   OverviewCell,
 } from './OverviewCell';
-import EyeIcon from '../../pictures/icon_eye.svg';
-import { themeVar } from '../../Components/Theme/ThemeVars';
 
 interface OverviewRowProps {
   team: STeam;
@@ -55,11 +55,9 @@ export function OverviewRow({
             <Button
               icon={showPlayers ? 'caret-down' : 'caret-right'}
               onClick={() => setShowPlayers(sp => !sp)}
-              className={css({padding: '5px'})}
+              className={css({ padding: '5px' })}
             />
-            <p className={hideWithEllipsis}>
-              {team.getName()}
-            </p>
+            <p className={hideWithEllipsis}>{team.getName()}</p>
           </div>
         </td>
         {!structure && (

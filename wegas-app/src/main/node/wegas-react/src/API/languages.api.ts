@@ -36,6 +36,11 @@ export interface ITranslationUpdate {
   value: string;
 }
 
+interface DeepleTraduction {
+  detected_source_language: string;
+  text: string;
+}
+
 const LANGUAGES_BASE = (gameModelId?: number) =>
   `GameModel/${
     gameModelId === undefined ? GameModel.selectCurrent().id! : gameModelId
@@ -58,11 +63,11 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
      * Increase a language priority
      * @param language The language to priorize
      */
-    upLanguage(language: IGameModelLanguage) {
+    upLanguage(language: IGameModelLanguage): Promise<IGameModel> {
       return rest(LANGUAGES_BASE(gameModelId) + 'Lang/' + language.id + '/Up', {
         method: 'PUT',
       }).then((res: Response) => {
-        return res.json() as Promise<IGameModel>;
+        return res.json();
       });
     },
     /**
@@ -210,6 +215,29 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
           method: 'PUT',
         },
       );
+    },
+
+    /**
+     *
+     * @param fromLanguageCode the source language code to be translated
+     * @param toLanguageCode the target language code
+     * @param text the text to translate
+     */
+    translateText(
+      fromLanguageCode: string,
+      toLanguageCode: string,
+      text: string,
+    ): Promise<DeepleTraduction> {
+      return rest(
+        LANGUAGES_BASE(gameModelId) +
+          `Translate/${fromLanguageCode}/${toLanguageCode}`,
+        {
+          method: 'PUT',
+          body: text,
+        },
+        undefined,
+        'text/plain',
+      ).then(res => res.json());
     },
   };
 };

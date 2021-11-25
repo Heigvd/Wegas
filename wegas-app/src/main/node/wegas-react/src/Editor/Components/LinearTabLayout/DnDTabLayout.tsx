@@ -89,6 +89,25 @@ const dropSpecsFactory = (action: DropAction, dndAcceptType: string) => {
   };
 };
 
+function translateTabs(
+  dndTabs: DnDTabs,
+  i18nTabsNames: EditorTabsTranslations,
+): DnDTabs {
+  return dndTabs.map(dndTab => {
+    const translatedOrUndefLabel =
+      i18nTabsNames.tabsNames[
+        dndTab.label as keyof EditorTabsTranslations['tabsNames']
+      ];
+    const translatedLabel = translatedOrUndefLabel
+      ? translatedOrUndefLabel
+      : dndTab.label;
+    const translatedItems = dndTab.items
+      ? translateTabs(dndTab.items, i18nTabsNames)
+      : undefined;
+    return { ...dndTab, label: translatedLabel, items: translatedItems };
+  });
+}
+
 interface DnDTabLayoutHeaderProps
   extends Pick<
       DnDTabLayoutProps,
@@ -173,7 +192,7 @@ function DnDTabLayoutHeader({
                     }
                   >
                     <DropMenu
-                      items={otherTabs}
+                      items={translateTabs(otherTabs, i18nTabsNames)}
                       icon="plus"
                       onSelect={i => {
                         onSelect && onSelect(i.value);

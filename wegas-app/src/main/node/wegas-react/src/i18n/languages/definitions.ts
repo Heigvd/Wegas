@@ -3,6 +3,7 @@ export interface LanguagesTranslations {
   warningDelete: (language: string, outdated: boolean) => string;
   outdated: string;
   upToDate: string;
+  noTranslation: string;
   saveTranslations: string;
   clearTranslations: string;
   outdatedTranslations: string;

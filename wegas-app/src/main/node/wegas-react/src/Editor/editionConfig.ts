@@ -2,8 +2,8 @@ import { Schema } from 'jsoninput';
 // import { TYPESTRING } from 'jsoninput/typings/types';
 import {
   IAbstractEntity,
-  SAbstractEntity,
   IMergeable,
+  SAbstractEntity,
   WegasClassNames,
 } from 'wegas-ts-api';
 import { entityIs } from '../data/entities';
@@ -164,10 +164,8 @@ async function injectRef(schema: { $wref?: string }): Promise<Schema> {
   return restSchema;
 }
 
-export default async function getEditionConfig<T extends IMergeable>(
-  entity: T,
-): Promise<Schema> {
-  return fetchConfig(entity['@class'] + '.json')
+export async function getConfigFromPath(path: string): Promise<Schema> {
+  return fetchConfig(path)
     .then(res => {
       return schemaUpdater(
         res.schema,
@@ -180,6 +178,12 @@ export default async function getEditionConfig<T extends IMergeable>(
       wwarn(e);
       return {};
     });
+}
+
+export default async function getEditionConfig<T extends IMergeable>(
+  entity: T,
+): Promise<Schema> {
+  return getConfigFromPath(entity['@class'] + '.json');
 }
 
 export interface EActions {

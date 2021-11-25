@@ -29,10 +29,6 @@ const ThemeEditor = React.lazy(
   () => import('../../Components/Theme/Components/ThemeEditor'),
 );
 const Languages = React.lazy(() => import('./Languages/Languages'));
-const Tester = React.lazy(
-  () => import('../../Testers/Components/TabLayoutTester'),
-);
-
 const ComponentPalette = React.lazy(() => import('./Page/ComponentPalette'));
 const ConnectedComponentProperties = React.lazy(
   () => import('./Page/ComponentProperties'),
@@ -40,6 +36,8 @@ const ConnectedComponentProperties = React.lazy(
 const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
 const PagesLayout = React.lazy(() => import('./Page/PagesLayout'));
 const SourceEditor = React.lazy(() => import('./Page/SourceEditor'));
+
+// const Tester = React.lazy(() => import('../../Testers/HTMLEditorTester'));
 
 const layout = css({
   display: 'flex',
@@ -52,10 +50,10 @@ const layout = css({
 });
 
 const availableLayoutTabs: LinearLayoutComponents = [
-  {
-    tabId: 'Tester',
-    content: <Tester />,
-  },
+  // {
+  //   tabId: 'Tester',
+  //   content: <Tester />,
+  // },
   {
     tabId: 'Variables',
     content: <TreeView />,
@@ -97,12 +95,12 @@ const availableLayoutTabs: LinearLayoutComponents = [
     content: <PageEditor />,
   },
   {
+    tabId: 'Pages Layout',
+    content: <PagesLayout />,
+  },
+  {
     tabId: 'Pages',
     items: [
-      {
-        tabId: 'Pages Layout',
-        content: <PagesLayout />,
-      },
       {
         tabId: 'Component Palette',
         content: <ComponentPalette />,

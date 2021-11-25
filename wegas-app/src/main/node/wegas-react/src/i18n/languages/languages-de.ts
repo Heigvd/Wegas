@@ -9,6 +9,7 @@ export const languagesTranslationsDE: LanguagesTranslations = {
     } Übersetzungen von ${language} löschen möchten?`,
   outdated: 'veraltet',
   upToDate: 'gültig',
+  noTranslation: 'kein Übersetzung',
   saveTranslations: 'Übersetzung speichern',
   clearTranslations: 'Übersetzungen löschen',
   outdatedTranslations: 'Veraltete Übersetzungen',

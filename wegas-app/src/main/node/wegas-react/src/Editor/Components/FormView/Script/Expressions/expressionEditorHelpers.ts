@@ -1,26 +1,21 @@
+import { parse } from '@babel/parser';
+import { emptyStatement, Statement } from '@babel/types';
+import { TYPESTRING } from 'jsoninput/typings/types';
+import { pick } from 'lodash-es';
+import { SVariableDescriptor } from 'wegas-ts-api';
+import { safeClientScriptEval } from '../../../../../Components/Hooks/useScript';
+import { schemaProps } from '../../../../../Components/PageComponents/tools/schemaProps';
+import { isServerMethod } from '../../../../../data/Reducer/globalState';
+import { store } from '../../../../../data/Stores/store';
 import {
-  WegasMethodParameter,
+  getVariableMethodConfig,
   MethodConfig,
   WegasMethod,
-  getVariableMethodConfig,
+  WegasMethodParameter,
 } from '../../../../editionConfig';
-
-import { schemaProps } from '../../../../../Components/PageComponents/tools/schemaProps';
-
-import { pick } from 'lodash-es';
-
-import { isScriptCondition } from '../Script';
-
 import { StringOrT } from '../../TreeVariableSelect';
-
-import { store } from '../../../../../data/Stores/store';
-import { TYPESTRING } from 'jsoninput/typings/types';
-import { safeClientScriptEval } from '../../../../../Components/Hooks/useScript';
-import { isServerMethod } from '../../../../../data/Reducer/globalState';
-import { SVariableDescriptor } from 'wegas-ts-api';
-import { emptyStatement, Statement } from '@babel/types';
+import { isScriptCondition } from '../Script';
 import { parseStatement } from './astManagement';
-import { parse } from '@babel/parser';
 
 const booleanOperators = {
   '===': { label: 'equals' },
