@@ -14,7 +14,6 @@ export const commonTranslationsEN: CommonTranslations = {
   accept: 'Accept',
   cancel: 'Cancel',
   delete: 'Delete',
-  deleteChanges: 'Delete changes',
   reset: 'Reset',
   restart: 'Restart',
   save: 'Save',
@@ -31,6 +30,7 @@ export const commonTranslationsEN: CommonTranslations = {
   features: 'Features',
   language: 'Language',
   deepSearch: 'Deep search',
+  addVariable: 'Add new variable',
   role: 'User role',
   header: {
     restartGame: 'Restart the game (applied to every scenarist)',

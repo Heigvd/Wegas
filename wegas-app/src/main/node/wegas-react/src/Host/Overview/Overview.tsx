@@ -13,6 +13,7 @@ import '../../Editor/Components/FormView';
 import { createScript } from '../../Helper/wegasEntites';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { trainerTranslations } from '../../i18n/trainer/trainer';
 import { sortFnFactory, SortState } from '../TableSorter';
 import { OverviewHeader } from './OverviewHeader';
 import { FilterState } from './OverviewModal/FilterModalContent';
@@ -24,7 +25,7 @@ export const trainerCellStyleI: CSSInterpolation = {
   alignItems: 'center',
   backgroundColor: '#fff',
   boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
-  padding: '15px 20px',
+  padding: '5px',
   textAlign: 'center',
   margin: '3px',
   height: '48px',
@@ -182,6 +183,7 @@ export default function Overview() {
   const isRealGame = GameModel.selectCurrent().type === 'PLAY';
 
   const i18nValues = useInternalTranslate(commonTranslations);
+  const i18nValuesTrainer = useInternalTranslate(trainerTranslations);
   const refreshOverview = React.useCallback(() => {
     setNewData(false);
     VariableDescriptorAPI.runScript(
@@ -285,17 +287,7 @@ export default function Overview() {
   return (
     <Toolbar className={expandWidth}>
       <Toolbar.Header className={css({ justifyContent: 'flex-end' })}>
-        <Button
-          icon="filter"
-          onClick={() =>
-            setLayoutState({
-              modalState: 'Filter',
-              team: undefined,
-              item: undefined,
-            })
-          }
-        />
-        {newData && (
+      {newData && (
           <span
             className={cx(
               css({ fontSize: '14px', margin: '5px -5px 5px 0' }),
@@ -307,11 +299,24 @@ export default function Overview() {
         )}
         <Button
           icon="undo"
+          tooltip={i18nValuesTrainer.refreshData}
           onClick={refreshOverview}
           className={cx({ [newDataStyle]: newData })}
         />
         <Button
+          icon="filter"
+          tooltip={i18nValuesTrainer.manageColumns}
+          onClick={() =>
+            setLayoutState({
+              modalState: 'Filter',
+              team: undefined,
+              item: undefined,
+            })
+          }
+        />
+        <Button
           icon="file-excel"
+          tooltip={i18nValuesTrainer.exportTeamsData}
           onClick={() => {
             window.open(
               `${API_ENDPOINT}/GameModel/Game/${Game.selectCurrent()

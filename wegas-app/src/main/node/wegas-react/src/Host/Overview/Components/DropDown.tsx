@@ -1,5 +1,8 @@
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { DropDown } from '../../../Components/DropDown';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { MediumPadding } from '../../../css/classes';
 import {
   TrainerComponentKey,
   ReactFormatter,
@@ -19,6 +22,13 @@ export function TrainerDropDown<K extends TrainerComponentKey>({
     <DropDown
       label={componentOrRawHTML(label)}
       content={componentOrRawHTML(content)}
+      listClassName={cx(MediumPadding, css({borderRadius: themeVar.dimensions.BorderRadius, marginTop: '5px'}))}
+      containerClassName={css({
+        '.open': {
+          fontWeight: 700,
+          boxShadow: 'inset 0 0 8px 1px rgba(0, 0, 0, 0.2)',
+        }
+      })}
     />
   );
 }

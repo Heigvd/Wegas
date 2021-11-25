@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css } from '@emotion/css';
 import { themeVar } from './Theme/ThemeVars';
-import { classNameOrEmpty } from '../Helper/className';
+import { classNameOrEmpty, classOrNothing } from '../Helper/className';
 import { useOnClickOutside } from './Hooks/useOnClickOutside';
 
 export const itemStyle = css({
@@ -296,7 +296,7 @@ export function DropDown({
       className={containerClassName}
       style={style}
     >
-      <div className={itemStyle} onClick={() => setOpen(isOpen => !isOpen)}>
+      <div className={itemStyle + classOrNothing('open',  isOpen)} onClick={() => setOpen(isOpen => !isOpen)}>
         {label}
       </div>
 

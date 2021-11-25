@@ -6,7 +6,6 @@ import { Button } from '../../Components/Inputs/Buttons/Button';
 import {
   flex,
   flexRow,
-  grow,
   hideWithEllipsis,
   itemCenter,
   justifyCenter,
@@ -51,15 +50,16 @@ export function OverviewRow({
   return (
     <>
       <tr>
-        <td className={fixedCellStyle}>
-          <div className={cx(flex, flexRow, itemCenter, justifyCenter)}>
+        <td className={fixedCellStyle} title={team.getName() || ''}>
+          <div className={cx(flex, flexRow, itemCenter)}>
             <Button
               icon={showPlayers ? 'caret-down' : 'caret-right'}
               onClick={() => setShowPlayers(sp => !sp)}
+              className={css({padding: '5px'})}
             />
-            <div className={cx(flex, grow, justifyCenter, hideWithEllipsis)}>
+            <p className={hideWithEllipsis}>
               {team.getName()}
-            </div>
+            </p>
           </div>
         </td>
         {!structure && (
@@ -131,6 +131,7 @@ export function OverviewRow({
                   value={team.getNotes() || ''}
                   noResize
                   onSave={editTeam}
+                  keepInternalValue
                 />
               </div>
             </div>

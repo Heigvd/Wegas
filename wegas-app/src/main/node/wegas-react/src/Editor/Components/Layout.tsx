@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import * as React from 'react';
 import { roleCTX } from '../../Components/Contexts/RoleProvider';
-import { TumbleLoader } from '../../Components/Loader';
+import { MaxiLoader } from '../../Components/MaxiLoader';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { State } from '../../data/Reducer/reducers';
 import { useStore } from '../../data/Stores/store';
@@ -173,7 +173,7 @@ export default function Layout() {
   if (loading) {
     return (
       <div className={fullScreenLoaderStyle}>
-        <TumbleLoader />
+        <MaxiLoader />
       </div>
     );
   }

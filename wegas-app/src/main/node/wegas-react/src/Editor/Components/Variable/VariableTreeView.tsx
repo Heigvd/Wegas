@@ -230,7 +230,7 @@ export function VariableTreeView({
           )}
         </TreeView>
         <DropMenu
-          tooltip={i18nValues.add}
+          tooltip={i18nValues.addVariable}
           items={data || []}
           label={<IconComp icon="plus" />}
           onSelect={(i, e) => {
