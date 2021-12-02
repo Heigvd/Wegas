@@ -46,11 +46,11 @@ export default function ActionIconButton({
 
   const winConfirmCb = React.useCallback(() => {
     // eslint-disable-next-line no-alert
-    const result = window.confirm('Confirm ?');
+    const result = window.confirm(`${title}?`);
     if (result) {
       onClickCb();
     }
-  }, [onClickCb]);
+  }, [onClickCb, title]);
 
   React.useEffect(() => {
     let tId: number | undefined;

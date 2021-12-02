@@ -600,6 +600,10 @@ export const changeGameStatus = createAsyncThunk(
   },
 );
 
+export const finalDeleteGame = createAsyncThunk('game/finalDelete', async (gameId: number) => {
+  return await restClient.GameController.finalDelete(gameId);
+});
+
 export const updateGame = createAsyncThunk('game/updateGame', async (game: IGameWithId) => {
   return await restClient.GameController.update(game);
 });
@@ -675,6 +679,13 @@ export const changeGameModelStatus = createAsyncThunk(
   'gameModel/changeStatus',
   async ({ gameModelId, status }: { gameModelId: number; status: IGameModelWithId['status'] }) => {
     return await restClient.GameModelController.changeStatus(gameModelId, status);
+  },
+);
+
+export const finalDeleteGameModel = createAsyncThunk(
+  'gameModel/forceDelete',
+  async (gameModelId: number) => {
+    return await restClient.GameModelController.finalDelete(gameModelId);
   },
 );
 

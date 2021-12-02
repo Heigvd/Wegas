@@ -707,6 +707,10 @@ export const WegasLobbyRestClient = function (
         const path = `${baseUrl}/Lobby/GameModel/Game/${gameId}/status/${status}`;
         return sendJsonRequest<IGameWithId>('PUT', path, undefined, errorHandler);
       },
+      finalDelete: (gameId: number) => {
+        const path = `${baseUrl}/Lobby/GameModel/Game/${gameId}`;
+        return sendJsonRequest<void>('DELETE', path, undefined, errorHandler);
+      },
       findTrainers: (gameId: number) => {
         const path = `${baseUrl}/User/FindEditorsByInstance/g${gameId}`;
         return sendJsonRequest<IUserWithAccounts[]>('GET', path, undefined, errorHandler);
@@ -767,6 +771,14 @@ export const WegasLobbyRestClient = function (
       changeStatus: (gmid: number, status: IGameModelWithId['status']) => {
         const path = `${baseUrl}/Lobby/GameModel/${gmid}/status/${status}`;
         return sendJsonRequest<IGameModelWithId>('PUT', path, undefined, errorHandler);
+      },
+      finalDelete: (gmId: number) => {
+        const path = `${baseUrl}/Lobby/GameModel/Force/${gmId}`;
+        return sendJsonRequest<void>('DELETE', path, undefined, errorHandler);
+      },
+      finalDeleteAllCandidates: () => {
+        const path = `${baseUrl}/Lobby/GameModel/CleanDatabase`;
+        return sendJsonRequest<void>('DELETE', path, undefined, errorHandler);
       },
       findScenarists: (gameModelId: number) => {
         const path = `${baseUrl}/User/FindUserPermissionByInstance/gm${gameModelId}`;

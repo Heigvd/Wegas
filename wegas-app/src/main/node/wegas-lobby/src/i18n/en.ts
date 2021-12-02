@@ -92,6 +92,7 @@ export const en = {
   archive: 'move to archives',
   restore: 'unarchive',
   moveToTrash: 'move to trash',
+  finalDelete: 'delete permanantly',
   openGameAsTrainer: 'open game',
   spyGame: "Open dashboard of the player's session",
   //
@@ -248,6 +249,7 @@ export const en = {
   createEmptyModel: 'Create an empty Model',
   requestClientReload: 'Ask users to reload the page (e.g after a big update)',
   clearCache: 'Clear JPA cache',
+  deleteAllGameModels: 'Delete all scenarios and models scheduled for final deletion',
 
   userIsMemberOf: (user: string) => `"${user}" is member of these groups`,
   userPermissions: (user: string) => `"${user}" permissions`,

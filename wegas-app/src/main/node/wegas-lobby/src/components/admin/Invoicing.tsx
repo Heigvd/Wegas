@@ -95,7 +95,10 @@ function GameAdminUsers({ gameAdmin }: GameAdminModalProps): JSX.Element {
       {(gameAdmin.teams || []).length === 0 ? (
         <h3>{i18n.emptyGame}</h3>
       ) : (
-        <h3>{`${gameAdmin.declaredCount} ${i18n.declared}; ${gameAdmin.effectiveCount} ${i18n.effective}`}</h3>
+        <h3>
+          {' '}
+          {`${gameAdmin.effectiveCount} ${i18n.effective} ; ${gameAdmin.declaredCount} ${i18n.declared} `}
+        </h3>
       )}
       {(gameAdmin.teams || []).map((team, i) => {
         const count = (team.players || []).length;

@@ -167,6 +167,10 @@ export default function MainAdminPanel(): JSX.Element {
     return getRestClient().AdminStuff.requestClientReload();
   }, []);
 
+  const cleanDatabaseCb = React.useCallback(async () => {
+    return getRestClient().GameModelController.finalDeleteAllCandidates();
+  }, []);
+
   return (
     <FitSpace direction="column" overflow="auto" align="flex-start" className={panelPadding}>
       <h3>{i18n.adminConsole}</h3>
@@ -226,6 +230,14 @@ export default function MainAdminPanel(): JSX.Element {
         onClick={createModelCb}
       >
         {i18n.createEmptyModel}
+      </ActionIconButton>
+      <ActionIconButton
+        title={i18n.deleteAllGameModels}
+        icon={faEraser}
+        shouldConfirm="SOFT_RIGHT"
+        onClick={cleanDatabaseCb}
+      >
+        {i18n.deleteAllGameModels}
       </ActionIconButton>
     </FitSpace>
   );

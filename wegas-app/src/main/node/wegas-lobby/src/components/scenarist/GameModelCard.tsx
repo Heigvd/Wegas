@@ -22,7 +22,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import { IGameModelWithId } from 'wegas-ts-api';
-import { changeGameModelStatus, duplicateGameModel } from '../../API/api';
+import { changeGameModelStatus, duplicateGameModel, finalDeleteGameModel } from '../../API/api';
 import { entityIs } from '../../API/entityHelper';
 import { getDisplayName } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
@@ -65,6 +65,10 @@ export default function GameModelCard({ gameModel }: GameModelCardProps): JSX.El
 
   const deleteCb = React.useCallback(async () => {
     return dispatch(changeGameModelStatus({ gameModelId: gameModelId, status: 'DELETE' }));
+  }, [dispatch, gameModelId]);
+
+  const finalDeleteCb = React.useCallback(async () => {
+    return dispatch(finalDeleteGameModel(gameModelId));
   }, [dispatch, gameModelId]);
 
   const createdByAccount = useAccount(gameModel.createdById);
@@ -162,7 +166,7 @@ export default function GameModelCard({ gameModel }: GameModelCardProps): JSX.El
               icon={faArchive}
               title={i18n.archive}
               onClick={archiveCb}
-              shouldConfirm='SOFT_CENTER'
+              shouldConfirm="SOFT_CENTER"
             />
           ) : null}
 
@@ -177,7 +181,7 @@ export default function GameModelCard({ gameModel }: GameModelCardProps): JSX.El
               />
               <ActionIconButton
                 className={cardSecButtonStyle}
-                shouldConfirm='HARD'
+                shouldConfirm="HARD"
                 icon={faTrash}
                 title={i18n.moveToTrash}
                 onClick={deleteCb}
@@ -192,6 +196,13 @@ export default function GameModelCard({ gameModel }: GameModelCardProps): JSX.El
                 icon={faTrashRestore}
                 title={i18n.restore}
                 onClick={archiveCb}
+              />
+              <ActionIconButton
+                className={cardSecButtonStyle}
+                shouldConfirm="HARD"
+                icon={faTrash}
+                title={i18n.finalDelete}
+                onClick={finalDeleteCb}
               />
             </>
           ) : null}

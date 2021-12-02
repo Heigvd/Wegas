@@ -19,7 +19,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
 import { IGameModelWithId, IGameWithId } from 'wegas-ts-api';
-import { changeGameStatus, getUser, updateGame } from '../../API/api';
+import { changeGameStatus, finalDeleteGame, getUser, updateGame } from '../../API/api';
 import { entityIs } from '../../API/entityHelper';
 import { getDisplayName } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
@@ -113,6 +113,10 @@ export default function GameCard({ game, gameModel }: GameCardProps): JSX.Elemen
     return dispatch(changeGameStatus({ gameId: game.id, status: 'DELETE' }));
   }, [dispatch, game.id]);
 
+  const finalDeleteCb = React.useCallback(async () => {
+    return dispatch(finalDeleteGame(game.id));
+  }, [dispatch, game.id]);
+
   //  React.useEffect(() => {
   //    if (gameModel == null && gameModelId != null) {
   //      // Load gameModel !
@@ -198,7 +202,7 @@ export default function GameCard({ game, gameModel }: GameCardProps): JSX.Elemen
           />
           <ActionIconButton
             className={cardSecButtonStyle}
-            shouldConfirm={true}
+            shouldConfirm="HARD"
             icon={faTrash}
             title={i18n.moveToTrash}
             onClick={deleteCb}
@@ -213,6 +217,13 @@ export default function GameCard({ game, gameModel }: GameCardProps): JSX.Elemen
             icon={faTrashRestore}
             title={i18n.restore}
             onClick={archiveCb}
+          />
+          <ActionIconButton
+            className={cardSecButtonStyle}
+            shouldConfirm="HARD"
+            icon={faTrash}
+            title={i18n.finalDelete}
+            onClick={finalDeleteCb}
           />
         </>
       ) : null}

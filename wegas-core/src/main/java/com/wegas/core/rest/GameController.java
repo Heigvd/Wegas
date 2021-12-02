@@ -9,11 +9,9 @@ package com.wegas.core.rest;
 
 import com.wegas.core.Helper.EmailAttributes;
 import com.wegas.core.XlsxSpreadsheet;
-import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
@@ -21,7 +19,6 @@ import com.wegas.core.persistence.game.Game.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -88,16 +85,7 @@ public class GameController {
      *
      */
     @Inject
-    private TeamFacade teamFacade;
-
-    /**
-     *
-     */
-    @Inject
     private PlayerFacade playerFacade;
-
-    @Inject
-    private PopulatorFacade populatorFacade;
 
     /**
      * @param entityId

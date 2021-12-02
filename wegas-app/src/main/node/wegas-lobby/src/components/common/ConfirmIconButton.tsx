@@ -29,7 +29,12 @@ const relative = css({
 const bubbleStyle = (position: 'LEFT' | 'RIGHT' | 'CENTER') => {
   const left = position === 'LEFT' ? '100%' : position === 'CENTER' ? '50%' : '0%';
 
-  const translate = position === 'LEFT' ? 'translate(-100%, 0)' : position === 'CENTER' ? 'translate(-50%, 0)' : 'translate(0%, 0)';
+  const translate =
+    position === 'LEFT'
+      ? 'translate(-100%, 0)'
+      : position === 'CENTER'
+      ? 'translate(-50%, 0)'
+      : 'translate(0%, 0)';
 
   const caretLeft =
     position === 'RIGHT'
