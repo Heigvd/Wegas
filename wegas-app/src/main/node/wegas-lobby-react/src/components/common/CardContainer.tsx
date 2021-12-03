@@ -131,7 +131,7 @@ export function WindowedContainer<T>({
         }
 
         if (nbBelow > total) {
-          nbAbove = Math.max(0, total - data.current.numberOfItem)
+          nbAbove = Math.max(0, total - data.current.numberOfItem);
         }
 
         data.current.paddingTop = nbAbove * perItem;

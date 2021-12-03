@@ -24,7 +24,9 @@ export interface UserState {
   users: Record<number, UserDetail | 'LOADING'>;
   accounts: Record<number, IAbstractAccountWithId>;
   roles: Record<number, IRoleWithId>;
+  /** userId to list of role id*/
   userRoles: Record<number, number[] | 'LOADING'>;
+  /** roleId to list of user id*/
   roleUsers: Record<number, number[] | 'LOADING'>;
   permissions: Record<number, IPermissionWithId>;
 }
@@ -112,6 +114,23 @@ function updateUser(state: UserState, user: IUserWithAccounts) {
         state.accounts[a.id] = a;
       });
     }
+  }
+}
+
+function deleteUser(state: UserState, user: IUserWithId, account: IAbstractAccountWithId) {
+  delete state.users[user.id];
+  delete state.accounts[account.id];
+
+  const roleIds = state.userRoles[user.id];
+
+  if (roleIds != null && roleIds != 'LOADING') {
+    roleIds.forEach(roleId => {
+      const users = state.roleUsers[roleId];
+      if (users != null && users != 'LOADING') {
+        removeItem(users, user.id);
+      }
+    });
+    delete state.userRoles[user.id];
   }
 }
 
@@ -225,6 +244,9 @@ const userSlice = createSlice({
       })
       .addCase(API.updateAccount.fulfilled, (state, action) => {
         state.accounts[action.payload.id] = action.payload;
+      })
+      .addCase(API.deleteAccount.fulfilled, (state, action) => {
+        deleteUser(state, action.payload, action.meta.arg);
       })
       .addCase(API.runAs.fulfilled, () => {
         return initialState;

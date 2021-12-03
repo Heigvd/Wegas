@@ -525,6 +525,10 @@ export const WegasLobbyRestClient = function (
         const path = `${baseUrl}/Shadow/User/Account/${account.id}`;
         return sendJsonRequest<IAbstractAccountWithId>('PUT', path, account, errorHandler);
       },
+      deleteAccount: (account: IAbstractAccountWithId) => {
+        const path = `${baseUrl}/Shadow/User/Account/${account.id}`;
+        return sendJsonRequest<IUserWithAccounts>('DELETE', path, undefined, errorHandler);
+      },
       giveRole: (userId: number, roleId: number) => {
         const path = `${baseUrl}/Shadow/User/${userId}/Add/${roleId}`;
         return sendJsonRequest<IUserWithAccounts>('PUT', path, undefined, errorHandler);

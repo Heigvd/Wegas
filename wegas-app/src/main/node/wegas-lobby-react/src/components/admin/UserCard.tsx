@@ -12,6 +12,7 @@ import {
   faMinusCircle,
   faPen,
   faPlusCircle,
+  faTrash,
   faUsers,
   faUserSecret,
 } from '@fortawesome/free-solid-svg-icons';
@@ -21,6 +22,7 @@ import Select from 'react-select';
 import { IPermission, IUserWithId } from 'wegas-ts-api';
 import {
   createPermissionForUser,
+  deleteAccount,
   getAllRoles,
   getFullUser,
   getGameByIds,
@@ -273,6 +275,12 @@ export default function UserCard({
     }
   }, [dispatch, accountId]);
 
+  const deleteAccountCb = React.useCallback(async () => {
+    if (entityIs(account, 'AbstractAccount', true)) {
+      return dispatch(deleteAccount(account));
+    }
+  }, [dispatch, account]);
+
   return (
     <Card
       key={user.id}
@@ -331,6 +339,13 @@ export default function UserCard({
       </OpenCloseModal>
 
       <IconButton icon={faUserSecret} onClick={sudoCb} />
+
+      <ActionIconButton
+        icon={faTrash}
+        shouldConfirm="HARD"
+        title={i18n.removeAccount}
+        onClick={deleteAccountCb}
+      />
 
       {children}
     </Card>
