@@ -33,6 +33,7 @@ import ActionIconButton from '../common/ActionIconButton';
 import Card, { CardMainButton, cardSecButtonStyle } from '../common/Card';
 import FitSpace from '../common/FitSpace';
 import OpenCloseModal from '../common/OpenCloseModal';
+import StatusIcon from '../common/StatusIcon';
 import { cardDetailsStyle, cardSubDetailsStyle, cardTitleStyle } from '../styling/style';
 import GameModelSettings from './GameModelSettings';
 import GameModelVersioning from './GameModelVersioning';
@@ -100,6 +101,8 @@ export default function GameModelCard({ gameModel }: GameModelCardProps): JSX.El
         ) : null}
         <div className={cardSubDetailsStyle}>{gameModel.comments}</div>
       </FitSpace>
+
+      <StatusIcon status={gameModel.status} />
 
       {permission === 'Edit' ? (
         <>

@@ -31,6 +31,7 @@ import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import OnBlurInput from '../common/OnBlurInput';
 import OpenCloseModal from '../common/OpenCloseModal';
+import StatusIcon from '../common/StatusIcon';
 import Toggler from '../common/Toggler';
 import { cardDetailsStyle, cardSubDetailsStyle, cardTitleStyle } from '../styling/style';
 import GameSettings from './GameSettings';
@@ -60,7 +61,7 @@ function EditKey({ game }: { game: IGameWithId }) {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
 
-  //  const [open, setOpen] = React.useState(game.access === 'OPEN');
+  // const [open, setOpen] = React.useState(game.access === 'OPEN');
   const open = game.access === 'OPEN';
 
   const updateCb = React.useCallback(
@@ -113,12 +114,12 @@ export default function GameCard({ game, gameModel }: GameCardProps): JSX.Elemen
     return dispatch(changeGameStatus({ gameId: game.id, status: 'DELETE' }));
   }, [dispatch, game.id]);
 
-  //  React.useEffect(() => {
-  //    if (gameModel == null && gameModelId != null) {
-  //      // Load gameModel !
-  //      dispatch(getGameModelById(gameModelId));
-  //    }
-  //  }, [gameModel, gameModelId, dispatch]);
+  // React.useEffect(() => {
+  //  if (gameModel == null && gameModelId != null) {
+  //   // Load gameModel !
+  //   dispatch(getGameModelById(gameModelId));
+  //  }
+  // }, [gameModel, gameModelId, dispatch]);
 
   const createdByAccount = useAccount(game.createdById);
   const createdBy = entityIs(createdByAccount, 'AbstractAccount', true) ? (
@@ -150,6 +151,8 @@ export default function GameCard({ game, gameModel }: GameCardProps): JSX.Elemen
         <div className={cardDetailsStyle}>{`${i18n.basedOnScenario} "${gameModel.name}"`}</div>
         <div className={cardSubDetailsStyle}>{gameModel.comments}</div>
       </FitSpace>
+
+      <StatusIcon status={game.status} />
 
       <EditKey game={game} />
 
