@@ -39,6 +39,7 @@ interface ValidateProps<T> extends DisabledReadonly {
   onValidate: (value: T) => void;
   onCancel: () => void;
   children: (value: T, onChange: (value: T) => void) => JSX.Element;
+  vertical?: boolean;
 }
 
 export function Validate<T>({
@@ -48,6 +49,7 @@ export function Validate<T>({
   children,
   disabled,
   readOnly,
+  vertical,
 }: ValidateProps<T>) {
   const [savedValue, setSavedValue] = React.useState<T>(value);
 
@@ -56,11 +58,24 @@ export function Validate<T>({
   }, [value]);
 
   return (
-    <div className={cx(flex, flexRow, itemCenter, validatorStyle)}>
+    <div
+      className={cx(
+        flex,
+        { [flexRow]: !vertical, [flexColumn]: vertical },
+        itemCenter,
+        validatorStyle,
+      )}
+    >
       <div className={cx(grow, inputStyle)}>
         {children(savedValue, setSavedValue)}
       </div>
-      <div className={cx(flex, flexColumn, inputStyle)}>
+      <div
+        className={cx(
+          flex,
+          { [flexColumn]: !vertical, [flexRow]: vertical },
+          inputStyle,
+        )}
+      >
         <Button
           icon="times"
           onClick={() => onCancel()}

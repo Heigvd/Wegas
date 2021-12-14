@@ -6,7 +6,7 @@ import {
   ComponentWithFormFlexValues,
   flexValuesSchema,
 } from '../../../Editor/Components/FormView/ComponentWithForm';
-import { StateMachineEditor } from '../../../Editor/Components/StateMachineEditor';
+import { StateMachineEditor } from '../../../Editor/Components/StateMachine/StateMachineEditor';
 import { useScript } from '../../Hooks/useScript';
 import {
   pageComponentFactory,
@@ -19,12 +19,17 @@ interface PlayerStateMachineProps extends WegasComponentProps {
   stateMachine?: IScript;
   title?: IScript;
   flexValues?: ComponentWithFormFlexValues;
+  /**
+   * Simplifies interface for content creation
+   */
+  lite?: boolean;
 }
 
 export default function PlayerStateMachine({
   stateMachine,
   title,
   flexValues,
+  lite,
   context,
   className,
   style,
@@ -59,6 +64,7 @@ export default function PlayerStateMachine({
             forceLocalDispatch
             disabled={options.disabled || options.locked}
             readOnly={options.readOnly}
+            lite={lite}
           />
         );
       }}
@@ -81,6 +87,7 @@ registerComponent(
       }),
       title: schemaProps.scriptString({ label: 'Title', richText: true }),
       flexValues: flexValuesSchema,
+      lite: schemaProps.boolean({ label: 'Easy editor', value: true }),
     },
     allowedVariables: ['FSMDescriptor', 'DialogueDescriptor'],
   }),
