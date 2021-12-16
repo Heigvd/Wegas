@@ -40,6 +40,7 @@ interface ValidateProps<T> extends DisabledReadonly {
   onCancel: () => void;
   children: (value: T, onChange: (value: T) => void) => JSX.Element;
   vertical?: boolean;
+  validatorClassName?: string;
 }
 
 export function Validate<T>({
@@ -50,6 +51,7 @@ export function Validate<T>({
   disabled,
   readOnly,
   vertical,
+  validatorClassName = validatorStyle,
 }: ValidateProps<T>) {
   const [savedValue, setSavedValue] = React.useState<T>(value);
 
@@ -63,7 +65,7 @@ export function Validate<T>({
         flex,
         { [flexRow]: !vertical, [flexColumn]: vertical },
         itemCenter,
-        validatorStyle,
+        validatorClassName,
       )}
     >
       <div className={cx(grow, inputStyle)}>

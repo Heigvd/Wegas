@@ -25,7 +25,7 @@ import { entityIs } from '../../../data/entities';
 import { deleteState } from '../../../data/Reducer/globalState';
 import { store } from '../../../data/Stores/store';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
-import { translate } from '../FormView/translatable';
+import { createTranslatableContent, translate } from '../FormView/translatable';
 import { IconComp } from '../Views/FontAwesome';
 import { StateProcess, TransitionFlowLine } from './StateMachineEditor';
 
@@ -107,7 +107,7 @@ export function LiteStateProcessComponentFactory<
           if (entityIs(state, 'State')) {
             state.label = value;
           } else {
-            state.text.translations[lang].translation = value;
+            state.text = createTranslatableContent(lang, value, state.text);
           }
         })(stateMachine);
 

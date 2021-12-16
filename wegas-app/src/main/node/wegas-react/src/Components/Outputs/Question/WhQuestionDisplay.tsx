@@ -2,41 +2,74 @@ import { cx } from '@emotion/css';
 import { cloneDeep } from 'lodash-es';
 import * as React from 'react';
 import {
-  IWhQuestionInstance,
   IBooleanInstance,
-  INumberInstance,
   INumberDescriptor,
+  INumberInstance,
   IStringInstance,
   IWhQuestionDescriptor,
+  IWhQuestionInstance,
 } from 'wegas-ts-api';
-import { halfOpacity } from '../../../css/classes';
+import { autoMargin, halfOpacity } from '../../../css/classes';
+import { Actions } from '../../../data';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
+import { State } from '../../../data/Reducer/reducers';
 import {
-  validateQuestion,
   updateInstance,
+  validateQuestion,
 } from '../../../data/Reducer/VariableInstanceReducer';
 import {
-  getChoices,
   IWhChoiceDescriptor,
   IWhChoiceInstance,
 } from '../../../data/scriptable/impl/QuestionDescriptor';
 import { select } from '../../../data/selectors/VariableDescriptorSelector';
-import { StoreDispatch } from '../../../data/Stores/store';
+import { store, StoreDispatch } from '../../../data/Stores/store';
 import {
+  createTranslatableContent,
   translate,
-  createTranslation,
 } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { DropMenu } from '../../DropMenu';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';
 import { SimpleInput } from '../../Inputs/SimpleInput';
-import { autoMargin } from '../../../css/classes';
+import { isActionAllowed } from '../../PageComponents/tools/options';
 import { ChoiceContainer, choiceInputStyle } from './ChoiceContainer';
 import { questionStyle } from './Question';
-import { TranslatableText } from '../HTMLText';
-import { isActionAllowed } from '../../PageComponents/tools/options';
+import { QuestionDescription } from './QuestionDescription';
+import { makeMenuFromClass } from './QuestionList';
+
+interface AddChoiceMenuProps {
+  questionD: IWhQuestionDescriptor;
+}
+
+export function AddChoiceMenu({ questionD }: AddChoiceMenuProps) {
+  const { lang } = React.useContext(languagesCTX);
+  const items = ['Text', 'String', 'StaticText', 'Number', 'Boolean'].map(
+    makeMenuFromClass,
+  );
+  return (
+    <DropMenu
+      items={items}
+      icon="plus"
+      onSelect={item => {
+        store.dispatch(
+          Actions.VariableDescriptorActions.createDescriptor(
+            {
+              '@class': item.value.descriptor,
+              label: createTranslatableContent(lang, 'Réponse'),
+              defaultInstance: {
+                '@class': item.value.instance,
+              },
+            } as unknown as IVariableDescriptor,
+            questionD,
+          ),
+        );
+      }}
+    />
+  );
+}
 
 interface WhQuestionInfo {
   questionD: Readonly<IWhQuestionDescriptor>;
@@ -45,17 +78,23 @@ interface WhQuestionInfo {
   choicesI: (Readonly<IWhChoiceInstance> | undefined)[];
 }
 
-export function whQuestionInfo(
-  question: IWhQuestionDescriptor,
-): WhQuestionInfo {
-  const questionD = select<IWhQuestionDescriptor>(question.id)!;
-  const choicesD = getChoices(question);
-  const choicesI = choicesD.map(c => getInstance<IWhChoiceInstance>(c));
-  return {
-    questionD,
-    questionI: getInstance(question),
-    choicesD,
-    choicesI,
+export function whQuestionInfo(question: IWhQuestionDescriptor) {
+  return function (s: Readonly<State>): WhQuestionInfo {
+    const questionD = select<IWhQuestionDescriptor>(question.id)!;
+    const choicesD = questionD.itemsIds
+      .map(id => s.variableDescriptors[id])
+      .filter(function (
+        entity: IWhChoiceDescriptor | undefined,
+      ): entity is IWhChoiceDescriptor {
+        return entity != null;
+      });
+    const choicesI = choicesD.map(c => getInstance<IWhChoiceInstance>(c));
+    return {
+      questionD,
+      questionI: getInstance(question),
+      choicesD,
+      choicesI,
+    };
   };
 }
 
@@ -117,10 +156,12 @@ function WhChoiceDisplay({
           value={translate((choiceI as IStringInstance).trValue, lang)}
           onChange={v => {
             const newChoiceI = cloneDeep(choiceI as IStringInstance);
-            newChoiceI.trValue.translations[lang] = createTranslation(
+            newChoiceI.trValue = createTranslatableContent(
               lang,
               String(v),
+              newChoiceI.trValue,
             );
+
             onChange(newChoiceI);
           }}
           disabled={questionI.validated || disabled}
@@ -131,16 +172,18 @@ function WhChoiceDisplay({
           value={translate((choiceI as IStringInstance).trValue, lang)}
           onChange={v => {
             const newChoiceI = cloneDeep(choiceI as IStringInstance);
-            newChoiceI.trValue.translations[lang] = createTranslation(
+            newChoiceI.trValue = createTranslatableContent(
               lang,
               String(v),
+              newChoiceI.trValue,
             );
+
             onChange(newChoiceI);
           }}
           disabled={questionI.validated || disabled}
           readOnly={readOnly}
           inline={false}
-          keepInternalValue
+          // keepInternalValue
         />
       )}
     </ChoiceContainer>
@@ -149,6 +192,7 @@ function WhChoiceDisplay({
 
 interface WhQuestionDisplayProps extends WhQuestionInfo, DisabledReadonly {
   dispatch: StoreDispatch;
+  editMode?: boolean;
 }
 
 export function WhQuestionDisplay({
@@ -159,9 +203,14 @@ export function WhQuestionDisplay({
   choicesI,
   disabled,
   readOnly,
+  editMode,
 }: WhQuestionDisplayProps) {
   const [choicesValues, setChoicesValues] =
     React.useState<(IWhChoiceInstance | undefined)[]>(choicesI);
+
+  React.useEffect(() => {
+    setChoicesValues(choicesI);
+  }, [choicesI]);
 
   if (questionI == null || !questionI.active) {
     return null;
@@ -173,9 +222,10 @@ export function WhQuestionDisplay({
         [halfOpacity]: disabled,
       })}
     >
-      <TranslatableText content={questionD.description} />
+      <QuestionDescription questionD={questionD} editMode={editMode} />
       {choicesD.map((choiceD, i) => {
-        const choiceI = choicesI[i];
+        // const choiceI = choicesI[i];
+        const choiceI = choicesValues[i];
         if (choiceI == null) {
           return <span key={choiceD.id} />;
         }
@@ -185,7 +235,7 @@ export function WhQuestionDisplay({
             key={choiceD.id}
             onChange={newChoiceI =>
               setChoicesValues(oldValues => {
-                const newValues = oldValues;
+                const newValues = cloneDeep(oldValues);
                 newValues[i] = newChoiceI;
                 return newValues;
               })
@@ -198,6 +248,7 @@ export function WhQuestionDisplay({
           />
         );
       })}
+      <AddChoiceMenu questionD={questionD} />
       <div className={cx(choiceInputStyle)}>
         <Button
           className={autoMargin}

@@ -26,7 +26,7 @@ import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
 import { store } from '../../../data/Stores/store';
 import { classOrNothing } from '../../../Helper/className';
-import { translate } from '../FormView/translatable';
+import { createTranslatableContent, translate } from '../FormView/translatable';
 import { EditButton, TrashButton } from './LiteProcessComponent';
 import {
   deleteTransition,
@@ -91,7 +91,11 @@ export function LiteFlowLineComponentFactory<
           if (entityIs(transition, 'Transition')) {
             transition.label = value;
           } else {
-            transition.actionText.translations[lang].translation = value;
+            transition.actionText = createTranslatableContent(
+              lang,
+              value,
+              transition.actionText,
+            );
           }
         })(stateMachine);
 

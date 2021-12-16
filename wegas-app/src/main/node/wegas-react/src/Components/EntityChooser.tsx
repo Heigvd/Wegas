@@ -1,6 +1,5 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
-import { deepDifferent } from './Hooks/storeHookFactory';
+import * as React from 'react';
 import {
   flex,
   flexColumn,
@@ -9,8 +8,9 @@ import {
   halfOpacity,
   justifyCenter,
 } from '../css/classes';
-import { themeVar } from './Theme/ThemeVars';
 import { classNameOrEmpty } from '../Helper/className';
+import { deepDifferent } from './Hooks/storeHookFactory';
+import { themeVar } from './Theme/ThemeVars';
 
 const entityChooser = css({
   width: '100%',
@@ -82,6 +82,7 @@ interface EntityChooserProps<E extends IAbstractEntity>
   entityLabel: (entity: E) => React.ReactNode;
   customLabelStyle?: (entity: E) => string | undefined;
   autoOpenFirst?: boolean;
+  addComponent?: React.ReactNode;
 }
 
 export function EntityChooser<E extends IAbstractEntity>({
@@ -92,6 +93,7 @@ export function EntityChooser<E extends IAbstractEntity>({
   autoOpenFirst,
   disabled,
   readOnly,
+  addComponent,
 }: EntityChooserProps<E>) {
   const [entity, setEntity] = React.useState<E>();
 
@@ -145,10 +147,11 @@ export function EntityChooser<E extends IAbstractEntity>({
             {/* <div className={labelArrow} /> */}
           </div>
         ))}
+        {addComponent}
       </div>
       {entity != null && (
         <div className={cx(flex, entityContainer, grow, justifyCenter)}>
-          {<Children entity={entity} disabled={disabled} readOnly={readOnly} />}
+          <Children entity={entity} disabled={disabled} readOnly={readOnly} />
         </div>
       )}
     </div>

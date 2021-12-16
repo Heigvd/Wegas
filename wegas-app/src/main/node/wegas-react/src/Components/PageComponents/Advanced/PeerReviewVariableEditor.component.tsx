@@ -1,4 +1,5 @@
 import { css, cx } from '@emotion/css';
+import u from 'immer';
 import * as React from 'react';
 import {
   INumberDescriptor,
@@ -8,6 +9,7 @@ import {
   ITextInstance,
   SPeerReviewDescriptor,
 } from 'wegas-ts-api';
+import { useLiveUpdate } from '../../../API/websocket';
 import {
   defaultMarginTop,
   flex,
@@ -26,10 +28,7 @@ import { instantiate } from '../../../data/scriptable';
 import { GameModel, Player, Team } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { store, useStore } from '../../../data/Stores/store';
-import {
-  createTranslatableContent,
-  createTranslation,
-} from '../../../Editor/Components/FormView/translatable';
+import { createTranslatableContent } from '../../../Editor/Components/FormView/translatable';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../../i18n/peerReview/peerReview';
@@ -50,8 +49,6 @@ import {
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
-import u from 'immer';
-import { useLiveUpdate } from '../../../API/websocket';
 
 const submissionStyle = css({
   border: '1px solid ' + themeVar.colors.DisabledColor,
@@ -93,8 +90,9 @@ export default function PeerReviewVariableEditor({
     deepDifferent,
   );
 
-  const [value, setValue] =
-    React.useState<string | number | undefined>(storeValue);
+  const [value, setValue] = React.useState<string | number | undefined>(
+    storeValue,
+  );
 
   React.useEffect(() => {
     setValue(storeValue);
@@ -148,10 +146,11 @@ export default function PeerReviewVariableEditor({
             u((variable: INumberInstance | ITextInstance) => {
               if (entityIs(variable, 'NumberInstance')) {
                 variable.value = Number(val);
-              } else if (variable.trValue != null) {
-                variable.trValue.translations[lang] = createTranslation(
+              } else {
+                variable.trValue = createTranslatableContent(
                   lang,
                   String(val),
+                  variable.trValue,
                 );
               }
               return variable;

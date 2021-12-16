@@ -1,16 +1,25 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { IChoiceDescriptor, IChoiceInstance } from 'wegas-ts-api';
+import {
+  IChoiceDescriptor,
+  IChoiceInstance,
+  IQuestionDescriptor,
+} from 'wegas-ts-api';
 import { halfOpacity } from '../../../css/classes';
+import { Actions } from '../../../data';
 import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
-import { StoreDispatch } from '../../../data/Stores/store';
+import { store, StoreDispatch } from '../../../data/Stores/store';
+import { createTranslatableContent } from '../../../Editor/Components/FormView/translatable';
+import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { DropMenu } from '../../DropMenu';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { themeVar } from '../../Theme/ThemeVars';
-import { TranslatableText } from '../HTMLText';
 import { ChoiceContainer } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
+import { QuestionDescription } from './QuestionDescription';
+import { makeMenuFromClass } from './QuestionList';
 import { RepliesDisplay } from './Reply';
 
 const simpleChoiceHoverStyle = css({
@@ -21,11 +30,42 @@ const simpleChoiceHoverStyle = css({
   },
 });
 
+interface AddChoiceMenuProps {
+  questionD: IQuestionDescriptor;
+}
+
+export function AddChoiceMenu({ questionD }: AddChoiceMenuProps) {
+  const { lang } = React.useContext(languagesCTX);
+  const items = ['SingleResultChoice', 'Choice'].map(makeMenuFromClass);
+  return (
+    <DropMenu
+      items={items}
+      icon="plus"
+      onSelect={item => {
+        store.dispatch(
+          Actions.VariableDescriptorActions.createDescriptor(
+            {
+              '@class': item.value.descriptor,
+              label: createTranslatableContent(lang, ''),
+              description: createTranslatableContent(lang, 'Réponse'),
+              defaultInstance: {
+                '@class': 'ChoiceInstance',
+              },
+            } as unknown as IVariableDescriptor,
+            questionD,
+          ),
+        );
+      }}
+    />
+  );
+}
+
 interface SimpleChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
   choiceI: IChoiceInstance;
   onValidate: (choice: IChoiceDescriptor) => void;
   replyAllowed: boolean;
+  editMode?: boolean;
 }
 
 function SimpleChoiceDisplay({
@@ -33,6 +73,7 @@ function SimpleChoiceDisplay({
   choiceI,
   onValidate,
   replyAllowed,
+  editMode,
 }: SimpleChoiceDisplayProps) {
   const { active, replies } = choiceI;
   const { maxReplies } = choiceD;
@@ -53,12 +94,14 @@ function SimpleChoiceDisplay({
       onClick={() => onValidate(choiceD)}
       className={simpleChoiceHoverStyle}
       hasBeenSelected={hasBeenValidated}
+      editMode={editMode}
     />
   );
 }
 
 interface SimpleQuestionDisplayProps extends QuestionInfo, DisabledReadonly {
   dispatch: StoreDispatch;
+  editMode?: boolean;
 }
 
 export function SimpleQuestionDisplay({
@@ -68,6 +111,7 @@ export function SimpleQuestionDisplay({
   choicesD,
   choicesI,
   replies,
+  editMode,
   ...options
 }: SimpleQuestionDisplayProps) {
   const validatedReplies = replies.filter(r => r.validated);
@@ -94,7 +138,7 @@ export function SimpleQuestionDisplay({
         [halfOpacity]: options.disabled,
       })}
     >
-      <TranslatableText content={questionD.description} />
+      <QuestionDescription questionD={questionD} editMode={editMode} />
       {choicesD.map((choiceD, i) => {
         const choiceI = choicesI[i];
         if (choiceI == null) {
@@ -102,14 +146,16 @@ export function SimpleQuestionDisplay({
         }
         return (
           <SimpleChoiceDisplay
-            key={choiceD.id}
+            key={`${choiceD.id}${i}`}
             onValidate={onChoiceValidate}
             choiceD={choiceD}
             choiceI={choiceI}
             replyAllowed={canReply}
+            editMode={editMode}
           />
         );
       })}
+      <AddChoiceMenu questionD={questionD} />
       <RepliesDisplay replies={replies} />
     </div>
   );
