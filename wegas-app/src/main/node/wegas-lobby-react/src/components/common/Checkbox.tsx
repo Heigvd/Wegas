@@ -6,16 +6,16 @@
  * Licensed under the MIT License
  */
 
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { faCheckSquare, faSquare } from '@fortawesome/free-regular-svg-icons';
 import * as React from 'react';
-import { errorStyle, warningStyle } from '../styling/style';
+import { errorStyle, smallTextStyle } from '../styling/style';
 import Flex from './Flex';
 import IconButton from './IconButton';
 
 export interface Props {
   label?: React.ReactNode;
-  warning?: string;
+  warning?: string | React.ReactNode;
   error?: string;
   title?: string;
   disabled?: boolean;
@@ -42,8 +42,8 @@ export default function Checkbox({
   return (
     <Flex className={className} direction="column">
       <Flex justify="space-between">
-        {warning ? <div className={warningStyle}>{warning}</div> : null}
-        {error ? <div className={errorStyle}>{error}</div> : null}
+        {warning ? <div className={cx(errorStyle, smallTextStyle)}>{warning}</div> : null}
+        {error ? <div className={cx(errorStyle, smallTextStyle)}>{error}</div> : null}
       </Flex>
       <Flex
         className={disabled ? disabledStyle : enabledStyle}

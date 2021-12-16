@@ -119,37 +119,11 @@ export const semiDarkMode = cx(
   }),
 );
 
-export const melonColors = css({
-  '--bgColor': '#FB8160',
-  '--fgColor': white.toString(),
-  '--disabledFgColor': white.clone().darken(10).toString(),
-  '--secBgColor': '#FEFEFE',
-  '--secFgColor': '#666',
-  '--hoverBgColor': '#404040',
-  '--hoverFgColor': white.toString(),
-  '--linkColor': 'white',
-  '--linkHoverColor': white.toString(),
-  '--linkHoverBgColor': '#FB8160',
-  '--focusColor': 'var(--pictoSteelBlue)',
-  '--warningColor': white.toString(),
-});
-
-export const melonMode = cx(
-  melonColors,
-  css({
-    backgroundColor: 'var(--bgColor)',
-    color: 'var(--fgColor)',
-    '& a': {
-      color: 'var(--linkColor)',
-    },
-  }),
-);
-
 export const lightModeColors = css({
   '--bgColor': '#FEFEFE',
   '--fgColor': '#666',
   '--disabledFgColor': '#999',
-  '--secBgColor': '#FEFEFE',
+  '--secBgColor': '#FFF',
   '--secFgColor': '#666',
   '--hoverBgColor': '#FFF0',
   '--hoverFgColor': '#999',
@@ -421,7 +395,11 @@ export const warningStyle = css({
 });
 
 export const errorStyle = css({
-  color: 'var(--dangerColor)',
+  color: 'var(--errorColor)',
+});
+
+export const smallTextStyle = css({
+fontSize: '0.8rem',
 });
 
 export const labelStyle = css({
