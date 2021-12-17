@@ -2,7 +2,12 @@ import { css, cx } from '@emotion/css';
 import produce from 'immer';
 import * as React from 'react';
 import { IChoiceDescriptor, ISingleResultChoiceDescriptor } from 'wegas-ts-api';
-import { flex, flexColumn, flexRow } from '../../../css/classes';
+import {
+  flex,
+  flexColumn,
+  flexDistribute,
+  flexRow,
+} from '../../../css/classes';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
 import { IWhChoiceDescriptor } from '../../../data/scriptable/impl/QuestionDescriptor';
@@ -15,6 +20,7 @@ import { classNameOrEmpty } from '../../../Helper/className';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import { Button } from '../../Inputs/Buttons/Button';
+import { TumbleLoader } from '../../Loader';
 import { themeVar } from '../../Theme/ThemeVars';
 import { HTMLText } from '../HTMLText';
 import { buttonFactory, handleStyle } from './QuestionList';
@@ -31,6 +37,10 @@ export const choiceContainerStyle = css({
   '&.selected': {
     backgroundColor: themeVar.colors.PrimaryColor,
     color: themeVar.colors.LightTextColor,
+  },
+  '&.editing': {
+    borderRadius: themeVar.dimensions.BorderRadius,
+    backgroundColor: themeVar.colors.HeaderColor,
   },
   '&.disabled': {
     backgroundColor: themeVar.colors.BackgroundColor,
@@ -64,6 +74,18 @@ export const choiceInputStyle = css({
   flexDirection: 'column',
   justifyContent: 'center',
   padding: '5px',
+});
+const editButtonsContainer = css({
+  margin: '5px',
+});
+const clickedOverlay = css({
+  position: 'absolute',
+  width: '100%',
+  height: '100%',
+  backgroundColor: 'rgba(128,128,128,0.228)',
+  borderRadius: themeVar.dimensions.BorderRadius,
+  display: 'flex',
+  alignItems: 'center',
 });
 
 interface ChoiceContainerProps {
@@ -104,6 +126,7 @@ export function ChoiceContainer({
 
   const [showHandle, setShowHandle] = React.useState(false);
   const [isEditing, setEditing] = React.useState(false);
+  const [clicked, setClicked] = React.useState(false);
   const { lang } = React.useContext(languagesCTX);
 
   const Edit = buttonFactory('pen');
@@ -130,6 +153,10 @@ export function ChoiceContainer({
       feedback: feedbackText,
     });
   }, [descriptionText, feedbackText, labelText]);
+
+  React.useEffect(() => {
+    setClicked(false);
+  }, [descriptor]);
 
   const onValidate = React.useCallback(() => {
     const newChoice = produce(
@@ -187,12 +214,23 @@ export function ChoiceContainer({
       className={
         cx(choiceContainerStyle, classNameOrEmpty(className)) +
         (hasBeenSelected ? ' selected' : '') +
-        (canReply ? '' : ' disabled')
+        (canReply && !clicked ? '' : ' disabled') +
+        (isEditing ? '' : ' editing')
       }
-      onClick={onClick}
+      onClick={() => {
+        if (onClick) {
+          setClicked(true);
+          onClick();
+        }
+      }}
       onMouseEnter={() => setShowHandle(true)}
       onMouseLeave={() => setShowHandle(false)}
     >
+      {clicked && (
+        <div className={clickedOverlay}>
+          <TumbleLoader />
+        </div>
+      )}
       {isEditing ? (
         <div className={cx(flex, flexColumn)}>
           <div className={cx(flex, flexColumn)}>
@@ -224,7 +262,9 @@ export function ChoiceContainer({
               </div>
             </>
           )}
-          <div className={cx(flex, flexRow)}>
+          <div
+            className={cx(flex, flexRow, flexDistribute, editButtonsContainer)}
+          >
             <Button
               onClick={e => {
                 e.stopPropagation();
