@@ -103,6 +103,7 @@ interface WhChoiceDisplayProps extends DisabledReadonly {
   choiceI: IWhChoiceInstance;
   questionI: IWhQuestionInstance;
   onChange: (choiceI: IWhChoiceInstance) => void;
+  editMode?: boolean;
 }
 function WhChoiceDisplay({
   choiceD,
@@ -111,6 +112,7 @@ function WhChoiceDisplay({
   onChange,
   disabled,
   readOnly,
+  editMode,
 }: WhChoiceDisplayProps) {
   const { lang } = React.useContext(languagesCTX);
   return (
@@ -119,6 +121,7 @@ function WhChoiceDisplay({
       descriptor={choiceD}
       canReply={!questionI.validated && isActionAllowed({ disabled, readOnly })}
       hasBeenSelected={false}
+      editMode={editMode}
     >
       {choiceD['@class'] === 'BooleanDescriptor' ? (
         <CheckBox
@@ -245,10 +248,11 @@ export function WhQuestionDisplay({
             choiceI={choiceI}
             disabled={disabled}
             readOnly={readOnly}
+            editMode={editMode}
           />
         );
       })}
-      <AddChoiceMenu questionD={questionD} />
+      {editMode && <AddChoiceMenu questionD={questionD} />}
       <div className={cx(choiceInputStyle)}>
         <Button
           className={autoMargin}

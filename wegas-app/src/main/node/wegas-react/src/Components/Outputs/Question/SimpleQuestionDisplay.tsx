@@ -155,7 +155,7 @@ export function SimpleQuestionDisplay({
           />
         );
       })}
-      <AddChoiceMenu questionD={questionD} />
+      {editMode && <AddChoiceMenu questionD={questionD} />}
       <RepliesDisplay replies={replies} />
     </div>
   );

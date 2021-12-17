@@ -170,7 +170,7 @@ export function CbxQuestionDisplay({
           />
         );
       })}
-      <AddChoiceMenu questionD={questionD} />
+      {editMode && <AddChoiceMenu questionD={questionD} />}
       {!questionI.validated && (
         <div className={cx(choiceInputStyle)}>
           {remainingChoices > 0 && (
