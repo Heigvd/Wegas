@@ -56,6 +56,7 @@ interface CbxChoiceDisplayProps {
   replyAllowed: boolean;
   maxReplyReached: boolean;
   radioButton: boolean;
+  editMode?: boolean;
 }
 
 function CbxChoiceDisplay({
@@ -65,6 +66,7 @@ function CbxChoiceDisplay({
   replyAllowed,
   maxReplyReached,
   radioButton,
+  editMode,
 }: CbxChoiceDisplayProps) {
   const { active, replies } = choiceI;
   const questionChoosed = replies.filter(r => !r.ignored).length > 0;
@@ -89,6 +91,7 @@ function CbxChoiceDisplay({
           onValidate(choiceD);
         }
       }}
+      editMode={editMode}
     >
       {
         <CheckBox
@@ -167,6 +170,7 @@ export function CbxQuestionDisplay({
             replyAllowed={canReply}
             maxReplyReached={maxReplyReached}
             radioButton={radio}
+            editMode={editMode}
           />
         );
       })}

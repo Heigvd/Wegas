@@ -106,15 +106,61 @@ interface AddQuestionsMenuProps {
   questionList: SListDescriptor;
 }
 
+const questions = [
+  {
+    label: (
+      <div>
+        <IconComp icon="question" />
+        Simple question
+      </div>
+    ),
+    value: {
+      type: 'Question',
+      descriptor: 'QuestionDescriptor',
+      instance: 'QuestionInstance',
+    },
+  },
+  {
+    label: (
+      <div>
+        <IconComp icon="check-square" />
+        Checkbox question
+      </div>
+    ),
+    value: {
+      type: 'Checkbox',
+      descriptor: 'QuestionDescriptor',
+      instance: 'QuestionInstance',
+    },
+  },
+  {
+    label: (
+      <div>
+        <IconComp
+          icon={[
+            'square-full',
+            { icon: 'question', color: 'white', size: 'xs' },
+          ]}
+        />
+        Open question
+      </div>
+    ),
+    value: {
+      type: 'WH',
+      descriptor: 'WHQuestionDescriptor',
+      instance: 'WHQuestionInstance',
+    },
+  },
+] as const;
+
 function AddQuestionsMenu({ questionList }: AddQuestionsMenuProps) {
   const { lang } = React.useContext(languagesCTX);
-  const items = ['Question', 'WhQuestion'].map(makeMenuFromClass);
   return (
     <DropMenu
       // style={style}
       // label={label}
       // prefixedLabel={prefixedLabel}
-      items={items}
+      items={questions}
       icon="plus"
       onSelect={item => {
         store.dispatch(
@@ -126,9 +172,8 @@ function AddQuestionsMenu({ questionList }: AddQuestionsMenuProps) {
                 lang,
                 'Ennoncé de la question',
               ),
-              ...(item.value.descriptor === 'QuestionDescriptor'
-                ? { maxReplies: 1 }
-                : {}),
+              ...(item.value.type === 'Question' ? { maxReplies: 1 } : {}),
+              ...(item.value.type === 'Checkbox' ? { cbx: true } : {}),
               defaultInstance: {
                 '@class': item.value.instance,
               },
