@@ -8,7 +8,6 @@ import {
   halfOpacity,
   justifyCenter,
 } from '../css/classes';
-import { classNameOrEmpty } from '../Helper/className';
 import { deepDifferent } from './Hooks/storeHookFactory';
 import { themeVar } from './Theme/ThemeVars';
 
@@ -22,7 +21,7 @@ const labelList = css({
   padding: '10px',
 });
 
-const labelStyle = (disabled?: boolean) =>
+export const entityChooserLabelStyle = (disabled?: boolean) =>
   cx(
     css({
       backgroundColor: themeVar.colors.PrimaryColor,
@@ -48,14 +47,14 @@ const labelStyle = (disabled?: boolean) =>
   borderLeft: `20px solid ${themeVar.colors.HeaderColor}`,
 }); */
 
-const labelContainer = css({
+export const entityChooserLabelContainer = css({
   marginBottom: '10px',
   /* [`&>.${labelArrow}`]: {
       borderLeft: `20px solid ${themeVar.colors.DisabledColor}`,
     }, */
 });
 
-const activeLabel = css(
+export const activeEntityChooserLabel = css(
   {
     backgroundColor: themeVar.colors.ActiveColor,
     color: themeVar.colors.LightTextColor,
@@ -79,8 +78,9 @@ interface EntityChooserProps<E extends IAbstractEntity>
   extends DisabledReadonly {
   entities: E[];
   children: React.FunctionComponent<{ entity: E } & DisabledReadonly>;
-  entityLabel: (entity: E) => React.ReactNode;
-  customLabelStyle?: (entity: E) => string | undefined;
+  // entityLabel: (entity: E) => React.ReactNode;
+  EntityLabel: React.FunctionComponent<EntityChooserLabelProps<E>>;
+  // customLabelStyle?: (entity: E) => string | undefined;
   autoOpenFirst?: boolean;
   addComponent?: React.ReactNode;
 }
@@ -88,8 +88,8 @@ interface EntityChooserProps<E extends IAbstractEntity>
 export function EntityChooser<E extends IAbstractEntity>({
   entities,
   children: Children,
-  entityLabel,
-  customLabelStyle,
+  EntityLabel,
+  // customLabelStyle,
   autoOpenFirst,
   disabled,
   readOnly,
@@ -117,36 +117,54 @@ export function EntityChooser<E extends IAbstractEntity>({
       })}
     >
       <div className={cx(flex, flexColumn, labelList)}>
-        {entities.map(e => (
-          <div
-            key={e.id}
-            className={cx(flex, flexRow, labelContainer)}
-            onClick={() => {
-              if (!disabled) {
+        {entities.map(
+          e => (
+            <EntityLabel
+              key={e.id}
+              entity={e}
+              selected={e.id === entity?.id}
+              onClick={() =>
                 setEntity(oldEntity => {
                   if (deepDifferent(e, oldEntity)) {
                     return e;
                   } else {
                     return oldEntity;
                   }
-                });
+                })
               }
-            }}
-          >
-            <div
-              className={cx(
-                labelStyle(disabled),
-                classNameOrEmpty(customLabelStyle && customLabelStyle(e)),
-                {
-                  [activeLabel]: entity?.id === e.id,
-                },
-              )}
-            >
-              {entityLabel(e)}
-            </div>
-            {/* <div className={labelArrow} /> */}
-          </div>
-        ))}
+            />
+          ),
+          // (
+          //   <div
+          //     key={e.id}
+          //     className={cx(flex, flexRow, labelContainer)}
+          //     onClick={() => {
+          //       if (!disabled) {
+          //         setEntity(oldEntity => {
+          //           if (deepDifferent(e, oldEntity)) {
+          //             return e;
+          //           } else {
+          //             return oldEntity;
+          //           }
+          //         });
+          //       }
+          //     }}
+          //   >
+          //     <div
+          //       className={cx(
+          //         labelStyle(disabled),
+          //         classNameOrEmpty(customLabelStyle && customLabelStyle(e)),
+          //         {
+          //           [activeLabel]: entity?.id === e.id,
+          //         },
+          //       )}
+          //     >
+          //       {entityLabel(e)}
+          //     </div>
+          //     {/* <div className={labelArrow} /> */}
+          //   </div>
+          // )
+        )}
         {addComponent}
       </div>
       {entity != null && (
@@ -154,6 +172,51 @@ export function EntityChooser<E extends IAbstractEntity>({
           <Children entity={entity} disabled={disabled} readOnly={readOnly} />
         </div>
       )}
+    </div>
+  );
+}
+
+export interface EntityChooserLabelProps<T extends IAbstractEntity> {
+  entity: T;
+  selected: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+}
+
+export interface CustomEntityChooserLabel<T extends IAbstractEntity>
+  extends EntityChooserLabelProps<T> {
+  customLabelStyle?: (entity: T) => string | undefined;
+}
+
+export function DefaultEntityChooserLabel<T extends IAbstractEntity>({
+  entity,
+  selected,
+  disabled,
+  onClick,
+  children,
+  customLabelStyle,
+}: React.PropsWithChildren<CustomEntityChooserLabel<T>>) {
+  return (
+    <div
+      key={entity.id}
+      className={cx(flex, flexRow, entityChooserLabelContainer)}
+      onClick={() => {
+        if (!disabled) {
+          onClick();
+        }
+      }}
+    >
+      <div
+        className={cx(
+          entityChooserLabelStyle(disabled),
+          customLabelStyle && customLabelStyle(entity),
+          {
+            [activeEntityChooserLabel]: selected,
+          },
+        )}
+      >
+        {children}
+      </div>
     </div>
   );
 }

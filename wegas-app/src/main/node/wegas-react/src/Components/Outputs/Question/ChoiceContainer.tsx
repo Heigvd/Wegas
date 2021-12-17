@@ -17,13 +17,14 @@ import HTMLEditor from '../../HTML/HTMLEditor';
 import { Button } from '../../Inputs/Buttons/Button';
 import { themeVar } from '../../Theme/ThemeVars';
 import { HTMLText } from '../HTMLText';
-import { buttonFactory } from './QuestionList';
+import { buttonFactory, handleStyle } from './QuestionList';
 
 export const choiceContainerStyle = css({
   position: 'relative',
   margin: '1em 0',
   display: 'flex',
-  flexDirection: 'column',
+  flexDirection: 'row',
+  alignItems: 'center',
   boxShadow: '2px 2px 6px rgba(0, 0, 0, 0.2)',
   borderRadius: themeVar.dimensions.BorderRadius,
   backgroundColor: themeVar.colors.HeaderColor,
@@ -65,11 +66,6 @@ export const choiceInputStyle = css({
   padding: '5px',
 });
 
-const editHandleStyle = css({
-  position: 'absolute',
-  right: '-35px',
-});
-
 interface ChoiceContainerProps {
   descriptor:
     | IChoiceDescriptor
@@ -106,6 +102,7 @@ export function ChoiceContainer({
       ? descriptor.results[0].answer
       : undefined;
 
+  const [showHandle, setShowHandle] = React.useState(false);
   const [isEditing, setEditing] = React.useState(false);
   const { lang } = React.useContext(languagesCTX);
 
@@ -193,6 +190,8 @@ export function ChoiceContainer({
         (canReply ? '' : ' disabled')
       }
       onClick={onClick}
+      onMouseEnter={() => setShowHandle(true)}
+      onMouseLeave={() => setShowHandle(false)}
     >
       {isEditing ? (
         <div className={cx(flex, flexColumn)}>
@@ -245,21 +244,25 @@ export function ChoiceContainer({
           </div>
         </div>
       ) : (
-        <div className={choiceContentStyle}>
-          {label && <HTMLText className={choiceLabelStyle} text={labelText} />}
-          {description && (
-            <HTMLText
-              className={choiceDescriptionStyle}
-              text={descriptionText}
-            />
-          )}
+        <div className={cx(flex, flexColumn)}>
+          <div className={choiceContentStyle}>
+            {label && (
+              <HTMLText className={choiceLabelStyle} text={labelText} />
+            )}
+            {description && (
+              <HTMLText
+                className={choiceDescriptionStyle}
+                text={descriptionText}
+              />
+            )}
+          </div>
+          <div className={choiceInputStyle + classNameOrEmpty(inputClassName)}>
+            {children}
+          </div>
         </div>
       )}
-      <div className={choiceInputStyle + classNameOrEmpty(inputClassName)}>
-        {children}
-      </div>
-      {editMode && (
-        <div className={editHandleStyle}>
+      {editMode && showHandle && (
+        <div className={handleStyle}>
           <Edit
             onClick={e => {
               e.stopPropagation();

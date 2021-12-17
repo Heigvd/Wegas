@@ -33,12 +33,19 @@ import { getClassLabel, getIcon } from '../../../Editor/editionConfig';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { wwarn } from '../../../Helper/wegaslog';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import { DropMenu } from '../../DropMenu';
-import { EntityChooser } from '../../EntityChooser';
+import {
+  activeEntityChooserLabel,
+  DefaultEntityChooserLabel,
+  EntityChooser,
+  entityChooserLabelContainer,
+  EntityChooserLabelProps,
+  entityChooserLabelStyle,
+} from '../../EntityChooser';
 import { asyncSFC } from '../../HOC/asyncSFC';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { Validate } from '../../Inputs/Validate';
 import { themeVar } from '../../Theme/ThemeVars';
+import { AddMenu } from './AddMenu';
 import {
   ConnectedQuestionDisplay,
   ConnectedQuestionDisplayProps,
@@ -56,22 +63,25 @@ const repliedLabelStyle = css({
   },
 });
 
-const questionLabelEditionStyle = css({
-  backgroundColor: themeVar.colors.BackgroundColor,
+export const handleStyle = css({
+  position: 'absolute',
+  backgroundColor: 'rgba(128, 128, 128, 0.228)',
+  borderRadius: '5px',
+  left: '100%',
+  zIndex: 2,
 });
 
 const editButtonStyle = css({
   display: 'flex',
-  borderRadius: '50%',
   minWidth: '30px',
   height: '30px',
   marginLeft: 'auto',
   justifyContent: 'center',
   alignItems: 'center',
-  border: '1px solid ' + themeVar.colors.PrimaryColor,
   color: themeVar.colors.PrimaryColor,
+  cursor: 'pointer',
+  margin: '5px',
   '&:hover': {
-    border: '1px solid ' + themeVar.colors.ActiveColor,
     color: themeVar.colors.ActiveColor,
   },
 });
@@ -79,6 +89,16 @@ const editButtonStyle = css({
 const questionLabelEditingStyle = css({
   position: 'absolute',
   zIndex: 1000,
+});
+
+export const singleEditButtonStyle = css({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderRadius: '50%',
+  border: '2px solid black',
+  width: '42px',
+  height: '42px',
 });
 
 export function makeMenuFromClass(className: string) {
@@ -111,7 +131,7 @@ const questions = [
     label: (
       <div>
         <IconComp icon="question" />
-        Simple question
+        Question simple
       </div>
     ),
     value: {
@@ -124,11 +144,24 @@ const questions = [
     label: (
       <div>
         <IconComp icon="check-square" />
-        Checkbox question
+        Question à choix multiple
       </div>
     ),
     value: {
       type: 'Checkbox',
+      descriptor: 'QuestionDescriptor',
+      instance: 'QuestionInstance',
+    },
+  },
+  {
+    label: (
+      <div>
+        <IconComp icon="dot-circle" />
+        Question à un seul choix
+      </div>
+    ),
+    value: {
+      type: 'Radio',
       descriptor: 'QuestionDescriptor',
       instance: 'QuestionInstance',
     },
@@ -155,13 +188,10 @@ const questions = [
 
 function AddQuestionsMenu({ questionList }: AddQuestionsMenuProps) {
   const { lang } = React.useContext(languagesCTX);
+
   return (
-    <DropMenu
-      // style={style}
-      // label={label}
-      // prefixedLabel={prefixedLabel}
+    <AddMenu
       items={questions}
-      icon="plus"
       onSelect={item => {
         store.dispatch(
           Actions.VariableDescriptorActions.createDescriptor(
@@ -172,8 +202,13 @@ function AddQuestionsMenu({ questionList }: AddQuestionsMenuProps) {
                 lang,
                 'Ennoncé de la question',
               ),
-              ...(item.value.type === 'Question' ? { maxReplies: 1 } : {}),
-              ...(item.value.type === 'Checkbox' ? { cbx: true } : {}),
+              ...(item.value.type === 'Question' || item.value.type === 'Radio'
+                ? { maxReplies: 1 }
+                : {}),
+              ...(item.value.type === 'Radio' ? { minReplies: 1 } : {}),
+              ...(item.value.type === 'Checkbox' || item.value.type === 'Radio'
+                ? { cbx: true }
+                : {}),
               defaultInstance: {
                 '@class': item.value.instance,
               },
@@ -267,6 +302,16 @@ export function QuestionLabel({
   );
 }
 
+function QuestionChooser(
+  props: EntityChooserLabelProps<IQuestionDescriptor | IWhQuestionDescriptor>,
+) {
+  return (
+    <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
+      <QuestionLabel questionD={props.entity} disabled={props.disabled} />
+    </DefaultEntityChooserLabel>
+  );
+}
+
 function customLabelStyle(
   e: IWhQuestionDescriptor | IQuestionDescriptor,
 ): string | undefined {
@@ -299,24 +344,53 @@ export function buttonFactory(icon: Icons) {
     );
   };
 }
+const Edit = buttonFactory('edit');
+const Copy = buttonFactory('copy');
+const Trash = buttonFactory('trash');
 
-function QuestionLabelEdition({ questionD, disabled }: QuestionLabelProps) {
+function QuestionChooserEdition({
+  entity,
+  onClick,
+  selected,
+  disabled,
+}: EntityChooserLabelProps<IQuestionDescriptor | IWhQuestionDescriptor>) {
   const [isEditing, setEditing] = React.useState(false);
-  const Edit = buttonFactory('edit');
-  const Copy = buttonFactory('copy');
-  const Trash = buttonFactory('trash');
+  const [showHandle, setShowHandle] = React.useState(false);
   return (
-    <div className={cx(flex, flexRow)}>
-      <div className={grow}>
-        <QuestionLabel
-          questionD={questionD}
-          disabled={disabled}
-          editing={isEditing}
-          onFinishEditing={() => setEditing(false)}
-        />
+    <div
+      key={entity.id}
+      className={cx(flex, flexRow, itemCenter, entityChooserLabelContainer)}
+      style={{ position: 'relative' }}
+      onClick={() => {
+        if (!disabled) {
+          onClick();
+        }
+      }}
+      onMouseEnter={() => setShowHandle(true)}
+      onMouseLeave={() => setShowHandle(false)}
+    >
+      <div
+        className={cx(
+          entityChooserLabelStyle(disabled),
+          customLabelStyle && customLabelStyle(entity),
+          {
+            [activeEntityChooserLabel]: selected,
+          },
+        )}
+      >
+        <div className={cx(flex, flexRow)}>
+          <div className={grow}>
+            <QuestionLabel
+              questionD={entity}
+              disabled={disabled}
+              editing={isEditing}
+              onFinishEditing={() => setEditing(false)}
+            />
+          </div>
+        </div>
       </div>
-      {!isEditing && (
-        <div className={cx(flex, flexColumn, questionLabelEditionStyle)}>
+      {!isEditing && showHandle && (
+        <div className={cx(flex, flexColumn, handleStyle)}>
           <Edit
             onClick={e => {
               e.stopPropagation();
@@ -327,9 +401,7 @@ function QuestionLabelEdition({ questionD, disabled }: QuestionLabelProps) {
             onClick={e => {
               e.stopPropagation();
               store.dispatch(
-                Actions.VariableDescriptorActions.duplicateDescriptor(
-                  questionD,
-                ),
+                Actions.VariableDescriptorActions.duplicateDescriptor(entity),
               );
             }}
           />
@@ -337,7 +409,7 @@ function QuestionLabelEdition({ questionD, disabled }: QuestionLabelProps) {
             onClick={e => {
               e.stopPropagation();
               store.dispatch(
-                Actions.VariableDescriptorActions.deleteDescriptor(questionD),
+                Actions.VariableDescriptorActions.deleteDescriptor(entity),
               );
             }}
           />
@@ -388,15 +460,9 @@ export default function QuestionList({
   return (
     <EntityChooser
       entities={entities.questions}
-      entityLabel={e =>
-        editMode ? (
-          <QuestionLabelEdition questionD={e} disabled={disabled} />
-        ) : (
-          <QuestionLabel questionD={e} disabled={disabled} />
-        )
-      }
+      EntityLabel={editMode ? QuestionChooserEdition : QuestionChooser}
       autoOpenFirst={autoOpenFirst}
-      customLabelStyle={customLabelStyle}
+      // customLabelStyle={customLabelStyle}
       disabled={disabled}
       readOnly={readOnly}
       addComponent={

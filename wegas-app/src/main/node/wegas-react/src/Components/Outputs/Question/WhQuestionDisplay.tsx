@@ -28,13 +28,13 @@ import {
   translate,
 } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import { DropMenu } from '../../DropMenu';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { isActionAllowed } from '../../PageComponents/tools/options';
+import { AddMenu } from './AddMenu';
 import { ChoiceContainer, choiceInputStyle } from './ChoiceContainer';
 import { questionStyle } from './Question';
 import { QuestionDescription } from './QuestionDescription';
@@ -44,15 +44,15 @@ interface AddChoiceMenuProps {
   questionD: IWhQuestionDescriptor;
 }
 
+const choices = ['Text', 'String', 'StaticText', 'Number', 'Boolean'].map(
+  makeMenuFromClass,
+);
+
 export function AddChoiceMenu({ questionD }: AddChoiceMenuProps) {
   const { lang } = React.useContext(languagesCTX);
-  const items = ['Text', 'String', 'StaticText', 'Number', 'Boolean'].map(
-    makeMenuFromClass,
-  );
   return (
-    <DropMenu
-      items={items}
-      icon="plus"
+    <AddMenu
+      items={choices}
       onSelect={item => {
         store.dispatch(
           Actions.VariableDescriptorActions.createDescriptor(

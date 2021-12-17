@@ -13,9 +13,9 @@ import { Player } from '../../../data/selectors';
 import { store, StoreDispatch } from '../../../data/Stores/store';
 import { createTranslatableContent } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import { DropMenu } from '../../DropMenu';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { themeVar } from '../../Theme/ThemeVars';
+import { AddMenu } from './AddMenu';
 import { ChoiceContainer } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
 import { QuestionDescription } from './QuestionDescription';
@@ -34,13 +34,13 @@ interface AddChoiceMenuProps {
   questionD: IQuestionDescriptor;
 }
 
+const choices = ['SingleResultChoice', 'Choice'].map(makeMenuFromClass);
+
 export function AddChoiceMenu({ questionD }: AddChoiceMenuProps) {
   const { lang } = React.useContext(languagesCTX);
-  const items = ['SingleResultChoice', 'Choice'].map(makeMenuFromClass);
   return (
-    <DropMenu
-      items={items}
-      icon="plus"
+    <AddMenu
+      items={choices}
       onSelect={item => {
         store.dispatch(
           Actions.VariableDescriptorActions.createDescriptor(
