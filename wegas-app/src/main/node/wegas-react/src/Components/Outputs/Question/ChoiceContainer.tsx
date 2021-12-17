@@ -39,8 +39,10 @@ export const choiceContainerStyle = css({
     color: themeVar.colors.LightTextColor,
   },
   '&.editing': {
-    borderRadius: themeVar.dimensions.BorderRadius,
-    backgroundColor: themeVar.colors.HeaderColor,
+    '&:hover': {
+      backgroundColor: themeVar.colors.HeaderColor,
+      color: themeVar.colors.DarkTextColor,
+    },
   },
   '&.disabled': {
     backgroundColor: themeVar.colors.BackgroundColor,
@@ -215,10 +217,10 @@ export function ChoiceContainer({
         cx(choiceContainerStyle, classNameOrEmpty(className)) +
         (hasBeenSelected ? ' selected' : '') +
         (canReply && !clicked ? '' : ' disabled') +
-        (isEditing ? '' : ' editing')
+        (isEditing ? ' editing' : '')
       }
       onClick={() => {
-        if (onClick) {
+        if (onClick && !isEditing) {
           setClicked(true);
           onClick();
         }

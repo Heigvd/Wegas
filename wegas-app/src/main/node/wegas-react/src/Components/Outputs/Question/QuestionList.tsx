@@ -42,6 +42,7 @@ import {
   entityChooserLabelStyle,
 } from '../../EntityChooser';
 import { asyncSFC } from '../../HOC/asyncSFC';
+import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { Validate } from '../../Inputs/Validate';
 import { themeVar } from '../../Theme/ThemeVars';
@@ -153,19 +154,19 @@ const questions = [
       instance: 'QuestionInstance',
     },
   },
-  {
-    label: (
-      <div>
-        <IconComp icon="dot-circle" />
-        Question à un seul choix
-      </div>
-    ),
-    value: {
-      type: 'Radio',
-      descriptor: 'QuestionDescriptor',
-      instance: 'QuestionInstance',
-    },
-  },
+  // {
+  //   label: (
+  //     <div>
+  //       <IconComp icon="dot-circle" />
+  //       Question à un seul choix
+  //     </div>
+  //   ),
+  //   value: {
+  //     type: 'Radio',
+  //     descriptor: 'QuestionDescriptor',
+  //     instance: 'QuestionInstance',
+  //   },
+  // },
   {
     label: (
       <div>
@@ -175,13 +176,13 @@ const questions = [
             { icon: 'question', color: 'white', size: 'xs' },
           ]}
         />
-        Open question
+        Question ouverte
       </div>
     ),
     value: {
       type: 'WH',
-      descriptor: 'WHQuestionDescriptor',
-      instance: 'WHQuestionInstance',
+      descriptor: 'WhQuestionDescriptor',
+      instance: 'WhQuestionInstance',
     },
   },
 ] as const;
@@ -202,11 +203,13 @@ function AddQuestionsMenu({ questionList }: AddQuestionsMenuProps) {
                 lang,
                 'Ennoncé de la question',
               ),
-              ...(item.value.type === 'Question' || item.value.type === 'Radio'
+              ...(item.value.type ===
+              'Question' /*|| item.value.type === 'Radio'*/
                 ? { maxReplies: 1 }
                 : {}),
-              ...(item.value.type === 'Radio' ? { minReplies: 1 } : {}),
-              ...(item.value.type === 'Checkbox' || item.value.type === 'Radio'
+              // ...(item.value.type === 'Radio' ? { minReplies: 1 } : {}),
+              ...(item.value.type ===
+              'Checkbox' /*|| item.value.type === 'Radio'*/
                 ? { cbx: true }
                 : {}),
               defaultInstance: {
@@ -244,7 +247,9 @@ export function QuestionLabel({
   //   };
   // }, [questionD]);
   // const { isUnread } = useStore(unreadSelector);
+  const label = React.useRef<HTMLDivElement>(null);
   const { lang } = React.useContext(languagesCTX);
+  useOnClickOutside(label, () => onFinishEditing && onFinishEditing());
 
   const textValue = TranslatableContent.toString(questionD.label);
 
@@ -270,6 +275,7 @@ export function QuestionLabel({
 
   return (
     <div
+      ref={label}
       className={cx(flex, itemCenter, { [questionLabelEditingStyle]: editing })}
       onClick={() => {
         !disabled &&
@@ -356,6 +362,7 @@ function QuestionChooserEdition({
 }: EntityChooserLabelProps<IQuestionDescriptor | IWhQuestionDescriptor>) {
   const [isEditing, setEditing] = React.useState(false);
   const [showHandle, setShowHandle] = React.useState(false);
+
   return (
     <div
       key={entity.id}

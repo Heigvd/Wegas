@@ -28,6 +28,8 @@ const clickableDescriptionStyle = css({
 const editButtonStyle = css({
   position: 'absolute',
   right: '-35px',
+  border: 'solid 2px black',
+  borderRadius: '50%',
 });
 
 interface QuestionDescriptionProps {
