@@ -4,7 +4,7 @@ import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
 import { arrayRemoveDuplicates } from '../../../Helper/tools';
 import { css } from '@emotion/css';
 import { themeVar } from '../../Theme/ThemeVars';
-import { secondaryButtonCSS } from '../../Modal';
+import { secondaryButtonCSS } from '../../../css/classes';
 
 export const headerOutlineButtonStyle = css({
   border: '1px solid ' + themeVar.colors.DisabledColor,
@@ -50,6 +50,8 @@ export const buttonStyle = css({
   },
   ['&:focus']: {
     outline: 'none',
+  },
+  ['&:focus-visible']: {
     backgroundColor: themeVar.colors.PrimaryColorShade,
   },
   ['&.readOnly']: {
@@ -104,7 +106,7 @@ export const buttonStyle = css({
   },
   ['&.success']: {
     backgroundColor: themeVar.colors.SuccessColor,
-    ['&:hover, &:focus']: {
+    ['&:hover, &:focus-visible']: {
       backgroundColor: themeVar.colors.PrimaryColorShade,
     },
     ['&.iconOnly,&.noBackground']: {

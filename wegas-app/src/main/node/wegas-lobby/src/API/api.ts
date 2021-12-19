@@ -327,6 +327,13 @@ export const updateAccount = createAsyncThunk(
   },
 );
 
+export const deleteAccount = createAsyncThunk(
+  'account/deleteAccount',
+  async (account: IAbstractAccountWithId) => {
+    return await restClient.UserController.deleteAccount(account);
+  },
+);
+
 export const updateJpaPassword = createAsyncThunk(
   'account/updateJpa',
   async ({ account, password }: { account: IJpaAccountWithId; password: string }) => {

@@ -3,24 +3,23 @@ import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import HTMLEditor from '../../Components/HTML/HTMLEditor';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { themeVar } from '../../Components/Theme/ThemeVars';
 import {
   flex,
   flexRow,
-  grow,
   hideWithEllipsis,
   itemCenter,
   justifyCenter,
 } from '../../css/classes';
 import { Actions } from '../../data';
 import { store } from '../../data/Stores/store';
-import { OverviewClickType, ActionItem, DataItem, DataType } from './Overview';
+import EyeIcon from '../../pictures/icon_eye.svg';
+import { ActionItem, DataItem, DataType, OverviewClickType } from './Overview';
 import {
   firstScrollCellStyle,
   fixedCellStyle,
   OverviewCell,
 } from './OverviewCell';
-import EyeIcon from '../../pictures/icon_eye.svg';
-import { themeVar } from '../../Components/Theme/ThemeVars';
 
 interface OverviewRowProps {
   team: STeam;
@@ -51,15 +50,14 @@ export function OverviewRow({
   return (
     <>
       <tr>
-        <td className={fixedCellStyle}>
-          <div className={cx(flex, flexRow, itemCenter, justifyCenter)}>
+        <td className={fixedCellStyle} title={team.getName() || ''}>
+          <div className={cx(flex, flexRow, itemCenter)}>
             <Button
               icon={showPlayers ? 'caret-down' : 'caret-right'}
               onClick={() => setShowPlayers(sp => !sp)}
+              className={css({ padding: '5px' })}
             />
-            <div className={cx(flex, grow, justifyCenter, hideWithEllipsis)}>
-              {team.getName()}
-            </div>
+            <p className={hideWithEllipsis}>{team.getName()}</p>
           </div>
         </td>
         {!structure && (
@@ -131,6 +129,7 @@ export function OverviewRow({
                   value={team.getNotes() || ''}
                   noResize
                   onSave={editTeam}
+                  keepInternalValue
                 />
               </div>
             </div>

@@ -263,6 +263,7 @@ export const fr: WegasTranslations = {
   giveRole: 'Ajouter au group',
   removeRole: 'Retirer du groupe',
   addMemberInvite: 'rechercher un utilisateur à ajouter',
+  removeAccount: 'Supprimer le compte utilisateur',
 
   AllScenariosAndModels: 'Tous les scénarios et modèles',
   showPermissions: 'voir les permissions',

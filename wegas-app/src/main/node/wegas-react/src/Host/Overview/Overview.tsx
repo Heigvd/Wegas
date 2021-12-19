@@ -2,17 +2,19 @@ import { css, CSSInterpolation, cx } from '@emotion/css';
 import * as React from 'react';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { useWebsocketEvent } from '../../API/websocket';
+import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import { expandWidth } from '../../css/classes';
 import { instantiate } from '../../data/scriptable';
 import { Game, GameModel, Player } from '../../data/selectors';
-import { store } from '../../data/Stores/store';
+import { useStore } from '../../data/Stores/store';
 import '../../Editor/Components/FormView';
 import { createScript } from '../../Helper/wegasEntites';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { trainerTranslations } from '../../i18n/trainer/trainer';
 import { sortFnFactory, SortState } from '../TableSorter';
 import { OverviewHeader } from './OverviewHeader';
 import { FilterState } from './OverviewModal/FilterModalContent';
@@ -24,7 +26,7 @@ export const trainerCellStyleI: CSSInterpolation = {
   alignItems: 'center',
   backgroundColor: '#fff',
   boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
-  padding: '15px 20px',
+  padding: '5px',
   textAlign: 'center',
   margin: '3px',
   height: '48px',
@@ -182,6 +184,9 @@ export default function Overview() {
   const isRealGame = GameModel.selectCurrent().type === 'PLAY';
 
   const i18nValues = useInternalTranslate(commonTranslations);
+  const i18nValuesTrainer = useInternalTranslate(trainerTranslations);
+  const teams = useStore(s => s.teams, deepDifferent);
+
   const refreshOverview = React.useCallback(() => {
     setNewData(false);
     VariableDescriptorAPI.runScript(
@@ -228,8 +233,6 @@ export default function Overview() {
       mounted.current = false;
     };
   }, [refreshOverview]);
-
-  const teams = store.getState().teams;
 
   const onRowClick = React.useCallback(
     (team?: STeam | STeam[]) => (type: OverviewClickType, item?: ActionItem) => {
@@ -285,16 +288,6 @@ export default function Overview() {
   return (
     <Toolbar className={expandWidth}>
       <Toolbar.Header className={css({ justifyContent: 'flex-end' })}>
-        <Button
-          icon="filter"
-          onClick={() =>
-            setLayoutState({
-              modalState: 'Filter',
-              team: undefined,
-              item: undefined,
-            })
-          }
-        />
         {newData && (
           <span
             className={cx(
@@ -307,11 +300,24 @@ export default function Overview() {
         )}
         <Button
           icon="undo"
+          tooltip={i18nValuesTrainer.refreshData}
           onClick={refreshOverview}
           className={cx({ [newDataStyle]: newData })}
         />
         <Button
+          icon="filter"
+          tooltip={i18nValuesTrainer.manageColumns}
+          onClick={() =>
+            setLayoutState({
+              modalState: 'Filter',
+              team: undefined,
+              item: undefined,
+            })
+          }
+        />
+        <Button
           icon="file-excel"
+          tooltip={i18nValuesTrainer.exportTeamsData}
           onClick={() => {
             window.open(
               `${API_ENDPOINT}/GameModel/Game/${Game.selectCurrent()

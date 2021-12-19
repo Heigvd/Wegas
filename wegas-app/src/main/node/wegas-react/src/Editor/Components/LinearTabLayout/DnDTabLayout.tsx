@@ -64,7 +64,7 @@ const dropBottomZone = css({
 
 const headerTabStyle = css({
   paddingTop: '20px',
-  columnGap: '6px',
+  columnGap: '5px',
 });
 
 export type DropAction = (item: { label: string; type: string }) => void;
@@ -88,6 +88,25 @@ const dropSpecsFactory = (action: DropAction, dndAcceptType: string) => {
     },
   };
 };
+
+function translateTabs(
+  dndTabs: DnDTabs,
+  i18nTabsNames: EditorTabsTranslations,
+): DnDTabs {
+  return dndTabs.map(dndTab => {
+    const translatedOrUndefLabel =
+      i18nTabsNames.tabsNames[
+        dndTab.label as keyof EditorTabsTranslations['tabsNames']
+      ];
+    const translatedLabel = translatedOrUndefLabel
+      ? translatedOrUndefLabel
+      : dndTab.label;
+    const translatedItems = dndTab.items
+      ? translateTabs(dndTab.items, i18nTabsNames)
+      : undefined;
+    return { ...dndTab, label: translatedLabel, items: translatedItems };
+  });
+}
 
 interface DnDTabLayoutHeaderProps
   extends Pick<
@@ -173,7 +192,7 @@ function DnDTabLayoutHeader({
                     }
                   >
                     <DropMenu
-                      items={otherTabs}
+                      items={translateTabs(otherTabs, i18nTabsNames)}
                       icon="plus"
                       onSelect={i => {
                         onSelect && onSelect(i.value);

@@ -276,7 +276,8 @@ export function parseEvent(
       return { message: event.error, onRead };
     case 'ExceptionEvent': {
       if (event.exceptions.length > 0) {
-        let message = 'Exceptions :';
+        // let message = 'Exception : ';
+        let message = '';
         for (const exception of event.exceptions) {
           switch (exception['@class']) {
             case 'WegasConflictException':

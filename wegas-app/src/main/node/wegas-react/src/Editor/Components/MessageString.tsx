@@ -5,11 +5,10 @@ import { themeVar } from '../../Components/Theme/ThemeVars';
 const messageStyle = (color?: string) =>
   css({
     color,
-    padding: '5px',
+    margin: '5px',
     whiteSpace: 'pre-wrap',
     fontSize: '0.9em',
     lineHeight: '0.9em',
-    margin: 'auto',
   });
 
 export const messageStringStyles = [

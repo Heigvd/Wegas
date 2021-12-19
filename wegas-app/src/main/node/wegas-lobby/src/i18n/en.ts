@@ -262,6 +262,7 @@ export const en = {
   giveRole: 'Add to group',
   removeRole: 'Remove from group',
   addMemberInvite: 'search for a user to add',
+  removeAccount: 'Remove account',
 
   AllScenariosAndModels: 'All scenarios and models',
   showPermissions: 'show permissions',

@@ -423,7 +423,6 @@ export function TreeView<T = unknown>({
         ...style,
         flex: '1 1 auto',
       }}
-      className={className}
       id={rootId}
       data-treenode-path={JSON.stringify([
         ...rootPath,
@@ -463,6 +462,7 @@ export function TreeView<T = unknown>({
           path={rootPath}
           notDroppable={notDroppable}
           acceptTypes={acceptTypes}
+          className={className}
         >
           {children}
         </TreeChildren>

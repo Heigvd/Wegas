@@ -340,7 +340,11 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
             AbstractAccount account = this.getUser().getMainAccount();
             return account.getName();
         } else {
-            return "Test player";
+            if (getTeam() instanceof DebugTeam || this.getGame() instanceof DebugGame) {
+                return "Test player";
+            } else {
+                return "Anonymous";
+            }
         }
     }
 

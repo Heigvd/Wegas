@@ -3,12 +3,14 @@ export interface LanguagesTranslations {
   warningDelete: (language: string, outdated: boolean) => string;
   outdated: string;
   upToDate: string;
+  noTranslation: string;
   saveTranslations: string;
   clearTranslations: string;
   outdatedTranslations: string;
   allTranslations: string;
   translateFrom: string;
-  copyTranslations: string;
+  translateWithDeepl: string;
+  copyFrom: string;
   CONTENT_EDITOR: string;
   SCENARIO_EDITOR: string;
   translationManagement: string;

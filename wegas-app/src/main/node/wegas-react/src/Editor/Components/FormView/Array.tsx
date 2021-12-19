@@ -56,7 +56,7 @@ interface AdderProps<T> {
   tooltip?: string;
 }
 
-function Adder<T>({ onChildAdd, choices, id, tooltip }: AdderProps<T>) {
+function Adder<T>({ onChildAdd, choices, id }: AdderProps<T>) {
   const i18nValues = useInternalTranslate(commonTranslations);
   if (Array.isArray(choices)) {
     return (
@@ -70,10 +70,9 @@ function Adder<T>({ onChildAdd, choices, id, tooltip }: AdderProps<T>) {
   return (
     <Button
       id={id}
-      label={i18nValues.add}
-      icon="plus-circle"
+      icon="plus"
       onClick={() => onChildAdd()}
-      tooltip={tooltip}
+      tooltip={i18nValues.add}
       noBackground
     />
   );

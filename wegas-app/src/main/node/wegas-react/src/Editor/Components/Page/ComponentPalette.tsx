@@ -9,6 +9,7 @@ import {
 } from '../../../Components/PageComponents/tools/componentFactory';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import {
+  autoScroll,
   defaultMargin,
   defaultMarginTop,
   expandBoth,
@@ -239,7 +240,7 @@ export default function ComponentPalette() {
     deepDifferent,
   );
   return (
-    <div className={cx(flex, flexColumn, expandBoth)}>
+    <div className={cx(flex, flexColumn, expandBoth, autoScroll)}>
       {!editMode && (
         <div className={cx(headerStyle, flex, itemCenter, flexColumn)}>
           <p className={textCenter}>
