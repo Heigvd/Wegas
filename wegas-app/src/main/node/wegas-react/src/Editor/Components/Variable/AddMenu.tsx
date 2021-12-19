@@ -13,26 +13,28 @@ import { entityIs } from '../../../data/entities';
 import { getChildren, getClassLabel, getIcon } from '../../editionConfig';
 import { IconComp, withDefault } from '../Views/FontAwesome';
 
+export function makeMenuFromClass(className: IAbstractEntity['@class']) {
+  const Label = asyncSFC(async () => {
+    const entity = { '@class': className };
+    return (
+      <>
+        <IconComp icon={withDefault(getIcon(entity), 'question')} />
+        {getClassLabel(entity)}
+      </>
+    );
+  });
+  return {
+    label: <Label />,
+    value: className,
+  };
+}
+
 function buildMenuItems(
   variable: IAbstractEntity,
 ): Promise<DropMenuItem<IAbstractEntity['@class']>[]> {
   return getChildren(variable).then(children => {
     return children
-      .map(i => {
-        const Label = asyncSFC(async () => {
-          const entity = { '@class': i };
-          return (
-            <>
-              <IconComp icon={withDefault(getIcon(entity), 'question')} />
-              {getClassLabel(entity)}
-            </>
-          );
-        });
-        return {
-          label: <Label />,
-          value: i,
-        };
-      })
+      .map(makeMenuFromClass)
       .filter(
         item =>
           !entityIs(variable, 'ListDescriptor') ||

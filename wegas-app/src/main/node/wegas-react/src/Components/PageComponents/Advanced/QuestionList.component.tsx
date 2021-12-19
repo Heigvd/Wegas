@@ -1,28 +1,31 @@
 import * as React from 'react';
+import { IScript, SListDescriptor } from 'wegas-ts-api';
+import { entityIs } from '../../../data/entities';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { useScript } from '../../Hooks/useScript';
+import QuestionList from '../../Outputs/Question/QuestionList';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { IScript, SListDescriptor } from 'wegas-ts-api';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import QuestionList from '../../Outputs/Question/QuestionList';
-import { entityIs } from '../../../data/entities';
-import { useScript } from '../../Hooks/useScript';
+import { schemaProps } from '../tools/schemaProps';
 
 interface QuestionListDisplayProps extends WegasComponentProps {
   questionList?: IScript;
   autoOpenFirst: boolean;
+  edit?: IScript;
 }
 
 export default function QuestionListDisplay({
   questionList,
   autoOpenFirst,
+  edit,
   context,
   options,
 }: QuestionListDisplayProps) {
   const descriptor = useScript<SListDescriptor>(questionList, context);
+  const editing = useScript<boolean>(edit, context);
 
   if (questionList === undefined) {
     return <pre>No selected list</pre>;
@@ -36,6 +39,7 @@ export default function QuestionListDisplay({
       autoOpenFirst={autoOpenFirst}
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
+      editMode={editing}
     />
   );
 }
@@ -61,6 +65,11 @@ registerComponent(
       autoOpenFirst: schemaProps.boolean({
         label: 'Automatically open first item',
         value: true,
+      }),
+      edit: schemaProps.scriptVariable({
+        label: 'Edition mode',
+        required: false,
+        returnType: ['boolean'],
       }),
     },
     allowedVariables: ['ListDescriptor', 'QuestionDescriptor'],

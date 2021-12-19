@@ -1,12 +1,16 @@
 import * as React from 'react';
 import { IScript, SFSMDescriptor } from 'wegas-ts-api';
 import { Player } from '../../../data/selectors';
+import { useStore } from '../../../data/Stores/store';
 import {
   ComponentWithForm,
   ComponentWithFormFlexValues,
   flexValuesSchema,
 } from '../../../Editor/Components/FormView/ComponentWithForm';
-import { StateMachineEditor } from '../../../Editor/Components/StateMachineEditor';
+import {
+  globalStateSelector,
+  StateMachineEditor,
+} from '../../../Editor/Components/StateMachine/StateMachineEditor';
 import { useScript } from '../../Hooks/useScript';
 import {
   pageComponentFactory,
@@ -19,12 +23,17 @@ interface PlayerStateMachineProps extends WegasComponentProps {
   stateMachine?: IScript;
   title?: IScript;
   flexValues?: ComponentWithFormFlexValues;
+  /**
+   * Simplifies interface for content creation
+   */
+  lite?: boolean;
 }
 
 export default function PlayerStateMachine({
   stateMachine,
   title,
   flexValues,
+  lite,
   context,
   className,
   style,
@@ -35,11 +44,22 @@ export default function PlayerStateMachine({
   const FSM = useScript<SFSMDescriptor>(stateMachine, context);
   const descriptor = FSM?.getEntity();
   const instance = FSM?.getInstance(Player.self()).getEntity();
+  const globalState = useStore(globalStateSelector);
 
   return descriptor == null || instance == null ? (
     <pre className={className} style={style} id={id}>
       State machine not found
     </pre>
+  ) : lite ? (
+    <StateMachineEditor
+      title={titleText}
+      stateMachine={descriptor}
+      stateMachineInstance={instance}
+      editPath={globalState.editPath}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
+      lite={lite}
+    />
   ) : (
     <ComponentWithForm
       flexValues={flexValues}
@@ -59,6 +79,7 @@ export default function PlayerStateMachine({
             forceLocalDispatch
             disabled={options.disabled || options.locked}
             readOnly={options.readOnly}
+            lite={lite}
           />
         );
       }}
@@ -81,6 +102,7 @@ registerComponent(
       }),
       title: schemaProps.scriptString({ label: 'Title', richText: true }),
       flexValues: flexValuesSchema,
+      lite: schemaProps.boolean({ label: 'Easy editor', value: true }),
     },
     allowedVariables: ['FSMDescriptor', 'DialogueDescriptor'],
   }),

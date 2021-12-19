@@ -1,24 +1,25 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
+import * as React from 'react';
+import { entityIs } from '../../data/entities';
+import { translate } from '../../Editor/Components/FormView/translatable';
 import {
   StateProcess,
   TransitionFlowLine,
-} from '../../Editor/Components/StateMachineEditor';
-import { entityIs } from '../../data/entities';
-import { translate } from '../../Editor/Components/FormView/translatable';
+} from '../../Editor/Components/StateMachine/StateMachineEditor';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
 import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
+import { themeVar } from '../Theme/ThemeVars';
 import {
   CustomFlowLineComponent,
   FlowLineComponentProps,
 } from './FlowLineComponent';
-import { themeVar } from '../Theme/ThemeVars';
 
-const transitionContainerStyle = css({
+export const transitionContainerStyle = css({
   display: 'inline-flex',
   flexDirection: 'column',
   width: '200px',
+  userSelect: 'none',
 });
 export const transitionBoxStyle = css({
   display: 'flex',
@@ -38,6 +39,7 @@ export const transitionBoxStyle = css({
     fontSize: '16px',
     textAlign: 'left',
     margin: 0,
+    flex: '1 1 auto',
   },
   '& *': {
     whiteSpace: 'nowrap',
@@ -65,7 +67,7 @@ const selectedTransitionBoxStyle = css({
   },
 });
 
-const transitionMoreInfosStyle = css({
+export const transitionMoreInfosStyle = css({
   position: 'relative',
   backgroundColor: themeVar.colors.BackgroundColor,
   color: '#807F7F',

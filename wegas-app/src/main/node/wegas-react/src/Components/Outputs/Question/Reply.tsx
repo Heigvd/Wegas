@@ -1,17 +1,16 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { IReply, IChoiceDescriptor } from 'wegas-ts-api';
-import { TranslatableContent } from '../../../data/i18n';
+import { IChoiceDescriptor, IReply } from 'wegas-ts-api';
 import { VariableDescriptor } from '../../../data/selectors';
 import { StoreConsumer } from '../../../data/Stores/store';
 import { Button } from '../../Inputs/Buttons/Button';
 import { themeVar } from '../../Theme/ThemeVars';
+import { TranslatableText } from '../HTMLText';
 import {
   choiceContainerStyle,
-  choiceLabelStyle,
   choiceDescriptionStyle,
+  choiceLabelStyle,
 } from './ChoiceContainer';
-import { TranslatableText } from '../HTMLText';
 
 const repliesContainer = css({
   marginTop: '5px',
@@ -29,7 +28,7 @@ function ReplyDisplay({ reply }: ReplyDisplayProps) {
   const answer = reply.answer;
 
   return (
-    <div className={cx(choiceContainerStyle, css({padding: '15px'}))}>
+    <div className={cx(choiceContainerStyle, css({ padding: '15px' }))}>
       <StoreConsumer
         selector={() =>
           VariableDescriptor.firstMatch<IChoiceDescriptor>({
@@ -37,13 +36,16 @@ function ReplyDisplay({ reply }: ReplyDisplayProps) {
           })
         }
       >
-        {({ state }) => (
-          <div className={choiceLabelStyle}>
-            {state != null
-              ? TranslatableContent.toString(state.label)
-              : 'Unkown choice'}
-          </div>
-        )}
+        {({ state }) =>
+          state != null ? (
+            <TranslatableText
+              className={choiceLabelStyle}
+              content={state.label}
+            />
+          ) : (
+            <div className={choiceLabelStyle}>'Unkown choice'</div>
+          )
+        }
       </StoreConsumer>
 
       <TranslatableText

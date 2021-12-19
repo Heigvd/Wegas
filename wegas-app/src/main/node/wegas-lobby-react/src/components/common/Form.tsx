@@ -28,7 +28,7 @@ export interface BaseField<T> {
   placeholder?: string;
   isMandatory: boolean;
   isErroneous?: (entity: T) => boolean;
-  errorMessage?: string;
+  errorMessage?:  string | React.ReactNode;
 }
 
 export interface TextualField<T> extends BaseField<T> {

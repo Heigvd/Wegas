@@ -1,13 +1,13 @@
-import * as React from 'react';
 import { Schema } from 'jsoninput';
-import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { entityIs } from '../../../data/entities';
-import { LabeledView } from './labeled';
+import * as React from 'react';
 import {
   ITranslatableContent,
   ITranslation,
   STranslatableContent,
 } from 'wegas-ts-api';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { entityIs } from '../../../data/entities';
+import { LabeledView } from './labeled';
 
 interface TranslatableProps {
   value?: ITranslatableContent;
@@ -33,17 +33,20 @@ export function createTranslation(lang: string, value?: string): ITranslation {
 export function createTranslatableContent(
   lang?: string,
   value?: string,
+  oldTranlatable?: ITranslatableContent | null,
 ): ITranslatableContent {
   return {
     '@class': 'TranslatableContent',
-    translations:
-      lang === undefined
+    translations: {
+      ...oldTranlatable?.translations,
+      ...(lang === undefined
         ? {
             DEF: createTranslation('DEF', value),
           }
         : {
             [lang]: createTranslation(lang, value),
-          },
+          }),
+    },
     version: 0,
   };
 }

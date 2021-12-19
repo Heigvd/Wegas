@@ -6,14 +6,15 @@
  * Licensed under the MIT License
  */
 
+import { cx } from '@emotion/css';
 import * as React from 'react';
-import { errorStyle, inputStyle, labelStyle, textareaStyle, warningStyle } from '../styling/style';
+import { errorStyle, inputStyle, labelStyle, smallTextStyle, textareaStyle } from '../styling/style';
 import Flex from './Flex';
 
 export interface Props {
   label?: React.ReactNode;
   inputType?: 'input' | 'textarea';
-  warning?: string;
+  warning?: string | React.ReactNode;
   error?: string;
   value?: string;
   mandatory?: boolean;
@@ -59,8 +60,8 @@ export default function Input({
           {label}
           {mandatory ? ' * ' : null}{' '}
         </div>
-        {warning ? <div className={warningStyle}>{warning}</div> : null}
-        {error ? <div className={errorStyle}>{error}</div> : null}
+        {warning ? <div className={cx(errorStyle, smallTextStyle)}>{warning}</div> : null}
+        {error ? <div className={cx(errorStyle, smallTextStyle)}>{error}</div> : null}
       </Flex>
       {inputType === 'input' ? (
         <input

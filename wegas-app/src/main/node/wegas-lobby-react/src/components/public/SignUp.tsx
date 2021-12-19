@@ -65,8 +65,17 @@ export default (props: Props): JSX.Element => {
       type: 'password',
       isMandatory: false,
       isErroneous: data => data.strength < 2,
-      errorMessage: i18n.weakPassword,
-      showStrenghBar: true,
+      errorMessage: (
+        <div>
+          {i18n.weakPassword} {i18n.passwordConditions.mustContain}
+          <ul className={css({margin: '3px 0'})}>
+            <li>{i18n.passwordConditions.minChars}</li>
+            <li>{i18n.passwordConditions.minCaps}</li>
+            <li>{i18n.passwordConditions.minNums}</li>
+          </ul>
+        </div>
+      ),
+      showStrenghBar: false,
       strengthProp: 'strength',
     },
     {
