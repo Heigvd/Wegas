@@ -19,6 +19,7 @@ export const transitionContainerStyle = css({
   display: 'inline-flex',
   flexDirection: 'column',
   width: '200px',
+  userSelect: 'none',
 });
 export const transitionBoxStyle = css({
   display: 'flex',

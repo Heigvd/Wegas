@@ -8,8 +8,8 @@ import {
   ProcessComponentProps,
 } from '../../../Components/FlowChart/ProcessComponent';
 import {
+  selectedStateBoxStyle,
   stateBoxActionStyle,
-  stateBoxButtonStyle,
   stateBoxStyle,
   stateContainerStyle,
   stateMoreInfosStyle,
@@ -26,10 +26,8 @@ import { deleteState } from '../../../data/Reducer/globalState';
 import { store } from '../../../data/Stores/store';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { createTranslatableContent, translate } from '../FormView/translatable';
-import { IconComp } from '../Views/FontAwesome';
+import { EditHandle } from './EditHandle';
 import { StateProcess, TransitionFlowLine } from './StateMachineEditor';
-
-const editButtonStyle = css(stateBoxButtonStyle);
 
 const customProcessComponentEditingStyle = css({
   zIndex: 1000,
@@ -46,26 +44,6 @@ const stateBoxContentEditingStyle = css({
   border: '2px solid ' + themeVar.colors.DisabledColor,
   boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.15)',
 });
-
-interface EditButtonProps {
-  onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-}
-
-export function TrashButton({ onClick }: EditButtonProps) {
-  return (
-    <div className={editButtonStyle} onClick={onClick} data-nodrag={true}>
-      <IconComp icon="trash" />
-    </div>
-  );
-}
-
-export function EditButton({ onClick }: EditButtonProps) {
-  return (
-    <div className={editButtonStyle} onClick={onClick} data-nodrag={true}>
-      <IconComp icon="pen" />
-    </div>
-  );
-}
 
 export function LiteStateProcessComponentFactory<
   IFSM extends IFSMDescriptor | IDialogueDescriptor,
@@ -119,6 +97,8 @@ export function LiteStateProcessComponentFactory<
       [lang, process.state.index],
     );
 
+    const isSelected = isProcessSelected && isProcessSelected(process);
+
     return (
       <CustomProcessComponent
         {...processProps}
@@ -136,7 +116,11 @@ export function LiteStateProcessComponentFactory<
           }
           style={process.style}
           onDoubleClick={onEdit}
+          onClick={e => onClick && onClick(e, process)}
         >
+          {isSelected && !isEditing && (
+            <EditHandle onEdit={onEdit} onTrash={onTrash} />
+          )}
           {isEditing ? (
             <div className={stateBoxContentEditingStyle}>
               <Validate
@@ -154,6 +138,7 @@ export function LiteStateProcessComponentFactory<
             <div
               className={cx(stateBoxStyle, {
                 [stateBoxActionStyle]: isActionAllowed({ disabled, readOnly }),
+                [selectedStateBoxStyle]: isSelected,
               })}
               onMouseEnter={() => !disabled && setIsShown(true)}
               onMouseLeave={() => !disabled && setIsShown(false)}
@@ -162,11 +147,7 @@ export function LiteStateProcessComponentFactory<
                 <HTMLText text={textValue || 'Empty'} />
               </div>
               {isActionAllowed({ readOnly, disabled }) && (
-                <>
-                  <TrashButton onClick={onTrash} />
-                  <EditButton onClick={onEdit} />
-                  <StateProcessHandle sourceProcess={process} />
-                </>
+                <StateProcessHandle sourceProcess={process} />
               )}
             </div>
           )}

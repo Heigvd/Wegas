@@ -27,7 +27,7 @@ import { entityIs } from '../../../data/entities';
 import { store } from '../../../data/Stores/store';
 import { classOrNothing } from '../../../Helper/className';
 import { createTranslatableContent, translate } from '../FormView/translatable';
-import { EditButton, TrashButton } from './LiteProcessComponent';
+import { EditHandle } from './EditHandle';
 import {
   deleteTransition,
   StateProcess,
@@ -65,10 +65,8 @@ export function LiteFlowLineComponentFactory<
     readOnly,
     position,
     zoom,
-  }: Omit<
-    FlowLineComponentProps<TransitionFlowLine, StateProcess>,
-    'selected'
-  >) {
+    selected,
+  }: FlowLineComponentProps<TransitionFlowLine, StateProcess>) {
     const [isEditing, setEditing] = React.useState(false);
     const [isShown, setIsShown] = React.useState(false);
     const { lang } = React.useContext(languagesCTX);
@@ -130,7 +128,7 @@ export function LiteFlowLineComponentFactory<
 
     return (
       <CustomFlowLineComponent
-        selected={false}
+        selected={selected}
         position={position}
         zoom={zoom}
         className={classOrNothing(
@@ -143,6 +141,9 @@ export function LiteFlowLineComponentFactory<
             [transitionContainerEditingStyle]: isEditing,
           })}
         >
+          {!isEditing && selected && (
+            <EditHandle onEdit={onEdit} onTrash={onTrash} />
+          )}
           {isEditing ? (
             <div className={stateBoxContentEditingStyle}>
               <Validate
@@ -167,12 +168,11 @@ export function LiteFlowLineComponentFactory<
               onMouseEnter={() => !disabled && setIsShown(true)}
               onMouseLeave={() => !disabled && setIsShown(false)}
               onDoubleClick={onEdit}
+              onClick={e => onClick && onClick(e, startProcess, flowline)}
             >
               <div className="StateLabelTextStyle">
                 <HTMLText text={textValue || 'Empty'} />
               </div>
-              <TrashButton onClick={onTrash} />
-              <EditButton onClick={onEdit} />
             </div>
           )}
           {isShown &&

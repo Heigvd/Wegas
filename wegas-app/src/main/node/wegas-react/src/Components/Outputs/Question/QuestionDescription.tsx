@@ -16,6 +16,7 @@ import { buttonFactory } from './QuestionList';
 const descriptionStyle = css({
   position: 'relative',
   display: 'flex',
+  alignItems: 'center',
 });
 
 const clickableDescriptionStyle = css({

@@ -107,21 +107,21 @@ export function StateMachineEditor<
   type TState = IFSM['states'][0];
   type TTransition = TState['transitions'][0];
 
-  const computedForceLocalDispatch = !lite && forceLocalDispatch;
+  // const computedForceLocalDispatch = !lite && forceLocalDispatch;
 
   const { lang } = React.useContext(languagesCTX);
   const onEditionChanges = useOnEditionChangesModal(
-    computedForceLocalDispatch,
+    forceLocalDispatch,
     localState,
     localDispatch,
   );
 
   const dispatch = React.useMemo(
     () =>
-      localDispatch != null && computedForceLocalDispatch
+      localDispatch != null && forceLocalDispatch
         ? localDispatch!
         : store.dispatch,
-    [computedForceLocalDispatch, localDispatch],
+    [forceLocalDispatch, localDispatch],
   );
 
   const processes: StateProcess[] = React.useMemo(
@@ -233,7 +233,7 @@ export function StateMachineEditor<
       }
 
       const dispatchLocal =
-        (e.ctrlKey === true || computedForceLocalDispatch === true) &&
+        (e.ctrlKey === true || forceLocalDispatch === true) &&
         localDispatch != null;
 
       const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
@@ -247,7 +247,7 @@ export function StateMachineEditor<
         focusTab(mainLayoutId, 'Variable Properties');
       }
     },
-    [computedForceLocalDispatch, localDispatch, stateMachine],
+    [forceLocalDispatch, localDispatch, stateMachine],
   );
 
   const onSafeStateClick = React.useCallback(
@@ -349,7 +349,7 @@ export function StateMachineEditor<
       })(stateMachine);
 
       const dispatchLocal =
-        (e.ctrlKey === true || computedForceLocalDispatch === true) &&
+        (e.ctrlKey === true || forceLocalDispatch === true) &&
         localDispatch != null;
       const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
 
@@ -367,13 +367,7 @@ export function StateMachineEditor<
         Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
       );
     },
-    [
-      createTransition,
-      computedForceLocalDispatch,
-      lang,
-      localDispatch,
-      stateMachine,
-    ],
+    [createTransition, forceLocalDispatch, lang, localDispatch, stateMachine],
   );
 
   const safeCreateState = React.useCallback(
@@ -420,7 +414,7 @@ export function StateMachineEditor<
       };
 
       const dispatchLocal =
-        (e.ctrlKey === true || computedForceLocalDispatch === true) &&
+        (e.ctrlKey === true || forceLocalDispatch === true) &&
         localDispatch != null;
       const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
       dispatch(
@@ -437,7 +431,7 @@ export function StateMachineEditor<
         focusTab(mainLayoutId, 'Variable Properties');
       }
     },
-    [computedForceLocalDispatch, localDispatch, stateMachine],
+    [forceLocalDispatch, localDispatch, stateMachine],
   );
 
   const onSafeFlowlineClick = React.useCallback(
@@ -511,7 +505,7 @@ export function StateMachineEditor<
   );
 }
 
-function globalStateSelector(s: RState) {
+export function globalStateSelector(s: RState) {
   let editedVariable: IFSMDescriptor | IDialogueDescriptor | undefined =
     undefined;
   let editPath: (string | number)[] | undefined = undefined;

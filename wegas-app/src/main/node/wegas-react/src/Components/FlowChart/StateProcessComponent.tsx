@@ -25,6 +25,7 @@ import {
 } from './ProcessComponent';
 
 export const stateContainerStyle = css({
+  position: 'relative',
   display: 'inline-flex',
   flexDirection: 'column',
   width: '200px',
@@ -82,7 +83,7 @@ export const stateBoxButtonStyle = {
   minWidth: '30px',
   height: '30px',
   border: '1px solid transparent',
-  marginLeft: 'auto',
+  // marginLeft: 'auto',
   justifyContent: 'center',
   alignItems: 'center',
   '&:hover': {
@@ -124,12 +125,12 @@ export const stateMoreInfosStyle = css({
 });
 
 export const selectedStateBoxStyle = css({
-  background: themeVar.colors.HeaderColor,
+  backgroundColor: themeVar.colors.HeaderColor,
   color: themeVar.colors.ActiveColor,
   borderColor: 'transparent',
   boxShadow: 'none',
   '&:hover': {
-    background: themeVar.colors.HeaderColor,
+    backgroundColor: themeVar.colors.HeaderColor,
   },
   [`.${indexTagStyle}`]: {
     borderColor: themeVar.colors.ActiveColor,
