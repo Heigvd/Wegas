@@ -1,16 +1,18 @@
 import * as React from 'react';
 import { IScript, SFSMDescriptor } from 'wegas-ts-api';
+import { createStoreConnector } from '../../../data/connectStore';
 import { Player } from '../../../data/selectors';
-import { useStore } from '../../../data/Stores/store';
+import {
+  LocalGlobalState,
+  storeFactory,
+} from '../../../data/Stores/storeFactory';
 import {
   ComponentWithForm,
   ComponentWithFormFlexValues,
   flexValuesSchema,
 } from '../../../Editor/Components/FormView/ComponentWithForm';
-import {
-  globalStateSelector,
-  StateMachineEditor,
-} from '../../../Editor/Components/StateMachine/StateMachineEditor';
+import { StateMachineEditor } from '../../../Editor/Components/StateMachine/StateMachineEditor';
+import { shallowDifferent } from '../../Hooks/storeHookFactory';
 import { useScript } from '../../Hooks/useScript';
 import {
   pageComponentFactory,
@@ -44,7 +46,24 @@ export default function PlayerStateMachine({
   const FSM = useScript<SFSMDescriptor>(stateMachine, context);
   const descriptor = FSM?.getEntity();
   const instance = FSM?.getInstance(Player.self()).getEntity();
-  const globalState = useStore(globalStateSelector);
+  // const globalState = useStore(globalStateSelector);
+
+  // const { fullscreen } = React.useContext(fullscreenCTX);
+
+  const { useStore: useLocalStore, getDispatch: getLocalDispatch } =
+    React.useMemo(() => createStoreConnector(storeFactory()), []);
+
+  // const globalState = useStore(state => state.global.editing);
+
+  // const fullscreenFSM = globalState?.type === 'VariableFSM' && fullscreen;
+
+  const localState = useLocalStore(
+    (state: LocalGlobalState) => state.global,
+    shallowDifferent,
+  );
+
+  const localDispatch = getLocalDispatch();
+  // const localEntity = getEntity(localState.editing);
 
   return descriptor == null || instance == null ? (
     <pre className={className} style={style} id={id}>
@@ -55,10 +74,16 @@ export default function PlayerStateMachine({
       title={titleText}
       stateMachine={descriptor}
       stateMachineInstance={instance}
-      editPath={globalState.editPath}
+      localDispatch={localDispatch}
+      editPath={
+        localState.editing?.type === 'VariableFSM'
+          ? localState.editing.path
+          : undefined
+      }
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
       lite={lite}
+      forceLocalDispatch
     />
   ) : (
     <ComponentWithForm

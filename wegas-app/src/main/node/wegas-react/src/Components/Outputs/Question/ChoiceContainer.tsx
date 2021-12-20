@@ -236,7 +236,7 @@ export function ChoiceContainer({
         </div>
       )}
       {isEditing ? (
-        <div className={cx(flex, flexColumn, css({ padding: '15px'}))}>
+        <div className={cx(flex, flexColumn, css({ padding: '15px' }))}>
           <div className={cx(flex, flexColumn, defaultMarginBottom)}>
             <div className={choiceLabelStyle}>Label</div>
             <HTMLEditor
