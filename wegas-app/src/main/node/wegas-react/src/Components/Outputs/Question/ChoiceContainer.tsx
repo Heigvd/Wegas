@@ -38,6 +38,7 @@ export const choiceContainerStyle = css({
   '&.selected': {
     backgroundColor: themeVar.colors.PrimaryColor,
     color: themeVar.colors.LightTextColor,
+    cursor: 'default',
   },
   '&.editing': {
     '&:hover': {
@@ -48,8 +49,8 @@ export const choiceContainerStyle = css({
   '&.disabled': {
     backgroundColor: themeVar.colors.BackgroundColor,
     opacity: '0.7',
-    cursor: 'default',
-    pointerEvents: 'none',
+    cursor: 'initial',
+    //pointerEvents: 'none',
     '&:hover': {
       backgroundColor: themeVar.colors.BackgroundColor,
       color: themeVar.colors.DarkTextColor,

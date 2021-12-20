@@ -28,6 +28,9 @@ const simpleChoiceHoverStyle = css({
     color: themeVar.colors.LightTextColor,
     cursor: 'pointer',
   },
+  '&.disabled:hover': {
+    cursor: 'default',
+  }
 });
 
 interface AddChoiceMenuProps {
