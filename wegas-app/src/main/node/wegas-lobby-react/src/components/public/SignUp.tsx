@@ -68,7 +68,7 @@ export default (props: Props): JSX.Element => {
       errorMessage: (
         <div>
           {i18n.weakPassword} {i18n.passwordConditions.mustContain}
-          <ul className={css({margin: '3px 0'})}>
+          <ul className={css({ margin: '3px 0' })}>
             <li>{i18n.passwordConditions.minChars}</li>
             <li>{i18n.passwordConditions.minCaps}</li>
             <li>{i18n.passwordConditions.minNums}</li>

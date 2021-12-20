@@ -399,7 +399,7 @@ export const errorStyle = css({
 });
 
 export const smallTextStyle = css({
-fontSize: '0.8rem',
+  fontSize: '0.8rem',
 });
 
 export const labelStyle = css({
