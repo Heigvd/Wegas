@@ -78,26 +78,42 @@ export const indexTagStyle = css({
 });
 
 export const stateBoxButtonStyle = {
+  color: themeVar.colors.PrimaryColor,
   display: 'flex',
-  borderRadius: '50%',
   minWidth: '30px',
   height: '30px',
-  border: '1px solid transparent',
-  // marginLeft: 'auto',
   justifyContent: 'center',
   alignItems: 'center',
   '&:hover': {
-    border: '1px solid ' + themeVar.colors.PrimaryColor,
-    color: themeVar.colors.PrimaryColor,
+    color: themeVar.colors.PrimaryColorShade,
   },
 };
 
+export const editHandle = css({
+  position: 'absolute',
+  top: '-38px',
+  left: '50%',
+  transform:'translate(-50%, 0)', 
+  backgroundColor: themeVar.colors.HeaderColor,
+  borderRadius: '5px 5px 0 0',
+  padding: '3px',
+  border: '2px solid ' + themeVar.colors.PrimaryColor,
+});
+
 const handleForTransition = css({
   ...stateBoxButtonStyle,
+  marginRight: '-15px',
+  borderTop: '1px solid ' + themeVar.colors.PrimaryColor,
+  borderBottom: '1px solid ' + themeVar.colors.PrimaryColor,
+  borderLeft: '1px solid ' + themeVar.colors.PrimaryColor,
+  borderRadius: '5px 0 0 5px',
+  marginLeft: '5px',
   cursor: 'grab',
   '&:hover': {
-    border: '1px solid ' + themeVar.colors.PrimaryColor,
-    color: themeVar.colors.PrimaryColor,
+    color: themeVar.colors.PrimaryColorShade,
+    borderTop: '1px solid ' + themeVar.colors.PrimaryColorShade,
+    borderBottom: '1px solid ' + themeVar.colors.PrimaryColorShade,
+    borderLeft: '1px solid ' + themeVar.colors.PrimaryColorShade,
   },
 });
 export const stateMoreInfosStyle = css({
