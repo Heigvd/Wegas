@@ -116,11 +116,6 @@ export function SimpleQuestionDisplay({
 }: SimpleQuestionDisplayProps) {
   const validatedReplies = replies.filter(r => r.validated);
 
-  const canReply =
-    (questionD.maxReplies == null ||
-      validatedReplies.length < questionD.maxReplies) &&
-    isActionAllowed(options);
-
   const onChoiceValidate = React.useCallback(
     (choice: IChoiceDescriptor) => {
       dispatch(selectAndValidate(choice));
@@ -128,9 +123,14 @@ export function SimpleQuestionDisplay({
     [dispatch],
   );
 
-  if (questionI == null || !questionI.active) {
+  if (questionD == null || questionI == null || !questionI.active) {
     return null;
   }
+
+  const canReply =
+    (questionD.maxReplies == null ||
+      validatedReplies.length < questionD.maxReplies) &&
+    isActionAllowed(options);
 
   return (
     <div
