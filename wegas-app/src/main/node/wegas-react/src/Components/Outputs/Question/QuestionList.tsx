@@ -137,19 +137,19 @@ const questions = [
       instance: 'QuestionInstance',
     },
   },
-  {
-    label: (
-      <div>
-        <IconComp icon="check-square" />
-        Question à choix multiple
-      </div>
-    ),
-    value: {
-      type: 'Checkbox',
-      descriptor: 'QuestionDescriptor',
-      instance: 'QuestionInstance',
-    },
-  },
+  // {
+  //   label: (
+  //     <div>
+  //       <IconComp icon="check-square" />
+  //       Question à choix multiple
+  //     </div>
+  //   ),
+  //   value: {
+  //     type: 'Checkbox',
+  //     descriptor: 'QuestionDescriptor',
+  //     instance: 'QuestionInstance',
+  //   },
+  // },
   // {
   //   label: (
   //     <div>
@@ -204,10 +204,10 @@ function AddQuestionsMenu({ questionList }: AddQuestionsMenuProps) {
                 ? { maxReplies: 1 }
                 : {}),
               // ...(item.value.type === 'Radio' ? { minReplies: 1 } : {}),
-              ...(item.value.type ===
-              'Checkbox' /*|| item.value.type === 'Radio'*/
-                ? { cbx: true }
-                : {}),
+              // ...(item.value.type ===
+              // 'Checkbox' || item.value.type === 'Radio'
+              //   ? { cbx: true }
+              //   : {}),
               defaultInstance: {
                 '@class': item.value.instance,
               },
@@ -272,9 +272,11 @@ export function QuestionLabel({
   return (
     <div
       ref={label}
-      className={cx(flex, itemCenter, 
+      className={cx(
+        flex,
+        itemCenter,
         //{ [questionLabelEditingStyle]: editing }
-        )}
+      )}
       onClick={() => {
         !disabled &&
           !editing &&
@@ -293,11 +295,11 @@ export function QuestionLabel({
           onCancel={() => onFinishEditing && onFinishEditing()}
           vertical
           validatorClassName={css({
-            padding: 0, 
+            padding: 0,
             backgroundColor: themeVar.colors.HeaderColor,
           })}
           buttonClassName={css({
-            color: 'white'  
+            color: 'white',
           })}
         >
           {(value, onChange) => (
