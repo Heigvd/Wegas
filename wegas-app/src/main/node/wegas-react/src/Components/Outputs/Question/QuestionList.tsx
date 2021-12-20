@@ -87,10 +87,10 @@ const editButtonStyle = css({
   },
 });
 
-const questionLabelEditingStyle = css({
+/* const questionLabelEditingStyle = css({
   position: 'absolute',
   zIndex: 1000,
-});
+}); */
 
 export const singleEditButtonStyle = css({
   display: 'flex',
@@ -276,7 +276,9 @@ export function QuestionLabel({
   return (
     <div
       ref={label}
-      className={cx(flex, itemCenter, { [questionLabelEditingStyle]: editing })}
+      className={cx(flex, itemCenter, 
+        //{ [questionLabelEditingStyle]: editing }
+        )}
       onClick={() => {
         !disabled &&
           !editing &&
@@ -294,6 +296,13 @@ export function QuestionLabel({
           onValidate={onValidate}
           onCancel={() => onFinishEditing && onFinishEditing()}
           vertical
+          validatorClassName={css({
+            padding: 0, 
+            backgroundColor: themeVar.colors.HeaderColor,
+          })}
+          buttonClassName={css({
+            color: 'white'  
+          })}
         >
           {(value, onChange) => (
             <SimpleInput value={value} onChange={onChange} />
