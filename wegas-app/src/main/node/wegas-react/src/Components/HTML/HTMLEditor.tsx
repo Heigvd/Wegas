@@ -20,6 +20,8 @@ import { defaultLightMode, modeStyle, themeVar } from '../Theme/ThemeVars';
 
 const fontUrl =
   require('../../css/fonts/Raleway-VariableFont_wght.ttf').default;
+const fontItalicUrl =
+  require('../../css/fonts/Raleway-Italic-VariableFont_wght.ttf').default;
 
 const toolbar = css({
   width: '300px',
@@ -331,14 +333,32 @@ export default function HTMLEditor({
         });
       },
       content_style: `
+      @font-face {
+        font-family: "Raleway";
+        src: url("${fontUrl}") format('ttf supports variations'),
+             url("${fontUrl}") format('ttf-variations'),
+             url("${fontUrl}");
+        font-weight: 100 800;
+        font-stretch: 25% 151%;
+        }
         @font-face {
           font-family: "Raleway";
-          src: url("${fontUrl}") format('ttf supports variations'),
-               url("${fontUrl}") format('ttf-variations'),
-               url("${fontUrl}");
+          src: url("${fontItalicUrl}") format('ttf supports variations'),
+               url("${fontItalicUrl}") format('ttf-variations'),
+               url("${fontItalicUrl}");
           font-weight: 100 800;
           font-stretch: 25% 151%;
+          font-style: italic;
           }
+          html {
+          font-size: 1em;
+          font-family: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+            Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+            'Segoe UI Symbol';
+          line-height: 1.15em;
+          box-sizing: border-box;
+          color: #232323;
+        }
 
         body {
           ${Object.entries(wegasStyle)
