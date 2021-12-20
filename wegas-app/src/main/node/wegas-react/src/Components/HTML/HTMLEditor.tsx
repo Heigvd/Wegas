@@ -282,7 +282,7 @@ export default function HTMLEditor({
         //   })),
         // },
       ],
-      // forced_root_block: '',
+      forced_root_block: '',
       setup: function (editor: TinyMCEEditor) {
         // let formatter: EditorFormatter | undefined;
         // editor.on('init', () => {
