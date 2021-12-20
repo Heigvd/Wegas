@@ -83,14 +83,18 @@ export function Validate<T>({
       >
         <Button
           icon="times"
-          onClick={() => onCancel()}
+          onClick={() => {
+            onCancel();
+          }}
           disabled={disabled}
           readOnly={readOnly}
           className={classNameOrEmpty(buttonClassName)}
         />
         <Button
           icon="check"
-          onClick={() => onValidate(savedValue)}
+          onClick={() => {
+            onValidate(savedValue);
+          }}
           disabled={disabled}
           readOnly={readOnly}
           className={classNameOrEmpty(buttonClassName)}

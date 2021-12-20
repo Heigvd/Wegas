@@ -9,8 +9,8 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import LanguageSelector from '../../i18n/LanguageSelector';
-import { fullPageStyle, lightMode } from '../styling/style';
 import Logo from '../styling/Logo';
+import { fullPageStyle, lightMode } from '../styling/style';
 import Flex from './Flex';
 
 export interface MelonProps {

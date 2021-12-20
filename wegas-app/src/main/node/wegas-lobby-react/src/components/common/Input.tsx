@@ -8,13 +8,19 @@
 
 import { cx } from '@emotion/css';
 import * as React from 'react';
-import { errorStyle, inputStyle, labelStyle, smallTextStyle, textareaStyle } from '../styling/style';
+import {
+  errorStyle,
+  inputStyle,
+  labelStyle,
+  smallTextStyle,
+  textareaStyle,
+} from '../styling/style';
 import Flex from './Flex';
 
 export interface Props {
   label?: React.ReactNode;
   inputType?: 'input' | 'textarea';
-  warning?: string | React.ReactNode;
+  warning?: React.ReactNode;
   error?: string;
   value?: string;
   mandatory?: boolean;

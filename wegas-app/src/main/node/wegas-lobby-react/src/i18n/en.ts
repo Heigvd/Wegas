@@ -22,12 +22,11 @@ export const en = {
   emailOrUsername: 'e-mail or username',
   password: 'password',
   weakPassword: 'Password is too weak.',
-  passwordConditions:
-  {
-    mustContain: 'It must conatin:',
+  passwordConditions: {
+    mustContain: 'It must contain:',
     minChars: 'Min. 8 characters (min. 2 different)',
     minCaps: 'Min. 1 CAPITAL letter',
-    minNums:'Min. 1 number (0-9)',
+    minNums: 'Min. 1 number (0-9)',
   },
   password_again: 'password again',
   passwordsMismatch: 'passwords do not match',
