@@ -40,7 +40,7 @@ export const editorTabsTranslationsFR: EditorTabsTranslations = {
     deleteFolder:
       'Êtes-vous sûr-e de supprimer le dossier et tous ses sous-répertoires ?',
     uploadNew: 'Charger une nouvelle version',
-    uploadFile: 'Charger document',
+    uploadFile: 'Ajouter fichier',
     uploadFileFolder: 'Charger le document dans le dossier',
     addNewFolder: 'Ajouter nouveau dossier',
     newFolder: 'Nouveau dossier',

@@ -5,7 +5,12 @@ import {
   IChoiceInstance,
   IQuestionDescriptor,
 } from 'wegas-ts-api';
-import { halfOpacity } from '../../../css/classes';
+import {
+  flex,
+  halfOpacity,
+  itemCenter,
+  justifyCenter,
+} from '../../../css/classes';
 import { Actions } from '../../../data';
 import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
@@ -19,7 +24,12 @@ import { AddMenu } from './AddMenu';
 import { ChoiceContainer } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
 import { QuestionDescription } from './QuestionDescription';
-import { makeMenuFromClass } from './QuestionList';
+import {
+  buttonFactory,
+  editButonBorder,
+  editButtonStyle,
+  makeMenuFromClass,
+} from './QuestionList';
 import { RepliesDisplay } from './Reply';
 
 const simpleChoiceHoverStyle = css({
@@ -30,7 +40,7 @@ const simpleChoiceHoverStyle = css({
   },
   '&.disabled:hover': {
     cursor: 'default',
-  }
+  },
 });
 
 interface AddChoiceMenuProps {
@@ -60,6 +70,39 @@ export function AddChoiceMenu({ questionD }: AddChoiceMenuProps) {
         );
       }}
     />
+  );
+}
+
+interface AddChoiceButtonProps {
+  question: IQuestionDescriptor;
+}
+
+const Plus = buttonFactory('plus');
+
+function AddChoiceButton({ question }: AddChoiceButtonProps) {
+  const { lang } = React.useContext(languagesCTX);
+
+  return (
+    <div className={cx(flex, justifyCenter, itemCenter)}>
+      <Plus
+        className={cx(editButtonStyle, editButonBorder)}
+        onClick={() => {
+          store.dispatch(
+            Actions.VariableDescriptorActions.createDescriptor(
+              {
+                '@class': 'SingleResultChoiceDescriptor',
+                label: createTranslatableContent(lang, ''),
+                description: createTranslatableContent(lang, 'Réponse'),
+                defaultInstance: {
+                  '@class': 'ChoiceInstance',
+                },
+              } as unknown as IVariableDescriptor,
+              question,
+            ),
+          );
+        }}
+      />
+    </div>
   );
 }
 
@@ -158,7 +201,7 @@ export function SimpleQuestionDisplay({
           />
         );
       })}
-      {editMode && <AddChoiceMenu questionD={questionD} />}
+      {editMode && <AddChoiceButton question={questionD} />}
       <RepliesDisplay replies={replies} />
     </div>
   );
