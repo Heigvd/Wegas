@@ -28,7 +28,7 @@ function ReplyDisplay({ reply }: ReplyDisplayProps) {
   const answer = reply.answer;
 
   return (
-    <div className={cx(choiceContainerStyle, css({ padding: '15px' }))}>
+    <div className={cx(choiceContainerStyle, css({ padding: '15px', flexDirection: 'column', alignItems: 'left' }))}>
       <StoreConsumer
         selector={() =>
           VariableDescriptor.firstMatch<IChoiceDescriptor>({
