@@ -122,16 +122,25 @@ export function LiteStateProcessComponentFactory<
             <EditHandle onEdit={onEdit} onTrash={onTrash} />
           )}
           {isEditing ? (
-            <div className={cx(stateBoxContentEditingStyle, css({padding: 0}))}>
+            <div
+              className={cx(stateBoxContentEditingStyle, css({ padding: 0 }))}
+            >
               <Validate
                 value={textValue}
                 onValidate={onValidate}
                 onCancel={() => setEditing(false)}
                 vertical
-                validatorClassName={css({padding: '15px', backgroundColor: themeVar.colors.HeaderColor})}
+                validatorClassName={css({
+                  padding: '15px',
+                  backgroundColor: themeVar.colors.HeaderColor,
+                })}
               >
                 {(value, onChange) => (
-                  <HTMLEditor value={value} onChange={onChange} />
+                  <HTMLEditor
+                    value={value}
+                    onChange={onChange}
+                    customToolbar="bold italic underline bullist fontsizeselect"
+                  />
                 )}
               </Validate>
             </div>
