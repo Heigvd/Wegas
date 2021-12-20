@@ -69,6 +69,7 @@ export const handleStyle = css({
   backgroundColor: 'rgba(128, 128, 128, 0.228)',
   borderRadius: '5px',
   left: '100%',
+  top: 0,
   zIndex: 2,
 });
 
@@ -86,11 +87,6 @@ const editButtonStyle = css({
     color: themeVar.colors.ActiveColor,
   },
 });
-
-/* const questionLabelEditingStyle = css({
-  position: 'absolute',
-  zIndex: 1000,
-}); */
 
 export const singleEditButtonStyle = css({
   display: 'flex',

@@ -3,6 +3,7 @@ import produce from 'immer';
 import * as React from 'react';
 import { IChoiceDescriptor, ISingleResultChoiceDescriptor } from 'wegas-ts-api';
 import {
+  defaultMarginBottom,
   flex,
   flexColumn,
   flexDistribute,
@@ -234,8 +235,8 @@ export function ChoiceContainer({
         </div>
       )}
       {isEditing ? (
-        <div className={cx(flex, flexColumn)}>
-          <div className={cx(flex, flexColumn)}>
+        <div className={cx(flex, flexColumn, css({ padding: '15px'}))}>
+          <div className={cx(flex, flexColumn, defaultMarginBottom)}>
             <div className={choiceLabelStyle}>Label</div>
             <HTMLEditor
               value={values.label}
@@ -244,7 +245,7 @@ export function ChoiceContainer({
           </div>
           {entityIs(descriptor, 'ChoiceDescriptor', true) && (
             <>
-              <div className={cx(flex, flexColumn)}>
+              <div className={cx(flex, flexColumn, defaultMarginBottom)}>
                 <div className={choiceLabelStyle}>Description</div>
                 <HTMLEditor
                   value={values.description}
@@ -253,7 +254,7 @@ export function ChoiceContainer({
                   }
                 />
               </div>
-              <div className={cx(flex, flexColumn)}>
+              <div className={cx(flex, flexColumn, defaultMarginBottom)}>
                 <div className={choiceLabelStyle}>Feedback</div>
                 <HTMLEditor
                   value={values.feedback}
