@@ -38,6 +38,8 @@ interface QuestionDescriptionProps {
   editMode?: boolean;
 }
 
+const Edit = buttonFactory('pen');
+
 export function QuestionDescription({
   questionD,
   editMode,
@@ -67,7 +69,7 @@ export function QuestionDescription({
     [lang, questionD],
   );
 
-  const Edit = buttonFactory('pen');
+  // return <HTMLEditor value={textValue} onChange={onValidate} />;
 
   return isEditing && editMode ? (
     <Validate
@@ -77,7 +79,13 @@ export function QuestionDescription({
       vertical
       validatorClassName={'none'}
     >
-      {(value, onChange) => <HTMLEditor value={value} onChange={onChange} />}
+      {(value, onChange) => (
+        <HTMLEditor
+          value={value}
+          onChange={onChange}
+          customToolbar="bold italic underline"
+        />
+      )}
     </Validate>
   ) : (
     <div

@@ -1,7 +1,45 @@
+import { cloneDeep } from 'lodash-es';
 import * as React from 'react';
+import { transpile } from 'typescript';
+import {
+  IGame,
+  IScript,
+  IVariableDescriptor,
+  ScriptableEntity,
+  SGameModel,
+  SPlayer,
+  SStaticTextDescriptor,
+  SStringDescriptor,
+  STextDescriptor,
+  STranslatableContent,
+  SVariableDescriptor,
+  SVariableInstance,
+  WegasClassNames,
+} from 'wegas-ts-api';
+import { APIScriptMethods } from '../../API/clientScriptHelper';
+import { Actions } from '../../data';
+import { ActionCreator } from '../../data/actions';
+import { getItems } from '../../data/methods/VariableDescriptorMethods';
+import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
+import { State } from '../../data/Reducer/reducers';
 import { instantiate } from '../../data/scriptable';
 import { VariableDescriptor as VDSelect } from '../../data/selectors';
-import { useStore, store } from '../../data/Stores/store';
+import {
+  pagesContextStateStore,
+  setPagesContextState,
+  usePagesContextStateStore,
+} from '../../data/Stores/pageContextStore';
+import { store, useStore } from '../../data/Stores/store';
+import {
+  createTranslatableContent,
+  createTranslation,
+  translate,
+} from '../../Editor/Components/FormView/translatable';
+import { formatScriptToFunctionBody } from '../../Editor/Components/ScriptEditors/WegasScriptEditor';
+import { createLRU, replace } from '../../Helper/tools';
+import { createScript, isScript } from '../../Helper/wegasEntites';
+import { wwarn } from '../../Helper/wegaslog';
+import { ClassesContext, classesCTX } from '../Contexts/ClassesProvider';
 import {
   defaultFeatures,
   FeatureContext,
@@ -9,50 +47,13 @@ import {
   isFeatureEnabled,
 } from '../Contexts/FeaturesProvider';
 import { LanguagesContext, languagesCTX } from '../Contexts/LanguagesProvider';
-import { Actions } from '../../data';
-import { transpile } from 'typescript';
-import { ClassesContext, classesCTX } from '../Contexts/ClassesProvider';
-import { deepDifferent } from './storeHookFactory';
-import {
-  IVariableDescriptor,
-  WegasClassNames,
-  SGameModel,
-  SPlayer,
-  STranslatableContent,
-  SStringDescriptor,
-  STextDescriptor,
-  SStaticTextDescriptor,
-  IScript,
-  SVariableDescriptor,
-  SVariableInstance,
-} from 'wegas-ts-api';
-import { ScriptableEntity } from 'wegas-ts-api';
-import { addPopup } from '../PopupManager';
-import { ActionCreator } from '../../data/actions';
-import {
-  createTranslatableContent,
-  createTranslation,
-  translate,
-} from '../../Editor/Components/FormView/translatable';
-import { wwarn } from '../../Helper/wegaslog';
-import { getItems } from '../../data/methods/VariableDescriptorMethods';
-import { replace, createLRU } from '../../Helper/tools';
-import { APIScriptMethods } from '../../API/clientScriptHelper';
-import { createScript, isScript } from '../../Helper/wegasEntites';
-import { cloneDeep } from 'lodash-es';
-import { State } from '../../data/Reducer/reducers';
-import { formatScriptToFunctionBody } from '../../Editor/Components/ScriptEditors/WegasScriptEditor';
-import {
-  pagesContextStateStore,
-  setPagesContextState,
-  usePagesContextStateStore,
-} from '../../data/Stores/pageContextStore';
 import { PageComponentContext } from '../PageComponents/tools/options';
-import { IGame } from 'wegas-ts-api';
 import {
   schemaProps,
   SchemaPropsType,
 } from '../PageComponents/tools/schemaProps';
+import { addPopup } from '../PopupManager';
+import { deepDifferent } from './storeHookFactory';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -400,7 +401,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     setRoles: (roles, defaultRoleId, rolesId) => {
       globalDispatch(
         ActionCreator.EDITOR_SET_ROLES({
-          roles,
+          roles: { ...roles, ...DEFAULT_ROLES },
           defaultRoleId: defaultRoleId as string,
           rolesId,
         }),
@@ -548,10 +549,9 @@ export function useScript<T extends ScriptReturnType>(
   },
   catchCB?: (e: Error) => void,
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
-  const oldContext =
-    React.useRef<{
-      [name: string]: unknown;
-    }>();
+  const oldContext = React.useRef<{
+    [name: string]: unknown;
+  }>();
 
   const newContext = React.useMemo(() => {
     if (deepDifferent(context, oldContext.current)) {

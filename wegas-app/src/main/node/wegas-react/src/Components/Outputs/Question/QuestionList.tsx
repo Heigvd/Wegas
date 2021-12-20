@@ -14,6 +14,7 @@ import {
   flexRow,
   grow,
   itemCenter,
+  justifyCenter,
 } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { TranslatableContent } from '../../../data/i18n';
@@ -46,7 +47,7 @@ import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { Validate } from '../../Inputs/Validate';
 import { themeVar } from '../../Theme/ThemeVars';
-import { AddMenu } from './AddMenu';
+// import { AddMenu } from './AddMenu';
 import {
   ConnectedQuestionDisplay,
   ConnectedQuestionDisplayProps,
@@ -69,10 +70,11 @@ export const handleStyle = css({
   backgroundColor: 'rgba(128, 128, 128, 0.228)',
   borderRadius: '5px',
   left: '100%',
+  top: 0,
   zIndex: 2,
 });
 
-const editButtonStyle = css({
+export const editButtonStyle = css({
   display: 'flex',
   minWidth: '30px',
   height: '30px',
@@ -87,9 +89,9 @@ const editButtonStyle = css({
   },
 });
 
-const questionLabelEditingStyle = css({
-  position: 'absolute',
-  zIndex: 1000,
+export const editButonBorder = css({
+  border: 'solid 2px black',
+  borderRadius: '50%',
 });
 
 export const singleEditButtonStyle = css({
@@ -127,106 +129,161 @@ interface AddQuestionsMenuProps {
   questionList: SListDescriptor;
 }
 
-const questions = [
-  {
-    label: (
-      <div>
-        <IconComp icon="question" />
-        Question simple
-      </div>
-    ),
-    value: {
-      type: 'Question',
-      descriptor: 'QuestionDescriptor',
-      instance: 'QuestionInstance',
-    },
-  },
-  {
-    label: (
-      <div>
-        <IconComp icon="check-square" />
-        Question à choix multiple
-      </div>
-    ),
-    value: {
-      type: 'Checkbox',
-      descriptor: 'QuestionDescriptor',
-      instance: 'QuestionInstance',
-    },
-  },
-  // {
-  //   label: (
-  //     <div>
-  //       <IconComp icon="dot-circle" />
-  //       Question à un seul choix
-  //     </div>
-  //   ),
-  //   value: {
-  //     type: 'Radio',
-  //     descriptor: 'QuestionDescriptor',
-  //     instance: 'QuestionInstance',
-  //   },
-  // },
-  {
-    label: (
-      <div>
-        <IconComp
-          icon={[
-            'square-full',
-            { icon: 'question', color: 'white', size: 'xs' },
-          ]}
-        />
-        Question ouverte
-      </div>
-    ),
-    value: {
-      type: 'WH',
-      descriptor: 'WhQuestionDescriptor',
-      instance: 'WhQuestionInstance',
-    },
-  },
-] as const;
+// const questions = [
+//   {
+//     label: (
+//       <div>
+//         <IconComp icon="question" />
+//         Question simple
+//       </div>
+//     ),
+//     value: {
+//       type: 'Question',
+//       descriptor: 'QuestionDescriptor',
+//       instance: 'QuestionInstance',
+//     },
+//   },
+//   // {
+//   //   label: (
+//   //     <div>
+//   //       <IconComp icon="check-square" />
+//   //       Question à choix multiple
+//   //     </div>
+//   //   ),
+//   //   value: {
+//   //     type: 'Checkbox',
+//   //     descriptor: 'QuestionDescriptor',
+//   //     instance: 'QuestionInstance',
+//   //   },
+//   // },
+//   // {
+//   //   label: (
+//   //     <div>
+//   //       <IconComp icon="dot-circle" />
+//   //       Question à un seul choix
+//   //     </div>
+//   //   ),
+//   //   value: {
+//   //     type: 'Radio',
+//   //     descriptor: 'QuestionDescriptor',
+//   //     instance: 'QuestionInstance',
+//   //   },
+//   // },
+//   {
+//     label: (
+//       <div>
+//         <IconComp
+//           icon={[
+//             'square-full',
+//             { icon: 'question', color: 'white', size: 'xs' },
+//           ]}
+//         />
+//         Question ouverte
+//       </div>
+//     ),
+//     value: {
+//       type: 'WH',
+//       descriptor: 'WhQuestionDescriptor',
+//       instance: 'WhQuestionInstance',
+//     },
+//   },
+// ] as const;
 
-function AddQuestionsMenu({ questionList }: AddQuestionsMenuProps) {
+// function AddQuestionsMenu({ questionList }: AddQuestionsMenuProps) {
+//   const { lang } = React.useContext(languagesCTX);
+
+//   return (
+//     <AddMenu
+//       items={questions}
+//       onSelect={item => {
+//         store.dispatch(
+//           Actions.VariableDescriptorActions.createDescriptor(
+//             {
+//               '@class': item.value.descriptor,
+//               label: createTranslatableContent(lang, 'Titre de la question'),
+//               description: createTranslatableContent(
+//                 lang,
+//                 'Ennoncé de la question',
+//               ),
+//               ...(item.value.type ===
+//               'Question' /*|| item.value.type === 'Radio'*/
+//                 ? { maxReplies: 1 }
+//                 : {}),
+//               // ...(item.value.type === 'Radio' ? { minReplies: 1 } : {}),
+//               // ...(item.value.type ===
+//               // 'Checkbox' || item.value.type === 'Radio'
+//               //   ? { cbx: true }
+//               //   : {}),
+//               defaultInstance: {
+//                 '@class': item.value.instance,
+//               },
+//             } as unknown as IVariableDescriptor,
+//             questionList.getEntity(),
+//           ),
+//         );
+//       }}
+//     />
+//   );
+// }
+
+const Plus = buttonFactory('plus');
+
+function AddQuestionButton({ questionList }: AddQuestionsMenuProps) {
   const { lang } = React.useContext(languagesCTX);
 
   return (
-    <AddMenu
-      items={questions}
-      onSelect={item => {
-        store.dispatch(
-          Actions.VariableDescriptorActions.createDescriptor(
-            {
-              '@class': item.value.descriptor,
-              label: createTranslatableContent(lang, 'Titre de la question'),
-              description: createTranslatableContent(
-                lang,
-                'Ennoncé de la question',
-              ),
-              ...(item.value.type ===
-              'Question' /*|| item.value.type === 'Radio'*/
-                ? { maxReplies: 1 }
-                : {}),
-              // ...(item.value.type === 'Radio' ? { minReplies: 1 } : {}),
-              ...(item.value.type ===
-              'Checkbox' /*|| item.value.type === 'Radio'*/
-                ? { cbx: true }
-                : {}),
-              defaultInstance: {
-                '@class': item.value.instance,
-              },
-            } as unknown as IVariableDescriptor,
-            questionList.getEntity(),
-          ),
-        );
-      }}
-    />
+    <div className={cx(flex, justifyCenter, itemCenter)}>
+      <Plus
+        className={cx(editButtonStyle, editButonBorder)}
+        onClick={() => {
+          store.dispatch(
+            Actions.VariableDescriptorActions.createDescriptor(
+              {
+                '@class': 'QuestionDescriptor',
+                label: createTranslatableContent(lang, 'Titre de la question'),
+                description: createTranslatableContent(
+                  lang,
+                  'Ennoncé de la question',
+                ),
+                maxReplies: 1,
+                defaultInstance: {
+                  '@class': 'QuestionInstance',
+                },
+              } as unknown as IVariableDescriptor,
+              questionList.getEntity(),
+            ),
+          );
+        }}
+      />
+    </div>
   );
+  // return (
+  //   <div
+  //     className={cx(flex, itemCenter, justifyCenter, singleEditButtonStyle)}
+  //     onClick={() => {
+  //       store.dispatch(
+  //         Actions.VariableDescriptorActions.createDescriptor(
+  //           {
+  //             '@class': 'QuestionDescriptor',
+  //             label: createTranslatableContent(lang, 'Titre de la question'),
+  //             description: createTranslatableContent(
+  //               lang,
+  //               'Ennoncé de la question',
+  //             ),
+  //             maxReplies: 1,
+  //             defaultInstance: {
+  //               '@class': 'QuestionInstance',
+  //             },
+  //           } as unknown as IVariableDescriptor,
+  //           questionList.getEntity(),
+  //         ),
+  //       );
+  //     }}
+  //   >
+  //     <IconComp icon="plus" />
+  //   </div>
+  // );
 }
-
-/*interface QuestionProps {
-  variable: string;
-}*/
 
 export interface QuestionLabelProps {
   questionD: IQuestionDescriptor | IWhQuestionDescriptor;
@@ -276,7 +333,11 @@ export function QuestionLabel({
   return (
     <div
       ref={label}
-      className={cx(flex, itemCenter, { [questionLabelEditingStyle]: editing })}
+      className={cx(
+        flex,
+        itemCenter,
+        //{ [questionLabelEditingStyle]: editing }
+      )}
       onClick={() => {
         !disabled &&
           !editing &&
@@ -294,6 +355,13 @@ export function QuestionLabel({
           onValidate={onValidate}
           onCancel={() => onFinishEditing && onFinishEditing()}
           vertical
+          validatorClassName={css({
+            padding: 0,
+            backgroundColor: themeVar.colors.HeaderColor,
+          })}
+          buttonClassName={css({
+            color: 'white',
+          })}
         >
           {(value, onChange) => (
             <SimpleInput value={value} onChange={onChange} />
@@ -473,7 +541,7 @@ export default function QuestionList({
       disabled={disabled}
       readOnly={readOnly}
       addComponent={
-        editMode ? <AddQuestionsMenu questionList={questionList} /> : undefined
+        editMode ? <AddQuestionButton questionList={questionList} /> : undefined
       }
     >
       {connectedQuestionDisplayFactory(editMode)}
