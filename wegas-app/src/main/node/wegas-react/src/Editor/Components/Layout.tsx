@@ -92,10 +92,10 @@ const availableLayoutTabs: LinearLayoutComponents = [
     tabId: 'Theme Editor',
     content: <ThemeEditor />,
   },
-  {
-    tabId: 'Page Editor',
-    content: <PageEditor />,
-  },
+  // {
+  //   tabId: 'Page Editor',
+  //   content: <PageEditor />,
+  // },
   {
     tabId: 'Pages Layout',
     content: <PagesLayout />,
