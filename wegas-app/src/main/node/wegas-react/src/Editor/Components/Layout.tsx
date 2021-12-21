@@ -3,6 +3,7 @@ import * as React from 'react';
 import { roleCTX } from '../../Components/Contexts/RoleProvider';
 import { MaxiLoader } from '../../Components/MaxiLoader';
 import { themeVar } from '../../Components/Theme/ThemeVars';
+import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
 import { useStore } from '../../data/Stores/store';
 import { visitIndex } from '../../Helper/pages';
@@ -18,7 +19,6 @@ import { fullScreenLoaderStyle, PageLoader } from './Page/PageLoader';
 const StateMachineEditor = React.lazy(
   () => import('./StateMachine/StateMachineEditor'),
 );
-const PageEditor = React.lazy(() => import('./Page/PageEditor'));
 const TreeView = React.lazy(() => import('./Variable/VariableTreeView'));
 const EntityEditor = React.lazy(() => import('./EntityEditor'));
 const FileBrowserWithMeta = React.lazy(
@@ -39,7 +39,7 @@ const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
 const PagesLayout = React.lazy(() => import('./Page/PagesLayout'));
 const SourceEditor = React.lazy(() => import('./Page/SourceEditor'));
 
-// const Tester = React.lazy(() => import('../../Testers/HTMLEditorTester'));
+// const Tester = React.lazy(() => import('../../Testers/WyswigScriptViewTester'));
 
 const layout = css({
   display: 'flex',
@@ -92,10 +92,10 @@ const availableLayoutTabs: LinearLayoutComponents = [
     tabId: 'Theme Editor',
     content: <ThemeEditor />,
   },
-  {
-    tabId: 'Page Editor',
-    content: <PageEditor />,
-  },
+  // {
+  //   tabId: 'Page Editor',
+  //   content: <PageEditor />,
+  // },
   {
     tabId: 'Pages Layout',
     content: <PagesLayout />,
@@ -149,8 +149,10 @@ export default function Layout() {
     ({ tabId }) => allowedPages === true || allowedPages.includes(tabId),
   );
 
-  // const initTabs = ['Variables', 'Files', 'Page Editor'];
-  const initTabs = layoutPages.map(page => page.tabId);
+  const initTabs =
+    currentRole === DEFAULT_ROLES.SCENARIO_EDITOR.id
+      ? ['Variables', 'Files', 'Page Editor']
+      : layoutPages.map(page => page.tabId);
   const allowedInitTabs = initTabs.filter(
     t => allowedPages === true || allowedPages.includes(t),
   );

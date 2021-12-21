@@ -1,30 +1,30 @@
 // OPTIONS -> ACTIONS
-import { store } from '../../../data/Stores/store';
-import { ActionCreator } from '../../../data/actions';
-import { clientScriptEval, useScript } from '../../Hooks/useScript';
-import { fileURL } from '../../../API/files.api';
-import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
-import { Player } from '../../../data/selectors';
-import { wlog, wwarn } from '../../../Helper/wegaslog';
-import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
-import { schemaProps } from './schemaProps';
-import { PlayerInfoBulletProps } from './InfoBullet';
-import { createScript } from '../../../Helper/wegasEntites';
-import { IScript } from 'wegas-ts-api';
 import {
+  IScript,
   SDialogueDescriptor,
   SFSMInstance,
-  SInboxInstance,
-  SQuestionInstance,
-  SQuestionDescriptor,
-  SWhQuestionInstance,
-  SSurveyInstance,
-  SPeerReviewInstance,
   SInboxDescriptor,
-  SWhQuestionDescriptor,
-  SSurveyDescriptor,
+  SInboxInstance,
   SPeerReviewDescriptor,
+  SPeerReviewInstance,
+  SQuestionDescriptor,
+  SQuestionInstance,
+  SSurveyDescriptor,
+  SSurveyInstance,
+  SWhQuestionDescriptor,
+  SWhQuestionInstance,
 } from 'wegas-ts-api';
+import { fileURL } from '../../../API/files.api';
+import { ActionCreator } from '../../../data/actions';
+import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
+import { Player } from '../../../data/selectors';
+import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
+import { store } from '../../../data/Stores/store';
+import { createScript } from '../../../Helper/wegasEntites';
+import { wlog, wwarn } from '../../../Helper/wegaslog';
+import { clientScriptEval, useScript } from '../../Hooks/useScript';
+import { PlayerInfoBulletProps } from './InfoBullet';
+import { schemaProps } from './schemaProps';
 
 export interface PageComponentContext {
   [item: string]: unknown;
@@ -364,7 +364,7 @@ export const layoutConditionnalChoices: HashListChoices = [
           }),
           condition: schemaProps.script({
             label: 'Condition',
-            mode: 'GET',
+            mode: 'GET_CLIENT',
             language: 'TypeScript',
             value: 'false',
           }),
@@ -378,7 +378,7 @@ export const layoutConditionnalChoices: HashListChoices = [
       prop: 'disableIf',
       schema: schemaProps.script({
         label: 'Disable If',
-        mode: 'GET',
+        mode: 'GET_CLIENT',
         language: 'TypeScript',
         value: 'false',
       }),
@@ -390,7 +390,7 @@ export const layoutConditionnalChoices: HashListChoices = [
       prop: 'hideIf',
       schema: schemaProps.script({
         label: 'Hide If',
-        mode: 'GET',
+        mode: 'GET_CLIENT',
         language: 'TypeScript',
         value: 'false',
       }),
@@ -402,7 +402,7 @@ export const layoutConditionnalChoices: HashListChoices = [
       prop: 'readOnlyIf',
       schema: schemaProps.script({
         label: 'Readonly If',
-        mode: 'GET',
+        mode: 'GET_CLIENT',
         language: 'TypeScript',
         value: 'false',
       }),
@@ -441,13 +441,13 @@ export const decorationsChoices: HashListChoices = [
         properties: {
           showScript: schemaProps.script({
             label: 'Show',
-            mode: 'GET',
+            mode: 'GET_CLIENT',
             language: 'TypeScript',
             value: 'true',
           }),
           blinkScript: schemaProps.script({
             label: 'Blink',
-            mode: 'GET',
+            mode: 'GET_CLIENT',
             language: 'TypeScript',
             value: 'false',
           }),
