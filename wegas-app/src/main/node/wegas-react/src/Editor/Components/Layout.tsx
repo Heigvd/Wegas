@@ -18,7 +18,6 @@ import { fullScreenLoaderStyle, PageLoader } from './Page/PageLoader';
 const StateMachineEditor = React.lazy(
   () => import('./StateMachine/StateMachineEditor'),
 );
-const PageEditor = React.lazy(() => import('./Page/PageEditor'));
 const TreeView = React.lazy(() => import('./Variable/VariableTreeView'));
 const EntityEditor = React.lazy(() => import('./EntityEditor'));
 const FileBrowserWithMeta = React.lazy(
