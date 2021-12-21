@@ -125,10 +125,9 @@ export function ChoiceContainer({
     : undefined;
   const feedback =
     entityIs(descriptor, 'ChoiceDescriptor', true) &&
-    descriptor.results.length > 0
+  descriptor.results?.length > 0
       ? descriptor.results[0].answer
       : undefined;
-
   const [showHandle, setShowHandle] = React.useState(false);
   const [isEditing, setEditing] = React.useState(false);
   const [clicked, setClicked] = React.useState(false);
@@ -193,7 +192,7 @@ export function ChoiceContainer({
         if (
           newFeedback &&
           entityIs(choice, 'ChoiceDescriptor', true) &&
-          choice.results.length > 0
+          choice.results?.length > 0
         ) {
           choice.results[0].answer = createTranslatableContent(
             lang,
