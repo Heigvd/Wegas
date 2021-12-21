@@ -1,42 +1,47 @@
-import * as React from 'react';
-import { WidgetProps } from 'jsoninput/typings/types';
-import { LabeledView, Labeled } from '../labeled';
-import { CommonView, CommonViewContainer } from '../commonView';
-import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
-import { css, cx } from '@emotion/css';
-import { store } from '../../../../data/Stores/store';
-import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
-import { Player } from '../../../../data/selectors';
-import { WyswygScriptEditor } from './WyswygScriptEditor';
+import generate from '@babel/generator';
+import { parse } from '@babel/parser';
 import {
-  Statement,
-  program,
   BinaryExpression,
-  isBooleanLiteral,
   BooleanLiteral,
-  isCallExpression,
+  CallExpression,
   Expression,
+  expressionStatement,
+  isBinaryExpression,
+  isBooleanLiteral,
+  isCallExpression,
+  isEmptyStatement,
   isExpressionStatement,
   isLogicalExpression,
-  expressionStatement,
   LogicalExpression,
   logicalExpression,
-  isBinaryExpression,
-  CallExpression,
-  isEmptyStatement,
+  program,
+  Statement,
 } from '@babel/types';
-import { parse } from '@babel/parser';
-import generate from '@babel/generator';
-import { DropMenu } from '../../../../Components/DropMenu';
-import { ResizeHandle } from '../../ResizeHandle';
-import { createScript } from '../../../../Helper/wegasEntites';
+import { css, cx } from '@emotion/css';
+import { WidgetProps } from 'jsoninput/typings/types';
+import * as React from 'react';
 import { IScript, IVariableDescriptor, IVariableInstance } from 'wegas-ts-api';
-import { EmbeddedSrcEditor } from '../../ScriptEditors/EmbeddedSrcEditor';
-import { flex, grow, justifyEnd, secondaryButtonStyle } from '../../../../css/classes';
+import { DropMenu } from '../../../../Components/DropMenu';
 import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
-import { useInternalTranslate } from '../../../../i18n/internalTranslator';
-import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { themeVar } from '../../../../Components/Theme/ThemeVars';
+import {
+  flex,
+  grow,
+  justifyEnd,
+  secondaryButtonStyle,
+} from '../../../../css/classes';
+import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
+import { Player } from '../../../../data/selectors';
+import { store } from '../../../../data/Stores/store';
+import { createScript } from '../../../../Helper/wegasEntites';
+import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
+import { useInternalTranslate } from '../../../../i18n/internalTranslator';
+import { ResizeHandle } from '../../ResizeHandle';
+import { EmbeddedSrcEditor } from '../../ScriptEditors/EmbeddedSrcEditor';
+import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
+import { CommonView, CommonViewContainer } from '../commonView';
+import { Labeled, LabeledView } from '../labeled';
+import { WyswygScriptEditor } from './WyswygScriptEditor';
 
 export const scriptEditStyle = css({
   minHeight: '5em',
@@ -48,13 +53,13 @@ const operators = ['&&', '||'] as const;
 type Operator = typeof operators[number];
 
 export function isScriptCondition(mode?: ScriptMode) {
-  return mode === 'GET';
+  return mode === 'GET' || mode === 'GET_CLIENT';
 }
 
 export function returnTypes(
   mode?: ScriptMode,
 ): WegasScriptEditorReturnTypeName[] | undefined {
-  return isScriptCondition(mode) ? ['boolean'] : undefined;
+  return mode === 'GET_CLIENT' ? ['boolean'] : undefined;
 }
 
 function conditionGenerator(
@@ -159,7 +164,7 @@ export function Script({
   const [operator, setOperator] = React.useState<Operator>(operators[0]);
   const i18nValues = useInternalTranslate(editorTabsTranslations);
 
-  const isServerScript = view.mode === 'SET';
+  const isServerScript = view.mode === 'SET' || view.mode === 'GET';
 
   const testScript = React.useCallback(
     value => {
@@ -295,7 +300,7 @@ export function Script({
                       noGutter={true}
                       returnType={returnTypes(view.mode)}
                       scriptContext={
-                        view.mode === 'SET' ? 'Server internal' : 'Client'
+                        isServerScript ? 'Server internal' : 'Client'
                       }
                       Editor={WegasScriptEditor}
                       EmbeddedEditor={WegasScriptEditor}
@@ -318,7 +323,7 @@ export function Script({
                             onClick={() => setSrcMode(sm => !sm)}
                           />
                         )}
-                        {isServerScript && (
+                        {view.mode === 'SET' && (
                           <IconButton
                             icon="play"
                             tooltip={i18nValues.variableProperties.runScripts}

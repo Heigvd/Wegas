@@ -13,7 +13,7 @@ type WegasTypeString = TYPESTRING | 'identifier';
 
 type WegasMethodReturnType = 'number' | 'string' | 'boolean';
 
-type ScriptMode = 'SET' | 'GET';
+type ScriptMode = 'SET' | 'GET' | 'SET_CLIENT' | 'GET_CLIENT';
 
 type ScriptContext = 'Client' | 'Server internal' | 'Server external';
 
