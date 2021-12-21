@@ -3,6 +3,7 @@ import produce from 'immer';
 import * as React from 'react';
 import { IChoiceDescriptor, ISingleResultChoiceDescriptor } from 'wegas-ts-api';
 import {
+  defaultMarginBottom,
   flex,
   flexColumn,
   flexDistribute,
@@ -19,7 +20,8 @@ import {
 import { classNameOrEmpty } from '../../../Helper/className';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import HTMLEditor from '../../HTML/HTMLEditor';
-import { Button } from '../../Inputs/Buttons/Button';
+import { IconButton } from '../../Inputs/Buttons/IconButton';
+import { SimpleInput } from '../../Inputs/SimpleInput';
 import { TumbleLoader } from '../../Loader';
 import { themeVar } from '../../Theme/ThemeVars';
 import { HTMLText } from '../HTMLText';
@@ -37,6 +39,7 @@ export const choiceContainerStyle = css({
   '&.selected': {
     backgroundColor: themeVar.colors.PrimaryColor,
     color: themeVar.colors.LightTextColor,
+    cursor: 'default',
   },
   '&.editing': {
     '&:hover': {
@@ -47,8 +50,8 @@ export const choiceContainerStyle = css({
   '&.disabled': {
     backgroundColor: themeVar.colors.BackgroundColor,
     opacity: '0.7',
-    cursor: 'default',
-    pointerEvents: 'none',
+    cursor: 'initial',
+    //pointerEvents: 'none',
     '&:hover': {
       backgroundColor: themeVar.colors.BackgroundColor,
       color: themeVar.colors.DarkTextColor,
@@ -234,32 +237,36 @@ export function ChoiceContainer({
         </div>
       )}
       {isEditing ? (
-        <div className={cx(flex, flexColumn)}>
-          <div className={cx(flex, flexColumn)}>
+        <div className={cx(flex, flexColumn, css({ padding: '15px' }))}>
+          <div className={cx(flex, flexColumn, defaultMarginBottom)}>
             <div className={choiceLabelStyle}>Label</div>
-            <HTMLEditor
+            <SimpleInput
               value={values.label}
-              onChange={value => setValues(o => ({ ...o, label: value }))}
+              onChange={value =>
+                setValues(o => ({ ...o, label: String(value) }))
+              }
             />
           </div>
           {entityIs(descriptor, 'ChoiceDescriptor', true) && (
             <>
-              <div className={cx(flex, flexColumn)}>
+              <div className={cx(flex, flexColumn, defaultMarginBottom)}>
                 <div className={choiceLabelStyle}>Description</div>
                 <HTMLEditor
                   value={values.description}
                   onChange={value =>
                     setValues(o => ({ ...o, description: value }))
                   }
+                  customToolbar="bold italic underline bullist"
                 />
               </div>
-              <div className={cx(flex, flexColumn)}>
+              <div className={cx(flex, flexColumn, defaultMarginBottom)}>
                 <div className={choiceLabelStyle}>Feedback</div>
                 <HTMLEditor
                   value={values.feedback}
                   onChange={value =>
                     setValues(o => ({ ...o, feedback: value }))
                   }
+                  customToolbar="bold italic underline bullist"
                 />
               </div>
             </>
@@ -267,22 +274,22 @@ export function ChoiceContainer({
           <div
             className={cx(flex, flexRow, flexDistribute, editButtonsContainer)}
           >
-            <Button
-              onClick={e => {
-                e.stopPropagation();
-                onValidate();
-              }}
-            >
-              Accept
-            </Button>
-            <Button
+            <IconButton
+              icon="times"
               onClick={e => {
                 e.stopPropagation();
                 setEditing(false);
               }}
-            >
-              Cancel
-            </Button>
+              chipStyle
+            />
+            <IconButton
+              icon="check"
+              onClick={e => {
+                e.stopPropagation();
+                onValidate();
+              }}
+              chipStyle
+            />
           </div>
         </div>
       ) : (

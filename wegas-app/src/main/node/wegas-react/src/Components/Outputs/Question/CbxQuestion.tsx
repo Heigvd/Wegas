@@ -126,7 +126,7 @@ export function CbxQuestionDisplay({
   editMode,
   ...options
 }: CbxQuestionDisplayProps) {
-  const { maxReplies, minReplies } = questionD;
+  const { maxReplies, minReplies } = questionD || {};
 
   const canReply =
     questionI != null && !questionI.validated && isActionAllowed(options);
@@ -145,7 +145,7 @@ export function CbxQuestionDisplay({
     [dispatch, radio],
   );
 
-  if (questionI == null || !questionI.active) {
+  if (questionD == null || questionI == null || !questionI.active) {
     return null;
   }
 

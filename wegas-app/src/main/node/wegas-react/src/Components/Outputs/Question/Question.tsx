@@ -19,8 +19,8 @@ import { SimpleQuestionDisplay } from './SimpleQuestionDisplay';
 import { WhQuestionDisplay, whQuestionInfo } from './WhQuestionDisplay';
 
 export interface QuestionInfo {
-  questionD: Readonly<IQuestionDescriptor>;
-  questionI: Readonly<IQuestionInstance> | undefined;
+  questionD?: Readonly<IQuestionDescriptor>;
+  questionI?: Readonly<IQuestionInstance> | undefined;
   choicesD: Readonly<IChoiceDescriptor>[];
   choicesI: (Readonly<IChoiceInstance> | undefined)[];
   replies: Readonly<IReply[]>;
@@ -36,22 +36,22 @@ export const questionStyle = css({
  */
 export function questionInfo(question: IQuestionDescriptor) {
   return function (s: Readonly<State>): QuestionInfo {
-    const questionD = select<IQuestionDescriptor>(question.id)!;
-    const choicesD = questionD.itemsIds
+    const questionD = select<IQuestionDescriptor>(question.id);
+    const choicesD = questionD?.itemsIds
       .map(id => s.variableDescriptors[id])
       .filter(function (
         entity: IChoiceDescriptor | undefined,
       ): entity is IChoiceDescriptor {
         return entity != null;
       });
-    const choicesI = choicesD.map(c => getInstance(c));
+    const choicesI = choicesD?.map(c => getInstance(c)) || [];
 
     return {
       questionD,
       questionI: getInstance(question),
-      choicesD,
+      choicesD: choicesD || [],
       choicesI,
-      replies: choicesI
+      replies: (choicesI || [])
         .reduce<IReply[]>((c, i) => {
           if (i == null) {
             return c;
@@ -73,7 +73,9 @@ export function ConnectedSimpleQuestionDisplay({
   ...options
 }: ConnectedSimpleQuestionDisplayProps) {
   const state = useStore(questionInfo(entity), deepDifferent);
-
+  if (state.questionD == null) {
+    return null;
+  }
   return state.questionD.cbx ? (
     <CbxQuestionDisplay {...state} dispatch={store.dispatch} {...options} />
   ) : (

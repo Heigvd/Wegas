@@ -149,7 +149,8 @@ export default function Layout() {
     ({ tabId }) => allowedPages === true || allowedPages.includes(tabId),
   );
 
-  const initTabs = ['Variables', 'Files', 'Page Editor'];
+  // const initTabs = ['Variables', 'Files', 'Page Editor'];
+  const initTabs = layoutPages.map(page => page.tabId);
   const allowedInitTabs = initTabs.filter(
     t => allowedPages === true || allowedPages.includes(t),
   );

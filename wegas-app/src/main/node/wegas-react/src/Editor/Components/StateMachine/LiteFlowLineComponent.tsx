@@ -153,7 +153,11 @@ export function LiteFlowLineComponentFactory<
                 vertical
               >
                 {(value, onChange) => (
-                  <HTMLEditor value={value} onChange={onChange} />
+                  <HTMLEditor
+                    value={value}
+                    onChange={onChange}
+                    customToolbar="bold italic underline bullist fontsizeselect"
+                  />
                 )}
               </Validate>
             </div>
