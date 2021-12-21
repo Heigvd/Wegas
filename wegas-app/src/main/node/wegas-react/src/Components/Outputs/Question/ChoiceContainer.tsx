@@ -125,7 +125,7 @@ export function ChoiceContainer({
     : undefined;
   const feedback =
     entityIs(descriptor, 'ChoiceDescriptor', true) &&
-    descriptor.results.length > 0
+    descriptor.results?.length > 0
       ? descriptor.results[0].answer
       : undefined;
 
