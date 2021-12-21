@@ -40,7 +40,7 @@ const matchSearch = (search: string) => (data: KnownUser) => {
   return match(search, regex => {
     return (
       (data.user.name != null && data.user.name.match(regex) != null) ||
-      data.onlineUser.email.match(regex) != null
+      (data.onlineUser.email != null && data.onlineUser.email.match(regex) != null)
     );
   });
 };
