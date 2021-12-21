@@ -3,6 +3,7 @@ import * as React from 'react';
 import { roleCTX } from '../../Components/Contexts/RoleProvider';
 import { MaxiLoader } from '../../Components/MaxiLoader';
 import { themeVar } from '../../Components/Theme/ThemeVars';
+import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
 import { useStore } from '../../data/Stores/store';
 import { visitIndex } from '../../Helper/pages';
@@ -148,8 +149,10 @@ export default function Layout() {
     ({ tabId }) => allowedPages === true || allowedPages.includes(tabId),
   );
 
-  // const initTabs = ['Variables', 'Files', 'Page Editor'];
-  const initTabs = layoutPages.map(page => page.tabId);
+  const initTabs =
+    currentRole === DEFAULT_ROLES.SCENARIO_EDITOR.id
+      ? ['Variables', 'Files', 'Page Editor']
+      : layoutPages.map(page => page.tabId);
   const allowedInitTabs = initTabs.filter(
     t => allowedPages === true || allowedPages.includes(t),
   );
