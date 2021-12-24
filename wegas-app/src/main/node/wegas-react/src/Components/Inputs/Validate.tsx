@@ -5,6 +5,7 @@ import { runLoadedScript } from '../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../data/selectors';
 import { usePagesContextStateStore } from '../../data/Stores/pageContextStore';
 import { store } from '../../data/Stores/store';
+import { classNameOrEmpty } from '../../Helper/className';
 import { safeClientScriptEval } from '../Hooks/useScript';
 import { ClientAndServerAction } from '../PageComponents/Inputs/tools';
 import { assembleStateAndContext } from '../PageComponents/tools/EditableComponent';
@@ -39,6 +40,9 @@ interface ValidateProps<T> extends DisabledReadonly {
   onValidate: (value: T) => void;
   onCancel: () => void;
   children: (value: T, onChange: (value: T) => void) => JSX.Element;
+  vertical?: boolean;
+  validatorClassName?: string;
+  buttonClassName?: string;
 }
 
 export function Validate<T>({
@@ -48,6 +52,9 @@ export function Validate<T>({
   children,
   disabled,
   readOnly,
+  vertical,
+  validatorClassName = validatorStyle,
+  buttonClassName,
 }: ValidateProps<T>) {
   const [savedValue, setSavedValue] = React.useState<T>(value);
 
@@ -56,22 +63,41 @@ export function Validate<T>({
   }, [value]);
 
   return (
-    <div className={cx(flex, flexRow, itemCenter, validatorStyle)}>
+    <div
+      className={cx(
+        flex,
+        { [flexRow]: !vertical, [flexColumn]: vertical },
+        itemCenter,
+        validatorClassName,
+      )}
+    >
       <div className={cx(grow, inputStyle)}>
         {children(savedValue, setSavedValue)}
       </div>
-      <div className={cx(flex, flexColumn, inputStyle)}>
+      <div
+        className={cx(
+          flex,
+          { [flexColumn]: !vertical, [flexRow]: vertical },
+          inputStyle,
+        )}
+      >
         <Button
           icon="times"
-          onClick={() => onCancel()}
+          onClick={() => {
+            onCancel();
+          }}
           disabled={disabled}
           readOnly={readOnly}
+          className={classNameOrEmpty(buttonClassName)}
         />
         <Button
           icon="check"
-          onClick={() => onValidate(savedValue)}
+          onClick={() => {
+            onValidate(savedValue);
+          }}
           disabled={disabled}
           readOnly={readOnly}
+          className={classNameOrEmpty(buttonClassName)}
         />
       </div>
     </div>

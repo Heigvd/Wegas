@@ -9,6 +9,7 @@ import {
   IPlayerWithId,
   ITeamWithId,
 } from 'wegas-ts-api';
+import { getOnlineUsers } from '../API/api';
 import { entityIs } from '../API/entityHelper';
 import getLogger from '../logger';
 import { getStore, WegasLobbyState } from '../store/store';
@@ -357,7 +358,7 @@ export class WebSocketListener {
       getStore().dispatch(decQueue(amount));
       return;
     } else if (event === 'online-users') {
-      getStore().dispatch(reinitOnlineUsers());
+      getStore().dispatch(getOnlineUsers());
     } else {
       if (!eventFound) {
         logger.error(`Event [${event}] unchecked`, data);

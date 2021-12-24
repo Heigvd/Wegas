@@ -11,6 +11,7 @@ import * as API from '../../API/api';
 import { ILevelDescriptor, OnlineUser } from '../../API/restClient';
 import { mapByKey } from '../../helper';
 import { reinitOnlineUsers } from '../../websocket/websocket';
+import { shallowEqual } from '../hooks';
 import { LoadingStatus } from '../store';
 
 export interface AdminState {
@@ -46,11 +47,32 @@ const adminSlice = createSlice({
       .addCase(API.getAllRoles.fulfilled, state => {
         state.rolesStatus = 'READY';
       })
-      .addCase(API.getOnlineUsers.pending, state => {
-        state.onlineUsers = 'LOADING';
-      })
+      //      .addCase(API.getOnlineUsers.pending, state => {
+      //        state.onlineUsers = 'LOADING';
+      //      })
       .addCase(API.getOnlineUsers.fulfilled, (state, action) => {
-        state.onlineUsers = mapByKey(action.payload, 'userId');
+        const s = state.onlineUsers;
+        if (typeof s === 'string') {
+          state.onlineUsers = mapByKey(action.payload, 'userId');
+        } else {
+          const currents = { ...s };
+          action.payload.forEach(user => {
+            const userId = user.userId;
+            const current = s[userId];
+
+            delete currents[userId];
+
+            if (current != null) {
+              if (!shallowEqual(current, user)) {
+                s[userId] = user;
+              }
+            } else {
+              s[userId] = user;
+            }
+          });
+
+          Object.keys(currents).forEach(userId => delete s[+userId]);
+        }
       })
       .addCase(API.syncOnlineUsers.pending, state => {
         state.onlineUsers = 'LOADING';

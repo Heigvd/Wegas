@@ -57,12 +57,12 @@ const nodeStyle = css({
   width: '100%',
 });
 const nodeLabelStyle = css({
-minWidth: '100px',
-maxWidth: '100%',
-overflow: 'hidden',
-whiteSpace: 'nowrap',
-textOverflow: 'ellipsis',
-})
+  minWidth: '100px',
+  maxWidth: '100%',
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
+  textOverflow: 'ellipsis',
+});
 
 export const actionNodeContentStyle = cx(
   css({
@@ -222,100 +222,109 @@ export function CTree({
   );
   const onMenuParentSelect = React.useCallback<
     Exclude<AddMenuProps['onSelect'], undefined>
-  >((i, e) => {
-    if (
-      entityIs(variable, 'ListDescriptor') ||
-      entityIs(variable, 'QuestionDescriptor') ||
-      entityIs(variable, 'WhQuestionDescriptor')
-    ) {
-      let dispatch = store.dispatch;
+  >(
+    (i, e) => {
+      if (
+        entityIs(variable, 'ListDescriptor') ||
+        entityIs(variable, 'QuestionDescriptor') ||
+        entityIs(variable, 'WhQuestionDescriptor')
+      ) {
+        let dispatch = store.dispatch;
 
-      if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
-        dispatch = localDispatch;
-      } else {
-        focusTab(mainLayoutId, 'Variable Properties');
+        if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
+          dispatch = localDispatch;
+        } else {
+          focusTab(mainLayoutId, 'Variable Properties');
+        }
+
+        dispatch(Actions.EditorActions.createVariable(i.value, variable));
       }
-
-      dispatch(Actions.EditorActions.createVariable(i.value, variable));
-    }
-  }, []);
+    },
+    [forceLocalDispatch, localDispatch, variable],
+  );
 
   const onMenuChoiceSelect = React.useCallback<
     Exclude<AddMenuProps['onSelect'], undefined>
-  >((i, e) => {
-    if (entityIs(variable, 'ChoiceDescriptor')) {
-      const globalDispatch = store.dispatch;
-      let dispatch = globalDispatch;
-      if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
-        dispatch = localDispatch;
-      } else {
-        focusTab(mainLayoutId, 'Variable Properties');
-      }
+  >(
+    (i, e) => {
+      if (entityIs(variable, 'ChoiceDescriptor')) {
+        const globalDispatch = store.dispatch;
+        let dispatch = globalDispatch;
+        if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
+          dispatch = localDispatch;
+        } else {
+          focusTab(mainLayoutId, 'Variable Properties');
+        }
 
-      dispatch(
-        Actions.EditorActions.createVariable(i.value, variable, {
-          save: (entity: IResult) => {
-            const newChoice = produce(variable, v => {
-              v.results.push(entity);
-            });
-            const index = newChoice.results.length - 1;
-            globalDispatch(
-              Actions.VariableDescriptorActions.updateDescriptor(newChoice),
-            ).then(() =>
-              dispatch(
-                Actions.EditorActions.editVariable(newChoice, [
-                  'results',
-                  String(index),
-                ]),
-              ),
-            );
-          },
-        }),
-      );
-    }
-  }, []);
+        dispatch(
+          Actions.EditorActions.createVariable(i.value, variable, {
+            save: (entity: IResult) => {
+              const newChoice = produce(variable, v => {
+                v.results.push(entity);
+              });
+              const index = newChoice.results.length - 1;
+              globalDispatch(
+                Actions.VariableDescriptorActions.updateDescriptor(newChoice),
+              ).then(() =>
+                dispatch(
+                  Actions.EditorActions.editVariable(newChoice, [
+                    'results',
+                    String(index),
+                  ]),
+                ),
+              );
+            },
+          }),
+        );
+      }
+    },
+    [forceLocalDispatch, localDispatch, variable],
+  );
 
   const onMenuFeedbackSelect = React.useCallback<
     Exclude<AddMenuProps['onSelect'], undefined>
-  >((i, e) => {
-    if (entityIs(variable, 'EvaluationDescriptorContainer')) {
-      const globalDispatch = store.dispatch;
-      let dispatch = globalDispatch;
-      if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
-        dispatch = localDispatch;
-      } else {
-        focusTab(mainLayoutId, 'Variable Properties');
+  >(
+    (i, e) => {
+      if (entityIs(variable, 'EvaluationDescriptorContainer')) {
+        const globalDispatch = store.dispatch;
+        let dispatch = globalDispatch;
+        if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
+          dispatch = localDispatch;
+        } else {
+          focusTab(mainLayoutId, 'Variable Properties');
+        }
+
+        const parent = VariableDescriptor.select(
+          variable.parentId,
+        ) as IPeerReviewDescriptor;
+
+        const path = subPath![0] as 'feedback' | 'fbComments';
+
+        dispatch(
+          Actions.EditorActions.createVariable(i.value, parent, {
+            save: (entity: IEvaluationDescriptor) => {
+              const newChoice = produce(parent, v => {
+                v[path].evaluations.push(entity);
+              });
+              const index = newChoice[path].evaluations.length - 1;
+              globalDispatch(
+                Actions.VariableDescriptorActions.updateDescriptor(newChoice),
+              ).then(() =>
+                dispatch(
+                  Actions.EditorActions.editVariable(newChoice, [
+                    path,
+                    'evaluations',
+                    String(index),
+                  ]),
+                ),
+              );
+            },
+          }),
+        );
       }
-
-      const parent = VariableDescriptor.select(
-        variable.parentId,
-      ) as IPeerReviewDescriptor;
-
-      const path = subPath![0] as 'feedback' | 'fbComments';
-
-      dispatch(
-        Actions.EditorActions.createVariable(i.value, parent, {
-          save: (entity: IEvaluationDescriptor) => {
-            const newChoice = produce(parent, v => {
-              v[path].evaluations.push(entity);
-            });
-            const index = newChoice[path].evaluations.length - 1;
-            globalDispatch(
-              Actions.VariableDescriptorActions.updateDescriptor(newChoice),
-            ).then(() =>
-              dispatch(
-                Actions.EditorActions.editVariable(newChoice, [
-                  path,
-                  'evaluations',
-                  String(index),
-                ]),
-              ),
-            );
-          },
-        }),
-      );
-    }
-  }, []);
+    },
+    [forceLocalDispatch, localDispatch, subPath, variable],
+  );
 
   if (variable) {
     if (!match) {
@@ -342,7 +351,11 @@ export function CTree({
             }}
           >
             {!noVisibleRoot && (
-              <VariableTreeTitle variable={variable} subPath={subPath} className={nodeLabelStyle} />
+              <VariableTreeTitle
+                variable={variable}
+                subPath={subPath}
+                className={nodeLabelStyle}
+              />
             )}
             {actionAllowed &&
               (entityIs(variable, 'ListDescriptor') ||

@@ -135,7 +135,9 @@ public class UserFacade extends BaseFacade<User> {
      * @return true is username is already in use
      */
     public boolean checkExistingUsername(String username) {
-        return !accountFacade.findAllByEmailOrUsername(username).isEmpty();
+        try ( Sudoer root = requestManager.sudoer()) {
+            return !accountFacade.findAllByEmailOrUsername(username).isEmpty();
+        }
     }
 
     /**

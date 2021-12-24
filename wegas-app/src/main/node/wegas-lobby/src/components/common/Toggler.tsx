@@ -14,7 +14,7 @@ import Flex from './Flex';
 
 export interface Props {
   label?: React.ReactNode;
-  warning?: string;
+  warning?: React.ReactNode;
   error?: string;
   title?: string;
   value?: boolean;

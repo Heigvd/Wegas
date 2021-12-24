@@ -1,5 +1,6 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
+import { classNameOrEmpty } from '../../Helper/className';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { themeVar } from '../Theme/ThemeVars';
@@ -612,7 +613,7 @@ export function TempFlowLine({
   );
 }
 
-export interface FlowLineLabelProps extends FlowLineLabelValues {
+export interface FlowLineLabelProps extends FlowLineLabelValues, ClassStyleId {
   /**
    * a condition given by the user to see if flowline is selected or not
    */
@@ -624,11 +625,15 @@ export function CustomFlowLineComponent({
   children,
   selected,
   zoom,
+  className,
+  style,
+  id,
 }: React.PropsWithChildren<FlowLineLabelProps> & { zoom: number }) {
   const flowLineContainer = React.useRef<HTMLDivElement>();
 
   return (
     <div
+      id={id}
       ref={ref => {
         if (ref != null) {
           flowLineContainer.current = ref;
@@ -638,8 +643,12 @@ export function CustomFlowLineComponent({
           ref.style.setProperty('top', values.y + 'px');
         }
       }}
-      className={childrenContainerStyle(selected)}
-      style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}
+      className={childrenContainerStyle(selected) + classNameOrEmpty(className)}
+      style={{
+        ...style,
+        transform: `scale(${zoom})`,
+        transformOrigin: 'top left',
+      }}
     >
       {children}
     </div>

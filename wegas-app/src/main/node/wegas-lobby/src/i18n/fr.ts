@@ -23,6 +23,12 @@ export const fr: WegasTranslations = {
   emailOrUsername: "e-mail ou nom d'utilisateur",
   password: 'mot de passe',
   weakPassword: 'mot de passe trop faible',
+  passwordConditions: {
+    mustContain: 'Il doit contenir:',
+    minChars: 'Min. 8 caractères (min. 2 différents)',
+    minCaps: 'Min. 1 MAJUSCULE',
+    minNums: 'Min. 1 nombre (0-9)',
+  },
   password_again: 'confirmation du mot de passe',
   passwordsMismatch: 'les mots de passe ne correspondent pas',
   login: 'connexion',

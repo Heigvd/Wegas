@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { useTranslate } from '../../Editor/Components/FormView/translatable';
 import { ITranslatableContent } from 'wegas-ts-api';
-import sanitize from '../../Helper/sanitize';
-import { classNameOrEmpty, classOrNothing } from '../../Helper/className';
 import { halfOpacity } from '../../css/classes';
+import { useTranslate } from '../../Editor/Components/FormView/translatable';
+import { classNameOrEmpty, classOrNothing } from '../../Helper/className';
+import sanitize from '../../Helper/sanitize';
 
 interface TextProps extends ClassStyleId {
   text?: string;

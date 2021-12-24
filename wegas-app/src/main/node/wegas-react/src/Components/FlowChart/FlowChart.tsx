@@ -195,7 +195,6 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   className,
   style,
   id,
-
   readOnly,
   disabled,
 }: FlowChartProps<F, P>) {

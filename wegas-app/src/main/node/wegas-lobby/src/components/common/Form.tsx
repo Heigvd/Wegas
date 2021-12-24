@@ -19,6 +19,10 @@ import Toggler from './Toggler';
 
 const PasswordStrengthBar = React.lazy(() => import('react-password-strength-bar'));
 
+const hideBar = css({
+  display: 'none',
+});
+
 export interface BaseField<T> {
   type: 'text' | 'textarea' | 'password' | 'boolean';
   key: keyof T;
@@ -28,7 +32,7 @@ export interface BaseField<T> {
   placeholder?: string;
   isMandatory: boolean;
   isErroneous?: (entity: T) => boolean;
-  errorMessage?: string;
+  errorMessage?: React.ReactNode;
 }
 
 export interface TextualField<T> extends BaseField<T> {
@@ -143,19 +147,22 @@ export default function Form<T>({
             readonly={field.readonly}
           />
           {field.fieldFooter != null ? field.fieldFooter : null}
-          {field.showStrenghBar ? (
-            <React.Suspense fallback={<InlineLoading />}>
-              <PasswordStrengthBar
-                barColors={['#ddd', '#ef4836', 'rgb(118, 176, 232)', '#2b90ef', '#01f590']}
-                scoreWordStyle={{ color: 'var(--fgColor)' }}
-                onChangeScore={value => {
-                  if (field.strengthProp != null) {
-                    setFormValue(field.strengthProp, value);
-                  }
-                }}
-                password={String(state[field.key] || '')}
-              />
-            </React.Suspense>
+          {/* if strength prop is set, always init the PasswordStrengthBar */}
+          {field.strengthProp ? (
+            <div className={field.showStrenghBar ? '' : hideBar}>
+              <React.Suspense fallback={<InlineLoading />}>
+                <PasswordStrengthBar
+                  barColors={['#ddd', '#ef4836', 'rgb(118, 176, 232)', '#2b90ef', '#01f590']}
+                  scoreWordStyle={{ color: 'var(--fgColor)' }}
+                  onChangeScore={value => {
+                    if (field.strengthProp != null) {
+                      setFormValue(field.strengthProp, value);
+                    }
+                  }}
+                  password={String(state[field.key] || '')}
+                />
+              </React.Suspense>
+            </div>
           ) : null}
         </div>
       );

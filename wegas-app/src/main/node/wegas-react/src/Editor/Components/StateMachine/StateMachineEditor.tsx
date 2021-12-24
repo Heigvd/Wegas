@@ -1,4 +1,3 @@
-import { css, cx } from '@emotion/css';
 import produce, { Immutable } from 'immer';
 import { cloneDeep } from 'lodash';
 import * as React from 'react';
@@ -11,63 +10,57 @@ import {
   IState,
   ITransition,
 } from 'wegas-ts-api';
-import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
 import {
   FlowChart,
   FlowLine,
   Process,
-} from '../../Components/FlowChart/FlowChart';
-import { StateProcessComponent } from '../../Components/FlowChart/StateProcessComponent';
-import { TransitionFlowLineComponent } from '../../Components/FlowChart/TransitionFlowLineComponent';
-import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
-import { XYPosition } from '../../Components/Hooks/useMouseEventDnd';
-import HTMLEditor from '../../Components/HTML/HTMLEditor';
-import { Button } from '../../Components/Inputs/Buttons/Button';
-import { SimpleInput } from '../../Components/Inputs/SimpleInput';
-import { useOnEditionChangesModal } from '../../Components/Modal';
-import { HTMLText } from '../../Components/Outputs/HTMLText';
-import {
-  flex,
-  flexColumn,
-  flexRow,
-  grow,
-  MediumPadding,
-} from '../../css/classes';
-import { Actions } from '../../data';
-import { entityIs } from '../../data/entities';
+} from '../../../Components/FlowChart/FlowChart';
+import { StateProcessComponent } from '../../../Components/FlowChart/StateProcessComponent';
+import { TransitionFlowLineComponent } from '../../../Components/FlowChart/TransitionFlowLineComponent';
+import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { XYPosition } from '../../../Components/Hooks/useMouseEventDnd';
+import { useOnEditionChangesModal } from '../../../Components/Modal';
+import { grow, MediumPadding } from '../../../css/classes';
+import { Actions } from '../../../data';
+import { entityIs } from '../../../data/entities';
 import {
   editorLabel,
   getInstance,
-} from '../../data/methods/VariableDescriptorMethods';
+} from '../../../data/methods/VariableDescriptorMethods';
 import {
   deleteState,
   Edition,
   EditorAction,
-} from '../../data/Reducer/globalState';
-import { State as RState } from '../../data/Reducer/reducers';
+} from '../../../data/Reducer/globalState';
+import { State as RState } from '../../../data/Reducer/reducers';
 // import * as ReactDOMServer from 'react-dom/server';
-import { VariableDescriptor } from '../../data/selectors';
-import { store, StoreDispatch, useStore } from '../../data/Stores/store';
-import { lastKeyboardEvents } from '../../Helper/keyboardEvents';
-import { createScript } from '../../Helper/wegasEntites';
-import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
-import { useInternalTranslate } from '../../i18n/internalTranslator';
-import { mainLayoutId } from '../layouts';
-import { ComponentWithForm } from './FormView/ComponentWithForm';
-import { createTranslatableContent } from './FormView/translatable';
-import { focusTab } from './LinearTabLayout/LinearLayout';
+import { VariableDescriptor } from '../../../data/selectors';
+import { store, StoreDispatch, useStore } from '../../../data/Stores/store';
+import { lastKeyboardEvents } from '../../../Helper/keyboardEvents';
+import { createScript } from '../../../Helper/wegasEntites';
+import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { mainLayoutId } from '../../layouts';
+import { ComponentWithForm } from '../FormView/ComponentWithForm';
+import { createTranslatableContent } from '../FormView/translatable';
+import { focusTab } from '../LinearTabLayout/LinearLayout';
+import { LiteFlowLineComponentFactory } from './LiteFlowLineComponent';
+import { LiteStateProcessComponentFactory } from './LiteProcessComponent';
 
 const emptyPath: (string | number)[] = [];
 
-function deleteTransition<T extends IFSMDescriptor | IDialogueDescriptor>(
+export function deleteTransition<
+  T extends IFSMDescriptor | IDialogueDescriptor,
+>(
   stateMachine: Immutable<T>,
   stateId: number,
-  transitionId: number,
+  transitionIndex: number,
   dispatch: typeof store.dispatch,
 ) {
   const newStateMachine = produce((stateMachine: T) => {
     const transitions = stateMachine.states[stateId].transitions;
-    transitions.splice(transitionId, 1);
+    transitions.splice(transitionIndex, 1);
   })(stateMachine);
 
   dispatch(Actions.VariableDescriptorActions.updateDescriptor(newStateMachine));
@@ -93,6 +86,10 @@ interface StateMachineEditorProps<
   search?: RState['global']['search'];
   title?: string;
   editPath?: (string | number)[] | undefined;
+  /**
+   * Simplifies interface for content creation
+   */
+  lite?: boolean;
 }
 export function StateMachineEditor<
   IFSM extends IFSMDescriptor | IDialogueDescriptor,
@@ -104,10 +101,13 @@ export function StateMachineEditor<
   forceLocalDispatch,
   editPath = emptyPath,
   search, // TODO:Implement search in Flowchart
+  lite,
   ...options
 }: StateMachineEditorProps<IFSM>) {
   type TState = IFSM['states'][0];
   type TTransition = TState['transitions'][0];
+
+  // const computedForceLocalDispatch = !lite && forceLocalDispatch;
 
   const { lang } = React.useContext(languagesCTX);
   const onEditionChanges = useOnEditionChangesModal(
@@ -471,6 +471,22 @@ export function StateMachineEditor<
     [editPath],
   );
 
+  const Process = React.useMemo(() => {
+    if (lite) {
+      return LiteStateProcessComponentFactory(stateMachine);
+    } else {
+      return StateProcessComponent;
+    }
+  }, [lite, stateMachine]);
+
+  const Flowline = React.useMemo(() => {
+    if (lite) {
+      return LiteFlowLineComponentFactory(stateMachine);
+    } else {
+      return TransitionFlowLineComponent;
+    }
+  }, [lite, stateMachine]);
+
   return (
     <FlowChart
       title={title || <h3>{editorLabel(stateMachine)}</h3>}
@@ -482,14 +498,14 @@ export function StateMachineEditor<
       onProcessClick={onSafeStateClick}
       isFlowlineSelected={isFlowlineSelected}
       isProcessSelected={isProcessSelected}
-      Process={StateProcessComponent}
-      Flowline={TransitionFlowLineComponent}
+      Process={Process}
+      Flowline={Flowline}
       {...options}
     />
   );
 }
 
-function globalStateSelector(s: RState) {
+export function globalStateSelector(s: RState) {
   let editedVariable: IFSMDescriptor | IDialogueDescriptor | undefined =
     undefined;
   let editPath: (string | number)[] | undefined = undefined;
@@ -593,70 +609,5 @@ export default function StateMachineEditorWithMeta({
         );
       }}
     </ComponentWithForm>
-  );
-}
-
-const stateTextStyle = css({
-  cursor: 'text',
-});
-
-interface ModifiableTextProps {
-  mode: 'String' | 'Text';
-  initialValue: string;
-  onValidate: (newValue: string) => void;
-}
-
-// Currently this component is not used but it will be in the future
-// TODO : Integrade this component in DialogueEditor
-// @ts-ignore
-function ModifiableText({
-  mode,
-  initialValue,
-  onValidate,
-}: ModifiableTextProps) {
-  const [editingText, setEditingText] = React.useState(false);
-  const [newTextValue, setNewTextValue] = React.useState(initialValue);
-
-  React.useEffect(() => {
-    setNewTextValue(initialValue);
-  }, [initialValue]);
-
-  return editingText ? (
-    <div className={cx(flex, flexRow)}>
-      <div className={grow}>
-        {mode === 'String' ? (
-          <SimpleInput
-            placeholder="State label"
-            value={newTextValue}
-            onChange={value => setNewTextValue(String(value))}
-          />
-        ) : (
-          <HTMLEditor value={newTextValue} onChange={setNewTextValue} />
-        )}
-      </div>
-      <div className={cx(flex, flexColumn)}>
-        <Button
-          icon="times"
-          onClick={() => {
-            setEditingText(false);
-          }}
-        />
-        <Button
-          icon="check"
-          onClick={() => {
-            setEditingText(false);
-            onValidate(newTextValue);
-          }}
-        />
-      </div>
-    </div>
-  ) : newTextValue === '' ? (
-    <div onClick={() => setEditingText(true)}>
-      {`Click here to edit ${mode === 'String' ? 'label' : 'text'}`}
-    </div>
-  ) : (
-    <div onClick={() => setEditingText(true)} className={stateTextStyle}>
-      <HTMLText text={newTextValue} />
-    </div>
   );
 }

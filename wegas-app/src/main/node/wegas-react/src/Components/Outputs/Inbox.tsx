@@ -1,19 +1,23 @@
-import * as React from 'react';
-import { useTranslate } from '../../Editor/Components/FormView/translatable';
-import { Player } from '../../data/selectors';
-import { useStore, store } from '../../data/Stores/store';
-import { EntityChooser } from '../EntityChooser';
 import { cx } from '@emotion/css';
+import * as React from 'react';
+import { IInboxDescriptor, IMessage } from 'wegas-ts-api';
 import {
   flex,
   itemCenter,
   unreadSignalStyle,
   unreadSpaceStyle,
 } from '../../css/classes';
-import { readMessage } from '../../data/Reducer/VariableInstanceReducer';
-import { TranslatableText } from './HTMLText';
-import { IMessage, IInboxDescriptor } from 'wegas-ts-api';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
+import { readMessage } from '../../data/Reducer/VariableInstanceReducer';
+import { Player } from '../../data/selectors';
+import { store, useStore } from '../../data/Stores/store';
+import { useTranslate } from '../../Editor/Components/FormView/translatable';
+import {
+  DefaultEntityChooserLabel,
+  EntityChooser,
+  EntityChooserLabelProps,
+} from '../EntityChooser';
+import { TranslatableText } from './HTMLText';
 
 interface MessageLabelProps {
   message: IMessage;
@@ -34,6 +38,14 @@ function MessageLabel({ message, disabled }: MessageLabelProps) {
       )}
       <div className={flex}>{translatedLabel}</div>
     </div>
+  );
+}
+
+function MessageChooser(props: EntityChooserLabelProps<IMessage>) {
+  return (
+    <DefaultEntityChooserLabel {...props}>
+      <MessageLabel message={props.entity} />
+    </DefaultEntityChooserLabel>
   );
 }
 
@@ -68,7 +80,7 @@ export function InboxDisplay({ inbox, disabled, readOnly }: InboxDisplayProps) {
   return (
     <EntityChooser
       entities={messages}
-      entityLabel={e => <MessageLabel message={e} />}
+      EntityLabel={MessageChooser}
       disabled={disabled}
       readOnly={readOnly}
     >

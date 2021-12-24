@@ -9,8 +9,8 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import LanguageSelector from '../../i18n/LanguageSelector';
-import { fullPageStyle, melonMode } from '../styling/style';
-import Logo from '../styling/WhiteLogo';
+import Logo from '../styling/Logo';
+import { fullPageStyle, lightMode } from '../styling/style';
 import Flex from './Flex';
 
 export interface MelonProps {
@@ -35,7 +35,7 @@ export default function MelonContainer({ children, below }: MelonProps): JSX.Ele
         </div>
         <div
           className={cx(
-            melonMode,
+            lightMode,
             css({
               overflow: 'auto',
               padding: '32px 32px',
@@ -53,8 +53,9 @@ export default function MelonContainer({ children, below }: MelonProps): JSX.Ele
           >
             <Logo
               className={css({
-                height: 'auto',
+                maxHeight: '50px',
                 width: '300px',
+                margin: 'auto',
               })}
             />
             {children}

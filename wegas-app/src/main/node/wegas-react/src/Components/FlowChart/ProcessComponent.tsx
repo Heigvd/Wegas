@@ -30,7 +30,8 @@ export const readOnlyStyle = css({
 });
 
 export interface ProcessProps<F extends FlowLine, P extends Process<F>>
-  extends DisabledReadonly {
+  extends DisabledReadonly,
+    ClassStyleId {
   /**
    * the process object to be displayed
    */
@@ -65,6 +66,9 @@ export function CustomProcessComponent<
   onConnect,
   zoom,
   children,
+  className,
+  style,
+  id,
   ...options
 }: React.PropsWithChildren<ProcessProps<F, P>> & { zoom: number }) {
   const processElement = React.useRef<HTMLDivElement | null>(null);
@@ -110,6 +114,7 @@ export function CustomProcessComponent<
 
   return (
     <div
+      id={id}
       ref={ref => {
         drop(ref);
         if (ref != null) {
@@ -118,11 +123,12 @@ export function CustomProcessComponent<
         }
       }}
       style={{
+        ...style,
         left: process.position.x * zoom,
         top: process.position.y * zoom,
         transform: `scale(${zoom})`,
       }}
-      className={processStyle}
+      className={processStyle + classNameOrEmpty(className)}
       data-id={process.id}
     >
       {children}

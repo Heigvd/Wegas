@@ -191,7 +191,10 @@ registerComponent(
     icon: 'code',
     illustration: 'ifElse',
     schema: {
-      ifCondition: schemaProps.script({ label: 'If condition', mode: 'GET' }),
+      ifCondition: schemaProps.script({
+        label: 'If condition',
+        mode: 'GET_CLIENT',
+      }),
     },
     getComputedPropsFromVariable: () => ({
       children: [emptyIfChildren, emptyElseChildren],

@@ -1,15 +1,15 @@
 import * as React from 'react';
+import { IDialogueDescriptor, IScript } from 'wegas-ts-api';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { useComponentScript } from '../../Hooks/useComponentScript';
+import { TumbleLoader } from '../../Loader';
+import { DialogueDisplay } from '../../Outputs/Dialogue/Dialogue';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { useComponentScript } from '../../Hooks/useComponentScript';
-import { IScript, IDialogueDescriptor } from 'wegas-ts-api';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { DialogueDisplay } from '../../Outputs/Dialogue/Dialogue';
-import { TumbleLoader } from '../../Loader';
+import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerDialogueProps extends WegasComponentProps {
   dialogue?: IScript;

@@ -12,11 +12,12 @@ import { MessageString } from '../../../Editor/Components/MessageString';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
 import { isActionAllowed } from '../../PageComponents/tools/options';
+import { themeVar } from '../../Theme/ThemeVars';
 import { ChoiceContainer, choiceInputStyle } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
+import { QuestionDescription } from './QuestionDescription';
 import { RepliesDisplay } from './Reply';
-import { TranslatableText } from '../HTMLText';
-import { themeVar } from '../../Theme/ThemeVars';
+import { AddChoiceMenu } from './SimpleQuestionDisplay';
 
 const cbxChoiceContainerStyle = css({
   cursor: 'pointer',
@@ -28,20 +29,25 @@ const cbxContainerStyle = css({
   backgroundColor: themeVar.colors.PrimaryColor,
   color: themeVar.colors.LightTextColor,
   justifyContent: 'center',
-  borderRadius: '0px ' + themeVar.dimensions.BorderRadius + ' ' + themeVar.dimensions.BorderRadius + ' 0px',
+  borderRadius:
+    '0px ' +
+    themeVar.dimensions.BorderRadius +
+    ' ' +
+    themeVar.dimensions.BorderRadius +
+    ' 0px',
   borderLeft: '1px solid ' + themeVar.colors.HeaderColor,
   '&:hover': {
     backgroundColor: themeVar.colors.ActiveColor,
     borderLeft: '1px solid ' + themeVar.colors.ActiveColor,
-  }
+  },
 });
 const cbxStyle = css({
-  '&.wegas.wegas-btn':{
-      color: themeVar.colors.LightTextColor,
+  '&.wegas.wegas-btn': {
+    color: themeVar.colors.LightTextColor,
     '&:hover': {
       color: themeVar.colors.LightTextColor,
-    }
-  }
+    },
+  },
 });
 interface CbxChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
@@ -50,6 +56,7 @@ interface CbxChoiceDisplayProps {
   replyAllowed: boolean;
   maxReplyReached: boolean;
   radioButton: boolean;
+  editMode?: boolean;
 }
 
 function CbxChoiceDisplay({
@@ -59,6 +66,7 @@ function CbxChoiceDisplay({
   replyAllowed,
   maxReplyReached,
   radioButton,
+  editMode,
 }: CbxChoiceDisplayProps) {
   const { active, replies } = choiceI;
   const questionChoosed = replies.filter(r => !r.ignored).length > 0;
@@ -71,11 +79,20 @@ function CbxChoiceDisplay({
   }
 
   return (
-    <ChoiceContainer active={active} descriptor={choiceD} canReply={!disabled} hasBeenSelected={questionChoosed} className={cbxChoiceContainerStyle} inputClassName={cbxContainerStyle} onClick={() => {
-      if (enableValidate) {
-        onValidate(choiceD);
-      }
-    }}>
+    <ChoiceContainer
+      active={active}
+      descriptor={choiceD}
+      canReply={!disabled}
+      hasBeenSelected={questionChoosed}
+      className={cbxChoiceContainerStyle}
+      inputClassName={cbxContainerStyle}
+      onClick={() => {
+        if (enableValidate) {
+          onValidate(choiceD);
+        }
+      }}
+      editMode={editMode}
+    >
       {
         <CheckBox
           className={autoMargin}
@@ -96,6 +113,7 @@ function CbxChoiceDisplay({
 
 interface CbxQuestionDisplayProps extends QuestionInfo, DisabledReadonly {
   dispatch: StoreDispatch;
+  editMode?: boolean;
 }
 
 export function CbxQuestionDisplay({
@@ -105,9 +123,10 @@ export function CbxQuestionDisplay({
   choicesD,
   choicesI,
   replies,
+  editMode,
   ...options
 }: CbxQuestionDisplayProps) {
-  const { maxReplies, minReplies } = questionD;
+  const { maxReplies, minReplies } = questionD || {};
 
   const canReply =
     questionI != null && !questionI.validated && isActionAllowed(options);
@@ -126,7 +145,7 @@ export function CbxQuestionDisplay({
     [dispatch, radio],
   );
 
-  if (questionI == null || !questionI.active) {
+  if (questionD == null || questionI == null || !questionI.active) {
     return null;
   }
 
@@ -136,7 +155,7 @@ export function CbxQuestionDisplay({
         [halfOpacity]: options.disabled,
       })}
     >
-      <TranslatableText content={questionD.description} />
+      <QuestionDescription questionD={questionD} editMode={editMode} />
       {choicesD.map((choiceD, i) => {
         const choiceI = choicesI[i];
         if (choiceI == null) {
@@ -151,9 +170,11 @@ export function CbxQuestionDisplay({
             replyAllowed={canReply}
             maxReplyReached={maxReplyReached}
             radioButton={radio}
+            editMode={editMode}
           />
         );
       })}
+      {editMode && <AddChoiceMenu questionD={questionD} />}
       {!questionI.validated && (
         <div className={cx(choiceInputStyle)}>
           {remainingChoices > 0 && (

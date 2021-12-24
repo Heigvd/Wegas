@@ -20,6 +20,8 @@ import { defaultLightMode, modeStyle, themeVar } from '../Theme/ThemeVars';
 
 const fontUrl =
   require('../../css/fonts/Raleway-VariableFont_wght.ttf').default;
+const fontItalicUrl =
+  require('../../css/fonts/Raleway-Italic-VariableFont_wght.ttf').default;
 
 const toolbar = css({
   width: '300px',
@@ -109,6 +111,10 @@ export interface HTMLEditorProps extends ClassStyleId, DisabledReadonly {
    * displays the internal value while the input value is not changed
    */
   keepInternalValue?: boolean;
+  /**
+   * display a custom toolbar
+   */
+  customToolbar?: string;
 }
 
 let HTMLEditorID = 0;
@@ -127,6 +133,7 @@ export default function HTMLEditor({
   noResize,
   noRootBlock,
   keepInternalValue,
+  customToolbar,
 }: HTMLEditorProps) {
   const toolBarIdRef = React.useRef(
     'externalEditorToolbar' + String(HTMLEditorID++),
@@ -223,16 +230,18 @@ export default function HTMLEditor({
         `${onSave ? 'save' : ''} autolink link image lists code media table`,
         'paste advlist',
       ],
-      toolbar: `${
-        onSave && isActionAllowed({ disabled, readOnly }) ? 'save' : ''
-      } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link | ${[
-        // ...extraStyleButton,
-        ...extraActionButton,
-      ]
-        .map(btn => btn.name)
-        .join(
-          ' ',
-        )} | code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
+      toolbar: customToolbar
+        ? customToolbar
+        : `${
+            onSave && isActionAllowed({ disabled, readOnly }) ? 'save' : ''
+          } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link | ${[
+            // ...extraStyleButton,
+            ...extraActionButton,
+          ]
+            .map(btn => btn.name)
+            .join(
+              ' ',
+            )} | code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
       toolbar_drawer: 'floating',
       menubar: false,
       resize: disabled || noResize ? false : 'both',
@@ -280,7 +289,7 @@ export default function HTMLEditor({
         //   })),
         // },
       ],
-      // forced_root_block: '',
+      forced_root_block: '',
       setup: function (editor: TinyMCEEditor) {
         // let formatter: EditorFormatter | undefined;
         // editor.on('init', () => {
@@ -331,14 +340,32 @@ export default function HTMLEditor({
         });
       },
       content_style: `
+      @font-face {
+        font-family: "Raleway";
+        src: url("${fontUrl}") format('ttf supports variations'),
+             url("${fontUrl}") format('ttf-variations'),
+             url("${fontUrl}");
+        font-weight: 100 800;
+        font-stretch: 25% 151%;
+        }
         @font-face {
           font-family: "Raleway";
-          src: url("${fontUrl}") format('ttf supports variations'),
-               url("${fontUrl}") format('ttf-variations'),
-               url("${fontUrl}");
+          src: url("${fontItalicUrl}") format('ttf supports variations'),
+               url("${fontItalicUrl}") format('ttf-variations'),
+               url("${fontItalicUrl}");
           font-weight: 100 800;
           font-stretch: 25% 151%;
+          font-style: italic;
           }
+          html {
+          font-size: 1em;
+          font-family: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+            Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+            'Segoe UI Symbol';
+          line-height: 1.15em;
+          box-sizing: border-box;
+          color: #232323;
+        }
 
         body {
           ${Object.entries(wegasStyle)
@@ -424,9 +451,9 @@ export default function HTMLEditor({
         </ErrorBoundary>
       </div>
       {fileBrowsing.fn && (
-        <Modal>
+        <Modal onExit={() => setFileBrowsing({})}>
           <FileBrowser
-            onFileClick={file => {
+            onFileClick={file=> {
               setFileBrowsing({});
               file &&
                 fileBrowsing.fn &&

@@ -6,7 +6,7 @@ import { translate } from '../../Editor/Components/FormView/translatable';
 import {
   StateProcess,
   TransitionFlowLine,
-} from '../../Editor/Components/StateMachineEditor';
+} from '../../Editor/Components/StateMachine/StateMachineEditor';
 import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../../Helper/className';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
@@ -24,7 +24,8 @@ import {
   ProcessComponentProps,
 } from './ProcessComponent';
 
-const stateContainerStyle = css({
+export const stateContainerStyle = css({
+  position: 'relative',
   display: 'inline-flex',
   flexDirection: 'column',
   width: '200px',
@@ -52,6 +53,7 @@ export const stateBoxStyle = css({
   '.StateLabelTextStyle': {
     fontSize: '16px',
     textAlign: 'left',
+    flex: '1 1 auto',
   },
 });
 
@@ -75,25 +77,46 @@ export const indexTagStyle = css({
   marginRight: '10px',
 });
 
-const handleForTransition = css({
+export const stateBoxButtonStyle = {
+  color: themeVar.colors.PrimaryColor,
   display: 'flex',
-  borderRadius: '50%',
   minWidth: '30px',
   height: '30px',
-  border: '1px solid transparent',
-  marginLeft: 'auto',
   justifyContent: 'center',
   alignItems: 'center',
+  '&:hover': {
+    color: themeVar.colors.PrimaryColorShade,
+  },
+};
+
+export const editHandle = css({
+  position: 'absolute',
+  top: '-38px',
+  left: '50%',
+  transform:'translate(-50%, 0)', 
+  backgroundColor: themeVar.colors.HeaderColor,
+  borderRadius: '5px 5px 0 0',
+  padding: '3px',
+  border: '2px solid ' + themeVar.colors.PrimaryColor,
+});
+
+const handleForTransition = css({
+  ...stateBoxButtonStyle,
+  marginRight: '-15px',
+  borderTop: '1px solid ' + themeVar.colors.PrimaryColor,
+  borderBottom: '1px solid ' + themeVar.colors.PrimaryColor,
+  borderLeft: '1px solid ' + themeVar.colors.PrimaryColor,
+  borderRadius: '5px 0 0 5px',
+  marginLeft: '5px',
   cursor: 'grab',
   '&:hover': {
-    border: '1px solid ' + themeVar.colors.PrimaryColor,
-    color: themeVar.colors.PrimaryColor,
-  },
-  '&:active': {
-    cursor: 'grabbing',
+    color: themeVar.colors.PrimaryColorShade,
+    borderTop: '1px solid ' + themeVar.colors.PrimaryColorShade,
+    borderBottom: '1px solid ' + themeVar.colors.PrimaryColorShade,
+    borderLeft: '1px solid ' + themeVar.colors.PrimaryColorShade,
   },
 });
-const stateMoreInfosStyle = css({
+export const stateMoreInfosStyle = css({
   position: 'absolute',
   backgroundColor: themeVar.colors.BackgroundColor,
   color: '#807F7F',
@@ -118,12 +141,12 @@ const stateMoreInfosStyle = css({
 });
 
 export const selectedStateBoxStyle = css({
-  background: themeVar.colors.HeaderColor,
+  backgroundColor: themeVar.colors.HeaderColor,
   color: themeVar.colors.ActiveColor,
   borderColor: 'transparent',
   boxShadow: 'none',
   '&:hover': {
-    background: themeVar.colors.HeaderColor,
+    backgroundColor: themeVar.colors.HeaderColor,
   },
   [`.${indexTagStyle}`]: {
     borderColor: themeVar.colors.ActiveColor,
@@ -136,7 +159,7 @@ const dragAndHoverStyle = css({
   background: themeVar.colors.HighlightColor, // add a third color? "evidence color shaded" editor theme var
 });
 
-interface StateBoxProps {
+export interface StateBoxProps {
   state: StateProcess;
   className?: string;
   onClick?: (e: ModifierKeysEvent, process: StateProcess) => void;
