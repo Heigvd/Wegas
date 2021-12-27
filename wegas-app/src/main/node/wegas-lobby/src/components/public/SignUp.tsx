@@ -43,7 +43,7 @@ const defData: Data = {
   agreed: false,
 };
 
-export default (props: Props): JSX.Element => {
+export default function SignUp(props: Props): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
   const history = useHistory();
