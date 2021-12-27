@@ -401,6 +401,19 @@ public class GameFacade extends BaseFacade<Game> {
             .setParameter("statuses", statuses).getResultList();
     }
 
+
+    /**
+     * Find all id of games with given logId
+     *
+     * @return list of id
+     */
+    public List<Long> getAllGameIdByLogId(String logId) {
+        TypedQuery<Long> query = this.getEntityManager()
+            .createNamedQuery("Game.findAllIdByLogId", Long.class);
+        query.setParameter("logId", logId);
+        return query.getResultList();
+    }
+
     /**
      * Filter out the debug team
      *
