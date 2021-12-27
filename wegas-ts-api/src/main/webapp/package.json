@@ -13,7 +13,7 @@
     "contributors": [],
     "dependencies": {},
       "devDependencies": {
-        "jest": "^24.8.0",
+        "jest": "^27.4.5",
         "rimraf": "^3.0.0",
         "typescript": "^3.7.5",
         "tslint" : "^5.1.0",
