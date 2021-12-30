@@ -5,7 +5,7 @@ const PROD = process.env.NODE_ENV === 'production';
 module.exports = {
     devtool: PROD ? 'source-map' : 'inline-source-map',
     entry: {
-        app: ['./src/index.js'],
+        app: ['./src/index.tsx'],
     },
     output: {
         path: path.join(__dirname, '../../../../target/Wegas/wegas-stats/build'),
@@ -13,8 +13,16 @@ module.exports = {
         // chunkFilename: '[name].js',
         // publicPath: 'wegas-react-form/dist/',
     },
+    resolve: {
+        extensions: ['.ts', '.tsx', '.js', '.jsx']
+    },
     module: {
         rules: [
+            {
+                test: /\.tsx?$/,
+                loaders: ['ts-loader'],
+                include: [path.join(__dirname, 'src')],
+            },
             {
                 test: /\.jsx?$/,
                 loaders: ['babel-loader'],

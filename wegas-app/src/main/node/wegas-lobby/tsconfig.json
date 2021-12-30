@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "esnext",
+    "outDir": "../../../../target/Wegas/wegas-lobby/dist",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "jsx": "react",
+    "allowJs": false,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": [
+    "src",
+    "test",
+    "types"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

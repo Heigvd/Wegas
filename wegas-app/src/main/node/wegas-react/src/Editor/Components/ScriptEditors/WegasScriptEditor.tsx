@@ -1,9 +1,7 @@
-import * as React from 'react';
-import SrcEditor, { SrcEditorProps } from './SrcEditor';
-import { useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
-
 // @ts-ignore
 import libes5 from '!!raw-loader!typescript/lib/lib.es5.d.ts';
+import { Monaco } from '@monaco-editor/react';
+import * as React from 'react';
 // @ts-ignore
 // import libes2015_core from "!!raw-loader!typescript/lib/lib.es2015.core.d.ts";
 // @ts-ignore
@@ -22,21 +20,21 @@ import libes5 from '!!raw-loader!typescript/lib/lib.es5.d.ts';
 // import libes2015_symbol from "!!raw-loader!typescript/lib/lib.es2015.symbol.d.ts";
 // @ts-ignore
 // import libes2015_symbol_wellknown from "!!raw-loader!typescript/lib/lib.es2015.symbol.wellknown.d.ts";
-
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
 import { ResizeHandle } from '../ResizeHandle';
 import {
-  textToArray,
   arrayToText,
-  MonacoSCodeEditor,
-  MonacoEditorSimpleRange,
-  MonacoDefinitionsLibraries,
-  MonacoEditorCursorEvent,
-  SrcEditorAction,
-  MonacoEditor,
   MonacoCodeEditor,
+  MonacoDefinitionsLibraries,
+  MonacoEditor,
+  MonacoEditorCursorEvent,
+  MonacoEditorSimpleRange,
+  MonacoSCodeEditor,
+  SrcEditorAction,
+  textToArray,
 } from './editorHelpers';
-import { Monaco } from '@monaco-editor/react';
+import SrcEditor, { SrcEditorProps } from './SrcEditor';
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
   scriptContext?: ScriptContext;
@@ -249,7 +247,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
           {
             id: 'SelectAllWithScriptFunction',
             label: 'Ctrl + A avoiding header and footer',
-            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_A],
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyA],
             run: (_monaco: MonacoEditor, editor: MonacoCodeEditor) => {
               const editorLines = textToArray(editor.getValue());
               const lastEditableLine =

@@ -342,6 +342,7 @@ public class Xapi implements XapiI {
         this.post(this.buildAuthorNumberInstance(n));
     }
 
+    @Deprecated
     public List<Long> getAllGameIdByLogId(String logId) {
         try {
             return getLearningLockerClient().getAllGamesByLogId(logId);
@@ -350,6 +351,12 @@ public class Xapi implements XapiI {
         }
     }
 
+    /**
+     * Find all logId from XAPI statements.
+     *
+     * @return list of all distinct logID
+     */
+    @Deprecated
     public List<String> getAllLogId() {
 
         try {

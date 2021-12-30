@@ -366,7 +366,7 @@ public class WebsocketFacade {
         } catch (NoSuchMethodException | SecurityException
             | InstantiationException | IllegalAccessException
             | IllegalArgumentException | InvocationTargetException ex) {
-            logger.error("EVENT INSTANTIATION FAILS");
+            logger.error("EVENT INSTANTIATION FAILS", ex);
         }
     }
 

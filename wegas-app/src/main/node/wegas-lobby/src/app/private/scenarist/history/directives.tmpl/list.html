@@ -1,4 +1,0 @@
-<h2 ng-if="versions.length > 0">{{'SCENARIST-MODALE-VERSIONS-AVAILABLE-VERSIONS' | translate}}</h2>
-<article class="card card--scenario-history" ng-repeat="version in versions | orderBy:'-dataLastModified'" ng:class="{true:'card--block', false:'card--inline'}[versions.length <= 2]" version="version" scenarist-history-card></article>
-
-<h2 ng-if="versions.length == 0">{{'SCENARIST-MODALE-VERSIONS-NO-VERSION' | translate}}</h2>

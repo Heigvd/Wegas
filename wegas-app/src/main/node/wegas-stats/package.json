@@ -11,23 +11,23 @@
     "license": "MIT",
     "dependencies": {
         "@babel/polyfill": "^7.4.4",
+        "@reduxjs/toolkit": "^1.5.1",
         "chartist": "^0.11.0",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
         "react-redux": "^7.2.4",
         "react-router-dom": "^5.2.0",
         "react-select": "^4.3.1",
-        "redux": "^4.0.4",
-        "redux-thunk": "^2.2.0",
         "rx": "^4.0.6",
-        "tcomb-form": "^0.9.17",
-        "updeep": "^1.0.0"
+        "wegas-ts-api": "link:../../../../../wegas-ts-api/target/wegas-ts-api"
     },
     "devDependencies": {
         "@babel/core": "^7.5.5",
         "@babel/preset-env": "^7.5.5",
         "@babel/preset-react": "^7.0.0",
+        "@types/chartist": "^0.11.1",
         "@types/react": "^17.0.19",
+        "@types/react-redux": "^7.1.9",
         "babel-eslint": "^10.0.3",
         "babel-loader": "^8.0.6",
         "babel-preset-react": "^6.24.1",
@@ -43,12 +43,11 @@
         "less-loader": "^6.2.0",
         "react-hot-loader": "^4.12.11",
         "style-loader": "^1.0.0",
+        "ts-loader": "^6.0.0",
+        "typescript": "^3.7.5",
         "webpack": "^4.39.2",
         "webpack-cli": "^3.3.6",
         "webpack-dev-server": "^3.8.0"
     },
-    "description": "",
-    "engines": {
-        "node": "~11.10.1"
-    }
+    "description": ""
 }

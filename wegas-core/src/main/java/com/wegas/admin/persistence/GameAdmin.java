@@ -45,7 +45,6 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +61,7 @@ import org.slf4j.LoggerFactory;
 @NamedQuery(name = "GameAdmin.findByStatus",
     query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime DESC")
 @NamedQuery(name = "GameAdmin.GamesToDelete",
-    query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = com.wegas.admin.persistence.GameAdmin.Status.PROCESSED AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
+    query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status <> com.wegas.admin.persistence.GameAdmin.Status.TODO AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
 @Table(
     indexes = {
         @Index(columnList = "game_id")

@@ -107,7 +107,7 @@ import org.slf4j.LoggerFactory;
 )
 @NamedQuery(
     name = "GameModel.findDistinctLogIds",
-    query = "SELECT DISTINCT(gm.properties.logID) FROM GameModel gm"
+    query = "SELECT DISTINCT(gm.properties.logID) FROM GameModel gm WHERE gm.properties.logID IS NOT NULL AND gm.properties.logID != ''"
 )
 @NamedQuery(
     name = "GameModel.findDistinctChildrenLabels",

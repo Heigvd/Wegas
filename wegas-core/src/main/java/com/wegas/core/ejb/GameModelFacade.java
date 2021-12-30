@@ -499,6 +499,17 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
+     * Find all distinct logId
+     *
+     * @return list of all logID in use
+     */
+    public List<String> findDistinctLogIds() {
+        TypedQuery<String> query = this.getEntityManager()
+            .createNamedQuery("GameModel.findDistinctLogIds", String.class);
+        return query.getResultList();
+    }
+
+    /**
      * Find a unique logId
      *
      * @param oName
@@ -506,13 +517,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @return new unique name
      */
     public String findUniqueLogId(String oName) {
+        List<String> usedLogIds = this.findDistinctLogIds();
 
         String newName = oName != null ? oName : "newLogId";
-
-        TypedQuery<String> query = this.getEntityManager()
-            .createNamedQuery("GameModel.findDistinctLogIds", String.class);
-        List<String> usedLogIds = query.getResultList();
-
         return Helper.findUniqueLabel(newName, usedLogIds);
     }
 

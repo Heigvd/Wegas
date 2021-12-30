@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "esnext",
+        "target": "es2018",
         "allowJs": false,
         "module": "esnext",
         "outDir": "dist",
@@ -9,7 +9,6 @@
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
         "suppressImplicitAnyIndexErrors": true,
-        // creating d.ts files
         "declaration": true,
     },
     "files": [

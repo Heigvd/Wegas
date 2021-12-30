@@ -57,7 +57,7 @@ export function EmbeddedSrcEditor<
         y: cursorPosition.lineNumber - 1,
       };
       const editorValue = editor.getValue();
-      const tokens = monaco.editor.tokenize(editorValue, model.getModeId());
+      const tokens = monaco.editor.tokenize(editorValue, model.getLanguageId());
       const tokensLine = tokens[y];
       if (tokensLine != null) {
         const tokenIndex = tokensLine.findIndex(

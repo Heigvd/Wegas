@@ -1,8 +1,0 @@
-<div class="tool tool--language">
-    <a class="tool__button button button--medium button--round button--default-reverse button--label-off button--language" title="{{'CHOOSE-LANGUAGE-BTN' | translate}}">
-        <span class="button__label">{{'CHOOSE-LANGUAGE-BTN' | translate}}</span>
-    </a>
-    <div class="tool__subactions">
-        <a ng-repeat="language in languages" class="button button--small button--default-reverse" ng-class="{'button--active': language.key == currentLanguage}" ng-click="changeLanguage(language.key)">{{language.name}}</a>
-    </div>
-</div>
