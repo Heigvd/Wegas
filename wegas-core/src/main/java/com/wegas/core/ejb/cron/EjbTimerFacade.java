@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -67,7 +66,7 @@ public class EjbTimerFacade extends WegasAbstractFacade {
 
     /**
      * CRON to delete games once the bin have been emptied. Note that only games which are marked as
-     * {@link Status#PROCESSED} will be destroyed. {@link Status#TODO} and {@link Status#CHARGED}
+     * {@link Status#PROCESSED} or {@link Status#CHARGED} will be destroyed. {@link Status#TODO}
      * ones will not be destroyed
      * <p>
      * This task is scheduled each Sunday at 1:30 am

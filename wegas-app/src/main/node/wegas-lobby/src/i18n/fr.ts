@@ -256,7 +256,8 @@ export const fr: WegasTranslations = {
   stats: 'Stats',
   createEmptyModel: 'Créer un modèle vide',
   clearCache: 'Vider le cache JPA',
-  deleteAllGameModels: 'Supprimer tous les scénarios et modèles en attente de suppression définitive',
+  deleteAllGameModels:
+    'Supprimer tous les scénarios et modèles en attente de suppression définitive',
   requestClientReload:
     'Demander aux utilisateurs de recharger la (p.e après une grosse mise à jour)',
 

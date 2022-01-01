@@ -89,13 +89,13 @@ function questionSerie(question: IQuestionDescriptor, questionData: QuestionData
 
 export interface ComputedData {
   labels: string[];
-  series: Record<string, {data: number[]}>;
+  series: {data: number[]}[];
 }
 
 export async function computeData(question: IQuestionDescriptor, logId: string, groups: GameOption[][]): Promise<ComputedData> {
   const data: ComputedData = {
     labels: genLabel(question),
-    series: {}
+    series: [],
   };
 
   const series = await Promise.all(groups.map(async (group) => {
@@ -125,7 +125,7 @@ export function computeDiffs(data: ComputedData) {
   const ref = data.series[0].data;
   const newData: ComputedData = {
     labels: data.labels,
-    series: {},
+    series: [],
   };
   let item;
   function diff(val: number, index: number) {

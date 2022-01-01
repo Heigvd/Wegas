@@ -159,4 +159,4 @@ export default function SignUp(props: Props): JSX.Element {
       </Form>
     </MelonContainer>
   );
-};
+}
