@@ -61,12 +61,20 @@ function EditKey({ game }: { game: IGameWithId }) {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
 
-  // const [open, setOpen] = React.useState(game.access === 'OPEN');
+  const [key, setKey] = React.useState(game.token);
+
   const open = game.access === 'OPEN';
+
+  React.useEffect(() => setKey(game.token), [game.token]);
 
   const updateCb = React.useCallback(
     (value: string) => {
-      dispatch(updateGame({ ...game, token: value }));
+      setKey(value);
+      dispatch(updateGame({ ...game, token: value })).then(action => {
+        if (action.meta.requestStatus === 'rejected') {
+          setKey(game.token);
+        }
+      });
     },
     [dispatch, game],
   );
@@ -84,7 +92,7 @@ function EditKey({ game }: { game: IGameWithId }) {
       <FontAwesomeIcon className={css({ paddingRight: '5px' })} icon={faKey} />
       <OnBlurInput
         className={open ? verySmallInput : invisibleVerySmallInput}
-        value={game.token}
+        value={key}
         size="SMALL"
         onChange={updateCb}
       />
