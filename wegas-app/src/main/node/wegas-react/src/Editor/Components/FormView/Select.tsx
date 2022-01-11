@@ -30,7 +30,6 @@ export interface IAsyncSelectProps extends WidgetProps.BaseProps {
 
 function SelectView(props: ISelectProps) {
   const onChange = (value: string) => {
-    debugger;
     let parsedValue: string | undefined = value;
     try {
       parsedValue = JSON.parse(parsedValue);

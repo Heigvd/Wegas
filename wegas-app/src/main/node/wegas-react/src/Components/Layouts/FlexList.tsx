@@ -193,6 +193,7 @@ type AlignContent = typeof alignContentValues[number];
 export const flexListSchema = {
   layout: schemaProps.hashlist({
     label: 'List layout properties',
+    index: 100,
     choices: [
       {
         label: 'Direction',

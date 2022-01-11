@@ -96,7 +96,6 @@ export const buttonSchema = {
   icon: schemaProps.select({
     label: 'Icon',
     values: Object.keys(icons),
-    required: false,
   }),
   prefixedLabel: schemaProps.boolean({ label: 'Prefixed label' }),
   confirm: schemaProps.boolean({ label: 'Ask confirmation' }),
