@@ -338,6 +338,7 @@ function EvalutationEditor({
         value: c.getName(),
         label: translate(c.getLabel(), lang),
       }))}
+      allowUndefined={false}
       disabled={disabled || waitingState}
       readOnly={readOnly}
     />;

@@ -51,7 +51,7 @@ export const selectArrowStyle = css({
 type SelectProps = React.ComponentProps<typeof Select>;
 
 interface Option {
-  value: string;
+  value: string | undefined;
   label: string;
   color?: string;
   isDisabled?: boolean;
@@ -80,7 +80,10 @@ function buildOptions(choices: Choices): Options {
   return choices.map(choice => buildOption(choice));
 }
 
-function findOption(options: Options, value: string): Option | undefined {
+function findOption(
+  options: Options,
+  value: string | undefined,
+): Option | undefined {
   return options.find(opt => opt.value === value);
 }
 
@@ -132,26 +135,40 @@ export const selectStyles: SelectProps['styles'] = {
   },
 };
 
-interface SelectorProps extends ClassStyleId, DisabledReadonly {
+// interface SelectorProps extends ClassStyleId, DisabledReadonly {
+//   choices: Choices;
+//   value: string | undefined;
+//   onChange?: (value: string | undefined) => void;
+//   allowUndefined?: boolean;
+//   allowAnyValue?: boolean;
+// }
+
+interface SelectorProps<
+  T extends true | false,
+  R = T extends true ? string | undefined : string,
+> extends ClassStyleId,
+    DisabledReadonly {
   choices: Choices;
   value: string | undefined;
-  onChange?: (value: string) => void;
-  allowUndefined?: boolean;
+  onChange?: (value: R) => void;
+  allowUndefined?: T;
   allowAnyValue?: boolean;
+  clearable?: boolean;
 }
 
-export function Selector({
+export function Selector<T extends true | false>({
   choices,
   id,
   className,
   /*style,*/
-  value = '',
+  value,
   onChange,
-  allowUndefined = false,
+  allowUndefined,
+  clearable,
   allowAnyValue = false,
   readOnly,
   disabled,
-}: SelectorProps): JSX.Element {
+}: SelectorProps<T>): JSX.Element {
   const i18nValues = useInternalTranslate(commonTranslations);
   const placeholder = i18nValues.plzChooseValue;
 
@@ -160,10 +177,15 @@ export function Selector({
   const onChangeCb = React.useCallback(
     (option: { value: string } | null) => {
       if (onChange) {
-        onChange(option?.value || '');
+        const value = (option?.value ||
+          (allowUndefined ? undefined : '')) as T extends true
+          ? string | undefined
+          : string;
+
+        onChange(value);
       }
     },
-    [onChange],
+    [allowUndefined, onChange],
   );
 
   const currentOption = findOption(options, value) || { label: value, value };
@@ -178,7 +200,7 @@ export function Selector({
       id={id}
       isDisabled={readOnly || disabled}
       className={selectStyle + classNameOrEmpty(className)}
-      isClearable={allowUndefined}
+      isClearable={clearable}
       options={options}
       placeholder={placeholder}
       value={currentOption}

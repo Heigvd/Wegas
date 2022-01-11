@@ -11,8 +11,8 @@ import { Labeled, LabeledView } from './labeled';
 export interface ISelectProps extends WidgetProps.BaseProps {
   view: {
     choices: Choices;
-    undefined?: boolean;
     allowUndefined?: boolean;
+    clearable?: boolean;
     allowAnyValue?: boolean;
   } & CommonView &
     LabeledView;
@@ -20,8 +20,8 @@ export interface ISelectProps extends WidgetProps.BaseProps {
 export interface IAsyncSelectProps extends WidgetProps.BaseProps {
   view: {
     choices: (() => Promise<Choices>) | Choices;
-    undefined?: boolean;
     openChoices?: boolean;
+    clearable?: boolean;
     allowUndefined?: boolean;
     allowAnyValue?: boolean;
   } & CommonView &
@@ -30,6 +30,7 @@ export interface IAsyncSelectProps extends WidgetProps.BaseProps {
 
 function SelectView(props: ISelectProps) {
   const onChange = (value: string) => {
+    debugger;
     let parsedValue: string | undefined = value;
     try {
       parsedValue = JSON.parse(parsedValue);
@@ -49,16 +50,16 @@ function SelectView(props: ISelectProps) {
     value: undefined,
     label: '- undefined -',
     selected: true,
-    disabled: true,
+    disabled: false,
   };
 
   const selectChoices: Choices = [
-    ...(props.view.undefined ? [undefinedTitle] : []),
+    ...(props.view.allowUndefined ? [undefinedTitle] : []),
     ...props.view.choices,
   ];
 
   const defaultTitle: Choice = {
-    value: '[[[default]]]',
+    value: undefined,
     label: '- please select -',
     selected: true,
     disabled: true,
@@ -82,6 +83,7 @@ function SelectView(props: ISelectProps) {
               onChange={onChange}
               readOnly={props.view.readOnly}
               allowUndefined={props.view.allowUndefined}
+              clearable={props.view.clearable}
               allowAnyValue={props.view.allowAnyValue}
             />
           </div>

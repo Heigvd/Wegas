@@ -334,7 +334,7 @@ const simpleSchemaProps = {
     }
 
     return {
-      enum: enumerator,
+      enum: [...enumerator, required ? [] : [undefined]],
       required,
       type: returnType,
       index,
@@ -348,7 +348,7 @@ const simpleSchemaProps = {
         label,
         type: 'select',
         layout,
-        undefined: !required,
+        allowUndefined: !required,
         openChoices,
       },
     };
