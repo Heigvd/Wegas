@@ -22,7 +22,7 @@ export const editorTabsTranslationsFR: EditorTabsTranslations = {
     'Page Editor': 'Éditeur de page',
     'Component Palette': 'Palette de composants',
     'Page Display': 'Affichage page',
-    'Pages Layout': 'Composition pages',
+    'Pages Layout': 'Liste des pages',
     'Source Editor': 'Éditeur de source',
     'Component Properties': 'Propriétés du composant',
     'Language editor': 'Editeur de langues',
