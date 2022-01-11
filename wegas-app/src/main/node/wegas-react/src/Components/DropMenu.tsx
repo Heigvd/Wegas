@@ -179,7 +179,9 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
               if (timer.current != null) {
                 clearTimeout(timer.current);
               }
-              closeMenu();
+              timer.current = setTimeout(() => {
+                closeMenu();
+              }, 100);
             }
           }}
         >

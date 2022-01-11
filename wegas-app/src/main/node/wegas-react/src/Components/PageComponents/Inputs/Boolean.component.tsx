@@ -1,24 +1,24 @@
 import * as React from 'react';
-import {
-  registerComponent,
-  pageComponentFactory,
-} from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
-import { store, useStore } from '../../../data/Stores/store';
-import { Actions } from '../../../data';
-import { Toggler } from '../../Inputs/Boolean/Toggler';
-import { CheckBox } from '../../Inputs/Boolean/CheckBox';
-import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, SBooleanDescriptor } from 'wegas-ts-api';
+import { Actions } from '../../../data';
+import { Player } from '../../../data/selectors';
+import { store, useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
+import { CheckBox } from '../../Inputs/Boolean/CheckBox';
+import { Toggler } from '../../Inputs/Boolean/Toggler';
+import { TumbleLoader } from '../../Loader';
+import {
+  pageComponentFactory,
+  registerComponent,
+} from '../tools/componentFactory';
+import { WegasComponentProps } from '../tools/EditableComponent';
+import { schemaProps } from '../tools/schemaProps';
 import {
   OnVariableChange,
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
-import { TumbleLoader } from '../../Loader';
-import { Player } from '../../../data/selectors';
 
 interface PlayerBooleanProps extends WegasComponentProps {
   /**
@@ -102,12 +102,14 @@ registerComponent(
       type: schemaProps.select({
         label: 'Type',
         values: ['checkbox', 'toggler'],
+        required: true,
       }),
       onVariableChange: onVariableChangeSchema('On change action'),
     },
     allowedVariables: ['BooleanDescriptor'],
     getComputedPropsFromVariable: v => ({
       script: createFindVariableScript(v),
+      type: 'checkbox',
     }),
   }),
 );

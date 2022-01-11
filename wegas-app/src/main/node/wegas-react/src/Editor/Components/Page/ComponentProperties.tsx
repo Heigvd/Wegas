@@ -215,15 +215,15 @@ export function wegasComponentSchema(
   return {
     description: pageComponentSchema.description,
     properties: {
-      commonProperties: schemaProps.object({
-        label: 'Container properties',
-        properties: wegasComponentCommonSchema,
-      }),
       componentProperties: schemaProps.object({
         label: 'Component properties',
         properties: (pageComponentSchema.properties || {}) as {
           [key: string]: SimpleSchemaPropsSchemas;
         },
+      }),
+      commonProperties: schemaProps.object({
+        label: 'Container properties',
+        properties: wegasComponentCommonSchema,
       }),
       ...wegasComponentExtraSchema(parentContainer?.childrenSchema),
     },

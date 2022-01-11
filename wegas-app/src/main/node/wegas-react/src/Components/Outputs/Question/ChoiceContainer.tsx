@@ -222,7 +222,7 @@ export function ChoiceContainer({
         (isEditing ? ' editing' : '')
       }
       onClick={() => {
-        if (onClick && !isEditing) {
+        if (canReply && onClick && !isEditing) {
           setClicked(true);
           onClick();
         }

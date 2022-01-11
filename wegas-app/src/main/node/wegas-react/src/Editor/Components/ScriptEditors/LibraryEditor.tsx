@@ -649,13 +649,14 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                       label: name,
                     }),
                   )}
-                    onChange={(value) =>
+                  onChange={value =>
                     dispatchStateAction({
                       type: 'SelectLibrary',
                       name: value,
                     })
                   }
-                  className={cx(defaultMarginRight, css({width: '10em'}))}
+                  allowUndefined={false}
+                  className={cx(defaultMarginRight, css({ width: '10em' }))}
                 />
                 <Selector
                   value={getLibraryVisibility(librariesState)}
@@ -665,13 +666,13 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                       value: v,
                       label: v,
                     }))}
-                    onChange={(value) =>
+                  onChange={value =>
                     dispatchStateAction({
                       type: 'SetLibraryVisibility',
                       visibility: value as IVisibility,
                     })
                   }
-                  className={cx(defaultMarginRight, css({width: '10em'}))}
+                  className={cx(defaultMarginRight, css({ width: '10em' }))}
                 />
                 {!isLibraryOutdated(libEntry) && (
                   <>

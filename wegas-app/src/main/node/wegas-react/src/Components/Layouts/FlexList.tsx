@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { schemaProps } from '../PageComponents/tools/schemaProps';
 import { css, cx } from '@emotion/css';
+import * as React from 'react';
 import { flex, grow } from '../../css/classes';
 import { classNameOrEmpty } from '../../Helper/className';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
+import { schemaProps } from '../PageComponents/tools/schemaProps';
 
 export const alignItemsValues = [
   'stretch',
@@ -193,6 +193,7 @@ type AlignContent = typeof alignContentValues[number];
 export const flexListSchema = {
   layout: schemaProps.hashlist({
     label: 'List layout properties',
+    index: 100,
     choices: [
       {
         label: 'Direction',

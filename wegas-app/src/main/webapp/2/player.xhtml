@@ -36,7 +36,10 @@
       http-equiv="Content-Language"
       content="#{requestController.locale.toLanguageTag()}"
     />
-    <title>#{editorGameController.currentGameModel.name}</title>
+    <title>
+      #{gameController.currentGame.name} -
+      #{gameController.currentGameModel.name}
+    </title>
     <link rel="icon" type="image/ico" href="/Wegas/favicon_orange.ico" />
     <link rel="preload" href="../wegas-react/dist/player.js" as="script" />
   </h:head>

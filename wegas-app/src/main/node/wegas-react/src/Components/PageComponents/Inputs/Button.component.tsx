@@ -1,20 +1,20 @@
 import * as React from 'react';
+import { IScript } from 'wegas-ts-api';
+import { icons, Icons } from '../../../Editor/Components/Views/FontAwesome';
+import { useScript } from '../../Hooks/useScript';
+import { Button, ButtonProps } from '../../Inputs/Buttons/Button';
+import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
+import { HTMLText } from '../../Outputs/HTMLText';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
-import { Button, ButtonProps } from '../../Inputs/Buttons/Button';
 import {
   onComponentClick,
   WegasComponentProps,
 } from '../tools/EditableComponent';
-import { IScript } from 'wegas-ts-api';
-import { icons, Icons } from '../../../Editor/Components/Views/FontAwesome';
-import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
-import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
-import { HTMLText } from '../../Outputs/HTMLText';
+import { schemaProps } from '../tools/schemaProps';
 
 export interface PlayerButtonProps extends WegasComponentProps {
   label?: IScript;
@@ -93,7 +93,10 @@ function PlayerButton({
 export const buttonSchema = {
   // action: schemaProps.script({ label: 'Action', mode: 'SET' }),
   label: schemaProps.scriptString({ label: 'Label', richText: true }),
-  icon: schemaProps.select({ label: 'Icon', values: Object.keys(icons) }),
+  icon: schemaProps.select({
+    label: 'Icon',
+    values: Object.keys(icons),
+  }),
   prefixedLabel: schemaProps.boolean({ label: 'Prefixed label' }),
   confirm: schemaProps.boolean({ label: 'Ask confirmation' }),
   ...classStyleIdShema,

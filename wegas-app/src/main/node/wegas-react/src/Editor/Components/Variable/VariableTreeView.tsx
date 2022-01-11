@@ -36,9 +36,9 @@ import { CTree } from './CTree';
 
 const addVariableContainerStyle = css({
   position: 'absolute',
-  left:'1.5rem',
+  left: '1.5rem',
   bottom: '5px',
-  zIndex: 1,
+  // zIndex: 1,
 });
 const addVariableButtonStyle = css({
   height: '2rem',
