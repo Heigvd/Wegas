@@ -1,5 +1,7 @@
 import { css, CSSInterpolation, cx } from '@emotion/css';
 import * as React from 'react';
+import { ITeam } from 'wegas-ts-api';
+import { rest } from '../../API/rest';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { useWebsocketEvent } from '../../API/websocket';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
@@ -12,6 +14,7 @@ import { Game, GameModel, Player } from '../../data/selectors';
 import { useStore } from '../../data/Stores/store';
 import '../../Editor/Components/FormView';
 import { createScript } from '../../Helper/wegasEntites';
+import { wlog } from '../../Helper/wegaslog';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { trainerTranslations } from '../../i18n/trainer/trainer';
@@ -246,11 +249,17 @@ export default function Overview() {
           break;
         }
         case 'Watch team': {
-          const win = window.open(
-            'player.html?gameId=' + CurrentGame.id,
-            '_blank',
-          );
-          win?.focus();
+          if (team != null && !Array.isArray(team)) {
+            // const win = window.open(
+            //   'player.html?gameId=' + CurrentGame.id,
+            //   '_blank',
+            // );
+            const playerId = team.getPlayers().pop()?.getId();
+            if (playerId != null) {
+              const win = window.open('player.html?id=' + playerId, '_blank');
+              win?.focus();
+            }
+          }
           break;
         }
       }
@@ -324,6 +333,108 @@ export default function Overview() {
                 .id!}/ExportMembers.xlsx`,
               '_blank',
             );
+          }}
+        />
+        <Button
+          icon="plus"
+          onClick={() => {
+            const lastTeamName = Object.values(teams).pop();
+            if (lastTeamName != null && lastTeamName.name != null) {
+              const newTeamName = lastTeamName.name + Math.random() * 100000;
+              const newMail = newTeamName + '@test.test';
+              const submitForm = {
+                '@class': 'JpaAccount',
+                agreedTime: 1641895013104,
+                comment: '',
+                email: newMail,
+                firstname: newTeamName,
+                lastname: newTeamName,
+                password:
+                  'd15dfd7c6099af1c461dc4bfe6125cda19bbe4de7b7cddb3bb6eba51388358a3',
+                salt: 'c52fc1e6bfd5dd97cc9bc750d427d6dd',
+                username: newTeamName,
+              };
+              rest(
+                'User/Signup',
+                {
+                  method: 'POST',
+                  body: JSON.stringify(submitForm),
+                },
+                false,
+              ).then(res => {
+                res.json().then((user: IUser) => {
+                  wlog({ user });
+                  rest('User/AuthMethod/' + newMail, {
+                    method: 'GET',
+                  }).then(res => {
+                    res.json().then(
+                      (
+                        auth: [
+                          {
+                            '@class': 'JpaAuthentication';
+                            mandatoryMethod: string;
+                            salt: string;
+                          },
+                        ],
+                      ) => {
+                        wlog({ auth });
+
+                        const authInfo = {
+                          '@class': 'AuthenticationInformation',
+                          agreed: false,
+                          hashes: [
+                            'd15dfd7c6099af1c461dc4bfe6125cda19bbe4de7b7cddb3bb6eba51388358a3',
+                          ],
+                          login: newMail,
+                          remember: true,
+                        };
+
+                        rest(
+                          'User/Authenticate',
+                          {
+                            method: 'POST',
+                            body: JSON.stringify(authInfo),
+                          },
+                          false,
+                        ).then(res => {
+                          res.json().then((user: IUser) => {
+                            wlog({ user });
+
+                            const newTeam = {
+                              '@class': 'Team',
+                              declaredSize: 1,
+                              name: newTeamName,
+                              players: [],
+                            };
+
+                            rest('GameModel/Game/' + CurrentGame.id + '/Team', {
+                              method: 'POST',
+                              body: JSON.stringify(newTeam),
+                            }).then(res => {
+                              res.json().then((team: ITeam) => {
+                                wlog({ team });
+
+                                rest(
+                                  'GameModel/Game/Team/' + team.id! + '/Player',
+                                  {
+                                    method: 'POST',
+                                    body: JSON.stringify(newTeam),
+                                  },
+                                ).then(res => {
+                                  res.json().then((team: ITeam) => {
+                                    wlog({ team });
+                                  });
+                                });
+                              });
+                            });
+                          });
+                        });
+                      },
+                    );
+                  });
+                });
+              });
+            }
           }}
         />
       </Toolbar.Header>
