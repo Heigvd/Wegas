@@ -1,7 +1,5 @@
 import { css, CSSInterpolation, cx } from '@emotion/css';
 import * as React from 'react';
-import { ITeam } from 'wegas-ts-api';
-import { rest } from '../../API/rest';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { useWebsocketEvent } from '../../API/websocket';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
@@ -14,7 +12,6 @@ import { Game, GameModel, Player } from '../../data/selectors';
 import { useStore } from '../../data/Stores/store';
 import '../../Editor/Components/FormView';
 import { createScript } from '../../Helper/wegasEntites';
-import { wlog } from '../../Helper/wegaslog';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { trainerTranslations } from '../../i18n/trainer/trainer';
@@ -250,10 +247,6 @@ export default function Overview() {
         }
         case 'Watch team': {
           if (team != null && !Array.isArray(team)) {
-            // const win = window.open(
-            //   'player.html?gameId=' + CurrentGame.id,
-            //   '_blank',
-            // );
             const playerId = team.getPlayers().pop()?.getId();
             if (playerId != null) {
               const win = window.open('player.html?id=' + playerId, '_blank');
@@ -335,7 +328,7 @@ export default function Overview() {
             );
           }}
         />
-        <Button
+        {/* <Button
           icon="plus"
           onClick={() => {
             const lastTeamName = Object.values(teams).pop();
@@ -436,7 +429,7 @@ export default function Overview() {
               });
             }
           }}
-        />
+        /> */}
       </Toolbar.Header>
       <Toolbar.Content className={flexAuto}>
         <div className={tableStyle}>
