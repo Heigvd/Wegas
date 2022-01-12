@@ -79,6 +79,15 @@ export const modalCloseDivStyle = css({
   },
 });
 
+export const modalTitleDivStyle = css({
+  display: 'flex',
+  position: 'absolute',
+  justifyContent: 'center',
+  alignItems: 'center',
+  top: '-1.4em',
+  left: 0,
+});
+
 const modalCloseButtonStyle = css({
   margin: 'auto',
 });
