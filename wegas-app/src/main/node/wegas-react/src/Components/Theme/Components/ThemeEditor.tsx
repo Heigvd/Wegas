@@ -14,6 +14,7 @@ import { MainLinearLayout } from '../../../Editor/Components/LinearTabLayout/Lin
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { DropMenu } from '../../DropMenu';
+import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { outlineButtonStyle } from '../../Inputs/Buttons/Button';
 import { tabLayoutChildrenClassNames } from '../../TabLayout/tabLayoutStyles';
 import { Toolbar } from '../../Toolbar';
@@ -40,9 +41,24 @@ const themeEditorHeaderStyle = css({
   },
 });
 
+const themeEditorTabs = [
+  { tabId: 'Theme', content: <ThemeEdition /> },
+  { tabId: 'Modes', content: <ModeEdition /> },
+  { tabId: 'Preview', content: <Preview /> },
+];
+
+const themeEditorDefaultLayout = [['Theme'], ['Preview']];
+
+const dispatch = getThemeDispatch();
+
 export default function ThemeEditor() {
-  const { themes, selectedThemes } = useThemeStore(s => s);
-  const dispatch = getThemeDispatch();
+  const { themesKeys, selectedThemes } = useThemeStore(
+    s => ({
+      themesKeys: Object.keys(s.themes),
+      selectedThemes: s.selectedThemes,
+    }),
+    deepDifferent,
+  );
   const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   return (
@@ -76,7 +92,7 @@ export default function ThemeEditor() {
                   <DropMenu
                     buttonClassName="noOutline"
                     label={selectedThemes[k]}
-                    items={Object.keys(themes).map(k => ({
+                    items={themesKeys.map(k => ({
                       value: k,
                       label: k,
                     }))}
@@ -94,12 +110,8 @@ export default function ThemeEditor() {
       </Toolbar.Header>
       <Toolbar.Content>
         <MainLinearLayout
-          tabs={[
-            { tabId: 'Theme', content: <ThemeEdition /> },
-            { tabId: 'Modes', content: <ModeEdition /> },
-            { tabId: 'Preview', content: <Preview /> },
-          ]}
-          initialLayout={[['Theme'], ['Preview']]}
+          tabs={themeEditorTabs}
+          initialLayout={themeEditorDefaultLayout}
           layoutId={THEME_EDITOR_LAYOUT_ID}
           classNames={tabLayoutChildrenClassNames}
         />

@@ -1,9 +1,7 @@
-import * as React from 'react';
-import { debounce } from 'lodash-es';
-
-import { classNameOrEmpty } from '../../Helper/className';
-
 import { css, CSSObject } from '@emotion/css';
+import { debounce } from 'lodash-es';
+import * as React from 'react';
+import { classNameOrEmpty } from '../../Helper/className';
 import { themeVar } from '../Theme/ThemeVars';
 
 export const inputDefaultCSS = {
@@ -98,6 +96,10 @@ export interface SimpleInputProps extends InputProps<string | number> {
    * allow only a certain type of input
    */
   inputType?: 'text' | 'number';
+  /**
+   * timer before triggering on change (100 ms by default)
+   */
+  debouncingTime?: number;
 }
 
 export function SimpleInput({
@@ -115,13 +117,18 @@ export function SimpleInput({
   onFocus,
   fullWidth,
   inputType = 'text',
+  debouncingTime = 100,
 }: SimpleInputProps) {
+  const isDebouncingRef = React.useRef(false);
+  const cancelDebouncedRef = React.useRef(() => {});
   const inputRef = React.useRef<HTMLInputElement>(null);
   const textAeraRef = React.useRef<HTMLTextAreaElement>(null);
   const [currentValue, setCurrentValue] = React.useState(value);
 
   React.useEffect(() => {
-    setCurrentValue(value);
+    if (!isDebouncingRef.current) {
+      setCurrentValue(value);
+    }
   }, [value]);
 
   React.useEffect(() => {
@@ -132,10 +139,17 @@ export function SimpleInput({
   }, [autoFocus]);
 
   const debouncedOnChange = React.useCallback(
-    debounce((value: string) => {
-      onChange && onChange(value);
-    }, 100),
-    [onChange],
+    (value: string) => {
+      isDebouncingRef.current = true;
+      cancelDebouncedRef.current();
+      const debouncedFN = debounce((value: string) => {
+        onChange && onChange(value);
+        isDebouncingRef.current = false;
+      }, debouncingTime);
+      debouncedFN(value);
+      cancelDebouncedRef.current = debouncedFN.cancel;
+    },
+    [debouncingTime, onChange],
   );
 
   const onInputChange = (
