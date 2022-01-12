@@ -294,10 +294,10 @@ export function ChoiceContainer({
       ) : (
         <div className={cx(flex, flexColumn)}>
           <div className={choiceContentStyle}>
-            {label && (
+            {label && labelText !== '' && (
               <HTMLText className={choiceLabelStyle} text={labelText} />
             )}
-            {description && (
+            {description && descriptionText !== '' && (
               <HTMLText
                 className={choiceDescriptionStyle}
                 text={descriptionText}
