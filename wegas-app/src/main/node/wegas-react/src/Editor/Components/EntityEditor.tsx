@@ -5,7 +5,7 @@ import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
-import { MediumPadding } from '../../css/classes';
+import { mediumPadding } from '../../css/classes';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
 import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
@@ -249,7 +249,7 @@ export const AsyncVariableForm = asyncSFC<EditorProps<IMergeable>>(
   WindowedEditor,
   () => {
     const i18nValues = useInternalTranslate(commonTranslations);
-    return <div className={MediumPadding}>{i18nValues.loading + '...'}</div>;
+    return <div className={mediumPadding}>{i18nValues.loading + '...'}</div>;
   },
   ({ err }: { err: Error }) => {
     const i18nValues = useInternalTranslate(commonTranslations);

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
 import { FileAPI, generateAbsolutePath } from '../../../API/files.api';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
-import { grow, halfOpacity, MediumPadding } from '../../../css/classes';
+import { grow, halfOpacity, mediumPadding } from '../../../css/classes';
 import { State } from '../../../data/Reducer/reducers';
 import { StoreDispatch, useStore } from '../../../data/Stores/store';
 import { classNameOrEmpty } from '../../../Helper/className';
@@ -139,7 +139,7 @@ export default function FileBrowserWithMeta({
             onFileClick={() => focusTab(mainLayoutId, 'Variable Properties')}
             disabled={disabled}
             readOnly={readOnly}
-            className={MediumPadding}
+            className={mediumPadding}
           />
         );
       }}

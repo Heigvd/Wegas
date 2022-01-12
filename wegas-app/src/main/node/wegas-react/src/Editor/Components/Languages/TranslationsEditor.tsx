@@ -45,8 +45,8 @@ import {
   itemCenter,
   justifyStart,
   layoutStyle,
-  MediumPadding_notBottom,
-  MediumPadding_sides,
+  mediumPadding_notBottom,
+  mediumPadding_sides,
   secondaryButtonStyle,
 } from '../../../css/classes';
 import { Actions } from '../../../data';
@@ -1149,7 +1149,7 @@ export function TranslationEditor() {
               flex,
               expandWidth,
               itemCenter,
-              MediumPadding_notBottom,
+              mediumPadding_notBottom,
             )}
           >
             <h2 className={css({ margin: 0 })}>
@@ -1221,7 +1221,7 @@ export function TranslationEditor() {
           <div
             className={cx(
               translationContainerStyle(selectedLanguagesIds.length),
-              MediumPadding_sides,
+              mediumPadding_sides,
               borderBottom,
             )}
           >
@@ -1246,7 +1246,7 @@ export function TranslationEditor() {
             className={cx(
               translationContainerStyle(selectedLanguagesIds.length),
               forceScrollY,
-              MediumPadding_sides,
+              mediumPadding_sides,
             )}
           >
             {root.itemsIds.map(itemId => (

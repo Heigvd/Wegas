@@ -21,7 +21,7 @@ import { TransitionFlowLineComponent } from '../../../Components/FlowChart/Trans
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { XYPosition } from '../../../Components/Hooks/useMouseEventDnd';
 import { useOnEditionChangesModal } from '../../../Components/Modal';
-import { grow, MediumPadding } from '../../../css/classes';
+import { grow, mediumPadding } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
 import {
@@ -563,13 +563,13 @@ export function ConnectedStateMachineEditor({
   if ('variable' in globalState) {
     if (globalState.variable == null) {
       return (
-        <span className={MediumPadding}>
+        <span className={mediumPadding}>
           {i18nValues.stateMachine.selectVariable}
         </span>
       );
     } else {
       return (
-        <span className={MediumPadding}>
+        <span className={mediumPadding}>
           {i18nValues.stateMachine.selectedNotStateMachine}
         </span>
       );
