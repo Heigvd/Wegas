@@ -19,6 +19,7 @@ import {
   absolute,
   autoScroll,
   expandBoth,
+  expandWidth,
   flex,
   grow,
   hatchedBackground,
@@ -300,6 +301,7 @@ export function DnDTabLayout({
       className={cx(
         relative,
         general,
+        expandWidth,
         css({ backgroundColor: themeVar.colors.BackgroundColor }),
       )}
     >
