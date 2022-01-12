@@ -165,20 +165,20 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
           className={containerClassName}
           style={style}
           onMouseOver={() => {
+            if (timer.current != null) {
+              clearTimeout(timer.current);
+            }
             if (openOnHover) {
-              if (timer.current != null) {
-                clearTimeout(timer.current);
-              }
               timer.current = setTimeout(() => {
                 openMenu();
               }, 200);
             }
           }}
           onMouseLeave={() => {
+            if (timer.current != null) {
+              clearTimeout(timer.current);
+            }
             if (openOnHover || openOnHoverChildren) {
-              if (timer.current != null) {
-                clearTimeout(timer.current);
-              }
               timer.current = setTimeout(() => {
                 closeMenu();
               }, 100);
