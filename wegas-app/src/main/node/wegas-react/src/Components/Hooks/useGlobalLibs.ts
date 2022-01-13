@@ -1,3 +1,4 @@
+// using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
 import generalTypes from '!!raw-loader!../../../types/general-types.d.ts';
 // @ts-ignore
@@ -26,7 +27,6 @@ import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMet
 import WegasDashboardSrc from '!!raw-loader!../../../types/scripts/WegasDashboard.d.ts';
 // @ts-ignore
 import wegasEventsGlobalSrc from '!!raw-loader!../../../types/scripts/WegasEventsGlobals.d.ts';
-// using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
 import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasEntities.ts';
 // @ts-ignore
@@ -48,6 +48,8 @@ function makeAmbient(source: string) {
 
 const ambientEntitiesSrc = makeAmbient(entitiesSrc);
 const ambientScriptableEntitiesSrc = makeAmbient(scriptableEntitiesSrc);
+
+wlog(ambientScriptableEntitiesSrc);
 
 // We'll keep it for later uses
 // const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
