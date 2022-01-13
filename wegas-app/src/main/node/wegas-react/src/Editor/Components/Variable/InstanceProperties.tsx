@@ -12,7 +12,7 @@ import {
   flexColumn,
   grow,
   localSelection,
-  MediumPadding,
+  mediumPadding,
 } from '../../../css/classes';
 import { ActionCreator } from '../../../data/actions';
 import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods';
@@ -130,7 +130,7 @@ export function InstanceProperties({
   );
 
   return (
-    <Toolbar className={MediumPadding}>
+    <Toolbar className={mediumPadding}>
       <Toolbar.Header>
         <div className={cx(grow, flex, flexColumn)}>
           <div>{title}</div>

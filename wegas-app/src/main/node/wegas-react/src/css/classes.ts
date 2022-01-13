@@ -173,16 +173,16 @@ export const defaultMargin = cx(
 );
 
 export const autoMargin = css({ margin: 'auto' });
-export const XLPadding = css({
+export const xlPadding = css({
   padding: '2em',
 });
-export const MediumPadding = css({
+export const mediumPadding = css({
   padding: '1.5em',
 });
-export const MediumPadding_notBottom = css({
+export const mediumPadding_notBottom = css({
   padding: '1.5em 1.5em 0 1.5em',
 });
-export const MediumPadding_sides = css({
+export const mediumPadding_sides = css({
   padding: '0 1.5em',
 });
 export const defaultPaddingLeft = css({

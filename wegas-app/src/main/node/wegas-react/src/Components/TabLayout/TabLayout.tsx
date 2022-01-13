@@ -4,6 +4,7 @@ import {
   autoScroll,
   expandBoth,
   flex,
+  flexRow,
   fullScreenContentContainerStyle,
   grow,
   headerStyle,
@@ -11,16 +12,22 @@ import {
   relative,
 } from '../../css/classes';
 import { Reparentable } from '../../Editor/Components/Reparentable';
-import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { commonTranslations } from '../../i18n/common/common';
 import { EditorTabsTranslations } from '../../i18n/editorTabs/definitions';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { Loader } from '../HOC/Loader';
-import { modalCloseDivStyle, modalContentStyle } from '../Modal';
+import { IconButton } from '../Inputs/Buttons/IconButton';
+import { modalContentStyle, modalTitleDivStyle } from '../Modal';
+import { themeVar } from '../Theme/ThemeVars';
 import { Toolbar } from '../Toolbar';
 import { Tab, TabComponent } from './Tab';
 import { tabsStyle } from './tabLayoutStyles';
+
+const fullScreenTabStyle = css({
+  cursor: 'initial',
+  borderBottomRightRadius: themeVar.dimensions.BorderRadius,
+});
 
 export interface TabLayoutComponent {
   tabId: string;
@@ -136,17 +143,39 @@ export function TabLayoutContentWithFullScreen({
   closeFullScreen,
   ...contentProps
 }: TabLayoutContentWithFullScreenProps) {
+  const i18nTabsNames = useInternalTranslate(editorTabsTranslations);
+
   if (fullScreen && !preventFullScreen) {
+    const translatedOrUndefLabel =
+      i18nTabsNames.tabsNames[
+        contentProps.activeTab as keyof EditorTabsTranslations['tabsNames']
+      ];
+    const translatedLabel = translatedOrUndefLabel
+      ? translatedOrUndefLabel
+      : contentProps.activeTab;
+
     return (
-      <div className={fullScreenContentContainerStyle}>
+      <div
+        className={fullScreenContentContainerStyle}
+        onClick={closeFullScreen}
+      >
         <div
           className={cx(
             modalContentStyle,
             css({ height: '100%', position: 'relative' }),
           )}
+          onClick={e => e.stopPropagation()}
         >
-          <div className={modalCloseDivStyle} onClick={closeFullScreen}>
-            <IconComp icon="times" />
+          <div className={cx(modalTitleDivStyle, flexRow)}>
+            <Tab className={cx(tabsStyle(true), fullScreenTabStyle)}>
+              {translatedLabel}
+              <IconButton
+                icon="times"
+                tooltip="Remove tab"
+                onClick={closeFullScreen}
+                className={'close-btn'}
+              />
+            </Tab>
           </div>
           <TabLayoutContent {...contentProps} />
         </div>

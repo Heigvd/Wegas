@@ -1,16 +1,16 @@
-import * as Color from 'color';
 import { css, cx } from '@emotion/css';
+import * as Color from 'color';
 import * as React from 'react';
-import { RGBColor, ChromePicker } from 'react-color';
+import { ChromePicker, RGBColor } from 'react-color';
 import {
-  flex,
-  justifyCenter,
-  grow,
-  flexColumn,
-  itemCenter,
   defaultMargin,
-  MediumPadding,
   expandWidth,
+  flex,
+  flexColumn,
+  grow,
+  itemCenter,
+  justifyCenter,
+  mediumPadding,
   relative,
 } from '../../../../css/classes';
 import { borderBottom } from '../../../../Editor/Components/FormView/commonView';
@@ -153,7 +153,7 @@ export function ColorPicker({
             flex,
             flexColumn,
             itemCenter,
-            MediumPadding,
+            mediumPadding,
             colorPickerContainerStyle,
           )}
           ref={n => justifyDropMenu(n, colorContainer.current, 'down')}

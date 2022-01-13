@@ -241,7 +241,28 @@ export default function ComponentPalette() {
   );
   return (
     <div className={cx(flex, flexColumn, expandBoth, autoScroll)}>
-      {!editMode && (
+      {editMode ? (
+        <div
+          className={cx(
+            flex,
+            flexColumn,
+            grow,
+            paletteStyle(editMode),
+            defaultMargin,
+          )}
+        >
+          <div className={cx(flex, flexColumn, expandWidth)}>
+            {componentTypes.map(t => (
+              <ComponentTypeElement
+                key={t}
+                componentType={t}
+                enabled={editMode}
+                componentNames={componentNames}
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
         <div className={cx(headerStyle, flex, itemCenter, flexColumn)}>
           <p className={textCenter}>
             {i18nValues.pageEditor.editorMustEnabled}
@@ -254,26 +275,6 @@ export default function ComponentPalette() {
           </Button>
         </div>
       )}
-      <div
-        className={cx(
-          flex,
-          flexColumn,
-          grow,
-          paletteStyle(editMode),
-          defaultMargin,
-        )}
-      >
-        <div className={cx(flex, flexColumn, expandWidth)}>
-          {componentTypes.map(t => (
-            <ComponentTypeElement
-              key={t}
-              componentType={t}
-              enabled={editMode}
-              componentNames={componentNames}
-            />
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

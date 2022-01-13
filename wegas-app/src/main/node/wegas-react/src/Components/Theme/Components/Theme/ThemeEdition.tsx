@@ -2,36 +2,49 @@ import { cx } from '@emotion/css';
 import * as React from 'react';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import {
-  flex,
   contentStyle,
+  defaultPadding,
   expandBoth,
+  flex,
   flexColumn,
-  justifyEnd,
   flexRow,
   itemCenter,
-  defaultPadding,
+  justifyEnd,
 } from '../../../../css/classes';
 import {
-  useThemeStore,
   getThemeDispatch,
   setThemeValue,
+  useThemeStore,
 } from '../../../../data/Stores/themeStore';
 import { borderBottom } from '../../../../Editor/Components/FormView/commonView';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { DropMenu } from '../../../DropMenu';
+import { deepDifferent } from '../../../Hooks/storeHookFactory';
 import { CheckBox } from '../../../Inputs/Boolean/CheckBox';
 import { Toolbar } from '../../../Toolbar';
-import { Theme } from '../../ThemeVars';
+import { Theme, ThemeValues } from '../../ThemeVars';
 import { ThemeValueModifier } from './ThemeValueModifier';
+
+const dispatch = getThemeDispatch();
+
+function onValueChange<
+  T extends keyof ThemeValues,
+  K extends keyof ThemeValues[T],
+  V extends ThemeValues[T][K],
+>(section: T) {
+  return function (k: K, v: V) {
+    dispatch(setThemeValue(section, k, v));
+  };
+}
 
 export function ThemeEdition() {
   const i18nValues = useInternalTranslate(editorTabsTranslations);
-  const { themes, editedThemeName } = useThemeStore(s => s);
-  const dispatch = getThemeDispatch();
 
-  const currentTheme = themes[editedThemeName];
-  const editedValues = currentTheme?.values || {};
+  const { currentTheme, editedValues } = useThemeStore(s => {
+    const currentTheme = s.themes[s.editedThemeName];
+    return { currentTheme, editedValues: currentTheme?.values || {} };
+  }, deepDifferent);
 
   const [selectedSection, setSelectedSection] = React.useState<
     { [key in keyof Theme['values']]?: boolean }
@@ -83,9 +96,7 @@ export function ThemeEdition() {
               <ThemeValueModifier
                 theme={currentTheme}
                 section="colors"
-                onChange={(k, v) => {
-                  dispatch(setThemeValue('colors', k, v));
-                }}
+                onChange={onValueChange('colors')}
               />
             </ReflexElement>
           )}
@@ -98,7 +109,7 @@ export function ThemeEdition() {
               <ThemeValueModifier
                 theme={currentTheme}
                 section="dimensions"
-                onChange={(k, v) => dispatch(setThemeValue('dimensions', k, v))}
+                onChange={onValueChange('dimensions')}
               />
             </ReflexElement>
           )}
@@ -110,7 +121,7 @@ export function ThemeEdition() {
               <ThemeValueModifier
                 theme={currentTheme}
                 section="others"
-                onChange={(k, v) => dispatch(setThemeValue('others', k, v))}
+                onChange={onValueChange('others')}
               />
             </ReflexElement>
           )}

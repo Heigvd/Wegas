@@ -1,45 +1,43 @@
-import * as React from 'react';
-import { useStore } from '../../data/Stores/store';
-import { State } from '../../data/Reducer/reducers';
-import { GameModel } from '../../data/selectors';
-import { classesCTX } from '../Contexts/ClassesProvider';
-
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
+// @ts-ignore
+import generalTypes from '!!raw-loader!../../../types/general-types.d.ts';
+// @ts-ignore
+import APIMethodsGlobalSrc from '!!raw-loader!../../../types/scripts/APIMethodsGlobals.d.ts';
+// @ts-ignore
+import classesGlobalSrc from '!!raw-loader!../../../types/scripts/ClassesGlobals.d.ts';
+// @ts-ignore
+import clientMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ClientMethodGlobals.d.ts';
+// @ts-ignore
+import editorGlobalSrc from '!!raw-loader!../../../types/scripts/EditorGlobals.d.ts';
+// @ts-ignore
+import HelpersGlobalSrc from '!!raw-loader!../../../types/scripts/HelpersGlobals.d.ts';
+// @ts-ignore
+import i18nGlobalSrc from '!!raw-loader!../../../types/scripts/I18nGlobals.d.ts';
+// @ts-ignore
+import popupsGlobalSrc from '!!raw-loader!../../../types/scripts/PopupsGlobals.d.ts';
+// @ts-ignore
+import RolesMethodsGlobalSrc from '!!raw-loader!../../../types/scripts/RolesGlobals.d.ts';
+// @ts-ignore
+import schemaGlobalSrc from '!!raw-loader!../../../types/scripts/SchemaGlobals.d.ts';
+// @ts-ignore
+import SchemaHelper from '!!raw-loader!../../../types/scripts/SchemaHelper.d.ts';
+// @ts-ignore
+import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMethodsGlobals.d.ts';
+// @ts-ignore
+import WegasDashboardSrc from '!!raw-loader!../../../types/scripts/WegasDashboard.d.ts';
+// @ts-ignore
+import wegasEventsGlobalSrc from '!!raw-loader!../../../types/scripts/WegasEventsGlobals.d.ts';
 // @ts-ignore
 import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasEntities.ts';
 // @ts-ignore
 import scriptableEntitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasScriptableEntities.d.ts.mlib';
-// @ts-ignore
-import editorGlobalSrc from '!!raw-loader!../../../types/scripts/EditorGlobals.d.ts';
-// @ts-ignore
-import clientMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ClientMethodGlobals.d.ts';
-// @ts-ignore
-import schemaGlobalSrc from '!!raw-loader!../../../types/scripts/SchemaGlobals.d.ts';
-// @ts-ignore
-import classesGlobalSrc from '!!raw-loader!../../../types/scripts/ClassesGlobals.d.ts';
-// @ts-ignore
-import popupsGlobalSrc from '!!raw-loader!../../../types/scripts/PopupsGlobals.d.ts';
-// @ts-ignore
-import wegasEventsGlobalSrc from '!!raw-loader!../../../types/scripts/WegasEventsGlobals.d.ts';
-// @ts-ignore
-import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMethodsGlobals.d.ts';
-// @ts-ignore
-import i18nGlobalSrc from '!!raw-loader!../../../types/scripts/I18nGlobals.d.ts';
-// @ts-ignore
-import APIMethodsGlobalSrc from '!!raw-loader!../../../types/scripts/APIMethodsGlobals.d.ts';
-// @ts-ignore
-import RolesMethodsGlobalSrc from '!!raw-loader!../../../types/scripts/RolesGlobals.d.ts';
-// @ts-ignore
-import HelpersGlobalSrc from '!!raw-loader!../../../types/scripts/HelpersGlobals.d.ts';
-// @ts-ignore
-import WegasDashboardSrc from '!!raw-loader!../../../types/scripts/WegasDashboard.d.ts';
-// @ts-ignore
-import SchemaHelper from '!!raw-loader!../../../types/scripts/SchemaHelper.d.ts';
-// @ts-ignore
-import generalTypes from '!!raw-loader!../../../types/general-types.d.ts';
-
-import { wwarn } from '../../Helper/wegaslog';
+import * as React from 'react';
 import { buildGlobalServerMethods } from '../../data/Reducer/globalState';
+import { State } from '../../data/Reducer/reducers';
+import { GameModel } from '../../data/selectors';
+import { useStore } from '../../data/Stores/store';
+import { wwarn } from '../../Helper/wegaslog';
+import { classesCTX } from '../Contexts/ClassesProvider';
 import { deepDifferent } from './storeHookFactory';
 
 const stripRegex = /\/\* STRIP FROM \*\/[\s\S]*?\/\* STRIP TO \*\//gm;
@@ -86,19 +84,21 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
       const globalMethods = s.global.clientMethods;
       const globalSchemas = s.global.schemas.views;
       const globalServerMethods = s.global.serverMethods;
-
       const currentLanguages = Object.values(
         GameModel.selectCurrent().languages,
       )
         .map(l => `"${l.code}"`)
         .join(' | ');
 
-      const allowedPageLoadersType = Object.keys(s.global.pageLoaders)
-        .map(name => `"${name}"`)
-        .join('|');
+      const allowedPageLoadersType =
+        Object.keys(s.global.pageLoaders).length > 0
+          ? Object.keys(s.global.pageLoaders)
+              .map(name => `"${name}"`)
+              .join('|')
+          : 'unknown';
 
       try {
-        return `
+        const internalLib = `
         declare const gameModel: SGameModel;
         declare const self: SPlayer;
         declare const schemaProps: SchemaPropsDefinedType;
@@ -115,11 +115,10 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
             .join('\n')}
         }
 
-        type FindFN =
-          | (<T extends keyof VariableClasses>(
+        type FindFN = <T extends keyof VariableClasses>(
           gameModel: SGameModel,
           name: T
-        ) => VariableClasses[T])
+        ) => VariableClasses[T]
 
         declare class Variable {
           static find: FindFN;
@@ -149,16 +148,18 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
           setPageLoaders: (name: ${allowedPageLoadersType}, pageId: IScript) => void;
         };
 
-        interface ClientMethods {
+        interface ClientMethodList {
           ${Object.keys(globalMethods)
             .map(k => {
               const method = globalMethods[k];
               const isArray = method.returnStyle === 'array';
               return `'${k}' : (${method.parameters
                 .map(p => `${p[0]} : ${p[1]}`)
-                .join(', ')}) => ${
-                isArray ? '(' : ''
-              } ${method.returnTypes.join(' | ')}
+                .join(', ')}) => ${isArray ? '(' : ''} ${
+                method.returnTypes.length > 0
+                  ? method.returnTypes.join(' | ')
+                  : 'void'
+              }
                ${isArray ? ')[]' : ''};
               `;
             })
@@ -166,7 +167,7 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         }
 
         interface ClientMethodClass extends GlobalClientMethodClass {
-          getMethod: <T extends keyof ClientMethods>(name : T) => ClientMethods[T];
+          getMethod: <T extends keyof ClientMethodList>(name : T) => ClientMethodList[T];
         }
         declare const ClientMethods : ClientMethodClass;
 
@@ -227,6 +228,8 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         }
 
         `;
+
+        return internalLib;
       } catch (e) {
         wwarn(e);
         return '';

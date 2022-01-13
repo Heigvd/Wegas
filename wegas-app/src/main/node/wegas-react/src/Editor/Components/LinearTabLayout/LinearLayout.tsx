@@ -13,7 +13,7 @@ import {
   expandHeight,
   flex,
   grow,
-  MediumPadding,
+  mediumPadding,
   noOverflow,
 } from '../../../css/classes';
 import { selectCurrentEditorLanguage } from '../../../data/selectors/Languages';
@@ -1093,7 +1093,7 @@ export function MainLinearLayout({
             >
               {rendered.length === 0 ? (
                 <ReflexElement>
-                  <div className={MediumPadding}>{i18nValues.loading}...</div>
+                  <div className={mediumPadding}>{i18nValues.loading}...</div>
                 </ReflexElement>
               ) : (
                 rendered

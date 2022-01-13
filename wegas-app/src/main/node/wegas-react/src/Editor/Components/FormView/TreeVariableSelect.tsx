@@ -1,36 +1,35 @@
-import * as React from 'react';
-import { SearchableItems } from '../Tree/searchable';
-import { TreeSelect } from '../Tree/TreeSelect';
-import { WidgetProps } from 'jsoninput/typings/types';
-import { useStore } from '../../../data/Stores/store';
-import { varIsList } from '../../../data/entities';
-import { VariableDescriptor, GameModel } from '../../../data/selectors';
-import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import { CommonViewContainer, CommonView } from './commonView';
-import { LabeledView, Labeled } from './labeled';
 import { css, cx } from '@emotion/css';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
-import {
-  scriptableClassNameToClassFilter,
-  createScript,
-} from '../../../Helper/wegasEntites';
-import { scriptEditStyle } from './Script/Script';
+import { WidgetProps } from 'jsoninput/typings/types';
+import * as React from 'react';
+import { IScript, IVariableDescriptor } from 'wegas-ts-api';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 import {
   inputStyle,
   SimpleInput,
 } from '../../../Components/Inputs/SimpleInput';
-import { IVariableDescriptor, IScript } from 'wegas-ts-api';
-import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
 import {
-  flexRow,
   flex,
-  itemCenter,
-  grow,
   flexColumn,
+  flexRow,
+  grow,
+  itemCenter,
 } from '../../../css/classes';
+import { varIsList } from '../../../data/entities';
+import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
+import { GameModel, VariableDescriptor } from '../../../data/selectors';
+import { useStore } from '../../../data/Stores/store';
+import {
+  createScript,
+  scriptableClassNameToClassFilter,
+} from '../../../Helper/wegasEntites';
+import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { SearchableItems } from '../Tree/searchable';
+import { TreeSelect } from '../Tree/TreeSelect';
 import { VariableScriptPath } from '../Variable/VariableScriptPath';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { CommonView, CommonViewContainer } from './commonView';
+import { Labeled, LabeledView } from './labeled';
+import { scriptEditStyle } from './Script/Script';
 
 const treeCss = css({
   padding: '5px 10px',
@@ -391,11 +390,7 @@ export function ScripableVariableSelect(
                   : createScript(value),
               )
             }
-            language={
-              props.value
-                ? (props.value.language.toLowerCase() as SrcEditorLanguages)
-                : 'javascript'
-            }
+            language="typescript"
             minimap={false}
             noGutter
             resizable

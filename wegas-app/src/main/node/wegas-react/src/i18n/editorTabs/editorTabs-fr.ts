@@ -5,7 +5,7 @@ export const editorTabsTranslationsFR: EditorTabsTranslations = {
     Tester: 'Testeur',
     Variables: 'Variables',
     'State Machine': "Machine d'états",
-    'Variable Properties': 'Propriétés variables',
+    'Variable Properties': 'Propriétés des variables',
     Files: 'Fichiers',
     Scripts: 'Scripts',
     Styles: 'Styles',

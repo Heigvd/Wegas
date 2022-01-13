@@ -90,7 +90,12 @@ export function EditHandle({
         <div className={cx(flex, flexRow) + ' wegas-component-handle-content'}>
           <Button
             icon="edit"
-            onClick={() => onEdit(isSelected ? undefined : path)}
+            mode={isSelected ? 'success' : undefined}
+            readOnly={isSelected}
+            onClick={() => onEdit(path)}
+            tooltip={
+              isSelected ? 'The component is selected' : 'Select this component'
+            }
           />
           <Button
             icon="arrows-alt"
