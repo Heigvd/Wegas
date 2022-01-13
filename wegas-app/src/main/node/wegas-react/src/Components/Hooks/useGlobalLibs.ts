@@ -36,7 +36,7 @@ import { buildGlobalServerMethods } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
 import { GameModel } from '../../data/selectors';
 import { useStore } from '../../data/Stores/store';
-import { wlog, wwarn } from '../../Helper/wegaslog';
+import { wwarn } from '../../Helper/wegaslog';
 import { classesCTX } from '../Contexts/ClassesProvider';
 import { deepDifferent } from './storeHookFactory';
 
@@ -48,8 +48,6 @@ function makeAmbient(source: string) {
 
 const ambientEntitiesSrc = makeAmbient(entitiesSrc);
 const ambientScriptableEntitiesSrc = makeAmbient(scriptableEntitiesSrc);
-
-wlog(ambientScriptableEntitiesSrc);
 
 // We'll keep it for later uses
 // const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
@@ -269,8 +267,6 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
     ],
     [libs],
   );
-
-  wlog(globalLibs);
 
   return globalLibs;
 }

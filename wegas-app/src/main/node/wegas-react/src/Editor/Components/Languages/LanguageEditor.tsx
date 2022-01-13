@@ -24,7 +24,7 @@ import { Actions } from '../../../data';
 import { manageResponseHandler } from '../../../data/actions';
 import { GameModel } from '../../../data/selectors';
 import { getDispatch } from '../../../data/Stores/store';
-import { wlog } from '../../../Helper/wegaslog';
+import { wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -232,8 +232,7 @@ export default function LanguageEditor() {
                         );
                       })
                       .catch(e => {
-                        wlog(e);
-                        debugger;
+                        wwarn(e);
                       });
                   } else {
                     LanguagesAPI.addLanguage(selectedLanguage).then(
