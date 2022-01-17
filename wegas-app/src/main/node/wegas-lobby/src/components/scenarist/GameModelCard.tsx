@@ -22,12 +22,17 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import { IGameModelWithId } from 'wegas-ts-api';
-import { changeGameModelStatus, duplicateGameModel, finalDeleteGameModel } from '../../API/api';
+import {
+  changeGameModelStatus,
+  duplicateGameModel,
+  finalDeleteGameModel,
+  getGameModelById,
+} from '../../API/api';
 import { entityIs } from '../../API/entityHelper';
 import { getDisplayName } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
 import { useAccount, useCurrentUser } from '../../selectors/userSelector';
-import { useGameModelPermission } from '../../selectors/wegasSelector';
+import { useGameModel, useGameModelPermission } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
 import ActionIconButton from '../common/ActionIconButton';
 import Card, { CardMainButton, cardSecButtonStyle } from '../common/Card';
@@ -79,6 +84,14 @@ export default function GameModelCard({ gameModel }: GameModelCardProps): JSX.El
     <i>{i18n.anonymous}</i>
   );
 
+  const basedOn = useGameModel(gameModel.basedOnId || undefined);
+
+  React.useEffect(() => {
+    if (basedOn == null && gameModel.basedOnId != null) {
+      // Load gameModel !
+      dispatch(getGameModelById({ id: gameModel.basedOnId, view: 'Lobby' }));
+    }
+  }, [gameModel.basedOnId, dispatch, basedOn]);
   //  React.useEffect(() => {
   //    if (isAdmin && gameModel.createdById != null && createdByAccount === undefined) {
   //      dispatch(getUser(gameModel.createdById));
@@ -101,7 +114,9 @@ export default function GameModelCard({ gameModel }: GameModelCardProps): JSX.El
           ) : null}
         </div>
         {gameModel.basedOnId != null ? (
-          <div className={cardDetailsStyle}>{`${i18n.Model} "${gameModel.name}"`}</div>
+          <div className={cardDetailsStyle}>{`${i18n.Model} "${
+            entityIs(basedOn, 'GameModel') ? basedOn.name : ''
+          }"`}</div>
         ) : null}
         <div className={cardSubDetailsStyle}>{gameModel.comments}</div>
       </FitSpace>
