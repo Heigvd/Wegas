@@ -245,17 +245,17 @@ function SrcEditor({
           onBlur(getValue.current());
         }
       });
-
       editor.addAction({
         id: 'onSave',
         label: 'Save code',
-        keybindings: [reactMonaco.KeyMod.CtrlCmd | reactMonaco.KeyCode.KeyS],
+        keybindings: [reactMonaco.KeyMod.CtrlCmd | reactMonaco.KeyCode.KEY_S],
         run: () => {
           if (onSave && getValue.current) {
             onSave(getValue.current());
           }
         },
       });
+
       if (defaultActions) {
         defaultActions(reactMonaco).forEach(action => {
           editor.addAction({

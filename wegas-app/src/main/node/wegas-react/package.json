@@ -116,7 +116,7 @@
     "globby": "^11.0.0",
     "jest": "^25.1.0",
     "less-loader": "^6.2.0",
-    "monaco-editor": "^0.30.1",
+    "monaco-editor": "0.29.1",
     "prop-types": "^15.7.2",
     "react-color": "^2.18.0",
     "react-testing-library": "^8.0.1",
