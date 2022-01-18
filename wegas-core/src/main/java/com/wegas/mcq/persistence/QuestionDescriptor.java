@@ -400,9 +400,17 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Scriptable(label = "has not been replied", dependsOn = DependencyScope.CHILDREN)
     public boolean isNotReplied(Player p) {
-        QuestionInstance instance = this.getInstance(p);
         // no validated replies at all
-        return instance.getReplies(p, true).isEmpty();
+
+        for (ChoiceDescriptor cd : this.getItems()) {
+            if (!cd.getInstance(p).getReplies(true).isEmpty()) {
+                // as soon as one choice has been replied, the question has been replied
+                return false;
+            }
+        }
+        return true;
+
+        //return instance.getReplies(p, true).isEmpty();
     }
 
     /**
@@ -414,22 +422,24 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Scriptable(dependsOn = DependencyScope.CHILDREN)
     public boolean isStillAnswerabled(Player p) {
-        if (this.getValidated(p)){
+        if (this.getValidated(p)) {
             return false;
         }
         if (this.getMaxReplies() != null) {
-            QuestionInstance qi = this.getInstance(p);
             // there is maximum number of choice at the question level
             int countNotIgnored = 0;
-            for (Reply r : qi.getReplies(p, true)) {
-                if (!r.getIgnored()) {
-                    countNotIgnored++;
+
+            for (ChoiceDescriptor cd : this.getItems()) {
+                for (Reply r : cd.getInstance(p).getReplies(true)) {
+                    if (!r.getIgnored()) {
+                        countNotIgnored++;
+                        // is number of not ignored and validated  > max ?
+                        if (countNotIgnored >= this.getMaxReplies()) {
+                            // max has been reached
+                            return false;
+                        }
+                    }
                 }
-            }
-            // is number of not ignored and validated  > max ?
-            if (countNotIgnored >= this.getMaxReplies()) {
-                // max has been reached
-                return false;
             }
         }
 
