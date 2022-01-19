@@ -321,22 +321,23 @@ export function getClassLabel<T extends IMergeable>(
   return '';
 }
 export const ListDescriptorChild = [
-  'NumberDescriptor',
-  'StringDescriptor',
   'ListDescriptor',
+  'NumberDescriptor',
   'TextDescriptor',
-  'StaticTextDescriptor',
-  'TaskDescriptor',
+  'StringDescriptor',
   'BooleanDescriptor',
-  'ObjectDescriptor',
-  'TriggerDescriptor',
+  'StaticTextDescriptor',
   'QuestionDescriptor',
   'WhQuestionDescriptor',
+  'TriggerDescriptor',
+  'FSMDescriptor',
   'InboxDescriptor',
   'DialogueDescriptor',
+  'ObjectDescriptor',
   'ResourceDescriptor',
+  'TaskDescriptor',
   'PeerReviewDescriptor',
-  'FSMDescriptor',
+  'AchievementDescriptor',
 ] as const;
 const QuestionDescriptorChild = [
   'SingleResultChoiceDescriptor',
