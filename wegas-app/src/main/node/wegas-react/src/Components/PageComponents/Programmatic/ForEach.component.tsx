@@ -66,7 +66,7 @@ function ChildrenDeserializer({
           Container={FlexItem}
           path={path}
           content={
-            'Place a component that you want to duplicate for each item of the Fore Each'
+            'Place a component that you want to duplicate for each item of the For Each'
           }
         />
       ) : (
