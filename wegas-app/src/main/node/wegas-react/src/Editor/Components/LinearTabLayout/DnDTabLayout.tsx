@@ -171,7 +171,9 @@ function DnDTabLayoutHeader({
               dndAcceptType={dndAcceptType}
               CustomTab={CustomTab}
             >
-              {translatedLabel}
+              <span className="tab-label">
+                {translatedLabel}
+              </span>
               <IconButton
                 icon="times"
                 tooltip="Remove tab"
