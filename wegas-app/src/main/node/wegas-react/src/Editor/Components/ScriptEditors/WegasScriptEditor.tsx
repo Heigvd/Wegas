@@ -247,7 +247,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
           {
             id: 'SelectAllWithScriptFunction',
             label: 'Ctrl + A avoiding header and footer',
-            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyA],
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_A],
             run: (_monaco: MonacoEditor, editor: MonacoCodeEditor) => {
               const editorLines = textToArray(editor.getValue());
               const lastEditableLine =

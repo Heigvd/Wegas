@@ -1,0 +1,17 @@
+{
+  "env": {
+    "cypress-react-selector": {
+      "root": "#root"
+    }
+  },
+  "reporter" : "junit",
+  "reporterOptions": {
+    "mochaFile": "../../../target/surefire-reports/TEST-ch.colabproject.colab.tests.e2e.CypressTest.[hash].xml",
+    "rootSuiteTitle": "ch.colabproject.tests.e2e",
+    "testsuitesTitle": "Cypress Test Suite",
+    "suiteTitleSeparatedBy": ".",
+    "useFullSuiteTitle": true,
+    "jenkinsMode": true,
+    "testCaseSwitchClassnameAndName": true
+  }
+}
