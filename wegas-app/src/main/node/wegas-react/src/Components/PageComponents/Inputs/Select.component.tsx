@@ -32,7 +32,7 @@ interface PlayerSelectInputProps extends WegasComponentProps {
   /**
    * choices - the allowed choices
    */
-  choices?: Choice[];
+  choices?: Choice[] | IScript;
   onVariableChange?: OnVariableChange;
 }
 
@@ -51,6 +51,11 @@ function PlayerSelectInput({
     context,
   );
 
+  const scriptedChoices = useScript<Choice[] | undefined>(
+    entityIs(choices, 'Script') ? choices : '[]',
+    context,
+  );
+
   const value = useStore(
     () =>
       (descriptor != null && typeof descriptor === 'object'
@@ -65,16 +70,19 @@ function PlayerSelectInput({
     wwarn('Varialbe not found');
     return <TumbleLoader />;
   }
+  const choicesFromProp = entityIs(choices, 'Script')
+    ? scriptedChoices
+    : choices;
 
   const computedChoices: Choice[] =
-    choices == null || choices.length === 0
+    choicesFromProp == null || choicesFromProp.length === 0
       ? entityIs(descriptor, 'StringDescriptor')
         ? (descriptor as SStringDescriptor).getAllowedValues().map(v => {
             const value = translate(v.getLabel(), lang);
             return { value, label: v.getName() || value };
           })
         : []
-      : choices;
+      : choicesFromProp;
 
   return (
     <Selector
