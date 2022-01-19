@@ -31,7 +31,7 @@ import {
 } from '../../../Components/PageComponents/tools/schemaProps';
 import { defaultPadding, flex, flexColumn, grow } from '../../../css/classes';
 import { ActionsProps } from '../../../data/Reducer/globalState';
-import { StoreDispatch } from '../../../data/Stores/store';
+import { store, StoreDispatch } from '../../../data/Stores/store';
 import { findComponent } from '../../../Helper/pages';
 import { MessageString } from '../MessageString';
 import { pageCTX } from './PageEditor';
@@ -256,13 +256,26 @@ export function ComponentProperties({
       parent ? s[parent.type].container : undefined,
     ) as Schema<BaseView>;
   }, deepDifferent);
+  // customize schema
+  // Then try to get schema from complex filters
+
+  let customSchema: SimpleSchema | void;
+  const customSchemas = store.getState().global.schemas;
+  for (const schemaName of customSchemas.unfiltered) {
+    const nfSchema = customSchemas.views[schemaName](entity, schema);
+    if (nfSchema !== undefined) {
+      customSchema = nfSchema;
+      break;
+    }
+  }
+
   if (entity === undefined || schema === undefined) {
     return null;
   }
   return (
     <AsyncComponentForm
       entity={wegasComponentToForm(entity.props)}
-      schema={schema}
+      schema={customSchema ? customSchema : schema}
       update={value =>
         update && update({ ...entity, props: formToWegasComponent(value) })
       }
