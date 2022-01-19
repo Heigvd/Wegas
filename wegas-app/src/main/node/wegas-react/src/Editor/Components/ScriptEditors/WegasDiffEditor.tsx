@@ -286,7 +286,7 @@ function WegasDiffEditor({
       editor.addAction({
         id: 'onSave',
         label: 'Save code',
-        keybindings: [reactMonaco.KeyMod.CtrlCmd | reactMonaco.KeyCode.KeyS],
+        keybindings: [reactMonaco.KeyMod.CtrlCmd | reactMonaco.KeyCode.KEY_S],
         run: () => {
           if (onSave && getOriginalValue.current) {
             onSave(getOriginalValue.current());
