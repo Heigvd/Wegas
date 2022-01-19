@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "format": "prettier --write cypress",
-    "start": "CYPRESS_WEGAS_URL='http://localhost:8080/Wegas' CYPRESS_ADMIN_USERNAME='root' CYPRESS_ADMIN_PASSWORD='1234' yarn cypress open",
-    "test": "CYPRESS_WEGAS_URL='http://localhost:8080/Wegas' CYPRESS_ADMIN_USERNAME='root' CYPRESS_ADMIN_PASSWORD='1234' yarn cypress run"
+    "local:start": "CYPRESS_WEGAS_URL='http://localhost:8080/Wegas' CYPRESS_ADMIN_USERNAME='root' CYPRESS_ADMIN_PASSWORD='1234' yarn cypress open",
+    "local:test": "CYPRESS_WEGAS_URL='http://localhost:8080/Wegas' CYPRESS_ADMIN_USERNAME='root' CYPRESS_ADMIN_PASSWORD='1234' yarn cypress run"
   },
   "devDependencies": {
     "cypress": "^9.2.0",

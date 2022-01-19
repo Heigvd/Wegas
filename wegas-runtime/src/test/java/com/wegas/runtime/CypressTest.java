@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
+import org.slf4j.Logger;
 
 /**
  *
@@ -31,22 +32,63 @@ public class CypressTest {
     private String ADMIN_USERNAME ;
     private String ADMIN_EMAIL;
     private String ADMIN_PASSWORD;
+    private Logger logger;
 
 
-    public CypressTest( String url, String username, String email, String password ){
+    public CypressTest( String url, String username, String email, String password, Logger logger ){
         this.WEGAS_URL_1 = url;
         this.ADMIN_USERNAME = username;
         this.ADMIN_EMAIL = email;
         this.ADMIN_PASSWORD = password;
-    
+        this.logger = logger;
+        verifyCypress();
         cypressSuiteTest();
+    }
+
+
+ /**
+     * Test application with cypress
+     */
+    private void verifyCypress() {
+        logger.info("Verifying Cypress");
+        try {
+            String cypressCommand = "yarn cypress verify" ;
+
+            boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+
+            ProcessBuilder builder = new ProcessBuilder();
+            if (isWindows) {
+                builder.command("cmd.exe", "/c", cypressCommand);
+            } else {
+                builder.command("sh", "-c", cypressCommand);
+            }
+
+            Path cypressPath = Paths.get("src", "test", "node");
+
+            builder.directory(cypressPath.toFile());
+
+            Process process = builder.start();
+            //make sure to consume output
+            StreamGobbler streamGobbler
+                = new StreamGobbler(process.getInputStream(), System.out::println);
+
+            Executors.newSingleThreadExecutor().submit(streamGobbler);
+
+            int exitCode = process.waitFor();
+
+            Assert.assertEquals(0, exitCode);
+        } catch (IOException ex) {
+            Assert.fail("Run cypress failed with : " + ex.getMessage() );
+        } catch (InterruptedException ex) {
+            Assert.fail("Cypress has been interrupted : " + ex.getMessage());
+        }
     }
 
     /**
      * Test application with cypress
      */
-    public void cypressSuiteTest() {
-
+    private void cypressSuiteTest() {
+        logger.info(("Launching tests with Cypress"));
         try {
             Map<String, String> env = new HashMap<>();
 
@@ -61,7 +103,6 @@ public class CypressTest {
 
 
             boolean interractive = System.getProperty("cypress", "false").equals("true");
-            // boolean interractive = true;
 
             String cypressSubcommand = interractive ? "open" : "run";
 

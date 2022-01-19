@@ -523,7 +523,7 @@ public class WegasTest {
 
     @Test
     public void testCypress() throws IOException {
-        new CypressTest(WEGAS_URL_1,  ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD).cypressSuiteTest();
+        new CypressTest(WEGAS_URL_1,  ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD, logger);
     }
 
 }
