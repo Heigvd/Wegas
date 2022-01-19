@@ -1,4 +1,5 @@
 # Build files #
+###############
 target/*
 wegas-app/target
 wegas-core/target
@@ -36,6 +37,7 @@ settings.xml
 *.iml
 
 # Eclipse Files #
+#################
 .project
 .settings/
 .classpath
@@ -55,3 +57,10 @@ Thumbs.db
 /wegas-ts-api/src/main/webapp/typings/
 
 node_modules/
+
+# Cypress generated files #
+###########################
+/wegas-runtime/src/test/node/cypress/results/
+/wegas-runtime/src/test/node/cypress/videos/
+/wegas-runtime/src/test/node/test-results.xml
+/wegas-runtime/src/test/node/cypress/screenshots/
