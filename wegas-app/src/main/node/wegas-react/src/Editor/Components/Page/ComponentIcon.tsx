@@ -37,6 +37,7 @@ import PRVariableIcon from '../../../pictures/componentsIcons/PRVariableEditor.s
 import QuestionIcon from '../../../pictures/componentsIcons/question.svg';
 import QuestionListIcon from '../../../pictures/componentsIcons/questionList.svg';
 import QuestProgressBar from '../../../pictures/componentsIcons/questProgressBar.svg';
+import ScatterIcon from '../../../pictures/componentsIcons/scatter.svg';
 import SelectInputIcon from '../../../pictures/componentsIcons/selectInput.svg';
 import StateIcon from '../../../pictures/componentsIcons/state.svg';
 import StateMachineIcon from '../../../pictures/componentsIcons/stateMachine.svg';
@@ -83,6 +84,7 @@ const iconComponents = {
   question: QuestionIcon,
   questionList: QuestionListIcon,
   questProgressBar: QuestProgressBar,
+  scatter: ScatterIcon,
   selectInput: SelectInputIcon,
   state: StateIcon,
   stateMachine: StateMachineIcon,
