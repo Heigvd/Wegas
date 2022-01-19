@@ -4,10 +4,10 @@ describe("ch.colabproject.colab.tests.e2e.Login", () => {
     cy.waitForReact();
   });
 
-  it("LoginAsAdmin", () => {
+  it("LoginAsAdminAndLogout", () => {
     cy.login(Cypress.env("ADMIN_USERNAME"), Cypress.env("ADMIN_PASSWORD"));
-  });
-  it("Logout", () => {
     cy.logout();
   });
+  // it("Logout", () => {
+  // });
 });
