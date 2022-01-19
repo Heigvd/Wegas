@@ -64,6 +64,12 @@ public class WegasTest {
     public TestName name = new TestName();
 
     private static final String WEGAS_ROOT_DIR = "../wegas-app/";
+    private static final String WEGAS_URL_1 = "http://localhost:28080/Wegas";
+    private static final String WEGAS_URL_2 = "http://localhost:28081/Wegas";
+    private static final String ADMIN_USERNAME = "root";
+    private static final String ADMIN_EMAIL = "root@root.com";
+    private static final String ADMIN_PASSWORD = "1234";
+
 
     private static final Logger logger = LoggerFactory.getLogger(WegasTest.class);
 
@@ -95,7 +101,7 @@ public class WegasTest {
     public static WebArchive createDeployment(String name) {
         WegasRuntime.resetDB("wegas_test");
         String warPath;
-        warPath = "../wegas-app/target/Wegas";
+        warPath = WEGAS_ROOT_DIR + "target/Wegas";
 
         WebArchive war = ShrinkWrap.create(ExplodedImporter.class, name + ".war")
             .importDirectory(new File(warPath))
@@ -106,14 +112,14 @@ public class WegasTest {
 
     @BeforeClass
     public static void setUpClass() throws IOException {
-        client = new WegasRESTClient("http://localhost:28080/Wegas");
-        client2 = new WegasRESTClient("http://localhost:28081/Wegas");
+        client = new WegasRESTClient(WEGAS_URL_1);
+        client2 = new WegasRESTClient(WEGAS_URL_2);
 
         scenarist = client.signup("scenarist@local", "1234");
         trainer = client.signup("trainer@local", "1234");
         user = client.signup("user@local", "1234");
 
-        root = client.getAuthInfo("root@root.com", "1234");
+        root = client.getAuthInfo(ADMIN_EMAIL, ADMIN_PASSWORD);
         root.setUserId(1l);
 
         client.login(root);
@@ -155,7 +161,7 @@ public class WegasTest {
 
     private void loadArtos() throws IOException {
         logger.info("LOAD ARTOS");
-        artos = client.postJSONFromFile("/rest/GameModel", "../wegas-app/src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json", GameModel.class);
+        artos = client.postJSONFromFile("/rest/GameModel", WEGAS_ROOT_DIR + "src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json", GameModel.class);
     }
 
     private Player getTestPlayer(GameModel gameModel) throws IOException {
@@ -431,7 +437,7 @@ public class WegasTest {
 
     @Test
     public void testUpdateAndCreateGame() throws IOException {
-        GameModel myGameModel = client.postJSONFromFile("/rest/GameModel", "../wegas-app/src/test/resources/gmScope.json", GameModel.class);
+        GameModel myGameModel = client.postJSONFromFile("/rest/GameModel", WEGAS_ROOT_DIR + "src/test/resources/gmScope.json", GameModel.class);
         Game myGame = client.postJSON_asString("/rest/GameModel/" + myGameModel.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + myGameModel.getId() + "\",\"access\":\"OPEN\",\"name\":\"My Test Game\"}", Game.class);
         myGame.getId();
     }
@@ -440,8 +446,8 @@ public class WegasTest {
     public void testModeliseStateMachine() throws IOException {
         client.get("/rest/Utils/SetLoggerLevel/com.wegas.core.ejb.ModelFacade/DEBUG");
 
-        GameModel gm1 = client.postJSONFromFile("/rest/GameModel", "../wegas-app/src/test/resources/fsm.json", GameModel.class);
-        GameModel gm2 = client.postJSONFromFile("/rest/GameModel", "../wegas-app/src/test/resources/fsm.json", GameModel.class);
+        GameModel gm1 = client.postJSONFromFile("/rest/GameModel", WEGAS_ROOT_DIR + "src/test/resources/fsm.json", GameModel.class);
+        GameModel gm2 = client.postJSONFromFile("/rest/GameModel", WEGAS_ROOT_DIR + "src/test/resources/fsm.json", GameModel.class);
 
         // create model
         GameModel model = client.postJSON_asString("/rest/GameModel/extractModel/" + gm1.getId() + "," + gm2.getId(),
@@ -513,6 +519,11 @@ public class WegasTest {
         String tContent = domTotal.getTextContent();
 
         logger.info("TESTS:  " + pContent + "/" + tContent);
+    }
+
+    @Test
+    public void testCypress() throws IOException {
+        new CypressTest(WEGAS_URL_1,  ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD).cypressSuiteTest();
     }
 
 }
