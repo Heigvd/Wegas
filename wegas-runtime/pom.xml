@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ch.albasim.wegas</groupId>
@@ -44,7 +45,7 @@
             <groupId>fish.payara.extras</groupId>
             <artifactId>payara-micro</artifactId>
         </dependency>
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>-->
@@ -95,8 +96,6 @@
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
-
-
         <dependency>
             <groupId>net.sourceforge.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
@@ -153,6 +152,27 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>yarn install</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>yarn</executable>
+                            <arguments>
+                                <argument>--frozen-lockfile</argument>
+                                <argument>install</argument>
+                            </arguments>
+                            <workingDirectory>${project.basedir}/src/test/node/</workingDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Download and copy Payara Micro artefact -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
