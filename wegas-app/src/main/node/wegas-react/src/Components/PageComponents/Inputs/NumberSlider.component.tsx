@@ -22,6 +22,7 @@ import {
 } from './tools';
 import { TumbleLoader } from '../../Loader';
 import { useComponentScript } from '../../Hooks/useComponentScript';
+import { debounce } from 'lodash-es';
 
 interface PlayerNumberSliderProps extends WegasComponentProps {
   /**
@@ -58,6 +59,31 @@ function PlayerNumberSlider({
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
+  const variableName = descriptor?.getName();
+
+  const doUpdate = React.useCallback(
+    (newValue: number) => {
+      if (handleOnChange) {
+        handleOnChange(newValue);
+      } else {
+        if (variableName) {
+          store.dispatch(
+            Actions.VariableInstanceActions.runScript(
+              `Variable.find(gameModel,"${variableName}").setValue(self, ${newValue});`,
+            ),
+          );
+        }
+      }
+    },
+    [handleOnChange, variableName],
+  );
+
+  const debouncedOnChange = React.useMemo(() => {
+    return debounce((value: number) => {
+      doUpdate(value);
+    }, 300);
+  }, [doUpdate]);
+
   return notFound ? (
     <TumbleLoader />
   ) : (
@@ -69,15 +95,9 @@ function PlayerNumberSlider({
       value={instance?.getValue()}
       onChange={(v, i) => {
         if (i === 'DragEnd') {
-          if (handleOnChange) {
-            handleOnChange(v);
-          } else {
-            store.dispatch(
-              Actions.VariableInstanceActions.runScript(
-                `Variable.find(gameModel,"${descriptor?.getName()}").setValue(self, ${v});`,
-              ),
-            );
-          }
+          doUpdate(v);
+        } else if (i === 'NumberInput') {
+          debouncedOnChange(v);
         }
       }}
       min={descriptor?.getMinValue() != null ? descriptor.getMinValue()! : -100}
