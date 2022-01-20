@@ -588,14 +588,17 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
       });
   }, [i18nValues.scripts.cannotGetScripts, scriptType]);
 
+  function onChange(content: string) {
+    dispatchStateAction({
+      type: 'SetLibraryContent',
+      content: content,
+    });
+  }
+
   const editorProps: SrcEditorProps = React.useMemo(
     () => ({
       value: librariesState.selected ? libEntry?.library.content || '' : '',
-      onChange: (content: string) =>
-        dispatchStateAction({
-          type: 'SetLibraryContent',
-          content: content,
-        }),
+      onChange: onChange,
       language: getScriptLanguage(scriptType),
       readOnly: !isEditAllowed(librariesState),
       onSave: onSaveLibrary,
@@ -736,21 +739,15 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             originalValue={libEntry.status.latestVersionLibrary.content}
             modifiedValue={libEntry.library.content}
             language={getScriptLanguage(scriptType)}
-            onChange={content =>
-              dispatchStateAction({
-                type: 'SetLibraryContent',
-                content: content,
-              })
-            }
+            onChange={onChange}
             onResolved={onSaveLibrary}
           />
         ) : librariesState.selected ? (
           getScriptLanguage(scriptType) === 'css' ? (
-            <SrcEditor {...editorProps} language="css" />
+            <SrcEditor {...editorProps} />
           ) : (
             <WegasScriptEditor
               {...editorProps}
-              language={getScriptLanguage(scriptType)}
               scriptContext={
                 scriptType === 'ServerScript' ? 'Server external' : 'Client'
               }

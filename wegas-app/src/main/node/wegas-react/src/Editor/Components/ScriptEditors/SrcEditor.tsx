@@ -149,43 +149,43 @@ function SrcEditor({
   const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const i18nValues = useInternalTranslate(commonTranslations);
 
-  React.useEffect(
-    () => {
-      if (reactMonaco) {
-        if (editor) {
-          const newModel = reactMonaco.editor.createModel(
-            value || '',
-            language || 'plaintext',
-            defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
-          );
+  // React.useEffect(
+  //   () => {
+  //     if (reactMonaco) {
+  //       if (editor) {
+  //         const newModel = reactMonaco.editor.createModel(
+  //           value || '',
+  //           language || 'plaintext',
+  //           defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
+  //         );
 
-          newModel.updateOptions({ tabSize: 2 });
+  //         newModel.updateOptions({ tabSize: 2 });
 
-          editor.setModel(newModel);
+  //         editor.setModel(newModel);
 
-          // Unmount effect to dispose editor and model
-          return () => {
-            if (editor) {
-              const model = editor.getModel();
-              if (model) {
-                model.dispose();
-              }
-              editor.dispose();
-            }
-          };
-        }
-      }
-    } /* eslint-disable react-hooks/exhaustive-deps */ /* Linter disabled for the following lines to avoid reloading editor and loosing focus */,
-    [
-      editor,
-      reactMonaco,
-      // defaultValue,
-      // language,
-      // defaultUri
-      // value,
-    ],
-  );
-  /* eslint-enable */
+  //         // Unmount effect to dispose editor and model
+  //         return () => {
+  //           if (editor) {
+  //             const model = editor.getModel();
+  //             if (model) {
+  //               model.dispose();
+  //             }
+  //             editor.dispose();
+  //           }
+  //         };
+  //       }
+  //     }
+  //   } /* eslint-disable react-hooks/exhaustive-deps */ /* Linter disabled for the following lines to avoid reloading editor and loosing focus */,
+  //   [
+  //     editor,
+  //     reactMonaco,
+  //     // defaultValue,
+  //     // language,
+  //     // defaultUri
+  //     // value,
+  //   ],
+  // );
+  // /* eslint-enable */
 
   const schema = useJSONSchema(language === 'json');
 
@@ -194,15 +194,60 @@ function SrcEditor({
       getValue.current = editor.getValue;
       setEditor(editor);
 
-      if (language === 'javascript') {
-        /*
-      reactMonaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-        source: reactMonaco.languages.typescript.ScriptTarget.ES5,
-        noLib: true,
-        lib: ['es6'],
-      });
-      */
-      } else if (language === 'typescript') {
+      const newModel = reactMonaco.editor.createModel(
+        value || '',
+        language || 'plaintext',
+        defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
+      );
+
+      newModel.updateOptions({ tabSize: 2 });
+
+      editor.setModel(newModel);
+
+      if (onEditorReady) {
+        onEditorReady(editor);
+      }
+
+      // Unmount effect to dispose editor and model
+      return () => {
+        if (editor) {
+          const model = editor.getModel();
+          if (model) {
+            model.dispose();
+          }
+          editor.dispose();
+        }
+      };
+    },
+    [defaultUri, language, onEditorReady, value],
+  );
+
+  React.useEffect(() => {
+    if (editor != null && reactMonaco != null) {
+      if (defaultFocus) {
+        editor.focus();
+      }
+      if (cursorOffset) {
+        const model = editor.getModel();
+        if (model) {
+          editor.setPosition(model.getPositionAt(cursorOffset));
+        }
+      }
+    }
+  }, [
+    cursorOffset,
+    defaultFocus,
+    editor,
+    extraLibs,
+    forceJS,
+    language,
+    reactMonaco,
+    schema,
+  ]);
+
+  React.useEffect(() => {
+    if (reactMonaco != null) {
+      if (language === 'typescript') {
         reactMonaco.languages.typescript.typescriptDefaults.setCompilerOptions({
           // noLib: true, //TODO: wait for the issue / stackoverflow solution :P
           allowNonTsExtensions: true,
@@ -226,25 +271,34 @@ function SrcEditor({
           ],
         });
       }
+    }
+  }, [extraLibs, forceJS, language, reactMonaco, schema]);
 
-      if (defaultFocus) {
-        editor.focus();
-      }
-      if (cursorOffset) {
-        const model = editor.getModel();
-        if (model) {
-          editor.setPosition(model.getPositionAt(cursorOffset));
-        }
-      }
-      if (onEditorReady) {
-        onEditorReady(editor);
-      }
-
+  React.useEffect(() => {
+    if (editor != null && reactMonaco != null) {
       editor.onDidBlurEditorText(() => {
         if (onBlur && getValue.current) {
           onBlur(getValue.current());
         }
       });
+    }
+  }, [editor, onBlur, reactMonaco]);
+
+  React.useEffect(() => {
+    if (editor != null && reactMonaco != null) {
+      if (defaultActions) {
+        defaultActions(reactMonaco).forEach(action => {
+          editor.addAction({
+            ...action,
+            run: editor => action.run(reactMonaco, editor),
+          });
+        });
+      }
+    }
+  }, [defaultActions, editor, reactMonaco]);
+
+  React.useEffect(() => {
+    if (editor != null && reactMonaco != null) {
       editor.addAction({
         id: 'onSave',
         label: 'Save code',
@@ -255,29 +309,8 @@ function SrcEditor({
           }
         },
       });
-
-      if (defaultActions) {
-        defaultActions(reactMonaco).forEach(action => {
-          editor.addAction({
-            ...action,
-            run: editor => action.run(reactMonaco, editor),
-          });
-        });
-      }
-    },
-    [
-      cursorOffset,
-      defaultActions,
-      defaultFocus,
-      extraLibs,
-      forceJS,
-      language,
-      onBlur,
-      onEditorReady,
-      onSave,
-      schema,
-    ],
-  );
+    }
+  }, [editor, onSave, reactMonaco]);
 
   return (
     <SizedDiv className={overflowHide}>
