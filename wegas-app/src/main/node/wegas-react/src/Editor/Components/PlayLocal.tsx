@@ -1,7 +1,10 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { useDebounce } from '../../Components/Hooks/useDebounce';
-import { useUnsafeScript } from '../../Components/Hooks/useScript';
+import {
+  clientScriptEval,
+  useUnsafeScript,
+} from '../../Components/Hooks/useScript';
 import { Toggler } from '../../Components/Inputs/Boolean/Toggler';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../Components/Theme/ThemeVars';
@@ -10,8 +13,17 @@ import { defaultPadding, flex } from '../../css/classes';
 import { shallowIs } from '../../Helper/shallowIs';
 import { WegasScriptEditor } from './ScriptEditors/WegasScriptEditor';
 
-const container = css({ width: '100%' });
-const editor = css({ width: '100%', height: '400px' });
+const container = css({
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+});
+const editor = css({
+  width: '100%',
+  flexGrow: 1,
+  flexShrink: 1,
+  overflow: 'auto',
+});
 const togglerStyle = css({ padding: '0 15px 0 15px' });
 
 class ErrorBoundary extends React.Component<Record<string, unknown>> {
@@ -52,25 +64,28 @@ Eval.displayName = 'Eval';
 export default function PlayLocal() {
   const [script, setScript] = React.useState('');
 
-  const [tmpScript, setTmpScript] = React.useState('');
-
-  const debouncedScript = useDebounce(script, 300);
+  const [result, setResult] = React.useState<unknown>();
 
   const [autorun, setAutorun] = React.useState(true);
 
-  const onChangeCb = React.useCallback(
-    (newScript: string) => {
-      setTmpScript(newScript);
-      if (autorun) {
-        setScript(newScript);
-      }
-    },
-    [autorun],
-  );
+  const debouncedScript = useDebounce(script, 300);
+
+  const onChangeCb = React.useCallback((newScript: string) => {
+    setScript(newScript);
+  }, []);
 
   const onRunCb = React.useCallback(() => {
-    setScript(tmpScript);
-  }, [tmpScript]);
+    setResult(undefined);
+    try {
+      setResult(clientScriptEval(script));
+    } catch (e) {
+      if (typeof e === 'object' && e != null && 'message' in e) {
+        setResult((e as unknown as Error).message);
+      } else {
+        setResult(e);
+      }
+    }
+  }, [script]);
 
   return (
     <Toolbar>
@@ -91,7 +106,13 @@ export default function PlayLocal() {
             <WegasScriptEditor value={script} onChange={onChangeCb} />
           </div>
           <ErrorBoundary script={debouncedScript}>
-            <Eval script={debouncedScript} />
+            {autorun ? (
+              <Eval script={debouncedScript} />
+            ) : (
+              <pre className={overlayStyle}>
+                {JSON.stringify(result, null, 2)}
+              </pre>
+            )}
           </ErrorBoundary>
         </div>
       </Toolbar.Content>
