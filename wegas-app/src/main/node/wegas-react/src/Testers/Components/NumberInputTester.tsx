@@ -1,12 +1,13 @@
+import { css } from '@emotion/css';
 import * as React from 'react';
 import NumberBoxTester from './NumberBoxTester';
-import { css } from '@emotion/css';
 import NumberSliderTester from './NumberSliderTester';
 
 export const testerSectionStyle = css({
   borderStyle: 'solid',
   borderColor: 'black',
   margin: '2px',
+  width: '100%',
 });
 
 export default function NumberInputTester() {
