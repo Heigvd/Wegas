@@ -77,7 +77,6 @@ const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
 
 export interface SharedTreeProps extends DisabledReadonly {
   noHeader?: boolean;
-  noVisibleRoot?: boolean;
   localState?: Readonly<Edition> | undefined;
   localDispatch?: StoreDispatch;
   forceLocalDispatch?: boolean;
@@ -86,7 +85,6 @@ export interface SharedTreeProps extends DisabledReadonly {
 interface TreeProps extends SharedTreeProps {
   root: IParentDescriptor;
   noHeader?: boolean;
-  noVisibleRoot?: boolean;
   localState?: Readonly<Edition> | undefined;
   localDispatch?: StoreDispatch;
   forceLocalDispatch?: boolean;
@@ -95,7 +93,6 @@ interface TreeProps extends SharedTreeProps {
 export function VariableTreeView({
   root,
   noHeader = false,
-  noVisibleRoot = false,
   localState,
   localDispatch,
   forceLocalDispatch,
@@ -218,7 +215,6 @@ export function VariableTreeView({
               <CTree
                 key={id}
                 variableId={id}
-                noVisibleRoot={noVisibleRoot}
                 localState={localState}
                 localDispatch={localDispatch}
                 forceLocalDispatch={forceLocalDispatch}

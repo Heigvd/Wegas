@@ -142,7 +142,6 @@ export function CTree({
   forceLocalDispatch,
   localDispatch,
   localState,
-  noVisibleRoot,
   readOnly,
   subPath,
 }: Omit<
@@ -350,22 +349,20 @@ export function CTree({
               }
             }}
           >
-            {!noVisibleRoot && (
-              <VariableTreeTitle
-                variable={variable}
-                subPath={subPath}
-                className={nodeLabelStyle}
-              />
-            )}
+            <VariableTreeTitle
+              variable={variable}
+              subPath={subPath}
+              className={nodeLabelStyle}
+            />
             {actionAllowed &&
               (entityIs(variable, 'ListDescriptor') ||
               entityIs(variable, 'QuestionDescriptor') ||
               entityIs(variable, 'WhQuestionDescriptor') ? (
                 <AddMenuParent
-                  label={noVisibleRoot ? 'Add' : undefined}
-                  prefixedLabel={!noVisibleRoot}
+                  // label={noVisibleRoot ? 'Add' : undefined}
+                  // prefixedLabel={!noVisibleRoot}
                   variable={variable}
-                  style={noVisibleRoot ? { marginBottom: '10px' } : undefined}
+                  // style={noVisibleRoot ? { marginBottom: '10px' } : undefined}
                   onSelect={(i, e) => {
                     onEditionChanges(0, e, e => onMenuParentSelect(i, e));
                   }}
