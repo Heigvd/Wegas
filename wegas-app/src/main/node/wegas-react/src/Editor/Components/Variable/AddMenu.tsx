@@ -14,7 +14,7 @@ import { getChildren, getClassLabel, getIcon } from '../../editionConfig';
 import { IconComp, withDefault } from '../Views/FontAwesome';
 
 export function makeMenuFromClass(className: IAbstractEntity['@class']) {
-  const Label = asyncSFC(async () => {
+  const Label = () => {
     const entity = { '@class': className };
     return (
       <>
@@ -22,26 +22,24 @@ export function makeMenuFromClass(className: IAbstractEntity['@class']) {
         {getClassLabel(entity)}
       </>
     );
-  });
+  };
   return {
     label: <Label />,
     value: className,
   };
 }
 
-function buildMenuItems(
+export function buildMenuItems(
   variable: IAbstractEntity,
-): Promise<DropMenuItem<IAbstractEntity['@class']>[]> {
-  return getChildren(variable).then(children => {
-    return children
-      .map(makeMenuFromClass)
-      .filter(
-        item =>
-          !entityIs(variable, 'ListDescriptor') ||
-          variable.allowedTypes.length === 0 ||
-          variable.allowedTypes.includes(item.value),
-      );
-  });
+): DropMenuItem<IAbstractEntity['@class']>[] {
+  return getChildren(variable)
+    .map(makeMenuFromClass)
+    .filter(
+      item =>
+        !entityIs(variable, 'ListDescriptor') ||
+        variable.allowedTypes.length === 0 ||
+        variable.allowedTypes.includes(item.value),
+    );
 }
 
 export interface AddMenuProps {
@@ -67,7 +65,7 @@ export const AddMenuParent = asyncSFC(
   }: {
     variable: IListDescriptor | IQuestionDescriptor | IWhQuestionDescriptor;
   } & AddMenuProps) => {
-    const items = await buildMenuItems(variable);
+    const items = buildMenuItems(variable);
     return (
       <DropMenu
         style={style}
@@ -91,7 +89,7 @@ export const AddMenuChoice = asyncSFC(
   }: {
     variable: IChoiceDescriptor;
   } & AddMenuProps) => {
-    const items = await buildMenuItems(variable);
+    const items = buildMenuItems(variable);
     return <DropMenu items={items} icon="plus" onSelect={onSelect} />;
   },
 );
@@ -105,7 +103,7 @@ export const AddMenuFeedback = asyncSFC(
   }: {
     variable: IEvaluationDescriptorContainer;
   } & AddMenuProps) => {
-    const items = await buildMenuItems(variable);
+    const items = buildMenuItems(variable);
     return <DropMenu items={items} icon="plus" onSelect={onSelect} />;
   },
 );

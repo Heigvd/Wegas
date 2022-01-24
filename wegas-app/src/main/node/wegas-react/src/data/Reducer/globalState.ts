@@ -702,6 +702,7 @@ export function editFile(
 export function createVariable(
   cls: IAbstractEntity['@class'],
   parent?:
+    | IParentDescriptor
     | IListDescriptor
     | IQuestionDescriptor
     | IChoiceDescriptor

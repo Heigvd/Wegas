@@ -355,12 +355,19 @@ const EvaluationDescriptorContainerChild = [
   'CategorizedEvaluationDescriptor',
 ] as const;
 const ChoiceDescriptorChild = ['Result'] as const;
-export async function getChildren<T extends IAbstractEntity>(
+export function getChildren<T extends IAbstractEntity>(
   entity: T,
-): Promise<readonly IAbstractEntity['@class'][]> {
+): readonly IAbstractEntity['@class'][] {
   switch (entity['@class']) {
     case 'ListDescriptor':
-      return ListDescriptorChild;
+    case 'GameModel':
+      return ListDescriptorChild.filter(
+        child =>
+          entityIs(entity, 'GameModel', true) ||
+          (entityIs(entity, 'ListDescriptor', true) &&
+            (entity.allowedTypes.length === 0 ||
+              entity.allowedTypes.includes(child))),
+      );
     case 'QuestionDescriptor':
       return QuestionDescriptorChild;
     case 'WhQuestionDescriptor':

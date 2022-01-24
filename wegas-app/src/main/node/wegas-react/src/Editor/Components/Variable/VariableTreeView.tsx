@@ -2,9 +2,7 @@ import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { IVariableDescriptor } from 'wegas-ts-api';
 import { DropMenu } from '../../../Components/DropMenu';
-import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { useAsync } from '../../../Components/Hooks/useAsync';
 import { useDebounceFn } from '../../../Components/Hooks/useDebounce';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
@@ -27,11 +25,11 @@ import { moveDescriptor } from '../../../data/Reducer/VariableDescriptorReducer'
 import { store, StoreDispatch, useStore } from '../../../data/Stores/store';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { getChildren, getClassLabel, getIcon } from '../../editionConfig';
 import { mainLayoutId } from '../../layouts';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { focusTab } from '../LinearTabLayout/LinearLayout';
-import { IconComp, withDefault } from '../Views/FontAwesome';
+import { IconComp } from '../Views/FontAwesome';
+import { buildMenuItems } from './AddMenu';
 import { CTree } from './CTree';
 
 const addVariableContainerStyle = css({
@@ -52,28 +50,6 @@ const deepSearchButtonOffStyle = css({
 export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_VARIABLE_ITEM';
 
 const TREECONTENTID = 'TREECONTENT';
-
-const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
-  children =>
-    children.map(i => {
-      const Label = asyncSFC(async () => {
-        const entity = { '@class': i };
-        return (
-          <>
-            <IconComp
-              icon={withDefault(getIcon(entity), 'question')}
-              className={css({ marginRight: '3px' })}
-            />
-            <p>{getClassLabel(entity)}</p>
-          </>
-        );
-      });
-      return {
-        label: <Label />,
-        value: i,
-      };
-    }),
-);
 
 export interface SharedTreeProps extends DisabledReadonly {
   noHeader?: boolean;
@@ -102,7 +78,7 @@ export function VariableTreeView({
     [path: string]: boolean | undefined;
   }>({});
 
-  const { data } = useAsync(itemsPromise);
+  const data = buildMenuItems(root);
 
   const i18nValues = useInternalTranslate(commonTranslations);
 
@@ -232,9 +208,13 @@ export function VariableTreeView({
           onSelect={(i, e) => {
             onEditionChanges(0, e, e => {
               if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
-                localDispatch(Actions.EditorActions.createVariable(i.value));
+                localDispatch(
+                  Actions.EditorActions.createVariable(i.value, root),
+                );
               } else {
-                globalDispatch(Actions.EditorActions.createVariable(i.value));
+                globalDispatch(
+                  Actions.EditorActions.createVariable(i.value, root),
+                );
                 focusTab(mainLayoutId, 'Variable Properties');
               }
             });
