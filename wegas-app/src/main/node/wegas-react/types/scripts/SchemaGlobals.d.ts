@@ -4,15 +4,15 @@ type WegasClassNames = import('wegas-ts-api').WegasClassNames;
 type SimpleSchema =
   | {}
   | {
-    properties?: {
-      [props: string]: SimpleSchema;
-    };
-    additionalProperties?: SimpleSchema;
-  }
+      properties?: {
+        [props: string]: SimpleSchema;
+      };
+      additionalProperties?: SimpleSchema;
+    }
   | { items?: SimpleSchema[] | SimpleSchema };
 
-type CustomSchemaFN = <T extends IMergeable>(
-  entity: T,
+type CustomSchemaFN = (
+  entity: unknown,
   // eslint-disable-next-line
   baseSchema: any,
 ) => SimpleSchema | void;

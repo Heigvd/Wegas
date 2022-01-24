@@ -107,8 +107,11 @@ const tabStyle = css({
   fontWeight: 600,
   lineHeight: '120%',
   position: 'relative',
+  '& .tab-label': {
+    padding: '0 10px 0 0',
+  },
   '& .close-btn': {
-    padding: '0 0 0 10px',
+    padding: '0',
   },
   '& .fullscreen-btn': {
     background: themeVar.colors.PrimaryColor,

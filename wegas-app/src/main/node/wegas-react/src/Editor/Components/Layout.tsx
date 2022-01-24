@@ -39,7 +39,9 @@ const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
 const PagesLayout = React.lazy(() => import('./Page/PagesLayout'));
 const SourceEditor = React.lazy(() => import('./Page/SourceEditor'));
 
-// const Tester = React.lazy(() => import('../../Testers/WyswigScriptViewTester'));
+// const Tester = React.lazy(
+//   () => import('../../Testers/Components/NumberSliderTester'),
+// );
 
 const layout = css({
   display: 'flex',

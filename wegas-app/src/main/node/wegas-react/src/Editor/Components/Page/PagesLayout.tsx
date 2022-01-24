@@ -9,7 +9,7 @@ import { DropMenu } from '../../../Components/DropMenu';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
-import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
+import { componentTypes, usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
 import { TreeNode } from '../../../Components/TreeView/TreeNode';
@@ -344,12 +344,20 @@ function ComponentAdder({ className, tooltip, onSelect }: ComponentAdderProps) {
     <div className={className} title={tooltip}>
       <DropMenu
         icon="plus"
-        items={Object.values(components).map(v => ({
-          label: v.componentName,
-          id: v.componentName,
+        items={componentTypes.map(type => ({
+          label: type,
+          id: type,
+          items: Object.values(components)
+            .filter(c => c.componentType === type)
+            .map(v => ({
+              label: v.componentName,
+              id: v.componentName,
+            })),
         }))}
         onSelect={({ id }) => {
-          onSelect(id);
+          if (!componentTypes.includes(id)) {
+            onSelect(id);
+          }
         }}
       />
     </div>

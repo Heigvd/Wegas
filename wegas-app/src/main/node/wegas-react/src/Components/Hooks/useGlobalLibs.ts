@@ -207,6 +207,8 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         declare const Helpers : GlobalHelpersClass;
 
         declare const Roles : RolesMehtods;
+
+        declare const wlog : (toLog:any)=>void;
         `
             : `${buildGlobalServerMethods(globalServerMethods)}
 

@@ -1,8 +1,10 @@
+import { cx } from '@emotion/css';
 import * as React from 'react';
 import {
   NumberSlider,
   NumberSliderProps,
 } from '../../Components/Inputs/Number/NumberSlider';
+import { autoScroll, expandBoth } from '../../css/classes';
 import { testerSectionStyle } from './NumberInputTester';
 
 export default function NumberSliderTester({
@@ -103,7 +105,7 @@ export default function NumberSliderTester({
   }
 
   return (
-    <div>
+    <div className={cx(expandBoth, autoScroll)}>
       <NumberSliderPack label="Simple" min={0} max={10} />
       <NumberSliderPack label="Steps 10" min={0} max={10} steps={10} />
       <NumberSliderPack label="Steps 1000" min={0} max={10} steps={1000} />

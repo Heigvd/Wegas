@@ -56,7 +56,7 @@ const header = (
           '',
         )
       : '';
-  return `/*\n *\tPlease always respect the return type : ${cleanReturnType}\n*/\n(${cleanArgs}) : ${cleanReturnType} => {\n\t`;
+  return `/* Please always respect the return type : ${cleanReturnType} */\n(${cleanArgs}) : ${cleanReturnType} => {\n\t`;
 };
 const headerSize = textToArray(header()).length;
 const footer = () => `\n};`;

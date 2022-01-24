@@ -168,9 +168,11 @@ export function TabLayoutContentWithFullScreen({
         >
           <div className={cx(modalTitleDivStyle, flexRow)}>
             <Tab className={cx(tabsStyle(true), fullScreenTabStyle)}>
-              {translatedLabel}
+              <span className="tab-label">
+                {translatedLabel}
+              </span>
               <IconButton
-                icon="times"
+                icon="compress-alt"
                 tooltip="Remove tab"
                 onClick={closeFullScreen}
                 className={'close-btn'}

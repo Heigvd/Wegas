@@ -2,13 +2,19 @@ import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { flex, flexWrap } from '../../css/classes';
 import { PeerReviewData } from './PeerReviewPage';
-import { Bar, defaults } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
 
-if (defaults.global.legend != null) {
-  defaults.global.legend.display = false;
-}
+import {
+  Chart as ChartJS,
+  LinearScale,
+  CategoryScale,
+  BarElement,
+  Tooltip,
+} from 'chart.js';
+
+ChartJS.register(LinearScale, CategoryScale, BarElement, Tooltip);
 
 const chartStyle = css({
   minWidth: '350px',
@@ -85,31 +91,18 @@ interface PRChartProps {
   completeData: PeerReviewData;
 }
 
-const chartOptions = {
+type BarChartProps = React.ComponentProps<typeof Bar>;
+
+const chartOptions: BarChartProps['options'] = {
   maintainAspectRatio: false,
   scales: {
-    yAxes: [
-      {
-        ticks: {
-          beginAtZero: true,
-        },
-      },
-    ],
+    y: {
+      beginAtZero: true,
+    },
   },
 };
 
-interface DataForCharts {
-  labels: string[];
-  datasets: [
-    {
-      label?: string;
-      data: number[];
-      backgroundColor?: string | string[];
-      borderColor?: string | string[];
-      borderWidth?: number;
-    },
-  ];
-}
+type DataForCharts = BarChartProps['data'];
 
 // TODO max numberof values to put in a global const!!!
 function TextSummary({

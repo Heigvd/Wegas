@@ -46,7 +46,6 @@ export default function PlayerVariableTree({
           <VariableTreeView
             root={rootDirectory.getEntity()}
             noHeader
-            noVisibleRoot
             localState={localState}
             localDispatch={localDispatch}
             forceLocalDispatch

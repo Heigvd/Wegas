@@ -5,6 +5,7 @@ import BooleanView from './Boolean';
 import { Code } from './Code';
 import ColorPickerView from './ColorPickerView';
 import { CustomScript } from './CustomScript';
+import DictionaryView from './Dictionary';
 import EntityArrayFieldSelect from './EntityArrayFieldSelect';
 import FileSelector from './FileSelector';
 import FlatVariableSelect from './FlatVariableSelect';
@@ -28,6 +29,7 @@ import Select, {
   ListChildrenNullSelectView,
   ListChildrenSelectView,
 } from './Select';
+import SerializerView from './SerializerView';
 import StringInput from './String';
 import Textarea from './Textarea';
 import ThemeModeSelect from './ThemeModeSelect';
@@ -41,44 +43,46 @@ import {
 import uneditable from './Uneditable';
 
 export const DEFINED_VIEWS = {
-  hidden,
-  uneditable,
-  object: ObjectView,
-  hashlist: HashListView,
-  string: StringInput,
-  colorpicker: ColorPickerView,
-  iconselect: IconSelect,
-  questselect: QuestSelect,
-  i18nstring: translatable(StringInput),
-  number: NumberInput,
-  boolean: BooleanView,
-  scriptableBoolean: ScriptableBoolean,
-  textarea: Textarea,
   array: ArrayWidget,
-  select: Select,
-  pageselect: PageSelect,
-  pagesloaderselect: PageLoaderSelect,
+  attachment: AttachmentSelector,
+  boolean: BooleanView,
+  code: Code,
+  colorpicker: ColorPickerView,
+  customscript: CustomScript,
+  dictionary: DictionaryView,
+  entityarrayfieldselect: EntityArrayFieldSelect,
+  file: FileSelector,
+  flatvariableselect: FlatVariableSelect,
+  hashlist: HashListView,
+  hidden,
   html: LabeledHTMLEditor,
   i18nhtml: translatable(LabeledHTMLEditor),
-  script: Script,
-  customscript: CustomScript,
-  code: Code,
-  variableselect: TreeVariableSelect,
-  scriptableVariableSelect: LabeledScripableVariableSelect,
-  scriptableString: ScriptableString,
-  variableInput: VariableInput,
-  entityarrayfieldselect: EntityArrayFieldSelect,
-  flatvariableselect: FlatVariableSelect,
-  timestamp: TimestampView,
-  statement: StatementView,
+  i18nstring: translatable(StringInput),
+  iconselect: IconSelect,
   listchildren: ListChildrenSelectView,
   listchildrennull: ListChildrenNullSelectView,
-  treeselect: TreeVSelect,
-  thememodeselect: ThemeModeSelect,
-  file: FileSelector,
+  number: NumberInput,
+  object: ObjectView,
+  pageselect: PageSelect,
+  pagesloaderselect: PageLoaderSelect,
   path: PathSelector,
+  questselect: QuestSelect,
+  script: Script,
+  scriptableBoolean: ScriptableBoolean,
+  scriptableString: ScriptableString,
+  scriptableVariableSelect: LabeledScripableVariableSelect,
   scriptablepath: ScriptablePath,
-  attachment: AttachmentSelector,
+  select: Select,
+  serializer: SerializerView,
+  statement: StatementView,
+  string: StringInput,
+  textarea: Textarea,
+  thememodeselect: ThemeModeSelect,
+  timestamp: TimestampView,
+  treeselect: TreeVSelect,
+  uneditable,
+  variableInput: VariableInput,
+  variableselect: TreeVariableSelect,
 };
 setDefaultWidgets(DEFINED_VIEWS);
 

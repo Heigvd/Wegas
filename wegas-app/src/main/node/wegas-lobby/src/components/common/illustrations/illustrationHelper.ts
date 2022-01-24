@@ -640,6 +640,8 @@ export const icons: IconDef[] = [
   { name: 'restaurant', key: 'restaurant', library: 'icon' },
   { name: 'police', key: 'police', library: 'icon' },
   { name: 'giraffe', key: 'giraffe', library: 'icon' },
+  { name: 'cat', key: 'cat', library: 'fa' },
+  { name: 'paw', key: 'paw', library: 'fa' },
   { name: 'football', key: 'football', library: 'icon' },
   { name: 'fire-station', key: 'fire-station', library: 'icon' },
   { name: 'ferry', key: 'ferry', library: 'icon' },
