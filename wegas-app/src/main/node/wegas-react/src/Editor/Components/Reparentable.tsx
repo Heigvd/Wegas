@@ -2,8 +2,10 @@
  * POC, would need to check if context pass through correctly.
  * Maybe Mem leak
  */
+import { css } from '@emotion/css';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
+import ResizeObserver from 'resize-observer-polyfill';
 
 const ctx =
   React.createContext<
@@ -44,6 +46,11 @@ export function ReparentableRoot({ children }: { children: React.ReactNode }) {
     </ctx.Provider>
   );
 }
+
+const sizeDisplayStyle = css({
+  position: 'fixed',
+});
+
 /**
  * React Component.
  *
@@ -66,7 +73,11 @@ export function Reparentable({
   outerClassName?: string;
 }) {
   const getNode = React.useContext(ctx);
-  const n = React.useRef() as React.MutableRefObject<HTMLInputElement>;
+
+  const resizeObserver = React.useRef<ResizeObserver | undefined>();
+  const sizeDisplayRef = React.useRef<HTMLDivElement>(null);
+  const n = React.useRef<HTMLDivElement>();
+
   if (getNode == null) {
     throw new Error(
       `${Reparentable.name} must be enclosed by a ${ReparentableRoot.name}`,
@@ -85,5 +96,45 @@ export function Reparentable({
       };
     }
   }, [n, innerClassName, getNode, children, id]);
-  return <div ref={n} className={outerClassName} />;
+
+  const setRef = React.useCallback((element: HTMLDivElement | null) => {
+    if (resizeObserver.current != null) {
+      resizeObserver.current.disconnect();
+    }
+
+    if (element != null) {
+      n.current = element;
+      let timer: number | undefined;
+
+      const ro = new ResizeObserver(() => {
+        if (sizeDisplayRef.current != null && n.current != null) {
+          const rect = n.current.getBoundingClientRect();
+          sizeDisplayRef.current.innerText = `${rect.width.toFixed()}x${rect.height.toFixed()}`;
+          sizeDisplayRef.current.style.right = `${
+            window.innerWidth - rect.right
+          }px`;
+          sizeDisplayRef.current.style.top = `${rect.top}px`;
+          if (timer != null) {
+            clearTimeout(timer);
+          }
+
+          timer = window.setTimeout(() => {
+            if (sizeDisplayRef.current != null) {
+              sizeDisplayRef.current.innerText = '';
+            }
+          }, 500);
+        }
+      });
+
+      ro.observe(n.current);
+      resizeObserver.current = ro;
+    }
+  }, []);
+
+  return (
+    <>
+      <div className={sizeDisplayStyle} ref={sizeDisplayRef}></div>
+      <div ref={setRef} className={outerClassName} />
+    </>
+  );
 }
