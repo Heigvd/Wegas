@@ -95,6 +95,10 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
           .then(res => {
             safeClientScriptEval(res.text, undefined, () =>
               wwarn(`In static client script : ${res.scriptUrl}`),
+              undefined, {
+                injectReturn: false,
+                moduleName: scriptUrl,
+              }
             );
           })
           .catch(e => {
@@ -133,8 +137,15 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
 
   React.useEffect(() => {
     Object.entries(jsLibs).forEach(([key, lib]) =>
-      safeClientScriptEval(lib.content, undefined, () =>
-        wwarn(`In client script  : ${key}`),
+      safeClientScriptEval(
+        lib.content,
+        undefined,
+        () => wwarn(`In client script  : ${key}`),
+        undefined,
+        {
+          moduleName: `./${key}`,
+          injectReturn: false,
+        },
       ),
     );
   }, [jsLibs]);

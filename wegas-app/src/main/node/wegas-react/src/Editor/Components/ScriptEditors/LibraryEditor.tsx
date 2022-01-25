@@ -518,7 +518,10 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           if (scriptType === 'ClientScript') {
             try {
               setGlobals(globalContexts, store.getState());
-              clientScriptEval(libEntry.library.content);
+              clientScriptEval(libEntry.library.content, undefined, undefined, {
+                moduleName: `./${ librariesState.selected}`,
+                injectReturn: false,
+              });
             } catch (e) {
               setModalState({
                 type: 'warning',
