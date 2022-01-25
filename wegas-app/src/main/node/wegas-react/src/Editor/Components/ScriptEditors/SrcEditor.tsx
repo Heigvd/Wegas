@@ -17,6 +17,10 @@ import { useJSONSchema } from './useJSONSchema';
 
 export interface SrcEditorProps {
   /**
+   * filename - the name of the current file
+   */
+  fileName?: string;
+  /**
    * value - the content of the editor
    */
   value?: string;
@@ -115,10 +119,28 @@ export const gutter: (
   return {};
 };
 
+export function languageToFormat(language: SrcEditorLanguages | undefined) {
+  switch (language) {
+    case 'css':
+      return 'css';
+    case 'javascript':
+      return 'js';
+    case 'json':
+      return 'json';
+    case 'plaintext':
+      return 'txt';
+    case 'typescript':
+      return 'ts';
+    default:
+      'txt';
+  }
+}
+
 /**
  * SrcEditor is a component uses monaco-editor to create a code edition panel
  */
 function SrcEditor({
+  fileName,
   value,
   defaultFocus,
   language,
@@ -152,7 +174,11 @@ function SrcEditor({
       const newModel = reactMonaco.editor.createModel(
         value || '',
         language || 'plaintext',
-        reactMonaco.Uri.parse('file:///m2.ts'),
+        reactMonaco.Uri.parse(
+          `file:///${
+            fileName || String(new Date().getTime())
+          }.${languageToFormat(language)}`,
+        ),
       );
 
       newModel.updateOptions({ tabSize: 2 });
@@ -174,7 +200,7 @@ function SrcEditor({
         }
       };
     },
-    [language, onEditorReady, value],
+    [fileName, language, onEditorReady, value],
   );
 
   React.useEffect(() => {

@@ -9,7 +9,7 @@ import {
   MonacoEditorProperties,
   MonacoSDiffEditor,
 } from './editorHelpers';
-import { addExtraLib, gutter } from './SrcEditor';
+import { addExtraLib, gutter, languageToFormat } from './SrcEditor';
 import { useJSONSchema } from './useJSONSchema';
 
 const overflowHide = css({
@@ -39,6 +39,10 @@ export interface ExtendedDiffNavigator extends MonacoDiffNavigator {
 }
 
 interface WegasDiffEditorProps {
+  /**
+   * filename - the name of the current file
+   */
+  fileName?: string;
   /**
    * originalValue - the original content.
    * Located on the left side of the editor.
@@ -105,6 +109,7 @@ interface WegasDiffEditorProps {
 }
 
 function WegasDiffEditor({
+  fileName,
   originalValue,
   modifiedValue,
   language,
@@ -203,12 +208,20 @@ function WegasDiffEditor({
       const originalModel = reactMonaco.editor.createModel(
         originalValue || '',
         language || 'plaintext',
-        reactMonaco.Uri.parse('file:///m2.ts'),
+        reactMonaco.Uri.parse(
+          `file:///${
+            fileName || String(new Date().getTime())
+          }.${languageToFormat(language)}`,
+        ),
       );
       const modifiedModel = reactMonaco.editor.createModel(
         modifiedValue || '',
         language || 'plaintext',
-        reactMonaco.Uri.parse('file:///m2Modified.ts'),
+        reactMonaco.Uri.parse(
+          `file:///${
+            fileName || String(new Date().getTime())
+          }_modified.${languageToFormat(language)}`,
+        ),
       );
       editor.setModel({
         original: originalModel,
