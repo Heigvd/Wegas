@@ -252,13 +252,20 @@ function SrcEditor({
 
   React.useEffect(() => {
     if (editor != null && reactMonaco != null) {
-      extraLibs?.forEach(lib => {
-        reactMonaco.editor.createModel(
-          lib.content,
-          'typescript',
-          reactMonaco.Uri.parse(lib.name),
-        );
-      });
+      extraLibs
+        ?.filter(lib => {
+          return !reactMonaco.editor
+            .getModels()
+            .map(model => model.uri.path)
+            .includes(reactMonaco.Uri.parse(lib.name).path);
+        })
+        .forEach(lib => {
+          reactMonaco.editor.createModel(
+            lib.content,
+            'typescript',
+            reactMonaco.Uri.parse(lib.name),
+          );
+        });
     }
   }, [editor, extraLibs, reactMonaco]);
 
