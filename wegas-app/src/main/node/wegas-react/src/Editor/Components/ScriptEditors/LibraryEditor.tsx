@@ -600,6 +600,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
 
   const editorProps: SrcEditorProps = React.useMemo(
     () => ({
+      fileName: librariesState.selected,
       value: librariesState.selected ? libEntry?.library.content || '' : '',
       onChange: onChange,
       language: getScriptLanguage(scriptType),
@@ -739,6 +740,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
       <Toolbar.Content>
         {librariesState.selected && isLibraryOutdated(libEntry) ? (
           <MergeEditor
+            fileName={`${librariesState.selected}_${scriptType}`}
             originalValue={libEntry.status.latestVersionLibrary.content}
             modifiedValue={libEntry.library.content}
             language={getScriptLanguage(scriptType)}

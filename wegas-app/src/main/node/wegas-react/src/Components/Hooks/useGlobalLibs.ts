@@ -36,6 +36,7 @@ import { buildGlobalServerMethods } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
 import { GameModel } from '../../data/selectors';
 import { useStore } from '../../data/Stores/store';
+import { MonacoDefinitionsLibrary } from '../../Editor/Components/ScriptEditors/editorHelpers';
 import { wwarn } from '../../Helper/wegaslog';
 import { classesCTX } from '../Contexts/ClassesProvider';
 import { deepDifferent } from './storeHookFactory';
@@ -49,6 +50,42 @@ function makeAmbient(source: string) {
 const ambientEntitiesSrc = makeAmbient(entitiesSrc);
 const ambientScriptableEntitiesSrc = makeAmbient(scriptableEntitiesSrc);
 
+const clientLibs: MonacoDefinitionsLibrary[] = [
+  { content: ambientEntitiesSrc, name: 'ts:filename/ambientEntities.d.ts' },
+  {
+    content: ambientScriptableEntitiesSrc,
+    name: 'ts:filename/ambientScriptableEntities.d.ts',
+  },
+  { content: generalTypes, name: 'ts:filename/generalTypes.d.ts' },
+  { content: editorGlobalSrc, name: 'ts:filename/editorGlobal.d.ts' },
+  {
+    content: clientMethodGlobalSrc,
+    name: 'ts:filename/clientMethodGlobal.d.ts',
+  },
+  {
+    content: serverMethodGlobalSrc,
+    name: 'ts:filename/serverMethodGlobal.d.ts',
+  },
+  { content: schemaGlobalSrc, name: 'ts:filename/schemaGlobal.d.ts' },
+  { content: classesGlobalSrc, name: 'ts:filename/classesGlobal.d.ts' },
+  { content: popupsGlobalSrc, name: 'ts:filename/popupsGlobal.d.ts' },
+  {
+    content: wegasEventsGlobalSrc,
+    name: 'ts:filename/wegasEventsGlobal.d.ts',
+  },
+  { content: i18nGlobalSrc, name: 'ts:filename/i18nGlobal.d.ts' },
+  { content: APIMethodsGlobalSrc, name: 'ts:filename/APIMethodsGlobal.d.ts' },
+  { content: HelpersGlobalSrc, name: 'ts:filename/HelpersGlobal.d.ts' },
+  {
+    content: RolesMethodsGlobalSrc,
+    name: 'ts:filename/RolesMethodsGlobal.d.ts',
+  },
+  { content: SchemaHelper, name: 'ts:filename/SchemaHelper.d.ts' },
+];
+
+const serverLibs: MonacoDefinitionsLibrary[] = [
+  { content: WegasDashboardSrc, name: 'ts:filename/WegasDashboard.d.ts' },
+];
 // We'll keep it for later uses
 // const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
 
@@ -242,33 +279,13 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
 
   const libs = useStore(libsSelector, deepDifferent);
 
-  const globalLibs = React.useMemo(
-    () => [
-      {
-        content: `
-        ${ambientEntitiesSrc}\n
-        ${ambientScriptableEntitiesSrc}\n
-        ${generalTypes}\n
-        ${editorGlobalSrc}\n
-        ${clientMethodGlobalSrc}\n
-        ${serverMethodGlobalSrc}\n
-        ${schemaGlobalSrc}\n
-        ${classesGlobalSrc}\n
-        ${popupsGlobalSrc}\n
-        ${wegasEventsGlobalSrc}\n
-        ${i18nGlobalSrc}\n
-        ${APIMethodsGlobalSrc}\n
-        ${HelpersGlobalSrc}\n
-        ${RolesMethodsGlobalSrc}\n
-        ${SchemaHelper}\n
-        ${WegasDashboardSrc}\n
-        ${libs}\n
-      `,
-        name: 'VariablesTypes.d.ts',
-      },
-    ],
-    [libs],
-  );
-
-  return globalLibs;
+  return [
+    {
+      content: `
+    ${libs}\n
+  `,
+      name: 'file:///VariablesTypes.d.ts',
+    },
+    ...(scriptContext === 'Client' ? clientLibs : serverLibs),
+  ];
 }

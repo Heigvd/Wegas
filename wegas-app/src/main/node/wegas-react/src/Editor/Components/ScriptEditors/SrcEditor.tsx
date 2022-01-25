@@ -5,7 +5,7 @@ import { SizedDiv } from '../../../Components/SizedDiv';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import {
-  MonacoDefinitionsLibraries,
+  MonacoDefinitionsLibrary,
   MonacoEditor,
   MonacoEditorProperties,
   MonacoLangaugesServices,
@@ -16,6 +16,10 @@ import {
 import { useJSONSchema } from './useJSONSchema';
 
 export interface SrcEditorProps {
+  /**
+   * filename - the name of the current file
+   */
+  fileName?: string;
   /**
    * value - the content of the editor
    */
@@ -57,11 +61,6 @@ export interface SrcEditorProps {
    */
   onSave?: (value: string) => void;
   /**
-   * defaultUri - allows the language to be inferred from this uri
-   * To apply changes you must rerender the whole editor (i.e : change the key of the componnent)
-   */
-  defaultUri?: 'internal://page.json';
-  /**
    * defaultKeyEvents - a list of key event to be caught in the editor
    */
   defaultActions?: (monaco: Monaco) => SrcEditorAction[];
@@ -72,7 +71,7 @@ export interface SrcEditorProps {
   /**
    * extraLibs - libraries to add to the editor intellisense
    */
-  extraLibs?: MonacoDefinitionsLibraries[];
+  extraLibs?: MonacoDefinitionsLibrary[];
   /**
    * onEditorReady - Callback to give the editor the a higher component
    */
@@ -120,14 +119,31 @@ export const gutter: (
   return {};
 };
 
+export function languageToFormat(language: SrcEditorLanguages | undefined) {
+  switch (language) {
+    case 'css':
+      return 'css';
+    case 'javascript':
+      return 'js';
+    case 'json':
+      return 'json';
+    case 'plaintext':
+      return 'txt';
+    case 'typescript':
+      return 'ts';
+    default:
+      'txt';
+  }
+}
+
 /**
  * SrcEditor is a component uses monaco-editor to create a code edition panel
  */
 function SrcEditor({
+  fileName,
   value,
   defaultFocus,
   language,
-  defaultUri,
   readOnly,
   minimap,
   cursorOffset,
@@ -148,45 +164,6 @@ function SrcEditor({
   const editorValue = React.useRef(value || '');
   const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const i18nValues = useInternalTranslate(commonTranslations);
-
-  // React.useEffect(
-  //   () => {
-  //     if (reactMonaco) {
-  //       if (editor) {
-  //         const newModel = reactMonaco.editor.createModel(
-  //           value || '',
-  //           language || 'plaintext',
-  //           defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
-  //         );
-
-  //         newModel.updateOptions({ tabSize: 2 });
-
-  //         editor.setModel(newModel);
-
-  //         // Unmount effect to dispose editor and model
-  //         return () => {
-  //           if (editor) {
-  //             const model = editor.getModel();
-  //             if (model) {
-  //               model.dispose();
-  //             }
-  //             editor.dispose();
-  //           }
-  //         };
-  //       }
-  //     }
-  //   } /* eslint-disable react-hooks/exhaustive-deps */ /* Linter disabled for the following lines to avoid reloading editor and loosing focus */,
-  //   [
-  //     editor,
-  //     reactMonaco,
-  //     // defaultValue,
-  //     // language,
-  //     // defaultUri
-  //     // value,
-  //   ],
-  // );
-  // /* eslint-enable */
-
   const schema = useJSONSchema(language === 'json');
 
   const onMount = React.useCallback(
@@ -197,7 +174,11 @@ function SrcEditor({
       const newModel = reactMonaco.editor.createModel(
         value || '',
         language || 'plaintext',
-        defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
+        reactMonaco.Uri.parse(
+          `file:///${
+            fileName || String(new Date().getTime())
+          }.${languageToFormat(language)}`,
+        ),
       );
 
       newModel.updateOptions({ tabSize: 2 });
@@ -219,7 +200,7 @@ function SrcEditor({
         }
       };
     },
-    [defaultUri, language, onEditorReady, value],
+    [fileName, language, onEditorReady, value],
   );
 
   React.useEffect(() => {
@@ -249,16 +230,11 @@ function SrcEditor({
     if (reactMonaco != null) {
       if (language === 'typescript') {
         reactMonaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-          // noLib: true, //TODO: wait for the issue / stackoverflow solution :P
           allowNonTsExtensions: true,
           checkJs: true,
           allowJs: forceJS,
-          target: reactMonaco.languages.typescript.ScriptTarget.ES5,
+          target: reactMonaco.languages.typescript.ScriptTarget.ESNext,
         });
-        extraLibs &&
-          addExtraLib(reactMonaco.languages.typescript.typescriptDefaults, [
-            ...extraLibs,
-          ]);
       } else if (language === 'json') {
         reactMonaco.languages.json.jsonDefaults.setDiagnosticsOptions({
           validate: true,
@@ -273,6 +249,25 @@ function SrcEditor({
       }
     }
   }, [extraLibs, forceJS, language, reactMonaco, schema]);
+
+  React.useEffect(() => {
+    if (editor != null && reactMonaco != null) {
+      extraLibs
+        ?.filter(lib => {
+          return !reactMonaco.editor
+            .getModels()
+            .map(model => model.uri.path)
+            .includes(reactMonaco.Uri.parse(lib.name).path);
+        })
+        .forEach(lib => {
+          reactMonaco.editor.createModel(
+            lib.content,
+            'typescript',
+            reactMonaco.Uri.parse(lib.name),
+          );
+        });
+    }
+  }, [editor, extraLibs, reactMonaco]);
 
   React.useEffect(() => {
     if (editor != null && reactMonaco != null) {
@@ -320,7 +315,7 @@ function SrcEditor({
             height={size ? size.height : undefined} // By default, it fully fits with its parent
             width={size ? size.width : undefined} // By default, it fully fits with its parent
             theme={'dark'}
-            language={'javascript'}
+            language={language}
             beforeMount={monaco => {
               setReactMonaco(monaco);
             }}

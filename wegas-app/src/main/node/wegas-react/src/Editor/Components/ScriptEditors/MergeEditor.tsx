@@ -1,14 +1,14 @@
 import { css } from '@emotion/css';
 import * as React from 'react';
-import { Toolbar } from '../../../Components/Toolbar';
-import WegasDiffEditor, {
-  ExtendedDiffNavigator,
-  DiffEditorLineChanges,
-} from './WegasDiffEditor';
-import { MessageString } from '../MessageString';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
-import { arrayToText, textToArray } from './editorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { Toolbar } from '../../../Components/Toolbar';
+import { MessageString } from '../MessageString';
+import { arrayToText, textToArray } from './editorHelpers';
+import WegasDiffEditor, {
+  DiffEditorLineChanges,
+  ExtendedDiffNavigator,
+} from './WegasDiffEditor';
 
 const diffLabel = css({
   color: themeVar.colors.DarkTextColor,
@@ -105,6 +105,10 @@ type ModalState = ModalStateClose | ModalStateError;
 
 interface MergeEditorProps {
   /**
+   * filename - the name of the current file
+   */
+  fileName?: string;
+  /**
    * originalValue - the original content.
    * Located on the left side of the editor.
    * Is readonly for user.
@@ -144,6 +148,7 @@ interface MergeEditorProps {
 }
 
 function MergeEditor({
+  fileName,
   originalValue,
   modifiedValue,
   minimap,
@@ -352,6 +357,7 @@ function MergeEditor({
       </Toolbar.Header>
       <Toolbar.Content>
         <WegasDiffEditor
+          fileName={fileName}
           originalValue={finalValue}
           modifiedValue={modifiedValue}
           minimap={minimap}
