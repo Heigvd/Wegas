@@ -28,9 +28,9 @@ export interface MonacoEditorSimpleToken {
   type: string;
   language: string;
 }
-export interface MonacoDefinitionsLibraries {
+export interface MonacoDefinitionsLibrary {
   content: string;
-  name?: string;
+  name: string;
 }
 export interface MonacoEditorSimpleRange {
   /**

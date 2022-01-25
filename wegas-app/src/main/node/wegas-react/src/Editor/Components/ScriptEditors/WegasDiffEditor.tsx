@@ -4,7 +4,11 @@ import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { MonacoEditorProperties, MonacoSDiffEditor } from './editorHelpers';
+import {
+  MonacoDefinitionsLibrary,
+  MonacoEditorProperties,
+  MonacoSDiffEditor,
+} from './editorHelpers';
 import { addExtraLib, gutter } from './SrcEditor';
 import { useJSONSchema } from './useJSONSchema';
 
@@ -87,11 +91,6 @@ interface WegasDiffEditorProps {
    */
   onEditorReady?: (editor: MonacoSDiffEditor) => void;
   /**
-   * defaultUri - allows the language to be inferred from this uri
-   * To apply changes you must rerender the whole editor (i.e : change the key of the componnent)
-   */
-  defaultUri?: 'internal://page.json';
-  /**
    * defaultProperties - Add specific properties for monaco-editor
    */
   defaultProperties?: MonacoEditorProperties;
@@ -102,11 +101,10 @@ interface WegasDiffEditorProps {
   /**
    * extraLibs - libraries to add to the editor intellisense
    */
-  extraLibs?: { content: string; name?: string }[];
+  extraLibs?: MonacoDefinitionsLibrary[];
 }
 
 function WegasDiffEditor({
-  defaultUri,
   originalValue,
   modifiedValue,
   language,
@@ -129,64 +127,7 @@ function WegasDiffEditor({
   const getOriginalValue = React.useRef<() => string>();
   const getModifiedValue = React.useRef<() => string>();
   const i18nValues = useInternalTranslate(commonTranslations);
-
-  React.useEffect(
-    () => {
-      if (reactMonaco) {
-        if (editor) {
-          // Creates 2 models for original and modified content
-          const originalModel = reactMonaco.editor.createModel(
-            originalValue || '',
-            language || 'plaintext',
-            defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
-          );
-          const modifiedModel = reactMonaco.editor.createModel(
-            modifiedValue || '',
-            language || 'plaintext',
-            defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
-          );
-          editor.setModel({
-            original: originalModel,
-            modified: modifiedModel,
-          });
-
-          // Creates a diff navigator to allow navigation in diffs
-          setNavigator(
-            reactMonaco.editor.createDiffNavigator(editor, {
-              ignoreCharChanges: true,
-            }) as ExtendedDiffNavigator,
-          );
-
-          return () => {
-            if (editor) {
-              const originalEditor = editor.getOriginalEditor();
-              const modifiedEditor = editor.getModifiedEditor();
-              const originalModel = originalEditor.getModel();
-              const modifiedModel = modifiedEditor.getModel();
-              if (originalModel) {
-                originalModel.dispose();
-              }
-              if (modifiedModel) {
-                modifiedModel.dispose();
-              }
-              originalEditor.dispose();
-              modifiedEditor.dispose();
-              editor.dispose();
-            }
-          };
-        }
-      }
-    } /* eslint-disable react-hooks/exhaustive-deps */ /* Linter disabled for the following lines to avoid reloading editor and loosing focus */,
-    [
-      editor,
-      reactMonaco,
-      // defaultUri,
-      // originalValue,
-      // modifiedValue,
-      // language,
-    ],
-  );
-  /* eslint-enable */
+  const schema = useJSONSchema(language === 'json');
 
   React.useEffect(() => {
     // Fires the handleDiffNavigator to pass the navigator to the parent component
@@ -211,8 +152,6 @@ function WegasDiffEditor({
       }
     }
   }, [navigator, idx]);
-
-  const schema = useJSONSchema(language === 'json');
 
   const beforeMount = React.useCallback(
     (reactMonaco: Monaco) => {
@@ -260,29 +199,104 @@ function WegasDiffEditor({
       getModifiedValue.current = editor.getModifiedEditor().getValue;
       setEditor(editor);
 
+      // Creates 2 models for original and modified content
+      const originalModel = reactMonaco.editor.createModel(
+        originalValue || '',
+        language || 'plaintext',
+        reactMonaco.Uri.parse('file:///m2.ts'),
+      );
+      const modifiedModel = reactMonaco.editor.createModel(
+        modifiedValue || '',
+        language || 'plaintext',
+        reactMonaco.Uri.parse('file:///m2Modified.ts'),
+      );
+      editor.setModel({
+        original: originalModel,
+        modified: modifiedModel,
+      });
+
+      // Creates a diff navigator to allow navigation in diffs
+      setNavigator(
+        reactMonaco.editor.createDiffNavigator(editor, {
+          ignoreCharChanges: true,
+        }) as ExtendedDiffNavigator,
+      );
+
       if (onEditorReady) {
         onEditorReady(editor);
       }
+    },
+    [language, modifiedValue, onEditorReady, originalValue],
+  );
 
+  React.useEffect(() => {
+    if (reactMonaco != null) {
+      if (language === 'typescript') {
+        reactMonaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+          allowNonTsExtensions: true,
+          checkJs: true,
+          target: reactMonaco.languages.typescript.ScriptTarget.ESNext,
+        });
+      } else if (language === 'json') {
+        reactMonaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+          validate: true,
+          schemas: [
+            {
+              uri: 'internal://page-schema.json',
+              fileMatch: ['page.json'],
+              schema,
+            },
+          ],
+        });
+      }
+    }
+  }, [extraLibs, language, reactMonaco, schema]);
+
+  React.useEffect(() => {
+    if (editor != null && reactMonaco != null) {
+      extraLibs?.forEach(lib => {
+        reactMonaco.editor.createModel(
+          lib.content,
+          'typescript',
+          reactMonaco.Uri.parse(lib.name),
+        );
+      });
+    }
+  }, [editor, extraLibs, reactMonaco]);
+
+  React.useEffect(() => {
+    if (editor != null) {
       editor.getModifiedEditor().onDidBlurEditorText(() => {
         if (onModifiedBlur && getModifiedValue.current) {
           onModifiedBlur(getModifiedValue.current());
         }
       });
+    }
+  }, [editor, onModifiedBlur]);
 
+  React.useEffect(() => {
+    if (editor != null) {
       editor.getModifiedEditor().onDidChangeModelContent(() => {
         if (onModifiedChange && getModifiedValue.current) {
           onModifiedChange(getModifiedValue.current());
         }
       });
+    }
+  }, [editor, onModifiedBlur, onModifiedChange]);
 
+  React.useEffect(() => {
+    if (editor != null) {
       editor.onDidUpdateDiff(() => {
         if (onDiffChange) {
           const diffs = editor.getLineChanges();
           onDiffChange(diffs ? diffs : []);
         }
       });
+    }
+  }, [editor, onDiffChange, onModifiedBlur, onModifiedChange]);
 
+  React.useEffect(() => {
+    if (editor != null && reactMonaco != null) {
       editor.addAction({
         id: 'onSave',
         label: 'Save code',
@@ -293,9 +307,8 @@ function WegasDiffEditor({
           }
         },
       });
-    },
-    [onDiffChange, onEditorReady, onModifiedBlur, onModifiedChange, onSave],
-  );
+    }
+  }, [editor, onSave, reactMonaco]);
 
   return (
     <SizedDiv className={overflowHide}>

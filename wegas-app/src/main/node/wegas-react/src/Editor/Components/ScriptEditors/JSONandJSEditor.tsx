@@ -1,13 +1,13 @@
-import * as React from 'react';
-import { Toolbar } from '../../../Components/Toolbar';
 import { css } from '@emotion/css';
+import * as React from 'react';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { Toolbar } from '../../../Components/Toolbar';
+import { defaultPadding } from '../../../css/classes';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { MessageString, MessageStringStyle } from '../MessageString';
 import { EmbeddedSrcEditor } from './EmbeddedSrcEditor';
 import { WegasScriptEditor } from './WegasScriptEditor';
-import { defaultPadding } from '../../../css/classes';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { commonTranslations } from '../../../i18n/common/common';
 
 const infoDuration = 5000;
 
@@ -33,8 +33,9 @@ export function JSONandJSEditor({
 }: JSONandJSEditorProps) {
   const i18nValues = useInternalTranslate(commonTranslations);
   const editorContent = React.useRef<string>(content);
-  const [error, setError] =
-    React.useState<OnSaveStatus | undefined | void>(status);
+  const [error, setError] = React.useState<OnSaveStatus | undefined | void>(
+    status,
+  );
 
   React.useEffect(() => setError(status), [status]);
 
@@ -62,7 +63,6 @@ export function JSONandJSEditor({
       <Toolbar.Content>
         <EmbeddedSrcEditor
           value={content}
-          defaultUri="internal://page.json"
           language="json"
           onChange={val => (editorContent.current = val)}
           onSave={trySave}
