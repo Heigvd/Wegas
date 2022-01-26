@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import Editor, { Monaco } from '@monaco-editor/react';
+import { debounce } from 'lodash-es';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -85,6 +86,10 @@ export interface SrcEditorProps {
    * It allows to keep offering typescript intellisense while coding in javascript
    */
   forceJS?: boolean;
+  /**
+   * delay - time before sending onChange
+   */
+  delay?: number;
 }
 
 const overflowHide = css({
@@ -155,6 +160,7 @@ function SrcEditor({
   onSave,
   defaultActions,
   forceJS,
+  delay = 250,
 }: SrcEditorProps) {
   const [editor, setEditor] = React.useState<MonacoSCodeEditor>();
   const [reactMonaco, setReactMonaco] = React.useState<MonacoEditor>();
@@ -184,12 +190,6 @@ function SrcEditor({
     },
     [onEditorReady],
   );
-
-  // React.useEffect(() => {
-  //   if (editor != null && value != null) {
-  //     editor.getModel()?.setValue(value);
-  //   }
-  // }, [editor, value]);
 
   React.useEffect(() => {
     if (editor != null && reactMonaco != null) {
@@ -233,8 +233,6 @@ function SrcEditor({
   React.useEffect(() => {
     if (editor != null && reactMonaco != null) {
       const models = reactMonaco.editor.getModels();
-
-      // debugger;
 
       extraLibs?.map(lib => {
         const path = reactMonaco.Uri.parse(lib.name).path;
@@ -294,6 +292,14 @@ function SrcEditor({
     }
   }, [editor, onSave, reactMonaco]);
 
+  const onChangeRef = React.useRef(onChange);
+
+  const debouncedOnChange = React.useMemo(
+    () =>
+      onChangeRef.current ? debounce(onChangeRef.current, delay) : undefined,
+    [delay],
+  );
+
   return (
     <SizedDiv className={overflowHide}>
       {size => {
@@ -316,7 +322,7 @@ function SrcEditor({
               ...gutter(noGutter),
               ...defaultProperties,
             }}
-            onChange={onChange}
+            onChange={debouncedOnChange}
           />
         );
       }}

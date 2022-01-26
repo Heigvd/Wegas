@@ -257,23 +257,31 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
 
   const content = formatScriptToFunction(value || '', returnType, args);
 
-  const editorProps: SrcEditorProps = {
-    ...props,
-    language,
-    extraLibs,
-    value: content,
-    onEditorReady: editorLock,
-    onChange: handleChange,
-    onBlur: handleBlur,
-    onSave: handleSave,
-    defaultActions: actions,
-  };
-
   return resizable ? (
     <ResizeHandle minSize={100} textContent={content}>
-      <SrcEditor {...editorProps} />
+      <SrcEditor
+        {...props}
+        language={language}
+        extraLibs={extraLibs}
+        value={content}
+        onEditorReady={editorLock}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        onSave={handleSave}
+        defaultActions={actions}
+      />
     </ResizeHandle>
   ) : (
-    <SrcEditor {...editorProps} />
+    <SrcEditor
+      {...props}
+      language={language}
+      extraLibs={extraLibs}
+      value={content}
+      onEditorReady={editorLock}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      onSave={handleSave}
+      defaultActions={actions}
+    />
   );
 }
