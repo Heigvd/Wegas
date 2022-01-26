@@ -312,6 +312,7 @@ function SrcEditor({
             loading={i18nValues.loading + '...'}
             options={{
               readOnly,
+              fixedOverflowWidgets: true,
               minimap: { enabled: minimap },
               ...gutter(noGutter),
               ...defaultProperties,

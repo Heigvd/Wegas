@@ -450,11 +450,16 @@ function transpileToFunction(
   script: string,
   { injectReturn = true }: TranspileOptions = {},
 ) {
+  // transpile first
+  const jsScript = transpile(script);
+
   // script does not containes any return statement (eval-style returns last-evaluated statement)
   // such a statement must be added
   // TODO: this function is not that robust... AST based transformation is required (quite a big job)
-  const fnBody = injectReturn ? formatScriptToFunctionBody(script) : script;
-  const fnScript = '"use strict"; undefined;' + transpile(fnBody);
+  const fnBody = injectReturn
+    ? formatScriptToFunctionBody(jsScript, true)
+    : jsScript;
+  const fnScript = '"use strict"; undefined;' + fnBody;
 
   // hide forbidden object by overriding them with parameters
   // on call, provide undefined arguments

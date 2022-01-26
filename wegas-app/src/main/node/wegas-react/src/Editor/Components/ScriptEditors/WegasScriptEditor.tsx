@@ -44,21 +44,31 @@ const headerSize = textToArray(header()).length;
 const footer = () => `\n};`;
 const footerSize = textToArray(footer()).length - 1;
 
-export const formatScriptToFunctionBody = (val: string) => {
+export const formatScriptToFunctionBody = (
+  val: string,
+  dropBlankLines: boolean = false,
+) => {
   let newValue = val;
   // Removing first tab if exists
   if (newValue.length > 0 && newValue[0] === '\t') {
     newValue = newValue.substring(1);
   }
-  const lines = textToArray(newValue);
+  const lines = textToArray(newValue, dropBlankLines);
   const tabber = lines.length > 1 ? '\t' : '';
-  if (lines.length > 0 && !lines[lines.length - 1].includes('return')) {
-    lines[lines.length - 1] = tabber + 'return ' + lines[lines.length - 1];
+
+  if (lines.length > 0) {
+    const lastLine = lines.pop()!;
+
+    if (lastLine.includes('return')) {
+      // indent existing "return"
+      lines.push(lastLine.replace(/\breturn /, tabber + 'return '));
+    } else {
+      // insert "return"
+      lines.push(tabber + 'return ' + lastLine);
+    }
   } else {
-    lines[lines.length - 1] = lines[lines.length - 1].replace(
-      /\breturn /,
-      tabber + 'return ',
-    );
+    // insert "return"
+    lines.push(tabber + 'return');
   }
   return arrayToText(lines);
 };
