@@ -140,7 +140,6 @@ export function languageToFormat(language: SrcEditorLanguages | undefined) {
  * SrcEditor is a component uses monaco-editor to create a code edition panel
  */
 function SrcEditor({
-  fileName,
   value,
   defaultFocus,
   language,
@@ -150,7 +149,6 @@ function SrcEditor({
   extraLibs,
   noGutter,
   defaultProperties,
-  timeout = 100,
   onEditorReady,
   onBlur,
   onChange,
@@ -160,31 +158,15 @@ function SrcEditor({
 }: SrcEditorProps) {
   const [editor, setEditor] = React.useState<MonacoSCodeEditor>();
   const [reactMonaco, setReactMonaco] = React.useState<MonacoEditor>();
-  const getValue = React.useRef<() => string>();
-  const editorValue = React.useRef(value || '');
-  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const i18nValues = useInternalTranslate(commonTranslations);
   const schema = useJSONSchema(language === 'json');
+  const path = React.useRef<string>(
+    `file:///${String(new Date().getTime())}.${languageToFormat(language)}`,
+  );
 
   const onMount = React.useCallback(
-    (editor: MonacoSCodeEditor, reactMonaco: Monaco) => {
-      getValue.current = editor.getValue;
+    (editor: MonacoSCodeEditor) => {
       setEditor(editor);
-
-      const newModel = reactMonaco.editor.createModel(
-        value || '',
-        language || 'plaintext',
-        reactMonaco.Uri.parse(
-          `file:///${
-            fileName || String(new Date().getTime())
-          }.${languageToFormat(language)}`,
-        ),
-      );
-
-      newModel.updateOptions({ tabSize: 2 });
-
-      editor.setModel(newModel);
-
       if (onEditorReady) {
         onEditorReady(editor);
       }
@@ -200,14 +182,21 @@ function SrcEditor({
         }
       };
     },
-    [fileName, language, onEditorReady, value],
+    [onEditorReady],
   );
+
+  // React.useEffect(() => {
+  //   if (editor != null && value != null) {
+  //     editor.getModel()?.setValue(value);
+  //   }
+  // }, [editor, value]);
 
   React.useEffect(() => {
     if (editor != null && reactMonaco != null) {
       if (defaultFocus) {
         editor.focus();
       }
+
       if (cursorOffset) {
         const model = editor.getModel();
         if (model) {
@@ -215,16 +204,7 @@ function SrcEditor({
         }
       }
     }
-  }, [
-    cursorOffset,
-    defaultFocus,
-    editor,
-    extraLibs,
-    forceJS,
-    language,
-    reactMonaco,
-    schema,
-  ]);
+  }, [cursorOffset, defaultFocus, editor, reactMonaco]);
 
   React.useEffect(() => {
     if (reactMonaco != null) {
@@ -252,28 +232,34 @@ function SrcEditor({
 
   React.useEffect(() => {
     if (editor != null && reactMonaco != null) {
-      extraLibs
-        ?.filter(lib => {
-          return !reactMonaco.editor
-            .getModels()
-            .map(model => model.uri.path)
-            .includes(reactMonaco.Uri.parse(lib.name).path);
-        })
-        .forEach(lib => {
+      const models = reactMonaco.editor.getModels();
+
+      // debugger;
+
+      extraLibs?.map(lib => {
+        const path = reactMonaco.Uri.parse(lib.name).path;
+        const existingModel = models.find(model => model.uri.path === path);
+        if (existingModel != null) {
+          if (existingModel.getValue() !== lib.content) {
+            existingModel.setValue(lib.content);
+          }
+        } else {
           reactMonaco.editor.createModel(
             lib.content,
             'typescript',
             reactMonaco.Uri.parse(lib.name),
           );
-        });
+        }
+      });
     }
   }, [editor, extraLibs, reactMonaco]);
 
   React.useEffect(() => {
     if (editor != null && reactMonaco != null) {
       editor.onDidBlurEditorText(() => {
-        if (onBlur && getValue.current) {
-          onBlur(getValue.current());
+        const model = editor.getModel();
+        if (onBlur && model) {
+          onBlur(model.getValue());
         }
       });
     }
@@ -299,8 +285,9 @@ function SrcEditor({
         label: 'Save code',
         keybindings: [reactMonaco.KeyMod.CtrlCmd | reactMonaco.KeyCode.KEY_S],
         run: () => {
-          if (onSave && getValue.current) {
-            onSave(getValue.current());
+          const model = editor.getModel();
+          if (onSave && model) {
+            onSave(model.getValue());
           }
         },
       });
@@ -315,11 +302,12 @@ function SrcEditor({
             height={size ? size.height : undefined} // By default, it fully fits with its parent
             width={size ? size.width : undefined} // By default, it fully fits with its parent
             theme={'dark'}
-            language={language}
             beforeMount={monaco => {
               setReactMonaco(monaco);
             }}
+            language={language || 'plaintext'}
             value={value}
+            path={path.current}
             onMount={onMount}
             loading={i18nValues.loading + '...'}
             options={{
@@ -328,25 +316,7 @@ function SrcEditor({
               ...gutter(noGutter),
               ...defaultProperties,
             }}
-            onChange={(newVal, _event) => {
-              if (getValue.current) {
-                if (newVal !== editorValue.current) {
-                  editorValue.current = newVal || '';
-                  if (onChange) {
-                    if (timeout) {
-                      if (timeoutRef.current != null) {
-                        clearTimeout(timeoutRef.current);
-                      }
-                      timeoutRef.current = setTimeout(() => {
-                        onChange(newVal || '');
-                      }, timeout);
-                    } else {
-                      onChange(newVal || '');
-                    }
-                  }
-                }
-              }
-            }}
+            onChange={onChange}
           />
         );
       }}

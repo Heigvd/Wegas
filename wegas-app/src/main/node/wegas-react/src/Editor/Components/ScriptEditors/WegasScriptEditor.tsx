@@ -3,6 +3,7 @@ import { Monaco } from '@monaco-editor/react';
 import * as React from 'react';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
+import { librariesCTX } from '../LibrariesLoader';
 import { ResizeHandle } from '../ResizeHandle';
 import {
   arrayToText,
@@ -102,6 +103,20 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     endLineNumber: headerSize,
   });
 
+  const globalLibs = useGlobalLibs(scriptContext);
+  const { clientScripts } = React.useContext(librariesCTX);
+  const clientLibs: MonacoDefinitionsLibrary[] =
+    scriptContext === 'Client'
+      ? Object.entries(clientScripts).map(([k, v]) => ({
+          name: `file:///${k}.ts`,
+          content: v.content,
+        }))
+      : [];
+
+  const extraLibs: MonacoDefinitionsLibrary[] = React.useMemo(
+    () => [...(newExtraLibs || []), ...globalLibs, ...clientLibs],
+    [clientLibs, globalLibs, newExtraLibs],
+  );
   /**
    * acceptFunctionStyle - Returning false if return type needed and function is not parsable
    * Verifies if the user didn't delete header, footer and return statement.
@@ -172,13 +187,6 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       return fn && fn(newValue);
     },
     [returnType, args],
-  );
-
-  const globalLibs = useGlobalLibs(scriptContext);
-
-  const extraLibs: MonacoDefinitionsLibrary[] = React.useMemo(
-    () => [...(newExtraLibs || []), ...globalLibs],
-    [globalLibs, newExtraLibs],
   );
 
   if (returnType !== undefined && returnType.length > 0) {

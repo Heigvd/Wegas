@@ -1,24 +1,25 @@
+// @ts-ignore
+import mainStyle from '!!raw-loader!../../css/defaultStyle.less';
 import * as React from 'react';
-import { LibraryAPI, ILibraries } from '../../API/library.api';
-import { wlog, wwarn } from '../../Helper/wegaslog';
+import { IGameModelContent } from 'wegas-ts-api';
+import { ILibraries, LibraryAPI } from '../../API/library.api';
+import { useWebsocketEvent } from '../../API/websocket';
 import {
   safeClientScriptEval,
   setGlobals,
   useGlobalContexts,
 } from '../../Components/Hooks/useScript';
-import { useWebsocketEvent } from '../../API/websocket';
-import { IGameModelContent } from 'wegas-ts-api';
-
-// @ts-ignore
-import mainStyle from '!!raw-loader!../../css/defaultStyle.less';
 import { store } from '../../data/Stores/store';
+import { wlog, wwarn } from '../../Helper/wegaslog';
 
 interface LibrariesContext {
   updateCSSLibraries: (name: string) => void;
+  clientScripts: ILibraries;
 }
 
 export const librariesCTX = React.createContext<LibrariesContext>({
   updateCSSLibraries: () => {},
+  clientScripts: {},
 });
 
 export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
@@ -169,7 +170,10 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
         </style>
       ))}
       <librariesCTX.Provider
-        value={{ updateCSSLibraries: name => cssEventHandler(name) }}
+        value={{
+          updateCSSLibraries: name => cssEventHandler(name),
+          clientScripts: jsLibs,
+        }}
       >
         {props.children}
       </librariesCTX.Provider>
