@@ -9,6 +9,7 @@ import {
   isReturnStatement,
   isSourceFile,
   ScriptTarget,
+  transpile,
 } from 'typescript';
 import { expandBoth, flex, flexColumn, grow } from '../css/classes';
 import {
@@ -104,6 +105,7 @@ export default function ScriptParserTester() {
 
   const functionalized = functionalizeScript(value, RETURN_TYPES);
   const defunctionalized = defunctionalizeScript(functionalized);
+  const transpiled = formatScriptToFunctionBody(transpile(defunctionalized), true);
 
   return (
     <div className={cx(flex, expandBoth, flexColumn)}>
@@ -150,6 +152,17 @@ export default function ScriptParserTester() {
           readOnly
           language="typescript"
           fileName="DefunctionalizedTestScript"
+        />
+      </div>
+      <div className={cx(grow, flex, flexColumn)}>
+        <h3>Transpiled script</h3>
+        <WegasScriptEditor
+          value={transpiled}
+          noGutter
+          minimap={false}
+          readOnly
+          language="javascript"
+          fileName="transpiled"
         />
       </div>
     </div>
