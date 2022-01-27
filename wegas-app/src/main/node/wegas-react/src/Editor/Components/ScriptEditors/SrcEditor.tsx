@@ -145,6 +145,7 @@ export function languageToFormat(language: SrcEditorLanguages | undefined) {
  * SrcEditor is a component uses monaco-editor to create a code edition panel
  */
 function SrcEditor({
+  fileName,
   value,
   defaultFocus,
   language,
@@ -167,7 +168,9 @@ function SrcEditor({
   const i18nValues = useInternalTranslate(commonTranslations);
   const schema = useJSONSchema(language === 'json');
   const path = React.useRef<string>(
-    `file:///${String(new Date().getTime())}.${languageToFormat(language)}`,
+    `file:///${
+      fileName != null ? fileName : String(new Date().getTime())
+    }.${languageToFormat(language)}`,
   );
 
   const onMount = React.useCallback(

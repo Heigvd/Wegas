@@ -1,26 +1,22 @@
-import * as React from 'react';
 import { cx } from '@emotion/css';
-import { flex, expandBoth, flexColumn } from '../css/classes';
-import { EmbeddedSrcEditor } from '../Editor/Components/ScriptEditors/EmbeddedSrcEditor';
+import * as React from 'react';
+import { expandBoth, flex, flexColumn } from '../css/classes';
 import { WegasScriptEditor } from '../Editor/Components/ScriptEditors/WegasScriptEditor';
-// import { parse } from '@babel/parser';
-// import { isFunctionDeclaration, isBlockStatement } from '@babel/types';
 
 export default function WegasScriptEditorTester() {
-  const [value, setValue] =
-    React.useState(`runClientScript("Context.salut");runClientScript("Context.salut");runClientScript("Context.salut");
-  runClientScript("Context.salut");
-  runClientScript("Context.salut");runClientScript("Context.salut");
-  runClientScript("Context.salut");`);
+  const [value, setValue] = React.useState(
+    `import {test} from "./test";\n"Est-ce que ça joue?"\n"Est-ce que ça joue ou comment?"`,
+  );
 
   return (
     <div className={cx(flex, expandBoth, flexColumn)}>
       <div style={{ height: '100%' }}>
-        <EmbeddedSrcEditor
-          scriptContext="Server internal"
+        <WegasScriptEditor
           value={value}
           onChange={setValue}
-          Editor={WegasScriptEditor}
+          noGutter
+          minimap={false}
+          returnType={['string']}
         />
       </div>
     </div>

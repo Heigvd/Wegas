@@ -25,7 +25,7 @@ export interface WegasScriptEditorProps extends SrcEditorProps {
   args?: [string, WegasScriptEditorReturnTypeName[]][];
 }
 
-const header = (
+export const header = (
   returnType?: string[],
   args?: [string, WegasScriptEditorReturnTypeName[]][],
 ) => {
@@ -41,7 +41,7 @@ const header = (
   return `/* Please always respect the return type : ${cleanReturnType} */\n(${cleanArgs}) : ${cleanReturnType} => {\n\t`;
 };
 const headerSize = textToArray(header()).length;
-const footer = () => `\n};`;
+export const footer = () => `\n};`;
 const footerSize = textToArray(footer()).length - 1;
 
 export const formatScriptToFunctionBody = (
@@ -70,6 +70,7 @@ export const formatScriptToFunctionBody = (
     // insert "return"
     lines.push(tabber + 'return');
   }
+
   return arrayToText(lines);
 };
 
@@ -133,11 +134,11 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
    * @param val - The new script value
    * @param returnType - The script return type needed
    */
-  const acceptFunctionStyle = (
+  function acceptFunctionStyle(
     val?: string,
     returnType?: WegasScriptEditorReturnTypeName[],
     args?: [string, WegasScriptEditorReturnTypeName[]][],
-  ) => {
+  ) {
     const newVal = val ? val : '';
     if (returnType !== undefined && returnType.length > 0) {
       const lines = textToArray(newVal);
@@ -157,7 +158,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       }
     }
     return true;
-  };
+  }
 
   /**
    * trimFunctionToScript - If return type defined this function will trim the header, footer and return statement of the function and call back with only script value
