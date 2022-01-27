@@ -1,4 +1,3 @@
-// @ts-ignore
 import { Monaco } from '@monaco-editor/react';
 import * as React from 'react';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
