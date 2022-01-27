@@ -302,7 +302,7 @@ body:not(.wegas-modeler-mode) .wegas-model-feature {
     font-size: 1.5em;
 }
 
-.wegas-advancedmode .wegas-loading.pusher-update .wegas-loading-overlay:before, 
+.wegas-advancedmode .wegas-loading.pusher-update .wegas-loading-overlay:before,
 .wegas-advancedmode .wegas-loading.pusher-update .wegas-loading-overlay:after {
     color: #4d6673;
     text-shadow: 0 0 1px #2c3236;
@@ -919,6 +919,18 @@ svg #triangleStart{
 .whquestion-history .whview-history-answer-title{
     margin-top: 16px;
     font-weight:600;
+}
+
+/**
+ *  add separator if the choice has no label but a description
+ */
+.question-history .question-description + .choice-description::before {
+  display: block;
+  content: " ";
+  width: 50px;
+  border-top: 1px solid grey;
+  margin-top: 20px;
+  margin-bottom: 5px;
 }
 
 .question-history .choice-label,
