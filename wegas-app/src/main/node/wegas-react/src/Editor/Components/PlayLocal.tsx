@@ -12,6 +12,7 @@ import { Toolbar } from '../../Components/Toolbar';
 import { defaultPadding, flex } from '../../css/classes';
 import { shallowIs } from '../../Helper/shallowIs';
 import { WegasScriptEditor } from './ScriptEditors/WegasScriptEditor';
+import { computePath } from './ScriptEditors/SrcEditor';
 
 const container = css({
   width: '100%',
@@ -20,7 +21,7 @@ const container = css({
 });
 const editor = css({
   width: '100%',
-  flexBasis: "1px",
+  flexBasis: '1px',
   flexGrow: 2,
   flexShrink: 1,
   overflow: 'auto',
@@ -41,12 +42,12 @@ class ErrorBoundary extends React.Component<Record<string, unknown>> {
     if (this.state.error) {
       return (
         <div
-          className={ cx(
+          className={cx(
             defaultPadding,
             css({ color: themeVar.colors.ErrorColor }),
-          ) }
+          )}
         >
-          { this.state.error.message }
+          {this.state.error.message}
         </div>
       );
     }
@@ -59,14 +60,16 @@ const overlayStyle = css({ overflow: 'auto' });
 const resultPanel = css({
   overflow: 'auto',
   flexGrow: 1,
-  flexBasis: "1px",
+  flexBasis: '1px',
 });
 
 const Eval = React.memo(function Eval({ script }: { script: string }) {
   const val = useUnsafeScript(script);
-  return <pre className={ overlayStyle }>{ JSON.stringify(val, null, 2) }</pre>;
+  return <pre className={overlayStyle}>{JSON.stringify(val, null, 2)}</pre>;
 });
 Eval.displayName = 'Eval';
+
+const filename = computePath(undefined, 'typescript');
 
 export default function PlayLocal() {
   const [script, setScript] = React.useState('');
@@ -96,30 +99,34 @@ export default function PlayLocal() {
 
   return (
     <Toolbar>
-      <Toolbar.Header className={ defaultPadding }>
-        <div className={ flex }>
+      <Toolbar.Header className={defaultPadding}>
+        <div className={flex}>
           <Toggler
-            className={ togglerStyle }
-            value={ autorun }
-            onChange={ setAutorun }
+            className={togglerStyle}
+            value={autorun}
+            onChange={setAutorun}
             label="autorun"
           />
-          { autorun ? null : <Button onClick={ onRunCb } label="Run script" /> }
+          {autorun ? null : <Button onClick={onRunCb} label="Run script" />}
         </div>
       </Toolbar.Header>
       <Toolbar.Content>
-        <div className={ container }>
-          <div className={ editor }>
-            <WegasScriptEditor value={ script } onChange={ onChangeCb } />
+        <div className={container}>
+          <div className={editor}>
+            <WegasScriptEditor
+              models={{ [filename]: script }}
+              fileName={filename}
+              onChange={onChangeCb}
+            />
           </div>
-          <ErrorBoundary script={ debouncedScript }>
-            { autorun ? (
-              <Eval script={ debouncedScript } />
+          <ErrorBoundary script={debouncedScript}>
+            {autorun ? (
+              <Eval script={debouncedScript} />
             ) : (
-                <pre className={ resultPanel }>
-                  { JSON.stringify(result, null, 2) }
-                </pre>
-              ) }
+              <pre className={resultPanel}>
+                {JSON.stringify(result, null, 2)}
+              </pre>
+            )}
           </ErrorBoundary>
         </div>
       </Toolbar.Content>

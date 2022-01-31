@@ -3,38 +3,32 @@ import * as React from 'react';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { Modal } from '../../../Components/Modal';
 import { MonacoEditor, MonacoSCodeEditor } from './editorHelpers';
-import SrcEditor, { SrcEditorProps } from './SrcEditor';
+import SrcEditor, { computePath } from './SrcEditor';
 
-type EmbeddedSrcEditorProps<
-  P extends SrcEditorProps,
-  EP extends SrcEditorProps,
-> = P & {
-  Editor?: React.FunctionComponent<P>;
-  embeddedProps?: EP;
-  EmbeddedEditor?: React.FunctionComponent<EP>;
-  embeddedEditorBindings?: (monaco: Monaco) => number[];
-};
+interface EmbeddedSrcEditorProps {
+  value: string;
+  language: 'json';
+  onChange: (newValue: string) => void;
+  onSave: () => void;
+}
 
-export function EmbeddedSrcEditor<
-  P extends SrcEditorProps,
-  EP extends SrcEditorProps,
->({
+export function EmbeddedSrcEditor({
   value,
+  language,
   onChange,
-  Editor = SrcEditor,
-  embeddedProps = {} as EP,
-  EmbeddedEditor = SrcEditor,
-  embeddedEditorBindings = monaco => [
-    monaco.KeyMod.CtrlCmd | monaco.KeyCode.Insert,
-  ],
-  ...props
-}: EmbeddedSrcEditorProps<P, EP>) {
+  onSave,
+}: EmbeddedSrcEditorProps) {
   const [editing, setEditing] = React.useState(false);
   const [editorContent, setEditorContent] = React.useState<string>(value || '');
   const cursorOffset = React.useRef(0);
   const embeddedContent = React.useRef('');
   const embeddedCodeInit = React.useRef(0);
   const embeddedCodeEnd = React.useRef(0);
+
+  const embeddedEditorBindings = React.useCallback(
+    (monaco: Monaco) => [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Insert],
+    [],
+  );
 
   React.useEffect(() => {
     setEditorContent(value || '');
@@ -95,6 +89,11 @@ export function EmbeddedSrcEditor<
     setEditing(false);
   };
 
+  const [filename] = React.useState(computePath(undefined, 'typescript'));
+  const [embeddedFilename] = React.useState(
+    computePath(undefined, 'plaintext'),
+  );
+
   return (
     <>
       {editing && (
@@ -105,14 +104,14 @@ export function EmbeddedSrcEditor<
               width: '50vw',
             }}
           >
-            <EmbeddedSrcEditor
-              value={embeddedContent.current}
+            <SrcEditor
+              fileName={embeddedFilename}
+              models={{ [embeddedFilename]: embeddedContent.current }}
               onChange={value => {
                 embeddedContent.current = value;
               }}
               defaultFocus
               onSave={onAcceptEmbedded}
-              {...embeddedProps}
             />
           </div>
           <Button
@@ -127,13 +126,14 @@ export function EmbeddedSrcEditor<
           />
         </Modal>
       )}
-      <Editor
+      <SrcEditor
         cursorOffset={cursorOffset.current}
-        {...(props as P)}
-        value={editorContent}
+        fileName={filename}
+        models={{ [filename]: editorContent }}
         onChange={v => setEditorContent(v)}
+        onSave={() => onSave()}
+        language={language}
         defaultActions={monaco => [
-          ...(props.defaultActions ? props.defaultActions(monaco) : []),
           {
             id: 'embeddedEditor',
             label: 'Open embedded editor',

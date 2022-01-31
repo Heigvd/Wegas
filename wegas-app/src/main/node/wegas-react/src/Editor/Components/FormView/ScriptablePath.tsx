@@ -26,6 +26,7 @@ import {
   isPropertyAccessExpression,
 } from 'typescript';
 import { CustomFileSelector } from './FileSelector';
+import { computePath } from '../ScriptEditors/SrcEditor';
 
 const labelStyle = css({
   marginBottom: '5px',
@@ -145,6 +146,8 @@ export function ScriptablePath(props: ScriptablePathProps): JSX.Element {
     [props],
   );
 
+  const [filename] = React.useState(computePath(undefined, 'typescript'));
+
   return (
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>
@@ -164,7 +167,8 @@ export function ScriptablePath(props: ScriptablePathProps): JSX.Element {
             {inputMode === 'Code' ? (
               <div className={scriptEditStyle}>
                 <WegasScriptEditor
-                  value={script}
+                  fileName={filename}
+                  models={{ [filename]: script }}
                   returnType={['string']}
                   onChange={value =>
                     props.onChange(

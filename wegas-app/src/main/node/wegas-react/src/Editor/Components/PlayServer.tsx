@@ -10,6 +10,8 @@ import { defaultMargin } from '../../css/classes';
 const container = css({ width: '100%' });
 const editor = css({ width: '100%', height: '400px' });
 
+const filename = 'play:server.js';
+
 export default function PlayServer() {
   const [script, setScript] = React.useState('');
   const [error, setError] = React.useState<string | undefined>();
@@ -27,7 +29,8 @@ export default function PlayServer() {
     <div className={container}>
       <div className={editor}>
         <WegasScriptEditor
-          value={script}
+          models={{ [filename]: script }}
+          fileName={filename}
           onChange={e => setScript(e)}
           scriptContext="Server internal"
         />

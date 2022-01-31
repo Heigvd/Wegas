@@ -27,6 +27,7 @@ import {
   isPropertyAccessExpression,
 } from 'typescript';
 import { omit } from 'lodash-es';
+import { computePath } from '../ScriptEditors/SrcEditor';
 
 const labelStyle = css({
   marginBottom: '5px',
@@ -155,6 +156,8 @@ export function scriptableComponentFactory<BCT extends BaseComponentProps>(
       [props],
     );
 
+    const [filename] = React.useState(computePath(undefined, 'typescript'));
+
     return (
       <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
         <Labeled {...props.view}>
@@ -174,7 +177,8 @@ export function scriptableComponentFactory<BCT extends BaseComponentProps>(
               {inputMode === 'Code' ? (
                 <div className={scriptEditStyle}>
                   <WegasScriptEditor
-                    value={script}
+                    fileName={filename}
+                    models={{ [filename]: script }}
                     returnType={['string']}
                     onChange={value =>
                       props.onChange(

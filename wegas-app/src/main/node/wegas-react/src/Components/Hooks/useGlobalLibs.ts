@@ -279,13 +279,15 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
 
   const libs = useStore(libsSelector, deepDifferent);
 
-  return [
-    {
-      content: `
+  return React.useMemo(() => {
+    return [
+      {
+        content: `
     ${libs}\n
   `,
-      name: 'file:///VariablesTypes.d.ts',
-    },
-    ...(scriptContext === 'Client' ? clientLibs : serverLibs),
-  ];
+        name: 'file:///VariablesTypes.d.ts',
+      },
+      ...(scriptContext === 'Client' ? clientLibs : serverLibs),
+    ];
+  }, [libs, scriptContext]);
 }

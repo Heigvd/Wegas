@@ -21,6 +21,7 @@ import { IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { State } from '../../../data/Reducer/reducers';
+import { computePath } from '../ScriptEditors/SrcEditor';
 
 const updateScript = (scriptContent: string, currentScript?: IScript) =>
   currentScript
@@ -73,6 +74,12 @@ export default function PageLoaderSelect(props: PageSelectProps) {
     [props],
   );
 
+  const language = props.value
+    ? (props.value.language.toLowerCase() as SrcEditorLanguages)
+    : 'typescript';
+
+  const [filename] = React.useState(computePath(undefined, language));
+
   return (
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>
@@ -92,7 +99,8 @@ export default function PageLoaderSelect(props: PageSelectProps) {
                   {srcMode ? (
                     <div className={cx(scriptEditStyle, grow)}>
                       <WegasScriptEditor
-                        value={loaderValue}
+                        fileName={filename}
+                        models={{ [filename]: loaderValue || '' }}
                         returnType={['string']}
                         onChange={setPageLoader}
                         onSave={value =>

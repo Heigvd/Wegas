@@ -5,6 +5,7 @@ import { WegasScriptEditor } from '../Editor/Components/ScriptEditors/WegasScrip
 import { createSandbox } from '../Components/Hooks/useScript';
 import { transpile } from 'typescript';
 import { getEntry, setEntry } from '../Helper/tools';
+import { computePath } from '../Editor/Components/ScriptEditors/SrcEditor';
 
 const { sandbox, globals } =
   createSandbox<{
@@ -69,6 +70,8 @@ const testobject = {
 setEntry(testobject,{value:"YOOMAMA",index:666},["more","mama"],{defaultObject:{value:"def",index:0},lookupKey:"value"})
 `;
 
+const filename = computePath(undefined, 'typescript');
+
 export default function ObjectAccessorTester() {
   const [content, setContent] = React.useState<string>(testcontent);
 
@@ -77,14 +80,12 @@ export default function ObjectAccessorTester() {
       <div className={css({ height: '400px' })}>
         <WegasScriptEditor
           language="typescript"
-          value={content}
           onChange={setContent}
-          extraLibs={[
-            {
-              name: 'ObjectAccess.d.ts',
-              content: objectaccesslib,
-            },
-          ]}
+          fileName={filename}
+          models={{
+            [filename]: content,
+            'ObjectAccess.d.ts': objectaccesslib,
+          }}
         />
       </div>
       <div className={grow}>{JSON.stringify(evaluate(content))}</div>

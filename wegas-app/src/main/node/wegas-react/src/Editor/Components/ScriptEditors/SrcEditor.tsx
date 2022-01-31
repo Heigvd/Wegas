@@ -15,16 +15,17 @@ import {
   SrcEditorLanguages,
 } from './editorHelpers';
 import { useJSONSchema } from './useJSONSchema';
+import { wlog } from '../../../Helper/wegaslog';
 
 export interface SrcEditorProps {
   /**
-   * filename - the name of the current file
+   * map of files to register as model
    */
-  fileName?: string;
+  models: Record<string, string>;
   /**
-   * value - the content of the editor
+   * filename - the name of the file to edit
    */
-  value?: string;
+  fileName: string;
   /**
    * minimap - the editor shows a minimap of the code
    */
@@ -72,7 +73,7 @@ export interface SrcEditorProps {
   /**
    * extraLibs - libraries to add to the editor intellisense
    */
-  extraLibs?: MonacoDefinitionsLibrary[];
+  //extraLibs?: MonacoDefinitionsLibrary[];
   /**
    * onEditorReady - Callback to give the editor the a higher component
    */
@@ -100,7 +101,7 @@ const overflowHide = css({
 
 export const addExtraLib = (
   service: MonacoLangaugesServices,
-  extraLibs?: SrcEditorProps['extraLibs'],
+  extraLibs?: MonacoDefinitionsLibrary[],
 ) => {
   if (extraLibs) {
     for (const lib of extraLibs) {
@@ -141,18 +142,35 @@ export function languageToFormat(language: SrcEditorLanguages | undefined) {
   }
 }
 
+let computedPathCounter = 1;
+
+export const computePath = (
+  fileName: string | undefined,
+  language: SrcEditorLanguages | undefined,
+) => {
+  if (fileName) {
+    return fileName;
+  } else {
+    // get current value then inc global counter
+    const currentCount = computedPathCounter++;
+    const timestamp = new Date().getTime();
+    return `file:///_generated_${timestamp}_${currentCount}.${languageToFormat(
+      language,
+    )}`;
+  }
+};
+
 /**
  * SrcEditor is a component uses monaco-editor to create a code edition panel
  */
 function SrcEditor({
   fileName,
-  value,
   defaultFocus,
   language,
   readOnly,
   minimap,
   cursorOffset,
-  extraLibs,
+  models,
   noGutter,
   defaultProperties,
   onEditorReady,
@@ -167,11 +185,6 @@ function SrcEditor({
   const [reactMonaco, setReactMonaco] = React.useState<MonacoEditor>();
   const i18nValues = useInternalTranslate(commonTranslations);
   const schema = useJSONSchema(language === 'json');
-  const path = React.useRef<string>(
-    `file:///${
-      fileName != null ? fileName : String(new Date().getTime())
-    }.${languageToFormat(language)}`,
-  );
 
   const onMount = React.useCallback(
     (editor: MonacoSCodeEditor) => {
@@ -203,6 +216,7 @@ function SrcEditor({
       if (cursorOffset) {
         const model = editor.getModel();
         if (model) {
+          wlog('Touch cursor Offset');
           editor.setPosition(model.getPositionAt(cursorOffset));
         }
       }
@@ -216,7 +230,16 @@ function SrcEditor({
           allowNonTsExtensions: true,
           checkJs: true,
           allowJs: forceJS,
+          lib: ['es2019'],
           target: reactMonaco.languages.typescript.ScriptTarget.ESNext,
+        });
+      } else if (language === 'javascript') {
+        reactMonaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+          allowNonTsExtensions: true,
+          checkJs: true,
+          allowJs: true,
+          lib: ['es5'],
+          target: reactMonaco.languages.typescript.ScriptTarget.ES5,
         });
       } else if (language === 'json') {
         reactMonaco.languages.json.jsonDefaults.setDiagnosticsOptions({
@@ -231,29 +254,26 @@ function SrcEditor({
         });
       }
     }
-  }, [extraLibs, forceJS, language, reactMonaco, schema]);
+  }, [forceJS, language, reactMonaco, schema]);
 
+  // make sure to have up-to-date models
   React.useEffect(() => {
     if (editor != null && reactMonaco != null) {
-      const models = reactMonaco.editor.getModels();
-
-      extraLibs?.map(lib => {
-        const path = reactMonaco.Uri.parse(lib.name).path;
-        const existingModel = models.find(model => model.uri.path === path);
+      wlog('Update Models', models);
+      Object.entries(models).forEach(([uri, content]) => {
+        const libUri = reactMonaco.Uri.parse(uri);
+        const existingModel = reactMonaco.editor.getModel(libUri);
         if (existingModel != null) {
-          if (existingModel.getValue() !== lib.content) {
-            existingModel.setValue(lib.content);
+          if (existingModel.getValue() !== content) {
+            wlog('Update Model');
+            existingModel.setValue(content);
           }
         } else {
-          reactMonaco.editor.createModel(
-            lib.content,
-            'typescript',
-            reactMonaco.Uri.parse(lib.name),
-          );
+          reactMonaco.editor.createModel(content, language, libUri);
         }
       });
     }
-  }, [editor, extraLibs, reactMonaco]);
+  }, [editor, models, reactMonaco, language]);
 
   React.useEffect(() => {
     if (editor != null && reactMonaco != null) {
@@ -296,10 +316,15 @@ function SrcEditor({
   }, [editor, onSave, reactMonaco]);
 
   const onChangeRef = React.useRef(onChange);
+  onChangeRef.current = onChange;
 
   const debouncedOnChange = React.useMemo(
     () =>
-      onChangeRef.current ? debounce(onChangeRef.current, delay) : undefined,
+      debounce((value: string) => {
+        if (onChangeRef.current) {
+          onChangeRef.current(value);
+        }
+      }, delay),
     [delay],
   );
 
@@ -315,8 +340,7 @@ function SrcEditor({
               setReactMonaco(monaco);
             }}
             language={language || 'plaintext'}
-            value={value}
-            path={path.current}
+            path={fileName}
             onMount={onMount}
             loading={i18nValues.loading + '...'}
             options={{

@@ -25,6 +25,7 @@ import {
   isStringLiteral,
   isPropertyAccessExpression,
 } from 'typescript';
+import { computePath } from '../ScriptEditors/SrcEditor';
 
 const labelStyle = css({
   marginBottom: '5px',
@@ -110,6 +111,8 @@ export function ScriptableBoolean(props: ScriptableBooleanProps): JSX.Element {
     [props],
   );
 
+  const [filename] = React.useState(computePath(undefined, 'typescript'));
+
   return (
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>
@@ -129,7 +132,8 @@ export function ScriptableBoolean(props: ScriptableBooleanProps): JSX.Element {
             {inputMode === 'Code' ? (
               <div className={scriptEditStyle}>
                 <WegasScriptEditor
-                  value={script}
+                  fileName={filename}
+                  models={{ [filename]: script }}
                   returnType={['boolean', 'SBooleanDescriptor']}
                   onChange={value =>
                     props.onChange(

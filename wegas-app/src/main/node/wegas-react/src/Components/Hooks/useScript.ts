@@ -35,7 +35,7 @@ import {
   createTranslation,
   translate,
 } from '../../Editor/Components/FormView/translatable';
-import { formatScriptToFunctionBody } from '../../Editor/Components/ScriptEditors/WegasScriptEditor';
+import { insertReturn } from '../../Editor/Components/ScriptEditors/WegasScriptEditor';
 import { createLRU, replace } from '../../Helper/tools';
 import { createScript, isScript } from '../../Helper/wegasEntites';
 import { wwarn } from '../../Helper/wegaslog';
@@ -456,9 +456,7 @@ function transpileToFunction(
   // script does not containes any return statement (eval-style returns last-evaluated statement)
   // such a statement must be added
   // TODO: this function is not that robust... AST based transformation is required (quite a big job)
-  const fnBody = injectReturn
-    ? formatScriptToFunctionBody(jsScript, true)
-    : jsScript;
+  const fnBody = injectReturn ? insertReturn(jsScript) : jsScript;
   const fnScript = '"use strict"; undefined;' + fnBody;
 
   // hide forbidden object by overriding them with parameters

@@ -19,6 +19,7 @@ import { IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { State } from '../../../data/Reducer/reducers';
+import { computePath } from '../ScriptEditors/SrcEditor';
 
 const updateScript = (scriptContent: string, currentScript?: IScript) =>
   currentScript
@@ -58,6 +59,12 @@ export default function PageSelect(props: PageSelectProps) {
     [props],
   );
 
+  const language = props.value
+    ? (props.value.language.toLowerCase() as SrcEditorLanguages)
+    : 'typescript';
+
+  const [filename] = React.useState(computePath(undefined, language));
+
   return (
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>
@@ -73,7 +80,8 @@ export default function PageSelect(props: PageSelectProps) {
               {srcMode ? (
                 <div className={cx(scriptEditStyle, grow)}>
                   <WegasScriptEditor
-                    value={pageValue}
+                    fileName={filename}
+                    models={{ [filename]: pageValue || '' }}
                     returnType={['string']}
                     onChange={setPageValue}
                     onSave={value =>
@@ -83,11 +91,7 @@ export default function PageSelect(props: PageSelectProps) {
                           : createScript(value),
                       )
                     }
-                    language={
-                      props.value
-                        ? (props.value.language.toLowerCase() as SrcEditorLanguages)
-                        : 'typescript'
-                    }
+                    language={language}
                     minimap={false}
                     noGutter
                     resizable

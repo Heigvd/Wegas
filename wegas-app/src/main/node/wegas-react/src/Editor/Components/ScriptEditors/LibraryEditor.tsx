@@ -258,23 +258,30 @@ const setLibraryState = (oldState: ILibrariesState, action: StateAction) =>
     return oldState;
   });
 
+type ScriptLanguage = 'css' | 'typescript' | 'javascript';
+
+const extensions: Record<ScriptLanguage, string> = {
+  css: 'css',
+  typescript: 'ts',
+  javascript: 'js',
+};
+
 /**
  * getScriptLanguage that gives a language type from a libType
  * @param scriptType - the type of library
  */
-const getScriptLanguage: (
-  scriptType: LibType,
-) => 'css' | 'typescript' | 'javascript' = scriptType => {
-  switch (scriptType) {
-    case 'CSS':
-      return 'css';
-    case 'ServerScript':
-      return 'javascript';
-    case 'ClientScript':
-    default:
-      return 'typescript';
-  }
-};
+const getScriptLanguage: (scriptType: LibType) => ScriptLanguage =
+  scriptType => {
+    switch (scriptType) {
+      case 'CSS':
+        return 'css';
+      case 'ServerScript':
+        return 'javascript';
+      case 'ClientScript':
+      default:
+        return 'typescript';
+    }
+  };
 
 /**
  * getScriptOutdatedState is a function that looks for a lastestVersionLibrary.
@@ -519,7 +526,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             try {
               setGlobals(globalContexts, store.getState());
               clientScriptEval(libEntry.library.content, undefined, undefined, {
-                moduleName: `./${ librariesState.selected}`,
+                moduleName: `./${librariesState.selected}`,
                 injectReturn: false,
               });
             } catch (e) {
@@ -598,17 +605,26 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
     });
   }
 
-  const editorProps: SrcEditorProps = React.useMemo(
-    () => ({
-      fileName: librariesState.selected,
-      value: librariesState.selected ? libEntry?.library.content || '' : '',
+  const editorProps: SrcEditorProps = React.useMemo(() => {
+    const language = getScriptLanguage(scriptType);
+    const extension = extensions[language];
+
+    const models = Object.entries(librariesState.libraries).reduce<
+      Record<string, string>
+    >((acc, [key, value]) => {
+      acc[`file:///${key}.${extension}`] = value.library.content;
+      return acc;
+    }, {});
+
+    return {
+      fileName: `file:///${librariesState.selected}.${extension}`,
       onChange: onChange,
-      language: getScriptLanguage(scriptType),
+      language: language,
       readOnly: !isEditAllowed(librariesState),
       onSave: onSaveLibrary,
-    }),
-    [libEntry, librariesState, onSaveLibrary, scriptType],
-  );
+      models: models,
+    };
+  }, [librariesState, onSaveLibrary, scriptType]);
 
   return (
     <Toolbar>
@@ -630,7 +646,11 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                 }
               }
             }}
-            onBlur={() => setModalState({ type: 'close' })}
+            onBlur={() =>
+              setModalState(current =>
+                current.type !== 'close' ? { type: 'close' } : current,
+              )
+            }
             applyOnEnter
           />
         ) : (
@@ -650,10 +670,10 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                       ? librariesState.selected
                       : i18nValues.scripts.noLibrarySelected
                   }
-                  choices={Object.keys(librariesState.libraries).map(
-                    (name: string) => ({
-                      value: name,
-                      label: name,
+                  choices={Object.entries(librariesState.libraries).map(
+                    ([key, value]) => ({
+                      value: key,
+                      label: value.status.isEdited ? `* ${key}` : key,
                     }),
                   )}
                   onChange={value =>
@@ -696,7 +716,11 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                         tooltip={i18nValues.scripts.deleteScript}
                         onAction={success => success && onDeleteLibrary()}
                         onBlur={() => {
-                          setModalState({ type: 'close' });
+                          setModalState(current =>
+                            current.type !== 'close'
+                              ? { type: 'close' }
+                              : current,
+                          );
                         }}
                       />
                     )}

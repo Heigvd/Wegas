@@ -6,6 +6,7 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { LabeledView } from '../labeled';
 import { CommonView } from '../commonView';
 import { Button } from '../../../../Components/Inputs/Buttons/Button';
+import { computePath } from '../../ScriptEditors/SrcEditor';
 
 interface VariableInputProps
   extends WidgetProps.BaseProps<
@@ -29,13 +30,15 @@ const schema = (scriptableClassFilter?: WegasScriptEditorReturnTypeName[]) => ({
 
 export function VariableInput(props: VariableInputProps) {
   const [srcMode, setSrcMode] = React.useState(false);
+  const [filename] = React.useState(computePath(undefined, "typescript"));
   return (
     <div>
       <Button icon="code" onClick={() => setSrcMode(sm => !sm)} />
       <div>
         {srcMode ? (
           <WegasScriptEditor
-            value={props.value}
+            fileName={filename}
+            models={{[filename]: props.value || ''}}
             onChange={props.onChange}
             noGutter
             minimap={false}

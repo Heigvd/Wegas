@@ -8,6 +8,7 @@ import { scriptEditStyle } from './Script/Script';
 import { createScript } from '../../../Helper/wegasEntites';
 import { IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
+import { computePath } from '../ScriptEditors/SrcEditor';
 
 export interface CustomScriptProps
   extends WidgetProps.BaseProps<
@@ -30,6 +31,11 @@ export function CustomScript({ view, value, onChange }: CustomScriptProps) {
     },
     [onChange, view.language],
   );
+  const language = view.language
+    ? (toLower(view.language) as SrcEditorLanguages)
+    : view.language;
+
+  const [filename] = React.useState(computePath(undefined, language));
 
   return (
     <CommonViewContainer view={view}>
@@ -40,14 +46,11 @@ export function CustomScript({ view, value, onChange }: CustomScriptProps) {
               {labelNode}
               <div className={scriptEditStyle}>
                 <WegasScriptEditor
-                  language={
-                    view.language
-                      ? (toLower(view.language) as SrcEditorLanguages)
-                      : view.language
-                  }
+                  language={language}
                   returnType={view.returnType}
                   args={view.args}
-                  value={value ? value.content : ''}
+                  models={{ [filename]: value ? value.content : '' }}
+                  fileName={filename}
                   onChange={onValueChange}
                   minimap={false}
                   noGutter={true}

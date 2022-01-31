@@ -18,7 +18,6 @@ import { State } from '../../../../../data/Reducer/reducers';
 import { GameModel } from '../../../../../data/selectors';
 import { useStore } from '../../../../../data/Stores/store';
 import { MessageString } from '../../../MessageString';
-import { EmbeddedSrcEditor } from '../../../ScriptEditors/EmbeddedSrcEditor';
 import { WegasScriptEditor } from '../../../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
 import { Labeled, LabeledView } from '../../labeled';
@@ -39,6 +38,7 @@ import {
   typeCleaner,
   WyiswygExpressionSchema,
 } from './expressionEditorHelpers';
+import { computePath } from '../../../ScriptEditors/SrcEditor';
 
 const expressionEditorStyle = css({
   backgroundColor: themeVar.colors.HeaderColor,
@@ -286,6 +286,12 @@ export function ExpressionEditor({
     [mode, onChange, variablesItems],
   );
 
+  const isServerScript = mode === 'SET' || mode === 'GET';
+
+  const [filename] = React.useState(
+    computePath(undefined, isServerScript ? 'javascript' : 'typescript'),
+  );
+
   return (
     <div id={id} className={expressionEditorStyle}>
       <Button
@@ -297,16 +303,17 @@ export function ExpressionEditor({
       {srcMode ? (
         <div className={scriptEditStyle}>
           <MessageString type="error" value={error || softError} />
-          <EmbeddedSrcEditor
-            value={code}
+          <WegasScriptEditor
+            fileName={filename}
+            models={{
+              [filename]: code,
+            }}
             onChange={onChange}
             noGutter
             minimap={false}
             returnType={returnTypes(mode)}
             resizable
-            scriptContext={mode === 'SET' ? 'Server internal' : 'Client'}
-            Editor={WegasScriptEditor}
-            EmbeddedEditor={WegasScriptEditor}
+            scriptContext={isServerScript ? 'Server internal' : 'Client'}
           />
         </div>
       ) : (
