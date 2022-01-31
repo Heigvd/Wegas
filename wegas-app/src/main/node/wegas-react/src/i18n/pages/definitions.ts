@@ -4,4 +4,5 @@ export interface PagesTranslations {
   loadingPages: string;
   noSelectedPage: string;
   pageUndefined: string;
+  completeCompConfig: string;
 }
