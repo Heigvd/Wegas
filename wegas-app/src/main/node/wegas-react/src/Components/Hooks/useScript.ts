@@ -38,7 +38,7 @@ import {
 import { insertReturn } from '../../Editor/Components/ScriptEditors/WegasScriptEditor';
 import { createLRU, replace } from '../../Helper/tools';
 import { createScript, isScript } from '../../Helper/wegasEntites';
-import { wwarn } from '../../Helper/wegaslog';
+import { wlog, wwarn, getLogger } from '../../Helper/wegaslog';
 import { ClassesContext, classesCTX } from '../Contexts/ClassesProvider';
 import {
   defaultFeatures,
@@ -91,7 +91,7 @@ interface GlobalClasses {
   APIMethods: APIMethodsClass;
   Helpers: GlobalHelpersClass;
   Roles: RolesMehtods;
-  wlog: (a: any) => void;
+  wlog: (...args: unknown[]) => void;
   __WegasModules: {
     [moduleName: string]: {
       [exported: string]: unknown;
@@ -419,6 +419,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.Helpers = {
     cloneDeep: cloneDeep,
     uniq: uniq,
+    getLogger: getLogger,
   };
 
   globals.Roles = {
@@ -433,8 +434,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     },
   };
 
-  // eslint-disable-next-line no-console
-  globals.wlog = console.log;
+  globals.wlog = wlog;
 }
 
 export type ScriptReturnType = object | number | boolean | string | undefined;

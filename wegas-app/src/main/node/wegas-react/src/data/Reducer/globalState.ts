@@ -158,6 +158,18 @@ export interface EditingState {
   events: WegasEvent[];
   eventsHandlers: WegasEventHandlers;
 }
+
+export const LoggerLevelValues = [
+  'OFF' as const,
+  'ERROR' as const,
+  'WARN' as const,
+  'LOG' as const,
+  'INFO' as const,
+  'DEBUG' as const,
+];
+
+export type LoggerLevel = typeof LoggerLevelValues[number];
+
 export interface GlobalState extends EditingState {
   currentGameModelId: number;
   currentGameId: number;
@@ -198,6 +210,7 @@ export interface GlobalState extends EditingState {
     translatableLanguages: undefined | 'loading' | string[];
     editableLanguages: undefined | 'loading' | 'all' | string[];
   };
+  logLevels: Record<string, LoggerLevel>;
 }
 
 export function eventHandlersManagement(
@@ -482,6 +495,11 @@ const global: Reducer<Readonly<GlobalState>> = u(
         return;
       }
 
+      case ActionType.LOGGER_LEVEL_SET: {
+        state.logLevels[action.payload.loggerName] = action.payload.level;
+        return;
+      }
+
       default:
         state.eventsHandlers = eventHandlersManagement(state, action);
         state.events = eventManagement(state, action);
@@ -525,6 +543,9 @@ const global: Reducer<Readonly<GlobalState>> = u(
       currentEditorLanguageCode: 'EN',
       editableLanguages: undefined,
       translatableLanguages: undefined,
+    },
+    logLevels: {
+      default: 'LOG',
     },
   } as GlobalState,
 );

@@ -15,7 +15,9 @@ import {
   SrcEditorLanguages,
 } from './editorHelpers';
 import { useJSONSchema } from './useJSONSchema';
-import { wlog } from '../../../Helper/wegaslog';
+import { getLogger } from '../../../Helper/wegaslog';
+
+const logger = getLogger("monaco");
 
 export interface SrcEditorProps {
   /**
@@ -216,7 +218,7 @@ function SrcEditor({
       if (cursorOffset) {
         const model = editor.getModel();
         if (model) {
-          wlog('Touch cursor Offset');
+          logger.info('Touch cursor Offset');
           editor.setPosition(model.getPositionAt(cursorOffset));
         }
       }
@@ -259,13 +261,13 @@ function SrcEditor({
   // make sure to have up-to-date models
   React.useEffect(() => {
     if (editor != null && reactMonaco != null) {
-      wlog('Update Models', models);
+      logger.info('Update Models', models);
       Object.entries(models).forEach(([uri, content]) => {
         const libUri = reactMonaco.Uri.parse(uri);
         const existingModel = reactMonaco.editor.getModel(libUri);
         if (existingModel != null) {
           if (existingModel.getValue() !== content) {
-            wlog('Update Model');
+            logger.info('Update Model');
             existingModel.setValue(content);
           }
         } else {

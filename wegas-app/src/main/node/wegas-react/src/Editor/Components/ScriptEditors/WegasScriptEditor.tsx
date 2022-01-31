@@ -11,7 +11,7 @@ import {
   textToArray,
 } from './editorHelpers';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
-import { wlog } from '../../../Helper/wegaslog';
+import { getLogger } from '../../../Helper/wegaslog';
 import {
   createSourceFile,
   isArrowFunction,
@@ -22,6 +22,8 @@ import {
   isSourceFile,
   ScriptTarget,
 } from 'typescript';
+
+const logger = getLogger("monaco");
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
   scriptContext?: ScriptContext;
@@ -54,11 +56,11 @@ function clearIndentation(script: string, numLevel?: number) {
   if (numLevel != null) {
     if (numLevel > 0) {
       // clear up to numLevel tab
-      regex = new RegExp(`^(\\t){0, ${numLevel}}`, 'g');
+      regex = new RegExp(`^(\\t){0,${numLevel}}`, 'gm');
     }
   } else {
     // clear all tab
-    regex = new RegExp('^\\t*', 'g');
+    regex = new RegExp('^\\t*', 'gm');
   }
   if (regex) {
     return script.replaceAll(regex, '');
@@ -294,9 +296,9 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     const functionalizedNewExtraLibs = Object.entries(
       newModels || {},
     ).reduce<LibMap>((acc, [key, content]) => {
-      wlog('Process ExternalModels:', content);
+      logger.info('Process ExternalModels:', content);
       acc[key] = functionalizeScript(content, returnType, args);
-      wlog('  -> Processed:', acc[key]);
+      logger.info('  -> Processed:', acc[key]);
       return acc;
     }, {});
 
@@ -309,14 +311,14 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     //    const currentLib = libs.find(lib => lib.name === fileName);
     //    const content = formatScriptToFunction(value || '', returnType, args);
 
-    wlog('Rebuild Extra libs');
+    logger.info('Rebuild Extra libs');
     setModels(libs);
   }, [newModels, globalLibs, scriptContext, clientScripts, returnType, args]);
 
-  wlog('Render WSE with ', props.fileName);
+  logger.info('Render WSE with ', props.fileName);
   const updateLib = React.useCallback(
     (newContent: string) => {
-      wlog('New Lib:', newContent);
+      logger.info('New Lib:', newContent);
       setModels(currentLibs => {
         const updatedModels = { ...currentLibs };
         updatedModels[props.fileName] = newContent;
@@ -335,9 +337,9 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     (val?: string, fn?: (val: string) => void) => {
       let newValue = val ? val : '';
       if (returnType !== undefined && returnType.length > 0) {
-        wlog('Should trimFunctionToScript');
+        logger.info('Should trimFunctionToScript');
         newValue = defunctionalizeScript(newValue);
-        wlog('Defunced to:', newValue);
+        logger.info('Defunced to:', newValue);
       }
       // setCurrentValue(newValue);
       return fn && fn(newValue);
