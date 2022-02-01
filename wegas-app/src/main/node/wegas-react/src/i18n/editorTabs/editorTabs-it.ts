@@ -72,6 +72,7 @@ export const editorTabsTranslationsIT: EditorTabsTranslations = {
     libraryMustName: 'La biblioteca deve avere un nome',
     addNewScript: 'Aggiungere un nuovo script',
     noLibrarySelected: 'Nessuna biblioteca selezionata',
+    downloadScript: 'Scaricare lo script',
     saveScript: 'Salvare lo script',
     deleteScript: 'Cancellare lo script',
     scriptDangerOutdate: 'Lo script è pericolosamente superato!',

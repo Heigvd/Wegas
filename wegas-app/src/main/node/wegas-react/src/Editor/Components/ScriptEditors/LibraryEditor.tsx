@@ -582,6 +582,22 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
     scriptType,
   ]);
 
+  const downloadCb = React.useCallback(() => {
+    const content =
+      librariesState.libraries[librariesState.selected].library.content;
+
+    const extension = extensions[getScriptLanguage(scriptType)];
+    const filename = `${librariesState.selected}.${extension}`;
+
+    const anchor: HTMLAnchorElement = document.createElement('a');
+    anchor.setAttribute(
+      'href',
+      'data:text/plain;charset=utf-8,' + encodeURIComponent(content),
+    );
+    anchor.setAttribute('download', filename);
+    anchor.click();
+  }, [librariesState.selected, librariesState.libraries, scriptType]);
+
   /**
    * When scriptType changes, gets all libraries of this type and refresh the librariesState
    */
@@ -724,6 +740,11 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                         }}
                       />
                     )}
+                    <Button
+                      icon="download"
+                      tooltip={i18nValues.scripts.downloadScript}
+                      onClick={downloadCb}
+                    />
                   </>
                 )}
                 {modalState.type === 'error' ||

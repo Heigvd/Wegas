@@ -73,6 +73,7 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     noLibrarySelected: 'No library selected',
     saveScript: 'Save the script',
     deleteScript: 'Delete the script',
+    downloadScript: 'Download the script',
     scriptDangerOutdate: 'The script is dangeroulsy outdated!',
     scriptNotSaved: 'The script is not saved',
     scriptSaved: 'The script is saved',
