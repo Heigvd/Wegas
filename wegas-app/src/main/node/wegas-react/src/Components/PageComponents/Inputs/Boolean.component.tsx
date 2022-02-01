@@ -7,7 +7,7 @@ import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Toggler } from '../../Inputs/Boolean/Toggler';
-import { TumbleLoader } from '../../Loader';
+import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
   registerComponent,
@@ -61,7 +61,7 @@ function PlayerBoolean({
   );
 
   return bool == null ? (
-    <TumbleLoader />
+    <UncompleteCompMessage />
   ) : (
     <BooleanComponent
       className={className}

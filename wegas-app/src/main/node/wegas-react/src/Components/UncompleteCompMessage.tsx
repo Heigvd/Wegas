@@ -10,14 +10,16 @@ interface UncompleteCompMessageProps {
   color?: string;
 }
 
-export function UncompleteCompMessage({ color }: UncompleteCompMessageProps) {
+export function UncompleteCompMessage({
+  color = themeVar.colors.DarkTextColor,
+}: UncompleteCompMessageProps) {
   const i18nValues = useInternalTranslate(pagesTranslations);
   return (
     <div
       className={cx(
         css({
           svg: {
-            fill: color || themeVar.colors.DarkTextColor,
+            fill: color,
             maxWidth: '70px',
           },
           textAlign: 'center',

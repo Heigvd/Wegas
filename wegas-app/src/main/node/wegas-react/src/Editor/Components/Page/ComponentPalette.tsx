@@ -236,7 +236,10 @@ export default function ComponentPalette() {
   const { editMode, setEditMode } = React.useContext(pageCTX);
 
   const componentNames = usePageComponentStore(
-    s => Object.keys(s),
+    s =>
+      Object.entries(s)
+        .filter(([, component]) => component.obsoleteComponent == null)
+        .map(([k]) => k),
     deepDifferent,
   );
   return (
