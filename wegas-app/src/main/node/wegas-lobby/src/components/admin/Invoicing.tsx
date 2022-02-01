@@ -413,12 +413,12 @@ export default function Invoicing(): JSX.Element {
               g.creator,
             )}, ${encodeCsvCell(g.gameModelName)}, ${encodeCsvCell(g.gameName)}, ${encodeCsvCell(
               g.status,
-            )}, ${encodeCsvCell(g.effectiveCount)}, ${encodeCsvCell(g.declaredCount)}`,
+            )}, ${g.effectiveCount}, ${g.declaredCount}`,
         )
         .join('\n');
 
       const csv = `${headers}\n${data}`;
-      navigator.clipboard.writeText(csv);
+      //navigator.clipboard.writeText(csv);
 
       const pom: HTMLAnchorElement = document.createElement('a');
       pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(csv));
