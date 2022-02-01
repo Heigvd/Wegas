@@ -2,18 +2,19 @@ import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import { useScript } from '../../Hooks/useScript';
 import {
-  FlexListProps,
+  defaultFlexLayoutOptionsKeys,
+  FlexItem,
+  flexlayoutChoices,
   FlexList,
+  FlexListProps,
   flexListSchema,
   isVertical,
-  FlexItem,
-  defaultFlexLayoutOptionsKeys,
-  flexlayoutChoices,
 } from '../../Layouts/FlexList';
+import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import { EmptyComponentContainer } from '../Layouts/FlexList.component';
 import {
-  registerComponent,
   pageComponentFactory,
+  registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { classStyleIdShema } from '../tools/options';
@@ -49,7 +50,9 @@ function ChildrenDeserializer({
   const items = useScript<{ [key: string]: any }[]>(getItemsFn, context);
   let children: JSX.Element[] = [];
 
-  if (items) {
+  if (!items) {
+    return <UncompleteCompMessage />;
+  } else {
     children = items.map((item, index) => {
       const newContext = { ...context, [exposeAs]: item };
 

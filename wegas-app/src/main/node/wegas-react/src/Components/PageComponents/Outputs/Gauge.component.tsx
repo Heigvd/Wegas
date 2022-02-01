@@ -1,17 +1,17 @@
 import * as React from 'react';
+import { IScript, SNumberDescriptor } from 'wegas-ts-api';
+import { Player } from '../../../data/selectors';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { useScript } from '../../Hooks/useScript';
+import { StandardGauge } from '../../Outputs/StandardGauge';
+import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
-import { StandardGauge } from '../../Outputs/StandardGauge';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { IScript, SNumberDescriptor } from 'wegas-ts-api';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
-import { TumbleLoader } from '../../Loader';
-import { Player } from '../../../data/selectors';
+import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerGaugeProps extends WegasComponentProps {
   /**
@@ -41,7 +41,7 @@ function PlayerGauge({
   const number = useScript<SNumberDescriptor>(script, context);
 
   return number == null ? (
-    <TumbleLoader />
+    <UncompleteCompMessage />
   ) : (
     <StandardGauge
       className={className}

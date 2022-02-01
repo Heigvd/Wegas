@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
 import { icons, Icons } from '../../../Editor/Components/Views/FontAwesome';
+import { createScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
 import { Button, ButtonProps } from '../../Inputs/Buttons/Button';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
@@ -111,5 +112,8 @@ registerComponent(
     icon: 'hand-pointer',
     illustration: 'button',
     schema: buttonSchema,
+    getComputedPropsFromVariable: () => ({
+      label: createScript("'Button'"),
+    }),
   }),
 );

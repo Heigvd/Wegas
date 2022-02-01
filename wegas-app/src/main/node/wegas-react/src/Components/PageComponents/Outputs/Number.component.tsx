@@ -1,17 +1,17 @@
 import * as React from 'react';
-import {
-  registerComponent,
-  pageComponentFactory,
-} from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
-import { WegasComponentProps } from '../tools/EditableComponent';
-import { useComponentScript } from '../../Hooks/useComponentScript';
-import { IScript, INumberDescriptor } from 'wegas-ts-api';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { classStyleIdShema } from '../tools/options';
-import { TumbleLoader } from '../../Loader';
+import { INumberDescriptor, IScript } from 'wegas-ts-api';
 import { halfOpacity } from '../../../css/classes';
 import { classOrNothing } from '../../../Helper/className';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { useComponentScript } from '../../Hooks/useComponentScript';
+import { UncompleteCompMessage } from '../../UncompleteCompMessage';
+import {
+  pageComponentFactory,
+  registerComponent,
+} from '../tools/componentFactory';
+import { WegasComponentProps } from '../tools/EditableComponent';
+import { classStyleIdShema } from '../tools/options';
+import { schemaProps } from '../tools/schemaProps';
 
 export interface PlayerNumberProps extends WegasComponentProps {
   script?: IScript;
@@ -26,7 +26,7 @@ function PlayerNumber({
 }: PlayerNumberProps) {
   const { instance, notFound } = useComponentScript<INumberDescriptor>(script);
   return notFound ? (
-    <TumbleLoader />
+    <UncompleteCompMessage />
   ) : (
     <div
       id={id}
