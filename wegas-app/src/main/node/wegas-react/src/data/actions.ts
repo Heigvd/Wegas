@@ -23,6 +23,7 @@ import {
   Edition,
   EditorAction,
   GlobalState,
+  WegasStatus,
 } from './Reducer/globalState';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
 import { store, StoreDispatch } from './Stores/store';
@@ -156,6 +157,10 @@ export const ActionCreator = {
 
   PUSHER_SOCKET: (data: { socket_id: string; status: string }) =>
     createAction(ActionType.PUSHER_SOCKET, data),
+
+  SERVER_STATUS: (data: { status: WegasStatus }) =>
+    createAction(ActionType.SERVER_STATUS, data),
+
   GAMEMODEL_EDIT: (data: { gameModel: IGameModel; gameModelId: string }) =>
     createAction(ActionType.GAMEMODEL_EDIT, data),
 

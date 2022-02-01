@@ -43,36 +43,29 @@ export function TextLoader({ text = 'Loading...' }: { text?: string }) {
 
 const animationMoves = keyframes`
   0%,
-  100% { box-shadow: 4em -2em 0 0 rgba(0, 0, 0, 1), 6em 0 0 0 rgba(0, 0, 0, 0), 4em 2em 0 0 rgba(0, 0, 0, 0), 2em 0 0 0 rgba(0, 0, 0, 0);}
-  20% { box-shadow: 4em -2em 0 0 rgba(0, 0, 0, 1), 6em 0em 0 0 rgba(0, 0, 0, 1), 4em 2em 0 0 rgba(0, 0, 0, 0), 2em 0 0 0 rgba(0, 0, 0, 0); }
-  40% { box-shadow: 4em -2em 0 0 rgba(0, 0, 0, 0), 6em 0em 0 0 rgba(0, 0, 0, 1), 4em 2em 0 0 rgba(0, 0, 0, 1), 2em 0 0 0 rgba(0, 0, 0, 0); }
-  60% { box-shadow: 4em -2em 0 0 rgba(0, 0, 0, 0), 6em 0em 0 0 rgba(0, 0, 0, 0), 4em 2em 0 0 rgba(0, 0, 0, 1), 2em 0 0 0 rgba(0, 0, 0, 1); }
-  80% { box-shadow: 4em -2em 0 0 rgba(0, 0, 0, 1), 6em 0em 0 0 rgba(0, 0, 0, 0), 4em 2em 0 0 rgba(0, 0, 0, 0), 2em 0 0 0 rgba(0, 0, 0, 1); }`;
+  100% { box-shadow: 0em -2em 0 0 rgba(0, 0, 0, 1), 2em 0em 0 0 rgba(0, 0, 0, 0), 0em 2em 0 0 rgba(0, 0, 0, 0), -2em 0em 0 0 rgba(0, 0, 0, 0);}
+  20% {  box-shadow: 0em -2em 0 0 rgba(0, 0, 0, 1), 2em 0em 0 0 rgba(0, 0, 0, 1), 0em 2em 0 0 rgba(0, 0, 0, 0), -2em 0em 0 0 rgba(0, 0, 0, 0); }
+  40% {  box-shadow: 0em -2em 0 0 rgba(0, 0, 0, 0), 2em 0em 0 0 rgba(0, 0, 0, 1), 0em 2em 0 0 rgba(0, 0, 0, 1), -2em 0em 0 0 rgba(0, 0, 0, 0); }
+  60% {  box-shadow: 0em -2em 0 0 rgba(0, 0, 0, 0), 2em 0em 0 0 rgba(0, 0, 0, 0), 0em 2em 0 0 rgba(0, 0, 0, 1), -2em 0em 0 0 rgba(0, 0, 0, 1); }
+  80% {  box-shadow: 0em -2em 0 0 rgba(0, 0, 0, 1), 2em 0em 0 0 rgba(0, 0, 0, 0), 0em 2em 0 0 rgba(0, 0, 0, 0), -2em 0em 0 0 rgba(0, 0, 0, 1); }`;
 
 const tumbleLoaderStyle = css({
-    color: '#000000',
-    fontSize: '10px',
-    margin: '80px auto',
-    position: 'relative',
-    textIndent: '-9999em',
-    transform: 'translateZ(0)',
-    width: '2em',
-    height: '2em',
-    animationFillMode: 'both',
-    animation: `${animationMoves} 3.5s infinite ease-in-out`,
-  });
-
+  color: '#000000',
+  fontSize: '10px',
+  margin: '2em 2em',
+  position: 'relative',
+  textIndent: '-9999em',
+  transform: 'translateZ(0)',
+  width: '2em',
+  height: '2em',
+  animationFillMode: 'both',
+  animation: `${animationMoves} 3.5s infinite ease-in-out`,
+});
 
 export function TumbleLoader() {
-  const container = React.useRef<HTMLDivElement>(null)
-  return (
-    <div
-      ref={container}
-      className={tumbleLoaderStyle}
-    ></div>
-  );
+  const container = React.useRef<HTMLDivElement>(null);
+  return <div ref={container} className={tumbleLoaderStyle}></div>;
 }
-
 
 const dotLoaderAnimation1 = keyframes({
   '0%': {
