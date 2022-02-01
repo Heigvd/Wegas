@@ -88,20 +88,9 @@ export const insertReturn = (val: string) => {
     const lastStatement =
       sourceFile.statements[sourceFile.statements.length - 1];
     if (lastStatement) {
-      const p = lastStatement.pos;
-      const statement = code.substring(p);
+      const p = lastStatement.getStart();
       if (!isReturnStatement(lastStatement)) {
-        if (statement.startsWith('\r\n') || statement.startsWith('  ')) {
-          code = code.substring(0, p + 2) + 'return ' + code.substring(p + 2);
-        } else if (
-          statement.startsWith('\r') ||
-          statement.startsWith('\n') ||
-          statement.startsWith(' ')
-        ) {
-          code = code.substring(0, p + 1) + 'return ' + code.substring(p + 1);
-        } else {
-          code = code.substring(0, p) + 'return ' + code.substring(p);
-        }
+        code = code.substring(0, p) + 'return ' + code.substring(p);
       }
       return indent(code);
     } else {
@@ -152,7 +141,7 @@ export function functionalizeScript(
         nakedScript.substring(startPosition, nakedScript.length).trim(),
       );
 
-      return `${imports}\n${header(returnType, args)}\n${body}${footer()}`;
+      return `${imports ? imports + '\n' : ''}${header(returnType, args)}\n${body}${footer()}`;
     }
   }
   return nakedScript;

@@ -17,8 +17,7 @@ import {
 import { useJSONSchema } from './useJSONSchema';
 import { getLogger } from '../../../Helper/wegaslog';
 
-const logger = getLogger("monaco");
-
+const logger = getLogger('monaco');
 export interface SrcEditorProps {
   /**
    * map of files to register as model
@@ -266,12 +265,18 @@ function SrcEditor({
         const libUri = reactMonaco.Uri.parse(uri);
         const existingModel = reactMonaco.editor.getModel(libUri);
         if (existingModel != null) {
-          if (existingModel.getValue() !== content) {
+          const currentValue = existingModel.getValue();
+          if (currentValue !== content) {
             logger.info('Update Model');
             existingModel.setValue(content);
           }
         } else {
-          reactMonaco.editor.createModel(content, language, libUri);
+          const model = reactMonaco.editor.createModel(
+            content,
+            language,
+            libUri,
+          );
+          model.setEOL(reactMonaco.editor.EndOfLineSequence.LF);
         }
       });
     }
@@ -348,6 +353,8 @@ function SrcEditor({
             options={{
               readOnly,
               fixedOverflowWidgets: true,
+              detectIndentation: false,
+              insertSpaces: false,
               minimap: { enabled: minimap },
               ...gutter(noGutter),
               ...defaultProperties,
