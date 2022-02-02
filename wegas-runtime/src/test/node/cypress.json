@@ -6,9 +6,9 @@
   },
   "reporter" : "junit",
   "reporterOptions": {
-    "mochaFile": "../../../target/surefire-reports/TEST-ch.colabproject.colab.tests.e2e.CypressTest.[hash].xml",
-    "rootSuiteTitle": "ch.colabproject.tests.e2e",
-    "testsuitesTitle": "Cypress Test Suite",
+    "mochaFile": "../../../target/surefire-reports/TEST-ch.wegas.client.tests.e2e.CypressTest.[hash].xml",
+    "rootSuiteTitle": "ch.wegas.tests.e2e",
+    "testsuitesTitle": "Wegas Client Test Suite",
     "suiteTitleSeparatedBy": ".",
     "useFullSuiteTitle": true,
     "jenkinsMode": true,

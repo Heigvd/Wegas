@@ -1,9 +1,10 @@
 {
-  "name": "colab-e2e-tests",
+  "name": "wegas-e2e-tests",
   "version": "1.0.0",
   "license": "MIT",
   "private": true,
   "scripts": {
+    "clean": "rimraf ./node_modules",
     "format": "prettier --write cypress",
     "local:start": "CYPRESS_WEGAS_URL='http://localhost:8080/Wegas' CYPRESS_ADMIN_USERNAME='root' CYPRESS_ADMIN_PASSWORD='1234' yarn cypress open",
     "local:test": "CYPRESS_WEGAS_URL='http://localhost:8080/Wegas' CYPRESS_ADMIN_USERNAME='root' CYPRESS_ADMIN_PASSWORD='1234' yarn cypress run",
@@ -15,8 +16,9 @@
     "cypress-react-selector": "^2.3.13",
     "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
+    "prettier": "^2.4.1",
     "prettier-plugin-organize-imports": "^2.3.4",
-    "prettier": "^2.4.1"
+    "rimraf": "^3.0.2"
   },
   "dependencies": {
     "typescript": "^4.5.4"
