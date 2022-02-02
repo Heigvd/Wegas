@@ -8,7 +8,7 @@
   "private": true,
   "main": "src/index.ts",
   "scripts": {
-    "clean": "rimraf ../../../../target/Wegas/wegas-lobby",
+    "clean": "rimraf ../../../../target/Wegas/wegas-lobby && rimraf ./node_modules",
     "test": "jest",
     "lint": "eslint -c .eslintrc.js --ext .ts,.tsx ./src",
     "build": "webpack --mode=production",
@@ -93,6 +93,7 @@
     "url-loader": "^4.1.1",
     "webpack": "^5.68.0",
     "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.7.4",
     "webpack-react-component-name": "^5.0.2"
   },
   "dependencies": {

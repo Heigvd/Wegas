@@ -33,6 +33,13 @@ Cypress.Commands.add("visitWegas", () => {
   }
 });
 
+Cypress.Commands.add("clickOnClass", (component, className, force = true) => {
+  // cy.react("IconButton", { props: { icon: { iconName: "sign-out-alt" } } })
+  //   .should("have.length", "1")
+  //   .click();
+  cy.get(component + '[class="' + className + '"]').click({ force });
+});
+
 Cypress.Commands.add("login", (identifier, password) => {
   // cy.react("Input").should("have.length", "2");
 
@@ -59,11 +66,6 @@ Cypress.Commands.add("login", (identifier, password) => {
   cy.get("span[title=login]").click();
 });
 
-Cypress.Commands.add("logout", (identifier, password) => {
-  // cy.react("IconButton", { props: { icon: { iconName: "sign-out-alt" } } })
-  //   .should("have.length", "1")
-  //   .click();
-  cy.get(
-    'svg[class="svg-inline--fa fa-sign-out-alt fa-w-16 css-5030pi"]'
-  ).click({ force: true });
+Cypress.Commands.add("logout", () => {
+  cy.clickOnClass("svg", "svg-inline--fa fa-sign-out-alt fa-w-16 css-5030pi");
 });

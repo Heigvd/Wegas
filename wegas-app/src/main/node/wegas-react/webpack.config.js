@@ -9,6 +9,7 @@ const smp = new SpeedMeasurePlugin();
 const BundleAnalyzerPlugin =
   require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const CopyPlugin = require('copy-webpack-plugin');
+// const WebpackReactComponentNamePlugin = require('webpack-react-component-name');
 
 const PROD = process.env.NODE_ENV === 'production';
 const PREPROD = process.env.NODE_ENV === 'pre-production';
@@ -20,9 +21,7 @@ const isCI =
     : false;
 
 const plugins = [
-  // new MonacoWebpackPlugin({
-  //   languages: ['json', 'css', 'javascript', 'typescript'],
-  // }),
+  // new WebpackReactComponentNamePlugin(),
   new ForkTsCheckerWebpackPlugin({
     formatter: 'codeframe',
     tsconfig: process.env.TS_NODE_PROJECT,
@@ -36,12 +35,6 @@ if (!isCI && PREPROD) {
 }
 
 const modules = {
-  // Avoid stupid warnings that occures when webpack cannot manage modules
-  node: {
-    fs: 'empty',
-    module: 'empty',
-  },
-  // stats: 'verbose',
   devtool: PROD || PREPROD ? 'source-map' : 'inline-source-map',
   entry: {
     editor: ['./src/index.tsx'],
@@ -67,6 +60,12 @@ const modules = {
         exclude: /node_modules/,
         loader: 'babel-loader',
       },
+      // {
+      //   // Include ts, tsx, js, and jsx files.
+      //   test: /\.(ts)x?$/,
+      //   exclude: /node_modules/,
+      //   loader: 'ts-loader',
+      // },
       // {
       //   test: /\.tsx?$/,
       //   exclude: /node_modules/,
@@ -170,14 +169,17 @@ const modules = {
     ],
   },
   devServer: {
-    stats: 'errors-warnings',
+    host: 'localhost',
     port: PREPROD ? 4004 : 3003,
-    overlay: true,
-    publicPath: '/Wegas/wegas-react/dist',
     proxy: {
-      '/Wegas': {
-        target: 'http://localhost:8080',
-      },
+      '/Wegas': 'http://localhost:8080',
+    },
+    client: {
+      overlay: true,
+    },
+    devMiddleware: {
+      stats: 'errors-warnings',
+      publicPath: '/Wegas/wegas-react/dist',
     },
   },
 };

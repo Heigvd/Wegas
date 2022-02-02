@@ -1,8 +1,10 @@
 const path = require('path');
+const WebpackReactComponentNamePlugin = require('webpack-react-component-name');
 
 module.exports = {
   entry: './src/components/App.tsx',
   devtool: 'inline-source-map',
+  plugins: [new WebpackReactComponentNamePlugin()],
   module: {
     rules: [
       {
@@ -41,15 +43,17 @@ module.exports = {
     publicPath: './wegas-lobby/',
   },
   devServer: {
-    stats: 'errors-warnings',
+    host: 'localhost',
     port: 3003,
-    overlay: true,
-    publicPath: '/Wegas/wegas-lobby',
     proxy: {
       '/Wegas': 'http://localhost:8080',
     },
-  },
-  watchOptions: {
-    ignored: '../../../../**/node_modules',
+    client: {
+      overlay: true,
+    },
+    devMiddleware: {
+      stats: 'errors-warnings',
+      publicPath: '/Wegas/wegas-lobby',
+    },
   },
 };

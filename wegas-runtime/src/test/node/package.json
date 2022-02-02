@@ -6,7 +6,9 @@
   "scripts": {
     "format": "prettier --write cypress",
     "local:start": "CYPRESS_WEGAS_URL='http://localhost:8080/Wegas' CYPRESS_ADMIN_USERNAME='root' CYPRESS_ADMIN_PASSWORD='1234' yarn cypress open",
-    "local:test": "CYPRESS_WEGAS_URL='http://localhost:8080/Wegas' CYPRESS_ADMIN_USERNAME='root' CYPRESS_ADMIN_PASSWORD='1234' yarn cypress run"
+    "local:test": "CYPRESS_WEGAS_URL='http://localhost:8080/Wegas' CYPRESS_ADMIN_USERNAME='root' CYPRESS_ADMIN_PASSWORD='1234' yarn cypress run",
+    "local:dev:start": "CYPRESS_WEGAS_URL='http://localhost:3003/Wegas' CYPRESS_ADMIN_USERNAME='root' CYPRESS_ADMIN_PASSWORD='1234' yarn cypress open",
+    "local:dev:test": "CYPRESS_WEGAS_URL='http://localhost:3003/Wegas' CYPRESS_ADMIN_USERNAME='root' CYPRESS_ADMIN_PASSWORD='1234' yarn cypress run"
   },
   "devDependencies": {
     "cypress": "^9.2.0",
