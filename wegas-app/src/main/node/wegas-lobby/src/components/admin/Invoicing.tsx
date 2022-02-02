@@ -294,13 +294,16 @@ function GameAdminCard({ gameAdmin, sortKey, touch }: GameAdminCardProps): JSX.E
   );
 }
 
-const matchSearch = (search: string) => (data: IGameAdminWithTeams) => {
+type DateFormatter = (timestamp: number) => string;
+
+const matchSearch = (dateFormatter: DateFormatter ,search: string) => (data: IGameAdminWithTeams) => {
   return match(search, regex => {
     return (
       (data.creator != null && data.creator.match(regex) != null) ||
       (data.gameName != null && data.gameName.match(regex) != null) ||
       (data.comments != null && data.comments.match(regex) != null) ||
-      (data.gameModelName != null && data.gameModelName.match(regex) != null)
+      (data.gameModelName != null && data.gameModelName.match(regex) != null) ||
+      (data.createdTime != null && dateFormatter(data.createdTime).match(regex) != null)
     );
   });
 };
@@ -413,12 +416,12 @@ export default function Invoicing(): JSX.Element {
               g.creator,
             )}, ${encodeCsvCell(g.gameModelName)}, ${encodeCsvCell(g.gameName)}, ${encodeCsvCell(
               g.status,
-            )}, ${encodeCsvCell(g.effectiveCount)}, ${encodeCsvCell(g.declaredCount)}`,
+            )}, ${g.effectiveCount}, ${g.declaredCount}`,
         )
         .join('\n');
 
       const csv = `${headers}\n${data}`;
-      navigator.clipboard.writeText(csv);
+      //navigator.clipboard.writeText(csv);
 
       const pom: HTMLAnchorElement = document.createElement('a');
       pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(csv));
@@ -437,7 +440,7 @@ export default function Invoicing(): JSX.Element {
     );
   } else {
     const all = gameAdmins;
-    const filtered = filter ? all.filter(matchSearch(filter)) : all;
+    const filtered = filter ? all.filter(matchSearch(i18n.formatDate, filter)) : all;
 
     const sorted = filtered.sort((a, b) => {
       const reverse = sortBy.asc ? 1 : -1;

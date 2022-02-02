@@ -8,6 +8,7 @@ import {
 import { findComponent } from '../../../Helper/pages';
 import { useScript } from '../../Hooks/useScript';
 import { defaultFlexLayoutOptionsKeys, FlexItem } from '../../Layouts/FlexList';
+import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import { emptyLayoutItemStyle } from '../Layouts/FlexList.component';
 import {
   pageComponentFactory,
@@ -111,7 +112,9 @@ function ChildrenDeserializer({
     (wegasChildren != null && wegasChildren[0]) || emptyIfChildren;
   const children2: WegasComponent =
     (wegasChildren != null && wegasChildren[1]) || emptyElseChildren;
-  if (editMode) {
+  if (condition == null) {
+    return <UncompleteCompMessage />;
+  } else if (editMode) {
     return (
       <>
         {children1.type === IfChildrenType ? (

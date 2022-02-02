@@ -9,8 +9,8 @@ import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { wwarn } from '../../../Helper/wegaslog';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { useScript } from '../../Hooks/useScript';
-import { TumbleLoader } from '../../Loader';
 import { Choice, Selector } from '../../Selector';
+import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
   registerComponent,
@@ -67,8 +67,7 @@ function PlayerSelectInput({
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
   if (descriptor == null) {
-    wwarn('Varialbe not found');
-    return <TumbleLoader />;
+    return <UncompleteCompMessage />;
   }
   const choicesFromProp = entityIs(choices, 'Script')
     ? scriptedChoices

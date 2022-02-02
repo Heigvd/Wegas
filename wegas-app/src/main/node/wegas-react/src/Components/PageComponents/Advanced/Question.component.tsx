@@ -1,16 +1,16 @@
 import * as React from 'react';
+import { IScript, SQuestionDescriptor } from 'wegas-ts-api';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { wwarn } from '../../../Helper/wegaslog';
+import { useScript } from '../../Hooks/useScript';
+import { ConnectedQuestionDisplay } from '../../Outputs/Question/Question';
+import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { ConnectedQuestionDisplay } from '../../Outputs/Question/Question';
-import { IScript, SQuestionDescriptor } from 'wegas-ts-api';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { useScript } from '../../Hooks/useScript';
-import { TumbleLoader } from '../../Loader';
-import { wwarn } from '../../../Helper/wegaslog';
+import { schemaProps } from '../tools/schemaProps';
 
 interface QuestionDisplayProps extends WegasComponentProps {
   /**
@@ -28,7 +28,7 @@ export default function QuestionDisplay({
 
   if (descriptor == null) {
     wwarn(`${question?.content} Not found`);
-    return <TumbleLoader />;
+    return <UncompleteCompMessage />;
   } else {
     return (
       <ConnectedQuestionDisplay

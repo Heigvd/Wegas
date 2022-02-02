@@ -1,30 +1,30 @@
 import * as React from 'react';
-import {
-  registerComponent,
-  pageComponentFactory,
-} from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
-import { store, useStore } from '../../../data/Stores/store';
-import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, SStringDescriptor } from 'wegas-ts-api';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { SimpleInput } from '../../Inputs/SimpleInput';
-import { useScript } from '../../Hooks/useScript';
-import { classStyleIdShema } from '../tools/options';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
-import {
-  OnVariableChange,
-  onVariableChangeSchema,
-  useOnVariableChange,
-} from './tools';
+import { Player } from '../../../data/selectors';
+import { store, useStore } from '../../../data/Stores/store';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { useScript } from '../../Hooks/useScript';
+import { SimpleInput } from '../../Inputs/SimpleInput';
 import {
   useOnCancelAction,
   Validate,
   ValidatorComponentProps,
   validatorSchema,
 } from '../../Inputs/Validate';
-import { TumbleLoader } from '../../Loader';
-import { Player } from '../../../data/selectors';
+import { UncompleteCompMessage } from '../../UncompleteCompMessage';
+import {
+  pageComponentFactory,
+  registerComponent,
+} from '../tools/componentFactory';
+import { WegasComponentProps } from '../tools/EditableComponent';
+import { classStyleIdShema } from '../tools/options';
+import { schemaProps } from '../tools/schemaProps';
+import {
+  OnVariableChange,
+  onVariableChangeSchema,
+  useOnVariableChange,
+} from './tools';
 
 interface PlayerStringInput
   extends WegasComponentProps,
@@ -82,7 +82,7 @@ function PlayerStringInput({
   );
 
   return text == null ? (
-    <TumbleLoader />
+    <UncompleteCompMessage />
   ) : validator ? (
     <Validate value={value} onValidate={onChange} onCancel={handleOnCancel}>
       {(value, onChange) => {

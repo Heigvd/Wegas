@@ -5,15 +5,16 @@ import { createScript } from '../../../Helper/wegasEntites';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import {
+  FlexItem,
+  flexlayoutChoices,
   FlexListProps,
   isVertical,
-  flexlayoutChoices,
-  FlexItem,
 } from '../../Layouts/FlexList';
+import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import { EmptyComponentContainer } from '../Layouts/FlexList.component';
 import {
-  registerComponent,
   pageComponentFactory,
+  registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import {
@@ -100,6 +101,10 @@ function State({
       setPagesContextState(exposeAs, init);
     }
   }, [exposeAs, init, localState]);
+
+  if (state == null) {
+    return <UncompleteCompMessage />;
+  }
 
   return (
     <React.Fragment key={JSON.stringify(state)}>{children}</React.Fragment>

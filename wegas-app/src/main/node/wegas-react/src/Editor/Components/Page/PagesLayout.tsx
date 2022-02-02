@@ -9,7 +9,10 @@ import { DropMenu } from '../../../Components/DropMenu';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
-import { componentTypes, usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
+import {
+  componentTypes,
+  usePageComponentStore,
+} from '../../../Components/PageComponents/tools/componentFactory';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
 import { TreeNode } from '../../../Components/TreeView/TreeNode';
@@ -348,7 +351,9 @@ function ComponentAdder({ className, tooltip, onSelect }: ComponentAdderProps) {
           label: type,
           id: type,
           items: Object.values(components)
-            .filter(c => c.componentType === type)
+            .filter(
+              c => c.componentType === type && c.obsoleteComponent == null,
+            )
             .map(v => ({
               label: v.componentName,
               id: v.componentName,

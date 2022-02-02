@@ -2,8 +2,8 @@ import * as React from 'react';
 import { IDialogueDescriptor, IScript } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useComponentScript } from '../../Hooks/useComponentScript';
-import { TumbleLoader } from '../../Loader';
 import { DialogueDisplay } from '../../Outputs/Dialogue/Dialogue';
+import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
   registerComponent,
@@ -21,7 +21,7 @@ export default function PlayerDialogue({
 }: PlayerDialogueProps) {
   const { descriptor } = useComponentScript<IDialogueDescriptor>(dialogue);
   if (descriptor === undefined) {
-    return <TumbleLoader />;
+    return <UncompleteCompMessage />;
   }
 
   return (
