@@ -11,8 +11,9 @@
     "clean": "rimraf ../../../../target/Wegas/wegas-lobby && rimraf ./node_modules",
     "test": "jest",
     "lint": "eslint -c .eslintrc.js --ext .ts,.tsx ./src",
-    "build": "webpack --mode=production",
+    "build": "webpack --mode production",
     "start": "webpack serve --hot --mode development",
+    "preprod": "cross-env PHASE=preprod webpack serve --hot --mode production",
     "format": "prettier --write src"
   },
   "jest": {

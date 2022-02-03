@@ -99,8 +99,9 @@ public class CypressTest {
             boolean interractive = System.getProperty("cypress", "false").equals("true");
 
             String cypressSubcommand = interractive ? "open" : "run";
+            // String cypressSubcommand = "open";
 
-            String cypressCommand = "yarn cypress " + cypressSubcommand + " --env " +envOpt;
+            String cypressCommand = "yarn cypress " + cypressSubcommand + " --env " + envOpt;
 
             boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
 

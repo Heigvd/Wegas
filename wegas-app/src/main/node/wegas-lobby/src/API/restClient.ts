@@ -456,6 +456,10 @@ export const WegasLobbyRestClient = function (
         const path = `${baseUrl}/Lobby/Update/CreateEmptyModel`;
         return sendRawRequest('POST', path, undefined, errorHandler);
       },
+      createEmptyReactModel: () => {
+        const path = `${baseUrl}/Lobby/Update/CreateEmptyReactModel`;
+        return sendRawRequest('POST', path, undefined, errorHandler);
+      },
       getLocks: () => {
         const path = `${baseUrl}/Utils/Locks`;
         return sendRawRequest('GET', path, undefined, errorHandler);

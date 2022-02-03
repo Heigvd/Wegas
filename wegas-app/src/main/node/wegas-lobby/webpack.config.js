@@ -1,10 +1,29 @@
 const path = require('path');
-const WebpackReactComponentNamePlugin = require('webpack-react-component-name');
 
 module.exports = {
   entry: './src/components/App.tsx',
   devtool: 'inline-source-map',
-  plugins: [new WebpackReactComponentNamePlugin()],
+  optimization: {
+    minimizer: [
+      compiler => {
+        const TerserPlugin = require('terser-webpack-plugin');
+        new TerserPlugin({
+          terserOptions: {
+            mangle: {
+              keep_classnames: true,
+              keep_fnames: true,
+            },
+            compress: {
+              passes: 2,
+            },
+          },
+        }).apply(compiler);
+      },
+    ],
+  },
+  watchOptions: {
+    ignored: /node_modules/,
+  },
   module: {
     rules: [
       {
@@ -49,7 +68,10 @@ module.exports = {
       '/Wegas': 'http://localhost:8080',
     },
     client: {
-      overlay: true,
+      overlay: {
+        errors: true,
+        warnings: false,
+      },
     },
     devMiddleware: {
       stats: 'errors-warnings',

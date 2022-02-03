@@ -9,7 +9,6 @@ const smp = new SpeedMeasurePlugin();
 const BundleAnalyzerPlugin =
   require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const CopyPlugin = require('copy-webpack-plugin');
-// const WebpackReactComponentNamePlugin = require('webpack-react-component-name');
 
 const PROD = process.env.NODE_ENV === 'production';
 const PREPROD = process.env.NODE_ENV === 'pre-production';
@@ -21,7 +20,6 @@ const isCI =
     : false;
 
 const plugins = [
-  // new WebpackReactComponentNamePlugin(),
   new ForkTsCheckerWebpackPlugin({
     formatter: 'codeframe',
     tsconfig: process.env.TS_NODE_PROJECT,
@@ -167,6 +165,9 @@ const modules = {
       //   ],
       // },
     ],
+  },
+  watchOptions: {
+    ignored: /node_modules/,
   },
   devServer: {
     host: 'localhost',
