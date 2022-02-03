@@ -1,16 +1,16 @@
 import * as React from 'react';
+import { INumberDescriptor, IScript } from 'wegas-ts-api';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { wwarn } from '../../../Helper/wegaslog';
+import { useComponentScript } from '../../Hooks/useComponentScript';
+import { PhasesProgressBar } from '../../Outputs/PhasesProgressBar';
+import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import { useComponentScript } from '../../Hooks/useComponentScript';
-import { PhasesProgressBar } from '../../Outputs/PhasesProgressBar';
-import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { IScript, INumberDescriptor } from 'wegas-ts-api';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { wwarn } from '../../../Helper/wegaslog';
-import { TumbleLoader } from '../../Loader';
+import { schemaProps } from '../tools/schemaProps';
 
 interface PhasesProgressBarProps extends WegasComponentProps {
   /**
@@ -52,13 +52,13 @@ export default function PlayerPhasesProgressBar({
 
   if (phaseNotFound) {
     wwarn(`Current phase not found: ${phaseContent}`);
-    return <TumbleLoader />;
+    return <UncompleteCompMessage />;
   } else if (phaseMinNotFound) {
     wwarn(`Phase min not found: ${phaseMinContent}`);
-    return <TumbleLoader />;
+    return <UncompleteCompMessage />;
   } else if (phaseMaxNotFound) {
     wwarn(`Phase max not found: ${phaseMaxContent}`);
-    return <TumbleLoader />;
+    return <UncompleteCompMessage />;
   } else {
     return (
       <PhasesProgressBar

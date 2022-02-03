@@ -1627,7 +1627,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                         type: 'AddEntityChildButton',
                                         label: '<span class="fa fa-certificate"></span> Achievement',
                                         targetClass: 'AchievementDescriptor',
-                                        cssClass: 'wegas-advanced-feature'
+                                        //cssClass: 'wegas-advanced-feature'
                                     }
                                 ]
                             }

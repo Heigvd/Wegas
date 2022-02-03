@@ -189,7 +189,7 @@ public class AchievementDescriptor extends VariableDescriptor<AchievementInstanc
      */
     @Scriptable(label = "achieved", dependsOn = DependencyScope.SELF)
     public void setAchieved(Player p, boolean achieved) {
-        this.getInstance(p).setAchieved(true);
+        this.getInstance(p).setAchieved(achieved);
     }
 
     /**

@@ -1,16 +1,16 @@
 import * as React from 'react';
+import { IInboxDescriptor, IScript } from 'wegas-ts-api';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { wwarn } from '../../../Helper/wegaslog';
+import { useComponentScript } from '../../Hooks/useComponentScript';
+import { InboxDisplay } from '../../Outputs/Inbox';
+import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { InboxDisplay } from '../../Outputs/Inbox';
-import { useComponentScript } from '../../Hooks/useComponentScript';
-import { IScript, IInboxDescriptor } from 'wegas-ts-api';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { TumbleLoader } from '../../Loader';
-import { wwarn } from '../../../Helper/wegaslog';
+import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerInboxProps extends WegasComponentProps {
   inbox?: IScript;
@@ -24,7 +24,7 @@ export default function PlayerInbox({
   const { descriptor } = useComponentScript<IInboxDescriptor>(inbox);
   if (descriptor === undefined) {
     wwarn(`No descriptor found for inbox ${name}`);
-    return <TumbleLoader />;
+    return <UncompleteCompMessage />;
   }
 
   return (

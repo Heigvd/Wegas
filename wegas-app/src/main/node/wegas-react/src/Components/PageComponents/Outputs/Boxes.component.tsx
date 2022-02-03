@@ -1,16 +1,16 @@
 import * as React from 'react';
+import { INumberDescriptor, IScript } from 'wegas-ts-api';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { useComponentScript } from '../../Hooks/useComponentScript';
+import { NumberBox } from '../../Inputs/Number/NumberBox';
+import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { useComponentScript } from '../../Hooks/useComponentScript';
-import { NumberBox } from '../../Inputs/Number/NumberBox';
-import { IScript, INumberDescriptor } from 'wegas-ts-api';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { classStyleIdShema } from '../tools/options';
-import { TumbleLoader } from '../../Loader';
+import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerBoxesProps extends WegasComponentProps {
   /**
@@ -45,7 +45,7 @@ function PlayerBoxes({
     useComponentScript<INumberDescriptor>(script);
 
   return notFound ? (
-    <TumbleLoader />
+    <UncompleteCompMessage />
   ) : (
     <NumberBox
       className={className}

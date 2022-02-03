@@ -98,6 +98,7 @@ export function TeamCreator({ game, hideAfterCreation = true }: TeamCreatorProps
         <Select
           placeholder={i18n.teamSize}
           menuPlacement="auto"
+          menuPortalTarget={document.body}
           styles={{
             ...defaultSelectStyles,
             control: provided => ({

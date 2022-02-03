@@ -1,28 +1,28 @@
+import { debounce } from 'lodash-es';
 import * as React from 'react';
+import { INumberDescriptor, IScript } from 'wegas-ts-api';
+import { Actions } from '../../../data';
+import { store } from '../../../data/Stores/store';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { useComponentScript } from '../../Hooks/useComponentScript';
 import {
-  registerComponent,
-  pageComponentFactory,
-} from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
-import {
-  NumberSlider,
   DisplayMode,
   displayModes,
+  NumberSlider,
 } from '../../Inputs/Number/NumberSlider';
-import { store } from '../../../data/Stores/store';
-import { Actions } from '../../../data';
+import { UncompleteCompMessage } from '../../UncompleteCompMessage';
+import {
+  pageComponentFactory,
+  registerComponent,
+} from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { INumberDescriptor, IScript } from 'wegas-ts-api';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { classStyleIdShema } from '../tools/options';
+import { schemaProps } from '../tools/schemaProps';
 import {
   OnVariableChange,
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
-import { TumbleLoader } from '../../Loader';
-import { useComponentScript } from '../../Hooks/useComponentScript';
-import { debounce } from 'lodash-es';
 
 interface PlayerNumberSliderProps extends WegasComponentProps {
   /**
@@ -85,7 +85,7 @@ function PlayerNumberSlider({
   }, [doUpdate]);
 
   return notFound ? (
-    <TumbleLoader />
+    <UncompleteCompMessage />
   ) : (
     <NumberSlider
       {...restProps}

@@ -12,7 +12,7 @@
  * @author Maxence Laurent <maxence.laurent@gmail.com>
  */
 
-var WegasDashboard = (function() {
+var WegasDashboard = (function () {
     "use strict";
     var dashConfigs = {};
 
@@ -74,31 +74,39 @@ var WegasDashboard = (function() {
         };
     }
 
-    function registerQuest(questName, cfg) {
+    /**
+     *
+     * @param {string} questName
+     * @param {object} cfg : {label?:string; react?:boolean; display: 'absolute' | 'percent'}
+     * @returns {undefined}
+     */
+    function registerQuest(questName, aCfg) {
+        var cfg = aCfg || {};
 
-        var reactFormatter = function(data) {
+        var reactFormatter = function (data) {
             return data + "&nbsp;%";
         };
 
-        var yuiFormatter = function(bloc, value) {
+        var yuiFormatter = function (bloc, value) {
             bloc.one('.bloc__value').append("&nbsp;%");
         };
-        var formatter = cfg && cfg.react ? reactFormatter : yuiFormatter;
+
+        var formatter = cfg.display !== 'absolute' ? cfg.react ? reactFormatter : yuiFormatter : undefined;
 
         registerVariable(null, {
             id: 'QUEST_' + questName,
-            label: cfg && cfg.label || questName,
+            label: cfg.label || questName,
             kind: 'number',
-            mapFn: function(teamId) {
+            mapFn: function (teamId) {
                 var ads = Java.from(Variable.findByClass(gameModel,
                     com.wegas.core.persistence.variable.primitive.AchievementDescriptor.class));
 
                 var stats = ads
-                    .filter(function(ad) {
+                    .filter(function (ad) {
                         // only keep achievement which match the quest
                         return ad.getQuest() === questName;
                     })
-                    .reduce(function(acc, curr) {
+                    .reduce(function (acc, curr) {
                         acc.total += curr.getWeight();
                         var inst = Variable.getInstancesByKeyId(curr)[teamId];
                         if (inst.isAchieved()) {
@@ -106,7 +114,11 @@ var WegasDashboard = (function() {
                         }
                         return acc;
                     }, {total: 0, current: 0});
-                return ((stats.current / stats.total)*100).toFixed();
+                if (cfg.display === 'absolute') {
+                    return stats.current + " / " +  stats.total;
+                } else {
+                    return ((stats.current / stats.total) * 100).toFixed();
+                }
             },
             formatter: "" + formatter
         });
@@ -148,7 +160,7 @@ var WegasDashboard = (function() {
     }
 
     function registerStatExporter(id, activityPattern, userConfig) {
-        var fn = function(owner, payload) {
+        var fn = function (owner, payload) {
             var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
             var path = owner.name === "Game" || owner.name === "DebugGame" ? "Games" : "Teams";
             window.open("rest/Statistics/ExportXLSX/" + logId
@@ -232,7 +244,7 @@ var WegasDashboard = (function() {
                                     switch (itemCfg.doFn.type) {
                                         case "ModalAction":
                                         {
-                                            var actions = itemCfg.doFn.actions.map(function(f) {
+                                            var actions = itemCfg.doFn.actions.map(function (f) {
                                                 return {
                                                     doFn: f.doFn + "",
                                                     schemaFn: f.schemaFn + ""
@@ -357,8 +369,8 @@ var WegasDashboard = (function() {
             }
 
             // Stringify formatter functions
-            overview.structure.forEach(function(groupItems) {
-                groupItems.items.forEach(function(item) {
+            overview.structure.forEach(function (groupItems) {
+                groupItems.items.forEach(function (item) {
                     if (item.formatter) {
                         item.formatter = serializeFunction(item.formatter);
                     }
@@ -398,10 +410,10 @@ var WegasDashboard = (function() {
          *  mapFnExtraArgs = [vdNanem, vdName2, ...]}
          * @returns {undefined}
          */
-        registerVariable: function(varName, cfg) {
+        registerVariable: function (varName, cfg) {
             return registerVariable(varName, cfg);
         },
-        registerQuest: function(questName, cfg) {
+        registerQuest: function (questName, cfg) {
             return registerQuest(questName, cfg);
         },
         /**
@@ -410,22 +422,22 @@ var WegasDashboard = (function() {
          * @param {type} cfg
          * @returns {undefined}
          */
-        registerAction: function(id, doFn, cfg) {
+        registerAction: function (id, doFn, cfg) {
             return registerAction(id, doFn, cfg);
         },
-        registerStatExporter: function(id, activityPattern, cfg) {
+        registerStatExporter: function (id, activityPattern, cfg) {
             return registerStatExporter(id, activityPattern, cfg);
         },
-        getOverview: function(name) {
+        getOverview: function (name) {
             return overview(name);
         },
-        getAllOverviews: function() {
+        getAllOverviews: function () {
             return getAllOverviews();
         },
-        setSectionLabel: function(label, sectionName, dashboardName) {
+        setSectionLabel: function (label, sectionName, dashboardName) {
             getOrCreateSection(dashboardName, sectionName).title = label;
         },
-        getNumberFormatter: function(/*color1, threshold1, color2, threshold2, ..., thresholdN, colorN*/) {
+        getNumberFormatter: function (/*color1, threshold1, color2, threshold2, ..., thresholdN, colorN*/) {
             var args = Array.prototype.slice.call(arguments);
 
             var color, threshold;
