@@ -1,10 +1,10 @@
 /* eslint-env node */
 /* eslint  @typescript-eslint/no-var-requires: "off" */
 const path = require('path');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-// const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
-const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
+const webpack = require('webpack');
 
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 const smp = new SpeedMeasurePlugin();
 const BundleAnalyzerPlugin =
   require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -20,9 +20,14 @@ const isCI =
     : false;
 
 const plugins = [
+  new webpack.ProvidePlugin({
+    Buffer: ['buffer', 'Buffer'],
+  }),
+  new webpack.ProvidePlugin({
+    process: 'process/browser',
+  }),
   new ForkTsCheckerWebpackPlugin({
-    formatter: 'codeframe',
-    tsconfig: process.env.TS_NODE_PROJECT,
+    typescript: { configFile: process.env.TS_NODE_PROJECT },
   }),
   new CopyPlugin({
     patterns: [{ from: 'src/**/*.less' }],
@@ -34,6 +39,24 @@ if (!isCI && PREPROD) {
 
 const modules = {
   devtool: PROD || PREPROD ? 'source-map' : 'inline-source-map',
+  optimization: {
+    minimizer: [
+      compiler => {
+        const TerserPlugin = require('terser-webpack-plugin');
+        new TerserPlugin({
+          terserOptions: {
+            mangle: {
+              keep_classnames: true,
+              keep_fnames: true,
+            },
+            compress: {
+              passes: 2,
+            },
+          },
+        }).apply(compiler);
+      },
+    ],
+  },
   entry: {
     editor: ['./src/index.tsx'],
     player: ['./src/player.tsx'],
@@ -58,52 +81,6 @@ const modules = {
         exclude: /node_modules/,
         loader: 'babel-loader',
       },
-      // {
-      //   // Include ts, tsx, js, and jsx files.
-      //   test: /\.(ts)x?$/,
-      //   exclude: /node_modules/,
-      //   loader: 'ts-loader',
-      // },
-      // {
-      //   test: /\.tsx?$/,
-      //   exclude: /node_modules/,
-      //   oneOf: [
-      //     {
-      //       test: /\.build\.tsx?$/,
-      //       use: [
-      //         { loader: 'val-loader' },
-      //         {
-      //           loader: 'ts-loader',
-      //           options: {
-      //             compilerOptions: {
-      //               target: 'es2018',
-      //               module: 'commonjs',
-      //               noEmit: false,
-      //             },
-      //             transpileOnly: true,
-      //             instance: 'node',
-      //             onlyCompileBundledFiles: true,
-      //           },
-      //         },
-      //       ],
-      //     },
-      //     {
-      //       loader: 'ts-loader',
-      //       options: {
-      //         compilerOptions: {
-      //           noEmit: false,
-      //         },
-      //         transpileOnly: true,
-      //         instance: 'web',
-      //         onlyCompileBundledFiles: true,
-      //       },
-      //     },
-      //   ],
-      // },
-      // {
-      //   test: /\.tsx?$/,
-      //   loader: 'awesome-typescript-loader',
-      // },
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
@@ -136,18 +113,6 @@ const modules = {
           },
         ],
       },
-      // {
-      //   test: /\.less$/,
-      //   use: [
-      //     {
-      //       loader: 'url-loader',
-      //       options: {
-      //         name: 'css/[hash]-[name].[ext]',
-      //       },
-      //     },
-      //   ],
-      // },
-
       {
         test: /\.txt$/i,
         use: 'raw-loader',
@@ -156,18 +121,7 @@ const modules = {
         test: /\.less$/i,
         use: 'raw-loader',
       },
-      // {
-      //   test: /\.less$/,
-      //   use: [
-      //     { loader: 'style-loader' },
-      //     { loader: 'css-loader' },
-      //     { loader: 'less-loader' },
-      //   ],
-      // },
     ],
-  },
-  watchOptions: {
-    ignored: /node_modules/,
   },
   devServer: {
     host: 'localhost',
@@ -176,7 +130,10 @@ const modules = {
       '/Wegas': 'http://localhost:8080',
     },
     client: {
-      overlay: true,
+      overlay: {
+        errors: true,
+        warnings: false,
+      },
     },
     devMiddleware: {
       stats: 'errors-warnings',
