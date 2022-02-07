@@ -50,7 +50,7 @@ function ChildrenDeserializer({
   const items = useScript<{ [key: string]: any }[]>(getItemsFn, context);
   let children: JSX.Element[] = [];
 
-  if (!items) {
+  if (items == undefined) {
     return <UncompleteCompMessage />;
   } else {
     children = items.map((item, index) => {
