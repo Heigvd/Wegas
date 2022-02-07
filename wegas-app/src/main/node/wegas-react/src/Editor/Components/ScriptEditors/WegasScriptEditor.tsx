@@ -12,18 +12,12 @@ import {
 } from './editorHelpers';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
 import { getLogger } from '../../../Helper/wegaslog';
-import {
-  createSourceFile,
-  isArrowFunction,
-  isBlock,
-  isExpressionStatement,
-  isImportDeclaration,
-  isReturnStatement,
-  isSourceFile,
-  ScriptTarget,
-} from 'typescript';
+import * as ts from 'typescript';
+import { MessageString } from '../MessageString';
+import { expandBoth, flex, flexColumn } from '../../../css/classes';
+import { cx } from '@emotion/css';
 
-const logger = getLogger("monaco");
+const logger = getLogger('monaco');
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
   scriptContext?: ScriptContext;
@@ -76,29 +70,23 @@ function indent(script: string, numLevel?: number) {
 export const insertReturn = (val: string) => {
   let code = val;
 
-  const sourceFile = createSourceFile(
+  const sourceFile = ts.createSourceFile(
     'Testedfile',
     code,
-    ScriptTarget.ESNext,
+    ts.ScriptTarget.ESNext,
     true,
   );
 
-  if (isSourceFile(sourceFile)) {
+  if (ts.isSourceFile(sourceFile)) {
     // Find the last import before another statement
     const lastStatement =
       sourceFile.statements[sourceFile.statements.length - 1];
     if (lastStatement) {
       const p = lastStatement.getStart();
-      if (!isReturnStatement(lastStatement)) {
+      if (!ts.isReturnStatement(lastStatement)) {
         code = code.substring(0, p) + 'return ' + code.substring(p);
       }
       return indent(code);
-    } else {
-      if (code.includes('return')) {
-        return code;
-      } else {
-        return indent('return ' + code);
-      }
     }
   }
   return val;
@@ -115,20 +103,20 @@ export function functionalizeScript(
   args?: [string, WegasScriptEditorReturnTypeName[]][],
 ) {
   if (returnType !== undefined && returnType.length > 0) {
-    const sourceFile = createSourceFile(
+    const sourceFile = ts.createSourceFile(
       'Testedfile',
       nakedScript,
-      ScriptTarget.ESNext,
+      ts.ScriptTarget.ESNext,
       true,
     );
 
-    if (isSourceFile(sourceFile)) {
+    if (ts.isSourceFile(sourceFile)) {
       let startPosition = 0;
 
       // Find the last import before another statement
       for (const statement of sourceFile.statements) {
         // If new import found, push the startPosition at the end of the statement
-        if (isImportDeclaration(statement)) {
+        if (ts.isImportDeclaration(statement)) {
           startPosition = statement.end;
         }
         // If another statement is found, stop searching
@@ -141,26 +129,72 @@ export function functionalizeScript(
         nakedScript.substring(startPosition, nakedScript.length).trim(),
       );
 
-      return `${imports ? imports + '\n' : ''}${header(returnType, args)}\n${body}${footer()}`;
+      return `${imports ? imports + '\n' : ''}${header(
+        returnType,
+        args,
+      )}\n${body}${footer()}`;
     }
   }
   return nakedScript;
 }
 
-export function defunctionalizeScript(functionalizedScript: string): string {
-  const sourceFile = createSourceFile(
-    'Testedfile',
+interface Positions {
+  lastImportPostion: number;
+  startBodyPosition: number;
+  stopBodyPosition: number;
+  startReturnPosition: number;
+  stopReturnPosition: number;
+}
+
+/**
+ * find body and return positions.
+ * return array of error if it is not possible to detect such positions
+ */
+function findPositions(functionalizedScript: string): Positions | string[] {
+  const filePath = 'dummy.ts';
+
+  const sourceFile = ts.createSourceFile(
+    filePath,
     functionalizedScript,
-    ScriptTarget.ESNext,
+    ts.ScriptTarget.ESNext,
     true,
   );
 
-  if (isSourceFile(sourceFile)) {
+  if (ts.isSourceFile(sourceFile)) {
+    const options: ts.CompilerOptions = {};
+    const host: ts.CompilerHost = {
+      fileExists: filePath => filePath === filePath,
+      directoryExists: dirPath => dirPath === '/',
+      getCurrentDirectory: () => '/',
+      getDirectories: () => [],
+      getCanonicalFileName: fileName => fileName,
+      getNewLine: () => '\n',
+      getDefaultLibFileName: () => '',
+      getSourceFile: filePath =>
+        filePath === filePath ? sourceFile : undefined,
+      readFile: filePath =>
+        filePath === filePath ? functionalizedScript : undefined,
+      useCaseSensitiveFileNames: () => true,
+      writeFile: () => {},
+    };
+
+    const program = ts.createProgram({
+      options,
+      rootNames: [filePath],
+      host,
+    });
+
+    const syntaxErrors = program.getSyntacticDiagnostics();
+    if (syntaxErrors.length > 0) {
+      logger.log('Syntax errors: ', syntaxErrors);
+      return syntaxErrors.map(se => `syntax error "${se.messageText}"`);
+    }
+
     let lastImportPostion = 0;
     // Find the last import before another statement
     for (const statement of sourceFile.statements) {
       // If new import found, push the startPosition at the end of the statement
-      if (isImportDeclaration(statement)) {
+      if (ts.isImportDeclaration(statement)) {
         lastImportPostion = statement.end;
       }
       // If another statement is found, stop searching
@@ -173,20 +207,21 @@ export function defunctionalizeScript(functionalizedScript: string): string {
     let stopBodyPosition = functionalizedScript.length;
     let startReturnPosition: number | undefined = undefined;
     let stopReturnPosition: number | undefined = undefined;
+
     //Find the start and stop of the body
     for (const fileStatement of sourceFile.statements) {
       // If new import found, push the startPosition at the end of the statement
       if (
-        isExpressionStatement(fileStatement) &&
-        isArrowFunction(fileStatement.expression) &&
-        isBlock(fileStatement.expression.body)
+        ts.isExpressionStatement(fileStatement) &&
+        ts.isArrowFunction(fileStatement.expression) &&
+        ts.isBlock(fileStatement.expression.body)
       ) {
         startBodyPosition = fileStatement.expression.body.getStart();
         stopBodyPosition = fileStatement.expression.body.end - 1;
 
         for (const functionStatement of fileStatement.expression.body
           .statements) {
-          if (isReturnStatement(functionStatement)) {
+          if (ts.isReturnStatement(functionStatement)) {
             startReturnPosition = functionStatement.getStart();
             stopReturnPosition = fileStatement.expression.body.end - 1;
           }
@@ -194,42 +229,63 @@ export function defunctionalizeScript(functionalizedScript: string): string {
       }
     }
 
-    const imports = functionalizedScript.substring(0, lastImportPostion);
-
     if (startReturnPosition != null && stopReturnPosition != null) {
-      let body = functionalizedScript.substring(
-        startBodyPosition,
-        startReturnPosition,
-      );
-      if (body.startsWith('{')) {
-        body = body.substring(1);
-      }
-
-      //Removing return keyword
-      const returnStatement = functionalizedScript
-        .substring(startReturnPosition, stopReturnPosition)
-        .replace('return ', '');
-      // Removing tabs in the body
-      // Removing return in the last line
-
-      return (
-        imports +
-        (imports ? '\n' : '') +
-        clearIndentation((body + returnStatement).trim(), 1)
-      );
-    } else {
-      let body = functionalizedScript.substring(
+      return {
+        lastImportPostion,
         startBodyPosition,
         stopBodyPosition,
-      );
-      if (body.startsWith('{')) {
-        body = body.substring(1);
-      }
-
-      return imports + (imports ? '\n' : '') + clearIndentation(body.trim(), 1);
+        startReturnPosition,
+        stopReturnPosition,
+      };
+    } else {
+      return ['No return statement found'];
     }
   } else {
-    return functionalizedScript;
+    return ['Unable to parse script'];
+  }
+}
+
+function extractFromPositions(script: string, positions: Positions): string {
+  const {
+    lastImportPostion,
+    startBodyPosition,
+    //stopBodyPosition,
+    startReturnPosition,
+    stopReturnPosition,
+  } = positions;
+
+  const imports = script.substring(0, lastImportPostion);
+
+  let body = script.substring(startBodyPosition, startReturnPosition);
+  if (body.startsWith('{')) {
+    body = body.substring(1);
+  }
+
+  //Removing return keyword
+  const returnStatement = script
+    .substring(startReturnPosition, stopReturnPosition)
+    .replace('return ', '');
+  // Removing tabs in the body
+  // Removing return in the last line
+
+  return (
+    imports +
+    (imports ? '\n' : '') +
+    clearIndentation((body + returnStatement).trim(), 1)
+  );
+}
+
+/**
+ * FOR TESTING PURPOSE
+ * May return list of errors
+ */
+export function defunctionalizeScript(functionalizedScript: string): string {
+  const positions = findPositions(functionalizedScript);
+
+  if (Array.isArray(positions)) {
+    return positions.join('\n');
+  } else {
+    return extractFromPositions(functionalizedScript, positions);
   }
 }
 
@@ -270,6 +326,8 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const [models, setModels] = React.useState<LibMap>(
     convertToLibMap(globalLibs),
   );
+
+  const [error, setError] = React.useState<string | undefined>();
 
   React.useEffect(() => {
     // make sure all clientscripts are injected as extraLibs
@@ -327,38 +385,25 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       let newValue = val ? val : '';
       if (returnType !== undefined && returnType.length > 0) {
         logger.info('Should trimFunctionToScript');
-        newValue = defunctionalizeScript(newValue);
-        logger.info('Defunced to:', newValue);
+
+        const positions = findPositions(newValue);
+
+        if (Array.isArray(positions)) {
+          // syntax error detected : print message and DO NOT trigger onChange
+          setError(positions.join('\n'));
+          return;
+        } else {
+          // return statement found
+          newValue = extractFromPositions(newValue, positions);
+          logger.info('Defunced to:', newValue);
+        }
       }
+      setError(undefined);
       // setCurrentValue(newValue);
       return fn && fn(newValue);
     },
     [returnType],
   );
-
-  //  if (returnType !== undefined && returnType.length > 0) {
-  //    editorLock = (editor: MonacoSCodeEditor) => {
-  //      editorRef.current = editor;
-  //      // Allow to make lines of the editor readonly
-  //      editor.onDidChangeCursorSelection((e: MonacoEditorCursorEvent) => {
-  //        if (deepDifferent(selectionRef.current, e.selection)) {
-  //          const textLines = textToArray(editor.getValue()).length;
-  //          const trimStartUp = e.selection.startLineNumber < headerSize;
-  //          const trimStartDown =
-  //            e.selection.startLineNumber > textLines - footerSize;
-  //          const trimEndUp = e.selection.endLineNumber < headerSize;
-  //          const trimEndDown =
-  //            e.selection.endLineNumber > textLines - footerSize;
-  //
-  //          if (trimStartUp || trimStartDown || trimEndUp || trimEndDown) {
-  //            editor.setSelection(selectionRef.current);
-  //          } else {
-  //            selectionRef.current = e.selection;
-  //          }
-  //        }
-  //      });
-  //    };
-  //  }
 
   const actions = React.useCallback(
     (monaco: Monaco): SrcEditorAction[] => [
@@ -407,31 +452,41 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     [onSave, trimFunctionToScript],
   );
 
-  const content = functionalizeScript('', returnType, args);
-
-  return resizable ? (
-    <ResizeHandle minSize={100} textContent={content}>
-      <SrcEditor
-        {...props}
-        language={language}
-        models={models}
-        //        onEditorReady={ editorLock }
-        onChange={handleChange}
-        onBlur={handleBlur}
-        onSave={handleSave}
-        defaultActions={actions}
-      />
-    </ResizeHandle>
-  ) : (
-    <SrcEditor
-      {...props}
-      language={language}
-      models={models}
-      //      onEditorReady={ editorLock }
-      onChange={handleChange}
-      onBlur={handleBlur}
-      onSave={handleSave}
-      defaultActions={actions}
-    />
+  return (
+    <div className={cx(flex, flexColumn, expandBoth)}>
+      {error && <MessageString value={error} type="error" />}
+      {resizable ? (
+        <ResizeHandle
+          minSize={100}
+          textContent={functionalizeScript(
+            models[props.fileName] || '\n\n\n\n',
+            returnType,
+            args,
+          )}
+        >
+          <SrcEditor
+            {...props}
+            language={language}
+            models={models}
+            //        onEditorReady={ editorLock }
+            onChange={handleChange}
+            onBlur={handleBlur}
+            onSave={handleSave}
+            defaultActions={actions}
+          />
+        </ResizeHandle>
+      ) : (
+        <SrcEditor
+          {...props}
+          language={language}
+          models={models}
+          //      onEditorReady={ editorLock }
+          onChange={handleChange}
+          onBlur={handleBlur}
+          onSave={handleSave}
+          defaultActions={actions}
+        />
+      )}
+    </div>
   );
 }
