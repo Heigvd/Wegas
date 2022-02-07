@@ -1,15 +1,15 @@
-describe("ch.wegas.client.tests.e2e.ManageGames", () => {
+describe("ch.wegas.client.tests.e2e.DeleteScenario", () => {
   beforeEach(() => {
     cy.visitWegas();
     cy.waitForReact();
   });
 
-  it("LoginAsAdminCreateGameAndDeleteGame", () => {
+  it("DeleteScenario", () => {
     cy.login(Cypress.env("ADMIN_USERNAME"), Cypress.env("ADMIN_PASSWORD"));
     cy.gotoPage("scenarist");
     ////////////////////////////////////////////////////////////////////////////////////////////////////7
-    cy.createScenario("Test scenario", "_Empty React Scenario [EN]\n");
     cy.removeScenario("Test scenario");
+    cy.removeScenario("Test react scenario");
 
     ////////////////// JOIN SCENARIO
     // cy.react("GameModelCard", {

@@ -1,0 +1,38 @@
+describe("ch.wegas.client.tests.e2e.InferModel", () => {
+  beforeEach(() => {
+    cy.visitWegas();
+    cy.waitForReact();
+  });
+
+  it("InferModel", () => {
+    cy.login(Cypress.env("ADMIN_USERNAME"), Cypress.env("ADMIN_PASSWORD"));
+    cy.gotoPage("modeler");
+    ////////////////////////////////////////////////////////////////////////////////////////////////////7
+    cy.inferModel("Test scenario inferred model", "Empty scenario\n");
+    cy.inferModel(
+      "Test react scenario inferred model",
+      "Empty react scenario\n"
+    );
+    cy.wait(1000);
+    cy.removeScenario("Test scenario inferred model");
+    cy.wait(1000);
+    cy.removeScenario("Test react scenario inferred model");
+
+    ////////////////// JOIN SCENARIO
+    // cy.react("GameModelCard", {
+    //   props: {
+    //     gameModel: {
+    //       "@class": "GameModel",
+    //       name: "Test scenario",
+    //     },
+    //   },
+    // })
+    //   .nthNode(0)
+    //   .find("a[title='Edit scenario']")
+    //   // .react("CardMainAction")
+    //   .click();
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////7
+    cy.logout();
+  });
+});

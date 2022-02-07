@@ -1,10 +1,10 @@
-describe("ch.wegas.client.tests.e2e.ManageGames", () => {
+describe("ch.wegas.client.tests.e2e.CreateEmptyModels", () => {
   beforeEach(() => {
     cy.visitWegas();
     cy.waitForReact();
   });
 
-  it("LoginAsAdminCreateCreateModel", () => {
+  it("CreateEmptyModels", () => {
     cy.login(Cypress.env("ADMIN_USERNAME"), Cypress.env("ADMIN_PASSWORD"));
     cy.gotoPage("admin");
     cy.react("ConfirmIconButton", {

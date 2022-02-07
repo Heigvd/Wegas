@@ -91,7 +91,9 @@ Cypress.Commands.add("createEmptyModel", (scenarioName, basedOn) => {
         prefix: "fas",
       },
     },
-  }).click();
+  }).click({
+    force: true,
+  });
   cy.react("Input", {
     props: { placeholder: "Scenario name" },
   }).type(scenarioName);
@@ -105,20 +107,10 @@ Cypress.Commands.add("createEmptyModel", (scenarioName, basedOn) => {
   });
 });
 
-Cypress.Commands.add("createScenario", (scenarioName, basedOn) => {
+Cypress.Commands.add("createScenario", (scenarioName, basedOn, model) => {
   cy.react("IconButton_IconButton", {
     props: {
-      icon: {
-        icon: [
-          512,
-          512,
-          [],
-          "f055",
-          "M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z",
-        ],
-        iconName: "plus-circle",
-        prefix: "fas",
-      },
+      title: model ? "Create a model" : "Create scenario",
     },
   }).click();
   cy.react("Input", {
@@ -129,8 +121,29 @@ Cypress.Commands.add("createScenario", (scenarioName, basedOn) => {
     props: { placeholder: "Select..." },
   }).type(basedOn);
 
-  cy.react("ActionButton_Button", {
-    props: { label: "create", className: "css-18b5fmi" },
+  cy.react("Clickable", {
+    props: { title: "create" },
+  }).click();
+});
+
+Cypress.Commands.add("inferModel", (modelName, basedOn) => {
+  cy.react("IconButton_IconButton", {
+    props: {
+      title: "Infer a model",
+    },
+  }).click();
+  cy.react("Input", {
+    props: { placeholder: "model name" },
+  }).type(modelName);
+
+  cy.react("Select", {
+    props: { placeholder: "Select..." },
+  }).type(basedOn);
+
+  cy.react("DropdownIndicator").click();
+
+  cy.react("Clickable", {
+    props: { title: "create" },
   }).click();
 });
 

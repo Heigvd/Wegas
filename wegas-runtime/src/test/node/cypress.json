@@ -4,7 +4,8 @@
       "root": "#root"
     }
   },
-  "reporter" : "junit",
+  "ignoreTestFiles": "**/*.todo",
+  "reporter": "junit",
   "reporterOptions": {
     "mochaFile": "../../../target/surefire-reports/TEST-ch.wegas.client.tests.e2e.CypressTest.[hash].xml",
     "rootSuiteTitle": "ch.wegas.tests.e2e",
