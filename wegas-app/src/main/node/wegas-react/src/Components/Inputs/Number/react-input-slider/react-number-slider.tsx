@@ -195,8 +195,11 @@ const Slider = ({
     return { top, left };
   }
 
-  function change({ top, left }: { top: number; left: number }) {
+  function change({ top: topArg, left: leftArg }: { top: number; left: number }) {
     if (!onChange) return;
+
+    let top = topArg;
+    let left = leftArg;
 
     if (container.current != null) {
       const { width, height } = container.current.getBoundingClientRect();
