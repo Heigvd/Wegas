@@ -257,6 +257,10 @@ function SrcEditor({
     }
   }, [forceJS, language, reactMonaco, schema]);
 
+  // keep last value sent to onChangeProps
+  const sentRef = React.useRef({ filename: fileName, value: models[fileName] });
+  sentRef.current.filename = fileName;
+
   // make sure to have up-to-date models
   React.useEffect(() => {
     if (editor != null && reactMonaco != null) {
@@ -267,8 +271,30 @@ function SrcEditor({
         if (existingModel != null) {
           const currentValue = existingModel.getValue();
           if (currentValue !== content) {
-            logger.info('Update Model');
-            existingModel.setValue(content);
+            if (
+              sentRef.current.filename === uri &&
+              content === sentRef.current.value
+            ) {
+              // sentRef stores the last script sent to the props.onChange callback.
+              // Due to async behaviour, the current in-editor model may have been edited before
+              // the sent value actially came back in props.models
+              // In such case, there is no need to update the currentModel
+              // (doing the update will revert the script to a previous value)
+              logger.info('Silent Model update: it came from the past');
+            } else {
+              logger.info('Update Model');
+
+              if (sentRef.current.filename === uri) {
+                // updating the current model: try to mitigate cursor jump
+                const viewState = editor.saveViewState();
+                existingModel.setValue(content);
+                if (viewState) {
+                  editor.restoreViewState(viewState);
+                }
+              } else {
+                existingModel.setValue(content);
+              }
+            }
           }
         } else {
           const model = reactMonaco.editor.createModel(
@@ -329,6 +355,8 @@ function SrcEditor({
     () =>
       debounce((value: string) => {
         if (onChangeRef.current) {
+          logger.info('Send On Change: ', value);
+          sentRef.current.value = value;
           onChangeRef.current(value);
         }
       }, delay),
