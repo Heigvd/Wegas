@@ -76,7 +76,7 @@ export default function PlayLocal() {
 
   const [result, setResult] = React.useState<unknown>();
 
-  const [autorun, setAutorun] = React.useState(true);
+  const [autorun, setAutorun] = React.useState(false);
 
   const debouncedScript = useDebounce(script, 300);
 
