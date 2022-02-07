@@ -68,14 +68,14 @@ function getLogger(name: string): Logger {
         const currentLevel = LoggerLevels[getLevel()];
         if (currentLevel >= LoggerLevels.DEBUG) {
           // eslint-disable-next-line no-console
-          console.debug(...mapArgs(...params));
+          console.log(...mapArgs(...params));
         }
       },
       info: (...params: unknown[]): void => {
         const currentLevel = LoggerLevels[getLevel()];
         if (currentLevel >= LoggerLevels.INFO) {
           // eslint-disable-next-line no-console
-          console.info(...mapArgs(...params));
+          console.log(...mapArgs(...params));
         }
       },
       log: (...params: unknown[]): void => {
@@ -122,7 +122,7 @@ export { getLogger };
 //    };
 
 export const wlog = (message?: unknown, ...optionalParams: unknown[]): void =>
-  getLogger('default').info(message, ...optionalParams);
+  getLogger('default').log(message, ...optionalParams);
 
 export const wwarn = (message?: unknown, ...optionalParams: unknown[]): void =>
   getLogger('default').warn(message, ...optionalParams);
