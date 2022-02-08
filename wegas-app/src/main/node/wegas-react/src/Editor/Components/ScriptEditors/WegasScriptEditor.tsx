@@ -19,11 +19,8 @@ import { cx } from '@emotion/css';
 
 const logger = getLogger('monaco');
 
-export interface WegasScriptEditorProps extends SrcEditorProps {
-  scriptContext?: ScriptContext;
-  returnType?: WegasScriptEditorReturnTypeName[];
-  resizable?: boolean;
-  args?: [string, WegasScriptEditorReturnTypeName[]][];
+function makeReturnTypes(returnType?: string[]) {
+  return returnType?.join(' | ') || '';
 }
 
 const header = (
@@ -32,13 +29,7 @@ const header = (
 ) => {
   const cleanArgs =
     args !== undefined ? args.map(arg => arg.join(':')).join(',') : '';
-  const cleanReturnType =
-    returnType !== undefined
-      ? returnType.reduce(
-          (o, t, i) => o + (i ? '|' : '') + t.replace(/\r?\n/, ''),
-          '',
-        )
-      : '';
+  const cleanReturnType = makeReturnTypes(returnType);
   return `/* Please always respect the return type : ${cleanReturnType} */\n(${cleanArgs}) : ${cleanReturnType} => {`;
 };
 const headerSize = textToArray(header()).length;
@@ -191,6 +182,76 @@ function findPositions(functionalizedScript: string): Positions | string[] {
     }
 
     let lastImportPostion = 0;
+    let startBodyPosition = lastImportPostion;
+    let stopBodyPosition = functionalizedScript.length;
+    let startReturnPosition: number | undefined = undefined;
+    let stopReturnPosition: number | undefined = undefined;
+
+    let currentStatementIndex = 0;
+
+    // walk through leading import statements
+    while (
+      ts.isImportDeclaration(sourceFile.statements[currentStatementIndex])
+    ) {
+      // end extract last import end-position
+      lastImportPostion = sourceFile.statements[currentStatementIndex].end;
+      currentStatementIndex++;
+    }
+
+    const firstNonImportStatement =
+      sourceFile.statements[currentStatementIndex];
+
+    if (
+      ts.isExpressionStatement(firstNonImportStatement) &&
+      ts.isArrowFunction(firstNonImportStatement.expression)
+    ) {
+      // first non-import statement is the arrow function
+      const scriptFunction = firstNonImportStatement.expression;
+      if (ts.isBlock(scriptFunction.body)) {
+        const body = scriptFunction.body;
+        if (scriptFunction.body.statements.find(ts.isImportDeclaration)) {
+          return [
+            'Import statements are not allowed in the body of the function',
+          ];
+        } else {
+          const fnStatements = body.statements;
+          const firstStatement = fnStatements[0];
+          if (firstStatement != null) {
+            startBodyPosition = firstStatement.getFullStart();
+            stopBodyPosition = body.end - 1;
+
+            const lastStatement = fnStatements.slice(-1)[0];
+
+            if (lastStatement == null) {
+              return ['Function must have a return statement'];
+            } else if (ts.isReturnStatement(lastStatement)) {
+              startReturnPosition = lastStatement.getStart();
+              stopReturnPosition = lastStatement.getEnd();
+            } else {
+              return ['Last function statement must be a return statement'];
+            }
+          } else {
+            return ['Function is empty'];
+          }
+        }
+      } else {
+        return ['Script function must be a block'];
+      }
+      currentStatementIndex++;
+    } else {
+      // first non-import statement is not an arrow function
+      if (firstNonImportStatement != null) {
+        return ['Only import statements are allowed before the function'];
+      } else {
+        // firstNonImportStatement found
+        return ['Function is missing'];
+      }
+    }
+
+    if (currentStatementIndex < sourceFile.statements.length) {
+      return ['Statements after the function are forbidden'];
+    }
+
     // Find the last import before another statement
     for (const statement of sourceFile.statements) {
       // If new import found, push the startPosition at the end of the statement
@@ -200,32 +261,6 @@ function findPositions(functionalizedScript: string): Positions | string[] {
       // If another statement is found, stop searching
       else {
         break;
-      }
-    }
-
-    let startBodyPosition = lastImportPostion;
-    let stopBodyPosition = functionalizedScript.length;
-    let startReturnPosition: number | undefined = undefined;
-    let stopReturnPosition: number | undefined = undefined;
-
-    //Find the start and stop of the body
-    for (const fileStatement of sourceFile.statements) {
-      // If new import found, push the startPosition at the end of the statement
-      if (
-        ts.isExpressionStatement(fileStatement) &&
-        ts.isArrowFunction(fileStatement.expression) &&
-        ts.isBlock(fileStatement.expression.body)
-      ) {
-        startBodyPosition = fileStatement.expression.body.getStart();
-        stopBodyPosition = fileStatement.expression.body.end - 1;
-
-        for (const functionStatement of fileStatement.expression.body
-          .statements) {
-          if (ts.isReturnStatement(functionStatement)) {
-            startReturnPosition = functionStatement.getStart();
-            stopReturnPosition = fileStatement.expression.body.end - 1;
-          }
-        }
       }
     }
 
@@ -256,10 +291,7 @@ function extractFromPositions(script: string, positions: Positions): string {
 
   const imports = script.substring(0, lastImportPostion);
 
-  let body = script.substring(startBodyPosition, startReturnPosition);
-  if (body.startsWith('{')) {
-    body = body.substring(1);
-  }
+  const body = script.substring(startBodyPosition, startReturnPosition);
 
   //Removing return keyword
   const returnStatement = script
@@ -297,6 +329,13 @@ const convertToLibMap = (list: MonacoDefinitionsLibrary[]) => {
     return acc;
   }, {});
 };
+
+export interface WegasScriptEditorProps extends SrcEditorProps {
+  scriptContext?: ScriptContext;
+  returnType?: WegasScriptEditorReturnTypeName[];
+  resizable?: boolean;
+  args?: [string, WegasScriptEditorReturnTypeName[]][];
+}
 
 export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const {
