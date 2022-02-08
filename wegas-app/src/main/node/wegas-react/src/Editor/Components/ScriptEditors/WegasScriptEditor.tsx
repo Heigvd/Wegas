@@ -30,7 +30,7 @@ const header = (
   const cleanArgs =
     args !== undefined ? args.map(arg => arg.join(':')).join(',') : '';
   const cleanReturnType = makeReturnTypes(returnType);
-  return `/* Please always respect the return type : ${cleanReturnType} */\n(${cleanArgs}) : ${cleanReturnType} => {`;
+  return `/* Please always respect the return type : ${ cleanReturnType } */\n(${ cleanArgs }) : ${ cleanReturnType } => {`;
 };
 const headerSize = textToArray(header()).length;
 export const footer = () => `\n};`;
@@ -41,7 +41,7 @@ function clearIndentation(script: string, numLevel?: number) {
   if (numLevel != null) {
     if (numLevel > 0) {
       // clear up to numLevel tab
-      regex = new RegExp(`^(\\t){0,${numLevel}}`, 'gm');
+      regex = new RegExp(`^(\\t){0,${ numLevel }}`, 'gm');
     }
   } else {
     // clear all tab
@@ -116,14 +116,13 @@ export function functionalizeScript(
         }
       }
       const imports = clearIndentation(nakedScript.substring(0, startPosition));
-      const body = insertReturn(
-        nakedScript.substring(startPosition, nakedScript.length).trim(),
-      );
+      const rawBody = nakedScript.substring(startPosition, nakedScript.length);
+      const body = insertReturn( rawBody.replace(/^\r?\n/, ""));
 
-      return `${imports ? imports + '\n' : ''}${header(
+      return `${ imports ? imports + '\n' : '' }${ header(
         returnType,
         args,
-      )}\n${body}${footer()}`;
+      ) }\n${ body }${ footer() }`;
     }
   }
   return nakedScript;
@@ -166,7 +165,7 @@ function findPositions(functionalizedScript: string): Positions | string[] {
       readFile: filePath =>
         filePath === filePath ? functionalizedScript : undefined,
       useCaseSensitiveFileNames: () => true,
-      writeFile: () => {},
+      writeFile: () => { },
     };
 
     const program = ts.createProgram({
@@ -178,7 +177,7 @@ function findPositions(functionalizedScript: string): Positions | string[] {
     const syntaxErrors = program.getSyntacticDiagnostics();
     if (syntaxErrors.length > 0) {
       logger.log('Syntax errors: ', syntaxErrors);
-      return syntaxErrors.map(se => `syntax error "${se.messageText}"`);
+      return syntaxErrors.map(se => `syntax error "${ se.messageText }"`);
     }
 
     let lastImportPostion = 0;
@@ -303,7 +302,7 @@ function extractFromPositions(script: string, positions: Positions): string {
   return (
     imports +
     (imports ? '\n' : '') +
-    clearIndentation((body + returnStatement).trim(), 1)
+    clearIndentation((body.replace(/^\r?\n/, '') + returnStatement), 1)
   );
 }
 
@@ -374,9 +373,9 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     const contextLibs =
       scriptContext === 'Client'
         ? Object.entries(clientScripts).reduce<LibMap>((acc, [k, v]) => {
-            acc[`file:///${k}.ts`] = v.content;
-            return acc;
-          }, {})
+          acc[`file:///${ k }.ts`] = v.content;
+          return acc;
+        }, {})
         : {};
 
     const functionalizedNewExtraLibs = Object.entries(
@@ -449,24 +448,24 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       ...(defaultActions ? defaultActions(monaco) : []),
       ...(returnType && returnType.length > 0
         ? [
-            {
-              id: 'SelectAllWithScriptFunction',
-              label: 'Ctrl + A avoiding header and footer',
-              keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_A],
-              run: (_monaco: MonacoEditor, editor: MonacoCodeEditor) => {
-                const editorLines = textToArray(editor.getValue());
-                const lastEditableLine =
-                  textToArray(editor.getValue()).length - footerSize;
-                const range = {
-                  startColumn: 1,
-                  endColumn: editorLines[lastEditableLine - 1].length,
-                  startLineNumber: headerSize,
-                  endLineNumber: lastEditableLine,
-                };
-                editor.setSelection(range);
-              },
+          {
+            id: 'SelectAllWithScriptFunction',
+            label: 'Ctrl + A avoiding header and footer',
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_A],
+            run: (_monaco: MonacoEditor, editor: MonacoCodeEditor) => {
+              const editorLines = textToArray(editor.getValue());
+              const lastEditableLine =
+                textToArray(editor.getValue()).length - footerSize;
+              const range = {
+                startColumn: 1,
+                endColumn: editorLines[lastEditableLine - 1].length,
+                startLineNumber: headerSize,
+                endLineNumber: lastEditableLine,
+              };
+              editor.setSelection(range);
             },
-          ]
+          },
+        ]
         : []),
     ],
     [defaultActions, returnType],
@@ -492,40 +491,40 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   );
 
   return (
-    <div className={cx(flex, flexColumn, expandBoth)}>
-      {error && <MessageString value={error} type="error" />}
-      {resizable ? (
+    <div className={ cx(flex, flexColumn, expandBoth) }>
+      { error && <MessageString value={ error } type="error" /> }
+      { resizable ? (
         <ResizeHandle
-          minSize={100}
-          textContent={functionalizeScript(
+          minSize={ 100 }
+          textContent={ functionalizeScript(
             models[props.fileName] || '\n\n\n\n',
             returnType,
             args,
-          )}
+          ) }
         >
           <SrcEditor
-            {...props}
-            language={language}
-            models={models}
+            { ...props }
+            language={ language }
+            models={ models }
             //        onEditorReady={ editorLock }
-            onChange={handleChange}
-            onBlur={handleBlur}
-            onSave={handleSave}
-            defaultActions={actions}
+            onChange={ handleChange }
+            onBlur={ handleBlur }
+            onSave={ handleSave }
+            defaultActions={ actions }
           />
         </ResizeHandle>
       ) : (
         <SrcEditor
-          {...props}
-          language={language}
-          models={models}
+          { ...props }
+          language={ language }
+          models={ models }
           //      onEditorReady={ editorLock }
-          onChange={handleChange}
-          onBlur={handleBlur}
-          onSave={handleSave}
-          defaultActions={actions}
+          onChange={ handleChange }
+          onBlur={ handleBlur }
+          onSave={ handleSave }
+          defaultActions={ actions }
         />
-      )}
+      ) }
     </div>
   );
 }
