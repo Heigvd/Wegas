@@ -143,11 +143,11 @@ export default function ScriptParserTester() {
           <h3>In editor script Dual</h3>
           <WegasScriptEditor
             models={{}}
-            fileName="lib.dom.d.ts"
+            fileName={initialPath}
             onChange={setValue}
             noGutter
             minimap={false}
-            returnType={RETURN_TYPES}
+            //returnType={RETURN_TYPES}
             language="typescript"
           />
         </div>
