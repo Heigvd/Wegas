@@ -35,15 +35,13 @@ public class CypressTest {
         this.ADMIN_EMAIL = email;
         this.ADMIN_PASSWORD = password;
         this.logger = logger;
-        verifyCypress();
-        cypressSuiteTest();
     }
 
 
  /**
      * Test application with cypress
      */
-    private void verifyCypress() {
+    public void verifyCypress() {
         logger.info("Verifying Cypress");
         try {
             String cypressCommand = "yarn cypress verify" ;
@@ -81,7 +79,7 @@ public class CypressTest {
     /**
      * Test application with cypress
      */
-    private void cypressSuiteTest() {
+    public void cypressSuiteTest() {
         logger.info(("Launching tests with Cypress"));
         try {
             Map<String, String> env = new HashMap<>();
@@ -99,7 +97,6 @@ public class CypressTest {
             boolean interractive = System.getProperty("cypress", "false").equals("true");
 
             String cypressSubcommand = interractive ? "open" : "run";
-            // String cypressSubcommand = "open";
 
             String cypressCommand = "yarn cypress " + cypressSubcommand + " --env " + envOpt;
 

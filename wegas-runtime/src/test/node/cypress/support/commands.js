@@ -24,10 +24,10 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-Cypress.Commands.add("visitWegas", () => {
+Cypress.Commands.add("visitWegas", (path) => {
   const url = Cypress.env("WEGAS_URL");
   if (url) {
-    cy.visit(url);
+    cy.visit(url + (path ? path : ""));
   } else {
     throw "please set env WEGAS_URL to the test url";
   }
