@@ -53,11 +53,11 @@ public class RenameVariableVisitor implements MergeHelper.MergeableVisitor {
             String oldName = entry.getKey();
             String newName = entry.getValue();
             this.patterns.put(
-                Pattern.compile("Variable.find\\(gameModel, ([\"'])"
-                    + Pattern.quote(oldName) + "([\"'])\\)",
+                Pattern.compile("([\"'])"
+                    + Pattern.quote(oldName) + "([\"'])",
                     Pattern.UNICODE_CASE | Pattern.UNICODE_CHARACTER_CLASS
                 ),
-                "Variable.find(gameModel, $1" + newName + "$2)"
+                "$1" + newName + "$2"
             );
         }
     }
@@ -101,7 +101,7 @@ public class RenameVariableVisitor implements MergeHelper.MergeableVisitor {
         if (target instanceof Script) {
             Script script = (Script) target;
             String content = script.getContent();
-            // Convert all Variable.find(gameModel, "oldName") to Variable.find(gameModel, "newName")
+            // Convert all "oldName" "newName"
             for (Entry<Pattern, String> entry : patterns.entrySet()) {
                 Pattern pattern = entry.getKey();
                 String newName = entry.getValue();
