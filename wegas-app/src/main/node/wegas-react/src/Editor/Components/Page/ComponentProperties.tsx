@@ -12,6 +12,7 @@ import {
   defaultFlexLayoutOptionsKeys,
   FlexItemLayoutProps,
 } from '../../../Components/Layouts/FlexList';
+import { defaultMenuItemKeys } from '../../../Components/Layouts/Menu';
 import {
   ContainerComponent,
   usePageComponentStore,
@@ -154,6 +155,9 @@ const defaultDecorations: WegasComponentDecorations = {
 const defaultDecorationsKeys = Object.keys(defaultDecorations);
 
 interface WegasComponentForm {
+  childrenProperties?: {
+    [prop: string]: unknown;
+  };
   commonProperties: WegasComponentCommonProperties;
   componentProperties: {
     [prop: string]: unknown;
@@ -169,6 +173,7 @@ function wegasComponentToForm(
   wegasComponentProperties: WegasComponent['props'],
 ): WegasComponentForm {
   return {
+    childrenProperties: pick(wegasComponentProperties, defaultMenuItemKeys),
     commonProperties: pick(
       wegasComponentProperties,
       defaultCommonPropertiesKeys,
@@ -194,6 +199,7 @@ function formToWegasComponent(
   formObject: WegasComponentForm,
 ): WegasComponent['props'] {
   return {
+    ...formObject.childrenProperties,
     ...formObject.commonProperties,
     ...formObject.componentProperties,
     ...formObject.layoutOptions,
@@ -212,9 +218,19 @@ export function wegasComponentSchema(
   },
   parentContainer?: ContainerComponent,
 ) {
+  const childrenAdditionalShema = parentContainer?.childrenAdditionalShema
+    ? {
+        childrenProperties: schemaProps.object({
+          label: 'Children properties',
+          properties: parentContainer.childrenAdditionalShema,
+        }),
+      }
+    : {};
+
   return {
     description: pageComponentSchema.description,
     properties: {
+      ...childrenAdditionalShema,
       componentProperties: schemaProps.object({
         label: 'Component properties',
         properties: (pageComponentSchema.properties || {}) as {
@@ -225,7 +241,7 @@ export function wegasComponentSchema(
         label: 'Container properties',
         properties: wegasComponentCommonSchema,
       }),
-      ...wegasComponentExtraSchema(parentContainer?.childrenSchema),
+      ...wegasComponentExtraSchema(parentContainer?.childrenLayoutOptionSchema),
     },
   };
 }

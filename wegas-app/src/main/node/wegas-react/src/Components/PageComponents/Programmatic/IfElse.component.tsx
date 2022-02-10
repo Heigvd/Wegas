@@ -186,8 +186,6 @@ registerComponent(
     container: {
       isVertical: () => false,
       ChildrenDeserializer,
-      childrenSchema: [],
-      // noContainer: () => true,
       deleteChildren,
     },
     name: 'If Else',

@@ -23,9 +23,9 @@ export function useJSONSchema(enabled: boolean = true) {
     return emptySchema;
   }
 
-  const childrenSchemas = Object.values(components)
-    .filter(component => component.container != null)
-    .reduce((o, c) => [...o, ...c.container!.childrenSchema], []);
+  const childrenLayoutOptionSchema = Object.values(components)
+    .filter(component => component.container?.childrenAdditionalShema)
+    .reduce((o, c) => [...o, ...c.container!.childrenLayoutOptionSchema!], []);
 
   const componentSchemas = Object.values(components).map(component => {
     const componentSchemaProperties = cloneDeep(
@@ -44,9 +44,10 @@ export function useJSONSchema(enabled: boolean = true) {
     const properties = {
       ...wegasComponentCommonSchema,
       ...componentSchemaProperties,
+      ...component.container?.childrenAdditionalShema,
       ...hashListChoicesToSchema([
         // ...Object.values(layoutChoices).reduce((o, c) => [...o, ...c], []),
-        ...childrenSchemas,
+        ...childrenLayoutOptionSchema,
         ...layoutCommonChoices,
       ]),
       ...hashListChoicesToSchema(layoutConditionnalChoices),
@@ -79,7 +80,7 @@ export function useJSONSchema(enabled: boolean = true) {
               //   (o, c) => [...o, ...c],
               //   [],
               // ),
-              ...childrenSchemas,
+              ...childrenLayoutOptionSchema,
               ...layoutCommonChoices,
             ]),
             ...hashListChoicesToSchema(layoutConditionnalChoices),

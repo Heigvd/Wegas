@@ -1,23 +1,23 @@
-import * as React from 'react';
-import { createStore, Reducer, applyMiddleware } from 'redux';
 import u from 'immer';
-import { composeEnhancers } from '../../../data/Stores/store';
+import * as React from 'react';
+import { applyMiddleware, createStore, Reducer } from 'redux';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
-import { useAnyStore } from '../../Hooks/storeHookFactory';
-import {
-  WegasComponentProps,
-  PageComponentProps,
-  DropZones,
-} from './EditableComponent';
-import { Icon } from '../../../Editor/Components/Views/FontAwesome';
-import { SchemaPropsSchemas } from './schemaProps';
 import {
   IVariableDescriptor,
   WegasClassNameAndScriptableTypes,
 } from 'wegas-ts-api';
-import { ChildrenDeserializerProps } from './PageDeserializer';
-import { classStyleIdShema } from './options';
+import { composeEnhancers } from '../../../data/Stores/store';
 import { IconComponentType } from '../../../Editor/Components/Page/ComponentIcon';
+import { Icon } from '../../../Editor/Components/Views/FontAwesome';
+import { useAnyStore } from '../../Hooks/storeHookFactory';
+import {
+  DropZones,
+  PageComponentProps,
+  WegasComponentProps,
+} from './EditableComponent';
+import { classStyleIdShema } from './options';
+import { ChildrenDeserializerProps } from './PageDeserializer';
+import { SchemaPropsSchemas, SimpleSchemaPropsSchemas } from './schemaProps';
 
 export const componentTypes = [
   'Layout',
@@ -35,8 +35,8 @@ export type ComponentType = typeof componentTypes[number];
 export interface ContainerComponent<P = {}> {
   isVertical: (props?: P) => boolean | undefined;
   ChildrenDeserializer: React.FunctionComponent<ChildrenDeserializerProps<P>>;
-  noContainer?: (props?: P) => boolean | undefined;
-  childrenSchema: HashListChoices;
+  childrenAdditionalShema?: { [prop: string]: SimpleSchemaPropsSchemas };
+  childrenLayoutOptionSchema?: HashListChoices;
   childrenLayoutKeys?: string[];
   deleteChildren?: (
     page: WegasComponent,

@@ -169,7 +169,6 @@ const test = pageComponentFactory({
   container: {
     isVertical,
     ChildrenDeserializer,
-    childrenSchema: [],
     childrenLayoutKeys: [],
   },
   name: CONTENT_TYPE,

@@ -717,26 +717,6 @@ export function ComponentContainer({
     };
   }, []);
 
-  // const onEditableComponentDrop: ComponentDropZoneProps['onDrop'] =
-  //   React.useCallback(
-  //     (dndComponent, e) => {
-  //       if (container.current) {
-  //         // Get the bounding rectangle of target
-  //         const rect = e.currentTarget.getBoundingClientRect();
-
-  //         // Mouse position
-  //         const x = e.clientX - rect.left;
-  //         const y = e.clientY - rect.top;
-
-  //         onDrop(dndComponent, path, undefined, {
-  //           // position: { left: relX, top: relY },
-  //           position: { left: x, top: y },
-  //         });
-  //       }
-  //     },
-  //     [onDrop, path],
-  //   );
-
   return showComponent ? (
     <Container
       ref={container}
@@ -762,21 +742,9 @@ export function ComponentContainer({
       onMouseLeave={onMouseLeave}
       onDragOver={dragEnter}
       onDragLeave={dragLeave}
-      // {...dropFunctions}
-      // onDragEnter={dragEnter}
-      // onDragEnd={dragLeave}
-      // onDragLeave={dragLeave}
       tooltip={options.tooltip}
     >
-      {/* {dragHoverState && editable && dropzones.center && (
-        <ComponentDropZone
-          onDrop={onEditableComponentDrop}
-          show
-          dropPosition="INTO"
-        />
-      )} */}
       {dragHoverState && editable && dropzones.side && (
-        // {true && (
         <ComponentDropZone
           onDrop={dndComponent => onDrop(dndComponent, containerPath, itemPath)}
           show
