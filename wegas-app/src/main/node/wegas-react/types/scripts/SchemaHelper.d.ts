@@ -140,9 +140,9 @@ type SchemaPropsScriptFn = (
 
 type SchemaPropsCustomScriptFn = (
   props: {
-    returnType?: WegasScriptEditorReturnTypeName[];
+    returnType?: string[];
     language?: ScriptLanguage;
-    args?: [string, WegasScriptEditorReturnTypeName[]][];
+    args?: [string, string[]][];
     scriptContext?: ScriptContext;
   } & CommonSchemaProps &
     ValueSchemaProps<string>,
@@ -168,7 +168,7 @@ type SchemaPropsCommonFn = (props: CommonSchemaProps) => {};
 
 type SchemaPropsVariableFn = (
   props: {
-    returnType?: WegasScriptEditorReturnTypeName[];
+    returnType?: string[];
     items?: TreeSelectItem<string>[];
   } & CommonSchemaProps,
 ) => {};
@@ -176,7 +176,7 @@ type SchemaPropsVariableFn = (
 type SchemaPropsTreeFn = <T>(
   props: {
     items?: TreeSelectItem<T>[];
-    returnType?: WegasScriptEditorReturnTypeName[];
+    returnType?: string[];
     type?: TYPESTRING | TYPESTRING[];
     borderBottom?: boolean;
   } & CommonSchemaProps,
@@ -184,7 +184,7 @@ type SchemaPropsTreeFn = <T>(
 
 type SchemaPropsScriptVariableFn = (
   props: {
-    returnType?: WegasScriptEditorReturnTypeName[];
+    returnType?: string[];
   } & CommonSchemaProps,
 ) => {};
 

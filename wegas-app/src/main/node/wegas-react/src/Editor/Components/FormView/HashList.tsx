@@ -4,16 +4,14 @@ import { CommonViewContainer, CommonView } from './commonView';
 import Form from 'jsoninput';
 import { omit, cloneDeep } from 'lodash-es';
 import { useDeepChanges } from '../../../Components/Hooks/useDeepChanges';
-import {
-  schemaProps,
-  SchemaPropsSchemas,
-} from '../../../Components/PageComponents/tools/schemaProps';
+import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { LabeledView, Labeled } from './labeled';
 import { DragDropArray } from './Array';
 import { setEntry, getEntry } from '../../../Helper/tools';
 import { legendStyle, reset, borderTopStyle } from './Object';
 import { cx } from '@emotion/css';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { AvailableSchemas } from '.';
 
 interface ObjectValues {
   [key: string]: string | number | ObjectValues;
@@ -29,7 +27,7 @@ function isHashListValue(item: HashListItem): item is HashListValue {
 }
 
 export function hashListChoicesToSchema(choices?: HashListChoices): {
-  [prop: string]: SchemaPropsSchemas;
+  [prop: string]: AvailableSchemas;
 } {
   return choices
     ? choices.reduce(
@@ -73,7 +71,7 @@ interface EntryViewProps<T> {
   prop: string;
   value: T | undefined;
   onChange: (key: string, value: T) => void;
-  schema?: SchemaPropsSchemas;
+  schema?: AvailableSchemas;
 }
 
 export function EntryView<T>({
@@ -264,7 +262,7 @@ function EntriesView({
         Object.entries(currentValue)
           .sort(([, a], [, b]) => sortValues(a, b))
           .map(([k, v], i) => {
-            let schema: SchemaPropsSchemas | undefined;
+            let schema: AvailableSchemas | undefined;
             let label: React.ReactNode | undefined;
             // let newChoices: HashListChoices | undefined;
             if (choices) {

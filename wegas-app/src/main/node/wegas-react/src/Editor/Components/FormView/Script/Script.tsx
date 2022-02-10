@@ -56,9 +56,7 @@ export function isScriptCondition(mode?: ScriptMode) {
   return mode === 'GET' || mode === 'GET_CLIENT';
 }
 
-export function returnTypes(
-  mode?: ScriptMode,
-): WegasScriptEditorReturnTypeName[] | undefined {
+export function returnTypes(mode?: ScriptMode): string[] | undefined {
   return mode === 'GET_CLIENT' ? ['boolean'] : undefined;
 }
 

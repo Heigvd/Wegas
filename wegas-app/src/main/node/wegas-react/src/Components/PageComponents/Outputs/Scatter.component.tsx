@@ -27,58 +27,57 @@ ChartJS.register(LinearScale, PointElement, LineElement, Legend, Tooltip);
 type Point = { x: number; y: number };
 
 interface Data {
-  label: IScript;
-  points: IScript;
+  label: string;
+  points: Point[];
   fill?: string;
+  allowDrag?: boolean;
 }
 
 export interface PlayerScatterChartProps extends WegasComponentProps {
   height?: number;
-  data: Data[];
+  series: IScript;
   showLine: boolean;
 }
+/*
+ * TODO
+ *********
+ *  1) if any serie | s.allowDrag then
+ *     - enable dragData plugin
+ *     - onDragEnd = call
+ */
 
 type ChartProps = React.ComponentProps<typeof Scatter>;
 
 function PlayerScatterChart({
   height,
   showLine,
-  data,
+  series,
   className,
   style,
   id,
   options,
   context,
 }: PlayerScatterChartProps): JSX.Element {
-  const labelScripts: IScript[] = [];
-  const pointScripts: IScript[] = [];
-
-  (data || []).forEach(dataSet => {
-    labelScripts.push(dataSet.label);
-    pointScripts.push(dataSet.points);
-  });
-
-  const labels = useScript<string[]>(labelScripts, context);
-  const points = useScript<Point[][]>(pointScripts, context);
+  const evaluatedData = useScript<Data[]>(series, context);
 
   const chartData: ChartProps['data'] = {
-    datasets: [],
+    datasets: (evaluatedData || [])
+      .filter(serie => !!serie)
+      .map(serie => {
+        return {
+          label: serie.label,
+          data: serie.points,
+          backgroundColor: serie.fill,
+        };
+      }),
   };
 
   const chartOptions: ChartProps['options'] = {
+    responsive: true,
     showLine: showLine,
+    animation: false,
+    plugins: {},
   };
-
-  (labels || []).forEach((label, i) => {
-    if (points != null) {
-      const dataSet = points[i];
-      chartData.datasets!.push({
-        label,
-        data: dataSet,
-        backgroundColor: data[i]?.fill,
-      });
-    }
-  });
 
   return (
     <div
@@ -98,31 +97,18 @@ registerComponent(
   pageComponentFactory({
     component: PlayerScatterChart,
     componentType: 'Output',
-    name: 'Scatter',
     icon: 'chart-line',
     illustration: 'scatter',
     schema: {
-      data: schemaProps.array({
-        label: 'Datasets',
-        itemSchema: {
-          label: schemaProps.scriptString({
-            label: 'Name',
-          }),
-          points: schemaProps.customScript({
-            label: 'Points',
-            //@ts-ignore this works fine
-            returnType: ['{x:number;y:number}[]'],
-          }),
-          fill: {
-            type: 'string',
-            value: '',
-            view: {
-              type: 'colorpicker',
-              label: 'Fill color',
-            },
-          },
+      series: {
+        view: {
+          type: 'customscript',
+          label: 'Series',
+          returnType: [
+            '{label: string, points:{x:number, y:number}[], fill?: string, allowDrag?: boolean}[]',
+          ],
         },
-      }),
+      },
       height: schemaProps.number({
         label: 'Height',
         required: false,

@@ -129,13 +129,25 @@ registerComponent(
         required: true,
         returnType: ['SStringDescriptor', 'SNumberDescriptor', 'string'],
       }),
-      choices: schemaProps.array({
-        label: 'Choices',
-        itemSchema: {
-          label: schemaProps.string({ label: 'Label' }),
-          value: schemaProps.string({ label: 'Value' }),
+      choices: {
+        //type: 'object',
+        view: {
+          type: 'scriptable',
+          label: 'Choices',
+          scriptProps: {
+            language: 'TypeScript',
+            scriptContext: 'Client',
+            // @ts-ignore
+            returnType: ['{label:string, value: string}[]'],
+          },
+          literalSchema: schemaProps.array({
+            itemSchema: {
+              label: schemaProps.string({ label: 'Label' }),
+              value: schemaProps.string({ label: 'Value' }),
+            },
+          }),
         },
-      }),
+      },
       onVariableChange: onVariableChangeSchema('On text change action'),
       ...classStyleIdShema,
     },

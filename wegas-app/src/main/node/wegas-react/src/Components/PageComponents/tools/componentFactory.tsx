@@ -18,6 +18,7 @@ import {
 import { ChildrenDeserializerProps } from './PageDeserializer';
 import { classStyleIdShema } from './options';
 import { IconComponentType } from '../../../Editor/Components/Page/ComponentIcon';
+import { AvailableSchemas } from '../../../Editor/Components/FormView';
 
 export const componentTypes = [
   'Layout',
@@ -176,7 +177,7 @@ interface ComponentFactoryBasicParameters<
   /**
    * Indicates who to manage the component properties
    */
-  schema: { [prop: string]: SchemaPropsSchemas };
+  schema: { [prop: string]: AvailableSchemas };
   /**
    * Indicates for which kind of variables this component suits well
    */

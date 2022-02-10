@@ -4,15 +4,13 @@ import { CommonViewContainer, CommonView } from './commonView';
 import Form from 'jsoninput';
 import { omit } from 'lodash-es';
 import { useDeepChanges } from '../../../Components/Hooks/useDeepChanges';
-import {
-  schemaProps,
-  SchemaPropsSchemas,
-} from '../../../Components/PageComponents/tools/schemaProps';
+import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { LabeledView, Labeled } from './labeled';
 import { DragDropArray } from './Array';
 import { legendStyle, reset, borderTopStyle } from './Object';
 import { cx } from '@emotion/css';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { AvailableSchemas } from '.';
 
 interface ObjectValues {
   [key: string]: string | number | ObjectValues;
@@ -29,16 +27,16 @@ type DictionaryViewBag = CommonView &
     tooltip?: string;
     objectViewStyle?: boolean;
     cleaning?: CleaningHashmapMethods;
-    keySchema?: SchemaPropsSchemas;
-    valueSchema?: SchemaPropsSchemas;
+    keySchema?: AvailableSchemas;
+    valueSchema?: AvailableSchemas;
   };
 
 interface EntryViewProps<T> {
   prop: string;
   value: T | undefined;
   onChange: (key: string, value: T) => void;
-  keySchema?: SchemaPropsSchemas;
-  valueSchema?: SchemaPropsSchemas;
+  keySchema?: AvailableSchemas;
+  valueSchema?: AvailableSchemas;
 }
 
 export function EntryView<T>({
@@ -115,8 +113,8 @@ interface EntriesViewProps {
   labelNode?: React.ReactNode;
   view: DictionaryViewBag;
   allowChildAdd?: boolean;
-  keySchema?: SchemaPropsSchemas;
-  valueSchema?: SchemaPropsSchemas;
+  keySchema?: AvailableSchemas;
+  valueSchema?: AvailableSchemas;
 }
 
 function EntriesView({

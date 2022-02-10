@@ -204,8 +204,14 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         }
 
         interface ClientMethodClass extends GlobalClientMethodClass {
+          /**
+           * @deprecated use import
+           */
           getMethod: <T extends keyof ClientMethodList>(name : T) => ClientMethodList[T];
         }
+        /**
+         * @deprecated
+         */
         declare const ClientMethods : ClientMethodClass;
 
         type GlobalSchemas =

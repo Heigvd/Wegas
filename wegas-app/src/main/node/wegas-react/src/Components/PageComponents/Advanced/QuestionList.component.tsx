@@ -59,7 +59,7 @@ registerComponent(
           'SListDescriptor',
           'SQuestionDescriptor',
           'SWhQuestionDescriptor',
-          '(SListDescriptor | SQuestionDescriptor | SWhQuestionDescriptor)[]' as WegasScriptEditorReturnTypeName,
+          '(SListDescriptor | SQuestionDescriptor | SWhQuestionDescriptor)[]',
         ],
       }),
       autoOpenFirst: schemaProps.boolean({

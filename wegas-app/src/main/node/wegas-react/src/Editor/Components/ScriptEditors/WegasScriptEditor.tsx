@@ -23,9 +23,7 @@ function makeReturnTypes(returnType?: string[]) {
   return returnType?.join(' | ') || '';
 }
 
-function makeArgs(
-  args?: [string, WegasScriptEditorReturnTypeName[]][],
-): string {
+function makeArgs(args?: [string, string[]][]): string {
   return args !== undefined ? args.map(arg => arg.join(':')).join(',') : '';
 }
 
@@ -331,9 +329,9 @@ const convertToLibMap = (list: MonacoDefinitionsLibrary[]) => {
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
   scriptContext?: ScriptContext;
-  returnType?: WegasScriptEditorReturnTypeName[];
+  returnType?: string[];
   resizable?: boolean;
-  args?: [string, WegasScriptEditorReturnTypeName[]][];
+  args?: [string, string[]][];
 }
 
 export function WegasScriptEditor(props: WegasScriptEditorProps) {

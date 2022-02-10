@@ -1,33 +1,14 @@
 import { emptyStatement, Statement } from '@babel/types';
-import { Schema, TYPESTRING, WidgetProps } from 'jsoninput/typings/types';
+import { TYPESTRING } from 'jsoninput/typings/types';
 import * as React from 'react';
 import { IAbstractContentDescriptor, IScript } from 'wegas-ts-api';
-import { DEFINED_VIEWS } from '../../../Editor/Components/FormView';
-import { IArrayProps } from '../../../Editor/Components/FormView/Array';
-import { BooleanProps } from '../../../Editor/Components/FormView/Boolean';
-import { CodeProps } from '../../../Editor/Components/FormView/Code';
-import { CustomScriptProps } from '../../../Editor/Components/FormView/CustomScript';
-import { PageSelectProps } from '../../../Editor/Components/FormView/PageSelect';
-import { StatementViewProps } from '../../../Editor/Components/FormView/Script/Expressions/ExpressionEditor';
-import { ScriptProps } from '../../../Editor/Components/FormView/Script/Script';
-import { ScriptableBooleanProps } from '../../../Editor/Components/FormView/ScriptableBoolean';
-import { ScriptableStringProps } from '../../../Editor/Components/FormView/ScriptableString';
-import { IAsyncSelectProps } from '../../../Editor/Components/FormView/Select';
-import { StringInputProps } from '../../../Editor/Components/FormView/String';
 import {
-  ScripableVariableSelectProps,
-  TreeVariableSelectProps,
-  TreeVSelectProps,
-} from '../../../Editor/Components/FormView/TreeVariableSelect';
+  DEFINED_VIEWS,
+  SchemaFromView,
+} from '../../../Editor/Components/FormView';
 import { WegasMethod } from '../../../Editor/editionConfig';
 import { createScript } from '../../../Helper/wegasEntites';
 import { Choices } from '../../Selector';
-
-type TypedProps<T extends { view: {} }> = Schema<
-  T['view'] & {
-    type: keyof typeof DEFINED_VIEWS;
-  }
->;
 
 // For tests only
 //const simpleSchemaProps: SimpleSchemaPropsType = {
@@ -39,7 +20,7 @@ const simpleSchemaProps = {
     index = 0,
   }: {
     type?: TYPESTRING | TYPESTRING[];
-  } & SimpleSchemaProps): TypedProps<WidgetProps.BaseProps> => ({
+  } & SimpleSchemaProps): SchemaFromView<'hidden'> => ({
     required,
     type,
     index,
@@ -59,7 +40,7 @@ const simpleSchemaProps = {
     noMarginTop,
   }: CommonSchemaProps &
     ReadOnlySchemaProps &
-    ValueSchemaProps<boolean>): TypedProps<BooleanProps> => ({
+    ValueSchemaProps<boolean>): SchemaFromView<'boolean'> => ({
     required,
     type: 'boolean',
     value,
@@ -87,7 +68,7 @@ const simpleSchemaProps = {
     noMarginTop,
   }: CommonSchemaProps &
     ReadOnlySchemaProps &
-    ValueSchemaProps<number>): TypedProps<StringInputProps> => ({
+    ValueSchemaProps<number>): SchemaFromView<'number'> => ({
     required,
     type: 'number',
     value,
@@ -118,7 +99,7 @@ const simpleSchemaProps = {
     ReadOnlySchemaProps &
     ValueSchemaProps<string> & {
       fullWidth?: boolean;
-    }): TypedProps<StringInputProps> => ({
+    }): SchemaFromView<'string'> => ({
     required,
     type: 'string',
     value,
@@ -219,7 +200,7 @@ const simpleSchemaProps = {
     mode?: ScriptMode;
     language?: ScriptLanguage;
   } & CommonSchemaProps &
-    ValueSchemaProps<string>): TypedProps<ScriptProps> => ({
+    ValueSchemaProps<string>): SchemaFromView<'script'> => ({
     required,
     type: 'object',
     value: createScript(value, language),
@@ -249,12 +230,12 @@ const simpleSchemaProps = {
     noMarginTop,
     scriptContext,
   }: {
-    returnType?: WegasScriptEditorReturnTypeName[];
+    returnType?: string[];
     language?: ScriptLanguage;
-    args?: [string, WegasScriptEditorReturnTypeName[]][];
+    args?: [string, string[]][];
     scriptContext?: ScriptContext;
   } & CommonSchemaProps &
-    ValueSchemaProps<string>): TypedProps<CustomScriptProps> => ({
+    ValueSchemaProps<string>): SchemaFromView<'customscript'> => ({
     required,
     type: 'object',
     value: createScript(value, language),
@@ -285,7 +266,7 @@ const simpleSchemaProps = {
   }: {
     language?: CodeLanguage;
   } & CommonSchemaProps &
-    ValueSchemaProps<{} | string>): TypedProps<CodeProps> => ({
+    ValueSchemaProps<{} | string>): SchemaFromView<'code'> => ({
     required,
     type: 'object',
     value,
@@ -318,7 +299,7 @@ const simpleSchemaProps = {
     returnType?: TYPESTRING | TYPESTRING[];
     openChoices?: boolean;
   } & CommonSchemaProps &
-    ValueSchemaProps<V>): TypedProps<IAsyncSelectProps> & {
+    ValueSchemaProps<V>): SchemaFromView<'select'> & {
     enum: readonly unknown[];
   } => {
     let enumerator: readonly unknown[] = [];
@@ -361,7 +342,7 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
-  }: CommonSchemaProps): TypedProps<PageSelectProps> => {
+  }: CommonSchemaProps): SchemaFromView<'pageselect'> => {
     return {
       required,
       type: 'object',
@@ -385,7 +366,7 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
-  }: CommonSchemaProps): TypedProps<PageSelectProps> => {
+  }: CommonSchemaProps): SchemaFromView<'pagesloaderselect'> => {
     return {
       required,
       type: 'object',
@@ -409,7 +390,7 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
-  }: CommonSchemaProps): TypedProps<PageSelectProps> => {
+  }: CommonSchemaProps): SchemaFromView<'thememodeselect'> => {
     return {
       required,
       type: 'string',
@@ -436,9 +417,9 @@ const simpleSchemaProps = {
     borderTop,
     noMarginTop,
   }: {
-    returnType?: WegasScriptEditorReturnTypeName[];
+    returnType?: string[];
     items?: TreeSelectItem<string>[];
-  } & CommonSchemaProps): TypedProps<TreeVariableSelectProps> => ({
+  } & CommonSchemaProps): SchemaFromView<'variableselect'> => ({
     required,
     type: 'string',
     index,
@@ -468,10 +449,10 @@ const simpleSchemaProps = {
     borderBottom,
   }: {
     items?: TreeSelectItem<T>[];
-    returnType?: WegasScriptEditorReturnTypeName[];
+    returnType?: string[];
     type?: TYPESTRING | TYPESTRING[];
     borderBottom?: boolean;
-  } & CommonSchemaProps): TypedProps<TreeVSelectProps<T>> => ({
+  } & CommonSchemaProps): SchemaFromView<'treeselect'> => ({
     required,
     type,
     index,
@@ -498,8 +479,8 @@ const simpleSchemaProps = {
     borderTop,
     noMarginTop,
   }: {
-    returnType?: WegasScriptEditorReturnTypeName[];
-  } & CommonSchemaProps): TypedProps<ScripableVariableSelectProps> => ({
+    returnType?: string[];
+  } & CommonSchemaProps): SchemaFromView<'scriptableVariableSelect'> => ({
     required,
     type: 'object',
     index,
@@ -527,7 +508,7 @@ const simpleSchemaProps = {
   }: CommonSchemaProps &
     ValueSchemaProps<IScript> & {
       richText?: boolean;
-    }): TypedProps<ScriptableStringProps> => ({
+    }): SchemaFromView<'scriptableString'> => ({
     required,
     type: 'object',
     index,
@@ -554,7 +535,7 @@ const simpleSchemaProps = {
     borderTop,
     noMarginTop,
   }: CommonSchemaProps &
-    ValueSchemaProps<IScript>): TypedProps<ScriptableBooleanProps> => ({
+    ValueSchemaProps<IScript>): SchemaFromView<'scriptableBoolean'> => ({
     required,
     type: 'object',
     index,
@@ -591,7 +572,7 @@ const simpleSchemaProps = {
     highlight?: boolean;
     sortable?: boolean;
     controls?: React.ReactNode;
-  } & Omit<CommonSchemaProps, 'noMarginTop'>): TypedProps<IArrayProps> => ({
+  } & Omit<CommonSchemaProps, 'noMarginTop'>): SchemaFromView<'array'> => ({
     required,
     items: {
       properties: itemSchema,
@@ -626,7 +607,7 @@ const simpleSchemaProps = {
   }: {
     mode?: ScriptMode;
   } & CommonSchemaProps &
-    ValueSchemaProps<Statement>): TypedProps<StatementViewProps> => ({
+    ValueSchemaProps<Statement>): SchemaFromView<'statement'> => ({
     required,
     type: 'object',
     index,
@@ -659,7 +640,7 @@ const simpleSchemaProps = {
     objectViewStyle?: boolean;
     cleaning?: CleaningHashmapMethods;
   } & CommonSchemaProps &
-    ValueSchemaProps<object>) => ({
+    ValueSchemaProps<object>): SchemaFromView<'hashlist'> => ({
     required,
     type: 'object',
     value,
@@ -692,7 +673,7 @@ const simpleSchemaProps = {
     pickType?: FilePickingType;
     filter?: FileFilter;
   } & CommonSchemaProps &
-    ValueSchemaProps<IAbstractContentDescriptor>) => ({
+    ValueSchemaProps<IAbstractContentDescriptor>): SchemaFromView<'file'> => ({
     required,
     type: 'object',
     value,
@@ -726,23 +707,47 @@ const simpleSchemaProps = {
     filter?: FileFilter;
     scriptable?: boolean;
   } & CommonSchemaProps &
-    ValueSchemaProps<string>) => ({
-    required,
-    type: scriptable ? 'object' : 'string',
-    value,
-    index,
-    view: {
-      pickType,
-      filter,
-      featureLevel,
-      index,
-      label,
-      type: scriptable ? 'scriptablepath' : 'path',
-      layout,
-      borderTop,
-      noMarginTop,
-    },
-  }),
+    ValueSchemaProps<string>):
+    | SchemaFromView<'scriptablepath'>
+    | SchemaFromView<'path'> => {
+    if (scriptable) {
+      return {
+        required,
+        type: 'object',
+        value,
+        index,
+        view: {
+          pickType,
+          filter,
+          featureLevel,
+          index,
+          label,
+          type: 'scriptablepath',
+          layout,
+          borderTop,
+          noMarginTop,
+        },
+      };
+    } else {
+      return {
+        required,
+        type: 'string',
+        value,
+        index,
+        view: {
+          pickType,
+          filter,
+          featureLevel,
+          index,
+          label,
+          type: 'path',
+          layout,
+          borderTop,
+          noMarginTop,
+        },
+      };
+    }
+  },
 } as const;
 
 // For tests only !
@@ -778,10 +783,12 @@ export const schemaProps = {
   ...objectSchemaProps,
 } as const;
 
+/** used to expose schemaProps helpers in client scripts */
 export type SchemaPropsType = typeof schemaProps;
 
 type SimpleSchemaPropsValues = keyof typeof simpleSchemaProps;
 
+/** used only once in ComponentProperties.tsx (in pages components properties) */
 export type SimpleSchemaPropsSchemas = ReturnType<
   typeof simpleSchemaProps[SimpleSchemaPropsValues]
 >;
@@ -792,10 +799,17 @@ type ObjectSchemaPropsSchemas = ReturnType<
   typeof objectSchemaProps[ObjectSchemaPropsValues]
 >;
 
-export type SchemaPropsValues =
-  | SimpleSchemaPropsValues
-  | ObjectSchemaPropsValues;
+// unused
+//export type SchemaPropsValues =
+//  | SimpleSchemaPropsValues
+//  | ObjectSchemaPropsValues;
 
+/**
+ * Still used in:
+ *  - ComponentProperties.ts: as parameter of wegasComponentSchema function
+ *  - ComponentFactory.tsx:
+ *  - useJSONSchema.ts:
+ */
 export type SchemaPropsSchemas =
   | SimpleSchemaPropsSchemas
   | ObjectSchemaPropsSchemas;

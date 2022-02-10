@@ -12,10 +12,7 @@ import {
 import { wlog } from '../Helper/wegaslog';
 import { computePath } from '../Editor/Components/ScriptEditors/SrcEditor';
 
-export function header(
-  returnType?: string[],
-  args?: [string, WegasScriptEditorReturnTypeName[]][],
-) {
+export function header(returnType?: string[], args?: [string, string[]][]) {
   const cleanArgs =
     args !== undefined ? args.map(arg => arg.join(':')).join(',') : '';
   const cleanReturnType =
@@ -56,7 +53,7 @@ const funcPath = computePath(undefined, 'typescript');
 const defuncPath = computePath(undefined, 'typescript');
 const transPath = computePath(undefined, 'typescript');
 
-const RETURN_TYPES: WegasScriptEditorReturnTypeName[] = ['string'];
+const RETURN_TYPES = ['string'];
 const STR_RETURN_TYPES = RETURN_TYPES.join(' | ');
 
 export default function ScriptParserTester() {

@@ -136,7 +136,7 @@ export interface LabeledTreeVSelectProps<T>
     CommonView &
       LabeledView & {
         items?: TreeSelectItem<T>[];
-        returnType?: WegasScriptEditorReturnTypeName[];
+        returnType?: string[];
       }
   > {
   value?: T;

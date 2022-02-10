@@ -15,8 +15,8 @@ export interface CustomScriptProps
     LabeledView &
       CommonView & {
         language?: CodeLanguage;
-        returnType?: WegasScriptEditorReturnTypeName[];
-        args?: [string, WegasScriptEditorReturnTypeName[]][];
+        returnType?: string[];
+        args?: [string, string[]][];
         scriptContext?: ScriptContext;
       }
   > {
