@@ -35,7 +35,24 @@ const labelStyle = css({
 const inputModes = ['File', 'Variable', 'Code'] as const;
 type InputMode = ValueOf<typeof inputModes>;
 
-function parseScript(script: string = ''): InputMode {
+interface FileLiteral {
+  type: 'File';
+  content: string;
+}
+
+interface Variable {
+  type: 'Variable';
+  variableName: string;
+}
+
+interface Code {
+  type: 'Code';
+  script: string;
+}
+
+type ParsedScript = FileLiteral | Variable | Code;
+
+function parseScript(script: string = ''): ParsedScript {
   const sourceFile = createSourceFile(
     'Testedfile',
     script,
@@ -48,7 +65,7 @@ function parseScript(script: string = ''): InputMode {
     if (initStatement != null && isExpressionStatement(initStatement)) {
       const initExpression = initStatement.expression;
       if (initExpression == null || isStringLiteral(initExpression)) {
-        return 'File';
+        return { type: 'File', content: initExpression.text };
       } else if (isCallExpression(initExpression)) {
         const propertyAccess = initExpression.expression;
         if (isPropertyAccessExpression(propertyAccess)) {
@@ -83,7 +100,10 @@ function parseScript(script: string = ''): InputMode {
                     findName != null &&
                     isStringLiteral(findName)
                   ) {
-                    return 'Variable';
+                    return {
+                      type: 'Variable',
+                      variableName: findName.text,
+                    };
                   }
                 }
               }
@@ -92,12 +112,12 @@ function parseScript(script: string = ''): InputMode {
         }
       }
     } else if (initStatement != null) {
-      return 'Code';
+      return { type: 'Code', script: script };
     } else {
-      return 'File';
+      return { type: 'File', content: '' };
     }
   }
-  return 'Code';
+  return { type: 'Code', script: '' };
 }
 
 export interface ScriptablePathProps
@@ -111,28 +131,15 @@ export interface ScriptablePathProps
 
 export function ScriptablePath(props: ScriptablePathProps): JSX.Element {
   const script = props.value ? props.value.content : '';
-  const [inputMode, setInputMode] = React.useState<InputMode>(
-    parseScript(script),
-  );
-  let treeValue = '';
-  let textValue = '';
 
-  switch (inputMode) {
-    case 'Variable': {
-      const regexStart = /^(I18n\.toString\(Variable\.find\(gameModel,("|')?)/;
-      const regexEnd = /(("|')?\)\))(;?)$/;
-      treeValue = script.replace(regexStart, '').replace(regexEnd, '');
-      break;
-    }
-    case 'File': {
-      try {
-        textValue = JSON.parse(script);
-      } catch (e) {
-        textValue = script;
-      }
-      break;
-    }
-  }
+  const parsedScript = parseScript(script);
+
+  const [inputMode, setInputMode] = React.useState<InputMode>(
+    parsedScript.type,
+  );
+  const textValue = parsedScript.type === 'File' ? parsedScript.content : '';
+  const treeValue =
+    parsedScript.type === 'Variable' ? parsedScript.variableName : '';
 
   const onTreeChange = React.useCallback(
     (value?: string) => {
