@@ -310,24 +310,30 @@ function SrcEditor({
 
   React.useEffect(() => {
     if (editor != null && reactMonaco != null) {
-      editor.onDidBlurEditorText(() => {
+      const listener = editor.onDidBlurEditorText(() => {
         const model = editor.getModel();
         if (onBlur && model) {
           onBlur(model.getValue());
         }
       });
+      return () => {
+        listener.dispose();
+      };
     }
   }, [editor, onBlur, reactMonaco]);
 
   React.useEffect(() => {
     if (editor != null && reactMonaco != null) {
       if (defaultActions) {
-        defaultActions(reactMonaco).forEach(action => {
+        const listeneres = defaultActions(reactMonaco).map(action =>
           editor.addAction({
             ...action,
             run: editor => action.run(reactMonaco, editor),
-          });
-        });
+          }),
+        );
+        return () => {
+          listeneres.forEach(l => l.dispose());
+        };
       }
     }
   }, [defaultActions, editor, reactMonaco]);
@@ -381,6 +387,7 @@ function SrcEditor({
             options={{
               readOnly,
               fixedOverflowWidgets: true,
+              scrollBeyondLastLine: false,
               detectIndentation: false,
               insertSpaces: false,
               minimap: { enabled: minimap },

@@ -57,6 +57,7 @@ const defuncPath = computePath(undefined, 'typescript');
 const transPath = computePath(undefined, 'typescript');
 
 const RETURN_TYPES: WegasScriptEditorReturnTypeName[] = ['string'];
+const STR_RETURN_TYPES = RETURN_TYPES.join(' | ');
 
 export default function ScriptParserTester() {
   const [value, setValue] = React.useState(
@@ -64,7 +65,7 @@ export default function ScriptParserTester() {
 "hello " + test`,
   );
 
-  const functionalized = functionalizeScript(value, RETURN_TYPES);
+  const functionalized = functionalizeScript(value, STR_RETURN_TYPES);
   const defunctionalized = defunctionalizeScript(functionalized);
   const transpiled = insertReturn(transpile(defunctionalized));
   wlog('Value: ', value);
