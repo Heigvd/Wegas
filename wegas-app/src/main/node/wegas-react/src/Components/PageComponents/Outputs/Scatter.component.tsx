@@ -97,6 +97,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerScatterChart,
     componentType: 'Output',
+    name: 'Scatter',
     icon: 'chart-line',
     illustration: 'scatter',
     schema: {
