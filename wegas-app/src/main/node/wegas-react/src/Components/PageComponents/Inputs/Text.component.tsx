@@ -51,6 +51,8 @@ function PlayerTextInput({
   validator,
   onCancel,
   options,
+  pageId,
+  path,
 }: PlayerTextInputProps) {
   const text = useScript<STextDescriptor | string>(script, context);
   const placeholderText = useScript<string>(placeholder, context);
@@ -79,7 +81,7 @@ function PlayerTextInput({
   );
 
   return text == null ? (
-    <UncompleteCompMessage />
+    <UncompleteCompMessage pageId={pageId} path={path} />
   ) : validator ? (
     <Validate value={value} onValidate={onChange} onCancel={handleOnCancel}>
       {(value, onChange) => {

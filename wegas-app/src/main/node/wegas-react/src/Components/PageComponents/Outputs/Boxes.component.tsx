@@ -40,12 +40,14 @@ function PlayerBoxes({
   style,
   id,
   options,
+  pageId,
+  path,
 }: PlayerBoxesProps) {
   const { descriptor, instance, notFound } =
     useComponentScript<INumberDescriptor>(script);
 
   return notFound ? (
-    <UncompleteCompMessage />
+    <UncompleteCompMessage pageId={pageId} path={path} />
   ) : (
     <NumberBox
       className={className}

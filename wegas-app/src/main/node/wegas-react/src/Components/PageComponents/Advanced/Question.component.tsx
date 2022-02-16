@@ -23,12 +23,14 @@ export default function QuestionDisplay({
   question,
   context,
   options,
+  pageId,
+  path,
 }: QuestionDisplayProps) {
   const descriptor = useScript<SQuestionDescriptor>(question, context);
 
   if (descriptor == null) {
     wwarn(`${question?.content} Not found`);
-    return <UncompleteCompMessage />;
+    return <UncompleteCompMessage pageId={pageId} path={path} />;
   } else {
     return (
       <ConnectedQuestionDisplay

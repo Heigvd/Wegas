@@ -54,6 +54,8 @@ function PlayerNumberSlider({
   // const number = useScript<SNumberDescriptor>(script, context);
   // const player = useCurrentPlayer();
 
+  const { pageId, path } = restProps;
+
   const { descriptor, instance, notFound } =
     useComponentScript<INumberDescriptor>(script, context);
 
@@ -85,7 +87,7 @@ function PlayerNumberSlider({
   }, [doUpdate]);
 
   return notFound ? (
-    <UncompleteCompMessage />
+    <UncompleteCompMessage pageId={pageId} path={path} />
   ) : (
     <NumberSlider
       {...restProps}
