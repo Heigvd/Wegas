@@ -113,7 +113,7 @@ function ChildrenDeserializer({
   const children2: WegasComponent =
     (wegasChildren != null && wegasChildren[1]) || emptyElseChildren;
   if (condition == null) {
-    return <UncompleteCompMessage />;
+    return <UncompleteCompMessage pageId={pageId} path={path} />;
   } else if (editMode) {
     return (
       <>

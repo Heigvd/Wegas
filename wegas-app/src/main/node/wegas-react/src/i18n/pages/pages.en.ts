@@ -6,5 +6,7 @@ export const pagesTranslationsEN: PagesTranslations = {
   loadingPages: 'Loading the pages',
   noSelectedPage: 'No selected page',
   pageUndefined: 'The page is undefined',
-  completeCompConfig: 'Please complete the component configuration for it to be displayed.',
+  completeCompConfig:
+    'Please complete the component configuration for it to be displayed.',
+  editComponent: 'Edit component',
 };

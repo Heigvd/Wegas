@@ -47,6 +47,8 @@ function PlayerBoolean({
   style,
   id,
   onVariableChange,
+  pageId,
+  path,
 }: PlayerBooleanProps) {
   const bool = useScript<SBooleanDescriptor | boolean>(script, context);
 
@@ -61,7 +63,7 @@ function PlayerBoolean({
   );
 
   return bool == null ? (
-    <UncompleteCompMessage />
+    <UncompleteCompMessage pageId={pageId} path={path} />
   ) : (
     <BooleanComponent
       className={className}

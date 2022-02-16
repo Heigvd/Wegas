@@ -52,7 +52,7 @@ function ChildrenDeserializer({
   let children: JSX.Element[] = [];
 
   if (!items) {
-    return <UncompleteCompMessage />;
+    return <UncompleteCompMessage pageId={pageId} path={path} />;
   } else {
     children = items.map((item, index) => {
       const newContext = { ...context, [exposeAs]: item };

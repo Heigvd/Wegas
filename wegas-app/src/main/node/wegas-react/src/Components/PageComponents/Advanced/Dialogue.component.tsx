@@ -18,10 +18,12 @@ interface PlayerDialogueProps extends WegasComponentProps {
 export default function PlayerDialogue({
   dialogue,
   options,
+  pageId,
+  path,
 }: PlayerDialogueProps) {
   const { descriptor } = useComponentScript<IDialogueDescriptor>(dialogue);
   if (descriptor === undefined) {
-    return <UncompleteCompMessage />;
+    return <UncompleteCompMessage pageId={pageId} path={path} />;
   }
 
   return (

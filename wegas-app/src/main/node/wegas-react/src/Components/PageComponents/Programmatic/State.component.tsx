@@ -76,6 +76,8 @@ function State({
   exposeAs,
   initialState,
   localState,
+  pageId,
+  path,
 }: StateProps) {
   const initRef = React.useRef<unknown>();
   const exposeAsRef = React.useRef<string>();
@@ -103,7 +105,7 @@ function State({
   }, [exposeAs, init, localState]);
 
   if (state == null) {
-    return <UncompleteCompMessage />;
+    return <UncompleteCompMessage pageId={pageId} path={path} />;
   }
 
   return (

@@ -20,11 +20,13 @@ export default function PlayerInbox({
   inbox,
   name,
   options,
+  pageId,
+  path,
 }: PlayerInboxProps) {
   const { descriptor } = useComponentScript<IInboxDescriptor>(inbox);
   if (descriptor === undefined) {
     wwarn(`No descriptor found for inbox ${name}`);
-    return <UncompleteCompMessage />;
+    return <UncompleteCompMessage pageId={pageId} path={path} />;
   }
 
   return (
