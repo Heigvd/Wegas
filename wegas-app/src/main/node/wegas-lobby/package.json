@@ -95,7 +95,7 @@
     "webpack": "^5.68.0",
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.7.4",
-    "webpack-react-component-name": "^5.0.2"
+    "webpack-react-component-name": "^4.0.3"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",

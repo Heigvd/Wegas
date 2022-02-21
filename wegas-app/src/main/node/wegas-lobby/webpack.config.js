@@ -1,26 +1,28 @@
 const path = require('path');
+const WebpackReactComponentNamePlugin = require('webpack-react-component-name');
 
 module.exports = {
   entry: './src/components/App.tsx',
   devtool: 'inline-source-map',
-  optimization: {
-    minimizer: [
-      compiler => {
-        const TerserPlugin = require('terser-webpack-plugin');
-        new TerserPlugin({
-          terserOptions: {
-            mangle: {
-              keep_classnames: true,
-              keep_fnames: true,
-            },
-            compress: {
-              passes: 2,
-            },
-          },
-        }).apply(compiler);
-      },
-    ],
-  },
+  // optimization: {
+  //   minimizer: [
+  //     compiler => {
+  //       const TerserPlugin = require('terser-webpack-plugin');
+  //       new TerserPlugin({
+  //         terserOptions: {
+  //           mangle: {
+  //             keep_classnames: true,
+  //             keep_fnames: true,
+  //           },
+  //           compress: {
+  //             passes: 2,
+  //           },
+  //         },
+  //       }).apply(compiler);
+  //     },
+  //   ],
+  // },
+  plugins: [new WebpackReactComponentNamePlugin()],
   module: {
     rules: [
       {

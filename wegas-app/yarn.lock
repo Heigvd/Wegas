@@ -14455,10 +14455,10 @@ webpack-node-externals@^3.0.0:
   resolved "https://registry.yarnpkg.com/webpack-node-externals/-/webpack-node-externals-3.0.0.tgz#1a3407c158d547a9feb4229a9e3385b7b60c9917"
   integrity sha512-LnL6Z3GGDPht/AigwRh2dvL9PQPFQ8skEpVrWZXLWBYmqcaojHNN0onvHzie6rq7EWKrrBfPYqNEzTJgiwEQDQ==
 
-webpack-react-component-name@^5.0.2:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/webpack-react-component-name/-/webpack-react-component-name-5.0.2.tgz#89fbabcb81dae7b896b23dd672d8d26e4fde4449"
-  integrity sha512-z95ppLyWY283lIMEjrPXN+sTtwt30lVzEtBBSUW1bfJW41JVaM+fdtGtHF2YiqOUN+tF2jwyfQ4UKcnn48et2g==
+webpack-react-component-name@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/webpack-react-component-name/-/webpack-react-component-name-4.0.3.tgz#6b41babcd036dc40f1dc2d3a9c05e537164d01a7"
+  integrity sha512-SxS07I1KtoMts4lKyZbF5l9Vls6qcNCBb44ewRbPmCCMtyKTMjFEZmUfHbJ/d1P3SM4jUv8YkhYSxz+oeCTZRw==
   dependencies:
     acorn-walk "7.2.0"
 
