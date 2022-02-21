@@ -34,6 +34,7 @@ Cypress.Commands.add("visitWegas", (path) => {
 });
 
 Cypress.Commands.add("login", (identifier, password) => {
+  cy.log("Testing login...");
   cy.react("Input", {
     props: { type: "text", placeholder: "e-mail or username" },
   }).type(identifier);
@@ -45,29 +46,28 @@ Cypress.Commands.add("login", (identifier, password) => {
   cy.react("Button", { props: { key: "submit", label: "login" } }).click({
     force: true,
   });
+  cy.log("Login working!");
 });
 
 Cypress.Commands.add("logout", () => {
-  cy.react("IconButton_IconButton", {
+  cy.log("Testing logout...");
+  cy.react("IconButton", {
     props: {
       icon: {
         iconName: "sign-out-alt",
-        prefix: "fas",
-        icon: [
-          512,
-          512,
-          [],
-          "f2f5",
-          "M497 273L329 441c-15 15-41 4.5-41-17v-96H152c-13.3 0-24-10.7-24-24v-96c0-13.3 10.7-24 24-24h136V88c0-21.4 25.9-32 41-17l168 168c9.3 9.4 9.3 24.6 0 34zM192 436v-40c0-6.6-5.4-12-12-12H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h84c6.6 0 12-5.4 12-12V76c0-6.6-5.4-12-12-12H96c-53 0-96 43-96 96v192c0 53 43 96 96 96h84c6.6 0 12-5.4 12-12z",
-        ],
       },
     },
   }).click({
     force: true,
   });
+  cy.react("FontAwesomeIcon", {
+    props: {},
+  });
+  cy.log("Logout working!");
 });
 
 Cypress.Commands.add("gotoPage", (page) => {
+  cy.log("Going to " + page + " page...");
   cy.react("MainMenu").click({
     force: true,
   });
@@ -77,18 +77,10 @@ Cypress.Commands.add("gotoPage", (page) => {
 });
 
 Cypress.Commands.add("createEmptyModel", (scenarioName, basedOn) => {
-  cy.react("IconButton_IconButton", {
+  cy.react("IconButton", {
     props: {
       icon: {
-        icon: [
-          512,
-          512,
-          [],
-          "f055",
-          "M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z",
-        ],
         iconName: "plus-circle",
-        prefix: "fas",
       },
     },
   }).click({
@@ -108,7 +100,7 @@ Cypress.Commands.add("createEmptyModel", (scenarioName, basedOn) => {
 });
 
 Cypress.Commands.add("createScenario", (scenarioName, basedOn, model) => {
-  cy.react("IconButton_IconButton", {
+  cy.react("IconButton", {
     props: {
       title: model ? "Create a model" : "Create scenario",
     },
@@ -117,9 +109,7 @@ Cypress.Commands.add("createScenario", (scenarioName, basedOn, model) => {
     props: { placeholder: "Scenario name" },
   }).type(scenarioName);
 
-  cy.react("Select", {
-    props: { placeholder: "Select..." },
-  }).type(basedOn);
+  cy.react("SelectContainer", {}).type(basedOn);
 
   cy.react("Clickable", {
     props: { title: "create" },
@@ -127,7 +117,7 @@ Cypress.Commands.add("createScenario", (scenarioName, basedOn, model) => {
 });
 
 Cypress.Commands.add("inferModel", (modelName, basedOn) => {
-  cy.react("IconButton_IconButton", {
+  cy.react("IconButton", {
     props: {
       title: "Infer a model",
     },
