@@ -23,10 +23,12 @@ function PlayerNumber({
   style,
   id,
   options,
+  pageId,
+  path,
 }: PlayerNumberProps) {
   const { instance, notFound } = useComponentScript<INumberDescriptor>(script);
   return notFound ? (
-    <UncompleteCompMessage />
+    <UncompleteCompMessage pageId={pageId} path={path} />
   ) : (
     <div
       id={id}

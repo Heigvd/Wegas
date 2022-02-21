@@ -51,6 +51,8 @@ function PlayerStringInput({
   onVariableChange,
   validator,
   onCancel,
+  pageId,
+  path,
 }: PlayerStringInput) {
   const placeholderText = useScript<string>(placeholder, context);
 
@@ -82,7 +84,7 @@ function PlayerStringInput({
   );
 
   return text == null ? (
-    <UncompleteCompMessage />
+    <UncompleteCompMessage pageId={pageId} path={path} />
   ) : validator ? (
     <Validate value={value} onValidate={onChange} onCancel={handleOnCancel}>
       {(value, onChange) => {

@@ -5,4 +5,5 @@ export interface PagesTranslations {
   noSelectedPage: string;
   pageUndefined: string;
   completeCompConfig: string;
+  editComponent: string;
 }

@@ -32,6 +32,8 @@ export default function PlayerPhasesProgressBar({
   phaseMin,
   phaseMax,
   options,
+  pageId,
+  path,
 }: PhasesProgressBarProps) {
   const {
     content: phaseContent,
@@ -52,13 +54,13 @@ export default function PlayerPhasesProgressBar({
 
   if (phaseNotFound) {
     wwarn(`Current phase not found: ${phaseContent}`);
-    return <UncompleteCompMessage />;
+    return <UncompleteCompMessage pageId={pageId} path={path} />;
   } else if (phaseMinNotFound) {
     wwarn(`Phase min not found: ${phaseMinContent}`);
-    return <UncompleteCompMessage />;
+    return <UncompleteCompMessage pageId={pageId} path={path} />;
   } else if (phaseMaxNotFound) {
     wwarn(`Phase max not found: ${phaseMaxContent}`);
-    return <UncompleteCompMessage />;
+    return <UncompleteCompMessage pageId={pageId} path={path} />;
   } else {
     return (
       <PhasesProgressBar

@@ -37,11 +37,13 @@ function PlayerGauge({
   id,
   context,
   options,
+  pageId,
+  path,
 }: PlayerGaugeProps) {
   const number = useScript<SNumberDescriptor>(script, context);
 
   return number == null ? (
-    <UncompleteCompMessage />
+    <UncompleteCompMessage pageId={pageId} path={path} />
   ) : (
     <StandardGauge
       className={className}

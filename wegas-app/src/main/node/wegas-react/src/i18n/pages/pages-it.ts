@@ -7,5 +7,7 @@ export const pagesTranslationsIT: PagesTranslations = {
   loadingPages: 'Caricare le pagine',
   noSelectedPage: 'Nessuna pagina selezionata',
   pageUndefined: 'La pagina non è definita',
-  completeCompConfig: 'Completare la configurazione del componente per visualizzarlo.'
+  completeCompConfig:
+    'Completare la configurazione del componente per visualizzarlo.',
+  editComponent: 'Modifica componente',
 };
