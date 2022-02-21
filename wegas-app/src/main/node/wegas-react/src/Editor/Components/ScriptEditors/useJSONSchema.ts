@@ -24,7 +24,7 @@ export function useJSONSchema(enabled: boolean = true) {
   }
 
   const childrenLayoutOptionSchema = Object.values(components)
-    .filter(component => component.container?.childrenAdditionalShema)
+    .filter(component => component.container?.childrenLayoutOptionSchema)
     .reduce((o, c) => [...o, ...c.container!.childrenLayoutOptionSchema!], []);
 
   const componentSchemas = Object.values(components).map(component => {

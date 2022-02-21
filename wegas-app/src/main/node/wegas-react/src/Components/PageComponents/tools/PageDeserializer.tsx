@@ -209,9 +209,10 @@ export function PageDeserializer({
     return <div>{`Unknown component : ${wegasComponent.type}`}</div>;
   }
 
-  const Children = container
-    ? container.ChildrenDeserializer
-    : (DefaultChildren as React.FunctionComponent<ChildrenDeserializerProps>);
+  const Children =
+    container && container.ChildrenDeserializer
+      ? container.ChildrenDeserializer
+      : (DefaultChildren as React.FunctionComponent<ChildrenDeserializerProps>);
 
   return (
     <ComponentContainer
@@ -223,9 +224,10 @@ export function PageDeserializer({
       componentType={componentName}
       isContainer={container != null}
       context={context}
-      vertical={container?.isVertical(
-        wegasComponent.props as WegasComponentProps,
-      )}
+      vertical={
+        container?.isVertical &&
+        container?.isVertical(wegasComponent.props as WegasComponentProps)
+      }
       Container={Container}
       containerPropsKeys={containerPropsKeys}
       {...restProps}

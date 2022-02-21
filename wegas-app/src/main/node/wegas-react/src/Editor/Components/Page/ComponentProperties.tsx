@@ -179,6 +179,7 @@ function wegasComponentToForm(
       defaultCommonPropertiesKeys,
     ),
     componentProperties: omit(wegasComponentProperties, [
+      ...defaultMenuItemKeys,
       ...defaultCommonPropertiesKeys,
       ...defaultLayoutOptionsKeys,
       ...defaultLayoutConditionsKeys,

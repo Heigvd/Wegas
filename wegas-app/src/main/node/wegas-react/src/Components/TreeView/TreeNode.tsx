@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { cx } from '@emotion/css';
+import * as React from 'react';
 import { passedPropsCTX, TreeChildren } from './TreeChildren';
 import {
   DEFAULT_FILE_TYPE,
@@ -153,18 +153,20 @@ export function TreeNode<T = unknown>({
         >
           {open ? openCloseButtons.open : openCloseButtons.close}
         </div>
-      ): (
-        <div style={{
-          ...{
-            display: 'flex',
-            height: '1.8rem',
-            width: '1rem',
-            alignItems: 'center',
-            opacity: 0.1,
-            color: 'black',
-            margin: '0 3px',
-          },
-        }}>
+      ) : (
+        <div
+          style={{
+            ...{
+              display: 'flex',
+              height: '1.8rem',
+              width: '1rem',
+              alignItems: 'center',
+              opacity: 0.1,
+              color: 'black',
+              margin: '0 3px',
+            },
+          }}
+        >
           {levelIcon}
         </div>
       )}

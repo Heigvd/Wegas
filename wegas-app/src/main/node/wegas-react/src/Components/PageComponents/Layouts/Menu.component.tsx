@@ -1,10 +1,7 @@
 import * as React from 'react';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import { FlexItem } from '../../Layouts/FlexList';
 import {
-  defaultFlexLayoutOptionsKeys,
-  flexlayoutChoices,
-} from '../../Layouts/FlexList';
-import {
+  LabelFNArgs,
   Menu,
   MenuChildren,
   MenuItemProps,
@@ -16,15 +13,13 @@ import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import {
-  ComponentDropZone,
-  WegasComponentProps,
-} from '../tools/EditableComponent';
+import { WegasComponentProps } from '../tools/EditableComponent';
 import { classStyleIdShema } from '../tools/options';
 import {
   ChildrenDeserializerProps,
   PageDeserializer,
 } from '../tools/PageDeserializer';
+import { EmptyComponentContainer } from './FlexList.component';
 
 interface PlayerMenuProps extends MenuProps, WegasComponentProps {
   /**
@@ -41,20 +36,82 @@ function isVertical(props: PlayerMenuProps) {
   return props.vertical;
 }
 
-function EmmptyComponentContainer({ path }: { path: number[] }) {
-  const { onDrop } = React.useContext(pageCTX);
+function PlayerMenuLabel({ children }: WegasComponentProps) {
+  return <>{children}</>;
+}
+const PlayerMenuLabelName = 'MenuLabel';
+
+function PlayerMenuItems({ children }: WegasComponentProps) {
+  return <>{children}</>;
+}
+const PlayerMenuItemsName = 'MenuItems';
+
+registerComponent(
+  pageComponentFactory({
+    component: PlayerMenuLabel,
+    componentType: 'Utility',
+    container: {},
+    name: PlayerMenuLabelName,
+    icon: 'bars',
+    illustration: 'menu',
+    schema: {},
+    getComputedPropsFromVariable: () => ({
+      children: [],
+    }),
+    behaviour: {
+      allowDelete: () => false,
+      allowMove: () => false,
+      allowChildren: wegasComponent =>
+        wegasComponent.props.children == null ||
+        wegasComponent.props.children.length === 0,
+      allowEdit: () => false,
+    },
+  }),
+);
+
+registerComponent(
+  pageComponentFactory({
+    component: PlayerMenuItems,
+    componentType: 'Utility',
+    name: PlayerMenuItemsName,
+    container: {
+      childrenAdditionalShema: menuItemSchema,
+    },
+    icon: 'bars',
+    illustration: 'menu',
+    schema: {},
+    getComputedPropsFromVariable: () => ({
+      children: [],
+    }),
+    behaviour: {
+      allowDelete: () => false,
+      allowMove: () => false,
+      allowEdit: () => false,
+    },
+  }),
+);
+
+function MenuLabel({
+  path,
+  pageId,
+  uneditable,
+  context,
+  containerPropsKeys,
+  inheritedOptionsState,
+  item,
+}: ChildrenDeserializerProps<{ item: LabelFNArgs }>) {
+  const newContext = { ...context, menuItem: item };
   return (
-    <div>
-      <ComponentDropZone
-        onDrop={dndComponent => {
-          onDrop(dndComponent, path);
-        }}
-        show={true}
-        noFocus={true}
-        dropPosition="INTO"
-      />
-      {'The layout is empty, drop components in to fill it!'}
-    </div>
+    <PageDeserializer
+      key={JSON.stringify(path)}
+      pageId={pageId}
+      path={path}
+      uneditable={uneditable}
+      context={newContext}
+      containerPropsKeys={containerPropsKeys}
+      dropzones={{ center: true }}
+      inheritedOptionsState={inheritedOptionsState}
+    />
   );
 }
 
@@ -69,32 +126,77 @@ function ChildrenDeserializer({
   containerPropsKeys,
   inheritedOptionsState,
 }: ChildrenDeserializerProps<MenuProps>) {
-  const items = wegasChildren?.reduce<MenuChildren>((o, child, i) => {
-    const menuChildProps = child.props as MenuItemProps;
-    return {
-      ...o,
-      [menuChildProps.componentId]: {
-        label: menuChildProps.componentLabel,
-        content: (
-          <PageDeserializer
-            key={JSON.stringify([...path, i])}
-            pageId={pageId}
-            path={[...path, i]}
-            uneditable={uneditable}
-            context={context}
-            containerPropsKeys={containerPropsKeys}
-            dropzones={{ center: true }}
-            inheritedOptionsState={inheritedOptionsState}
-          />
-        ),
-      },
-    };
-  }, {});
+  const menuLabel = wegasChildren?.find(
+    child => child.type === PlayerMenuLabelName,
+  );
+  const menuItems = wegasChildren?.find(
+    child => child.type === PlayerMenuItemsName,
+  );
 
-  if (editMode && (!wegasChildren || wegasChildren.length === 0)) {
-    return <EmmptyComponentContainer path={path} />;
+  if (menuLabel && menuItems) {
+    const items = menuItems.props.children?.reduce<MenuChildren>(
+      (o, child, i) => {
+        const newPath = [...path, 1, i];
+        const menuChildProps = child.props as MenuItemProps;
+        return {
+          ...o,
+          [menuChildProps.childrenComponentId]: {
+            label: menuChildProps.childrenComponentLabel,
+            content: (
+              <PageDeserializer
+                key={JSON.stringify(newPath)}
+                pageId={pageId}
+                path={newPath}
+                uneditable={uneditable}
+                context={context}
+                containerPropsKeys={containerPropsKeys}
+                dropzones={{ center: true }}
+                inheritedOptionsState={inheritedOptionsState}
+              />
+            ),
+            index: menuChildProps.childrenComponentIndex,
+          },
+        };
+      },
+      {},
+    );
+
+    if (
+      editMode &&
+      (menuItems.props.children == null ||
+        menuItems.props.children.length === 0)
+    ) {
+      return (
+        <EmptyComponentContainer Container={FlexItem} path={[...path, 1]} />
+      );
+    } else {
+      const labelChildren = menuLabel.props.children?.slice(0);
+      const labelPath = [...path, 0, 0];
+      return (
+        <Menu
+          labelFN={
+            labelChildren && labelChildren.length > 0
+              ? item => (
+                  <MenuLabel
+                    pageId={pageId}
+                    path={labelPath}
+                    uneditable={uneditable}
+                    editMode={editMode}
+                    context={context}
+                    containerPropsKeys={containerPropsKeys}
+                    inheritedOptionsState={inheritedOptionsState}
+                    item={item}
+                  />
+                )
+              : undefined
+          }
+          vertical={vertical}
+          items={items || {}}
+        />
+      );
+    }
   } else {
-    return <Menu vertical={vertical} items={items || {}} />;
+    return <pre>ERROR</pre>;
   }
 }
 
@@ -105,15 +207,20 @@ registerComponent(
     container: {
       isVertical,
       ChildrenDeserializer: ChildrenDeserializer,
-      childrenAdditionalShema: menuItemSchema,
-      childrenLayoutOptionSchema: flexlayoutChoices,
-      childrenLayoutKeys: defaultFlexLayoutOptionsKeys,
     },
     dropzones: {},
     name: 'Menu',
     icon: 'bars',
     illustration: 'menu',
     schema: { ...menuSchema, ...classStyleIdShema },
-    getComputedPropsFromVariable: () => ({ children: [] }),
+    getComputedPropsFromVariable: () => ({
+      children: [
+        { type: PlayerMenuLabelName, props: { children: [] } },
+        { type: PlayerMenuItemsName, props: { children: [] } },
+      ],
+    }),
+    behaviour: {
+      allowChildren: () => false,
+    },
   }),
 );
