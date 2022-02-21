@@ -7,7 +7,6 @@ import { pageCTX, patchPage } from './PageEditor';
 export default function SourceEditor() {
   const { loading, selectedPage, selectedPageId } = React.useContext(pageCTX);
   const i18nValues = useInternalTranslate(pagesTranslations);
-
   if (loading) {
     return <pre>{i18nValues.loadingPages}</pre>;
   } else {

@@ -16,6 +16,7 @@ import {
 import {
   ComponentContainer,
   ItemContainer,
+  WegasComponentItemProps,
   WegasComponentProps,
 } from './EditableComponent';
 import {
@@ -69,6 +70,49 @@ function DefaultChildren(_: ChildrenDeserializerProps) {
   return null;
 }
 
+export const DummyContainer: ItemContainer = React.forwardRef<
+  HTMLDivElement,
+  WegasComponentItemProps
+>(
+  (
+    {
+      onClick,
+      onMouseOver,
+      onMouseLeave,
+      onDragOver,
+      onDragEnter,
+      onDragLeave,
+      onDragEnd,
+      className,
+      style = {},
+      tooltip,
+      children,
+      id,
+    },
+    ref,
+  ) => {
+    return (
+      <div
+        ref={ref}
+        id={id}
+        onClick={onClick}
+        onMouseOver={onMouseOver}
+        onMouseLeave={onMouseLeave}
+        onDragOver={onDragOver}
+        onDragEnter={onDragEnter}
+        onDragLeave={onDragLeave}
+        onDragEnd={onDragEnd}
+        className={className}
+        style={style}
+        title={tooltip}
+      >
+        {children}
+      </div>
+    );
+  },
+);
+DummyContainer.displayName = 'DummyContainer';
+
 interface PageDeserializerProps {
   pageId?: string;
   path?: number[];
@@ -92,7 +136,7 @@ export function PageDeserializer({
   path,
   uneditable,
   context: oldContext,
-  Container,
+  Container = DummyContainer,
   containerPropsKeys,
   dropzones,
   inheritedOptionsState: newInheritedOptionsState,
@@ -165,93 +209,74 @@ export function PageDeserializer({
     return <div>{`Unknown component : ${wegasComponent.type}`}</div>;
   }
 
-  const Children = container
-    ? container.ChildrenDeserializer
-    : (DefaultChildren as React.FunctionComponent<ChildrenDeserializerProps>);
+  const Children =
+    container && container.ChildrenDeserializer
+      ? container.ChildrenDeserializer
+      : (DefaultChildren as React.FunctionComponent<ChildrenDeserializerProps>);
 
   return (
-    <>
-      {Container == null ||
-      (container?.noContainer &&
-        container?.noContainer(wegasComponent.props as WegasComponentProps)) ? (
-        <Children
-          {...wegasComponent?.props}
-          wegasChildren={children}
-          path={realPath}
+    <ComponentContainer
+      // the key is set in order to force rerendering when page change
+      //(if not, if an error occures and the page's strucutre is the same it won't render the new component)
+      key={pageId}
+      path={realPath}
+      pageId={pageId}
+      componentType={componentName}
+      isContainer={container != null}
+      context={context}
+      vertical={
+        container?.isVertical &&
+        container?.isVertical(wegasComponent.props as WegasComponentProps)
+      }
+      Container={Container}
+      containerPropsKeys={containerPropsKeys}
+      {...restProps}
+      dropzones={{ ...component.dropzones, ...dropzones }}
+      options={optionsState}
+      editMode={editMode}
+      onClickManaged={component.manageOnClick === true}
+      className={optionsState.outerClassName}
+    >
+      {displayObsoleteComponentManager(obsoleteComponent, wegasComponent) ? (
+        <ObsoleteComponentManager
+          componentType={componentName}
           pageId={pageId}
-          uneditable={uneditable}
-          context={context}
-          editMode={editMode}
-          containerPropsKeys={containerPropsKeys}
-          inheritedOptionsState={pick(optionsState, heritableOptionsStateKeys)}
+          path={realPath}
+          sanitizer={obsoleteComponent.sanitizer}
         />
       ) : (
-        <ComponentContainer
-          // the key is set in order to force rerendering when page change
-          //(if not, if an error occures and the page's strucutre is the same it won't render the new component)
-          key={pageId}
+        <WegasComponent
           path={realPath}
           pageId={pageId}
-          componentType={componentName}
-          isContainer={container != null}
           context={context}
-          vertical={container?.isVertical(
-            wegasComponent.props as WegasComponentProps,
-          )}
+          componentType={componentName}
           Container={Container}
           containerPropsKeys={containerPropsKeys}
           {...restProps}
+          className={
+            classNameOrEmpty(restProps.className) +
+            classNameOrEmpty(optionsState.innerClassName)
+          }
           dropzones={{ ...component.dropzones, ...dropzones }}
           options={optionsState}
           editMode={editMode}
-          onClickManaged={component.manageOnClick === true}
-          className={optionsState.outerClassName}
         >
-          {displayObsoleteComponentManager(
-            obsoleteComponent,
-            wegasComponent,
-          ) ? (
-            <ObsoleteComponentManager
-              componentType={componentName}
-              pageId={pageId}
-              path={realPath}
-              sanitizer={obsoleteComponent.sanitizer}
-            />
-          ) : (
-            <WegasComponent
-              path={realPath}
-              pageId={pageId}
-              context={context}
-              componentType={componentName}
-              Container={Container}
-              containerPropsKeys={containerPropsKeys}
-              {...restProps}
-              className={
-                classNameOrEmpty(restProps.className) +
-                classNameOrEmpty(optionsState.innerClassName)
-              }
-              dropzones={{ ...component.dropzones, ...dropzones }}
-              options={optionsState}
-              editMode={editMode}
-            >
-              <Children
-                {...wegasComponent?.props}
-                wegasChildren={children}
-                path={realPath}
-                pageId={pageId}
-                uneditable={uneditable}
-                context={context}
-                editMode={editMode}
-                containerPropsKeys={container?.childrenLayoutKeys}
-                inheritedOptionsState={pick(
-                  optionsState,
-                  heritableOptionsStateKeys,
-                )}
-              />
-            </WegasComponent>
-          )}
-        </ComponentContainer>
+          <Children
+            {...wegasComponent?.props}
+            wegasChildren={children}
+            path={realPath}
+            pageId={pageId}
+            uneditable={uneditable}
+            context={context}
+            editMode={editMode}
+            containerPropsKeys={container?.childrenLayoutKeys}
+            inheritedOptionsState={pick(
+              optionsState,
+              heritableOptionsStateKeys,
+            )}
+          />
+        </WegasComponent>
       )}
-    </>
+    </ComponentContainer>
   );
 }

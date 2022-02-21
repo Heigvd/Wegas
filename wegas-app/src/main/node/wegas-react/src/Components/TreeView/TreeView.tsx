@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { TreeChildren } from './TreeChildren';
-import {
-  nodeStyle,
-  emptyNodeStyle,
-  dragUpStyle,
-  dragDownStyle,
-  dragOverStyle,
-  dragMarginStyle,
-} from './classes';
 import { wwarn } from '../../Helper/wegaslog';
+import {
+  dragDownStyle,
+  dragMarginStyle,
+  dragOverStyle,
+  dragUpStyle,
+  emptyNodeStyle,
+  nodeStyle,
+} from './classes';
+import { TreeChildren } from './TreeChildren';
 
 export const DEFAULT_TREENODE_TYPE = 'DEFAULT_TREENODE_TYPE';
 export const DEFAULT_FILE_TYPE = 'Files';
@@ -50,7 +50,7 @@ const OPEN_CLOSE_BUTTONS = {
   open: <DefaultCarret icon="▾" />,
   close: <DefaultCarret icon="▸" />,
 };
-const LEVEL_ICON = "└";
+const LEVEL_ICON = '└';
 const DESIGN_PARAMS: DesignParams = {
   nodeStyle,
   emptyNodeStyle,

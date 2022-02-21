@@ -170,6 +170,7 @@ export const editorTabsTranslationsFR: EditorTabsTranslations = {
       Output: 'Sortie',
       Advanced: 'Avancé',
       Programmatic: 'Programmatique',
+      Utility: 'Utilitaire',
     },
   },
   languageEditor: {

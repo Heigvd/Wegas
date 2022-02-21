@@ -1,74 +1,176 @@
-import * as React from 'react';
-import { createStore, Reducer, applyMiddleware } from 'redux';
 import u from 'immer';
-import { composeEnhancers } from '../../../data/Stores/store';
+import { omit } from 'lodash-es';
+import * as React from 'react';
+import { applyMiddleware, createStore, Reducer } from 'redux';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
-import { useAnyStore } from '../../Hooks/storeHookFactory';
-import {
-  WegasComponentProps,
-  PageComponentProps,
-  DropZones,
-} from './EditableComponent';
-import { Icon } from '../../../Editor/Components/Views/FontAwesome';
-import { SchemaPropsSchemas } from './schemaProps';
 import {
   IVariableDescriptor,
   WegasClassNameAndScriptableTypes,
 } from 'wegas-ts-api';
-import { ChildrenDeserializerProps } from './PageDeserializer';
-import { classStyleIdShema } from './options';
+import { composeEnhancers } from '../../../data/Stores/store';
 import { IconComponentType } from '../../../Editor/Components/Page/ComponentIcon';
+import { Icon } from '../../../Editor/Components/Views/FontAwesome';
+import { useAnyStore } from '../../Hooks/storeHookFactory';
+import {
+  DropZones,
+  PageComponentProps,
+  WegasComponentProps,
+} from './EditableComponent';
+import { classStyleIdShema } from './options';
+import { ChildrenDeserializerProps } from './PageDeserializer';
+import { SchemaPropsSchemas, SimpleSchemaPropsSchemas } from './schemaProps';
 
 export const componentTypes = [
+  'Other',
   'Layout',
   'Input',
   'Output',
   'Advanced',
   'Programmatic',
+  'Utility',
 ] as const;
 
 export type ComponentType = typeof componentTypes[number];
+
+export interface Submenu {
+  label: string;
+  icon: Icon;
+  startIndex: number;
+  stopIndex?: number;
+}
+
+export interface Submenus {
+  [id: string]: Submenu;
+}
 
 /**
  * ContainerComponent - Defines the type and management of a container component
  */
 export interface ContainerComponent<P = {}> {
-  isVertical: (props?: P) => boolean | undefined;
-  ChildrenDeserializer: React.FunctionComponent<ChildrenDeserializerProps<P>>;
-  noContainer?: (props?: P) => boolean | undefined;
-  childrenSchema: HashListChoices;
+  isVertical?: (props?: P) => boolean | undefined;
+  ChildrenDeserializer?: React.FunctionComponent<ChildrenDeserializerProps<P>>;
+  childrenAdditionalShema?: { [prop: string]: SimpleSchemaPropsSchemas };
+  childrenLayoutOptionSchema?: HashListChoices;
   childrenLayoutKeys?: string[];
-  deleteChildren?: (
-    page: WegasComponent,
-    path: number[],
-  ) => WegasComponent | undefined;
 }
 
+interface PageComponentBehaviour {
+  /** Can it be deleted */
+  allowDelete: (props: WegasComponent) => boolean;
+  /** Can it be dragged */
+  allowMove: (props: WegasComponent) => boolean;
+  /** Can it accept drop */
+  allowChildren: (props: WegasComponent) => boolean;
+  /** Can it be edited */
+  allowEdit: (props: WegasComponent) => boolean;
+}
+
+export const defaultPageComponentBehaviour: PageComponentBehaviour = {
+  allowDelete: function () {
+    return true;
+  },
+  allowMove: function () {
+    return true;
+  },
+  allowChildren: function (component) {
+    return component.props?.children != null;
+  },
+  allowEdit: function () {
+    return true;
+  },
+};
+
+interface ComponentFactoryBasicParameters<
+  P extends WegasComponentProps,
+  C extends ContainerComponent<P> | undefined,
+  T extends IVariableDescriptor['@class'],
+> {
+  /**
+   * The name of the component
+   */
+  name: string;
+  /**
+   * The icon of the component
+   */
+  icon: Icon;
+  /**
+   * The illustration of the component for the palette
+   */
+  illustration?: IconComponentType;
+  /**
+   * Component to display
+   */
+  component: React.FunctionComponent<P>;
+  /**
+   * The category in wich the component is registered
+   */
+  componentType: ComponentType;
+  /**
+   * Indicates if the component contains children and how to manage them
+   */
+  container?: C;
+  /**
+   * Indicates if the component manages onClick by itself (i.e. a button like component)
+   */
+  manageOnClick?: boolean;
+  /**
+   * Indicates where to display dropzones when other compoments are dragged over
+   */
+  dropzones?: DropZones;
+  /**
+   * Indicates who to manage the component properties
+   */
+  schema: { [prop: string]: SchemaPropsSchemas };
+  /**
+   * Indicates for which kind of variables this component suits well
+   */
+  allowedVariables?: T[];
+  /**
+   * Allows to modify a component or its props when obsolete
+   */
+  obsoleteComponent?: {
+    /**
+     * Indicates if the obsolete component should still be displayed to the player.
+     */
+    keepDisplayingToPlayer: boolean;
+    /**
+     * Returns if the component is obsolete or not
+     */
+    isObsolete: (oldComponent: WegasComponent) => boolean;
+    /**
+     * Returns a new component that is not obsolete
+     */
+    sanitizer: (oldComponent: WegasComponent) => WegasComponent;
+  };
+  /** Allow to control the behaviour of a component */
+  behaviour?: Partial<PageComponentBehaviour>;
+}
+
+const pageComponentOmitProps = [
+  'schema',
+  'component',
+  'name',
+  'getComputedPropsFromVariable',
+] as const;
+
+type PageComponentOmitProps = ValueOf<typeof pageComponentOmitProps>;
 export interface PageComponent<
   P extends WegasComponentProps = WegasComponentProps,
+  C extends ContainerComponent<P> | undefined = ContainerComponent<P>,
   T extends IVariableDescriptor['@class'] = IVariableDescriptor['@class'],
-> {
+> extends Omit<
+    ComponentFactoryBasicParameters<P, C, T>,
+    PageComponentOmitProps
+  > {
   WegasComponent: React.FunctionComponent<P>;
-  container?: ContainerComponent<P>;
-  manageOnClick?: boolean;
-  componentType: ComponentType;
   componentName: string;
-  icon: Icon;
-  illustration?: IconComponentType;
-  dropzones?: DropZones;
   schema: {
     description: string;
     properties: { [prop: string]: SchemaPropsSchemas };
   };
-  allowedVariables?: T[];
   getComputedPropsFromVariable?: (
     variable?: WegasClassNameAndScriptableTypes[T],
-  ) => Omit<P, keyof PageComponentProps>;
-  obsoleteComponent?: {
-    keepDisplayingToPlayer: boolean;
-    isObsolete: (oldComponent: WegasComponent) => boolean;
-    sanitizer: (oldComponent: WegasComponent) => WegasComponent;
-  };
+  ) => Omit<P, keyof PageComponentProps> & { children?: WegasComponent[] };
 }
 
 export interface PageComponentsState {
@@ -136,91 +238,27 @@ export const componentsStore = createStore(
   ),
 );
 
-interface ComponentFactoryBasicParameters<
-  C extends ContainerComponent<P> | undefined,
-  P extends WegasComponentProps,
-  T extends IVariableDescriptor['@class'],
-> {
-  /**
-   * The name of the component
-   */
-  name: string;
-  /**
-   * The icon of the component
-   */
-  icon: Icon;
-  /**
-   * The illustration of the component for the palette
-   */
-  illustration?: IconComponentType;
-  /**
-   * Component to display
-   */
-  component: React.FunctionComponent<P>;
-  /**
-   * The category in wich the component is registered
-   */
-  componentType: ComponentType;
-  /**
-   * Indicates if the component contains children and how to manage them
-   */
-  container?: C;
-  /**
-   * Indicates if the component manages onClick by itself (i.e. a button like component)
-   */
-  manageOnClick?: boolean;
-  /**
-   * Indicates where to display dropzones when other compoments are dragged over
-   */
-  dropzones?: DropZones;
-  /**
-   * Indicates who to manage the component properties
-   */
-  schema: { [prop: string]: SchemaPropsSchemas };
-  /**
-   * Indicates for which kind of variables this component suits well
-   */
-  allowedVariables?: T[];
-  /**
-   * Allows to modify a component or its props when obsolete
-   */
-  obsoleteComponent?: {
-    /**
-     * Indicates if the obsolete component should still be displayed to the player.
-     */
-    keepDisplayingToPlayer: boolean;
-    /**
-     * Returns if the component is obsolete or not
-     */
-    isObsolete: (oldComponent: WegasComponent) => boolean;
-    /**
-     * Returns a new component that is not obsolete
-     */
-    sanitizer: (oldComponent: WegasComponent) => WegasComponent;
-  };
-}
-
 type ComponentFactoryParameters<
-  C extends ContainerComponent<P> | undefined,
   P extends WegasComponentProps,
+  C extends ContainerComponent<P> | undefined,
   T extends IVariableDescriptor['@class'],
-> = ComponentFactoryBasicParameters<C, P, T> &
+> = ComponentFactoryBasicParameters<P, C, T> &
   (C extends undefined
     ? {
-        /**
-         * gives a computed list of props from variable, if the variable is undefined, gives default props
-         */
-        getComputedPropsFromVariable?: (
-          variable?: WegasClassNameAndScriptableTypes[T],
-        ) => Omit<P, keyof PageComponentProps>;
-      }
-    : {
         getComputedPropsFromVariable: (
           /**
            * gives a computed list of props from variable, if the variable is undefined, gives default props
            */
           variable?: WegasClassNameAndScriptableTypes[T],
         ) => Omit<P, keyof PageComponentProps> & { children: WegasComponent[] };
+      }
+    : {
+        /**
+         * gives a computed list of props from variable, if the variable is undefined, gives default props
+         */
+        getComputedPropsFromVariable?: (
+          variable?: WegasClassNameAndScriptableTypes[T],
+        ) => Omit<P, keyof PageComponentProps>;
       });
 
 /**
@@ -237,26 +275,19 @@ export function usePageComponentStore<R>(
 }
 
 export function pageComponentFactory<
-  C extends ContainerComponent<P> | undefined,
   P extends WegasComponentProps,
+  C extends ContainerComponent<P> | undefined,
   T extends IVariableDescriptor['@class'],
->(param: ComponentFactoryParameters<C, P, T>): PageComponent<P> {
+>(param: ComponentFactoryParameters<P, C, T>): PageComponent<P, C, T> {
   return {
+    ...omit(param, pageComponentOmitProps),
     WegasComponent: param.component,
-    componentType: param.componentType,
-    container: param.container,
-    manageOnClick: param.manageOnClick,
-    icon: param.icon,
-    illustration: param.illustration,
-    dropzones: param.dropzones,
     componentName: param.name,
     schema: {
       description: param.name,
       properties: { ...classStyleIdShema, ...param.schema },
     },
-    allowedVariables: param.allowedVariables,
     getComputedPropsFromVariable: param.getComputedPropsFromVariable,
-    obsoleteComponent: param.obsoleteComponent,
   };
 }
 

@@ -107,26 +107,14 @@ const flexItemDefaultStyle = css({
   padding: '5px',
 });
 
-export interface FlexItemProps
-  extends WegasComponentItemProps,
-    React.PropsWithChildren<FlexItemLayoutProps> {
-  /**
-   * onMouseOut - triggers when the mouse is not more over the element
-   */
-  onMouseOut?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  /**
-   * onMouseEnter - triggers when the mouse enters the component
-   */
-  onMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-}
+export type FlexItemProps = WegasComponentItemProps &
+  React.PropsWithChildren<FlexItemLayoutProps>;
 
 export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
   (
     {
       onClick,
       onMouseOver,
-      onMouseOut,
-      onMouseEnter,
       onMouseLeave,
       onDragOver,
       onDragEnter,
@@ -145,8 +133,6 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
         ref={ref}
         onClick={onClick}
         onMouseOver={onMouseOver}
-        onMouseOut={onMouseOut}
-        onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         onDragOver={onDragOver}
         onDragEnter={onDragEnter}
@@ -154,7 +140,6 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
         onDragEnd={onDragEnd}
         className={flexItemDefaultStyle + classNameOrEmpty(className)}
         style={{
-          // position: 'relative',
           ...layout,
           ...style,
         }}
@@ -165,6 +150,8 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
     );
   },
 );
+
+FlexItem.displayName = 'FlexItem';
 
 export const flexDirectionValues = [
   'row',

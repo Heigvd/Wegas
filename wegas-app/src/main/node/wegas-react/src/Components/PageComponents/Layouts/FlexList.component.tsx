@@ -23,6 +23,7 @@ import {
 import { classStyleIdShema } from '../tools/options';
 import {
   ChildrenDeserializerProps,
+  DummyContainer,
   PageDeserializer,
 } from '../tools/PageDeserializer';
 
@@ -101,7 +102,7 @@ export function EmptyComponentContainer({
 }
 
 export function childrenDeserializerFactory(
-  Container: ItemContainer = FlexItem,
+  Container: ItemContainer = DummyContainer,
   dropzones: DropZones = flexListItemDropZones,
   EmptyContainer: React.FunctionComponent<EmptyPageComponentProps> = EmptyComponentContainer,
 ) {
@@ -147,8 +148,8 @@ registerComponent(
     componentType: 'Layout',
     container: {
       isVertical,
-      ChildrenDeserializer: childrenDeserializerFactory(),
-      childrenSchema: flexlayoutChoices,
+      ChildrenDeserializer: childrenDeserializerFactory(FlexItem),
+      childrenLayoutOptionSchema: flexlayoutChoices,
       childrenLayoutKeys: defaultFlexLayoutOptionsKeys,
     },
     name: 'FlexList',
