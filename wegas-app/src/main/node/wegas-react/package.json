@@ -4,9 +4,9 @@
   "version": "0.0.1",
   "scripts": {
     "clean": "rimraf ../../../../target/Wegas/wegas-react",
-    "start": "webpack-dev-server --hot --mode development",
-    "start-no-unused": "cross-env TS_NODE_PROJECT=\"tsconfig-no-unused.json\" webpack-dev-server --hot --mode development",
-    "preprod": "cross-env NODE_ENV=pre-production  webpack-dev-server --hot --mode production",
+    "start": "webpack serve --hot --mode development",
+    "start-no-unused": "cross-env TS_NODE_PROJECT=\"tsconfig-no-unused.json\" webpack serve --hot --mode development",
+    "preprod": "cross-env NODE_ENV=pre-production  webpack serve --hot --mode production",
     "build": "cross-env NODE_ENV=production webpack --mode production",
     "test": "jest",
     "lint": "eslint 'src' --ext '.js,.ts,.tsx'",
