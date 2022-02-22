@@ -55,12 +55,15 @@ Cypress.Commands.add("createScenario", (scenarioName, basedOn, model) => {
   cy.react("Clickable", {
     props: { title: "create" },
   }).click();
+
+  // Forced to reload without pusher
+  cy.reload();
+  cy.waitForReact();
 });
 
 Cypress.Commands.add("createTestModel", () => {
   cy.gotoPage("modeler");
   cy.createScenario("Test model", "_EmptyModel\n", true);
-  cy.wait(1000);
   cy.createScenario("Test react model", "_EmptyReactModel\n", true);
 });
 
