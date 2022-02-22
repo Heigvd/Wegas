@@ -125,7 +125,7 @@ const modules = {
   },
   devServer: {
     host: 'localhost',
-    port: PREPROD ? 4004 : 3003,
+    port: 3003,
     proxy: {
       '/Wegas': 'http://localhost:8080',
     },

@@ -6,18 +6,18 @@
   "scripts": {
     "clean": "rimraf ./node_modules",
     "format": "prettier --write cypress",
-    "local:start": "CYPRESS_WEGAS_URL='http://localhost:8080/Wegas' CYPRESS_ADMIN_USERNAME='root' CYPRESS_ADMIN_PASSWORD='1234' yarn cypress open",
-    "local:test": "CYPRESS_WEGAS_URL='http://localhost:8080/Wegas' CYPRESS_ADMIN_USERNAME='root' CYPRESS_ADMIN_PASSWORD='1234' yarn cypress run",
-    "local:dev:start": "CYPRESS_WEGAS_URL='http://localhost:3003/Wegas' CYPRESS_ADMIN_USERNAME='root' CYPRESS_ADMIN_PASSWORD='1234' yarn cypress open",
-    "local:dev:test": "CYPRESS_WEGAS_URL='http://localhost:3003/Wegas' CYPRESS_ADMIN_USERNAME='root' CYPRESS_ADMIN_PASSWORD='1234' yarn cypress run"
+    "start": "cross-env DEFAULT_URL='http://localhost:8080/Wegas' node promptAndStart.js",
+    "dev": "cross-env DEFAULT_URL='http://localhost:3003/Wegas' node promptAndStart.js"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "cypress": "^9.2.0",
     "cypress-react-selector": "^2.3.13",
     "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
     "prettier": "^2.4.1",
     "prettier-plugin-organize-imports": "^2.3.4",
+    "prompt": "^1.2.2",
     "rimraf": "^3.0.2"
   },
   "dependencies": {

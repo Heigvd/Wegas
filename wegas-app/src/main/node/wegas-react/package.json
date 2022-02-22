@@ -6,7 +6,7 @@
     "clean": "rimraf ../../../../target/Wegas/wegas-react",
     "start": "webpack-dev-server --hot --mode development",
     "start-no-unused": "cross-env TS_NODE_PROJECT=\"tsconfig-no-unused.json\" webpack-dev-server --hot --mode development",
-    "start-pre-prod": "cross-env NODE_ENV=pre-production  webpack-dev-server --hot --mode production",
+    "preprod": "cross-env NODE_ENV=pre-production  webpack-dev-server --hot --mode production",
     "build": "cross-env NODE_ENV=production webpack --mode production",
     "test": "jest",
     "lint": "eslint 'src' --ext '.js,.ts,.tsx'",
@@ -136,7 +136,8 @@
     "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.7.4",
-    "webpack-node-externals": "^3.0.0"
+    "webpack-node-externals": "^3.0.0",
+    "webpack-react-component-name": "^4.0.3"
   },
   "peerDependencies": {}
 }

@@ -24,13 +24,26 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+Cypress.Commands.add("checkEnv", () => {
+  const url = Cypress.env("WEGAS_URL");
+  console.log(url);
+  if (url == null) {
+    throw "please set --env WEGAS_URL to start tests";
+  }
+  const username = Cypress.env("ADMIN_USERNAME");
+  if (username == null) {
+    throw "please set --env ADMIN_USERNAME to start tests";
+  }
+  const password = Cypress.env("ADMIN_PASSWORD");
+  if (password == null) {
+    throw "please set --env ADMIN_PASSWORD to start tests";
+  }
+});
+
 Cypress.Commands.add("visitWegas", (path) => {
   const url = Cypress.env("WEGAS_URL");
-  if (url) {
-    cy.visit(url + (path ? path : ""));
-  } else {
-    throw "please set env WEGAS_URL to the test url";
-  }
+  cy.checkEnv();
+  cy.visit(url + (path ? path : ""));
 });
 
 Cypress.Commands.add("login", (identifier, password) => {
@@ -64,95 +77,4 @@ Cypress.Commands.add("logout", () => {
     props: {},
   });
   cy.log("Logout working!");
-});
-
-Cypress.Commands.add("gotoPage", (page) => {
-  cy.log("Going to " + page + " page...");
-  cy.react("MainMenu").click({
-    force: true,
-  });
-  cy.react("MainMenuLink", { props: { to: "/" + page } }).click({
-    force: true,
-  });
-});
-
-Cypress.Commands.add("createEmptyModel", (scenarioName, basedOn) => {
-  cy.react("IconButton", {
-    props: {
-      icon: {
-        iconName: "plus-circle",
-      },
-    },
-  }).click({
-    force: true,
-  });
-  cy.react("Input", {
-    props: { placeholder: "Scenario name" },
-  }).type(scenarioName);
-  cy.react("Select", {
-    props: { placeholder: "Select..." },
-  }).type(basedOn);
-  cy.react("Button", {
-    props: { label: "create", className: "css-18b5fmi" },
-  }).click({
-    force: true,
-  });
-});
-
-Cypress.Commands.add("createScenario", (scenarioName, basedOn, model) => {
-  cy.react("IconButton", {
-    props: {
-      title: model ? "Create a model" : "Create scenario",
-    },
-  }).click();
-  cy.react("Input", {
-    props: { placeholder: "Scenario name" },
-  }).type(scenarioName);
-
-  cy.react("SelectContainer", {}).type(basedOn);
-
-  cy.react("Clickable", {
-    props: { title: "create" },
-  }).click();
-});
-
-Cypress.Commands.add("inferModel", (modelName, basedOn) => {
-  cy.react("IconButton", {
-    props: {
-      title: "Infer a model",
-    },
-  }).click();
-  cy.react("Input", {
-    props: { placeholder: "model name" },
-  }).type(modelName);
-
-  cy.react("Select", {
-    props: { placeholder: "Select..." },
-  }).type(basedOn);
-
-  cy.react("DropdownIndicator").click();
-
-  cy.react("Clickable", {
-    props: { title: "create" },
-  }).click();
-});
-
-Cypress.Commands.add("removeScenario", (scenarioName) => {
-  cy.react("GameModelCard", {
-    props: {
-      gameModel: {
-        "@class": "GameModel",
-        name: scenarioName,
-      },
-    },
-  })
-    .nthNode(0)
-    .find("div[title='move to archives']")
-    .click();
-
-  cy.react("Clickable", {
-    props: {
-      title: "confirm move to archives",
-    },
-  }).click();
 });
