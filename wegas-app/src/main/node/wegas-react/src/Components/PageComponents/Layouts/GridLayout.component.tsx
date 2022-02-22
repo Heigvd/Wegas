@@ -33,7 +33,7 @@ registerComponent(
     container: {
       isVertical: () => false,
       ChildrenDeserializer: childrenDeserializerFactory(GridItem),
-      childrenSchema: gridItemChoices,
+      childrenLayoutOptionSchema: gridItemChoices,
       childrenLayoutKeys: defaultGridLayoutOptionsKeys,
     },
     name: 'Grid',

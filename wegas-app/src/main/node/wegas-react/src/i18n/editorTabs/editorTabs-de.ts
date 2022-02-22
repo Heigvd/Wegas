@@ -173,6 +173,7 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
       Output: 'Ausgang',
       Advanced: 'Erweitert',
       Programmatic: 'Programmatisch',
+      Utility: 'Hilfsmittel',
     },
   },
   languageEditor: {

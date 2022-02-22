@@ -9,7 +9,6 @@ import {
 import { DropMenu } from '../../../Components/DropMenu';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import {
-  componentsStore,
   PageComponent,
   usePageComponentStore,
 } from '../../../Components/PageComponents/tools/componentFactory';
@@ -351,7 +350,7 @@ export function PageContextProvider({
     component: PageComponent,
     props?: WegasComponent['props'],
     variable?: WegasClassNameAndScriptableTypes[IVariableDescriptor['@class']],
-  ) => {
+  ): WegasComponent['props'] => {
     if (props) {
       return props;
     } else if (component.getComputedPropsFromVariable) {
@@ -442,13 +441,7 @@ export function PageContextProvider({
     (path: number[]) => {
       if (selectedPageId && selectedPage) {
         // Checking if parent manages delete by itself
-        const { parent: parentComponent } = findComponent(selectedPage, path);
-        const { container } =
-          componentsStore.getState()[parentComponent?.type || ''];
-
-        const newPage = container?.deleteChildren
-          ? container?.deleteChildren(selectedPage, path)
-          : deleteComponent(selectedPage, path);
+        const newPage = deleteComponent(selectedPage, path);
         if (newPage) {
           patchPage(selectedPageId, newPage);
         }
@@ -470,22 +463,23 @@ export function PageContextProvider({
     [editedPath, selectedPage, selectedPageId],
   );
 
-  const onNewLayoutComponent = React.useCallback(
-    (pageId, page, path, componentTypeName, index) => {
-      const newComponent = createComponent(
-        page,
-        path,
-        componentTypeName,
-        computeProps(components[componentTypeName], undefined, undefined),
-        index,
-      );
-      if (newComponent) {
-        patchPage(pageId, newComponent.newPage);
-        onEdit(pageId, newComponent.newPath);
-      }
-    },
-    [components, onEdit],
-  );
+  const onNewLayoutComponent: PageContext['onNewLayoutComponent'] =
+    React.useCallback(
+      (pageId, page, path, componentTypeName, index) => {
+        const newComponent = createComponent(
+          page,
+          path,
+          componentTypeName,
+          computeProps(components[componentTypeName], undefined, undefined),
+          index,
+        );
+        if (newComponent) {
+          patchPage(pageId, newComponent.newPage);
+          onEdit(pageId, newComponent.newPath);
+        }
+      },
+      [components, onEdit],
+    );
 
   const onDuplicateLayoutComponent = React.useCallback(
     (pageId, page, path) => {
@@ -510,13 +504,7 @@ export function PageContextProvider({
   const onDeleteLayoutComponent = React.useCallback(
     (pageId: string, page: WegasComponent, path: number[]) => {
       // Checking if parent manages delete by itself
-      const { parent: parentComponent } = findComponent(page, path);
-      const { container } =
-        componentsStore.getState()[parentComponent?.type || ''];
-
-      const newPage = container?.deleteChildren
-        ? container?.deleteChildren(page, path)
-        : deleteComponent(page, path);
+      const newPage = deleteComponent(page, path);
       if (newPage) {
         patchPage(pageId, newPage);
       }

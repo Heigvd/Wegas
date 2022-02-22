@@ -46,6 +46,7 @@ function ChildrenDeserializer({
   editMode,
   inheritedOptionsState,
   wegasChildren,
+  itemsOnly,
 }: ChildrenDeserializerProps<ForEachProps>) {
   const items = useScript<{ [key: string]: any }[]>(getItemsFn, context);
   let children: JSX.Element[] = [];
@@ -79,7 +80,7 @@ function ChildrenDeserializer({
           path={[...(path ? path : []), 0]}
           uneditable={uneditable}
           context={newContext}
-          Container={FlexItem}
+          Container={itemsOnly ? undefined : FlexItem}
           containerPropsKeys={defaultFlexLayoutOptionsKeys}
           dropzones={{}}
           inheritedOptionsState={inheritedOptionsState}
@@ -90,10 +91,6 @@ function ChildrenDeserializer({
   return <>{editMode === false ? children : children.slice(0, 1)}</>;
 }
 
-function noContainer(props: ForEachProps) {
-  return props.itemsOnly === true;
-}
-
 registerComponent(
   pageComponentFactory({
     component: ForEach,
@@ -101,8 +98,7 @@ registerComponent(
     container: {
       isVertical,
       ChildrenDeserializer,
-      noContainer,
-      childrenSchema: flexlayoutChoices,
+      childrenLayoutOptionSchema: flexlayoutChoices,
     },
     name: 'For each',
     icon: 'code',

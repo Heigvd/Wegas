@@ -120,7 +120,7 @@ registerComponent(
     container: {
       isVertical,
       ChildrenDeserializer: ChildrenDeserializer,
-      childrenSchema: flexlayoutChoices,
+      childrenLayoutOptionSchema: flexlayoutChoices,
     },
     name: 'State',
     icon: 'code',

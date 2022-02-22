@@ -108,7 +108,7 @@ registerComponent(
     container: {
       isVertical,
       ChildrenDeserializer: childrenDeserializerFactory(),
-      childrenSchema: flexlayoutChoices,
+      childrenLayoutOptionSchema: flexlayoutChoices,
       childrenLayoutKeys: defaultFlexLayoutOptionsKeys,
     },
     name: 'Modal',
