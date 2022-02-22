@@ -78,3 +78,9 @@ Cypress.Commands.add("logout", () => {
   });
   cy.log("Logout working!");
 });
+
+Cypress.Commands.add("simulatePusher", () => {
+  // Forced to reload without pusher
+  cy.reload();
+  cy.waitForReact();
+});

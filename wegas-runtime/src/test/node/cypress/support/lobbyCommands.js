@@ -30,6 +30,7 @@ Cypress.Commands.add("createEmptyModel", () => {
       title: "confirm Create an empty React Model",
     },
   }).click();
+  cy.simulatePusher();
 });
 
 Cypress.Commands.add("deleteEmptyModel", () => {
@@ -56,9 +57,7 @@ Cypress.Commands.add("createScenario", (scenarioName, basedOn, model) => {
     props: { title: "create" },
   }).click();
 
-  // Forced to reload without pusher
-  cy.reload();
-  cy.waitForReact();
+  cy.simulatePusher();
 });
 
 Cypress.Commands.add("createTestModel", () => {
