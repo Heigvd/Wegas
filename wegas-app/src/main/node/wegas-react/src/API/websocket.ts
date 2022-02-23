@@ -1,13 +1,17 @@
 // import PusherConstructor, { Pusher } from 'pusher-js';
 // import { inflate } from 'pako';
-import { store } from '../data/Stores/store';
-import { editorEvent, updatePusherStatus } from '../data/Reducer/globalState';
-import { manageResponseHandler } from '../data/actions';
-import { Actions } from '../data';
 import * as React from 'react';
-import { werror, wwarn } from '../Helper/wegaslog';
 import { IAbstractEntity } from 'wegas-ts-api';
+import { Actions } from '../data';
+import { manageResponseHandler } from '../data/actions';
 import { entityIs } from '../data/entities';
+import {
+  editorEvent,
+  updatePusherStatus,
+  WegasStatus,
+} from '../data/Reducer/globalState';
+import { store } from '../data/Stores/store';
+import { werror, wwarn } from '../Helper/wegaslog';
 
 const CHANNEL_PREFIX = {
   Admin: 'private-Admin',
@@ -101,6 +105,7 @@ const webSocketEvents = [
   'LibraryUpdate-ClientScript',
   'LibraryUpdate-ServerScript',
   'LockEvent',
+  'LifeCycleEvent',
   'OutdatedEntitiesEvent',
   'populateQueue-dec',
 ] as const;
@@ -128,6 +133,12 @@ export interface LockEventData {
   '@class': 'LockEvent';
   token: string;
   status: 'lock' | 'unlock';
+}
+
+export interface LifeCycleEventData {
+  '@class': 'LifeCycleEvent';
+  channel: string;
+  status: WegasStatus;
 }
 
 /**
@@ -303,6 +314,14 @@ class WebSocketListener {
       case 'LockEvent':
         store.dispatch(Actions.EditorActions.setLock(data as LockEventData));
         return;
+      case 'LifeCycleEvent': {
+        store.dispatch(
+          Actions.EditorActions.updateServerStatus(
+            (data as LifeCycleEventData).status,
+          ),
+        );
+        return;
+      }
       default:
         if (!eventFound) {
           werror(`Event [${event}] unchecked`);

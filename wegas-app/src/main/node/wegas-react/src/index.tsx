@@ -9,6 +9,7 @@ import { RoleProvider } from './Components/Contexts/RoleProvider';
 import { ModalProvider } from './Components/Modal';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
 import { PopupManager } from './Components/PopupManager';
+import { ServerStatusManager } from './Components/ServerStatusManager';
 import { ThemeProvider } from './Components/Theme/Theme';
 import './css/global.css';
 import './data/Stores/store';
@@ -57,21 +58,23 @@ function mount() {
   render(
     <FeaturesProvider>
       <FullscreenProvider>
-        <LanguagesProvider>
-          <ClassesProvider>
-            <LibrariesLoader>
-              <RoleProvider>
-                <ThemeProvider contextName="editor">
-                  <PopupManager>
-                    <ModalProvider>
-                      <Layout />
-                    </ModalProvider>
-                  </PopupManager>
-                </ThemeProvider>
-              </RoleProvider>
-            </LibrariesLoader>
-          </ClassesProvider>
-        </LanguagesProvider>
+        <ServerStatusManager>
+          <LanguagesProvider>
+            <ClassesProvider>
+              <LibrariesLoader>
+                <RoleProvider>
+                  <ThemeProvider contextName="editor">
+                    <PopupManager>
+                      <ModalProvider>
+                        <Layout />
+                      </ModalProvider>
+                    </PopupManager>
+                  </ThemeProvider>
+                </RoleProvider>
+              </LibrariesLoader>
+            </ClassesProvider>
+          </LanguagesProvider>
+        </ServerStatusManager>
       </FullscreenProvider>
     </FeaturesProvider>,
     document.getElementById('root'),

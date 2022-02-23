@@ -255,6 +255,7 @@ export const fr: WegasTranslations = {
   gameAdmins: 'Facturation',
   stats: 'Stats',
   createEmptyModel: 'Créer un modèle vide',
+  createEmptyReactModel: 'Créer un modèle React vide',
   clearCache: 'Vider le cache JPA',
   deleteAllGameModels:
     'Supprimer tous les scénarios et modèles en attente de suppression définitive',

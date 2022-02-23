@@ -163,6 +163,10 @@ export default function MainAdminPanel(): JSX.Element {
     return getRestClient().AdminStuff.createEmptyModel();
   }, []);
 
+  const createReactModelCb = React.useCallback(async () => {
+    return getRestClient().AdminStuff.createEmptyReactModel();
+  }, []);
+
   const requestReloadCb = React.useCallback(async () => {
     return getRestClient().AdminStuff.requestClientReload();
   }, []);
@@ -230,6 +234,14 @@ export default function MainAdminPanel(): JSX.Element {
         onClick={createModelCb}
       >
         {i18n.createEmptyModel}
+      </ActionIconButton>
+      <ActionIconButton
+        title={i18n.createEmptyReactModel}
+        icon={faCubes}
+        shouldConfirm="SOFT_RIGHT"
+        onClick={createReactModelCb}
+      >
+        {i18n.createEmptyReactModel}
       </ActionIconButton>
       <ActionIconButton
         title={i18n.deleteAllGameModels}

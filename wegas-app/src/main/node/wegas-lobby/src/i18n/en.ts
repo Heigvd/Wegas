@@ -253,6 +253,7 @@ export const en = {
   gameAdmins: 'Invoicing',
   stats: 'Stats',
   createEmptyModel: 'Create an empty Model',
+  createEmptyReactModel: 'Create an empty React Model',
   requestClientReload: 'Ask users to reload the page (e.g after a big update)',
   clearCache: 'Clear JPA cache',
   deleteAllGameModels: 'Delete all scenarios and models scheduled for final deletion',

@@ -15,3 +15,4 @@
 
 import "cypress-react-selector";
 import "./commands";
+import "./lobbyCommands";
