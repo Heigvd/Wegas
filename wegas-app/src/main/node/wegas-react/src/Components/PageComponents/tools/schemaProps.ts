@@ -15,6 +15,7 @@ import { ScriptableStringProps } from '../../../Editor/Components/FormView/Scrip
 import { IAsyncSelectProps } from '../../../Editor/Components/FormView/Select';
 import { StringInputProps } from '../../../Editor/Components/FormView/String';
 import {
+  ScripableVariableSelectProps,
   TreeVariableSelectProps,
   TreeVSelectProps,
 } from '../../../Editor/Components/FormView/TreeVariableSelect';
@@ -448,6 +449,7 @@ const simpleSchemaProps = {
       returnType,
       featureLevel,
       label,
+      required,
       type: 'variableselect',
       layout,
       items,
@@ -479,12 +481,40 @@ const simpleSchemaProps = {
       noMarginTop,
       borderBottom,
       index,
+      required,
       returnType,
       featureLevel,
       label,
       type: 'treeselect',
       layout,
       items,
+    },
+  }),
+  scriptVariable: ({
+    label,
+    required = false,
+    returnType = [],
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+    noMarginTop,
+  }: {
+    returnType?: WegasScriptEditorReturnTypeName[];
+  } & CommonSchemaProps): TypedProps<ScripableVariableSelectProps> => ({
+    required,
+    type: 'object',
+    index,
+    view: {
+      borderTop,
+      noMarginTop,
+      index,
+      returnType,
+      featureLevel,
+      label,
+      required,
+      type: 'scriptableVariableSelect',
+      layout,
     },
   }),
   scriptString: ({

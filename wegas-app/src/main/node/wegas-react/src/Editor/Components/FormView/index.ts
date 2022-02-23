@@ -35,7 +35,11 @@ import Textarea from './Textarea';
 import ThemeModeSelect from './ThemeModeSelect';
 import { TimestampView } from './Timestamp';
 import translatable from './translatable';
-import { TreeVariableSelect, TreeVSelect } from './TreeVariableSelect';
+import {
+  LabeledScripableVariableSelect,
+  TreeVariableSelect,
+  TreeVSelect,
+} from './TreeVariableSelect';
 import uneditable from './Uneditable';
 
 export const DEFINED_VIEWS = {
@@ -66,6 +70,7 @@ export const DEFINED_VIEWS = {
   script: Script,
   scriptableBoolean: ScriptableBoolean,
   scriptableString: ScriptableString,
+  scriptableVariableSelect: LabeledScripableVariableSelect,
   scriptablepath: ScriptablePath,
   select: Select,
   serializer: SerializerView,

@@ -105,10 +105,12 @@ export interface ScriptableView extends CommonView, LabeledView {
 }
 
 export function computeReturnType(
-  returnType: WegasScriptEditorReturnTypeName[],
+  returnType: WegasScriptEditorReturnTypeName[] | undefined,
   required?: boolean,
-): WegasScriptEditorReturnTypeName[] {
-  if (required) {
+): WegasScriptEditorReturnTypeName[] | undefined {
+  if (returnType == null) {
+    return undefined;
+  } else if (required) {
     return returnType;
   } else {
     return [...returnType, 'undefined'];
