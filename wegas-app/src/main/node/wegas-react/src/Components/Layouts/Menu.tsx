@@ -11,24 +11,23 @@ import {
   justifyCenter,
 } from '../../css/classes';
 import { entityIs } from '../../data/entities';
-import { classNameOrEmpty } from '../../Helper/className';
+import { classNameOrEmpty, classOrNothing } from '../../Helper/className';
 import { createScript } from '../../Helper/wegasEntites';
 import { useScript } from '../Hooks/useScript';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 
-const menuLabelStyle = css({
-  cursor: 'pointer',
-});
-
-function menuLabelDefaultStyle(selected: boolean) {
-  return css({
-    backgroundColor: selected ? 'red' : 'white',
-  });
-}
-
-export const menuSchema = {
-  vertical: schemaProps.boolean({ label: 'Vertical' }),
-};
+const menuLabelDefaultStyle = cx(
+  flex,
+  grow,
+  justifyCenter,
+  itemCenter,
+  css({
+    cursor: 'pointer',
+    '&.selected': {
+      boxShadow: 'inset 0 0 0 2px var(--colors-highlightcolor)',
+    },
+  }),
+);
 
 interface MenuChild {
   label: React.ReactNode | IScript;
@@ -48,6 +47,7 @@ export interface LabelFNArgs extends Omit<MenuChild, 'content'> {
 
 interface MenuLabelProps extends LabelFNArgs {
   labelFN?: (child: LabelFNArgs) => React.ReactNode;
+  labelClassName?: string;
 }
 
 export function MenuLabel({
@@ -55,6 +55,7 @@ export function MenuLabel({
   selected,
   label,
   labelFN,
+  labelClassName,
   id,
   index,
 }: MenuLabelProps) {
@@ -66,9 +67,10 @@ export function MenuLabel({
   return (
     <div
       onClick={onClick}
-      className={cx(menuLabelStyle, {
-        [menuLabelDefaultStyle(selected)]: !labelFN,
-      })}
+      className={cx(
+        classOrNothing('selected', selected),
+        labelClassName ? labelClassName : menuLabelDefaultStyle,
+      )}
       title={String(labelValue)}
     >
       {labelFN
@@ -83,14 +85,16 @@ export interface MenuProps<T extends MenuChildren = MenuChildren>
   vertical?: boolean;
   items?: T;
   labelFN?: (child: LabelFNArgs) => React.ReactNode;
+  labelClassName?: string;
 }
 
 export function Menu<T extends MenuChildren = MenuChildren>({
   vertical,
-  className,
-  style,
   items,
   labelFN,
+  labelClassName,
+  className,
+  style,
   id,
 }: MenuProps<T>) {
   const [selectedItem, setSelectedItem] = React.useState<keyof T | undefined>();
@@ -130,6 +134,7 @@ export function Menu<T extends MenuChildren = MenuChildren>({
                 id={k}
                 index={v.index}
                 labelFN={labelFN}
+                labelClassName={labelClassName}
               />
             );
           })}

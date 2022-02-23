@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useScript } from '../../Hooks/useScript';
 import { FlexItem } from '../../Layouts/FlexList';
 import {
   LabelFNArgs,
@@ -7,7 +8,6 @@ import {
   MenuItemProps,
   menuItemSchema,
   MenuProps,
-  menuSchema,
 } from '../../Layouts/Menu';
 import {
   pageComponentFactory,
@@ -19,14 +19,29 @@ import {
   ChildrenDeserializerProps,
   PageDeserializer,
 } from '../tools/PageDeserializer';
+import { schemaProps } from '../tools/schemaProps';
 import { EmptyComponentContainer } from './FlexList.component';
 
-interface PlayerMenuProps extends MenuProps, WegasComponentProps {
+interface PlayerMenuProps
+  extends Omit<MenuProps, 'labelClassName'>,
+    WegasComponentProps {
   /**
    * children - the array containing the child components
    */
   children: React.ReactNode[];
+  /**
+   * labelClassName - allow to override the class of the label
+   */
+  labelClassName?: IScript;
 }
+
+const menuSchema = {
+  vertical: schemaProps.boolean({ label: 'Vertical' }),
+  labelClassName: schemaProps.scriptString({
+    label: 'Label class',
+    required: false,
+  }),
+};
 
 function PlayerMenu(props: PlayerMenuProps) {
   return <>{props.children}</>;
@@ -125,7 +140,9 @@ function ChildrenDeserializer({
   editMode,
   containerPropsKeys,
   inheritedOptionsState,
-}: ChildrenDeserializerProps<MenuProps>) {
+  labelClassName,
+}: ChildrenDeserializerProps<PlayerMenuProps>) {
+  const labelClass = useScript<string>(labelClassName);
   const menuLabel = wegasChildren?.find(
     child => child.type === PlayerMenuLabelName,
   );
@@ -192,6 +209,7 @@ function ChildrenDeserializer({
           }
           vertical={vertical}
           items={items || {}}
+          labelClassName={labelClass}
         />
       );
     }
