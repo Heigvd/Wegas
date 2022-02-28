@@ -269,7 +269,8 @@ export function ComponentProperties({
   update,
   actions,
   localDispatch,
-  editionKey}: ComponentPropertiesProps) {
+  editionKey,
+}: ComponentPropertiesProps) {
   const schema = usePageComponentStore(s => {
     const baseSchema =
       entity && s[entity.type]
@@ -312,8 +313,14 @@ export function ComponentProperties({
 }
 
 export default function ConnectedComponentProperties() {
-  const { editedPath,selectedPageId,  selectedPage, onUpdate, onDelete, onEdit } =
-    React.useContext(pageCTX);
+  const {
+    editedPath,
+    selectedPageId,
+    selectedPage,
+    onUpdate,
+    onDelete,
+    onEdit,
+  } = React.useContext(pageCTX);
 
   if (!editedPath) {
     return <pre className={defaultPadding}>No component selected yet</pre>;
@@ -348,7 +355,7 @@ export default function ConnectedComponentProperties() {
         },
       ]}
       localDispatch={undefined}
-      editionKey={JSON.stringify({selectedPageId,editedPath})}
+      editionKey={JSON.stringify({ selectedPageId, editedPath })}
     />
   );
 }

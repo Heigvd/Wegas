@@ -1,19 +1,20 @@
-import * as React from 'react';
-import { WidgetProps } from 'jsoninput/typings/types';
-import { CommonViewContainer, CommonView } from './commonView';
+import { cx } from '@emotion/css';
 import Form from 'jsoninput';
-import { omit, cloneDeep } from 'lodash-es';
+import { WidgetProps } from 'jsoninput/typings/types';
+import { cloneDeep, omit } from 'lodash-es';
+import * as React from 'react';
+import { SelecteDropdMenuItem } from '../../../Components/DropMenu';
 import { useDeepChanges } from '../../../Components/Hooks/useDeepChanges';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 import {
   schemaProps,
   SchemaPropsSchemas,
 } from '../../../Components/PageComponents/tools/schemaProps';
-import { LabeledView, Labeled } from './labeled';
+import { getEntry, setEntry } from '../../../Helper/tools';
 import { DragDropArray } from './Array';
-import { setEntry, getEntry } from '../../../Helper/tools';
-import { legendStyle, reset, borderTopStyle } from './Object';
-import { cx } from '@emotion/css';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { CommonView, CommonViewContainer } from './commonView';
+import { Labeled, LabeledView } from './labeled';
+import { borderTopStyle, legendStyle, reset } from './Object';
 
 interface ObjectValues {
   [key: string]: string | number | ObjectValues;
@@ -176,6 +177,92 @@ const getKeyPath = (
   return keyPath;
 };
 
+interface DragAndDropEntryProps {
+  currentValue: ImprovedValues;
+  entry: [string, ImprovedObjectValue];
+  view: HashListViewBag;
+  onChange: (value: ImprovedValues) => void;
+  index: number;
+}
+
+function DragAndDropEntry({
+  view,
+  entry,
+  currentValue,
+  onChange,
+  index,
+}: DragAndDropEntryProps) {
+  const [k, v] = entry;
+  let schema: SchemaPropsSchemas | undefined;
+  let label: React.ReactNode | undefined;
+
+  const onIntermediateEntryViewChange = React.useCallback(
+    function (value: ImprovedValues) {
+      let newValue: ImprovedValues;
+      const nestedValue = { ...v, value };
+      if (Object.keys(nestedValue.value).length > 0) {
+        newValue = { ...currentValue, [k]: nestedValue };
+      } else {
+        newValue = omit(currentValue, k);
+      }
+      onChange(newValue);
+    },
+    [currentValue, k, onChange, v],
+  );
+
+  const onEntryViewChange = React.useCallback(
+    function (newKey: string, newVal: string | ImprovedValues) {
+      const safeNewKey =
+        newKey === k || currentValue[newKey] == null
+          ? newKey
+          : newKey + ' - copy';
+      const newValue = {
+        ...omit(currentValue, k),
+        [safeNewKey]: {
+          ...(currentValue ? currentValue[k] : { index }),
+          value: newVal,
+        },
+      };
+      onChange(newValue);
+    },
+    [currentValue, index, k, onChange],
+  );
+
+  if (view.choices) {
+    const choice: HashListChoice | undefined = view.choices.find(
+      c => c.value.prop === k,
+    );
+    label = choice?.label;
+    if (choice && choice.value && isHashListValue(choice.value)) {
+      schema = choice.value.schema;
+    }
+  }
+  const [isIntermediate, itemChoices] = isIntermediateKey(k, view.choices);
+  if (isIntermediate && typeof v.value === 'object') {
+    const newView = {
+      ...view,
+      choices: itemChoices,
+    };
+    return (
+      <EntriesView
+        labelNode={label}
+        currentValue={v.value}
+        onChange={onIntermediateEntryViewChange}
+        view={newView}
+      />
+    );
+  } else {
+    return (
+      <EntryView
+        prop={k}
+        value={v.value}
+        onChange={onEntryViewChange}
+        schema={schema}
+      />
+    );
+  }
+}
+
 interface EntriesViewProps {
   currentValue: ImprovedValues;
   onNewEntry?: (value: ImprovedValues) => void;
@@ -206,124 +293,131 @@ function EntriesView({
     [onChangeOutside],
   );
 
+  const onChildAdd = React.useCallback(
+    (
+      choice: SelecteDropdMenuItem<HashListItem, DropMenuItem<HashListItem>>,
+    ) => {
+      const index = Object.keys(currentValue).length;
+      if (choice && choices) {
+        const choiceKeyPath = getKeyPath(choice.path, choices);
+        if (choiceKeyPath != null) {
+          const keyPath = [...choiceKeyPath, choice.value.prop];
+          const newValue = setEntry(
+            currentValue,
+            { index: 0, value: undefined },
+            keyPath,
+            {
+              defaultObject: { index: 0, value: '' },
+              lookupKey: 'value',
+            },
+          );
+          if (newValue != null) {
+            onNewEntry && onNewEntry(newValue);
+          }
+        }
+      } else {
+        onNewEntry &&
+          onNewEntry({
+            ...currentValue,
+            [`key${index}`]: {
+              index,
+              value: '',
+            },
+          });
+      }
+    },
+    [choices, currentValue, onNewEntry],
+  );
+
+  const onChildRemove = React.useCallback(
+    (i: number) => {
+      onChange(
+        Object.entries(currentValue)
+          .filter((_kv, vI) => vI !== i)
+          .reduce((o, [k, v]) => ({ ...o, [k]: v }), {}),
+      );
+    },
+    [currentValue, onChange],
+  );
+
+  const filterRemovable = React.useMemo(
+    () =>
+      Object.entries(currentValue)
+        .sort(([, a], [, b]) => sortValues(a, b))
+        .map(([k]) => !isIntermediateKey(k, choices)[0]),
+    [choices, currentValue],
+  );
+
   return (
     <DragDropArray
       choices={allowedChoices}
-      onChildAdd={
-        allowChildAdd
-          ? choice => {
-              const index = Object.keys(currentValue).length;
-              if (choice && choices) {
-                const choiceKeyPath = getKeyPath(choice.path, choices);
-                if (choiceKeyPath != null) {
-                  const keyPath = [...choiceKeyPath, choice.value.prop];
-                  const newValue = setEntry(
-                    currentValue,
-                    { index: 0, value: undefined },
-                    keyPath,
-                    {
-                      defaultObject: { index: 0, value: '' },
-                      lookupKey: 'value',
-                    },
-                  );
-                  if (newValue != null) {
-                    onNewEntry && onNewEntry(newValue);
-                  }
-                }
-              } else {
-                onNewEntry &&
-                  onNewEntry({
-                    ...currentValue,
-                    [`key${index}`]: {
-                      index,
-                      value: '',
-                    },
-                  });
-              }
-            }
-          : undefined
-      }
-      onChildRemove={i => {
-        onChange(
-          Object.entries(currentValue)
-            .filter((_kv, vI) => vI !== i)
-            .reduce((o, [k, v]) => ({ ...o, [k]: v }), {}),
-        );
-      }}
+      onChildAdd={allowChildAdd ? onChildAdd : undefined}
+      onChildRemove={onChildRemove}
       array={Object.values(currentValue)}
       disabled={disabled}
       readOnly={readOnly}
       inputId={inputId}
       label={labelNode}
       tooltip={tooltip}
-      filterRemovable={Object.entries(currentValue)
-        .sort(([, a], [, b]) => sortValues(a, b))
-        .map(([k]) => !isIntermediateKey(k, choices)[0])}
+      filterRemovable={filterRemovable}
     >
-      {currentValue &&
-        Object.entries(currentValue)
-          .sort(([, a], [, b]) => sortValues(a, b))
-          .map(([k, v], i) => {
-            let schema: SchemaPropsSchemas | undefined;
-            let label: React.ReactNode | undefined;
-            // let newChoices: HashListChoices | undefined;
-            if (choices) {
-              const choice: HashListChoice | undefined = choices.find(
-                c => c.value.prop === k,
-              );
-              label = choice?.label;
-              if (choice && choice.value && isHashListValue(choice.value)) {
-                schema = choice.value.schema;
-              }
-            }
-            const [isIntermediate, itemChoices] = isIntermediateKey(k, choices);
-            if (isIntermediate && typeof v.value === 'object') {
-              return (
-                <EntriesView
-                  labelNode={label}
-                  currentValue={v.value}
-                  onChange={value => {
-                    let newValue: ImprovedValues;
-                    const nestedValue = { ...v, value };
-                    if (Object.keys(nestedValue.value).length > 0) {
-                      newValue = { ...currentValue, [k]: nestedValue };
-                    } else {
-                      newValue = omit(currentValue, k);
-                    }
-                    onChange(newValue);
-                  }}
-                  view={{
-                    ...view,
-                    choices: itemChoices,
-                  }}
-                  key={i}
-                />
-              );
-            } else {
-              return (
-                <EntryView
-                  key={i}
-                  prop={k}
-                  value={v.value}
-                  onChange={(newKey, newVal) => {
-                    const safeNewKey =
-                      newKey === k || currentValue[newKey] == null
-                        ? newKey
-                        : newKey + ' - copy';
-                    const newValue = {
-                      ...omit(currentValue, k),
-                      [safeNewKey]: {
-                        ...(currentValue ? currentValue[k] : { index: i }),
-                        value: newVal,
-                      },
-                    };
-                    onChange(newValue);
-                  }}
-                  schema={schema}
-                />
-              );
-            }
-          })}
+      {
+        currentValue &&
+          Object.entries(currentValue)
+            .sort(([, a], [, b]) => sortValues(a, b))
+            .map((entry, i) => (
+              <DragAndDropEntry
+                key={entry[0] + i}
+                currentValue={currentValue}
+                entry={entry}
+                index={i}
+                onChange={onChange}
+                view={view}
+              />
+            ))
+        // Object.entries(currentValue)
+        //   .sort(([, a], [, b]) => sortValues(a, b))
+        //   .map(([k, v], i) => {
+        //     let schema: SchemaPropsSchemas | undefined;
+        //     let label: React.ReactNode | undefined;
+        //     // let newChoices: HashListChoices | undefined;
+        //     if (choices) {
+        //       const choice: HashListChoice | undefined = choices.find(
+        //         c => c.value.prop === k,
+        //       );
+        //       label = choice?.label;
+        //       if (choice && choice.value && isHashListValue(choice.value)) {
+        //         schema = choice.value.schema;
+        //       }
+        //     }
+        //     const [isIntermediate, itemChoices] = isIntermediateKey(k, choices);
+        //     if (isIntermediate && typeof v.value === 'object') {
+        //       const newView = {
+        //         ...view,
+        //         choices: itemChoices,
+        //       };
+        //       return (
+        //         <EntriesView
+        //           labelNode={label}
+        //           currentValue={v.value}
+        //           onChange={onIntermediateEntryViewChange(k, v)}
+        //           view={newView}
+        //           key={i}
+        //         />
+        //       );
+        //     } else {
+        //       return (
+        //         <EntryView
+        //           key={i}
+        //           prop={k}
+        //           value={v.value}
+        //           onChange={onEntryViewChange(k, i)}
+        //           schema={schema}
+        //         />
+        //       );
+        //     }
+        //   })
+      }
     </DragDropArray>
   );
 }
@@ -373,44 +467,51 @@ function HashListView({
     setValue(normalizeValues(nv || {}, choices));
   });
 
-  const allowedChoices = view.choices
-    ? visitChoices(view.choices, (choice, path) => {
-        if (view.choices) {
-          const keyPath = getKeyPath(path, view.choices);
-          if (keyPath != null) {
-            const newValue: ImprovedObjectValue = getEntry(
-              currentValue,
-              keyPath,
-              'value',
-            );
-            if (newValue != null && choice.items == null) {
-              return undefined;
+  const allowedChoices = React.useMemo(
+    () =>
+      view.choices
+        ? visitChoices(view.choices, (choice, path) => {
+            if (view.choices) {
+              const keyPath = getKeyPath(path, view.choices);
+              if (keyPath != null) {
+                const newValue: ImprovedObjectValue = getEntry(
+                  currentValue,
+                  keyPath,
+                  'value',
+                );
+                if (newValue != null && choice.items == null) {
+                  return undefined;
+                }
+              }
             }
-          }
-        }
-        return choice;
-      })
-    : undefined;
+            return choice;
+          })
+        : undefined,
+    [currentValue, view.choices],
+  );
 
-  const computedLabel =
-    label || cleaning ? (
-      <>
-        {label}
-        {cleaning && cleaning.errorDetector(value) && (
-          <Button
-            label={'Clean value'}
-            onClick={() =>
-              onChange(
-                normalizeValues(
-                  cleaning.cleaningMethod(value),
-                  choices,
-                )(undefined),
-              )
-            }
-          />
-        )}
-      </>
-    ) : undefined;
+  const computedLabel = React.useMemo(
+    () =>
+      label || cleaning ? (
+        <>
+          {label}
+          {cleaning && cleaning.errorDetector(value) && (
+            <Button
+              label={'Clean value'}
+              onClick={() =>
+                onChange(
+                  normalizeValues(
+                    cleaning.cleaningMethod(value),
+                    choices,
+                  )(undefined),
+                )
+              }
+            />
+          )}
+        </>
+      ) : undefined,
+    [choices, cleaning, label, onChange, value],
+  );
 
   return (
     <>
