@@ -3,6 +3,7 @@ import { TYPESTRING } from 'jsoninput/typings/types';
 import * as React from 'react';
 import { IAbstractContentDescriptor, IScript } from 'wegas-ts-api';
 import {
+  AvailableSchemas,
   DEFINED_VIEWS,
   SchemaFromView,
 } from '../../../Editor/Components/FormView';
@@ -765,7 +766,7 @@ const objectSchemaProps = {
     borderTop,
     noMarginTop,
   }: {
-    properties?: { [key: string]: SimpleSchemaPropsSchemas };
+    properties?: { [key: string]: AvailableSchemas };
   } & CommonSchemaProps &
     ValueSchemaProps<object>) => ({
     description: 'com.wegas.core.persistence.variable.primitive.NumberInstance',
@@ -785,31 +786,3 @@ export const schemaProps = {
 
 /** used to expose schemaProps helpers in client scripts */
 export type SchemaPropsType = typeof schemaProps;
-
-type SimpleSchemaPropsValues = keyof typeof simpleSchemaProps;
-
-/** used only once in ComponentProperties.tsx (in pages components properties) */
-export type SimpleSchemaPropsSchemas = ReturnType<
-  typeof simpleSchemaProps[SimpleSchemaPropsValues]
->;
-
-type ObjectSchemaPropsValues = keyof typeof objectSchemaProps;
-
-type ObjectSchemaPropsSchemas = ReturnType<
-  typeof objectSchemaProps[ObjectSchemaPropsValues]
->;
-
-// unused
-//export type SchemaPropsValues =
-//  | SimpleSchemaPropsValues
-//  | ObjectSchemaPropsValues;
-
-/**
- * Still used in:
- *  - ComponentProperties.ts: as parameter of wegasComponentSchema function
- *  - ComponentFactory.tsx:
- *  - useJSONSchema.ts:
- */
-export type SchemaPropsSchemas =
-  | SimpleSchemaPropsSchemas
-  | ObjectSchemaPropsSchemas;

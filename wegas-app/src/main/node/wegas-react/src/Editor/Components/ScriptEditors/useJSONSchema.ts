@@ -6,7 +6,7 @@ import {
   layoutCommonChoices,
   layoutConditionnalChoices,
 } from '../../../Components/PageComponents/tools/options';
-import { SchemaPropsSchemas } from '../../../Components/PageComponents/tools/schemaProps';
+import { AvailableSchemas } from '../FormView';
 import { hashListChoicesToSchema } from '../FormView/HashList';
 import { wegasComponentCommonSchema } from '../Page/ComponentProperties';
 
@@ -38,7 +38,7 @@ export function useJSONSchema(enabled: boolean = true) {
         items: {
           $ref: '#/definitions/___self',
         },
-      } as SchemaPropsSchemas;
+      } as AvailableSchemas;
     }
 
     const properties = {

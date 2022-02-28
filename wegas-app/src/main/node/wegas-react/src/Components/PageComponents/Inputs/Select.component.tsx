@@ -137,7 +137,6 @@ registerComponent(
           scriptProps: {
             language: 'TypeScript',
             scriptContext: 'Client',
-            // @ts-ignore
             returnType: ['{label:string, value: string}[]'],
           },
           literalSchema: schemaProps.array({

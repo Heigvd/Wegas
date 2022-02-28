@@ -10,7 +10,6 @@ import {
   DropZones,
 } from './EditableComponent';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
-import { SchemaPropsSchemas } from './schemaProps';
 import {
   IVariableDescriptor,
   WegasClassNameAndScriptableTypes,
@@ -59,7 +58,7 @@ export interface PageComponent<
   dropzones?: DropZones;
   schema: {
     description: string;
-    properties: { [prop: string]: SchemaPropsSchemas };
+    properties: { [prop: string]: AvailableSchemas };
   };
   allowedVariables?: T[];
   getComputedPropsFromVariable?: (
