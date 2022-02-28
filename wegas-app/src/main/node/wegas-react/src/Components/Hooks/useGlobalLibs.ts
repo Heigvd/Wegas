@@ -251,7 +251,7 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
 
         declare const Roles : RolesMehtods;
 
-        declare const wlog : (toLog:any)=>void;
+        declare const wlog : (...args: unknown[])=>void;
         `
             : `${buildGlobalServerMethods(globalServerMethods)}
 

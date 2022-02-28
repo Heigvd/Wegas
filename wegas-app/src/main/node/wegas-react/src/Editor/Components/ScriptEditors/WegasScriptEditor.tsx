@@ -59,6 +59,13 @@ function indent(script: string, numLevel?: number) {
 export const insertReturn = (val: string) => {
   let code = val;
 
+  if (val === '{};' || val === '{}') {
+    // hack: AST will parse "{};" as en empty block + empty statement rather than an empty object;
+    //       in such a case, generated code would be "{}; return;"
+    //       correct code is "return {};"
+    return '\treturn {};';
+  }
+
   const sourceFile = ts.createSourceFile(
     'Testedfile',
     code,
@@ -222,6 +229,11 @@ function findPositions(functionalizedScript: string): Positions | string[] {
             if (lastStatement == null) {
               return ['Function must have a return statement'];
             } else if (ts.isReturnStatement(lastStatement)) {
+              const returnExpr = lastStatement.expression;
+              if (returnExpr && ts.isObjectLiteralExpression(returnExpr)) {
+                return ['Please wrap object literal within parenthesis!'];
+              }
+
               startReturnPosition = lastStatement.getStart();
               stopReturnPosition = lastStatement.getEnd();
             } else {
@@ -498,7 +510,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       {resizable ? (
         <ResizeHandle
           minSize={100}
-          textContent={models[props.fileName] || '\n\n\n\n'}
+          textContent={models[props.fileName] + '\n\n' || '\n\n\n\n\n'}
         >
           <SrcEditor
             {...props}
