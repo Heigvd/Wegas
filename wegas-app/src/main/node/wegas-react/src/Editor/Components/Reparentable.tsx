@@ -49,6 +49,7 @@ export function ReparentableRoot({ children }: { children: React.ReactNode }) {
 
 const sizeDisplayStyle = css({
   position: 'fixed',
+  zIndex: 99,
 });
 
 /**
