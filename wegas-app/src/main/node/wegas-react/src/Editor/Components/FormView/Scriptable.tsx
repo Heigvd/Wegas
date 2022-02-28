@@ -60,7 +60,7 @@ export default function ScriptableView(
     onChange({
       '@class': 'Script',
       language: language,
-      content: scripted,
+      content: scripted || '',
     } as IScript);
   }, [onChange, language]);
 
@@ -116,7 +116,7 @@ export default function ScriptableView(
             ) : (
               <Form
                 schema={literalSchema}
-                value={value || undefined}
+                value={value}
                 onChange={onChange}
               />
             )}
