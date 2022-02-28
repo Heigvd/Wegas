@@ -22,16 +22,17 @@ module.exports = {
       },
       {
         test: /\.woff(2)?$/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              limit: 10000,
-              name: './font/[hash].[ext]',
-              mimetype: 'application/font-woff',
-            },
-          },
-        ],
+        type: 'asset/resource',
+        // use: [
+        //   {
+        //     loader: 'url-loader',
+        //     options: {
+        //       limit: 10000,
+        //       name: './font/[hash].[ext]',
+        //       mimetype: 'application/font-woff',
+        //     },
+        //   },
+        // ],
       },
     ],
   },
