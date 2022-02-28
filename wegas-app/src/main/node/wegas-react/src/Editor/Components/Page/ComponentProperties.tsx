@@ -60,6 +60,10 @@ interface EditorProps<T = WegasComponentForm> {
   localDispatch: StoreDispatch | undefined;
 }
 
+interface PagePropertiesFormProps extends EditorProps {
+  editionKey: string;
+}
+
 async function WindowedEditor({
   entity,
   schema,
@@ -67,7 +71,8 @@ async function WindowedEditor({
   actions = [],
   error,
   localDispatch,
-}: EditorProps) {
+  editionKey,
+}: PagePropertiesFormProps) {
   const [Form] = await Promise.all<typeof import('../Form')['Form']>([
     import('../Form').then(m => m.Form),
   ]);
@@ -80,6 +85,8 @@ async function WindowedEditor({
         onLabelVanish={error && error.onVanish}
       />
       <Form
+        // Force rerender Form when path changes,
+        key={editionKey}
         entity={entity}
         update={value => update && update(value)}
         actions={actions}
@@ -89,7 +96,7 @@ async function WindowedEditor({
     </div>
   );
 }
-const AsyncComponentForm = asyncSFC<EditorProps>(
+const AsyncComponentForm = asyncSFC<PagePropertiesFormProps>(
   WindowedEditor,
   () => <div>load...</div>,
   ({ err }: { err: Error }) => (
@@ -253,6 +260,7 @@ export interface ComponentPropertiesProps {
   update?: (variable: WegasComponent) => void;
   actions?: EditorProps['actions'];
   localDispatch: StoreDispatch | undefined;
+  editionKey: string;
 }
 
 export function ComponentProperties({
@@ -261,7 +269,7 @@ export function ComponentProperties({
   update,
   actions,
   localDispatch,
-}: ComponentPropertiesProps) {
+  editionKey}: ComponentPropertiesProps) {
   const schema = usePageComponentStore(s => {
     const baseSchema =
       entity && s[entity.type]
@@ -298,12 +306,13 @@ export function ComponentProperties({
       }
       actions={actions}
       localDispatch={localDispatch}
+      editionKey={editionKey}
     />
   );
 }
 
 export default function ConnectedComponentProperties() {
-  const { editedPath, selectedPage, onUpdate, onDelete, onEdit } =
+  const { editedPath,selectedPageId,  selectedPage, onUpdate, onDelete, onEdit } =
     React.useContext(pageCTX);
 
   if (!editedPath) {
@@ -339,6 +348,7 @@ export default function ConnectedComponentProperties() {
         },
       ]}
       localDispatch={undefined}
+      editionKey={JSON.stringify({selectedPageId,editedPath})}
     />
   );
 }
