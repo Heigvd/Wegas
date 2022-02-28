@@ -29,11 +29,11 @@ export default function SerializeView({
     [onChange],
   );
 
-  let parsed: {};
+  let parsed: undefined;
   try {
     parsed = JSON.parse(typeof value === 'string' ? value : '{}');
   } catch {
-    parsed = {};
+    parsed = undefined;
   }
 
   return (
