@@ -361,63 +361,19 @@ function EntriesView({
       tooltip={tooltip}
       filterRemovable={filterRemovable}
     >
-      {
-        currentValue &&
-          Object.entries(currentValue)
-            .sort(([, a], [, b]) => sortValues(a, b))
-            .map((entry, i) => (
-              <DragAndDropEntry
-                key={entry[0] + i}
-                currentValue={currentValue}
-                entry={entry}
-                index={i}
-                onChange={onChange}
-                view={view}
-              />
-            ))
-        // Object.entries(currentValue)
-        //   .sort(([, a], [, b]) => sortValues(a, b))
-        //   .map(([k, v], i) => {
-        //     let schema: SchemaPropsSchemas | undefined;
-        //     let label: React.ReactNode | undefined;
-        //     // let newChoices: HashListChoices | undefined;
-        //     if (choices) {
-        //       const choice: HashListChoice | undefined = choices.find(
-        //         c => c.value.prop === k,
-        //       );
-        //       label = choice?.label;
-        //       if (choice && choice.value && isHashListValue(choice.value)) {
-        //         schema = choice.value.schema;
-        //       }
-        //     }
-        //     const [isIntermediate, itemChoices] = isIntermediateKey(k, choices);
-        //     if (isIntermediate && typeof v.value === 'object') {
-        //       const newView = {
-        //         ...view,
-        //         choices: itemChoices,
-        //       };
-        //       return (
-        //         <EntriesView
-        //           labelNode={label}
-        //           currentValue={v.value}
-        //           onChange={onIntermediateEntryViewChange(k, v)}
-        //           view={newView}
-        //           key={i}
-        //         />
-        //       );
-        //     } else {
-        //       return (
-        //         <EntryView
-        //           key={i}
-        //           prop={k}
-        //           value={v.value}
-        //           onChange={onEntryViewChange(k, i)}
-        //           schema={schema}
-        //         />
-        //       );
-        //     }
-        //   })
-      }
+      {currentValue &&
+        Object.entries(currentValue)
+          .sort(([, a], [, b]) => sortValues(a, b))
+          .map((entry, i) => (
+            <DragAndDropEntry
+              key={entry[0] + i}
+              currentValue={currentValue}
+              entry={entry}
+              index={i}
+              onChange={onChange}
+              view={view}
+            />
+          ))}
     </DragDropArray>
   );
 }

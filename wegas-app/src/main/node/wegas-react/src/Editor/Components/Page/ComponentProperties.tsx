@@ -282,9 +282,9 @@ export function ComponentProperties({
       parent ? s[parent.type].container : undefined,
     ) as Schema<BaseView>;
   }, deepDifferent);
+
   // customize schema
   // Then try to get schema from complex filters
-
   let customSchema: SimpleSchema | void;
   const customSchemas = store.getState().global.schemas;
   for (const schemaName of customSchemas.unfiltered) {
@@ -322,6 +322,27 @@ export default function ConnectedComponentProperties() {
     onEdit,
   } = React.useContext(pageCTX);
 
+  const pageComponentActions: ActionsProps<WegasComponentForm>[] | undefined =
+    React.useMemo(
+      () =>
+        editedPath
+          ? [
+              {
+                label: 'Delete',
+                action: () => onDelete(editedPath),
+                confirm: true,
+                sorting: 'delete',
+              },
+              {
+                label: 'Deselect',
+                action: () => onEdit(undefined),
+                sorting: 'toolbox',
+              },
+            ]
+          : undefined,
+      [editedPath, onDelete, onEdit],
+    );
+
   if (!editedPath) {
     return <pre className={defaultPadding}>No component selected yet</pre>;
   }
@@ -341,19 +362,7 @@ export default function ConnectedComponentProperties() {
       entity={component}
       parent={parent}
       update={onUpdate}
-      actions={[
-        {
-          label: 'Delete',
-          action: () => onDelete(editedPath),
-          confirm: true,
-          sorting: 'delete',
-        },
-        {
-          label: 'Deselect',
-          action: () => onEdit(undefined),
-          sorting: 'toolbox',
-        },
-      ]}
+      actions={pageComponentActions}
       localDispatch={undefined}
       editionKey={JSON.stringify({ selectedPageId, editedPath })}
     />
