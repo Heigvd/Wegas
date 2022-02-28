@@ -23,6 +23,7 @@ import { deepUpdate } from '../../data/updateUtils';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import getEditionConfig, { getClassLabel } from '../editionConfig';
+import { ErrorBoundary } from './ErrorBoundary';
 import { AvailableViews } from './FormView';
 import { InstanceProperties } from './Variable/InstanceProperties';
 
@@ -459,24 +460,26 @@ export function VariableForm({
   return (
     <ReflexContainer orientation="vertical">
       <ReflexElement>
-        <AsyncVariableForm
-          path={path}
-          getConfig={config}
-          update={update}
-          actions={actions}
-          entity={entity}
-          onChange={newEntity => {
-            (localDispatch || store.dispatch)(
-              ActionCreator.EDITION_CHANGES({
-                newEntity: newEntity as IAbstractEntity,
-              }),
-            );
-          }}
-          error={parseEventFromIndex(events)}
-          highlight={editing?.highlight && !highlightInstance}
-          readOnly={readOnly}
-          localDispatch={localDispatch}
-        />
+        <ErrorBoundary>
+          <AsyncVariableForm
+            path={path}
+            getConfig={config}
+            update={update}
+            actions={actions}
+            entity={entity}
+            onChange={newEntity => {
+              (localDispatch || store.dispatch)(
+                ActionCreator.EDITION_CHANGES({
+                  newEntity: newEntity as IAbstractEntity,
+                }),
+              );
+            }}
+            error={parseEventFromIndex(events)}
+            highlight={editing?.highlight && !highlightInstance}
+            readOnly={readOnly}
+            localDispatch={localDispatch}
+          />
+        </ErrorBoundary>
       </ReflexElement>
       {instanceEditing && <ReflexSplitter />}
       {instanceEditing && (
