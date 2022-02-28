@@ -46,7 +46,12 @@ const dropZoneStyle = cx(
 );
 
 const handleStyle = css({
-  display: 'inline-grid',
+  display: 'flex',
+  alignItems: 'center',
+});
+
+const smallPadding = css({
+  padding: '0'
 });
 
 interface AdderProps<T> {
@@ -137,6 +142,7 @@ function ArrayItem({
       <div className={cx(handleStyle, transparentStyle)}>
         {onChildRemove ? (
           <Button
+            className={smallPadding}
             icon="trash"
             onClick={() => onChildRemove(index)}
             tooltip="Delete this group"
@@ -144,7 +150,9 @@ function ArrayItem({
         ) : null}
         {!unmovable && (
           <div ref={drag}>
-            <Button icon="arrows-alt" />
+            <Button
+            className={smallPadding}
+            icon="arrows-alt" />
           </div>
         )}
       </div>
@@ -248,8 +256,8 @@ export function DragDropArray<T>({
   //wlog(label);
   return (
     <>
-      {label}
       <div className={flex}>
+        {label}
         {maxItems > valueLength && !disabled && !readOnly && onChildAdd && (
           <Adder
             id={inputId}
