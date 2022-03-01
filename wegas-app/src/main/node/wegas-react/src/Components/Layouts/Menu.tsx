@@ -110,6 +110,8 @@ export interface MenuProps<T extends MenuChildren = MenuChildren>
   items?: T;
   labelFN?: (child: LabelFNArgs) => React.ReactNode;
   labelClassName?: string;
+  menuBarClassName?: string;
+  contentClassName?: string;
 }
 
 export function Menu<T extends MenuChildren = MenuChildren>({
@@ -117,6 +119,8 @@ export function Menu<T extends MenuChildren = MenuChildren>({
   items,
   labelFN,
   labelClassName,
+  menuBarClassName,
+  contentClassName,
   className,
   style,
   id,
@@ -134,7 +138,7 @@ export function Menu<T extends MenuChildren = MenuChildren>({
       }}
       id={id}
     >
-      <div className={cx(classOrNothing('vertical', vertical), menuBarStyle)}>
+      <div className={cx(classOrNothing('vertical', vertical), menuBarStyle, menuBarClassName)}>
         {Object.entries(items || [])
           .sort(([, a], [, b]) => (a.index || 0) - (b.index || 0))
           .map(([k, v]) => {
@@ -157,7 +161,7 @@ export function Menu<T extends MenuChildren = MenuChildren>({
             );
           })}
       </div>
-      <div className={cx(flex, grow, itemCenter, justifyCenter)}>
+      <div className={cx(flex, grow, itemCenter, justifyCenter, contentClassName)}>
         {items && selectedItem && items[selectedItem].content}
       </div>
     </div>
