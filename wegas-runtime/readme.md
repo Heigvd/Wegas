@@ -69,7 +69,7 @@ JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/" mvn -DskipTests install
 Run `./run` to start wegas.
 
 #### Java 11
-Wegas is designed to run on Java 11. If your default JVM is <> 11, you must provide the path to a JVM 11 using the -j option.
+Wegas is designed to run on Java 11. If your default JVM is lower or higher than 11, you must provide the path to a JVM 11 using the -j option.
 
 #### Options
 Option | Default Value | Description 
