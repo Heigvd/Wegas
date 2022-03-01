@@ -14,8 +14,6 @@ brew install --cask adoptopenjdk11
 
 #Install node and change version to 11.10.1
 brew install node
-npm install -g n 
-sudo n 11.10.1
 
 #Install yarn
 brew install yarn
