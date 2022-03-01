@@ -4,7 +4,6 @@ import {
   expandBoth,
   flex,
   flexColumn,
-  flexDistribute,
   flexRow,
   grow,
   itemCenter,
@@ -15,16 +14,38 @@ import { classNameOrEmpty, classOrNothing } from '../../Helper/className';
 import { createScript } from '../../Helper/wegasEntites';
 import { useScript } from '../Hooks/useScript';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
+import { themeVar } from '../Theme/ThemeVars';
 
 const menuLabelDefaultStyle = cx(
   flex,
-  grow,
-  justifyCenter,
   itemCenter,
   css({
+    padding: '10px',
     cursor: 'pointer',
-    '&.selected': {
-      boxShadow: 'inset 0 0 0 2px var(--colors-highlightcolor)',
+    backgroundColor: themeVar.colors.BackgroundColor,
+    fontWeight: 600,
+    color: themeVar.colors.DarkTextColor,
+    transition: 'all .4s ease',
+    '&.selected, &:hover': {
+      backgroundColor: themeVar.colors.HeaderColor,
+    },
+    '&.readOnly': {
+      color: themeVar.colors.DisabledColor,
+      userSelect: 'none',
+      pointerEvents: 'none',
+    }
+  }),
+);
+
+const menuBarStyle = cx(
+  flex,
+  css({
+    borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
+    flexDirection: 'row',
+    '&.vertical': {
+      flexDirection: 'column',
+      borderBottom: 'none',
+      borderRight: '1px solid ' + themeVar.colors.DisabledColor,
     },
   }),
 );
@@ -33,6 +54,7 @@ interface MenuChild {
   label: React.ReactNode | IScript;
   content: React.ReactNode;
   index?: number;
+  readOnly?: boolean;
 }
 
 export type MenuChildren = {
@@ -58,6 +80,7 @@ export function MenuLabel({
   labelClassName,
   id,
   index,
+  readOnly,
 }: MenuLabelProps) {
   const isScript = entityIs(label, 'Script');
   const labelScript = useScript(
@@ -69,6 +92,7 @@ export function MenuLabel({
       onClick={onClick}
       className={cx(
         classOrNothing('selected', selected),
+        classOrNothing('readOnly', readOnly),
         labelClassName ? labelClassName : menuLabelDefaultStyle,
       )}
       title={String(labelValue)}
@@ -102,22 +126,15 @@ export function Menu<T extends MenuChildren = MenuChildren>({
   return (
     <div
       className={
-        cx(
-          flex,
-          grow,
-          vertical ? flexRow : flexColumn,
-          flexDistribute,
-          expandBoth,
-        ) + classNameOrEmpty(className)
+        cx(flex, vertical ? flexRow : flexColumn, grow, expandBoth) +
+        classNameOrEmpty(className)
       }
       style={{
         ...style,
       }}
       id={id}
     >
-      <div
-        className={cx(flex, vertical ? flexColumn : flexRow, flexDistribute)}
-      >
+      <div className={cx(classOrNothing('vertical', vertical), menuBarStyle)}>
         {Object.entries(items || [])
           .sort(([, a], [, b]) => (a.index || 0) - (b.index || 0))
           .map(([k, v]) => {
@@ -135,6 +152,7 @@ export function Menu<T extends MenuChildren = MenuChildren>({
                 index={v.index}
                 labelFN={labelFN}
                 labelClassName={labelClassName}
+                readOnly={v.readOnly}
               />
             );
           })}

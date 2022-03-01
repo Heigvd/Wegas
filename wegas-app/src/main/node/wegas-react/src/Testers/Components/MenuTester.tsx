@@ -21,7 +21,7 @@ export default function MenuTester() {
           items={{
             Item1: { label: 'Item1', content: <div>Item1</div> },
             Item2: { label: 'Item2', content: <div>Item2</div> },
-            Item3: { label: 'Item3', content: <div>Item3</div> },
+            Item3: { label: 'Item3', content: <div>Item3</div>, readOnly: true },
           }}
         />
       </div>
