@@ -33,6 +33,7 @@ interface PlayerBoxesProps extends WegasComponentProps {
 
 function PlayerBoxes({
   script,
+  context,
   label,
   hideBoxValue,
   showLabelValue,
@@ -44,7 +45,7 @@ function PlayerBoxes({
   path,
 }: PlayerBoxesProps) {
   const { descriptor, instance, notFound } =
-    useComponentScript<INumberDescriptor>(script);
+    useComponentScript<INumberDescriptor>(script, context);
 
   return notFound ? (
     <UncompleteCompMessage pageId={pageId} path={path} />

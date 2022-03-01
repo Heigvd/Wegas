@@ -60,6 +60,10 @@ interface EditorProps<T = WegasComponentForm> {
   localDispatch: StoreDispatch | undefined;
 }
 
+interface PagePropertiesFormProps extends EditorProps {
+  editionKey: string;
+}
+
 async function WindowedEditor({
   entity,
   schema,
@@ -67,7 +71,8 @@ async function WindowedEditor({
   actions = [],
   error,
   localDispatch,
-}: EditorProps) {
+  editionKey,
+}: PagePropertiesFormProps) {
   const [Form] = await Promise.all<typeof import('../Form')['Form']>([
     import('../Form').then(m => m.Form),
   ]);
@@ -80,6 +85,8 @@ async function WindowedEditor({
         onLabelVanish={error && error.onVanish}
       />
       <Form
+        // Force rerender Form when path changes,
+        key={editionKey}
         entity={entity}
         update={value => update && update(value)}
         actions={actions}
@@ -89,7 +96,7 @@ async function WindowedEditor({
     </div>
   );
 }
-const AsyncComponentForm = asyncSFC<EditorProps>(
+const AsyncComponentForm = asyncSFC<PagePropertiesFormProps>(
   WindowedEditor,
   () => <div>load...</div>,
   ({ err }: { err: Error }) => (
@@ -253,6 +260,7 @@ export interface ComponentPropertiesProps {
   update?: (variable: WegasComponent) => void;
   actions?: EditorProps['actions'];
   localDispatch: StoreDispatch | undefined;
+  editionKey: string;
 }
 
 export function ComponentProperties({
@@ -261,6 +269,7 @@ export function ComponentProperties({
   update,
   actions,
   localDispatch,
+  editionKey,
 }: ComponentPropertiesProps) {
   const schema = usePageComponentStore(s => {
     const baseSchema =
@@ -273,9 +282,9 @@ export function ComponentProperties({
       parent ? s[parent.type].container : undefined,
     ) as Schema<BaseView>;
   }, deepDifferent);
+
   // customize schema
   // Then try to get schema from complex filters
-
   let customSchema: SimpleSchema | void;
   const customSchemas = store.getState().global.schemas;
   for (const schemaName of customSchemas.unfiltered) {
@@ -298,13 +307,41 @@ export function ComponentProperties({
       }
       actions={actions}
       localDispatch={localDispatch}
+      editionKey={editionKey}
     />
   );
 }
 
 export default function ConnectedComponentProperties() {
-  const { editedPath, selectedPage, onUpdate, onDelete, onEdit } =
-    React.useContext(pageCTX);
+  const {
+    editedPath,
+    selectedPageId,
+    selectedPage,
+    onUpdate,
+    onDelete,
+    onEdit,
+  } = React.useContext(pageCTX);
+
+  const pageComponentActions: ActionsProps<WegasComponentForm>[] | undefined =
+    React.useMemo(
+      () =>
+        editedPath
+          ? [
+              {
+                label: 'Delete',
+                action: () => onDelete(editedPath),
+                confirm: true,
+                sorting: 'delete',
+              },
+              {
+                label: 'Deselect',
+                action: () => onEdit(undefined),
+                sorting: 'toolbox',
+              },
+            ]
+          : undefined,
+      [editedPath, onDelete, onEdit],
+    );
 
   if (!editedPath) {
     return <pre className={defaultPadding}>No component selected yet</pre>;
@@ -325,20 +362,9 @@ export default function ConnectedComponentProperties() {
       entity={component}
       parent={parent}
       update={onUpdate}
-      actions={[
-        {
-          label: 'Delete',
-          action: () => onDelete(editedPath),
-          confirm: true,
-          sorting: 'delete',
-        },
-        {
-          label: 'Deselect',
-          action: () => onEdit(undefined),
-          sorting: 'toolbox',
-        },
-      ]}
+      actions={pageComponentActions}
       localDispatch={undefined}
+      editionKey={JSON.stringify({ selectedPageId, editedPath })}
     />
   );
 }
