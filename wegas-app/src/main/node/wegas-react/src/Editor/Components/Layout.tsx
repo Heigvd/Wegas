@@ -39,7 +39,7 @@ const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
 const PagesLayout = React.lazy(() => import('./Page/PagesLayout'));
 const SourceEditor = React.lazy(() => import('./Page/SourceEditor'));
 
-const Tester = React.lazy(() => import('../../Testers/Components/MenuTester'));
+// const Tester = React.lazy(() => import('../../Testers/Components/MenuTester'));
 
 const layout = css({
   display: 'flex',
@@ -52,10 +52,10 @@ const layout = css({
 });
 
 const availableLayoutTabs: LinearLayoutComponents = [
-  {
-    tabId: 'Tester',
-    content: <Tester />,
-  },
+  // {
+  //   tabId: 'Tester',
+  //   content: <Tester />,
+  // },
   {
     tabId: 'Variables',
     content: <TreeView />,

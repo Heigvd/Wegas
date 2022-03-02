@@ -30,6 +30,7 @@ import { VariableScriptPath } from '../Variable/VariableScriptPath';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 import { scriptEditStyle } from './Script/Script';
+import { computeReturnType, ScriptableView } from './ScriptableString';
 
 const treeCss = css({
   padding: '5px 10px',
@@ -130,14 +131,13 @@ function labelForValue<T>(items: TreeSelectItem<T>[], value?: T) {
   return '';
 }
 
+interface LabeledTreeVSelectView<T> extends ScriptableView {
+  items?: TreeSelectItem<T>[];
+  returnType?: WegasScriptEditorReturnTypeName[];
+}
+
 export interface LabeledTreeVSelectProps<T>
-  extends WidgetProps.BaseProps<
-    CommonView &
-      LabeledView & {
-        items?: TreeSelectItem<T>[];
-        returnType?: WegasScriptEditorReturnTypeName[];
-      }
-  > {
+  extends WidgetProps.BaseProps<LabeledTreeVSelectView<T>> {
   value?: T;
 }
 
@@ -382,7 +382,10 @@ export function ScripableVariableSelect(
         <div className={scriptEditStyle}>
           <WegasScriptEditor
             value={script}
-            returnType={props.view.returnType}
+            returnType={computeReturnType(
+              props.view.returnType,
+              props.view.required,
+            )}
             onChange={value =>
               props.onChange(
                 props.value
