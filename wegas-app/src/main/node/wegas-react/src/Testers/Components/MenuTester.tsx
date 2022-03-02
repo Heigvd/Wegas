@@ -1,24 +1,29 @@
-import * as React from 'react';
 import { cx /*,css*/ } from '@emotion/css';
-import { flex, flexColumn, grow, expandBoth } from '../../css/classes';
-import { Menu, MenuItem } from '../../Components/Layouts/Menu';
+import * as React from 'react';
+import { Menu } from '../../Components/Layouts/Menu';
+import { expandBoth, flex, flexColumn, grow } from '../../css/classes';
 
 export default function MenuTester() {
   return (
     <div className={cx(flex, flexColumn, expandBoth)}>
       <div className={grow}>
-        <Menu>
-          <MenuItem>Item1</MenuItem>
-          <MenuItem>Item2</MenuItem>
-          <MenuItem>Item3</MenuItem>
-        </Menu>
+        <Menu
+          items={{
+            Item1: { label: 'Item1', content: <div>Item1</div> },
+            Item2: { label: 'Item2', content: <div>Item2</div> },
+            Item3: { label: 'Item3', content: <div>Item3</div> },
+          }}
+        />
       </div>
       <div className={grow}>
-        <Menu vertical>
-          <MenuItem>Item1</MenuItem>
-          <MenuItem>Item2</MenuItem>
-          <MenuItem>Item3</MenuItem>
-        </Menu>
+        <Menu
+          vertical
+          items={{
+            Item1: { label: 'Item1', content: <div>Item1</div> },
+            Item2: { label: 'Item2', content: <div>Item2</div> },
+            Item3: { label: 'Item3', content: <div>Item3</div> },
+          }}
+        />
       </div>
     </div>
   );

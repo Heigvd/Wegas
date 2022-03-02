@@ -29,36 +29,39 @@ interface PhasesProgressBarProps extends WegasComponentProps {
 
 export default function PlayerPhasesProgressBar({
   phase,
+  context,
   phaseMin,
   phaseMax,
   options,
+  pageId,
+  path,
 }: PhasesProgressBarProps) {
   const {
     content: phaseContent,
     instance: phaseInstance,
     notFound: phaseNotFound,
-  } = useComponentScript<INumberDescriptor>(phase);
+  } = useComponentScript<INumberDescriptor>(phase, context);
   const {
     content: phaseMinContent,
     instance: phaseMinInstance,
     notFound: phaseMinNotFound,
-  } = useComponentScript<INumberDescriptor>(phaseMin);
+  } = useComponentScript<INumberDescriptor>(phaseMin, context);
 
   const {
     content: phaseMaxContent,
     instance: phaseMaxInstance,
     notFound: phaseMaxNotFound,
-  } = useComponentScript<INumberDescriptor>(phaseMax);
+  } = useComponentScript<INumberDescriptor>(phaseMax, context);
 
   if (phaseNotFound) {
     wwarn(`Current phase not found: ${phaseContent}`);
-    return <UncompleteCompMessage />;
+    return <UncompleteCompMessage pageId={pageId} path={path} />;
   } else if (phaseMinNotFound) {
     wwarn(`Phase min not found: ${phaseMinContent}`);
-    return <UncompleteCompMessage />;
+    return <UncompleteCompMessage pageId={pageId} path={path} />;
   } else if (phaseMaxNotFound) {
     wwarn(`Phase max not found: ${phaseMaxContent}`);
-    return <UncompleteCompMessage />;
+    return <UncompleteCompMessage pageId={pageId} path={path} />;
   } else {
     return (
       <PhasesProgressBar

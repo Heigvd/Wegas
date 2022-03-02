@@ -90,13 +90,17 @@ export function Form<T>({
   );
   const i18nValues = useInternalTranslate(commonTranslations);
 
-  if (
-    deepDifferent(entity, oldReceivedEntity.current) &&
-    deepDifferent(entity, val)
-  ) {
-    oldReceivedEntity.current = entity;
-    setVal(entity);
-  }
+  React.useEffect(() => {
+    if (
+      deepDifferent(entity, oldReceivedEntity.current) &&
+      deepDifferent(entity, val)
+    ) {
+      oldReceivedEntity.current = entity;
+      setVal(entity);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entity]);
+
   const closeAction = actions.find(a => a.sorting === 'close');
   const deleteAction = actions.find(a => a.sorting === 'delete');
   const duplicateAction = actions.find(a => a.sorting === 'duplicate');
@@ -130,22 +134,6 @@ export function Form<T>({
                   className={expandHeight}
                 />
               )}
-              {/*
-            Undo button in forms.
-            Leaving it as a comment as it may be asked to re-add it.
-            <ConfirmButton
-              icon="undo"
-              chipStyle
-              tooltip={i18nValues.reset}
-              onAction={accept => {
-                accept && setVal(entity);
-              }}
-              disableBorders={{
-                left: update !== undefined,
-                right: actions.length > 0,
-              }}
-              buttonClassName={expandHeight}
-            /> */}
               {deleteAction != null && deleteAction.confirm ? (
                 <ConfirmButton
                   icon="trash"

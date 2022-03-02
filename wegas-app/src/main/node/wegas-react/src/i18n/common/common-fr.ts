@@ -39,4 +39,7 @@ export const commonTranslationsFR: CommonTranslations = {
   },
   noContent: 'Aucun contenu',
   noSelectedTab: 'Aucun onglet selectionné',
+  serverDown: 'Reconnexion...',
+  serverOutaded:
+    "Votre version de Wegas n'est plus a jour, veuillez rafraichir votre navigateur.",
 };

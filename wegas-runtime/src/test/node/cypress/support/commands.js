@@ -24,46 +24,63 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-Cypress.Commands.add("visitWegas", () => {
+Cypress.Commands.add("checkEnv", () => {
   const url = Cypress.env("WEGAS_URL");
-  if (url) {
-    cy.visit(url);
-  } else {
-    throw "please set env WEGAS_URL to the test url";
+  console.log(url);
+  if (url == null) {
+    throw "please set --env WEGAS_URL to start tests";
+  }
+  const username = Cypress.env("ADMIN_USERNAME");
+  if (username == null) {
+    throw "please set --env ADMIN_USERNAME to start tests";
+  }
+  const password = Cypress.env("ADMIN_PASSWORD");
+  if (password == null) {
+    throw "please set --env ADMIN_PASSWORD to start tests";
   }
 });
 
-Cypress.Commands.add("login", (identifier, password) => {
-  // cy.react("Input").should("have.length", "2");
-
-  // cy.react("Input")
-  //   .get("input[type=text]")
-  //   .should("have.length", "1")
-  //   .type(identifier);
-  // cy.react("Input")
-  //   .get("input[type=password]")
-  //   .should("have.length", "1")
-  //   .type(password);
-
-  // cy.react("Button").should("have.length", "1").click();
-
-  // const test = cy
-  //   .get("input")
-  //   .should("have.attr", "type", "text")
-  //   .should("have.attr", "placeholder", "e-mail or username");
-  // console.log(test);
-  // debugger;
-
-  cy.get('input[placeholder="e-mail or username"]').type(identifier);
-  cy.get('input[placeholder="password"]').type(password);
-  cy.get("span[title=login]").click();
+Cypress.Commands.add("visitWegas", (path) => {
+  const url = Cypress.env("WEGAS_URL");
+  cy.checkEnv();
+  cy.visit(url + (path ? path : ""));
 });
 
-Cypress.Commands.add("logout", (identifier, password) => {
-  // cy.react("IconButton", { props: { icon: { iconName: "sign-out-alt" } } })
-  //   .should("have.length", "1")
-  //   .click();
-  cy.get(
-    'svg[class="svg-inline--fa fa-sign-out-alt fa-w-16 css-5030pi"]'
-  ).click({ force: true });
+Cypress.Commands.add("login", (identifier, password) => {
+  cy.log("Testing login...");
+  cy.react("Input", {
+    props: { type: "text", placeholder: "e-mail or username" },
+  }).type(identifier);
+
+  cy.react("Input", {
+    props: { type: "password", placeholder: "password" },
+  }).type(password);
+
+  cy.react("Button", { props: { key: "submit", label: "login" } }).click({
+    force: true,
+  });
+  cy.log("Login working!");
+});
+
+Cypress.Commands.add("logout", () => {
+  cy.log("Testing logout...");
+  cy.react("IconButton", {
+    props: {
+      icon: {
+        iconName: "sign-out-alt",
+      },
+    },
+  }).click({
+    force: true,
+  });
+  cy.react("FontAwesomeIcon", {
+    props: {},
+  });
+  cy.log("Logout working!");
+});
+
+Cypress.Commands.add("simulatePusher", () => {
+  // Forced to reload without pusher
+  cy.reload();
+  cy.waitForReact();
 });

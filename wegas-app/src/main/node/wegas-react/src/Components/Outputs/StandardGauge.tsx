@@ -1,12 +1,42 @@
 import * as React from 'react';
 import { CustomGauge } from './CustomGauge';
-import { degreeToRadian } from './PieChart';
+import { degreeToRadian, SVGNeedleStyle } from './PieChart';
 
 const sectionsColor = [
   { backgroundColor: 'red', stopValue: 20 },
   { backgroundColor: 'yellow', stopValue: 80 },
   { backgroundColor: 'green', stopValue: 100 },
 ];
+
+function standardNeedle(
+  cX: number,
+  cY: number,
+  angle: number,
+  radius: number,
+  holeRadius: number,
+) {
+  const border = 10;
+  const width = radius - holeRadius + 2 * border;
+  const radAngle = degreeToRadian(angle);
+  const x = Math.cos(radAngle) * (radius + border) + cX;
+  const y = Math.sin(radAngle) * (radius + border) + cY;
+  return (
+    <rect
+      x={x}
+      y={y}
+      width={width}
+      height={10}
+      fill="black"
+      rotate={radAngle}
+      transform={`rotate(${angle} ${x} ${y})`}
+    />
+  );
+}
+
+const defaultNeedleStyle: SVGNeedleStyle = {
+  '@class': 'SVGNeedle',
+  svg: standardNeedle,
+};
 
 export interface StandardGaugeProps extends ClassStyleId {
   /**
@@ -51,6 +81,7 @@ export function StandardGauge({
     ...s,
     stopValue: (s.stopValue / 100) * deltaValue + min,
   }));
+
   return (
     <CustomGauge
       className={className}
@@ -65,27 +96,7 @@ export function StandardGauge({
       holeRatio={0.8}
       label={label}
       disabled={disabled}
-      needleStyle={{
-        '@class': 'SVGNeedle',
-        svg: (cX, cY, angle, radius, holeRadius) => {
-          const border = 10;
-          const width = radius - holeRadius + 2 * border;
-          const radAngle = degreeToRadian(angle);
-          const x = Math.cos(radAngle) * (radius + border) + cX;
-          const y = Math.sin(radAngle) * (radius + border) + cY;
-          return (
-            <rect
-              x={x}
-              y={y}
-              width={width}
-              height={10}
-              fill="black"
-              rotate={radAngle}
-              transform={`rotate(${angle} ${x} ${y})`}
-            />
-          );
-        },
-      }}
+      needleStyle={defaultNeedleStyle}
       blur
       followNeedle={followNeedle}
     />

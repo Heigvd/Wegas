@@ -26,7 +26,7 @@ registerComponent(
         {},
         () => null,
       ),
-      childrenSchema: absolutelayoutChoices,
+      childrenLayoutOptionSchema: absolutelayoutChoices,
       childrenLayoutKeys: defaultAbsoluteLayoutPropsKeys,
     },
     name: 'AbsoluteLayout',

@@ -1,9 +1,3 @@
-/*
- * The coLAB project
- * Copyright (C) 2021 AlbaSim, MEI, HEIG-VD, HES-SO
- *
- * Licensed under the MIT License
- */
 package com.wegas.runtime;
 
 import java.io.BufferedReader;
@@ -41,15 +35,13 @@ public class CypressTest {
         this.ADMIN_EMAIL = email;
         this.ADMIN_PASSWORD = password;
         this.logger = logger;
-        verifyCypress();
-        cypressSuiteTest();
     }
 
 
  /**
      * Test application with cypress
      */
-    private void verifyCypress() {
+    public void verifyCypress() {
         logger.info("Verifying Cypress");
         try {
             String cypressCommand = "yarn cypress verify" ;
@@ -87,7 +79,7 @@ public class CypressTest {
     /**
      * Test application with cypress
      */
-    private void cypressSuiteTest() {
+    public void cypressSuiteTest() {
         logger.info(("Launching tests with Cypress"));
         try {
             Map<String, String> env = new HashMap<>();
@@ -106,7 +98,7 @@ public class CypressTest {
 
             String cypressSubcommand = interractive ? "open" : "run";
 
-            String cypressCommand = "yarn cypress " + cypressSubcommand + " --env " +envOpt;
+            String cypressCommand = "yarn cypress " + cypressSubcommand + " --env " + envOpt;
 
             boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
 

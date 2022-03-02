@@ -1,17 +1,17 @@
+import { cx } from '@emotion/css';
 import * as React from 'react';
 import {
-  justifyCenter,
-  textCenter,
-  flexColumn,
-  grow,
   expandWidth,
   flex,
+  flexColumn,
+  grow,
   halfOpacity,
+  justifyCenter,
+  textCenter,
 } from '../../css/classes';
-import { PieChart, PieChartSection, NeedleStyle } from './PieChart';
-import { Value } from './Value';
-import { cx } from '@emotion/css';
 import { classNameOrEmpty } from '../../Helper/className';
+import { NeedleStyle, PieChart, PieChartSection } from './PieChart';
+import { Value } from './Value';
 
 const valueToAngle = (
   value: number,
@@ -19,7 +19,10 @@ const valueToAngle = (
   maxValue: number,
   minAngle: number,
   maxAngle: number,
-) => minAngle + ((maxAngle - minAngle) * value) / (maxValue - minValue);
+) =>
+  minAngle +
+  ((maxAngle - minAngle) * Math.max(Math.min(value, maxValue), minValue)) /
+    (maxValue - minValue);
 
 export interface GaugeSection
   extends Omit<PieChartSection, 'angleTo' | 'fillColor'> {

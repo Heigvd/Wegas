@@ -171,7 +171,7 @@ async function WindowedEditor<T extends IMergeable>({
   localDispatch,
   ...options
 }: EditorProps<T>) {
-  let pathEntity = entity;
+  let pathEntity = entity as T & { id?: number };
   if (Array.isArray(path) && path.length > 0) {
     pathEntity = get(entity, path);
   }
@@ -212,8 +212,9 @@ async function WindowedEditor<T extends IMergeable>({
   }
 
   return (
-    // <div className={cx(flex, grow, flexColumn)}>
     <Form
+      // Force rerender Form when entity change
+      key={'id' in pathEntity ? pathEntity.id : undefined}
       entity={pathEntity}
       label={editorTitle({
         label: entity
@@ -243,7 +244,6 @@ async function WindowedEditor<T extends IMergeable>({
       localDispatch={localDispatch}
       {...options}
     />
-    // </div>
   );
 }
 export const AsyncVariableForm = asyncSFC<EditorProps<IMergeable>>(

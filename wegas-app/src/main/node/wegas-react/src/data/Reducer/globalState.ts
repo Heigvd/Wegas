@@ -170,6 +170,8 @@ export const LoggerLevelValues = [
 
 export type LoggerLevel = typeof LoggerLevelValues[number];
 
+export type WegasStatus = 'DOWN' | 'READY' | 'OUTDATED';
+
 export interface GlobalState extends EditingState {
   currentGameModelId: number;
   currentGameId: number;
@@ -183,6 +185,7 @@ export interface GlobalState extends EditingState {
     status: string;
     socket_id?: string;
   };
+  serverStatus: WegasStatus;
   clientMethods: {
     [name: string]: Omit<ClientMethodPayload, 'name'>;
   };
@@ -394,6 +397,9 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.PUSHER_SOCKET:
         state.pusherStatus = action.payload;
         return;
+      case ActionType.SERVER_STATUS:
+        state.serverStatus = action.payload.status;
+        return;
       case ActionType.EDITOR_SET_CLIENT_METHOD:
         state.clientMethods[action.payload.name] = {
           parameters: action.payload.parameters,
@@ -513,6 +519,7 @@ const global: Reducer<Readonly<GlobalState>> = u(
     currentTeamId: CurrentTeamId,
     currentUser: CurrentUser,
     pusherStatus: { status: 'disconnected' },
+    serverStatus: 'READY',
     search: { value: undefined, deep: false },
     events: [],
     eventsHandlers: {
@@ -798,6 +805,10 @@ export function saveEditor(
 
 export function updatePusherStatus(status: string, socket_id: string) {
   return ActionCreator.PUSHER_SOCKET({ socket_id, status });
+}
+
+export function updateServerStatus(status: WegasStatus) {
+  return ActionCreator.SERVER_STATUS({ status });
 }
 
 export function closeEditor() {

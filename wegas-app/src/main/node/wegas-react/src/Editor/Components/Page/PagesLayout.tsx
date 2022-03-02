@@ -11,6 +11,7 @@ import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import {
   componentTypes,
+  defaultPageComponentBehaviour,
   usePageComponentStore,
 } from '../../../Components/PageComponents/tools/componentFactory';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
@@ -385,6 +386,7 @@ interface LayoutNodeTitleProps extends ClassStyleId {
   onMouseOver?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   onMouseOut?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   classSelector?: string[];
+  notSelectable?: boolean;
 }
 
 function LayoutNodeTitle({
@@ -397,6 +399,7 @@ function LayoutNodeTitle({
   onMouseOut,
   className,
   style,
+  notSelectable,
   children,
 }: React.PropsWithChildren<LayoutNodeTitleProps>) {
   const { currentFeatures } = React.useContext(featuresCTX);
@@ -410,7 +413,7 @@ function LayoutNodeTitle({
     <div
       onMouseUp={onMouseUp}
       className={cx(
-        actionNodeContentStyle,
+        { [actionNodeContentStyle]: notSelectable },
         titleStyle,
         flex,
         grow,
@@ -476,6 +479,17 @@ function WegasComponentTitle({
     isComponentFocused(editMode, pageId, componentPath),
   );
 
+  const { allowChildren, allowDelete, allowEdit } = {
+    ...defaultPageComponentBehaviour,
+    ...registeredComponent.behaviour,
+  };
+
+  const onSelect = React.useCallback(() => {
+    if (allowEdit(component)) {
+      onEditComponent(pageId, componentPath);
+    }
+  }, [allowEdit, component, componentPath, onEditComponent, pageId]);
+
   return (
     <LayoutNodeTitle
       icon={icon}
@@ -486,7 +500,7 @@ function WegasComponentTitle({
           ? i18nValues.pageEditor.unknownComponent
           : undefined
       }
-      onMouseUp={() => onEditComponent(pageId, componentPath)}
+      onMouseUp={onSelect}
       onMouseOver={e => {
         if (editMode /*&& !isDragging*/) {
           e.stopPropagation();
@@ -504,7 +518,7 @@ function WegasComponentTitle({
         [focusedComponentStyle]: isFocused,
       })}
     >
-      {component.props?.children && (
+      {allowChildren(component) && (
         <ComponentAdder
           tooltip={i18nValues.pageEditor.addComponent}
           onSelect={componentType => {
@@ -519,26 +533,28 @@ function WegasComponentTitle({
           className={CONTROLS_CLASSNAME}
         />
       )}
-      {!component.uneditable && (
+      {allowEdit(component) && (
         <>
-          <ConfirmButton
-            icon="trash"
-            onAction={success =>
-              success &&
-              onDeleteLayoutComponent(
-                pageId,
-                store.getState().pages[pageId],
-                componentPath,
-              )
-            }
-            disabled={componentPath.length === 0}
-            tooltip={
-              componentPath.length === 0
-                ? i18nValues.pageEditor.firstCompoNotDeleted
-                : i18nValues.pageEditor.deleteComponent
-            }
-            className={CONTROLS_CLASSNAME}
-          />
+          {allowDelete(component) && (
+            <ConfirmButton
+              icon="trash"
+              onAction={success =>
+                success &&
+                onDeleteLayoutComponent(
+                  pageId,
+                  store.getState().pages[pageId],
+                  componentPath,
+                )
+              }
+              disabled={componentPath.length === 0}
+              tooltip={
+                componentPath.length === 0
+                  ? i18nValues.pageEditor.firstCompoNotDeleted
+                  : i18nValues.pageEditor.deleteComponent
+              }
+              className={CONTROLS_CLASSNAME}
+            />
+          )}
           <Button
             icon="copy"
             onClick={() =>
@@ -574,6 +590,7 @@ function WegasComponentNode({
   selectedComponentPath,
 }: WegasComponentNodeProps) {
   const i18nValues = useInternalTranslate(editorTabsTranslations);
+  const registeredComponent = usePageComponentStore(s => s[component.type]);
   const data: PageComponentNode = { pageId, componentPath };
   let computedComponent: WegasComponent;
 
@@ -595,6 +612,7 @@ function WegasComponentNode({
     );
   }
 
+  const { allowMove, allowChildren } = registeredComponent.behaviour || {};
   return (
     <TreeNode
       label={
@@ -609,12 +627,16 @@ function WegasComponentNode({
       data={data}
       type={PAGE_LAYOUT_COMPONENT}
       acceptTypes={ALLOWED_PAGE_EDITOR_COMPONENTS}
-      notDraggable={componentPath.length === 0}
+      notDraggable={
+        allowMove ? !allowMove(computedComponent) : componentPath.length === 0
+      }
       notDroppable={
-        computedComponent.props?.children == null ||
-        (computedComponent.props.children.length === 1 &&
-          computedComponent.type === 'For each') ||
-        computedComponent.type === 'If Else'
+        allowChildren
+          ? !allowChildren(computedComponent)
+          : computedComponent.props?.children == null ||
+            (computedComponent.props.children.length === 1 &&
+              computedComponent.type === 'For each') ||
+            computedComponent.type === 'If Else'
       }
     >
       {computedComponent.props?.children
@@ -661,7 +683,6 @@ function PageIndexTitle({
       className={cx({
         [globalSelection]:
           isPageItem(indexItem) && indexItem.id === selectedPageId,
-        // [css({ backgroundColor: 'green' })]: indexItem.id === selectedPageId,
       })}
     >
       {isFolderItem(indexItem) && (

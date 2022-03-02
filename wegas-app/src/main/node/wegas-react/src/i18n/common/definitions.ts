@@ -37,4 +37,6 @@ export interface CommonTranslations {
   };
   noContent: string;
   noSelectedTab: string;
+  serverDown: string;
+  serverOutaded: string;
 }

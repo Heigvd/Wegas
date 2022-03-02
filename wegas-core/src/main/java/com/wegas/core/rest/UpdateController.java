@@ -967,7 +967,8 @@ public class UpdateController {
         ).setMaxResults(3000);
         return query.getResultList();
     }
-
+    
+    
     @POST
     @Path("CreateEmptyModel")
     public String createEmptyModel() {
@@ -979,6 +980,20 @@ public class UpdateController {
 
         return "OK";
     }
+    
+    @POST
+    @Path("CreateEmptyReactModel")
+    public String createEmptyReactModel() {
+        GameModel emptyModel = new GameModel();
+        emptyModel.setName("_EmptyReactModel (en)");
+        emptyModel.setType(GameModel.GmType.MODEL);
+        emptyModel.setUiversion(2);
+
+        gameModelFacade.createWithDebugGame(emptyModel);
+
+        return "OK";
+    }
+
 
     @GET
     @Path("CheckAllLiveGameModel")

@@ -119,13 +119,13 @@ interface LinkProps {
   isActive?: NavLinkProps['isActive'];
 }
 
-export const MainMenuLink = ({
+export function MainMenuLink({
   to,
   exact = false,
   children,
   isActive,
   className,
-}: LinkProps): JSX.Element => {
+}: LinkProps): JSX.Element {
   return (
     <NavLink
       isActive={isActive}
@@ -137,15 +137,15 @@ export const MainMenuLink = ({
       {children}
     </NavLink>
   );
-};
+}
 
-export const SecondLevelLink = ({
+export function SecondLevelLink({
   to,
   exact = false,
   children,
   isActive,
   className,
-}: LinkProps): JSX.Element => {
+}: LinkProps): JSX.Element {
   return (
     <NavLink
       isActive={isActive}
@@ -157,28 +157,28 @@ export const SecondLevelLink = ({
       {children}
     </NavLink>
   );
-};
+}
 
-export const InlineLink = ({ to, exact = false, children, className }: LinkProps): JSX.Element => {
+export function InlineLink({ to, exact = false, children, className }: LinkProps): JSX.Element {
   return (
     <NavLink exact={exact} to={to} className={cx(className, inlineLink)}>
       {children}
     </NavLink>
   );
-};
+}
 
-export const DiscreetInlineLink = ({
+export function DiscreetInlineLink({
   to,
   exact = false,
   children,
   className,
-}: LinkProps): JSX.Element => {
+}: LinkProps): JSX.Element {
   return (
     <NavLink exact={exact} to={to} className={cx(className, discreetInlineLink)}>
       {children}
     </NavLink>
   );
-};
+}
 
 interface Entry {
   label: string;

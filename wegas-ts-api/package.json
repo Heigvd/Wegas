@@ -6,7 +6,7 @@
   ],
   "author": "maxence",
   "scripts": {
-    "clean": "rimraf src/main/webapp/src/generated src/main/webapp/typings"
+    "clean": "rimraf src/main/webapp/src/generated src/main/webapp/typings && rimraf ./node_modules"
   },
   "workspaces": [
     "target/wegas-ts-api"

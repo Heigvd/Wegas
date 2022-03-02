@@ -1,19 +1,19 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
-import { WidgetProps, TYPESTRING } from 'jsoninput/typings/types';
-import { DropMenu, SelecteDropdMenuItem } from '../../../Components/DropMenu';
-import { CommonViewContainer, CommonView } from './commonView';
-import { Labeled, LabeledView } from './labeled';
+import { TYPESTRING, WidgetProps } from 'jsoninput/typings/types';
+import * as React from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { dropZoneFocus } from '../../../Components/Contexts/DefaultDndProvider';
-import { array_move } from '../../../Helper/tools';
-import { classNameOrEmpty } from '../../../Helper/className';
-import { typeCleaner } from './Script/Expressions/expressionEditorHelpers';
+import { DropMenu, SelecteDropdMenuItem } from '../../../Components/DropMenu';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { commonTranslations } from '../../../i18n/common/common';
 import { flex } from '../../../css/classes';
+import { classNameOrEmpty } from '../../../Helper/className';
+import { array_move } from '../../../Helper/tools';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { CommonView, CommonViewContainer } from './commonView';
+import { Labeled, LabeledView } from './labeled';
+import { typeCleaner } from './Script/Expressions/expressionEditorHelpers';
 
 const transparentStyle = css({
   opacity: 0,

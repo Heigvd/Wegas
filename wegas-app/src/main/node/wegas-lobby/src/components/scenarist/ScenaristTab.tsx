@@ -279,6 +279,7 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
               onClick={() => {
                 setCreatePanelViewMode('EXPANDED');
               }}
+              title={gameModelType === 'SCENARIO' ? i18n.createGameModel : i18n.createModel}
             >
               {gameModelType === 'SCENARIO' ? i18n.createGameModel : i18n.createModel}
             </IconButton>
@@ -290,6 +291,7 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
                 onClick={() => {
                   setInferModelViewMode('EXPANDED');
                 }}
+                title={i18n.inferModel}
               >
                 {i18n.inferModel}
               </IconButton>

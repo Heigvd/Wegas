@@ -7,5 +7,7 @@ export const pagesTranslationsFR: PagesTranslations = {
   loadingPages: 'Chargement des pages',
   noSelectedPage: 'Aucune page sélectionnée',
   pageUndefined: "La page n'est pas définie",
-  completeCompConfig: 'Veuillez terminer la configuration du composant pour qu\'il s\'affiche..',
+  completeCompConfig:
+    "Veuillez terminer la configuration du composant pour qu'il s'affiche..",
+  editComponent: 'Editer le componsant',
 };

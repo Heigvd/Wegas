@@ -3,7 +3,7 @@ import JSONForm, { Schema } from 'jsoninput';
 import { cloneDeep } from 'lodash';
 import * as React from 'react';
 import { IGameModel, IGameModelLanguage } from 'wegas-ts-api';
-import * as gameModelLanguageSchema from 'wegas-ts-api/src/generated/schemas/GameModelLanguage.json';
+import gameModelLanguageSchema from 'wegas-ts-api/src/generated/schemas/GameModelLanguage.json';
 import { LanguagesAPI } from '../../../API/languages.api';
 import { IManagedResponse } from '../../../API/rest';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';

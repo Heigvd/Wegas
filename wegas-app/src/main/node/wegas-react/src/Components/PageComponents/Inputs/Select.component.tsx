@@ -45,6 +45,8 @@ function PlayerSelectInput({
   id,
   options,
   onVariableChange,
+  pageId,
+  path,
 }: PlayerSelectInputProps) {
   const descriptor = useScript<SStringDescriptor | SNumberDescriptor | string>(
     script,
@@ -67,7 +69,7 @@ function PlayerSelectInput({
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
   if (descriptor == null) {
-    return <UncompleteCompMessage />;
+    return <UncompleteCompMessage pageId={pageId} path={path} />;
   }
   const choicesFromProp = entityIs(choices, 'Script')
     ? scriptedChoices

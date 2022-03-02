@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { IScript, SNumberDescriptor } from 'wegas-ts-api';
-import { Player } from '../../../data/selectors';
+import { INumberDescriptor, IScript } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { useScript } from '../../Hooks/useScript';
+import { useComponentScript } from '../../Hooks/useComponentScript';
 import { StandardGauge } from '../../Outputs/StandardGauge';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
@@ -37,11 +36,14 @@ function PlayerGauge({
   id,
   context,
   options,
+  pageId,
+  path,
 }: PlayerGaugeProps) {
-  const number = useScript<SNumberDescriptor>(script, context);
+  const { descriptor, instance, notFound } =
+    useComponentScript<INumberDescriptor>(script, context);
 
-  return number == null ? (
-    <UncompleteCompMessage />
+  return notFound ? (
+    <UncompleteCompMessage pageId={pageId} path={path} />
   ) : (
     <StandardGauge
       className={className}
@@ -49,9 +51,9 @@ function PlayerGauge({
       id={id}
       label={label}
       followNeedle={followNeedle}
-      min={number.getMinValue() || 0}
-      max={number.getMaxValue() || 1}
-      value={number.getValue(Player.self())}
+      min={descriptor!.getMinValue() ?? 0}
+      max={descriptor!.getMaxValue() ?? 1}
+      value={instance!.getValue()}
       disabled={options.disabled || options.locked}
     />
   );

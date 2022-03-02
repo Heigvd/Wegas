@@ -1,3 +1,5 @@
+import { ComponentType } from '../../Components/PageComponents/tools/componentFactory';
+
 export interface EditorTabsTranslations {
   tabsNames: {
     Tester: string;
@@ -137,14 +139,7 @@ export interface EditorTabsTranslations {
     editorMustEnabled: string;
     enableEditMode: string;
     back: string;
-    componentTypes: {
-      Other: string;
-      Layout: string;
-      Input: string;
-      Output: string;
-      Advanced: string;
-      Programmatic: string;
-    };
+    componentTypes: Record<ComponentType, string>;
   };
   languageEditor: {
     languages: string;
