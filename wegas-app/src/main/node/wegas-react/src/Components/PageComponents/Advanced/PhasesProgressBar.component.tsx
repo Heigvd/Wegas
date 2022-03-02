@@ -29,6 +29,7 @@ interface PhasesProgressBarProps extends WegasComponentProps {
 
 export default function PlayerPhasesProgressBar({
   phase,
+  context,
   phaseMin,
   phaseMax,
   options,
@@ -39,18 +40,18 @@ export default function PlayerPhasesProgressBar({
     content: phaseContent,
     instance: phaseInstance,
     notFound: phaseNotFound,
-  } = useComponentScript<INumberDescriptor>(phase);
+  } = useComponentScript<INumberDescriptor>(phase, context);
   const {
     content: phaseMinContent,
     instance: phaseMinInstance,
     notFound: phaseMinNotFound,
-  } = useComponentScript<INumberDescriptor>(phaseMin);
+  } = useComponentScript<INumberDescriptor>(phaseMin, context);
 
   const {
     content: phaseMaxContent,
     instance: phaseMaxInstance,
     notFound: phaseMaxNotFound,
-  } = useComponentScript<INumberDescriptor>(phaseMax);
+  } = useComponentScript<INumberDescriptor>(phaseMax, context);
 
   if (phaseNotFound) {
     wwarn(`Current phase not found: ${phaseContent}`);

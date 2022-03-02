@@ -19,6 +19,7 @@ export interface PlayerNumberProps extends WegasComponentProps {
 
 function PlayerNumber({
   script,
+  context,
   className,
   style,
   id,
@@ -26,7 +27,10 @@ function PlayerNumber({
   pageId,
   path,
 }: PlayerNumberProps) {
-  const { instance, notFound } = useComponentScript<INumberDescriptor>(script);
+  const { instance, notFound } = useComponentScript<INumberDescriptor>(
+    script,
+    context,
+  );
   return notFound ? (
     <UncompleteCompMessage pageId={pageId} path={path} />
   ) : (
