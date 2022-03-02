@@ -1,30 +1,31 @@
-import * as React from 'react';
-import { IScript } from 'wegas-ts-api';
+import { css, cx } from '@emotion/css';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { CommonView, CommonViewContainer } from './commonView';
-import { LabeledView, Labeled } from './labeled';
-import { TreeVariableSelect } from './TreeVariableSelect';
-import { createScript } from '../../../Helper/wegasEntites';
-import { cx, css } from '@emotion/css';
-import {
-  flex,
-  flexRow,
-  itemCenter,
-  componentMarginLeft,
-} from '../../../css/classes';
-import { scriptEditStyle } from './Script/Script';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
-import { DropMenu } from '../../../Components/DropMenu';
+import * as React from 'react';
 import {
   createSourceFile,
-  ScriptTarget,
-  isSourceFile,
   isCallExpression,
   isExpressionStatement,
   isIdentifier,
-  isStringLiteral,
   isPropertyAccessExpression,
+  isSourceFile,
+  isStringLiteral,
+  ScriptTarget,
 } from 'typescript';
+import { IScript } from 'wegas-ts-api';
+import { DropMenu } from '../../../Components/DropMenu';
+import {
+  componentMarginLeft,
+  flex,
+  flexRow,
+  itemCenter,
+} from '../../../css/classes';
+import { createScript } from '../../../Helper/wegasEntites';
+import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { CommonViewContainer } from './commonView';
+import { Labeled } from './labeled';
+import { scriptEditStyle } from './Script/Script';
+import { computeReturnType, ScriptableView } from './ScriptableString';
+import { TreeVariableSelect } from './TreeVariableSelect';
 
 const labelStyle = css({
   marginBottom: '5px',
@@ -77,7 +78,7 @@ function parseScript(script: string = ''): InputMode {
 }
 
 export interface ScriptableBooleanProps
-  extends WidgetProps.BaseProps<CommonView & LabeledView> {
+  extends WidgetProps.BaseProps<ScriptableView> {
   value?: IScript;
   onChange: (IScript: IScript) => void;
 }
@@ -130,7 +131,10 @@ export function ScriptableBoolean(props: ScriptableBooleanProps): JSX.Element {
               <div className={scriptEditStyle}>
                 <WegasScriptEditor
                   value={script}
-                  returnType={['boolean', 'SBooleanDescriptor']}
+                  returnType={computeReturnType(
+                    ['boolean', 'SBooleanDescriptor'],
+                    props.view.required,
+                  )}
                   onChange={value =>
                     props.onChange(
                       props.value

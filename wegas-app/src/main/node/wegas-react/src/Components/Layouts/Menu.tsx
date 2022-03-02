@@ -4,36 +4,57 @@ import {
   expandBoth,
   flex,
   flexColumn,
-  flexDistribute,
   flexRow,
   grow,
   itemCenter,
   justifyCenter,
 } from '../../css/classes';
 import { entityIs } from '../../data/entities';
-import { classNameOrEmpty } from '../../Helper/className';
+import { classNameOrEmpty, classOrNothing } from '../../Helper/className';
 import { createScript } from '../../Helper/wegasEntites';
 import { useScript } from '../Hooks/useScript';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
+import { themeVar } from '../Theme/ThemeVars';
 
-const menuLabelStyle = css({
-  cursor: 'pointer',
-});
+const menuLabelDefaultStyle = cx(
+  flex,
+  itemCenter,
+  css({
+    padding: '10px',
+    cursor: 'pointer',
+    backgroundColor: themeVar.colors.BackgroundColor,
+    fontWeight: 600,
+    color: themeVar.colors.DarkTextColor,
+    transition: 'all .4s ease',
+    '&.selected, &:hover': {
+      backgroundColor: themeVar.colors.HeaderColor,
+    },
+    '&.disabled': {
+      color: themeVar.colors.DisabledColor,
+      userSelect: 'none',
+      pointerEvents: 'none',
+    },
+  }),
+);
 
-function menuLabelDefaultStyle(selected: boolean) {
-  return css({
-    backgroundColor: selected ? 'red' : 'white',
-  });
-}
-
-export const menuSchema = {
-  vertical: schemaProps.boolean({ label: 'Vertical' }),
-};
+const menuBarStyle = cx(
+  flex,
+  css({
+    borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
+    flexDirection: 'row',
+    '&.vertical': {
+      flexDirection: 'column',
+      borderBottom: 'none',
+      borderRight: '1px solid ' + themeVar.colors.DisabledColor,
+    },
+  }),
+);
 
 interface MenuChild {
   label: React.ReactNode | IScript;
   content: React.ReactNode;
   index?: number;
+  disabled?: boolean;
 }
 
 export type MenuChildren = {
@@ -48,6 +69,7 @@ export interface LabelFNArgs extends Omit<MenuChild, 'content'> {
 
 interface MenuLabelProps extends LabelFNArgs {
   labelFN?: (child: LabelFNArgs) => React.ReactNode;
+  labelClassName?: string;
 }
 
 export function MenuLabel({
@@ -55,8 +77,10 @@ export function MenuLabel({
   selected,
   label,
   labelFN,
+  labelClassName,
   id,
   index,
+  disabled,
 }: MenuLabelProps) {
   const isScript = entityIs(label, 'Script');
   const labelScript = useScript(
@@ -66,9 +90,11 @@ export function MenuLabel({
   return (
     <div
       onClick={onClick}
-      className={cx(menuLabelStyle, {
-        [menuLabelDefaultStyle(selected)]: !labelFN,
-      })}
+      className={cx(
+        classOrNothing('selected', selected),
+        classOrNothing('disabled', disabled),
+        labelClassName ? labelClassName : menuLabelDefaultStyle,
+      )}
       title={String(labelValue)}
     >
       {labelFN
@@ -82,29 +108,34 @@ export interface MenuProps<T extends MenuChildren = MenuChildren>
   extends ClassStyleId {
   vertical?: boolean;
   items?: T;
+  initialSelectedItemId?: keyof T;
   labelFN?: (child: LabelFNArgs) => React.ReactNode;
+  labelClassName?: string;
+  menuBarClassName?: string;
+  contentClassName?: string;
 }
 
 export function Menu<T extends MenuChildren = MenuChildren>({
   vertical,
+  items,
+  initialSelectedItemId,
+  labelFN,
+  labelClassName,
+  menuBarClassName,
+  contentClassName,
   className,
   style,
-  items,
-  labelFN,
   id,
 }: MenuProps<T>) {
-  const [selectedItem, setSelectedItem] = React.useState<keyof T | undefined>();
+  const [selectedItemId, setSelectedItemId] = React.useState<
+    keyof T | undefined
+  >(initialSelectedItemId);
 
   return (
     <div
       className={
-        cx(
-          flex,
-          grow,
-          vertical ? flexRow : flexColumn,
-          flexDistribute,
-          expandBoth,
-        ) + classNameOrEmpty(className)
+        cx(flex, vertical ? flexRow : flexColumn, grow, expandBoth) +
+        classNameOrEmpty(className)
       }
       style={{
         ...style,
@@ -112,15 +143,19 @@ export function Menu<T extends MenuChildren = MenuChildren>({
       id={id}
     >
       <div
-        className={cx(flex, vertical ? flexColumn : flexRow, flexDistribute)}
+        className={cx(
+          classOrNothing('vertical', vertical),
+          menuBarStyle,
+          menuBarClassName,
+        )}
       >
         {Object.entries(items || [])
           .sort(([, a], [, b]) => (a.index || 0) - (b.index || 0))
           .map(([k, v]) => {
             function onClick() {
-              setSelectedItem(k);
+              setSelectedItemId(k);
             }
-            const selected = selectedItem === k;
+            const selected = selectedItemId === k;
             return (
               <MenuLabel
                 key={k}
@@ -130,12 +165,18 @@ export function Menu<T extends MenuChildren = MenuChildren>({
                 id={k}
                 index={v.index}
                 labelFN={labelFN}
+                labelClassName={labelClassName}
+                disabled={v.disabled}
               />
             );
           })}
       </div>
-      <div className={cx(flex, grow, itemCenter, justifyCenter)}>
-        {items && selectedItem && items[selectedItem].content}
+      <div
+        className={cx(flex, grow, itemCenter, justifyCenter, contentClassName)}
+      >
+        {items && selectedItemId && items[selectedItemId] != null
+          ? items[selectedItemId].content
+          : 'Selected item does not match any of the menu items'}
       </div>
     </div>
   );
@@ -145,12 +186,14 @@ export interface MenuItemProps {
   childrenComponentId: string;
   childrenComponentLabel: IScript;
   childrenComponentIndex?: number;
+  disabled?: IScript;
 }
 
 export const defaultMenuItemProps: MenuItemProps = {
   childrenComponentId: 'An id',
-  childrenComponentLabel: createScript('A label', 'Typescript'),
+  childrenComponentLabel: createScript('"A label"', 'Typescript'),
   childrenComponentIndex: 0,
+  disabled: createScript('false', 'Typescript'),
 };
 
 export const defaultMenuItemKeys = Object.keys(
@@ -167,4 +210,5 @@ export const menuItemSchema: { [prop: string]: SimpleSchemaProps } = {
     required: true,
   }),
   childrenComponentIndex: schemaProps.number({ label: 'Component index' }),
+  disabled: schemaProps.scriptBoolean({ label: 'Disabled' }),
 };
