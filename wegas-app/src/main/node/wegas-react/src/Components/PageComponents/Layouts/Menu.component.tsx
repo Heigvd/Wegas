@@ -150,7 +150,14 @@ function ChildrenDeserializer({
     child => child.type === PlayerMenuItemsName,
   );
 
-  if (menuLabel && menuItems) {
+  const disabledChildren = useScript<(boolean | undefined)[]>(
+    menuItems?.props.children?.map(c => {
+      const menuChildProps = c.props as MenuItemProps;
+      return menuChildProps.disabled;
+    }),
+  );
+
+  if (menuLabel && menuItems && disabledChildren) {
     const items = menuItems.props.children?.reduce<MenuChildren>(
       (o, child, i) => {
         const newPath = [...path, 1, i];
@@ -172,6 +179,10 @@ function ChildrenDeserializer({
               />
             ),
             index: menuChildProps.childrenComponentIndex,
+            disabled:
+              inheritedOptionsState.disabled ||
+              inheritedOptionsState.readOnly ||
+              disabledChildren[i],
           },
         };
       },

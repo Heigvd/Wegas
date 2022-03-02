@@ -29,11 +29,11 @@ const menuLabelDefaultStyle = cx(
     '&.selected, &:hover': {
       backgroundColor: themeVar.colors.HeaderColor,
     },
-    '&.readOnly': {
+    '&.disabled': {
       color: themeVar.colors.DisabledColor,
       userSelect: 'none',
       pointerEvents: 'none',
-    }
+    },
   }),
 );
 
@@ -54,7 +54,7 @@ interface MenuChild {
   label: React.ReactNode | IScript;
   content: React.ReactNode;
   index?: number;
-  readOnly?: boolean;
+  disabled?: boolean;
 }
 
 export type MenuChildren = {
@@ -80,7 +80,7 @@ export function MenuLabel({
   labelClassName,
   id,
   index,
-  readOnly,
+  disabled,
 }: MenuLabelProps) {
   const isScript = entityIs(label, 'Script');
   const labelScript = useScript(
@@ -92,7 +92,7 @@ export function MenuLabel({
       onClick={onClick}
       className={cx(
         classOrNothing('selected', selected),
-        classOrNothing('readOnly', readOnly),
+        classOrNothing('disabled', disabled),
         labelClassName ? labelClassName : menuLabelDefaultStyle,
       )}
       title={String(labelValue)}
@@ -138,7 +138,13 @@ export function Menu<T extends MenuChildren = MenuChildren>({
       }}
       id={id}
     >
-      <div className={cx(classOrNothing('vertical', vertical), menuBarStyle, menuBarClassName)}>
+      <div
+        className={cx(
+          classOrNothing('vertical', vertical),
+          menuBarStyle,
+          menuBarClassName,
+        )}
+      >
         {Object.entries(items || [])
           .sort(([, a], [, b]) => (a.index || 0) - (b.index || 0))
           .map(([k, v]) => {
@@ -156,12 +162,14 @@ export function Menu<T extends MenuChildren = MenuChildren>({
                 index={v.index}
                 labelFN={labelFN}
                 labelClassName={labelClassName}
-                readOnly={v.readOnly}
+                disabled={v.disabled}
               />
             );
           })}
       </div>
-      <div className={cx(flex, grow, itemCenter, justifyCenter, contentClassName)}>
+      <div
+        className={cx(flex, grow, itemCenter, justifyCenter, contentClassName)}
+      >
         {items && selectedItem && items[selectedItem].content}
       </div>
     </div>
@@ -172,12 +180,14 @@ export interface MenuItemProps {
   childrenComponentId: string;
   childrenComponentLabel: IScript;
   childrenComponentIndex?: number;
+  disabled?: IScript;
 }
 
 export const defaultMenuItemProps: MenuItemProps = {
   childrenComponentId: 'An id',
-  childrenComponentLabel: createScript('A label', 'Typescript'),
+  childrenComponentLabel: createScript('"A label"', 'Typescript'),
   childrenComponentIndex: 0,
+  disabled: createScript('false', 'Typescript'),
 };
 
 export const defaultMenuItemKeys = Object.keys(
@@ -194,4 +204,5 @@ export const menuItemSchema: { [prop: string]: SimpleSchemaProps } = {
     required: true,
   }),
   childrenComponentIndex: schemaProps.number({ label: 'Component index' }),
+  disabled: schemaProps.scriptBoolean({ label: 'Disabled' }),
 };
