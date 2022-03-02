@@ -108,6 +108,7 @@ export interface MenuProps<T extends MenuChildren = MenuChildren>
   extends ClassStyleId {
   vertical?: boolean;
   items?: T;
+  initialSelectedItemId?: keyof T;
   labelFN?: (child: LabelFNArgs) => React.ReactNode;
   labelClassName?: string;
   menuBarClassName?: string;
@@ -117,6 +118,7 @@ export interface MenuProps<T extends MenuChildren = MenuChildren>
 export function Menu<T extends MenuChildren = MenuChildren>({
   vertical,
   items,
+  initialSelectedItemId,
   labelFN,
   labelClassName,
   menuBarClassName,
@@ -125,7 +127,9 @@ export function Menu<T extends MenuChildren = MenuChildren>({
   style,
   id,
 }: MenuProps<T>) {
-  const [selectedItem, setSelectedItem] = React.useState<keyof T | undefined>();
+  const [selectedItemId, setSelectedItemId] = React.useState<
+    keyof T | undefined
+  >(initialSelectedItemId);
 
   return (
     <div
@@ -149,9 +153,9 @@ export function Menu<T extends MenuChildren = MenuChildren>({
           .sort(([, a], [, b]) => (a.index || 0) - (b.index || 0))
           .map(([k, v]) => {
             function onClick() {
-              setSelectedItem(k);
+              setSelectedItemId(k);
             }
-            const selected = selectedItem === k;
+            const selected = selectedItemId === k;
             return (
               <MenuLabel
                 key={k}
@@ -170,7 +174,9 @@ export function Menu<T extends MenuChildren = MenuChildren>({
       <div
         className={cx(flex, grow, itemCenter, justifyCenter, contentClassName)}
       >
-        {items && selectedItem && items[selectedItem].content}
+        {items && selectedItemId && items[selectedItemId] != null
+          ? items[selectedItemId].content
+          : 'Selected item does not match any of the menu items'}
       </div>
     </div>
   );

@@ -23,7 +23,7 @@ import { schemaProps } from '../tools/schemaProps';
 import { EmptyComponentContainer } from './FlexList.component';
 
 interface PlayerMenuProps
-  extends Omit<MenuProps, 'labelClassName'>,
+  extends Omit<MenuProps, 'labelClassName' | 'initialSelectedItemId'>,
     WegasComponentProps {
   /**
    * children - the array containing the child components
@@ -33,13 +33,19 @@ interface PlayerMenuProps
    * labelClassName - allow to override the class of the label
    */
   labelClassName?: IScript;
+  /**
+   * initialSelectedItemId - set the selected item when at the menu first render
+   */
+  initialSelectedItemId?: IScript;
 }
 
 const menuSchema = {
   vertical: schemaProps.boolean({ label: 'Vertical' }),
   labelClassName: schemaProps.scriptString({
     label: 'Label class',
-    required: false,
+  }),
+  initialSelectedItemId: schemaProps.scriptString({
+    label: 'Selected item id at start',
   }),
 };
 
@@ -133,6 +139,7 @@ function MenuLabel({
 function ChildrenDeserializer({
   vertical,
   wegasChildren,
+  initialSelectedItemId,
   path,
   pageId,
   uneditable,
@@ -142,6 +149,7 @@ function ChildrenDeserializer({
   inheritedOptionsState,
   labelClassName,
 }: ChildrenDeserializerProps<PlayerMenuProps>) {
+  const selectedId = useScript<string>(initialSelectedItemId);
   const labelClass = useScript<string>(labelClassName);
   const menuLabel = wegasChildren?.find(
     child => child.type === PlayerMenuLabelName,
@@ -220,6 +228,7 @@ function ChildrenDeserializer({
           }
           vertical={vertical}
           items={items || {}}
+          initialSelectedItemId={selectedId}
           labelClassName={labelClass}
         />
       );
