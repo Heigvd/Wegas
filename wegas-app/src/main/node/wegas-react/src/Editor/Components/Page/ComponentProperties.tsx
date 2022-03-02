@@ -60,10 +60,6 @@ interface EditorProps<T = WegasComponentForm> {
   localDispatch: StoreDispatch | undefined;
 }
 
-interface PagePropertiesFormProps extends EditorProps {
-  editionKey: string;
-}
-
 async function WindowedEditor({
   entity,
   schema,
@@ -71,8 +67,7 @@ async function WindowedEditor({
   actions = [],
   error,
   localDispatch,
-  editionKey,
-}: PagePropertiesFormProps) {
+}: EditorProps) {
   const [Form] = await Promise.all<typeof import('../Form')['Form']>([
     import('../Form').then(m => m.Form),
   ]);
@@ -85,8 +80,6 @@ async function WindowedEditor({
         onLabelVanish={error && error.onVanish}
       />
       <Form
-        // Force rerender Form when path changes,
-        key={editionKey}
         entity={entity}
         update={value => update && update(value)}
         actions={actions}
@@ -96,7 +89,7 @@ async function WindowedEditor({
     </div>
   );
 }
-const AsyncComponentForm = asyncSFC<PagePropertiesFormProps>(
+const AsyncComponentForm = asyncSFC<EditorProps>(
   WindowedEditor,
   () => <div>load...</div>,
   ({ err }: { err: Error }) => (
@@ -260,7 +253,6 @@ export interface ComponentPropertiesProps {
   update?: (variable: WegasComponent) => void;
   actions?: EditorProps['actions'];
   localDispatch: StoreDispatch | undefined;
-  editionKey: string;
 }
 
 export function ComponentProperties({
@@ -269,7 +261,6 @@ export function ComponentProperties({
   update,
   actions,
   localDispatch,
-  editionKey,
 }: ComponentPropertiesProps) {
   const schema = usePageComponentStore(s => {
     const baseSchema =
@@ -307,20 +298,13 @@ export function ComponentProperties({
       }
       actions={actions}
       localDispatch={localDispatch}
-      editionKey={editionKey}
     />
   );
 }
 
 export default function ConnectedComponentProperties() {
-  const {
-    editedPath,
-    selectedPageId,
-    selectedPage,
-    onUpdate,
-    onDelete,
-    onEdit,
-  } = React.useContext(pageCTX);
+  const { editedPath, selectedPage, onUpdate, onDelete, onEdit } =
+    React.useContext(pageCTX);
 
   const pageComponentActions: ActionsProps<WegasComponentForm>[] | undefined =
     React.useMemo(
@@ -364,7 +348,6 @@ export default function ConnectedComponentProperties() {
       update={onUpdate}
       actions={pageComponentActions}
       localDispatch={undefined}
-      editionKey={JSON.stringify({ selectedPageId, editedPath })}
     />
   );
 }
