@@ -20,14 +20,21 @@ import { classStyleIdShema } from './options';
 import { ChildrenDeserializerProps } from './PageDeserializer';
 import { SchemaPropsSchemas, SimpleSchemaPropsSchemas } from './schemaProps';
 
-export const componentTypes = [
-  'Other',
+export const usableComponentType = [
   'Layout',
   'Input',
   'Output',
   'Advanced',
   'Programmatic',
-  'Utility',
+] as const;
+
+export const componentTypes = [
+  ...usableComponentType,
+  'Layout',
+  'Input',
+  'Output',
+  'Advanced',
+  'Programmatic',
 ] as const;
 
 export type ComponentType = typeof componentTypes[number];

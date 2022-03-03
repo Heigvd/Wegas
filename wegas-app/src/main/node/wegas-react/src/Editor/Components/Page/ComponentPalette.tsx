@@ -4,7 +4,7 @@ import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import {
   ComponentType,
-  componentTypes,
+  usableComponentType,
   usePageComponentStore,
 } from '../../../Components/PageComponents/tools/componentFactory';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
@@ -255,7 +255,7 @@ export default function ComponentPalette() {
           )}
         >
           <div className={cx(flex, flexColumn, expandWidth)}>
-            {componentTypes.map(t => (
+            {usableComponentType.map(t => (
               <ComponentTypeElement
                 key={t}
                 componentType={t}
