@@ -30,11 +30,8 @@ export const usableComponentType = [
 
 export const componentTypes = [
   ...usableComponentType,
-  'Layout',
-  'Input',
-  'Output',
-  'Advanced',
-  'Programmatic',
+  'Other',
+  'Utility',
 ] as const;
 
 export type ComponentType = typeof componentTypes[number];
