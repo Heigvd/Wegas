@@ -1,31 +1,30 @@
-import * as React from 'react';
-import { IScript } from 'wegas-ts-api';
+import { css, cx } from '@emotion/css';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { CommonView, CommonViewContainer } from './commonView';
-import { LabeledView, Labeled } from './labeled';
-import { TreeVariableSelect } from './TreeVariableSelect';
-import { createScript } from '../../../Helper/wegasEntites';
-import { cx, css } from '@emotion/css';
-import {
-  flex,
-  flexRow,
-  itemCenter,
-  componentMarginLeft,
-} from '../../../css/classes';
-import { scriptEditStyle } from './Script/Script';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
-import { DropMenu } from '../../../Components/DropMenu';
+import * as React from 'react';
 import {
   createSourceFile,
-  ScriptTarget,
-  isSourceFile,
   isCallExpression,
   isExpressionStatement,
   isIdentifier,
-  isStringLiteral,
   isPropertyAccessExpression,
+  isSourceFile,
+  isStringLiteral,
+  ScriptTarget,
 } from 'typescript';
-import { computePath } from '../ScriptEditors/SrcEditor';
+import { IScript } from 'wegas-ts-api';
+import { DropMenu } from '../../../Components/DropMenu';
+import {
+  componentMarginLeft,
+  flex,
+  flexRow,
+  itemCenter,
+} from '../../../css/classes';
+import { createScript } from '../../../Helper/wegasEntites';
+import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { CommonView, CommonViewContainer } from './commonView';
+import { Labeled, LabeledView } from './labeled';
+import { scriptEditStyle } from './Script/Script';
+import { TreeVariableSelect } from './TreeVariableSelect';
 
 const labelStyle = css({
   marginBottom: '5px',
@@ -121,8 +120,6 @@ export function ScriptableBoolean(props: ScriptableBooleanProps): JSX.Element {
     [props],
   );
 
-  const [filename] = React.useState(computePath(undefined, 'typescript'));
-
   return (
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>
@@ -142,9 +139,9 @@ export function ScriptableBoolean(props: ScriptableBooleanProps): JSX.Element {
             {inputMode === 'Code' ? (
               <div className={scriptEditStyle}>
                 <WegasScriptEditor
-                  fileName={filename}
-                  models={{ [filename]: script }}
+                  value={script}
                   returnType={['boolean', 'SBooleanDescriptor']}
+                  language="typescript"
                   onChange={value =>
                     props.onChange(
                       props.value

@@ -41,7 +41,6 @@ import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { Labeled, LabeledView } from '../labeled';
 import { WyswygScriptEditor } from './WyswygScriptEditor';
-import { computePath } from '../../ScriptEditors/SrcEditor';
 
 export const scriptEditStyle = css({
   minHeight: '5em',
@@ -276,10 +275,6 @@ export function Script({
     view.mode,
   ]);
 
-  const [filename] = React.useState(
-    computePath(undefined, isServerScript ? 'javascript' : 'typescript'),
-  );
-
   return (
     <CommonViewContainer view={view} errorMessage={error}>
       <Labeled label={view.label} description={view.description}>
@@ -310,10 +305,8 @@ export function Script({
                     </div>
                     <ResizeHandle minSize={200}>
                       <WegasScriptEditor
-                        fileName={filename}
-                        models={{
-                          [filename]: script.current,
-                        }}
+                        language={isServerScript ? 'javascript' : 'typescript'}
+                        value={script.current}
                         onChange={onCodeChange}
                         minimap={false}
                         noGutter={true}

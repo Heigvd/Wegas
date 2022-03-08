@@ -38,7 +38,6 @@ import {
   typeCleaner,
   WyiswygExpressionSchema,
 } from './expressionEditorHelpers';
-import { computePath } from '../../../ScriptEditors/SrcEditor';
 
 const expressionEditorStyle = css({
   backgroundColor: themeVar.colors.HeaderColor,
@@ -288,10 +287,6 @@ export function ExpressionEditor({
 
   const isServerScript = mode === 'SET' || mode === 'GET';
 
-  const [filename] = React.useState(
-    computePath(undefined, isServerScript ? 'javascript' : 'typescript'),
-  );
-
   return (
     <div id={id} className={expressionEditorStyle}>
       <Button
@@ -304,10 +299,8 @@ export function ExpressionEditor({
         <div className={scriptEditStyle}>
           <MessageString type="error" value={error || softError} />
           <WegasScriptEditor
-            fileName={filename}
-            models={{
-              [filename]: code,
-            }}
+            language={isServerScript ? 'javascript' : 'typescript'}
+            value={code}
             onChange={onChange}
             noGutter
             minimap={false}

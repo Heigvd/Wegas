@@ -1,11 +1,11 @@
 import { css } from '@emotion/css';
 import * as React from 'react';
-import { WegasScriptEditor } from './ScriptEditors/WegasScriptEditor';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { defaultMargin } from '../../css/classes';
+import { runScript } from '../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../data/selectors';
 import { store } from '../../data/Stores/store';
-import { runScript } from '../../data/Reducer/VariableInstanceReducer';
-import { defaultMargin } from '../../css/classes';
+import { WegasScriptEditor } from './ScriptEditors/WegasScriptEditor';
 
 const container = css({ width: '100%' });
 const editor = css({ width: '100%', height: '400px' });
@@ -29,8 +29,8 @@ export default function PlayServer() {
     <div className={container}>
       <div className={editor}>
         <WegasScriptEditor
-          models={{ [filename]: script }}
           fileName={filename}
+          language="javascript"
           onChange={e => setScript(e)}
           scriptContext="Server internal"
         />

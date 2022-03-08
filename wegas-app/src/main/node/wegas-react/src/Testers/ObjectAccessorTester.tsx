@@ -1,17 +1,17 @@
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { expandBoth, flex, flexColumn, grow } from '../css/classes';
-import { cx, css } from '@emotion/css';
-import { WegasScriptEditor } from '../Editor/Components/ScriptEditors/WegasScriptEditor';
-import { createSandbox } from '../Components/Hooks/useScript';
 import { transpile } from 'typescript';
-import { getEntry, setEntry } from '../Helper/tools';
+import { useModel } from '../Components/Contexts/LibrariesContext';
+import { createSandbox } from '../Components/Hooks/useScript';
+import { expandBoth, flex, flexColumn, grow } from '../css/classes';
 import { computePath } from '../Editor/Components/ScriptEditors/SrcEditor';
+import { WegasScriptEditor } from '../Editor/Components/ScriptEditors/WegasScriptEditor';
+import { getEntry, setEntry } from '../Helper/tools';
 
-const { sandbox, globals } =
-  createSandbox<{
-    getEntry: typeof getEntry;
-    setEntry: typeof setEntry;
-  }>();
+const { sandbox, globals } = createSandbox<{
+  getEntry: typeof getEntry;
+  setEntry: typeof setEntry;
+}>();
 
 function evaluate(script: string) {
   try {
@@ -75,6 +75,8 @@ const filename = computePath(undefined, 'typescript');
 export default function ObjectAccessorTester() {
   const [content, setContent] = React.useState<string>(testcontent);
 
+  useModel(objectaccesslib, 'typescript', 'ObjectAccess.d.ts');
+
   return (
     <div className={cx(flex, expandBoth, flexColumn)}>
       <div className={css({ height: '400px' })}>
@@ -82,10 +84,7 @@ export default function ObjectAccessorTester() {
           language="typescript"
           onChange={setContent}
           fileName={filename}
-          models={{
-            [filename]: content,
-            'ObjectAccess.d.ts': objectaccesslib,
-          }}
+          value={content}
         />
       </div>
       <div className={grow}>{JSON.stringify(evaluate(content))}</div>

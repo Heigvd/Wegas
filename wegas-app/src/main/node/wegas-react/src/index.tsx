@@ -5,6 +5,7 @@ import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
 import { FullscreenProvider } from './Components/Contexts/FullscreenContext';
 import { LanguagesProvider } from './Components/Contexts/LanguagesProvider';
+import { LibrariesLoader } from './Components/Contexts/LibrariesContext';
 import { RoleProvider } from './Components/Contexts/RoleProvider';
 import { ModalProvider } from './Components/Modal';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
@@ -14,45 +15,9 @@ import { ThemeProvider } from './Components/Theme/Theme';
 import './css/global.css';
 import './data/Stores/store';
 import Layout from './Editor/Components/Layout';
-import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
-// import * as less from 'less';
-// import { wlog } from '../Helper/wegaslog';
+// import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
 
 importPageComponents();
-
-// function TestLessLib() {
-//   const lesstest = less
-//     .render(
-//       `.wegas {
-//       @MainColor: blue;
-//       @DisabledColor: grey;
-//       @TextColor: white;
-
-//       &.wegas-btn {
-//         background-color: @MainColor;
-//         color: @TextColor;
-//         border-style: none;
-//         padding-left: 5px;
-//         padding-right: 5px;
-//         padding-top: 2px;
-//         padding-bottom: 2px;
-//         cursor: pointer;
-//         &.disabled {
-//           background-color: @DisabledColor;
-//           cursor: initial;
-//         }
-//       }
-//     }`,
-//     )
-//     .then(output => output.css)
-//     .catch(error => {
-//       wlog(error);
-//       return '';
-//     });
-
-//   wlog(lesstest);
-//   return null;
-// }
 
 function mount() {
   render(

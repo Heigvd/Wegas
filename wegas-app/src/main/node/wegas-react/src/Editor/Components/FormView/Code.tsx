@@ -1,14 +1,13 @@
-import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { LabeledView, Labeled } from './labeled';
-import { CommonView, CommonViewContainer } from './commonView';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { toLower } from 'lodash';
-import { scriptEditStyle } from './Script/Script';
-import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
+import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
 import { createScript } from '../../../Helper/wegasEntites';
-import { computePath } from '../ScriptEditors/SrcEditor';
+import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
+import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { CommonView, CommonViewContainer } from './commonView';
+import { Labeled, LabeledView } from './labeled';
+import { scriptEditStyle } from './Script/Script';
 
 export interface CodeProps
   extends WidgetProps.BaseProps<
@@ -22,8 +21,6 @@ export function Code({ view, value, onChange }: CodeProps) {
   const language = view.language
     ? (toLower(view.language) as SrcEditorLanguages)
     : view.language;
-
-  const [filename] = React.useState(computePath(undefined, language));
 
   const onValueChange = React.useCallback(
     (val: string) => {
@@ -45,11 +42,9 @@ export function Code({ view, value, onChange }: CodeProps) {
               <div className={scriptEditStyle}>
                 <WegasScriptEditor
                   language={language}
-                  models={{
-                    [filename]:
-                      typeof value === 'string' ? value : value?.content || '',
-                  }}
-                  fileName={filename}
+                  value={
+                    typeof value === 'string' ? value : value?.content || ''
+                  }
                   onChange={onValueChange}
                   minimap={false}
                   noGutter={true}

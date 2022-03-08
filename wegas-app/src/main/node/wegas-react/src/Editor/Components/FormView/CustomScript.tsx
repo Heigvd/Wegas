@@ -1,14 +1,13 @@
-import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { LabeledView, Labeled } from './labeled';
-import { CommonView, CommonViewContainer } from './commonView';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { toLower } from 'lodash';
-import { scriptEditStyle } from './Script/Script';
-import { createScript } from '../../../Helper/wegasEntites';
+import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
+import { createScript } from '../../../Helper/wegasEntites';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
-import { computePath } from '../ScriptEditors/SrcEditor';
+import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { CommonView, CommonViewContainer } from './commonView';
+import { Labeled, LabeledView } from './labeled';
+import { scriptEditStyle } from './Script/Script';
 
 export interface CustomScriptProps
   extends WidgetProps.BaseProps<
@@ -35,8 +34,6 @@ export function CustomScript({ view, value, onChange }: CustomScriptProps) {
     ? (toLower(view.language) as SrcEditorLanguages)
     : view.language;
 
-  const [filename] = React.useState(computePath(undefined, language));
-
   return (
     <CommonViewContainer view={view}>
       <Labeled label={view.label} description={view.description} /*{...view}*/>
@@ -49,8 +46,7 @@ export function CustomScript({ view, value, onChange }: CustomScriptProps) {
                   language={language}
                   returnType={view.returnType}
                   args={view.args}
-                  models={{ [filename]: value ? value.content : '' }}
-                  fileName={filename}
+                  value={value ? value.content : ''}
                   onChange={onValueChange}
                   minimap={false}
                   noGutter={true}

@@ -30,7 +30,6 @@ import { VariableScriptPath } from '../Variable/VariableScriptPath';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 import { scriptEditStyle } from './Script/Script';
-import { computePath } from '../ScriptEditors/SrcEditor';
 
 const treeCss = css({
   padding: '5px 10px',
@@ -366,8 +365,6 @@ export function ScripableVariableSelect(
     [props],
   );
 
-  const [filename] = React.useState(computePath(undefined, 'typescript'));
-
   return (
     <>
       <div className={cx(flex, flexRow, itemCenter)}>
@@ -384,8 +381,7 @@ export function ScripableVariableSelect(
       {srcMode ? (
         <div className={scriptEditStyle}>
           <WegasScriptEditor
-            fileName={filename}
-            models={{ [filename]: script }}
+            value={script}
             returnType={props.view.returnType}
             onChange={value =>
               props.onChange(

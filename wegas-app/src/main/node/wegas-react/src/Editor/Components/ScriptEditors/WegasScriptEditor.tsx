@@ -1,21 +1,18 @@
+import { cx } from '@emotion/css';
 import { Monaco } from '@monaco-editor/react';
 import * as React from 'react';
-import { useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
-import { librariesCTX } from '../LibrariesLoader';
+import * as ts from 'typescript';
+import { expandBoth, flex, flexColumn } from '../../../css/classes';
+import { getLogger } from '../../../Helper/wegaslog';
+import { MessageString } from '../MessageString';
 import { ResizeHandle } from '../ResizeHandle';
 import {
   MonacoCodeEditor,
-  MonacoDefinitionsLibrary,
   MonacoEditor,
   SrcEditorAction,
   textToArray,
 } from './editorHelpers';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
-import { getLogger } from '../../../Helper/wegaslog';
-import * as ts from 'typescript';
-import { MessageString } from '../MessageString';
-import { expandBoth, flex, flexColumn } from '../../../css/classes';
-import { cx } from '@emotion/css';
 
 const logger = getLogger('monaco');
 
@@ -330,14 +327,14 @@ export function defunctionalizeScript(functionalizedScript: string): string {
   }
 }
 
-type LibMap = Record<string, string>;
+// type LibMap = Record<string, string>;
 
-const convertToLibMap = (list: MonacoDefinitionsLibrary[]) => {
-  return list.reduce<LibMap>((acc, lib) => {
-    acc[lib.name] = lib.content;
-    return acc;
-  }, {});
-};
+// const convertToLibMap = (list: MonacoDefinitionsLibrary[]) => {
+//   return list.reduce<LibMap>((acc, lib) => {
+//     acc[lib.name] = lib.content;
+//     return acc;
+//   }, {});
+// };
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
   scriptContext?: ScriptContext;
@@ -350,14 +347,14 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const {
     returnType: returnTypeArray,
     args: argsArray,
-    scriptContext = 'Client',
+    // scriptContext = 'Client',
     onChange,
     onBlur,
     onSave,
     resizable,
-    models: newModels,
     defaultActions,
   } = props;
+
   const language = props.language ? props.language : 'typescript';
   //let editorLock: ((editor: MonacoSCodeEditor) => void) | undefined = undefined;
   //  const editorRef = React.useRef<MonacoSCodeEditor>();
@@ -368,63 +365,63 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   //    endLineNumber: headerSize,
   //  });
 
-  const globalLibs = useGlobalLibs(scriptContext);
-  const { clientScripts } = React.useContext(librariesCTX);
+  // const globalLibs = useGlobalLibs(scriptContext);
+  // const { clientScripts } = React.useContext(librariesCTX);
 
-  const [models, setModels] = React.useState<LibMap>(
-    convertToLibMap(globalLibs),
-  );
+  // const [models, setModels] = React.useState<LibMap>(
+  //   convertToLibMap(globalLibs),
+  // );
 
   const [error, setError] = React.useState<string | undefined>();
 
   const returnType = makeReturnTypes(returnTypeArray);
   const args = makeArgs(argsArray);
 
-  React.useEffect(() => {
-    // make sure all clientscripts are injected as extraLibs
-    // to have autocompletion
-    const contextLibs =
-      scriptContext === 'Client'
-        ? Object.entries(clientScripts).reduce<LibMap>((acc, [k, v]) => {
-            acc[`file:///${k}.ts`] = v.content;
-            return acc;
-          }, {})
-        : {};
+  // React.useEffect(() => {
+  //   // make sure all clientscripts are injected as extraLibs
+  //   // to have autocompletion
+  //   const contextLibs =
+  //     scriptContext === 'Client'
+  //       ? Object.entries(clientScripts).reduce<LibMap>((acc, [k, v]) => {
+  //           acc[`file:///${k}.ts`] = v.content;
+  //           return acc;
+  //         }, {})
+  //       : {};
 
-    const functionalizedNewExtraLibs = Object.entries(
-      newModels || {},
-    ).reduce<LibMap>((acc, [key, content]) => {
-      logger.info('Process ExternalModels:', content);
-      acc[key] = functionalizeScript(content, returnType, args);
-      logger.info('  -> Processed:', acc[key]);
-      return acc;
-    }, {});
+  //   const functionalizedNewExtraLibs = Object.entries(
+  //     newModels || {},
+  //   ).reduce<LibMap>((acc, [key, content]) => {
+  //     logger.info('Process ExternalModels:', content);
+  //     acc[key] = functionalizeScript(content, returnType, args);
+  //     logger.info('  -> Processed:', acc[key]);
+  //     return acc;
+  //   }, {});
 
-    const libs: LibMap = {
-      ...convertToLibMap(globalLibs),
-      ...contextLibs,
-      ...(functionalizedNewExtraLibs || []),
-    };
+  //   const libs: LibMap = {
+  //     ...convertToLibMap(globalLibs),
+  //     ...contextLibs,
+  //     ...(functionalizedNewExtraLibs || []),
+  //   };
 
-    //    const currentLib = libs.find(lib => lib.name === fileName);
-    //    const content = formatScriptToFunction(value || '', returnType, args);
+  //   //    const currentLib = libs.find(lib => lib.name === fileName);
+  //   //    const content = formatScriptToFunction(value || '', returnType, args);
 
-    logger.info('Rebuild Extra libs');
-    setModels(libs);
-  }, [newModels, globalLibs, scriptContext, clientScripts, returnType, args]);
+  //   logger.info('Rebuild Extra libs');
+  //   setModels(libs);
+  // }, [newModels, globalLibs, scriptContext, clientScripts, returnType, args]);
 
-  logger.info('Render WSE with ', props.fileName);
-  const updateLib = React.useCallback(
-    (newContent: string) => {
-      logger.info('New Lib:', newContent);
-      setModels(currentLibs => {
-        const updatedModels = { ...currentLibs };
-        updatedModels[props.fileName] = newContent;
-        return updatedModels;
-      });
-    },
-    [props.fileName],
-  );
+  // logger.info('Render WSE with ', props.fileName);
+  // const updateLib = React.useCallback(
+  //   (newContent: string) => {
+  //     logger.info('New Lib:', newContent);
+  //     setModels(currentLibs => {
+  //       const updatedModels = { ...currentLibs };
+  //       updatedModels[props.fileName] = newContent;
+  //       return updatedModels;
+  //     });
+  //   },
+  //   [props.fileName],
+  // );
 
   /**
    * trimFunctionToScript - If return type defined this function will trim the header, footer and return statement of the function and call back with only script value
@@ -486,10 +483,9 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
 
   const handleChange = React.useCallback(
     val => {
-      updateLib(val);
       return trimFunctionToScript(val, onChange);
     },
-    [onChange, trimFunctionToScript, updateLib],
+    [onChange, trimFunctionToScript],
   );
 
   const handleBlur = React.useCallback(
@@ -510,13 +506,12 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       {resizable ? (
         <ResizeHandle
           minSize={100}
-          textContent={models[props.fileName] + '\n\n' || '\n\n\n\n\n'}
+          textContent={props.value + '\n\n' || '\n\n\n\n\n'}
         >
           <SrcEditor
             {...props}
+            value={functionalizeScript(props.value || '', returnType, args)}
             language={language}
-            models={models}
-            //        onEditorReady={ editorLock }
             onChange={handleChange}
             onBlur={handleBlur}
             onSave={handleSave}
@@ -526,9 +521,8 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       ) : (
         <SrcEditor
           {...props}
+          value={functionalizeScript(props.value || '', returnType, args)}
           language={language}
-          models={models}
-          //      onEditorReady={ editorLock }
           onChange={handleChange}
           onBlur={handleBlur}
           onSave={handleSave}

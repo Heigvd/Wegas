@@ -1,27 +1,26 @@
-import * as React from 'react';
+import { css, cx } from '@emotion/css';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { CommonView, CommonViewContainer } from './commonView';
-import { LabeledView, Labeled } from './labeled';
-import { scriptEditStyle } from './Script/Script';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
-import { createScript } from '../../../Helper/wegasEntites';
+import * as React from 'react';
+import { IScript } from 'wegas-ts-api';
+import { DropMenu } from '../../../Components/DropMenu';
+import { useScript } from '../../../Components/Hooks/useScript';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { flex, flexRow, grow } from '../../../css/classes';
+import { State } from '../../../data/Reducer/reducers';
 import { useStore } from '../../../data/Stores/store';
 import {
-  isWegasComponent,
-  visitComponents,
   isPageLoaderComponent,
+  isWegasComponent,
   PageLoaderComponentProps,
+  visitComponents,
 } from '../../../Helper/pages';
-import { useScript } from '../../../Components/Hooks/useScript';
-import { DropMenu } from '../../../Components/DropMenu';
-import { cx, css } from '@emotion/css';
-import { flex, flexRow, grow } from '../../../css/classes';
+import { createScript } from '../../../Helper/wegasEntites';
 import { MessageString } from '../MessageString';
-import { IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { State } from '../../../data/Reducer/reducers';
-import { computePath } from '../ScriptEditors/SrcEditor';
+import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { CommonView, CommonViewContainer } from './commonView';
+import { Labeled, LabeledView } from './labeled';
+import { scriptEditStyle } from './Script/Script';
 
 const updateScript = (scriptContent: string, currentScript?: IScript) =>
   currentScript
@@ -55,34 +54,37 @@ function pageLoadersSelector(s: State) {
   return loaders;
 }
 
-export default function PageLoaderSelect(props: PageSelectProps) {
+export default function PageLoaderSelect({
+  onChange,
+  view,
+  errorMessage,
+  value,
+}: PageSelectProps) {
   const [loaderValue, setPageLoader] = React.useState<string>();
   const [srcMode, setSrcMode] = React.useState(false);
   const pageLoaders = useStore(pageLoadersSelector);
   const pageLoaderName = useScript<string>(loaderValue);
 
   React.useEffect(() => {
-    setPageLoader(props.value ? props.value.content : '');
-  }, [props.value]);
+    setPageLoader(value ? value.content : '');
+  }, [value]);
 
   const onPageLoaderChange = React.useCallback(
-    (value?: string) => {
-      const content = updateScript(JSON.stringify(value || ''), props.value);
+    (newValue?: string) => {
+      const content = updateScript(JSON.stringify(newValue || ''), value);
       setPageLoader(content.content);
-      props.onChange(content);
+      onChange(content);
     },
-    [props],
+    [onChange, value],
   );
 
-  const language = props.value
-    ? (props.value.language.toLowerCase() as SrcEditorLanguages)
+  const language = value
+    ? (value.language.toLowerCase() as SrcEditorLanguages)
     : 'typescript';
 
-  const [filename] = React.useState(computePath(undefined, language));
-
   return (
-    <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
-      <Labeled {...props.view}>
+    <CommonViewContainer view={view} errorMessage={errorMessage}>
+      <Labeled {...view}>
         {({ inputId, labelNode }) => (
           <>
             {labelNode}
@@ -99,22 +101,17 @@ export default function PageLoaderSelect(props: PageSelectProps) {
                   {srcMode ? (
                     <div className={cx(scriptEditStyle, grow)}>
                       <WegasScriptEditor
-                        fileName={filename}
-                        models={{ [filename]: loaderValue || '' }}
+                        value={loaderValue || ''}
                         returnType={['string']}
                         onChange={setPageLoader}
-                        onSave={value =>
-                          props.onChange(
-                            props.value
-                              ? { ...props.value, content: value }
-                              : createScript(value, 'TypeScript'),
+                        onSave={newValue =>
+                          onChange(
+                            value
+                              ? { ...value, content: newValue }
+                              : createScript(newValue, 'TypeScript'),
                           )
                         }
-                        language={
-                          props.value
-                            ? (props.value.language.toLowerCase() as SrcEditorLanguages)
-                            : 'typescript'
-                        }
+                        language={language}
                         minimap={false}
                         noGutter
                         resizable

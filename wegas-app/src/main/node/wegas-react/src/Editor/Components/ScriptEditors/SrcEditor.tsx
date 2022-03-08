@@ -2,7 +2,9 @@ import { css } from '@emotion/css';
 import Editor, { Monaco } from '@monaco-editor/react';
 import { debounce } from 'lodash-es';
 import * as React from 'react';
+import { useComputePath } from '../../../Components/Contexts/LibrariesContext';
 import { SizedDiv } from '../../../Components/SizedDiv';
+import { getLogger } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import {
@@ -15,18 +17,17 @@ import {
   SrcEditorLanguages,
 } from './editorHelpers';
 import { useJSONSchema } from './useJSONSchema';
-import { getLogger } from '../../../Helper/wegaslog';
 
 const logger = getLogger('monaco');
 export interface SrcEditorProps {
   /**
-   * map of files to register as model
+   * value - the content of the editor
    */
-  models: Record<string, string>;
+  value?: string;
   /**
    * filename - the name of the file to edit
    */
-  fileName: string;
+  fileName?: string;
   /**
    * minimap - the editor shows a minimap of the code
    */
@@ -165,13 +166,13 @@ export const computePath = (
  * SrcEditor is a component uses monaco-editor to create a code edition panel
  */
 function SrcEditor({
+  value,
   fileName,
   defaultFocus,
-  language,
+  language = 'plaintext',
   readOnly,
   minimap,
   cursorOffset,
-  models,
   noGutter,
   defaultProperties,
   onEditorReady,
@@ -186,6 +187,7 @@ function SrcEditor({
   const [reactMonaco, setReactMonaco] = React.useState<MonacoEditor>();
   const i18nValues = useInternalTranslate(commonTranslations);
   const schema = useJSONSchema(language === 'json');
+  const path = useComputePath(fileName, language);
 
   const onMount = React.useCallback(
     (editor: MonacoSCodeEditor) => {
@@ -257,57 +259,6 @@ function SrcEditor({
     }
   }, [forceJS, language, reactMonaco, schema]);
 
-  // keep last value sent to onChangeProps
-  const sentRef = React.useRef({ filename: fileName, value: models[fileName] });
-  sentRef.current.filename = fileName;
-
-  // make sure to have up-to-date models
-  React.useEffect(() => {
-    if (editor != null && reactMonaco != null) {
-      logger.info('Update Models', models);
-      Object.entries(models).forEach(([uri, content]) => {
-        const libUri = reactMonaco.Uri.parse(uri);
-        const existingModel = reactMonaco.editor.getModel(libUri);
-        if (existingModel != null) {
-          const currentValue = existingModel.getValue();
-          if (currentValue !== content) {
-            if (
-              sentRef.current.filename === uri &&
-              content === sentRef.current.value
-            ) {
-              // sentRef stores the last script sent to the props.onChange callback.
-              // Due to async behaviour, the current in-editor model may have been edited before
-              // the sent value actially came back in props.models
-              // In such case, there is no need to update the currentModel
-              // (doing the update will revert the script to a previous value)
-              logger.info('Silent Model update: it came from the past');
-            } else {
-              logger.info('Update Model');
-
-              if (sentRef.current.filename === uri) {
-                // updating the current model: try to mitigate cursor jump
-                const viewState = editor.saveViewState();
-                existingModel.setValue(content);
-                if (viewState) {
-                  editor.restoreViewState(viewState);
-                }
-              } else {
-                existingModel.setValue(content);
-              }
-            }
-          }
-        } else {
-          const model = reactMonaco.editor.createModel(
-            content,
-            language,
-            libUri,
-          );
-          model.setEOL(reactMonaco.editor.EndOfLineSequence.LF);
-        }
-      });
-    }
-  }, [editor, models, reactMonaco, language]);
-
   React.useEffect(() => {
     if (editor != null && reactMonaco != null) {
       const listener = editor.onDidBlurEditorText(() => {
@@ -362,7 +313,6 @@ function SrcEditor({
       debounce((value: string) => {
         if (onChangeRef.current) {
           logger.info('Send On Change: ', value);
-          sentRef.current.value = value;
           onChangeRef.current(value);
         }
       }, delay),
@@ -380,8 +330,9 @@ function SrcEditor({
             beforeMount={monaco => {
               setReactMonaco(monaco);
             }}
-            language={language || 'plaintext'}
-            path={fileName}
+            language={language}
+            value={value}
+            path={path}
             onMount={onMount}
             loading={i18nValues.loading + '...'}
             options={{

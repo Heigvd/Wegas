@@ -1,18 +1,17 @@
-import * as React from 'react';
+import Form from 'jsoninput';
 import { WidgetProps } from 'jsoninput/typings/types';
+import { toLower } from 'lodash';
+import * as React from 'react';
+import { AvailableSchemas } from '.';
+import { clientScriptEval } from '../../../Components/Hooks/useScript';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { flex } from '../../../css/classes';
+import { entityIs } from '../../../data/entities';
+import { createScript } from '../../../Helper/wegasEntites';
+import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
+import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
-import Form from 'jsoninput';
-import { entityIs } from '../../../data/entities';
-import { toLower } from 'lodash';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { clientScriptEval } from '../../../Components/Hooks/useScript';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
-import { computePath } from '../ScriptEditors/SrcEditor';
-import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
-import { flex } from '../../../css/classes';
-import { createScript } from '../../../Helper/wegasEntites';
-import { AvailableSchemas } from '.';
 
 export interface ScriptableViewProps
   extends WidgetProps.BaseProps<
@@ -78,8 +77,6 @@ export default function ScriptableView(
     }
   }, [onChange]);
 
-  const [filename] = React.useState(computePath(undefined, language));
-
   const onScriptContentChange = React.useCallback(
     (val: string) => {
       onChange(createScript(val, language));
@@ -105,8 +102,7 @@ export default function ScriptableView(
                 language={language}
                 returnType={scriptProps.returnType}
                 args={scriptProps.args}
-                models={{ [filename]: value ? value.content : '' }}
-                fileName={filename}
+                value={value ? value.content : ''}
                 onChange={onScriptContentChange}
                 minimap={false}
                 noGutter={true}
@@ -114,11 +110,7 @@ export default function ScriptableView(
                 scriptContext={scriptProps.scriptContext}
               />
             ) : (
-              <Form
-                schema={literalSchema}
-                value={value}
-                onChange={onChange}
-              />
+              <Form schema={literalSchema} value={value} onChange={onChange} />
             )}
           </>
         )}

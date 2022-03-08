@@ -81,8 +81,8 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
         wlog('Cannot get the scripts');
       });
 
+    // Run global contexts before loading external client scripts
     setGlobals(globalContexts, store.getState());
-
     CurrentGM.properties.clientScriptUri?.split(';').map(scriptUrl => {
       if (scriptUrl !== '') {
         fetch(scriptUrl)
@@ -94,12 +94,15 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
             }
           })
           .then(res => {
-            safeClientScriptEval(res.text, undefined, () =>
-              wwarn(`In static client script : ${res.scriptUrl}`),
-              undefined, {
+            safeClientScriptEval(
+              res.text,
+              undefined,
+              () => wwarn(`In static client script : ${res.scriptUrl}`),
+              undefined,
+              {
                 injectReturn: false,
                 moduleName: scriptUrl,
-              }
+              },
             );
           })
           .catch(e => {

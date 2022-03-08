@@ -12,7 +12,6 @@ import { Toolbar } from '../../Components/Toolbar';
 import { defaultPadding, flex } from '../../css/classes';
 import { shallowIs } from '../../Helper/shallowIs';
 import { WegasScriptEditor } from './ScriptEditors/WegasScriptEditor';
-import { computePath } from './ScriptEditors/SrcEditor';
 
 const container = css({
   width: '100%',
@@ -69,8 +68,6 @@ const Eval = React.memo(function Eval({ script }: { script: string }) {
 });
 Eval.displayName = 'Eval';
 
-const filename = computePath(undefined, 'typescript');
-
 export default function PlayLocal() {
   const [script, setScript] = React.useState('');
 
@@ -114,9 +111,9 @@ export default function PlayLocal() {
         <div className={container}>
           <div className={editor}>
             <WegasScriptEditor
-              models={{ [filename]: script }}
-              fileName={filename}
+              value={script}
               onChange={onChangeCb}
+              language="typescript"
             />
           </div>
           <ErrorBoundary script={debouncedScript}>

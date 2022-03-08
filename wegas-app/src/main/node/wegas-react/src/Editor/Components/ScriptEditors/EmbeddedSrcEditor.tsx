@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { Modal } from '../../../Components/Modal';
 import { MonacoEditor, MonacoSCodeEditor } from './editorHelpers';
-import SrcEditor, { computePath } from './SrcEditor';
+import SrcEditor from './SrcEditor';
 
 interface EmbeddedSrcEditorProps {
   value: string;
@@ -89,11 +89,6 @@ export function EmbeddedSrcEditor({
     setEditing(false);
   };
 
-  const [filename] = React.useState(computePath(undefined, 'typescript'));
-  const [embeddedFilename] = React.useState(
-    computePath(undefined, 'plaintext'),
-  );
-
   return (
     <>
       {editing && (
@@ -105,8 +100,8 @@ export function EmbeddedSrcEditor({
             }}
           >
             <SrcEditor
-              fileName={embeddedFilename}
-              models={{ [embeddedFilename]: embeddedContent.current }}
+              value={embeddedContent.current}
+              language={'plaintext'}
               onChange={value => {
                 embeddedContent.current = value;
               }}
@@ -128,11 +123,10 @@ export function EmbeddedSrcEditor({
       )}
       <SrcEditor
         cursorOffset={cursorOffset.current}
-        fileName={filename}
-        models={{ [filename]: editorContent }}
+        value={editorContent}
+        language={language}
         onChange={v => setEditorContent(v)}
         onSave={() => onSave()}
-        language={language}
         defaultActions={monaco => [
           {
             id: 'embeddedEditor',
