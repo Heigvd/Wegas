@@ -431,6 +431,7 @@ const simpleSchemaProps = {
       returnType,
       featureLevel,
       label,
+      required,
       type: 'variableselect',
       layout,
       items,
@@ -462,6 +463,7 @@ const simpleSchemaProps = {
       noMarginTop,
       borderBottom,
       index,
+      required,
       returnType,
       featureLevel,
       label,
@@ -492,6 +494,7 @@ const simpleSchemaProps = {
       returnType,
       featureLevel,
       label,
+      required,
       type: 'scriptableVariableSelect',
       layout,
     },
@@ -518,7 +521,7 @@ const simpleSchemaProps = {
       borderTop,
       noMarginTop,
       index,
-      // returnType: ['string'],
+      required,
       featureLevel,
       label,
       type: 'scriptableString',
@@ -547,6 +550,7 @@ const simpleSchemaProps = {
       index,
       featureLevel,
       label,
+      required,
       type: 'scriptableBoolean',
       layout,
     },
@@ -708,47 +712,24 @@ const simpleSchemaProps = {
     filter?: FileFilter;
     scriptable?: boolean;
   } & CommonSchemaProps &
-    ValueSchemaProps<string>):
-    | SchemaFromView<'scriptablepath'>
-    | SchemaFromView<'path'> => {
-    if (scriptable) {
-      return {
-        required,
-        type: 'object',
-        value,
-        index,
-        view: {
-          pickType,
-          filter,
-          featureLevel,
-          index,
-          label,
-          type: 'scriptablepath',
-          layout,
-          borderTop,
-          noMarginTop,
-        },
-      };
-    } else {
-      return {
-        required,
-        type: 'string',
-        value,
-        index,
-        view: {
-          pickType,
-          filter,
-          featureLevel,
-          index,
-          label,
-          type: 'path',
-          layout,
-          borderTop,
-          noMarginTop,
-        },
-      };
-    }
-  },
+    ValueSchemaProps<string>) => ({
+    required,
+    type: scriptable ? 'object' : 'string',
+    value,
+    index,
+    view: {
+      pickType,
+      filter,
+      featureLevel,
+      index,
+      label,
+      required,
+      type: scriptable ? 'scriptablepath' : 'path',
+      layout,
+      borderTop,
+      noMarginTop,
+    },
+  }),
 } as const;
 
 // For tests only !

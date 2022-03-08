@@ -172,16 +172,13 @@ async function WindowedEditor<T extends IMergeable>({
   ...options
 }: EditorProps<T>) {
   let pathEntity = entity as T & { id?: number };
+
   if (Array.isArray(path) && path.length > 0) {
     pathEntity = get(entity, path);
   }
 
   if (pathEntity === undefined) {
     return null;
-  }
-
-  function updatePath(variable: {}) {
-    return update != null && update(deepUpdate(entity, path, variable) as T);
   }
 
   const [Form, schema] = await Promise.all<
@@ -213,8 +210,6 @@ async function WindowedEditor<T extends IMergeable>({
 
   return (
     <Form
-      // Force rerender Form when entity change
-      key={'id' in pathEntity ? pathEntity.id : undefined}
       entity={pathEntity}
       label={editorTitle({
         label: entity
@@ -225,7 +220,11 @@ async function WindowedEditor<T extends IMergeable>({
           : undefined,
         name: getClassLabel(pathEntity),
       })}
-      update={update != null ? updatePath : update}
+      update={variable =>
+        update != null
+          ? update(deepUpdate(entity, path, variable) as T)
+          : undefined
+      }
       actions={actions.map(action => ({
         ...action,
         action: function (e: T) {

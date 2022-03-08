@@ -162,7 +162,7 @@ function filterVariableMethods(
 ): MethodConfig {
   return Object.keys(methods)
     .filter(k =>
-      mode === 'GET'
+      mode?.includes('GET')
         ? methods[k].returns !== undefined
         : methods[k].returns === undefined,
     )

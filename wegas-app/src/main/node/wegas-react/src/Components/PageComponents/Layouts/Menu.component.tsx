@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useScript } from '../../Hooks/useScript';
 import { FlexItem } from '../../Layouts/FlexList';
 import {
   LabelFNArgs,
@@ -7,7 +8,6 @@ import {
   MenuItemProps,
   menuItemSchema,
   MenuProps,
-  menuSchema,
 } from '../../Layouts/Menu';
 import {
   pageComponentFactory,
@@ -19,14 +19,35 @@ import {
   ChildrenDeserializerProps,
   PageDeserializer,
 } from '../tools/PageDeserializer';
+import { schemaProps } from '../tools/schemaProps';
 import { EmptyComponentContainer } from './FlexList.component';
 
-interface PlayerMenuProps extends MenuProps, WegasComponentProps {
+interface PlayerMenuProps
+  extends Omit<MenuProps, 'labelClassName' | 'initialSelectedItemId'>,
+    WegasComponentProps {
   /**
    * children - the array containing the child components
    */
   children: React.ReactNode[];
+  /**
+   * labelClassName - allow to override the class of the label
+   */
+  labelClassName?: IScript;
+  /**
+   * initialSelectedItemId - set the selected item when at the menu first render
+   */
+  initialSelectedItemId?: IScript;
 }
+
+const menuSchema = {
+  vertical: schemaProps.boolean({ label: 'Vertical' }),
+  labelClassName: schemaProps.scriptString({
+    label: 'Label class',
+  }),
+  initialSelectedItemId: schemaProps.scriptString({
+    label: 'Selected item id at start',
+  }),
+};
 
 function PlayerMenu(props: PlayerMenuProps) {
   return <>{props.children}</>;
@@ -118,6 +139,7 @@ function MenuLabel({
 function ChildrenDeserializer({
   vertical,
   wegasChildren,
+  initialSelectedItemId,
   path,
   pageId,
   uneditable,
@@ -125,7 +147,10 @@ function ChildrenDeserializer({
   editMode,
   containerPropsKeys,
   inheritedOptionsState,
-}: ChildrenDeserializerProps<MenuProps>) {
+  labelClassName,
+}: ChildrenDeserializerProps<PlayerMenuProps>) {
+  const selectedId = useScript<string>(initialSelectedItemId);
+  const labelClass = useScript<string>(labelClassName);
   const menuLabel = wegasChildren?.find(
     child => child.type === PlayerMenuLabelName,
   );
@@ -133,7 +158,14 @@ function ChildrenDeserializer({
     child => child.type === PlayerMenuItemsName,
   );
 
-  if (menuLabel && menuItems) {
+  const disabledChildren = useScript<(boolean | undefined)[]>(
+    menuItems?.props.children?.map(c => {
+      const menuChildProps = c.props as MenuItemProps;
+      return menuChildProps.disabled;
+    }),
+  );
+
+  if (menuLabel && menuItems && disabledChildren) {
     const items = menuItems.props.children?.reduce<MenuChildren>(
       (o, child, i) => {
         const newPath = [...path, 1, i];
@@ -155,6 +187,10 @@ function ChildrenDeserializer({
               />
             ),
             index: menuChildProps.childrenComponentIndex,
+            disabled:
+              inheritedOptionsState.disabled ||
+              inheritedOptionsState.readOnly ||
+              disabledChildren[i],
           },
         };
       },
@@ -192,6 +228,8 @@ function ChildrenDeserializer({
           }
           vertical={vertical}
           items={items || {}}
+          initialSelectedItemId={selectedId}
+          labelClassName={labelClass}
         />
       );
     }

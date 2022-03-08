@@ -23,7 +23,7 @@ import {
 import { ActionCreator } from '../../data/actions';
 import { ActionsProps } from '../../data/Reducer/globalState';
 import { store, StoreDispatch } from '../../data/Stores/store';
-import { wwarn } from '../../Helper/wegaslog';
+import { wlog, wwarn } from '../../Helper/wegaslog';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import './FormView';
@@ -91,15 +91,15 @@ export function Form<T>({
   const i18nValues = useInternalTranslate(commonTranslations);
 
   React.useEffect(() => {
-    if (
-      deepDifferent(entity, oldReceivedEntity.current) &&
-      deepDifferent(entity, val)
-    ) {
-      oldReceivedEntity.current = entity;
-      setVal(entity);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    oldReceivedEntity.current = entity;
   }, [entity]);
+
+  if (
+    deepDifferent(entity, oldReceivedEntity.current) &&
+    deepDifferent(entity, val)
+  ) {
+    setVal(entity);
+  }
 
   const closeAction = actions.find(a => a.sorting === 'close');
   const deleteAction = actions.find(a => a.sorting === 'delete');
@@ -123,6 +123,10 @@ export function Form<T>({
                   disabled={!deepDifferent(val, entity)}
                   onClick={() => {
                     if (form.current != null) {
+                      wlog(config);
+                      wlog(oldReceivedEntity.current);
+                      wlog(entity);
+                      wlog(val);
                       const validation = form.current.validate();
                       if (validation.length) {
                         wwarn(val, JSON.stringify(validation, null, 2));
@@ -206,7 +210,7 @@ export function Form<T>({
             duration={3000}
             onLabelVanish={error.onRead}
           />
-        )}{' '}
+        )}
       </Toolbar.Header>
       <Toolbar.Content
         className={cx(grow, defaultPaddingLeft, defaultPaddingRight, {
@@ -225,12 +229,7 @@ export function Form<T>({
           <h3 className={defaultMarginBottom}>{label}</h3>
           <JSONForm
             // Ugly workaround to force update JSONForm when config changes or entity changes
-            key={JSON.stringify({
-              description: config
-                ? (config as { description?: string }).description
-                : undefined,
-              id: val ? (val as { id?: number }).id : undefined,
-            })}
+            key={JSON.stringify({ entity, config })}
             ref={form}
             value={val}
             schema={config}

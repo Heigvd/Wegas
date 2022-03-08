@@ -23,8 +23,9 @@ import {
 import { createScript } from '../../../Helper/wegasEntites';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from './commonView';
-import { Labeled, LabeledView } from './labeled';
+import { Labeled } from './labeled';
 import { scriptEditStyle } from './Script/Script';
+import { computeReturnType, ScriptableView } from './ScriptableString';
 import { TreeVariableSelect } from './TreeVariableSelect';
 
 const labelStyle = css({
@@ -37,7 +38,7 @@ interface BaseComponentProps extends WidgetProps.BaseProps<CommonView> {
 }
 
 export interface ScriptableComponentProps
-  extends WidgetProps.BaseProps<CommonView & LabeledView> {
+  extends WidgetProps.BaseProps<ScriptableView> {
   value?: IScript;
   onChange: (IScript: IScript) => void;
 }
@@ -175,7 +176,10 @@ export function scriptableComponentFactory<BCT extends BaseComponentProps>(
                   <WegasScriptEditor
                     value={script}
                     language="typescript"
-                    returnType={['string']}
+                    returnType={computeReturnType(
+                      ['string'],
+                      props.view.required,
+                    )}
                     onChange={value =>
                       props.onChange(
                         props.value

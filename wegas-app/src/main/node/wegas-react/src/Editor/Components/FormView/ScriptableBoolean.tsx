@@ -21,9 +21,10 @@ import {
 } from '../../../css/classes';
 import { createScript } from '../../../Helper/wegasEntites';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
-import { CommonView, CommonViewContainer } from './commonView';
-import { Labeled, LabeledView } from './labeled';
+import { CommonViewContainer } from './commonView';
+import { Labeled } from './labeled';
 import { scriptEditStyle } from './Script/Script';
+import { computeReturnType, ScriptableView } from './ScriptableString';
 import { TreeVariableSelect } from './TreeVariableSelect';
 
 const labelStyle = css({
@@ -92,7 +93,7 @@ function parseScript(script: string = ''): ParsedScript {
 }
 
 export interface ScriptableBooleanProps
-  extends WidgetProps.BaseProps<CommonView & LabeledView> {
+  extends WidgetProps.BaseProps<ScriptableView> {
   value?: IScript;
   onChange: (IScript: IScript) => void;
 }
@@ -140,8 +141,11 @@ export function ScriptableBoolean(props: ScriptableBooleanProps): JSX.Element {
               <div className={scriptEditStyle}>
                 <WegasScriptEditor
                   value={script}
-                  returnType={['boolean', 'SBooleanDescriptor']}
                   language="typescript"
+                  returnType={computeReturnType(
+                    ['boolean', 'SBooleanDescriptor'],
+                    props.view.required,
+                  )}
                   onChange={value =>
                     props.onChange(
                       props.value

@@ -120,10 +120,29 @@ function parseScript(script: string = ''): ParsedScript {
   return { type: 'Code', script: '' };
 }
 
+export interface ScriptableView extends CommonView, LabeledView {
+  required: boolean;
+}
+
+export function computeReturnType(
+  returnType: WegasScriptEditorReturnTypeName[] | undefined,
+  required?: boolean,
+): WegasScriptEditorReturnTypeName[] | undefined {
+  if (returnType == null) {
+    return undefined;
+  } else if (required) {
+    return returnType;
+  } else {
+    return [...returnType, 'undefined'];
+  }
+}
+
+interface ScriptableStringView extends ScriptableView {
+  richText?: boolean;
+}
+
 export interface ScriptableStringProps
-  extends WidgetProps.BaseProps<
-    CommonView & LabeledView & { richText?: boolean }
-  > {
+  extends WidgetProps.BaseProps<ScriptableStringView> {
   value?: IScript;
   onChange: (IScript: IScript) => void;
 }
@@ -172,7 +191,10 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
                 <WegasScriptEditor
                   value={script}
                   language="typescript"
-                  returnType={['string']}
+                  returnType={computeReturnType(
+                    ['string'],
+                    props.view.required,
+                  )}
                   onChange={value =>
                     props.onChange(
                       props.value

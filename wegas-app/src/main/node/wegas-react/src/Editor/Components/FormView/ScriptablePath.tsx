@@ -21,10 +21,11 @@ import {
 } from '../../../css/classes';
 import { createScript } from '../../../Helper/wegasEntites';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
-import { CommonView, CommonViewContainer } from './commonView';
+import { CommonViewContainer } from './commonView';
 import { CustomFileSelector } from './FileSelector';
-import { Labeled, LabeledView } from './labeled';
+import { Labeled } from './labeled';
 import { scriptEditStyle } from './Script/Script';
+import { computeReturnType, ScriptableView } from './ScriptableString';
 import { TreeVariableSelect } from './TreeVariableSelect';
 
 const labelStyle = css({
@@ -119,11 +120,13 @@ function parseScript(script: string = ''): ParsedScript {
   return { type: 'Code', script: '' };
 }
 
+interface ScriptablePathView extends ScriptableView {
+  pickType: FilePickingType;
+  filter?: FileFilter;
+}
+
 export interface ScriptablePathProps
-  extends WidgetProps.BaseProps<
-    CommonView &
-      LabeledView & { pickType: FilePickingType; filter?: FileFilter }
-  > {
+  extends WidgetProps.BaseProps<ScriptablePathView> {
   value?: IScript;
   onChange: (IScript: IScript) => void;
 }
@@ -173,7 +176,10 @@ export function ScriptablePath(props: ScriptablePathProps): JSX.Element {
                 <WegasScriptEditor
                   value={script}
                   language="typescript"
-                  returnType={['string']}
+                  returnType={computeReturnType(
+                    ['string'],
+                    props.view.required,
+                  )}
                   onChange={value =>
                     props.onChange(
                       props.value
