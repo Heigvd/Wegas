@@ -131,12 +131,6 @@ function doesPersistedExists(
   return entry[1].persisted != null;
 }
 
-function doesLibraryExists(
-  entry: [string, IGameModelContent | undefined] | [string, IGameModelContent],
-): entry is [string, IGameModelContent] {
-  return entry[1] != null;
-}
-
 interface LibrariesWithStatus {
   [id: string]: LibraryWithStatus;
 }
@@ -150,12 +144,14 @@ interface LibrariesState {
   style: LibrariesWithStatus;
 }
 
+export type LibraryType = keyof LibrariesState;
+
 interface SetUpLibrariesStateAction {
-  type: 'SetUpLibrariesState';
+  actionType: 'SetUpLibrariesState';
   /**
    * librariesType - the type of the libraries to add in state
    */
-  librariesType: keyof LibrariesState;
+  librariesType: LibraryType;
   /**
    * libraries - the map of libraries of the new librariesState
    */
@@ -163,11 +159,11 @@ interface SetUpLibrariesStateAction {
 }
 
 interface ModifyLibraryAction {
-  type: 'ModifyLibrary';
+  actionType: 'ModifyLibrary';
   /**
    * libraryType - the type of the library to add in state
    */
-  libraryType: keyof LibrariesState;
+  libraryType: LibraryType;
   /**
    * name - the name of the inserted library
    */
@@ -182,12 +178,28 @@ interface ModifyLibraryAction {
   library: IGameModelContent;
 }
 
+interface SaveLibraryAction {
+  actionType: 'SaveLibrary';
+  /**
+   * libraryType - the type of the library to add in state
+   */
+  libraryType: LibraryType;
+  /**
+   * name - the name of the inserted library
+   */
+  name: string;
+  /**
+   * library - the library to be inserted
+   */
+  library: IGameModelContent;
+}
+
 interface RemoveLibraryAction {
-  type: 'RemoveLibrary';
+  actionType: 'RemoveLibrary';
   /**
    * libraryType - the type of the library
    */
-  libraryType: keyof LibrariesState;
+  libraryType: LibraryType;
   /**
    * location - the location from where the modification is made
    */
@@ -200,6 +212,7 @@ interface RemoveLibraryAction {
 
 type LibraryStateAction =
   | SetUpLibrariesStateAction
+  | SaveLibraryAction
   | ModifyLibraryAction
   | RemoveLibraryAction;
 
@@ -211,7 +224,7 @@ const setLibrariesState = (
   action: LibraryStateAction,
 ) =>
   u(oldState, newState => {
-    switch (action.type) {
+    switch (action.actionType) {
       case 'SetUpLibrariesState': {
         const { librariesType, libraries } = action;
         newState[librariesType] = Object.entries(
@@ -232,15 +245,21 @@ const setLibrariesState = (
         );
         break;
       }
+      case 'SaveLibrary':
       case 'ModifyLibrary': {
-        const { libraryType, name, location, library } = action;
+        const { libraryType, name, library } = action;
         if (newState[libraryType][name] == null) {
           newState[libraryType][name] = {
             persisted: undefined,
             modified: undefined,
           };
         }
-        newState[libraryType][name][location] = library;
+        newState[libraryType][name][
+          action.actionType === 'ModifyLibrary' ? action.location : 'persisted'
+        ] = library;
+        if (action.actionType === 'SaveLibrary') {
+          newState[libraryType][name].modified = undefined;
+        }
         break;
       }
       case 'RemoveLibrary': {
@@ -257,6 +276,7 @@ const setLibrariesState = (
 interface LibrariesContext {
   librariesState: LibrariesState;
   modifyLibrary: (action: ModifyLibraryAction) => void;
+  saveLibrary: (action: SaveLibraryAction) => void;
   removeLibrary: (action: RemoveLibraryAction) => void;
 }
 
@@ -269,6 +289,7 @@ const defaultLibrariesState: LibrariesState = {
 export const librariesCTX = React.createContext<LibrariesContext>({
   librariesState: defaultLibrariesState,
   modifyLibrary: () => {},
+  saveLibrary: () => {},
   removeLibrary: () => {},
 });
 
@@ -290,7 +311,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
       .then((libraries: ILibraries) => {
         try {
           dispatchLibrariesState({
-            type: 'SetUpLibrariesState',
+            actionType: 'SetUpLibrariesState',
             librariesType: 'client',
             libraries,
           });
@@ -305,7 +326,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
     LibraryAPI.getAllLibraries('ServerScript')
       .then((libraries: ILibraries) => {
         dispatchLibrariesState({
-          type: 'SetUpLibrariesState',
+          actionType: 'SetUpLibrariesState',
           librariesType: 'server',
           libraries,
         });
@@ -317,7 +338,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
     LibraryAPI.getAllLibraries('CSS')
       .then((libraries: ILibraries) => {
         dispatchLibrariesState({
-          type: 'SetUpLibrariesState',
+          actionType: 'SetUpLibrariesState',
           librariesType: 'style',
           libraries,
         });
@@ -367,7 +388,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
       LibraryAPI.getLibrary('ClientScript', updatedLibraryName).then(
         (library: IGameModelContent) => {
           dispatchLibrariesState({
-            type: 'ModifyLibrary',
+            actionType: 'ModifyLibrary',
             libraryType: 'client',
             name: updatedLibraryName,
             location: 'persisted',
@@ -385,7 +406,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
       LibraryAPI.getLibrary('ClientScript', updatedLibraryName).then(
         (library: IGameModelContent) => {
           dispatchLibrariesState({
-            type: 'ModifyLibrary',
+            actionType: 'ModifyLibrary',
             libraryType: 'server',
             name: updatedLibraryName,
             location: 'persisted',
@@ -403,7 +424,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
       LibraryAPI.getLibrary('CSS', updatedLibraryName).then(
         (library: IGameModelContent) => {
           dispatchLibrariesState({
-            type: 'ModifyLibrary',
+            actionType: 'ModifyLibrary',
             libraryType: 'style',
             name: updatedLibraryName,
             location: 'persisted',
@@ -436,31 +457,34 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
   // make sure to have up-to-date models
   React.useEffect(() => {
     if (reactMonaco != null) {
-      Object.entries(librariesState).forEach(([libType, libTypes]) => {
-        Object.entries(libTypes).forEach(([libName, libStatuses]) => {
-          const extension =
-            libType === 'client' ? 'ts' : libType === 'server' ? 'js' : 'css';
-          const language: SrcEditorLanguages =
-            libType === 'client'
-              ? 'typescript'
-              : libType === 'server'
-              ? 'javascript'
-              : 'css';
+      Object.entries(librariesState)
+        // Do not save server libraries in monaco editor's models
+        .filter(([libType]) => libType === 'client' || libType === 'style')
+        .forEach(([libType, libTypes]) => {
+          Object.entries(libTypes)
+            .filter(doesPersistedExists)
+            .forEach(([libName, libStatuses]) => {
+              const extension =
+                libType === 'client'
+                  ? 'ts'
+                  : libType === 'server'
+                  ? 'js'
+                  : 'css';
+              const language: SrcEditorLanguages =
+                libType === 'client'
+                  ? 'typescript'
+                  : libType === 'server'
+                  ? 'javascript'
+                  : 'css';
 
-          Object.entries(libStatuses)
-            .filter(doesLibraryExists)
-            .forEach(([libStatus, library]) => {
-              if (library?.content) {
-                createOrUpdateModel(
-                  reactMonaco,
-                  library?.content,
-                  language,
-                  `file:///${libName}.${libStatus}.${extension}`,
-                );
-              }
+              createOrUpdateModel(
+                reactMonaco,
+                libStatuses.persisted.content,
+                language,
+                `file:///${libName}.${extension}`,
+              );
             });
         });
-      });
     }
   }, [librariesState, reactMonaco]);
 
@@ -495,6 +519,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
         value={{
           librariesState,
           modifyLibrary: dispatchLibrariesState,
+          saveLibrary: dispatchLibrariesState,
           removeLibrary: dispatchLibrariesState,
         }}
       >

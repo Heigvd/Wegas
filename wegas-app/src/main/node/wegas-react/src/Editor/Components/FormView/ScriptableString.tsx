@@ -121,13 +121,13 @@ function parseScript(script: string = ''): ParsedScript {
 }
 
 export interface ScriptableView extends CommonView, LabeledView {
-  required: boolean;
+  required?: boolean;
 }
 
 export function computeReturnType(
-  returnType: WegasScriptEditorReturnTypeName[] | undefined,
+  returnType: string[] | undefined,
   required?: boolean,
-): WegasScriptEditorReturnTypeName[] | undefined {
+): string[] | undefined {
   if (returnType == null) {
     return undefined;
   } else if (required) {

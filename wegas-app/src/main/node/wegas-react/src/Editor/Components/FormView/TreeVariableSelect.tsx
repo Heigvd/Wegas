@@ -133,7 +133,7 @@ function labelForValue<T>(items: TreeSelectItem<T>[], value?: T) {
 
 interface LabeledTreeVSelectView<T> extends ScriptableView {
   items?: TreeSelectItem<T>[];
-  returnType?: WegasScriptEditorReturnTypeName[];
+  returnType?: string[];
 }
 
 export interface LabeledTreeVSelectProps<T>

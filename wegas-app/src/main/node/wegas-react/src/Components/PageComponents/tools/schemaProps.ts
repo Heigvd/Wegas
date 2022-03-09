@@ -418,7 +418,7 @@ const simpleSchemaProps = {
     borderTop,
     noMarginTop,
   }: {
-    returnType?: string[];
+    returnType?: WegasScriptEditorReturnTypeName[];
     items?: TreeSelectItem<string>[];
   } & CommonSchemaProps): SchemaFromView<'variableselect'> => ({
     required,
@@ -451,7 +451,7 @@ const simpleSchemaProps = {
     borderBottom,
   }: {
     items?: TreeSelectItem<T>[];
-    returnType?: string[];
+    returnType?: WegasScriptEditorReturnTypeName[];
     type?: TYPESTRING | TYPESTRING[];
     borderBottom?: boolean;
   } & CommonSchemaProps): SchemaFromView<'treeselect'> => ({
@@ -482,7 +482,7 @@ const simpleSchemaProps = {
     borderTop,
     noMarginTop,
   }: {
-    returnType?: string[];
+    returnType?: string[] | undefined;
   } & CommonSchemaProps): SchemaFromView<'scriptableVariableSelect'> => ({
     required,
     type: 'object',
@@ -706,15 +706,45 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
-    scriptable,
   }: {
     pickType?: FilePickingType;
     filter?: FileFilter;
-    scriptable?: boolean;
   } & CommonSchemaProps &
-    ValueSchemaProps<string>) => ({
+    ValueSchemaProps<string>): SchemaFromView<'path'> => ({
     required,
-    type: scriptable ? 'object' : 'string',
+    type: 'string',
+    value,
+    index,
+    view: {
+      pickType,
+      filter,
+      featureLevel,
+      index,
+      label,
+      type: 'path',
+      layout,
+      borderTop,
+      noMarginTop,
+    },
+  }),
+  scriptPath: ({
+    label,
+    required = false,
+    pickType = 'FILE',
+    filter,
+    value,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+    noMarginTop,
+  }: {
+    pickType?: FilePickingType;
+    filter?: FileFilter;
+  } & CommonSchemaProps &
+    ValueSchemaProps<string>): SchemaFromView<'scriptablepath'> => ({
+    required,
+    type: 'object',
     value,
     index,
     view: {
@@ -724,7 +754,7 @@ const simpleSchemaProps = {
       index,
       label,
       required,
-      type: scriptable ? 'scriptablepath' : 'path',
+      type: 'scriptablepath',
       layout,
       borderTop,
       noMarginTop,

@@ -73,10 +73,6 @@ export interface SrcEditorProps {
    */
   defaultFocus?: boolean;
   /**
-   * extraLibs - libraries to add to the editor intellisense
-   */
-  //extraLibs?: MonacoDefinitionsLibrary[];
-  /**
    * onEditorReady - Callback to give the editor the a higher component
    */
   onEditorReady?: (editor: MonacoSCodeEditor) => void;

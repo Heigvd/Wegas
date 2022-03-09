@@ -121,7 +121,7 @@ function parseScript(script: string = ''): ParsedScript {
 }
 
 interface ScriptablePathView extends ScriptableView {
-  pickType: FilePickingType;
+  pickType?: FilePickingType;
   filter?: FileFilter;
 }
 
