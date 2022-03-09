@@ -416,6 +416,7 @@ body > .wegas-prettyprinted-text h1:first-child {
     page-break-before: avoid;
 }
 
+.wegas-pdf-content p,
 .wegas-pdf-content img {
     page-break-inside: avoid;
 }
