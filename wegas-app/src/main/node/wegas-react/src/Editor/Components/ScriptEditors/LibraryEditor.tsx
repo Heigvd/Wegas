@@ -686,7 +686,8 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                       ? librariesState.selected
                       : i18nValues.scripts.noLibrarySelected
                   }
-                  choices={Object.entries(librariesState.libraries).map(
+                  choices={Object.entries(librariesState.libraries)
+                    .sort((a, b) => a[0].localeCompare(b[0])).map(
                     ([key, value]) => ({
                       value: key,
                       label: value.status.isEdited ? `* ${key}` : key,
