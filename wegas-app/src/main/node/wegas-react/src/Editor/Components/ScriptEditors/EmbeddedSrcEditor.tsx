@@ -1,46 +1,43 @@
 import { Monaco } from '@monaco-editor/react';
 import * as React from 'react';
+import { useTempModel } from '../../../Components/Contexts/LibrariesContext';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { Modal } from '../../../Components/Modal';
-import { MonacoEditor, MonacoSCodeEditor } from './editorHelpers';
+import {
+  MonacoEditor,
+  MonacoSCodeEditor,
+  SrcEditorLanguages,
+} from './editorHelpers';
 import SrcEditor from './SrcEditor';
 
-interface EmbeddedSrcEditorProps {
-  value: string;
-  language: 'json';
+interface EmbeddedEditorProps {
+  initialValue: string;
+  language: SrcEditorLanguages;
   onChange: (newValue: string) => void;
   onSave: () => void;
 }
 
-export function EmbeddedSrcEditor({
-  value,
+export function EmbeddedEditor({
+  initialValue,
   language,
   onChange,
   onSave,
-}: EmbeddedSrcEditorProps) {
+}: EmbeddedEditorProps) {
   const [editing, setEditing] = React.useState(false);
-  const [editorContent, setEditorContent] = React.useState<string>(value || '');
   const cursorOffset = React.useRef(0);
-  const embeddedContent = React.useRef('');
   const embeddedCodeInit = React.useRef(0);
   const embeddedCodeEnd = React.useRef(0);
+
+  const valueModel = useTempModel(initialValue, language);
+  valueModel?.onDidChangeContent(() => {
+    onChange(valueModel.getValue());
+  });
+  const embeddedModel = useTempModel('', 'plaintext');
 
   const embeddedEditorBindings = React.useCallback(
     (monaco: Monaco) => [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Insert],
     [],
   );
-
-  React.useEffect(() => {
-    setEditorContent(value || '');
-  }, [value]);
-
-  React.useEffect(() => {
-    if (onChange && value !== editorContent) {
-      onChange(editorContent);
-    }
-    // No need to listen for onChange or value change here. Only send updates when editorContent changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editorContent]);
 
   const editEmbedded = (monaco: MonacoEditor, editor: MonacoSCodeEditor) => {
     const cursorPosition = editor.getPosition();
@@ -65,7 +62,7 @@ export function EmbeddedSrcEditor({
           const tokenContent = model
             .getLineContent(y + 1)
             .substring(codeStart, codeEnd);
-          embeddedContent.current = JSON.parse(tokenContent);
+          embeddedModel?.setValue(JSON.parse(tokenContent));
 
           cursorOffset.current = model.getOffsetAt({
             ...cursorPosition,
@@ -80,11 +77,10 @@ export function EmbeddedSrcEditor({
     }
   };
   const onAcceptEmbedded = () => {
-    setEditorContent(
-      oldContent =>
-        oldContent.substring(0, embeddedCodeInit.current) +
-        JSON.stringify(embeddedContent.current) +
-        oldContent.substring(embeddedCodeEnd.current),
+    valueModel?.setValue(
+      valueModel.getValue().substring(0, embeddedCodeInit.current) +
+        JSON.stringify(embeddedModel?.getValue()) +
+        valueModel.getValue().substring(embeddedCodeEnd.current),
     );
     setEditing(false);
   };
@@ -100,11 +96,7 @@ export function EmbeddedSrcEditor({
             }}
           >
             <SrcEditor
-              value={embeddedContent.current}
-              language={'plaintext'}
-              onChange={value => {
-                embeddedContent.current = value;
-              }}
+              fileName={embeddedModel?.uri.toString()}
               defaultFocus
               onSave={onAcceptEmbedded}
             />
@@ -123,9 +115,7 @@ export function EmbeddedSrcEditor({
       )}
       <SrcEditor
         cursorOffset={cursorOffset.current}
-        value={editorContent}
-        language={language}
-        onChange={v => setEditorContent(v)}
+        fileName={valueModel?.uri.toString()}
         onSave={() => onSave()}
         defaultActions={monaco => [
           {

@@ -2,15 +2,16 @@ import { cx } from '@emotion/css';
 import { useMonaco } from '@monaco-editor/react';
 import * as React from 'react';
 import { transpile } from 'typescript';
+import { useTempModel } from '../Components/Contexts/LibrariesContext';
 import { expandBoth, flex, flexColumn, grow } from '../css/classes';
 import { MessageString } from '../Editor/Components/MessageString';
+import SrcEditor from '../Editor/Components/ScriptEditors/SrcEditor';
 import {
   defunctionalizeScript,
   functionalizeScript,
   insertReturn,
-  WegasScriptEditor,
+  TempScriptEditor,
 } from '../Editor/Components/ScriptEditors/WegasScriptEditor';
-import { wlog } from '../Helper/wegaslog';
 
 const RETURN_TYPES = ['string'];
 const STR_RETURN_TYPES = RETURN_TYPES.join(' | ');
@@ -19,10 +20,24 @@ const defaultValue = `import {test} from "./test";
 "hello " + test`;
 
 export default function ScriptParserTester() {
-  const [value, setValue] = React.useState(defaultValue);
-  const functionalized = functionalizeScript(value, STR_RETURN_TYPES);
-  const defunctionalized = defunctionalizeScript(functionalized);
-  const transpiled = insertReturn(transpile(defunctionalized));
+  const [workingFunct, setWorkingFunct] = React.useState(true);
+  const valueModel = useTempModel(defaultValue, 'typescript');
+  const functionalizedModel = useTempModel(defaultValue, 'typescript');
+  const defunctionalizedModel = useTempModel(defaultValue, 'typescript');
+  const transpiledModel = useTempModel(defaultValue, 'typescript');
+
+  const onChange = React.useCallback(
+    newVal => {
+      valueModel?.setValue(newVal);
+      const functionalized = functionalizeScript(newVal, STR_RETURN_TYPES);
+      const defunctionalized = defunctionalizeScript(functionalized);
+      functionalizedModel?.setValue(functionalized);
+      defunctionalizedModel?.setValue(defunctionalized);
+      transpiledModel?.setValue(insertReturn(transpile(defunctionalized)));
+      setWorkingFunct(newVal === defunctionalized);
+    },
+    [defunctionalizedModel, functionalizedModel, transpiledModel, valueModel],
+  );
 
   const [show, setShow] = React.useState({
     invalue: true,
@@ -33,8 +48,13 @@ export default function ScriptParserTester() {
   });
 
   const reactMonaco = useMonaco();
-  // wlog(reactMonaco?.editor.getModels().map(model => model.uri.toString()));
-  wlog(reactMonaco?.editor.getModels().length);
+
+  reactMonaco?.editor.onDidCreateModel(() => {
+    reactMonaco?.editor.getModels().length;
+  });
+  reactMonaco?.editor.onWillDisposeModel(() => {
+    reactMonaco?.editor.getModels().length;
+  });
 
   return (
     <div className={cx(flex, expandBoth, flexColumn)}>
@@ -48,9 +68,9 @@ export default function ScriptParserTester() {
             In editor script
           </h3>
           {show.invalue && (
-            <WegasScriptEditor
-              value={value}
-              onChange={setValue}
+            <TempScriptEditor
+              initialValue={defaultValue}
+              onChange={onChange}
               noGutter
               minimap={false}
               returnType={RETURN_TYPES}
@@ -65,12 +85,13 @@ export default function ScriptParserTester() {
             Raw script
           </h3>
           {show.value && (
-            <WegasScriptEditor
-              value={value}
+            <SrcEditor
+              // value={value}
+              fileName={valueModel?.uri.toString()}
               noGutter
               minimap={false}
               readOnly
-              language="typescript"
+              // language="typescript"
             />
           )}
         </div>
@@ -78,41 +99,41 @@ export default function ScriptParserTester() {
       <div className={cx(grow, flex)}>
         <div className={cx(grow, flex, flexColumn)}>
           <h3>Functionalized script</h3>
-          <WegasScriptEditor
-            value={functionalized}
+          <SrcEditor
+            fileName={functionalizedModel?.uri.toString()}
             noGutter
             minimap={false}
             readOnly
-            language="typescript"
           />
         </div>
         <div className={cx(grow, flex, flexColumn)}>
           <MessageString
-            type={value === defunctionalized ? 'succes' : 'warning'}
+            type={workingFunct ? 'succes' : 'warning'}
             value={
-              value === defunctionalized
+              workingFunct
                 ? 'Defunctionalized script equals initial script'
                 : 'Defunctionalized script is different from initial script'
             }
           />
-          <WegasScriptEditor
-            value={defunctionalized}
+          <SrcEditor
+            // value={defunctionalized}
+            fileName={defunctionalizedModel?.uri.toString()}
             noGutter
             minimap={false}
             readOnly
-            language="typescript"
+            // language="typescript"
           />
         </div>
       </div>
       <div className={cx(grow, flex)}>
         <div className={cx(grow, flex, flexColumn)}>
           <h3>Transpiled script</h3>
-          <WegasScriptEditor
-            value={transpiled}
+          <SrcEditor
+            fileName={transpiledModel?.uri.toString()}
             noGutter
             minimap={false}
             readOnly
-            language="javascript"
+            // language="javascript"
           />
         </div>
       </div>

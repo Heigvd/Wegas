@@ -6,7 +6,7 @@ import { defaultPadding } from '../../../css/classes';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { MessageString, MessageStringStyle } from '../MessageString';
-import { EmbeddedSrcEditor } from './EmbeddedSrcEditor';
+import { EmbeddedEditor } from './EmbeddedSrcEditor';
 
 const infoDuration = 5000;
 
@@ -32,8 +32,9 @@ export function JSONandJSEditor({
 }: JSONandJSEditorProps) {
   const i18nValues = useInternalTranslate(commonTranslations);
   const editorContent = React.useRef<string>(content);
-  const [error, setError] =
-    React.useState<OnSaveStatus | undefined | void>(status);
+  const [error, setError] = React.useState<OnSaveStatus | undefined | void>(
+    status,
+  );
 
   React.useEffect(() => setError(status), [status]);
 
@@ -59,8 +60,8 @@ export function JSONandJSEditor({
         )}
       </Toolbar.Header>
       <Toolbar.Content>
-        <EmbeddedSrcEditor
-          value={content}
+        <EmbeddedEditor
+          initialValue={content}
           language="json"
           onChange={val => (editorContent.current = val)}
           onSave={trySave}

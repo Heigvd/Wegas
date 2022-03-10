@@ -36,8 +36,7 @@ import { store } from '../../../../data/Stores/store';
 import { createScript } from '../../../../Helper/wegasEntites';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
-import { ResizeHandle } from '../../ResizeHandle';
-import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { Labeled, LabeledView } from '../labeled';
 import { WyswygScriptEditor } from './WyswygScriptEditor';
@@ -303,19 +302,18 @@ export function Script({
                         onClick={() => setSrcMode(sm => !sm)}
                       />
                     </div>
-                    <ResizeHandle minSize={200}>
-                      <WegasScriptEditor
-                        language={isServerScript ? 'javascript' : 'typescript'}
-                        value={script.current}
-                        onChange={onCodeChange}
-                        minimap={false}
-                        noGutter={true}
-                        returnType={returnTypes(view.mode)}
-                        scriptContext={
-                          isServerScript ? 'Server internal' : 'Client'
-                        }
-                      />
-                    </ResizeHandle>
+                    <TempScriptEditor
+                      language={isServerScript ? 'javascript' : 'typescript'}
+                      initialValue={script.current}
+                      onChange={onCodeChange}
+                      minimap={false}
+                      noGutter={true}
+                      returnType={returnTypes(view.mode)}
+                      scriptContext={
+                        isServerScript ? 'Server internal' : 'Client'
+                      }
+                      resizable
+                    />
                   </>
                 ) : (
                   <WyswygScriptEditor

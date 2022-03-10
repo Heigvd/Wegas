@@ -18,7 +18,7 @@ import { State } from '../../../../../data/Reducer/reducers';
 import { GameModel } from '../../../../../data/selectors';
 import { useStore } from '../../../../../data/Stores/store';
 import { MessageString } from '../../../MessageString';
-import { WegasScriptEditor } from '../../../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../../../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
 import { Labeled, LabeledView } from '../../labeled';
 import { genVarItems } from '../../TreeVariableSelect';
@@ -298,9 +298,9 @@ export function ExpressionEditor({
       {srcMode ? (
         <div className={scriptEditStyle}>
           <MessageString type="error" value={error || softError} />
-          <WegasScriptEditor
+          <TempScriptEditor
             language={isServerScript ? 'javascript' : 'typescript'}
-            value={code}
+            initialValue={code}
             onChange={onChange}
             noGutter
             minimap={false}

@@ -17,7 +17,7 @@ import {
 import { createScript } from '../../../Helper/wegasEntites';
 import { MessageString } from '../MessageString';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 import { scriptEditStyle } from './Script/Script';
@@ -100,8 +100,8 @@ export default function PageLoaderSelect({
                   />
                   {srcMode ? (
                     <div className={cx(scriptEditStyle, grow)}>
-                      <WegasScriptEditor
-                        value={loaderValue || ''}
+                      <TempScriptEditor
+                        initialValue={loaderValue || ''}
                         returnType={['string']}
                         onChange={setPageLoader}
                         onSave={newValue =>

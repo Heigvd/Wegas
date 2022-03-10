@@ -132,7 +132,7 @@ function WegasDiffEditor({
   const getOriginalValue = React.useRef<() => string>();
   const getModifiedValue = React.useRef<() => string>();
   const i18nValues = useInternalTranslate(commonTranslations);
-  const schema = useJSONSchema(language === 'json');
+  const schema = useJSONSchema();
 
   React.useEffect(() => {
     // Fires the handleDiffNavigator to pass the navigator to the parent component

@@ -3,7 +3,7 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import * as React from 'react';
 import { Button } from '../../../../Components/Inputs/Buttons/Button';
 import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
-import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import { CommonView } from '../commonView';
 import { LabeledView } from '../labeled';
 
@@ -36,8 +36,8 @@ export function VariableInput({ onChange, view, value }: VariableInputProps) {
       <Button icon="code" onClick={() => setSrcMode(sm => !sm)} />
       <div>
         {srcMode ? (
-          <WegasScriptEditor
-            value={value || ''}
+          <TempScriptEditor
+            initialValue={value || ''}
             language="typescript"
             onChange={onChange}
             noGutter

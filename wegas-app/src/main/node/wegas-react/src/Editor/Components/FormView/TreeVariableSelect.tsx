@@ -23,7 +23,7 @@ import {
   createScript,
   scriptableClassNameToClassFilter,
 } from '../../../Helper/wegasEntites';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { SearchableItems } from '../Tree/searchable';
 import { TreeSelect } from '../Tree/TreeSelect';
 import { VariableScriptPath } from '../Variable/VariableScriptPath';
@@ -380,8 +380,8 @@ export function ScripableVariableSelect(
       </div>
       {srcMode ? (
         <div className={scriptEditStyle}>
-          <WegasScriptEditor
-            value={script}
+          <TempScriptEditor
+            initialValue={script}
             returnType={computeReturnType(
               props.view.returnType,
               props.view.required,

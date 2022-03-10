@@ -22,7 +22,7 @@ import {
   itemCenter,
 } from '../../../css/classes';
 import { createScript } from '../../../Helper/wegasEntites';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 import { scriptEditStyle } from './Script/Script';
@@ -188,8 +188,8 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
             </div>
             {inputMode === 'Code' ? (
               <div className={scriptEditStyle}>
-                <WegasScriptEditor
-                  value={script}
+                <TempScriptEditor
+                  initialValue={script}
                   language="typescript"
                   returnType={computeReturnType(
                     ['string'],

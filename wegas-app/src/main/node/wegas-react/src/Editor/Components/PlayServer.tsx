@@ -5,7 +5,7 @@ import { defaultMargin } from '../../css/classes';
 import { runScript } from '../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../data/selectors';
 import { store } from '../../data/Stores/store';
-import { WegasScriptEditor } from './ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from './ScriptEditors/WegasScriptEditor';
 
 const container = css({ width: '100%' });
 const editor = css({ width: '100%', height: '400px' });
@@ -28,7 +28,7 @@ export default function PlayServer() {
   return (
     <div className={container}>
       <div className={editor}>
-        <WegasScriptEditor
+        <TempScriptEditor
           fileName={filename}
           language="javascript"
           onChange={e => setScript(e)}

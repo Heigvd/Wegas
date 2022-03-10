@@ -20,7 +20,7 @@ import {
   itemCenter,
 } from '../../../css/classes';
 import { createScript } from '../../../Helper/wegasEntites';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { CommonViewContainer } from './commonView';
 import { CustomFileSelector } from './FileSelector';
 import { Labeled } from './labeled';
@@ -173,8 +173,8 @@ export function ScriptablePath(props: ScriptablePathProps): JSX.Element {
             </div>
             {inputMode === 'Code' ? (
               <div className={scriptEditStyle}>
-                <WegasScriptEditor
-                  value={script}
+                <TempScriptEditor
+                  initialValue={script}
                   language="typescript"
                   returnType={computeReturnType(
                     ['string'],

@@ -4,7 +4,7 @@ import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
 import { createScript } from '../../../Helper/wegasEntites';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 import { scriptEditStyle } from './Script/Script';
@@ -40,9 +40,9 @@ export function Code({ view, value, onChange }: CodeProps) {
             <>
               {labelNode}
               <div className={scriptEditStyle}>
-                <WegasScriptEditor
+                <TempScriptEditor
                   language={language}
-                  value={
+                  initialValue={
                     typeof value === 'string' ? value : value?.content || ''
                   }
                   onChange={onValueChange}

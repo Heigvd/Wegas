@@ -15,7 +15,7 @@ import {
 } from '../../../Helper/pages';
 import { createScript } from '../../../Helper/wegasEntites';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 import { scriptEditStyle } from './Script/Script';
@@ -76,8 +76,8 @@ export default function PageSelect(props: PageSelectProps) {
               />
               {srcMode ? (
                 <div className={cx(scriptEditStyle, grow)}>
-                  <WegasScriptEditor
-                    value={pageValue || ''}
+                  <TempScriptEditor
+                    initialValue={pageValue || ''}
                     returnType={['string']}
                     onChange={setPageValue}
                     onSave={value =>

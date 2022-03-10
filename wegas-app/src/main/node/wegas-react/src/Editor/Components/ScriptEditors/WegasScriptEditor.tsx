@@ -2,6 +2,7 @@ import { cx } from '@emotion/css';
 import { Monaco } from '@monaco-editor/react';
 import * as React from 'react';
 import * as ts from 'typescript';
+import { useTempModel } from '../../../Components/Contexts/LibrariesContext';
 import { expandBoth, flex, flexColumn } from '../../../css/classes';
 import { getLogger } from '../../../Helper/wegaslog';
 import { MessageString } from '../MessageString';
@@ -10,6 +11,7 @@ import {
   MonacoCodeEditor,
   MonacoEditor,
   SrcEditorAction,
+  SrcEditorLanguages,
   textToArray,
 } from './editorHelpers';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
@@ -336,18 +338,26 @@ export function defunctionalizeScript(functionalizedScript: string): string {
 //   }, {});
 // };
 
-export interface WegasScriptEditorProps extends SrcEditorProps {
+export interface WegasScriptEditorProps
+  extends Omit<SrcEditorProps, 'filename'> {
+  initialValue?: string;
+  language?: SrcEditorLanguages;
   scriptContext?: ScriptContext;
   returnType?: string[];
   resizable?: boolean;
   args?: [string, string[]][];
+  /**
+   * onChange - this function is fired each time the content of the editor is changed by the user
+   */
+  onChange?: (value: string) => void;
 }
 
-export function WegasScriptEditor(props: WegasScriptEditorProps) {
+export function TempScriptEditor(props: WegasScriptEditorProps) {
   const {
+    initialValue,
+    language = 'plaintext',
     returnType: returnTypeArray,
     args: argsArray,
-    // scriptContext = 'Client',
     onChange,
     onBlur,
     onSave,
@@ -355,73 +365,14 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     defaultActions,
   } = props;
 
-  const language = props.language ? props.language : 'typescript';
-  //let editorLock: ((editor: MonacoSCodeEditor) => void) | undefined = undefined;
-  //  const editorRef = React.useRef<MonacoSCodeEditor>();
-  //  const selectionRef = React.useRef<MonacoEditorSimpleRange>({
-  //    startColumn: 1,
-  //    endColumn: 1,
-  //    startLineNumber: headerSize,
-  //    endLineNumber: headerSize,
-  //  });
-
-  // const globalLibs = useGlobalLibs(scriptContext);
-  // const { clientScripts } = React.useContext(librariesCTX);
-
-  // const [models, setModels] = React.useState<LibMap>(
-  //   convertToLibMap(globalLibs),
-  // );
-
+  const [value, setValue] = React.useState(initialValue);
   const [error, setError] = React.useState<string | undefined>();
-
   const returnType = makeReturnTypes(returnTypeArray);
   const args = makeArgs(argsArray);
-
-  // React.useEffect(() => {
-  //   // make sure all clientscripts are injected as extraLibs
-  //   // to have autocompletion
-  //   const contextLibs =
-  //     scriptContext === 'Client'
-  //       ? Object.entries(clientScripts).reduce<LibMap>((acc, [k, v]) => {
-  //           acc[`file:///${k}.ts`] = v.content;
-  //           return acc;
-  //         }, {})
-  //       : {};
-
-  //   const functionalizedNewExtraLibs = Object.entries(
-  //     newModels || {},
-  //   ).reduce<LibMap>((acc, [key, content]) => {
-  //     logger.info('Process ExternalModels:', content);
-  //     acc[key] = functionalizeScript(content, returnType, args);
-  //     logger.info('  -> Processed:', acc[key]);
-  //     return acc;
-  //   }, {});
-
-  //   const libs: LibMap = {
-  //     ...convertToLibMap(globalLibs),
-  //     ...contextLibs,
-  //     ...(functionalizedNewExtraLibs || []),
-  //   };
-
-  //   //    const currentLib = libs.find(lib => lib.name === fileName);
-  //   //    const content = formatScriptToFunction(value || '', returnType, args);
-
-  //   logger.info('Rebuild Extra libs');
-  //   setModels(libs);
-  // }, [newModels, globalLibs, scriptContext, clientScripts, returnType, args]);
-
-  // logger.info('Render WSE with ', props.fileName);
-  // const updateLib = React.useCallback(
-  //   (newContent: string) => {
-  //     logger.info('New Lib:', newContent);
-  //     setModels(currentLibs => {
-  //       const updatedModels = { ...currentLibs };
-  //       updatedModels[props.fileName] = newContent;
-  //       return updatedModels;
-  //     });
-  //   },
-  //   [props.fileName],
-  // );
+  const srcModel = useTempModel(
+    functionalizeScript(initialValue || '', returnType, args),
+    language,
+  );
 
   /**
    * trimFunctionToScript - If return type defined this function will trim the header, footer and return statement of the function and call back with only script value
@@ -447,8 +398,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
         }
       }
       setError(undefined);
-      // setCurrentValue(newValue);
-      return fn && fn(newValue);
+      fn && fn(newValue);
     },
     [returnType],
   );
@@ -481,12 +431,14 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     [defaultActions, returnType],
   );
 
-  const handleChange = React.useCallback(
-    val => {
-      return trimFunctionToScript(val, onChange);
-    },
-    [onChange, trimFunctionToScript],
-  );
+  const handleChange = React.useCallback(() => {
+    if (srcModel != null) {
+      setValue(srcModel.getValue());
+      trimFunctionToScript(srcModel.getValue(), onChange);
+    }
+  }, [onChange, srcModel, trimFunctionToScript]);
+
+  srcModel?.onDidChangeContent(handleChange);
 
   const handleBlur = React.useCallback(
     val => {
@@ -506,13 +458,14 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       {resizable ? (
         <ResizeHandle
           minSize={100}
-          textContent={props.value + '\n\n' || '\n\n\n\n\n'}
+          textContent={value + '\n\n' || '\n\n\n\n\n'}
         >
           <SrcEditor
             {...props}
-            value={functionalizeScript(props.value || '', returnType, args)}
-            language={language}
-            onChange={handleChange}
+            fileName={srcModel?.uri.toString()}
+            // value={functionalizeScript(props.value || '', returnType, args)}
+            // language={language}
+            // onChange={handleChange}
             onBlur={handleBlur}
             onSave={handleSave}
             defaultActions={actions}
@@ -521,9 +474,10 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       ) : (
         <SrcEditor
           {...props}
-          value={functionalizeScript(props.value || '', returnType, args)}
-          language={language}
-          onChange={handleChange}
+          fileName={srcModel?.uri.toString()}
+          // value={functionalizeScript(props.value || '', returnType, args)}
+          // language={language}
+          // onChange={handleChange}
           onBlur={handleBlur}
           onSave={handleSave}
           defaultActions={actions}

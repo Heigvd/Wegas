@@ -1,8 +1,6 @@
 import { css } from '@emotion/css';
 import Editor, { Monaco } from '@monaco-editor/react';
-import { debounce } from 'lodash-es';
 import * as React from 'react';
-import { useComputePath } from '../../../Components/Contexts/LibrariesContext';
 import { SizedDiv } from '../../../Components/SizedDiv';
 import { getLogger } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -16,14 +14,9 @@ import {
   SrcEditorAction,
   SrcEditorLanguages,
 } from './editorHelpers';
-import { useJSONSchema } from './useJSONSchema';
 
 const logger = getLogger('monaco');
 export interface SrcEditorProps {
-  /**
-   * value - the content of the editor
-   */
-  value?: string;
   /**
    * filename - the name of the file to edit
    */
@@ -41,10 +34,6 @@ export interface SrcEditorProps {
    */
   readOnly?: boolean;
   /**
-   * language - the editor language
-   */
-  language?: SrcEditorLanguages;
-  /**
    * cursorOffset - the position of the cursor in the text
    */
   cursorOffset?: number;
@@ -52,10 +41,6 @@ export interface SrcEditorProps {
    * timeout - the timeout before changes applies
    */
   timeout?: number | undefined;
-  /**
-   * onChange - this function is fired each time the content of the editor is changed by the user
-   */
-  onChange?: (value: string) => void;
   /**
    * onBlur - this function is fired each time the editor loose focus
    */
@@ -80,15 +65,6 @@ export interface SrcEditorProps {
    * defaultProperties - Add specific properties for monaco-editor
    */
   defaultProperties?: MonacoEditorProperties;
-  /**
-   * forceJS - If true, force the user to code in javascript, event if typescript language is defined.
-   * It allows to keep offering typescript intellisense while coding in javascript
-   */
-  forceJS?: boolean;
-  /**
-   * delay - time before sending onChange
-   */
-  delay?: number;
 }
 
 const overflowHide = css({
@@ -162,10 +138,8 @@ export const computePath = (
  * SrcEditor is a component uses monaco-editor to create a code edition panel
  */
 function SrcEditor({
-  value,
   fileName,
   defaultFocus,
-  language = 'plaintext',
   readOnly,
   minimap,
   cursorOffset,
@@ -173,17 +147,12 @@ function SrcEditor({
   defaultProperties,
   onEditorReady,
   onBlur,
-  onChange,
   onSave,
   defaultActions,
-  forceJS,
-  delay = 250,
 }: SrcEditorProps) {
   const [editor, setEditor] = React.useState<MonacoSCodeEditor>();
   const [reactMonaco, setReactMonaco] = React.useState<MonacoEditor>();
   const i18nValues = useInternalTranslate(commonTranslations);
-  const schema = useJSONSchema(language === 'json');
-  const path = useComputePath(fileName, language);
 
   const onMount = React.useCallback(
     (editor: MonacoSCodeEditor) => {
@@ -221,39 +190,6 @@ function SrcEditor({
       }
     }
   }, [cursorOffset, defaultFocus, editor, reactMonaco]);
-
-  React.useEffect(() => {
-    if (reactMonaco != null) {
-      if (language === 'typescript') {
-        reactMonaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-          allowNonTsExtensions: true,
-          checkJs: true,
-          allowJs: forceJS,
-          lib: ['es2019'],
-          target: reactMonaco.languages.typescript.ScriptTarget.ESNext,
-        });
-      } else if (language === 'javascript') {
-        reactMonaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-          allowNonTsExtensions: true,
-          checkJs: true,
-          allowJs: true,
-          lib: ['es5'],
-          target: reactMonaco.languages.typescript.ScriptTarget.ES5,
-        });
-      } else if (language === 'json') {
-        reactMonaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-          validate: true,
-          schemas: [
-            {
-              uri: 'internal://page-schema.json',
-              fileMatch: ['page.json'],
-              schema,
-            },
-          ],
-        });
-      }
-    }
-  }, [forceJS, language, reactMonaco, schema]);
 
   React.useEffect(() => {
     if (editor != null && reactMonaco != null) {
@@ -301,19 +237,19 @@ function SrcEditor({
     }
   }, [editor, onSave, reactMonaco]);
 
-  const onChangeRef = React.useRef(onChange);
-  onChangeRef.current = onChange;
+  // const onChangeRef = React.useRef(onChange);
+  // onChangeRef.current = onChange;
 
-  const debouncedOnChange = React.useMemo(
-    () =>
-      debounce((value: string) => {
-        if (onChangeRef.current) {
-          logger.info('Send On Change: ', value);
-          onChangeRef.current(value);
-        }
-      }, delay),
-    [delay],
-  );
+  // const debouncedOnChange = React.useMemo(
+  //   () =>
+  //     debounce((value: string) => {
+  //       if (onChangeRef.current) {
+  //         logger.info('Send On Change: ', value);
+  //         onChangeRef.current(value);
+  //       }
+  //     }, delay),
+  //   [delay],
+  // );
 
   return (
     <SizedDiv className={overflowHide}>
@@ -326,9 +262,9 @@ function SrcEditor({
             beforeMount={monaco => {
               setReactMonaco(monaco);
             }}
-            language={language}
-            value={value}
-            path={path}
+            // language={language}
+            // value={value}
+            path={fileName}
             onMount={onMount}
             loading={i18nValues.loading + '...'}
             options={{
@@ -341,7 +277,7 @@ function SrcEditor({
               ...gutter(noGutter),
               ...defaultProperties,
             }}
-            onChange={debouncedOnChange}
+            // onChange={debouncedOnChange}
           />
         );
       }}

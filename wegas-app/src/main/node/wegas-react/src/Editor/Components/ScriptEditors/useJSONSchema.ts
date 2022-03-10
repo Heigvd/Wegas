@@ -10,19 +10,11 @@ import { AvailableSchemas } from '../FormView';
 import { hashListChoicesToSchema } from '../FormView/HashList';
 import { wegasComponentCommonSchema } from '../Page/ComponentProperties';
 
-const emptySchema = {};
-
 /**
  * useJSONSchema - Creates the schema for the JSON of a page
- * @param enabled - If false, avoid calculation of the shema and return {}
  */
-export function useJSONSchema(enabled: boolean = true) {
+export function useJSONSchema() {
   const components = usePageComponentStore(s => s);
-
-  if (!enabled) {
-    return emptySchema;
-  }
-
   const childrenLayoutOptionSchema = Object.values(components)
     .filter(component => component.container?.childrenLayoutOptionSchema)
     .reduce((o, c) => [...o, ...c.container!.childrenLayoutOptionSchema!], []);

@@ -34,7 +34,7 @@ import { MessageString } from '../MessageString';
 import { TextPrompt } from '../TextPrompt';
 import MergeEditor from './MergeEditor';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
-import { WegasScriptEditor } from './WegasScriptEditor';
+import { TempScriptEditor } from './WegasScriptEditor';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [
@@ -796,7 +796,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           getScriptLanguage(scriptType) === 'css' ? (
             <SrcEditor {...editorProps} />
           ) : (
-            <WegasScriptEditor
+            <TempScriptEditor
               {...editorProps}
               scriptContext={
                 scriptType === 'ServerScript' ? 'Server external' : 'Client'

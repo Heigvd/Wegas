@@ -9,7 +9,7 @@ import { flex } from '../../../css/classes';
 import { entityIs } from '../../../data/entities';
 import { createScript } from '../../../Helper/wegasEntites';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 
@@ -98,11 +98,11 @@ export default function ScriptableView(
               />
             </div>
             {entityIs(value, 'Script') ? (
-              <WegasScriptEditor
+              <TempScriptEditor
                 language={language}
                 returnType={scriptProps.returnType}
                 args={scriptProps.args}
-                value={value ? value.content : ''}
+                initialValue={value ? value.content : ''}
                 onChange={onScriptContentChange}
                 minimap={false}
                 noGutter={true}

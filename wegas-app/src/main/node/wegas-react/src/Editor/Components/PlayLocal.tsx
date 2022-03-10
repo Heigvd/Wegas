@@ -11,7 +11,7 @@ import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import { defaultPadding, flex } from '../../css/classes';
 import { shallowIs } from '../../Helper/shallowIs';
-import { WegasScriptEditor } from './ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from './ScriptEditors/WegasScriptEditor';
 
 const container = css({
   width: '100%',
@@ -110,8 +110,8 @@ export default function PlayLocal() {
       <Toolbar.Content>
         <div className={container}>
           <div className={editor}>
-            <WegasScriptEditor
-              value={script}
+            <TempScriptEditor
+              initialValue={script}
               onChange={onChangeCb}
               language="typescript"
             />

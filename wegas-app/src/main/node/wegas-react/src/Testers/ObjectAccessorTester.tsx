@@ -1,11 +1,11 @@
 import { css, cx } from '@emotion/css';
+import { useMonaco } from '@monaco-editor/react';
 import * as React from 'react';
 import { transpile } from 'typescript';
-import { useModel } from '../Components/Contexts/LibrariesContext';
+import { createOrUpdateModel } from '../Components/Contexts/LibrariesContext';
 import { createSandbox } from '../Components/Hooks/useScript';
 import { expandBoth, flex, flexColumn, grow } from '../css/classes';
-import { computePath } from '../Editor/Components/ScriptEditors/SrcEditor';
-import { WegasScriptEditor } from '../Editor/Components/ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../Editor/Components/ScriptEditors/WegasScriptEditor';
 import { getEntry, setEntry } from '../Helper/tools';
 
 const { sandbox, globals } = createSandbox<{
@@ -70,21 +70,26 @@ const testobject = {
 setEntry(testobject,{value:"YOOMAMA",index:666},["more","mama"],{defaultObject:{value:"def",index:0},lookupKey:"value"})
 `;
 
-const filename = computePath(undefined, 'typescript');
-
 export default function ObjectAccessorTester() {
   const [content, setContent] = React.useState<string>(testcontent);
 
-  useModel(objectaccesslib, 'typescript', 'ObjectAccess.d.ts');
+  const reactMonaco = useMonaco();
+  if (reactMonaco) {
+    createOrUpdateModel(
+      reactMonaco,
+      objectaccesslib,
+      'typescript',
+      'file:///ObjectAccess.d.ts',
+    );
+  }
 
   return (
     <div className={cx(flex, expandBoth, flexColumn)}>
       <div className={css({ height: '400px' })}>
-        <WegasScriptEditor
+        <TempScriptEditor
           language="typescript"
           onChange={setContent}
-          fileName={filename}
-          value={content}
+          initialValue={testcontent}
         />
       </div>
       <div className={grow}>{JSON.stringify(evaluate(content))}</div>
