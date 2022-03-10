@@ -306,7 +306,6 @@ export function ExpressionEditor({
             minimap={false}
             returnType={returnTypes(mode)}
             resizable
-            scriptContext={isServerScript ? 'Server internal' : 'Client'}
           />
         </div>
       ) : (

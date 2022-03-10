@@ -116,24 +116,6 @@ export function languageToFormat(language: SrcEditorLanguages | undefined) {
   }
 }
 
-let computedPathCounter = 1;
-
-export const computePath = (
-  fileName: string | undefined,
-  language: SrcEditorLanguages | undefined,
-) => {
-  if (fileName) {
-    return fileName;
-  } else {
-    // get current value then inc global counter
-    const currentCount = computedPathCounter++;
-    const timestamp = new Date().getTime();
-    return `file:///_generated_${timestamp}_${currentCount}.${languageToFormat(
-      language,
-    )}`;
-  }
-};
-
 /**
  * SrcEditor is a component uses monaco-editor to create a code edition panel
  */

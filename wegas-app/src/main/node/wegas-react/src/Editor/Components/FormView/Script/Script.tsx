@@ -309,9 +309,6 @@ export function Script({
                       minimap={false}
                       noGutter={true}
                       returnType={returnTypes(view.mode)}
-                      scriptContext={
-                        isServerScript ? 'Server internal' : 'Client'
-                      }
                       resizable
                     />
                   </>

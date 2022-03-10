@@ -6,8 +6,8 @@ import { IAbstractContentDescriptor, IGameModelContent } from 'wegas-ts-api';
 import {
   ILibraries,
   LibraryAPI,
-  LibType,
   NewLibErrors,
+  ServerLibraryType,
 } from '../../../API/library.api';
 import { useWebsocketEvent, WebSocketEvent } from '../../../API/websocket';
 import {
@@ -270,7 +270,7 @@ const extensions: Record<ScriptLanguage, string> = {
  * getScriptLanguage that gives a language type from a libType
  * @param scriptType - the type of library
  */
-const getScriptLanguage: (scriptType: LibType) => ScriptLanguage =
+const getScriptLanguage: (scriptType: ServerLibraryType) => ScriptLanguage =
   scriptType => {
     switch (scriptType) {
       case 'CSS':
@@ -394,7 +394,7 @@ interface ScriptEditorProps {
   /**
    * scriptType- the type of library to use ("CSS" | "ClientScript" | "ServerScript")
    */
-  scriptType: LibType;
+  scriptType: ServerLibraryType;
 }
 
 /**
@@ -796,12 +796,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           getScriptLanguage(scriptType) === 'css' ? (
             <SrcEditor {...editorProps} />
           ) : (
-            <TempScriptEditor
-              {...editorProps}
-              scriptContext={
-                scriptType === 'ServerScript' ? 'Server external' : 'Client'
-              }
-            />
+            <TempScriptEditor {...editorProps} />
           )
         ) : (
           <MessageString

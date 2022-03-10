@@ -16,7 +16,6 @@ export interface CustomScriptProps
         language?: CodeLanguage;
         returnType?: string[];
         args?: [string, string[]][];
-        scriptContext?: ScriptContext;
       }
   > {
   value?: IScript;
@@ -51,7 +50,6 @@ export function CustomScript({ view, value, onChange }: CustomScriptProps) {
                   minimap={false}
                   noGutter={true}
                   resizable
-                  scriptContext={view.scriptContext}
                 />
               </div>
             </>

@@ -25,6 +25,9 @@ const FileBrowserWithMeta = React.lazy(
   () => import('./FileBrowser/FileBrowser'),
 );
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
+const NewLibraryEditor = React.lazy(
+  () => import('./ScriptEditors/LibraryEditor.new'),
+);
 const PlayLocal = React.lazy(() => import('./PlayLocal'));
 const PlayServer = React.lazy(() => import('./PlayServer'));
 const ThemeEditor = React.lazy(
@@ -75,6 +78,10 @@ const availableLayoutTabs: LinearLayoutComponents = [
   {
     tabId: 'Scripts',
     content: <LibraryEditor />,
+  },
+  {
+    tabId: 'Scripts2',
+    content: <NewLibraryEditor />,
   },
   {
     tabId: 'Languages',

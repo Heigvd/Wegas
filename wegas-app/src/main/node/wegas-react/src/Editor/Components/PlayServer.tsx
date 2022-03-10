@@ -32,7 +32,6 @@ export default function PlayServer() {
           fileName={filename}
           language="javascript"
           onChange={e => setScript(e)}
-          scriptContext="Server internal"
         />
         <div className={defaultMargin}>
           <Button onClick={playScript} label="Run script" />

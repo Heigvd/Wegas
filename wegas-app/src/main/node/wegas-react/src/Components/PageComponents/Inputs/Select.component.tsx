@@ -132,13 +132,11 @@ registerComponent(
         returnType: ['SStringDescriptor', 'SNumberDescriptor', 'string'],
       }),
       choices: {
-        //type: 'object',
         view: {
           type: 'scriptable',
           label: 'Choices',
           scriptProps: {
             language: 'TypeScript',
-            scriptContext: 'Client',
             returnType: ['{label:string, value: string}[]'],
           },
           literalSchema: schemaProps.array({

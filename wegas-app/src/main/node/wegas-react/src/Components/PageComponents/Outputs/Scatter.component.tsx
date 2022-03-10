@@ -1,44 +1,39 @@
-import * as React from 'react';
-import {
-  registerComponent,
-  pageComponentFactory,
-} from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
-import { WegasComponentProps } from '../tools/EditableComponent';
-import { IScript } from 'wegas-ts-api';
-import { classStyleIdShema } from '../tools/options';
-import { halfOpacity } from '../../../css/classes';
-import { classOrNothing } from '../../../Helper/className';
-
-import { Scatter } from 'react-chartjs-2';
-import { useScript } from '../../Hooks/useScript';
-
 import {
   Chart as ChartJS,
-  LinearScale,
-  PointElement,
-  LineElement,
   Legend,
-  Tooltip,
+  LinearScale,
+  LineElement,
   Plugin,
+  PointElement,
+  Tooltip,
 } from 'chart.js';
-
 import 'chartjs-plugin-dragdata';
+import * as React from 'react';
+import { Scatter } from 'react-chartjs-2';
+import { IScript } from 'wegas-ts-api';
+import { halfOpacity } from '../../../css/classes';
 import { entityIs } from '../../../data/entities';
-
-
+import { classOrNothing } from '../../../Helper/className';
 //////////////////////////////////////////////////////
 // The CreatePoint Plugin
 //////////////////////////////////////////////////////
 import { wlog } from '../../../Helper/wegaslog';
+import { useScript } from '../../Hooks/useScript';
+import {
+  pageComponentFactory,
+  registerComponent,
+} from '../tools/componentFactory';
+import { WegasComponentProps } from '../tools/EditableComponent';
+import { classStyleIdShema } from '../tools/options';
+import { schemaProps } from '../tools/schemaProps';
 
 interface DoubleClickOptions {
   onDoubleClick?: ValueCb;
-};
+}
 
 let clickTime: number | undefined = undefined;
 
-const ChartJSDoubleClickPlugin: Plugin<"scatter"> = {
+const ChartJSDoubleClickPlugin: Plugin<'scatter'> = {
   id: 'doubleClick',
   //  afterInit: function (chartInstance, _args, options: DoubleClickOptions) {
   //    const plugins = chartInstance.config.options?.plugins as {
@@ -56,37 +51,33 @@ const ChartJSDoubleClickPlugin: Plugin<"scatter"> = {
         const currentTime = new Date().getTime();
         if (clickTime) {
           const delta = currentTime - clickTime;
-          wlog("Delta: ", delta);
+          wlog('Delta: ', delta);
           if (delta < 350) {
             // double-click detected
             const x = chart.scales.x.getValueForPixel(args.event.x!);
             const y = chart.scales.y.getValueForPixel(args.event.y!);
 
-            wlog("Double click", x, y);
+            wlog('Double click', x, y);
             if (x != undefined && y != undefined) {
               options.onDoubleClick({ x, y });
             }
             clickTime = undefined;
           } else {
-            wlog("Too late");
+            wlog('Too late');
             clickTime = currentTime;
           }
         } else {
-          wlog("First late");
+          wlog('First late');
           clickTime = currentTime;
         }
       }
     }
   },
-}
+};
 
-ChartJS.register(ChartJSDoubleClickPlugin)
-
-
+ChartJS.register(ChartJSDoubleClickPlugin);
 
 //////////////////////////////////////////////////////
-
-
 
 ChartJS.register(LinearScale, PointElement, LineElement, Legend, Tooltip);
 
@@ -101,7 +92,12 @@ interface Data {
 
 type ChartProps = React.ComponentProps<typeof Scatter>;
 
-type DragCb = (e: MouseEvent, datasetIndex: number, index: number, value: { x: number; y: number }) => boolean;
+type DragCb = (
+  e: MouseEvent,
+  datasetIndex: number,
+  index: number,
+  value: { x: number; y: number },
+) => boolean;
 type ValueCb = (value: { x: number; y: number }) => void;
 
 type ChartOptionsWithPlugins = ChartProps['options'] & {
@@ -125,23 +121,28 @@ type ChartOptionsWithPlugins = ChartProps['options'] & {
       onDragStart?: DragCb;
       onDrag?: DragCb;
       onDragEnd?: DragCb;
-    }
-  }
-}
+    };
+  };
+};
 
 type Scales = ChartOptionsWithPlugins['scales'];
 
-function useScales(scales: undefined | Scales | IScript, context?: Record<string, unknown>): undefined | Scales {
-  const evaluated = useScript<Scales>(entityIs(scales, 'Script') ? scales : undefined, context);
+function useScales(
+  scales: undefined | Scales | IScript,
+  context?: Record<string, unknown>,
+): undefined | Scales {
+  const evaluated = useScript<Scales>(
+    entityIs(scales, 'Script') ? scales : undefined,
+    context,
+  );
   if (evaluated != null) {
-    return evaluated
+    return evaluated;
   } else if (typeof scales === 'object') {
     return scales as Scales;
   } else {
     return undefined;
   }
 }
-
 
 export interface PlayerScatterChartProps extends WegasComponentProps {
   height?: number;
@@ -216,25 +217,25 @@ function PlayerScatterChart({
       onDragStart: dragStartCb,
       onDrag: dragCb,
       onDragEnd: dragEndCb,
-    }
+    };
   }
 
   if (allowDoubleClick && dblCb) {
     chartOptions.plugins!.doubleClick = {
       onDoubleClick: dblCb,
-    }
+    };
   }
 
   return (
     <div
-      id={ id }
+      id={id}
       className={
         className +
         classOrNothing(halfOpacity, options.disabled || options.locked)
       }
-      style={ style }
+      style={style}
     >
-      <Scatter data={ chartData } options={ chartOptions } height={ height } />
+      <Scatter data={chartData} options={chartOptions} height={height} />
     </div>
   );
 }
@@ -261,63 +262,91 @@ registerComponent(
         value: false,
         view: {
           label: 'Allow Double-Click',
-          description: "allow double-clicks"
-        }
+          description: 'allow double-clicks',
+        },
       },
       onDblClickCallback: {
         type: 'object',
-        value: { '@class': 'Script', language: 'typescript', content: 'undefined;' },
+        value: {
+          '@class': 'Script',
+          language: 'typescript',
+          content: 'undefined;',
+        },
         view: {
           label: 'onDblClick callback',
           type: 'customscript',
-          returnType: ['undefined', '((value: { x: number; y: number }) => void)']
+          returnType: [
+            'undefined',
+            '((value: { x: number; y: number }) => void)',
+          ],
         },
         visible: (_value, formValue) => {
           return formValue?.componentProperties?.allowDoubleClick;
-        }
+        },
       },
       allowDrag: {
         type: 'boolean',
         value: false,
         view: {
           label: 'Allow Drag',
-        }
+        },
       },
       onDragCallback: {
         type: 'object',
-        value: { '@class': 'Script', language: 'typescript', content: 'undefined;' },
+        value: {
+          '@class': 'Script',
+          language: 'typescript',
+          content: 'undefined;',
+        },
         view: {
           label: 'onDrag callback',
           type: 'customscript',
-          returnType: ['undefined', '((e: MouseEvent, datasetIndex: number, index: number, value: { x: number; y: number }) => boolean)']
+          returnType: [
+            'undefined',
+            '((e: MouseEvent, datasetIndex: number, index: number, value: { x: number; y: number }) => boolean)',
+          ],
         },
         visible: (_value, formValue) => {
           return formValue?.componentProperties?.allowDrag;
-        }
+        },
       },
       onDragStartCallback: {
         type: 'object',
-        value: { '@class': 'Script', language: 'typescript', content: 'undefined;' },
+        value: {
+          '@class': 'Script',
+          language: 'typescript',
+          content: 'undefined;',
+        },
         view: {
           label: 'onDragStart callback',
           type: 'customscript',
-          returnType: ['undefined', '((e: MouseEvent, datasetIndex: number, index: number, value: { x: number; y: number }) => boolean)']
+          returnType: [
+            'undefined',
+            '((e: MouseEvent, datasetIndex: number, index: number, value: { x: number; y: number }) => boolean)',
+          ],
         },
         visible: (_value, formValue) => {
           return formValue?.componentProperties?.allowDrag;
-        }
+        },
       },
       onDragEndCallback: {
         type: 'object',
-        value: { '@class': 'Script', language: 'typescript', content: 'undefined;' },
+        value: {
+          '@class': 'Script',
+          language: 'typescript',
+          content: 'undefined;',
+        },
         view: {
           label: 'onDragStart callback',
           type: 'customscript',
-          returnType: ['undefined', '((e: MouseEvent, datasetIndex: number, index: number, value: { x: number; y: number }) => boolean)']
+          returnType: [
+            'undefined',
+            '((e: MouseEvent, datasetIndex: number, index: number, value: { x: number; y: number }) => boolean)',
+          ],
         },
         visible: (_value, formValue) => {
           return formValue?.componentProperties?.allowDrag;
-        }
+        },
       },
       height: schemaProps.number({
         label: 'Height',
@@ -335,7 +364,6 @@ registerComponent(
           scriptProps: {
             language: 'TypeScript',
             returnType: ['unknown'],
-            scriptContext: 'Client'
           },
           literalSchema: {
             type: 'object',
@@ -344,21 +372,33 @@ registerComponent(
                 type: 'object',
                 view: { label: 'X' },
                 properties: {
-                  min: schemaProps.number({ label: 'min', layout: 'extraShortInline' }),
-                  max: schemaProps.number({ label: 'max', layout: 'extraShortInline' })
-                }
+                  min: schemaProps.number({
+                    label: 'min',
+                    layout: 'extraShortInline',
+                  }),
+                  max: schemaProps.number({
+                    label: 'max',
+                    layout: 'extraShortInline',
+                  }),
+                },
               },
               y: {
                 type: 'object',
                 view: { label: 'Y' },
                 properties: {
-                  min: schemaProps.number({ label: 'min', layout: 'extraShortInline' }),
-                  max: schemaProps.number({ label: 'max', layout: 'extraShortInline' })
-                }
-              }
-            }
-          }
-        }
+                  min: schemaProps.number({
+                    label: 'min',
+                    layout: 'extraShortInline',
+                  }),
+                  max: schemaProps.number({
+                    label: 'max',
+                    layout: 'extraShortInline',
+                  }),
+                },
+              },
+            },
+          },
+        },
       },
       ...classStyleIdShema,
     },

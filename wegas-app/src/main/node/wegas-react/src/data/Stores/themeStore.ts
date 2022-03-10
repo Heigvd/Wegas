@@ -1,34 +1,34 @@
-import { createStore, applyMiddleware, Reducer } from 'redux';
-import { composeEnhancers, store } from './store';
-import thunk, { ThunkAction, ThunkMiddleware } from 'redux-thunk';
-import { createStoreConnector } from '../connectStore';
 import u from 'immer';
-import {
-  LibraryAPI,
-  ILibraries,
-  NOCONTENTMESSAGE,
-  LibType,
-} from '../../API/library.api';
-import { addPopup } from '../../Components/PopupManager';
-import { createTranslatableContent } from '../../Editor/Components/FormView/translatable';
+import { cloneDeep } from 'lodash';
+import { applyMiddleware, createStore, Reducer } from 'redux';
+import thunk, { ThunkAction, ThunkMiddleware } from 'redux-thunk';
 import { IGameModelContent } from 'wegas-ts-api';
 import {
-  Themes,
-  SelectedThemes,
-  ThemesState,
-  defaultThemesState,
-  defaultTheme,
-  trainerTheme,
+  ILibraries,
+  LibraryAPI,
+  NOCONTENTMESSAGE,
+  ServerLibraryType,
+} from '../../API/library.api';
+import { addPopup } from '../../Components/PopupManager';
+import {
   defaulSelectedThemes,
-  Theme,
-  ThemeValues,
   defaultLightMode,
-  ModeValues,
+  defaultTheme,
   defaultThemes,
+  defaultThemesState,
   modeClass,
+  ModeValues,
+  SelectedThemes,
+  Theme,
+  Themes,
+  ThemesState,
+  ThemeValues,
+  trainerTheme,
 } from '../../Components/Theme/ThemeVars';
-import { cloneDeep } from 'lodash';
+import { createTranslatableContent } from '../../Editor/Components/FormView/translatable';
 import { wwarn } from '../../Helper/wegaslog';
+import { createStoreConnector } from '../connectStore';
+import { composeEnhancers, store } from './store';
 
 const globalDispatch = store.dispatch;
 
@@ -236,7 +236,7 @@ export function addNewLib(
   themeName: string,
   theme?: Theme | SelectedThemes,
   modeName?: string,
-  libType: LibType = 'Theme',
+  libType: ServerLibraryType = 'Theme',
 ): ThemeThunkResult {
   return function (dispatch, getState) {
     const newTheme = theme
@@ -332,7 +332,7 @@ function saveLib(
   themeName: string,
   newTheme: Theme | SelectedThemes,
   modeName?: string,
-  libType: LibType = 'Theme',
+  libType: ServerLibraryType = 'Theme',
 ): ThemeThunkResult {
   return function (dispatch) {
     return LibraryAPI.getLibrary(libType, themeName)

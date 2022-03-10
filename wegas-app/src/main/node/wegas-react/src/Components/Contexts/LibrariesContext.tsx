@@ -1,11 +1,18 @@
 import { useMonaco } from '@monaco-editor/react';
 import u from 'immer';
-import { debounce } from 'lodash-es';
+import { cloneDeep } from 'lodash-es';
 import * as React from 'react';
 import { IGameModelContent } from 'wegas-ts-api';
-import { ILibraries, LibraryAPI } from '../../API/library.api';
+import {
+  ILibraries,
+  LibraryAPI,
+  NewLibErrors,
+  ServerLibraryType,
+} from '../../API/library.api';
 import { useWebsocketEvent } from '../../API/websocket';
+import { GameModel } from '../../data/selectors';
 import { store } from '../../data/Stores/store';
+import { MessageStringStyle } from '../../Editor/Components/MessageString';
 import {
   MonacoEditor,
   MonacoEditorModel,
@@ -13,8 +20,11 @@ import {
 } from '../../Editor/Components/ScriptEditors/editorHelpers';
 import { useJSONSchema } from '../../Editor/Components/ScriptEditors/useJSONSchema';
 import { getLogger, wlog } from '../../Helper/wegaslog';
+import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { useGlobalLibs } from '../Hooks/useGlobalLibs';
 import {
+  clientScriptEval,
   safeClientScriptEval,
   setGlobals,
   useGlobalContexts,
@@ -52,6 +62,30 @@ function libraryTypeToFormat(libraryType: LibraryType): string {
   return languageToFormat(libraryTypeToLanguage(libraryType));
 }
 
+export function libraryTypeToServerLibraryType(
+  libraryType: LibraryType,
+): ServerLibraryType {
+  switch (libraryType) {
+    case 'client':
+      return 'ClientScript';
+    case 'server':
+      return 'ServerScript';
+    case 'style':
+      return 'CSS';
+  }
+}
+
+function libraryTypeToMimeType(libraryType: LibraryType) {
+  switch (libraryType) {
+    case 'client':
+      return 'application/typescript';
+    case 'server':
+      return 'application/javascript';
+    case 'style':
+      return 'text/css';
+  }
+}
+
 let computedPathCounter = 1;
 
 function computePath(
@@ -70,18 +104,8 @@ function computePath(
   }
 }
 
-function computeLibraryPath(libName: string, libType: LibraryType) {
+export function computeLibraryPath(libName: string, libType: LibraryType) {
   return `file:///${libName}.${libraryTypeToFormat(libType)}`;
-}
-
-export function useComputePath(
-  fileName: string | undefined,
-  language: SrcEditorLanguages | undefined,
-) {
-  return React.useMemo(
-    () => computePath(fileName, language),
-    [fileName, language],
-  );
 }
 
 const monacoLogger = getLogger('monaco');
@@ -135,13 +159,14 @@ export function useTempModel(
   return model;
 }
 
-interface LibraryWithStatus {
+export interface LibraryWithStatus {
   /**
    * persisted - the current state of the library in the server
    */
   persisted: IGameModelContent;
   modified: boolean;
   conflict: boolean;
+  visibility: IVisibility | undefined;
 }
 
 interface LibrariesWithStatus {
@@ -181,9 +206,9 @@ interface UpdateLibrary {
    */
   libraryType: LibraryType;
   /**
-   * name - the name of the inserted library
+   * libraryName - the name of the inserted library
    */
-  name: string;
+  libraryName: string;
   /**
    * library - the library to be inserted
    */
@@ -197,11 +222,11 @@ interface SaveLibraryAction {
    */
   libraryType: LibraryType;
   /**
-   * name - the name of the inserted library
+   * name - the name of the saved library
    */
-  name: string;
+  libraryName: string;
   /**
-   * library - the library to be inserted
+   * library - the library to be saved
    */
   library: IGameModelContent;
 }
@@ -213,9 +238,9 @@ interface RemoveLibraryAction {
    */
   libraryType: LibraryType;
   /**
-   * name - the name of the inserted library
+   * name - the name of the removed library
    */
-  name: string;
+  libraryName: string;
 }
 
 interface ModifyLibraryModelAction {
@@ -225,13 +250,29 @@ interface ModifyLibraryModelAction {
    */
   libraryType: LibraryType;
   /**
-   * name - the name of the modified library
+   * libraryName - the name of the modified library
    */
-  name: string;
+  libraryName: string;
   /**
    * modelValue - the value of the modified library's model
    */
   modelValue: string;
+}
+
+interface ModifyLibraryVisibilityAction {
+  actionType: 'ModifyLibraryVisibility';
+  /**
+   * libraryType - the type of the library
+   */
+  libraryType: LibraryType;
+  /**
+   * name - the name of the modified library
+   */
+  libraryName: string;
+  /**
+   * modelValue - the value of the modified library's model
+   */
+  visibility: IVisibility;
 }
 
 type LibraryStateAction =
@@ -239,7 +280,8 @@ type LibraryStateAction =
   | SaveLibraryAction
   | UpdateLibrary
   | RemoveLibraryAction
-  | ModifyLibraryModelAction;
+  | ModifyLibraryModelAction
+  | ModifyLibraryVisibilityAction;
 
 /**
  * setLibraryState - the reducer for libraries management
@@ -261,6 +303,7 @@ const setLibrariesState = (
               persisted: lib,
               modified: false,
               conflict: false,
+              visibility: lib.visibility,
             },
           }),
           {},
@@ -269,53 +312,84 @@ const setLibrariesState = (
       }
       case 'SaveLibrary':
       case 'UpdateLibrary': {
-        const { libraryType, name, library } = action;
-        if (newState[libraryType][name] == null) {
-          newState[libraryType][name] = {
+        const { libraryType, libraryName, library } = action;
+        if (newState[libraryType][libraryName] == null) {
+          newState[libraryType][libraryName] = {
             persisted: library,
             modified: false,
             conflict: false,
+            visibility: library.visibility,
           };
         }
-        newState[libraryType][name].persisted = library;
+
+        newState[libraryType][libraryName].persisted = library;
+        newState[libraryType][libraryName].visibility = library.visibility;
+
         // If the library is saved by the user no more conflicts or modifications can exists
         if (action.actionType === 'SaveLibrary') {
-          newState[libraryType][name].modified = false;
-          newState[libraryType][name].conflict = false;
+          newState[libraryType][libraryName].modified = false;
+          newState[libraryType][libraryName].conflict = false;
         }
         // If the library is updated by the server and the user is allready modifying it, there is a conflict
         else {
-          if (newState[libraryType][name].modified) {
-            newState[libraryType][name].conflict = true;
+          if (newState[libraryType][libraryName].modified) {
+            newState[libraryType][libraryName].conflict = true;
           }
         }
         break;
       }
       case 'RemoveLibrary': {
-        const { libraryType, name } = action;
-        if (newState[libraryType][name] != null) {
-          delete newState[libraryType][name];
+        const { libraryType, libraryName } = action;
+        if (newState[libraryType][libraryName] != null) {
+          delete newState[libraryType][libraryName];
         }
         break;
       }
       case 'ModifyLibraryModel': {
-        const { libraryType, name, modelValue } = action;
-        newState[libraryType][name].modified =
-          newState[libraryType][name].persisted.content !== modelValue;
+        const { libraryType, libraryName, modelValue } = action;
+        newState[libraryType][libraryName].modified =
+          newState[libraryType][libraryName].persisted.content !== modelValue;
+        break;
+      }
+      case 'ModifyLibraryVisibility': {
+        const { libraryType, libraryName, visibility } = action;
+        newState[libraryType][libraryName].visibility = visibility;
+        newState[libraryType][libraryName].modified =
+          newState[libraryType][libraryName].persisted.visibility !==
+          visibility;
         break;
       }
     }
     return newState;
   });
 
+export interface LibrariesCallbackMessage {
+  type: MessageStringStyle;
+  message: string;
+}
+
 interface LibrariesContext {
   librariesState: LibrariesState;
-  saveLibrary: (
-    type: LibraryType,
-    name: string,
-    library: IGameModelContent,
+  addLibrary: (
+    libraryType: LibraryType,
+    libraryName: string,
+    addLibraryCB?: (message: LibrariesCallbackMessage) => void,
   ) => void;
-  removeLibrary: (libraryType: LibraryType, libraryName: string) => void;
+  saveLibrary: (
+    libraryType: LibraryType,
+    libraryName: string,
+    saveLibraryCB?: (message: LibrariesCallbackMessage) => void,
+  ) => void;
+  setLibraryVisibility: (
+    libraryType: LibraryType,
+    libraryName: string,
+    visibility: IVisibility,
+  ) => void;
+  removeLibrary: (
+    libraryType: LibraryType,
+    libraryName: string,
+    removeLibraryCB?: (message: LibrariesCallbackMessage) => void,
+  ) => void;
 }
 
 const defaultLibrariesState: LibrariesState = {
@@ -326,7 +400,9 @@ const defaultLibrariesState: LibrariesState = {
 
 export const librariesCTX = React.createContext<LibrariesContext>({
   librariesState: defaultLibrariesState,
+  addLibrary: () => {},
   saveLibrary: () => {},
+  setLibraryVisibility: () => {},
   removeLibrary: () => {},
 });
 
@@ -339,8 +415,9 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
   );
   const globalContexts = useGlobalContexts();
   const reactMonaco = useMonaco();
-  const globalLibs = useGlobalLibs('Client');
+  const globalLibs = useGlobalLibs();
   const jsonSchema = useJSONSchema();
+  const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   // Effect triggers on first rendering only
   React.useEffect(() => {
@@ -426,7 +503,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
           dispatchLibrariesState({
             actionType: 'UpdateLibrary',
             libraryType: 'client',
-            name: updatedLibraryName,
+            libraryName: updatedLibraryName,
             library,
           });
         },
@@ -443,7 +520,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
           dispatchLibrariesState({
             actionType: 'UpdateLibrary',
             libraryType: 'server',
-            name: updatedLibraryName,
+            libraryName: updatedLibraryName,
             library,
           });
         },
@@ -460,7 +537,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
           dispatchLibrariesState({
             actionType: 'UpdateLibrary',
             libraryType: 'style',
-            name: updatedLibraryName,
+            libraryName: updatedLibraryName,
             library,
           });
         },
@@ -493,11 +570,10 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
 
   // Update monaco editor's models when libraryState update
   React.useEffect(() => {
-    let mounted = true;
     if (reactMonaco != null) {
       Object.entries(librariesState)
         .filter(isRealLibraryStateEntry)
-        .forEach(([libraryType, libTypes]) => {
+        .forEach(([type, libTypes]) => {
           Object.entries(libTypes)
             // Only update libraries that are not beeing modified
             .filter(([, libStatus]) => !libStatus.modified)
@@ -505,27 +581,23 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
               const model = createOrUpdateModel(
                 reactMonaco,
                 libStatus.persisted.content,
-                libraryTypeToLanguage(libraryType),
-                computeLibraryPath(name, libraryType),
+                libraryTypeToLanguage(type),
+                computeLibraryPath(name, type),
               );
               model.onDidChangeContent(() => {
-                debounce(() => {
-                  if (mounted) {
-                    dispatchLibrariesState({
-                      actionType: 'ModifyLibraryModel',
-                      libraryType,
-                      name,
-                      modelValue: model.getValue(),
-                    });
-                  }
-                }, 500)();
+                const libraryType = type;
+                const libraryName = name;
+                const modelValue = model.getValue();
+                dispatchLibrariesState({
+                  actionType: 'ModifyLibraryModel',
+                  libraryType,
+                  libraryName,
+                  modelValue,
+                });
               });
             });
         });
     }
-    return () => {
-      mounted = false;
-    };
   }, [librariesState, reactMonaco]);
 
   // Insert global libs in models
@@ -567,32 +639,169 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
     }
   }, [jsonSchema, reactMonaco]);
 
-  const saveLibrary = React.useCallback<LibrariesContext['saveLibrary']>(
-    (libraryType, name, library) => {
-      dispatchLibrariesState({
-        actionType: 'SaveLibrary',
-        libraryType,
-        name,
-        library,
-      });
+  const addLibrary = React.useCallback<LibrariesContext['addLibrary']>(
+    (libraryType, libraryName, addLibrary) => {
+      LibraryAPI.addLibrary(
+        libraryTypeToServerLibraryType(libraryType),
+        libraryTypeToMimeType(libraryType),
+        libraryName,
+        '',
+        'PRIVATE',
+      )
+        .then((res: IGameModelContent) => {
+          dispatchLibrariesState({
+            actionType: 'UpdateLibrary',
+            libraryType,
+            libraryName,
+            library: res,
+          });
+          addLibrary && addLibrary({ type: 'succes', message: libraryName });
+        })
+        .catch((e: NewLibErrors) => {
+          switch (e) {
+            case 'NOTNEW':
+              addLibrary &&
+                addLibrary({
+                  type: 'error',
+                  message: i18nValues.scripts.scriptNameNotAvailable,
+                });
+              break;
+            case 'UNKNOWN':
+            default:
+              addLibrary &&
+                addLibrary({
+                  type: 'error',
+                  message: i18nValues.scripts.cannotCreateScript,
+                });
+          }
+        });
     },
-    [],
+    [
+      i18nValues.scripts.cannotCreateScript,
+      i18nValues.scripts.scriptNameNotAvailable,
+    ],
+  );
+
+  const saveLibrary = React.useCallback<LibrariesContext['saveLibrary']>(
+    (
+      libraryType: LibraryType,
+      libraryName: string,
+      saveLibraryCB?: (message: LibrariesCallbackMessage) => void,
+    ) => {
+      const libraryPath = computeLibraryPath(libraryName, libraryType);
+
+      const selectedPersistedLibrary = librariesState[libraryType][libraryName];
+
+      const selectedMonacoModel =
+        reactMonaco != null ? getModel(reactMonaco, libraryPath) : undefined;
+
+      if (
+        selectedPersistedLibrary != null &&
+        selectedMonacoModel != null &&
+        isEditAllowed(selectedPersistedLibrary)
+      ) {
+        const newLibrary = cloneDeep(selectedPersistedLibrary.persisted);
+        newLibrary.content = selectedMonacoModel.getValue();
+        newLibrary.visibility = selectedPersistedLibrary.visibility;
+
+        LibraryAPI.saveLibrary(
+          libraryTypeToServerLibraryType(libraryType),
+          libraryName,
+          newLibrary,
+        )
+          .then(library => {
+            let savedWithErrors = false;
+            if (libraryType === 'client') {
+              try {
+                setGlobals(globalContexts, store.getState());
+                clientScriptEval(library.content, undefined, undefined, {
+                  moduleName: libraryPath,
+                  injectReturn: false,
+                });
+              } catch (e) {
+                savedWithErrors = true;
+              }
+            }
+            if (savedWithErrors) {
+              saveLibraryCB &&
+                saveLibraryCB({
+                  type: 'warning',
+                  message: i18nValues.scripts.librarySavedErrors,
+                });
+            } else {
+              saveLibraryCB &&
+                saveLibraryCB({
+                  type: 'succes',
+                  message: i18nValues.scripts.scriptSaved,
+                });
+            }
+
+            dispatchLibrariesState({
+              actionType: 'SaveLibrary',
+              libraryType,
+              libraryName,
+              library,
+            });
+          })
+          .catch(() => {
+            saveLibraryCB &&
+              saveLibraryCB({
+                type: 'error',
+                message: i18nValues.scripts.libraryCannotSave,
+              });
+          });
+      }
+    },
+    [
+      globalContexts,
+      i18nValues.scripts.libraryCannotSave,
+      i18nValues.scripts.librarySavedErrors,
+      i18nValues.scripts.scriptSaved,
+      librariesState,
+      reactMonaco,
+    ],
   );
 
   const removeLibrary = React.useCallback<LibrariesContext['removeLibrary']>(
-    (libraryType, name) => {
-      // Remove library in state
-      dispatchLibrariesState({
-        actionType: 'RemoveLibrary',
-        libraryType,
-        name,
-      });
-
-      // Dispose library in monaco editor
-      getModel(reactMonaco, computeLibraryPath(name, libraryType))?.dispose();
+    (libraryType, libraryName, removeLibraryCB) => {
+      LibraryAPI.deleteLibrary(
+        libraryTypeToServerLibraryType(libraryType),
+        libraryName,
+      )
+        .then(() => {
+          // Remove library in state
+          dispatchLibrariesState({
+            actionType: 'RemoveLibrary',
+            libraryType,
+            libraryName,
+          });
+          // Dispose library in monaco editor
+          getModel(
+            reactMonaco,
+            computeLibraryPath(libraryName, libraryType),
+          )?.dispose();
+        })
+        .catch(() => {
+          removeLibraryCB &&
+            removeLibraryCB({
+              type: 'error',
+              message: i18nValues.scripts.libraryCannotDelete,
+            });
+        });
     },
-    [reactMonaco],
+    [i18nValues.scripts.libraryCannotDelete, reactMonaco],
   );
+
+  const setLibraryVisibility = React.useCallback<
+    LibrariesContext['setLibraryVisibility']
+  >((libraryType, libraryName, visibility) => {
+    dispatchLibrariesState({
+      actionType: 'ModifyLibraryVisibility',
+      libraryType,
+      libraryName,
+      visibility,
+    });
+  }, []);
 
   return (
     <>
@@ -613,7 +822,9 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
       <librariesCTX.Provider
         value={{
           librariesState,
+          addLibrary,
           saveLibrary,
+          setLibraryVisibility,
           removeLibrary,
         }}
       >
@@ -622,3 +833,37 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
     </>
   );
 }
+
+export function isEditAllowed(library?: LibraryWithStatus): boolean {
+  return (
+    GameModel.selectCurrent().type !== 'SCENARIO' ||
+    library?.persisted.visibility === 'PRIVATE' ||
+    library?.persisted.visibility === 'INHERITED'
+  );
+}
+
+export type IVisibility = IAbstractContentDescriptor['visibility'];
+export const visibilities: IVisibility[] = [
+  'INTERNAL',
+  'PROTECTED',
+  'INHERITED',
+  'PRIVATE',
+];
+
+/**
+ * isVisibilityAllowed is a function that tells if a visibility can be sat to the current library
+ * depending on the GameModel type and the current visibility of the library
+ *
+ * @param librariesState - the state of the script editor
+ * @param visibility - the wanted new visibility
+ */
+export const isVisibilityAllowed = (
+  library: LibraryWithStatus,
+  visibility: IVisibility,
+): boolean => {
+  return (
+    visibility === 'PRIVATE' ||
+    visibility === library.persisted.visibility ||
+    GameModel.selectCurrent().type === 'MODEL'
+  );
+};

@@ -101,7 +101,9 @@ const serverLibs: MonacoDefinitionsLibrary[] = [
  * script will be injected into the server script.
  * In order for this trick to work, the server script must be passed in parseAndRunClientScript before beeing sent to the server.
  */
-export function useGlobalLibs(scriptContext: ScriptContext) {
+export function useGlobalLibs() {
+  const scriptContext = 'Client';
+
   const { classes } = React.useContext(classesCTX);
 
   const libsSelector = React.useCallback(

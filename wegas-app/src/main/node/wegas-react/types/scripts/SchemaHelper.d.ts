@@ -15,8 +15,6 @@ type WegasMethodReturnType = 'number' | 'string' | 'boolean';
 
 type ScriptMode = 'SET' | 'GET' | 'SET_CLIENT' | 'GET_CLIENT';
 
-type ScriptContext = 'Client' | 'Server internal' | 'Server external';
-
 type ScriptLanguage = 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS';
 
 type CodeLanguage = ScriptLanguage | 'PlainText';
@@ -143,7 +141,6 @@ type SchemaPropsCustomScriptFn = (
     returnType?: string[];
     language?: ScriptLanguage;
     args?: [string, string[]][];
-    scriptContext?: ScriptContext;
   } & CommonSchemaProps &
     ValueSchemaProps<string>,
 ) => {};

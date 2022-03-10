@@ -338,11 +338,10 @@ export function defunctionalizeScript(functionalizedScript: string): string {
 //   }, {});
 // };
 
-export interface WegasScriptEditorProps
+export interface TempScriptEditorProps
   extends Omit<SrcEditorProps, 'filename'> {
   initialValue?: string;
   language?: SrcEditorLanguages;
-  scriptContext?: ScriptContext;
   returnType?: string[];
   resizable?: boolean;
   args?: [string, string[]][];
@@ -352,7 +351,7 @@ export interface WegasScriptEditorProps
   onChange?: (value: string) => void;
 }
 
-export function TempScriptEditor(props: WegasScriptEditorProps) {
+export function TempScriptEditor(props: TempScriptEditorProps) {
   const {
     initialValue,
     language = 'plaintext',

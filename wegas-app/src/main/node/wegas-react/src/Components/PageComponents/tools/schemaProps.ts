@@ -229,12 +229,10 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
-    scriptContext,
   }: {
     returnType?: string[];
     language?: ScriptLanguage;
     args?: [string, string[]][];
-    scriptContext?: ScriptContext;
   } & CommonSchemaProps &
     ValueSchemaProps<string>): SchemaFromView<'customscript'> => ({
     required,
@@ -251,7 +249,6 @@ const simpleSchemaProps = {
       args,
       type: 'customscript',
       layout,
-      scriptContext,
     },
   }),
   code: ({

@@ -21,7 +21,6 @@ export interface ScriptableViewProps
           language?: CodeLanguage;
           returnType?: string[];
           args?: [string, string[]][];
-          scriptContext?: ScriptContext;
         };
         literalSchema: AvailableSchemas;
       }
@@ -107,7 +106,6 @@ export default function ScriptableView(
                 minimap={false}
                 noGutter={true}
                 resizable
-                scriptContext={scriptProps.scriptContext}
               />
             ) : (
               <Form schema={literalSchema} value={value} onChange={onChange} />
