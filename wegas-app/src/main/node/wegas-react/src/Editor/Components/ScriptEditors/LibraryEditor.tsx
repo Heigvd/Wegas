@@ -34,7 +34,7 @@ import { MessageString } from '../MessageString';
 import { TextPrompt } from '../TextPrompt';
 import MergeEditor from './MergeEditor';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
-import { TempScriptEditor } from './WegasScriptEditor';
+import { TempScriptEditor } from './TempScriptEditor';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [

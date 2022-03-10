@@ -18,7 +18,7 @@ import { State } from '../../../../../data/Reducer/reducers';
 import { GameModel } from '../../../../../data/selectors';
 import { useStore } from '../../../../../data/Stores/store';
 import { MessageString } from '../../../MessageString';
-import { TempScriptEditor } from '../../../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../../../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
 import { Labeled, LabeledView } from '../../labeled';
 import { genVarItems } from '../../TreeVariableSelect';

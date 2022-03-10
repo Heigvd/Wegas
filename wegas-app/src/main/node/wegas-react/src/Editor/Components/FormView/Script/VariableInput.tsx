@@ -3,7 +3,7 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import * as React from 'react';
 import { Button } from '../../../../Components/Inputs/Buttons/Button';
 import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
-import { TempScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../../ScriptEditors/TempScriptEditor';
 import { CommonView } from '../commonView';
 import { LabeledView } from '../labeled';
 

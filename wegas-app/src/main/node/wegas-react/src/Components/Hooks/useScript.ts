@@ -35,10 +35,10 @@ import {
   createTranslation,
   translate,
 } from '../../Editor/Components/FormView/translatable';
-import { insertReturn } from '../../Editor/Components/ScriptEditors/WegasScriptEditor';
+import { insertReturn } from '../../Editor/Components/ScriptEditors/TempScriptEditor';
 import { createLRU, replace } from '../../Helper/tools';
 import { createScript, isScript } from '../../Helper/wegasEntites';
-import { wlog, wwarn, getLogger } from '../../Helper/wegaslog';
+import { getLogger, wlog, wwarn } from '../../Helper/wegaslog';
 import { ClassesContext, classesCTX } from '../Contexts/ClassesProvider';
 import {
   defaultFeatures,
@@ -610,10 +610,9 @@ export function useScript<T extends ScriptReturnType>(
   },
   catchCB?: (e: Error) => void,
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
-  const oldContext =
-    React.useRef<{
-      [name: string]: unknown;
-    }>();
+  const oldContext = React.useRef<{
+    [name: string]: unknown;
+  }>();
 
   const newContext = React.useMemo(() => {
     if (deepDifferent(context, oldContext.current)) {

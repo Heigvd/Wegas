@@ -5,7 +5,7 @@ import { transpile } from 'typescript';
 import { createOrUpdateModel } from '../Components/Contexts/LibrariesContext';
 import { createSandbox } from '../Components/Hooks/useScript';
 import { expandBoth, flex, flexColumn, grow } from '../css/classes';
-import { TempScriptEditor } from '../Editor/Components/ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../Editor/Components/ScriptEditors/TempScriptEditor';
 import { getEntry, setEntry } from '../Helper/tools';
 
 const { sandbox, globals } = createSandbox<{

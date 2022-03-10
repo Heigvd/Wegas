@@ -20,7 +20,7 @@ import {
   itemCenter,
 } from '../../../css/classes';
 import { createScript } from '../../../Helper/wegasEntites';
-import { TempScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../ScriptEditors/TempScriptEditor';
 import { CommonViewContainer } from './commonView';
 import { CustomFileSelector } from './FileSelector';
 import { Labeled } from './labeled';

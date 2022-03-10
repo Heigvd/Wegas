@@ -9,7 +9,7 @@ import { flex } from '../../../css/classes';
 import { entityIs } from '../../../data/entities';
 import { createScript } from '../../../Helper/wegasEntites';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
-import { TempScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 

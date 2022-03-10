@@ -21,7 +21,7 @@ import {
   itemCenter,
 } from '../../../css/classes';
 import { createScript } from '../../../Helper/wegasEntites';
-import { TempScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled } from './labeled';
 import { scriptEditStyle } from './Script/Script';

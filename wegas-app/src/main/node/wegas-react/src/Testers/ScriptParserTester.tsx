@@ -11,7 +11,7 @@ import {
   functionalizeScript,
   insertReturn,
   TempScriptEditor,
-} from '../Editor/Components/ScriptEditors/WegasScriptEditor';
+} from '../Editor/Components/ScriptEditors/TempScriptEditor';
 
 const RETURN_TYPES = ['string'];
 const STR_RETURN_TYPES = RETURN_TYPES.join(' | ');

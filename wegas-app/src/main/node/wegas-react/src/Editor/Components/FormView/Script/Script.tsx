@@ -36,7 +36,7 @@ import { store } from '../../../../data/Stores/store';
 import { createScript } from '../../../../Helper/wegasEntites';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
-import { TempScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { Labeled, LabeledView } from '../labeled';
 import { WyswygScriptEditor } from './WyswygScriptEditor';

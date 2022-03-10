@@ -5,7 +5,7 @@ import { defaultMargin } from '../../css/classes';
 import { runScript } from '../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../data/selectors';
 import { store } from '../../data/Stores/store';
-import { TempScriptEditor } from './ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from './ScriptEditors/TempScriptEditor';
 
 const container = css({ width: '100%' });
 const editor = css({ width: '100%', height: '400px' });

@@ -23,7 +23,7 @@ import {
   createScript,
   scriptableClassNameToClassFilter,
 } from '../../../Helper/wegasEntites';
-import { TempScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../ScriptEditors/TempScriptEditor';
 import { SearchableItems } from '../Tree/searchable';
 import { TreeSelect } from '../Tree/TreeSelect';
 import { VariableScriptPath } from '../Variable/VariableScriptPath';
