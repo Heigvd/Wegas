@@ -143,16 +143,16 @@ function SrcEditor({
         onEditorReady(editor);
       }
 
-      // Unmount effect to dispose editor and model
-      return () => {
-        if (editor) {
-          const model = editor.getModel();
-          if (model) {
-            model.dispose();
-          }
-          editor.dispose();
-        }
-      };
+      // // Unmount effect to dispose editor and model
+      // return () => {
+      //   if (editor) {
+      //     const model = editor.getModel();
+      //     if (model) {
+      //       model.dispose();
+      //     }
+      //     editor.dispose();
+      //   }
+      // };
     },
     [onEditorReady],
   );
@@ -246,6 +246,7 @@ function SrcEditor({
             }}
             // language={language}
             // value={value}
+            keepCurrentModel
             path={fileName}
             onMount={onMount}
             loading={i18nValues.loading + '...'}

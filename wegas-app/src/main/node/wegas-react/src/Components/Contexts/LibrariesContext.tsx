@@ -30,6 +30,9 @@ import {
   useGlobalContexts,
 } from '../Hooks/useScript';
 
+const monacoLogger = getLogger('monaco');
+const contextLogger = getLogger('Libraries Context');
+
 function languageToFormat(language: SrcEditorLanguages | undefined): string {
   switch (language) {
     case 'css':
@@ -107,8 +110,6 @@ function computePath(
 export function computeLibraryPath(libName: string, libType: LibraryType) {
   return `file:///${libName}.${libraryTypeToFormat(libType)}`;
 }
-
-const monacoLogger = getLogger('monaco');
 
 export function getModel(reactMonaco: MonacoEditor | null, modelPath: string) {
   return reactMonaco != null
@@ -291,6 +292,7 @@ const setLibrariesState = (
   action: LibraryStateAction,
 ) =>
   u(oldState, newState => {
+    contextLogger.warn(action.actionType);
     switch (action.actionType) {
       case 'SetUpLibrariesState': {
         const { librariesType, libraries } = action;
@@ -576,25 +578,34 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
         .forEach(([type, libTypes]) => {
           Object.entries(libTypes)
             // Only update libraries that are not beeing modified
-            .filter(([, libStatus]) => !libStatus.modified)
+            // .filter(([, libStatus]) => !libStatus.modified)
             .forEach(([name, libStatus]) => {
-              const model = createOrUpdateModel(
-                reactMonaco,
-                libStatus.persisted.content,
-                libraryTypeToLanguage(type),
-                computeLibraryPath(name, type),
-              );
-              model.onDidChangeContent(() => {
-                const libraryType = type;
-                const libraryName = name;
-                const modelValue = model.getValue();
-                dispatchLibrariesState({
-                  actionType: 'ModifyLibraryModel',
-                  libraryType,
-                  libraryName,
-                  modelValue,
+              if (!libStatus.modified) {
+                const model = createOrUpdateModel(
+                  reactMonaco,
+                  libStatus.persisted.content,
+                  libraryTypeToLanguage(type),
+                  computeLibraryPath(name, type),
+                );
+                model.onDidChangeContent(() => {
+                  const libraryType = type;
+                  const libraryName = name;
+                  const modelValue = model.getValue();
+                  dispatchLibrariesState({
+                    actionType: 'ModifyLibraryModel',
+                    libraryType,
+                    libraryName,
+                    modelValue,
+                  });
                 });
-              });
+              } else {
+                createOrUpdateModel(
+                  reactMonaco,
+                  libStatus.persisted.content,
+                  libraryTypeToLanguage(type),
+                  computeLibraryPath(name + '.server', type),
+                );
+              }
             });
         });
     }

@@ -1,10 +1,12 @@
 import { css } from '@emotion/css';
+import { Monaco } from '@monaco-editor/react';
 import * as React from 'react';
+import { getModel } from '../../../Components/Contexts/LibrariesContext';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
 import { MessageString } from '../MessageString';
-import { arrayToText, textToArray } from './editorHelpers';
+import { arrayToText, MonacoEditorModel, textToArray } from './editorHelpers';
 import WegasDiffEditor, {
   DiffEditorLineChanges,
   ExtendedDiffNavigator,
@@ -105,75 +107,50 @@ type ModalState = ModalStateClose | ModalStateError;
 
 interface MergeEditorProps {
   /**
-   * filename - the name of the current file
+   * filename - the name of the current modified file
    */
-  fileName?: string;
+  persistedFileName: string;
   /**
-   * originalValue - the original content.
-   * Located on the left side of the editor.
-   * Is readonly for user.
+   * filename - the name of the current modified file
    */
-  originalValue: string;
-  /**
-   * modifiedValue - the modified content.
-   * Located on the right side of the editor
-   */
-  modifiedValue: string;
+  modifiedFileName: string;
   /**
    * minimap - the editor shows a minimap of the code
    */
   minimap?: boolean;
   /**
-   * langauge - the editor language
-   */
-  language?: 'javascript' | 'typescript' | 'css' | 'json';
-  /**
    * onResolved - this function is fired each time the user resolved all diff and want to apply changes
    * Can be fire from the little floppy button or the Ctrl+S
    */
-  onResolved?: (newContent: string) => void;
-  /**
-   * onChange - this function is fired each time the user modifies the modifiedValue
-   */
-  onChange?: (value: string) => void;
-  /**
-   * onBlur - this function is fired each time the modifiedEditor loose focus
-   */
-  onBlur?: (value: string) => void;
-  /**
-   * defaultUri - allows the language to be inferred from this uri
-   * To apply changes you must rerender the whole editor (i.e : change the key of the componnent)
-   */
-  defaultUri?: 'internal://page.json';
+  onResolved: () => void;
 }
 
 function MergeEditor({
-  fileName,
-  originalValue,
-  modifiedValue,
+  persistedFileName,
+  modifiedFileName,
   minimap,
-  language,
   onResolved,
-  onChange,
-  onBlur,
 }: MergeEditorProps) {
+  const persistedModel = React.useRef<MonacoEditorModel | null>(null);
+  const modifiedModel = React.useRef<MonacoEditorModel | null>(null);
   const diffNavigator = React.useRef<ExtendedDiffNavigator>();
   const [mergeState, setMergeState] = React.useState<NavState>({
     idx: -1,
     diffs: [],
   });
-
-  /**
-   * This must be a state or it will never update the editor when finalValue is modified
-   */
-  const [finalValue, setFinalValue] = React.useState(originalValue);
   const [modalState, setModalState] = React.useState<ModalState>({
     type: 'close',
   });
 
-  React.useEffect(() => {
-    setFinalValue(originalValue);
-  }, [originalValue]);
+  // const reactMonaco = useMonaco();
+
+  const beforeMount = React.useCallback(
+    (monaco: Monaco) => {
+      persistedModel.current = getModel(monaco, persistedFileName);
+      modifiedModel.current = getModel(monaco, modifiedFileName);
+    },
+    [modifiedFileName, persistedFileName],
+  );
 
   const handleDiffNavigator = React.useCallback(
     (navigator: ExtendedDiffNavigator) => (diffNavigator.current = navigator),
@@ -222,72 +199,88 @@ function MergeEditor({
     }
   };
 
-  const onSave = React.useCallback(
-    (value: string) => {
-      if (onResolved) {
-        if (mergeState.diffs.length > 0) {
-          setModalState({
-            type: 'error',
-            label: 'You must resolve all differences before saving',
-          });
+  const onSave = React.useCallback(() => {
+    if (mergeState.diffs.length > 0) {
+      setModalState({
+        type: 'error',
+        label: 'You must resolve all differences before saving',
+      });
+    } else {
+      onResolved();
+    }
+  }, [mergeState.diffs.length, onResolved]);
+
+  const onKeepOne = React.useCallback(
+    (original: boolean) => {
+      if (persistedModel.current != null && modifiedModel.current != null) {
+        const persistedValue = persistedModel.current.getValue();
+        const modifiedValue = modifiedModel.current.getValue();
+        const change = mergeState.diffs[mergeState.idx];
+        const newContent = original ? persistedValue : modifiedValue;
+        const oldContent = original ? modifiedValue : persistedValue;
+        const newStartLine = original
+          ? change.originalStartLineNumber
+          : change.modifiedStartLineNumber;
+        const newEndLine = original
+          ? change.originalEndLineNumber
+          : change.modifiedEndLineNumber;
+        const oldStartLine = original
+          ? change.modifiedStartLineNumber
+          : change.originalStartLineNumber;
+        const oldEndLine = original
+          ? change.modifiedEndLineNumber
+          : change.originalEndLineNumber;
+
+        const newText = getTextLines(
+          newContent,
+          newStartLine - 1,
+          newEndLine - 1,
+        );
+        const savedContent =
+          oldEndLine > 0 // Checks if line is missing
+            ? replaceContent(
+                oldContent,
+                newText,
+                oldStartLine - 1,
+                oldEndLine - 1,
+              )
+            : insertContent(oldContent, newText, oldStartLine);
+
+        if (original) {
+          modifiedModel.current.setValue(savedContent);
         } else {
-          onResolved(value);
+          persistedModel.current.setValue(savedContent);
         }
       }
     },
-    [mergeState.diffs.length, onResolved],
+    [mergeState.diffs, mergeState.idx],
   );
 
-  const onKeepOne = (original: boolean) => {
-    const change = mergeState.diffs[mergeState.idx];
-    const newContent = original ? finalValue : modifiedValue;
-    const oldContent = original ? modifiedValue : finalValue;
-    const newStartLine = original
-      ? change.originalStartLineNumber
-      : change.modifiedStartLineNumber;
-    const newEndLine = original
-      ? change.originalEndLineNumber
-      : change.modifiedEndLineNumber;
-    const oldStartLine = original
-      ? change.modifiedStartLineNumber
-      : change.originalStartLineNumber;
-    const oldEndLine = original
-      ? change.modifiedEndLineNumber
-      : change.originalEndLineNumber;
+  const onKeepAll = React.useCallback(() => {
+    if (persistedModel.current != null && modifiedModel.current != null) {
+      const persistedValue = persistedModel.current.getValue();
+      const modifiedValue = modifiedModel.current.getValue();
 
-    const newText = getTextLines(newContent, newStartLine - 1, newEndLine - 1);
-    const savedContent =
-      oldEndLine > 0 // Checks if line is missing
-        ? replaceContent(oldContent, newText, oldStartLine - 1, oldEndLine - 1)
-        : insertContent(oldContent, newText, oldStartLine);
-    if (original) {
-      onChange && onChange(savedContent);
-    } else {
-      setFinalValue(savedContent);
-    }
-  };
-  const onKeepAll = () => {
-    const change = mergeState.diffs[mergeState.idx];
-    const origText = getTextLines(
-      finalValue,
-      change.originalStartLineNumber - 1,
-      change.originalEndLineNumber - 1,
-    );
-    if (origText === null) {
-      return onKeepOne(false);
-    }
-    const modifText = getTextLines(
-      modifiedValue,
-      change.modifiedStartLineNumber - 1,
-      change.modifiedEndLineNumber - 1,
-    );
-    if (modifText === null) {
-      return onKeepOne(true);
-    }
-    const newText =
-      (origText ? origText : '') + '\n' + (modifText ? modifText : '');
-    onChange &&
-      onChange(
+      const change = mergeState.diffs[mergeState.idx];
+      const origText = getTextLines(
+        persistedValue,
+        change.originalStartLineNumber - 1,
+        change.originalEndLineNumber - 1,
+      );
+      if (origText === null) {
+        return onKeepOne(false);
+      }
+      const modifText = getTextLines(
+        modifiedValue,
+        change.modifiedStartLineNumber - 1,
+        change.modifiedEndLineNumber - 1,
+      );
+      if (modifText === null) {
+        return onKeepOne(true);
+      }
+      const newText =
+        (origText ? origText : '') + '\n' + (modifText ? modifText : '');
+      modifiedModel.current.setValue(
         replaceContent(
           modifiedValue,
           newText,
@@ -295,15 +288,17 @@ function MergeEditor({
           change.modifiedEndLineNumber - 1,
         ),
       );
-    setFinalValue(oldValue =>
-      replaceContent(
-        oldValue,
-        newText,
-        change.originalStartLineNumber - 1,
-        change.originalEndLineNumber - 1,
-      ),
-    );
-  };
+
+      persistedModel.current.setValue(
+        replaceContent(
+          persistedValue,
+          newText,
+          change.originalStartLineNumber - 1,
+          change.originalEndLineNumber - 1,
+        ),
+      );
+    }
+  }, [mergeState.diffs, mergeState.idx, onKeepOne]);
 
   return (
     <Toolbar>
@@ -338,13 +333,7 @@ function MergeEditor({
             />
           </>
         ) : (
-          <Button
-            icon="save"
-            tooltip="Save current state"
-            onClick={() => {
-              onSave(modifiedValue);
-            }}
-          />
+          <Button icon="save" tooltip="Save current state" onClick={onSave} />
         )}
         {modalState.type === 'error' && (
           <MessageString
@@ -357,15 +346,11 @@ function MergeEditor({
       </Toolbar.Header>
       <Toolbar.Content>
         <WegasDiffEditor
-          fileName={fileName}
-          originalValue={finalValue}
-          modifiedValue={modifiedValue}
+          modifiedFileName={modifiedFileName}
+          persistedFileName={persistedFileName}
           minimap={minimap}
-          language={language}
-          onModifiedBlur={onBlur}
-          onModifiedChange={onChange}
           onSave={onSave}
-          onDiffChange={onDiffChange}
+          onBeforeMount={beforeMount}
           handleDiffNavigator={handleDiffNavigator}
         />
       </Toolbar.Content>

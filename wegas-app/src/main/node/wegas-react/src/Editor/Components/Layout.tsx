@@ -25,9 +25,6 @@ const FileBrowserWithMeta = React.lazy(
   () => import('./FileBrowser/FileBrowser'),
 );
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
-const NewLibraryEditor = React.lazy(
-  () => import('./ScriptEditors/LibraryEditor.new'),
-);
 const PlayLocal = React.lazy(() => import('./PlayLocal'));
 const PlayServer = React.lazy(() => import('./PlayServer'));
 const ThemeEditor = React.lazy(
@@ -42,7 +39,7 @@ const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
 const PagesLayout = React.lazy(() => import('./Page/PagesLayout'));
 const SourceEditor = React.lazy(() => import('./Page/SourceEditor'));
 
-const Tester = React.lazy(() => import('../../Testers/ScriptParserTester'));
+// const Tester = React.lazy(() => import('../../Testers/ScriptParserTester'));
 
 const layout = css({
   display: 'flex',
@@ -55,10 +52,10 @@ const layout = css({
 });
 
 const availableLayoutTabs: LinearLayoutComponents = [
-  {
-    tabId: 'Tester',
-    content: <Tester />,
-  },
+  // {
+  //   tabId: 'Tester',
+  //   content: <Tester />,
+  // },
   {
     tabId: 'Variables',
     content: <TreeView />,
@@ -78,10 +75,6 @@ const availableLayoutTabs: LinearLayoutComponents = [
   {
     tabId: 'Scripts',
     content: <LibraryEditor />,
-  },
-  {
-    tabId: 'Scripts2',
-    content: <NewLibraryEditor />,
   },
   {
     tabId: 'Languages',
