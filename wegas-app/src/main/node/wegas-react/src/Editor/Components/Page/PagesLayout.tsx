@@ -10,8 +10,8 @@ import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import {
-  componentTypes,
   defaultPageComponentBehaviour,
+  usableComponentType,
   usePageComponentStore,
 } from '../../../Components/PageComponents/tools/componentFactory';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
@@ -348,7 +348,7 @@ function ComponentAdder({ className, tooltip, onSelect }: ComponentAdderProps) {
     <div className={className} title={tooltip}>
       <DropMenu
         icon="plus"
-        items={componentTypes.map(type => ({
+        items={usableComponentType.map(type => ({
           label: type,
           id: type,
           items: Object.values(components)
@@ -361,7 +361,7 @@ function ComponentAdder({ className, tooltip, onSelect }: ComponentAdderProps) {
             })),
         }))}
         onSelect={({ id }) => {
-          if (!componentTypes.includes(id)) {
+          if (!usableComponentType.includes(id)) {
             onSelect(id);
           }
         }}

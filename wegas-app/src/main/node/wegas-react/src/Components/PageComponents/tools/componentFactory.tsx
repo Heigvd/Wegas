@@ -20,13 +20,17 @@ import {
 import { classStyleIdShema } from './options';
 import { ChildrenDeserializerProps } from './PageDeserializer';
 
-export const componentTypes = [
-  'Other',
+export const usableComponentType = [
   'Layout',
   'Input',
   'Output',
   'Advanced',
   'Programmatic',
+] as const;
+
+export const componentTypes = [
+  ...usableComponentType,
+  'Other',
   'Utility',
 ] as const;
 
