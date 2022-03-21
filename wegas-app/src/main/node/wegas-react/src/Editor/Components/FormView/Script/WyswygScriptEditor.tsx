@@ -1,11 +1,15 @@
-import * as React from 'react';
-import { ScriptView, isScriptCondition } from './Script';
-import { Statement, expressionStatement, booleanLiteral } from '@babel/types';
-import { emptyStatement } from '@babel/types';
-import Form from 'jsoninput';
-import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
 import generate from '@babel/generator';
 import { parse } from '@babel/parser';
+import {
+  booleanLiteral,
+  emptyStatement,
+  expressionStatement,
+  Statement,
+} from '@babel/types';
+import Form from 'jsoninput';
+import * as React from 'react';
+import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
+import { isScriptCondition, ScriptView } from './Script';
 
 function createNewExpression(mode?: ScriptMode) {
   return isScriptCondition(mode)
