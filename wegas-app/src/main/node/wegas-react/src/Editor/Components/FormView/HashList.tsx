@@ -364,7 +364,7 @@ function EntriesView({
           .sort(([, a], [, b]) => sortValues(a, b))
           .map((entry, i) => (
             <DragAndDropEntry
-              key={entry[0] + i}
+              key={i}
               currentValue={currentValue}
               entry={entry}
               index={i}
