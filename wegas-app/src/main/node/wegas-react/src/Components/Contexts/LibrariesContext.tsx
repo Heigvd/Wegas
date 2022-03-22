@@ -24,7 +24,6 @@ import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { useGlobalLibs } from '../Hooks/useGlobalLibs';
 import {
-  clientScriptEval,
   safeClientScriptEval,
   setGlobals,
   useGlobalContexts,
@@ -410,6 +409,19 @@ export const librariesCTX = React.createContext<LibrariesContext>({
 
 const librariesLoaderLogger = getLogger('LibrariesLoader');
 
+function executeClientLibrary(libraryName: string, libraryContent: string) {
+  safeClientScriptEval(
+    libraryContent,
+    undefined,
+    () => librariesLoaderLogger.warn(`In client script  : ${libraryName}`),
+    undefined,
+    {
+      moduleName: `./${libraryName}`,
+      injectReturn: false,
+    },
+  );
+}
+
 export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
   const [librariesState, dispatchLibrariesState] = React.useReducer(
     setLibrariesState,
@@ -430,6 +442,9 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
             actionType: 'SetUpLibrariesState',
             librariesType: 'client',
             libraries,
+          });
+          Object.entries(libraries).forEach(([k, v]) => {
+            executeClientLibrary(k, v.content);
           });
         } catch (e) {
           wlog(e);
@@ -508,10 +523,14 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
             libraryName: updatedLibraryName,
             library,
           });
+          Object.entries(librariesState.client).forEach(([k, v]) => {
+            executeClientLibrary(k, v.persisted.content);
+          });
+          executeClientLibrary(updatedLibraryName, library.content);
         },
       );
     },
-    [],
+    [librariesState.client],
   );
   useWebsocketEvent('LibraryUpdate-ClientScript', clientScriptEventHandler);
 
@@ -555,20 +574,20 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
     setGlobals(globalContexts, store.getState());
   }, [globalContexts]);
 
-  React.useEffect(() => {
-    Object.entries(librariesState.client).forEach(([key, lib]) =>
-      safeClientScriptEval(
-        lib.persisted.content,
-        undefined,
-        () => librariesLoaderLogger.warn(`In client script  : ${key}`),
-        undefined,
-        {
-          moduleName: `./${key}`,
-          injectReturn: false,
-        },
-      ),
-    );
-  }, [librariesState.client]);
+  // React.useEffect(() => {
+  //   Object.entries(librariesState.client).forEach(([key, lib]) =>
+  //     safeClientScriptEval(
+  //       lib.persisted.content,
+  //       undefined,
+  //       () => librariesLoaderLogger.warn(`In client script  : ${key}`),
+  //       undefined,
+  //       {
+  //         moduleName: `./${key}`,
+  //         injectReturn: false,
+  //       },
+  //     ),
+  //   );
+  // }, [librariesState.client]);
 
   // Update monaco editor's models when libraryState update
   React.useEffect(() => {
@@ -724,11 +743,10 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
             let savedWithErrors = false;
             if (libraryType === 'client') {
               try {
-                setGlobals(globalContexts, store.getState());
-                clientScriptEval(library.content, undefined, undefined, {
-                  moduleName: libraryPath,
-                  injectReturn: false,
+                Object.entries(librariesState.client).forEach(([k, v]) => {
+                  executeClientLibrary(k, v.persisted.content);
                 });
+                executeClientLibrary(libraryName, library.content);
               } catch (e) {
                 savedWithErrors = true;
               }
@@ -764,7 +782,6 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
       }
     },
     [
-      globalContexts,
       i18nValues.scripts.libraryCannotSave,
       i18nValues.scripts.librarySavedErrors,
       i18nValues.scripts.scriptSaved,

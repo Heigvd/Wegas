@@ -79,6 +79,9 @@ type FormStateActions =
       payload: { error: string };
     }
   | {
+      type: 'UNSET_ERROR';
+    }
+  | {
       type: 'SET_SOFT_ERROR';
       payload: { error: string };
     };
@@ -126,6 +129,10 @@ export function ExpressionEditor({
           }
           case 'SET_ERROR': {
             state.error = action.payload.error;
+            break;
+          }
+          case 'UNSET_ERROR': {
+            state.error = undefined;
             break;
           }
           case 'SET_SOFT_ERROR': {
@@ -287,6 +294,26 @@ export function ExpressionEditor({
 
   const isServerScript = mode === 'SET' || mode === 'GET';
 
+  const onScriptEditorChange = React.useCallback(
+    (value: string) => {
+      try {
+        parse(value).program.body[0];
+        dispatchFormState({
+          type: 'UNSET_ERROR',
+        });
+        onChange && onChange(value);
+      } catch (e) {
+        dispatchFormState({
+          type: 'SET_ERROR',
+          payload: {
+            error: 'Script cannot be parsed',
+          },
+        });
+      }
+    },
+    [onChange],
+  );
+
   return (
     <div id={id} className={expressionEditorStyle}>
       <Button
@@ -295,13 +322,13 @@ export function ExpressionEditor({
         pressed={srcMode}
         onClick={() => setSrcMode(srcMode => !srcMode)}
       />
-      {srcMode ? (
+      {typeof error === 'string' || srcMode ? (
         <div className={scriptEditStyle}>
           <MessageString type="error" value={error || softError} />
           <TempScriptEditor
             language={isServerScript ? 'javascript' : 'typescript'}
             initialValue={code}
-            onChange={onChange}
+            onChange={onScriptEditorChange}
             noGutter
             minimap={false}
             returnType={returnTypes(mode)}

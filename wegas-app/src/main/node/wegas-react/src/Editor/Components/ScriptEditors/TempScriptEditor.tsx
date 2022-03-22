@@ -365,6 +365,7 @@ export function TempScriptEditor(props: TempScriptEditorProps) {
   } = props;
 
   const [value, setValue] = React.useState(initialValue);
+  const refValue = React.useRef(initialValue);
   const [error, setError] = React.useState<string | undefined>();
   const returnType = makeReturnTypes(returnTypeArray);
   const args = makeArgs(argsArray);
@@ -397,7 +398,10 @@ export function TempScriptEditor(props: TempScriptEditorProps) {
         }
       }
       setError(undefined);
-      fn && fn(newValue);
+      if (refValue.current !== newValue) {
+        refValue.current = newValue;
+        fn && fn(newValue);
+      }
     },
     [returnType],
   );
@@ -437,7 +441,9 @@ export function TempScriptEditor(props: TempScriptEditorProps) {
     }
   }, [onChange, srcModel, trimFunctionToScript]);
 
-  srcModel?.onDidChangeContent(handleChange);
+  React.useEffect(() => {
+    srcModel?.onDidChangeContent(handleChange);
+  }, [handleChange, srcModel]);
 
   const handleBlur = React.useCallback(
     val => {
