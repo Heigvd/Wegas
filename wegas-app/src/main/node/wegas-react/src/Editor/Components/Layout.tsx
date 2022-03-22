@@ -83,7 +83,7 @@ const availableLayoutTabs: LinearLayoutComponents = [
     content: <FileBrowserWithMeta />,
   },
   {
-    tabId: 'Scripts',
+    tabId: 'Libraries',
     items: [
       {
         tabId: 'Client',
