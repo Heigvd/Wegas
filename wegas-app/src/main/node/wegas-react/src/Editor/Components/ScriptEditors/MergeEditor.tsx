@@ -1,12 +1,20 @@
 import { css } from '@emotion/css';
 import { Monaco } from '@monaco-editor/react';
 import * as React from 'react';
-import { getModel } from '../../../Components/Contexts/LibrariesContext';
+import {
+  getModel,
+  useTempModel,
+} from '../../../Components/Contexts/LibrariesContext';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
 import { MessageString } from '../MessageString';
-import { arrayToText, MonacoEditorModel, textToArray } from './editorHelpers';
+import {
+  arrayToText,
+  MonacoEditorModel,
+  MonacoSDiffEditor,
+  textToArray,
+} from './editorHelpers';
 import WegasDiffEditor, {
   DiffEditorLineChanges,
   ExtendedDiffNavigator,
@@ -142,18 +150,17 @@ function MergeEditor({
     type: 'close',
   });
 
-  // const reactMonaco = useMonaco();
+  persistedModel.current = useTempModel(originalContent, 'typescript');
+
+  React.useEffect(() => {
+    persistedModel.current?.setValue(originalContent);
+  }, [originalContent]);
 
   const beforeMount = React.useCallback(
     (monaco: Monaco) => {
       modifiedModel.current = getModel(monaco, modifiedFileName);
     },
     [modifiedFileName],
-  );
-
-  const handleDiffNavigator = React.useCallback(
-    (navigator: ExtendedDiffNavigator) => (diffNavigator.current = navigator),
-    [],
   );
 
   const onDiffChange = React.useCallback(() => {
@@ -183,6 +190,14 @@ function MergeEditor({
       return oldState;
     });
   }, []);
+
+  const handleDiffNavigator = React.useCallback(
+    (editor: MonacoSDiffEditor, navigator: ExtendedDiffNavigator) => {
+      diffNavigator.current = navigator;
+      editor.onDidUpdateDiff(onDiffChange);
+    },
+    [onDiffChange],
+  );
 
   const onNavigate = (next: boolean) => {
     if (diffNavigator.current) {
@@ -346,7 +361,7 @@ function MergeEditor({
       <Toolbar.Content>
         <WegasDiffEditor
           modifiedFileName={modifiedFileName}
-          persistedFileContent={originalContent}
+          persistedFileName={persistedModel.current?.uri.toString()}
           minimap={minimap}
           onSave={onSave}
           onBeforeMount={beforeMount}

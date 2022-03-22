@@ -293,7 +293,7 @@ const setLibrariesState = (
   action: LibraryStateAction,
 ) =>
   u(oldState, newState => {
-    contextLogger.warn(action.actionType);
+    contextLogger.info(action.actionType);
     switch (action.actionType) {
       case 'SetUpLibrariesState': {
         const { librariesType, libraries } = action;

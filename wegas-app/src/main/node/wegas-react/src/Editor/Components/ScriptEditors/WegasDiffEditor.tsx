@@ -2,7 +2,6 @@ import { css } from '@emotion/css';
 import { DiffEditor, Monaco } from '@monaco-editor/react';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
-import { wlog } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { MonacoEditorProperties, MonacoSDiffEditor } from './editorHelpers';
@@ -38,7 +37,7 @@ interface WegasDiffEditorProps {
   /**
    * filename - the name of the current modified file
    */
-  persistedFileContent?: string;
+  persistedFileName?: string;
   /**
    * filename - the name of the current modified file
    */
@@ -58,7 +57,10 @@ interface WegasDiffEditorProps {
   /**
    * handleDiffNavigator - this function gets the diffNavigator that allows navigation between diffs
    */
-  handleDiffNavigator?: (diffNavigator: MonacoDiffNavigator) => void;
+  handleDiffNavigator?: (
+    editor: MonacoSDiffEditor,
+    diffNavigator: MonacoDiffNavigator,
+  ) => void;
   /**
    * onBlur - this function is fired each time the modifiedEditor loose focus
    */
@@ -83,7 +85,7 @@ interface WegasDiffEditorProps {
 
 function WegasDiffEditor({
   modifiedFileName,
-  persistedFileContent,
+  persistedFileName,
   readOnly,
   minimap,
   noGutter,
@@ -94,10 +96,11 @@ function WegasDiffEditor({
   handleDiffNavigator,
   idx,
 }: WegasDiffEditorProps) {
-  const [navigator, setNavigator] = React.useState<ExtendedDiffNavigator>();
+  const refNavigator = React.useRef<ExtendedDiffNavigator>();
   const i18nValues = useInternalTranslate(commonTranslations);
 
   React.useEffect(() => {
+    const navigator = refNavigator.current;
     if (idx && navigator) {
       const firstIdx = navigator.nextIdx;
       while (navigator.nextIdx !== idx && navigator.nextIdx !== firstIdx) {
@@ -107,7 +110,7 @@ function WegasDiffEditor({
         navigator.next();
       }
     }
-  }, [navigator, idx]);
+  }, [idx]);
 
   const onMount = React.useCallback(
     (editor: MonacoSDiffEditor, reactMonaco: Monaco) => {
@@ -115,8 +118,10 @@ function WegasDiffEditor({
       const navigator = reactMonaco.editor.createDiffNavigator(editor, {
         ignoreCharChanges: true,
       }) as ExtendedDiffNavigator;
-      handleDiffNavigator && handleDiffNavigator(navigator);
-      setNavigator(navigator);
+      if (handleDiffNavigator) {
+        handleDiffNavigator(editor, navigator);
+      }
+      refNavigator.current = navigator;
 
       if (editor != null && reactMonaco != null) {
         editor.addAction({
@@ -136,8 +141,6 @@ function WegasDiffEditor({
     [handleDiffNavigator, onEditorReady, onSave],
   );
 
-  wlog(persistedFileContent);
-
   return (
     <SizedDiv className={overflowHide}>
       {size => (
@@ -145,10 +148,8 @@ function WegasDiffEditor({
           beforeMount={onBeforeMount}
           height={size ? size.height : undefined} // By default, it fully fits with its parent
           width={size ? size.width : undefined} // By default, it fully fits with its parent
+          originalModelPath={persistedFileName}
           modifiedModelPath={modifiedFileName}
-          // originalContent={persistedFileContent}
-          //566+56+565
-          original={persistedFileContent}
           onMount={onMount}
           loading={i18nValues.loading + '...'}
           keepCurrentModifiedModel
