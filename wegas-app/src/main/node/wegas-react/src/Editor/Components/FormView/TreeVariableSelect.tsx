@@ -23,7 +23,7 @@ import {
   createScript,
   scriptableClassNameToClassFilter,
 } from '../../../Helper/wegasEntites';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../ScriptEditors/TempScriptEditor';
 import { SearchableItems } from '../Tree/searchable';
 import { TreeSelect } from '../Tree/TreeSelect';
 import { VariableScriptPath } from '../Variable/VariableScriptPath';
@@ -133,7 +133,7 @@ function labelForValue<T>(items: TreeSelectItem<T>[], value?: T) {
 
 interface LabeledTreeVSelectView<T> extends ScriptableView {
   items?: TreeSelectItem<T>[];
-  returnType?: WegasScriptEditorReturnTypeName[];
+  returnType?: string[];
 }
 
 export interface LabeledTreeVSelectProps<T>
@@ -380,8 +380,8 @@ export function ScripableVariableSelect(
       </div>
       {srcMode ? (
         <div className={scriptEditStyle}>
-          <WegasScriptEditor
-            value={script}
+          <TempScriptEditor
+            initialValue={script}
             returnType={computeReturnType(
               props.view.returnType,
               props.view.required,

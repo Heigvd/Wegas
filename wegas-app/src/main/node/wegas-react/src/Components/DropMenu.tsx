@@ -181,7 +181,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
             if (openOnHover || openOnHoverChildren) {
               timer.current = setTimeout(() => {
                 closeMenu();
-              }, 100);
+              }, 250);
             }
           }}
         >

@@ -27,13 +27,12 @@ import {
 } from '../../../Components/PageComponents/tools/options';
 import {
   schemaProps,
-  SchemaPropsSchemas,
-  SimpleSchemaPropsSchemas,
 } from '../../../Components/PageComponents/tools/schemaProps';
 import { defaultPadding, flex, flexColumn, grow } from '../../../css/classes';
 import { ActionsProps } from '../../../data/Reducer/globalState';
 import { store, StoreDispatch } from '../../../data/Stores/store';
 import { findComponent } from '../../../Helper/pages';
+import { AvailableSchemas } from '../FormView';
 import { MessageString } from '../MessageString';
 import { pageCTX } from './PageEditor';
 
@@ -214,7 +213,7 @@ export function wegasComponentSchema(
   pageComponentSchema: {
     description: string;
     properties: {
-      [prop: string]: SchemaPropsSchemas;
+      [prop: string]: AvailableSchemas;
     };
   },
   parentContainer?: ContainerComponent,
@@ -235,7 +234,7 @@ export function wegasComponentSchema(
       componentProperties: schemaProps.object({
         label: 'Component properties',
         properties: (pageComponentSchema.properties || {}) as {
-          [key: string]: SimpleSchemaPropsSchemas;
+          [key: string]: AvailableSchemas;
         },
       }),
       commonProperties: schemaProps.object({

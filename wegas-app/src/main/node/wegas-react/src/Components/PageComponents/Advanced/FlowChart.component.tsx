@@ -83,7 +83,7 @@ export default function PlayerFlowChart<
 }
 
 const returnType = [
-  `{id: string; label:string; position:{x:number,y:number}; connections:{id: string; label:string; connectedTo: string}[];}[]` as WegasScriptEditorReturnTypeName,
+  `{id: string; label:string; position:{x:number,y:number}; connections:{id: string; label:string; connectedTo: string}[];}[]`,
 ];
 
 registerComponent(

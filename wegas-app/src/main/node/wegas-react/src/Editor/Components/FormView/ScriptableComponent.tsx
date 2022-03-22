@@ -21,7 +21,7 @@ import {
   itemCenter,
 } from '../../../css/classes';
 import { createScript } from '../../../Helper/wegasEntites';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled } from './labeled';
 import { scriptEditStyle } from './Script/Script';
@@ -173,8 +173,9 @@ export function scriptableComponentFactory<BCT extends BaseComponentProps>(
               </div>
               {inputMode === 'Code' ? (
                 <div className={scriptEditStyle}>
-                  <WegasScriptEditor
-                    value={script}
+                  <TempScriptEditor
+                    initialValue={script}
+                    language="typescript"
                     returnType={computeReturnType(
                       ['string'],
                       props.view.required,

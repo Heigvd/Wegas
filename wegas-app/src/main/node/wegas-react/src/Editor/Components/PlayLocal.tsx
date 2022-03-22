@@ -11,7 +11,7 @@ import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import { defaultPadding, flex } from '../../css/classes';
 import { shallowIs } from '../../Helper/shallowIs';
-import { WegasScriptEditor } from './ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from './ScriptEditors/TempScriptEditor';
 
 const container = css({
   width: '100%',
@@ -20,7 +20,8 @@ const container = css({
 });
 const editor = css({
   width: '100%',
-  flexGrow: 1,
+  flexBasis: '1px',
+  flexGrow: 2,
   flexShrink: 1,
   overflow: 'auto',
 });
@@ -55,6 +56,12 @@ class ErrorBoundary extends React.Component<Record<string, unknown>> {
 
 const overlayStyle = css({ overflow: 'auto' });
 
+const resultPanel = css({
+  overflow: 'auto',
+  flexGrow: 1,
+  flexBasis: '1px',
+});
+
 const Eval = React.memo(function Eval({ script }: { script: string }) {
   const val = useUnsafeScript(script);
   return <pre className={overlayStyle}>{JSON.stringify(val, null, 2)}</pre>;
@@ -66,7 +73,7 @@ export default function PlayLocal() {
 
   const [result, setResult] = React.useState<unknown>();
 
-  const [autorun, setAutorun] = React.useState(true);
+  const [autorun, setAutorun] = React.useState(false);
 
   const debouncedScript = useDebounce(script, 300);
 
@@ -103,13 +110,17 @@ export default function PlayLocal() {
       <Toolbar.Content>
         <div className={container}>
           <div className={editor}>
-            <WegasScriptEditor value={script} onChange={onChangeCb} />
+            <TempScriptEditor
+              initialValue={script}
+              onChange={onChangeCb}
+              language="typescript"
+            />
           </div>
           <ErrorBoundary script={debouncedScript}>
             {autorun ? (
               <Eval script={debouncedScript} />
             ) : (
-              <pre className={overlayStyle}>
+              <pre className={resultPanel}>
                 {JSON.stringify(result, null, 2)}
               </pre>
             )}

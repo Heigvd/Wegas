@@ -9,6 +9,7 @@ import { instantiate } from '../data/scriptable';
 import { store } from '../data/Stores/store';
 import { IManagedResponse } from './rest';
 import { VariableDescriptorAPI } from './variableDescriptor.api';
+import { UtilsAPI } from './utils.api.ts';
 
 function getNewVariable(
   variable: IVariableDescriptor,
@@ -98,4 +99,5 @@ export const APIScriptMethods: APIMethodsClass = {
   updateVariable: variable => dispatch(updateDescriptor(variable)),
   deleteVariable: variable => dispatch(deleteDescriptor(variable)),
   updateInstance: instance => dispatch(updateInstance(instance)),
+  getServerTime: () => UtilsAPI.getServerTime(),
 };

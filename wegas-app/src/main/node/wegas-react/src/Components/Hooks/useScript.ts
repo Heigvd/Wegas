@@ -35,10 +35,10 @@ import {
   createTranslation,
   translate,
 } from '../../Editor/Components/FormView/translatable';
-import { formatScriptToFunctionBody } from '../../Editor/Components/ScriptEditors/WegasScriptEditor';
+import { insertReturn } from '../../Editor/Components/ScriptEditors/TempScriptEditor';
 import { createLRU, replace } from '../../Helper/tools';
 import { createScript, isScript } from '../../Helper/wegasEntites';
-import { wwarn } from '../../Helper/wegaslog';
+import { getLogger, wlog, wwarn } from '../../Helper/wegaslog';
 import { ClassesContext, classesCTX } from '../Contexts/ClassesProvider';
 import {
   defaultFeatures,
@@ -91,7 +91,12 @@ interface GlobalClasses {
   APIMethods: APIMethodsClass;
   Helpers: GlobalHelpersClass;
   Roles: RolesMehtods;
-  wlog: (a: any) => void;
+  wlog: (...args: unknown[]) => void;
+  __WegasModules: {
+    [moduleName: string]: {
+      [exported: string]: unknown;
+    };
+  };
 }
 
 const globalDispatch = store.dispatch;
@@ -108,8 +113,26 @@ export function createSandbox<T = unknown>() {
   document.body.appendChild(sandbox);
 
   if (sandbox.contentWindow != null) {
-    // Prevent http request by hiding fetch and XHR
     const w = sandbox.contentWindow as any;
+    // global object to to store esModule
+    // will be hidden just like window, top and globalThis are
+    w.__WegasModules = {};
+
+    // to load esModule
+    w.require = (moduleName: string) => {
+      // get or create module
+      let mod = w.__WegasModules[moduleName];
+      if (mod == null) {
+        mod = {};
+        w.__WegasModules[moduleName] = mod;
+      }
+      // always return a proxy to
+      //  1) allow importing before exporting
+      //  2) prevent modifications
+      return new Proxy(mod, { get: (m, key) => m[key] });
+    };
+
+    // Prevent http request by hiding fetch and XHR
     w.fetch = undefined;
     w.XMLHttpRequest = undefined;
     if (w.document != null) {
@@ -396,6 +419,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.Helpers = {
     cloneDeep: cloneDeep,
     uniq: uniq,
+    getLogger: getLogger,
   };
 
   globals.Roles = {
@@ -410,25 +434,41 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     },
   };
 
-  // eslint-disable-next-line no-console
-  globals.wlog = console.log;
+  globals.wlog = wlog;
 }
 
 export type ScriptReturnType = object | number | boolean | string | undefined;
 
+interface TranspileOptions {
+  moduleName?: string;
+  injectReturn?: boolean;
+}
 /**
  * Transpile to a new Function()
  */
-function transpileToFunction(script: string) {
+function transpileToFunction(
+  script: string,
+  { injectReturn = true }: TranspileOptions = {},
+) {
+  // transpile first
+  const jsScript = transpile(script);
+
   // script does not containes any return statement (eval-style returns last-evaluated statement)
   // such a statement must be added
   // TODO: this function is not that robust... AST based transformation is required (quite a big job)
-  const fnBody = formatScriptToFunctionBody(script);
-  const fnScript = '"use strict"; undefined;' + transpile(fnBody);
+  const fnBody = injectReturn ? insertReturn(jsScript) : jsScript;
+  const fnScript = '"use strict"; undefined;' + fnBody;
 
   // hide forbidden object by overriding them with parameters
   // on call, provide undefined arguments
-  return new globals.Function('globalThis', 'window', 'top', fnScript);
+  return new globals.Function(
+    'globalThis',
+    'window',
+    'top',
+    '__WegasModules',
+    'exports',
+    fnScript,
+  );
 }
 
 export function addSetterToState(state: PageComponentContext) {
@@ -463,6 +503,7 @@ const memoClientScriptEval = (() => {
     script?: string | IScript,
     context: PageComponentContext = {},
     state?: PageComponentContext,
+    options?: TranspileOptions,
   ): T extends WegasScriptEditorReturnType ? T : unknown => {
     const currentState = addSetterToState(
       state || pagesContextStateStore.getState(),
@@ -474,7 +515,7 @@ const memoClientScriptEval = (() => {
       return undefined as any;
     } else if (typeof script === 'string') {
       // scripts provided as string (eg. big clientscripts), are not cached
-      scriptAsFunction = transpileToFunction(script);
+      scriptAsFunction = transpileToFunction(script, options);
     } else {
       if (!script.content) {
         return undefined as any;
@@ -484,7 +525,7 @@ const memoClientScriptEval = (() => {
         // IScript not in cache -> transpile it
         transpiledCache.set(
           script.content,
-          transpileToFunction(script.content)!,
+          transpileToFunction(script.content, options)!,
         );
       }
       // fetch from cache
@@ -492,8 +533,25 @@ const memoClientScriptEval = (() => {
     }
 
     if (scriptAsFunction) {
+      let exports = {};
+      if (options?.moduleName) {
+        // script with module name -> export symbol to internal WegasModules store
+        exports = globals.__WegasModules[options?.moduleName];
+        if (exports == null) {
+          // modules not yet defined: create it
+          exports = {};
+          // and add it to modules store
+          globals.__WegasModules[options?.moduleName] = exports;
+        }
+      }
       // do not provide effective arguments ever !
-      return scriptAsFunction(undefined, undefined, undefined);
+      return scriptAsFunction(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        exports,
+      );
     } else {
       return undefined as any;
     }
@@ -508,8 +566,9 @@ export function clientScriptEval<T extends ScriptReturnType>(
   state?: {
     [name: string]: unknown;
   },
+  options?: TranspileOptions,
 ): T extends WegasScriptEditorReturnType ? T : unknown {
-  return memoClientScriptEval(script, context, state);
+  return memoClientScriptEval(script, context, state, options);
 }
 
 export function safeClientScriptEval<T extends ScriptReturnType>(
@@ -521,19 +580,24 @@ export function safeClientScriptEval<T extends ScriptReturnType>(
   state?: {
     [name: string]: unknown;
   },
+  options?: TranspileOptions,
 ): T extends WegasScriptEditorReturnType ? T : unknown {
   try {
-    return clientScriptEval<T>(script, context, state);
+    return clientScriptEval<T>(script, context, state, options);
   } catch (e) {
-    const scriptContent = typeof script === 'string' ? script : script?.content;
-    wwarn(
-      `Script error at line ${e.lineNumber} : ${
-        e.message
-      }\n\nScript content is :\n${scriptContent}\n\nTranspiled content is :\n${
-        scriptContent != null ? transpile(scriptContent) : undefined
-      }`,
-    );
-    catchCB && catchCB(e);
+    if (catchCB) {
+      catchCB(e);
+    } else {
+      const scriptContent =
+        typeof script === 'string' ? script : script?.content;
+      wwarn(
+        `Script error at line ${e.lineNumber} : ${
+          e.message
+        }\n\nScript content is :\n${scriptContent}\n\nTranspiled content is :\n${
+          scriptContent != null ? transpile(scriptContent) : undefined
+        }`,
+      );
+    }
     return undefined as any;
   }
 }

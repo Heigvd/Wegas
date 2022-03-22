@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css, cx } from '@emotion/css';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { CommonViewContainer, CommonView } from './commonView';
+import { CommonViewContainer, CommonView, LayoutType, LAYOUTS } from './commonView';
 
 export const borderTopStyle = css({
   borderWidth: '1px 0 0 0',
@@ -17,19 +17,25 @@ export const legendStyle = css({
 });
 
 function ObjectView(
-  props: WidgetProps.ObjectProps<CommonView & { label?: string }>,
+  props: WidgetProps.ObjectProps<CommonView & { label?: string, childrenLayout?: LayoutType }>,
 ) {
+  const { childrenLayout, ...restView } = props.view;
+
+  const childrenCLassName = childrenLayout ? LAYOUTS[childrenLayout] : undefined;
+
   return (
-    <CommonViewContainer errorMessage={props.errorMessage} view={props.view}>
+    <CommonViewContainer errorMessage={ props.errorMessage } view={ restView }>
       <fieldset
-        className={cx(reset, {
+        className={ cx(reset, {
           [borderTopStyle]: props.view.label !== undefined,
-        })}
+        }) }
       >
-        <legend className={legendStyle}>{props.view.label}</legend>
-        {props.children}
+        <legend className={ legendStyle }>{ props.view.label }</legend>
+        <div className={ childrenCLassName }>
+          { props.children }
+        </div>
       </fieldset>
-    </CommonViewContainer>
+    </CommonViewContainer >
   );
 }
 

@@ -477,14 +477,14 @@ export async function generateSchema(
   if (attributes.initExpression) {
     const type = attributes.initExpression.type;
     const script = attributes.initExpression.script;
-    const variable = safeClientScriptEval<SVariableDescriptor>(script);
+    //const variable = safeClientScriptEval<SVariableDescriptor>(script);
     let configArg: MethodSearchers;
     switch (type) {
       case 'global':
         configArg = { type, value: script };
         break;
       case 'variable':
-        configArg = { type, value: variable, mode };
+        configArg = { type, value: safeClientScriptEval<SVariableDescriptor>(script), mode };
         break;
       default:
         configArg = { type };

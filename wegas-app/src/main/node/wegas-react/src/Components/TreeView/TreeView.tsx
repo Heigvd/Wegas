@@ -46,9 +46,15 @@ function DefaultCarret({ icon }: { icon: string }) {
 const MINIMUM_NODE_LABEL_HEIGHT = 30;
 const MINIMUM_NODE_LABEL_WIDTH = 100;
 const KEEP_OPEN_ON_DRAG = false;
+const OPEN_BUTTON = <DefaultCarret icon="▾" />;
+const CLOSE_BUTTON = <DefaultCarret icon="▸" />;
 const OPEN_CLOSE_BUTTONS = {
-  open: <DefaultCarret icon="▾" />,
-  close: <DefaultCarret icon="▸" />,
+  open: OPEN_BUTTON,
+  close: CLOSE_BUTTON,
+};
+export const ALWAYS_OPEN_BUTTONS = {
+  open: CLOSE_BUTTON,
+  close: CLOSE_BUTTON,
 };
 const LEVEL_ICON = '└';
 const DESIGN_PARAMS: DesignParams = {
@@ -140,7 +146,7 @@ interface TreeViewProps<T = unknown> extends ClassStyleId {
     >;
   };
   onMove?: OnMoveFn<T>;
-  parameters?: TreeContextParameters & { designParams: Partial<DesignParams> };
+  parameters?: TreeContextParameters & { designParams?: Partial<DesignParams> };
   style?: React.CSSProperties;
   className?: string;
 }

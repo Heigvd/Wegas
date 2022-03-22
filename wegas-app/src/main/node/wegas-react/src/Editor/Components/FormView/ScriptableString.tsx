@@ -22,7 +22,7 @@ import {
   itemCenter,
 } from '../../../css/classes';
 import { createScript } from '../../../Helper/wegasEntites';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 import { scriptEditStyle } from './Script/Script';
@@ -35,7 +35,24 @@ const labelStyle = css({
 const inputModes = ['Text', 'Variable', 'Code'] as const;
 type InputMode = ValueOf<typeof inputModes>;
 
-function parseScript(script: string = ''): InputMode {
+interface StringLiteral {
+  type: 'Text';
+  content: string;
+}
+
+interface Variable {
+  type: 'Variable';
+  variableName: string;
+}
+
+interface Code {
+  type: 'Code';
+  script: string;
+}
+
+type ParsedScript = StringLiteral | Variable | Code;
+
+function parseScript(script: string = ''): ParsedScript {
   const sourceFile = createSourceFile(
     'Testedfile',
     script,
@@ -48,7 +65,7 @@ function parseScript(script: string = ''): InputMode {
     if (initStatement != null && isExpressionStatement(initStatement)) {
       const initExpression = initStatement.expression;
       if (initExpression == null || isStringLiteral(initExpression)) {
-        return 'Text';
+        return { type: 'Text', content: initExpression.text };
       } else if (isCallExpression(initExpression)) {
         const propertyAccess = initExpression.expression;
         if (isPropertyAccessExpression(propertyAccess)) {
@@ -83,7 +100,10 @@ function parseScript(script: string = ''): InputMode {
                     findName != null &&
                     isStringLiteral(findName)
                   ) {
-                    return 'Variable';
+                    return {
+                      type: 'Variable',
+                      variableName: findName.text,
+                    };
                   }
                 }
               }
@@ -92,22 +112,22 @@ function parseScript(script: string = ''): InputMode {
         }
       }
     } else if (initStatement != null) {
-      return 'Code';
+      return { type: 'Code', script: script };
     } else {
-      return 'Text';
+      return { type: 'Text', content: '' };
     }
   }
-  return 'Code';
+  return { type: 'Code', script: '' };
 }
 
 export interface ScriptableView extends CommonView, LabeledView {
-  required: boolean;
+  required?: boolean;
 }
 
 export function computeReturnType(
-  returnType: WegasScriptEditorReturnTypeName[] | undefined,
+  returnType: string[] | undefined,
   required?: boolean,
-): WegasScriptEditorReturnTypeName[] | undefined {
+): string[] | undefined {
   if (returnType == null) {
     return undefined;
   } else if (required) {
@@ -129,28 +149,14 @@ export interface ScriptableStringProps
 
 export function ScriptableString(props: ScriptableStringProps): JSX.Element {
   const script = props.value ? props.value.content : '';
-  const [inputMode, setInputMode] = React.useState<InputMode>(
-    parseScript(script),
-  );
-  let treeValue = '';
-  let textValue = '';
+  const parsedScript = parseScript(script);
 
-  switch (inputMode) {
-    case 'Variable': {
-      const regexStart = /^(I18n\.toString\(Variable\.find\(gameModel,("|')?)/;
-      const regexEnd = /(("|')?\)\))(;?)$/;
-      treeValue = script.replace(regexStart, '').replace(regexEnd, '');
-      break;
-    }
-    case 'Text': {
-      try {
-        textValue = JSON.parse(script);
-      } catch (e) {
-        textValue = script;
-      }
-      break;
-    }
-  }
+  const [inputMode, setInputMode] = React.useState<InputMode>(
+    parsedScript.type,
+  );
+  const textValue = parsedScript.type === 'Text' ? parsedScript.content : '';
+  const treeValue =
+    parsedScript.type === 'Variable' ? parsedScript.variableName : '';
 
   const onTreeChange = React.useCallback(
     (value?: string) => {
@@ -182,8 +188,9 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
             </div>
             {inputMode === 'Code' ? (
               <div className={scriptEditStyle}>
-                <WegasScriptEditor
-                  value={script}
+                <TempScriptEditor
+                  initialValue={script}
+                  language="typescript"
                   returnType={computeReturnType(
                     ['string'],
                     props.view.required,

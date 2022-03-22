@@ -3,14 +3,12 @@ import { WegasClassNames, IScript, SVariableDescriptor } from 'wegas-ts-api';
 export function toScriptableClassName(classes?: WegasClassNames[]) {
   return classes
     ? classes.map(c => {
-        return ('S' + c) as WegasScriptEditorReturnTypeName;
+        return 'S' + c;
       })
     : undefined;
 }
 
-export function scriptableClassNameToClassFilter(
-  classes?: WegasScriptEditorReturnTypeName[],
-) {
+export function scriptableClassNameToClassFilter(classes?: string[]) {
   return classes
     ? classes.filter(c => c.indexOf('S') === 0).map(c => c.substring(1))
     : undefined;

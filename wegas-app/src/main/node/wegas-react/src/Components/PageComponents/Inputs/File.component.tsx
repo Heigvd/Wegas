@@ -66,10 +66,9 @@ registerComponent(
     illustration: 'fileInput',
     schema: {
       onVariableChange: onVariableChangeSchema('On file click actions'),
-      pathScript: schemaProps.path({
+      pathScript: schemaProps.scriptPath({
         label: 'Root path',
         pickType: 'FOLDER',
-        scriptable: true,
       }),
       pickType: schemaProps.select({
         label: 'File picking option',

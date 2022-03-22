@@ -1,13 +1,13 @@
-import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { LabeledView, Labeled } from './labeled';
-import { CommonView, CommonViewContainer } from './commonView';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { toLower } from 'lodash';
-import { scriptEditStyle } from './Script/Script';
-import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
+import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
 import { createScript } from '../../../Helper/wegasEntites';
+import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
+import { TempScriptEditor } from '../ScriptEditors/TempScriptEditor';
+import { CommonView, CommonViewContainer } from './commonView';
+import { Labeled, LabeledView } from './labeled';
+import { scriptEditStyle } from './Script/Script';
 
 export interface CodeProps
   extends WidgetProps.BaseProps<
@@ -18,6 +18,10 @@ export interface CodeProps
 }
 
 export function Code({ view, value, onChange }: CodeProps) {
+  const language = view.language
+    ? (toLower(view.language) as SrcEditorLanguages)
+    : view.language;
+
   const onValueChange = React.useCallback(
     (val: string) => {
       if (value == null || typeof value === 'string') {
@@ -36,13 +40,9 @@ export function Code({ view, value, onChange }: CodeProps) {
             <>
               {labelNode}
               <div className={scriptEditStyle}>
-                <WegasScriptEditor
-                  language={
-                    view.language
-                      ? (toLower(view.language) as SrcEditorLanguages)
-                      : view.language
-                  }
-                  value={
+                <TempScriptEditor
+                  language={language}
+                  initialValue={
                     typeof value === 'string' ? value : value?.content || ''
                   }
                   onChange={onValueChange}

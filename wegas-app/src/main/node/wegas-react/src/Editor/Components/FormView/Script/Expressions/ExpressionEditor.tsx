@@ -18,8 +18,7 @@ import { State } from '../../../../../data/Reducer/reducers';
 import { GameModel } from '../../../../../data/selectors';
 import { useStore } from '../../../../../data/Stores/store';
 import { MessageString } from '../../../MessageString';
-import { EmbeddedSrcEditor } from '../../../ScriptEditors/EmbeddedSrcEditor';
-import { WegasScriptEditor } from '../../../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../../../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
 import { Labeled, LabeledView } from '../../labeled';
 import { genVarItems } from '../../TreeVariableSelect';
@@ -80,6 +79,9 @@ type FormStateActions =
       payload: { error: string };
     }
   | {
+      type: 'UNSET_ERROR';
+    }
+  | {
       type: 'SET_SOFT_ERROR';
       payload: { error: string };
     };
@@ -127,6 +129,10 @@ export function ExpressionEditor({
           }
           case 'SET_ERROR': {
             state.error = action.payload.error;
+            break;
+          }
+          case 'UNSET_ERROR': {
+            state.error = undefined;
             break;
           }
           case 'SET_SOFT_ERROR': {
@@ -286,6 +292,28 @@ export function ExpressionEditor({
     [mode, onChange, variablesItems],
   );
 
+  const isServerScript = mode === 'SET' || mode === 'GET';
+
+  const onScriptEditorChange = React.useCallback(
+    (value: string) => {
+      try {
+        parse(value).program.body[0];
+        dispatchFormState({
+          type: 'UNSET_ERROR',
+        });
+        onChange && onChange(value);
+      } catch (e) {
+        dispatchFormState({
+          type: 'SET_ERROR',
+          payload: {
+            error: 'Script cannot be parsed',
+          },
+        });
+      }
+    },
+    [onChange],
+  );
+
   return (
     <div id={id} className={expressionEditorStyle}>
       <Button
@@ -294,19 +322,17 @@ export function ExpressionEditor({
         pressed={srcMode}
         onClick={() => setSrcMode(srcMode => !srcMode)}
       />
-      {srcMode ? (
+      {typeof error === 'string' || srcMode ? (
         <div className={scriptEditStyle}>
           <MessageString type="error" value={error || softError} />
-          <EmbeddedSrcEditor
-            value={code}
-            onChange={onChange}
+          <TempScriptEditor
+            language={isServerScript ? 'javascript' : 'typescript'}
+            initialValue={code}
+            onChange={onScriptEditorChange}
             noGutter
             minimap={false}
             returnType={returnTypes(mode)}
             resizable
-            scriptContext={mode === 'SET' ? 'Server internal' : 'Client'}
-            Editor={WegasScriptEditor}
-            EmbeddedEditor={WegasScriptEditor}
           />
         </div>
       ) : (

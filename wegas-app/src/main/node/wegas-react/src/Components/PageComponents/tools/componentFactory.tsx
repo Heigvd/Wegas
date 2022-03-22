@@ -9,6 +9,7 @@ import {
 } from 'wegas-ts-api';
 import { composeEnhancers } from '../../../data/Stores/store';
 import { IconComponentType } from '../../../Editor/Components/Page/ComponentIcon';
+import { AvailableSchemas } from '../../../Editor/Components/FormView';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 import { useAnyStore } from '../../Hooks/storeHookFactory';
 import {
@@ -18,7 +19,6 @@ import {
 } from './EditableComponent';
 import { classStyleIdShema } from './options';
 import { ChildrenDeserializerProps } from './PageDeserializer';
-import { SchemaPropsSchemas, SimpleSchemaPropsSchemas } from './schemaProps';
 
 export const usableComponentType = [
   'Layout',
@@ -53,7 +53,7 @@ export interface Submenus {
 export interface ContainerComponent<P = {}> {
   isVertical?: (props?: P) => boolean | undefined;
   ChildrenDeserializer?: React.FunctionComponent<ChildrenDeserializerProps<P>>;
-  childrenAdditionalShema?: { [prop: string]: SimpleSchemaPropsSchemas };
+  childrenAdditionalShema?: { [prop: string]: AvailableSchemas };
   childrenLayoutOptionSchema?: HashListChoices;
   childrenLayoutKeys?: string[];
 }
@@ -124,7 +124,7 @@ interface ComponentFactoryBasicParameters<
   /**
    * Indicates who to manage the component properties
    */
-  schema: { [prop: string]: SchemaPropsSchemas };
+  schema: { [prop: string]: AvailableSchemas };
   /**
    * Indicates for which kind of variables this component suits well
    */
@@ -170,7 +170,7 @@ export interface PageComponent<
   componentName: string;
   schema: {
     description: string;
-    properties: { [prop: string]: SchemaPropsSchemas };
+    properties: { [prop: string]: AvailableSchemas };
   };
   getComputedPropsFromVariable?: (
     variable?: WegasClassNameAndScriptableTypes[T],
