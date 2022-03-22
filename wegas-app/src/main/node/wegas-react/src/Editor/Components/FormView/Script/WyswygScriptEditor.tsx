@@ -75,7 +75,7 @@ export function WyswygScriptEditor({
           const cleanValue: Statement[] = value.statements.map(
             (s: { statement: string }) => {
               return s
-                ? parse(s.statement).program.body[0]
+                ? parse(s.statement).program.body[0] || emptyStatement()
                 : createNewExpression(mode);
             },
           );
