@@ -523,10 +523,12 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
             libraryName: updatedLibraryName,
             library,
           });
-          Object.entries(librariesState.client).forEach(([k, v]) => {
+          Object.entries({
+            ...librariesState.client,
+            [updatedLibraryName]: { persisted: library },
+          }).forEach(([k, v]) => {
             executeClientLibrary(k, v.persisted.content);
           });
-          executeClientLibrary(updatedLibraryName, library.content);
         },
       );
     },
@@ -536,7 +538,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
 
   const serverScriptEventHandler = React.useCallback(
     (updatedLibraryName: string) => {
-      LibraryAPI.getLibrary('ClientScript', updatedLibraryName).then(
+      LibraryAPI.getLibrary('ServerScript', updatedLibraryName).then(
         (library: IGameModelContent) => {
           dispatchLibrariesState({
             actionType: 'UpdateLibrary',

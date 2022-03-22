@@ -65,8 +65,8 @@ function LibraryNode({
           )}
         >
           {libraryName}
-          {library.modified && '[unsaved]'}
-          {library.conflict && '[outdated]'}
+          {library.modified && ' [unsaved]'}
+          {library.conflict && ' [outdated]'}
         </div>
       }
     />
@@ -138,8 +138,9 @@ function LibraryTypeNode({
         />
       }
     >
-      {Object.entries(librariesState[libraryType]).map(
-        ([libraryName, library]) => (
+      {Object.entries(librariesState[libraryType])
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([libraryName, library]) => (
           <LibraryNode
             key={library.persisted.id!}
             libraryName={libraryName}
@@ -147,8 +148,7 @@ function LibraryTypeNode({
             onSelectLibrary={() => onSelectLibrary(libraryName)}
             selected={libraryName === selectedLibraryName}
           />
-        ),
-      )}
+        ))}
     </TreeNode>
   );
 }
@@ -157,13 +157,13 @@ function LibraryTypeNode({
  * LibraryEditor is a component for wegas library management
  */
 export default function LibraryEditor() {
-  const [message, setMessage] = React.useState<
-    LibrariesCallbackMessage | undefined
-  >();
+  const [message, setMessage] =
+    React.useState<LibrariesCallbackMessage | undefined>();
   const [mergeMode, setMergeMode] = React.useState(false);
-  const [selectedLibraryData, setSelectedLibraryData] = React.useState<
-    { libraryType: LibraryType; libraryName: string } | undefined
-  >(undefined);
+  const [selectedLibraryData, setSelectedLibraryData] =
+    React.useState<
+      { libraryType: LibraryType; libraryName: string } | undefined
+    >(undefined);
   const { librariesState, saveLibrary, setLibraryVisibility, removeLibrary } =
     React.useContext(librariesCTX);
 
