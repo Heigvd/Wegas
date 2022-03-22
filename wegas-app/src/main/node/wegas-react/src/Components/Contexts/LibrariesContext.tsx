@@ -121,6 +121,7 @@ export function createOrUpdateModel(
   modelContent: string,
   language: SrcEditorLanguages,
   modelName?: string,
+  onCreateCB?: (model: MonacoEditorModel) => void,
 ) {
   const name = computePath(modelName, language);
   const libUri = reactMonaco.Uri.parse(name);
@@ -136,6 +137,7 @@ export function createOrUpdateModel(
     monacoLogger.info('Creating model');
     model = reactMonaco.editor.createModel(modelContent, language, libUri);
     model.setEOL(reactMonaco.editor.EndOfLineSequence.LF);
+    onCreateCB && onCreateCB(model);
   }
   return model;
 }
@@ -599,34 +601,27 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
         .forEach(([type, libTypes]) => {
           Object.entries(libTypes)
             // Only update libraries that are not beeing modified
-            // .filter(([, libStatus]) => !libStatus.modified)
+            .filter(([, libStatus]) => !libStatus.modified)
             .forEach(([name, libStatus]) => {
-              if (!libStatus.modified) {
-                const model = createOrUpdateModel(
-                  reactMonaco,
-                  libStatus.persisted.content,
-                  libraryTypeToLanguage(type),
-                  computeLibraryPath(name, type),
-                );
-                model.onDidChangeContent(() => {
-                  const libraryType = type;
-                  const libraryName = name;
-                  const modelValue = model.getValue();
-                  dispatchLibrariesState({
-                    actionType: 'ModifyLibraryModel',
-                    libraryType,
-                    libraryName,
-                    modelValue,
+              createOrUpdateModel(
+                reactMonaco,
+                libStatus.persisted.content,
+                libraryTypeToLanguage(type),
+                computeLibraryPath(name, type),
+                model => {
+                  model.onDidChangeContent(() => {
+                    const libraryType = type;
+                    const libraryName = name;
+                    const modelValue = model.getValue();
+                    dispatchLibrariesState({
+                      actionType: 'ModifyLibraryModel',
+                      libraryType,
+                      libraryName,
+                      modelValue,
+                    });
                   });
-                });
-              } else {
-                createOrUpdateModel(
-                  reactMonaco,
-                  libStatus.persisted.content,
-                  libraryTypeToLanguage(type),
-                  computeLibraryPath(name + '.server', type),
-                );
-              }
+                },
+              );
             });
         });
     }
@@ -745,9 +740,6 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
             let savedWithErrors = false;
             if (libraryType === 'client') {
               try {
-                Object.entries(librariesState.client).forEach(([k, v]) => {
-                  executeClientLibrary(k, v.persisted.content);
-                });
                 executeClientLibrary(libraryName, library.content);
               } catch (e) {
                 savedWithErrors = true;

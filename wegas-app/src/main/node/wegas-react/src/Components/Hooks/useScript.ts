@@ -585,15 +585,19 @@ export function safeClientScriptEval<T extends ScriptReturnType>(
   try {
     return clientScriptEval<T>(script, context, state, options);
   } catch (e) {
-    const scriptContent = typeof script === 'string' ? script : script?.content;
-    wwarn(
-      `Script error at line ${e.lineNumber} : ${
-        e.message
-      }\n\nScript content is :\n${scriptContent}\n\nTranspiled content is :\n${
-        scriptContent != null ? transpile(scriptContent) : undefined
-      }`,
-    );
-    catchCB && catchCB(e);
+    if (catchCB) {
+      catchCB(e);
+    } else {
+      const scriptContent =
+        typeof script === 'string' ? script : script?.content;
+      wwarn(
+        `Script error at line ${e.lineNumber} : ${
+          e.message
+        }\n\nScript content is :\n${scriptContent}\n\nTranspiled content is :\n${
+          scriptContent != null ? transpile(scriptContent) : undefined
+        }`,
+      );
+    }
     return undefined as any;
   }
 }

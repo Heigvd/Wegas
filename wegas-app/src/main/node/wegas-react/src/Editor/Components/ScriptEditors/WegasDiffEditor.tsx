@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import { DiffEditor, Monaco } from '@monaco-editor/react';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
+import { wlog } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { MonacoEditorProperties, MonacoSDiffEditor } from './editorHelpers';
@@ -37,7 +38,7 @@ interface WegasDiffEditorProps {
   /**
    * filename - the name of the current modified file
    */
-  persistedFileName?: string;
+  persistedFileContent?: string;
   /**
    * filename - the name of the current modified file
    */
@@ -82,7 +83,7 @@ interface WegasDiffEditorProps {
 
 function WegasDiffEditor({
   modifiedFileName,
-  persistedFileName,
+  persistedFileContent,
   readOnly,
   minimap,
   noGutter,
@@ -135,6 +136,8 @@ function WegasDiffEditor({
     [handleDiffNavigator, onEditorReady, onSave],
   );
 
+  wlog(persistedFileContent);
+
   return (
     <SizedDiv className={overflowHide}>
       {size => (
@@ -143,7 +146,9 @@ function WegasDiffEditor({
           height={size ? size.height : undefined} // By default, it fully fits with its parent
           width={size ? size.width : undefined} // By default, it fully fits with its parent
           modifiedModelPath={modifiedFileName}
-          originalModelPath={persistedFileName}
+          // originalContent={persistedFileContent}
+          //566+56+565
+          original={persistedFileContent}
           onMount={onMount}
           loading={i18nValues.loading + '...'}
           keepCurrentModifiedModel

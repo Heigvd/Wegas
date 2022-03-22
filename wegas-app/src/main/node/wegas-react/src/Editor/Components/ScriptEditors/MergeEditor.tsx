@@ -107,9 +107,9 @@ type ModalState = ModalStateClose | ModalStateError;
 
 interface MergeEditorProps {
   /**
-   * filename - the name of the current modified file
+   * originalContent - the content of the original file
    */
-  persistedFileName: string;
+  originalContent: string;
   /**
    * filename - the name of the current modified file
    */
@@ -126,7 +126,7 @@ interface MergeEditorProps {
 }
 
 function MergeEditor({
-  persistedFileName,
+  originalContent,
   modifiedFileName,
   minimap,
   onResolved,
@@ -146,10 +146,9 @@ function MergeEditor({
 
   const beforeMount = React.useCallback(
     (monaco: Monaco) => {
-      persistedModel.current = getModel(monaco, persistedFileName);
       modifiedModel.current = getModel(monaco, modifiedFileName);
     },
-    [modifiedFileName, persistedFileName],
+    [modifiedFileName],
   );
 
   const handleDiffNavigator = React.useCallback(
@@ -347,7 +346,7 @@ function MergeEditor({
       <Toolbar.Content>
         <WegasDiffEditor
           modifiedFileName={modifiedFileName}
-          persistedFileName={persistedFileName}
+          persistedFileContent={originalContent}
           minimap={minimap}
           onSave={onSave}
           onBeforeMount={beforeMount}
