@@ -7,8 +7,10 @@
  */
 package com.wegas.messaging.persistence;
 
+import ch.albasim.wegas.annotations.CommonView;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.Helper;
@@ -19,7 +21,6 @@ import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
-import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -65,7 +66,7 @@ public class InboxInstance extends VariableInstance {
         optional = false, nullable = false, proposal = EmptyArray.class,
         view = @View(
             label = "Messages",
-            value = Hidden.class
+            featureLevel = CommonView.FEATURE_LEVEL.ADVANCED
         ))
     private List<Message> messages = new ArrayList<>();
 
@@ -261,6 +262,10 @@ public class InboxInstance extends VariableInstance {
     /**
      * @return unread message count
      */
+    @WegasExtraProperty(view = @View(
+        label = "Unread count",
+        readOnly = true
+    ))
     public int getUnreadCount() {
         int unread = 0;
         List<Message> listMessages = this.getMessages();
