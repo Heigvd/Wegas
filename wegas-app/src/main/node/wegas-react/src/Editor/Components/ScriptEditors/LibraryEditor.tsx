@@ -157,13 +157,13 @@ function LibraryTypeNode({
  * LibraryEditor is a component for wegas library management
  */
 export default function LibraryEditor() {
-  const [message, setMessage] =
-    React.useState<LibrariesCallbackMessage | undefined>();
+  const [message, setMessage] = React.useState<
+    LibrariesCallbackMessage | undefined
+  >();
   const [mergeMode, setMergeMode] = React.useState(false);
-  const [selectedLibraryData, setSelectedLibraryData] =
-    React.useState<
-      { libraryType: LibraryType; libraryName: string } | undefined
-    >(undefined);
+  const [selectedLibraryData, setSelectedLibraryData] = React.useState<
+    { libraryType: LibraryType; libraryName: string } | undefined
+  >(undefined);
   const { librariesState, saveLibrary, setLibraryVisibility, removeLibrary } =
     React.useContext(librariesCTX);
 
@@ -320,13 +320,10 @@ export default function LibraryEditor() {
             )}
           </Toolbar.Header>
           <Toolbar.Content>
-            {selectedLibraryData != null ? (
+            {selectedLibraryData != null && currentLibrary != null ? (
               mergeMode ? (
                 <MergeEditor
-                  persistedFileName={computeLibraryPath(
-                    selectedLibraryData.libraryName + '.server',
-                    selectedLibraryData.libraryType,
-                  )}
+                  originalContent={currentLibrary.persisted.content}
                   modifiedFileName={computeLibraryPath(
                     selectedLibraryData.libraryName,
                     selectedLibraryData.libraryType,
