@@ -42,6 +42,13 @@ interface LibraryNodeProps {
   selected: boolean;
 }
 
+const labelStyle = css({
+  width: '100%',
+  ':hover': {
+    backgroundColor: 'var(--colors-hovercolor)',
+  },
+});
+
 function LibraryNode({
   libraryName,
   library,
@@ -56,6 +63,7 @@ function LibraryNode({
         <div
           onClick={onSelectLibrary}
           className={cx(
+            labelStyle,
             flex,
             flexBetween,
             cx({
@@ -123,13 +131,11 @@ interface CustomLibraryEditorProps {
  * LibraryEditor is a component for wegas library management
  */
 export function CustomLibraryEditor({ libraryType }: CustomLibraryEditorProps) {
-  const [message, setMessage] = React.useState<
-    LibrariesCallbackMessage | undefined
-  >();
+  const [message, setMessage] =
+    React.useState<LibrariesCallbackMessage | undefined>();
   const [mergeMode, setMergeMode] = React.useState(false);
-  const [selectedLibraryName, setSelectedLibraryName] = React.useState<
-    string | undefined
-  >(undefined);
+  const [selectedLibraryName, setSelectedLibraryName] =
+    React.useState<string | undefined>(undefined);
 
   const { librariesState, saveLibrary, setLibraryVisibility, removeLibrary } =
     React.useContext(librariesCTX);
@@ -177,6 +183,29 @@ export function CustomLibraryEditor({ libraryType }: CustomLibraryEditorProps) {
     },
     [],
   );
+
+  const downloadCb = React.useCallback(() => {
+    if (currentLibrary != null) {
+      const content = currentLibrary.persisted.content;
+
+      const extension =
+        libraryType === 'client'
+          ? 'ts'
+          : libraryType === 'server'
+          ? 'js'
+          : 'css';
+
+      const filename = `${selectedLibraryName}.${extension}`;
+
+      const anchor: HTMLAnchorElement = document.createElement('a');
+      anchor.setAttribute(
+        'href',
+        'data:text/plain;charset=utf-8,' + encodeURIComponent(content),
+      );
+      anchor.setAttribute('download', filename);
+      anchor.click();
+    }
+  }, [currentLibrary, selectedLibraryName, libraryType]);
 
   return (
     <ReflexContainer orientation="vertical">
@@ -250,6 +279,7 @@ export function CustomLibraryEditor({ libraryType }: CustomLibraryEditorProps) {
                     onClick={onSave}
                   />
                 )}
+                <IconButton icon="download" onClick={downloadCb} />
                 <ConfirmButton
                   icon="trash"
                   onAction={success =>
