@@ -15,7 +15,7 @@
       "devDependencies": {
         "jest": "^27.4.5",
         "rimraf": "^3.0.0",
-        "typescript": "4.2.x",
+        "typescript": "4.3.x",
         "tslint" : "^5.1.0",
         "copyfiles": "^2.3.0"
   }
