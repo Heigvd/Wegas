@@ -181,10 +181,7 @@ async function WindowedEditor<T extends IMergeable>({
     return null;
   }
 
-  const [Form, schema] = await Promise.all<
-    typeof import('./Form')['Form'],
-    Schema<AvailableViews>
-  >([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
+  const [Form, schema] = await Promise.all([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
 
   // First try to get schema from simple filters
   const customSchemas = store.getState().global.schemas;
