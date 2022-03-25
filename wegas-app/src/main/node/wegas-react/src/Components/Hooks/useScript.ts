@@ -70,6 +70,7 @@ interface GlobalVariableClass {
 }
 
 interface GlobalClasses {
+  Error: typeof globalThis['Error'];
   Function: typeof globalThis['Function'];
   gameModel?: Readonly<SGameModel>;
   self?: Readonly<SPlayer>;
@@ -571,6 +572,38 @@ export function clientScriptEval<T extends ScriptReturnType>(
   return memoClientScriptEval(script, context, state, options);
 }
 
+interface WegasScriptError extends Error {
+  fileName?: string;
+  lineNumber?: number;
+  columnNumber?: number;
+}
+
+export function printWegasScriptError(error: WegasScriptError): string {
+  return `Script error in transpiled ${error.fileName}:${error.lineNumber}:${error.columnNumber} : ${error.message}`;
+}
+
+function handleError(error: unknown, filename?: string): WegasScriptError {
+  if (error instanceof Error || error instanceof globals.Error) {
+    const e: WegasScriptError = {
+      message: error.message,
+      name: error.name,
+      stack: error.stack,
+      fileName: filename,
+      lineNumber: (error as unknown as { lineNumber?: number }).lineNumber,
+      columnNumber: (error as unknown as { columnNumber?: number })
+        .columnNumber,
+    };
+    return e;
+  } else {
+    const e: WegasScriptError = {
+      message: 'Unknown Error' + error,
+      name: 'WegasScriptError',
+      fileName: filename,
+    };
+    return e;
+  }
+}
+
 export function safeClientScriptEval<T extends ScriptReturnType>(
   script?: string | IScript,
   context?: {
@@ -585,15 +618,15 @@ export function safeClientScriptEval<T extends ScriptReturnType>(
   try {
     return clientScriptEval<T>(script, context, state, options);
   } catch (e) {
+    const error = handleError(e, options?.moduleName);
     if (catchCB) {
-      catchCB(e);
+      catchCB(error);
     } else {
       const scriptContent =
         typeof script === 'string' ? script : script?.content;
       wwarn(
-        `Script error at line ${e.lineNumber} : ${
-          e.message
-        }\n\nScript content is :\n${scriptContent}\n\nTranspiled content is :\n${
+        `${printWegasScriptError(error)}
+        \n\nScript content is :\n${scriptContent}\n\nTranspiled content is :\n${
           scriptContent != null ? transpile(scriptContent) : undefined
         }`,
       );
@@ -614,9 +647,10 @@ export function useScript<T extends ScriptReturnType>(
   },
   catchCB?: (e: Error) => void,
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
-  const oldContext = React.useRef<{
-    [name: string]: unknown;
-  }>();
+  const oldContext =
+    React.useRef<{
+      [name: string]: unknown;
+    }>();
 
   const newContext = React.useMemo(() => {
     if (deepDifferent(context, oldContext.current)) {

@@ -24,6 +24,7 @@ import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { useGlobalLibs } from '../Hooks/useGlobalLibs';
 import {
+  printWegasScriptError,
   safeClientScriptEval,
   setGlobals,
   useGlobalContexts,
@@ -415,7 +416,7 @@ function executeClientLibrary(libraryName: string, libraryContent: string) {
   safeClientScriptEval(
     libraryContent,
     undefined,
-    () => librariesLoaderLogger.warn(`In client script  : ${libraryName}`),
+    e => librariesLoaderLogger.warn(printWegasScriptError(e)),
     undefined,
     {
       moduleName: `./${libraryName}`,
