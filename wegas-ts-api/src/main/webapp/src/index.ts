@@ -6,12 +6,13 @@
  * Licensed under the MIT License
  */
 
-import { IMergeable, ITeam, IListDescriptor } from "..";
+import { IMergeable, ITeam, IListDescriptor, WegasClassNamesAndClasses } from "..";
 import {
   AtClassToConcrtetableClasses,
   mapAtClassToConcreteClasses,
   AtClassToConcreteClasses,
   WegasClassNameAndScriptableTypes,
+  AtClassToConcrtetableTypes,
 } from "./generated/WegasScriptableEntities";
 
 export type ScriptableEntity<
@@ -20,13 +21,18 @@ export type ScriptableEntity<
 
 export type MapOf<T> = { [key: string]: T; [key: number]: T };
 
+
+export type ConcretableFactory = {
+    [P in keyof AtClassToConcrtetableClasses]: (client: WegasClient, enttiy: WegasClassNamesAndClasses[P] ) => AtClassToConcrtetableTypes[P]
+};
+
 export class WegasClient {
   /**
    * Some classes require user to implement some methods.
    * User has to provide those implementation with this function.
    * @param implementations
    */
-  constructor(private implementations: AtClassToConcrtetableClasses) {}
+  constructor(private implementations: ConcretableFactory) {}
 
   /**
    * Create a Scriptable Entity from a IAbstractEntity.
@@ -37,7 +43,7 @@ export class WegasClient {
    */
   // prettier-ignore
   instantiate<T extends IMergeable | IMergeable[] | MapOf<IMergeable> | null | undefined>(entities: T):
-    T extends undefined ? undefined : T extends null ? null 
+    T extends undefined ? undefined : T extends null ? null
     : (T extends IMergeable // entity as-is
     ? ScriptableEntity<T>  // -> return a ScriptableEntity
     : (
@@ -64,7 +70,7 @@ export class WegasClient {
         return new mapAtClassToConcreteClasses[atClass](this, entity as any) as any;
       } else if (entity["@class"] in this.implementations) {
         const atClass = entity["@class"] as keyof AtClassToConcrtetableClasses;
-        return new this.implementations[atClass]!(this, entity as any) as any;
+         return this.implementations[atClass]!(this, entity as any) as any;
       } else {
         throw Error("Cannot instantiate abstract class " + entity["@class"] + "!");
       }

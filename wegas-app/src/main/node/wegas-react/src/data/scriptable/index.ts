@@ -33,33 +33,36 @@ import {
   SSurveyNumberDescriptorImpl,
 } from './impl/SurveyInputDescriptor';
 
-const apiConnector = new WegasApiConnector.WegasClient({
-  AchievementDescriptor: SAchievementDescriptorImpl,
-  BooleanDescriptor: SBooleanDescriptorImpl,
-  BurndownDescriptor: SBurndownDescriptorImpl,
-  ChoiceDescriptor: SChoiceDescriptorImpl,
-  DialogueDescriptor: SDialogueDescriptorImpl,
-  FSMDescriptor: SFSMDescriptorImpl,
-  InboxDescriptor: SInboxDescriptorImpl,
-  ListDescriptor: SListDescriptorImpl,
-  NumberDescriptor: SNumberDescriptorImpl,
-  ObjectDescriptor: SObjectDescriptorImpl,
-  PeerReviewDescriptor: SPeerReviewDescriptorImpl,
-  ResourceDescriptor: SResourceDescriptorImpl,
-  SingleResultChoiceDescriptor: SSingleResultChoiceDescriptorImpl,
-  StaticTextDescriptor: SStaticTextDescriptorImpl,
-  StringDescriptor: SStringDescriptorImpl,
-  SurveyDescriptor: SSurveyDescriptorImpl,
-  TaskDescriptor: STaskDescriptorImpl,
-  TextDescriptor: STextDescriptorImpl,
-  TriggerDescriptor: STriggerDescriptorImpl,
-  WhQuestionDescriptor: SWhQuestionDescriptorImpl,
-  QuestionDescriptor: SQuestionDescriptorImpl,
-  SurveySectionDescriptor: SSurveySectionDescriptorImpl,
-  SurveyChoicesDescriptor: SSurveyChoicesDescriptorImpl,
-  SurveyTextDescriptor: SSurveyTextDescriptorImpl,
-  SurveyNumberDescriptor: SSurveyNumberDescriptorImpl,
-});
+const factory: WegasApiConnector.ConcretableFactory = {
+  AchievementDescriptor: (c, e) => new SAchievementDescriptorImpl(c, e),
+  BooleanDescriptor: (c, e) => new SBooleanDescriptorImpl(c, e),
+  BurndownDescriptor: (c, e) => new SBurndownDescriptorImpl(c, e),
+  ChoiceDescriptor: (c, e) => new SChoiceDescriptorImpl(c, e),
+  DialogueDescriptor: (c, e) => new SDialogueDescriptorImpl(c, e),
+  FSMDescriptor: (c, e) => new SFSMDescriptorImpl(c, e),
+  InboxDescriptor: (c, e) => new SInboxDescriptorImpl(c, e),
+  ListDescriptor: (c, e) => new SListDescriptorImpl(c, e),
+  NumberDescriptor: (c, e) => new SNumberDescriptorImpl(c, e),
+  ObjectDescriptor: (c, e) => new SObjectDescriptorImpl(c, e),
+  PeerReviewDescriptor: (c, e) => new SPeerReviewDescriptorImpl(c, e),
+  ResourceDescriptor: (c, e) => new SResourceDescriptorImpl(c, e),
+  SingleResultChoiceDescriptor: (c, e) =>
+    new SSingleResultChoiceDescriptorImpl(c, e),
+  StaticTextDescriptor: (c, e) => new SStaticTextDescriptorImpl(c, e),
+  StringDescriptor: (c, e) => new SStringDescriptorImpl(c, e),
+  SurveyDescriptor: (c, e) => new SSurveyDescriptorImpl(c, e),
+  TaskDescriptor: (c, e) => new STaskDescriptorImpl(c, e),
+  TextDescriptor: (c, e) => new STextDescriptorImpl(c, e),
+  TriggerDescriptor: (c, e) => new STriggerDescriptorImpl(c, e),
+  WhQuestionDescriptor: (c, e) => new SWhQuestionDescriptorImpl(c, e),
+  QuestionDescriptor: (c, e) => new SQuestionDescriptorImpl(c, e),
+  SurveySectionDescriptor: (c, e) => new SSurveySectionDescriptorImpl(c, e),
+  SurveyChoicesDescriptor: (c, e) => new SSurveyChoicesDescriptorImpl(c, e),
+  SurveyTextDescriptor: (c, e) => new SSurveyTextDescriptorImpl(c, e),
+  SurveyNumberDescriptor: (c, e) => new SSurveyNumberDescriptorImpl(c, e),
+};
+
+const apiConnector = new WegasApiConnector.WegasClient(factory);
 
 export function instantiate<
   T extends IMergeable | IMergeable[] | MapOf<IMergeable> | null | undefined,
