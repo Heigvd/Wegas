@@ -39,7 +39,8 @@ function pageLoadersSelector(s: State) {
   Object.entries(s.pages)
     .filter(([, v]) => isWegasComponent(v))
     .map(([k, v]) =>
-      visitComponents(v, c => {
+      // TS does not understand PageIndexes have been filtered out
+      visitComponents(v as unknown as WegasComponent, c => {
         if (isPageLoaderComponent(c)) {
           loaders.push({
             label: c.props.name,
@@ -83,55 +84,55 @@ export default function PageLoaderSelect({
     : 'typescript';
 
   return (
-    <CommonViewContainer view={view} errorMessage={errorMessage}>
-      <Labeled {...view}>
-        {({ inputId, labelNode }) => (
+    <CommonViewContainer view={ view } errorMessage={ errorMessage }>
+      <Labeled { ...view }>
+        { ({ inputId, labelNode }) => (
           <>
-            {labelNode}
-            <div className={cx(flex, flexRow)} id={inputId}>
-              {pageLoaders.length === 0 ? (
+            { labelNode }
+            <div className={ cx(flex, flexRow) } id={ inputId }>
+              { pageLoaders.length === 0 ? (
                 <MessageString value="No page loader found" />
               ) : (
                 <>
                   <Button
                     icon="code"
-                    onClick={() => setSrcMode(sm => !sm)}
-                    className={css({ flex: '0 1 auto' })}
+                    onClick={ () => setSrcMode(sm => !sm) }
+                    className={ css({ flex: '0 1 auto' }) }
                   />
-                  {srcMode ? (
-                    <div className={cx(scriptEditStyle, grow)}>
+                  { srcMode ? (
+                    <div className={ cx(scriptEditStyle, grow) }>
                       <TempScriptEditor
-                        initialValue={loaderValue || ''}
-                        returnType={['string']}
-                        onChange={setPageLoader}
-                        onSave={newValue =>
+                        initialValue={ loaderValue || '' }
+                        returnType={ ['string'] }
+                        onChange={ setPageLoader }
+                        onSave={ newValue =>
                           onChange(
                             value
                               ? { ...value, content: newValue }
                               : createScript(newValue, 'TypeScript'),
                           )
                         }
-                        language={language}
-                        minimap={false}
+                        language={ language }
+                        minimap={ false }
                         noGutter
                         resizable
                       />
                     </div>
                   ) : (
                     <DropMenu
-                      items={pageLoaders}
-                      onSelect={item => {
+                      items={ pageLoaders }
+                      onSelect={ item => {
                         onPageLoaderChange(item.value.name);
-                      }}
-                      label={pageLoaderName}
-                      containerClassName={grow}
+                      } }
+                      label={ pageLoaderName }
+                      containerClassName={ grow }
                     />
-                  )}
+                  ) }
                 </>
-              )}
+              ) }
             </div>
           </>
-        )}
+        ) }
       </Labeled>
     </CommonViewContainer>
   );

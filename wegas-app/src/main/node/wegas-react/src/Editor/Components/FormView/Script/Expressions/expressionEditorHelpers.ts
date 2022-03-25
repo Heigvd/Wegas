@@ -14,7 +14,7 @@ import {
   WegasMethodParameter,
 } from '../../../../editionConfig';
 import { StringOrT } from '../../TreeVariableSelect';
-import { isScriptCondition } from '../Script';
+import { handleError, isScriptCondition } from '../Script';
 import { parseStatement } from './astManagement';
 
 const booleanOperators = {
@@ -555,6 +555,6 @@ export function testCode(
       return 'While multiple statements are detected, source mode is forced';
     }
   } catch (e) {
-    return e.message;
+    return handleError(e);
   }
 }
