@@ -1,17 +1,10 @@
-import { css } from '@emotion/css';
 import { DiffEditor, Monaco } from '@monaco-editor/react';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { MonacoEditorProperties, MonacoSDiffEditor } from './editorHelpers';
-import { gutter } from './SrcEditor';
-
-const overflowHide = css({
-  overflow: 'hidden',
-  width: '100%',
-  height: '100%',
-});
+import { editorStyle, gutter } from './SrcEditor';
 
 type MonacoDiffNavigator = ReturnType<Monaco['editor']['createDiffNavigator']>;
 export type DiffEditorLineChanges = Exclude<
@@ -142,7 +135,7 @@ function WegasDiffEditor({
   );
 
   return (
-    <SizedDiv className={overflowHide}>
+    <SizedDiv className={editorStyle}>
       {size => (
         <DiffEditor
           beforeMount={onBeforeMount}

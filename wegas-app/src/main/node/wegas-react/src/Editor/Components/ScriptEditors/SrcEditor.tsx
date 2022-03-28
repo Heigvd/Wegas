@@ -1,4 +1,4 @@
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import Editor, { Monaco } from '@monaco-editor/react';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
@@ -67,11 +67,26 @@ export interface SrcEditorProps {
   defaultProperties?: MonacoEditorProperties;
 }
 
+const errorStyle = css({
+  '& .squiggly-error': {
+    ':before': {
+      content: "' '",
+      backgroundColor: 'red',
+      left: 0,
+      width: '4px',
+      height: '19px',
+      position: 'fixed',
+    },
+  },
+});
+
 const overflowHide = css({
   overflow: 'hidden',
   width: '100%',
   height: '100%',
 });
+
+export const editorStyle = cx(overflowHide, errorStyle);
 
 export const addExtraLib = (
   service: MonacoLangaugesServices,
@@ -234,7 +249,7 @@ function SrcEditor({
   // );
 
   return (
-    <SizedDiv className={overflowHide}>
+    <SizedDiv className={editorStyle}>
       {size => {
         return (
           <Editor
