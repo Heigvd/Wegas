@@ -556,10 +556,11 @@ function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
 
 export function useComputeUnreadCount(
   unreadCountVariableScript: IScript | undefined,
+  context: PageComponentContext,
 ): PlayerInfoBulletProps | undefined {
   const scriptReturn = useScript<
     string | number | object[] | UnreadCountDescriptorTypes
-  >(unreadCountVariableScript);
+  >(unreadCountVariableScript, context);
 
   let infoBeamMessage: string | number;
   if (typeof scriptReturn === 'number') {
