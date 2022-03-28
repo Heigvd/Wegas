@@ -83,7 +83,6 @@ export class WegasClient {
         } else if (Array.isArray(entities)) {
             return entities.map(e => this.instantiate(e)) as any;
         } else {
-            console.log("Coucou", entities);
             // one would set any to U...
             const result: MapOf<ScriptableEntity<any>> = {};
             Object.entries(entities).forEach(([key, entity]) => {
