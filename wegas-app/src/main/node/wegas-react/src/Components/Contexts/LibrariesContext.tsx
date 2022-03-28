@@ -641,6 +641,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
   React.useEffect(() => {
     if (reactMonaco != null) {
       reactMonaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+        strict: true,
         allowNonTsExtensions: true,
         checkJs: true,
         // allowJs: forceJS,
@@ -648,6 +649,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
         target: reactMonaco.languages.typescript.ScriptTarget.ESNext,
       });
       reactMonaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+        strict: true,
         allowNonTsExtensions: true,
         checkJs: true,
         allowJs: true,
