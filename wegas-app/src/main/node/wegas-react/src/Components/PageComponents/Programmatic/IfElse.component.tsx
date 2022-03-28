@@ -11,7 +11,6 @@ import {
 } from '../tools/componentFactory';
 import {
   ComponentDropZone,
-  useDndComponentIsOverFactory,
   WegasComponentProps,
 } from '../tools/EditableComponent';
 import {
@@ -24,7 +23,7 @@ function IfElse({ children }: IfElseProps) {
   return <>{children}</>;
 }
 
-function PlayerIf({ children }: WegasComponentProps) {
+function PlayerIf({ children }: IfElseProps) {
   return <>{children}</>;
 }
 const PlayerIfName = 'PlayerIf';
@@ -89,24 +88,24 @@ export function EmptyComponentContainer({
   path,
   condition,
 }: EmptyCompoentContainerProps) {
-  // const [{ isOver }, dropZone] = useDndComponentDrop();
-  const { isOver, ref } = useDndComponentIsOverFactory();
+  // const { isOver, ref } = useDndComponentIsOverFactory();
 
   const { onDrop } = React.useContext(pageCTX);
 
   return (
-    <FlexItem ref={ref} className={emptyLayoutItemStyle}>
+    <FlexItem /*ref={ref}*/ className={emptyLayoutItemStyle}>
       <ComponentDropZone
         onDrop={dndComponent => {
           onDrop(
             dndComponent,
-            path,
-            condition === 'IF' ? 0 : 1,
+            [...path, condition === 'IF' ? 0 : 1],
+            0,
             undefined,
             true,
           );
         }}
-        show={isOver}
+        show
+        noFocus
         dropPosition="INTO"
       />
       {condition === 'IF'
@@ -129,20 +128,21 @@ function ChildrenDeserializer({
   const condition = useScript<boolean>(ifCondition, context);
 
   if (wegasChildren != null) {
-    const children1 = wegasChildren[0];
-    const children2 = wegasChildren[1];
+    const children1 = wegasChildren[0].props.children![0];
+    const children2 = wegasChildren[1].props.children![0];
+
     if (condition == null) {
       return <UncompleteCompMessage pageId={pageId} path={path} />;
     } else if (editMode) {
       return (
         <>
-          {children1.type === PlayerIfName ? (
+          {children1 == null ? (
             <EmptyComponentContainer path={path} condition="IF" />
           ) : (
             <PageDeserializer
-              key={JSON.stringify([...path, 0]) + JSON.stringify(context)}
+              key={JSON.stringify([...path, 0, 0]) + JSON.stringify(context)}
               pageId={pageId}
-              path={[...path, 0]}
+              path={[...path, 0, 0]}
               uneditable={uneditable}
               context={context}
               Container={FlexItem}
@@ -151,13 +151,13 @@ function ChildrenDeserializer({
               inheritedOptionsState={inheritedOptionsState}
             />
           )}
-          {children2.type === PlayerElseName ? (
+          {children2 == null ? (
             <EmptyComponentContainer path={path} condition="ELSE" />
           ) : (
             <PageDeserializer
-              key={JSON.stringify([...path, 1]) + JSON.stringify(context)}
+              key={JSON.stringify([...path, 1, 0]) + JSON.stringify(context)}
               pageId={pageId}
-              path={[...path, 1]}
+              path={[...path, 1, 0]}
               uneditable={uneditable}
               context={context}
               Container={FlexItem}
@@ -169,13 +169,13 @@ function ChildrenDeserializer({
         </>
       );
     } else {
-      const newPath = [...path, condition ? 0 : 1];
-      const emptyChildren =
-        wegasChildren == null ||
-        wegasChildren[condition ? 0 : 1].type === PlayerIfName ||
-        wegasChildren[condition ? 0 : 1].type === PlayerElseName;
-      return emptyChildren ? null : (
-        <PageDeserializer
+      const newPath = [...path, condition ? 0 : 1, 0];
+      // const emptyChildren =
+      //   wegasChildren == null ||
+      //   wegasChildren[condition ? 0 : 1].type === PlayerIfName ||
+      //   wegasChildren[condition ? 0 : 1].type === PlayerElseName;
+      return (
+        /*emptyChildren ? null :*/ <PageDeserializer
           key={JSON.stringify(newPath)}
           pageId={pageId}
           path={newPath}
@@ -211,6 +211,7 @@ registerComponent(
     schema: {
       ifCondition: schemaProps.script({
         label: 'If condition',
+        value: 'true',
         mode: 'GET_CLIENT',
       }),
     },
