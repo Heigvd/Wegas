@@ -107,6 +107,7 @@ registerComponent(
       ...flexListSchema,
       getItemsFn: schemaProps.customScript({
         label: 'Items',
+        language: 'TypeScript',
         returnType: ['Readonly<object[]>'],
       }),
       exposeAs: schemaProps.string({

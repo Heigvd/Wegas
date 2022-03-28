@@ -231,7 +231,7 @@ const simpleSchemaProps = {
     noMarginTop,
   }: {
     returnType?: string[];
-    language?: ScriptLanguage;
+    language: ScriptLanguage;
     args?: [string, string[]][];
   } & CommonSchemaProps &
     ValueSchemaProps<string>): SchemaFromView<'customscript'> => ({
@@ -245,9 +245,10 @@ const simpleSchemaProps = {
       index,
       featureLevel,
       label,
+      type: 'customscript',
       returnType,
       args,
-      type: 'customscript',
+      language,
       layout,
     },
   }),
