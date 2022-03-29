@@ -105,6 +105,22 @@ interface DragState {
   position: 'UP' | 'DOWN' | 'IN' | 'IN_LAST' | 'IN_EMPTY' | undefined;
 }
 
+function parsePath(path: string, position: DragState['position']) {
+  const newPath = JSON.parse(path) as number[];
+  if (position === 'UP' || position === 'DOWN') {
+    // Pop first element (index of the child)
+    newPath.pop();
+    let index = newPath.pop();
+    if (index != null) {
+      if (position === 'DOWN') {
+        index += 1;
+      }
+      newPath.splice(newPath.length, 0, index);
+    }
+  }
+  return newPath;
+}
+
 export const POSITION_DATA = {
   openCloseButton: 'TREENODE_OPEN_CLOSE_BUTTON',
   label: 'TREENODE_LABEL',
@@ -279,7 +295,6 @@ export function TreeView<T = unknown>({
 
       if (idData != null && positionData != null) {
         let position: DragState['position'] = undefined;
-
         switch (positionData) {
           case POSITION_DATA.openCloseButton:
             if (childrenAllowDrag) {
@@ -365,18 +380,8 @@ export function TreeView<T = unknown>({
           if (data != null) {
             data = JSON.parse(data);
           }
-          path = JSON.parse(path) as number[];
-          if (position === 'UP' || position === 'DOWN') {
-            // Pop first element (index of the child)
-            path.pop();
-            let index = path.pop();
-            if (index != null) {
-              if (position === 'DOWN') {
-                index += 1;
-              }
-              path = [...path, index];
-            }
-          }
+
+          path = parsePath(path, position);
 
           let fromPath;
           let fromId;
@@ -398,15 +403,19 @@ export function TreeView<T = unknown>({
             fromData = undefined;
           }
 
-          onMove(
-            {
-              path: fromPath,
-              id: fromId,
-              data: fromData,
-              dataTransfer: e.dataTransfer,
-            },
-            { path, id, data },
-          );
+          const dropInItself =
+            path.slice(0, fromPath.length).join(',') === fromPath.join(',');
+          if (!dropInItself) {
+            onMove(
+              {
+                path: fromPath,
+                id: fromId,
+                data: fromData,
+                dataTransfer: e.dataTransfer,
+              },
+              { path, id, data },
+            );
+          }
           if (id !== rootId) {
             openNode(id);
           }
@@ -414,7 +423,6 @@ export function TreeView<T = unknown>({
           wwarn('No given id');
         }
       }
-
       setDragState({
         id: '',
         position: undefined,
