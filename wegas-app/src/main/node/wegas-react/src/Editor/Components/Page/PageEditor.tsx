@@ -279,7 +279,17 @@ export function PageContextProvider({
       if (path != null && layoutId != null) {
         focusTab(layoutId, 'Component Properties');
       }
-      setPageEditorState(o => ({ ...o, editedPath: path, selectedPageId }));
+      setPageEditorState(o => {
+        if (
+          o == null ||
+          o.selectedPageId !== selectedPageId ||
+          o.editedPath?.join(',') !== path?.join(',')
+        ) {
+          return { ...o, editedPath: path, selectedPageId };
+        } else {
+          return o;
+        }
+      });
     },
     [layoutId],
   );
@@ -522,40 +532,56 @@ export function PageContextProvider({
     [],
   );
 
-  return (
-    <pageCTX.Provider
-      value={{
-        selectedPageId,
-        selectedPage,
-        editedPath,
-        loading,
-        editMode,
-        showControls,
-        showBorders: showBorders /*|| (editMode && isAnythingDragged)*/,
-        pageIdPath: selectedPageId
-          ? [selectedPageId]
-          : defaultPageId
-          ? [defaultPageId]
-          : [],
-        handles: handles.current,
-        setEditMode,
-        setShowBorders,
-        setShowControls,
-        onDrop,
-        onDelete,
-        onEdit: path => onEdit(selectedPageId, path),
-        onUpdate,
-        onDeleteLayoutComponent,
-        onDuplicateLayoutComponent,
-        onEditComponent: onEdit,
-        onMoveLayoutComponent,
-        onNewLayoutComponent,
-        onPageClick,
-      }}
-    >
-      {children}
-    </pageCTX.Provider>
-  );
+  const value: PageContext = React.useMemo(() => {
+    return {
+      selectedPageId,
+      selectedPage,
+      editedPath,
+      loading,
+      editMode,
+      showControls,
+      showBorders: showBorders /*|| (editMode && isAnythingDragged)*/,
+      pageIdPath: selectedPageId
+        ? [selectedPageId]
+        : defaultPageId
+        ? [defaultPageId]
+        : [],
+      handles: handles.current,
+      setEditMode,
+      setShowBorders,
+      setShowControls,
+      onDrop,
+      onDelete,
+      onEdit: path => onEdit(selectedPageId, path),
+      onUpdate,
+      onDeleteLayoutComponent,
+      onDuplicateLayoutComponent,
+      onEditComponent: onEdit,
+      onMoveLayoutComponent,
+      onNewLayoutComponent,
+      onPageClick,
+    };
+  }, [
+    defaultPageId,
+    editMode,
+    editedPath,
+    loading,
+    onDelete,
+    onDeleteLayoutComponent,
+    onDrop,
+    onDuplicateLayoutComponent,
+    onEdit,
+    onMoveLayoutComponent,
+    onNewLayoutComponent,
+    onPageClick,
+    onUpdate,
+    selectedPage,
+    selectedPageId,
+    showBorders,
+    showControls,
+  ]);
+
+  return <pageCTX.Provider value={value}>{children}</pageCTX.Provider>;
 }
 
 export default function PageEditor({

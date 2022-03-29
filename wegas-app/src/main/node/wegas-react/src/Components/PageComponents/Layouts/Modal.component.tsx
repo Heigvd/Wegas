@@ -4,6 +4,7 @@ import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
 import { store } from '../../../data/Stores/store';
+import { PAGE_DISPLAY_ID } from '../../../Editor/Components/Page/PageDisplay';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import {
   defaultFlexLayoutOptionsKeys,
@@ -71,26 +72,33 @@ function PlayerModal({
   ...flexProps
 }: PlayerModalProps) {
   const { client, server } = onExitActions || {};
+
+  const onExit = React.useMemo(() => {
+    return client == null || server == null
+      ? undefined
+      : () => {
+          if (client) {
+            safeClientScriptEval(client, context, undefined, undefined, {
+              injectReturn: false,
+            });
+          }
+          if (server) {
+            store.dispatch(
+              runLoadedScript(
+                server,
+                Player.selectCurrent(),
+                undefined,
+                assembleStateAndContext(context),
+              ),
+            );
+          }
+        };
+  }, [client, context, server]);
+
   return (
     <Modal
       attachedToId={attachedToId}
-      onExit={() => {
-        if (client) {
-          safeClientScriptEval(client, context, undefined, undefined, {
-            injectReturn: false,
-          });
-        }
-        if (server) {
-          store.dispatch(
-            runLoadedScript(
-              server,
-              Player.selectCurrent(),
-              undefined,
-              assembleStateAndContext(context),
-            ),
-          );
-        }
-      }}
+      onExit={onExit}
       style={editMode ? { position: 'relative' } : undefined}
       innerStyle={style}
       innerClassName={className}
@@ -126,6 +134,9 @@ registerComponent(
       ...flexListSchema,
       ...classStyleIdShema,
     },
-    getComputedPropsFromVariable: () => ({ children: [] }),
+    getComputedPropsFromVariable: () => ({
+      children: [],
+      attachedToId: PAGE_DISPLAY_ID,
+    }),
   }),
 );
