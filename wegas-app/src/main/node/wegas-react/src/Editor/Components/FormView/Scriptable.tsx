@@ -67,7 +67,12 @@ export default function ScriptableView(
    */
   const switchToLiteralMode = React.useCallback(() => {
     if (entityIs(valueRef.current, 'Script')) {
-      const evaluated = clientScriptEval(valueRef.current);
+      const evaluated = clientScriptEval(
+        valueRef.current,
+        undefined,
+        undefined,
+        undefined,
+      );
       if (evaluated != null) {
         onChange(evaluated);
       } else {

@@ -484,7 +484,17 @@ export async function generateSchema(
         configArg = { type, value: script };
         break;
       case 'variable':
-        configArg = { type, value: safeClientScriptEval<SVariableDescriptor>(script), mode };
+        configArg = {
+          type,
+          value: safeClientScriptEval<SVariableDescriptor>(
+            script,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+          ),
+          mode,
+        };
         break;
       default:
         configArg = { type };

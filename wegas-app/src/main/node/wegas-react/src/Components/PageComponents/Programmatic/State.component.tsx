@@ -82,7 +82,13 @@ function State({
   const initRef = React.useRef<unknown>();
   const exposeAsRef = React.useRef<string>();
 
-  const init = safeClientScriptEval(initialState, context);
+  const init = safeClientScriptEval(
+    initialState,
+    context,
+    undefined,
+    undefined,
+    undefined,
+  );
 
   const [state, setState] = React.useState(init);
 

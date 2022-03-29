@@ -72,7 +72,9 @@ export function useOnVariableChange(
       const newContext = { ...context, [exposeAs]: variable };
 
       if (client) {
-        safeClientScriptEval(client, newContext, undefined, state);
+        safeClientScriptEval(client, newContext, undefined, state, {
+          injectReturn: false,
+        });
       }
       if (server) {
         store.dispatch(

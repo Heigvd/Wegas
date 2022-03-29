@@ -84,7 +84,7 @@ export default function PlayLocal() {
   const onRunCb = React.useCallback(() => {
     setResult(undefined);
     try {
-      setResult(clientScriptEval(script));
+      setResult(clientScriptEval(script, undefined, undefined, undefined));
     } catch (e) {
       if (typeof e === 'object' && e != null && 'message' in e) {
         setResult((e as unknown as Error).message);

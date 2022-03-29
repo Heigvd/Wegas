@@ -106,7 +106,12 @@ export interface WegasComponentActions {
 
 export const wegasComponentActions: WegasComponentActions = {
   openPage: ({ pageLoaderName, pageId, context }) => {
-    const name = clientScriptEval<string>(pageLoaderName.content, context);
+    const name = clientScriptEval<string>(
+      pageLoaderName.content,
+      context,
+      undefined,
+      undefined,
+    );
     if (name != null) {
       store.dispatch(
         ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
@@ -117,7 +122,12 @@ export const wegasComponentActions: WegasComponentActions = {
     }
   },
   openUrl: props => {
-    const path = clientScriptEval<string | false>(props.url, props.context);
+    const path = clientScriptEval<string | false>(
+      props.url,
+      props.context,
+      undefined,
+      undefined,
+    );
     if (path) {
       const win = window.open(path);
       win!.focus();
@@ -127,6 +137,8 @@ export const wegasComponentActions: WegasComponentActions = {
     const path = clientScriptEval<string | false>(
       props.filePath,
       props.context,
+      undefined,
+      undefined,
     );
     if (path) {
       const win = window.open(fileURL(path), '_blank');
@@ -141,7 +153,9 @@ export const wegasComponentActions: WegasComponentActions = {
     }
   },
   localScriptEval: props => {
-    clientScriptEval(props.script, props.context);
+    clientScriptEval(props.script, props.context, undefined, {
+      injectReturn: false,
+    });
   },
   openPopupPage: props => {
     //TODO : Discuss that with Maxence

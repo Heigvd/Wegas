@@ -224,7 +224,15 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
       Object.entries(pageLoaders).reduce(
         (o, [name, script]) => ({
           ...o,
-          [name]: Number(safeClientScriptEval(script)),
+          [name]: Number(
+            safeClientScriptEval(
+              script,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+            ),
+          ),
         }),
         {},
       ),
@@ -560,14 +568,18 @@ const memoClientScriptEval = (() => {
 })();
 
 export function clientScriptEval<T extends ScriptReturnType>(
-  script?: string | IScript,
-  context?: {
-    [name: string]: unknown;
-  },
-  state?: {
-    [name: string]: unknown;
-  },
-  options?: TranspileOptions,
+  script: string | IScript | undefined,
+  context:
+    | {
+        [name: string]: unknown;
+      }
+    | undefined,
+  state:
+    | {
+        [name: string]: unknown;
+      }
+    | undefined,
+  options: TranspileOptions | undefined,
 ): T extends WegasScriptEditorReturnType ? T : unknown {
   return memoClientScriptEval(script, context, state, options);
 }
@@ -605,15 +617,19 @@ function handleError(error: unknown, filename?: string): WegasScriptError {
 }
 
 export function safeClientScriptEval<T extends ScriptReturnType>(
-  script?: string | IScript,
-  context?: {
-    [name: string]: unknown;
-  },
-  catchCB?: (e: Error) => void,
-  state?: {
-    [name: string]: unknown;
-  },
-  options?: TranspileOptions,
+  script: string | IScript | undefined,
+  context:
+    | {
+        [name: string]: unknown;
+      }
+    | undefined,
+  catchCB: ((e: Error) => void) | undefined,
+  state:
+    | {
+        [name: string]: unknown;
+      }
+    | undefined,
+  options: TranspileOptions | undefined,
 ): T extends WegasScriptEditorReturnType ? T : unknown {
   try {
     return clientScriptEval<T>(script, context, state, options);
@@ -647,10 +663,9 @@ export function useScript<T extends ScriptReturnType>(
   },
   catchCB?: (e: Error) => void,
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
-  const oldContext =
-    React.useRef<{
-      [name: string]: unknown;
-    }>();
+  const oldContext = React.useRef<{
+    [name: string]: unknown;
+  }>();
 
   const newContext = React.useMemo(() => {
     if (deepDifferent(context, oldContext.current)) {
@@ -668,10 +683,22 @@ export function useScript<T extends ScriptReturnType>(
   const fn = React.useCallback(() => {
     if (Array.isArray(script)) {
       return script.map(scriptItem =>
-        safeClientScriptEval<T>(scriptItem, newContext, catchCB, state),
+        safeClientScriptEval<T>(
+          scriptItem,
+          newContext,
+          catchCB,
+          state,
+          undefined,
+        ),
       );
     } else {
-      return safeClientScriptEval<T>(script, newContext, catchCB, state);
+      return safeClientScriptEval<T>(
+        script,
+        newContext,
+        catchCB,
+        state,
+        undefined,
+      );
     }
   }, [script, newContext, state, catchCB]);
 
@@ -697,7 +724,7 @@ export function useUnsafeScript<T extends ScriptReturnType>(
   const globalContexts = useGlobalContexts();
 
   const fn = React.useCallback(
-    () => clientScriptEval<T>(script, context),
+    () => clientScriptEval<T>(script, context, undefined, undefined),
     [script, context],
   );
   const returnValue = useStore(s => {
@@ -733,7 +760,13 @@ export function parseAndRunClientScript(
     if (matched) {
       index += matched.index == null ? scriptContent.length : matched.index;
       const matchedCode = matched[0].replace(regexStart, '').slice(0, -2);
-      let matchedValue = safeClientScriptEval<string>(matchedCode, context);
+      let matchedValue = safeClientScriptEval<string>(
+        matchedCode,
+        context,
+        undefined,
+        undefined,
+        undefined,
+      );
 
       if (typeof matchedValue === 'string') {
         matchedValue = `"${matchedValue}"`;

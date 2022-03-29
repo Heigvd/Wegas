@@ -169,7 +169,9 @@ export function useOnCancelAction(
 
   const handleOnCancel = React.useCallback(() => {
     if (client) {
-      safeClientScriptEval(client, context, undefined, state);
+      safeClientScriptEval(client, context, undefined, state, {
+        injectReturn: false,
+      });
     }
     if (server) {
       store.dispatch(
