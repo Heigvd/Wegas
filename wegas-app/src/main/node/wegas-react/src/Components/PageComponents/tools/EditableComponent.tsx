@@ -9,7 +9,7 @@ import {
 } from '../../../css/classes';
 import { manageResponseHandler } from '../../../data/actions';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
-import { pagesContextStateStore } from '../../../data/Stores/pageContextStore';
+import { PagesContextState, pagesContextStateStore } from '../../../data/Stores/pageContextStore';
 import {
   isComponentFocused,
   pagesStateStore,
@@ -103,7 +103,7 @@ const showBordersStyle = css({
 
 export function assembleStateAndContext(
   context: PageComponentContext = {},
-  state?: PageComponentContext,
+  state?: PagesContextState,
 ) {
   return {
     Context: {

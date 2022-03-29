@@ -25,6 +25,8 @@ import { State } from '../../data/Reducer/reducers';
 import { instantiate } from '../../data/scriptable';
 import { VariableDescriptor as VDSelect } from '../../data/selectors';
 import {
+  getPageState,
+  PagesContextState,
   pagesContextStateStore,
   setPagesContextState,
   usePagesContextStateStore,
@@ -428,6 +430,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.Helpers = {
     cloneDeep: cloneDeep,
     uniq: uniq,
+    getState: getPageState,
     getLogger: getLogger,
   };
 
@@ -480,8 +483,8 @@ function transpileToFunction(
   );
 }
 
-export function addSetterToState(state: PageComponentContext) {
-  return Object.entries(state).reduce((o, [k, s]) => {
+export function addSetterToState(state: PagesContextState) {
+  return Object.entries(state.context).reduce((o, [k, s]) => {
     if (typeof s === 'object' && s !== null && 'state' in s) {
       return {
         ...o,
@@ -511,7 +514,7 @@ const memoClientScriptEval = (() => {
   return <T extends ScriptReturnType>(
     script?: string | IScript,
     context: PageComponentContext = {},
-    state?: PageComponentContext,
+    state?: PagesContextState,
     options?: TranspileOptions,
   ): T extends WegasScriptEditorReturnType ? T : unknown => {
     const currentState = addSetterToState(
@@ -575,9 +578,7 @@ export function clientScriptEval<T extends ScriptReturnType>(
       }
     | undefined,
   state:
-    | {
-        [name: string]: unknown;
-      }
+    | PagesContextState
     | undefined,
   options: TranspileOptions | undefined,
 ): T extends WegasScriptEditorReturnType ? T : unknown {
@@ -625,9 +626,7 @@ export function safeClientScriptEval<T extends ScriptReturnType>(
     | undefined,
   catchCB: ((e: Error) => void) | undefined,
   state:
-    | {
-        [name: string]: unknown;
-      }
+    | PagesContextState
     | undefined,
   options: TranspileOptions | undefined,
 ): T extends WegasScriptEditorReturnType ? T : unknown {
@@ -702,10 +701,10 @@ export function useScript<T extends ScriptReturnType>(
     }
   }, [script, newContext, state, catchCB]);
 
-  const returnValue = useStore(s => {
+  const returnValue = useStore(React.useCallback( s => {
     setGlobals(globalContexts, s);
     return fn();
-  }, deepDifferent);
+  }, [fn, globalContexts]), deepDifferent);
 
   return returnValue as any;
 }
