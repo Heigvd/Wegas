@@ -1,18 +1,19 @@
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
-import { ThemeProvider, themeCTX } from '../../../Components/Theme/Theme';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { FlexItem } from '../../../Components/Layouts/FlexList';
 import { TextLoader, TumbleLoader } from '../../../Components/Loader';
 import { PageDeserializer } from '../../../Components/PageComponents/tools/PageDeserializer';
-import { useStore } from '../../../data/Stores/store';
-import { css, cx } from '@emotion/css';
-import { flex, expandHeight } from '../../../css/classes';
+import { themeCTX, ThemeProvider } from '../../../Components/Theme/Theme';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
-import { FlexItem } from '../../../Components/Layouts/FlexList';
-import { classNameOrEmpty } from '../../../Helper/className';
+import { expandHeight, flex } from '../../../css/classes';
 import { State } from '../../../data/Reducer/reducers';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { useStore } from '../../../data/Stores/store';
+import { classNameOrEmpty } from '../../../Helper/className';
+import { useComparator } from '../../../Helper/react.debug';
 import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { pagesTranslations } from '../../../i18n/pages/pages';
 
 export const fullScreenLoaderStyle = css({
@@ -47,6 +48,8 @@ interface PageLoaderProps extends ClassStyleId {
   readOnly?: boolean;
 }
 
+const voidObject = {};
+
 export function PageLoader({
   selectedPageId,
   displayFrame,
@@ -55,7 +58,7 @@ export function PageLoader({
   style,
   id,
   loadTimer = 0,
-  context = {},
+  context = voidObject,
   disabled,
   readOnly,
 }: PageLoaderProps) {
@@ -84,6 +87,24 @@ export function PageLoader({
     };
   }, [loadTimer, selectedPageId]);
 
+  const inheritedOptionsState = React.useMemo(() => {
+    return {
+      disabled,
+      readOnly,
+    };
+  }, [disabled, readOnly]);
+
+  useComparator({
+    selectedPage,
+    context,
+    currentContext,
+    currentMode,
+    inheritedOptionsState,
+    loadTimer,
+    selectedPageId,
+    waiting,
+  });
+
   return (
     <DefaultDndProvider>
       <ThemeProvider contextName={currentContext} modeName={currentMode}>
@@ -102,12 +123,9 @@ export function PageLoader({
               <PageDeserializer
                 pageId={selectedPageId}
                 Container={FlexItem}
-                dropzones={{}}
+                dropzones={voidObject}
                 context={context}
-                inheritedOptionsState={{
-                  disabled,
-                  readOnly,
-                }}
+                inheritedOptionsState={inheritedOptionsState}
               />
             ) : (
               <pre>{i18nPagesValues.pageUndefined}</pre>
@@ -116,7 +134,7 @@ export function PageLoader({
               // Petit tweak pour laisser la page se charger (si un scénario à un problème par contre, on verra le loader tourner éternellement)
               !selectedPage) && (
               <div className={fullScreenLoaderStyle}>
-                  <TumbleLoader />
+                <TumbleLoader />
               </div>
             )}
           </div>

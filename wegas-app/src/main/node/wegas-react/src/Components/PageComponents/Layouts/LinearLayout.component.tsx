@@ -17,7 +17,6 @@ import {
 import {
   ComponentDropZone,
   useDndComponentIsOverFactory,
-  // useDndComponentDrop,
   WegasComponentProps,
 } from '../tools/EditableComponent';
 import {
@@ -86,7 +85,6 @@ function isVertical(props?: PlayerLinearLayoutProps) {
 }
 
 export function EmptyComponentContainer({ path }: { path: number[] }) {
-  // const [{ isOver }, dropZone] = useDndComponentDrop();
   const { isOver, ref } = useDndComponentIsOverFactory();
 
   const { onDrop } = React.useContext(pageCTX);

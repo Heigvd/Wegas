@@ -23,7 +23,7 @@ import {
 import { ActionCreator } from '../../data/actions';
 import { ActionsProps } from '../../data/Reducer/globalState';
 import { store, StoreDispatch } from '../../data/Stores/store';
-import { wlog, wwarn } from '../../Helper/wegaslog';
+import { wwarn } from '../../Helper/wegaslog';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import './FormView';
@@ -123,10 +123,6 @@ export function Form<T>({
                   disabled={!deepDifferent(val, entity)}
                   onClick={() => {
                     if (form.current != null) {
-                      wlog(config);
-                      wlog(oldReceivedEntity.current);
-                      wlog(entity);
-                      wlog(val);
                       const validation = form.current.validate();
                       if (validation.length) {
                         wwarn(val, JSON.stringify(validation, null, 2));

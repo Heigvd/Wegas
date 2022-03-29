@@ -209,48 +209,6 @@ const checkIfInsideRectangle = (
   Ptest: { x: number; y: number },
 ) => Ptest.x >= A.x && Ptest.x <= C.x && Ptest.y >= A.y && Ptest.y <= C.y;
 
-// /**
-//  * useDndComponentDrop - it's a hook that normalize the usage of useDrop in the different dropable zone used in this file
-//  * @param onDrop - the function to trigger when a drop occures
-//  */
-// export function useDndComponentDrop(
-//   onDrop?: (
-//     dndComponnent: PageEditorComponent,
-//     dndMonitor: DropTargetMonitor,
-//   ) => void,
-// ): [
-//   {
-//     isOver: boolean;
-//     isOverCurrent: boolean;
-//     canDrop: boolean;
-//     item: PageEditorComponent | null;
-//   },
-//   DragElementWrapper<{}>,
-// ] {
-//   const [dropZoneProps, dropZone] = useDrop<
-//     PageEditorComponent,
-//     void,
-//     {
-//       isOver: boolean;
-//       isOverCurrent: boolean;
-//       canDrop: boolean;
-//       item: PageEditorComponent | null;
-//     }
-//   >({
-//     accept: [PAGEEDITOR_COMPONENT_TYPE, PAGE_LAYOUT_COMPONENT],
-//     canDrop: () => true,
-//     drop: onDrop,
-//     collect: (mon: DropTargetMonitor) => ({
-//       isOver: mon.isOver({ shallow: false }),
-//       isOverCurrent: mon.isOver({ shallow: true }),
-//       canDrop: mon.canDrop(),
-//       item: mon.getItem() as PageEditorComponent | null,
-//     }),
-//   });
-//   const delayedCanDrop = useDebounce(dropZoneProps.canDrop, 100);
-//   return [{ ...dropZoneProps, canDrop: delayedCanDrop }, dropZone];
-// }
-
 export function useDndComponentIsOverFactory(notDroppable?: boolean) {
   const [isOver, setIsOverCurrent] = React.useState(false);
 
@@ -396,7 +354,6 @@ export function ComponentDropZone({
   dropPosition,
   noFocus,
 }: ComponentDropZoneProps) {
-  // const [{ isOverCurrent }, dropZone] = useDndComponentDrop(onDrop);
   const [isOverCurrent, setIsOverCurrent] = React.useState(false);
 
   return (
@@ -410,9 +367,6 @@ export function ComponentDropZone({
       onDragLeave={_e => {
         setIsOverCurrent(false);
       }}
-      // onDragExit={_e => {
-      //   setIsOverCurrent(false);
-      // }}
       onDrop={e => {
         e.preventDefault();
         e.stopPropagation();

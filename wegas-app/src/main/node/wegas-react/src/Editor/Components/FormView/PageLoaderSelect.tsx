@@ -84,55 +84,55 @@ export default function PageLoaderSelect({
     : 'typescript';
 
   return (
-    <CommonViewContainer view={ view } errorMessage={ errorMessage }>
-      <Labeled { ...view }>
-        { ({ inputId, labelNode }) => (
+    <CommonViewContainer view={view} errorMessage={errorMessage}>
+      <Labeled {...view}>
+        {({ inputId, labelNode }) => (
           <>
-            { labelNode }
-            <div className={ cx(flex, flexRow) } id={ inputId }>
-              { pageLoaders.length === 0 ? (
+            {labelNode}
+            <div className={cx(flex, flexRow)} id={inputId}>
+              {pageLoaders.length === 0 ? (
                 <MessageString value="No page loader found" />
               ) : (
                 <>
                   <Button
                     icon="code"
-                    onClick={ () => setSrcMode(sm => !sm) }
-                    className={ css({ flex: '0 1 auto' }) }
+                    onClick={() => setSrcMode(sm => !sm)}
+                    className={css({ flex: '0 1 auto' })}
                   />
-                  { srcMode ? (
-                    <div className={ cx(scriptEditStyle, grow) }>
+                  {srcMode ? (
+                    <div className={cx(scriptEditStyle, grow)}>
                       <TempScriptEditor
-                        initialValue={ loaderValue || '' }
-                        returnType={ ['string'] }
-                        onChange={ setPageLoader }
-                        onSave={ newValue =>
+                        initialValue={loaderValue || ''}
+                        returnType={['string']}
+                        onChange={setPageLoader}
+                        onSave={newValue =>
                           onChange(
                             value
                               ? { ...value, content: newValue }
                               : createScript(newValue, 'TypeScript'),
                           )
                         }
-                        language={ language }
-                        minimap={ false }
+                        language={language}
+                        minimap={false}
                         noGutter
                         resizable
                       />
                     </div>
                   ) : (
                     <DropMenu
-                      items={ pageLoaders }
-                      onSelect={ item => {
+                      items={pageLoaders}
+                      onSelect={item => {
                         onPageLoaderChange(item.value.name);
-                      } }
-                      label={ pageLoaderName }
-                      containerClassName={ grow }
+                      }}
+                      label={pageLoaderName}
+                      containerClassName={grow}
                     />
-                  ) }
+                  )}
                 </>
-              ) }
+              )}
             </div>
           </>
-        ) }
+        )}
       </Labeled>
     </CommonViewContainer>
   );
