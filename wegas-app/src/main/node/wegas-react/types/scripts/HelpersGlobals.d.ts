@@ -1,6 +1,7 @@
 interface GlobalHelpersClass {
   cloneDeep: <T>(className: T | Readonly<T>) => T;
   uniq: <T>(array: T[] | null | undefined) => T[];
+  getState: <T>(initialValue: T) => [() => T, (stateOfFunction : T | ((oldValue: T) => T)) => void];
   getLogger: (name: string) => {
     error: (...args: unknown[]) => void;
     warn: (...args: unknown[]) => void;
