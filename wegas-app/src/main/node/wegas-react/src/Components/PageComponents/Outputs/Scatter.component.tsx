@@ -18,6 +18,7 @@ import { classOrNothing } from '../../../Helper/className';
 // The CreatePoint Plugin
 //////////////////////////////////////////////////////
 import { wlog } from '../../../Helper/wegaslog';
+import { useDeepMemo } from '../../Hooks/useDeepMemo';
 import { useScript } from '../../Hooks/useScript';
 import {
   pageComponentFactory,
@@ -226,6 +227,8 @@ function PlayerScatterChart({
     };
   }
 
+  const memoChartOptions = useDeepMemo(chartOptions);
+
   return (
     <div
       id={id}
@@ -235,7 +238,7 @@ function PlayerScatterChart({
       }
       style={style}
     >
-      <Scatter data={chartData} options={chartOptions} height={height} />
+      <Scatter data={chartData} options={memoChartOptions} height={height} />
     </div>
   );
 }
