@@ -11,7 +11,6 @@ import { expandHeight, flex } from '../../../css/classes';
 import { State } from '../../../data/Reducer/reducers';
 import { useStore } from '../../../data/Stores/store';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { useComparator } from '../../../Helper/react.debug';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { pagesTranslations } from '../../../i18n/pages/pages';
@@ -95,17 +94,6 @@ export function PageLoader({
       readOnly,
     };
   }, [disabled, readOnly]);
-
-  useComparator({
-    selectedPage,
-    context,
-    currentContext,
-    currentMode,
-    inheritedOptionsState,
-    loadTimer,
-    selectedPageId,
-    waiting,
-  });
 
   return (
     <DefaultDndProvider>
