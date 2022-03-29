@@ -54,9 +54,9 @@ function ChildrenDeserializer({
 
   const [state, setState] = React.useState(init);
 
-  let newContext = React.useMemo(() => {
+  const newContext = React.useMemo(() => {
     if (localState && context) {
-      newContext = {
+      return {
         ...context,
         [exposeAs]: {
           state,
