@@ -57,7 +57,6 @@ import {
 } from '../PageComponents/tools/schemaProps';
 import { addPopup } from '../PopupManager';
 import { deepDifferent } from './storeHookFactory';
-import { useDeepMemo } from './useDeepMemo';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -709,10 +708,10 @@ export function useScript<T extends ScriptReturnType>(
 
   //TODO: remove editing slice from store
   const store = useStore(s => s);
-  const aStore = { ...store, global: { ...store.global } };
-  delete aStore.global.editing;
-
-  const deepAstore = useDeepMemo(aStore);
+//  const aStore = { ...store, global: { ...store.global } };
+//  delete aStore.global.editing;
+//
+//  const deepAstore = useDeepMemo(aStore);
 
   // extract contents of all scripts in one string
   // such string is used to force re-evaluation of the next memo
@@ -723,11 +722,11 @@ export function useScript<T extends ScriptReturnType>(
     : toStr(script);
 
   return React.useMemo(() => {
-    setGlobals(globalContexts, deepAstore);
+    setGlobals(globalContexts, store);
     return fn();
     // strScript is used to force script re-evaluation
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [strScript, deepAstore, fn, globalContexts]) as any;
+  }, [strScript, store, fn, globalContexts]) as any;
 }
 
 /**
