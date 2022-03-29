@@ -19,6 +19,7 @@ import {
 import { APIScriptMethods } from '../../API/clientScriptHelper';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
+import { entityIs } from '../../data/entities';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
@@ -56,6 +57,7 @@ import {
 } from '../PageComponents/tools/schemaProps';
 import { addPopup } from '../PopupManager';
 import { deepDifferent } from './storeHookFactory';
+import { useDeepMemo } from './useDeepMemo';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -158,7 +160,10 @@ export function useGlobalContexts(): GlobalContexts {
   const featuresContext = React.useContext(featuresCTX);
   const languagesContext = React.useContext(languagesCTX);
   const classesContext = React.useContext(classesCTX);
-  return { ...featuresContext, ...languagesContext, ...classesContext };
+
+  return React.useMemo(() => {
+    return { ...featuresContext, ...languagesContext, ...classesContext };
+  }, [featuresContext, languagesContext, classesContext]);
 }
 
 export function setGlobals(globalContexts: GlobalContexts, store: State) {
@@ -577,9 +582,7 @@ export function clientScriptEval<T extends ScriptReturnType>(
         [name: string]: unknown;
       }
     | undefined,
-  state:
-    | PagesContextState
-    | undefined,
+  state: PagesContextState | undefined,
   options: TranspileOptions | undefined,
 ): T extends WegasScriptEditorReturnType ? T : unknown {
   return memoClientScriptEval(script, context, state, options);
@@ -625,9 +628,7 @@ export function safeClientScriptEval<T extends ScriptReturnType>(
       }
     | undefined,
   catchCB: ((e: Error) => void) | undefined,
-  state:
-    | PagesContextState
-    | undefined,
+  state: PagesContextState | undefined,
   options: TranspileOptions | undefined,
 ): T extends WegasScriptEditorReturnType ? T : unknown {
   try {
@@ -662,9 +663,10 @@ export function useScript<T extends ScriptReturnType>(
   },
   catchCB?: (e: Error) => void,
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
-  const oldContext = React.useRef<{
-    [name: string]: unknown;
-  }>();
+  const oldContext =
+    React.useRef<{
+      [name: string]: unknown;
+    }>();
 
   const newContext = React.useMemo(() => {
     if (deepDifferent(context, oldContext.current)) {
@@ -679,9 +681,12 @@ export function useScript<T extends ScriptReturnType>(
 
   const state = usePagesContextStateStore(s => s);
 
+  const scriptRef = React.useRef(script);
+  scriptRef.current = script;
+
   const fn = React.useCallback(() => {
-    if (Array.isArray(script)) {
-      return script.map(scriptItem =>
+    if (Array.isArray(scriptRef.current)) {
+      return scriptRef.current.map(scriptItem =>
         safeClientScriptEval<T>(
           scriptItem,
           newContext,
@@ -692,21 +697,37 @@ export function useScript<T extends ScriptReturnType>(
       );
     } else {
       return safeClientScriptEval<T>(
-        script,
+        scriptRef.current,
         newContext,
         catchCB,
         state,
         undefined,
       );
     }
-  }, [script, newContext, state, catchCB]);
+  }, [newContext, state, catchCB ]);
 
-  const returnValue = useStore(React.useCallback( s => {
-    setGlobals(globalContexts, s);
+
+  //TODO: remove editing slice from store
+  const store = useStore(s => s);
+  const aStore = { ...store, global: { ...store.global } };
+  delete aStore.global.editing;
+
+  const deepAstore = useDeepMemo(aStore);
+
+  // extract contents of all scripts in one string
+  // such string is used to force re-evaluation of the next memo
+  const toStr = (s: IScript | string | undefined) =>
+    entityIs(s, 'Script') ? s.content : s || '';
+  const strScript: string = Array.isArray(script)
+    ? script.map(toStr).join(',')
+    : toStr(script);
+
+  return React.useMemo(() => {
+    setGlobals(globalContexts, deepAstore);
     return fn();
-  }, [fn, globalContexts]), deepDifferent);
-
-  return returnValue as any;
+    // strScript is used to force script re-evaluation
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [strScript, deepAstore, fn, globalContexts]) as any;
 }
 
 /**
