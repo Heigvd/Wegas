@@ -2,7 +2,6 @@ import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import { setPagesContextState } from '../../../data/Stores/pageContextStore';
 import { createScript } from '../../../Helper/wegasEntites';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import {
   FlexItem,
@@ -79,7 +78,7 @@ function State({
   pageId,
   path,
 }: StateProps) {
-  const initRef = React.useRef<unknown>();
+  const initRef = React.useRef<boolean>(false);
   const exposeAsRef = React.useRef<string>();
 
   const init = safeClientScriptEval(
@@ -99,12 +98,15 @@ function State({
     };
   }
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (
-      (!localState && deepDifferent(initRef.current, init)) ||
-      exposeAsRef.current !== exposeAs
+      !localState && (
+      // deepDifferent(initRef.current, init))
+        initRef.current === false
+      ||
+      exposeAsRef.current !== exposeAs)
     ) {
-      initRef.current = init;
+      initRef.current = true;
       exposeAsRef.current = exposeAs;
       setPagesContextState(exposeAs, init);
     }
