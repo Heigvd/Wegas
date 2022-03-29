@@ -16,6 +16,8 @@ import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { pagesTranslations } from '../../../i18n/pages/pages';
 
+export const PAGE_LOADER_DEFAULT_ID = 'PAGE_LOADER_DEFAULT_ID';
+
 export const fullScreenLoaderStyle = css({
   zIndex: 10000,
   position: 'absolute',
@@ -56,7 +58,7 @@ export function PageLoader({
   themeMode,
   className,
   style,
-  id,
+  id = PAGE_LOADER_DEFAULT_ID,
   loadTimer = 0,
   context = voidObject,
   disabled,

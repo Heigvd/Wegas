@@ -9,8 +9,6 @@ import { pagesTranslations } from '../../../i18n/pages/pages';
 import { pageCTX } from './PageEditor';
 import { PageLoader } from './PageLoader';
 
-export const PAGE_DISPLAY_ID = 'PAGE_DISPLAY_PAGE_LOADER';
-
 const toggleButtonStyle = css({
   display: 'flex',
   padding: '0 15px 0 15px',
@@ -69,11 +67,7 @@ export default function PageDisplay() {
         <PageEditionToolbar />
       </Toolbar.Header>
       <Toolbar.Content>
-        <PageLoader
-          id={PAGE_DISPLAY_ID}
-          selectedPageId={selectedPageId}
-          displayFrame
-        />
+        <PageLoader selectedPageId={selectedPageId} displayFrame />
       </Toolbar.Content>
     </Toolbar>
   );

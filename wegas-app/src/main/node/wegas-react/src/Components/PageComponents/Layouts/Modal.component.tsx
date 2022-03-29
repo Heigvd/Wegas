@@ -4,7 +4,7 @@ import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
 import { store } from '../../../data/Stores/store';
-import { PAGE_DISPLAY_ID } from '../../../Editor/Components/Page/PageDisplay';
+import { PAGE_LOADER_DEFAULT_ID } from '../../../Editor/Components/Page/PageLoader';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import {
   defaultFlexLayoutOptionsKeys,
@@ -136,7 +136,7 @@ registerComponent(
     },
     getComputedPropsFromVariable: () => ({
       children: [],
-      attachedToId: PAGE_DISPLAY_ID,
+      attachedToId: PAGE_LOADER_DEFAULT_ID,
     }),
   }),
 );
