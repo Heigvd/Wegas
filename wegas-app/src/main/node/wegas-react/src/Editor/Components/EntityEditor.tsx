@@ -4,21 +4,26 @@ import * as React from 'react';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
-import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { mediumPadding } from '../../css/classes';
-import { Actions } from '../../data';
-import { ActionCreator } from '../../data/actions';
 import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
 import {
   ActionsProps,
   ComponentEdition,
+  EditingActionCreator,
+  EditingState,
   Edition,
+  editorEventRead,
   isEditingVariable,
+  saveEditor,
   VariableEdition,
-} from '../../data/Reducer/globalState';
-import { State } from '../../data/Reducer/reducers';
+} from '../../data/Reducer/editingState';
 import { GameModel, Helper, VariableDescriptor } from '../../data/selectors';
-import { store, StoreDispatch, useStore } from '../../data/Stores/store';
+import {
+  editingStore,
+  EditingStoreDispatch,
+  useEditingStore,
+} from '../../data/Stores/editingStore';
+import { store, StoreDispatch } from '../../data/Stores/store';
 import { deepUpdate } from '../../data/updateUtils';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
@@ -181,7 +186,10 @@ async function WindowedEditor<T extends IMergeable>({
     return null;
   }
 
-  const [Form, schema] = await Promise.all([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
+  const [Form, schema] = await Promise.all([
+    import('./Form').then(m => m.Form),
+    getConfig(pathEntity),
+  ]);
 
   // First try to get schema from simple filters
   const customSchemas = store.getState().global.schemas;
@@ -264,10 +272,9 @@ export const AsyncVariableForm = asyncSFC<EditorProps<IMergeable>>(
  */
 export function parseEvent(
   event: WegasEvent,
-  dispatch: StoreDispatch = store.dispatch,
+  dispatch: EditingStoreDispatch = editingStore.dispatch,
 ) {
-  const onRead = () =>
-    dispatch(Actions.EditorActions.editorEventRead(event.timestamp));
+  const onRead = () => dispatch(editorEventRead(event.timestamp));
   switch (event['@class']) {
     case 'ClientEvent':
       return { message: event.error, onRead };
@@ -364,13 +371,13 @@ export function getConfig(state: Readonly<Edition>) {
 
 export function getUpdate(
   state: Readonly<Edition>,
-  dispatch: StoreDispatch,
+  dispatch: EditingStoreDispatch,
   selectUpdatedEntity: boolean = true,
 ) {
   return 'actions' in state && state.actions.save
     ? state.actions.save
     : (entity: IAbstractEntity) => {
-        dispatch(Actions.EditorActions.saveEditor(entity, selectUpdatedEntity));
+        dispatch(saveEditor(entity, selectUpdatedEntity));
       };
 }
 
@@ -411,7 +418,7 @@ interface VariableFormProps {
   entity: IAbstractEntity | IAbstractContentDescriptor | undefined;
   events: WegasEvent[];
   readOnly?: boolean;
-  localDispatch: StoreDispatch | undefined;
+  localDispatch: EditingStoreDispatch | undefined;
 }
 
 export function VariableForm({
@@ -433,7 +440,7 @@ export function VariableForm({
   );
   const config = React.useMemo(() => editing && getConfig(editing), [editing]);
   const update = React.useMemo(
-    () => editing && getUpdate(editing, localDispatch || store.dispatch),
+    () => editing && getUpdate(editing, localDispatch || editingStore.dispatch),
     [editing, localDispatch],
   );
   const actions = React.useMemo(
@@ -464,8 +471,8 @@ export function VariableForm({
             actions={actions}
             entity={entity}
             onChange={newEntity => {
-              (localDispatch || store.dispatch)(
-                ActionCreator.EDITION_CHANGES({
+              (localDispatch || editingStore.dispatch)(
+                EditingActionCreator.EDITION_CHANGES({
                   newEntity: newEntity as IAbstractEntity,
                 }),
               );
@@ -483,7 +490,7 @@ export function VariableForm({
           <InstanceProperties
             editing={editing}
             events={events}
-            dispatch={localDispatch || store.dispatch}
+            dispatch={localDispatch || editingStore.dispatch}
             highlight={highlightInstance}
             readOnly={readOnly}
           />
@@ -493,14 +500,15 @@ export function VariableForm({
   );
 }
 
+function editionStoreSelector(s: EditingState) {
+  return {
+    editing: s.editing,
+    entity: getEntity(s.editing),
+    events: s.events,
+  };
+}
+
 export default function ConnectedVariableForm() {
-  const storeProps = useStore(
-    (s: State) => ({
-      editing: s.global.editing,
-      entity: getEntity(s.global.editing),
-      events: s.global.events,
-    }),
-    deepDifferent,
-  );
+  const storeProps = useEditingStore(editionStoreSelector);
   return <VariableForm {...storeProps} localDispatch={undefined} />;
 }

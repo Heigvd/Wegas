@@ -386,6 +386,7 @@ export default function HTMLEditor({
     readOnly,
     placeholder,
     onSave,
+    // customToolbar,
     disabled,
     noResize,
     noRootBlock,
@@ -453,7 +454,7 @@ export default function HTMLEditor({
       {fileBrowsing.fn && (
         <Modal onExit={() => setFileBrowsing({})}>
           <FileBrowser
-            onFileClick={file=> {
+            onFileClick={file => {
               setFileBrowsing({});
               file &&
                 fileBrowsing.fn &&

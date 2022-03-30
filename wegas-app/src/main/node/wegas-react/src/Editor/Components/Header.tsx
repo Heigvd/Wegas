@@ -32,12 +32,14 @@ import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
 import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
 import {
+  EditingState,
   editorEventRemove,
-  LoggerLevelValues,
-} from '../../data/Reducer/globalState';
+} from '../../data/Reducer/editingState';
+import { LoggerLevelValues } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
 import { GameModel, Global } from '../../data/selectors';
 import { selectCurrentEditorLanguage } from '../../data/selectors/Languages';
+import { editingStore, useEditingStore } from '../../data/Stores/editingStore';
 import { store, useStore } from '../../data/Stores/store';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
@@ -91,14 +93,14 @@ const headerElementsStyle = css({
   },
 });
 
-function wegasEventSelector(s: State) {
-  return s.global.events;
+function wegasEventSelector(s: EditingState) {
+  return s.events;
 }
 // May be moved in a proper file to allow wider usage
 // interface NotificationMenuProps {}
 function NotificationMenu({ className, style }: ClassStyleId) {
   const i18nValues = useInternalTranslate(commonTranslations);
-  const wegasEvents = useStore(wegasEventSelector);
+  const wegasEvents = useEditingStore(wegasEventSelector);
   const [recievedEvents, setRecievedEvents] = React.useState<number[]>([]);
 
   const unreadEvents = wegasEvents.filter(event => event.unread);
@@ -146,7 +148,7 @@ function NotificationMenu({ className, style }: ClassStyleId) {
                 icon="times"
                 onClick={e => {
                   e.stopPropagation();
-                  store.dispatch(editorEventRemove(event.timestamp));
+                  editingStore.dispatch(editorEventRemove(event.timestamp));
                 }}
               />
             </div>
@@ -214,17 +216,20 @@ function useLoggerLevelSelector() {
   };
 }
 
+function globalStoreSelector(s: State) {
+  return {
+    gameModel: GameModel.selectCurrent(),
+    user: Global.selectCurrentUser(),
+    userLanguage: selectCurrentEditorLanguage(s),
+  };
+}
+
 export default function Header() {
   const { currentFeatures } = React.useContext(featuresCTX);
   const { currentRole } = React.useContext(roleCTX);
   const i18nValues = useInternalTranslate(commonTranslations);
   const [showHeader, setShowHeader] = React.useState(true);
-  const { gameModel, user, userLanguage } = useStore(s => ({
-    gameModel: GameModel.selectCurrent(),
-    user: Global.selectCurrentUser(),
-    userLanguage: selectCurrentEditorLanguage(s),
-    editing: s.global.editing,
-  }));
+  const { gameModel, user, userLanguage } = useStore(globalStoreSelector);
   const dispatch = store.dispatch;
   const featuresToggler = useFeatures();
   const roleToggler = useRolesToggler();
@@ -348,7 +353,9 @@ export default function Header() {
                       icon="fast-backward"
                       onAction={success => {
                         if (success) {
-                          dispatch(Actions.VariableDescriptorActions.reset());
+                          editingStore.dispatch(
+                            Actions.VariableDescriptorActions.reset(),
+                          );
                           dispatch(Actions.EditorActions.resetPageLoader());
                         }
                       }}

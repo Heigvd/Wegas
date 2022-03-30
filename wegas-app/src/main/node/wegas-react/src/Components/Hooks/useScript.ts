@@ -19,7 +19,6 @@ import {
 import { APIScriptMethods } from '../../API/clientScriptHelper';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
-import { entityIs } from '../../data/entities';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
@@ -662,10 +661,9 @@ export function useScript<T extends ScriptReturnType>(
   },
   catchCB?: (e: Error) => void,
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
-  const oldContext =
-    React.useRef<{
-      [name: string]: unknown;
-    }>();
+  const oldContext = React.useRef<{
+    [name: string]: unknown;
+  }>();
 
   const newContext = React.useMemo(() => {
     if (deepDifferent(context, oldContext.current)) {
@@ -703,15 +701,15 @@ export function useScript<T extends ScriptReturnType>(
         undefined,
       );
     }
-  }, [newContext, state, catchCB ]);
+  }, [newContext, state, catchCB]);
 
-
+  /** 
   //TODO: remove editing slice from store
   const store = useStore(s => s);
-//  const aStore = { ...store, global: { ...store.global } };
-//  delete aStore.global.editing;
-//
-//  const deepAstore = useDeepMemo(aStore);
+  //  const aStore = { ...store, global: { ...store.global } };
+  //  delete aStore.global.editing;
+  //
+  //  const deepAstore = useDeepMemo(aStore);
 
   // extract contents of all scripts in one string
   // such string is used to force re-evaluation of the next memo
@@ -727,6 +725,14 @@ export function useScript<T extends ScriptReturnType>(
     // strScript is used to force script re-evaluation
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [strScript, store, fn, globalContexts]) as any;
+  */
+
+  const returnValue = useStore(s => {
+    setGlobals(globalContexts, s);
+    return fn();
+  }, deepDifferent);
+
+  return returnValue as any;
 }
 
 /**

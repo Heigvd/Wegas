@@ -16,7 +16,7 @@ import {
 } from '../../../css/classes';
 import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
-import { store } from '../../../data/Stores/store';
+import { editingStore } from '../../../data/Stores/editingStore';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { themeVar } from '../../Theme/ThemeVars';
 import { DialogueChoice } from './DialogueChoice';
@@ -182,7 +182,7 @@ export function DialogueDisplay({
               label={transition.getActionText()}
               onClick={() => {
                 setWaitingUser(true);
-                store.dispatch(
+                editingStore.dispatch(
                   applyFSMTransition(
                     dialogue.getEntity(),
                     transition.getEntity(),

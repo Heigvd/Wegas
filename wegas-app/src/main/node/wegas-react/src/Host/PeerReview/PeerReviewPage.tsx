@@ -1,10 +1,16 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { IPeerReviewDescriptor } from 'wegas-ts-api';
+import {
+  PeerReviewDescriptorAPI,
+  PeerReviewStateSelector,
+} from '../../API/peerReview.api';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { CheckBox } from '../../Components/Inputs/Boolean/CheckBox';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { useOkCancelModal } from '../../Components/Modal';
+import { addPopup } from '../../Components/PopupManager';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import {
@@ -21,23 +27,18 @@ import {
 import { updateDescriptor } from '../../data/Reducer/VariableDescriptorReducer';
 import { instantiate } from '../../data/scriptable';
 import { Game, GameModel, Player } from '../../data/selectors';
+import { editingStore } from '../../data/Stores/editingStore';
 import { store, useStore } from '../../data/Stores/store';
 import {
   createTranslatableContent,
   translate,
 } from '../../Editor/Components/FormView/translatable';
 import { createScript } from '../../Helper/wegasEntites';
-import { InfoOverlay } from '../InfoOverlay';
-import { PRTable } from './PeerReviewTable';
-import { ExtraProps, PRChart } from './PeerReviewChart';
-import {
-  PeerReviewDescriptorAPI,
-  PeerReviewStateSelector,
-} from '../../API/peerReview.api';
-import { addPopup } from '../../Components/PopupManager';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
-import { useOkCancelModal } from '../../Components/Modal';
+import { InfoOverlay } from '../InfoOverlay';
+import { ExtraProps, PRChart } from './PeerReviewChart';
+import { PRTable } from './PeerReviewTable';
 // import { testPRData } from './PRinterfaceTests';
 
 const prStateStyle = css({
@@ -463,7 +464,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
                       ...peerReview,
                       includeEvicted: value,
                     };
-                    store.dispatch(updateDescriptor(newPR));
+                    editingStore.dispatch(updateDescriptor(newPR));
                   }}
                   disabled={status !== 'NOT_STARTED'}
                 />

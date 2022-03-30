@@ -2,10 +2,7 @@ import * as React from 'react';
 import { IScript, SFSMDescriptor } from 'wegas-ts-api';
 import { createStoreConnector } from '../../../data/connectStore';
 import { Player } from '../../../data/selectors';
-import {
-  LocalGlobalState,
-  storeFactory,
-} from '../../../data/Stores/storeFactory';
+import { editingStoreFactory } from '../../../data/Stores/editingStore';
 import {
   ComponentWithForm,
   ComponentWithFormFlexValues,
@@ -46,24 +43,11 @@ export default function PlayerStateMachine({
   const FSM = useScript<SFSMDescriptor>(stateMachine, context);
   const descriptor = FSM?.getEntity();
   const instance = FSM?.getInstance(Player.self()).getEntity();
-  // const globalState = useStore(globalStateSelector);
-
-  // const { fullscreen } = React.useContext(fullscreenCTX);
 
   const { useStore: useLocalStore, getDispatch: getLocalDispatch } =
-    React.useMemo(() => createStoreConnector(storeFactory()), []);
-
-  // const globalState = useStore(state => state.global.editing);
-
-  // const fullscreenFSM = globalState?.type === 'VariableFSM' && fullscreen;
-
-  const localState = useLocalStore(
-    (state: LocalGlobalState) => state.global,
-    shallowDifferent,
-  );
-
+    React.useMemo(() => createStoreConnector(editingStoreFactory()), []);
+  const localState = useLocalStore(s => s, shallowDifferent);
   const localDispatch = getLocalDispatch();
-  // const localEntity = getEntity(localState.editing);
 
   return descriptor == null || instance == null ? (
     <pre className={className} style={style} id={id}>

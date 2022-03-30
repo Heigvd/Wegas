@@ -32,7 +32,7 @@ import {
 } from '../../../../css/classes';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
-import { store } from '../../../../data/Stores/store';
+import { editingStore } from '../../../../data/Stores/editingStore';
 import { createScript } from '../../../../Helper/wegasEntites';
 import { wwarn } from '../../../../Helper/wegaslog';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
@@ -180,7 +180,9 @@ export function Script({
   const testScript = React.useCallback(
     value => {
       try {
-        store.dispatch(runScript(value, Player.selectCurrent(), context));
+        editingStore.dispatch(
+          runScript(value, Player.selectCurrent(), context),
+        );
         setError(undefined);
       } catch (error) {
         setError([handleError(error)]);

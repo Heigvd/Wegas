@@ -22,10 +22,20 @@ import {
 import { Actions } from '../../../data';
 import { entityIs, varIsList } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import { Edition, VariableEdition } from '../../../data/Reducer/globalState';
+import {
+  createVariable,
+  EditingState,
+  Edition,
+  editVariable,
+  VariableEdition,
+} from '../../../data/Reducer/editingState';
 import { State } from '../../../data/Reducer/reducers';
 import { VariableDescriptor } from '../../../data/selectors';
-import { store, useStore } from '../../../data/Stores/store';
+import {
+  editingStore,
+  useEditingStore,
+} from '../../../data/Stores/editingStore';
+import { useStore } from '../../../data/Stores/store';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -154,7 +164,7 @@ export function CTree({
     readOnly: readOnly,
   });
 
-  const infoSelector = React.useCallback(
+  const globalInfoSelector = React.useCallback(
     (state: State) => {
       let variable:
         | undefined
@@ -181,14 +191,23 @@ export function CTree({
           state.global.search.value || '',
           state.global.search.deep,
         ),
-        editing: isEditing(variableId, subPath, state.global.editing),
         searching: state.global.search.value != null,
       };
     },
     [subPath, variableId],
   );
 
-  const { editing, variable, match, searching, open } = useStore(infoSelector);
+  const editingInfoSelector = React.useCallback(
+    (state: EditingState) => {
+      return {
+        editing: isEditing(variableId, subPath, state.editing),
+      };
+    },
+    [subPath, variableId],
+  );
+
+  const { variable, match, searching, open } = useStore(globalInfoSelector);
+  const { editing } = useEditingStore(editingInfoSelector);
 
   const localEditing = isEditing(variableId, subPath, localState);
 
@@ -200,7 +219,7 @@ export function CTree({
 
   const onClickAction = React.useCallback(
     (e: ModifierKeysEvent) => {
-      let dispatch = store.dispatch;
+      let dispatch = editingStore.dispatch;
       if ((forceLocalDispatch || e.ctrlKey) && localDispatch) {
         dispatch = localDispatch;
       } else {
@@ -228,7 +247,7 @@ export function CTree({
         entityIs(variable, 'QuestionDescriptor') ||
         entityIs(variable, 'WhQuestionDescriptor')
       ) {
-        let dispatch = store.dispatch;
+        let dispatch = editingStore.dispatch;
 
         if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
           dispatch = localDispatch;
@@ -236,7 +255,7 @@ export function CTree({
           focusTab(mainLayoutId, 'Variable Properties');
         }
 
-        dispatch(Actions.EditorActions.createVariable(i.value, variable));
+        dispatch(createVariable(i.value, variable));
       }
     },
     [forceLocalDispatch, localDispatch, variable],
@@ -247,8 +266,7 @@ export function CTree({
   >(
     (i, e) => {
       if (entityIs(variable, 'ChoiceDescriptor')) {
-        const globalDispatch = store.dispatch;
-        let dispatch = globalDispatch;
+        let dispatch = editingStore.dispatch;
         if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
           dispatch = localDispatch;
         } else {
@@ -256,21 +274,16 @@ export function CTree({
         }
 
         dispatch(
-          Actions.EditorActions.createVariable(i.value, variable, {
+          createVariable(i.value, variable, {
             save: (entity: IResult) => {
               const newChoice = produce(variable, v => {
                 v.results.push(entity);
               });
               const index = newChoice.results.length - 1;
-              globalDispatch(
+              dispatch(
                 Actions.VariableDescriptorActions.updateDescriptor(newChoice),
               ).then(() =>
-                dispatch(
-                  Actions.EditorActions.editVariable(newChoice, [
-                    'results',
-                    String(index),
-                  ]),
-                ),
+                dispatch(editVariable(newChoice, ['results', String(index)])),
               );
             },
           }),
@@ -285,8 +298,7 @@ export function CTree({
   >(
     (i, e) => {
       if (entityIs(variable, 'EvaluationDescriptorContainer')) {
-        const globalDispatch = store.dispatch;
-        let dispatch = globalDispatch;
+        let dispatch = editingStore.dispatch;
         if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
           dispatch = localDispatch;
         } else {
@@ -300,21 +312,17 @@ export function CTree({
         const path = subPath![0] as 'feedback' | 'fbComments';
 
         dispatch(
-          Actions.EditorActions.createVariable(i.value, parent, {
+          createVariable(i.value, parent, {
             save: (entity: IEvaluationDescriptor) => {
               const newChoice = produce(parent, v => {
                 v[path].evaluations.push(entity);
               });
               const index = newChoice[path].evaluations.length - 1;
-              globalDispatch(
+              dispatch(
                 Actions.VariableDescriptorActions.updateDescriptor(newChoice),
               ).then(() =>
                 dispatch(
-                  Actions.EditorActions.editVariable(newChoice, [
-                    path,
-                    'evaluations',
-                    String(index),
-                  ]),
+                  editVariable(newChoice, [path, 'evaluations', String(index)]),
                 ),
               );
             },

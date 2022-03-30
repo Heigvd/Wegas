@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { AnyAction } from 'redux';
 import {
-  useAnyStore,
   refDifferent,
   StoreType,
+  useAnyStore,
 } from '../Components/Hooks/storeHookFactory';
 
 function id<T>(x: T) {

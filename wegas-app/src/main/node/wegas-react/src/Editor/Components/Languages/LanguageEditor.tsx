@@ -23,6 +23,7 @@ import {
 import { Actions } from '../../../data';
 import { manageResponseHandler } from '../../../data/actions';
 import { GameModel } from '../../../data/selectors';
+import { editingStore } from '../../../data/Stores/editingStore';
 import { getDispatch } from '../../../data/Stores/store';
 import { wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -244,7 +245,7 @@ export default function LanguageEditor() {
                             .map(event => parseEvent(event).message)
                             .join('\n'),
                         );
-                        getDispatch()(
+                        editingStore.dispatch(
                           manageResponseHandler({
                             '@class': 'ManagedResponse',
                             deletedEntities,

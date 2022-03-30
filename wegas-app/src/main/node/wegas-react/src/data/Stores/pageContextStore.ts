@@ -1,8 +1,7 @@
-import { createStore, applyMiddleware, Reducer } from 'redux';
-import { composeEnhancers } from './store';
+import u from 'immer';
+import { applyMiddleware, compose, createStore, Reducer } from 'redux';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { createStoreConnector } from '../connectStore';
-import u from 'immer';
 
 const pagesContextActionCreator = {
   CONTEXT_SET: (exposeAs: string, value: unknown) => ({
@@ -17,7 +16,7 @@ const pagesContextActionCreator = {
 
 type PagesContextActions<
   A extends keyof typeof pagesContextActionCreator = keyof typeof pagesContextActionCreator,
-  > = ReturnType<typeof pagesContextActionCreator[A]>;
+> = ReturnType<typeof pagesContextActionCreator[A]>;
 
 export interface PagesContextState {
   context: {
@@ -44,8 +43,11 @@ const pagesContextStateReducer: Reducer<Readonly<PagesContextState>> = u(
     }
     return state;
   },
-  { context: {}, state: {}},
+  { context: {}, state: {} },
 );
+
+const composeEnhancers: typeof compose =
+  (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 export const pagesContextStateStore = createStore(
   pagesContextStateReducer,
@@ -79,7 +81,7 @@ let name = 0;
  * @returns function to update the state
  */
 export const getPageState: GlobalHelpersClass['getState'] = <T>(value: T) => {
-  const exposeAs = "state_" + name++;
+  const exposeAs = 'state_' + name++;
 
   pagesContextStateStore.dispatch(
     pagesContextActionCreator.STATE_SET(exposeAs, value),
@@ -107,4 +109,4 @@ export const getPageState: GlobalHelpersClass['getState'] = <T>(value: T) => {
   };
 
   return [getState, setState];
-}
+};

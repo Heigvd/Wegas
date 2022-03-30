@@ -14,12 +14,18 @@ import {
   localSelection,
   mediumPadding,
 } from '../../../css/classes';
-import { ActionCreator } from '../../../data/actions';
 import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods';
-import { Edition, VariableEdition } from '../../../data/Reducer/globalState';
+import {
+  EditingActionCreator,
+  Edition,
+  VariableEdition,
+} from '../../../data/Reducer/editingState';
 import { updateInstance } from '../../../data/Reducer/VariableInstanceReducer';
 import { VariableDescriptor } from '../../../data/selectors';
-import { store, StoreDispatch } from '../../../data/Stores/store';
+import {
+  editingStore,
+  EditingStoreDispatch,
+} from '../../../data/Stores/editingStore';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import getEditionConfig from '../../editionConfig';
@@ -66,7 +72,7 @@ export interface InstancePropertiesProps
     DisabledReadonly {
   editing: Edition;
   events: WegasEvent[];
-  dispatch: StoreDispatch | undefined;
+  dispatch: EditingStoreDispatch | undefined;
   actions?: EditorProps<IVariableInstance>['actions'];
   highlight?: boolean;
 }
@@ -126,7 +132,7 @@ export function InstanceProperties({
   const onEditionChanges = useOnEditionChangesModal(
     dispatch != null,
     editing,
-    dispatch || store.dispatch,
+    dispatch || editingStore.dispatch,
   );
 
   return (
@@ -147,8 +153,8 @@ export function InstanceProperties({
                     )}
                     onClick={e => {
                       onEditionChanges(i.id!, e, () => {
-                        (dispatch || store.dispatch)(
-                          ActionCreator.INSTANCE_EDIT({ instance: i }),
+                        (dispatch || editingStore.dispatch)(
+                          EditingActionCreator.INSTANCE_EDIT({ instance: i }),
                         );
                       });
                     }}
@@ -172,16 +178,20 @@ export function InstanceProperties({
               getEditionConfig(si) as Promise<Schema<AvailableViews>>
             }
             update={(entity: IVariableInstance) =>
-              (dispatch || store.dispatch)(updateInstance(entity)).then(() => {
-                getInstances(descriptor);
-                (dispatch || store.dispatch)(ActionCreator.INSTANCE_SAVE());
-              })
+              (dispatch || editingStore.dispatch)(updateInstance(entity)).then(
+                () => {
+                  getInstances(descriptor);
+                  (dispatch || editingStore.dispatch)(
+                    EditingActionCreator.INSTANCE_SAVE(),
+                  );
+                },
+              )
             }
             entity={instance}
             error={parseEventFromIndex(events)}
             actions={actions}
             onChange={newEntity => {
-              ActionCreator.INSTANCE_EDIT({
+              EditingActionCreator.INSTANCE_EDIT({
                 instance: newEntity as IVariableInstance,
               });
             }}

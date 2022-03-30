@@ -3,7 +3,7 @@ import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
-import { store } from '../../../data/Stores/store';
+import { editingStore } from '../../../data/Stores/editingStore';
 import { PAGE_LOADER_DEFAULT_ID } from '../../../Editor/Components/Page/PageLoader';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import {
@@ -83,7 +83,7 @@ function PlayerModal({
             });
           }
           if (server) {
-            store.dispatch(
+            editingStore.dispatch(
               runLoadedScript(
                 server,
                 Player.selectCurrent(),

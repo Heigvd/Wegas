@@ -10,7 +10,8 @@ import {
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { readMessage } from '../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../data/selectors';
-import { store, useStore } from '../../data/Stores/store';
+import { editingStore } from '../../data/Stores/editingStore';
+import { useStore } from '../../data/Stores/store';
 import { useTranslate } from '../../Editor/Components/FormView/translatable';
 import {
   DefaultEntityChooserLabel,
@@ -29,7 +30,7 @@ function MessageLabel({ message, disabled }: MessageLabelProps) {
   return (
     <div
       className={cx(flex, itemCenter)}
-      onClick={() => !disabled && store.dispatch(readMessage(message))}
+      onClick={() => !disabled && editingStore.dispatch(readMessage(message))}
     >
       {message.unread ? (
         <div className={cx(unreadSpaceStyle, unreadSignalStyle)} />

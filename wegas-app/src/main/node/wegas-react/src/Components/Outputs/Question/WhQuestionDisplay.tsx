@@ -22,7 +22,10 @@ import {
   IWhChoiceInstance,
 } from '../../../data/scriptable/impl/QuestionDescriptor';
 import { select } from '../../../data/selectors/VariableDescriptorSelector';
-import { store, StoreDispatch } from '../../../data/Stores/store';
+import {
+  editingStore,
+  EditingStoreDispatch,
+} from '../../../data/Stores/editingStore';
 import {
   createTranslatableContent,
   translate,
@@ -54,7 +57,7 @@ export function AddChoiceMenu({ questionD }: AddChoiceMenuProps) {
     <AddMenu
       items={choices}
       onSelect={item => {
-        store.dispatch(
+        editingStore.dispatch(
           Actions.VariableDescriptorActions.createDescriptor(
             {
               '@class': item.value.descriptor,
@@ -194,7 +197,7 @@ function WhChoiceDisplay({
 }
 
 interface WhQuestionDisplayProps extends WhQuestionInfo, DisabledReadonly {
-  dispatch: StoreDispatch;
+  dispatch: EditingStoreDispatch;
   editMode?: boolean;
 }
 

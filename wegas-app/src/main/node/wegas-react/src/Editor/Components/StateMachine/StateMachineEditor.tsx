@@ -29,14 +29,22 @@ import {
   getInstance,
 } from '../../../data/methods/VariableDescriptorMethods';
 import {
-  deleteState,
+  EditingState,
   Edition,
   EditorAction,
-} from '../../../data/Reducer/globalState';
+  editStateMachine,
+  saveEditor,
+} from '../../../data/Reducer/editingState';
+import { deleteState } from '../../../data/Reducer/globalState';
 import { State as RState } from '../../../data/Reducer/reducers';
 // import * as ReactDOMServer from 'react-dom/server';
 import { VariableDescriptor } from '../../../data/selectors';
-import { store, StoreDispatch, useStore } from '../../../data/Stores/store';
+import {
+  editingStore,
+  EditingStoreDispatch,
+  useEditingStore,
+} from '../../../data/Stores/editingStore';
+import { store, useStore } from '../../../data/Stores/store';
 import { lastKeyboardEvents } from '../../../Helper/keyboardEvents';
 import { createScript } from '../../../Helper/wegasEntites';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
@@ -56,7 +64,7 @@ export function deleteTransition<
   stateMachine: Immutable<T>,
   stateId: number,
   transitionIndex: number,
-  dispatch: typeof store.dispatch,
+  dispatch: EditingStoreDispatch,
 ) {
   const newStateMachine = produce((stateMachine: T) => {
     const transitions = stateMachine.states[stateId].transitions;
@@ -81,7 +89,7 @@ interface StateMachineEditorProps<
   stateMachineInstance: IFSM['defaultInstance'];
   localState?: Readonly<Edition> | undefined;
 
-  localDispatch?: StoreDispatch;
+  localDispatch?: EditingStoreDispatch;
   forceLocalDispatch?: boolean;
   search?: RState['global']['search'];
   title?: string;
@@ -120,7 +128,7 @@ export function StateMachineEditor<
     () =>
       localDispatch != null && forceLocalDispatch
         ? localDispatch!
-        : store.dispatch,
+        : editingStore.dispatch,
     [forceLocalDispatch, localDispatch],
   );
 
@@ -236,13 +244,8 @@ export function StateMachineEditor<
         (e.ctrlKey === true || forceLocalDispatch === true) &&
         localDispatch != null;
 
-      const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
-      dispatch(
-        Actions.EditorActions.editStateMachine(stateMachine, [
-          'states',
-          state.id,
-        ]),
-      );
+      const dispatch = dispatchLocal ? localDispatch! : editingStore.dispatch;
+      dispatch(editStateMachine(stateMachine, ['states', state.id]));
       if (!dispatchLocal) {
         focusTab(mainLayoutId, 'Variable Properties');
       }
@@ -259,13 +262,13 @@ export function StateMachineEditor<
 
   const updateStatePosition = React.useCallback(
     (sourceState: StateProcess, position: XYPosition) => {
-      const state = store.getState();
+      const state = editingStore.getState();
 
       const currentState =
-        state.global.editing?.type === 'VariableFSM' &&
-        state.global.editing.newEntity != null &&
-        state.global.editing.newEntity.id === sourceState.state.id
-          ? (state.global.editing.newEntity as unknown as StateProcess['state'])
+        state.editing?.type === 'VariableFSM' &&
+        state.editing.newEntity != null &&
+        state.editing.newEntity.id === sourceState.state.id
+          ? (state.editing.newEntity as unknown as StateProcess['state'])
           : sourceState.state;
 
       const newCurrentState: IState | IDialogueState = {
@@ -279,7 +282,7 @@ export function StateMachineEditor<
       ) as IFSMDescriptor;
       oldFSM.states[newCurrentState.index!] = newCurrentState as IState;
 
-      dispatch(Actions.EditorActions.saveEditor(oldFSM, false));
+      dispatch(saveEditor(oldFSM, false));
     },
     [dispatch],
   );
@@ -351,18 +354,13 @@ export function StateMachineEditor<
       const dispatchLocal =
         (e.ctrlKey === true || forceLocalDispatch === true) &&
         localDispatch != null;
-      const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
+      const dispatch = dispatchLocal ? localDispatch! : editingStore.dispatch;
 
       if (!dispatchLocal) {
         focusTab(mainLayoutId, 'Variable Properties');
       }
 
-      dispatch(
-        Actions.EditorActions.editStateMachine(stateMachine, [
-          'states',
-          String(newStateId),
-        ]),
-      );
+      dispatch(editStateMachine(stateMachine, ['states', String(newStateId)]));
       dispatch(
         Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
       );
@@ -416,9 +414,9 @@ export function StateMachineEditor<
       const dispatchLocal =
         (e.ctrlKey === true || forceLocalDispatch === true) &&
         localDispatch != null;
-      const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
+      const dispatch = dispatchLocal ? localDispatch! : editingStore.dispatch;
       dispatch(
-        Actions.EditorActions.editStateMachine(
+        editStateMachine(
           stateMachine,
           ['states', startProcess.id, 'transitions', flowline.id],
           undefined,
@@ -505,26 +503,24 @@ export function StateMachineEditor<
   );
 }
 
-export function globalStateSelector(s: RState) {
+export function editingStateSelector(s: EditingState) {
   let editedVariable: IFSMDescriptor | IDialogueDescriptor | undefined =
     undefined;
   let editPath: (string | number)[] | undefined = undefined;
   if (
-    s.global.editing &&
-    (s.global.editing.type === 'VariableFSM' ||
+    s.editing &&
+    (s.editing.type === 'VariableFSM' ||
       // The following condition seems stupid, need to be tested ans documented
-      s.global.editing.type === 'Variable')
+      s.editing.type === 'Variable')
   ) {
-    editedVariable = s.global.editing.entity as
-      | IFSMDescriptor
-      | IDialogueDescriptor;
-    const lastFSM = VariableDescriptor.select(s.global.editing.entity.id) as
+    editedVariable = s.editing.entity as IFSMDescriptor | IDialogueDescriptor;
+    const lastFSM = VariableDescriptor.select(s.editing.entity.id) as
       | IFSMDescriptor
       | IDialogueDescriptor;
     if (shallowDifferent(editedVariable, lastFSM)) {
       editedVariable = lastFSM;
     }
-    editPath = s.global.editing.path;
+    editPath = s.editing.path;
   }
   const instance = editedVariable ? getInstance(editedVariable) : undefined;
   if (
@@ -535,7 +531,6 @@ export function globalStateSelector(s: RState) {
     return {
       descriptor: editedVariable,
       instance,
-      search: s.global.search,
       editPath,
     };
   } else {
@@ -545,9 +540,13 @@ export function globalStateSelector(s: RState) {
   }
 }
 
+export function globalStateSelector(s: RState) {
+  return s.global.search;
+}
+
 interface ConnectedStateMachineEditorProps extends DisabledReadonly {
   localState?: Readonly<Edition> | undefined;
-  localDispatch?: StoreDispatch;
+  localDispatch?: EditingStoreDispatch;
   forceLocalDispatch?: boolean;
 }
 
@@ -557,11 +556,12 @@ export function ConnectedStateMachineEditor({
   forceLocalDispatch,
   ...options
 }: ConnectedStateMachineEditorProps) {
-  const globalState = useStore(globalStateSelector);
+  const editingState = useEditingStore(editingStateSelector);
+  const search = useStore(globalStateSelector);
   const i18nValues = useInternalTranslate(editorTabsTranslations);
 
-  if ('variable' in globalState) {
-    if (globalState.variable == null) {
+  if ('variable' in editingState) {
+    if (editingState.variable == null) {
       return (
         <span className={mediumPadding}>
           {i18nValues.stateMachine.selectVariable}
@@ -581,10 +581,10 @@ export function ConnectedStateMachineEditor({
           localState={localState}
           localDispatch={localDispatch}
           forceLocalDispatch={forceLocalDispatch}
-          stateMachine={globalState.descriptor}
-          stateMachineInstance={globalState.instance}
-          search={globalState.search}
-          editPath={globalState.editPath}
+          stateMachine={editingState.descriptor}
+          stateMachineInstance={editingState.instance}
+          search={search}
+          editPath={editingState.editPath}
           {...options}
         />
       </div>

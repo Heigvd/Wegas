@@ -1,11 +1,11 @@
-import { Reducer } from 'redux';
 import u from 'immer';
-import { ActionType, StateActions, ActionCreator } from '../actions';
 import { omit } from 'lodash-es';
-import { store, ThunkResult } from '../Stores/store';
-import { GameAPI } from '../../API/games.api';
+import { Reducer } from 'redux';
 import { IGame } from 'wegas-ts-api';
-// import normalizeData from '../normalize/index';
+import { GameAPI } from '../../API/games.api';
+import { ActionCreator, StateActions } from '../actions';
+import { ActionType } from '../actionTypes';
+import { store, ThunkResult } from '../Stores/store';
 
 export interface GameState {
   [id: string]: Readonly<IGame>;

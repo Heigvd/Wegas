@@ -4,7 +4,7 @@ import * as React from 'react';
 import { IQuestionDescriptor, IWhQuestionDescriptor } from 'wegas-ts-api';
 import { Actions } from '../../../data';
 import { TranslatableContent } from '../../../data/i18n';
-import { store } from '../../../data/Stores/store';
+import { editingStore } from '../../../data/Stores/editingStore';
 import { createTranslatableContent } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import HTMLEditor from '../../HTML/HTMLEditor';
@@ -61,7 +61,7 @@ export function QuestionDescription({
         },
       )(questionD);
 
-      store.dispatch(
+      editingStore.dispatch(
         Actions.VariableDescriptorActions.updateDescriptor(newQuestion),
       );
       setEditing(false);

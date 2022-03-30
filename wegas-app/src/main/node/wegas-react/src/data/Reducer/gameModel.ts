@@ -3,13 +3,10 @@ import { omit } from 'lodash-es';
 import { Reducer } from 'redux';
 import { IGameModel, IGameModelLanguage } from 'wegas-ts-api';
 import { GameModelApi } from '../../API/gameModel.api';
-import {
-  ActionCreator,
-  ActionType,
-  manageResponseHandler,
-  StateActions,
-} from '../actions';
-import { store, ThunkResult } from '../Stores/store';
+import { ActionCreator, manageResponseHandler, StateActions } from '../actions';
+import { ActionType } from '../actionTypes';
+import { editingStore, EditingThunkResult } from '../Stores/editingStore';
+import { ThunkResult } from '../Stores/store';
 
 export interface GameModelState {
   [id: string]: Readonly<IGameModel>;
@@ -78,18 +75,18 @@ export function editLanguage(
 export function liveEdition<T extends IMergeable>(
   channel: string,
   entity: T,
-): ThunkResult {
+): EditingThunkResult {
   return function (dispatch, getState) {
     return GameModelApi.liveEdition(channel, entity).then(res =>
-      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
     );
   };
 }
 
 export function getGameModel(gameModelId: number): ThunkResult {
-  return function (dispatch, getState) {
+  return function () {
     return GameModelApi.get(gameModelId).then(res =>
-      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+      editingStore.dispatch(manageResponseHandler(res)),
     );
   };
 }
