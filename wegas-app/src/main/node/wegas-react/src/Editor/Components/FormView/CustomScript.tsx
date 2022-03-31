@@ -13,7 +13,7 @@ export interface CustomScriptProps
   extends WidgetProps.BaseProps<
     LabeledView &
       CommonView & {
-        language?: CodeLanguage;
+        language: CodeLanguage;
         returnType?: string[];
         args?: [string, string[]][];
       }
