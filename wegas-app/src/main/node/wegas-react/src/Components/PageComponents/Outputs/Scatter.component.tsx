@@ -254,6 +254,7 @@ registerComponent(
       series: {
         view: {
           type: 'customscript',
+          language:'TypeScript',
           label: 'Series',
           returnType: [
             '{label: string, points:{x:number, y:number}[], fill?: string, allowDrag?: boolean}[]',
@@ -278,6 +279,7 @@ registerComponent(
         view: {
           label: 'onDblClick callback',
           type: 'customscript',
+          language:'TypeScript',
           returnType: [
             'undefined',
             '((value: { x: number; y: number }) => void)',
@@ -304,6 +306,7 @@ registerComponent(
         view: {
           label: 'onDrag callback',
           type: 'customscript',
+          language:'TypeScript',
           returnType: [
             'undefined',
             '((e: MouseEvent, datasetIndex: number, index: number, value: { x: number; y: number }) => boolean)',
@@ -323,6 +326,7 @@ registerComponent(
         view: {
           label: 'onDragStart callback',
           type: 'customscript',
+          language:'TypeScript',
           returnType: [
             'undefined',
             '((e: MouseEvent, datasetIndex: number, index: number, value: { x: number; y: number }) => boolean)',
@@ -342,6 +346,7 @@ registerComponent(
         view: {
           label: 'onDragStart callback',
           type: 'customscript',
+          language:'TypeScript',
           returnType: [
             'undefined',
             '((e: MouseEvent, datasetIndex: number, index: number, value: { x: number; y: number }) => boolean)',
