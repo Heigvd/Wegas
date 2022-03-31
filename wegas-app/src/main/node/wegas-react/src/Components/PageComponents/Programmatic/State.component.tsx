@@ -92,8 +92,8 @@ function ChildrenDeserializer({
           return (
             <PageDeserializer
               key={
-                JSON.stringify([...path, i]) +
-                JSON.stringify(newContext ? newContext[exposeAs] : 'undefined')
+                JSON.stringify([...path, i])
+                //JSON.stringify(newContext ? newContext[exposeAs] : 'undefined')
               }
               pageId={pageId}
               path={[...path, i]}
