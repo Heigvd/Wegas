@@ -15,9 +15,11 @@ import {
   pointer,
   secondaryButtonStyle,
 } from '../css/classes';
-import { ActionCreator } from '../data/actions';
-import { isEditingVariable } from '../data/Reducer/globalState';
-import { store } from '../data/Stores/store';
+import {
+  EditingActionCreator,
+  isEditingVariable,
+} from '../data/Reducer/editingState';
+import { editingStore } from '../data/Stores/editingStore';
 import { getUpdate } from '../Editor/Components/EntityEditor';
 import { focusTab } from '../Editor/Components/LinearTabLayout/LinearLayout';
 import { CTreeProps } from '../Editor/Components/Variable/CTree';
@@ -409,10 +411,10 @@ export function useOnEditionChangesModal(
     e: ModifierKeysEvent,
     onClickAction: (e: ModifierKeysEvent) => void,
   ) {
-    const globalState = store.getState().global.editing;
+    const globalState = editingStore.getState().editing;
     const localChanges = forceLocalDispatch || e.ctrlKey;
     const state = localChanges ? localState : globalState;
-    const dispatch = localChanges ? localDispatch : store.dispatch;
+    const dispatch = localChanges ? localDispatch : editingStore.dispatch;
     let pathEntity = state?.newEntity;
 
     if (isEditingVariable(state)) {
@@ -441,7 +443,9 @@ export function useOnEditionChangesModal(
           }}
           onShowChanges={() => {
             if (dispatch != null) {
-              dispatch(ActionCreator.EDITION_HIGHLIGHT({ highlight: true }));
+              dispatch(
+                EditingActionCreator.EDITION_HIGHLIGHT({ highlight: true }),
+              );
             }
             if (!localChanges) {
               focusTab(mainLayoutId, 'Variable Properties');

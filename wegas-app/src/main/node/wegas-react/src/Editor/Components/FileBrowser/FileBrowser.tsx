@@ -4,8 +4,9 @@ import { IAbstractContentDescriptor } from 'wegas-ts-api';
 import { FileAPI, generateAbsolutePath } from '../../../API/files.api';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
 import { grow, halfOpacity, mediumPadding } from '../../../css/classes';
-import { State } from '../../../data/Reducer/reducers';
-import { StoreDispatch, useStore } from '../../../data/Stores/store';
+import { EditingState } from '../../../data/Reducer/editingState';
+import { useEditingStore } from '../../../data/Stores/editingStore';
+import { StoreDispatch } from '../../../data/Stores/store';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -108,19 +109,15 @@ export function FileBrowser({
   );
 }
 
-function globalFileSelector(state: State) {
-  return (
-    state.global.editing &&
-    state.global.editing.type === 'File' &&
-    state.global.editing.entity
-  );
+function globalFileSelector(state: EditingState) {
+  return state.editing && state.editing.type === 'File' && state.editing.entity;
 }
 
 export default function FileBrowserWithMeta({
   disabled,
   readOnly,
 }: DisabledReadonly) {
-  const globalFile = useStore(globalFileSelector);
+  const globalFile = useEditingStore(globalFileSelector);
 
   return (
     <ComponentWithForm disabled={disabled} readOnly={readOnly}>

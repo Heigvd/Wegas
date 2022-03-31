@@ -1,34 +1,36 @@
-import { Reducer } from 'redux';
 import u from 'immer';
-import { ActionType, StateActions, manageResponseHandler } from '../actions';
-import { VariableInstanceAPI } from '../../API/variableInstance.api';
-import { ThunkResult, store } from '../Stores/store';
-import { Player } from '../selectors';
-import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
-import { QuestionDescriptorAPI } from '../../API/questionDescriptor.api';
-import { getInstance } from '../methods/VariableDescriptorMethods';
-import { createScript } from '../../Helper/wegasEntites';
-import { InboxAPI } from '../../API/inbox.api';
+import { Reducer } from 'redux';
 import {
-  IVariableInstance,
-  IScript,
-  IPlayer,
-  IVariableDescriptor,
   IChoiceDescriptor,
   IChoiceInstance,
-  IQuestionDescriptor,
-  IMessage,
-  IInboxDescriptor,
-  IFSMDescriptor,
-  ITransition,
-  IReply,
   IDialogueDescriptor,
   IDialogueTransition,
-  IWhQuestionDescriptor,
+  IFSMDescriptor,
+  IInboxDescriptor,
+  IMessage,
+  IPlayer,
+  IQuestionDescriptor,
   IQuestionInstance,
+  IReply,
+  IScript,
+  ITransition,
+  IVariableDescriptor,
+  IVariableInstance,
+  IWhQuestionDescriptor,
   IWhQuestionInstance,
 } from 'wegas-ts-api';
 import { FSM_API } from '../../API/FSM.api';
+import { InboxAPI } from '../../API/inbox.api';
+import { QuestionDescriptorAPI } from '../../API/questionDescriptor.api';
+import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
+import { VariableInstanceAPI } from '../../API/variableInstance.api';
+import { createScript } from '../../Helper/wegasEntites';
+import { manageResponseHandler, StateActions } from '../actions';
+import { ActionType } from '../actionTypes';
+import { getInstance } from '../methods/VariableDescriptorMethods';
+import { Player } from '../selectors';
+import { editingStore, EditingThunkResult } from '../Stores/editingStore';
+import { store, ThunkResult } from '../Stores/store';
 
 export interface VariableInstanceState {
   [id: string]: Readonly<IVariableInstance> | undefined;
@@ -65,20 +67,20 @@ export default variableInstances;
 
 export function updateInstance(
   variableInstance: IVariableInstance,
-): ThunkResult<Promise<StateActions | void>> {
+): EditingThunkResult<Promise<StateActions | void>> {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableInstanceAPI.update(variableInstance, gameModelId).then(res =>
       // Dispatching changes to global store and passing local store that manages editor state
-      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
     );
   };
 }
 
 export function getAll(): ThunkResult<Promise<StateActions>> {
-  return function (dispatch, getState) {
+  return function () {
     return VariableInstanceAPI.getByPlayer().then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+      editingStore.dispatch(manageResponseHandler(res)),
     );
   };
 }
@@ -110,13 +112,13 @@ export function runScript(
   script: string | IScript,
   player?: IPlayer,
   context?: IVariableDescriptor,
-): ThunkResult {
+): EditingThunkResult {
   return function (dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
+    const gameModelId = store.getState().global.currentGameModelId;
     return asyncRunScript(gameModelId, script, player, context).then(
       res =>
         res != null &&
-        dispatch(manageResponseHandler(res, dispatch, getState().global)),
+        dispatch(manageResponseHandler(res, dispatch, getState())),
     );
   };
 }
@@ -148,18 +150,16 @@ export function runLoadedScript(
   player?: IPlayer,
   currentDescriptor?: IVariableDescriptor,
   payload?: { [key: string]: unknown },
-): ThunkResult {
+): EditingThunkResult {
   return function (dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
+    const gameModelId = store.getState().global.currentGameModelId;
     return asyncRunLoadedScript(
       gameModelId,
       script,
       player,
       currentDescriptor,
       payload,
-    ).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState().global)),
-    );
+    ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
   };
 }
 
@@ -167,15 +167,15 @@ export function runLoadedScript(
 export function read(
   choice: IChoiceDescriptor | IQuestionDescriptor | IWhQuestionDescriptor,
   player?: IPlayer,
-): ThunkResult {
+): EditingThunkResult {
   return function (dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
+    const gameModelId = store.getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
       throw Error('Missing persisted player');
     }
     return QuestionDescriptorAPI.read(gameModelId, p.id, choice).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+      dispatch(manageResponseHandler(res, dispatch, getState())),
     );
   };
 }
@@ -183,9 +183,9 @@ export function read(
 export function selectAndValidate(
   choice: IChoiceDescriptor,
   player?: IPlayer,
-): ThunkResult {
+): EditingThunkResult {
   return function (dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
+    const gameModelId = store.getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
       throw Error('Missing persisted player');
@@ -194,37 +194,38 @@ export function selectAndValidate(
       gameModelId,
       p.id,
       choice,
-    ).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState().global)),
-    );
+    ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
   };
 }
 
 export function selectChoice(
   choice: IChoiceDescriptor,
   player?: IPlayer,
-): ThunkResult {
+): EditingThunkResult {
   return function (dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
+    const gameModelId = store.getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
       throw Error('Missing persisted player');
     }
     return QuestionDescriptorAPI.selectChoice(gameModelId, p.id, choice).then(
-      res => dispatch(manageResponseHandler(res, dispatch, getState().global)),
+      res => dispatch(manageResponseHandler(res, dispatch, getState())),
     );
   };
 }
 
-export function cancelReply(reply: IReply, player?: IPlayer): ThunkResult {
+export function cancelReply(
+  reply: IReply,
+  player?: IPlayer,
+): EditingThunkResult {
   return function (dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
+    const gameModelId = store.getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null || !reply) {
       throw Error('Missing persisted player');
     }
     return QuestionDescriptorAPI.cancelReply(gameModelId, p.id, reply).then(
-      res => dispatch(manageResponseHandler(res, dispatch, getState().global)),
+      res => dispatch(manageResponseHandler(res, dispatch, getState())),
     );
   };
 }
@@ -235,7 +236,7 @@ export function cancelReply(reply: IReply, player?: IPlayer): ThunkResult {
 export function toggleReply(
   choice: IChoiceDescriptor,
   player?: IPlayer,
-): ThunkResult {
+): EditingThunkResult {
   const p = player != null ? player : Player.selectCurrent();
 
   const ci = getInstance<IChoiceInstance>(choice, p);
@@ -251,12 +252,13 @@ export function toggleReply(
 export function validateQuestion(
   question: Readonly<IQuestionDescriptor | IWhQuestionDescriptor>,
   player?: IPlayer,
-): ThunkResult {
+): EditingThunkResult {
   return function (dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
+    const gameModelId = store.getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
-    const instance =
-      getInstance<IQuestionInstance | IWhQuestionInstance>(question);
+    const instance = getInstance<IQuestionInstance | IWhQuestionInstance>(
+      question,
+    );
     if (p.id == null || instance == null) {
       throw Error('Missing persisted player');
     }
@@ -264,15 +266,16 @@ export function validateQuestion(
       gameModelId,
       p.id,
       instance,
-    ).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState().global)),
-    );
+    ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
   };
 }
 
 // Message specific actions
 
-export function readMessage(message: IMessage, player?: IPlayer): ThunkResult {
+export function readMessage(
+  message: IMessage,
+  player?: IPlayer,
+): EditingThunkResult {
   return function (dispatch, getState) {
     const p = player != null ? player : Player.selectCurrent();
     if (message.id == null) {
@@ -282,7 +285,7 @@ export function readMessage(message: IMessage, player?: IPlayer): ThunkResult {
       throw Error('Missing persisted player');
     }
     return InboxAPI.readMessage(message.id, p.id).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+      dispatch(manageResponseHandler(res, dispatch, getState())),
     );
   };
 }
@@ -290,7 +293,7 @@ export function readMessage(message: IMessage, player?: IPlayer): ThunkResult {
 export function readMessages(
   inbox: IInboxDescriptor,
   player?: IPlayer,
-): ThunkResult {
+): EditingThunkResult {
   return function (dispatch, getState) {
     const p = player != null ? player : Player.selectCurrent();
     if (inbox.id == null) {
@@ -300,7 +303,7 @@ export function readMessages(
       throw Error('Missing persisted player');
     }
     return InboxAPI.readMessages(inbox.id, p.id).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+      dispatch(manageResponseHandler(res, dispatch, getState())),
     );
   };
 }
@@ -309,7 +312,7 @@ export function applyFSMTransition(
   stateMachine: IFSMDescriptor | IDialogueDescriptor,
   transition: ITransition | IDialogueTransition,
   cbFn?: () => void,
-): ThunkResult {
+): EditingThunkResult {
   return function (dispatch, getState) {
     if (stateMachine.id == null) {
       throw Error('Missing statemachine id');
@@ -318,16 +321,16 @@ export function applyFSMTransition(
       throw Error('Missing transition id');
     }
     return FSM_API.applyTransition(stateMachine.id, transition.id).then(res => {
-      dispatch(manageResponseHandler(res, dispatch, getState().global));
+      dispatch(manageResponseHandler(res, dispatch, getState()));
       cbFn && cbFn();
     });
   };
 }
 
-export function getByIds(ids: number[]): ThunkResult {
+export function getByIds(ids: number[]): EditingThunkResult {
   return function (dispatch, getState) {
     return VariableInstanceAPI.getByIds(ids).then(res =>
-      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
     );
   };
 }

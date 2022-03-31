@@ -1,6 +1,6 @@
 import u from 'immer';
 import { cloneDeep } from 'lodash';
-import { applyMiddleware, createStore, Reducer } from 'redux';
+import { applyMiddleware, compose, createStore, Reducer } from 'redux';
 import thunk, { ThunkAction, ThunkMiddleware } from 'redux-thunk';
 import { IGameModelContent } from 'wegas-ts-api';
 import {
@@ -28,7 +28,7 @@ import {
 import { createTranslatableContent } from '../../Editor/Components/FormView/translatable';
 import { wwarn } from '../../Helper/wegaslog';
 import { createStoreConnector } from '../connectStore';
-import { composeEnhancers, store } from './store';
+import { store } from './store';
 
 const globalDispatch = store.dispatch;
 
@@ -135,6 +135,9 @@ const themeStateReducer: Reducer<Readonly<ThemesState>, ThemeActions> = u(
   },
   defaultThemesState,
 );
+
+const composeEnhancers: typeof compose =
+  (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 export const themeStore = createStore(
   themeStateReducer,

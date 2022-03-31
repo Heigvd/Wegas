@@ -1,15 +1,14 @@
 import u from 'immer';
 import { omit } from 'lodash-es';
 import * as React from 'react';
-import { applyMiddleware, createStore, Reducer } from 'redux';
+import { applyMiddleware, compose, createStore, Reducer } from 'redux';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import {
   IVariableDescriptor,
   WegasClassNameAndScriptableTypes,
 } from 'wegas-ts-api';
-import { composeEnhancers } from '../../../data/Stores/store';
-import { IconComponentType } from '../../../Editor/Components/Page/ComponentIcon';
 import { AvailableSchemas } from '../../../Editor/Components/FormView';
+import { IconComponentType } from '../../../Editor/Components/Page/ComponentIcon';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 import { useAnyStore } from '../../Hooks/storeHookFactory';
 import {
@@ -232,6 +231,9 @@ export const importPageComponents = () => {
   );
   componentModules.keys().map(k => componentModules(k));
 };
+
+const composeEnhancers: typeof compose =
+  (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 export const componentsStore = createStore(
   pageComponentReducer,

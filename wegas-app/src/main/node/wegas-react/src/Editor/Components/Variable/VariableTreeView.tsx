@@ -20,9 +20,13 @@ import {
   toolboxHeaderStyle,
 } from '../../../css/classes';
 import { Actions } from '../../../data';
-import { Edition } from '../../../data/Reducer/globalState';
+import { createVariable, Edition } from '../../../data/Reducer/editingState';
 import { moveDescriptor } from '../../../data/Reducer/VariableDescriptorReducer';
-import { store, StoreDispatch, useStore } from '../../../data/Stores/store';
+import {
+  editingStore,
+  EditingStoreDispatch,
+} from '../../../data/Stores/editingStore';
+import { useStore } from '../../../data/Stores/store';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { mainLayoutId } from '../../layouts';
@@ -54,7 +58,7 @@ const TREECONTENTID = 'TREECONTENT';
 export interface SharedTreeProps extends DisabledReadonly {
   noHeader?: boolean;
   localState?: Readonly<Edition> | undefined;
-  localDispatch?: StoreDispatch;
+  localDispatch?: EditingStoreDispatch;
   forceLocalDispatch?: boolean;
 }
 
@@ -62,7 +66,7 @@ interface TreeProps extends SharedTreeProps {
   root: IParentDescriptor;
   noHeader?: boolean;
   localState?: Readonly<Edition> | undefined;
-  localDispatch?: StoreDispatch;
+  localDispatch?: EditingStoreDispatch;
   forceLocalDispatch?: boolean;
 }
 
@@ -82,7 +86,7 @@ export function VariableTreeView({
 
   const i18nValues = useInternalTranslate(commonTranslations);
 
-  const globalDispatch = store.dispatch;
+  const globalDispatch = editingStore.dispatch;
   const actionAllowed = isActionAllowed(options);
   const { value, deep } = useStore(
     s => ({
@@ -108,7 +112,7 @@ export function VariableTreeView({
       const parentVariable = to.data;
 
       if (movedVariable != null && index != null) {
-        let dispatch = store.dispatch;
+        let dispatch = editingStore.dispatch;
         if (forceLocalDispatch && localDispatch) {
           dispatch = localDispatch;
         }
@@ -208,13 +212,9 @@ export function VariableTreeView({
           onSelect={(i, e) => {
             onEditionChanges(0, e, e => {
               if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
-                localDispatch(
-                  Actions.EditorActions.createVariable(i.value, root),
-                );
+                localDispatch(createVariable(i.value, root));
               } else {
-                globalDispatch(
-                  Actions.EditorActions.createVariable(i.value, root),
-                );
+                globalDispatch(createVariable(i.value, root));
                 focusTab(mainLayoutId, 'Variable Properties');
               }
             });

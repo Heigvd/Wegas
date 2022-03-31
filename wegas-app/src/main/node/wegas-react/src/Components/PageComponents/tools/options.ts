@@ -19,6 +19,7 @@ import { ActionCreator } from '../../../data/actions';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
+import { editingStore } from '../../../data/Stores/editingStore';
 import { store } from '../../../data/Stores/store';
 import { createScript } from '../../../Helper/wegasEntites';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
@@ -147,7 +148,7 @@ export const wegasComponentActions: WegasComponentActions = {
   },
   impactVariable: props => {
     try {
-      store.dispatch(runScript(props.impact, Player.selectCurrent()));
+      editingStore.dispatch(runScript(props.impact, Player.selectCurrent()));
     } catch (error) {
       wwarn(error);
     }

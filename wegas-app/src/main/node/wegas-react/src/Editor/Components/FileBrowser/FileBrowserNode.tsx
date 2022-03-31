@@ -1,49 +1,47 @@
-import * as React from 'react';
-import { useDrop, DropTargetMonitor } from 'react-dnd';
-import { NativeTypes } from 'react-dnd-html5-backend';
-
 import { css, cx } from '@emotion/css';
-import {
-  flex,
-  grow,
-  hidden,
-  block,
-  localSelection,
-  globalSelection,
-  disabledColorStyle,
-  infoShortTextStyle,
-  defaultMarginLeft,
-  defaultMarginBottom,
-  thinHoverColorInsetShadow,
-  textCenter,
-  dropZoneStyle,
-} from '../../../css/classes';
-import { classNameOrEmpty } from '../../../Helper/className';
-
+import * as React from 'react';
+import { DropTargetMonitor, useDrop } from 'react-dnd';
+import { NativeTypes } from 'react-dnd-html5-backend';
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
-
-import { store, StoreDispatch } from '../../../data/Stores/store';
-import { GameModel } from '../../../data/selectors';
-import { editFile } from '../../../data/Reducer/globalState';
-
-import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { FileAPI, fileURL, generateAbsolutePath } from '../../../API/files.api';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
-import { TextPrompt } from '../TextPrompt';
-import { MessageString } from '../MessageString';
-
-import { generateAbsolutePath, FileAPI, fileURL } from '../../../API/files.api';
+import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import {
+  block,
+  defaultMarginBottom,
+  defaultMarginLeft,
+  disabledColorStyle,
+  dropZoneStyle,
+  flex,
+  globalSelection,
+  grow,
+  hidden,
+  infoShortTextStyle,
+  localSelection,
+  textCenter,
+  thinHoverColorInsetShadow,
+} from '../../../css/classes';
+import { editFile } from '../../../data/Reducer/editingState';
+import { GameModel } from '../../../data/selectors';
+import {
+  editingStore,
+  EditingStoreDispatch,
+} from '../../../data/Stores/editingStore';
+import { classNameOrEmpty } from '../../../Helper/className';
+import {
+  formatFileSize,
+  getIconForFile,
   isDirectory,
   isFile,
   isImage,
-  formatFileSize,
-  getIconForFile,
 } from '../../../Helper/fileTools';
-import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { MessageString } from '../MessageString';
+import { TextPrompt } from '../TextPrompt';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // styles
@@ -249,7 +247,7 @@ export interface FileBrowserNodeProps extends ClassStyleId, DisabledReadonly {
   /**
    * localDispatch
    */
-  localDispatch?: StoreDispatch;
+  localDispatch?: EditingStoreDispatch;
 }
 
 export function FileBrowserNode({
@@ -621,7 +619,9 @@ export function FileBrowserNode({
               onFileClick(currentFile, setCurrentFile);
               if (!pickOnly) {
                 const dispatch =
-                  e.ctrlKey && localDispatch ? localDispatch : store.dispatch;
+                  e.ctrlKey && localDispatch
+                    ? localDispatch
+                    : editingStore.dispatch;
                 dispatch(editFile(currentFile, setCurrentFile));
               }
             }

@@ -6,12 +6,12 @@ import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { autoScroll, flex, grow, halfOpacity } from '../../../css/classes';
 import { createStoreConnector } from '../../../data/connectStore';
-import { Edition } from '../../../data/Reducer/globalState';
-import { store, StoreDispatch, useStore } from '../../../data/Stores/store';
+import { Edition } from '../../../data/Reducer/editingState';
 import {
-  LocalGlobalState,
-  storeFactory,
-} from '../../../data/Stores/storeFactory';
+  editingStoreFactory,
+  useEditingStore,
+} from '../../../data/Stores/editingStore';
+import { store, StoreDispatch } from '../../../data/Stores/store';
 import { getEntity, VariableForm } from '../EntityEditor';
 
 const growBig = css({
@@ -75,14 +75,14 @@ export function ComponentWithForm({
   const { fullscreen } = React.useContext(fullscreenCTX);
 
   const { useStore: useLocalStore, getDispatch: getLocalDispatch } =
-    React.useMemo(() => createStoreConnector(storeFactory()), []);
+    React.useMemo(() => createStoreConnector(editingStoreFactory()), []);
 
-  const globalState = useStore(state => state.global.editing);
+  const globalState = useEditingStore(state => state.editing);
 
   const fullscreenFSM = globalState?.type === 'VariableFSM' && fullscreen;
 
-  const localState = (fullscreenFSM ? useStore : useLocalStore)(
-    (state: LocalGlobalState) => state.global,
+  const localState = (fullscreenFSM ? useEditingStore : useLocalStore)(
+    s => s,
     shallowDifferent,
   );
   const localDispatch = fullscreenFSM ? store.dispatch : getLocalDispatch();

@@ -12,6 +12,7 @@ import { entityIs } from '../../../data/entities';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { State } from '../../../data/Reducer/reducers';
 import { select } from '../../../data/selectors/VariableDescriptorSelector';
+import { editingStore } from '../../../data/Stores/editingStore';
 import { store, useStore } from '../../../data/Stores/store';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { CbxQuestionDisplay } from './CbxQuestion';
@@ -77,9 +78,17 @@ export function ConnectedSimpleQuestionDisplay({
     return null;
   }
   return state.questionD.cbx ? (
-    <CbxQuestionDisplay {...state} dispatch={store.dispatch} {...options} />
+    <CbxQuestionDisplay
+      {...state}
+      dispatch={editingStore.dispatch}
+      {...options}
+    />
   ) : (
-    <SimpleQuestionDisplay {...state} dispatch={store.dispatch} {...options} />
+    <SimpleQuestionDisplay
+      {...state}
+      dispatch={editingStore.dispatch}
+      {...options}
+    />
   );
 }
 

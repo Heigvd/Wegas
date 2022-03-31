@@ -23,7 +23,8 @@ import { read } from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
 import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
-import { store, useStore } from '../../../data/Stores/store';
+import { editingStore } from '../../../data/Stores/editingStore';
+import { useStore } from '../../../data/Stores/store';
 import { createTranslatableContent } from '../../../Editor/Components/FormView/translatable';
 import {
   IconComp,
@@ -129,103 +130,6 @@ interface AddQuestionsMenuProps {
   questionList: SListDescriptor;
 }
 
-// const questions = [
-//   {
-//     label: (
-//       <div>
-//         <IconComp icon="question" />
-//         Question simple
-//       </div>
-//     ),
-//     value: {
-//       type: 'Question',
-//       descriptor: 'QuestionDescriptor',
-//       instance: 'QuestionInstance',
-//     },
-//   },
-//   // {
-//   //   label: (
-//   //     <div>
-//   //       <IconComp icon="check-square" />
-//   //       Question à choix multiple
-//   //     </div>
-//   //   ),
-//   //   value: {
-//   //     type: 'Checkbox',
-//   //     descriptor: 'QuestionDescriptor',
-//   //     instance: 'QuestionInstance',
-//   //   },
-//   // },
-//   // {
-//   //   label: (
-//   //     <div>
-//   //       <IconComp icon="dot-circle" />
-//   //       Question à un seul choix
-//   //     </div>
-//   //   ),
-//   //   value: {
-//   //     type: 'Radio',
-//   //     descriptor: 'QuestionDescriptor',
-//   //     instance: 'QuestionInstance',
-//   //   },
-//   // },
-//   {
-//     label: (
-//       <div>
-//         <IconComp
-//           icon={[
-//             'square-full',
-//             { icon: 'question', color: 'white', size: 'xs' },
-//           ]}
-//         />
-//         Question ouverte
-//       </div>
-//     ),
-//     value: {
-//       type: 'WH',
-//       descriptor: 'WhQuestionDescriptor',
-//       instance: 'WhQuestionInstance',
-//     },
-//   },
-// ] as const;
-
-// function AddQuestionsMenu({ questionList }: AddQuestionsMenuProps) {
-//   const { lang } = React.useContext(languagesCTX);
-
-//   return (
-//     <AddMenu
-//       items={questions}
-//       onSelect={item => {
-//         store.dispatch(
-//           Actions.VariableDescriptorActions.createDescriptor(
-//             {
-//               '@class': item.value.descriptor,
-//               label: createTranslatableContent(lang, 'Titre de la question'),
-//               description: createTranslatableContent(
-//                 lang,
-//                 'Ennoncé de la question',
-//               ),
-//               ...(item.value.type ===
-//               'Question' /*|| item.value.type === 'Radio'*/
-//                 ? { maxReplies: 1 }
-//                 : {}),
-//               // ...(item.value.type === 'Radio' ? { minReplies: 1 } : {}),
-//               // ...(item.value.type ===
-//               // 'Checkbox' || item.value.type === 'Radio'
-//               //   ? { cbx: true }
-//               //   : {}),
-//               defaultInstance: {
-//                 '@class': item.value.instance,
-//               },
-//             } as unknown as IVariableDescriptor,
-//             questionList.getEntity(),
-//           ),
-//         );
-//       }}
-//     />
-//   );
-// }
-
 const Plus = buttonFactory('plus');
 
 function AddQuestionButton({ questionList }: AddQuestionsMenuProps) {
@@ -236,7 +140,7 @@ function AddQuestionButton({ questionList }: AddQuestionsMenuProps) {
       <Plus
         className={cx(editButtonStyle, editButonBorder)}
         onClick={() => {
-          store.dispatch(
+          editingStore.dispatch(
             Actions.VariableDescriptorActions.createDescriptor(
               {
                 '@class': 'QuestionDescriptor',
@@ -257,32 +161,6 @@ function AddQuestionButton({ questionList }: AddQuestionsMenuProps) {
       />
     </div>
   );
-  // return (
-  //   <div
-  //     className={cx(flex, itemCenter, justifyCenter, singleEditButtonStyle)}
-  //     onClick={() => {
-  //       store.dispatch(
-  //         Actions.VariableDescriptorActions.createDescriptor(
-  //           {
-  //             '@class': 'QuestionDescriptor',
-  //             label: createTranslatableContent(lang, 'Titre de la question'),
-  //             description: createTranslatableContent(
-  //               lang,
-  //               'Ennoncé de la question',
-  //             ),
-  //             maxReplies: 1,
-  //             defaultInstance: {
-  //               '@class': 'QuestionInstance',
-  //             },
-  //           } as unknown as IVariableDescriptor,
-  //           questionList.getEntity(),
-  //         ),
-  //       );
-  //     }}
-  //   >
-  //     <IconComp icon="plus" />
-  //   </div>
-  // );
 }
 
 export interface QuestionLabelProps {
@@ -322,7 +200,7 @@ export function QuestionLabel({
         },
       )(questionD);
 
-      store.dispatch(
+      editingStore.dispatch(
         Actions.VariableDescriptorActions.updateDescriptor(newQuestion),
       );
       onFinishEditing && onFinishEditing();
@@ -341,7 +219,7 @@ export function QuestionLabel({
       onClick={() => {
         !disabled &&
           !editing &&
-          store.dispatch(read(instantiate(questionD).getEntity()));
+          editingStore.dispatch(read(instantiate(questionD).getEntity()));
       }}
     >
       {/* {isUnread ? (
@@ -475,7 +353,7 @@ function QuestionChooserEdition({
           <Copy
             onClick={e => {
               e.stopPropagation();
-              store.dispatch(
+              editingStore.dispatch(
                 Actions.VariableDescriptorActions.duplicateDescriptor(entity),
               );
             }}
@@ -483,7 +361,7 @@ function QuestionChooserEdition({
           <Trash
             onClick={e => {
               e.stopPropagation();
-              store.dispatch(
+              editingStore.dispatch(
                 Actions.VariableDescriptorActions.deleteDescriptor(entity),
               );
             }}

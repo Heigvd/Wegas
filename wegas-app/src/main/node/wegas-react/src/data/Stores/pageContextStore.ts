@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { createStore, applyMiddleware, Reducer } from 'redux';
-import { composeEnhancers } from './store';
-import thunk, { ThunkMiddleware } from 'redux-thunk';
-import { createStoreConnector } from '../connectStore';
 import u from 'immer';
+import { applyMiddleware, compose, createStore, Reducer } from 'redux';
+import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { registerEffect } from '../../Helper/pageEffectsManager';
+import { createStoreConnector } from '../connectStore';
 
 const pagesContextActionCreator = {
   CONTEXT_SET: (exposeAs: string, value: unknown) => ({
@@ -58,6 +57,9 @@ const pagesContextStateReducer: Reducer<Readonly<PagesContextState>> = u(
   { context: {}, state: {} },
 );
 
+const composeEnhancers: typeof compose =
+  (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
 export const pagesContextStateStore = createStore(
   pagesContextStateReducer,
   composeEnhancers(
@@ -107,7 +109,6 @@ let name = 0;
  * @returns function to update the state
  */
 export const getPageState: GlobalHelpersClass['getState'] = <T>(value: T) => {
-  //export const getPageState: GlobalHelpersClass['getState'] = <T>(value: T) => {
   const exposeAs = 'state_' + name++;
 
   const effect = () => {

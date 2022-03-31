@@ -9,14 +9,21 @@ import {
 } from '../../../css/classes';
 import { manageResponseHandler } from '../../../data/actions';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
-import { PagesContextState, pagesContextStateStore } from '../../../data/Stores/pageContextStore';
+import {
+  editingStore,
+  EditingThunkResult,
+} from '../../../data/Stores/editingStore';
+import {
+  PagesContextState,
+  pagesContextStateStore,
+} from '../../../data/Stores/pageContextStore';
 import {
   isComponentFocused,
   pagesStateStore,
   PageStateAction,
   usePagesStateStore,
 } from '../../../data/Stores/pageStore';
-import { store, ThunkResult } from '../../../data/Stores/store';
+import { store } from '../../../data/Stores/store';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import {
   DnDComponent,
@@ -116,7 +123,7 @@ export function assembleStateAndContext(
 function awaitExecute(
   actions: [string, WegasComponentOptionsAction][],
   context?: PageComponentContext,
-): ThunkResult {
+): EditingThunkResult {
   return async function (dispatch, getState) {
     const sortedActions = actions.sort(
       ([, v1], [, v2]) =>
@@ -127,7 +134,7 @@ function awaitExecute(
       if (k === 'impactVariable') {
         const action = v as WegasComponentOptionsActions['impactVariable'];
         if (action) {
-          const gameModelId = getState().global.currentGameModelId;
+          const gameModelId = store.getState().global.currentGameModelId;
 
           const result = await asyncRunLoadedScript(
             gameModelId,
@@ -137,7 +144,7 @@ function awaitExecute(
             assembleStateAndContext(context),
           );
 
-          dispatch(manageResponseHandler(result, dispatch, getState().global));
+          dispatch(manageResponseHandler(result, dispatch, getState()));
         }
       } else {
         wegasComponentActions[k as keyof WegasComponentOptionsActions]({
@@ -179,7 +186,7 @@ export function onComponentClick(
       // eslint-disable-next-line no-alert
       confirm(confirmClick)
     ) {
-      store.dispatch(awaitExecute(onClickActions, context));
+      editingStore.dispatch(awaitExecute(onClickActions, context));
     }
   };
 }

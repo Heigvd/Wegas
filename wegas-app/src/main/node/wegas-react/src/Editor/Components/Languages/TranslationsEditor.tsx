@@ -53,9 +53,14 @@ import { Actions } from '../../../data';
 import { manageResponseHandler } from '../../../data/actions';
 import { entityIs } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
+import { EditingState } from '../../../data/Reducer/editingState';
 import { GlobalState } from '../../../data/Reducer/globalState';
 import { GameModel, VariableDescriptor } from '../../../data/selectors';
-import { getDispatch, store, useStore } from '../../../data/Stores/store';
+import {
+  editingStore,
+  useEditingStore,
+} from '../../../data/Stores/editingStore';
+import { getDispatch, useStore } from '../../../data/Stores/store';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { languagesTranslations } from '../../../i18n/languages/languages';
@@ -416,19 +421,19 @@ function TranslatableContentView({
       onSave={() => {
         LanguagesAPI.updateTranslation(translationObject).then(res => {
           setValue(languageCode)(undefined);
-          store.dispatch(manageResponseHandler(res));
+          editingStore.dispatch(manageResponseHandler(res));
         });
       }}
       onValueChange={setValue(languageCode)}
       onOutdateOthers={() => {
         LanguagesAPI.outdateTranslations(translationObject).then(res => {
-          store.dispatch(manageResponseHandler(res));
+          editingStore.dispatch(manageResponseHandler(res));
         });
       }}
       onOutdate={outdate => {
         LanguagesAPI.setTranslationStatus(translationObject, !outdate).then(
           res => {
-            store.dispatch(manageResponseHandler(res));
+            editingStore.dispatch(manageResponseHandler(res));
           },
         );
       }}
@@ -773,6 +778,26 @@ interface LanguagesVisitorProps {
   showOptions: boolean;
 }
 
+// function itemSelector() {
+//   return function (itemId: number) {
+//     return {
+//       item: VariableDescriptor.select(itemId),
+//     };
+//   };
+// }
+
+// function editionSelector(s: EditingState) {
+//   return function (itemId: number) {
+//     return {
+//       editing:
+//         s.editing !== undefined &&
+//         (s.editing.type === 'Variable' || s.editing.type === 'VariableFSM') &&
+//         s.editing.entity &&
+//         itemId === s.editing.entity.id,
+//     };
+//   };
+// }
+
 function LanguagesVisitor({
   itemId,
   parentIds,
@@ -781,17 +806,28 @@ function LanguagesVisitor({
   showOptions,
 }: LanguagesVisitorProps) {
   const translatableViewElement = React.useRef<HTMLDivElement>(null);
-  const { item, editing } = useStore(s => {
+
+  const itemSelector = React.useCallback(() => {
     return {
       item: VariableDescriptor.select(itemId),
-      editing:
-        s.global.editing !== undefined &&
-        (s.global.editing.type === 'Variable' ||
-          s.global.editing.type === 'VariableFSM') &&
-        s.global.editing.entity &&
-        itemId === s.global.editing.entity.id,
     };
-  }, deepDifferent);
+  }, [itemId]);
+
+  const editionSelector = React.useCallback(
+    (s: EditingState) => {
+      return {
+        editing:
+          s.editing !== undefined &&
+          (s.editing.type === 'Variable' || s.editing.type === 'VariableFSM') &&
+          s.editing.entity &&
+          itemId === s.editing.entity.id,
+      };
+    },
+    [itemId],
+  );
+
+  const { item } = useStore(itemSelector, deepDifferent);
+  const { editing } = useEditingStore(editionSelector, deepDifferent);
 
   React.useEffect(() => {
     if (editing) {
@@ -995,7 +1031,7 @@ function TranslationHeader({
                   language.code,
                 ).then(res => {
                   resetLanguage(language.code);
-                  store.dispatch(manageResponseHandler(res));
+                  editingStore.dispatch(manageResponseHandler(res));
                 });
               } else if (
                 item.type === 'CLEAR_OUTDATED' ||
@@ -1016,7 +1052,7 @@ function TranslationHeader({
             onClick={() => {
               LanguagesAPI.batchUpdateTranslations(editedValues).then(res => {
                 resetLanguage(language.code);
-                store.dispatch(manageResponseHandler(res));
+                editingStore.dispatch(manageResponseHandler(res));
               });
             }}
             className={cx(itemCenter, css({ padding: 0 }))}
@@ -1044,34 +1080,41 @@ export const translationCTX = React.createContext<{
   resetLanguage: () => {},
 });
 
-// const abs: string = 123;
+function parentIdSelector(s: EditingState) {
+  if (
+    s.editing !== undefined &&
+    (s.editing.type === 'Variable' || s.editing.type === 'VariableFSM') &&
+    s.editing.entity
+  ) {
+    return s.editing.entity.parentId;
+  } else return undefined;
+}
 
 export function TranslationEditor() {
   const [editedTranslations, setEditedTranslations] =
     React.useState<EditedTranslations>({});
   const [languageAction, setLanguageAction] = React.useState<LanguageAction>();
   const [showOptions, setShowOptions] = React.useState(false);
-  const { root /*, languages*/, parentIds } = useStore(s => {
+
+  const parentId = useEditingStore(parentIdSelector);
+
+  const translationSelector = React.useCallback(() => {
+    let newParentId = parentId;
     const parentIds: number[] = [];
-
-    if (
-      s.global.editing !== undefined &&
-      (s.global.editing.type === 'Variable' ||
-        s.global.editing.type === 'VariableFSM') &&
-      s.global.editing.entity
-    ) {
-      let parentId = s.global.editing.entity.parentId;
-      while (parentId != null) {
-        parentIds.push(parentId);
-        parentId = s.variableDescriptors[parentId]?.parentId;
-      }
+    while (newParentId != null) {
+      parentIds.push(newParentId);
+      newParentId = VariableDescriptor.select(newParentId)?.parentId;
     }
-
     return {
       parentIds,
       root: GameModel.selectCurrent(),
     };
-  }, deepDifferent);
+  }, [parentId]);
+
+  const { root /*, languages*/, parentIds } = useStore(
+    translationSelector,
+    deepDifferent,
+  );
   const languages = root.languages;
   const i18nValues = useInternalTranslate(languagesTranslations);
   const [selectedLanguagesIds, setSelectedLanguagesIds] = React.useState(
@@ -1266,14 +1309,14 @@ export function TranslationEditor() {
                       languageAction.language,
                       languageAction.sourceLanguage,
                     ).then(res => {
-                      store.dispatch(manageResponseHandler(res));
+                      editingStore.dispatch(manageResponseHandler(res));
                     });
                   } else {
                     LanguagesAPI.clearTranslations(
                       languageAction.language,
                       languageAction.type === 'CLEAR_OUTDATED',
                     ).then(res => {
-                      store.dispatch(manageResponseHandler(res));
+                      editingStore.dispatch(manageResponseHandler(res));
                     });
                   }
 

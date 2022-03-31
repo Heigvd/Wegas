@@ -1,39 +1,21 @@
 import u, { Immutable, produce } from 'immer';
-import { Schema } from 'jsoninput';
 import { omit } from 'lodash';
-import { cloneDeep } from 'lodash-es';
 import { Reducer } from 'redux';
 import {
-  IAbstractContentDescriptor,
-  IAbstractEntity,
   IAbstractState,
-  IAbstractStateMachineDescriptor,
   IAbstractTransition,
-  IChoiceDescriptor,
   IDialogueDescriptor,
   IFSMDescriptor,
-  IListDescriptor,
-  IPeerReviewDescriptor,
-  IQuestionDescriptor,
   IScript,
   IUser,
-  IVariableDescriptor,
-  IWhQuestionDescriptor,
   WegasClassNames,
 } from 'wegas-ts-api';
-import { Actions as ACTIONS, Actions } from '..';
-import { FileAPI } from '../../API/files.api';
+import { Actions } from '..';
 import { LockEventData } from '../../API/websocket';
 import { Popup } from '../../Components/PopupManager';
-import { AvailableViews } from '../../Editor/Components/FormView';
 import { WegasMethodParameter } from '../../Editor/editionConfig';
-import {
-  ActionCreator,
-  ActionType,
-  StateActions,
-  triggerEventHandlers,
-} from '../actions';
-import { entityIsPersisted } from '../entities';
+import { ActionCreator, StateActions } from '../actions';
+import { ActionType } from '../actionTypes';
 import {
   EditorLanguageData,
   EditorLanguagesCode,
@@ -41,10 +23,13 @@ import {
   getUserLanguage,
 } from '../i18n';
 import { commonServerMethods } from '../methods/CommonServerMethods';
-import { VariableDescriptor } from '../selectors';
-import { store, ThunkResult } from '../Stores/store';
+import { editingStore } from '../Stores/editingStore';
 
-export const DEFAULT_ROLES = {
+interface Roles {
+  [id: string]: Role;
+}
+
+export const DEFAULT_ROLES: Roles = {
   SCENARIO_EDITOR: {
     id: 'SCENARIO_EDITOR',
     label: {
@@ -95,70 +80,6 @@ export function buildGlobalServerMethods(
     }, '');
 }
 
-export interface ActionsProps<T> {
-  action: (entity: T, path?: (string | number)[]) => void;
-  label: React.ReactNode;
-  confirm?: boolean;
-  sorting: 'delete' | 'duplicate' | 'toolbox' | 'close' | 'findUsage';
-}
-
-export interface EditorAction<T extends IAbstractEntity> {
-  save?: (entity: T, selectUpdatedEntity?: boolean) => void;
-  more?: {
-    [id: string]: ActionsProps<T>;
-  };
-}
-
-export interface EditionState {
-  newEntity?: IAbstractEntity;
-  highlight?: boolean;
-}
-
-export interface VariableEdition extends EditionState {
-  type: 'Variable' | 'VariableFSM';
-  entity: IAbstractEntity;
-  instanceEditing?: {
-    editedInstance?: { instance: IAbstractEntity; saved: boolean };
-  };
-  config?: Schema<AvailableViews>;
-  path?: (string | number)[];
-  actions: EditorAction<IAbstractEntity>;
-}
-
-export interface VariableCreateEdition extends EditionState {
-  type: 'VariableCreate';
-  '@class': IVariableDescriptor['@class'];
-  parentId?: number;
-  parentType?: string;
-  config?: Schema<AvailableViews>;
-  actions: EditorAction<IAbstractEntity>;
-}
-
-export interface ComponentEdition extends EditionState {
-  type: 'Component';
-  page: string;
-  path: (string | number)[];
-  config?: Schema<AvailableViews>;
-  actions: EditorAction<IAbstractEntity>;
-}
-
-export interface FileEdition extends EditionState {
-  type: 'File';
-  entity: IAbstractContentDescriptor;
-  cb?: (updatedValue: IMergeable) => void;
-}
-
-export type Edition =
-  | VariableEdition
-  | VariableCreateEdition
-  | ComponentEdition
-  | FileEdition;
-export interface EditingState {
-  editing?: Edition;
-  events: WegasEvent[];
-  eventsHandlers: WegasEventHandlers;
-}
-
 export const LoggerLevelValues = [
   'OFF' as const,
   'ERROR' as const,
@@ -172,7 +93,7 @@ export type LoggerLevel = typeof LoggerLevelValues[number];
 
 export type WegasStatus = 'DOWN' | 'READY' | 'OUTDATED';
 
-export interface GlobalState extends EditingState {
+export interface GlobalState {
   currentGameModelId: number;
   currentGameId: number;
   currentPlayerId: number;
@@ -205,7 +126,7 @@ export interface GlobalState extends EditingState {
   roles: {
     rolesId: string;
     defaultRoleId: string;
-    roles: { [id: string]: Role };
+    roles: Roles;
   };
   popups: { [id: string]: Popup };
   languages: {
@@ -214,162 +135,51 @@ export interface GlobalState extends EditingState {
     editableLanguages: undefined | 'loading' | 'all' | string[];
   };
   logLevels: Record<string, LoggerLevel>;
+  eventsHandlers: WegasEventHandlers;
 }
 
-export function eventHandlersManagement(
-  state: EditingState,
-  action: StateActions,
-): WegasEventHandlers {
-  switch (action.type) {
-    case ActionType.EDITOR_ADD_EVENT_HANDLER:
-      state.eventsHandlers[action.payload.type][action.payload.id] =
-        action.payload.cb;
-      break;
-    case ActionType.EDITOR_REMOVE_EVENT_HANDLER:
-      state.eventsHandlers[action.payload.type] = omit(
-        state.eventsHandlers[action.payload.type],
-        action.payload.id,
-      );
-      break;
-  }
-  return state.eventsHandlers;
-}
-
-/**
- *
- * @param state
- * @param action
- */
-export function eventManagement(
-  state: EditingState,
-  action: StateActions,
-): WegasEvent[] {
-  switch (action.type) {
-    case ActionType.MANAGED_RESPONSE_ACTION:
-      return [...state.events, ...action.payload.events];
-    case ActionType.EDITOR_EVENT_REMOVE: {
-      const newEvents = [...state.events];
-      const indexOfRemoved = newEvents.findIndex(
-        e => e.timestamp === action.payload.timestamp,
-      );
-      if (indexOfRemoved !== -1) {
-        newEvents.splice(indexOfRemoved, 1);
-      }
-      return newEvents;
-    }
-    case ActionType.EDITOR_EVENT_READ: {
-      const readEventIndex = state.events.findIndex(
-        e => e.timestamp === action.payload.timestamp,
-      );
-      if (readEventIndex !== -1) {
-        const event = cloneDeep(state.events[readEventIndex]);
-        const before = state.events.slice(0, readEventIndex);
-        const after = state.events.slice(readEventIndex + 1);
-        const ret = [...before, { ...event, unread: false }, ...after];
-        return ret;
-      } else {
-        return state.events;
-      }
-    }
-    case ActionType.EDITOR_EVENT:
-      return [...state.events, action.payload];
-    default:
-      return state.events;
-  }
-}
-
-/**
- *  This is a separate switch-case only for editor actions management
- * @param state
- * @param action
- */
-export function editorManagement(
-  state: EditingState,
-  action: StateActions,
-): Edition | undefined {
-  switch (action.type) {
-    case ActionType.VARIABLE_EDIT:
-    case ActionType.FSM_EDIT:
-      return {
-        type:
-          action.type === ActionType.VARIABLE_EDIT ? 'Variable' : 'VariableFSM',
-        entity: action.payload.entity,
-        config: action.payload.config,
-        path: action.payload.path,
-        actions: action.payload.actions,
-        newEntity:
-          state.editing?.newEntity == null ||
-          state.editing?.newEntity?.id === action.payload.entity.id
-            ? state.editing?.newEntity
-            : undefined,
-      };
-    case ActionType.INSTANCE_EDITOR:
-      if (
-        state.editing?.type === 'Variable' ||
-        state.editing?.type === 'VariableFSM'
-      ) {
-        state.editing.instanceEditing = action.payload.open ? {} : undefined;
-      }
-      break;
-    case ActionType.INSTANCE_EDIT:
-      if (
-        action.payload.instance != null &&
-        (state.editing?.type === 'Variable' ||
-          state.editing?.type === 'VariableFSM')
-      ) {
-        state.editing.instanceEditing = {
-          editedInstance: { instance: action.payload.instance, saved: false },
-        };
-      }
-      break;
-    case ActionType.INSTANCE_SAVE:
-      if (
-        (state.editing?.type === 'Variable' ||
-          state.editing?.type === 'VariableFSM') &&
-        state.editing.instanceEditing?.editedInstance != null
-      ) {
-        state.editing.instanceEditing.editedInstance.saved = true;
-      }
-      break;
-    case ActionType.EDITION_CHANGES:
-      if (state.editing != null) {
-        state.editing.newEntity = action.payload.newEntity;
-      }
-      break;
-    case ActionType.EDITION_HIGHLIGHT:
-      if (state.editing != null) {
-        state.editing.highlight = action.payload.highlight;
-      }
-      break;
-
-    case ActionType.VARIABLE_CREATE:
-      return {
-        type: 'VariableCreate',
-        '@class': action.payload['@class'] as IVariableDescriptor['@class'],
-        parentId: action.payload.parentId,
-        parentType: action.payload.parentType,
-        actions: action.payload.actions,
-        newEntity: undefined,
-      };
-    case ActionType.FILE_EDIT:
-      return {
-        type: 'File',
-        ...action.payload,
-        newEntity: undefined,
-      };
-    case ActionType.DISCARD_UNSAVED_CHANGES:
-      if (
-        state.editing?.type === 'Variable' ||
-        state.editing?.type === 'VariableFSM'
-      ) {
-        state.editing.newEntity = undefined;
-      }
-      break;
-    case ActionType.CLOSE_EDITOR:
-      return undefined;
-  }
-  return state.editing;
-}
+const defaultGlobalState: GlobalState = {
+  currentGameModelId: CurrentGM.id!,
+  currentGameId: CurrentGame.id!,
+  currentPlayerId: CurrentPlayerId,
+  currentTeamId: CurrentTeamId,
+  currentUser: CurrentUser,
+  pusherStatus: { status: 'disconnected' },
+  serverStatus: 'READY',
+  search: { value: undefined, deep: false },
+  clientMethods: {},
+  serverMethods: { ...commonServerMethods },
+  serverVariableMethods: {},
+  schemas: {
+    filtered: {},
+    unfiltered: [],
+    views: {},
+  },
+  pageLoaders: {},
+  locks: {},
+  roles: {
+    rolesId: 'DEFAULT_ROLES',
+    defaultRoleId: DEFAULT_ROLES.SCENARIO_EDITOR.id,
+    roles: DEFAULT_ROLES,
+  },
+  popups: {},
+  languages: {
+    currentEditorLanguageCode: 'EN',
+    editableLanguages: undefined,
+    translatableLanguages: undefined,
+  },
+  logLevels: {
+    default: 'LOG',
+  },
+  eventsHandlers: {
+    ExceptionEvent: {},
+    ClientEvent: {},
+    CustomEvent: {},
+    EntityDestroyedEvent: {},
+    EntityUpdatedEvent: {},
+    OutdatedEntitiesEvent: {},
+  },
+};
 
 /**
  * Reducer for editor's state
@@ -505,130 +315,21 @@ const global: Reducer<Readonly<GlobalState>> = u(
         state.logLevels[action.payload.loggerName] = action.payload.level;
         return;
       }
-
-      default:
-        state.eventsHandlers = eventHandlersManagement(state, action);
-        state.events = eventManagement(state, action);
-        state.editing = editorManagement(state, action);
+      case ActionType.EDITOR_ADD_EVENT_HANDLER:
+        state.eventsHandlers[action.payload.type][action.payload.id] =
+          action.payload.cb;
+        break;
+      case ActionType.EDITOR_REMOVE_EVENT_HANDLER:
+        state.eventsHandlers[action.payload.type] = omit(
+          state.eventsHandlers[action.payload.type],
+          action.payload.id,
+        );
+        break;
     }
   },
-  {
-    currentGameModelId: CurrentGM.id!,
-    currentGameId: CurrentGame.id!,
-    currentPlayerId: CurrentPlayerId,
-    currentTeamId: CurrentTeamId,
-    currentUser: CurrentUser,
-    pusherStatus: { status: 'disconnected' },
-    serverStatus: 'READY',
-    search: { value: undefined, deep: false },
-    events: [],
-    eventsHandlers: {
-      ExceptionEvent: {},
-      ClientEvent: {},
-      CustomEvent: {},
-      EntityDestroyedEvent: {},
-      EntityUpdatedEvent: {},
-      OutdatedEntitiesEvent: {},
-    },
-    clientMethods: {},
-    serverMethods: { ...commonServerMethods },
-    serverVariableMethods: {},
-    schemas: {
-      filtered: {},
-      unfiltered: [],
-      views: {},
-    },
-    pageLoaders: {},
-    locks: {},
-    roles: {
-      rolesId: 'DEFAULT_ROLES',
-      defaultRoleId: DEFAULT_ROLES.SCENARIO_EDITOR.id,
-      roles: DEFAULT_ROLES,
-    },
-    popups: {},
-    languages: {
-      currentEditorLanguageCode: 'EN',
-      editableLanguages: undefined,
-      translatableLanguages: undefined,
-    },
-    logLevels: {
-      default: 'LOG',
-    },
-  } as GlobalState,
+  defaultGlobalState,
 );
 export default global;
-
-//ACTIONS
-/**
- * Edit VariableDescriptor
- * @param entity
- * @param path
- * @param config
- * @param actions
- */
-export function editVariable(
-  entity: IVariableDescriptor,
-  path: (string | number)[] = [],
-  config?: Schema<AvailableViews>,
-  actions?: EditorAction<IVariableDescriptor>,
-): ThunkResult {
-  return function (dispatch) {
-    const currentActions: EditorAction<IVariableDescriptor> =
-      actions != null
-        ? actions
-        : {
-            more: {
-              duplicate: {
-                label: 'Duplicate',
-                sorting: 'duplicate',
-                action: (entity: IVariableDescriptor) => {
-                  dispatch(
-                    Actions.VariableDescriptorActions.duplicateDescriptor(
-                      entity,
-                    ),
-                  );
-                },
-              },
-              delete: {
-                label: 'Delete',
-                sorting: 'delete',
-                action: (entity: IVariableDescriptor, path?: string[]) => {
-                  dispatch(
-                    Actions.VariableDescriptorActions.deleteDescriptor(
-                      entity,
-                      path,
-                    ),
-                  );
-                },
-                confirm: true,
-              },
-              findUsage: {
-                label: 'Find usage',
-                sorting: 'findUsage',
-                action: (entity: IVariableDescriptor) => {
-                  if (entityIsPersisted(entity) && entity.name != null) {
-                    dispatch(Actions.EditorActions.searchDeep(entity.name));
-                  }
-                },
-              },
-              Instance: {
-                label: 'Instance',
-                sorting: 'toolbox',
-                action: () =>
-                  dispatch(ActionCreator.INSTANCE_EDITOR({ open: true })),
-              },
-            },
-          };
-    dispatch(
-      ActionCreator.VARIABLE_EDIT({
-        entity,
-        config,
-        path,
-        actions: currentActions,
-      }),
-    );
-  };
-}
 
 export function deleteState<T extends IFSMDescriptor | IDialogueDescriptor>(
   stateMachine: Immutable<T>,
@@ -645,162 +346,9 @@ export function deleteState<T extends IFSMDescriptor | IDialogueDescriptor>(
     }
   })(stateMachine);
 
-  store.dispatch(
+  editingStore.dispatch(
     Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
   );
-}
-
-/**
- * Edit StateMachine
- * @param entity
- * @param path
- * @param config
- */
-export function editStateMachine(
-  entity: Immutable<IAbstractStateMachineDescriptor>,
-  path: string[] = [],
-  config?: Schema<AvailableViews>,
-  actions?: EditorAction<IVariableDescriptor>,
-): ThunkResult {
-  return function (dispatch) {
-    dispatch(
-      ActionCreator.FSM_EDIT({
-        entity,
-        config,
-        path,
-        actions: actions || {
-          more: {
-            delete: {
-              label: 'Delete',
-              sorting: 'delete',
-              confirm: true,
-              action: (entity: IFSMDescriptor, path?: string[]) => {
-                if (
-                  path != null &&
-                  Number(path.length) === 2 &&
-                  Number(path.length) !== entity.defaultInstance.currentStateId
-                ) {
-                  deleteState(entity, Number(path[1]));
-                } else {
-                  dispatch(
-                    Actions.VariableDescriptorActions.deleteDescriptor(
-                      entity,
-                      path,
-                    ),
-                  );
-                }
-              },
-            },
-            findUsage: {
-              label: 'Find usage',
-              sorting: 'findUsage',
-              action: (entity: IFSMDescriptor) => {
-                if (entityIsPersisted(entity) && entity.name != null) {
-                  dispatch(Actions.EditorActions.searchDeep(entity.name));
-                }
-              },
-            },
-          },
-        },
-      }),
-    );
-  };
-}
-/**
- * Edit File
- * @param entity
- * @param cb
- */
-export function editFile(
-  entity: IAbstractContentDescriptor,
-  cb?: (updatedValue: IAbstractContentDescriptor) => void,
-) {
-  return ActionCreator.FILE_EDIT({
-    entity,
-    cb,
-  });
-}
-/**
- * Create a variableDescriptor
- *
- * @export
- * @param {string} cls class
- * @returns
- */
-export function createVariable(
-  cls: IAbstractEntity['@class'],
-  parent?:
-    | IParentDescriptor
-    | IListDescriptor
-    | IQuestionDescriptor
-    | IChoiceDescriptor
-    | IWhQuestionDescriptor
-    | IPeerReviewDescriptor,
-  actions: EditorAction<IAbstractEntity> = {},
-) {
-  return ActionCreator.VARIABLE_CREATE({
-    '@class': cls,
-    parentId: parent ? parent.id : undefined,
-    parentType: parent ? parent['@class'] : undefined,
-    actions,
-  });
-}
-
-// export function editComponent(page: string, path: string[]) {
-//   return ActionCreator.PAGE_EDIT({ page, path });
-// }
-/**
- * Save the content from the editor
- *
- * The dispatch argument of the save function is not used to ensure that modifications are made in the global state
- *
- * @export
- * @param {IAbstractEntity} value
- * @returns {ThunkResult}
- */
-export function saveEditor(
-  value: IMergeable,
-  selectUpdatedEntity: boolean = true,
-): ThunkResult {
-  return function save(dispatch, getState) {
-    dispatch(discardUnsavedChanges());
-    const editMode = getState().global.editing;
-    if (editMode == null) {
-      return;
-    }
-    switch (editMode.type) {
-      case 'Variable':
-      case 'VariableFSM':
-        return dispatch(
-          ACTIONS.VariableDescriptorActions.updateDescriptor(
-            value as IVariableDescriptor,
-            selectUpdatedEntity,
-          ),
-        );
-      case 'VariableCreate':
-        return dispatch(
-          ACTIONS.VariableDescriptorActions.createDescriptor(
-            value as IVariableDescriptor,
-            VariableDescriptor.select(editMode.parentId) as
-              | IParentDescriptor
-              | undefined,
-          ),
-        );
-      case 'File':
-        return dispatch(dispatch => {
-          return FileAPI.updateMetadata(value as IAbstractContentDescriptor)
-            .then((res: IAbstractContentDescriptor) => {
-              if (selectUpdatedEntity) {
-                dispatch(ACTIONS.EditorActions.editFile(res));
-              }
-              editMode.cb && editMode.cb(res);
-            })
-            .catch((res: Error) => {
-              dispatch(ACTIONS.EditorActions.editorErrorEvent(res.message));
-            });
-        });
-    }
-  };
 }
 
 export function updatePusherStatus(status: string, socket_id: string) {
@@ -809,36 +357,6 @@ export function updatePusherStatus(status: string, socket_id: string) {
 
 export function updateServerStatus(status: WegasStatus) {
   return ActionCreator.SERVER_STATUS({ status });
-}
-
-export function closeEditor() {
-  return ActionCreator.CLOSE_EDITOR();
-}
-
-export function discardUnsavedChanges() {
-  return ActionCreator.DISCARD_UNSAVED_CHANGES();
-}
-
-export function editorEvent(anyEvent: WegasEvents[keyof WegasEvents]) {
-  const event: WegasEvent = {
-    ...anyEvent,
-    timestamp: new Date().getTime(),
-    unread: true,
-  };
-  triggerEventHandlers(event);
-  return ActionCreator.EDITOR_EVENT(event);
-}
-
-export function editorErrorEvent(error: string) {
-  return editorEvent({ '@class': 'ClientEvent', error });
-}
-
-export function editorEventRemove(timestamp: number) {
-  return ActionCreator.EDITOR_EVENT_REMOVE({ timestamp });
-}
-
-export function editorEventRead(timestamp: number) {
-  return ActionCreator.EDITOR_EVENT_READ({ timestamp });
 }
 
 export function search(searchString: string) {
@@ -968,13 +486,4 @@ export function getEditorLanguage() {
 export function setEditorLanguage(lang: EditorLanguagesCode) {
   window.localStorage.setItem(EditorLanguageData, lang);
   return ActionCreator.EDITOR_SET_LANGUAGE({ language: lang });
-}
-
-export function isEditingVariable(
-  edition: Edition | undefined,
-): edition is VariableEdition {
-  return (
-    edition != null &&
-    (edition.type === 'Variable' || edition.type === 'VariableFSM')
-  );
 }

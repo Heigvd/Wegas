@@ -6,10 +6,11 @@ import {
 } from '../data/Reducer/VariableDescriptorReducer';
 import { updateInstance } from '../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../data/scriptable';
+import { editingStore } from '../data/Stores/editingStore';
 import { store } from '../data/Stores/store';
 import { IManagedResponse } from './rest';
-import { VariableDescriptorAPI } from './variableDescriptor.api';
 import { UtilsAPI } from './utils.api.ts';
+import { VariableDescriptorAPI } from './variableDescriptor.api';
 
 function getNewVariable(
   variable: IVariableDescriptor,
@@ -24,7 +25,7 @@ function getNewVariable(
   ) as SVariableDescriptor;
 }
 
-const dispatch = store.dispatch;
+const dispatch = editingStore.dispatch;
 
 function compareVariables(
   var1: { [attr: string]: unknown },

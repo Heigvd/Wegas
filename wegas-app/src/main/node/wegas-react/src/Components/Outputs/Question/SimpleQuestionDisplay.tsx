@@ -15,7 +15,10 @@ import { Actions } from '../../../data';
 import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
-import { store, StoreDispatch } from '../../../data/Stores/store';
+import {
+  editingStore,
+  EditingStoreDispatch,
+} from '../../../data/Stores/editingStore';
 import { createTranslatableContent } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { isActionAllowed } from '../../PageComponents/tools/options';
@@ -55,7 +58,7 @@ export function AddChoiceMenu({ questionD }: AddChoiceMenuProps) {
     <AddMenu
       items={choices}
       onSelect={item => {
-        store.dispatch(
+        editingStore.dispatch(
           Actions.VariableDescriptorActions.createDescriptor(
             {
               '@class': item.value.descriptor,
@@ -87,7 +90,7 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
       <Plus
         className={cx(editButtonStyle, editButonBorder)}
         onClick={() => {
-          store.dispatch(
+          editingStore.dispatch(
             Actions.VariableDescriptorActions.createDescriptor(
               {
                 '@class': 'SingleResultChoiceDescriptor',
@@ -146,7 +149,7 @@ function SimpleChoiceDisplay({
 }
 
 interface SimpleQuestionDisplayProps extends QuestionInfo, DisabledReadonly {
-  dispatch: StoreDispatch;
+  dispatch: EditingStoreDispatch;
   editMode?: boolean;
 }
 

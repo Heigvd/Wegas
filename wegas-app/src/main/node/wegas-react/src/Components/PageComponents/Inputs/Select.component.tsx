@@ -3,7 +3,8 @@ import { IScript, SNumberDescriptor, SStringDescriptor } from 'wegas-ts-api';
 import { entityIs } from '../../../data/entities';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
-import { store, useStore } from '../../../data/Stores/store';
+import { editingStore } from '../../../data/Stores/editingStore';
+import { useStore } from '../../../data/Stores/store';
 import { translate } from '../../../Editor/Components/FormView/translatable';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { wwarn } from '../../../Helper/wegaslog';
@@ -95,7 +96,7 @@ function PlayerSelectInput({
         if (handleOnChange) {
           handleOnChange(newValue);
         } else if (typeof descriptor === 'object') {
-          store.dispatch(
+          editingStore.dispatch(
             runScript(
               `Variable.find(gameModel,"${descriptor.getName()}").setValue(self, ${
                 entityIs(descriptor, 'NumberDescriptor')

@@ -1,9 +1,11 @@
 import u from 'immer';
-import { applyMiddleware, createStore, Reducer } from 'redux';
+import { applyMiddleware, compose, createStore, Reducer } from 'redux';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { FocusedComponent } from '../../Editor/Components/Page/PageEditor';
 import { createStoreConnector } from '../connectStore';
-import { composeEnhancers } from './store';
+
+const composeEnhancers: typeof compose =
+  (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const pagesActionCreator = {
   COMPONENT_SET_FOCUSED: (data?: FocusedComponent) => ({

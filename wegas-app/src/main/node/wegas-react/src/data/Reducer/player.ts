@@ -1,8 +1,9 @@
-import { Reducer } from 'redux';
 import u from 'immer';
-import { ActionType, StateActions } from '../actions';
 import { omit } from 'lodash-es';
+import { Reducer } from 'redux';
 import { IPlayer } from 'wegas-ts-api';
+import { StateActions } from '../actions';
+import { ActionType } from '../actionTypes';
 
 export interface PlayerState {
   [id: string]: Readonly<IPlayer>;

@@ -2,7 +2,8 @@ import * as React from 'react';
 import { IScript, SStringDescriptor } from 'wegas-ts-api';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
-import { store, useStore } from '../../../data/Stores/store';
+import { editingStore } from '../../../data/Stores/editingStore';
+import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
 import { SimpleInput } from '../../Inputs/SimpleInput';
@@ -73,7 +74,7 @@ function PlayerStringInput({
       if (handleOnChange) {
         handleOnChange(v);
       } else if (typeof text === 'object') {
-        store.dispatch(
+        editingStore.dispatch(
           runScript(
             `Variable.find(gameModel,"${text.getName()}").setValue(self, '${v}');`,
           ),

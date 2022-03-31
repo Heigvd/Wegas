@@ -1,6 +1,4 @@
-import { Schema } from 'jsoninput';
 import {
-  IAbstractContentDescriptor,
   IAbstractEntity,
   IGame,
   IGameModel,
@@ -12,25 +10,15 @@ import {
 import { IManagedResponse } from '../API/rest';
 import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
 import { Popup } from '../Components/PopupManager';
-import { AvailableViews } from '../Editor/Components/FormView';
 import { getEntityActions } from '../Editor/editionConfig';
-import * as ActionType from './actionTypes';
+import { ActionType, ActionTypeValues } from './actionTypes';
 import { EditorLanguagesCode } from './i18n';
 import { discriminant, normalizeDatas, NormalizedData } from './normalize';
-import {
-  closeEditor,
-  EditingState,
-  Edition,
-  EditorAction,
-  GlobalState,
-  LoggerLevel,
-  WegasStatus,
-} from './Reducer/globalState';
+import { closeEditor, EditingState, Edition } from './Reducer/editingState';
+import { GlobalState, LoggerLevel, WegasStatus } from './Reducer/globalState';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
-import { store, StoreDispatch } from './Stores/store';
-
-export { ActionType };
-export type ActionTypeValues = ValueOf<typeof ActionType>;
+import { EditingStoreDispatch } from './Stores/editingStore';
+import { store } from './Stores/store';
 
 function createAction<T extends ActionTypeValues, P>(type: T, payload: P) {
   return {
@@ -38,46 +26,11 @@ function createAction<T extends ActionTypeValues, P>(type: T, payload: P) {
     payload,
   };
 }
-const variableEditAction =
-  <TA extends ActionTypeValues>(type: TA) =>
-  <TE extends IAbstractEntity>(data: {
-    entity: TE;
-    config?: Schema<AvailableViews>;
-    path?: TA extends ValueOf<typeof ActionType.FSM_EDIT>
-      ? string[]
-      : (string | number)[];
-    actions: EditorAction<TE>;
-    // {
-    //   save?: (entity: TE) => void;
-    //   more?: {
-    //     [id: string]: {
-    //       label: React.ReactNode;
-    //       action: (entity: TE, path: string[]) => void;
-    //     };
-    //   };
-    // };
-  }) =>
-    createAction(type, data);
 
 /**
  * Simple action creators.
  */
 export const ActionCreator = {
-  EDITOR_EVENT_REMOVE: (data: { timestamp: number }) =>
-    createAction(ActionType.EDITOR_EVENT_REMOVE, data),
-  EDITOR_EVENT_READ: (data: { timestamp: number }) =>
-    createAction(ActionType.EDITOR_EVENT_READ, data),
-  EDITOR_EVENT: (data: WegasEvent) =>
-    createAction(ActionType.EDITOR_EVENT, data),
-  EDITOR_ADD_EVENT_HANDLER: (data: {
-    id: string;
-    type: keyof WegasEvents;
-    cb: WegasEventHandler;
-  }) => createAction(ActionType.EDITOR_ADD_EVENT_HANDLER, data),
-  EDITOR_REMOVE_EVENT_HANDLER: (data: {
-    id: string;
-    type: WegasEvent['@class'];
-  }) => createAction(ActionType.EDITOR_REMOVE_EVENT_HANDLER, data),
   EDITOR_SET_CLIENT_METHOD: (data: ClientMethodPayload) =>
     createAction(ActionType.EDITOR_SET_CLIENT_METHOD, data),
   EDITOR_REGISTER_SERVER_GLOBAL_METHOD: (data: ServerGlobalMethodPayload) =>
@@ -97,41 +50,20 @@ export const ActionCreator = {
     createAction(ActionType.EDITOR_UNREGISTER_PAGE_LOADER, data),
   EDITOR_SET_LANGUAGE: (data: { language: EditorLanguagesCode }) =>
     createAction(ActionType.EDITOR_SET_LANGUAGE, data),
-
   EDITOR_SET_ROLES: (data: {
     roles: { [id: string]: Role };
     defaultRoleId: string;
     rolesId: string;
   }) => createAction(ActionType.EDITOR_SET_ROLES, data),
-
-  VARIABLE_EDIT: variableEditAction(ActionType.VARIABLE_EDIT),
-  FSM_EDIT: variableEditAction(ActionType.FSM_EDIT),
-  INSTANCE_EDIT: (data: { instance?: IAbstractEntity }) =>
-    createAction(ActionType.INSTANCE_EDIT, data),
-  INSTANCE_SAVE: () => createAction(ActionType.INSTANCE_SAVE, {}),
-  INSTANCE_EDITOR: (data: { open: boolean }) =>
-    createAction(ActionType.INSTANCE_EDITOR, data),
-  EDITION_CHANGES: (data: { newEntity: IAbstractEntity }) =>
-    createAction(ActionType.EDITION_CHANGES, data),
-  EDITION_HIGHLIGHT: (data: { highlight: boolean }) =>
-    createAction(ActionType.EDITION_HIGHLIGHT, data),
-  FILE_EDIT: (data: {
-    entity: IAbstractContentDescriptor;
-    cb?: (newEntity: IAbstractContentDescriptor) => void;
-  }) => createAction(ActionType.FILE_EDIT, data),
-  VARIABLE_CREATE: <T extends IAbstractEntity>(data: {
-    '@class': IAbstractEntity['@class'];
-    parentId?: number;
-    parentType?: string;
-    actions: {
-      save?: (entity: T) => void;
-      delete?: (entity: T) => void;
-    };
-  }) => createAction(ActionType.VARIABLE_CREATE, data),
-
-  CLOSE_EDITOR: () => createAction(ActionType.CLOSE_EDITOR, {}),
-  DISCARD_UNSAVED_CHANGES: () =>
-    createAction(ActionType.DISCARD_UNSAVED_CHANGES, {}),
+  EDITOR_ADD_EVENT_HANDLER: (data: {
+    id: string;
+    type: keyof WegasEvents;
+    cb: WegasEventHandler;
+  }) => createAction(ActionType.EDITOR_ADD_EVENT_HANDLER, data),
+  EDITOR_REMOVE_EVENT_HANDLER: (data: {
+    id: string;
+    type: WegasEvent['@class'];
+  }) => createAction(ActionType.EDITOR_REMOVE_EVENT_HANDLER, data),
 
   MANAGED_RESPONSE_ACTION: (data: {
     // Nearly empty shells
@@ -204,7 +136,7 @@ export type StateActions<
 
 export const closeEditorWhenDeletedVariable = (
   deletedVariables: VariableDescriptorState,
-  dispatch: StoreDispatch,
+  dispatch: EditingStoreDispatch,
   editing?: Readonly<Edition>,
 ) =>
   editing &&
@@ -223,7 +155,7 @@ export function triggerEventHandlers(event: WegasEvent) {
 
 export function manageResponseHandler(
   payload: IManagedResponse,
-  localDispatch?: StoreDispatch,
+  localDispatch?: EditingStoreDispatch,
   localState?: EditingState,
   selectUpdatedEntity: boolean = true,
 ) {
@@ -288,6 +220,8 @@ export function manageResponseHandler(
         return timedEvent;
       }) || [],
   };
+
+  store.dispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
 
   localDispatch &&
     localDispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
