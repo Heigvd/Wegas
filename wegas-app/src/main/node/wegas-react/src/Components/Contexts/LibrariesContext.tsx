@@ -11,6 +11,7 @@ import {
 } from '../../API/library.api';
 import { useWebsocketEvent } from '../../API/websocket';
 import { GameModel } from '../../data/selectors';
+import { setReloadingStatus } from '../../data/Stores/pageContextStore';
 import { store } from '../../data/Stores/store';
 import { MessageStringStyle } from '../../Editor/Components/MessageString';
 import {
@@ -19,6 +20,7 @@ import {
   SrcEditorLanguages,
 } from '../../Editor/Components/ScriptEditors/editorHelpers';
 import { useJSONSchema } from '../../Editor/Components/ScriptEditors/useJSONSchema';
+import { clearEffects, runEffects } from '../../Helper/pageEffectsManager';
 import { getLogger, wlog } from '../../Helper/wegaslog';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
@@ -425,6 +427,25 @@ function executeClientLibrary(libraryName: string, libraryContent: string) {
   );
 }
 
+type ScriptEntry = [string, string];
+
+/**
+ *Execute all client script
+ */
+function execAllScripts(scripts: ScriptEntry[]) {
+  // set PageStore reloading status to true to prevent usePagesContextStateStore  hooks to be triggered
+  setReloadingStatus(true);
+  clearEffects();
+
+  scripts.forEach(([k, v]) => {
+    executeClientLibrary(k, v);
+  });
+
+  runEffects();
+  // resumes pagesStore status, hooks will be triggered
+  setReloadingStatus(false);
+}
+
 export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
   const [librariesState, dispatchLibrariesState] = React.useReducer(
     setLibrariesState,
@@ -446,9 +467,11 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
             librariesType: 'client',
             libraries,
           });
-          Object.entries(libraries).forEach(([k, v]) => {
-            executeClientLibrary(k, v.content);
-          });
+          execAllScripts(
+            Object.entries(libraries).map(([k, v]) => {
+              return [k, v.content];
+            }),
+          );
         } catch (e) {
           wlog(e);
         }
@@ -526,12 +549,14 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
             libraryName: updatedLibraryName,
             library,
           });
-          Object.entries({
-            ...librariesState.client,
-            [updatedLibraryName]: { persisted: library },
-          }).forEach(([k, v]) => {
-            executeClientLibrary(k, v.persisted.content);
-          });
+          execAllScripts(
+            Object.entries({
+              ...librariesState.client,
+              [updatedLibraryName]: { persisted: library },
+            }).map(([key, value]) => {
+              return [key, value.persisted.content];
+            }),
+          );
         },
       );
     },
@@ -743,6 +768,9 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
             let savedWithErrors = false;
             if (libraryType === 'client') {
               try {
+                // set PageStore reloading status to true to prevent usePagesContextStateStore hooks to be triggered
+                // pageStore will be resumed after all clientscript libs will have been reloaded
+                setReloadingStatus(true);
                 executeClientLibrary(libraryName, library.content);
               } catch (e) {
                 savedWithErrors = true;

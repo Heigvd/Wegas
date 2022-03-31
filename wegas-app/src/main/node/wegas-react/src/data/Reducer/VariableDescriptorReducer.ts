@@ -7,6 +7,7 @@ import {
   PeerReviewStateSelector,
 } from '../../API/peerReview.api';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
+import { runEffects } from '../../Helper/pageEffectsManager';
 import { ActionType, manageResponseHandler, StateActions } from '../actions';
 import { Game, GameModel, Player } from '../selectors';
 import { store, ThunkResult } from '../Stores/store';
@@ -170,9 +171,13 @@ export function deleteDescriptor(
 export function reset(): ThunkResult {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
-    return VariableDescriptorAPI.reset(gameModelId).then(res =>
-      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
-    );
+    return VariableDescriptorAPI.reset(gameModelId).then(res => {
+      const r = store.dispatch(
+        manageResponseHandler(res, dispatch, getState().global),
+      );
+      runEffects();
+      return r;
+    });
   };
 }
 

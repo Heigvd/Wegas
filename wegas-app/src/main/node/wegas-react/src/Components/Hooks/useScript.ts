@@ -19,7 +19,6 @@ import {
 import { APIScriptMethods } from '../../API/clientScriptHelper';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
-import { entityIs } from '../../data/entities';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
@@ -39,6 +38,7 @@ import {
   translate,
 } from '../../Editor/Components/FormView/translatable';
 import { insertReturn } from '../../Editor/Components/ScriptEditors/TempScriptEditor';
+import { registerEffect } from '../../Helper/pageEffectsManager';
 import { createLRU, replace } from '../../Helper/tools';
 import { createScript, isScript } from '../../Helper/wegasEntites';
 import { getLogger, wlog, wwarn } from '../../Helper/wegaslog';
@@ -160,9 +160,12 @@ export function useGlobalContexts(): GlobalContexts {
   const languagesContext = React.useContext(languagesCTX);
   const classesContext = React.useContext(classesCTX);
 
-  return React.useMemo(() => {
-    return { ...featuresContext, ...languagesContext, ...classesContext };
-  }, [featuresContext, languagesContext, classesContext]);
+  return { ...featuresContext, ...languagesContext, ...classesContext };
+
+  //
+  //  return React.useMemo(() => {
+  //    return { ...featuresContext, ...languagesContext, ...classesContext };
+  //  }, [featuresContext, languagesContext, classesContext]);
 }
 
 export function setGlobals(globalContexts: GlobalContexts, store: State) {
@@ -436,6 +439,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     uniq: uniq,
     getState: getPageState,
     getLogger: getLogger,
+    registerEffect: registerEffect,
   };
 
   globals.Roles = {
@@ -680,12 +684,16 @@ export function useScript<T extends ScriptReturnType>(
 
   const state = usePagesContextStateStore(s => s);
 
-  const scriptRef = React.useRef(script);
-  scriptRef.current = script;
+  //  const toStr = (s: IScript | string | undefined) =>
+  //    entityIs(s, 'Script') ? s.content : s || '';
+  //
+  //  const strScript = Array.isArray(script)
+  //    ? script
+  //    : toStr(script);
 
   const fn = React.useCallback(() => {
-    if (Array.isArray(scriptRef.current)) {
-      return scriptRef.current.map(scriptItem =>
+    if (Array.isArray(script)) {
+      return script.map(scriptItem =>
         safeClientScriptEval<T>(
           scriptItem,
           newContext,
@@ -696,37 +704,22 @@ export function useScript<T extends ScriptReturnType>(
       );
     } else {
       return safeClientScriptEval<T>(
-        scriptRef.current,
+        script,
         newContext,
         catchCB,
         state,
         undefined,
       );
     }
-  }, [newContext, state, catchCB ]);
+  }, [script, newContext, state, catchCB]);
 
-
-  //TODO: remove editing slice from store
-  const store = useStore(s => s);
-//  const aStore = { ...store, global: { ...store.global } };
-//  delete aStore.global.editing;
-//
-//  const deepAstore = useDeepMemo(aStore);
-
-  // extract contents of all scripts in one string
-  // such string is used to force re-evaluation of the next memo
-  const toStr = (s: IScript | string | undefined) =>
-    entityIs(s, 'Script') ? s.content : s || '';
-  const strScript: string = Array.isArray(script)
-    ? script.map(toStr).join(',')
-    : toStr(script);
-
-  return React.useMemo(() => {
-    setGlobals(globalContexts, store);
+  const returnValue = useStore(s => {
+    //ref +state.reloading
+    setGlobals(globalContexts, s);
     return fn();
-    // strScript is used to force script re-evaluation
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [strScript, store, fn, globalContexts]) as any;
+  }, deepDifferent);
+
+  return returnValue as any;
 }
 
 /**
