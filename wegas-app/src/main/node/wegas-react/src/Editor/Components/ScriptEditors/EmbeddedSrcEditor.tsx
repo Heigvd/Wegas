@@ -11,27 +11,39 @@ import {
 import SrcEditor from './SrcEditor';
 
 interface EmbeddedEditorProps {
-  initialValue: string;
+  value: string;
   language: SrcEditorLanguages;
   onChange: (newValue: string) => void;
   onSave: () => void;
 }
 
 export function EmbeddedEditor({
-  initialValue,
+  value,
   language,
   onChange,
   onSave,
 }: EmbeddedEditorProps) {
   const [editing, setEditing] = React.useState(false);
   const cursorOffset = React.useRef(0);
+  const valueRef = React.useRef(value);
   const embeddedCodeInit = React.useRef(0);
   const embeddedCodeEnd = React.useRef(0);
 
-  const valueModel = useTempModel(initialValue, language);
+  const valueModel = useTempModel(value, language);
   valueModel?.onDidChangeContent(() => {
-    onChange(valueModel.getValue());
+    const newValue = valueModel.getValue();
+    if (valueRef.current !== newValue) {
+      valueRef.current = newValue;
+      onChange(newValue);
+    }
   });
+
+  React.useEffect(() => {
+    if (value !== valueRef.current) {
+      valueModel?.setValue(value);
+    }
+  }, [value, valueModel]);
+
   const embeddedModel = useTempModel('', 'plaintext');
 
   const embeddedEditorBindings = React.useCallback(

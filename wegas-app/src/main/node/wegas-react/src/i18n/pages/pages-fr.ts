@@ -10,4 +10,6 @@ export const pagesTranslationsFR: PagesTranslations = {
   completeCompConfig:
     "Veuillez terminer la configuration du composant pour qu'il s'affiche..",
   editComponent: 'Editer le componsant',
+  obsoleteComponent:
+    'Le composant a été mis a jour. Veuillez contacter votre formateur.',
 };

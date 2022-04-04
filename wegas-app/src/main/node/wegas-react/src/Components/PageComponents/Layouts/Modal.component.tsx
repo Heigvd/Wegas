@@ -74,7 +74,7 @@ function PlayerModal({
   const { client, server } = onExitActions || {};
 
   const onExit = React.useMemo(() => {
-    return client == null || server == null
+    return client == null && server == null
       ? undefined
       : () => {
           if (client) {

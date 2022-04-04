@@ -1,13 +1,24 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import { store } from '../../../data/Stores/store';
+import {
+  computeProps,
+  createComponent,
+  moveComponent,
+  pageCTX,
+  patchPage,
+} from '../../../Editor/Components/Page/PageEditor';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { pagesTranslations } from '../../../i18n/pages/pages';
 import { useScript } from '../../Hooks/useScript';
+import { Button } from '../../Inputs/Buttons/Button';
 import { defaultFlexLayoutOptionsKeys, FlexItem } from '../../Layouts/FlexList';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import { emptyLayoutItemStyle } from '../Layouts/FlexList.component';
 import {
   pageComponentFactory,
   registerComponent,
+  usePageComponentStore,
 } from '../tools/componentFactory';
 import {
   ComponentDropZone,
@@ -115,6 +126,88 @@ export function EmptyComponentContainer({
   );
 }
 
+function RepearIfElse({
+  wegasChildren,
+  pageId,
+  path,
+}: {
+  wegasChildren: WegasComponent[] | undefined;
+  pageId: string;
+  path: number[];
+}) {
+  const components = usePageComponentStore(s => s);
+  const pages = store.getState().pages;
+  const currentPage = pages[pageId!];
+
+  const repearFN = React.useCallback(() => {
+    let newComponent: WegasComponent = currentPage;
+    if (wegasChildren == null || wegasChildren[0] == null) {
+      newComponent =
+        createComponent(
+          currentPage,
+          path,
+          PlayerIfName,
+          computeProps(components[PlayerIfName], undefined, undefined),
+          0,
+        )?.newPage || newComponent;
+    } else if (wegasChildren[0].type !== PlayerIfName) {
+      newComponent =
+        createComponent(
+          newComponent,
+          path,
+          PlayerIfName,
+          computeProps(components[PlayerIfName], undefined, undefined),
+          0,
+        )?.newPage || newComponent;
+
+      newComponent =
+        moveComponent(
+          pageId!,
+          pageId!,
+          newComponent,
+          newComponent,
+          [...path, 1],
+          [...path, 0],
+          0,
+        )?.newDestPage || newComponent;
+    }
+
+    if (wegasChildren == null || wegasChildren[1] == null) {
+      newComponent =
+        createComponent(
+          newComponent,
+          path,
+          PlayerElseName,
+          computeProps(components[PlayerIfName], undefined, undefined),
+          1,
+        )?.newPage || newComponent;
+    } else if (wegasChildren[1].type !== PlayerElseName) {
+      newComponent =
+        createComponent(
+          newComponent,
+          path,
+          PlayerElseName,
+          computeProps(components[PlayerElseName], undefined, undefined),
+          1,
+        )?.newPage || newComponent;
+
+      newComponent =
+        moveComponent(
+          pageId!,
+          pageId!,
+          newComponent,
+          newComponent,
+          [...path, 2],
+          [...path, 1],
+          1,
+        )?.newDestPage || newComponent;
+    }
+
+    patchPage(pageId, newComponent);
+  }, [components, currentPage, pageId, path, wegasChildren]);
+  return <Button label="Repear" onClick={repearFN} />;
+}
+
 function ChildrenDeserializer({
   wegasChildren,
   path,
@@ -125,9 +218,29 @@ function ChildrenDeserializer({
   inheritedOptionsState,
   ifCondition,
 }: ChildrenDeserializerProps<IfElseProps>) {
+  const { obsoleteComponent } = useInternalTranslate(pagesTranslations);
+
   const condition = useScript<boolean>(ifCondition, context);
 
-  if (wegasChildren != null) {
+  if (
+    wegasChildren == null ||
+    wegasChildren[0] == null ||
+    wegasChildren[1] == null ||
+    wegasChildren[0].type !== PlayerIfName ||
+    wegasChildren[1].type !== PlayerElseName
+  ) {
+    if (API_VIEW === 'Editor') {
+      return (
+        <RepearIfElse
+          pageId={pageId!}
+          path={path}
+          wegasChildren={wegasChildren}
+        />
+      );
+    } else {
+      return <pre>{obsoleteComponent}</pre>;
+    }
+  } else {
     const children1 = wegasChildren[0].props.children![0];
     const children2 = wegasChildren[1].props.children![0];
 
@@ -188,8 +301,6 @@ function ChildrenDeserializer({
         />
       );
     }
-  } else {
-    return <pre>Error in component</pre>;
   }
 }
 

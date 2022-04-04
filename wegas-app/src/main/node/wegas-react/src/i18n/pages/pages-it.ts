@@ -10,4 +10,6 @@ export const pagesTranslationsIT: PagesTranslations = {
   completeCompConfig:
     'Completare la configurazione del componente per visualizzarlo.',
   editComponent: 'Modifica componente',
+  obsoleteComponent:
+    'Il componente è stato aggiornato. Contatta il tuo trainer.',
 };

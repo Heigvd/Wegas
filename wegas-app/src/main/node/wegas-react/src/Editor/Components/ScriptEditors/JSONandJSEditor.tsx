@@ -61,7 +61,7 @@ export function JSONandJSEditor({
       </Toolbar.Header>
       <Toolbar.Content>
         <EmbeddedEditor
-          initialValue={content}
+          value={content}
           language="json"
           onChange={val => (editorContent.current = val)}
           onSave={trySave}

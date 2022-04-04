@@ -216,6 +216,59 @@ export function updateComponent(
   }
 }
 
+export function moveComponent(
+  sourcePageId: string,
+  destPageId: string,
+  sourcePage: WegasComponent,
+  destPage: WegasComponent,
+  sourcePath: number[],
+  destPath: number[],
+  destIndex: number,
+  props?: WegasComponent['props'],
+) {
+  const sourceIndex: number | undefined = sourcePath.slice(-1)[0];
+  const samePages = sourcePageId === destPageId;
+  const samePath = !deepDifferent(sourcePath.slice(0, -1), destPath);
+  const deleteIndex =
+    samePages && samePath && sourceIndex >= destIndex
+      ? sourceIndex + 1
+      : sourceIndex;
+  const deletePath =
+    samePages && // If same pages
+    destPath.length + 1 < sourcePath.length && // If component is dragged out of its container
+    destIndex <= sourcePath[destPath.length] // If component new path is before its old container
+      ? // Add 1 to the container path current path
+        [
+          ...sourcePath.slice(0, destPath.length),
+          sourcePath[destPath.length] + 1,
+          ...sourcePath.slice(destPath.length + 1),
+        ]
+      : // Set the new index of the component in case it is moved inside the same container
+        [...sourcePath.slice(0, -1), deleteIndex];
+
+  const { component } = findComponent(sourcePage, sourcePath);
+  if (component != null) {
+    const newDest = createComponent(
+      destPage,
+      destPath,
+      component.type,
+      props ? mergeDeep(component.props, props) : component.props,
+      destIndex,
+    );
+    let newDestPage = newDest?.newPage;
+    let newSourcePage: WegasComponent | undefined = undefined;
+    const newDestPath = newDest?.newPath;
+
+    if (samePages && newDestPage) {
+      newDestPage = deleteComponent(newDestPage, deletePath);
+    } else {
+      newSourcePage = deleteComponent(sourcePage, sourcePath);
+    }
+    return { newSourcePage, newDestPath, samePages, newDestPage };
+  }
+  return { samePages };
+}
+
 function pageFolderToDropMenuItems(
   folder: PageIndexFolder,
 ): DropMenuItem<undefined>[] {
@@ -236,6 +289,20 @@ interface PageContextProviderProps {
    */
   layoutId?: string;
 }
+
+export const computeProps = (
+  component: PageComponent,
+  props?: WegasComponent['props'],
+  variable?: WegasClassNameAndScriptableTypes[IVariableDescriptor['@class']],
+): WegasComponent['props'] => {
+  if (props) {
+    return props;
+  } else if (component.getComputedPropsFromVariable) {
+    return component.getComputedPropsFromVariable(variable);
+  } else {
+    return {};
+  }
+};
 
 export function PageContextProvider({
   layoutId,
@@ -305,70 +372,28 @@ export function PageContextProvider({
       destIndex: number,
       props?: WegasComponent['props'],
     ) => {
-      const sourceIndex: number | undefined = sourcePath.slice(-1)[0];
-      const samePages = sourcePageId === destPageId;
-      const samePath = !deepDifferent(sourcePath.slice(0, -1), destPath);
-      const deleteIndex =
-        samePages && samePath && sourceIndex >= destIndex
-          ? sourceIndex + 1
-          : sourceIndex;
-      const deletePath =
-        samePages && // If same pages
-        destPath.length + 1 < sourcePath.length && // If component is dragged out of its container
-        destIndex <= sourcePath[destPath.length] // If component new path is before its old container
-          ? // Add 1 to the container path current path
-            [
-              ...sourcePath.slice(0, destPath.length),
-              sourcePath[destPath.length] + 1,
-              ...sourcePath.slice(destPath.length + 1),
-            ]
-          : // Set the new index of the component in case it is moved inside the same container
-            [...sourcePath.slice(0, -1), deleteIndex];
-
-      const { component } = findComponent(sourcePage, sourcePath);
-      if (component != null) {
-        const newDest = createComponent(
+      const { samePages, newDestPath, newSourcePage, newDestPage } =
+        moveComponent(
+          sourcePageId,
+          destPageId,
+          sourcePage,
           destPage,
+          sourcePath,
           destPath,
-          component.type,
-          props ? mergeDeep(component.props, props) : component.props,
           destIndex,
+          props,
         );
-        let newDestPage = newDest?.newPage;
-        let newSourcePage: WegasComponent | undefined = undefined;
-        const newDestPath = newDest?.newPath;
 
-        if (samePages && newDestPage) {
-          newDestPage = deleteComponent(newDestPage, deletePath);
-        } else {
-          newSourcePage = deleteComponent(sourcePage, sourcePath);
+      if (newDestPage) {
+        patchPage(destPageId, newDestPage);
+        if (!samePages && newSourcePage) {
+          patchPage(sourcePageId, newSourcePage);
         }
-
-        if (newDestPage) {
-          patchPage(destPageId, newDestPage);
-          if (!samePages && newSourcePage) {
-            patchPage(sourcePageId, newSourcePage);
-          }
-          onEdit(destPageId, newDestPath);
-        }
+        onEdit(destPageId, newDestPath);
       }
     },
     [onEdit],
   );
-
-  const computeProps = (
-    component: PageComponent,
-    props?: WegasComponent['props'],
-    variable?: WegasClassNameAndScriptableTypes[IVariableDescriptor['@class']],
-  ): WegasComponent['props'] => {
-    if (props) {
-      return props;
-    } else if (component.getComputedPropsFromVariable) {
-      return component.getComputedPropsFromVariable(variable);
-    } else {
-      return {};
-    }
-  };
 
   const onDrop = React.useCallback(
     (
