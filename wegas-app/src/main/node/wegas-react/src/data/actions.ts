@@ -23,6 +23,7 @@ import {
   Edition,
   EditorAction,
   GlobalState,
+  LoggerLevel,
   WegasStatus,
 } from './Reducer/globalState';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
@@ -191,6 +192,8 @@ export const ActionCreator = {
   LANGUAGES_EDITON_ALLOWED: (data: {
     editableLanguages: GlobalState['languages']['editableLanguages'];
   }) => createAction(ActionType.LANGUAGES_EDITON_ALLOWED, data),
+  LOGGER_LEVEL_SET: (payload: { loggerName: string; level: LoggerLevel }) =>
+    createAction(ActionType.LOGGER_LEVEL_SET, payload),
 };
 
 export type StateActions<

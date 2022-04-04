@@ -1,10 +1,10 @@
-import { rest } from './rest';
+import { IAbstractContentDescriptor, IGameModelContent } from 'wegas-ts-api';
 import { GameModel } from '../data/selectors';
-import { IGameModelContent, IAbstractContentDescriptor } from 'wegas-ts-api';
+import { rest } from './rest';
 
 export const NOCONTENTMESSAGE = 'No content';
 
-export type LibType =
+export type ServerLibraryType =
   | 'CSS'
   | 'ClientScript'
   | 'ServerScript'
@@ -15,19 +15,22 @@ export interface ILibraries {
   [key: string]: IGameModelContent;
 }
 
-const LIBRARY_BASE = (libType: LibType, gameModelId?: number) =>
+const LIBRARY_BASE = (libType: ServerLibraryType, gameModelId?: number) =>
   `GameModel/${
     gameModelId ? gameModelId : GameModel.selectCurrent().id!
   }/Library/${libType}`;
 
 export const LibraryAPIFactory = (gameModelId?: number) => {
   return {
-    getAllLibraries(libType: LibType): Promise<ILibraries> {
+    getAllLibraries(libType: ServerLibraryType): Promise<ILibraries> {
       return rest(LIBRARY_BASE(libType, gameModelId)).then((res: Response) => {
         return res.json();
       });
     },
-    getLibrary(libType: LibType, name: string): Promise<IGameModelContent> {
+    getLibrary(
+      libType: ServerLibraryType,
+      name: string,
+    ): Promise<IGameModelContent> {
       return rest(LIBRARY_BASE(libType, gameModelId) + '/' + name).then(
         (res: Response) => {
           if (res.status === 204) {
@@ -38,7 +41,7 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
       );
     },
     addLibrary(
-      libType: LibType,
+      libType: ServerLibraryType,
       mimeType: string,
       name: string,
       content: string,
@@ -67,7 +70,7 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
         });
     },
     saveLibrary(
-      libType: LibType,
+      libType: ServerLibraryType,
       name: string,
       library: IGameModelContent,
     ): Promise<IGameModelContent> {
@@ -83,7 +86,7 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
         return res.json();
       });
     },
-    deleteLibrary(libType: LibType, name: string) {
+    deleteLibrary(libType: ServerLibraryType, name: string) {
       return rest(LIBRARY_BASE(libType, gameModelId) + '/' + name, {
         method: 'DELETE',
       });

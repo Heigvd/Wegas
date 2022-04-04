@@ -1,14 +1,16 @@
 import { css } from '@emotion/css';
 import * as React from 'react';
-import { WegasScriptEditor } from './ScriptEditors/WegasScriptEditor';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { defaultMargin } from '../../css/classes';
+import { runScript } from '../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../data/selectors';
 import { store } from '../../data/Stores/store';
-import { runScript } from '../../data/Reducer/VariableInstanceReducer';
-import { defaultMargin } from '../../css/classes';
+import { TempScriptEditor } from './ScriptEditors/TempScriptEditor';
 
 const container = css({ width: '100%' });
 const editor = css({ width: '100%', height: '400px' });
+
+const filename = 'play:server.js';
 
 export default function PlayServer() {
   const [script, setScript] = React.useState('');
@@ -26,10 +28,10 @@ export default function PlayServer() {
   return (
     <div className={container}>
       <div className={editor}>
-        <WegasScriptEditor
-          value={script}
+        <TempScriptEditor
+          fileName={filename}
+          language="javascript"
           onChange={e => setScript(e)}
-          scriptContext="Server internal"
         />
         <div className={defaultMargin}>
           <Button onClick={playScript} label="Run script" />

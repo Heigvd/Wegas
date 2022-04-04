@@ -5,11 +5,9 @@ import { cloneDeep, omit } from 'lodash-es';
 import * as React from 'react';
 import { SelecteDropdMenuItem } from '../../../Components/DropMenu';
 import { useDeepChanges } from '../../../Components/Hooks/useDeepChanges';
+import { AvailableSchemas } from '.';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
-import {
-  schemaProps,
-  SchemaPropsSchemas,
-} from '../../../Components/PageComponents/tools/schemaProps';
+import { schemaProps, } from '../../../Components/PageComponents/tools/schemaProps';
 import { getEntry, setEntry } from '../../../Helper/tools';
 import { DragDropArray } from './Array';
 import { CommonView, CommonViewContainer } from './commonView';
@@ -30,7 +28,7 @@ function isHashListValue(item: HashListItem): item is HashListValue {
 }
 
 export function hashListChoicesToSchema(choices?: HashListChoices): {
-  [prop: string]: SchemaPropsSchemas;
+  [prop: string]: AvailableSchemas;
 } {
   return choices
     ? choices.reduce(
@@ -74,7 +72,7 @@ interface EntryViewProps<T> {
   prop: string;
   value: T | undefined;
   onChange: (key: string, value: T) => void;
-  schema?: SchemaPropsSchemas;
+  schema?: AvailableSchemas;
 }
 
 export function EntryView<T>({
@@ -193,7 +191,7 @@ function DragAndDropEntry({
   index,
 }: DragAndDropEntryProps) {
   const [k, v] = entry;
-  let schema: SchemaPropsSchemas | undefined;
+  let schema: AvailableSchemas | undefined;
   let label: React.ReactNode | undefined;
 
   const onIntermediateEntryViewChange = React.useCallback(
@@ -366,7 +364,7 @@ function EntriesView({
           .sort(([, a], [, b]) => sortValues(a, b))
           .map((entry, i) => (
             <DragAndDropEntry
-              key={entry[0] + i}
+              key={i}
               currentValue={currentValue}
               entry={entry}
               index={i}

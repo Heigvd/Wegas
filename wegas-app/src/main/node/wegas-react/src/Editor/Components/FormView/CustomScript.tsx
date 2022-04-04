@@ -1,22 +1,21 @@
-import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { LabeledView, Labeled } from './labeled';
-import { CommonView, CommonViewContainer } from './commonView';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { toLower } from 'lodash';
-import { scriptEditStyle } from './Script/Script';
-import { createScript } from '../../../Helper/wegasEntites';
+import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
+import { createScript } from '../../../Helper/wegasEntites';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
+import { TempScriptEditor } from '../ScriptEditors/TempScriptEditor';
+import { CommonView, CommonViewContainer } from './commonView';
+import { Labeled, LabeledView } from './labeled';
+import { scriptEditStyle } from './Script/Script';
 
 export interface CustomScriptProps
   extends WidgetProps.BaseProps<
     LabeledView &
       CommonView & {
         language?: CodeLanguage;
-        returnType?: WegasScriptEditorReturnTypeName[];
-        args?: [string, WegasScriptEditorReturnTypeName[]][];
-        scriptContext?: ScriptContext;
+        returnType?: string[];
+        args?: [string, string[]][];
       }
   > {
   value?: IScript;
@@ -30,6 +29,9 @@ export function CustomScript({ view, value, onChange }: CustomScriptProps) {
     },
     [onChange, view.language],
   );
+  const language = view.language
+    ? (toLower(view.language) as SrcEditorLanguages)
+    : view.language;
 
   return (
     <CommonViewContainer view={view}>
@@ -39,20 +41,15 @@ export function CustomScript({ view, value, onChange }: CustomScriptProps) {
             <>
               {labelNode}
               <div className={scriptEditStyle}>
-                <WegasScriptEditor
-                  language={
-                    view.language
-                      ? (toLower(view.language) as SrcEditorLanguages)
-                      : view.language
-                  }
+                <TempScriptEditor
+                  language={language}
                   returnType={view.returnType}
                   args={view.args}
-                  value={value ? value.content : ''}
+                  initialValue={value ? value.content : ''}
                   onChange={onValueChange}
                   minimap={false}
                   noGutter={true}
                   resizable
-                  scriptContext={view.scriptContext}
                 />
               </div>
             </>

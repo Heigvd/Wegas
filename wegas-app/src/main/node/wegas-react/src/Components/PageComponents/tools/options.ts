@@ -198,10 +198,10 @@ export const actionsChoices: HashListChoices = [
       schema: schemaProps.object({
         label: 'Open File',
         properties: {
-          filePath: schemaProps.path({
+          filePath: schemaProps.scriptPath({
             label: 'File',
             required: true,
-            scriptable: true,
+            pickType: 'FILE',
           }),
           priority: schemaProps.number({ label: 'Priority' }),
         },

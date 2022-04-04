@@ -12,10 +12,10 @@ const containerStyle = css({
   position: 'relative',
 });
 const marginTopStyle = css({
-  marginTop: '15px',
+  marginTop: '10px',
 });
 const marginBottomStyle = css({
-  marginBottom: '15px',
+  marginBottom: '5px',
 });
 const errorStyle = css({
   color: themeVar.colors.WarningColor,
@@ -31,13 +31,30 @@ export const borderBottom = css({
   paddingBottom: '5px',
   marginBottom: '5px',
 });
+
 const shortInline = css({
   display: 'inline-block',
-  marginRight: '2em',
+  marginRight: '1em',
   verticalAlign: 'bottom',
   maxWidth: '11em',
 });
-const LAYOUTS = {
+
+const longInline = css({
+  display: 'inline-block',
+  marginRight: '1em',
+  verticalAlign: 'bottom',
+  minWidth: '11em',
+  maxWidth: '21em',
+});
+
+
+const fullWidth = css({
+  minWidth: '25em',
+  flexGrow: 1,
+});
+
+
+export const LAYOUTS = {
   shortInline: shortInline,
   inline: css({
     display: 'inline-block',
@@ -45,14 +62,18 @@ const LAYOUTS = {
   }),
   extraShortInline: css(shortInline, {
     maxWidth: '5em',
-  }),
+}),
+  longInline: longInline,
   flexInline: cx(flex, flexRow, itemCenter),
+  fullWidth: fullWidth,
 };
+
+export type LayoutType = keyof typeof LAYOUTS;
 
 export interface CommonView {
   borderTop?: boolean;
   borderBottom?: boolean;
-  layout?: keyof typeof LAYOUTS;
+  layout?: LayoutType;
   index?: number;
   readOnly?: boolean;
   featureLevel?: FeatureLevel;

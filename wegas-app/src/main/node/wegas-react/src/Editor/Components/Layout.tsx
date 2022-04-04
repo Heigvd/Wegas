@@ -24,7 +24,15 @@ const EntityEditor = React.lazy(() => import('./EntityEditor'));
 const FileBrowserWithMeta = React.lazy(
   () => import('./FileBrowser/FileBrowser'),
 );
-const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
+const ClientLibraryEditor = React.lazy(
+  () => import('./ScriptEditors/LibraryEditors/ClientLibraryEditor'),
+);
+const ServerLibraryEditor = React.lazy(
+  () => import('./ScriptEditors/LibraryEditors/ServerLibraryEditor'),
+);
+const StyleLibraryEditor = React.lazy(
+  () => import('./ScriptEditors/LibraryEditors/StyleLibraryEditor'),
+);
 const PlayLocal = React.lazy(() => import('./PlayLocal'));
 const PlayServer = React.lazy(() => import('./PlayServer'));
 const ThemeEditor = React.lazy(
@@ -39,7 +47,9 @@ const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
 const PagesLayout = React.lazy(() => import('./Page/PagesLayout'));
 const SourceEditor = React.lazy(() => import('./Page/SourceEditor'));
 
-// const Tester = React.lazy(() => import('../../Testers/Components/MenuTester'));
+// const Tester = React.lazy(
+//   () => import('../../Testers/Components/MergeEditorTester'),
+// );
 
 const layout = css({
   display: 'flex',
@@ -73,8 +83,21 @@ const availableLayoutTabs: LinearLayoutComponents = [
     content: <FileBrowserWithMeta />,
   },
   {
-    tabId: 'Scripts',
-    content: <LibraryEditor />,
+    tabId: 'Libraries',
+    items: [
+      {
+        tabId: 'Client',
+        content: <ClientLibraryEditor />,
+      },
+      {
+        tabId: 'Server',
+        content: <ServerLibraryEditor />,
+      },
+      {
+        tabId: 'Style',
+        content: <StyleLibraryEditor />,
+      },
+    ],
   },
   {
     tabId: 'Languages',

@@ -28,9 +28,9 @@ export interface MonacoEditorSimpleToken {
   type: string;
   language: string;
 }
-export interface MonacoDefinitionsLibraries {
+export interface MonacoDefinitionsLibrary {
   content: string;
-  name?: string;
+  name: string;
 }
 export interface MonacoEditorSimpleRange {
   /**
@@ -74,8 +74,15 @@ export interface SrcEditorAction {
  * textToArray split a text into an array of lines
  *
  * @param text - the text to be splitted
+ * @param dropBlankLines - drop blank lines
  */
-export const textToArray = (text: string): string[] => text.split(/\r?\n/);
+export const textToArray = (
+  text: string,
+  dropBlankLines: boolean = false,
+): string[] => {
+  const lines = text.split(/\r?\n/);
+  return dropBlankLines ? lines.filter(line => line) : lines;
+};
 
 /**
  * arrayToText merge an array of lines into a single string

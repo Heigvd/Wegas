@@ -1,24 +1,25 @@
+// @ts-ignore
+import mainStyle from '!!raw-loader!../../css/defaultStyle.less';
 import * as React from 'react';
-import { LibraryAPI, ILibraries } from '../../API/library.api';
-import { wlog, wwarn } from '../../Helper/wegaslog';
+import { IGameModelContent } from 'wegas-ts-api';
+import { ILibraries, LibraryAPI } from '../../API/library.api';
+import { useWebsocketEvent } from '../../API/websocket';
 import {
   safeClientScriptEval,
   setGlobals,
   useGlobalContexts,
 } from '../../Components/Hooks/useScript';
-import { useWebsocketEvent } from '../../API/websocket';
-import { IGameModelContent } from 'wegas-ts-api';
-
-// @ts-ignore
-import mainStyle from '!!raw-loader!../../css/defaultStyle.less';
 import { store } from '../../data/Stores/store';
+import { wlog, wwarn } from '../../Helper/wegaslog';
 
 interface LibrariesContext {
   updateCSSLibraries: (name: string) => void;
+  clientScripts: ILibraries;
 }
 
 export const librariesCTX = React.createContext<LibrariesContext>({
   updateCSSLibraries: () => {},
+  clientScripts: {},
 });
 
 export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
@@ -80,8 +81,8 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
         wlog('Cannot get the scripts');
       });
 
+    // Run global contexts before loading external client scripts
     setGlobals(globalContexts, store.getState());
-
     CurrentGM.properties.clientScriptUri?.split(';').map(scriptUrl => {
       if (scriptUrl !== '') {
         fetch(scriptUrl)
@@ -93,8 +94,15 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
             }
           })
           .then(res => {
-            safeClientScriptEval(res.text, undefined, () =>
-              wwarn(`In static client script : ${res.scriptUrl}`),
+            safeClientScriptEval(
+              res.text,
+              undefined,
+              () => wwarn(`In static client script : ${res.scriptUrl}`),
+              undefined,
+              {
+                injectReturn: false,
+                moduleName: scriptUrl,
+              },
             );
           })
           .catch(e => {
@@ -133,8 +141,15 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
 
   React.useEffect(() => {
     Object.entries(jsLibs).forEach(([key, lib]) =>
-      safeClientScriptEval(lib.content, undefined, () =>
-        wwarn(`In client script  : ${key}`),
+      safeClientScriptEval(
+        lib.content,
+        undefined,
+        () => wwarn(`In client script  : ${key}`),
+        undefined,
+        {
+          moduleName: `./${key}`,
+          injectReturn: false,
+        },
       ),
     );
   }, [jsLibs]);
@@ -158,7 +173,10 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
         </style>
       ))}
       <librariesCTX.Provider
-        value={{ updateCSSLibraries: name => cssEventHandler(name) }}
+        value={{
+          updateCSSLibraries: name => cssEventHandler(name),
+          clientScripts: jsLibs,
+        }}
       >
         {props.children}
       </librariesCTX.Provider>

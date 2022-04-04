@@ -36,14 +36,21 @@ interface ArrayedTypeMap<T = {}> {
   array: T[keyof T][];
 }
 
+
 type WegasScriptEditorReturnTypeName = keyof WegasScriptEditorNameAndTypes;
 
+/** @deprecated */
 type WegasScriptEditorReturnType = WegasScriptEditorNameAndTypes[WegasScriptEditorReturnTypeName];
 
+/** @deprecated */
 type ArrayedAndNot<T extends {}> = ArrayedTypeMap<T>[keyof ArrayedTypeMap];
 
+/** @deprecated */
 type ArgumentsType = [string, WegasScriptEditorReturnTypeName][];
 
+/**
+ * @deprecated use import/export
+ */
 type ClientMethodAdd = <
   PT extends ArgumentsType,
   RT extends WegasScriptEditorReturnTypeName,
@@ -66,18 +73,30 @@ type ClientMethodAdd = <
   method: MET,
 ) => void;
 
+/**
+ * @deprecated use import/export
+ */
 interface ClientMethodPayload {
   name: string;
   parameters: readonly ReadonlyTuple<
-    [string, WegasScriptEditorReturnTypeName]
+    [string, string]
   >[];
-  returnTypes: WegasScriptEditorReturnTypeName[];
+  returnTypes: string[];
   returnStyle: keyof ArrayedTypeMap;
   method: (...elements: any[]) => any;
 }
 
+/**
+ * @deprecated
+ */
 interface GlobalClientMethodClass {
+  /**
+   * @deprecated use export
+   */
   addMethod: ClientMethodAdd;
+  /**
+   * @deprecated use import
+   */
   getMethod: (
     name: string,
   ) => (

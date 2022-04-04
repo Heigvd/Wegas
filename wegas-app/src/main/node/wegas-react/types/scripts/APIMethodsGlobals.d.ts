@@ -25,4 +25,5 @@ interface APIMethodsClass {
   updateVariable: (instance: IVariableDescriptor) => void;
   deleteVariable: (variable: IVariableDescriptor) => void;
   updateInstance: (variable: IVariableInstance) => void;
+  getServerTime: () => Promise<number>;
 }

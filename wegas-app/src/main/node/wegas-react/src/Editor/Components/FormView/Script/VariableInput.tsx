@@ -1,11 +1,11 @@
-import * as React from 'react';
-import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import Form from 'jsoninput';
-import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { LabeledView } from '../labeled';
-import { CommonView } from '../commonView';
+import * as React from 'react';
 import { Button } from '../../../../Components/Inputs/Buttons/Button';
+import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
+import { TempScriptEditor } from '../../ScriptEditors/TempScriptEditor';
+import { CommonView } from '../commonView';
+import { LabeledView } from '../labeled';
 
 interface VariableInputProps
   extends WidgetProps.BaseProps<
@@ -16,7 +16,9 @@ interface VariableInputProps
   onChange: (code: string) => void;
 }
 
-const schema = (scriptableClassFilter?: WegasScriptEditorReturnTypeName[]) => ({
+const makeSchema = (
+  scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
+) => ({
   description: 'booleanExpressionSchema',
   properties: {
     variableName: schemaProps.scriptVariable({
@@ -27,25 +29,26 @@ const schema = (scriptableClassFilter?: WegasScriptEditorReturnTypeName[]) => ({
   },
 });
 
-export function VariableInput(props: VariableInputProps) {
+export function VariableInput({ onChange, view, value }: VariableInputProps) {
   const [srcMode, setSrcMode] = React.useState(false);
   return (
     <div>
       <Button icon="code" onClick={() => setSrcMode(sm => !sm)} />
       <div>
         {srcMode ? (
-          <WegasScriptEditor
-            value={props.value}
-            onChange={props.onChange}
+          <TempScriptEditor
+            initialValue={value || ''}
+            language="typescript"
+            onChange={onChange}
             noGutter
             minimap={false}
-            returnType={props.view.scriptableClassFilter}
+            returnType={view.scriptableClassFilter}
           />
         ) : (
           <Form
-            value={props.value}
-            schema={schema(props.view.scriptableClassFilter)}
-            onChange={props.onChange}
+            value={value}
+            schema={makeSchema(view.scriptableClassFilter)}
+            onChange={onChange}
           />
         )}
       </div>

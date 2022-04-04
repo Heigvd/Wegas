@@ -1,24 +1,24 @@
-import * as React from 'react';
+import { css, cx } from '@emotion/css';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { CommonView, CommonViewContainer } from './commonView';
-import { LabeledView, Labeled } from './labeled';
-import { scriptEditStyle } from './Script/Script';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
-import { createScript } from '../../../Helper/wegasEntites';
+import * as React from 'react';
+import { IScript } from 'wegas-ts-api';
+import { DropMenu } from '../../../Components/DropMenu';
+import { useScript } from '../../../Components/Hooks/useScript';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { flex, flexRow, grow } from '../../../css/classes';
+import { State } from '../../../data/Reducer/reducers';
 import { useStore } from '../../../data/Stores/store';
 import {
+  getPageIndexItem,
   indexToTree,
   isPageItem,
-  getPageIndexItem,
 } from '../../../Helper/pages';
-import { useScript } from '../../../Components/Hooks/useScript';
-import { DropMenu } from '../../../Components/DropMenu';
-import { cx, css } from '@emotion/css';
-import { flex, flexRow, grow } from '../../../css/classes';
-import { IScript } from 'wegas-ts-api';
+import { createScript } from '../../../Helper/wegasEntites';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { State } from '../../../data/Reducer/reducers';
+import { TempScriptEditor } from '../ScriptEditors/TempScriptEditor';
+import { CommonView, CommonViewContainer } from './commonView';
+import { Labeled, LabeledView } from './labeled';
+import { scriptEditStyle } from './Script/Script';
 
 const updateScript = (scriptContent: string, currentScript?: IScript) =>
   currentScript
@@ -58,6 +58,10 @@ export default function PageSelect(props: PageSelectProps) {
     [props],
   );
 
+  const language = props.value
+    ? (props.value.language.toLowerCase() as SrcEditorLanguages)
+    : 'typescript';
+
   return (
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>
@@ -72,8 +76,8 @@ export default function PageSelect(props: PageSelectProps) {
               />
               {srcMode ? (
                 <div className={cx(scriptEditStyle, grow)}>
-                  <WegasScriptEditor
-                    value={pageValue}
+                  <TempScriptEditor
+                    initialValue={pageValue || ''}
                     returnType={['string']}
                     onChange={setPageValue}
                     onSave={value =>
@@ -83,11 +87,7 @@ export default function PageSelect(props: PageSelectProps) {
                           : createScript(value),
                       )
                     }
-                    language={
-                      props.value
-                        ? (props.value.language.toLowerCase() as SrcEditorLanguages)
-                        : 'typescript'
-                    }
+                    language={language}
                     minimap={false}
                     noGutter
                     resizable

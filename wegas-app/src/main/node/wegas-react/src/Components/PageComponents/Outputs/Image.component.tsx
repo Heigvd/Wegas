@@ -1,16 +1,16 @@
+import { css } from '@emotion/css';
 import * as React from 'react';
+import { IScript } from 'wegas-ts-api';
+import { fileURL } from '../../../API/files.api';
+import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
+import { useScript } from '../../Hooks/useScript';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { schemaProps } from '../tools/schemaProps';
 import { classStyleIdShema } from '../tools/options';
-import { IScript } from 'wegas-ts-api';
-import { useScript } from '../../Hooks/useScript';
-import { css } from '@emotion/css';
-import { fileURL } from '../../../API/files.api';
-import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
+import { schemaProps } from '../tools/schemaProps';
 
 const initialImageStyle = css({
   maxHeight: '100%',
@@ -55,14 +55,13 @@ registerComponent(
     icon: 'image',
     illustration: 'image',
     schema: {
-      script: schemaProps.path({
+      script: schemaProps.scriptPath({
         label: 'Source',
         pickType: 'FILE',
         filter: {
           fileType: 'image',
           filterType: 'show',
         },
-        scriptable: true,
       }),
       ...classStyleIdShema,
     },

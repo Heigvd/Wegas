@@ -20,7 +20,7 @@ import {
   itemCenter,
 } from '../../../css/classes';
 import { createScript } from '../../../Helper/wegasEntites';
-import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../ScriptEditors/TempScriptEditor';
 import { CommonViewContainer } from './commonView';
 import { Labeled } from './labeled';
 import { scriptEditStyle } from './Script/Script';
@@ -34,7 +34,19 @@ const labelStyle = css({
 const inputModes = ['Variable', 'Code'] as const;
 type InputMode = ValueOf<typeof inputModes>;
 
-function parseScript(script: string = ''): InputMode {
+interface Variable {
+  type: 'Variable';
+  variableName: string;
+}
+
+interface Code {
+  type: 'Code';
+  script: string;
+}
+
+type ParsedScript = Variable | Code;
+
+function parseScript(script: string = ''): ParsedScript {
   const sourceFile = createSourceFile(
     'Testedfile',
     script,
@@ -65,16 +77,19 @@ function parseScript(script: string = ''): InputMode {
               findName != null &&
               isStringLiteral(findName)
             ) {
-              return 'Variable';
+              return {
+                type: 'Variable',
+                variableName: findName.text,
+              };
             }
           }
         }
       }
     } else {
-      return 'Code';
+      return { type: 'Code', script: script };
     }
   }
-  return 'Code';
+  return { type: 'Code', script: '' };
 }
 
 export interface ScriptableBooleanProps
@@ -85,19 +100,14 @@ export interface ScriptableBooleanProps
 
 export function ScriptableBoolean(props: ScriptableBooleanProps): JSX.Element {
   const script = props.value ? props.value.content : '';
-  const [inputMode, setInputMode] = React.useState<InputMode>(
-    parseScript(script),
-  );
-  let treeValue = '';
 
-  switch (inputMode) {
-    case 'Variable': {
-      const regexStart = /^(Variable\.find\(gameModel,("|')?)/;
-      const regexEnd = /(("|')?\))(;?)$/;
-      treeValue = script.replace(regexStart, '').replace(regexEnd, '');
-      break;
-    }
-  }
+  const parsedScript = parseScript(script);
+
+  const [inputMode, setInputMode] = React.useState<InputMode>(
+    parsedScript.type,
+  );
+  const treeValue =
+    parsedScript.type === 'Variable' ? parsedScript.variableName : '';
 
   const onTreeChange = React.useCallback(
     (value?: string) => {
@@ -129,8 +139,9 @@ export function ScriptableBoolean(props: ScriptableBooleanProps): JSX.Element {
             </div>
             {inputMode === 'Code' ? (
               <div className={scriptEditStyle}>
-                <WegasScriptEditor
-                  value={script}
+                <TempScriptEditor
+                  initialValue={script}
+                  language="typescript"
                   returnType={computeReturnType(
                     ['boolean', 'SBooleanDescriptor'],
                     props.view.required,

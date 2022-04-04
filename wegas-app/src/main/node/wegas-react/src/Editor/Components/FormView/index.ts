@@ -1,4 +1,4 @@
-import { setDefaultWidgets } from 'jsoninput';
+import { Schema, setDefaultWidgets } from 'jsoninput';
 import ArrayWidget from './Array';
 import AttachmentSelector from './AttachmentSelector';
 import BooleanView from './Boolean';
@@ -22,6 +22,7 @@ import QuestSelect from './QuestSelect';
 import StatementView from './Script/Expressions/ExpressionEditor';
 import { Script } from './Script/Script';
 import { VariableInput } from './Script/VariableInput';
+import Scriptable from './Scriptable';
 import { ScriptableBoolean } from './ScriptableBoolean';
 import { ScriptablePath } from './ScriptablePath';
 import { ScriptableString } from './ScriptableString';
@@ -68,6 +69,7 @@ export const DEFINED_VIEWS = {
   path: PathSelector,
   questselect: QuestSelect,
   script: Script,
+  scriptable: Scriptable,
   scriptableBoolean: ScriptableBoolean,
   scriptableString: ScriptableString,
   scriptableVariableSelect: LabeledScripableVariableSelect,
@@ -86,18 +88,32 @@ export const DEFINED_VIEWS = {
 };
 setDefaultWidgets(DEFINED_VIEWS);
 
+/**
+ * name of the view to be used as id. Eg. in {view: {type:'<VIEW_ID>'}}
+ */
 export type ViewTypes = keyof typeof DEFINED_VIEWS;
-type PropsType<T> = T extends React.ComponentType<infer U>
-  ? U
-  : T extends (p: infer P) => unknown
-  ? P
-  : never;
-type View<P extends ViewTypes> = PropsType<typeof DEFINED_VIEWS[P]> extends {
-  view: infer V;
-}
-  ? V & { type?: P }
-  : { type?: P };
 
+/**
+ * Retrieve properties of the view identifed by its type name P. And inject {type: P} property
+ * */
+type View<P extends ViewTypes> = React.ComponentProps<
+  typeof DEFINED_VIEWS[P]
+>['view'] & { type?: P };
+
+/** Map all views by their type name */
 type ViewMap = { [P in keyof typeof DEFINED_VIEWS]: View<P> };
 
+/**
+ * List all available views
+ */
 export type AvailableViews = ValueOf<ViewMap>;
+
+/**
+ * List all available schemas
+ */
+export type AvailableSchemas = Schema<AvailableViews>;
+
+/**
+ * Get schema from view typename
+ */
+export type SchemaFromView<P extends ViewTypes> = Schema<View<P>>;

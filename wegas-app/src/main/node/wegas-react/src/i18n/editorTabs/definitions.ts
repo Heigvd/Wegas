@@ -67,6 +67,7 @@ export interface EditorTabsTranslations {
     noLibrarySelected: string;
     saveScript: string;
     deleteScript: string;
+    downloadScript: string;
     scriptDangerOutdate: string;
     scriptNotSaved: string;
     scriptSaved: string;

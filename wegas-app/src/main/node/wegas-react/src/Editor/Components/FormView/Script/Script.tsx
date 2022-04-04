@@ -36,9 +36,7 @@ import { store } from '../../../../data/Stores/store';
 import { createScript } from '../../../../Helper/wegasEntites';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
-import { ResizeHandle } from '../../ResizeHandle';
-import { EmbeddedSrcEditor } from '../../ScriptEditors/EmbeddedSrcEditor';
-import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
+import { TempScriptEditor } from '../../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { Labeled, LabeledView } from '../labeled';
 import { WyswygScriptEditor } from './WyswygScriptEditor';
@@ -56,9 +54,7 @@ export function isScriptCondition(mode?: ScriptMode) {
   return mode === 'GET' || mode === 'GET_CLIENT';
 }
 
-export function returnTypes(
-  mode?: ScriptMode,
-): WegasScriptEditorReturnTypeName[] | undefined {
+export function returnTypes(mode?: ScriptMode): string[] | undefined {
   return mode === 'GET_CLIENT' ? ['boolean'] : undefined;
 }
 
@@ -292,20 +288,30 @@ export function Script({
                 })}
               >
                 {srcMode ? (
-                  <ResizeHandle minSize={200}>
-                    <EmbeddedSrcEditor
-                      value={script.current}
+                  <>
+                    <div
+                      className={css({
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                      })}
+                    >
+                      <IconButton
+                        icon="code"
+                        tooltip={i18nValues.variableProperties.toggleCoding}
+                        pressed={error !== undefined}
+                        onClick={() => setSrcMode(sm => !sm)}
+                      />
+                    </div>
+                    <TempScriptEditor
+                      language={isServerScript ? 'javascript' : 'typescript'}
+                      initialValue={script.current}
                       onChange={onCodeChange}
                       minimap={false}
                       noGutter={true}
                       returnType={returnTypes(view.mode)}
-                      scriptContext={
-                        isServerScript ? 'Server internal' : 'Client'
-                      }
-                      Editor={WegasScriptEditor}
-                      EmbeddedEditor={WegasScriptEditor}
+                      resizable
                     />
-                  </ResizeHandle>
+                  </>
                 ) : (
                   <WyswygScriptEditor
                     expressions={statements}

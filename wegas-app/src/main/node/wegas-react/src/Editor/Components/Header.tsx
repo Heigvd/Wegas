@@ -11,6 +11,7 @@ import {
   useRolesToggler,
 } from '../../Components/Contexts/RoleProvider';
 import { DropMenu } from '../../Components/DropMenu';
+import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { CheckBox } from '../../Components/Inputs/Boolean/CheckBox';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
@@ -28,8 +29,12 @@ import {
   itemsTop,
 } from '../../css/classes';
 import { Actions } from '../../data';
+import { ActionCreator } from '../../data/actions';
 import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
-import { editorEventRemove } from '../../data/Reducer/globalState';
+import {
+  editorEventRemove,
+  LoggerLevelValues,
+} from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
 import { GameModel, Global } from '../../data/selectors';
 import { selectCurrentEditorLanguage } from '../../data/selectors/Languages';
@@ -156,6 +161,59 @@ function NotificationMenu({ className, style }: ClassStyleId) {
     />
   );
 }
+
+function useLoggerLevelSelector() {
+  const currentLevels = useStore(
+    state => state.global.logLevels,
+    shallowDifferent,
+  );
+
+  const dispatch = store.dispatch;
+
+  return {
+    value: 'logger',
+    label: <span>Loggers</span>,
+    items: Object.entries(currentLevels).map(([loggerName, currentLevel]) => {
+      return {
+        value: loggerName,
+        label: loggerName,
+        items: LoggerLevelValues.map(value => {
+          return {
+            value: value,
+            label: (
+              <div
+                onClick={() => {
+                  dispatch(
+                    ActionCreator.LOGGER_LEVEL_SET({
+                      loggerName: loggerName,
+                      level: currentLevel !== value ? value : 'OFF',
+                    }),
+                  );
+                }}
+              >
+                <CheckBox
+                  horizontal
+                  radio
+                  value={value === currentLevel}
+                  label={value}
+                  onChange={(v: boolean) => {
+                    dispatch(
+                      ActionCreator.LOGGER_LEVEL_SET({
+                        loggerName: loggerName,
+                        level: v ? value : 'OFF',
+                      }),
+                    );
+                  }}
+                />
+              </div>
+            ),
+          };
+        }),
+      };
+    }),
+  };
+}
+
 export default function Header() {
   const { currentFeatures } = React.useContext(featuresCTX);
   const { currentRole } = React.useContext(roleCTX);
@@ -171,6 +229,8 @@ export default function Header() {
   const featuresToggler = useFeatures();
   const roleToggler = useRolesToggler();
   const langSelector = useLangToggler();
+  const loggerLevelTogglers = useLoggerLevelSelector();
+
   return (
     <>
       <Button
@@ -241,6 +301,7 @@ export default function Header() {
                     }),
                   ),
                 },
+                loggerLevelTogglers,
                 {
                   label: (
                     <div

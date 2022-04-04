@@ -6,13 +6,13 @@ import { DefaultDndProvider } from './Components/Contexts/DefaultDndProvider';
 import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
 import { FullscreenProvider } from './Components/Contexts/FullscreenContext';
 import { LanguagesProvider } from './Components/Contexts/LanguagesProvider';
+import { LibrariesLoader } from './Components/Contexts/LibrariesContext';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
 import { PopupManager } from './Components/PopupManager';
 import { ServerStatusManager } from './Components/ServerStatusManager';
 import { ThemeProvider } from './Components/Theme/Theme';
 import './css/global.css';
 import './data/Stores/store';
-import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
 import { PageContextProvider } from './Editor/Components/Page/PageEditor';
 import HostLayout from './Host/HostLayout';
 
