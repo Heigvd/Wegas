@@ -7,7 +7,7 @@ import {
   toggleReply,
   validateQuestion,
 } from '../../../data/Reducer/VariableInstanceReducer';
-import { StoreDispatch } from '../../../data/Stores/store';
+import { EditingStoreDispatch } from '../../../data/Stores/editingStore';
 import { MessageString } from '../../../Editor/Components/MessageString';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
@@ -112,7 +112,7 @@ function CbxChoiceDisplay({
 }
 
 interface CbxQuestionDisplayProps extends QuestionInfo, DisabledReadonly {
-  dispatch: StoreDispatch;
+  dispatch: EditingStoreDispatch;
   editMode?: boolean;
 }
 

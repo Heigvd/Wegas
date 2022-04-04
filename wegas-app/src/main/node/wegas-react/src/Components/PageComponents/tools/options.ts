@@ -19,6 +19,7 @@ import { ActionCreator } from '../../../data/actions';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
+import { editingStore } from '../../../data/Stores/editingStore';
 import { store } from '../../../data/Stores/store';
 import { createScript } from '../../../Helper/wegasEntites';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
@@ -106,7 +107,12 @@ export interface WegasComponentActions {
 
 export const wegasComponentActions: WegasComponentActions = {
   openPage: ({ pageLoaderName, pageId, context }) => {
-    const name = clientScriptEval<string>(pageLoaderName.content, context);
+    const name = clientScriptEval<string>(
+      pageLoaderName.content,
+      context,
+      undefined,
+      undefined,
+    );
     if (name != null) {
       store.dispatch(
         ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
@@ -117,7 +123,12 @@ export const wegasComponentActions: WegasComponentActions = {
     }
   },
   openUrl: props => {
-    const path = clientScriptEval<string | false>(props.url, props.context);
+    const path = clientScriptEval<string | false>(
+      props.url,
+      props.context,
+      undefined,
+      undefined,
+    );
     if (path) {
       const win = window.open(path);
       win!.focus();
@@ -127,6 +138,8 @@ export const wegasComponentActions: WegasComponentActions = {
     const path = clientScriptEval<string | false>(
       props.filePath,
       props.context,
+      undefined,
+      undefined,
     );
     if (path) {
       const win = window.open(fileURL(path), '_blank');
@@ -135,13 +148,15 @@ export const wegasComponentActions: WegasComponentActions = {
   },
   impactVariable: props => {
     try {
-      store.dispatch(runScript(props.impact, Player.selectCurrent()));
+      editingStore.dispatch(runScript(props.impact, Player.selectCurrent()));
     } catch (error) {
       wwarn(error);
     }
   },
   localScriptEval: props => {
-    clientScriptEval(props.script, props.context);
+    clientScriptEval(props.script, props.context, undefined, {
+      injectReturn: false,
+    });
   },
   openPopupPage: props => {
     //TODO : Discuss that with Maxence
@@ -556,10 +571,11 @@ function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
 
 export function useComputeUnreadCount(
   unreadCountVariableScript: IScript | undefined,
+  context: PageComponentContext,
 ): PlayerInfoBulletProps | undefined {
   const scriptReturn = useScript<
     string | number | object[] | UnreadCountDescriptorTypes
-  >(unreadCountVariableScript);
+  >(unreadCountVariableScript, context);
 
   let infoBeamMessage: string | number;
   if (typeof scriptReturn === 'number') {

@@ -2,7 +2,6 @@ import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import { setPagesContextState } from '../../../data/Stores/pageContextStore';
 import { createScript } from '../../../Helper/wegasEntites';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import {
   FlexItem,
@@ -39,7 +38,51 @@ function ChildrenDeserializer({
   inheritedOptionsState,
   containerPropsKeys,
   exposeAs,
+  initialState,
+  localState,
 }: ChildrenDeserializerProps<StateProps>) {
+  const initRef = React.useRef<boolean>(false);
+  const exposeAsRef = React.useRef<string>();
+
+  const init = safeClientScriptEval(
+    initialState,
+    context,
+    undefined,
+    undefined,
+    undefined,
+  );
+
+  const [state, setState] = React.useState(init);
+
+  const newContext = React.useMemo(() => {
+    if (localState && context) {
+      return {
+        ...context,
+        [exposeAs]: {
+          state,
+          setState,
+        },
+      };
+    } else {
+      return context;
+    }
+  }, [context, exposeAs, localState, state]);
+
+  React.useEffect(() => {
+    if (
+      !localState &&
+      (initRef.current === false || exposeAsRef.current !== exposeAs)
+    ) {
+      initRef.current = true;
+      exposeAsRef.current = exposeAs;
+      setPagesContextState(exposeAs, init);
+    }
+  }, [exposeAs, init, localState]);
+
+  if (initialState == null || exposeAs == null) {
+    return <UncompleteCompMessage pageId={pageId} path={path} />;
+  }
+
   return (
     <>
       {editMode && (!wegasChildren || wegasChildren.length === 0) ? (
@@ -49,13 +92,13 @@ function ChildrenDeserializer({
           return (
             <PageDeserializer
               key={
-                JSON.stringify([...path, i]) +
-                JSON.stringify(context ? context[exposeAs] : 'undefined')
+                JSON.stringify([...path, i])
+                //JSON.stringify(newContext ? newContext[exposeAs] : 'undefined')
               }
               pageId={pageId}
               path={[...path, i]}
               uneditable={uneditable}
-              context={context}
+              context={newContext}
               Container={FlexItem}
               containerPropsKeys={containerPropsKeys}
               dropzones={{
@@ -70,47 +113,8 @@ function ChildrenDeserializer({
   );
 }
 
-function State({
-  children,
-  context,
-  exposeAs,
-  initialState,
-  localState,
-  pageId,
-  path,
-}: StateProps) {
-  const initRef = React.useRef<unknown>();
-  const exposeAsRef = React.useRef<string>();
-
-  const init = safeClientScriptEval(initialState, context);
-
-  const [state, setState] = React.useState(init);
-
-  if (localState && context) {
-    context[exposeAs] = {
-      state,
-      setState,
-    };
-  }
-
-  React.useEffect(() => {
-    if (
-      (!localState && deepDifferent(initRef.current, init)) ||
-      exposeAsRef.current !== exposeAs
-    ) {
-      initRef.current = init;
-      exposeAsRef.current = exposeAs;
-      setPagesContextState(exposeAs, init);
-    }
-  }, [exposeAs, init, localState]);
-
-  if (state == null) {
-    return <UncompleteCompMessage pageId={pageId} path={path} />;
-  }
-
-  return (
-    <React.Fragment key={JSON.stringify(state)}>{children}</React.Fragment>
-  );
+function State({ children }: StateProps) {
+  return <>{children}</>;
 }
 
 registerComponent(

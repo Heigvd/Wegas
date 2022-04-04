@@ -20,10 +20,15 @@ import {
   grow,
   toolboxHeaderStyle,
 } from '../../css/classes';
-import { ActionCreator } from '../../data/actions';
-import { ActionsProps } from '../../data/Reducer/globalState';
-import { store, StoreDispatch } from '../../data/Stores/store';
-import { wlog, wwarn } from '../../Helper/wegaslog';
+import {
+  ActionsProps,
+  EditingActionCreator,
+} from '../../data/Reducer/editingState';
+import {
+  editingStore,
+  EditingStoreDispatch,
+} from '../../data/Stores/editingStore';
+import { wwarn } from '../../Helper/wegaslog';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import './FormView';
@@ -59,7 +64,7 @@ interface EditorProps<T> extends DisabledReadonly {
   onChange?: (newEntity: T) => void;
   label?: React.ReactNode;
   highlight?: boolean;
-  localDispatch: StoreDispatch | undefined;
+  localDispatch: EditingStoreDispatch | undefined;
   error?: {
     message: string;
     onRead: () => void;
@@ -123,10 +128,6 @@ export function Form<T>({
                   disabled={!deepDifferent(val, entity)}
                   onClick={() => {
                     if (form.current != null) {
-                      wlog(config);
-                      wlog(oldReceivedEntity.current);
-                      wlog(entity);
-                      wlog(val);
                       const validation = form.current.validate();
                       if (validation.length) {
                         wwarn(val, JSON.stringify(validation, null, 2));
@@ -219,8 +220,8 @@ export function Form<T>({
         })}
         onMouseMove={() => {
           if (highlight) {
-            (localDispatch || store.dispatch)(
-              ActionCreator.EDITION_HIGHLIGHT({ highlight: false }),
+            (localDispatch || editingStore.dispatch)(
+              EditingActionCreator.EDITION_HIGHLIGHT({ highlight: false }),
             );
           }
         }}

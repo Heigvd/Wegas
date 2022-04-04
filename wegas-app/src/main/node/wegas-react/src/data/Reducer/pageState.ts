@@ -1,11 +1,12 @@
-import u from 'immer';
-import { ActionType, StateActions, ActionCreator } from '../actions';
-import { PageAPI } from '../../API/pages.api';
-import { ThunkResult } from '../Stores/store';
-import { Reducer } from 'redux';
-import { Page } from '../selectors';
 import { compare } from 'fast-json-patch';
+import u from 'immer';
+import { Reducer } from 'redux';
+import { PageAPI } from '../../API/pages.api';
 import { getItemFromPath, isPageItem } from '../../Helper/pages';
+import { ActionCreator, StateActions } from '../actions';
+import { ActionType } from '../actionTypes';
+import { Page } from '../selectors';
+import { ThunkResult } from '../Stores/store';
 
 export type PageState = Readonly<AllPages>;
 

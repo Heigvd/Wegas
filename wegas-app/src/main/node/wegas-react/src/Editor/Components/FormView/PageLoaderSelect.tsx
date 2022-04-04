@@ -39,7 +39,8 @@ function pageLoadersSelector(s: State) {
   Object.entries(s.pages)
     .filter(([, v]) => isWegasComponent(v))
     .map(([k, v]) =>
-      visitComponents(v, c => {
+      // TS does not understand PageIndexes have been filtered out
+      visitComponents(v as unknown as WegasComponent, c => {
         if (isPageLoaderComponent(c)) {
           loaders.push({
             label: c.props.name,

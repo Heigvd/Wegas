@@ -6,4 +6,5 @@ export interface PagesTranslations {
   pageUndefined: string;
   completeCompConfig: string;
   editComponent: string;
+  obsoleteComponent: string;
 }

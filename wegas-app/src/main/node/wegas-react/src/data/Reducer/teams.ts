@@ -1,15 +1,12 @@
-import { Reducer } from 'redux';
 import u from 'immer';
-import {
-  ActionType,
-  StateActions,
-  ActionCreator,
-  manageResponseHandler,
-} from '../actions';
 import { omit } from 'lodash-es';
-import { ThunkResult, store } from '../Stores/store';
-import { TeamAPI } from '../../API/teams.api';
+import { Reducer } from 'redux';
 import { ITeam } from 'wegas-ts-api';
+import { TeamAPI } from '../../API/teams.api';
+import { ActionCreator, manageResponseHandler, StateActions } from '../actions';
+import { ActionType } from '../actionTypes';
+import { editingStore } from '../Stores/editingStore';
+import { store, ThunkResult } from '../Stores/store';
 
 export interface TeamState {
   [id: string]: Readonly<ITeam>;
@@ -61,7 +58,7 @@ export function updateTeam(team: ITeam): ThunkResult {
     const gameModelId = store.getState().global.currentGameModelId;
     const gameId = store.getState().global.currentGameId;
     return TeamAPI.update(gameModelId, gameId, team).then(res => {
-      return store.dispatch(manageResponseHandler(res));
+      return editingStore.dispatch(manageResponseHandler(res));
     });
   };
 }

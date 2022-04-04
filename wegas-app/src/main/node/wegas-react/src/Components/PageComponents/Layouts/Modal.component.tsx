@@ -1,16 +1,24 @@
+import { css } from '@emotion/css';
 import * as React from 'react';
+import { IScript } from 'wegas-ts-api/typings/WegasEntities';
+import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
+import { Player } from '../../../data/selectors';
+import { editingStore } from '../../../data/Stores/editingStore';
+import { PAGE_LOADER_DEFAULT_ID } from '../../../Editor/Components/Page/PageLoader';
+import { safeClientScriptEval } from '../../Hooks/useScript';
+import {
+  defaultFlexLayoutOptionsKeys,
+  flexlayoutChoices,
+  FlexList,
+  FlexListProps,
+  flexListSchema,
+  isVertical,
+} from '../../Layouts/FlexList';
+import { Modal } from '../../Modal';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import {
-  FlexListProps,
-  FlexList,
-  flexListSchema,
-  isVertical,
-  flexlayoutChoices,
-  defaultFlexLayoutOptionsKeys,
-} from '../../Layouts/FlexList';
 import {
   assembleStateAndContext,
   WegasComponentProps,
@@ -19,15 +27,8 @@ import {
   classStyleIdShema,
   clientAndServerScriptChoices,
 } from '../tools/options';
-import { css } from '@emotion/css';
-import { Modal } from '../../Modal';
-import { childrenDeserializerFactory } from './FlexList.component';
 import { schemaProps } from '../tools/schemaProps';
-import { IScript } from 'wegas-ts-api/typings/WegasEntities';
-import { safeClientScriptEval } from '../../Hooks/useScript';
-import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
-import { Player } from '../../../data/selectors';
-import { store } from '../../../data/Stores/store';
+import { childrenDeserializerFactory } from './FlexList.component';
 
 export const emptyLayoutItemStyle = css({
   display: 'flex',
@@ -71,24 +72,33 @@ function PlayerModal({
   ...flexProps
 }: PlayerModalProps) {
   const { client, server } = onExitActions || {};
+
+  const onExit = React.useMemo(() => {
+    return client == null && server == null
+      ? undefined
+      : () => {
+          if (client) {
+            safeClientScriptEval(client, context, undefined, undefined, {
+              injectReturn: false,
+            });
+          }
+          if (server) {
+            editingStore.dispatch(
+              runLoadedScript(
+                server,
+                Player.selectCurrent(),
+                undefined,
+                assembleStateAndContext(context),
+              ),
+            );
+          }
+        };
+  }, [client, context, server]);
+
   return (
     <Modal
       attachedToId={attachedToId}
-      onExit={() => {
-        if (client) {
-          safeClientScriptEval(client, context);
-        }
-        if (server) {
-          store.dispatch(
-            runLoadedScript(
-              server,
-              Player.selectCurrent(),
-              undefined,
-              assembleStateAndContext(context),
-            ),
-          );
-        }
-      }}
+      onExit={onExit}
       style={editMode ? { position: 'relative' } : undefined}
       innerStyle={style}
       innerClassName={className}
@@ -124,6 +134,9 @@ registerComponent(
       ...flexListSchema,
       ...classStyleIdShema,
     },
-    getComputedPropsFromVariable: () => ({ children: [] }),
+    getComputedPropsFromVariable: () => ({
+      children: [],
+      attachedToId: PAGE_LOADER_DEFAULT_ID,
+    }),
   }),
 );

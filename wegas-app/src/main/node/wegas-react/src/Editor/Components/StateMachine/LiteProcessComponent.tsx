@@ -23,7 +23,7 @@ import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
 import { deleteState } from '../../../data/Reducer/globalState';
-import { store } from '../../../data/Stores/store';
+import { editingStore } from '../../../data/Stores/editingStore';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { createTranslatableContent, translate } from '../FormView/translatable';
 import { EditHandle } from './EditHandle';
@@ -89,7 +89,7 @@ export function LiteStateProcessComponentFactory<
           }
         })(stateMachine);
 
-        store.dispatch(
+        editingStore.dispatch(
           Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
         );
         setEditing(false);

@@ -9,4 +9,6 @@ export const pagesTranslationsEN: PagesTranslations = {
   completeCompConfig:
     'Please complete the component configuration for it to be displayed.',
   editComponent: 'Edit component',
+  obsoleteComponent:
+    'The component has been updated. Please contact your trainer.',
 };

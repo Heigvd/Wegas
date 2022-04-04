@@ -7,8 +7,8 @@ import {
   WegasClassNames,
 } from 'wegas-ts-api';
 import { entityIs } from '../data/entities';
-import { editStateMachine, editVariable } from '../data/Reducer/globalState';
-import { ThunkResult } from '../data/Stores/store';
+import { editStateMachine, editVariable } from '../data/Reducer/editingState';
+import { EditingThunkResult } from '../data/Stores/editingStore';
 import { wwarn } from '../Helper/wegaslog';
 import { AvailableViews } from './Components/FormView';
 import { Icons } from './Components/Views/FontAwesome';
@@ -191,7 +191,7 @@ export interface EActions {
     variable: IAbstractEntity,
     path?: (number | string)[],
     config?: Schema<AvailableViews>,
-  ) => ThunkResult;
+  ) => EditingThunkResult;
 }
 
 export async function getEntityActions(

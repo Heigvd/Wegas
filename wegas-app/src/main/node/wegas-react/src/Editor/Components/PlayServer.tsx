@@ -4,7 +4,8 @@ import { Button } from '../../Components/Inputs/Buttons/Button';
 import { defaultMargin } from '../../css/classes';
 import { runScript } from '../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../data/selectors';
-import { store } from '../../data/Stores/store';
+import { editingStore } from '../../data/Stores/editingStore';
+import { handleError } from './FormView/Script/Script';
 import { TempScriptEditor } from './ScriptEditors/TempScriptEditor';
 
 const container = css({ width: '100%' });
@@ -18,10 +19,10 @@ export default function PlayServer() {
 
   const playScript = React.useCallback(() => {
     try {
-      store.dispatch(runScript(script, Player.selectCurrent()));
+      editingStore.dispatch(runScript(script, Player.selectCurrent()));
       setError(undefined);
     } catch (error) {
-      setError(error.message);
+      setError(handleError(error));
     }
   }, [script]);
 

@@ -18,6 +18,7 @@ import { classOrNothing } from '../../../Helper/className';
 // The CreatePoint Plugin
 //////////////////////////////////////////////////////
 import { wlog } from '../../../Helper/wegaslog';
+import { useDeepMemo } from '../../Hooks/useDeepMemo';
 import { useScript } from '../../Hooks/useScript';
 import {
   pageComponentFactory,
@@ -226,6 +227,8 @@ function PlayerScatterChart({
     };
   }
 
+  const memoChartOptions = useDeepMemo(chartOptions);
+
   return (
     <div
       id={id}
@@ -235,7 +238,7 @@ function PlayerScatterChart({
       }
       style={style}
     >
-      <Scatter data={chartData} options={chartOptions} height={height} />
+      <Scatter data={chartData} options={memoChartOptions} height={height} />
     </div>
   );
 }
@@ -251,6 +254,7 @@ registerComponent(
       series: {
         view: {
           type: 'customscript',
+          language:'TypeScript',
           label: 'Series',
           returnType: [
             '{label: string, points:{x:number, y:number}[], fill?: string, allowDrag?: boolean}[]',
@@ -275,6 +279,7 @@ registerComponent(
         view: {
           label: 'onDblClick callback',
           type: 'customscript',
+          language:'TypeScript',
           returnType: [
             'undefined',
             '((value: { x: number; y: number }) => void)',
@@ -301,6 +306,7 @@ registerComponent(
         view: {
           label: 'onDrag callback',
           type: 'customscript',
+          language:'TypeScript',
           returnType: [
             'undefined',
             '((e: MouseEvent, datasetIndex: number, index: number, value: { x: number; y: number }) => boolean)',
@@ -320,6 +326,7 @@ registerComponent(
         view: {
           label: 'onDragStart callback',
           type: 'customscript',
+          language:'TypeScript',
           returnType: [
             'undefined',
             '((e: MouseEvent, datasetIndex: number, index: number, value: { x: number; y: number }) => boolean)',
@@ -339,6 +346,7 @@ registerComponent(
         view: {
           label: 'onDragStart callback',
           type: 'customscript',
+          language:'TypeScript',
           returnType: [
             'undefined',
             '((e: MouseEvent, datasetIndex: number, index: number, value: { x: number; y: number }) => boolean)',

@@ -24,7 +24,7 @@ import { isActionAllowed } from '../../../Components/PageComponents/tools/option
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
-import { store } from '../../../data/Stores/store';
+import { editingStore } from '../../../data/Stores/editingStore';
 import { classOrNothing } from '../../../Helper/className';
 import { createTranslatableContent, translate } from '../FormView/translatable';
 import { EditHandle } from './EditHandle';
@@ -97,7 +97,7 @@ export function LiteFlowLineComponentFactory<
           }
         })(stateMachine);
 
-        store.dispatch(
+        editingStore.dispatch(
           Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
         );
         setEditing(false);
@@ -121,7 +121,7 @@ export function LiteFlowLineComponentFactory<
         stateMachine,
         Number(startProcess.id),
         Number(flowline.id),
-        store.dispatch,
+        editingStore.dispatch,
       );
       setEditing(false);
     }, [flowline.id, startProcess.id]);

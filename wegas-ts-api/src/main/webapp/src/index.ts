@@ -6,19 +6,31 @@
  * Licensed under the MIT License
  */
 
-import { IMergeable, ITeam, IListDescriptor } from "..";
+import {
+  IMergeable,
+  ITeam,
+  IListDescriptor,
+  WegasClassNamesAndClasses,
+} from "..";
 import {
   AtClassToConcrtetableClasses,
   mapAtClassToConcreteClasses,
   AtClassToConcreteClasses,
   WegasClassNameAndScriptableTypes,
+  AtClassToConcrtetableTypes,
 } from "./generated/WegasScriptableEntities";
 
-export type ScriptableEntity<
-  T extends IMergeable
-> = WegasClassNameAndScriptableTypes[T["@class"]];
+export type ScriptableEntity<T extends IMergeable> =
+  WegasClassNameAndScriptableTypes[T["@class"]];
 
-export type MapOf<T> = { [key: string]: T; [key: number]: T };
+export type MapOf<T> = Record<string | number, T>;
+
+export type ConcretableFactory = {
+  [P in keyof AtClassToConcrtetableClasses]: (
+    client: WegasClient,
+    enttiy: WegasClassNamesAndClasses[P]
+  ) => AtClassToConcrtetableTypes[P];
+};
 
 export class WegasClient {
   /**
@@ -26,7 +38,7 @@ export class WegasClient {
    * User has to provide those implementation with this function.
    * @param implementations
    */
-  constructor(private implementations: AtClassToConcrtetableClasses) {}
+  constructor(private implementations: ConcretableFactory) {}
 
   /**
    * Create a Scriptable Entity from a IAbstractEntity.
@@ -37,51 +49,49 @@ export class WegasClient {
    */
   // prettier-ignore
   instantiate<T extends IMergeable | IMergeable[] | MapOf<IMergeable> | null | undefined>(entities: T):
-    T extends undefined ? undefined : T extends null ? null 
-    : (T extends IMergeable // entity as-is
-    ? ScriptableEntity<T>  // -> return a ScriptableEntity
-    : (
-      T extends (infer U)[] ? // array of some U
-      (
-        U extends IMergeable ? // two step: U extends, in fact, IMergeable
-        ScriptableEntity<U>[]   // return an array of ScriptableEntity
-        : undefined
-      )
-      : (
-        T extends MapOf<infer U> // T is a Map of some U
-        ? (U extends IMergeable   // and U extends IMergeable
-          ? Readonly<MapOf<ScriptableEntity<U>>> // -> Map of Scriptables
-          : undefined)
-        : undefined
-      ))
-    ) {
-    if(entities == null) {
-      return entities as any;
-    } else if ("@class" in entities) {
-      const entity = entities as IMergeable;
-      if (entity["@class"] in mapAtClassToConcreteClasses) {
-        const atClass = entity["@class"] as keyof AtClassToConcreteClasses;
-        return new mapAtClassToConcreteClasses[atClass](this, entity as any) as any;
-      } else if (entity["@class"] in this.implementations) {
-        const atClass = entity["@class"] as keyof AtClassToConcrtetableClasses;
-        return new this.implementations[atClass]!(this, entity as any) as any;
-      } else {
-        throw Error("Cannot instantiate abstract class " + entity["@class"] + "!");
-      }
-    } else if (Array.isArray(entities)) {
-      return entities.map(e => this.instantiate(e)) as any;
-    } else if (typeof entities === "object") {
-      // one would set any to U...
-      const result: MapOf<ScriptableEntity<any>> = {};
-      for (const key in entities) {
-        if (entities[key]) {
-          result[key] = this.instantiate(entities[key]);
+        T extends undefined ? undefined : T extends null ? null
+        : (T extends IMergeable // entity as-is
+            ? ScriptableEntity<T>  // -> return a ScriptableEntity
+            : (
+                T extends (infer U)[] ? // array of some U
+                (
+                    U extends IMergeable ? // two step: U extends, in fact, IMergeable
+                    ScriptableEntity<U>[]   // return an array of ScriptableEntity
+                    : undefined
+                )
+                : (
+                    T extends MapOf<infer U> // T is a Map of some U
+                    ? (U extends IMergeable   // and U extends IMergeable
+                        ? Readonly<MapOf<ScriptableEntity<U>>> // -> Map of Scriptables
+                        : undefined)
+                    : undefined
+                ))
+        ) {
+        if (entities == null) {
+            return entities as any;
+        } else if ("@class" in entities) {
+            const entity = entities as IMergeable;
+            if (entity["@class"] in mapAtClassToConcreteClasses) {
+                const atClass = entity["@class"] as keyof AtClassToConcreteClasses;
+                return new mapAtClassToConcreteClasses[atClass](this, entity as any) as any;
+            } else if (entity["@class"] in this.implementations) {
+                const atClass = entity["@class"] as keyof AtClassToConcrtetableClasses;
+                return this.implementations[atClass]!(this, entity as any) as any;
+            } else {
+                throw Error("Cannot instantiate abstract class " + entity["@class"] + "!");
+            }
+        } else if (Array.isArray(entities)) {
+            return entities.map(e => this.instantiate(e)) as any;
+        } else {
+            // one would set any to U...
+            const result: MapOf<ScriptableEntity<any>> = {};
+            Object.entries(entities).forEach(([key, entity]) => {
+                result[key] = this.instantiate(entity);
+            });
+            return result as any;
         }
-      }
-      return result as any;
+        return undefined as any;
     }
-    return undefined as any;
-  }
 
   test() {
     const listDesc: IListDescriptor = {

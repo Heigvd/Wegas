@@ -43,7 +43,8 @@ import {
 import { instantiate } from '../../../data/scriptable';
 import { Player, Team } from '../../../data/selectors';
 import * as VariableDescriptorSelector from '../../../data/selectors/VariableDescriptorSelector';
-import { store, useStore } from '../../../data/Stores/store';
+import { editingStore } from '../../../data/Stores/editingStore';
+import { useStore } from '../../../data/Stores/store';
 import { translate } from '../../../Editor/Components/FormView/translatable';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -281,7 +282,7 @@ function EvalutationEditor({
   const onChangeNotify = React.useCallback(
     (val: string | number) => {
       if (iEvaluation.getJSONClassName() === 'TextEvaluationInstance') {
-        store.dispatch(
+        editingStore.dispatch(
           liveEdition(`private-Team-${Team.selectCurrent().id!}`, {
             ...iEvaluation.getEntity(),
             value: val,
@@ -411,7 +412,7 @@ function EvalutationsEditor({
         if (type === 'TextEvaluationInstance') {
           asynchSaveReview(modifiedReview.current);
         } else {
-          store.dispatch(saveReview(modifiedReview.current));
+          editingStore.dispatch(saveReview(modifiedReview.current));
         }
       }, 500);
     },
@@ -440,7 +441,7 @@ function EvalutationsEditor({
       )}
       <OkCancelModal
         onOk={() => {
-          store.dispatch(submitReview(modifiedReview.current));
+          editingStore.dispatch(submitReview(modifiedReview.current));
         }}
       >
         <p>{i18nValues.global.confirmation.info}</p>

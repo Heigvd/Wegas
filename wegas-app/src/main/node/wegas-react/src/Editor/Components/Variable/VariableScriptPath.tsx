@@ -27,7 +27,13 @@ export function VariableScriptPath({ script }: VariableScriptPathProps) {
   return (
     <div className={variableScriptPathStyle}>
       {getVariablePath(
-        safeClientScriptEval<SVariableDescriptor>(script).getEntity(),
+        safeClientScriptEval<SVariableDescriptor>(
+          script,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+        ).getEntity(),
       )}
     </div>
   );

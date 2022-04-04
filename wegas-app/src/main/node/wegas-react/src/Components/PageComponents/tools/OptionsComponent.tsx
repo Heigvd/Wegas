@@ -108,7 +108,7 @@ export function useOptions(
   );
   const locked = useStore(lockedSelector);
 
-  const infoBulletProps = useComputeUnreadCount(unreadCount) || infoBullet;
+  const infoBulletProps = useComputeUnreadCount(unreadCount, context) || infoBullet;
 
   const { themesState, currentContext } = React.useContext(themeCTX);
   const themeModeClassName =

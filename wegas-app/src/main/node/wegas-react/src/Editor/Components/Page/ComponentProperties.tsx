@@ -25,11 +25,9 @@ import {
   WegasComponentLayoutConditionnalOptions,
   WegasComponentOptionsActions,
 } from '../../../Components/PageComponents/tools/options';
-import {
-  schemaProps,
-} from '../../../Components/PageComponents/tools/schemaProps';
+import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { defaultPadding, flex, flexColumn, grow } from '../../../css/classes';
-import { ActionsProps } from '../../../data/Reducer/globalState';
+import { ActionsProps } from '../../../data/Reducer/editingState';
 import { store, StoreDispatch } from '../../../data/Stores/store';
 import { findComponent } from '../../../Helper/pages';
 import { AvailableSchemas } from '../FormView';
@@ -342,6 +340,8 @@ export default function ConnectedComponentProperties() {
 
   return (
     <ComponentProperties
+      // Force refresh form when path changes
+      key={editedPath.join(';')}
       entity={component}
       parent={parent}
       update={onUpdate}

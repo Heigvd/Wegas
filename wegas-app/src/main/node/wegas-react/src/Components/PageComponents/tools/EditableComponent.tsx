@@ -9,14 +9,21 @@ import {
 } from '../../../css/classes';
 import { manageResponseHandler } from '../../../data/actions';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
-import { pagesContextStateStore } from '../../../data/Stores/pageContextStore';
+import {
+  editingStore,
+  EditingThunkResult,
+} from '../../../data/Stores/editingStore';
+import {
+  PagesContextState,
+  pagesContextStateStore,
+} from '../../../data/Stores/pageContextStore';
 import {
   isComponentFocused,
   pagesStateStore,
   PageStateAction,
   usePagesStateStore,
 } from '../../../data/Stores/pageStore';
-import { store, ThunkResult } from '../../../data/Stores/store';
+import { store } from '../../../data/Stores/store';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import {
   DnDComponent,
@@ -103,7 +110,7 @@ const showBordersStyle = css({
 
 export function assembleStateAndContext(
   context: PageComponentContext = {},
-  state?: PageComponentContext,
+  state?: PagesContextState,
 ) {
   return {
     Context: {
@@ -116,7 +123,7 @@ export function assembleStateAndContext(
 function awaitExecute(
   actions: [string, WegasComponentOptionsAction][],
   context?: PageComponentContext,
-): ThunkResult {
+): EditingThunkResult {
   return async function (dispatch, getState) {
     const sortedActions = actions.sort(
       ([, v1], [, v2]) =>
@@ -127,7 +134,7 @@ function awaitExecute(
       if (k === 'impactVariable') {
         const action = v as WegasComponentOptionsActions['impactVariable'];
         if (action) {
-          const gameModelId = getState().global.currentGameModelId;
+          const gameModelId = store.getState().global.currentGameModelId;
 
           const result = await asyncRunLoadedScript(
             gameModelId,
@@ -137,7 +144,7 @@ function awaitExecute(
             assembleStateAndContext(context),
           );
 
-          dispatch(manageResponseHandler(result, dispatch, getState().global));
+          dispatch(manageResponseHandler(result, dispatch, getState()));
         }
       } else {
         wegasComponentActions[k as keyof WegasComponentOptionsActions]({
@@ -179,7 +186,7 @@ export function onComponentClick(
       // eslint-disable-next-line no-alert
       confirm(confirmClick)
     ) {
-      store.dispatch(awaitExecute(onClickActions, context));
+      editingStore.dispatch(awaitExecute(onClickActions, context));
     }
   };
 }
@@ -208,48 +215,6 @@ const checkIfInsideRectangle = (
   C: { x: number; y: number },
   Ptest: { x: number; y: number },
 ) => Ptest.x >= A.x && Ptest.x <= C.x && Ptest.y >= A.y && Ptest.y <= C.y;
-
-// /**
-//  * useDndComponentDrop - it's a hook that normalize the usage of useDrop in the different dropable zone used in this file
-//  * @param onDrop - the function to trigger when a drop occures
-//  */
-// export function useDndComponentDrop(
-//   onDrop?: (
-//     dndComponnent: PageEditorComponent,
-//     dndMonitor: DropTargetMonitor,
-//   ) => void,
-// ): [
-//   {
-//     isOver: boolean;
-//     isOverCurrent: boolean;
-//     canDrop: boolean;
-//     item: PageEditorComponent | null;
-//   },
-//   DragElementWrapper<{}>,
-// ] {
-//   const [dropZoneProps, dropZone] = useDrop<
-//     PageEditorComponent,
-//     void,
-//     {
-//       isOver: boolean;
-//       isOverCurrent: boolean;
-//       canDrop: boolean;
-//       item: PageEditorComponent | null;
-//     }
-//   >({
-//     accept: [PAGEEDITOR_COMPONENT_TYPE, PAGE_LAYOUT_COMPONENT],
-//     canDrop: () => true,
-//     drop: onDrop,
-//     collect: (mon: DropTargetMonitor) => ({
-//       isOver: mon.isOver({ shallow: false }),
-//       isOverCurrent: mon.isOver({ shallow: true }),
-//       canDrop: mon.canDrop(),
-//       item: mon.getItem() as PageEditorComponent | null,
-//     }),
-//   });
-//   const delayedCanDrop = useDebounce(dropZoneProps.canDrop, 100);
-//   return [{ ...dropZoneProps, canDrop: delayedCanDrop }, dropZone];
-// }
 
 export function useDndComponentIsOverFactory(notDroppable?: boolean) {
   const [isOver, setIsOverCurrent] = React.useState(false);
@@ -396,7 +361,6 @@ export function ComponentDropZone({
   dropPosition,
   noFocus,
 }: ComponentDropZoneProps) {
-  // const [{ isOverCurrent }, dropZone] = useDndComponentDrop(onDrop);
   const [isOverCurrent, setIsOverCurrent] = React.useState(false);
 
   return (
@@ -410,9 +374,6 @@ export function ComponentDropZone({
       onDragLeave={_e => {
         setIsOverCurrent(false);
       }}
-      // onDragExit={_e => {
-      //   setIsOverCurrent(false);
-      // }}
       onDrop={e => {
         e.preventDefault();
         e.stopPropagation();

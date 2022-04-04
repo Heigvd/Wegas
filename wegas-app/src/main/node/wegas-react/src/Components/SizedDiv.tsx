@@ -18,7 +18,8 @@ export class SizedDiv extends React.Component<
   { readonly size?: DOMRectReadOnly }
 > {
   readonly state: Readonly<{ size?: DOMRectReadOnly }> = { size: undefined };
-  private readonly obs = new ResizeObserver(entries => {
+  // as of ts 4.2, ResizeObserver callback is typed mistyped as any...
+  private readonly obs = new ResizeObserver((entries : ResizeObserverEntry[]) => {
     if (entries.length === 1) {
       this.setState({ size: entries[0].contentRect });
     }

@@ -3,8 +3,8 @@ import * as React from 'react';
 import { flex, flexColumn, flexRow, grow, itemCenter } from '../../css/classes';
 import { runLoadedScript } from '../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../data/selectors';
+import { editingStore } from '../../data/Stores/editingStore';
 import { usePagesContextStateStore } from '../../data/Stores/pageContextStore';
-import { store } from '../../data/Stores/store';
 import { classNameOrEmpty } from '../../Helper/className';
 import { safeClientScriptEval } from '../Hooks/useScript';
 import { ClientAndServerAction } from '../PageComponents/Inputs/tools';
@@ -169,10 +169,12 @@ export function useOnCancelAction(
 
   const handleOnCancel = React.useCallback(() => {
     if (client) {
-      safeClientScriptEval(client, context, undefined, state);
+      safeClientScriptEval(client, context, undefined, state, {
+        injectReturn: false,
+      });
     }
     if (server) {
-      store.dispatch(
+      editingStore.dispatch(
         runLoadedScript(
           server,
           Player.selectCurrent(),

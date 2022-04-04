@@ -1,10 +1,7 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { useDebounce } from '../../Components/Hooks/useDebounce';
-import {
-  clientScriptEval,
-  useUnsafeScript,
-} from '../../Components/Hooks/useScript';
+import { clientScriptEval, useScript } from '../../Components/Hooks/useScript';
 import { Toggler } from '../../Components/Inputs/Boolean/Toggler';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../Components/Theme/ThemeVars';
@@ -63,7 +60,7 @@ const resultPanel = css({
 });
 
 const Eval = React.memo(function Eval({ script }: { script: string }) {
-  const val = useUnsafeScript(script);
+  const val = useScript(script);
   return <pre className={overlayStyle}>{JSON.stringify(val, null, 2)}</pre>;
 });
 Eval.displayName = 'Eval';
@@ -84,7 +81,7 @@ export default function PlayLocal() {
   const onRunCb = React.useCallback(() => {
     setResult(undefined);
     try {
-      setResult(clientScriptEval(script));
+      setResult(clientScriptEval(script, undefined, undefined, undefined));
     } catch (e) {
       if (typeof e === 'object' && e != null && 'message' in e) {
         setResult((e as unknown as Error).message);

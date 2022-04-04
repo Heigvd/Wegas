@@ -2,8 +2,8 @@ import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
 import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
+import { editingStore } from '../../../data/Stores/editingStore';
 import { usePagesContextStateStore } from '../../../data/Stores/pageContextStore';
-import { store } from '../../../data/Stores/store';
 import { createScript } from '../../../Helper/wegasEntites';
 import { safeClientScriptEval, useScript } from '../../Hooks/useScript';
 import { assembleStateAndContext } from '../tools/EditableComponent';
@@ -72,10 +72,12 @@ export function useOnVariableChange(
       const newContext = { ...context, [exposeAs]: variable };
 
       if (client) {
-        safeClientScriptEval(client, newContext, undefined, state);
+        safeClientScriptEval(client, newContext, undefined, state, {
+          injectReturn: false,
+        });
       }
       if (server) {
-        store.dispatch(
+        editingStore.dispatch(
           runLoadedScript(
             server,
             Player.selectCurrent(),

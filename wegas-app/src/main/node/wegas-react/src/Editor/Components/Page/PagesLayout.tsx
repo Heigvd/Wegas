@@ -633,10 +633,7 @@ function WegasComponentNode({
       notDroppable={
         allowChildren
           ? !allowChildren(computedComponent)
-          : computedComponent.props?.children == null ||
-            (computedComponent.props.children.length === 1 &&
-              computedComponent.type === 'For each') ||
-            computedComponent.type === 'If Else'
+          : computedComponent.props?.children == null
       }
     >
       {computedComponent.props?.children
@@ -896,6 +893,7 @@ export default function PagesLayout() {
 
   const onDrop: OnMoveFn<PageNode | DnDComponent> = React.useCallback(
     (from, to) => {
+      debugger;
       if (
         to.data != null &&
         from.data != null &&

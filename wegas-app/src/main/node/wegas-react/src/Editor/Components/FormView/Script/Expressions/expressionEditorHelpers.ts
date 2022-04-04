@@ -14,7 +14,7 @@ import {
   WegasMethodParameter,
 } from '../../../../editionConfig';
 import { StringOrT } from '../../TreeVariableSelect';
-import { isScriptCondition } from '../Script';
+import { handleError, isScriptCondition } from '../Script';
 import { parseStatement } from './astManagement';
 
 const booleanOperators = {
@@ -484,7 +484,17 @@ export async function generateSchema(
         configArg = { type, value: script };
         break;
       case 'variable':
-        configArg = { type, value: safeClientScriptEval<SVariableDescriptor>(script), mode };
+        configArg = {
+          type,
+          value: safeClientScriptEval<SVariableDescriptor>(
+            script,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+          ),
+          mode,
+        };
         break;
       default:
         configArg = { type };
@@ -555,6 +565,6 @@ export function testCode(
       return 'While multiple statements are detected, source mode is forced';
     }
   } catch (e) {
-    return e.message;
+    return handleError(e);
   }
 }

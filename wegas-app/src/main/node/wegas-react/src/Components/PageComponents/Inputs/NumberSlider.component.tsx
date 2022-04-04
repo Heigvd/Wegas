@@ -2,7 +2,7 @@ import { debounce } from 'lodash-es';
 import * as React from 'react';
 import { INumberDescriptor, IScript } from 'wegas-ts-api';
 import { Actions } from '../../../data';
-import { store } from '../../../data/Stores/store';
+import { editingStore } from '../../../data/Stores/editingStore';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import {
@@ -69,7 +69,7 @@ function PlayerNumberSlider({
         handleOnChange(newValue);
       } else {
         if (variableName) {
-          store.dispatch(
+          editingStore.dispatch(
             Actions.VariableInstanceActions.runScript(
               `Variable.find(gameModel,"${variableName}").setValue(self, ${newValue});`,
             ),

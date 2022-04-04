@@ -12,7 +12,7 @@ import {
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
 import { IWhChoiceDescriptor } from '../../../data/scriptable/impl/QuestionDescriptor';
-import { store } from '../../../data/Stores/store';
+import { editingStore } from '../../../data/Stores/editingStore';
 import {
   createTranslatableContent,
   useTranslate,
@@ -203,7 +203,7 @@ export function ChoiceContainer({
       },
     )(descriptor);
 
-    store.dispatch(
+    editingStore.dispatch(
       Actions.VariableDescriptorActions.updateDescriptor(newChoice),
     );
     setEditing(false);
@@ -320,7 +320,7 @@ export function ChoiceContainer({
           <Trash
             onClick={e => {
               e.stopPropagation();
-              store.dispatch(
+              editingStore.dispatch(
                 Actions.VariableDescriptorActions.deleteDescriptor(descriptor),
               );
             }}

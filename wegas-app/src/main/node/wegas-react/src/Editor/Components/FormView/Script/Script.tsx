@@ -32,14 +32,29 @@ import {
 } from '../../../../css/classes';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
-import { store } from '../../../../data/Stores/store';
+import { editingStore } from '../../../../data/Stores/editingStore';
 import { createScript } from '../../../../Helper/wegasEntites';
+import { wwarn } from '../../../../Helper/wegaslog';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { TempScriptEditor } from '../../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { Labeled, LabeledView } from '../labeled';
 import { WyswygScriptEditor } from './WyswygScriptEditor';
+
+/**
+ * Try to extract error message from error
+ */
+export function handleError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  } else if (typeof error === 'string') {
+    return error;
+  } else {
+    wwarn('UnhandledError: ', error);
+    return 'Something went wong';
+  }
+}
 
 export const scriptEditStyle = css({
   minHeight: '5em',
@@ -165,10 +180,12 @@ export function Script({
   const testScript = React.useCallback(
     value => {
       try {
-        store.dispatch(runScript(value, Player.selectCurrent(), context));
+        editingStore.dispatch(
+          runScript(value, Player.selectCurrent(), context),
+        );
         setError(undefined);
       } catch (error) {
-        setError([error.message]);
+        setError([handleError(error)]);
       }
     },
     [context],
@@ -193,7 +210,7 @@ export function Script({
             concatStatementsToCondition(operator, statements),
           );
         } catch (e) {
-          setError([e.message]);
+          setError([handleError(e)]);
         }
       } else {
         returnedProgram = program(statements);
@@ -264,7 +281,7 @@ export function Script({
       }
       setError(undefined);
     } catch (e) {
-      setError([e.message]);
+      setError([handleError(e)]);
     }
   }, [
     i18nValues.scripts.canntoBeParsed,
