@@ -1,129 +1,93 @@
+import { cx } from "@emotion/css";
 import Form from "jsoninput";
 import React from "react";
+import { Button } from "../../Components/Inputs/Buttons/Button";
 import { schemaProps } from "../../Components/PageComponents/tools/schemaProps";
+import { defaultPadding, expandWidth, flex, flexColumn } from "../../css/classes";
+// import { GameModel } from "../../data/selectors";
+import { AvailableSchemas } from "./FormView";
 
-const findAndReplaceSchema = {
+
+// const languages : AvailableSchemas = schemaProps.object({
+//     label : 'Languages',
+//     properties : CurrentGM.languages.reduce<Record<string, AvailableSchemas>>((o,lang) => {
+//         o[lang.code] = schemaProps.boolean({
+//             label : lang.lang
+//         });
+//         return o;
+//     }, {} )
+    
+// });
+
+const findAndReplaceSchema : {description : string, properties : Record<keyof FindAndReplacePayload,AvailableSchemas>} = {
     description : "Find and replace form layout",
     properties :{
+        "@class" : schemaProps.hidden({type : "string", value : 'FindAndReplacePayload'}),
         find: schemaProps.string(
         {
             label: 'Find',
             value: '',
+            description : 'bla',
+            
         }),
         replace : schemaProps.string(
         {
             label: 'Replace',
-            value : ''
+            value : '',
         }),
         pretend : schemaProps.boolean({
-            label : 'Simualte',
+            label : 'Simulate',
             value : true,
+            layout : "shortInline"
         }),
         matchCase : schemaProps.boolean({
             label : 'Match case',
-            value : true
+            value : true,
+            layout : "shortInline"
         }),        
         regex : schemaProps.boolean({
             label : 'Regex',
-            value : true
+            value : true,
+            layout : "shortInline"
         }),
-
+        //Targets
+        processVariables : schemaProps.boolean({
+            label : 'Variables',
+            value : true,
+            layout : "shortInline"
+        }),
+        processScripts : schemaProps.boolean({
+            label : 'Scripts',
+            value : false,
+            layout : "shortInline"
+        }),
+        processPages : schemaProps.boolean({
+            label : 'Pages',
+            value : false,
+            layout : "shortInline"
+        }),
+        processStyles : schemaProps.boolean({
+            label : 'Styles',
+            value : false,
+            layout : "shortInline"
+        }),
+        languages : schemaProps.object({
+            label : 'Languages',
+            properties : CurrentGM.languages.reduce<Record<string, AvailableSchemas>>((o,lang) => {
+                o[lang.code] = schemaProps.boolean({
+                    label : lang.lang,
+                    layout : 'shortInline'
+                });
+                return o;
+            }, {} )
+        }),
+        roots : schemaProps.array({
+            label : 'Those Variables Only',
+            itemSchema : schemaProps.variable({
+                label : 'Talksdaklsjd',
+            })
+        }),
         /*
-        '@class': {
-            value: 'FindAndReplacePayload',
-            type: "string",
-            view: {
-                type: "hidden"
-            }
-        },
-
-        pretend: {
-            type: "boolean",
-            value: true,
-            view: {
-                type: "boolean",
-                label: "Simulate",
-                description: "Only show differences",
-                layout: 'shortInline'
-            }
-        },
-        matchCase: {
-            type: "boolean",
-            value: false,
-            view: {
-                type: "boolean",
-                label: "Match case",
-                layout: 'shortInline',
-                description: "case insensitive"
-            }
-        },
-        regex: {
-            type: "boolean",
-            value: false,
-            view: {
-                className: 'wegas-advanced-feature',
-                type: "boolean",
-                label: "Regular Expression",
-                layout: 'shortInline',
-                description: "Use $1, $2, ..., $n"
-            }
-        },
-        processVariables: {
-            type: "boolean",
-            value: true,
-            view: {
-                className: 'wegas-advanced-feature',
-                type: "boolean",
-                label: "Variables",
-                description: "Search and replace in variables",
-                layout: 'shortInline'
-            }
-        },
-        processPages: {
-            type: "boolean",
-            value: false,
-            view: {
-                className: 'wegas-advanced-feature',
-                type: "boolean",
-                label: "Pages",
-                description: "Search and replace in Pages",
-                layout: 'shortInline'
-            }
-        },
-        processStyles: {
-            type: "boolean",
-            value: false,
-            view: {
-                className: 'wegas-advanced-feature',
-                type: "boolean",
-                label: "Styles",
-                description: "Search and replace in styles",
-                layout: 'shortInline'
-            }
-        },
-        processScripts: {
-            type: "boolean",
-            value: false,
-            view: {
-                className: 'wegas-advanced-feature',
-                type: "boolean",
-                label: "Scripts",
-                description: "Search and replace in client/server scripts",
-                layout: 'shortInline'
-            }
-        },
-        languages: {
-            type: "object",
-            value: {},
-            properties: {},
-            visible: function(val, formValue) {
-                return formValue.processVariables;
-            },
-            view: {
-                className: "wegas-internal-feature",
-                label: "Languages"
-            }
-        },
         roots: {
             type: "array",
             value: [],
@@ -147,6 +111,8 @@ const findAndReplaceSchema = {
 }
 
 interface FindAndReplacePayload {
+
+    '@class': 'FindAndReplacePayload',
     find: string,
     replace : string,
 
@@ -154,36 +120,50 @@ interface FindAndReplacePayload {
     matchCase : boolean,
     regex : boolean,
     
-    // processVariables : boolean,
-    // processScripts : boolean,
-    // processPages : boolean,
-    // processSyles : boolean,
+    processVariables : boolean,
+    processScripts : boolean,
+    processPages : boolean,
+    processStyles : boolean,
 
-    //languages ?
+    pretend : boolean,
 
+    languages : Record<string, boolean>,
+
+    roots? : string[]
 }
 
 export default function FindAndReplace() {
 
     const dflt : FindAndReplacePayload = {
+        '@class' : "FindAndReplacePayload",
         find: '',
         replace : '',
         matchCase : false,
-        regex : true
+        regex : true,
+        processVariables : true,
+        processScripts : false,
+        processPages : false,
+        processStyles : false,
+        pretend : true,
+        languages : {},
+        roots : undefined
     }
 
     const [state, setState] = React.useState<FindAndReplacePayload>(dflt);
 
+
     return(
-        <>
+        <div className={cx(flex, flexColumn, expandWidth, defaultPadding)}>
             <h3>Find And Replace</h3>
-            <p>{JSON.stringify(state)}</p>
             <Form 
                 schema={findAndReplaceSchema}
                 onChange={(v) => setState(v)}
                 value={state}
+
             />
+            <Button label="Haaa" onClick={() => alert('youhou')}/>
+            <p>{JSON.stringify(state)}</p>
             
-        </>
+        </div>
     );
 }
