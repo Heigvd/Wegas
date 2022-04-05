@@ -47,6 +47,8 @@ const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
 const PagesLayout = React.lazy(() => import('./Page/PagesLayout'));
 const SourceEditor = React.lazy(() => import('./Page/SourceEditor'));
 
+const FindAndReplace = React.lazy(() => import ('./FindAndReplace'));
+
 // const Tester = React.lazy(
 //   () => import('../../Testers/Components/MergeEditorTester'),
 // );
@@ -114,6 +116,10 @@ const availableLayoutTabs: LinearLayoutComponents = [
   {
     tabId: 'Theme Editor',
     content: <ThemeEditor />,
+  },
+  {
+    tabId: 'Find & Replace',
+    content: <FindAndReplace />,
   },
   {
     tabId: 'Pages',

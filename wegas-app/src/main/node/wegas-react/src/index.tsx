@@ -15,6 +15,7 @@ import { ThemeProvider } from './Components/Theme/Theme';
 import './css/global.css';
 import './data/Stores/store';
 import Layout from './Editor/Components/Layout';
+import "./Editor/Components/FormView/index";
 // import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
 
 importPageComponents();
