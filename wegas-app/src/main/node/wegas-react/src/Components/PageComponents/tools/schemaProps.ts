@@ -803,9 +803,6 @@ const simpleSchemaProps = {
   }),
 } as const;
 
-// For tests only !
-//const objectSchemaProps: ObjectSchemaPropsType = {
-
 const objectSchemaProps = {
   object: ({
     label,
@@ -821,23 +818,25 @@ const objectSchemaProps = {
   }: {
     properties?: { [key: string]: AvailableSchemas };
   } & CommonSchemaProps &
-    ValueSchemaProps<object>) => ({
-    description: 'com.wegas.core.persistence.variable.primitive.NumberInstance',
-    properties,
-    value,
-    required,
-    type: 'object',
-    index,
-    view: {
-      featureLevel,
+    ValueSchemaProps<object>) =>
+    ({
+      description: 'ObjectSchema',
+      properties,
+      value,
+      required,
+      type: 'object',
       index,
-      label,
-      layout,
-      borderTop,
-      noMarginTop,
-      description,
-    },
-  }),
+      view: {
+        featureLevel,
+        index,
+        label,
+        layout,
+        borderTop,
+        noMarginTop,
+        description,
+      },
+      // Force casting return type as JSONinput will do actually return the good props to object view (after computing these one)
+    } as SchemaFromView<'object'>),
 } as const;
 
 export const schemaProps = {
