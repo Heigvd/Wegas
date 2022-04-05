@@ -16,10 +16,10 @@ const simpleSchemaProps = {
     required = false,
     type = 'array',
     index = 0,
-    value
+    value,
   }: {
     type?: TYPESTRING | TYPESTRING[];
-    value? : {}
+    value?: {};
   } & SimpleSchemaProps): SchemaFromView<'hidden'> => ({
     required,
     type,
@@ -27,7 +27,7 @@ const simpleSchemaProps = {
     view: {
       type: 'hidden',
     },
-    value
+    value,
   }),
   boolean: ({
     label,
@@ -587,6 +587,7 @@ const simpleSchemaProps = {
       description,
     },
   }),
+  /** @deprecated */
   array: ({
     label,
     itemSchema = {},

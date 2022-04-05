@@ -226,7 +226,10 @@ export function Searcher<T>({
 
 function isValueScript(value: any): value is { type: string; script: string } {
   return (
-    typeof value === 'object' && 'type' in value && value.type === 'variable'
+    value != null &&
+    typeof value === 'object' &&
+    'type' in value &&
+    value.type === 'variable'
   );
 }
 
