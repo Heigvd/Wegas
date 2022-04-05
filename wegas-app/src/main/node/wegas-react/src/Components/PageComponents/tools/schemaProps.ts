@@ -11,13 +11,6 @@ import { WegasMethod } from '../../../Editor/editionConfig';
 import { createScript } from '../../../Helper/wegasEntites';
 import { Choices } from '../../Selector';
 
-// For tests only
-//const simpleSchemaProps: SimpleSchemaPropsType = {
-
-const test: ValueSchemaProps<boolean> = {
-  value: false,
-};
-
 const simpleSchemaProps = {
   hidden: ({
     required = false,
