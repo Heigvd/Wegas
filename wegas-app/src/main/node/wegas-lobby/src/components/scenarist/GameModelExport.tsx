@@ -272,6 +272,16 @@ export default function GameModelExportPatch({ gameModel }: GameModelExportProps
                     <FontAwesomeIcon icon={faDownload} /> {i18n.exportWgz}
                   </a>
 
+                  <a
+                    className={linkStyle}
+                    title={i18n.wgzTooltip(gameModel)}
+                    href={`${API_ENDPOINT}/Export/GameModel/${gameModel.id}.zip`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <FontAwesomeIcon icon={faDownload} /> {i18n.exportZip}
+                  </a>
+
                   {isAdmin ? (
                     <>
                       <a
@@ -290,7 +300,7 @@ export default function GameModelExportPatch({ gameModel }: GameModelExportProps
                         display="LINK"
                         title={i18n.diff}
                         onSelect={onFileSelect}
-                        accept=".json, .wgz"
+                        accept=".json, .wgz, .zip"
                       />
                     </>
                   ) : null}
