@@ -24,7 +24,7 @@ public class DetachedFileDescriptor extends DetachedContentDescriptor {
      */
     private FileDescriptor jcrFile = null;
 
-    @WegasEntityProperty
+    @WegasEntityProperty(notSerialized = true)
     private FileDescriptor.FileContent data;
 
     @WegasEntityProperty

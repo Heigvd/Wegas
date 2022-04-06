@@ -25,7 +25,7 @@ public abstract class DetachedContentDescriptor implements Mergeable, NamedEntit
 
     private DetachedDirectoryDescriptor parent;
 
-    @WegasEntityProperty
+    @WegasEntityProperty(nullable = false)
     private String refId;
 
     @WegasEntityProperty
