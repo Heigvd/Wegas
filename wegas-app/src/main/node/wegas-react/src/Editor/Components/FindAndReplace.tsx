@@ -1,7 +1,9 @@
 import { cx } from '@emotion/css';
 import Form from 'jsoninput';
 import React from 'react';
+import { FindAndReplaceAPI } from '../../API/utils.api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { HTMLText } from '../../Components/Outputs/HTMLText';
 import { schemaProps } from '../../Components/PageComponents/tools/schemaProps';
 import {
   defaultPadding,
@@ -9,25 +11,15 @@ import {
   flex,
   flexColumn,
 } from '../../css/classes';
-// import { GameModel } from "../../data/selectors";
+import { findAndReplaceStyle } from '../../css/findAndReplace';
+import { wlog } from '../../Helper/wegaslog';
 import { AvailableSchemas } from './FormView';
-
-// const languages : AvailableSchemas = schemaProps.object({
-//     label : 'Languages',
-//     properties : CurrentGM.languages.reduce<Record<string, AvailableSchemas>>((o,lang) => {
-//         o[lang.code] = schemaProps.boolean({
-//             label : lang.lang
-//         });
-//         return o;
-//     }, {} )
-
-// });
 
 const findAndReplaceSchema: {
   description: string;
   properties: Record<keyof FindAndReplacePayload, AvailableSchemas>;
 } = {
-  description: 'Find and replace form layout',
+  description: 'Find and replace form descriptor',
   properties: {
     '@class': schemaProps.hidden({
       type: 'string',
@@ -36,7 +28,6 @@ const findAndReplaceSchema: {
     find: schemaProps.string({
       label: 'Find',
       value: '',
-      description: 'bla',
     }),
     replace: schemaProps.string({
       label: 'Replace',
@@ -85,58 +76,31 @@ const findAndReplaceSchema: {
           o[lang.code] = schemaProps.boolean({
             label: lang.lang,
             layout: 'shortInline',
+            value: true
           });
           return o;
         },
         {},
       ),
+      
     }),
     roots: {
       type: 'array',
-      items: schemaProps.variable({
-        label: 'Talksdaklsjd',
-      }),
+      items: schemaProps.variable({}),
       view: {
         type: 'array',
+        label: 'Those Variables Only',
       },
+      visible: () => {return true}
     },
-    // roots: schemaProps.array({
-    //   label: 'Those Variables Only',
-    //   itemSchema: schemaProps.variable({
-    //     label: 'Talksdaklsjd',
-    //   }),
-    // }),
-    // itemSchema: schemaProps.variable({
-    //   label: 'Talksdaklsjd',
-    // }),
-    /*
-        roots: {
-            type: "array",
-            value: [],
-            items: {
-                type: "string",
-                view: {
-                    type: "treevariableselect",
-                    layout: "shortInline",
-                    label: ''
-                }
-            },
-            visible: function(_val, formValue) {
-                return formValue.processVariables;
-            },
-            view: {
-                label: "Those Variables Only"
-            }
-        }*/
   },
 };
 
-interface FindAndReplacePayload {
+export interface FindAndReplacePayload {
   '@class': 'FindAndReplacePayload';
   find: string;
   replace: string;
 
-  //roots ?
   matchCase: boolean;
   regex: boolean;
 
@@ -153,33 +117,43 @@ interface FindAndReplacePayload {
 }
 
 export default function FindAndReplace() {
-  const dflt: FindAndReplacePayload = {
-    '@class': 'FindAndReplacePayload',
-    find: '',
-    replace: '',
-    matchCase: false,
-    regex: true,
-    processVariables: true,
-    processScripts: false,
-    processPages: false,
-    processStyles: false,
-    pretend: true,
-    languages: {},
-    roots: undefined,
-  };
+  
+    const dflt: FindAndReplacePayload = {
+        '@class': 'FindAndReplacePayload',
+        find: '',
+        replace: '',
+        matchCase: false,
+        regex: true,
+        processVariables: true,
+        processScripts: false,
+        processPages: false,
+        processStyles: false,
+        pretend: true,
+        languages: {},
+        roots: undefined,
+    };
 
-  const [state, setState] = React.useState<FindAndReplacePayload>(dflt);
+    const [state, setState] = React.useState<FindAndReplacePayload>(dflt);
+    const [result, setResult] = React.useState('');
+    
+    const sendRequest = React.useCallback(() => {
+        FindAndReplaceAPI().findAndReplace(state).then( (v) => {
+          wlog(v);
+          setResult(v);
+        });
+    }, [state])
 
-  return (
-    <div className={cx(flex, flexColumn, expandWidth, defaultPadding)}>
-      <h3>Find And Replace</h3>
-      <Form
-        schema={findAndReplaceSchema}
-        onChange={v => setState(v)}
-        value={state}
-      />
-      <Button label="Haaa" onClick={() => alert('youhou')} />
-      <p>{JSON.stringify(state)}</p>
-    </div>
-  );
+    return (
+        <div className={cx(flex, flexColumn, expandWidth, defaultPadding)}>
+            <h3>Find &amp; Replace</h3>
+            <Form
+                schema={findAndReplaceSchema}
+                onChange={v => setState(v)}
+                value={state}
+            />
+            <Button label="Find &amp; Replace" onClick={sendRequest}/>
+            <p>{JSON.stringify(state)}</p>
+            <HTMLText className={findAndReplaceStyle} text={result}/>
+        </div>
+    );
 }
