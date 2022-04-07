@@ -13,6 +13,8 @@ import {
   flexColumn,
 } from '../../css/classes';
 import { findAndReplaceStyle } from '../../css/findAndReplace';
+import { manageResponseHandler } from '../../data/actions';
+import { store } from '../../data/Stores/store';
 import { AvailableSchemas } from './FormView';
 
 const findAndReplaceSchema: {
@@ -154,6 +156,9 @@ export default function FindAndReplace() {
   const [result, setResult] = React.useState('');
 
   const sendRequest = React.useCallback(() => {
+    // We admit that confirm can be used here as the changes are very consistant
+    // Its also a very internal feature that shouldn't be used by standard wegas users
+    // eslint-disable-next-line no-alert
     if (state.pretend || confirm('This cannot be cancelled, are you sure ?')) {
       setResult(
         '<h4 class="find-result-waiting">Performing find and replace...</h4>',
@@ -162,10 +167,18 @@ export default function FindAndReplace() {
       FindAndReplaceAPI()
         .findAndReplace(state)
         .then(v => {
-          if (v) {
-            setResult(v);
+          // Pop first updatedEntity as its not WegasEntity but string
+          const textAnswer = v.updatedEntities.splice(
+            0,
+            1,
+          )[0] as unknown as string;
+          if (textAnswer) {
+            setResult(textAnswer);
           } else {
             setResult('<h4 class="find-result-empty">No results</h4>');
+          }
+          if (!state.pretend) {
+            store.dispatch(manageResponseHandler(v));
           }
         });
     }
