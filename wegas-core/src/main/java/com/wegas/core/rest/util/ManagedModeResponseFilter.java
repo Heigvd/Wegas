@@ -8,6 +8,7 @@
 package com.wegas.core.rest.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.WebsocketFacade;
@@ -236,14 +237,14 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
         String socketId = requestManager.getSocketId();
 
-        String eSocketId = (!isManaged || socketId == null || !socketId.matches("^[\\d\\.]+$"))
+        String eSocketId = (!isManaged || Helper.isNullOrEmpty(socketId) || !socketId.matches("^[\\d\\.]+$"))
             ? null : socketId;
 
         if (!rollbacked) {
             if (!(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
                 requestManager.markPropagationStartTime();
                 websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap,
-                    socketId);
+                    eSocketId);
                 requestManager.markPropagationEndTime();
             }
 
