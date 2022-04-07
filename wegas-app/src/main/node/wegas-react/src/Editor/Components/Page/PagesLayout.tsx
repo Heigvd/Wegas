@@ -893,7 +893,6 @@ export default function PagesLayout() {
 
   const onDrop: OnMoveFn<PageNode | DnDComponent> = React.useCallback(
     (from, to) => {
-      debugger;
       if (
         to.data != null &&
         from.data != null &&

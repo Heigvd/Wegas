@@ -44,7 +44,13 @@ export interface MethodConfig {
  */
 export async function schemaUpdater(
   schema: SimpleSchema,
-  ...updater: (<Ext extends {}>(schema: Ext) => {} | Promise<{}>)[]
+  ...updater: (<
+    Ext extends {
+      $wref?: string | undefined;
+    } & Schema,
+  >(
+    schema: Ext,
+  ) => Schema | Promise<Schema>)[]
 ) {
   const update: SimpleSchema = await updater.reduce(
     async (p, f) => f(await p),
@@ -80,7 +86,13 @@ export async function schemaUpdater(
 
 export async function methodConfigUpdater(
   config: MethodConfig,
-  ...updater: (<Ext extends {}>(schema: Ext) => {} | Promise<{}>)[]
+  ...updater: (<
+    Ext extends {
+      $wref?: string | undefined;
+    } & Schema,
+  >(
+    schema: Ext,
+  ) => Schema | Promise<Schema>)[]
 ) {
   const newConfig: MethodConfig = {};
   for (const method in config) {

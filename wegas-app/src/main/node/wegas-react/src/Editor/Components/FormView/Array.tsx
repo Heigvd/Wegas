@@ -51,7 +51,7 @@ const handleStyle = css({
 });
 
 const smallPadding = css({
-  padding: '0'
+  padding: '0',
 });
 
 interface AdderProps<T> {
@@ -150,9 +150,7 @@ function ArrayItem({
         ) : null}
         {!unmovable && (
           <div ref={drag}>
-            <Button
-            className={smallPadding}
-            icon="arrows-alt" />
+            <Button className={smallPadding} icon="arrows-alt" />
           </div>
         )}
       </div>
@@ -205,7 +203,7 @@ export interface IArrayProps
       choices?: Item<string>[];
       tooltip?: string;
       disabled?: boolean;
-      userOnChildAdd?: (menuValue?: {}) => {};
+      userOnChildAdd?: (menuValue?: unknown) => unknown;
       // TODO : Use the following view props!
       highlight?: boolean;
       sortable?: boolean;
@@ -213,12 +211,12 @@ export interface IArrayProps
     } & Omit<CommonView, 'noMarginTop'> &
       LabeledView
   > {
-  value?: {}[];
+  value?: any[];
 }
 
 interface DropArrayProps<T> {
-  array?: {}[];
-  onMove?: (array?: {}[]) => void;
+  array?: unknown[];
+  onMove?: (array?: unknown[]) => void;
   onChildRemove?: (index: number) => void;
   onChildAdd?: (value?: SelecteDropdMenuItem<T, DropMenuItem<T>>) => void;
   choices?: DropMenuItem<T>[];
@@ -340,9 +338,9 @@ function ArrayWidget({
     itemType = itemType[0];
   }
   const singleItemType: Exclude<typeof itemType, TYPESTRING[]> = itemType;
-  const defaultNewChild: (newValue?: {} | undefined) => void = newValue =>
+  const defaultNewChild: (newValue?: unknown | undefined) => void = newValue =>
     typeCleaner(newValue, singleItemType || 'object', defaultItem);
-  const onNewChild: (menuValue?: {} | undefined) => void = menuValue => {
+  const onNewChild: (menuValue?: unknown | undefined) => void = menuValue => {
     const newValue = [
       ...(value || []),
       (userOnChildAdd || defaultNewChild)(menuValue),

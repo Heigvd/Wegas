@@ -25,7 +25,7 @@ export interface ScriptableViewProps
         literalSchema: AvailableSchemas;
       }
   > {
-  value?: IScript | {};
+  value?: IScript | string;
   onChange: (code?: IScript | unknown) => void;
 }
 

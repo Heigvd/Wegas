@@ -1,5 +1,5 @@
-import { validation } from './validation';
 import { IAbstractEntity } from 'wegas-ts-api';
+import { validation } from './validation';
 type ref = Const | Self | Field;
 interface Const<T = unknown> {
   type: 'Const';
@@ -14,18 +14,20 @@ interface Field {
   fieldName: string;
 }
 // mimic Wegas validation without accessing db
-function leafs(ref: ref): (val: {}, formValue: {}) => unknown {
+function leafs(
+  ref: ref,
+): (val: unknown, formValue: UknownValuesObject) => unknown {
   switch (ref.type) {
     case 'Const':
       return () => ref.const;
     case 'Self':
       return val => val;
     case 'Field':
-      return (_val: {}, formVal: IAbstractEntity & { [key: string]: {} }) => {
-        return (
-          // @ts-ignore
-          formVal[ref.fieldName]
-        );
+      return (
+        _val: UknownValuesObject,
+        formVal: IAbstractEntity & { [key: string]: UknownValuesObject },
+      ) => {
+        return formVal[ref.fieldName];
       };
   }
   throw Error('Unhandled reference: ' + JSON.stringify(ref));
@@ -126,8 +128,7 @@ test('Number comparison', () => {
 test('Unknown validation', () => {
   expect(() =>
     jsoninputValidator({
-      // @ts-ignore
       u: [],
-    }),
+    } as any),
   ).toThrow(/^Unhandled schema: /);
 });
