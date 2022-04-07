@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { useAsync } from '../Hooks/useAsync';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
+import { useAsync } from '../Hooks/useAsync';
 
 function Loading() {
   return <FontAwesome icon="cog" /*size="5x"*/ spin />;
@@ -18,7 +18,7 @@ function Error(err: unknown) {
  */
 export function asyncSFC<T>(
   PComp: (props: T) => Promise<React.ReactElement | null>,
-  Loader: React.FunctionComponent<{}> = Loading,
+  Loader: React.FunctionComponent<UknownValuesObject> = Loading,
   Err: React.FunctionComponent<{ err: unknown }> = Error,
 ) {
   function AsyncDeps(props: T): React.ReactElement {

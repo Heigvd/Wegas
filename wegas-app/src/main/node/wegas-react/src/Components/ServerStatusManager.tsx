@@ -28,7 +28,9 @@ function ServerStatusModal({
   );
 }
 
-export function ServerStatusManager({ children }: React.PropsWithChildren<{}>) {
+export function ServerStatusManager({
+  children,
+}: React.PropsWithChildren<UknownValuesObject>) {
   const serverStatus = useStore(s => s.global.serverStatus);
   return (
     <>

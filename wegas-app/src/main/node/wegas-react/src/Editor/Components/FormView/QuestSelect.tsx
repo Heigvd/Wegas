@@ -23,7 +23,7 @@ function makeOptions(values: string[]): Options {
 }
 
 interface IQuestSelectProps extends WidgetProps.BaseProps {
-  view: {} & CommonView & LabeledView;
+  view: CommonView & LabeledView;
   value?: string | null;
   onChange: (value: string) => void;
 }

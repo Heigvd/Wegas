@@ -9,7 +9,7 @@ import { instantiate } from '../data/scriptable';
 import { editingStore } from '../data/Stores/editingStore';
 import { store } from '../data/Stores/store';
 import { IManagedResponse } from './rest';
-import { UtilsAPI } from './utils.api.ts';
+import { UtilsAPI } from './utils.api';
 import { VariableDescriptorAPI } from './variableDescriptor.api';
 
 function getNewVariable(

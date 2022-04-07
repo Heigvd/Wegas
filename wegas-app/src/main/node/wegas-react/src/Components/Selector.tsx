@@ -9,7 +9,7 @@ import { inputStyleCSS } from './Inputs/SimpleInput';
 import { themeVar } from './Theme/ThemeVars';
 
 export interface Choice {
-  value?: {};
+  value?: any;
   label?: string;
   disabled?: boolean;
   selected?: boolean;

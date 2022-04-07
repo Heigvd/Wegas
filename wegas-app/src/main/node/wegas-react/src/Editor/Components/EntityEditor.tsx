@@ -241,7 +241,7 @@ async function WindowedEditor<T extends IMergeable>({
         entity,
         customSchema !== undefined ? customSchema : schema,
       )}
-      onChange={(val: {}) => {
+      onChange={(val: unknown) => {
         onChange && onChange(deepUpdate(entity, path, val) as T);
       }}
       highlight={highlight}

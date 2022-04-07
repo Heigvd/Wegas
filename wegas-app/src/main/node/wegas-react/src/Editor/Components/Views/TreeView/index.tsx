@@ -1,25 +1,25 @@
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import {
-  DragSource,
   DragElementWrapper,
+  DragSource,
   DragSourceOptions,
   DropTarget,
 } from 'react-dnd';
-import { css, cx } from '@emotion/css';
-import { DropZoneFactory, ItemDescription, Outcome } from './DropZone';
-import { FontAwesome } from '../FontAwesome';
 import { DefaultDndProvider } from '../../../../Components/Contexts/DefaultDndProvider';
 import {
   flex,
-  grow,
-  flexRow,
   flexColumn,
+  flexRow,
+  grow,
   itemCenter,
 } from '../../../../css/classes';
+import { FontAwesome } from '../FontAwesome';
+import { DropZoneFactory, ItemDescription, Outcome } from './DropZone';
 
 const noop = () => undefined;
 
-export interface DropResult<T = {}> {
+export interface DropResult<T = unknown> {
   id: T;
   source: {
     parent?: T;
@@ -33,7 +33,7 @@ export interface DropResult<T = {}> {
 
 interface ContainerProps {
   onDropResult?: (result: DropResult) => void;
-  parent?: {};
+  parent?: unknown;
   children: (passProps: { nodeProps: () => any }) => React.ReactElement<any>;
 }
 const isOverPrevStyle = css({
@@ -110,11 +110,11 @@ interface DragDropProps {
 }
 
 interface NodeProps extends DragDropProps {
-  id: {};
+  id: unknown;
   expanded?: boolean;
   noToggle?: boolean;
   /** Autoset when child of Container */
-  parent?: {};
+  parent?: unknown;
   /** Autoset when child of Container */
   index?: number;
   header: React.ReactNode;

@@ -4,9 +4,7 @@ import {
   WegasClassNames,
   WegasClassNamesAndClasses,
 } from 'wegas-ts-api';
-
-const InheritanceTable =
-  require('wegas-ts-api/typings/Inheritance.json') as typeof import('wegas-ts-api/typings/Inheritance.json');
+import InheritanceTable from 'wegas-ts-api/typings/Inheritance.json';
 
 type Mergeable = keyof typeof InheritanceTable;
 

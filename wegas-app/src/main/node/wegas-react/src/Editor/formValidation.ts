@@ -1,9 +1,9 @@
 /*
  * Wegas specific Leaf validation for Form
  */
+import { IAbstractEntity } from 'wegas-ts-api/typings/WegasEntities';
 import { findNearestParent } from '../data/selectors/Helper';
 import { validation } from './validation';
-import { IAbstractEntity } from 'wegas-ts-api/typings/WegasEntities';
 
 type ref = Const | Self | Field;
 interface Const<T = unknown> {
@@ -38,8 +38,9 @@ function formLeaf(
           }
           return formVal;
         }
-        const parent: (IAbstractEntity & { [key: string]: {} }) | undefined =
-          findNearestParent(formVal, path, ref.classFilter);
+        const parent:
+          | (IAbstractEntity & { [key: string]: UknownValuesObject })
+          | undefined = findNearestParent(formVal, path, ref.classFilter);
         if (ref.fieldName != null) {
           return parent ? parent[ref.fieldName] : undefined;
         } else {

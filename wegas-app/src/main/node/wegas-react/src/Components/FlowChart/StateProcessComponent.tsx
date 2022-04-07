@@ -93,7 +93,7 @@ export const editHandle = css({
   position: 'absolute',
   top: '-38px',
   left: '50%',
-  transform:'translate(-50%, 0)', 
+  transform: 'translate(-50%, 0)',
   backgroundColor: themeVar.colors.HeaderColor,
   borderRadius: '5px 5px 0 0',
   padding: '3px',
@@ -154,6 +154,7 @@ export const selectedStateBoxStyle = css({
 });
 
 // Ignoring style while not in use
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const dragAndHoverStyle = css({
   background: themeVar.colors.HighlightColor, // add a third color? "evidence color shaded" editor theme var

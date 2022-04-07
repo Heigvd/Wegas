@@ -477,6 +477,7 @@ const incrementNumericKey = (key: string, increment: number = 1) => {
  *
  * @param layouts
  */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const logLayouts = (layouts: LayoutMap) => {
   wlog(

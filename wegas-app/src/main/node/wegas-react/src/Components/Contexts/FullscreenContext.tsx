@@ -10,7 +10,9 @@ export const fullscreenCTX = React.createContext<FullscreenContext>({
   setFullscreen: () => {},
 });
 
-export function FullscreenProvider({ children }: React.PropsWithChildren<{}>) {
+export function FullscreenProvider({
+  children,
+}: React.PropsWithChildren<UknownValuesObject>) {
   const [fullscreen, setFullscreen] = React.useState(false);
   return (
     <fullscreenCTX.Provider value={{ fullscreen, setFullscreen }}>
