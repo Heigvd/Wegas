@@ -271,6 +271,11 @@ public class FileDescriptor extends AbstractContentDescriptor {
         }
 
         @Override
+        public String toString() {
+            return "FileContent{" + "contentLength=" + content.length + '}';
+        }
+
+        @Override
         public int hashCode() {
             int hash = 7;
             hash += 23 * hash + Arrays.hashCode(content);

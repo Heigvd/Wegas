@@ -197,6 +197,7 @@ export const en = {
   pdfTooltip: (gm: IGameModel) =>
     `A ${en.prettyPrintType(gm)} PDF allows to proofread the content in a (almost) convenient way`,
   exportWgz: 'Export to WGZ',
+  exportZip: 'Export to ZIP',
   wgzTooltip: (gm: IGameModel) => `Download a WGZ export of your ${en.prettyPrintType(gm)}`,
   exportJson: 'JSON',
   jsonTooltip: (gm: IGameModel) => `Download a JSON export of your ${en.prettyPrintType(gm)}`,
@@ -218,7 +219,7 @@ export const en = {
   },
 
   // Diff & Patch
-  diff: 'Update from wgz',
+  diff: 'Update from wgz, zip or json',
   patch: 'Do patch',
   restart: 'Cancel patch',
 

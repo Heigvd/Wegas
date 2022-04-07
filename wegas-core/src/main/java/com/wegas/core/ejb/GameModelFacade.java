@@ -9,6 +9,10 @@ package com.wegas.core.ejb;
 
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.wegas.core.Helper;
 import com.wegas.core.api.GameModelFacadeI;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
@@ -24,6 +28,9 @@ import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
 import com.wegas.core.jcr.content.DescriptorFactory;
+import com.wegas.core.jcr.content.DirectoryDescriptor;
+import com.wegas.core.jcr.content.FileDescriptor;
+import com.wegas.core.jcr.helpers.FileMeta;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.merge.patch.WegasPatch;
@@ -40,6 +47,7 @@ import static com.wegas.core.persistence.game.GameModel.GmType.MODEL;
 import static com.wegas.core.persistence.game.GameModel.GmType.PLAY;
 import static com.wegas.core.persistence.game.GameModel.GmType.SCENARIO;
 import com.wegas.core.persistence.game.GameModel.Status;
+import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -58,7 +66,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.attribute.FileTime;
+import java.text.Collator;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -573,7 +584,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         return gameModel;
     }
 
-    public GameModel unzip(ZipInputStream zip) throws IOException, RepositoryException {
+    public GameModel createFromWgz(ZipInputStream zip) throws IOException, RepositoryException {
         ZipEntry entry;
         GameModel gameModel = null;
         InputStream filesStream = null;
@@ -602,7 +613,18 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         return gameModel;
     }
 
-    public StreamingOutput zip(Long gameModelId) throws RepositoryException {
+    /**
+     * Archive game model in a WegasZip (WGZ). Archive will contains
+     * <li>gamemodel.json
+     * <li>files.xml
+     *
+     * @param gameModelId id of the gameModel to export
+     *
+     * @return the wgz-achived outputstreamed
+     *
+     * @throws RepositoryException in case the JCR files repository is not available
+     */
+    public StreamingOutput archiveAsWGZ(Long gameModelId) throws RepositoryException {
 
         GameModel gameModel = this.find(gameModelId);
 
@@ -610,7 +632,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-                try (ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
+                try ( ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
 
                     // serialise the json
                     ZipEntry gameModelEntry = new ZipEntry("gamemodel.json");
@@ -640,6 +662,375 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         };
 
         return out;
+    }
+
+    private String mimeTypeToExtension(String mimeType) {
+        switch (mimeType) {
+            case "css":
+            case "text/css":
+                return ".css";
+            case "application/json":
+            case "json":
+                return ".json";
+            case "application/typescript":
+                return ".ts";
+            case "application/javascript":
+                return ".js";
+            default:
+                return ".txt";
+        }
+    }
+
+    private String extensionToMimeType(String ext) {
+        switch (ext) {
+            case "css":
+                return "text/css";
+            case "json":
+                return "application/json";
+            case "ts":
+                return "application/typescript";
+            case "js":
+                return "application/javascript";
+            default:
+                return "text/plain";
+        }
+    }
+
+    private static final String NO_SLASH_GROUP = "([^/]+)";
+
+    private static final String GM_PREFIX = "/gameModel/";
+    private static final String LIBS_PREFIX = GM_PREFIX + "libs/";
+    private static final String PAGES_PREFIX = GM_PREFIX + "pages/";
+    private static final String FILES_PREFIX = GM_PREFIX + "files"; // No leading slash !
+
+    private static final String FILESMETA_PREFIX = GM_PREFIX + "filesmeta.json";
+    private static final String GM_DOT_JSON_NAME = GM_PREFIX + "gamemodel.json";
+
+    private static final Pattern LIB_PATTERN = Pattern.compile(LIBS_PREFIX
+        + NO_SLASH_GROUP// libType
+        + "/" + NO_SLASH_GROUP// libName
+        + "\\." + NO_SLASH_GROUP); //libExtension
+
+    private static final Pattern PAGE_PATTERN = Pattern.compile(PAGES_PREFIX
+        + NO_SLASH_GROUP// pageId
+        + "\\.json"); //libExtension
+
+    private static final Pattern FILE_PATTERN = Pattern.compile(FILES_PREFIX + "(.*)"); //libExtension
+
+    /**
+     * Extract the gameModel as an archived file directory.
+     * <ul>
+     * <li> /gamemodel.json <em>variables</em>
+     * <li> /libraries/
+     * <ul>
+     * <li> ./libType/  <em>a subfolder for each kind of libs</em>
+     * <ul>
+     * <li> ./libFiles.xyz
+     * </ul>
+     * </ul>
+     * <li> /pages/
+     * <ul>
+     * <li> ./page_x.json
+     * </ul>
+     * <li> /files/
+     * </ul>
+     *
+     * @param gameModelId id of the gameModel to export
+     *
+     * @return the wgz-achived outputstreamed
+     *
+     */
+    public StreamingOutput archiveAsExplodedZip(Long gameModelId) throws CloneNotSupportedException {
+
+        GameModel oriGameModel = this.find(gameModelId);
+        GameModel gameModel = (GameModel) oriGameModel.duplicate();
+        //GameModel gameModel = this.find(gameModelId);
+
+        StreamingOutput out;
+        out = new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                try ( ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
+                    ObjectMapper mapper = JacksonMapperProvider.getMapper();
+                    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+                    Map<String, Map<String, GameModelContent>> libraries = gameModel.getLibrariesAsMap();
+
+                    zipOutputStream.putNextEntry(new ZipEntry(GM_PREFIX));
+                    zipOutputStream.closeEntry();
+
+                    /* export Libraries */
+                    zipOutputStream.putNextEntry(new ZipEntry(LIBS_PREFIX));
+                    zipOutputStream.closeEntry();
+                    for (var libTypeentry : libraries.entrySet()) {
+                        String libType = libTypeentry.getKey();
+                        Map<String, GameModelContent> list = libTypeentry.getValue();
+                        zipOutputStream.putNextEntry(new ZipEntry(LIBS_PREFIX + libType + "/"));
+                        zipOutputStream.closeEntry();
+
+                        for (var libEntry : list.entrySet()) {
+                            String libName = libEntry.getKey();
+                            GameModelContent lib = libEntry.getValue();
+
+                            String extension = mimeTypeToExtension(lib.getContentType());
+                            ZipEntry zipLib = new ZipEntry(LIBS_PREFIX + libType + "/" + libName + extension);
+                            zipOutputStream.putNextEntry(zipLib);
+                            zipOutputStream.write(lib.getContent().getBytes(StandardCharsets.UTF_8));
+                            zipOutputStream.closeEntry();
+
+                            // clear lib content so it won't be serialized twice
+                            lib.setContent("");
+
+                            // hence, library are splitted:
+                            //  library content is exported in its own lib file
+                            //  library meta are kept in the gameModel JSON structure
+                        }
+                    }
+                    // sort libs before serialization. (to simplify comparision aka git coflict)
+                    List<GameModelContent> libsList = gameModel.getLibraries();
+                    Collator collator = Collator.getInstance();
+                    libsList.sort((GameModelContent libA, GameModelContent libB) -> {
+                        // First sort by type
+                        int typeCompare = collator.compare(libA.getLibraryType(), libB.getLibraryType());
+                        if (typeCompare == 0) {
+                            // libs of same type: sort by name
+                            return collator.compare(libA.getContentKey(), libB.getContentKey());
+                        } else {
+                            return typeCompare;
+                        }
+                    });
+
+                    /* export Pages */
+                    zipOutputStream.putNextEntry(new ZipEntry(PAGES_PREFIX));
+                    zipOutputStream.closeEntry();
+
+                    Map<String, JsonNode> pages = gameModel.getPages();
+                    for (var pageEntry : pages.entrySet()) {
+                        String pageId = pageEntry.getKey();
+                        JsonNode value = pageEntry.getValue();
+                        String toPrettyString = value.toPrettyString();
+                        ZipEntry page = new ZipEntry(PAGES_PREFIX + pageId + ".json");
+                        zipOutputStream.putNextEntry(page);
+                        zipOutputStream.write(toPrettyString.getBytes(StandardCharsets.UTF_8));
+                        zipOutputStream.closeEntry();
+                    }
+
+                    // At the end, serialize the GameModel to JSON
+                    // clear pages so they won't be serialized again
+                    gameModel.setPages(new HashMap());
+                    ZipEntry gameModelEntry = new ZipEntry(GM_DOT_JSON_NAME);
+                    zipOutputStream.putNextEntry(gameModelEntry);
+                    byte[] json = mapper.writerWithView(Views.Export.class).writeValueAsBytes(gameModel);
+                    zipOutputStream.write(json);
+                    zipOutputStream.closeEntry();
+
+                    ContentConnector connector = jcrConnectorProvider.getContentConnector(oriGameModel, WorkspaceType.FILES);
+                    AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor("/", connector);
+
+                    Map<String, FileMeta> meta = new HashMap<>();
+                    writeRepositoryEntry(zipOutputStream, descriptor, meta);
+
+                    // Write files meta
+                    ZipEntry metaEntry = new ZipEntry(FILESMETA_PREFIX);
+                    zipOutputStream.putNextEntry(metaEntry);
+                    byte[] metaJson = mapper.writeValueAsBytes(meta);
+                    zipOutputStream.write(metaJson);
+                    zipOutputStream.closeEntry();
+                } catch (RepositoryException ex) {
+                    logger.error(null, ex);
+                }
+            }
+        };
+
+        return out;
+    }
+
+    private void writeRepositoryEntry(ZipOutputStream zipOutputStream, AbstractContentDescriptor descriptor, Map<String, FileMeta> meta) throws IOException, RepositoryException {
+        String path = descriptor.getFullPath();
+
+        FileMeta fileMeta = new FileMeta();
+
+        fileMeta.setDescription(descriptor.getDescription());
+        fileMeta.setNote(descriptor.getNote());
+        fileMeta.setMimeType(descriptor.getMimeType());
+        fileMeta.setVisibility(descriptor.getVisibility());
+
+        meta.put(path, fileMeta);
+
+        if (descriptor instanceof DirectoryDescriptor) {
+            ZipEntry dirEntry = new ZipEntry(FILES_PREFIX + path);
+            zipOutputStream.putNextEntry(dirEntry);
+            zipOutputStream.closeEntry();
+
+            DirectoryDescriptor dir = (DirectoryDescriptor) descriptor;
+            for (var child : dir.getChildren()) {
+                writeRepositoryEntry(zipOutputStream, child, meta);
+            }
+        } else if (descriptor instanceof FileDescriptor) {
+            FileDescriptor file = (FileDescriptor) descriptor;
+            byte[] bytesData = file.getBytesData();
+
+            ZipEntry fileEntry = new ZipEntry(FILES_PREFIX + path);
+
+            Calendar dataLastModified = file.getDataLastModified();
+            long ts = dataLastModified.getTimeInMillis();
+            FileTime mTime = FileTime.from(ts, TimeUnit.MILLISECONDS);
+            fileEntry.setLastModifiedTime(mTime);
+            zipOutputStream.putNextEntry(fileEntry);
+            zipOutputStream.write(bytesData);
+            zipOutputStream.closeEntry();
+        }
+
+    }
+
+    public static class RecombinedGameModel {
+
+        GameModel gameModel = null;
+
+        Set<String> directories = new HashSet<>();
+
+        Map<String, FileMeta> filesMeta = new HashMap<>();
+        Map<String, FileTime> modificationTimes = new HashMap<>();
+        Map<String, byte[]> filesData = new HashMap<>();
+
+        public GameModel getGameModel() {
+            return gameModel;
+        }
+
+        public void setGameModel(GameModel gameModel) {
+            this.gameModel = gameModel;
+        }
+
+        public Map<String, FileMeta> getFilesMeta() {
+            return filesMeta;
+        }
+
+        public void setFilesMeta(Map<String, FileMeta> filesMeta) {
+            this.filesMeta = filesMeta;
+        }
+
+        public Map<String, FileTime> getModificationTimes() {
+            return modificationTimes;
+        }
+
+        public void setModificationTimes(Map<String, FileTime> modificationTimes) {
+            this.modificationTimes = modificationTimes;
+        }
+
+        public Map<String, byte[]> getFilesData() {
+            return filesData;
+        }
+
+        public void setFilesData(Map<String, byte[]> filesData) {
+            this.filesData = filesData;
+        }
+
+        public Set<String> getDirectories() {
+            return directories;
+        }
+
+        public void setDirectories(Set<String> directories) {
+            this.directories = directories;
+        }
+    }
+
+    /**
+     *
+     * @param zip zip stream to read
+     *
+     * @return recombined gameModel
+     *
+     * @throws IOException
+     */
+    public RecombinedGameModel extractFromExplodedZip(ZipInputStream zip) throws IOException {
+        ZipEntry entry;
+        RecombinedGameModel rgm = new RecombinedGameModel();
+
+        Map<String, JsonNode> pages = new HashMap<>();
+        List<GameModelContent> libs = new ArrayList<>();
+
+        Map<String, FileTime> mTimes = rgm.getModificationTimes();
+        Map<String, byte[]> filesData = rgm.getFilesData();
+        Set<String> directories = rgm.getDirectories();
+
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();
+        while ((entry = zip.getNextEntry()) != null) {
+            String entryName = entry.getName();
+            if (entryName.charAt(0) != '/') {
+                entryName = "/" + entryName;
+            }
+            if (GM_DOT_JSON_NAME.equals(entryName)) {
+                InputStream stream = IOUtils.toBufferedInputStream(zip);
+                rgm.setGameModel(mapper.readValue(stream, GameModel.class));
+            } else if (FILESMETA_PREFIX.equals(entryName)) {
+                InputStream stream = IOUtils.toBufferedInputStream(zip);
+
+                TypeReference<HashMap<String, FileMeta>> typeRef = new TypeReference<>() {
+                };
+
+                rgm.setFilesMeta(mapper.readValue(stream, typeRef));
+            } else {
+                Matcher matcher = LIB_PATTERN.matcher(entryName);
+                if (matcher.matches()) {
+                    String libType = matcher.group(1);
+
+                    String libName = matcher.group(2);
+
+                    String mimeType = extensionToMimeType(matcher.group(3));
+                    String libContent = IOUtils.toString(zip, StandardCharsets.UTF_8);
+
+                    libs.add(new GameModelContent(libName, libContent, mimeType, libType));
+                } else {
+                    matcher = PAGE_PATTERN.matcher(entryName);
+                    if (matcher.matches()) {
+                        String pageId = matcher.group(1);
+                        String jsonPage = IOUtils.toString(zip, StandardCharsets.UTF_8);
+                        JsonNode page = mapper.readTree(jsonPage);
+                        pages.put(pageId, page);
+                    } else {
+                        matcher = FILE_PATTERN.matcher(entryName);
+                        if (matcher.matches()) {
+                            String path = matcher.group(1);
+                            if (path.endsWith("/")) {
+                                // directories
+                                directories.add(path);
+                            } else {
+                                // files
+                                filesData.put(path, IOUtils.toByteArray(zip));
+                                mTimes.put(path, entry.getLastModifiedTime());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (rgm.getGameModel() != null) {
+            GameModel gameModel = rgm.getGameModel();
+            gameModel.setPages(pages);
+
+            // try to set lib content back
+            List<GameModelContent> gmLibs = gameModel.getLibraries();
+            libs.forEach(lib -> {
+                Optional<GameModelContent> find = gmLibs.stream()
+                    .filter(l -> {
+                        return l.getContentType().equals(lib.getContentType())
+                            && l.getContentKey().equals(lib.getContentKey());
+                    })
+                    .findFirst();
+                if (find.isPresent()) {
+                    // restore content
+                    find.get().setContent(lib.getContent());
+                } else {
+                    // new lib
+                    gmLibs.add(lib);
+                }
+            });
+            //gameModel.setLibraries(libs);
+            return rgm;
+        }
+
+        return null;
     }
 
     public void duplicateRepository(GameModel newGameModel, GameModel srcGameModel) {
@@ -1467,7 +1858,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Ginf all permission related to a gameMdoel
+     * Get all permissions related to a gameModel
      *
      * @param gmId
      *
