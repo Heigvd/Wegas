@@ -1,5 +1,8 @@
+
 type IAbstractContentDescriptor =
   import('wegas-ts-api').IAbstractContentDescriptor;
+
+type BaseSchema = import('jsoninput').Schema.BASE;
 
 type TYPESTRING = 'string' | 'number' | 'boolean' | 'object' | 'array' | 'null';
 
@@ -79,7 +82,7 @@ interface SimpleSchemaProps {
   index?: number;
 }
 
-interface CommonSchemaProps extends SimpleSchemaProps {
+interface CommonSchemaProps extends SimpleSchemaProps, Pick<BaseSchema, "visible"> {
   label?: string;
   featureLevel?: FeatureLevel;
   layout?: SchemaLayout;

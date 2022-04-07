@@ -1,10 +1,9 @@
 import { css } from "@emotion/css";
 
 export const findAndReplaceStyle = css({
-    /* Find & Replace */
 
     '.find-result-entry' : {
-        marginLeft: '10px',
+        //marginLeft: '10px',
         marginTop: '20px',
         '.find-result-entry-title': {
             fontWeight: "bolder",
@@ -24,7 +23,8 @@ export const findAndReplaceStyle = css({
             
             '.editOldInline' : {
                 backgroundColor: 'lightpink',
-                textDecoration: 'lineTrough'
+                textDecorationLine: 'line-through',
+                textDecorationThickness : '1px'
             },
             '.editNewInline' : {
                 backgroundColor: 'lightblue',
@@ -53,68 +53,18 @@ export const findAndReplaceStyle = css({
                 userSelect : 'none'
             }
         },
+        '.find-result-entry-line':{
+            marginLeft : '20px'
+        },
 
     },
 
+    'h4.find-result-waiting': {
+        fontStyle : "italic",
+    },
+    'h4.find-result-empty': {
+        fontStyle : "italic",
+        backgroundColor : 'pink'
+    }
 
-//   .find-result-entry-diff .find-result-entry-line,
-//   .find-result-entry-diff .find-result-entry-skip{
-//     margin-left:20px;
-// }
-
-//   .find-result-entry-diff .find-result-entry-skip{
-//     font-style: italic;
-//     color: #666;
-//     user-select: none;
-// }
-
-// -widget-content .actions{
-//     margin: 10px;
-// }
-
-// -widget-content .actions .execute{
-//     display: inline-block;
-//     background-color: #4a4a4a;
-//     color:white;
-//     cursor: pointer;
-//     padding: 10px;
-// }
-
-
-// .panel-inner -widget {
-//     height : 100%;
-// }
-
-// .panel-inner -widget-content {
-//     height : 100%;
-//     display: flex;
-//     height: 100%;
-//     flex-direction: column;
-// }
-
-// .panel-inner -widget .widget {
-//     flex-grow:1;
-//     position:relative;
-//     overflow: auto;
-// }
-// .panel-inner -widget .widget > div {
-//     position: absolute;
-//     top:0;
-//     bottom:0;
-//     left:0;
-//     right:0;
-// }
-
-// .panel-inner -widget .widget -content{
-//     height:100%;
-// }
-
-// .panel-inner -widget .widget -content > .the-form > .wegas-react-form,
-// .panel-inner -widget .widget -content > .the-form > .wegas-react-form > .wegas-react-form-content {
-//     overflow: visible;
-// }
-
-// .panel-inner -widget .widget .find-result{
-//     overflow: auto;
-// }
 })
