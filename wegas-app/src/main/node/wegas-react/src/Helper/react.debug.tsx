@@ -3,12 +3,12 @@
  * @author Pierre-Benjamin Monaco
  * Inspired from from https://gist.github.com/sqren/780ae8ca1e2cf59050b0695c901b5aa3
  */
-import * as React from 'react';
 import { omit } from 'lodash-es';
+import * as React from 'react';
 import { wlog } from './wegaslog';
 
 const defaultPropsCheckerProps = {
-  children: (_props: {}) => {},
+  children: (_props: UknownValuesObject) => {},
   compType: 'SIMPLE',
   verbose: false,
 };

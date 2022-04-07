@@ -30,7 +30,9 @@ export function isFeatureEnabled(
   return currentFeatures.includes(feature);
 }
 
-function FeaturesContext({ children }: React.PropsWithChildren<{}>) {
+function FeaturesContext({
+  children,
+}: React.PropsWithChildren<UknownValuesObject>) {
   const [features, setFeature] = React.useState<FeatureLevel[]>(['DEFAULT']);
   return (
     <featuresCTX.Provider
@@ -78,11 +80,11 @@ export function useFeatures() {
             selectFeature(feature);
           }}
         >
-           <CheckBox
-              value={isFeatureEnabled(currentFeatures, feature)}
-              onChange={() => selectFeature(feature)}
-              label={feature}
-              horizontal
+          <CheckBox
+            value={isFeatureEnabled(currentFeatures, feature)}
+            onChange={() => selectFeature(feature)}
+            label={feature}
+            horizontal
           />
         </div>
       ),

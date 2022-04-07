@@ -26,7 +26,7 @@ import {
   editingStore,
   EditingStoreDispatch,
 } from '../../../data/Stores/editingStore';
-import { useStore } from '../../../data/Stores/store';
+import { store, useStore } from '../../../data/Stores/store';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { mainLayoutId } from '../../layouts';
@@ -97,7 +97,7 @@ export function VariableTreeView({
   );
   const searchFn = useDebounceFn(
     (value: string) =>
-      globalDispatch(
+      store.dispatch(
         value.length < 2
           ? Actions.EditorActions.clearSearch()
           : Actions.EditorActions.search(value),
@@ -164,7 +164,7 @@ export function VariableTreeView({
                 )}
                 tooltip={i18nValues.deepSearch}
                 onClick={() => {
-                  globalDispatch(Actions.EditorActions.searchSetDeep(!deep));
+                  store.dispatch(Actions.EditorActions.searchSetDeep(!deep));
                 }}
               />
             </div>

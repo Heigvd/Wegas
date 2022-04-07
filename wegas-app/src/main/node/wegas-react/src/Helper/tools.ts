@@ -1,5 +1,5 @@
-import { wwarn } from './wegaslog';
 import { cloneDeep } from 'lodash-es';
+import { wwarn } from './wegaslog';
 
 /**
  * Inspired from :
@@ -219,7 +219,6 @@ export function createLRU<K, V>(maxSize?: number): LRU<K, V> {
   };
 
   const removeOldest = () => {
-    console.log('RemoveOldest');
     if (tail) {
       if (tail.previous) {
         // penultimate becomes the last

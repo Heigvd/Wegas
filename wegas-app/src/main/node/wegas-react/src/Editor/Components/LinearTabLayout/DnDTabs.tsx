@@ -7,7 +7,11 @@ import { DropAction } from './DnDTabLayout';
 
 const DROP_SPACE_WIDTH = 100;
 
-function triangleDropStyle(canDrop: boolean, isOverCurrent: boolean, position:'FIRST' | 'MIDDLE' | 'LAST') {
+function triangleDropStyle(
+  canDrop: boolean,
+  isOverCurrent: boolean,
+  position: 'FIRST' | 'MIDDLE' | 'LAST',
+) {
   return css({
     '&:before': {
       content: '""',
@@ -17,20 +21,21 @@ function triangleDropStyle(canDrop: boolean, isOverCurrent: boolean, position:'F
       position: 'relative',
       zIndex: 10,
       top: '-20px',
-      left: position === 'FIRST' ? 0 : position === 'LAST' ? (DROP_SPACE_WIDTH/2) + 'px' : 'calc(50% - 10px)',
-      borderLeft: position ==='FIRST'
-      ? 'none'
-      : '10px solid transparent',
-      borderRight: position ==='LAST'
-      ? 'none'
-      :'10px solid transparent',
+      left:
+        position === 'FIRST'
+          ? 0
+          : position === 'LAST'
+          ? DROP_SPACE_WIDTH / 2 + 'px'
+          : 'calc(50% - 10px)',
+      borderLeft: position === 'FIRST' ? 'none' : '10px solid transparent',
+      borderRight: position === 'LAST' ? 'none' : '10px solid transparent',
       borderTop: isOverCurrent
-      ? '20px solid ' + themeVar.colors.HighlightColor
-      : canDrop
-      ? '20px solid ' + themeVar.colors.DisabledColor
-      : 'transparent',
-    }
-  })
+        ? '20px solid ' + themeVar.colors.HighlightColor
+        : canDrop
+        ? '20px solid ' + themeVar.colors.DisabledColor
+        : 'transparent',
+    },
+  });
 }
 
 interface DragTabProps extends TabProps {
@@ -55,7 +60,7 @@ interface DragTabProps extends TabProps {
 export interface DnDItem {
   label: string;
   type: string;
-  children?: React.PropsWithChildren<{}>['children'];
+  children?: React.PropsWithChildren<EmptyObject>['children'];
 }
 
 export function DragTab({
@@ -124,8 +129,14 @@ export function DropTab({ dndAcceptType, onDrop, position }: DropTabProps) {
       ref={dropTab}
       style={{
         zIndex: 10,
-        width: position === 'MIDDLE' ? DROP_SPACE_WIDTH + 'px' : (DROP_SPACE_WIDTH/2) + 'px',
-        minWidth: position === 'MIDDLE' ? DROP_SPACE_WIDTH + 'px' : (DROP_SPACE_WIDTH/2) + 'px',
+        width:
+          position === 'MIDDLE'
+            ? DROP_SPACE_WIDTH + 'px'
+            : DROP_SPACE_WIDTH / 2 + 'px',
+        minWidth:
+          position === 'MIDDLE'
+            ? DROP_SPACE_WIDTH + 'px'
+            : DROP_SPACE_WIDTH / 2 + 'px',
         visibility: isOverCurrent || canDrop ? 'visible' : 'hidden',
         borderRadius:
           position === 'FIRST'
@@ -133,8 +144,14 @@ export function DropTab({ dndAcceptType, onDrop, position }: DropTabProps) {
             : position === 'LAST'
             ? `0 ${themeVar.dimensions.BorderRadius} 0 0`
             : 'initial',
-        marginLeft: position === 'LAST' || position === 'MIDDLE' ? '-' + (DROP_SPACE_WIDTH/2) + 'px' : '0px',
-        marginRight: position === 'FIRST' || position === 'MIDDLE' ? '-' + (DROP_SPACE_WIDTH/2) + 'px' : '0px',
+        marginLeft:
+          position === 'LAST' || position === 'MIDDLE'
+            ? '-' + DROP_SPACE_WIDTH / 2 + 'px'
+            : '0px',
+        marginRight:
+          position === 'FIRST' || position === 'MIDDLE'
+            ? '-' + DROP_SPACE_WIDTH / 2 + 'px'
+            : '0px',
       }}
       className={triangleDropStyle(canDrop, isOverCurrent, position)}
     />

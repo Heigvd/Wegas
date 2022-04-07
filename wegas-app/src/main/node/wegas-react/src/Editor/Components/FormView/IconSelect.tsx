@@ -1,13 +1,12 @@
-import * as React from 'react';
-import Select from './Select';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { LabeledView } from './labeled';
-import { CommonView } from './commonView';
-
+import * as React from 'react';
 import { icons } from '../../../Editor/Components/Views/FontAwesome';
+import { CommonView } from './commonView';
+import { LabeledView } from './labeled';
+import Select from './Select';
 
 interface IIconSelectProps extends WidgetProps.BaseProps {
-  view: {} & CommonView & LabeledView;
+  view: CommonView & LabeledView;
 }
 
 function IconSelect(props: IIconSelectProps) {

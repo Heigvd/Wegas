@@ -19,7 +19,7 @@ const simpleSchemaProps = {
     value,
   }: {
     type?: TYPESTRING | TYPESTRING[];
-    value?: {};
+    value?: any;
   } & SimpleSchemaProps): SchemaFromView<'hidden'> => ({
     required,
     type,
@@ -40,7 +40,7 @@ const simpleSchemaProps = {
     borderTop,
     noMarginTop,
     description,
-    visible
+    visible,
   }: CommonSchemaProps &
     ReadOnlySchemaProps &
     ValueSchemaProps<boolean>): SchemaFromView<'boolean'> => ({
@@ -295,7 +295,7 @@ const simpleSchemaProps = {
   }: {
     language?: CodeLanguage;
   } & CommonSchemaProps &
-    ValueSchemaProps<{} | string>): SchemaFromView<'code'> => ({
+    ValueSchemaProps<UknownValuesObject | string>): SchemaFromView<'code'> => ({
     required,
     type: 'object',
     value,
@@ -601,7 +601,7 @@ const simpleSchemaProps = {
     borderTop,
     noMarginTop,
     description,
-    visible
+    visible,
   }: CommonSchemaProps &
     ValueSchemaProps<IScript>): SchemaFromView<'scriptableBoolean'> => ({
     required,
@@ -637,10 +637,10 @@ const simpleSchemaProps = {
     borderTop,
     controls,
     description,
-    visible 
+    visible,
   }: {
-    itemSchema: {};
-    userOnChildAdd?: (value?: {}) => {};
+    itemSchema: any;
+    userOnChildAdd?: (value?: any) => any;
     requiredItems?: boolean;
     itemType?: TYPESTRING;
     highlight?: boolean;
@@ -865,7 +865,7 @@ const objectSchemaProps = {
     borderTop,
     noMarginTop,
     description,
-    visible
+    visible,
   }: {
     properties?: { [key: string]: AvailableSchemas };
   } & CommonSchemaProps &

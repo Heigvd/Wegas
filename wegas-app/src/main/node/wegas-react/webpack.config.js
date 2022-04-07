@@ -9,6 +9,7 @@ const smp = new SpeedMeasurePlugin();
 const BundleAnalyzerPlugin =
   require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const CopyPlugin = require('copy-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 const PROD = process.env.NODE_ENV === 'production';
 const PREPROD = process.env.NODE_ENV === 'pre-production';
@@ -32,7 +33,13 @@ const plugins = [
   new CopyPlugin({
     patterns: [{ from: 'src/**/*.less' }],
   }),
+  new ESLintPlugin({
+    context: './src',
+    extensions: ['ts', 'tsx'],
+    quiet: true,
+  }),
 ];
+
 if (!isCI && PREPROD) {
   plugins.push(new BundleAnalyzerPlugin());
 }
@@ -67,7 +74,16 @@ const modules = {
     publicPath: '../wegas-react/dist/',
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json'],
+    extensions: [
+      '.ts',
+      '.tsx',
+      '.mjs',
+      '.js',
+      '.jsx',
+      '.json',
+      '.ttf',
+      '.d.ts',
+    ],
     mainFields: ['browser', 'module', 'main'],
   },
   plugins: plugins,
@@ -120,6 +136,23 @@ const modules = {
       {
         test: /\.less$/i,
         use: 'raw-loader',
+      },
+      {
+        // https://github.com/foxglove/studio/pull/546/commits/8a60775ac428b25c8cf7bd4be7c5075f4b9bafdc
+        // TypeScript uses dynamic requires()s when running in node. We can disable these when we
+        // bundle it for the renderer.
+        test: /[\\/]node_modules[\\/]typescript[\\/]lib[\\/]typescript\.js$/,
+        loader: 'string-replace-loader',
+        options: {
+          multiple: [
+            {
+              search:
+                'var _a = require("perf_hooks"), nodePerformance_1 = _a.performance, PerformanceObserver_1 = _a.PerformanceObserver;',
+              replace:
+                "throw new Error('[perf_hooks] This module is not supported in the browser.');",
+            },
+          ],
+        },
       },
     ],
   },
