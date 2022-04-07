@@ -1,6 +1,6 @@
 import { GameModel } from '../data/selectors';
 import { FindAndReplacePayload } from '../Editor/Components/FindAndReplace';
-import { rest } from './rest';
+import { IManagedResponse, managedModeRequest, rest } from './rest';
 
 const UTILS_BASE = 'Utils/';
 const FIND_AND_REPLACE_BASE = 'FindAndReplace';
@@ -24,12 +24,16 @@ export const UtilsAPI = {
 
 export function FindAndReplaceAPI(gameModelId?: number) {
   return {
-    async findAndReplace(payload: FindAndReplacePayload): Promise<string> {
-      const res = await rest(GAME_MODEL_URL(gameModelId) + FIND_AND_REPLACE_BASE, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-      return await res.text();
+    async findAndReplace(
+      payload: FindAndReplacePayload,
+    ): Promise<IManagedResponse> {
+      return managedModeRequest(
+        GAME_MODEL_URL(gameModelId) + FIND_AND_REPLACE_BASE,
+        {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        },
+      );
     },
   };
 }
