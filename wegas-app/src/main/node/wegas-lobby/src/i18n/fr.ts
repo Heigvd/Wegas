@@ -199,6 +199,7 @@ export const fr: WegasTranslations = {
   pdfTooltip: (gm: IGameModel) =>
     `Le PDF d'un ${fr.prettyPrintType(gm)} liste tout son contenu dans format imprimable`,
   exportWgz: 'Exporter au format WGZ',
+  exportZip: 'Exporter au format ZIP',
   wgzTooltip: (gm: IGameModel) => `Un export de votre ${fr.prettyPrintType(gm)}`,
   exportJson: 'Exporter en JSON',
   jsonTooltip: (gm: IGameModel) => `Un export de votre ${fr.prettyPrintType(gm)} au format JSON`,
@@ -220,7 +221,7 @@ export const fr: WegasTranslations = {
   },
 
   // Diff & Patch
-  diff: 'Mettre à jour',
+  diff: 'Mettre à jour à partir d\'un export WGZ, ZIP ou JSON ',
   patch: 'Accepter la mise à jour',
   restart: 'Refuser la mise à jour',
 
