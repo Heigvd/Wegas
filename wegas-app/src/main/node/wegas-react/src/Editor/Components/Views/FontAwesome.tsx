@@ -1,19 +1,19 @@
-import * as React from 'react';
+import { cx } from '@emotion/css';
 import {
-  library,
-  IconPrefix,
   IconDefinition,
   IconName,
+  IconPrefix,
   IconProp,
+  library,
   Transform,
 } from '@fortawesome/fontawesome-svg-core';
+import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon, Props } from '@fortawesome/react-fontawesome';
-import { far } from '@fortawesome/free-regular-svg-icons';
 import { omit } from 'lodash-es';
+import * as React from 'react';
 import { halfOpacity } from '../../../css/classes';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { cx } from '@emotion/css';
 
 // These icon definitions MUST be added to library in order for React-Fontawsome to work properly
 library.add(fas, far);
@@ -36,11 +36,11 @@ export const prefixes = [
 export const icons = {
   // undefined: undefined,
   ...Object.values(fas).reduce(
-    (o: {}, v: IconDefinition) =>
+    (o: Record<IconName, IconDefinition>, v: IconDefinition) =>
       typeof v === 'object' && 'iconName' in v && v.iconName !== undefined
         ? { ...o, [v.iconName]: v }
         : o,
-    {},
+    {} as Record<IconName, IconDefinition>,
   ),
 };
 
@@ -62,7 +62,14 @@ interface IconDisplayProps extends Omit<ClassStyleId, 'id'> {
   transform?: string | Transform;
 }
 
-function IconDisplay({ icon, mask, transform, style, className, disabled }: IconDisplayProps) {
+function IconDisplay({
+  icon,
+  mask,
+  transform,
+  style,
+  className,
+  disabled,
+}: IconDisplayProps) {
   return isProps(icon) ? (
     <FontAwesome
       fixedWidth
@@ -109,14 +116,21 @@ interface IconCompProps extends Omit<ClassStyleId, 'id'> {
    * mask - icon name or [prefix, icon name] given to mask the icon prop
    */
   mask?: IconProp;
-/**
+  /**
    * transform - transform the icon given for icon prop.
    * Easiest is to use "shrink-n down-n left-n" for example: "shrink-9 down-1.5"
    */
   transform?: string | Transform;
 }
 
-export function IconComp({ icon, mask, transform, style, className, disabled }: IconCompProps) {
+export function IconComp({
+  icon,
+  mask,
+  transform,
+  style,
+  className,
+  disabled,
+}: IconCompProps) {
   return icon == null ? (
     <pre style={style} className={className}>
       No icon

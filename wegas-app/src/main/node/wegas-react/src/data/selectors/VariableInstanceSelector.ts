@@ -1,6 +1,6 @@
-import { store } from '../Stores/store';
 import { isMatch } from 'lodash-es';
 import { IVariableInstance } from 'wegas-ts-api';
+import { store } from '../Stores/store';
 
 /**
  * Find a variableInstance for an id
@@ -40,7 +40,10 @@ export function select<T extends IVariableInstance = IVariableInstance>(
  * @param key the key to search for
  * @param value the value the key should be equal
  */
-export function first<T extends IVariableInstance>(key: keyof T, value: any) {
+export function first<T extends IVariableInstance>(
+  key: keyof T,
+  value: ValueOf<T>,
+) {
   const state = store.getState();
   for (const vi in state.variableInstances) {
     const s = state.variableInstances[vi] as T;
@@ -67,7 +70,10 @@ export function firstMatch<T extends IVariableInstance>(o: Partial<T>) {
  * @param key the key to search for
  * @param value the value the key should be equal
  */
-export function all<T extends IVariableInstance>(key: keyof T, value: any) {
+export function all<T extends IVariableInstance>(
+  key: keyof T,
+  value: ValueOf<T>,
+) {
   const ret = [];
   const state = store.getState();
   for (const vi in state.variableInstances) {

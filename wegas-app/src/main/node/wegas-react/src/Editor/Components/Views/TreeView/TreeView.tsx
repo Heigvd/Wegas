@@ -1,24 +1,24 @@
+import { css, cx } from '@emotion/css';
+import { omit } from 'lodash-es';
 import * as React from 'react';
+import {
+  DragSourceMonitor,
+  DropTargetMonitor,
+  useDrag,
+  useDrop,
+} from 'react-dnd';
 import {
   DefaultDndProvider,
   dropZoneClass,
 } from '../../../../Components/Contexts/DefaultDndProvider';
-import {
-  flexColumn,
-  flex,
-  relative,
-  itemCenter,
-} from '../../../../css/classes';
-import { cx, css } from '@emotion/css';
-import {
-  useDrag,
-  useDrop,
-  DropTargetMonitor,
-  DragSourceMonitor,
-} from 'react-dnd';
-import { classNameOrEmpty } from '../../../../Helper/className';
 import { deepDifferent } from '../../../../Components/Hooks/storeHookFactory';
-import { omit } from 'lodash-es';
+import {
+  flex,
+  flexColumn,
+  itemCenter,
+  relative,
+} from '../../../../css/classes';
+import { classNameOrEmpty } from '../../../../Helper/className';
 import { FontAwesome } from '../FontAwesome';
 
 const treeNodeStyle = cx(flex, flexColumn, css({ marginTop: '1px' }));
@@ -36,7 +36,7 @@ export interface NodeBasicInfo<T> {
 }
 
 export interface DropResult<T> {
-  item: {};
+  item: unknown;
   id: T;
   source: NodeBasicInfo<T>;
   target: NodeBasicInfo<T>;

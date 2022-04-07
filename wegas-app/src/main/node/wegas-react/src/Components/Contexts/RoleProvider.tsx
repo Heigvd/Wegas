@@ -24,7 +24,9 @@ export const roleCTX = React.createContext<RoleContext>({
   setRole: () => {},
 });
 
-function RoleContext({ children }: React.PropsWithChildren<{}>) {
+function RoleContext({
+  children,
+}: React.PropsWithChildren<UknownValuesObject>) {
   const defaultRoleId = useStore(s => s.global.roles.defaultRoleId);
   const [currentRole, setRole] = React.useState<string>(
     window.localStorage.getItem(EditorRoleData) || defaultRoleId,

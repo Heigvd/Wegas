@@ -1,17 +1,16 @@
-import * as React from 'react';
-import { expandBoth, flex, flexColumn } from '../css/classes';
 import { cx } from '@emotion/css';
 import Form from 'jsoninput';
 import { ValidationError } from 'jsonschema/lib';
+import * as React from 'react';
+import { IAbstractContentDescriptor, IScript } from 'wegas-ts-api';
 import { Value } from '../Components/Outputs/Value';
-import { MessageString } from '../Editor/Components/MessageString';
 import { schemaProps } from '../Components/PageComponents/tools/schemaProps';
-import { createScript } from '../Helper/wegasEntites';
-
+import { themeVar } from '../Components/Theme/ThemeVars';
+import { expandBoth, flex, flexColumn } from '../css/classes';
 //It's really important to import index.ts in order to have the widjets allready registered before using Form
 import '../Editor/Components/FormView';
-import { themeVar } from '../Components/Theme/ThemeVars';
-import { IScript, IAbstractContentDescriptor } from 'wegas-ts-api';
+import { MessageString } from '../Editor/Components/MessageString';
+import { createScript } from '../Helper/wegasEntites';
 
 const testSchema = {
   variable: schemaProps.scriptVariable({ label: 'Variable' }),
@@ -100,9 +99,9 @@ interface SchemaPropsTesterState {
   code: object;
   select: string;
   undefSelect?: string;
-  simpleHashList: {};
-  customizedHashList: {};
-  customizedMultilevelHashList: {};
+  simpleHashList: UknownValuesObject;
+  customizedHashList: UknownValuesObject;
+  customizedMultilevelHashList: UknownValuesObject;
   file?: IAbstractContentDescriptor;
   greyFilterfile?: IAbstractContentDescriptor;
   objectArray?: { className?: string; condition?: IScript }[];

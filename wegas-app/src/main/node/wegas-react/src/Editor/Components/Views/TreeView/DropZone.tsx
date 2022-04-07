@@ -1,24 +1,24 @@
 import * as React from 'react';
-import { findDOMNode } from 'react-dom';
 import {
-  DropTarget,
   ConnectDropTarget,
-  XYCoord,
+  DropTarget,
   DropTargetMonitor,
+  XYCoord,
 } from 'react-dnd';
+import { findDOMNode } from 'react-dom';
 
 export type DropLocation = 'INSIDE' | 'AFTER' | 'BEFORE' | 'AUTO';
 
 export interface ItemDescription {
-  id: {};
-  parent?: {};
+  id: unknown;
+  parent?: unknown;
   index: number;
   boundingRect: ClientRect | DOMRect;
 }
 export interface Outcome {
   where: DropLocation;
   outcome: {
-    parent?: {};
+    parent?: unknown;
     index: number;
   };
 }
@@ -63,6 +63,8 @@ function outcome(
           ...props,
           where: pos(
             monitor!.getClientOffset()!,
+            // TODO : Find a better way
+            // eslint-disable-next-line react/no-find-dom-node
             component.separator || (findDOMNode(component) as Element),
           ),
         },
@@ -83,7 +85,7 @@ function outcome(
 }
 interface DropZoneProps {
   // accept: Parameters<typeof useDrop>[0]['accept'];
-  id?: {};
+  id?: unknown;
   where: DropLocation;
   index: number;
   children: (passProps: {

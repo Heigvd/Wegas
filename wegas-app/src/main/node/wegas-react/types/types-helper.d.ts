@@ -41,7 +41,7 @@ type ExtractTuppleArray<
   A2,
   Arest = [...any[]],
   N extends keyof ReadonlyTuple<[A1, A2, ...Arest[]]> = '1',
-  Lookup extends false | {} = false,
+  Lookup extends false | UknownValuesObject = false,
   RET = {
     [key in keyof T]: N extends keyof T[key] ? T[key][N] : unknown;
   },
@@ -52,3 +52,7 @@ type ExtractTuppleArray<
         : unknown;
     }
   : RET;
+
+type EmptyObject = Record<string, never>;
+type UknownValuesObject = Record<string, unknown>;
+type AnyValuesObject = Record<string, any>;

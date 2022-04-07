@@ -4,12 +4,12 @@ import { defaultPadding, flex, flexColumn } from '../../../../css/classes';
 import { DropMenu } from '../../../DropMenu';
 import { Title } from '../../../Inputs/String/Title';
 import {
-  ThemeValues,
   ModeColor,
   ModeDimension,
   ModeOther,
-  Theme,
   ModeValues,
+  Theme,
+  ThemeValues,
 } from '../../ThemeVars';
 import { ModeColorValue } from './ModeColorValue';
 
@@ -50,7 +50,7 @@ export function ModeValueModifier({
       >
         {section}
       </Title>
-      {Object.entries(values[section as keyof typeof values] || []).map(
+      {Object.entries(values[section] || []).map(
         ([k, v]: [string, ModeColor | ModeDimension | ModeOther]) => {
           const sectionValue = v == null ? 'undefined' : v;
           return (

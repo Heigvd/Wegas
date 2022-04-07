@@ -32,8 +32,8 @@ export function componentOrRawHTML<K extends TrainerComponentKey>(
   if (formatterIsReact(formatterOutput)) {
     const TrainerComponent = components[
       formatterOutput.component
-    ] as React.FunctionComponent<{}>;
-    return <TrainerComponent {...(formatterOutput.props as {})} />;
+    ] as React.FunctionComponent;
+    return <TrainerComponent {...(formatterOutput.props as AnyValuesObject)} />;
   } else {
     return <HTMLText text={formatterOutput} />;
   }

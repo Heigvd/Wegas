@@ -1,13 +1,13 @@
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { useStore, store } from '../data/Stores/store';
-import { flexColumn, flex, itemCenter, flexRow } from '../css/classes';
-import { cx, css } from '@emotion/css';
 import { ITranslatableContent } from 'wegas-ts-api';
+import { flex, flexColumn, flexRow, itemCenter } from '../css/classes';
+import { ActionCreator } from '../data/actions';
+import { store, useStore } from '../data/Stores/store';
 import { translate } from '../Editor/Components/FormView/translatable';
 import { languagesCTX } from './Contexts/LanguagesProvider';
-import { themeVar } from './Theme/ThemeVars';
 import { Button } from './Inputs/Buttons/Button';
-import { ActionCreator } from '../data/actions';
+import { themeVar } from './Theme/ThemeVars';
 
 const popupBackgroundStyle = css({
   zIndex: 100000,
@@ -49,7 +49,9 @@ export interface PopupState {
   popups: { [id: string]: Popup };
 }
 
-export function PopupManager({ children }: React.PropsWithChildren<{}>) {
+export function PopupManager({
+  children,
+}: React.PropsWithChildren<UknownValuesObject>) {
   const popups = useStore(s => s.global.popups);
   const { lang } = React.useContext(languagesCTX);
   return (

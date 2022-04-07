@@ -16,7 +16,7 @@ export interface NodeBasicInfo<T> {
 }
 
 export interface DropResult<T> {
-  item: {};
+  item: unknown;
   id: T;
   source: NodeBasicInfo<T>;
   target: NodeBasicInfo<T>;

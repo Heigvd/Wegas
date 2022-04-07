@@ -446,7 +446,9 @@ function execAllScripts(scripts: ScriptEntry[]) {
   setReloadingStatus(false);
 }
 
-export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
+export function LibrariesLoader(
+  props: React.PropsWithChildren<UknownValuesObject>,
+) {
   const [librariesState, dispatchLibrariesState] = React.useReducer(
     setLibrariesState,
     defaultLibrariesState,

@@ -56,7 +56,7 @@ export function rest(
     }
   }
   const v = view ? `${view}/` : '';
-  const u = url.startsWith('/') ? url.substr(1) : url;
+  const u = url.startsWith('/') ? url.substring(1) : url;
   return fetch(`${API_ENDPOINT}${v}${u}`, {
     ...COMMON_CONFIG(type),
     ...options,

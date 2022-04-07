@@ -1,34 +1,50 @@
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import generalTypes from '!!raw-loader!../../../types/general-types.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import APIMethodsGlobalSrc from '!!raw-loader!../../../types/scripts/APIMethodsGlobals.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import classesGlobalSrc from '!!raw-loader!../../../types/scripts/ClassesGlobals.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import clientMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ClientMethodGlobals.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import editorGlobalSrc from '!!raw-loader!../../../types/scripts/EditorGlobals.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import HelpersGlobalSrc from '!!raw-loader!../../../types/scripts/HelpersGlobals.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import i18nGlobalSrc from '!!raw-loader!../../../types/scripts/I18nGlobals.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import popupsGlobalSrc from '!!raw-loader!../../../types/scripts/PopupsGlobals.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import RolesMethodsGlobalSrc from '!!raw-loader!../../../types/scripts/RolesGlobals.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import schemaGlobalSrc from '!!raw-loader!../../../types/scripts/SchemaGlobals.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import SchemaHelper from '!!raw-loader!../../../types/scripts/SchemaHelper.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMethodsGlobals.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import WegasDashboardSrc from '!!raw-loader!../../../types/scripts/WegasDashboard.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import wegasEventsGlobalSrc from '!!raw-loader!../../../types/scripts/WegasEventsGlobals.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasEntities.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import scriptableEntitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasScriptableEntities.d.ts.mlib';
 import * as React from 'react';

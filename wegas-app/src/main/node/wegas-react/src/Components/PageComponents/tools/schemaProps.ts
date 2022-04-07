@@ -11,16 +11,15 @@ import { WegasMethod } from '../../../Editor/editionConfig';
 import { createScript } from '../../../Helper/wegasEntites';
 import { Choices } from '../../Selector';
 
-// For tests only
-//const simpleSchemaProps: SimpleSchemaPropsType = {
-
 const simpleSchemaProps = {
   hidden: ({
     required = false,
     type = 'array',
     index = 0,
+    value,
   }: {
     type?: TYPESTRING | TYPESTRING[];
+    value?: any;
   } & SimpleSchemaProps): SchemaFromView<'hidden'> => ({
     required,
     type,
@@ -28,6 +27,7 @@ const simpleSchemaProps = {
     view: {
       type: 'hidden',
     },
+    value,
   }),
   boolean: ({
     label,
@@ -39,6 +39,8 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: CommonSchemaProps &
     ReadOnlySchemaProps &
     ValueSchemaProps<boolean>): SchemaFromView<'boolean'> => ({
@@ -46,6 +48,7 @@ const simpleSchemaProps = {
     type: 'boolean',
     value,
     index,
+    visible,
     view: {
       borderTop,
       noMarginTop,
@@ -55,6 +58,7 @@ const simpleSchemaProps = {
       label,
       layout,
       type: 'boolean',
+      description,
     },
   }),
   number: ({
@@ -67,6 +71,8 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: CommonSchemaProps &
     ReadOnlySchemaProps &
     ValueSchemaProps<number>): SchemaFromView<'number'> => ({
@@ -74,6 +80,7 @@ const simpleSchemaProps = {
     type: 'number',
     value,
     index,
+    visible,
     view: {
       borderTop,
       noMarginTop,
@@ -83,6 +90,7 @@ const simpleSchemaProps = {
       layout,
       readOnly,
       type: 'number',
+      description,
     },
   }),
   string: ({
@@ -96,6 +104,8 @@ const simpleSchemaProps = {
     noMarginTop,
     readOnly,
     fullWidth = false,
+    description,
+    visible,
   }: CommonSchemaProps &
     ReadOnlySchemaProps &
     ValueSchemaProps<string> & {
@@ -105,6 +115,7 @@ const simpleSchemaProps = {
     type: 'string',
     value,
     index,
+    visible,
     view: {
       borderTop,
       noMarginTop,
@@ -115,6 +126,7 @@ const simpleSchemaProps = {
       type: 'string',
       readOnly,
       fullWidth,
+      description,
     },
   }),
   html: ({
@@ -128,6 +140,8 @@ const simpleSchemaProps = {
     noMarginTop,
     readOnly,
     noResize = false,
+    description,
+    visible,
   }: CommonSchemaProps &
     ReadOnlySchemaProps &
     ValueSchemaProps<ITranslatableContent> & { noResize?: boolean }) => ({
@@ -135,6 +149,7 @@ const simpleSchemaProps = {
     type: 'object',
     value,
     index,
+    visible,
     view: {
       borderTop,
       noMarginTop,
@@ -145,6 +160,7 @@ const simpleSchemaProps = {
       type: 'i18nhtml',
       readOnly,
       noResize,
+      description,
     },
   }),
   custom: <T extends keyof typeof DEFINED_VIEWS>({
@@ -159,6 +175,8 @@ const simpleSchemaProps = {
     featureLevel = 'DEFAULT',
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: {
     type?: WegasMethod['returns'];
     viewType?: T;
@@ -175,6 +193,7 @@ const simpleSchemaProps = {
       type,
       value,
       index,
+      visible,
       view: {
         borderTop,
         noMarginTop,
@@ -184,6 +203,7 @@ const simpleSchemaProps = {
         layout,
         readOnly,
         type: viewType,
+        description,
       },
     }),
   script: ({
@@ -197,6 +217,8 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: {
     mode?: ScriptMode;
     language?: ScriptLanguage;
@@ -206,6 +228,7 @@ const simpleSchemaProps = {
     type: 'object',
     value: createScript(value, language),
     index,
+    visible,
     view: {
       borderTop,
       noMarginTop,
@@ -215,6 +238,7 @@ const simpleSchemaProps = {
       mode,
       type: 'script',
       layout,
+      description,
     },
   }),
   customScript: ({
@@ -229,6 +253,8 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: {
     returnType?: string[];
     language: ScriptLanguage;
@@ -239,6 +265,7 @@ const simpleSchemaProps = {
     type: 'object',
     value: createScript(value, language),
     index,
+    visible,
     view: {
       borderTop,
       noMarginTop,
@@ -250,6 +277,7 @@ const simpleSchemaProps = {
       args,
       language,
       layout,
+      description,
     },
   }),
   code: ({
@@ -262,14 +290,17 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: {
     language?: CodeLanguage;
   } & CommonSchemaProps &
-    ValueSchemaProps<{} | string>): SchemaFromView<'code'> => ({
+    ValueSchemaProps<UknownValuesObject | string>): SchemaFromView<'code'> => ({
     required,
     type: 'object',
     value,
     index,
+    visible,
     view: {
       borderTop,
       noMarginTop,
@@ -279,6 +310,7 @@ const simpleSchemaProps = {
       language,
       type: 'code',
       layout,
+      description,
     },
   }),
   select: <V extends string | SelectItem>({
@@ -293,6 +325,8 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: {
     values?: readonly V[];
     returnType?: TYPESTRING | TYPESTRING[];
@@ -318,6 +352,7 @@ const simpleSchemaProps = {
       required,
       type: returnType,
       index,
+      visible,
       value,
       view: {
         borderTop,
@@ -330,6 +365,7 @@ const simpleSchemaProps = {
         layout,
         allowUndefined: !required,
         openChoices,
+        description,
       },
     };
   },
@@ -341,11 +377,14 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: CommonSchemaProps): SchemaFromView<'pageselect'> => {
     return {
       required,
       type: 'object',
       index,
+      visible,
       view: {
         borderTop,
         noMarginTop,
@@ -354,6 +393,7 @@ const simpleSchemaProps = {
         label,
         type: 'pageselect',
         layout,
+        description,
       },
     };
   },
@@ -365,11 +405,14 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: CommonSchemaProps): SchemaFromView<'pagesloaderselect'> => {
     return {
       required,
       type: 'object',
       index,
+      visible,
       view: {
         borderTop,
         noMarginTop,
@@ -378,6 +421,7 @@ const simpleSchemaProps = {
         label,
         type: 'pagesloaderselect',
         layout,
+        description,
       },
     };
   },
@@ -389,11 +433,14 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: CommonSchemaProps): SchemaFromView<'thememodeselect'> => {
     return {
       required,
       type: 'string',
       index,
+      visible,
       view: {
         borderTop,
         noMarginTop,
@@ -402,6 +449,7 @@ const simpleSchemaProps = {
         label,
         type: 'thememodeselect',
         layout,
+        description,
       },
     };
   },
@@ -415,6 +463,8 @@ const simpleSchemaProps = {
     items,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: {
     returnType?: WegasScriptEditorReturnTypeName[];
     items?: TreeSelectItem<string>[];
@@ -422,6 +472,7 @@ const simpleSchemaProps = {
     required,
     type: 'string',
     index,
+    visible,
     view: {
       borderTop,
       noMarginTop,
@@ -433,6 +484,7 @@ const simpleSchemaProps = {
       type: 'variableselect',
       layout,
       items,
+      description,
     },
   }),
   tree: <T>({
@@ -447,6 +499,8 @@ const simpleSchemaProps = {
     borderTop,
     noMarginTop,
     borderBottom,
+    description,
+    visible,
   }: {
     items?: TreeSelectItem<T>[];
     returnType?: WegasScriptEditorReturnTypeName[];
@@ -456,6 +510,7 @@ const simpleSchemaProps = {
     required,
     type,
     index,
+    visible,
     view: {
       borderTop,
       noMarginTop,
@@ -468,6 +523,7 @@ const simpleSchemaProps = {
       type: 'treeselect',
       layout,
       items,
+      description,
     },
   }),
   scriptVariable: ({
@@ -479,12 +535,15 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: {
     returnType?: string[] | undefined;
   } & CommonSchemaProps): SchemaFromView<'scriptableVariableSelect'> => ({
     required,
     type: 'object',
     index,
+    visible,
     view: {
       borderTop,
       noMarginTop,
@@ -495,6 +554,7 @@ const simpleSchemaProps = {
       required,
       type: 'scriptableVariableSelect',
       layout,
+      description,
     },
   }),
   scriptString: ({
@@ -507,6 +567,8 @@ const simpleSchemaProps = {
     borderTop,
     noMarginTop,
     richText,
+    description,
+    visible,
   }: CommonSchemaProps &
     ValueSchemaProps<IScript> & {
       richText?: boolean;
@@ -514,6 +576,7 @@ const simpleSchemaProps = {
     required,
     type: 'object',
     index,
+    visible,
     value,
     view: {
       borderTop,
@@ -525,6 +588,7 @@ const simpleSchemaProps = {
       type: 'scriptableString',
       layout,
       richText,
+      description,
     },
   }),
   scriptBoolean: ({
@@ -536,11 +600,14 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: CommonSchemaProps &
     ValueSchemaProps<IScript>): SchemaFromView<'scriptableBoolean'> => ({
     required,
     type: 'object',
     index,
+    visible,
     value,
     view: {
       borderTop,
@@ -551,8 +618,10 @@ const simpleSchemaProps = {
       required,
       type: 'scriptableBoolean',
       layout,
+      description,
     },
   }),
+  /** @deprecated */
   array: ({
     label,
     itemSchema = {},
@@ -567,9 +636,11 @@ const simpleSchemaProps = {
     sortable = true,
     borderTop,
     controls,
+    description,
+    visible,
   }: {
-    itemSchema: {};
-    userOnChildAdd?: (value?: {}) => {};
+    itemSchema: any;
+    userOnChildAdd?: (value?: any) => any;
     requiredItems?: boolean;
     itemType?: TYPESTRING;
     highlight?: boolean;
@@ -584,6 +655,7 @@ const simpleSchemaProps = {
     },
     type: 'array',
     index,
+    visible,
     view: {
       borderTop,
       index,
@@ -595,6 +667,7 @@ const simpleSchemaProps = {
       sortable,
       userOnChildAdd,
       controls,
+      description,
     },
   }),
   statement: ({
@@ -607,6 +680,8 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: {
     mode?: ScriptMode;
   } & CommonSchemaProps &
@@ -614,6 +689,7 @@ const simpleSchemaProps = {
     required,
     type: 'object',
     index,
+    visible,
     value,
     view: {
       borderTop,
@@ -624,6 +700,7 @@ const simpleSchemaProps = {
       type: 'statement',
       layout,
       mode,
+      description,
     },
   }),
   hashlist: ({
@@ -638,6 +715,8 @@ const simpleSchemaProps = {
     noMarginTop,
     objectViewStyle,
     cleaning,
+    description,
+    visible,
   }: {
     choices?: HashListChoices;
     objectViewStyle?: boolean;
@@ -648,6 +727,7 @@ const simpleSchemaProps = {
     type: 'object',
     value,
     index,
+    visible,
     view: {
       choices,
       featureLevel,
@@ -659,6 +739,7 @@ const simpleSchemaProps = {
       noMarginTop,
       objectViewStyle,
       cleaning,
+      description,
     },
   }),
   file: ({
@@ -672,6 +753,8 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: {
     pickType?: FilePickingType;
     filter?: FileFilter;
@@ -681,6 +764,7 @@ const simpleSchemaProps = {
     type: 'object',
     value,
     index,
+    visible,
     view: {
       pickType,
       filter,
@@ -691,6 +775,7 @@ const simpleSchemaProps = {
       layout,
       borderTop,
       noMarginTop,
+      description,
     },
   }),
   path: ({
@@ -704,6 +789,8 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: {
     pickType?: FilePickingType;
     filter?: FileFilter;
@@ -713,6 +800,7 @@ const simpleSchemaProps = {
     type: 'string',
     value,
     index,
+    visible,
     view: {
       pickType,
       filter,
@@ -723,6 +811,7 @@ const simpleSchemaProps = {
       layout,
       borderTop,
       noMarginTop,
+      description,
     },
   }),
   scriptPath: ({
@@ -736,6 +825,8 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: {
     pickType?: FilePickingType;
     filter?: FileFilter;
@@ -745,6 +836,7 @@ const simpleSchemaProps = {
     type: 'object',
     value,
     index,
+    visible,
     view: {
       pickType,
       filter,
@@ -756,12 +848,10 @@ const simpleSchemaProps = {
       layout,
       borderTop,
       noMarginTop,
+      description,
     },
   }),
 } as const;
-
-// For tests only !
-//const objectSchemaProps: ObjectSchemaPropsType = {
 
 const objectSchemaProps = {
   object: ({
@@ -774,18 +864,31 @@ const objectSchemaProps = {
     layout,
     borderTop,
     noMarginTop,
+    description,
+    visible,
   }: {
     properties?: { [key: string]: AvailableSchemas };
   } & CommonSchemaProps &
-    ValueSchemaProps<object>) => ({
-    description: 'com.wegas.core.persistence.variable.primitive.NumberInstance',
-    properties,
-    value,
-    required,
-    type: 'object',
-    index,
-    view: { featureLevel, index, label, layout, borderTop, noMarginTop },
-  }),
+    ValueSchemaProps<object>) =>
+    ({
+      description: 'ObjectSchema',
+      properties,
+      value,
+      required,
+      type: 'object',
+      index,
+      visible,
+      view: {
+        featureLevel,
+        index,
+        label,
+        layout,
+        borderTop,
+        noMarginTop,
+        description,
+      },
+      // Force casting return type as JSONinput will do actually return the good props to object view (after computing these one)
+    } as SchemaFromView<'object'>),
 } as const;
 
 export const schemaProps = {

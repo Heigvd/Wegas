@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { omit } from 'lodash';
+import * as React from 'react';
 
 export interface ClassesContext extends GlobalClassesClass {
   classes: string[];
@@ -10,7 +10,9 @@ export const classesCTX = React.createContext<ClassesContext>({
   classes: [],
 });
 
-function ClassesHandler({ children }: React.PropsWithChildren<{}>) {
+function ClassesHandler({
+  children,
+}: React.PropsWithChildren<UknownValuesObject>) {
   const [classes, setClasses] = React.useState({});
 
   function addClass(className: string) {

@@ -519,6 +519,8 @@ export function addSetterToState(state: PagesContextState) {
 }
 
 const memoClientScriptEval = (() => {
+  // We dont know what kinf of function is inserted in LRU so we admit it's unknown function
+  // eslint-disable-next-line @typescript-eslint/ban-types
   const transpiledCache = createLRU<string, Function>(500);
 
   return <T extends ScriptReturnType>(

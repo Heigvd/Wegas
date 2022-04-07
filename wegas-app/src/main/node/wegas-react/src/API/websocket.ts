@@ -70,10 +70,10 @@ function Uint8ArrayToStr(array: Uint8Array) {
 }
 async function processEvent(
   event: string,
-  data: string | {},
+  data: string | unknown,
 ): Promise<{
   event: string;
-  data: string | {};
+  data: string | unknown;
 }> {
   if (event.endsWith('.gz') && typeof data === 'string') {
     const ba = [];
@@ -189,7 +189,7 @@ class WebSocketListener {
   ) {
     socket!
       .subscribe(channelId)
-      .bind_global(async (event: string, data: {}) => {
+      .bind_global(async (event: string, data: string | unknown) => {
         const processed = await processEvent(event, data);
         if (processed.event.startsWith('pusher:')) {
           //pusher events

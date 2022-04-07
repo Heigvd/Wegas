@@ -105,18 +105,19 @@ export type ModeComponent<
   C extends { [entry: string]: ModeColor } | undefined = undefined,
   D extends { [entry: string]: ModeDimension } | undefined = undefined,
   O extends { [entry: string]: ModeOther } | undefined = undefined,
-> = {} & (C extends undefined
-  ? {}
-  : {
-      colors: C;
-    }) &
+> = UknownValuesObject &
+  (C extends undefined
+    ? UknownValuesObject
+    : {
+        colors: C;
+      }) &
   (D extends undefined
-    ? {}
+    ? UknownValuesObject
     : {
         dimensions: D;
       }) &
   (O extends undefined
-    ? {}
+    ? UknownValuesObject
     : {
         others: O;
       });
@@ -244,7 +245,7 @@ export const defaultDarkMode: Mode = {
 export const themeVar = Object.entries(defaultLightMode.values).reduce(
   (o, [sk, s]) => ({
     ...o,
-    [sk]: Object.keys((s as {}) || {}).reduce(
+    [sk]: Object.keys((s as object) || {}).reduce(
       (o, ek) => ({
         ...o,
         [ek]: `var(--${sk}-${ek})`.toLowerCase(),
@@ -262,13 +263,15 @@ export function modeStyle(themeValues: ThemeValues, mode: Mode) {
     ...Object.entries(mode.values).reduce(
       (o, [sk, s]) => ({
         ...o,
-        ...Object.entries((s as {}) || {}).reduce(
+        ...Object.entries((s as object) || {}).reduce(
           (o, [ek, e]) => ({
             ...o,
             [`--${sk}-${ek}`.toLowerCase()]:
               themeValues[sk as keyof ThemeValues][e as string] ||
               themeValues[sk as keyof ThemeValues][
-                defaultLightMode.values[sk as keyof ModeComponent][ek] as string
+                (defaultLightMode.values[sk as keyof ModeComponent] as any)[
+                  ek
+                ] as string
               ],
           }),
           {},

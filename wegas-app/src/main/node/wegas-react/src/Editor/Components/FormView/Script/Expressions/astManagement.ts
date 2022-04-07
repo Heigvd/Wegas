@@ -144,8 +144,7 @@ export const allowedArgumentTypes = {
 function methodParameterParse(node: Node | null) {
   for (const typeMethods of Object.values(allowedArgumentTypes)) {
     if (typeMethods.checker(node)) {
-      // @ts-ignore we can ignore the ts error here as we ensured the node's type with the checker
-      return typeMethods.parser(node, methodParameterParse);
+      return typeMethods.parser(node as any, methodParameterParse);
     }
   }
   throw Error(`Argument's node ${node?.type} cannot be parsed`);
