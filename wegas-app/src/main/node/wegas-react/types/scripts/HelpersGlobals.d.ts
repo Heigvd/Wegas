@@ -6,6 +6,7 @@ interface GlobalHelpersClass {
    * Register a function that will be executed once the clientScript context has been fully initialized.
    */
   registerEffect: (effect : () => void) => void;
+  getFilePath: (relativePath) => string;
   getLogger: (name: string) => {
     error: (...args: unknown[]) => void;
     warn: (...args: unknown[]) => void;

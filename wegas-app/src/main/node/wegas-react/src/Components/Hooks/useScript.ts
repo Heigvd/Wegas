@@ -17,6 +17,7 @@ import {
   WegasClassNames,
 } from 'wegas-ts-api';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
+import { fileURL } from '../../API/files.api';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
@@ -440,6 +441,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     getState: getPageState,
     getLogger: getLogger,
     registerEffect: registerEffect,
+    getFilePath: fileURL,
   };
 
   globals.Roles = {
