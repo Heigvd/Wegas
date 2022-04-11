@@ -11,6 +11,7 @@ import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.wegas.core.Helper;
@@ -753,6 +754,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 try ( ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
                     ObjectMapper mapper = JacksonMapperProvider.getMapper();
                     mapper.enable(SerializationFeature.INDENT_OUTPUT);
+                    mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
+                    mapper.enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
 
                     Map<String, Map<String, GameModelContent>> libraries = gameModel.getLibrariesAsMap();
 
@@ -804,14 +807,24 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     zipOutputStream.putNextEntry(new ZipEntry(PAGES_PREFIX));
                     zipOutputStream.closeEntry();
 
+  //                  JsonFactory factory = new JsonFactory();
+
                     Map<String, JsonNode> pages = gameModel.getPages();
                     for (var pageEntry : pages.entrySet()) {
                         String pageId = pageEntry.getKey();
                         JsonNode value = pageEntry.getValue();
-                        String toPrettyString = value.toPrettyString();
+
+                        // Hack: make sure to indent and sort properties
+                        // export JSONNode-encoded page to string
+                        // parse the string to get a full java object
+                        // Serialize object to json using the mapper with the custom config
+                        String toString = value.toString();
+                        Map javaPage = mapper.readValue(toString, Map.class);
+                        byte[] bytes = mapper.writeValueAsBytes(javaPage);
+
                         ZipEntry page = new ZipEntry(PAGES_PREFIX + pageId + ".json");
                         zipOutputStream.putNextEntry(page);
-                        zipOutputStream.write(toPrettyString.getBytes(StandardCharsets.UTF_8));
+                        zipOutputStream.write(bytes);
                         zipOutputStream.closeEntry();
                     }
 

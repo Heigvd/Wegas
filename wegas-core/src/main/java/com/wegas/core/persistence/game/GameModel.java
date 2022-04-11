@@ -318,25 +318,25 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         this.name = name;
     }
 
-    /**
-     * @param pageMap
-     *
-     * @throws RepositoryException
-     */
-    @JsonCreator
-    public GameModel(@JsonProperty("pages") JsonNode pageMap) throws RepositoryException {
-        Map<String, JsonNode> map = new HashMap<>();
-        if (pageMap == null) {
-            return;
-        }
-        String curKey;
-        Iterator<String> iterator = pageMap.fieldNames();
-        while (iterator.hasNext()) {
-            curKey = iterator.next();
-            map.put(curKey, pageMap.get(curKey));
-        }
-        this.setPages(map);
-    }
+//    /**
+//     * @param pageMap
+//     *
+//     * @throws RepositoryException
+//     */
+//    @JsonCreator
+//    public GameModel(@JsonProperty("pages") JsonNode pageMap) throws RepositoryException {
+//        Map<String, JsonNode> map = new HashMap<>();
+//        if (pageMap == null) {
+//            return;
+//        }
+//        String curKey;
+//        Iterator<String> iterator = pageMap.fieldNames();
+//        while (iterator.hasNext()) {
+//            curKey = iterator.next();
+//            map.put(curKey, pageMap.get(curKey));
+//        }
+//        this.setPages(map);
+//    }
 
     /**
      * Set the gameModel this PLAY gameModel is based on

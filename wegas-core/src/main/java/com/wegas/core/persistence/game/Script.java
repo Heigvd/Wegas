@@ -25,7 +25,7 @@ import javax.persistence.Transient;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Embeddable
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "@class")
 public class Script implements Serializable, Mergeable {
 
     private static final long serialVersionUID = 1L;

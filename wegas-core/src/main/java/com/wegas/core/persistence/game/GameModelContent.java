@@ -52,7 +52,7 @@ import javax.validation.constraints.NotNull;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "@class")
 @Table(indexes = {
     @Index(columnList = "gamemodel_id"),
     @Index(columnList = "gamemodel_id, libraryType, contentKey", unique = true)
