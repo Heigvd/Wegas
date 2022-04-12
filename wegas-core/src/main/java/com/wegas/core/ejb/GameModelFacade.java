@@ -1027,7 +1027,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             libs.forEach(lib -> {
                 Optional<GameModelContent> find = gmLibs.stream()
                     .filter(l -> {
-                        return l.getContentType().equals(lib.getContentType())
+                        return l.getLibraryType().equals(lib.getLibraryType())
                             && l.getContentKey().equals(lib.getContentKey());
                     })
                     .findFirst();

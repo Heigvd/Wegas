@@ -131,7 +131,7 @@ public class PatchUtils {
             }
 
             if (segments.length > 1) {
-                String subPath = path.replace(name, "");
+                String subPath = path.replaceFirst(name, "");
                 return getOrCreateNode((DetachedDirectoryDescriptor) child, subPath);
             } else {
                 return child;
