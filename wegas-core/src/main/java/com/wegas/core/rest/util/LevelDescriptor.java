@@ -9,12 +9,14 @@
 package com.wegas.core.rest.util;
 
 import ch.qos.logback.classic.Logger;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * Describe the current level of a logger
  *
  * @author maxence
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class LevelDescriptor {
 
     /**

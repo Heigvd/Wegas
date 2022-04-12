@@ -112,8 +112,7 @@ public class PlayerController {
         }
         //the team doesn't exists
 
-        return Response.status(Response.Status.BAD_REQUEST)
-            .build();
+        return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
     /**

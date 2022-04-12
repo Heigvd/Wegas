@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.util;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.security.persistence.User;
 import java.io.Serializable;
 import java.util.Date;
@@ -15,6 +16,7 @@ import java.util.Date;
  *
  * @author Maxence Laurent (maxence laurent gmail.com)
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class OnlineUser implements Serializable {
 
     private static final long serialVersionUID = -8980828303309755447L;

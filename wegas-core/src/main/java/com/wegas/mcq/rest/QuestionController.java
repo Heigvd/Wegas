@@ -103,8 +103,7 @@ public class QuestionController {
             requestFacade.commit(playerId);
         }
 
-        return Response.ok()
-            .build();
+        return Response.ok().build();
     }
 
     /**

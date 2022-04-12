@@ -250,7 +250,6 @@ public class ConcurrentHelper {
             }
 
             //this.getLock(lock).destroy();
-
             locks.remove(effectiveToken);
 
             logger.info("CLEAN LOCK LIST");
@@ -328,6 +327,27 @@ public class ConcurrentHelper {
         }
         return tokens;
 
+    }
+
+    /**
+     * Check lock cache integrity
+     */
+    public void gc() {
+        Iterator<Cache.Entry<String, RefCounterLock>> iterator = this.locks.iterator();
+        while (iterator.hasNext()) {
+            Cache.Entry<String, RefCounterLock> entry = iterator.next();
+            RefCounterLock value = entry.getValue();
+
+            FencedLock lock = getLock(value);
+
+            if (lock != null) {
+                if (lock.isLocked()) {
+                    iterator.remove();
+                }
+            } else {
+                iterator.remove();
+            }
+        }
     }
 
     /**

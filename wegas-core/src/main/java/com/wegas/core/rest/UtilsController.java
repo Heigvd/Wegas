@@ -10,6 +10,7 @@ package com.wegas.core.rest;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.hazelcast.cluster.Member;
 import com.hazelcast.core.HazelcastInstance;
 import com.wegas.core.Helper;
@@ -98,6 +99,7 @@ public class UtilsController {
     @Outbound(eventName = SET_LEVEL_EVENT, loopBack = false)
     private Event<LoggerLevel> events;
 
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
     public static class LoggerLevel implements Serializable {
 
         private final String loggerLevel;
@@ -525,6 +527,15 @@ public class UtilsController {
             .append("</script>");
 
         return sb.toString();
+    }
+
+    @GET
+    @Path("LocksGc")
+    @RequiresRoles("Administrator")
+    @Produces(MediaType.TEXT_HTML)
+    public String gcLocks() {
+        concurrentHelper.gc();
+        return listLockedTokens();
     }
 
     @GET

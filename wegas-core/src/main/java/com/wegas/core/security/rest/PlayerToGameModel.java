@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.rest;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -16,6 +17,7 @@ import com.wegas.core.persistence.game.Team;
  *
  * @author maxence
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class PlayerToGameModel {
 
     private Player player;

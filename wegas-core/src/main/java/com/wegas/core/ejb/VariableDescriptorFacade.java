@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import ch.albasim.wegas.annotations.ProtectionLevel;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.AlphanumericComparator;
 import com.wegas.core.Helper;
 import com.wegas.core.api.VariableDescriptorFacadeI;
@@ -1277,6 +1278,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         return list;
     }
 
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
     public static class VariableIndex {
 
         private final GameModel gameModel;

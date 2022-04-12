@@ -7,6 +7,7 @@
  */
 package com.wegas.core.rest;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.Helper.EmailAttributes;
 import com.wegas.core.XlsxSpreadsheet;
 import com.wegas.core.ejb.GameFacade;
@@ -427,6 +428,7 @@ public class GameController {
     /**
      * Class common to all invitation methods for returning a JSON result.
      */
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
     public static final class InvitationResult {
 
         private List<String> invitedEmails = null;

@@ -7,10 +7,13 @@
  */
 package com.wegas.core.security.aai;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
  * @author jarle.hulaas@heig-vd.ch on 07.03.2017.
  */
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class AaiLoginResponse {
     private String message;
     private boolean ok;
