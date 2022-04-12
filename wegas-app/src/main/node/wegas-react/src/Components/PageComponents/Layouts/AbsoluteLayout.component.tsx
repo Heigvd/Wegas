@@ -10,6 +10,7 @@ import {
 } from '../../Layouts/Absolute';
 import { childrenDeserializerFactory } from './FlexList.component';
 import { classStyleIdShema } from '../tools/options';
+import { onVariableChangeSchema } from '../Inputs/tools';
 
 function isVertical() {
   return undefined;
@@ -35,7 +36,10 @@ registerComponent(
     dropzones: {
       center: true,
     },
-    schema: classStyleIdShema,
+    schema: {
+      ...classStyleIdShema,
+      onAbsoluteClick: onVariableChangeSchema('On absolute click'),
+    },
     // {
     // name: schemaProps.string({ label: 'Name' }),
     // children: schemaProps.hidden({}),

@@ -6,6 +6,10 @@ import { isPageComponentNode } from '../../Editor/Components/Page/PagesLayout';
 import { classNameOrEmpty } from '../../Helper/className';
 import { wwarn } from '../../Helper/wegaslog';
 import {
+  OnVariableChange,
+  useOnVariableChange,
+} from '../PageComponents/Inputs/tools';
+import {
   WegasComponentItemProps,
   WegasComponentProps,
 } from '../PageComponents/tools/EditableComponent';
@@ -21,22 +25,54 @@ const highlightBorders = css({
   borderWidth: '2px',
 });
 
+export interface AbsoluteLayoutProps extends WegasComponentProps {
+  onAbsoluteClick?: OnVariableChange;
+}
+
+type AbsoluteClickFn = (coord: { x: number; y: number }) => void;
+
 export function AbsoluteLayout({
   className,
   style,
   children,
   path,
   id,
-}: WegasComponentProps) {
+  onAbsoluteClick,
+  context,
+}: AbsoluteLayoutProps) {
   const container = React.useRef<HTMLDivElement>(null);
   const [isOverCurrent, setIsOverCurrent] = React.useState(false);
 
   const { onDrop } = React.useContext(pageCTX);
 
+  const { handleOnChange } = useOnVariableChange(onAbsoluteClick, context);
+
+  const absClickRef = React.useRef<AbsoluteClickFn | undefined>(undefined);
+  absClickRef.current = handleOnChange;
+
+  const cb = React.useCallback((event: React.MouseEvent) => {
+    if (absClickRef.current != null && container.current != null) {
+      const bbox = container.current.getBoundingClientRect();
+      absClickRef.current({
+        x: event.clientX - bbox.left,
+        y: event.clientY - bbox.top,
+      });
+    }
+  }, []);
+
+  const absClickCb = React.useMemo(() => {
+    if (handleOnChange != null) {
+      return cb;
+    } else {
+      return undefined;
+    }
+  }, [handleOnChange, cb]);
+
   return (
     <div
       ref={container}
       id={id}
+      onClick={absClickCb}
       className={
         classNameOrEmpty(className) +
         cx({ [highlightBorders]: isOverCurrent }, absoluteLayoutDefaultStyle)

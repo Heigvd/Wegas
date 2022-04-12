@@ -32,6 +32,13 @@ export interface OnVariableChange extends ClientAndServerAction {
   exposeVariableAs?: IScript;
 }
 
+/**
+ * Define a form schema for: {
+ *   exposeVariableAs: IScript<SVariableDescriptor>;
+ *   client?: IScript<ClientScript>
+ *   server?: IScript<ServerScriptSetter>
+ * }
+ */
 export const onVariableChangeSchema = (label: string) =>
   schemaProps.hashlist({
     label,
