@@ -4,7 +4,10 @@ import {
   deleteDescriptor,
   updateDescriptor,
 } from '../data/Reducer/VariableDescriptorReducer';
-import { updateInstance } from '../data/Reducer/VariableInstanceReducer';
+import {
+  asyncRunLoadedScript,
+  updateInstance,
+} from '../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../data/scriptable';
 import { editingStore } from '../data/Stores/editingStore';
 import { store } from '../data/Stores/store';
@@ -100,5 +103,19 @@ export const APIScriptMethods: APIMethodsClass = {
   updateVariable: variable => dispatch(updateDescriptor(variable)),
   deleteVariable: variable => dispatch(deleteDescriptor(variable)),
   updateInstance: instance => dispatch(updateInstance(instance)),
+  runScript: async (script, context) => {
+    const gameModelId = store.getState().global.currentGameModelId;
+
+    const result = await asyncRunLoadedScript(
+      gameModelId,
+      script,
+      undefined,
+      undefined,
+      { Context: context },
+    );
+
+    return dispatch(manageResponseHandler(result));
+  },
+
   getServerTime: () => UtilsAPI.getServerTime(),
 };

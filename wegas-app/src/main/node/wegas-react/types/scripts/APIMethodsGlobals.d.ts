@@ -25,5 +25,9 @@ interface APIMethodsClass {
   updateVariable: (instance: IVariableDescriptor) => void;
   deleteVariable: (variable: IVariableDescriptor) => void;
   updateInstance: (variable: IVariableInstance) => void;
+  runScript: (
+    script: string,
+    context: Record<string, unknown>,
+  ) => Promise<unknown>;
   getServerTime: () => Promise<number>;
 }
