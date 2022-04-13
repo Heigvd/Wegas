@@ -51,7 +51,7 @@ export function OverviewRow({
     <>
       <tr>
         <td className={fixedCellStyle} title={team.getName() || ''}>
-          <div className={cx(flex, flexRow, itemCenter)}>
+          <div className={cx(flex, flexRow, itemCenter) + ' team-cell'}>
             <Button
               icon={showPlayers ? 'caret-down' : 'caret-right'}
               onClick={() => setShowPlayers(sp => !sp)}
