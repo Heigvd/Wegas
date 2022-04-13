@@ -19,6 +19,11 @@ public class DeeplTranslations {
 
     private List<DeeplTranslation> translations;
 
+    @JsonProperty("@class")
+    public String getJSONClassName() {
+        return this.getClass().getSimpleName();
+    }
+
     public List<DeeplTranslation> getTranslations() {
         return translations;
     }
@@ -33,6 +38,11 @@ public class DeeplTranslations {
 
         @JsonProperty("detected_source_language")
         private String lang;
+
+        @JsonProperty("@class")
+        public String getJSONClassName() {
+            return this.getClass().getSimpleName();
+        }
 
         public String getText() {
             return text;

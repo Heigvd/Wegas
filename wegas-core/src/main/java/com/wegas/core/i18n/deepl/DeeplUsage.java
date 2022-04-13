@@ -9,7 +9,6 @@ package com.wegas.core.i18n.deepl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  *
@@ -20,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  *
  * @author maxence
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class DeeplUsage {
 
     @JsonProperty("character_count")
@@ -28,6 +26,12 @@ public class DeeplUsage {
 
     @JsonProperty("character_limit")
     private Long characterLimit;
+
+
+    @JsonProperty("@class")
+    public String getJSONClassName() {
+        return this.getClass().getSimpleName();
+    }
 
     public Long getCharacterCount() {
         return characterCount;
