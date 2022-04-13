@@ -462,7 +462,7 @@ export function VariableForm({
 
   return (
     <ReflexContainer orientation="vertical">
-      <ReflexElement>
+      <ReflexElement flex={1000}>
         <ErrorBoundary>
           <AsyncVariableForm
             path={path}
@@ -486,7 +486,7 @@ export function VariableForm({
       </ReflexElement>
       {instanceEditing && <ReflexSplitter />}
       {instanceEditing && (
-        <ReflexElement>
+        <ReflexElement flex={1000}>
           <InstanceProperties
             editing={editing}
             events={events}
