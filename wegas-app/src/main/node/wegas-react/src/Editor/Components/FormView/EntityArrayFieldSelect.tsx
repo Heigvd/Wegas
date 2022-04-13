@@ -1,14 +1,14 @@
-import * as React from 'react';
-import Select from './Select';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { LabeledView } from './labeled';
-import { CommonView } from './commonView';
-import * as VariableDescriptor from '../../../data/selectors/VariableDescriptorSelector';
-import {
-  getInstance,
-  editorLabel,
-} from '../../../data/methods/VariableDescriptorMethods';
+import * as React from 'react';
 import { IVariableDescriptor } from 'wegas-ts-api';
+import {
+  editorLabel,
+  getInstance,
+} from '../../../data/methods/VariableDescriptorMethods';
+import * as VariableDescriptor from '../../../data/selectors/VariableDescriptorSelector';
+import { CommonView } from './commonView';
+import { LabeledView } from './labeled';
+import Select from './Select';
 
 interface IName {
   values: string[];
@@ -90,7 +90,9 @@ function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
     ) {
       props.onChange(props.value);
     } else {
-      props.onChange(choices[0].value);
+      if (choices[0] != null) {
+        props.onChange(choices[0].value);
+      }
     }
   }
 
