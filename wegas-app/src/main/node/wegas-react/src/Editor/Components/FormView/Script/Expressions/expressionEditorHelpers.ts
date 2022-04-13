@@ -18,6 +18,7 @@ import { handleError, isScriptCondition } from '../Script';
 import { parseStatement } from './astManagement';
 
 const booleanOperators = {
+  '!==': { label: 'not equals' },
   '===': { label: 'equals' },
   '>': { label: 'greater than' },
   '>=': { label: 'greater or equals than' },
@@ -173,7 +174,7 @@ function filterOperators(
   methodReturns: WegasMethod['returns'],
 ): SelectOperator[] {
   return Object.keys(booleanOperators)
-    .filter(k => methodReturns === 'number' || k === '===')
+    .filter(k => methodReturns === 'number' || k === '===' || k === '!==')
     .map((k: WegasOperators) => ({
       label: booleanOperators[k].label,
       value: k,
