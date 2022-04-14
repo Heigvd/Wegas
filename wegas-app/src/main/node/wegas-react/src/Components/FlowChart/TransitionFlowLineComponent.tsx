@@ -96,6 +96,7 @@ interface TransitionBoxProps {
   selected?: boolean;
   disabled?: boolean;
   readOnly?: boolean;
+  labelComponent?: React.LegacyRef<HTMLDivElement>;
 }
 
 export function TransitionBox({
@@ -105,12 +106,14 @@ export function TransitionBox({
   onClick,
   disabled,
   readOnly,
+  labelComponent,
 }: TransitionBoxProps) {
   const [isShown, setIsShown] = React.useState(false);
   const { lang } = React.useContext(languagesCTX);
   return (
     <div className={cx(transitionContainerStyle, className)} onClick={onClick}>
       <div
+        ref={labelComponent}
         className={cx(transitionBoxStyle, {
           [transitionBoxActionStyle]: isActionAllowed({ disabled, readOnly }),
           [selectedTransitionBoxStyle]: selected,
@@ -165,13 +168,16 @@ export function TransitionFlowLineComponent({
   position,
   zoom,
 }: FlowLineComponentProps<TransitionFlowLine, StateProcess>) {
+  const labelRef = React.useRef<HTMLDivElement>(null);
   return (
     <CustomFlowLineComponent
       selected={selected}
       position={position}
       zoom={zoom}
+      mainElement={labelRef}
     >
       <TransitionBox
+        labelComponent={labelRef}
         transition={flowline}
         onClick={e => onClick && onClick(e, startProcess, flowline)}
         selected={selected}
