@@ -28,27 +28,18 @@ export function editorLabel(vd?: {
   //   return label;
   // }
   if (vd && vd.editorTag && label) {
-    return `${vd.editorTag} - ${label}`;
+    return `${ vd.editorTag } - ${ label }`;
   }
   return (vd && (vd.editorTag || label || vd.name)) || '';
 }
 
-export function editorTitle(vd?: {
+export function editorTitle({label, editorTag, name}: {
   label?: ITranslatableContent;
   editorTag?: string | null;
   name?: string;
 }) {
-  const label = TranslatableContent.toString(vd?.label);
-  if (vd && vd.editorTag && label) {
-    return `${vd.editorTag} - ${label} ${vd.name && ' - ' + vd.name}`;
-  }
-  return (
-    (vd &&
-      `${vd.editorTag && vd.editorTag} ${
-        (label && vd.editorTag && ' - ' + label) || (label && label)
-      } ${vd.name && ' - ' + vd.name}`) ||
-    ''
-  );
+  const trLabel = TranslatableContent.toString(label);
+  return [editorTag, trLabel, name].filter(s => s).join(' - ');
 }
 
 export function getParent(vd: IVariableDescriptor): IParentDescriptor {
@@ -93,9 +84,9 @@ export function getInstance<I extends IVariableInstance>(
     scopeType === 'PlayerScope'
       ? player.id
       : scopeType === 'TeamScope'
-      ? player.parentId
-      : 0;
-  const cacheKey = `${parentId}${scopeType}${scopeKey}`;
+        ? player.parentId
+        : 0;
+  const cacheKey = `${ parentId }${ scopeType }${ scopeKey }`;
 
   const id = instancesCache.get(cacheKey);
   if (typeof id === 'number') {

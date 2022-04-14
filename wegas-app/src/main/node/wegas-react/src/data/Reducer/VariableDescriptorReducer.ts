@@ -119,29 +119,7 @@ export function createDescriptor(
       editingStore.dispatch(manageResponseHandler(res, dispatch, getState()));
       // Assume entity[0] is what we just created.
       return dispatch(
-        editVariable(
-          res.updatedEntities[0] as IVariableDescriptor,
-          undefined,
-          undefined,
-          {
-            more: {
-              duplicate: {
-                label: 'duplicate',
-                sorting: 'duplicate',
-                action: (entity: IVariableDescriptor) => {
-                  dispatch(duplicateDescriptor(entity));
-                },
-              },
-              delete: {
-                label: 'delete',
-                sorting: 'delete',
-                action: (entity: IVariableDescriptor, path?: string[]) => {
-                  dispatch(deleteDescriptor(entity, path));
-                },
-              },
-            },
-          },
-        ),
+        editVariable( res.updatedEntities[0] as IVariableDescriptor,),
       );
     });
   };

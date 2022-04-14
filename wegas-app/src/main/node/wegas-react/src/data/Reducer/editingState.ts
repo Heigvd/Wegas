@@ -19,12 +19,17 @@ import {
 import { Actions as ACTIONS, Actions } from '..';
 import { FileAPI } from '../../API/files.api';
 import { AvailableViews } from '../../Editor/Components/FormView';
+import { wlog } from '../../Helper/wegaslog';
 import { triggerEventHandlers } from '../actions';
 import { ActionType, ActionTypeValues } from '../actionTypes';
 import { entityIsPersisted } from '../entities';
 import { NormalizedData } from '../normalize';
 import { VariableDescriptor } from '../selectors';
-import { editingStore, EditingThunkResult } from '../Stores/editingStore';
+import {
+  editingStore,
+  EditingStoreDispatch,
+  EditingThunkResult,
+} from '../Stores/editingStore';
 import { store } from '../Stores/store';
 
 export interface ActionsProps<T> {
@@ -312,6 +317,45 @@ export function editorManagement(
   return state.editing;
 }
 
+const createDefaultMoreActions = (
+  dispatch: EditingStoreDispatch,
+): EditorAction<IVariableDescriptor>['more'] => {
+  return {
+    duplicate: {
+      label: 'Duplicate',
+      sorting: 'duplicate',
+      action: (entity: IVariableDescriptor) => {
+        dispatch(Actions.VariableDescriptorActions.duplicateDescriptor(entity));
+      },
+    },
+    delete: {
+      label: 'Delete',
+      sorting: 'delete',
+      action: (entity: IVariableDescriptor, path?: string[]) => {
+        dispatch(
+          Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
+        );
+      },
+      confirm: true,
+    },
+    findUsage: {
+      label: 'Find usage',
+      sorting: 'findUsage',
+      action: (entity: IVariableDescriptor) => {
+        if (entityIsPersisted(entity) && entity.name != null) {
+          store.dispatch(Actions.EditorActions.searchDeep(entity.name));
+        }
+      },
+    },
+    Instance: {
+      label: 'Instance',
+      sorting: 'toolbox',
+      action: () =>
+        dispatch(EditingActionCreator.INSTANCE_EDITOR({ open: true })),
+    },
+  };
+};
+
 /**
  * Edit VariableDescriptor
  * @param entity
@@ -330,51 +374,7 @@ export function editVariable(
       actions != null
         ? actions
         : {
-            more: {
-              duplicate: {
-                label: 'Duplicate',
-                sorting: 'duplicate',
-                action: (entity: IVariableDescriptor) => {
-                  dispatch(
-                    Actions.VariableDescriptorActions.duplicateDescriptor(
-                      entity,
-                    ),
-                  );
-                },
-              },
-              delete: {
-                label: 'Delete',
-                sorting: 'delete',
-                action: (entity: IVariableDescriptor, path?: string[]) => {
-                  dispatch(
-                    Actions.VariableDescriptorActions.deleteDescriptor(
-                      entity,
-                      path,
-                    ),
-                  );
-                },
-                confirm: true,
-              },
-              findUsage: {
-                label: 'Find usage',
-                sorting: 'findUsage',
-                action: (entity: IVariableDescriptor) => {
-                  if (entityIsPersisted(entity) && entity.name != null) {
-                    store.dispatch(
-                      Actions.EditorActions.searchDeep(entity.name),
-                    );
-                  }
-                },
-              },
-              Instance: {
-                label: 'Instance',
-                sorting: 'toolbox',
-                action: () =>
-                  dispatch(
-                    EditingActionCreator.INSTANCE_EDITOR({ open: true }),
-                  ),
-              },
-            },
+            more: createDefaultMoreActions(dispatch),
           };
     dispatch(
       EditingActionCreator.VARIABLE_EDIT({
@@ -432,12 +432,17 @@ export function editStateMachine(
               sorting: 'delete',
               confirm: true,
               action: (entity: IFSMDescriptor, path?: string[]) => {
-                if (
-                  path != null &&
-                  Number(path.length) === 2 &&
-                  Number(path.length) !== entity.defaultInstance.currentStateId
-                ) {
-                  deleteState(entity, Number(path[1]));
+                if (path != null && Number(path.length) === 2) {
+                  if (
+                    Number(path[1]) === entity.defaultInstance.currentStateId
+                  ) {
+                    wlog('You cannot delete the initial state!');
+                  } else {
+                    // wlog("Delete state", path, entity.defaultInstance.currentStateId);
+                    deleteState(entity, Number(path[1]));
+                  }
+                } else if (path != null && Number(path.length) === 4) {
+                  wlog('TODO: delete transition');
                 } else {
                   dispatch(
                     Actions.VariableDescriptorActions.deleteDescriptor(

@@ -139,7 +139,7 @@ export function Form<T>({
                   className={expandHeight}
                 />
               )}
-              {deleteAction != null && deleteAction.confirm ? (
+              {deleteAction != null ? deleteAction.confirm ? (
                 <ConfirmButton
                   icon="trash"
                   chipStyle
@@ -154,10 +154,10 @@ export function Form<T>({
                   icon="trash"
                   chipStyle
                   tooltip={i18nValues.delete}
-                  onClick={() => val != null && deleteAction?.action(val, path)}
+                  onClick={() => val != null && deleteAction.action(val, path)}
                   className={expandHeight}
                 />
-              )}
+              ) : null}
               {duplicateAction != null && (
                 <IconButton
                   icon="clone"
