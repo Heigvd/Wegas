@@ -1,14 +1,17 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { useDrag } from 'react-dnd';
+import { IAbstractState, IFSMDescriptor } from 'wegas-ts-api';
 import { entityIs } from '../../data/entities';
+import { instantiate } from '../../data/scriptable';
+import { VariableDescriptor } from '../../data/selectors';
+import { self } from '../../data/selectors/Player';
 import { translate } from '../../Editor/Components/FormView/translatable';
 import {
   StateProcess,
   TransitionFlowLine,
 } from '../../Editor/Components/StateMachine/StateMachineEditor';
 import { IconComp } from '../../Editor/Components/Views/FontAwesome';
-import { classNameOrEmpty } from '../../Helper/className';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
 import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
@@ -153,12 +156,24 @@ export const selectedStateBoxStyle = css({
   },
 });
 
+export const currentStateBoxStyle = css({
+  border: '2px solid ' + themeVar.colors.SuccessColor,
+});
+
 // Ignoring style while not in use
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const dragAndHoverStyle = css({
   background: themeVar.colors.HighlightColor, // add a third color? "evidence color shaded" editor theme var
 });
+
+export function isStateCurrent(state: IAbstractState) {
+  const sStateMachine = instantiate(
+    VariableDescriptor.select<IFSMDescriptor>(state.parentId),
+  );
+  const currentStateId = sStateMachine?.getInstance(self()).getCurrentStateId();
+  return currentStateId === state.index;
+}
 
 export interface StateBoxProps {
   state: StateProcess;
@@ -179,9 +194,9 @@ export function StateBox({
 }: StateBoxProps) {
   const [isShown, setIsShown] = React.useState(false);
   const { lang } = React.useContext(languagesCTX);
+
   return (
     <div
-      className={stateContainerStyle + classNameOrEmpty(state.className)}
       style={state.style}
       onClick={e =>
         isActionAllowed({ disabled, readOnly }) && onClick && onClick(e, state)
@@ -193,6 +208,7 @@ export function StateBox({
           {
             [stateBoxActionStyle]: isActionAllowed({ disabled, readOnly }),
             [selectedStateBoxStyle]: selected,
+            [currentStateBoxStyle]: isStateCurrent(state.state),
           },
           className,
         )}
