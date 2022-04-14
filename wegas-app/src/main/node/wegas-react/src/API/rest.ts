@@ -33,10 +33,16 @@ function COMMON_CONFIG(
     headers: HEADERS,
   };
 }
+
+export interface DestroyedEntity {
+  '@class': IAbstractEntity['@class'];
+  id: number;
+}
+
 export interface IManagedResponse {
   '@class': 'ManagedResponse';
-  deletedEntities: IAbstractEntity[];
-  updatedEntities: IAbstractEntity[];
+  deletedEntities: DestroyedEntity[];
+  updatedEntities: unknown[];
   events: WegasEvent[];
 }
 

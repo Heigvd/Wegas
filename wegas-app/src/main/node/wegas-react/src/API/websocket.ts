@@ -10,6 +10,7 @@ import { updatePusherStatus, WegasStatus } from '../data/Reducer/globalState';
 import { editingStore } from '../data/Stores/editingStore';
 import { store } from '../data/Stores/store';
 import { werror, wwarn } from '../Helper/wegaslog';
+import { DestroyedEntity } from './rest';
 
 const CHANNEL_PREFIX = {
   Admin: 'private-Admin',
@@ -254,10 +255,7 @@ class WebSocketListener {
               '@class': 'ManagedResponse',
               deletedEntities: (
                 data as {
-                  deletedEntities: {
-                    '@class': IAbstractEntity['@class'];
-                    id: number;
-                  }[];
+                  deletedEntities: DestroyedEntity[];
                 }
               ).deletedEntities,
               updatedEntities: [],

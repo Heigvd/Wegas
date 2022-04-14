@@ -108,8 +108,8 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
              * returnd entities are not to propagate through websockets unless they're registered
              * within requestManager's updatedEntities
              */
-            List updatedEntities;
-            List deletedEntities = new LinkedList<>();
+            List<Object> updatedEntities;
+            List<AbstractEntity> deletedEntities = new LinkedList<>();
 
 
             /*
