@@ -3,9 +3,7 @@ import * as React from 'react';
 import { useDrag } from 'react-dnd';
 import { IAbstractState, IFSMDescriptor } from 'wegas-ts-api';
 import { entityIs } from '../../data/entities';
-import { instantiate } from '../../data/scriptable';
 import { VariableDescriptor } from '../../data/selectors';
-import { self } from '../../data/selectors/Player';
 import { translate } from '../../Editor/Components/FormView/translatable';
 import {
   StateProcess,
@@ -168,10 +166,9 @@ const dragAndHoverStyle = css({
 });
 
 export function isStateCurrent(state: IAbstractState) {
-  const sStateMachine = instantiate(
-    VariableDescriptor.select<IFSMDescriptor>(state.parentId),
-  );
-  const currentStateId = sStateMachine?.getInstance(self()).getCurrentStateId();
+  const currentStateId = VariableDescriptor.select<IFSMDescriptor>(
+    state.parentId,
+  )?.defaultInstance.currentStateId;
   return currentStateId === state.index;
 }
 
