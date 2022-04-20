@@ -26,7 +26,6 @@ import {
   editingStore,
   EditingStoreDispatch,
 } from '../../data/Stores/editingStore';
-import { useComparator } from '../../Helper/react.debug';
 import { wwarn } from '../../Helper/wegaslog';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
@@ -139,8 +138,6 @@ export function Form<T>({
   ) {
     setVal(entity);
   }
-
-  useComparator(val || {}, 'DEEP');
 
   return (
     <Toolbar className={expandHeight}>

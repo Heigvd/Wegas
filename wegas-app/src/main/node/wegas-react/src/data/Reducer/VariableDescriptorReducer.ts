@@ -1,6 +1,10 @@
-import u from 'immer';
+import u, { produce } from 'immer';
 import { Reducer } from 'redux';
-import { IReview, IVariableDescriptor } from 'wegas-ts-api';
+import {
+  IReview,
+  IVariableDescriptor,
+  WegasClassNamesAndClasses,
+} from 'wegas-ts-api';
 import {
   PeerReviewDescriptorAPI,
   PeerReviewStateSelector,
@@ -9,6 +13,7 @@ import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { runEffects } from '../../Helper/pageEffectsManager';
 import { manageResponseHandler, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
+import { entityIs } from '../entities';
 import { Game, GameModel, Player } from '../selectors';
 import { EditingThunkResult } from '../Stores/editingStore';
 import { store, ThunkResult } from '../Stores/store';
@@ -82,15 +87,70 @@ export function updateDescriptor(
 }
 export function duplicateDescriptor(
   variableDescriptor: IVariableDescriptor,
+  path?: (number | string)[],
 ): EditingThunkResult<Promise<StateActions | void>> {
-  return function (dispatch, getState) {
-    const gameModelId = store.getState().global.currentGameModelId;
-    return VariableDescriptorAPI.duplicate(
-      gameModelId,
-      variableDescriptor,
-    ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
-  };
+  const gameModelId = store.getState().global.currentGameModelId;
+  if (path == null || path.length === 0) {
+    return function (dispatch, getState) {
+      return VariableDescriptorAPI.duplicate(
+        gameModelId,
+        variableDescriptor,
+      ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
+    };
+  } else {
+    const newEntity = produce(variableDescriptor, v => {
+      const newPath = [...path];
+      let value: any = v;
+      while (newPath.length > 1) {
+        const attr = newPath.splice(0, 1)[0];
+        value = value[attr];
+      }
+
+      const valToCopy = value[newPath[0]];
+      let newIndex = Number(newPath[0]) + 1;
+      while (value[newIndex] != null) {
+        newIndex += 1;
+      }
+
+      const newVal = produce(
+        valToCopy,
+        (
+          val: ValueOf<WegasClassNamesAndClasses> & {
+            id: number | undefined;
+            name: string | undefined;
+            refId: string | undefined;
+          },
+        ) => {
+          if (
+            entityIs(val, 'State') ||
+            entityIs(val, 'DialogueState') ||
+            entityIs(val, 'Transition') ||
+            entityIs(val, 'DialogueTransition')
+          ) {
+            val.index = newIndex;
+            if (entityIs(val, 'State') || entityIs(val, 'DialogueState')) {
+              val.x = val.x + 25;
+              val.y = val.y + 25;
+              val.transitions = [];
+            }
+          }
+
+          val.id = undefined;
+          val.name = undefined;
+          val.refId = undefined;
+        },
+      );
+
+      value[newIndex] = newVal;
+    });
+
+    return updateDescriptor(newEntity, true, [
+      ...path.slice(0, -1),
+      Number(path.slice(-1)[0]) + 1,
+    ]);
+  }
 }
+
 export function moveDescriptor(
   variableDescriptor: IVariableDescriptor,
   index: number,

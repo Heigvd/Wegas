@@ -423,18 +423,21 @@ export function editionActions<T extends IVariableDescriptor>(
       },
       confirm: true,
     });
+    actions.push({
+      type: 'IconAction',
+      label: 'Duplicate',
+      icon: 'clone',
+      action: (entity: T) => {
+        dispatch(
+          Actions.VariableDescriptorActions.duplicateDescriptor(
+            entity,
+            editionState.path,
+          ),
+        );
+      },
+    });
 
     if (editionState.path == null || editionState.path.length === 0) {
-      actions.push({
-        type: 'IconAction',
-        label: 'Duplicate',
-        icon: 'clone',
-        action: (entity: T) => {
-          dispatch(
-            Actions.VariableDescriptorActions.duplicateDescriptor(entity),
-          );
-        },
-      });
       actions.push({
         type: 'IconAction',
         label: 'Find usage',
