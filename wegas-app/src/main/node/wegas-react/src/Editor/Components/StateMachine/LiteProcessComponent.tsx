@@ -9,7 +9,9 @@ import {
 } from '../../../Components/FlowChart/ProcessComponent';
 import {
   currentStateBoxStyle,
+  defaultStateBoxStyle,
   isStateCurrent,
+  isStateCurrentDefault,
   selectedStateBoxStyle,
   stateBoxActionStyle,
   stateBoxStyle,
@@ -155,6 +157,7 @@ export function LiteStateProcessComponentFactory<
                 [stateBoxActionStyle]: isActionAllowed({ disabled, readOnly }),
                 [selectedStateBoxStyle]: isSelected,
                 [currentStateBoxStyle]: isStateCurrent(process.state),
+                [defaultStateBoxStyle]: isStateCurrentDefault(process.state),
               })}
               onMouseEnter={() => !disabled && setIsShown(true)}
               onMouseLeave={() => !disabled && setIsShown(false)}

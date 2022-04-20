@@ -53,6 +53,7 @@ import { createTranslatableContent } from '../FormView/translatable';
 import { focusTab } from '../LinearTabLayout/LinearLayout';
 import { LiteFlowLineComponentFactory } from './LiteFlowLineComponent';
 import { LiteStateProcessComponentFactory } from './LiteProcessComponent';
+import { StateMachineLegend } from './StateMachineLegend';
 
 const emptyPath: (string | number)[] = [];
 
@@ -431,6 +432,7 @@ export function StateMachineEditor<
   return (
     <FlowChart
       title={title || <h3>{editorLabel(stateMachine)}</h3>}
+      legend={<StateMachineLegend />}
       processes={processes}
       onConnect={connectState}
       onMove={safeUpdateStatePosition}

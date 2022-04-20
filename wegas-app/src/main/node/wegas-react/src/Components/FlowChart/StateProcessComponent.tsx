@@ -3,7 +3,8 @@ import * as React from 'react';
 import { useDrag } from 'react-dnd';
 import { IAbstractState, IFSMDescriptor } from 'wegas-ts-api';
 import { entityIs } from '../../data/entities';
-import { VariableDescriptor } from '../../data/selectors';
+import { instantiate } from '../../data/scriptable';
+import { Player, VariableDescriptor } from '../../data/selectors';
 import { translate } from '../../Editor/Components/FormView/translatable';
 import {
   StateProcess,
@@ -40,7 +41,9 @@ export const stateBoxStyle = css({
   boxSizing: 'border-box',
   background: themeVar.colors.BackgroundColor,
   borderRadius: '8px',
-  border: '2px solid ' + themeVar.colors.DisabledColor,
+  borderWidth: '2px',
+  borderStyle: 'solid',
+  borderColor: themeVar.colors.DisabledColor,
   boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.15)',
   color: themeVar.colors.ActiveColor,
   flexGrow: 0,
@@ -62,7 +65,7 @@ export const stateBoxActionStyle = css({
   cursor: 'pointer',
   '&:hover': {
     background: themeVar.colors.BackgroundColor,
-    border: '2px solid ' + themeVar.colors.PrimaryColor,
+    borderColor: themeVar.colors.PrimaryColor,
   },
 });
 
@@ -144,7 +147,6 @@ export const stateMoreInfosStyle = css({
 export const selectedStateBoxStyle = css({
   backgroundColor: themeVar.colors.HeaderColor,
   color: themeVar.colors.ActiveColor,
-  borderColor: 'transparent',
   boxShadow: 'none',
   '&:hover': {
     backgroundColor: themeVar.colors.HeaderColor,
@@ -155,7 +157,12 @@ export const selectedStateBoxStyle = css({
 });
 
 export const currentStateBoxStyle = css({
-  border: '2px solid ' + themeVar.colors.SuccessColor,
+  borderColor: themeVar.colors.SuccessColor,
+});
+
+export const defaultStateBoxStyle = css({
+  borderWidth: '3px',
+  borderStyle: 'double',
 });
 
 // Ignoring style while not in use
@@ -165,10 +172,19 @@ const dragAndHoverStyle = css({
   background: themeVar.colors.HighlightColor, // add a third color? "evidence color shaded" editor theme var
 });
 
-export function isStateCurrent(state: IAbstractState) {
+export function isStateCurrentDefault(state: IAbstractState) {
   const currentStateId = VariableDescriptor.select<IFSMDescriptor>(
     state.parentId,
   )?.defaultInstance.currentStateId;
+  return currentStateId === state.index;
+}
+
+export function isStateCurrent(state: IAbstractState) {
+  const currentStateId = instantiate(
+    VariableDescriptor.select<IFSMDescriptor>(state.parentId),
+  )
+    ?.getInstance(Player.self())
+    .getCurrentStateId();
   return currentStateId === state.index;
 }
 
@@ -206,6 +222,7 @@ export function StateBox({
             [stateBoxActionStyle]: isActionAllowed({ disabled, readOnly }),
             [selectedStateBoxStyle]: selected,
             [currentStateBoxStyle]: isStateCurrent(state.state),
+            [defaultStateBoxStyle]: isStateCurrentDefault(state.state),
           },
           className,
         )}
