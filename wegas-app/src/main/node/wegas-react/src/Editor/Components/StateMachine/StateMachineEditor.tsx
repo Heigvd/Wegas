@@ -31,11 +31,9 @@ import {
 import {
   EditingState,
   Edition,
-  EditorAction,
   editStateMachine,
   saveEditor,
 } from '../../../data/Reducer/editingState';
-import { deleteState } from '../../../data/Reducer/globalState';
 import { State as RState } from '../../../data/Reducer/reducers';
 // import * as ReactDOMServer from 'react-dom/server';
 import { VariableDescriptor } from '../../../data/selectors';
@@ -57,22 +55,6 @@ import { LiteFlowLineComponentFactory } from './LiteFlowLineComponent';
 import { LiteStateProcessComponentFactory } from './LiteProcessComponent';
 
 const emptyPath: (string | number)[] = [];
-
-export function deleteTransition<
-  T extends IFSMDescriptor | IDialogueDescriptor,
->(
-  stateMachine: Immutable<T>,
-  stateId: number,
-  transitionIndex: number,
-  dispatch: EditingStoreDispatch,
-) {
-  const newStateMachine = produce((stateMachine: T) => {
-    const transitions = stateMachine.states[stateId].transitions;
-    transitions.splice(transitionIndex, 1);
-  })(stateMachine);
-
-  dispatch(Actions.VariableDescriptorActions.updateDescriptor(newStateMachine));
-}
 
 export interface TransitionFlowLine extends FlowLine {
   transition: ITransition | IDialogueTransition;
@@ -221,25 +203,6 @@ export function StateMachineEditor<
 
   const onStateClick = React.useCallback(
     (e: ModifierKeysEvent, state: StateProcess) => {
-      const actions: EditorAction<
-        IFSMDescriptor | IDialogueDescriptor
-      >['more'] = {};
-      if (state.state.id !== stateMachine.defaultInstance.currentStateId) {
-        actions.delete = {
-          label: 'Delete',
-          confirm: true,
-          sorting: 'delete',
-          action: (
-            sm: IFSMDescriptor | IDialogueDescriptor,
-            path?: (string | number)[],
-          ) => {
-            if (path != null && path.length === 2) {
-              deleteState(sm, Number(path[1]));
-            }
-          },
-        };
-      }
-
       const dispatchLocal =
         (e.ctrlKey === true || forceLocalDispatch === true) &&
         localDispatch != null;
@@ -394,23 +357,6 @@ export function StateMachineEditor<
       startProcess: StateProcess,
       flowline: TransitionFlowLine,
     ) => {
-      const actions: EditorAction<
-        IFSMDescriptor | IDialogueDescriptor
-      >['more'] = {};
-      actions.delete = {
-        label: 'Delete',
-        confirm: true,
-        sorting: 'delete',
-        action: (
-          sm: IFSMDescriptor | IDialogueDescriptor,
-          path?: (string | number)[],
-        ) => {
-          if (path != null && path?.length === 4) {
-            deleteTransition(sm, Number(path[1]), Number(path[3]), dispatch);
-          }
-        },
-      };
-
       const dispatchLocal =
         (e.ctrlKey === true || forceLocalDispatch === true) &&
         localDispatch != null;
@@ -420,9 +366,6 @@ export function StateMachineEditor<
           stateMachine,
           ['states', startProcess.id, 'transitions', flowline.id],
           undefined,
-          {
-            more: actions,
-          },
         ),
       );
       if (!dispatchLocal) {
@@ -471,19 +414,19 @@ export function StateMachineEditor<
 
   const Process = React.useMemo(() => {
     if (lite) {
-      return LiteStateProcessComponentFactory(stateMachine);
+      return LiteStateProcessComponentFactory(stateMachine, dispatch);
     } else {
       return StateProcessComponent;
     }
-  }, [lite, stateMachine]);
+  }, [dispatch, lite, stateMachine]);
 
   const Flowline = React.useMemo(() => {
     if (lite) {
-      return LiteFlowLineComponentFactory(stateMachine);
+      return LiteFlowLineComponentFactory(stateMachine, dispatch);
     } else {
       return TransitionFlowLineComponent;
     }
-  }, [lite, stateMachine]);
+  }, [dispatch, lite, stateMachine]);
 
   return (
     <FlowChart

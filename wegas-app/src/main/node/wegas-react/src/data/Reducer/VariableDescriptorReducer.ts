@@ -10,7 +10,7 @@ import { runEffects } from '../../Helper/pageEffectsManager';
 import { manageResponseHandler, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import { Game, GameModel, Player } from '../selectors';
-import { editingStore, EditingThunkResult } from '../Stores/editingStore';
+import { EditingThunkResult } from '../Stores/editingStore';
 import { store, ThunkResult } from '../Stores/store';
 import { deepRemove } from '../updateUtils';
 import { editVariable } from './editingState';
@@ -50,10 +50,10 @@ export default variableDescriptors;
 //ACTIONS
 
 export function getAll(): ThunkResult {
-  return function () {
+  return function (dispatch) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.getAll(gameModelId).then(res => {
-      return editingStore.dispatch(manageResponseHandler(res));
+      return dispatch(manageResponseHandler(res));
     });
   };
 }
@@ -61,13 +61,20 @@ export function getAll(): ThunkResult {
 export function updateDescriptor(
   variableDescriptor: IVariableDescriptor,
   selectUpdatedEntity: boolean = true,
+  selectPath?: (string | number)[],
 ): EditingThunkResult<Promise<StateActions | void>> {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.update(gameModelId, variableDescriptor).then(
       res => {
-        editingStore.dispatch(
-          manageResponseHandler(res, dispatch, getState(), selectUpdatedEntity),
+        dispatch(
+          manageResponseHandler(
+            res,
+            dispatch,
+            getState(),
+            selectUpdatedEntity,
+            selectPath,
+          ),
         );
       },
     );
@@ -81,9 +88,7 @@ export function duplicateDescriptor(
     return VariableDescriptorAPI.duplicate(
       gameModelId,
       variableDescriptor,
-    ).then(res =>
-      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
-    );
+    ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
   };
 }
 export function moveDescriptor(
@@ -99,9 +104,7 @@ export function moveDescriptor(
       index,
       parent,
     ).then(res => {
-      return editingStore.dispatch(
-        manageResponseHandler(res, dispatch, getState()),
-      );
+      return dispatch(manageResponseHandler(res, dispatch, getState()));
     });
   };
 }
@@ -116,31 +119,13 @@ export function createDescriptor(
       variableDescriptor,
       parent,
     ).then(res => {
-      editingStore.dispatch(manageResponseHandler(res, dispatch, getState()));
+      dispatch(manageResponseHandler(res, dispatch, getState()));
       // Assume entity[0] is what we just created.
       return dispatch(
         editVariable(
           res.updatedEntities[0] as IVariableDescriptor,
           undefined,
           undefined,
-          {
-            more: {
-              duplicate: {
-                label: 'duplicate',
-                sorting: 'duplicate',
-                action: (entity: IVariableDescriptor) => {
-                  dispatch(duplicateDescriptor(entity));
-                },
-              },
-              delete: {
-                label: 'delete',
-                sorting: 'delete',
-                action: (entity: IVariableDescriptor, path?: string[]) => {
-                  dispatch(deleteDescriptor(entity, path));
-                },
-              },
-            },
-          },
         ),
       );
     });
@@ -153,12 +138,11 @@ export function deleteDescriptor(
   return function (dispatch, getState) {
     if (path.length > 0) {
       const vs = deepRemove(variableDescriptor, path) as IVariableDescriptor;
-      return editingStore.dispatch(updateDescriptor(vs));
+      return dispatch(updateDescriptor(vs));
     }
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.delete(gameModelId, variableDescriptor).then(
-      res =>
-        editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
+      res => dispatch(manageResponseHandler(res, dispatch, getState())),
     );
   };
 }
@@ -167,11 +151,10 @@ export function reset(): EditingThunkResult {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.reset(gameModelId).then(res => {
-      const r = editingStore.dispatch(manageResponseHandler(res, dispatch, getState()));
+      const r = dispatch(manageResponseHandler(res, dispatch, getState()));
       runEffects();
       return r;
-    }
-    );
+    });
   };
 }
 
@@ -179,7 +162,7 @@ export function getByIds(ids: number[]): EditingThunkResult {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.getByIds(ids, gameModelId).then(res =>
-      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
+      dispatch(manageResponseHandler(res, dispatch, getState())),
     );
   };
 }
@@ -194,9 +177,7 @@ export function setPRState(
       peerReviewId,
       Game.selectCurrent().id!,
       state,
-    ).then(res =>
-      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
-    );
+    ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
   };
 }
 
@@ -206,9 +187,7 @@ export function submitToReview(peerReviewId: number): EditingThunkResult {
       GameModel.selectCurrent().id!,
       peerReviewId,
       Player.selectCurrent().id!,
-    ).then(res =>
-      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
-    );
+    ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
   };
 }
 
@@ -223,7 +202,7 @@ export function asynchSaveReview(review: IReview) {
 export function saveReview(review: IReview): EditingThunkResult {
   return function (dispatch, getState) {
     return asynchSaveReview(review).then(res =>
-      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
+      dispatch(manageResponseHandler(res, dispatch, getState())),
     );
   };
 }
@@ -238,7 +217,7 @@ export function submitReview(
       Player.selectCurrent().id!,
       review,
     ).then(res => {
-      editingStore.dispatch(manageResponseHandler(res, dispatch, getState()));
+      dispatch(manageResponseHandler(res, dispatch, getState()));
       cb && cb();
     });
   };

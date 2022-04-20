@@ -1,4 +1,3 @@
-
 type IAbstractContentDescriptor =
   import('wegas-ts-api').IAbstractContentDescriptor;
 
@@ -51,7 +50,7 @@ interface HashListValue {
 type HashListItem = HashListValue | HashListProp;
 
 interface DropMenuItem<T> extends Item<T> {
-  disabled?: true;
+  disabled?: boolean;
   noCloseMenu?: boolean;
   items?: DropMenuItem<T>[];
 }
@@ -82,7 +81,9 @@ interface SimpleSchemaProps {
   index?: number;
 }
 
-interface CommonSchemaProps extends SimpleSchemaProps, Pick<BaseSchema, "visible"> {
+interface CommonSchemaProps
+  extends SimpleSchemaProps,
+    Pick<BaseSchema, 'visible'> {
   label?: string;
   featureLevel?: FeatureLevel;
   layout?: SchemaLayout;

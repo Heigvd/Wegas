@@ -24,15 +24,15 @@ import { isActionAllowed } from '../../../Components/PageComponents/tools/option
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
-import { editingStore } from '../../../data/Stores/editingStore';
+import { deleteTransition } from '../../../data/Reducer/editingState';
+import {
+  editingStore,
+  EditingStoreDispatch,
+} from '../../../data/Stores/editingStore';
 import { classOrNothing } from '../../../Helper/className';
 import { createTranslatableContent, translate } from '../FormView/translatable';
 import { EditHandle } from './EditHandle';
-import {
-  deleteTransition,
-  StateProcess,
-  TransitionFlowLine,
-} from './StateMachineEditor';
+import { StateProcess, TransitionFlowLine } from './StateMachineEditor';
 
 const customFlowLineComponentEditingStyle = css({
   zIndex: 1000,
@@ -56,7 +56,7 @@ const stateBoxContentEditingStyle = css({
 
 export function LiteFlowLineComponentFactory<
   IFSM extends IFSMDescriptor | IDialogueDescriptor,
->(stateMachine: Immutable<IFSM>) {
+>(stateMachine: Immutable<IFSM>, dispatch: EditingStoreDispatch) {
   function LiteFlowLineComponent({
     startProcess,
     onClick,
@@ -97,7 +97,7 @@ export function LiteFlowLineComponentFactory<
           }
         })(stateMachine);
 
-        editingStore.dispatch(
+        dispatch(
           Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
         );
         setEditing(false);
@@ -117,11 +117,12 @@ export function LiteFlowLineComponentFactory<
     );
 
     const onTrash = React.useCallback(() => {
-      deleteTransition(
-        stateMachine,
-        Number(startProcess.id),
-        Number(flowline.id),
-        editingStore.dispatch,
+      editingStore.dispatch(
+        deleteTransition(
+          stateMachine,
+          Number(startProcess.id),
+          Number(flowline.id),
+        ),
       );
       setEditing(false);
     }, [flowline.id, startProcess.id]);

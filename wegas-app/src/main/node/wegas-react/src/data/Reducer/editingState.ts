@@ -21,25 +21,10 @@ import { FileAPI } from '../../API/files.api';
 import { AvailableViews } from '../../Editor/Components/FormView';
 import { triggerEventHandlers } from '../actions';
 import { ActionType, ActionTypeValues } from '../actionTypes';
-import { entityIsPersisted } from '../entities';
 import { NormalizedData } from '../normalize';
 import { VariableDescriptor } from '../selectors';
 import { editingStore, EditingThunkResult } from '../Stores/editingStore';
 import { store } from '../Stores/store';
-
-export interface ActionsProps<T> {
-  action: (entity: T, path?: (string | number)[]) => void;
-  label: React.ReactNode;
-  confirm?: boolean;
-  sorting: 'delete' | 'duplicate' | 'toolbox' | 'close' | 'findUsage';
-}
-
-export interface EditorAction<T extends IAbstractEntity> {
-  save?: (entity: T, selectUpdatedEntity?: boolean) => void;
-  more?: {
-    [id: string]: ActionsProps<T>;
-  };
-}
 
 function createAction<T extends ActionTypeValues, P>(type: T, payload: P) {
   return {
@@ -55,7 +40,6 @@ const variableEditAction =
     path?: TA extends ValueOf<typeof ActionType.FSM_EDIT>
       ? string[]
       : (string | number)[];
-    actions: EditorAction<TE>;
   }) =>
     createAction(type, data);
 
@@ -84,14 +68,11 @@ export const EditingActionCreator = {
     entity: IAbstractContentDescriptor;
     cb?: (newEntity: IAbstractContentDescriptor) => void;
   }) => createAction(ActionType.FILE_EDIT, data),
-  VARIABLE_CREATE: <T extends IAbstractEntity>(data: {
+  VARIABLE_CREATE: (data: {
     '@class': IAbstractEntity['@class'];
     parentId?: number;
     parentType?: string;
-    actions: {
-      save?: (entity: T) => void;
-      delete?: (entity: T) => void;
-    };
+    subtype?: VariableCreateEdition['subtype'];
   }) => createAction(ActionType.VARIABLE_CREATE, data),
 
   CLOSE_EDITOR: () => createAction(ActionType.CLOSE_EDITOR, {}),
@@ -112,20 +93,6 @@ export type EditingStateActions<
   A extends keyof typeof EditingActionCreator = keyof typeof EditingActionCreator,
 > = ReturnType<typeof EditingActionCreator[A]>;
 
-export interface ActionsProps<T> {
-  action: (entity: T, path?: (string | number)[]) => void;
-  label: React.ReactNode;
-  confirm?: boolean;
-  sorting: 'delete' | 'duplicate' | 'toolbox' | 'close' | 'findUsage';
-}
-
-export interface EditorAction<T extends IAbstractEntity> {
-  save?: (entity: T, selectUpdatedEntity?: boolean) => void;
-  more?: {
-    [id: string]: ActionsProps<T>;
-  };
-}
-
 export interface EditionState {
   newEntity?: IAbstractEntity;
   highlight?: boolean;
@@ -139,25 +106,24 @@ export interface VariableEdition extends EditionState {
   };
   config?: Schema<AvailableViews>;
   path?: (string | number)[];
-  actions: EditorAction<IAbstractEntity>;
 }
 
 export interface VariableCreateEdition extends EditionState {
   type: 'VariableCreate';
+  subtype?: 'Choice' | 'Feedback' | 'Comments';
   '@class': IVariableDescriptor['@class'];
   parentId?: number;
   parentType?: string;
   config?: Schema<AvailableViews>;
-  actions: EditorAction<IAbstractEntity>;
+  path?: (string | number)[];
 }
 
-export interface ComponentEdition extends EditionState {
-  type: 'Component';
-  page: string;
-  path: (string | number)[];
-  config?: Schema<AvailableViews>;
-  actions: EditorAction<IAbstractEntity>;
-}
+// export interface ComponentEdition extends EditionState {
+//   type: 'Component';
+//   page: string;
+//   path: (string | number)[];
+//   config?: Schema<AvailableViews>;
+// }
 
 export interface FileEdition extends EditionState {
   type: 'File';
@@ -168,7 +134,7 @@ export interface FileEdition extends EditionState {
 export type Edition =
   | VariableEdition
   | VariableCreateEdition
-  | ComponentEdition
+  // | ComponentEdition
   | FileEdition;
 
 export interface EditingState {
@@ -237,7 +203,6 @@ export function editorManagement(
         entity: action.payload.entity,
         config: action.payload.config,
         path: action.payload.path,
-        actions: action.payload.actions,
         newEntity:
           state.editing?.newEntity == null ||
           state.editing?.newEntity?.id === action.payload.entity.id
@@ -286,10 +251,10 @@ export function editorManagement(
     case ActionType.VARIABLE_CREATE:
       return {
         type: 'VariableCreate',
+        subtype: action.payload.subtype,
         '@class': action.payload['@class'] as IVariableDescriptor['@class'],
         parentId: action.payload.parentId,
         parentType: action.payload.parentType,
-        actions: action.payload.actions,
         newEntity: undefined,
       };
     case ActionType.FILE_EDIT:
@@ -323,65 +288,13 @@ export function editVariable(
   entity: IVariableDescriptor,
   path: (string | number)[] = [],
   config?: Schema<AvailableViews>,
-  actions?: EditorAction<IVariableDescriptor>,
 ): EditingThunkResult {
   return function (dispatch) {
-    const currentActions: EditorAction<IVariableDescriptor> =
-      actions != null
-        ? actions
-        : {
-            more: {
-              duplicate: {
-                label: 'Duplicate',
-                sorting: 'duplicate',
-                action: (entity: IVariableDescriptor) => {
-                  dispatch(
-                    Actions.VariableDescriptorActions.duplicateDescriptor(
-                      entity,
-                    ),
-                  );
-                },
-              },
-              delete: {
-                label: 'Delete',
-                sorting: 'delete',
-                action: (entity: IVariableDescriptor, path?: string[]) => {
-                  dispatch(
-                    Actions.VariableDescriptorActions.deleteDescriptor(
-                      entity,
-                      path,
-                    ),
-                  );
-                },
-                confirm: true,
-              },
-              findUsage: {
-                label: 'Find usage',
-                sorting: 'findUsage',
-                action: (entity: IVariableDescriptor) => {
-                  if (entityIsPersisted(entity) && entity.name != null) {
-                    store.dispatch(
-                      Actions.EditorActions.searchDeep(entity.name),
-                    );
-                  }
-                },
-              },
-              Instance: {
-                label: 'Instance',
-                sorting: 'toolbox',
-                action: () =>
-                  dispatch(
-                    EditingActionCreator.INSTANCE_EDITOR({ open: true }),
-                  ),
-              },
-            },
-          };
     dispatch(
       EditingActionCreator.VARIABLE_EDIT({
         entity,
         config,
         path,
-        actions: currentActions,
       }),
     );
   };
@@ -390,21 +303,42 @@ export function editVariable(
 export function deleteState<T extends IFSMDescriptor | IDialogueDescriptor>(
   stateMachine: Immutable<T>,
   id: number,
-) {
-  const newStateMachine = produce((stateMachine: T) => {
-    const { states } = stateMachine;
-    delete states[id];
-    // delete transitions pointing to deleted state
-    for (const s in states) {
-      (states[s] as IAbstractState).transitions = (
-        states[s].transitions as IAbstractTransition[]
-      ).filter(t => t.nextStateId !== id);
-    }
-  })(stateMachine);
+): EditingThunkResult {
+  return function (dispatch) {
+    const newStateMachine = produce((stateMachine: T) => {
+      const { states } = stateMachine;
+      delete states[id];
+      // delete transitions pointing to deleted state
+      for (const s in states) {
+        (states[s] as IAbstractState).transitions = (
+          states[s].transitions as IAbstractTransition[]
+        ).filter(t => t.nextStateId !== id);
+      }
+    })(stateMachine);
 
-  editingStore.dispatch(
-    Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
-  );
+    return dispatch(
+      Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
+    );
+  };
+}
+
+export function deleteTransition<
+  T extends IFSMDescriptor | IDialogueDescriptor,
+>(
+  stateMachine: Immutable<T>,
+  stateId: number,
+  transitionIndex: number,
+): EditingThunkResult {
+  return function (dispatch) {
+    const newStateMachine = produce((stateMachine: T) => {
+      const transitions = stateMachine.states[stateId].transitions;
+      transitions.splice(transitionIndex, 1);
+    })(stateMachine);
+
+    return dispatch(
+      Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
+    );
+  };
 }
 
 /**
@@ -417,7 +351,6 @@ export function editStateMachine(
   entity: Immutable<IAbstractStateMachineDescriptor>,
   path: string[] = [],
   config?: Schema<AvailableViews>,
-  actions?: EditorAction<IVariableDescriptor>,
 ): EditingThunkResult {
   return function (dispatch) {
     dispatch(
@@ -425,40 +358,6 @@ export function editStateMachine(
         entity,
         config,
         path,
-        actions: actions || {
-          more: {
-            delete: {
-              label: 'Delete',
-              sorting: 'delete',
-              confirm: true,
-              action: (entity: IFSMDescriptor, path?: string[]) => {
-                if (
-                  path != null &&
-                  Number(path.length) === 2 &&
-                  Number(path.length) !== entity.defaultInstance.currentStateId
-                ) {
-                  deleteState(entity, Number(path[1]));
-                } else {
-                  dispatch(
-                    Actions.VariableDescriptorActions.deleteDescriptor(
-                      entity,
-                      path,
-                    ),
-                  );
-                }
-              },
-            },
-            findUsage: {
-              label: 'Find usage',
-              sorting: 'findUsage',
-              action: (entity: IFSMDescriptor) => {
-                if (entityIsPersisted(entity) && entity.name != null) {
-                  store.dispatch(Actions.EditorActions.searchDeep(entity.name));
-                }
-              },
-            },
-          },
-        },
       }),
     );
   };
@@ -493,13 +392,13 @@ export function createVariable(
     | IChoiceDescriptor
     | IWhQuestionDescriptor
     | IPeerReviewDescriptor,
-  actions: EditorAction<IAbstractEntity> = {},
+  subtype?: VariableCreateEdition['subtype'],
 ) {
   return EditingActionCreator.VARIABLE_CREATE({
     '@class': cls,
     parentId: parent ? parent.id : undefined,
     parentType: parent ? parent['@class'] : undefined,
-    actions,
+    subtype,
   });
 }
 
@@ -519,6 +418,7 @@ export function createVariable(
 export function saveEditor(
   value: IMergeable,
   selectUpdatedEntity: boolean = true,
+  selectPath?: (string | number)[],
 ): EditingThunkResult {
   return function save(dispatch, getState) {
     dispatch(discardUnsavedChanges());
@@ -533,6 +433,7 @@ export function saveEditor(
           ACTIONS.VariableDescriptorActions.updateDescriptor(
             value as IVariableDescriptor,
             selectUpdatedEntity,
+            selectPath,
           ),
         );
       case 'VariableCreate':
