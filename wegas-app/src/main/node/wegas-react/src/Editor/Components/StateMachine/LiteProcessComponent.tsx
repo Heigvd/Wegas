@@ -8,6 +8,10 @@ import {
   ProcessComponentProps,
 } from '../../../Components/FlowChart/ProcessComponent';
 import {
+  currentStateBoxStyle,
+  defaultStateBoxStyle,
+  isStateCurrent,
+  isStateCurrentDefault,
   selectedStateBoxStyle,
   stateBoxActionStyle,
   stateBoxStyle,
@@ -22,8 +26,11 @@ import { isActionAllowed } from '../../../Components/PageComponents/tools/option
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
-import { deleteState } from '../../../data/Reducer/globalState';
-import { editingStore } from '../../../data/Stores/editingStore';
+import { deleteState } from '../../../data/Reducer/editingState';
+import {
+  editingStore,
+  EditingStoreDispatch,
+} from '../../../data/Stores/editingStore';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { createTranslatableContent, translate } from '../FormView/translatable';
 import { EditHandle } from './EditHandle';
@@ -47,7 +54,7 @@ const stateBoxContentEditingStyle = css({
 
 export function LiteStateProcessComponentFactory<
   IFSM extends IFSMDescriptor | IDialogueDescriptor,
->(stateMachine: Immutable<IFSM>) {
+>(stateMachine: Immutable<IFSM>, dispatch: EditingStoreDispatch) {
   function LiteStateProcessComponent({
     isProcessSelected,
     onClick,
@@ -74,7 +81,7 @@ export function LiteStateProcessComponentFactory<
     );
 
     const onTrash = React.useCallback(() => {
-      deleteState(stateMachine, Number(process.id));
+      dispatch(deleteState(stateMachine, Number(process.id)));
       setEditing(false);
     }, [process.id]);
 
@@ -149,6 +156,8 @@ export function LiteStateProcessComponentFactory<
               className={cx(stateBoxStyle, {
                 [stateBoxActionStyle]: isActionAllowed({ disabled, readOnly }),
                 [selectedStateBoxStyle]: isSelected,
+                [currentStateBoxStyle]: isStateCurrent(process.state),
+                [defaultStateBoxStyle]: isStateCurrentDefault(process.state),
               })}
               onMouseEnter={() => !disabled && setIsShown(true)}
               onMouseLeave={() => !disabled && setIsShown(false)}

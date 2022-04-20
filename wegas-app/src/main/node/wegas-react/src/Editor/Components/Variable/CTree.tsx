@@ -1,9 +1,7 @@
 import { css, cx } from '@emotion/css';
-import produce from 'immer';
 import { get } from 'lodash-es';
 import * as React from 'react';
 import {
-  IEvaluationDescriptor,
   IEvaluationDescriptorContainer,
   IPeerReviewDescriptor,
   IResult,
@@ -19,14 +17,12 @@ import {
   globalSelection,
   localSelection,
 } from '../../../css/classes';
-import { Actions } from '../../../data';
 import { entityIs, varIsList } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import {
   createVariable,
   EditingState,
   Edition,
-  editVariable,
   VariableEdition,
 } from '../../../data/Reducer/editingState';
 import { State } from '../../../data/Reducer/reducers';
@@ -37,6 +33,7 @@ import {
 } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
 import { shallowIs } from '../../../Helper/shallowIs';
+import { wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { getEntityActions } from '../../editionConfig';
@@ -273,21 +270,7 @@ export function CTree({
           focusTab(mainLayoutId, 'Variable Properties');
         }
 
-        dispatch(
-          createVariable(i.value, variable, {
-            save: (entity: IResult) => {
-              const newChoice = produce(variable, v => {
-                v.results.push(entity);
-              });
-              const index = newChoice.results.length - 1;
-              dispatch(
-                Actions.VariableDescriptorActions.updateDescriptor(newChoice),
-              ).then(() =>
-                dispatch(editVariable(newChoice, ['results', String(index)])),
-              );
-            },
-          }),
-        );
+        dispatch(createVariable(i.value, variable, 'Choice'));
       }
     },
     [forceLocalDispatch, localDispatch, variable],
@@ -305,29 +288,28 @@ export function CTree({
           focusTab(mainLayoutId, 'Variable Properties');
         }
 
-        const parent = VariableDescriptor.select(
+        const parent = VariableDescriptor.select<IPeerReviewDescriptor>(
           variable.parentId,
-        ) as IPeerReviewDescriptor;
+        );
 
         const path = subPath![0] as 'feedback' | 'fbComments';
-
-        dispatch(
-          createVariable(i.value, parent, {
-            save: (entity: IEvaluationDescriptor) => {
-              const newChoice = produce(parent, v => {
-                v[path].evaluations.push(entity);
-              });
-              const index = newChoice[path].evaluations.length - 1;
-              dispatch(
-                Actions.VariableDescriptorActions.updateDescriptor(newChoice),
-              ).then(() =>
-                dispatch(
-                  editVariable(newChoice, [path, 'evaluations', String(index)]),
-                ),
+        if (path != null) {
+          switch (path) {
+            case 'fbComments':
+              dispatch(createVariable(i.value, parent, 'Comments'));
+              break;
+            case 'feedback':
+              dispatch(createVariable(i.value, parent, 'Feedback'));
+              break;
+            default:
+              wwarn(
+                'A subpath must was set but it refers to an unknown prop ' +
+                  path,
               );
-            },
-          }),
-        );
+          }
+        } else {
+          wwarn('A subpath must be set but was undefined');
+        }
       }
     },
     [forceLocalDispatch, localDispatch, subPath, variable],
@@ -342,8 +324,20 @@ export function CTree({
         acceptTypes={[TREEVIEW_ITEM_TYPE]}
         type={TREEVIEW_ITEM_TYPE}
         forceOpenClose={searching && open ? true : undefined}
-        notDraggable={!actionAllowed}
-        notDroppable={!actionAllowed}
+        notDraggable={
+          !actionAllowed ||
+          entityIs(variable, 'EvaluationDescriptorContainer', true) ||
+          entityIs(variable, 'ChoiceDescriptor', true) ||
+          entityIs(variable, 'EvaluationDescriptor', true) ||
+          entityIs(variable, 'Result', true)
+        }
+        notDroppable={
+          !actionAllowed ||
+          entityIs(variable, 'PeerReviewDescriptor', true) ||
+          entityIs(variable, 'EvaluationDescriptorContainer', true) ||
+          entityIs(variable, 'QuestionDescriptor', true) ||
+          entityIs(variable, 'ChoiceDescriptor', true)
+        }
         label={
           <div
             className={cx(flex, flexBetween, nodeStyle, {
@@ -352,7 +346,10 @@ export function CTree({
               [actionNodeContentStyle]: actionAllowed,
             })}
             onClick={(e: ModifierKeysEvent) => {
-              if (actionAllowed) {
+              if (
+                actionAllowed &&
+                !entityIs(variable, 'EvaluationDescriptorContainer')
+              ) {
                 onEditionChanges(variableId, e, onClickAction);
               }
             }}

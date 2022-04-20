@@ -158,6 +158,7 @@ export function manageResponseHandler(
   localDispatch?: EditingStoreDispatch,
   localState?: EditingState,
   selectUpdatedEntity: boolean = true,
+  selectPath?: (string | number)[],
 ) {
   const deletedEntities = normalizeDatas(payload.deletedEntities);
   if (localDispatch && localState) {
@@ -186,16 +187,14 @@ export function manageResponseHandler(
         updatedEntity &&
         shallowDifferent(updatedEntity, currentEditingEntity)
       ) {
-        getEntityActions(updatedEntity).then(
-          ({ edit }) =>
-            editState &&
-            localDispatch(
-              edit(
-                updatedEntity,
-                'path' in editState ? editState.path : undefined,
-              ),
-            ),
-        );
+        getEntityActions(updatedEntity).then(({ edit }) => {
+          const newPath = selectPath
+            ? selectPath
+            : editState && 'path' in editState
+            ? editState.path
+            : undefined;
+          localDispatch(edit(updatedEntity, newPath));
+        });
       }
     }
   }

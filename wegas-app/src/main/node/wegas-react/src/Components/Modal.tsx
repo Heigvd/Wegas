@@ -18,9 +18,9 @@ import {
 import {
   EditingActionCreator,
   isEditingVariable,
+  saveEditor,
 } from '../data/Reducer/editingState';
 import { editingStore } from '../data/Stores/editingStore';
-import { getUpdate } from '../Editor/Components/EntityEditor';
 import { focusTab } from '../Editor/Components/LinearTabLayout/LinearLayout';
 import { CTreeProps } from '../Editor/Components/Variable/CTree';
 import { SharedTreeProps } from '../Editor/Components/Variable/VariableTreeView';
@@ -436,7 +436,7 @@ export function useOnEditionChangesModal(
         <EditionModal
           onSaveChanges={() => {
             if (state != null && state?.newEntity != null && dispatch != null) {
-              getUpdate(state, dispatch, false)(state?.newEntity);
+              dispatch(saveEditor(state?.newEntity));
               onClickAction(e);
             }
           }}

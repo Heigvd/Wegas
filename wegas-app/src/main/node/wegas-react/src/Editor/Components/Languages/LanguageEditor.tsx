@@ -115,12 +115,8 @@ function LanguageEditForm({
   );
 }
 export default function LanguageEditor() {
-  const [selectedLanguageId, setSelectedLanguageId] = React.useState<
-    number | undefined
-  >(undefined);
-  const [selectedLanguage, setSelectedLanguage] = React.useState<
-    IGameModelLanguage | null | undefined
-  >();
+  const [selectedLanguage, setSelectedLanguage] =
+    React.useState<IGameModelLanguage>(defaultLanguage);
 
   const [error, setError] = React.useState<string | undefined>();
 
@@ -130,7 +126,7 @@ export default function LanguageEditor() {
   const translatableLanguages = useTranslatableLanguages();
 
   const schema =
-    selectedLanguageId === -1 ? createLanguageSchema : editLanguageSchema;
+    selectedLanguage.id == null ? createLanguageSchema : editLanguageSchema;
 
   if (
     Array.isArray(translatableLanguages) &&
@@ -146,16 +142,6 @@ export default function LanguageEditor() {
     (schema.properties.code as ISelectProps).view.allowAnyValue = true;
   }
 
-  React.useEffect(() => {
-    setSelectedLanguage(
-      selectedLanguageId == null
-        ? undefined
-        : selectedLanguageId === -1
-        ? defaultLanguage
-        : languages.find(lang => lang.id === selectedLanguageId),
-    );
-  }, [languages, selectedLanguageId]);
-
   return (
     <div className={cx(flex, flexRow, grow)}>
       <div
@@ -163,14 +149,16 @@ export default function LanguageEditor() {
       >
         <h2>{i18nEditorTabValues.languageEditor.languages}</h2>
         <ListView
-          selectedId={selectedLanguageId}
+          selectedId={selectedLanguage?.id}
           className={languageInnerPanelStyle}
           items={languages.map(lang => ({ id: lang.id!, label: lang.lang }))}
           onSelect={id => {
-            setSelectedLanguageId(id);
+            setSelectedLanguage(
+              languages.find(lang => lang.id === id) || defaultLanguage,
+            );
           }}
           onMove={up => moveLanguage(up, selectedLanguage, languages)}
-          onNew={() => setSelectedLanguageId(-1)}
+          onNew={() => setSelectedLanguage(defaultLanguage)}
           // NOT IMPLENTED YET
           // onTrash={() => {
           //   if (selectedLanguage) {
@@ -215,14 +203,14 @@ export default function LanguageEditor() {
               <Button
                 label={i18nCommonValues.cancel}
                 onClick={() => {
-                  setSelectedLanguageId(undefined);
+                  setSelectedLanguage(defaultLanguage);
                 }}
                 className={secondaryButtonStyle}
               />
               <Button
                 label={i18nCommonValues.save}
                 onClick={() => {
-                  if (selectedLanguage.id === -1) {
+                  if (selectedLanguage.id != null) {
                     LanguagesAPI.updateLanguage(selectedLanguage)
                       .then(gameModelLanguage => {
                         getDispatch()(

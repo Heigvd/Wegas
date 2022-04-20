@@ -27,9 +27,9 @@ import {
 } from '../../../Components/PageComponents/tools/options';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { defaultPadding, flex, flexColumn, grow } from '../../../css/classes';
-import { ActionsProps } from '../../../data/Reducer/editingState';
 import { store, StoreDispatch } from '../../../data/Stores/store';
 import { findComponent } from '../../../Helper/pages';
+import { FormAction } from '../Form';
 import { AvailableSchemas } from '../FormView';
 import { MessageString } from '../MessageString';
 import { pageCTX } from './PageEditor';
@@ -48,7 +48,7 @@ interface EditorProps<T = WegasComponentForm> {
   entity: T;
   schema: Schema<BaseView>;
   update?: (variable: T) => void;
-  actions?: ActionsProps<T>[];
+  actions?: FormAction<T>[];
   path?: (string | number)[];
   error?: {
     message: string;
@@ -248,7 +248,7 @@ export interface ComponentPropertiesProps {
   entity?: WegasComponent;
   parent?: WegasComponent;
   update?: (variable: WegasComponent) => void;
-  actions?: EditorProps['actions'];
+  actions?: FormAction<WegasComponentForm>[] | undefined;
   localDispatch: StoreDispatch | undefined;
 }
 
@@ -303,21 +303,22 @@ export default function ConnectedComponentProperties() {
   const { editedPath, selectedPage, onUpdate, onDelete, onEdit } =
     React.useContext(pageCTX);
 
-  const pageComponentActions: ActionsProps<WegasComponentForm>[] | undefined =
+  const pageComponentActions: FormAction<WegasComponentForm>[] | undefined =
     React.useMemo(
       () =>
         editedPath
           ? [
               {
+                type: 'IconAction',
+                icon: 'trash',
                 label: 'Delete',
                 action: () => onDelete(editedPath),
                 confirm: true,
-                sorting: 'delete',
               },
               {
+                type: 'ToolboxAction',
                 label: 'Deselect',
                 action: () => onEdit(undefined),
-                sorting: 'toolbox',
               },
             ]
           : undefined,

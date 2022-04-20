@@ -15,9 +15,11 @@ export const inputStyleCSS: CSSObject = {
   '::placeholder': {
     fontStyle: 'italic',
   },
-  '&[readonly]': {
-    color: themeVar.colors.DarkTextColor,
+  '&[disabled]': {
     backgroundColor: themeVar.colors.DisabledColor,
+  },
+  '&[readonly]': {
+    color: themeVar.colors.DisabledColor,
   },
 };
 

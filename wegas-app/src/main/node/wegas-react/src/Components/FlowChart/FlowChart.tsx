@@ -1,7 +1,12 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { useDrop } from 'react-dnd';
-import { defaultMarginLeft, flex, flexRow } from '../../css/classes';
+import {
+  defaultMarginLeft,
+  expandBoth,
+  flex,
+  flexRow,
+} from '../../css/classes';
 import { classNameOrEmpty } from '../../Helper/className';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
 import { NumberSlider } from '../Inputs/Number/NumberSlider';
@@ -27,6 +32,12 @@ import {
   DefaultProcessComponent,
   ProcessComponentProps,
 } from './ProcessComponent';
+
+const legendStyle = css({
+  position: 'absolute',
+  left: 0,
+  bottom: '15px',
+});
 
 const flowChartStyle = css({
   width: '100%',
@@ -121,6 +132,10 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
    */
   title?: React.ReactNode;
   /**
+   * the legend of the chart
+   */
+  legend?: React.ReactNode;
+  /**
    * the processes in the chart
    */
   processes?: P[];
@@ -182,6 +197,7 @@ const emptyProcesses: Process<FlowLine>[] = [];
 
 export function FlowChart<F extends FlowLine, P extends Process<F>>({
   title,
+  legend,
   processes = emptyProcesses as P[],
   Process = DefaultProcessComponent,
   Flowline = DefaultFlowLineComponent,
@@ -376,149 +392,157 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   }, [drawFlows]);
 
   return (
-    <Toolbar
-      className={
-        cx(flowChartStyle, { [flowChartDisabledStyle]: disabled }) +
-        classNameOrEmpty(className)
-      }
-      style={style}
-      id={id}
-    >
-      <Toolbar.Header className={cx(flex, flexRow, flowChartHeaderStyle)}>
-        {typeof title === 'string' ? <HTMLText text={title} /> : title}
-        <NumberSlider
-          min={0.1}
-          max={1}
-          steps={100}
-          value={zoom}
-          onChange={value => {
-            setZoom(Number(value.toFixed(2)));
-          }}
-          className={defaultMarginLeft}
-          displayValues="External"
-        />
-      </Toolbar.Header>
-      <Toolbar.Content
-        style={{ position: 'relative' }}
-        ref={ref => {
-          drop(ref);
-          if (ref != null) {
-            container.current = ref;
-            // mo.observe(ref);
-          }
-        }}
+    <div className={expandBoth}>
+      {legend != null && <div className={legendStyle}>{legend}</div>}
+      <Toolbar
+        className={
+          cx(flowChartStyle, { [flowChartDisabledStyle]: disabled }) +
+          classNameOrEmpty(className)
+        }
+        style={style}
+        id={id}
       >
-        <svg
-          style={{
-            zIndex: 0,
-            position: 'absolute',
-            left: 0,
-            top: 0,
-          }}
+        <Toolbar.Header className={cx(flex, flexRow, flowChartHeaderStyle)}>
+          {typeof title === 'string' ? <HTMLText text={title} /> : title}
+          <NumberSlider
+            min={0.1}
+            max={1}
+            steps={100}
+            value={zoom}
+            onChange={value => {
+              setZoom(Number(value.toFixed(2)));
+            }}
+            className={defaultMarginLeft}
+            displayValues="External"
+          />
+        </Toolbar.Header>
+        <Toolbar.Content
+          style={{ position: 'relative' }}
           ref={ref => {
-            const parent = ref?.parentElement;
-            if (ref != null && parent != null) {
-              const parentBox = parent.getBoundingClientRect();
-              ref.style.setProperty(
-                'width',
-                Math.max(parentBox.width, parent.scrollWidth) + 'px',
-              );
-              ref.style.setProperty(
-                'height',
-                Math.max(parentBox.height, parent.scrollHeight) + 'px',
-              );
+            drop(ref);
+            if (ref != null) {
+              container.current = ref;
+              // mo.observe(ref);
             }
           }}
         >
-          <ArrowDefs />
-          {flowValues.map(v => {
-            return v.circular ? (
-              <CircularFlowLine
-                key={v.id}
-                processElement={v.startProcessElement}
-                selected={v.selected}
-                positionOffset={v.offset}
-                zoom={zoom}
-              />
-            ) : (
-              <StraitFlowLine
-                key={v.id}
-                flowlineValues={v.values.flowlineValues}
-                selected={v.selected}
-                zoom={zoom}
-              />
-            );
-          })}
-          {tempFlow != null && <TempFlowLine {...tempFlow} />}
-        </svg>
-        {flowValues.map(v => (
-          <FlowLineHandles
-            key={'Handle' + v.id}
-            {...v.values.handlesValues}
-            startProcess={v.startProcess}
-            endProcess={v.endProcess}
-            flowline={v.flowline}
-            selected={v.selected}
-          />
-        ))}
-        {flowValues.map(v => (
-          <Flowline
-            key={'Label' + v.id}
-            position={v.values.labelValues.position}
-            startProcess={v.startProcess}
-            flowline={v.flowline}
-            disabled={disabled}
-            readOnly={readOnly}
-            onClick={(e, p, f) =>
-              isActionAllowed({ disabled, readOnly }) &&
-              onFlowlineClick &&
-              onFlowlineClick(e, p, f)
-            }
-            selected={v.selected}
-            zoom={zoom}
-          />
-        ))}
-        {processes.map((process /*, i, a*/) => (
-          <Process
-            key={process.id + JSON.stringify(process.position)}
-            process={process}
-            onReady={ref => {
-              processesRef.current[process.id] = ref;
-              // if (i === a.length - 1) {
-              //   mo.observe(ref);
-              // }
+          <svg
+            style={{
+              zIndex: 0,
+              position: 'absolute',
+              left: 0,
+              top: 0,
             }}
-            onMove={position => {
-              if (actionsAllowed) {
-                setInternalProcesses(op => ({
-                  ...op,
-                  [process.id]: { ...op[process.id], position },
-                }));
+            ref={ref => {
+              const parent = ref?.parentElement;
+              if (ref != null && parent != null) {
+                const parentBox = parent.getBoundingClientRect();
+                ref.style.setProperty(
+                  'width',
+                  Math.max(parentBox.width, parent.scrollWidth) + 'px',
+                );
+                ref.style.setProperty(
+                  'height',
+                  Math.max(parentBox.height, parent.scrollHeight) + 'px',
+                );
               }
             }}
-            onMoveEnd={(position, e) =>
-              actionsAllowed && onMove(process, position, e)
-            }
-            onConnect={(processes, flowline) => {
-              setTempFlow(undefined);
-              if (actionsAllowed) {
-                if ('targetProcess' in processes) {
-                  onConnect(process, processes.sourceProcess, flowline, true);
-                } else {
-                  onConnect(processes.sourceProcess, process, flowline, false);
+          >
+            <ArrowDefs />
+            {flowValues.map(v => {
+              return v.circular ? (
+                <CircularFlowLine
+                  key={v.id}
+                  processElement={v.startProcessElement}
+                  selected={v.selected}
+                  positionOffset={v.offset}
+                  zoom={zoom}
+                />
+              ) : (
+                <StraitFlowLine
+                  key={v.id}
+                  flowlineValues={v.values.flowlineValues}
+                  selected={v.selected}
+                  zoom={zoom}
+                />
+              );
+            })}
+            {tempFlow != null && <TempFlowLine {...tempFlow} />}
+          </svg>
+          {flowValues.map(v => (
+            <FlowLineHandles
+              key={'Handle' + v.id}
+              {...v.values.handlesValues}
+              startProcess={v.startProcess}
+              endProcess={v.endProcess}
+              flowline={v.flowline}
+              selected={v.selected}
+            />
+          ))}
+          {flowValues.map(v => (
+            <Flowline
+              key={'Label' + v.id}
+              position={v.values.labelValues.position}
+              startProcess={v.startProcess}
+              flowline={v.flowline}
+              disabled={disabled}
+              readOnly={readOnly}
+              onClick={(e, p, f) =>
+                isActionAllowed({ disabled, readOnly }) &&
+                onFlowlineClick &&
+                onFlowlineClick(e, p, f)
+              }
+              selected={v.selected}
+              zoom={zoom}
+            />
+          ))}
+          {processes.map((process /*, i, a*/) => (
+            <Process
+              key={process.id + JSON.stringify(process.position)}
+              process={process}
+              onReady={ref => {
+                processesRef.current[process.id] = ref;
+                // if (i === a.length - 1) {
+                //   mo.observe(ref);
+                // }
+              }}
+              onMove={position => {
+                if (actionsAllowed) {
+                  setInternalProcesses(op => ({
+                    ...op,
+                    [process.id]: { ...op[process.id], position },
+                  }));
                 }
+              }}
+              onMoveEnd={(position, e) =>
+                actionsAllowed && onMove(process, position, e)
               }
-            }}
-            onClick={(e, p) =>
-              actionsAllowed && onProcessClick && onProcessClick(e, p)
-            }
-            isProcessSelected={isProcessSelected}
-            disabled={disabled}
-            readOnly={readOnly}
-            zoom={zoom}
-          />
-        ))}
-      </Toolbar.Content>
-    </Toolbar>
+              onConnect={(processes, flowline) => {
+                setTempFlow(undefined);
+                if (actionsAllowed) {
+                  if ('targetProcess' in processes) {
+                    onConnect(process, processes.sourceProcess, flowline, true);
+                  } else {
+                    onConnect(
+                      processes.sourceProcess,
+                      process,
+                      flowline,
+                      false,
+                    );
+                  }
+                }
+              }}
+              onClick={(e, p) =>
+                actionsAllowed && onProcessClick && onProcessClick(e, p)
+              }
+              isProcessSelected={isProcessSelected}
+              disabled={disabled}
+              readOnly={readOnly}
+              zoom={zoom}
+            />
+          ))}
+        </Toolbar.Content>
+      </Toolbar>
+    </div>
   );
 }

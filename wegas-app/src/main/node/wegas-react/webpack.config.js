@@ -37,6 +37,7 @@ const plugins = [
     context: './src',
     extensions: ['ts', 'tsx'],
     quiet: true,
+    failOnError: PROD ? true : false,
   }),
 ];
 

@@ -1,14 +1,22 @@
+import produce from 'immer';
 import { Schema } from 'jsoninput';
 import { cloneDeep, get } from 'lodash-es';
 import * as React from 'react';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
-import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
+import {
+  IAbstractEntity,
+  IChoiceDescriptor,
+  IMergeable,
+  IPeerReviewDescriptor,
+  IResult,
+  IVariableDescriptor,
+} from 'wegas-ts-api';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { mediumPadding } from '../../css/classes';
+import { Actions } from '../../data';
+import { entityIs, entityIsPersisted } from '../../data/entities';
 import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
 import {
-  ActionsProps,
-  ComponentEdition,
   EditingActionCreator,
   EditingState,
   Edition,
@@ -17,6 +25,7 @@ import {
   saveEditor,
   VariableEdition,
 } from '../../data/Reducer/editingState';
+import { updateDescriptor } from '../../data/Reducer/VariableDescriptorReducer';
 import { GameModel, Helper, VariableDescriptor } from '../../data/selectors';
 import {
   editingStore,
@@ -29,13 +38,14 @@ import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import getEditionConfig, { getClassLabel } from '../editionConfig';
 import { ErrorBoundary } from './ErrorBoundary';
+import { FormAction } from './Form';
 import { AvailableViews } from './FormView';
 import { InstanceProperties } from './Variable/InstanceProperties';
 
 export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
   update?: (variable: T) => void;
-  actions?: ActionsProps<T>[];
+  actions?: FormAction<T>[];
   path?: (string | number)[];
   getConfig(entity: T): Promise<Schema<AvailableViews>>;
   error?: {
@@ -368,19 +378,6 @@ export function getStateConfig(
 export function getConfig(state: Readonly<Edition>) {
   return (entity: IVariableDescriptor) => getStateConfig(state, entity);
 }
-
-export function getUpdate(
-  state: Readonly<Edition>,
-  dispatch: EditingStoreDispatch,
-  selectUpdatedEntity: boolean = true,
-) {
-  return 'actions' in state && state.actions.save
-    ? state.actions.save
-    : (entity: IAbstractEntity) => {
-        dispatch(saveEditor(entity, selectUpdatedEntity));
-      };
-}
-
 export function getEntity(editionState?: Readonly<Edition>) {
   if (!editionState) {
     return undefined;
@@ -405,12 +402,83 @@ export function getEntity(editionState?: Readonly<Edition>) {
 
 export function editingGotPath(
   editing: Edition | undefined,
-): editing is VariableEdition | ComponentEdition {
-  return (
-    editing?.type === 'Variable' ||
-    editing?.type === 'VariableFSM' ||
-    editing?.type === 'Component'
-  );
+): editing is VariableEdition {
+  return editing?.type === 'Variable' || editing?.type === 'VariableFSM';
+}
+
+export function editionActions<T extends IVariableDescriptor>(
+  editionState: Edition,
+  dispatch: EditingStoreDispatch,
+): FormAction<T>[] {
+  const actions: FormAction<T>[] = [];
+  if (editionState.type === 'Variable' || editionState.type === 'VariableFSM') {
+    actions.push({
+      type: 'IconAction',
+      icon: 'trash',
+      label: 'Delete',
+      action: (entity: IVariableDescriptor, path?: string[]) => {
+        dispatch(
+          Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
+        );
+      },
+      confirm: true,
+    });
+    actions.push({
+      type: 'IconAction',
+      label: 'Duplicate',
+      icon: 'clone',
+      action: (entity: T) => {
+        dispatch(
+          Actions.VariableDescriptorActions.duplicateDescriptor(
+            entity,
+            editionState.path,
+          ),
+        );
+      },
+    });
+
+    if (editionState.path == null || editionState.path.length === 0) {
+      actions.push({
+        type: 'IconAction',
+        label: 'Find usage',
+        icon: 'search',
+        action: (entity: IVariableDescriptor) => {
+          if (entityIsPersisted(entity) && entity.name != null) {
+            store.dispatch(Actions.EditorActions.searchDeep(entity.name));
+          }
+        },
+      });
+      actions.push({
+        type: 'ToolboxAction',
+        label: 'Instance',
+        action: () =>
+          dispatch(EditingActionCreator.INSTANCE_EDITOR({ open: true })),
+      });
+    } else if (editionState.type === 'VariableFSM') {
+      if (editionState.path != null && editionState.path.length === 2) {
+        actions.push({
+          type: 'ToolboxAction',
+          label: 'Set as initial state',
+          action: (sm: IVariableDescriptor, path?: (string | number)[]) => {
+            if (
+              entityIs(sm, 'FSMDescriptor') ||
+              entityIs(sm, 'DialogueDescriptor')
+            ) {
+              if (path != null && path.length === 2) {
+                const newSM = produce(sm => {
+                  sm.defaultInstance.currentStateId = Number(path[1]);
+                  return sm;
+                })(sm);
+                dispatch(updateDescriptor(newSM));
+              }
+            }
+          },
+        });
+      }
+    }
+  }
+
+  return actions;
 }
 
 interface VariableFormProps {
@@ -439,21 +507,59 @@ export function VariableForm({
     [editing],
   );
   const config = React.useMemo(() => editing && getConfig(editing), [editing]);
-  const update = React.useMemo(
-    () => editing && getUpdate(editing, localDispatch || editingStore.dispatch),
-    [editing, localDispatch],
-  );
-  const actions = React.useMemo(
-    () =>
-      Object.values(
-        editing && 'actions' in editing && editing.actions.more
-          ? editing.actions.more
-          : {},
-      ),
-    [editing],
+  const dispatch = localDispatch || editingStore.dispatch;
+  const update = React.useCallback(
+    (entity: IMergeable) => {
+      if (entity != null) {
+        if (editing?.type === 'VariableCreate') {
+          if (editing.subtype === 'Choice') {
+            const parent = VariableDescriptor.select<IChoiceDescriptor>(
+              editing.parentId,
+            );
+            if (parent) {
+              const newChoice = produce(parent, v => {
+                v.results.push(entity as IResult);
+              });
+              const index = newChoice.results.length - 1;
+
+              dispatch(
+                Actions.VariableDescriptorActions.updateDescriptor(
+                  newChoice,
+                  true,
+                  ['results', String(index)],
+                ),
+              );
+              return;
+            }
+          } else {
+            const parent = VariableDescriptor.select<IPeerReviewDescriptor>(
+              editing.parentId,
+            );
+            if (parent && entityIs(entity, 'EvaluationDescriptor', true)) {
+              const path =
+                editing.subtype === 'Feedback' ? 'feedback' : 'fbComments';
+              const newChoice = produce(parent, v => {
+                v[path].evaluations.push(entity);
+              });
+              const index = newChoice[path].evaluations.length - 1;
+              dispatch(
+                Actions.VariableDescriptorActions.updateDescriptor(
+                  newChoice,
+                  true,
+                  [path, 'evaluations', String(index)],
+                ),
+              );
+              return;
+            }
+          }
+        }
+        dispatch(saveEditor(entity));
+      }
+    },
+    [dispatch, editing],
   );
 
-  if (!editing || !config || !update) {
+  if (!editing || !config) {
     return null;
   }
 
@@ -462,13 +568,13 @@ export function VariableForm({
 
   return (
     <ReflexContainer orientation="vertical">
-      <ReflexElement>
+      <ReflexElement flex={1000}>
         <ErrorBoundary>
           <AsyncVariableForm
             path={path}
             getConfig={config}
             update={update}
-            actions={actions}
+            actions={editionActions(editing, dispatch)}
             entity={entity}
             onChange={newEntity => {
               (localDispatch || editingStore.dispatch)(
@@ -486,7 +592,7 @@ export function VariableForm({
       </ReflexElement>
       {instanceEditing && <ReflexSplitter />}
       {instanceEditing && (
-        <ReflexElement>
+        <ReflexElement flex={1000}>
           <InstanceProperties
             editing={editing}
             events={events}

@@ -618,31 +618,40 @@ export interface FlowLineLabelProps extends FlowLineLabelValues, ClassStyleId {
    * a condition given by the user to see if flowline is selected or not
    */
   selected: boolean;
+  /**
+   * Will position the label relative to this element
+   */
+  mainElement?: React.MutableRefObject<HTMLElement | null>;
 }
 
 export function CustomFlowLineComponent({
   position,
   children,
   selected,
+  mainElement,
   zoom,
   className,
   style,
   id,
 }: React.PropsWithChildren<FlowLineLabelProps> & { zoom: number }) {
-  const flowLineContainer = React.useRef<HTMLDivElement>();
+  const flowLineContainer = React.useRef<HTMLDivElement>(null);
+
+  React.useLayoutEffect(() => {
+    const positionnedElement = (mainElement ? mainElement : flowLineContainer)
+      ?.current;
+
+    if (positionnedElement && flowLineContainer.current) {
+      const labelBox = positionnedElement.getBoundingClientRect();
+      const values = position(labelBox);
+      flowLineContainer.current.style.setProperty('left', values.x + 'px');
+      flowLineContainer.current.style.setProperty('top', values.y + 'px');
+    }
+  });
 
   return (
     <div
       id={id}
-      ref={ref => {
-        if (ref != null) {
-          flowLineContainer.current = ref;
-          const labelBox = ref.getBoundingClientRect();
-          const values = position(labelBox);
-          ref.style.setProperty('left', values.x + 'px');
-          ref.style.setProperty('top', values.y + 'px');
-        }
-      }}
+      ref={flowLineContainer}
       className={childrenContainerStyle(selected) + classNameOrEmpty(className)}
       style={{
         ...style,

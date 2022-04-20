@@ -3,6 +3,7 @@ import JSONForm, { Schema } from 'jsoninput';
 import * as React from 'react';
 import { DropMenu } from '../../Components/DropMenu';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
+import { Button } from '../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { isActionAllowed } from '../../Components/PageComponents/tools/options';
@@ -20,10 +21,7 @@ import {
   grow,
   toolboxHeaderStyle,
 } from '../../css/classes';
-import {
-  ActionsProps,
-  EditingActionCreator,
-} from '../../data/Reducer/editingState';
+import { EditingActionCreator } from '../../data/Reducer/editingState';
 import {
   editingStore,
   EditingStoreDispatch,
@@ -33,7 +31,7 @@ import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import './FormView';
 import { MessageString } from './MessageString';
-import { IconComp } from './Views/FontAwesome';
+import { Icon, IconComp } from './Views/FontAwesome';
 
 const toolboxContainerStyle = css({
   position: 'sticky',
@@ -55,10 +53,45 @@ const highlightStyle = css({
   boxShadow: `inset 0px 0px 0px 10px ${themeVar.colors.HighlightColor}`,
 });
 
+interface DefaultFormAction<T> {
+  type: string;
+  action: (entity: T, path?: (string | number)[]) => void;
+  index?: number;
+  disabledFN?: (oldEntity: T, newEntity: T) => boolean;
+}
+
+interface IconFormAction<T> extends DefaultFormAction<T> {
+  type: 'IconAction';
+  label?: string;
+  confirm?: boolean;
+  icon: Icon;
+}
+
+interface ToolboxFormAction<T> extends DefaultFormAction<T> {
+  type: 'ToolboxAction';
+  label: React.ReactNode;
+}
+
+export type FormAction<T> = IconFormAction<T> | ToolboxFormAction<T>;
+
+function isIconAction<T>(action: FormAction<T>): action is IconFormAction<T> {
+  return action.type === 'IconAction';
+}
+
+function isToolboxAction<T>(
+  action: FormAction<T>,
+): action is ToolboxFormAction<T> {
+  return !isIconAction(action);
+}
+
+function sortFormAction<T>(action1: FormAction<T>, action2: FormAction<T>) {
+  return (action1.index || 0) - (action2.index || 0);
+}
+
 interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
   update?: (variable: T) => void;
-  actions: ActionsProps<T>[];
+  actions: FormAction<T>[];
   path?: (string | number)[];
   config?: Schema;
   onChange?: (newEntity: T) => void;
@@ -90,9 +123,9 @@ export function Form<T>({
   const oldReceivedEntity = React.useRef(entity);
   const form = React.useRef<JSONForm>(null);
   const [val, setVal] = React.useState(entity);
-  const toolbox: ActionsProps<T>[] = actions.filter(
-    a => a.sorting === 'toolbox',
-  );
+
+  const iconActions = actions.filter(isIconAction).sort(sortFormAction);
+  const toolboxActions = actions.filter(isToolboxAction).sort(sortFormAction);
   const i18nValues = useInternalTranslate(commonTranslations);
 
   React.useEffect(() => {
@@ -105,11 +138,6 @@ export function Form<T>({
   ) {
     setVal(entity);
   }
-
-  const closeAction = actions.find(a => a.sorting === 'close');
-  const deleteAction = actions.find(a => a.sorting === 'delete');
-  const duplicateAction = actions.find(a => a.sorting === 'duplicate');
-  const findUsageAction = actions.find(a => a.sorting === 'findUsage');
 
   return (
     <Toolbar className={expandHeight}>
@@ -139,50 +167,42 @@ export function Form<T>({
                   className={expandHeight}
                 />
               )}
-              {deleteAction != null ? deleteAction.confirm ? (
-                <ConfirmButton
-                  icon="trash"
-                  chipStyle
-                  tooltip={i18nValues.delete}
-                  onAction={succes =>
-                    succes && val != null && deleteAction.action(val, path)
-                  }
-                  buttonClassName={expandHeight}
-                />
-              ) : (
-                <IconButton
-                  icon="trash"
-                  chipStyle
-                  tooltip={i18nValues.delete}
-                  onClick={() => val != null && deleteAction.action(val, path)}
-                  className={expandHeight}
-                />
-              ) : null}
-              {duplicateAction != null && (
-                <IconButton
-                  icon="clone"
-                  chipStyle
-                  tooltip={i18nValues.duplicate}
-                  onClick={() =>
-                    val != null && duplicateAction.action(val, path)
-                  }
-                  className={expandHeight}
-                />
+              {iconActions.map(({ icon, label, confirm, action, disabledFN }) =>
+                confirm ? (
+                  <ConfirmButton
+                    tooltip={label}
+                    icon={icon}
+                    disabled={
+                      val == null ||
+                      entity == null ||
+                      (disabledFN && disabledFN(entity, val))
+                    }
+                    onAction={success =>
+                      success && val != null && action(val, path)
+                    }
+                  />
+                ) : (
+                  <Button
+                    tooltip={label}
+                    icon={icon}
+                    disabled={
+                      val == null ||
+                      entity == null ||
+                      (disabledFN && disabledFN(entity, val))
+                    }
+                    onClick={() => val != null && action(val, path)}
+                  />
+                ),
               )}
-              {findUsageAction != null && (
-                <IconButton
-                  icon="search"
-                  chipStyle
-                  tooltip={String(findUsageAction.label)}
-                  onClick={() =>
-                    val != null && findUsageAction.action(val, path)
-                  }
-                  className={expandHeight}
-                />
-              )}
-              {toolbox.length > 0 && (
+              {toolboxActions.length > 0 && (
                 <DropMenu
-                  items={toolbox || []}
+                  items={toolboxActions.map(action => ({
+                    ...action,
+                    disabled:
+                      entity == null ||
+                      val == null ||
+                      (action.disabledFN && action.disabledFN(entity, val)),
+                  }))}
                   label={<IconComp icon="cog" />}
                   onSelect={i => {
                     val != null && i.action(val, path);
@@ -192,17 +212,6 @@ export function Form<T>({
               )}
             </>
           )}
-          {isActionAllowed({
-            disabled,
-            readOnly,
-          }) &&
-            closeAction != null && (
-              <IconButton
-                icon="times"
-                tooltip={i18nValues.close}
-                onClick={() => val != null && closeAction.action(val, path)}
-              />
-            )}
         </div>
         {error && (
           <MessageString

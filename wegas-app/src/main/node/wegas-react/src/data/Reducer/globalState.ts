@@ -1,16 +1,7 @@
-import u, { Immutable, produce } from 'immer';
+import u from 'immer';
 import { omit } from 'lodash';
 import { Reducer } from 'redux';
-import {
-  IAbstractState,
-  IAbstractTransition,
-  IDialogueDescriptor,
-  IFSMDescriptor,
-  IScript,
-  IUser,
-  WegasClassNames,
-} from 'wegas-ts-api';
-import { Actions } from '..';
+import { IScript, IUser, WegasClassNames } from 'wegas-ts-api';
 import { LockEventData } from '../../API/websocket';
 import { Popup } from '../../Components/PopupManager';
 import { WegasMethodParameter } from '../../Editor/editionConfig';
@@ -23,7 +14,6 @@ import {
   getUserLanguage,
 } from '../i18n';
 import { commonServerMethods } from '../methods/CommonServerMethods';
-import { editingStore } from '../Stores/editingStore';
 
 interface Roles {
   [id: string]: Role;
@@ -330,26 +320,6 @@ const global: Reducer<Readonly<GlobalState>> = u(
   defaultGlobalState,
 );
 export default global;
-
-export function deleteState<T extends IFSMDescriptor | IDialogueDescriptor>(
-  stateMachine: Immutable<T>,
-  id: number,
-) {
-  const newStateMachine = produce((stateMachine: T) => {
-    const { states } = stateMachine;
-    delete states[id];
-    // delete transitions pointing to deleted state
-    for (const s in states) {
-      (states[s] as IAbstractState).transitions = (
-        states[s].transitions as IAbstractTransition[]
-      ).filter(t => t.nextStateId !== id);
-    }
-  })(stateMachine);
-
-  editingStore.dispatch(
-    Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
-  );
-}
 
 export function updatePusherStatus(status: string, socket_id: string) {
   return ActionCreator.PUSHER_SOCKET({ socket_id, status });

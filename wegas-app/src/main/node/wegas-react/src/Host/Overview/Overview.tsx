@@ -33,10 +33,6 @@ export const trainerCellStyleI: CSSInterpolation = {
   '&> p': {
     margin: 0,
   },
-  '&> button': {
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
 };
 
 export const tableStyle = css({
@@ -57,6 +53,9 @@ export const tableStyle = css({
       whiteSpace: 'pre',
       '&> div': {
         ...trainerCellStyleI,
+      },
+      '& .team-cell': {
+        justifyContent: 'flex-start',
       },
     },
     '.collapse': {
