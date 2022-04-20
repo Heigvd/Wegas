@@ -5,9 +5,9 @@ import {
   IGame,
   IPlayer,
   ITeam,
-  IAbstractEntity,
 } from 'wegas-ts-api/typings/WegasEntities';
 import { wwarn } from '../../Helper/wegaslog';
+import { entityIs } from '../entities';
 
 export interface NormalizedData {
   variableDescriptors: {
@@ -57,12 +57,14 @@ export const discriminant = (input: {
   return undefined;
 };
 
-export function normalizeDatas(data: IAbstractEntity[] = []): NormalizedData {
-  return data.reduce(
+export function normalizeDatas(data: unknown[] = []): NormalizedData {
+  return data.reduce<NormalizedData>(
     (prev, variable) => {
-      const key = discriminant(variable);
-      if (key != null) {
-        prev[key][variable.id!] = variable as RootType;
+      if (entityIs(variable, 'AbstractEntity', true)) {
+        const key = discriminant(variable);
+        if (key != null) {
+          prev[key][variable.id!] = variable as RootType;
+        }
       }
       return prev;
     },
@@ -73,6 +75,6 @@ export function normalizeDatas(data: IAbstractEntity[] = []): NormalizedData {
       games: {},
       players: {},
       teams: {},
-    } as NormalizedData,
+    },
   );
 }

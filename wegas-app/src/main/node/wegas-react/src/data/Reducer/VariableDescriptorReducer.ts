@@ -182,11 +182,7 @@ export function createDescriptor(
       dispatch(manageResponseHandler(res, dispatch, getState()));
       // Assume entity[0] is what we just created.
       return dispatch(
-        editVariable(
-          res.updatedEntities[0] as IVariableDescriptor,
-          undefined,
-          undefined,
-        ),
+        editVariable(res.updatedEntities[0] as IVariableDescriptor),
       );
     });
   };

@@ -3,13 +3,16 @@ import { Schema } from 'jsoninput';
 import * as React from 'react';
 import { IVariableInstance } from 'wegas-ts-api';
 import { VariableInstanceAPI } from '../../../API/variableInstance.api';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { useOnEditionChangesModal } from '../../../Components/Modal';
 import { ThemeComponent } from '../../../Components/Theme/Theme';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
 import {
   flex,
+  flexBetween,
   flexColumn,
+  flexRow,
   grow,
   localSelection,
   mediumPadding,
@@ -26,6 +29,7 @@ import {
   editingStore,
   EditingStoreDispatch,
 } from '../../../data/Stores/editingStore';
+import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import getEditionConfig from '../../editionConfig';
@@ -87,6 +91,8 @@ export function InstanceProperties({
 }: InstancePropertiesProps) {
   const mounted = React.useRef(false);
   const i18nValues = useInternalTranslate(editorTabsTranslations);
+  const i18nCommon = useInternalTranslate(commonTranslations);
+
   const instanceState = isEditingVariable(editing)
     ? editing.instanceEditing?.editedInstance
     : undefined;
@@ -135,11 +141,24 @@ export function InstanceProperties({
     dispatch || editingStore.dispatch,
   );
 
+  const closeCb = React.useCallback(() => {
+    (dispatch || editingStore.dispatch)(
+      EditingActionCreator.INSTANCE_EDITOR({ open: false }),
+    );
+  }, [dispatch]);
+
   return (
     <Toolbar className={mediumPadding}>
       <Toolbar.Header>
         <div className={cx(grow, flex, flexColumn)}>
-          <div>{title}</div>
+          <div className={cx(grow, flex, flexRow, flexBetween)}>
+            <div>{title}</div>
+            <IconButton
+              icon="times"
+              tooltip={i18nCommon.close}
+              onClick={closeCb}
+            />
+          </div>
           <div className={cx(listBox, grow)}>
             {instances.map(i => {
               if (i) {
