@@ -11,9 +11,8 @@ interface PlayerMapProps extends WegasComponentProps {
   input1: number;
 }
 
-function PlayerMap({ input1, id, className, style }: PlayerMapProps) {
+function PlayerMap({ id, className, style }: PlayerMapProps) {
   const mapElement = React.useRef<HTMLDivElement>();
-
 
   return (
     <div

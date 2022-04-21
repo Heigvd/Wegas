@@ -47,11 +47,11 @@ const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
 const PagesLayout = React.lazy(() => import('./Page/PagesLayout'));
 const SourceEditor = React.lazy(() => import('./Page/SourceEditor'));
 
-const FindAndReplace = React.lazy(() => import ('./FindAndReplace'));
+const FindAndReplace = React.lazy(() => import('./FindAndReplace'));
 
-// const Tester = React.lazy(
-//   () => import('../../Testers/Components/MergeEditorTester'),
-// );
+const Tester = React.lazy(
+  () => import('../../Testers/Components/Map/MapTester'),
+);
 
 const layout = css({
   display: 'flex',
@@ -64,10 +64,10 @@ const layout = css({
 });
 
 const availableLayoutTabs: LinearLayoutComponents = [
-  // {
-  //   tabId: 'Tester',
-  //   content: <Tester />,
-  // },
+  {
+    tabId: 'Tester',
+    content: <Tester />,
+  },
   {
     tabId: 'Variables',
     content: <TreeView />,
