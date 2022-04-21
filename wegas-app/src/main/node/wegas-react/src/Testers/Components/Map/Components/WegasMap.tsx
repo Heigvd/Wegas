@@ -5,12 +5,10 @@ import { Collection } from 'ol';
 import BaseLayer from 'ol/layer/Base';
 import LayerGroup from 'ol/layer/Group';
 import Map from 'ol/Map';
-import { transform } from 'ol/proj';
 import View, { ViewOptions } from 'ol/View';
 // React
 import * as React from 'react';
 import { expandBoth, flex, flexRow } from '../../../../css/classes';
-import { wlog } from '../../../../Helper/wegaslog';
 
 interface MapContext {
   map?: Map;
@@ -45,30 +43,26 @@ export function WegasMap({
         controls: [],
       });
 
-      // map click handler
-      const handleMapClick = (event: any) => {
-        // get clicked coordinate using mapRef to access current React state inside OpenLayers callback
-        //  https://stackoverflow.com/a/60643670
-        const clickedCoord = initialMap.getCoordinateFromPixel(event.pixel);
+      //   // map click handler
+      //   const handleMapClick = (event: any) => {
+      //     // get clicked coordinate using mapRef to access current React state inside OpenLayers callback
+      //     //  https://stackoverflow.com/a/60643670
+      //     const clickedCoord = initialMap.getCoordinateFromPixel(event.pixel);
 
-        wlog(clickedCoord);
+      //     if (clickedCoord) {
+      //       // transform coord to EPSG 4326 standard Lat Long (WGS 84)
+      //       const transormedCoord = transform(
+      //         clickedCoord,
+      //         'EPSG:3857',
+      //         'EPSG:4326',
+      //       );
 
-        if (clickedCoord) {
-          // transform coord to EPSG 4326 standard Lat Long (WGS 84)
-          const transormedCoord = transform(
-            clickedCoord,
-            'EPSG:3857',
-            'EPSG:4326',
-          );
+      //       // setSelectedCoord(transormedCoord);
+      //     }
+      //   };
 
-          // setSelectedCoord(transormedCoord);
-
-          wlog(transormedCoord);
-        }
-      };
-
-      // set map onclick handler
-      initialMap.on('click', handleMapClick);
+      //   // set map onclick handler
+      //   initialMap.on('click', handleMapClick);
 
       // setZoom(initialMap.getView().getZoom() || 0);
 

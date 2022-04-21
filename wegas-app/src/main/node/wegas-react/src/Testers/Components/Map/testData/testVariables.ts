@@ -65,3 +65,11 @@ export const treeLayer = new VectorLayer({
   source: treeLayerSource,
   style: treeLayerStyleFN,
 });
+
+// Selection
+export const selectStyle = new Style({
+  stroke: new Stroke({
+    color: 'green',
+    width: 2,
+  }),
+});
