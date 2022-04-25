@@ -699,7 +699,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     private static final String NO_SLASH_GROUP = "([^/]+)";
 
-    private static final String GM_PREFIX = "/gameModel/";
+    private static final String GM_PREFIX = "gameModel/";
     private static final String LIBS_PREFIX = GM_PREFIX + "libs/";
     private static final String PAGES_PREFIX = GM_PREFIX + "pages/";
     private static final String FILES_PREFIX = GM_PREFIX + "files"; // No leading slash !
@@ -969,8 +969,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
         while ((entry = zip.getNextEntry()) != null) {
             String entryName = entry.getName();
-            if (entryName.charAt(0) != '/') {
-                entryName = "/" + entryName;
+
+            if (entryName.charAt(0) == '/') {
+                entryName = entryName.substring(1);
             }
             if (GM_DOT_JSON_NAME.equals(entryName)) {
                 InputStream stream = IOUtils.toBufferedInputStream(zip);
