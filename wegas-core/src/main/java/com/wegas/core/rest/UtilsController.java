@@ -272,7 +272,7 @@ public class UtilsController {
                 JsonObject r = reader.readObject();
                 JsonArray builds = r.getJsonArray("workflow_runs");
 
-                if (!builds.isEmpty()) {
+                if (builds != null && !builds.isEmpty()) {
                     JsonObject build = builds.get(0).asJsonObject();
                     return build.getInt("run_number", -1);
                 }
