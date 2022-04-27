@@ -3,6 +3,8 @@
 // layer
 import { cx } from '@emotion/css';
 import LayerTile from 'ol/layer/Tile';
+import { fromLonLat } from 'ol/proj';
+// source
 import SourceOSM from 'ol/source/OSM';
 /////////////////////////////////////////////////////////////////
 // React
@@ -60,17 +62,20 @@ function overlayFactory(
 //   'Only on a feature': { filter: () => false, allowClick: true },
 // };
 
+const position = fromLonLat([6.961834028944175, 46.313121655957694]);
+
 const defaultMapOptions = {
   // projection: 'EPSG:4326',
   projection: 'EPSG:3857',
-  center: [6.961834028944175, 46.313121655957694],
-  zoom: 4,
+  center: position,
+  zoom: 16,
 };
 
 export default function MapTester() {
   // const [selectedOverlayMode, setSelectedOverlayMode] =
   //   React.useState<OverlayMode>('Everywhere');
 
+  
   return (
     <div className={cx(flex, flexColumn, expandBoth)}>
       {/* <div className={cx(flex, flexRow)}>
@@ -119,7 +124,8 @@ export default function MapTester() {
         {/* Static overlay overlay, no position and no position on click */}
         <WegasOverlay
           OverlayComponent={overlayFactory('rgb(125,0,0,0.5)')}
-          initialPosition={[6.961834028944175, 46.313121655957694]}
+          initialPosition={position as [number, number]}
+          // initialPosition={position.map((v) => v) as [number, number]}
         />
         {/* Movable overlay, can be clicked everywhere */}
         <WegasOverlay

@@ -6,3 +6,5 @@
 
 # test data
 /src/Testers/Components/Map/testData
+!/src/Testers/Components/Map/testData/testVariable.ts
+
