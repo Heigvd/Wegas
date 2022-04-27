@@ -84,7 +84,7 @@ export default function PageSelect(props: PageSelectProps) {
                       props.onChange(
                         props.value
                           ? { ...props.value, content: value }
-                          : createScript(value),
+                          : createScript(value, 'TypeScript'),
                       )
                     }
                     language={language}
