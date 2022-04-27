@@ -7,10 +7,12 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
@@ -442,7 +444,7 @@ public class PlayerFacade extends BaseFacade<Player> {
             perms.addAll(player.getGame().getRequieredUpdatePermission(context));
 
             requestManager.assertUserHasPermission(perms, "DELETE", player);
-            try (Sudoer su = requestManager.sudoer()) {
+            try ( Sudoer su = requestManager.sudoer()) {
                 if (team.getPlayers().size() == 1) {
                     // Last player -> remove the whole team
                     teamFacade.remove(team);
@@ -508,7 +510,8 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public Player findDebugPlayerByGameModelId(Long gameModelId) {
         GameModel gameModel = gameModelFacade.find(gameModelId);
-        for (Game game : gameModel.getGames()) {
+        List<Game> sGames = Helper.copyAndSortModifiable(gameModel.getGames(), new EntityComparators.EntityIdComparator<>());
+        for (Game game : sGames) {
             Player p = findDebugPlayerByGame(game);
             if (p != null) {
                 return p;
@@ -528,9 +531,30 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @throws WegasNoResultException
      */
     private Player findDebugPlayerByGame(Game game) {
-        for (Team t : game.getTeams()) {
-            if ((t instanceof DebugTeam || game instanceof DebugGame) && !t.getPlayers().isEmpty()) {
-                return t.getPlayers().get(0);
+        List<Team> sTeams = Helper.copyAndSortModifiable(game.getTeams(), new EntityComparators.EntityIdComparator<>());
+        for (Team t : sTeams) {
+            Player found = findDebugPlayerByTeam(t);
+            if (found != null) {
+                return found;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The player with the lowest ID found in the given team.
+     *
+     * @param team
+     *
+     * @return a testPlayer
+     *
+     */
+    private Player findDebugPlayerByTeam(Team team) {
+        Game game = team.getGame();
+        if (game instanceof DebugGame || team instanceof DebugTeam) {
+            List<Player> sPlayers = Helper.copyAndSortModifiable(team.getPlayers(), new EntityComparators.EntityIdComparator<>());
+            if (!sPlayers.isEmpty()) {
+                return sPlayers.get(0);
             }
         }
         return null;

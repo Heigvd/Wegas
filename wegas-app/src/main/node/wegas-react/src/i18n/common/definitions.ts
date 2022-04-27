@@ -34,6 +34,8 @@ export interface CommonTranslations {
     restartGame: string;
     resetLayout: string;
     notifications: string;
+    teams: string;
+    addExtraTestPlayer: string;
   };
   noContent: string;
   noSelectedTab: string;

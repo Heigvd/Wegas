@@ -36,6 +36,8 @@ export const commonTranslationsFR: CommonTranslations = {
     restartGame: 'Recommence le jeu (appliqué à tous les scénaristes)',
     resetLayout: 'Réinitialiser mise en page',
     notifications: 'Notifications',
+    teams: 'Equipes',
+    addExtraTestPlayer: 'Ajouter un joueur de test',
   },
   noContent: 'Aucun contenu',
   noSelectedTab: 'Aucun onglet selectionné',
