@@ -83,6 +83,14 @@ export function liveEdition<T extends IMergeable>(
   };
 }
 
+export function createExtraTestPlayer(gameModelId: number): EditingThunkResult {
+  return function (dispatch, getState) {
+    return GameModelApi.createExtraTestPlayer(gameModelId).then(res =>
+      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
+    );
+  };
+}
+
 export function getGameModel(gameModelId: number): ThunkResult {
   return function () {
     return GameModelApi.get(gameModelId).then(res =>

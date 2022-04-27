@@ -18,6 +18,7 @@ import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import {
+  bolder,
   componentMarginLeft,
   componentMarginRight,
   defaultMarginLeft,
@@ -27,6 +28,7 @@ import {
   foregroundContent,
   itemCenter,
   itemsTop,
+  externalLlinkStyle,
 } from '../../css/classes';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
@@ -221,6 +223,8 @@ function globalStoreSelector(s: State) {
     gameModel: GameModel.selectCurrent(),
     user: Global.selectCurrentUser(),
     userLanguage: selectCurrentEditorLanguage(s),
+    currentPlayerId: s.global.currentPlayerId,
+    currentTeamId: s.global.currentTeamId,
   };
 }
 
@@ -229,12 +233,76 @@ export default function Header() {
   const { currentRole } = React.useContext(roleCTX);
   const i18nValues = useInternalTranslate(commonTranslations);
   const [showHeader, setShowHeader] = React.useState(true);
-  const { gameModel, user, userLanguage } = useStore(globalStoreSelector);
+  const { gameModel, user, userLanguage, currentPlayerId, currentTeamId } =
+    useStore(globalStoreSelector);
   const dispatch = store.dispatch;
   const featuresToggler = useFeatures();
   const roleToggler = useRolesToggler();
   const langSelector = useLangToggler();
   const loggerLevelTogglers = useLoggerLevelSelector();
+
+  const teams = useStore(s => {
+    return Object.values(s.teams);
+  }, shallowDifferent);
+
+  const createExtraTestPlayerItem: DropMenuItem<unknown> = {
+    label: (
+      <div
+        onClick={() => {
+          editingStore.dispatch(
+            Actions.GameModelActions.createExtraTestPlayer(gameModel.id!),
+          );
+        }}
+      >
+        {i18nValues.header.addExtraTestPlayer}
+      </div>
+    ),
+  };
+
+  const teamsMenuItem: DropMenuItem<unknown> = {
+    label: i18nValues.header.teams,
+    value: '-1',
+    items: teams
+      .sort((a, b) => {
+        return (a.name ?? '').localeCompare(b.name ?? '');
+      })
+      .map(team => {
+        return {
+          value: team.id,
+          label: (
+            <a
+              href={`./edit.html?teamId=${team.id}`}
+              target="_blank"
+              rel="noreferrer"
+              className={cx(externalLlinkStyle, {
+                [bolder]: currentTeamId === team.id,
+              })}
+            >
+              <IconComp icon="external-link-alt" />
+              {team.name}
+            </a>
+          ),
+          items: team.players.map(player => {
+            return {
+              label: (
+                <a
+                  href={`./edit.html?id=${player.id}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={cx(externalLlinkStyle, {
+                    [bolder]: currentPlayerId === player.id,
+                  })}
+                >
+                  <IconComp icon="external-link-alt" />
+                  { player.name }{ player.userId == null ? ` (${player.id})` : null}
+                </a>
+              ),
+              value: player.id,
+            };
+          }),
+        };
+      }),
+  };
 
   return (
     <>
@@ -346,6 +414,9 @@ export default function Header() {
               label={<IconComp icon="gamepad" />}
               items={[
                 langSelector,
+                ...(isFeatureEnabled(currentFeatures, 'ADVANCED')
+                  ? [teamsMenuItem, createExtraTestPlayerItem]
+                  : []),
                 {
                   label: (
                     <ConfirmButton

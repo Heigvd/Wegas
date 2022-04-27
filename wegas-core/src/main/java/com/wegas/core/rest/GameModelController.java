@@ -273,6 +273,20 @@ public class GameModelController {
     }
 
     /**
+     * Add a test player in the gameModel. The gamemodel must be a scenario or a model. A debug Game
+     * must exist. A debugTesm must exist
+     *
+     * @param gameModelId id of the gameModelId to add a testPlayer within
+     *
+     * @return the brand new test player
+     */
+    @POST
+    @Path("{gameModelId : [1-9][0-9]*}/ExtraTestPlayer")
+    public Player templateCreate(@PathParam("gameModelId") Long gameModelId) {
+        return gameModelFacade.addTestPlayer(gameModelId);
+    }
+
+    /**
      * EXPERIMENTAL
      * <p>
      * update default instance based on given player ones

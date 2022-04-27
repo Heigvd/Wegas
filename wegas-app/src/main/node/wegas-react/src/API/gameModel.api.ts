@@ -19,4 +19,11 @@ export const GameModelApi = {
       res => res.json() as Promise<string[]>,
     );
   },
+  createExtraTestPlayer(gameModelId: number) {
+    return managedModeRequest(
+      `/GameModel/${ gameModelId}/ExtraTestPlayer`,
+      {
+        method: 'POST',
+      });
+  }
 };

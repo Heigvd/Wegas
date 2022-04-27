@@ -36,6 +36,8 @@ export const commonTranslationsEN: CommonTranslations = {
     restartGame: 'Restart the game (applied to every scenarist)',
     resetLayout: 'Reset layout',
     notifications: 'Notifications',
+    teams: 'Teams',
+    addExtraTestPlayer: 'Add a test player',
   },
   noContent: 'No content',
   noSelectedTab: 'No selected tab',

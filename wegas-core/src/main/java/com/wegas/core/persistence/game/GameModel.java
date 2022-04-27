@@ -337,7 +337,6 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 //        }
 //        this.setPages(map);
 //    }
-
     /**
      * Set the gameModel this PLAY gameModel is based on
      *
@@ -1161,6 +1160,21 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     public Boolean getTemplate() {
         return type == GmType.MODEL || type == GmType.SCENARIO;
+    }
+
+    /**
+     * Find any debug game in the gameModel
+     *
+     * @return the debugGame if found, null otherwise
+     */
+    @JsonIgnore
+    public DebugGame findDebugGame() {
+        for (Game g : getGames()) {
+            if (g instanceof DebugGame) {
+                return (DebugGame) g;
+            }
+        }
+        return null;
     }
 
     /**
