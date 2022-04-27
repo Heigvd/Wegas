@@ -14,6 +14,7 @@ import hidden from './Hidden';
 import IconSelect from './IconSelect';
 import { LabeledHTMLEditor } from './LabeledHTMLEditor';
 import NumberInput from './Number';
+import Nupple from './Nupple';
 import ObjectView from './Object';
 import PageLoaderSelect from './PageLoaderSelect';
 import PageSelect from './PageSelect';
@@ -63,6 +64,7 @@ export const DEFINED_VIEWS = {
   listchildren: ListChildrenSelectView,
   listchildrennull: ListChildrenNullSelectView,
   number: NumberInput,
+  nupple: Nupple,
   object: ObjectView,
   pageselect: PageSelect,
   pagesloaderselect: PageLoaderSelect,

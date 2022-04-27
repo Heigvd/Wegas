@@ -3,6 +3,7 @@ import { Overlay } from 'ol';
 import { FeatureLike } from 'ol/Feature';
 // React
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import { mapCTX } from './WegasMap';
 
 export interface WegasOverlayComponentProps {
@@ -13,7 +14,7 @@ export interface WegasOverlayProps {
   /**
    * The component that shows in the overlay
    */
-  OverlayComponent: React.FunctionComponent<WegasOverlayComponentProps>;
+  OverlayComponent: React.FunctionComponent<UknownValuesObject>;
   /**
    * The position of the overlay
    * if undefined, the overlay will not be show at first render
@@ -34,18 +35,20 @@ export interface WegasOverlayProps {
 
 export function WegasOverlay({
   OverlayComponent,
-  initialPosition: position,
+  initialPosition,
   positionOnClick,
   featuresFilter,
 }: WegasOverlayProps) {
   const { map } = React.useContext(mapCTX);
-  const overlayComponentRef = React.useRef<HTMLElement>(null);
+  const overlayComponentRef = React.useRef<HTMLElement>(
+    document.createElement('div'),
+  );
 
   React.useEffect(() => {
     if (overlayComponentRef.current) {
       const overlay = new Overlay({
         element: overlayComponentRef.current,
-        position,
+        position: initialPosition,
       });
 
       if (positionOnClick && map) {
@@ -100,11 +103,11 @@ export function WegasOverlay({
         map?.removeOverlay(overlay);
       };
     }
-  }, [featuresFilter, map, position, positionOnClick]);
+  }, [featuresFilter, map, initialPosition, positionOnClick]);
 
   return (
     <div style={{ display: 'none' }}>
-      <OverlayComponent inputRef={overlayComponentRef} />
+      {createPortal(<OverlayComponent />, overlayComponentRef.current)}
     </div>
   );
 }

@@ -6,7 +6,7 @@ import LayerRenderer from 'ol/renderer/Layer';
 import Source from 'ol/source/Source';
 import { Style } from 'ol/style';
 import * as React from 'react';
-import { wlog } from '../../../../Helper/wegaslog';
+import { wlog } from '../../Helper/wegaslog';
 import { mapCTX } from './WegasMap';
 
 export interface WegasOverlayComponentProps {

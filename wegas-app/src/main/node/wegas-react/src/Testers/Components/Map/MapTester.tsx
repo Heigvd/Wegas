@@ -3,32 +3,29 @@
 // layer
 import { cx } from '@emotion/css';
 import LayerTile from 'ol/layer/Tile';
-// source
 import SourceOSM from 'ol/source/OSM';
 /////////////////////////////////////////////////////////////////
 // React
 import * as React from 'react';
+import { WegasLayer } from '../../../Components/Maps/WegasLayer';
+import { WegasMap } from '../../../Components/Maps/WegasMap';
+import { WegasOverlay } from '../../../Components/Maps/WegasOverlay';
+import { WegasSelect } from '../../../Components/Maps/WegasSelect';
 import { expandBoth, flex, flexColumn } from '../../../css/classes';
-import { WegasLayer } from './Components/WegasLayer';
-import { WegasMap } from './Components/WegasMap';
-import {
-  WegasOverlay,
-  WegasOverlayComponentProps,
-} from './Components/WegasOverlay';
-import { WegasSelect } from './Components/WegasSelect';
 import {
   buildingLayer,
   selectStyle,
+  swissBuildingLayer,
+  swissBuildingLayerWGS84,
   treeLayer,
 } from './testData/testVariables';
 
 function overlayFactory(
   backgroundColor: React.CSSProperties['backgroundColor'],
 ) {
-  return function Overlay({ inputRef }: WegasOverlayComponentProps) {
+  return function Overlay() {
     return (
       <div
-        ref={inputRef as React.LegacyRef<HTMLDivElement>}
         style={{
           width: '50px',
           height: '50px',
@@ -62,6 +59,13 @@ function overlayFactory(
 //   'Not on any feature': true,
 //   'Only on a feature': { filter: () => false, allowClick: true },
 // };
+
+const defaultMapOptions = {
+  // projection: 'EPSG:4326',
+  projection: 'EPSG:3857',
+  center: [6.961834028944175, 46.313121655957694],
+  zoom: 4,
+};
 
 export default function MapTester() {
   // const [selectedOverlayMode, setSelectedOverlayMode] =
@@ -99,18 +103,16 @@ export default function MapTester() {
         />
       </div> */}
       <WegasMap
-        options={{
-          projection: 'EPSG:4326',
-          center: [6.961834028944175, 46.313121655957694],
-          zoom: 16,
-        }}
+        options={defaultMapOptions}
         initialLayers={[
           new LayerTile({
             source: new SourceOSM(),
           }),
         ]}
       >
-        <WegasLayer layer={buildingLayer} />
+        <WegasLayer layer={swissBuildingLayerWGS84} />
+        <WegasLayer layer={swissBuildingLayer} />
+        {/* <WegasLayer layer={buildingLayer} /> */}
         <WegasLayer layer={treeLayer} />
         {/* Useless overlay, no position and no position on click */}
         <WegasOverlay OverlayComponent={overlayFactory('red')} />

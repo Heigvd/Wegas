@@ -8,7 +8,7 @@ import Map from 'ol/Map';
 import View, { ViewOptions } from 'ol/View';
 // React
 import * as React from 'react';
-import { expandBoth, flex, flexRow } from '../../../../css/classes';
+import { expandBoth, flex, flexRow } from '../../css/classes';
 
 interface MapContext {
   map?: Map;
@@ -77,6 +77,12 @@ export function WegasMap({
 
       // // save map and vector layer references to state
       setMap(initialMap);
+
+      // wlog(1);
+
+      return () => {
+        initialMap.dispose();
+      };
     }
   }, [initialLayers, options]);
 
