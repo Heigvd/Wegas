@@ -25,6 +25,7 @@ export const usableComponentType = [
   'Output',
   'Advanced',
   'Programmatic',
+  'Maps',
 ] as const;
 
 export const componentTypes = [
@@ -64,6 +65,10 @@ interface PageComponentBehaviour {
   allowMove: (props: WegasComponent) => boolean;
   /** Can it accept drop */
   allowChildren: (props: WegasComponent) => boolean;
+  /** Accept only specific children types */
+  filterChildrenType: string[] | undefined;
+  /** Accept only specific children names */
+  filterChildrenName: string[] | undefined;
   /** Can it be edited */
   allowEdit: (props: WegasComponent) => boolean;
 }
@@ -78,6 +83,8 @@ export const defaultPageComponentBehaviour: PageComponentBehaviour = {
   allowChildren: function (component) {
     return component.props?.children != null;
   },
+  filterChildrenType: undefined,
+  filterChildrenName: undefined,
   allowEdit: function () {
     return true;
   },

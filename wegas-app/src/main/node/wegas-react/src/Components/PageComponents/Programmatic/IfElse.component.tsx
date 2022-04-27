@@ -332,5 +332,8 @@ registerComponent(
         { type: PlayerElseName, props: { children: [] } },
       ],
     }),
+    behaviour: {
+      allowChildren: () => false,
+    },
   }),
 );
