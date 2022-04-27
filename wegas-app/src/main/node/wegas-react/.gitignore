@@ -5,11 +5,5 @@
 /dist
 
 # test data
-<<<<<<< HEAD
 src/Testers/Components/Map/testData/*
 !src/Testers/Components/Map/testData/testVariables.ts
-=======
-/src/Testers/Components/Map/testData
-!/src/Testers/Components/Map/testData/testVariable.ts
-
->>>>>>> 0bffbcefa30ae0851480c6f6bc8dbbc9d799e094
