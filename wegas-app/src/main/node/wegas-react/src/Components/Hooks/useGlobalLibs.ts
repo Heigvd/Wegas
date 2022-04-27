@@ -155,6 +155,7 @@ export function useGlobalLibs() {
       try {
         const internalLib = `
         declare const gameModel: SGameModel;
+        declare const teams: STeam[];
         declare const self: SPlayer;
         declare const schemaProps: SchemaPropsDefinedType;
 
