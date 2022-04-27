@@ -160,7 +160,7 @@ export function useGlobalLibs() {
 
         interface VariableClasses {
           ${Object.keys(variableClasses)
-            .map(k => `${k}: S${variableClasses[k].class};`)
+            .map(k => `"${k}": S${variableClasses[k].class};`)
             .join('\n')}
         }
 
