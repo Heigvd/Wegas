@@ -31,9 +31,13 @@ interface TileLayerObject {
 interface StaticSourceObject {
   type: 'Static';
   url: IScript;
-  projection?: string;
-  imageExtent?: [number, number, number, number];
-  imageSize?: [number, number];
+  projection: {
+    code: string;
+    units: string;
+    extent: [number, number, number, number];
+  };
+  imageExtent: [number, number, number, number];
+  imageSize: [number, number];
 }
 
 interface ImageLayerObject {
@@ -45,29 +49,10 @@ interface ImageLayerObject {
 
 //////////// Vector layer
 
-interface UrlData {
-  type: 'URL';
-  url: string;
-}
-interface JsonData {
-  type: 'JSON';
-  value: object;
-}
-type VectorLayerData = UrlData | JsonData;
-
-interface GeoJSONSourceObject {
-  type: 'GeoJSON';
-  features: VectorLayerData;
-}
-
-interface OSMSourceObject {
-  type: 'OSM';
-  features: VectorLayerData;
-}
-
 interface VectorLayerObject {
   type: 'VectorLayer';
-  source: GeoJSONSourceObject | OSMSourceObject;
+  dataType: 'OSM' | 'GeoJSON';
+  source: IScript | string;
   sourceProjection?: string;
   mapProjection?: string;
 }

@@ -1,3 +1,5 @@
+import TileLayer from 'ol/layer/Tile';
+import OSM from 'ol/source/OSM';
 import { ViewOptions } from 'ol/View';
 import * as React from 'react';
 import { entityIs } from '../../../data/entities';
@@ -13,7 +15,12 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
 import { extentSchema, pointSchema } from './helpers/OLHelpers';
 
-const defaultOptions: ViewOptions = {};
+const defaultOptions: ViewOptions = {
+  // projection: 'EPSG:4326',
+  projection: 'EPSG:3857',
+  center: [6.961834028944175, 46.313121655957694],
+  zoom: 4,
+};
 
 interface PlayerMapProps extends WegasComponentProps {
   // inbox?: IScript;
@@ -29,7 +36,17 @@ export default function PlayerMap({ children, mapOptions }: PlayerMapProps) {
     : mapOptions;
 
   return (
-    <WegasMap options={currentOptions || defaultOptions}>{children}</WegasMap>
+    <WegasMap
+      options={{ ...defaultOptions, ...currentOptions }}
+      // options={defaultOptions}
+      initialLayers={[
+        new TileLayer({
+          source: new OSM(),
+        }),
+      ]}
+    >
+      {children}
+    </WegasMap>
   );
 }
 
@@ -130,7 +147,13 @@ registerComponent(
       children: [],
     }),
     behaviour: {
-      filterChildrenName: ['Layer', 'TileLayer', 'Overlay'],
+      filterChildrenName: [
+        'Layer',
+        'TileLayer',
+        'Overlay',
+        'ImageLayer',
+        'VectorLayer',
+      ],
     },
   }),
 );

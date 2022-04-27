@@ -3,6 +3,7 @@ import BaseLayer from 'ol/layer/Base';
 import ImageLayer from 'ol/layer/Image';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
+import { Projection, ProjectionLike } from 'ol/proj';
 import BingMaps from 'ol/source/BingMaps';
 import GeoTIFF from 'ol/source/GeoTIFF';
 import ImageStatic from 'ol/source/ImageStatic';
@@ -10,6 +11,7 @@ import OSM from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
 import osmtogeojson from 'osmtogeojson';
 import { fileURL } from '../../../../API/files.api';
+import { entityIs } from '../../../../data/entities';
 import { PagesContextState } from '../../../../data/Stores/pageContextStore';
 import { AvailableSchemas } from '../../../../Editor/Components/FormView';
 import { safeClientScriptEval } from '../../../Hooks/useScript';
@@ -74,12 +76,24 @@ export async function layerObjectToOLLayer(
   layer: LayerObject,
   context: UknownValuesObject | undefined,
   state: PagesContextState | undefined,
+  mapProjection: ProjectionLike,
 ): Promise<BaseLayer> {
   switch (layer.type) {
     case 'ImageLayer': {
+      // const test = fileURL(
+      //   safeClientScriptEval(
+      //     layer.source.url,
+      //     context,
+      //     undefined,
+      //     state,
+      //     undefined,
+      //   ),
+      // );
+
       return new ImageLayer({
         source: new ImageStatic({
           ...layer.source,
+          projection: new Projection(layer.source.projection),
           url: fileURL(
             safeClientScriptEval(
               layer.source.url,
@@ -128,32 +142,37 @@ export async function layerObjectToOLLayer(
       return new TileLayer({ source });
     }
     case 'VectorLayer': {
-      let source;
-      let data;
-
-      switch (layer.source.features.type) {
-        case 'JSON':
-          data = layer.source.features.value;
-          break;
-        case 'URL':
-          data = (await fetch(layer.source.features.url).then(res =>
-            res.json(),
-          )) as Promise<object>;
+      let pathOrData: string | object;
+      if (entityIs(layer.source, 'Script')) {
+        pathOrData = safeClientScriptEval<object | string>(
+          layer.source,
+          context,
+          undefined,
+          state,
+          undefined,
+        );
+      } else {
+        pathOrData = layer.source;
       }
 
-      switch (layer.source.type) {
+      if (typeof pathOrData === 'string') {
+        pathOrData = await fetch(fileURL(pathOrData)).then(res => res.json());
+      }
+
+      let source: VectorSource;
+      switch (layer.dataType) {
         case 'GeoJSON':
           source = new VectorSource({
-            features: new GeoJSON().readFeatures(data, {
+            features: new GeoJSON().readFeatures(pathOrData, {
               dataProjection: layer.sourceProjection,
-              featureProjection: layer.mapProjection,
+              featureProjection: mapProjection,
             }),
           });
           break;
         case 'OSM':
           source = new VectorSource({
             features: new GeoJSON().readFeatures(
-              osmtogeojson(data, {
+              osmtogeojson(pathOrData, {
                 flatProperties: false,
                 deduplicator: undefined,
                 polygonFeatures: undefined,
@@ -162,7 +181,7 @@ export async function layerObjectToOLLayer(
               }),
               {
                 dataProjection: layer.sourceProjection,
-                featureProjection: layer.mapProjection,
+                featureProjection: mapProjection,
               },
             ),
           });

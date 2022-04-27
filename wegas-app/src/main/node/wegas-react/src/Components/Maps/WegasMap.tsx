@@ -5,6 +5,7 @@ import { Collection } from 'ol';
 import BaseLayer from 'ol/layer/Base';
 import LayerGroup from 'ol/layer/Group';
 import Map from 'ol/Map';
+import { ProjectionLike } from 'ol/proj';
 import View, { ViewOptions } from 'ol/View';
 // React
 import * as React from 'react';
@@ -12,6 +13,7 @@ import { expandBoth, flex, flexRow } from '../../css/classes';
 
 interface MapContext {
   map?: Map;
+  projection?: ProjectionLike;
 }
 
 export const mapCTX = React.createContext<MapContext>({});
@@ -90,7 +92,9 @@ export function WegasMap({
   return (
     <div className={cx(flex, flexRow, expandBoth)}>
       <div ref={mapElement} className={expandBoth}>
-        <mapCTX.Provider value={{ map }}>{children}</mapCTX.Provider>
+        <mapCTX.Provider value={{ map, projection: options.projection }}>
+          {children}
+        </mapCTX.Provider>
       </div>
     </div>
   );
