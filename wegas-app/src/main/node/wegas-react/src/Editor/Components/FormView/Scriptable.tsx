@@ -51,7 +51,7 @@ export default function ScriptableView(
   const switchToScriptMode = React.useCallback(() => {
     let scripted;
     try {
-      scripted = JSON.stringify(valueRef.current);
+      scripted = '(' + JSON.stringify(valueRef.current) + ')';
     } catch {
       scripted = valueRef.current;
     }
