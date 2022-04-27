@@ -77,6 +77,7 @@ interface GlobalClasses {
   Error: typeof globalThis['Error'];
   Function: typeof globalThis['Function'];
   gameModel?: Readonly<SGameModel>;
+  teams?: Readonly<Readonly<STeam>[]>;
   self?: Readonly<SPlayer>;
   schemaProps: SchemaPropsType;
   CurrentGame: IGame;
@@ -182,12 +183,15 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
 
   const player = store.players[store.global.currentPlayerId];
   const gameModel = store.gameModels[store.global.currentGameModelId];
+  const teams = Object.values(store.teams);
   const pageLoaders = store.global.pageLoaders;
 
   const splayer = instantiate(player);
 
   // Global variables
   globals.gameModel = instantiate(gameModel);
+  globals.teams = instantiate(teams);
+
   globals.self = instantiate(player);
   globals.schemaProps = schemaProps;
   globals.API_VIEW = API_VIEW;
