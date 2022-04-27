@@ -3,3 +3,6 @@
 
 # production
 /dist
+
+# test data
+/src/Testers/Components/Map/testData
