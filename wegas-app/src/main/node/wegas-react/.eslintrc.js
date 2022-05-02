@@ -34,7 +34,6 @@ module.exports = {
     'no-param-reassign': 'error',
     'no-debugger': 'error',
     'prefer-const': 'error',
-    'linebreak-style': ['error', 'unix'],
     'react/no-unescaped-entities': 'off',
     'react/prop-types': 'off',
     'react/no-unsafe': ['error', { checkAliases: true }],
