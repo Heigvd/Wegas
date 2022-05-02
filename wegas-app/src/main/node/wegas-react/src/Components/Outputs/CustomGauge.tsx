@@ -19,10 +19,14 @@ const valueToAngle = (
   maxValue: number,
   minAngle: number,
   maxAngle: number,
-) =>
-  minAngle +
-  ((maxAngle - minAngle) * Math.max(Math.min(value, maxValue), minValue)) /
-    (maxValue - minValue);
+) => {
+  return (
+    minAngle +
+    ((maxAngle - minAngle) *
+      (Math.max(Math.min(value, maxValue), minValue) - minValue)) /
+      (maxValue - minValue)
+  );
+};
 
 export interface GaugeSection
   extends Omit<PieChartSection, 'angleTo' | 'fillColor'> {

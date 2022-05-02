@@ -41,6 +41,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.DebugGame;
+import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.GmType;
@@ -49,7 +50,9 @@ import static com.wegas.core.persistence.game.GameModel.GmType.PLAY;
 import static com.wegas.core.persistence.game.GameModel.GmType.SCENARIO;
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.GameModelContent;
+import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -60,6 +63,7 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.core.tools.FindAndReplacePayload;
 import com.wegas.core.tools.FindAndReplaceVisitor;
 import com.wegas.core.tools.RegexExtractorVisitor;
@@ -362,6 +366,78 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         for (VariableInstance vi : (Collection<VariableInstance>) variableDescriptorFacade.getInstances(vd).values()) {
             variableInstanceFacade.reviveInstance(vi);
         }
+    }
+
+    /**
+     * Add a test player in the gameModel. The gamemodel must be a scenario or a model. A debug Game
+     * must exist. A debugTesm must exist
+     *
+     * @param gameModel the gameModel to add a testPlayer within
+     *
+     * @return the brand new test player
+     */
+    public Player addTestPlayer(GameModel gameModel) {
+        if (gameModel == null) {
+            throw WegasErrorMessage.error("GameModel is null");
+        }
+
+        /* Make sure the game model is a scenario or a model */
+        if (gameModel.getType() != GmType.SCENARIO
+            && gameModel.getType() != GmType.SCENARIO) {
+            throw WegasErrorMessage.error("GameModel is null");
+        }
+
+        /* Make sure it contains a DebugGame */
+        DebugGame game = gameModel.findDebugGame();
+        if (game == null) {
+            throw WegasErrorMessage.error("No DebugGame found");
+        }
+
+        /* Make sure the DebugGame contains a DebugTeam */
+        DebugTeam team = null;
+        for (Team t : game.getTeams()) {
+            if (t instanceof DebugTeam && t.getStatus() == Populatable.Status.LIVE) {
+                team = (DebugTeam) t;
+                break;
+            }
+        }
+        if (team == null) {
+            throw WegasErrorMessage.error("No DebugTeam found");
+        }
+
+
+        /**
+         * The debug team exists, let's create a test player within it
+         */
+        Player player = new Player();
+        team.addPlayer(player);
+        player.setStatus(Populatable.Status.LIVE);
+
+        List<GameModelLanguage> languages = game.getGameModel().getLanguages();
+        if (languages != null && !languages.isEmpty()) {
+            player.setLang(languages.get(0).getCode());
+        }
+        // create and persist the player
+        this.getEntityManager().persist(player);
+
+        // make sure to create all missing variable isntances
+        try ( ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            this.propagateAndReviveDefaultInstances(gameModel, player, true); // One-step team create (internal use)
+        }
+
+        return player;
+    }
+
+    /**
+     * Add a test player in the gameModel. The gamemodel must be a scenario or a model. A debug Game
+     * must exist. A debugTesm must exist
+     *
+     * @param gameModelId id of the gameModelId to add a testPlayer within
+     *
+     * @return the brand new test player
+     */
+    public Player addTestPlayer(Long gameModelId) {
+        return this.addTestPlayer(this.find(gameModelId));
     }
 
     /**
@@ -699,7 +775,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     private static final String NO_SLASH_GROUP = "([^/]+)";
 
-    private static final String GM_PREFIX = "/gameModel/";
+    private static final String GM_PREFIX = "gameModel/";
     private static final String LIBS_PREFIX = GM_PREFIX + "libs/";
     private static final String PAGES_PREFIX = GM_PREFIX + "pages/";
     private static final String FILES_PREFIX = GM_PREFIX + "files"; // No leading slash !
@@ -807,8 +883,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     zipOutputStream.putNextEntry(new ZipEntry(PAGES_PREFIX));
                     zipOutputStream.closeEntry();
 
-  //                  JsonFactory factory = new JsonFactory();
-
+                    // JsonFactory factory = new JsonFactory();
                     Map<String, JsonNode> pages = gameModel.getPages();
                     for (var pageEntry : pages.entrySet()) {
                         String pageId = pageEntry.getKey();
@@ -969,8 +1044,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
         while ((entry = zip.getNextEntry()) != null) {
             String entryName = entry.getName();
-            if (entryName.charAt(0) != '/') {
-                entryName = "/" + entryName;
+
+            if (entryName.charAt(0) == '/') {
+                entryName = entryName.substring(1);
             }
             if (GM_DOT_JSON_NAME.equals(entryName)) {
                 InputStream stream = IOUtils.toBufferedInputStream(zip);

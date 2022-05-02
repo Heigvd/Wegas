@@ -40,8 +40,8 @@ public final class AaiConfigInfo {
         enabled = Helper.getWegasProperty("aai.enabled").trim().toLowerCase().equals("true");
         loginUrl = Helper.getWegasProperty("aai.loginurl").trim();
         showButton = Helper.getWegasProperty("aai.showbutton").trim().toLowerCase().equals("true");
-        eduIdEnabled = Helper.getWegasProperty("eduid.enabled").trim().toLowerCase().equals("true");
-        eduIdUrl = Helper.getWegasProperty("eduid.url").trim();
+        eduIdEnabled = Helper.getWegasProperty("eduid.enabled", "false").trim().toLowerCase().equals("true");
+        eduIdUrl = Helper.getWegasProperty("eduid.url", "").trim();
     }
 
     private synchronized static void setInstance() {

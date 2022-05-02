@@ -32,7 +32,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 public class Deepl {
 
     //private static final Logger logger = LoggerFactory.getLogger(Deepl.class);
-
     /**
      * DeepL API URL
      */
@@ -63,29 +62,65 @@ public class Deepl {
      */
     public enum Language {
         /**
-         * English
+         * Bulgarian
          */
-        EN,
+        BG,
+        /**
+         * Czech
+         */
+        CS,
+        /**
+         * Danish
+         */
+        DA,
         /**
          * German
          */
         DE,
         /**
-         * French
+         * Greek
          */
-        FR,
+        EL,
+        /**
+         * English
+         */
+        EN,
         /**
          * Spanish
          */
         ES,
         /**
-         * Portuguese
+         * Estonian
          */
-        PT,
+        ET,
+        /**
+         * Finnish
+         */
+        FI,
+        /**
+         * French
+         */
+        FR,
+        /**
+         * Hungarian
+         */
+        HU,
         /**
          * Italian
          */
         IT,
+        /**
+         * Japanese
+         */
+        JA,
+        /**
+         * Latvian
+         */
+        LV,
+        /**
+         * Lithuanian
+         */
+        LT,
         /**
          * Dutch
          */
@@ -95,17 +130,33 @@ public class Deepl {
          */
         PL,
         /**
+         * Portuguese
+         */
+        PT,
+        /**
+         * Romanian
+         */
+        RO,
+        /**
          * Russian
          */
         RU,
         /**
-         * Japanese
+         * Slovak
          */
-        JA,
+        SK,
+        /**
+         * Slovenian
+         */
+        SL,
+        /**
+         * Swedish
+         */
+        SV,
         /**
          * Chinese
          */
-        ZH;
+        ZH,
 
     }
 
@@ -189,14 +240,14 @@ public class Deepl {
 
         StringBuilder sb = new StringBuilder();
         sb.append("auth_key=").append(this.key)
-        .append("&tag_handling=xml");
+            .append("&tag_handling=xml");
         if (sourceLang != null) {
             sb.append("&source_lang=").append(sourceLang);
         }
 
         if (targetLang != null) {
             sb.append("&target_lang=").append(targetLang);
-        /*} else {
+            /*} else {
             //TODO else : throw error*/
         }
 
@@ -204,7 +255,7 @@ public class Deepl {
             for (String text : texts) {
                 sb.append("&text=").append(URLEncoder.encode(text, "UTF-8"));
             }
-        /*} else {
+            /*} else {
             //TODO else : throw error*/
         }
 

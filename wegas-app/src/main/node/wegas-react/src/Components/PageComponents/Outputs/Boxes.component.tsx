@@ -55,7 +55,11 @@ function PlayerBoxes({
       style={style}
       id={id}
       value={instance?.getValue()}
-      minValue={1}
+      minValue={
+        descriptor?.getMinValue() != null
+          ? (descriptor.getMinValue() as number)
+          : undefined
+      }
       maxValue={
         descriptor?.getMaxValue() != null
           ? (descriptor.getMaxValue() as number)

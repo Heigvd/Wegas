@@ -19,7 +19,7 @@ public class EntityComparators {
      *
      * @param <T> extends AbstractEntity
      */
-    public static class EntityIdComparator<T extends AbstractEntity> implements Comparator<T>, Serializable {
+    public static class EntityIdComparator<T extends WithId> implements Comparator<T>, Serializable {
 
         @Override
         public int compare(T o1, T o2) {

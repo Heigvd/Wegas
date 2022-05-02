@@ -177,6 +177,7 @@ export function SimpleQuestionDisplay({
   }
 
   const canReply =
+    !questionI.validated  &&
     (questionD.maxReplies == null ||
       validatedReplies.length < questionD.maxReplies) &&
     isActionAllowed(options);

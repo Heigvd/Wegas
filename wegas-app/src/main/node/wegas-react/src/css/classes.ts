@@ -354,3 +354,15 @@ export const fullScreenContentContainerStyle = css({
 export const pointer = css({
   cursor: 'pointer',
 });
+
+export const externalLlinkStyle = css({
+  textDecoration: 'none',
+  color: 'var(--colors-darktextcolor)',
+  "&:hover": {
+    textDecoration: 'underline',
+  }
+});
+
+export const bolder = css({
+  fontWeight: 'bolder',
+});

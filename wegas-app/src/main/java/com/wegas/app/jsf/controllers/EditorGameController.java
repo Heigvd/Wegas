@@ -110,7 +110,7 @@ public class EditorGameController extends AbstractGameController {
         }
 
     }
-    
+
     /**
      * Checks that the current player has write rights on the game.
      */
