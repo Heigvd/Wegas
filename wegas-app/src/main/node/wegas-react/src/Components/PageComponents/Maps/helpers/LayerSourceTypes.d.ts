@@ -34,10 +34,10 @@ interface StaticSourceObject {
   projection: {
     code: string;
     units: string;
-    extent: [number, number, number, number];
+    extent: ExtentLikeObject;
   };
-  imageExtent: [number, number, number, number];
-  imageSize: [number, number];
+  imageExtent: ExtentLikeObject;
+  imageSize: PointLikeObject;
 }
 
 interface ImageLayerObject {
@@ -54,10 +54,6 @@ interface VectorLayerObject {
   dataType: 'OSM' | 'GeoJSON';
   source: IScript | string;
   sourceProjection?: string;
-  mapProjection?: string;
 }
 
-export type LayerObject =
-  | VectorLayerObject
-  | ImageLayerObject
-  | TileLayerObject;
+type LayerObject = VectorLayerObject | ImageLayerObject | TileLayerObject;

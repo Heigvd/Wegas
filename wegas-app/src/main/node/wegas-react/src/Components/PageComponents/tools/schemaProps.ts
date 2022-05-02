@@ -7,6 +7,7 @@ import {
   DEFINED_VIEWS,
   SchemaFromView,
 } from '../../../Editor/Components/FormView';
+import { ScriptableViewView } from '../../../Editor/Components/FormView/Scriptable';
 import { WegasMethod } from '../../../Editor/editionConfig';
 import { createScript } from '../../../Helper/wegasEntites';
 import { Choices } from '../../Selector';
@@ -845,6 +846,53 @@ const simpleSchemaProps = {
       label,
       required,
       type: 'scriptablepath',
+      layout,
+      borderTop,
+      noMarginTop,
+      description,
+    },
+  }),
+  scriptable: ({
+    label,
+    required = false,
+    featureLevel = 'DEFAULT',
+    valueType,
+    index = 0,
+    layout,
+    borderTop,
+    noMarginTop,
+    description,
+    visible,
+    literalSchema,
+    scriptProps,
+    currentLanguage,
+    readOnly,
+    onLanguage,
+    borderBottom,
+  }: CommonSchemaProps &
+    ScriptableViewView & {
+      valueType?: TYPESTRING | TYPESTRING[];
+    }): SchemaFromView<'scriptable'> => ({
+    required,
+    type:
+      valueType != null
+        ? Array.isArray(valueType)
+          ? ['object', ...valueType]
+          : ['object', valueType]
+        : 'object',
+    index,
+    visible,
+    view: {
+      featureLevel,
+      index,
+      label,
+      literalSchema,
+      scriptProps,
+      borderBottom,
+      currentLanguage,
+      onLanguage,
+      readOnly,
+      type: 'scriptable',
       layout,
       borderTop,
       noMarginTop,

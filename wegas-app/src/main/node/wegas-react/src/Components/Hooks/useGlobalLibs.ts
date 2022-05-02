@@ -43,6 +43,9 @@ import WegasDashboardSrc from '!!raw-loader!../../../types/scripts/WegasDashboar
 import wegasEventsGlobalSrc from '!!raw-loader!../../../types/scripts/WegasEventsGlobals.d.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+import libDom from '!!raw-loader!typescript/lib/lib.dom';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasEntities.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -97,6 +100,7 @@ const clientLibs: MonacoDefinitionsLibrary[] = [
     name: 'ts:filename/RolesMethodsGlobal.d.ts',
   },
   { content: SchemaHelper, name: 'ts:filename/SchemaHelper.d.ts' },
+  { content: libDom, name: 'ts:filename/ExportedLibDom.d.ts' },
 ];
 
 const serverLibs: MonacoDefinitionsLibrary[] = [
