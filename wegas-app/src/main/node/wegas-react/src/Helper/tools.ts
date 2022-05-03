@@ -29,35 +29,40 @@ export function array_move<T>(
 
 /**
  * getEntry - get an entry of object from and array of keys. Allows to go deep in an object without the use of brackets [][][]
- * @returns the value at of the searched entry or undefined
+ * @returns en object containing the value at of the searched entry and if the keys exists
  * @param object any object
  * @param keyPath an array of keys to acces entry
  * @param lookupKey if the searched object is made from intermediate objects, allows to look up in the intermediate object.
  */
-export function getEntry(
-  object: any,
-  keyPath: string[],
-  lookupKey?: string,
-): any {
+export function getEntry(object: any, keyPath: string[], lookupKey?: string) {
   if (keyPath.length === 0) {
-    return undefined;
+    return { value: undefined, keyExists: false, lookupKeyExists: false };
   }
   const newKeys = [...keyPath];
-  let entry: any = object;
+  let value: any = object;
+  let keyExists: boolean = false;
+  let lookupKeyExists: boolean = false;
   while (newKeys.length > 0) {
     const key = newKeys.shift();
-    if (
-      key == null ||
-      entry == null ||
-      typeof entry !== 'object' ||
-      !(key in entry)
-    ) {
-      return undefined;
+    if (key != null && value != null && typeof value === 'object') {
+      keyExists = key in value;
+      lookupKeyExists =
+        key in value &&
+        lookupKey != null &&
+        value[key] != null &&
+        typeof value[key] === 'object' &&
+        lookupKey in value[key];
+
+      if (lookupKeyExists) {
+        value = value[key][lookupKey as string];
+      } else {
+        value = value[key];
+      }
     } else {
-      entry = lookupKey != null ? entry[key][lookupKey] : entry[key];
+      return { value: undefined, keyExists: false, lookupKeyExists: false };
     }
   }
-  return entry;
+  return { value, keyExists, lookupKeyExists };
 }
 
 /**

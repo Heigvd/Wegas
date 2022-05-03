@@ -6,7 +6,7 @@ import { IAbstractContentDescriptor, IScript } from 'wegas-ts-api';
 import { Value } from '../Components/Outputs/Value';
 import { schemaProps } from '../Components/PageComponents/tools/schemaProps';
 import { themeVar } from '../Components/Theme/ThemeVars';
-import { expandBoth, flex, flexColumn } from '../css/classes';
+import { autoScroll, expandBoth, flex, flexColumn } from '../css/classes';
 //It's really important to import index.ts in order to have the widjets allready registered before using Form
 import '../Editor/Components/FormView';
 import { MessageString } from '../Editor/Components/MessageString';
@@ -31,10 +31,10 @@ const testSchema = {
     label: 'Undefined select',
     values: ['Option 1', 'Option 2', 'Option 3'],
   }),
-  simpleHashList: schemaProps.hashlist({
-    label: 'Simple hashlist',
-    required: true,
-  }),
+  // simpleHashList: schemaProps.hashlist({
+  //   label: 'Simple hashlist',
+  //   required: true,
+  // }),
   customizedHashList: schemaProps.hashlist({
     label: 'Customized hashlist',
     required: true,
@@ -63,6 +63,38 @@ const testSchema = {
       },
     ],
   }),
+  // multiLevelHashList: schemaProps.hashlist({
+  //   label: 'Multilevel hashlist',
+  //   required: true,
+  //   choices: [
+  //     {
+  //       label: 'Attribute1',
+  //       value: {
+  //         prop: 'Attribute1',
+  //       },
+  //       items: [
+  //         {
+  //           label: 'Attribute 1.1',
+  //           value: {
+  //             prop: 'Attribute 1.1',
+  //             schema: schemaProps.boolean({ label: 'Attribute 1.1' }),
+  //           },
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       label: 'Attribute2',
+  //       value: {
+  //         prop: 'Attribute2',
+  //         schema: schemaProps.select({
+  //           label: 'Attribute2',
+  //           required: true,
+  //           values: ['A', 'B', 'C'],
+  //         }),
+  //       },
+  //     },
+  //   ],
+  // }),
   // customizedMultilevelHashList: wegasComponentExtraSchema('FLEX').options,
   file: schemaProps.file({ label: 'File' }),
   greyFilterfile: schemaProps.file({
@@ -99,9 +131,9 @@ interface SchemaPropsTesterState {
   code: object;
   select: string;
   undefSelect?: string;
-  simpleHashList: UknownValuesObject;
+  // simpleHashList: UknownValuesObject;
   customizedHashList: UknownValuesObject;
-  customizedMultilevelHashList: UknownValuesObject;
+  // multiLevelHashList: UknownValuesObject;
   file?: IAbstractContentDescriptor;
   greyFilterfile?: IAbstractContentDescriptor;
   objectArray?: { className?: string; condition?: IScript }[];
@@ -124,10 +156,10 @@ export default function SchemaPropsTester() {
     code: {},
     select: 'Option 1',
     undefSelect: undefined,
-    simpleHashList: {},
-    customizedHashList: {},
+    // simpleHashList: {},
+    customizedHashList: { Attribute1: 1, Attribute2: undefined },
     // customizedMultilevelHashList: {},
-    customizedMultilevelHashList: { layout: { order: 1234567 } },
+    // multiLevelHashList: { layout: { order: 1234567 } },
     // customizedMultilevelHashList: {
     //   nextlevel: { 'Next level attribute 1': '2' },
     // },
@@ -138,7 +170,7 @@ export default function SchemaPropsTester() {
   const [errors, setErrors] = React.useState<ValidationError[]>([]);
 
   return (
-    <div className={cx(flex, expandBoth, flexColumn)}>
+    <div className={cx(flex, expandBoth, flexColumn, autoScroll)}>
       {errors.length > 0 && (
         <MessageString
           value={JSON.stringify(errors)}
