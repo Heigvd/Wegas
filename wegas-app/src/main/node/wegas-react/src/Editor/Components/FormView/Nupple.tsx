@@ -9,9 +9,7 @@ interface NuppleView extends CommonView, LabeledView {
   itemsSchema: Record<string, AvailableSchemas>;
 }
 
-interface NuppleProps extends WidgetProps.BaseProps<NuppleView> {
-  value?: unknown[];
-}
+type NuppleProps = WidgetProps.ArrayProps<NuppleView>;
 
 export default function Nupple({
   view,

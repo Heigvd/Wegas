@@ -59,7 +59,7 @@ registerComponent(
     name: 'Map',
     icon: 'map',
     illustration: 'scatter',
-    schema: mapSchema,
+    schema: { mapOptions: mapSchema },
     allowedVariables: [],
     getComputedPropsFromVariable: () => ({
       children: [],

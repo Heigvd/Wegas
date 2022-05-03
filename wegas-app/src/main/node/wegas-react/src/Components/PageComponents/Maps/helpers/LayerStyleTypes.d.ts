@@ -40,6 +40,7 @@ interface ImageStyleObject extends SharedStyleProperties {
 }
 
 interface TextStyleObject extends SharedStyleProperties {
+  type: 'TextStyle';
   font?: 'string';
   maxAngle?: number;
   offsetX?: number;

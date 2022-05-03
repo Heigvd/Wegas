@@ -60,7 +60,7 @@ registerComponent(
     name: 'TileLayer',
     icon: 'map',
     illustration: 'scatter',
-    schema: wegasTileLayerSchema,
+    schema: { source: wegasTileLayerSchema },
   }),
 );
 
@@ -71,7 +71,7 @@ registerComponent(
     name: 'ImageLayer',
     icon: 'map',
     illustration: 'scatter',
-    schema: wegasImageLayerSchema,
+    schema: { source: wegasImageLayerSchema },
   }),
 );
 
@@ -82,7 +82,7 @@ registerComponent(
     name: 'VectorLayer',
     icon: 'map',
     illustration: 'scatter',
-    schema: wegasVectorLayerSchema,
+    schema: { source: wegasVectorLayerSchema },
   }),
 );
 
