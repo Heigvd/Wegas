@@ -47,11 +47,9 @@ const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
 const PagesLayout = React.lazy(() => import('./Page/PagesLayout'));
 const SourceEditor = React.lazy(() => import('./Page/SourceEditor'));
 
-const FindAndReplace = React.lazy(() => import ('./FindAndReplace'));
+const FindAndReplace = React.lazy(() => import('./FindAndReplace'));
 
-// const Tester = React.lazy(
-//   () => import('../../Testers/Components/MergeEditorTester'),
-// );
+// const Tester = React.lazy(() => import('../../Testers/SchemaPropsTester'));
 
 const layout = css({
   display: 'flex',

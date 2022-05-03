@@ -3,11 +3,11 @@ import Form from 'jsoninput';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { cloneDeep, omit } from 'lodash-es';
 import * as React from 'react';
+import { AvailableSchemas } from '.';
 import { SelecteDropdMenuItem } from '../../../Components/DropMenu';
 import { useDeepChanges } from '../../../Components/Hooks/useDeepChanges';
-import { AvailableSchemas } from '.';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { schemaProps, } from '../../../Components/PageComponents/tools/schemaProps';
+import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { getEntry, setEntry } from '../../../Helper/tools';
 import { DragDropArray } from './Array';
 import { CommonView, CommonViewContainer } from './commonView';
@@ -118,9 +118,11 @@ export function EntryView<T>({
 export type ImprovedValues = { [prop: string]: ImprovedObjectValue };
 const normalizeValues =
   (nv: object, choices?: HashListChoices) =>
-  (ov?: ImprovedValues): ImprovedValues =>
-    Object.entries(nv).reduce((o, [k, v], i) => {
+  (ov?: ImprovedValues): ImprovedValues => ({
+    ...ov,
+    ...Object.entries(nv).reduce((o, [k, v], i) => {
       const [isIntermediate, itemChoices] = isIntermediateKey(k, choices);
+
       return {
         ...o,
         [k]: {
@@ -137,7 +139,8 @@ const normalizeValues =
           index: ov != null && ov[k] != null ? ov[k].index : i,
         },
       };
-    }, {});
+    }, {}),
+  });
 
 const extractValues = (
   values: ImprovedValues,
@@ -145,13 +148,11 @@ const extractValues = (
 ): ObjectValues =>
   Object.entries(values || {}).reduce((o, [k, v]) => {
     const [isIntermediate, itemChoices] = isIntermediateKey(k, choices);
-    return {
-      ...o,
-      [k]:
-        isIntermediate && typeof v.value === 'object'
-          ? extractValues(v.value, itemChoices)
-          : v.value,
-    };
+    (o as Record<string, unknown>)[k] =
+      isIntermediate && typeof v.value === 'object'
+        ? extractValues(v.value, itemChoices)
+        : v.value || undefined;
+    return o;
   }, {});
 const sortValues = (a: ImprovedObjectValue, b: ImprovedObjectValue) =>
   a.index - b.index;
@@ -302,10 +303,13 @@ function EntriesView({
           const keyPath = [...choiceKeyPath, choice.value.prop];
           const newValue = setEntry(
             currentValue,
-            { index: 0, value: undefined },
+            { index: Object.keys(currentValue).length, value: undefined },
             keyPath,
             {
-              defaultObject: { index: 0, value: '' },
+              defaultObject: {
+                index: Object.keys(currentValue).length,
+                value: '',
+              },
               lookupKey: 'value',
             },
           );
@@ -406,6 +410,7 @@ function HashListView({
   onChange: onChangeOutside,
   value,
 }: HashListViewProps) {
+  const [currentValue, setValue] = React.useState<ImprovedValues>({});
   const { label, description, choices, objectViewStyle, cleaning } = view;
 
   const onChange = React.useCallback(
@@ -416,9 +421,10 @@ function HashListView({
     [onChangeOutside, choices],
   );
 
-  const [currentValue, setValue] = React.useState<ImprovedValues>({});
   useDeepChanges(value, nv => {
-    setValue(normalizeValues(nv || {}, choices));
+    setValue(ov => {
+      return normalizeValues(nv || {}, choices)(ov);
+    });
   });
 
   const allowedChoices = React.useMemo(
@@ -428,12 +434,12 @@ function HashListView({
             if (view.choices) {
               const keyPath = getKeyPath(path, view.choices);
               if (keyPath != null) {
-                const newValue: ImprovedObjectValue = getEntry(
+                const { keyExists, lookupKeyExists } = getEntry(
                   currentValue,
                   keyPath,
                   'value',
                 );
-                if (newValue != null && choice.items == null) {
+                if (keyExists && lookupKeyExists) {
                   return undefined;
                 }
               }
