@@ -43,6 +43,15 @@ import WegasDashboardSrc from '!!raw-loader!../../../types/scripts/WegasDashboar
 import wegasEventsGlobalSrc from '!!raw-loader!../../../types/scripts/WegasEventsGlobals.d.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+import layerSourceTypes from '!!raw-loader!../Maps/helpers/LayerSourceTypes.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import layerStyleTypes from '!!raw-loader!../Maps/helpers/LayerStyleTypes.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import olTypes from '!!raw-loader!../Maps/helpers/OLTypes.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import libDom from '!!raw-loader!typescript/lib/lib.dom';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -101,6 +110,9 @@ const clientLibs: MonacoDefinitionsLibrary[] = [
   },
   { content: SchemaHelper, name: 'ts:filename/SchemaHelper.d.ts' },
   { content: libDom, name: 'ts:filename/ExportedLibDom.d.ts' },
+  { content: olTypes, name: 'ts:filename/olTypes.d.ts' },
+  { content: layerStyleTypes, name: 'ts:filename/layerStyleTypes.d.ts' },
+  { content: layerSourceTypes, name: 'ts:filename/layerSourceTypes.d.ts' },
 ];
 
 const serverLibs: MonacoDefinitionsLibrary[] = [

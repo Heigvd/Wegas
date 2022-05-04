@@ -1,59 +1,63 @@
 import { WidgetProps } from 'jsoninput/typings/types';
 import { toLower } from 'lodash';
 import * as React from 'react';
-import { IScript } from 'wegas-ts-api';
+import { flex } from '../../../css/classes';
 import { createScript } from '../../../Helper/wegasEntites';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 import { TempScriptEditor } from '../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
-import { scriptEditStyle } from './Script/Script';
 
-export interface CodeProps
-  extends WidgetProps.BaseProps<
-    LabeledView & CommonView & { language?: CodeLanguage }
-  > {
-  value?: IScript | string;
+export interface CodeViewView extends LabeledView, CommonView {
+  scriptProps: {
+    language?: CodeLanguage;
+    returnType?: string[];
+    args?: [string, string[]][];
+  };
+}
+
+export interface CodeViewProps extends WidgetProps.BaseProps<CodeViewView> {
+  value?: IScript;
   onChange: (code?: IScript) => void;
 }
 
-export function Code({ view, value, onChange }: CodeProps) {
-  const language = view.language
-    ? (toLower(view.language) as SrcEditorLanguages)
-    : view.language;
+export default function CodeView(props: CodeViewProps): JSX.Element {
+  const { errorMessage, view, onChange, value } = props;
 
-  const onValueChange = React.useCallback(
+  const { label, description, scriptProps } = view;
+
+  const valueRef = React.useRef(value);
+  valueRef.current = value;
+
+  const language = scriptProps.language
+    ? (toLower(scriptProps.language) as SrcEditorLanguages)
+    : scriptProps.language;
+
+  const onScriptContentChange = React.useCallback(
     (val: string) => {
-      if (value == null || typeof value === 'string') {
-        onChange(createScript(val, view.language));
-      } else {
-        onChange({ ...value, content: val });
-      }
+      onChange(createScript(val, language));
     },
-    [onChange, view.language, value],
+    [onChange, language],
   );
+
   return (
-    <CommonViewContainer view={view}>
-      <Labeled label={view.label} description={view.description} /*{...view}*/>
-        {({ labelNode }) => {
-          return (
-            <>
-              {labelNode}
-              <div className={scriptEditStyle}>
-                <TempScriptEditor
-                  language={language}
-                  initialValue={
-                    typeof value === 'string' ? value : value?.content || ''
-                  }
-                  onChange={onValueChange}
-                  minimap={false}
-                  noGutter={true}
-                  resizable
-                />
-              </div>
-            </>
-          );
-        }}
+    <CommonViewContainer errorMessage={errorMessage} view={view}>
+      <Labeled label={label} description={description}>
+        {({ labelNode }) => (
+          <>
+            <div className={flex}>{labelNode}</div>
+            <TempScriptEditor
+              language={language}
+              returnType={scriptProps.returnType}
+              args={scriptProps.args}
+              initialValue={value ? value.content : ''}
+              onChange={onScriptContentChange}
+              minimap={false}
+              noGutter={true}
+              resizable
+            />
+          </>
+        )}
       </Labeled>
     </CommonViewContainer>
   );

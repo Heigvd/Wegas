@@ -1,5 +1,5 @@
-import { AvailableSchemas } from '../../../../Editor/Components/FormView';
-import { schemaProps } from '../../tools/schemaProps';
+import { AvailableSchemas } from '../../../Editor/Components/FormView';
+import { schemaProps } from '../../PageComponents/tools/schemaProps';
 
 export const extentSchema: (
   label?: string,
@@ -232,27 +232,27 @@ export const wegasVectorLayerSchema: AvailableSchemas = {
   },
 };
 
-const colorSchema = (label: string) =>
-  schemaProps.scriptable({
-    valueType: 'string',
-    required: false,
-    label,
-    scriptProps: {
-      language: 'TypeScript',
-      returnType: [
-        'number',
-        'number[]',
-        'string',
-        'CanvasPattern',
-        'CanvasGradient',
-        'undefined',
-      ],
-    },
-    literalSchema: schemaProps.string({
-      label,
-      required: false,
-    }),
-  });
+// const colorSchema = (label: string) =>
+//   schemaProps.scriptable({
+//     valueType: 'string',
+//     required: false,
+//     label,
+//     scriptProps: {
+//       language: 'TypeScript',
+//       returnType: [
+//         'number',
+//         'number[]',
+//         'string',
+//         'CanvasPattern',
+//         'CanvasGradient',
+//         'undefined',
+//       ],
+//     },
+//     literalSchema: schemaProps.string({
+//       label,
+//       required: false,
+//     }),
+//   });
 
 export const fillStyleSchema: (required?: boolean) => AvailableSchemas =
   required => ({
@@ -260,7 +260,7 @@ export const fillStyleSchema: (required?: boolean) => AvailableSchemas =
     type: 'object',
     properties: {
       type: schemaProps.hidden({ type: 'string', value: 'FillStyle' }),
-      color: colorSchema('Color'),
+      color: schemaProps.string({ label: 'Color' }),
     },
   });
 
@@ -270,7 +270,7 @@ export const strokeStyleSchema: (required?: boolean) => AvailableSchemas =
     type: 'object',
     properties: {
       type: schemaProps.hidden({ type: 'string', value: 'StrokeStyle' }),
-      color: colorSchema('Color'),
+      color: schemaProps.string({ label: 'Color' }),
       width: schemaProps.number({ label: 'Width', required: false }),
       lineCap: schemaProps.select({
         label: 'Line cap',
@@ -279,7 +279,7 @@ export const strokeStyleSchema: (required?: boolean) => AvailableSchemas =
       }),
       lineJoin: schemaProps.select({
         label: 'Line join',
-        values: ['bever', 'round', 'miter'],
+        values: ['bevel', 'round', 'miter'],
         value: 'round',
       }),
       lineDash: schemaProps.number({
@@ -360,52 +360,129 @@ export const textStyleSchema: (required: boolean) => AvailableSchemas =
     },
   });
 
-export const styleObjectSchema: AvailableSchemas = schemaProps.hashlist({
-  label: 'Style',
-  choices: [
-    {
-      label: 'Geometry',
-      value: {
-        prop: 'geometry',
-        schema: schemaProps.select({
+export const styleObjectSchema: AvailableSchemas = {
+  type: 'object',
+  view: {
+    label: 'Style',
+    type: 'scriptable',
+    scriptProps: {
+      language: 'TypeScript',
+      returnType: ['StyleObject'],
+    },
+    literalSchema: schemaProps.hashlist({
+      label: 'Style',
+      choices: [
+        {
           label: 'Geometry',
-          values: [
-            'Point',
-            'LineString',
-            'LinearRing',
-            'Polygon',
-            'MultiPoint',
-            'MultiLineString',
-            'MultiPolygon',
-            'GeometryCollection',
-            'Circle',
-          ],
-        }),
-      },
-    },
-    {
-      label: 'Fill',
-      value: {
-        prop: 'fill',
-        schema: fillStyleSchema(true),
-      },
-    },
-    {
-      label: 'Image',
-      value: {
-        prop: 'image',
-        schema: imageStyleSchema(true),
-      },
-    },
-    {
-      label: 'Renderer',
-      value: {
-        prop: 'renderer',
-        schema: schemaProps.script({
+          value: {
+            prop: 'geometry',
+            schema: schemaProps.select({
+              label: 'Geometry',
+              values: [
+                'Point',
+                'LineString',
+                'LinearRing',
+                'Polygon',
+                'MultiPoint',
+                'MultiLineString',
+                'MultiPolygon',
+                'GeometryCollection',
+                'Circle',
+              ],
+            }),
+          },
+        },
+        {
+          label: 'Fill',
+          value: {
+            prop: 'fill',
+            schema: fillStyleSchema(true),
+          },
+        },
+        {
+          label: 'Image',
+          value: {
+            prop: 'image',
+            schema: imageStyleSchema(true),
+          },
+        },
+        {
           label: 'Renderer',
-          language: 'TypeScript',
-        }),
-      },
+          value: {
+            prop: 'renderer',
+            schema: schemaProps.code({
+              label: 'Renderer',
+              scriptProps: {
+                args: [
+                  [
+                    'coordinates',
+                    [
+                      '[number,number] | [number,number][] | [number,number][][]',
+                    ],
+                  ],
+                ],
+                language: 'TypeScript',
+                returnType: ['void'],
+              },
+            }),
+          },
+        },
+        {
+          label: 'Hit detection renderer',
+          value: {
+            prop: 'hitDetectionRenderer',
+            schema: schemaProps.code({
+              label: 'Hit detection renderer',
+              scriptProps: {
+                args: [
+                  [
+                    'coordinates',
+                    [
+                      '[number,number] | [number,number][] | [number,number][][]',
+                    ],
+                  ],
+                ],
+                language: 'TypeScript',
+                returnType: ['void'],
+              },
+            }),
+          },
+        },
+        {
+          label: 'Stroke',
+          value: {
+            prop: 'stroke',
+            schema: strokeStyleSchema(true),
+          },
+        },
+        {
+          label: 'Text',
+          value: {
+            prop: 'text',
+            schema: textStyleSchema(true),
+          },
+        },
+        {
+          label: 'Z index',
+          value: {
+            prop: 'zIndex',
+            schema: schemaProps.number({ label: 'Z index' }),
+          },
+        },
+      ],
+    }),
+  },
+};
+
+export const overlaySchema = {
+  type: 'object',
+  view: {
+    label: 'Style',
+    type: 'scriptable',
+    scriptProps: {
+      language: 'TypeScript',
+      returnType: ['StyleObject'],
     },
-  ],
-});
+    literalSchema: schemaProps.hashlist({}),
+  },
+};

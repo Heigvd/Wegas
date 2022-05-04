@@ -83,7 +83,7 @@ export function MenuLabel({
   disabled,
 }: MenuLabelProps) {
   const isScript = entityIs(label, 'Script');
-  const labelScript = useScript(
+  const labelScript = useScript<string>(
     isScript ? (label as IScript) : createScript(''),
   );
   const labelValue = isScript ? labelScript : label;

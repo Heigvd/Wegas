@@ -56,4 +56,4 @@ interface VectorLayerObject {
   sourceProjection?: string;
 }
 
-type LayerObject = VectorLayerObject | ImageLayerObject | TileLayerObject;
+type LayerSourceObject = VectorLayerObject | ImageLayerObject | TileLayerObject;

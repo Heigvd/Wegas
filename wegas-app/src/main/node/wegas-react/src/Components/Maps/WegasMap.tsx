@@ -10,6 +10,7 @@ import View, { ViewOptions } from 'ol/View';
 // React
 import * as React from 'react';
 import { expandBoth, flex, flexRow } from '../../css/classes';
+import { wlog } from '../../Helper/wegaslog';
 
 interface MapContext {
   map?: Map;
@@ -21,18 +22,16 @@ export const mapCTX = React.createContext<MapContext>({});
 interface WegasMapProps {
   options: ViewOptions;
   initialLayers?: BaseLayer[] | Collection<BaseLayer> | LayerGroup;
+  debug?: boolean;
 }
 
 export function WegasMap({
   options,
   initialLayers,
   children,
+  debug,
 }: React.PropsWithChildren<WegasMapProps>) {
-  // const [mode3d, setmode3d] = React.useState(false);
   const [map, setMap] = React.useState<Map>();
-  // const [selectedCoord, setSelectedCoord] = React.useState<Coordinate>();
-  // const [zoom, setZoom] = React.useState(0);
-
   const mapElement = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -44,6 +43,15 @@ export function WegasMap({
         view: new View(options),
         controls: [],
       });
+
+      if (debug) {
+        initialMap.on('moveend', () => {
+          wlog({
+            zoom: initialMap.getView().getZoom(),
+            center: initialMap.getView().getCenter(),
+          });
+        });
+      }
 
       //   // map click handler
       //   const handleMapClick = (event: any) => {
@@ -86,7 +94,7 @@ export function WegasMap({
         initialMap.dispose();
       };
     }
-  }, [initialLayers, options]);
+  }, [debug, initialLayers, options]);
 
   // render component
   return (

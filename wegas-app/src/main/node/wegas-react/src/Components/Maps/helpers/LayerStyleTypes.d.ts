@@ -1,4 +1,4 @@
-type ObjectColor = number | number[] | string | CanvasPattern | CanvasGradient;
+type ObjectColor = string | CanvasPattern | CanvasGradient;
 
 type FeatureGeometryType =
   | 'Point'
@@ -20,7 +20,7 @@ interface StrokeStyleObject {
   type: 'StrokeStyle';
   color?: ObjectColor;
   lineCap?: 'butt' | 'round' | 'square';
-  lineJoin?: 'bever' | 'round' | 'miter';
+  lineJoin?: 'bevel' | 'round' | 'miter';
   lineDash?: number[];
   lineDashOffset?: number;
   miterLimit?: number;
@@ -63,7 +63,7 @@ interface TextStyleObject extends SharedStyleProperties {
   padding?: ExtentLikeObject;
 }
 
-interface StyleObject {
+interface LayerStyleObject {
   /**
    * The geometry type of feature on witch to apply the style
    */
@@ -102,4 +102,8 @@ type RendererFunction = (
   points: PointLikeObject | PointLikeObject[] | PointLikeObject[][],
 ) => void;
 
-type StyleFunction = IScript | StyleObject | StyleObject[];
+type StyleFunction = (
+  feature: object,
+  resolution: number,
+) => LayerStyleObject | LayerStyleObject[];
+type StyleObject = LayerStyleObject | LayerStyleObject[] | StyleFunction;

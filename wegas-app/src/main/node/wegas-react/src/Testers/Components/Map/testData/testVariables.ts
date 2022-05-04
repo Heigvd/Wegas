@@ -9,7 +9,7 @@ import { register } from 'ol/proj/proj4';
 // source
 import VectorSource from 'ol/source/Vector';
 // style
-import { Fill, Icon, Stroke, Style } from 'ol/style';
+import { Fill, Icon, Stroke, Style, Text } from 'ol/style';
 // external tools
 import osmtogeojson from 'osmtogeojson';
 import proj4 from 'proj4';
@@ -131,7 +131,10 @@ export const swissBuildingLayerWGS84 = new VectorLayer({
 
 // Trees
 const treeLayerSource = new VectorSource({
-  features: new GeoJSON().readFeatures(GEOJSONTrees),
+  features: new GeoJSON().readFeatures(GEOJSONTrees, {
+    // dataProjection: 'EPSG:2056',
+    featureProjection: 'EPSG:3857',
+  }),
 });
 
 function treeLayerStyleFN(_feature: Feature, resolution: number) {
@@ -140,9 +143,17 @@ function treeLayerStyleFN(_feature: Feature, resolution: number) {
       anchor: [0.5, 0.5],
       anchorXUnits: 'fraction',
       anchorYUnits: 'fraction',
-      scale: 0.0000001 / resolution,
+      scale: 0.01 / resolution,
       src: require('./tree.png').default,
     }),
+    text: new Text({
+      text: '¼',
+    }),
+    // renderer: (
+    //   coordinates /*: number[] | number[][] | number[][][] | number[][][][],*/,
+    // ) => {
+    //   wlog(coordinates);
+    // },
   });
 }
 

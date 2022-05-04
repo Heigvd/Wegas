@@ -4,50 +4,79 @@ import * as React from 'react';
 import { entityIs } from '../../../data/entities';
 import { usePagesContextStateStore } from '../../../data/Stores/pageContextStore';
 import { useScript } from '../../Hooks/useScript';
-import { TumbleLoader } from '../../Loader';
+import { layerObjectsToOLLayer } from '../../Maps/helpers/LayerHelpers';
+import {
+  styleObjectSchema,
+  wegasImageLayerSchema,
+  wegasTileLayerSchema,
+  wegasVectorLayerSchema,
+} from '../../Maps/helpers/OLTypesSchemas';
 import { WegasLayer } from '../../Maps/WegasLayer';
 import { mapCTX } from '../../Maps/WegasMap';
+import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { layerObjectToOLLayer } from './helpers/LayerHelpers';
-import {
-  wegasImageLayerSchema,
-  wegasTileLayerSchema,
-  wegasVectorLayerSchema,
-} from './helpers/OLTypesSchemas';
 
 interface PlayerLayerProps extends WegasComponentProps {
-  layer?: IScript | LayerObject;
+  layerSource?: IScript | LayerSourceObject;
+  layerStyle?: IScript | LayerStyleObject;
 }
 
-export default function PlayerLayer({ layer, context }: PlayerLayerProps) {
-  const layerObjectRef = React.useRef<LayerObject>();
-  const scriptedLayer = useScript<LayerObject>(
-    entityIs(layer, 'Script') ? layer : undefined,
+export default function PlayerLayer({
+  layerSource,
+  layerStyle,
+  context,
+  pageId,
+  path,
+}: PlayerLayerProps) {
+  ///// SOURCE
+  const layerSourceObjectRef = React.useRef<LayerSourceObject>();
+  const scriptedLayerSource = useScript<LayerSourceObject>(
+    entityIs(layerSource, 'Script') ? layerSource : undefined,
   );
-  const currentLayer = entityIs(layer, 'Script') ? scriptedLayer : layer;
+  const currentLayerSource = entityIs(layerSource, 'Script')
+    ? scriptedLayerSource
+    : layerSource;
+
+  ///// STYLE
+  const layerStyleObjectRef = React.useRef<StyleObject>();
+  const scriptedLayerStyle = useScript<StyleObject>(
+    entityIs(layerStyle, 'Script') ? layerStyle : undefined,
+  );
+  const currentLayerStyle = entityIs(layerStyle, 'Script')
+    ? scriptedLayerStyle
+    : layerStyle;
+
   const [currentOLLayer, setCurrentOLLayer] = React.useState<BaseLayer>();
   const state = usePagesContextStateStore(s => s);
   const { projection } = React.useContext(mapCTX);
 
   React.useEffect(() => {
-    if (currentLayer) {
-      if (!isEqual(currentLayer, layerObjectRef.current)) {
-        layerObjectToOLLayer(currentLayer, context, state, projection).then(
-          newOLLayer => {
-            layerObjectRef.current = currentLayer;
-            setCurrentOLLayer(newOLLayer);
-          },
-        );
+    if (currentLayerSource) {
+      if (
+        !isEqual(currentLayerSource, layerSourceObjectRef.current) ||
+        !isEqual(currentLayerStyle, layerStyleObjectRef.current)
+      ) {
+        layerSourceObjectRef.current = currentLayerSource;
+        layerStyleObjectRef.current = currentLayerStyle;
+        layerObjectsToOLLayer(
+          currentLayerSource,
+          currentLayerStyle,
+          context,
+          state,
+          projection,
+        ).then(newOLLayer => {
+          setCurrentOLLayer(newOLLayer);
+        });
       }
     }
-  }, [context, currentLayer, projection, state]);
+  }, [context, currentLayerSource, currentLayerStyle, projection, state]);
 
   if (currentOLLayer == null) {
-    return <TumbleLoader />;
+    return <UncompleteCompMessage pageId={pageId} path={path} />;
   } else {
     return <WegasLayer layer={currentOLLayer} />;
   }
@@ -60,7 +89,9 @@ registerComponent(
     name: 'TileLayer',
     icon: 'map',
     illustration: 'scatter',
-    schema: { source: wegasTileLayerSchema },
+    schema: {
+      layerSource: wegasTileLayerSchema,
+    },
   }),
 );
 
@@ -71,7 +102,9 @@ registerComponent(
     name: 'ImageLayer',
     icon: 'map',
     illustration: 'scatter',
-    schema: { source: wegasImageLayerSchema },
+    schema: {
+      layerSource: wegasImageLayerSchema,
+    },
   }),
 );
 
@@ -82,7 +115,10 @@ registerComponent(
     name: 'VectorLayer',
     icon: 'map',
     illustration: 'scatter',
-    schema: { source: wegasVectorLayerSchema },
+    schema: {
+      layerSource: wegasVectorLayerSchema,
+      layerStyle: styleObjectSchema,
+    },
   }),
 );
 

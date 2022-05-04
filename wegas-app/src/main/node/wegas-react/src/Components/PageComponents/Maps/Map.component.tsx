@@ -1,9 +1,11 @@
+import { isEqual } from 'lodash-es';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
 import { ViewOptions } from 'ol/View';
 import * as React from 'react';
 import { entityIs } from '../../../data/entities';
 import { useScript } from '../../Hooks/useScript';
+import { mapSchema } from '../../Maps/helpers/OLTypesSchemas';
 // import { useScript } from '../../Hooks/useScript';
 import { WegasMap } from '../../Maps/WegasMap';
 import { childrenDeserializerFactory } from '../Layouts/FlexList.component';
@@ -12,7 +14,6 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { mapSchema } from './helpers/OLTypesSchemas';
 
 const defaultOptions: ViewOptions = {
   // projection: 'EPSG:4326',
@@ -22,9 +23,14 @@ const defaultOptions: ViewOptions = {
 };
 
 interface PlayerMapProps extends WegasComponentProps {
-  // inbox?: IScript;
   mapOptions: IScript | ViewOptions;
 }
+
+const initialLayers = [
+  new TileLayer({
+    source: new OSM(),
+  }),
+];
 
 export default function PlayerMap({ children, mapOptions }: PlayerMapProps) {
   const scriptedOptions = useScript<ViewOptions>(
@@ -34,16 +40,18 @@ export default function PlayerMap({ children, mapOptions }: PlayerMapProps) {
     ? scriptedOptions
     : mapOptions;
 
+  const optionsRef = React.useRef<ViewOptions>(defaultOptions);
+
+  const options = React.useMemo(() => {
+    const options = { ...defaultOptions, ...currentOptions };
+    if (!isEqual(optionsRef.current, options)) {
+      optionsRef.current = options;
+    }
+    return optionsRef.current;
+  }, [currentOptions]);
+
   return (
-    <WegasMap
-      options={{ ...defaultOptions, ...currentOptions }}
-      // options={defaultOptions}
-      initialLayers={[
-        new TileLayer({
-          source: new OSM(),
-        }),
-      ]}
-    >
+    <WegasMap options={options} initialLayers={initialLayers} debug>
       {children}
     </WegasMap>
   );

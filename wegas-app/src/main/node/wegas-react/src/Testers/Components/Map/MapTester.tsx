@@ -75,7 +75,6 @@ export default function MapTester() {
   // const [selectedOverlayMode, setSelectedOverlayMode] =
   //   React.useState<OverlayMode>('Everywhere');
 
-  
   return (
     <div className={cx(flex, flexColumn, expandBoth)}>
       {/* <div className={cx(flex, flexRow)}>
@@ -124,7 +123,7 @@ export default function MapTester() {
         {/* Static overlay overlay, no position and no position on click */}
         <WegasOverlay
           OverlayComponent={overlayFactory('rgb(125,0,0,0.5)')}
-          initialPosition={position as [number, number]}
+          position={position as [number, number]}
           // initialPosition={position.map((v) => v) as [number, number]}
         />
         {/* Movable overlay, can be clicked everywhere */}

@@ -7,6 +7,7 @@ import {
   DEFINED_VIEWS,
   SchemaFromView,
 } from '../../../Editor/Components/FormView';
+import { CodeViewView } from '../../../Editor/Components/FormView/Code';
 import { ScriptableViewView } from '../../../Editor/Components/FormView/Scriptable';
 import { WegasMethod } from '../../../Editor/editionConfig';
 import { createScript } from '../../../Helper/wegasEntites';
@@ -284,7 +285,6 @@ const simpleSchemaProps = {
   code: ({
     label,
     required = false,
-    language = 'JavaScript',
     value,
     featureLevel = 'DEFAULT',
     index = 0,
@@ -292,23 +292,25 @@ const simpleSchemaProps = {
     borderTop,
     noMarginTop,
     description,
-    visible,
-  }: {
-    language?: CodeLanguage;
-  } & CommonSchemaProps &
+    scriptProps,
+    borderBottom,
+    readOnly,
+  }: CodeViewView &
+    CommonSchemaProps &
     ValueSchemaProps<UknownValuesObject | string>): SchemaFromView<'code'> => ({
     required,
     type: 'object',
     value,
     index,
-    visible,
     view: {
+      scriptProps,
       borderTop,
+      borderBottom,
+      readOnly,
       noMarginTop,
       index,
       featureLevel,
       label,
-      language,
       type: 'code',
       layout,
       description,

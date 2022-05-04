@@ -7,22 +7,22 @@ import ImageStatic from 'ol/source/ImageStatic';
 import OSM from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
 import osmtogeojson from 'osmtogeojson';
-import { fileURL } from '../../../../API/files.api';
-import { entityIs } from '../../../../data/entities';
-import { PagesContextState } from '../../../../data/Stores/pageContextStore';
-import { safeClientScriptEval } from '../../../Hooks/useScript';
+import { fileURL } from '../../../API/files.api';
+import { entityIs } from '../../../data/entities';
+import { PagesContextState } from '../../../data/Stores/pageContextStore';
+import { safeClientScriptEval } from '../../Hooks/useScript';
 
 export function imageObjectToSource(
-  layer: ImageLayerObject,
+  source: ImageLayerObject,
   context: UknownValuesObject | undefined,
   state: PagesContextState | undefined,
 ): ImageStatic {
   return new ImageStatic({
-    ...layer.source,
-    projection: new Projection(layer.source.projection),
+    ...source.source,
+    projection: new Projection(source.source.projection),
     url: fileURL(
       safeClientScriptEval(
-        layer.source.url,
+        source.source.url,
         context,
         undefined,
         state,
@@ -33,17 +33,17 @@ export function imageObjectToSource(
 }
 
 export function tileLayerObjectToSource(
-  layer: TileLayerObject,
+  source: TileLayerObject,
   context: UknownValuesObject | undefined,
   state: PagesContextState | undefined,
 ): BingMaps | OSM | GeoTIFF {
-  switch (layer.source.type) {
+  switch (source.source.type) {
     case 'Bing':
-      return new BingMaps(layer.source);
+      return new BingMaps(source.source);
     case 'OSM':
       return new OSM();
     case 'Tiff': {
-      const sources = layer.source.sources.map(source => {
+      const sources = source.source.sources.map(source => {
         return {
           url: fileURL(
             safeClientScriptEval(
@@ -61,39 +61,39 @@ export function tileLayerObjectToSource(
     }
     default:
       throw Error(
-        `Unknown tile layer source type : ${JSON.stringify(layer.source)}`,
+        `Unknown tile layer source type : ${JSON.stringify(source.source)}`,
       );
   }
 }
 
 export async function vectorLayerObjectToSource(
-  layer: VectorLayerObject,
+  source: VectorLayerObject,
   context: UknownValuesObject | undefined,
   state: PagesContextState | undefined,
   mapProjection: ProjectionLike,
 ): Promise<VectorSource<Geometry>> {
   let pathOrData: string | object;
-  if (entityIs(layer.source, 'Script')) {
+  if (entityIs(source.source, 'Script')) {
     pathOrData = safeClientScriptEval<object | string>(
-      layer.source,
+      source.source,
       context,
       undefined,
       state,
       undefined,
     );
   } else {
-    pathOrData = layer.source;
+    pathOrData = source.source;
   }
 
   if (typeof pathOrData === 'string') {
     pathOrData = await fetch(fileURL(pathOrData)).then(res => res.json());
   }
 
-  switch (layer.dataType) {
+  switch (source.dataType) {
     case 'GeoJSON':
       return new VectorSource({
         features: new GeoJSON().readFeatures(pathOrData, {
-          dataProjection: layer.sourceProjection,
+          dataProjection: source.sourceProjection,
           featureProjection: mapProjection,
         }),
       });
@@ -108,14 +108,14 @@ export async function vectorLayerObjectToSource(
             verbose: false,
           }),
           {
-            dataProjection: layer.sourceProjection,
+            dataProjection: source.sourceProjection,
             featureProjection: mapProjection,
           },
         ),
       });
     default:
       throw Error(
-        `Unknown vector layer source type : ${JSON.stringify(layer.source)}`,
+        `Unknown vector layer source type : ${JSON.stringify(source.source)}`,
       );
   }
 }

@@ -19,7 +19,7 @@ export interface WegasOverlayProps {
    * The position of the overlay
    * if undefined, the overlay will not be show at first render
    */
-  initialPosition?: [number, number];
+  position?: [number, number];
   /**
    * Set the position of the overlay when a click occures on the map
    */
@@ -35,7 +35,7 @@ export interface WegasOverlayProps {
 
 export function WegasOverlay({
   OverlayComponent,
-  initialPosition,
+  position,
   positionOnClick,
   featuresFilter,
 }: WegasOverlayProps) {
@@ -48,7 +48,7 @@ export function WegasOverlay({
     if (overlayComponentRef.current) {
       const overlay = new Overlay({
         element: overlayComponentRef.current,
-        position: initialPosition,
+        position,
       });
 
       if (positionOnClick && map) {
@@ -103,7 +103,7 @@ export function WegasOverlay({
         map?.removeOverlay(overlay);
       };
     }
-  }, [featuresFilter, map, initialPosition, positionOnClick]);
+  }, [featuresFilter, map, position, positionOnClick]);
 
   return (
     <div style={{ display: 'none' }}>

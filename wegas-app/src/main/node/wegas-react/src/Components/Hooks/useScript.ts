@@ -20,6 +20,7 @@ import { APIScriptMethods } from '../../API/clientScriptHelper';
 import { fileURL } from '../../API/files.api';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
+import { entityIs } from '../../data/entities';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
@@ -463,8 +464,6 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.wlog = wlog;
 }
 
-export type ScriptReturnType = object | number | boolean | string | undefined;
-
 interface TranspileOptions {
   moduleName?: string;
   injectReturn?: boolean;
@@ -527,7 +526,7 @@ const memoClientScriptEval = (() => {
   // eslint-disable-next-line @typescript-eslint/ban-types
   const transpiledCache = createLRU<string, Function>(500);
 
-  return <T extends ScriptReturnType>(
+  return <T>(
     script?: string | IScript,
     context: PageComponentContext = {},
     state?: PagesContextState,
@@ -586,7 +585,7 @@ const memoClientScriptEval = (() => {
   };
 })();
 
-export function clientScriptEval<T extends ScriptReturnType>(
+export function clientScriptEval<T>(
   script: string | IScript | undefined,
   context:
     | {
@@ -631,7 +630,7 @@ function handleError(error: unknown, filename?: string): WegasScriptError {
   }
 }
 
-export function safeClientScriptEval<T extends ScriptReturnType>(
+export function safeClientScriptEval<T>(
   script: string | IScript | undefined,
   context:
     | {
@@ -667,13 +666,13 @@ export function safeClientScriptEval<T extends ScriptReturnType>(
  * @param script code to execute
  * @returns Last expression or undefined in case it errors.
  */
-export function useScript<T extends ScriptReturnType>(
+export function useScript<T>(
   script?: (string | IScript | undefined) | (string | IScript | undefined)[],
   context?: {
     [name: string]: unknown;
   },
   catchCB?: (e: Error) => void,
-): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
+): T | undefined {
   const oldContext = React.useRef<{
     [name: string]: unknown;
   }>();
@@ -734,7 +733,7 @@ export function useScript<T extends ScriptReturnType>(
  * @param script code to execute
  * @returns Last expression or LocalEvalError in case it errors.
  */
-export function useUnsafeScript<T extends ScriptReturnType>(
+export function useUnsafeScript<T>(
   script?: string | IScript,
   context?: {
     [name: string]: unknown;
@@ -805,4 +804,10 @@ export function parseAndRunClientScript(
   return isScript(script)
     ? { ...script, content: scriptContent }
     : scriptContent;
+}
+
+export function useScriptWithFallback<T>(variable: T | IScript) {
+  const isScript = entityIs(variable, 'Script');
+  const scriptedVariable = useScript<T>(isScript ? variable : undefined);
+  return isScript ? scriptedVariable : variable;
 }
