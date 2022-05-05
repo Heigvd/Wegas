@@ -2,10 +2,7 @@
 // Open layers
 // layer
 import { cx } from '@emotion/css';
-import LayerTile from 'ol/layer/Tile';
 import { fromLonLat } from 'ol/proj';
-// source
-import SourceOSM from 'ol/source/OSM';
 /////////////////////////////////////////////////////////////////
 // React
 import * as React from 'react';
@@ -15,7 +12,6 @@ import { WegasOverlay } from '../../../Components/Maps/WegasOverlay';
 import { WegasSelect } from '../../../Components/Maps/WegasSelect';
 import { expandBoth, flex, flexColumn } from '../../../css/classes';
 import {
-  buildingLayer,
   selectStyle,
   swissBuildingLayer,
   swissBuildingLayerWGS84,
@@ -106,14 +102,7 @@ export default function MapTester() {
           }}
         />
       </div> */}
-      <WegasMap
-        options={defaultMapOptions}
-        initialLayers={[
-          new LayerTile({
-            source: new SourceOSM(),
-          }),
-        ]}
-      >
+      <WegasMap viewOptions={defaultMapOptions}>
         <WegasLayer layer={swissBuildingLayerWGS84} />
         <WegasLayer layer={swissBuildingLayer} />
         {/* <WegasLayer layer={buildingLayer} /> */}
@@ -131,7 +120,7 @@ export default function MapTester() {
           OverlayComponent={overlayFactory('rgb(0,200,0,0.5)')}
           positionOnClick
         /> */}
-        <WegasOverlay
+        {/* <WegasOverlay
           OverlayComponent={overlayFactory('rgb(0,200,0,0.5)')}
           positionOnClick
           featuresFilter={{
@@ -140,8 +129,8 @@ export default function MapTester() {
             },
             allowClick: true,
           }}
-        />
-        <WegasSelect selectStyle={selectStyle} layers={[buildingLayer]} />
+        /> */}
+        <WegasSelect style={selectStyle} layers={[swissBuildingLayer]} />
       </WegasMap>
     </div>
   );

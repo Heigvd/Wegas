@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useScriptObjectWithFallback } from '../../Hooks/useScript';
 import { overlaySchema } from '../../Maps/helpers/schemas/OverlaySchemas';
-import { WegasOverlay } from '../../Maps/WegasOverlay';
+import { WegasOverlay, WegasOverlayProps } from '../../Maps/WegasOverlay';
 import { childrenDeserializerFactory } from '../Layouts/FlexList.component';
 import {
   pageComponentFactory,
@@ -11,16 +11,9 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 
 interface PlayerOverlayProps extends WegasComponentProps {
   overlayProps: {
-    overlayId?: IScript | string;
-    overlayClassName?: IScript | string;
-    position?: IScript | PointLikeObject;
-    offset?: IScript | PointLikeObject;
-    positioning?: IScript | PositioningOptions;
-    stopEvent?: IScript | boolean;
-    insertFirst?: IScript | boolean;
-    autoPan?: IScript | AutoPanOptions;
-    positionOnClick?: IScript | boolean;
-    featuresFilter?: IScript | FeatureFilter;
+    [P in keyof Omit<WegasOverlayProps, 'OverlayComponent'>]:
+      | WegasOverlayProps[P]
+      | IScript;
   };
 }
 

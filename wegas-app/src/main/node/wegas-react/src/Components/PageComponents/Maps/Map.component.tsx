@@ -1,12 +1,14 @@
-import { isEqual } from 'lodash-es';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
 import { ViewOptions } from 'ol/View';
 import * as React from 'react';
-import { entityIs } from '../../../data/entities';
-import { useScript } from '../../Hooks/useScript';
-import { mapSchema } from '../../Maps/helpers/schemas/MapSchemas';
-import { WegasMap } from '../../Maps/WegasMap';
+import { useDeepMemo } from '../../Hooks/useDeepMemo';
+import { useScriptObjectWithFallback } from '../../Hooks/useScript';
+import {
+  mapOptionsSchema,
+  viewOptionsSchema,
+} from '../../Maps/helpers/schemas/MapSchemas';
+import { WegasMap, WegasMapOptions } from '../../Maps/WegasMap';
 import { childrenDeserializerFactory } from '../Layouts/FlexList.component';
 import {
   pageComponentFactory,
@@ -14,15 +16,19 @@ import {
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 
-const defaultOptions: ViewOptions = {
-  // projection: 'EPSG:4326',
+const defaultViewOptions: ViewOptions = {
   projection: 'EPSG:3857',
-  center: [6.961834028944175, 46.313121655957694],
-  zoom: 4,
+  zoom: 15,
+  center: [775277, 5831039],
 };
 
 interface PlayerMapProps extends WegasComponentProps {
-  mapOptions: IScript | ViewOptions;
+  mapOptions?: {
+    [P in keyof WegasMapOptions]: WegasMapOptions[P] | IScript;
+  };
+  viewOptions?: {
+    [P in keyof ViewOptions]: ViewOptions[P] | IScript;
+  };
 }
 
 const initialLayers = [
@@ -31,26 +37,24 @@ const initialLayers = [
   }),
 ];
 
-export default function PlayerMap({ children, mapOptions }: PlayerMapProps) {
-  const scriptedOptions = useScript<ViewOptions>(
-    entityIs(mapOptions, 'Script') ? mapOptions : undefined,
-  );
-  const currentOptions = entityIs(mapOptions, 'Script')
-    ? scriptedOptions
-    : mapOptions;
-
-  const optionsRef = React.useRef<ViewOptions>(defaultOptions);
-
-  const options = React.useMemo(() => {
-    const options = { ...defaultOptions, ...currentOptions };
-    if (!isEqual(optionsRef.current, options)) {
-      optionsRef.current = options;
-    }
-    return optionsRef.current;
-  }, [currentOptions]);
+export default function PlayerMap({
+  children,
+  mapOptions: mapProps,
+  viewOptions: viewProps,
+}: PlayerMapProps) {
+  const { mapOptions, viewOptions } = useDeepMemo({
+    mapOptions: { ...mapProps, layers: initialLayers },
+    viewOptions: { ...defaultViewOptions, ...viewProps },
+  });
+  const currentMapOptions = useScriptObjectWithFallback(mapOptions);
+  const currentViewOptions = useScriptObjectWithFallback(viewOptions);
 
   return (
-    <WegasMap options={options} initialLayers={initialLayers} debug>
+    <WegasMap
+      mapOptions={currentMapOptions}
+      viewOptions={currentViewOptions}
+      debug
+    >
       {children}
     </WegasMap>
   );
@@ -66,18 +70,18 @@ registerComponent(
     name: 'Map',
     icon: 'map',
     illustration: 'scatter',
-    schema: { mapOptions: mapSchema },
+    schema: { mapOptions: mapOptionsSchema, viewOptions: viewOptionsSchema },
     allowedVariables: [],
     getComputedPropsFromVariable: () => ({
       children: [],
     }),
     behaviour: {
       filterChildrenName: [
-        'Layer',
         'TileLayer',
         'Overlay',
         'ImageLayer',
         'VectorLayer',
+        'Select',
       ],
     },
   }),

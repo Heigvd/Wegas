@@ -2,17 +2,13 @@
 import { cx } from '@emotion/css';
 import useResizeObserver from '@react-hook/resize-observer';
 import { debounce } from 'lodash-es';
-// Open layer
-import { Collection } from 'ol';
-import BaseLayer from 'ol/layer/Base';
-import LayerGroup from 'ol/layer/Group';
 import Map from 'ol/Map';
+import { MapOptions } from 'ol/PluggableMap';
 import { ProjectionLike } from 'ol/proj';
 import View, { ViewOptions } from 'ol/View';
 // React
 import * as React from 'react';
 import { expandBoth, flex, flexRow } from '../../css/classes';
-import { wlog } from '../../Helper/wegaslog';
 
 interface MapContext {
   map?: Map;
@@ -21,21 +17,29 @@ interface MapContext {
 
 export const mapCTX = React.createContext<MapContext>({});
 
+export type WegasMapOptions = Omit<
+  MapOptions,
+  'controls' | 'interactions' | 'layers' | 'overlays' | 'view'
+>;
+
 interface WegasMapProps {
-  options: ViewOptions;
-  initialLayers?: BaseLayer[] | Collection<BaseLayer> | LayerGroup;
+  mapOptions?: WegasMapOptions;
+  viewOptions?: ViewOptions;
   debug?: boolean;
 }
 
 export function WegasMap({
-  options,
-  initialLayers,
+  mapOptions,
+  viewOptions,
   children,
   debug,
 }: React.PropsWithChildren<WegasMapProps>) {
   const [map, setMap] = React.useState<Map>();
+  const [debugValues, setDebugValues] = React.useState({
+    zoom: 0,
+    center: [0, 0],
+  });
   const mapElementRef = React.useRef<HTMLDivElement>(null);
-  const containerElementRef = React.useRef<HTMLDivElement>(null);
 
   const debouncedMapResize = React.useMemo(
     () =>
@@ -54,17 +58,17 @@ export function WegasMap({
       // create map
       const initialMap = new Map({
         target: mapElementRef.current,
-        layers: initialLayers,
-        view: new View(options),
+        view: new View(viewOptions),
+        ...mapOptions,
         controls: [],
       });
 
       if (debug) {
         initialMap.on('moveend', () => {
-          wlog({
-            zoom: initialMap.getView().getZoom(),
-            center: initialMap.getView().getCenter(),
-          });
+          setDebugValues(ov => ({
+            zoom: initialMap.getView().getZoom() || ov.zoom,
+            center: initialMap.getView().getCenter() || ov.center,
+          }));
         });
       }
 
@@ -109,13 +113,31 @@ export function WegasMap({
         initialMap.dispose();
       };
     }
-  }, [debug, initialLayers, options]);
+  }, [debug, mapOptions, viewOptions]);
 
   // render component
   return (
-    <div ref={containerElementRef} className={cx(flex, flexRow, expandBoth)}>
+    <div className={cx(flex, flexRow, expandBoth)}>
+      {debug && (
+        <div
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            zIndex: 1000,
+            backgroundColor: 'rgba(100,100,100,0.8)',
+            color: 'white',
+            padding: '5px',
+          }}
+        >
+          <ul>
+            <li>{`zoom: ${debugValues.zoom}`}</li>
+            <li>{`position: [${debugValues.center.join(';')}]`}</li>
+          </ul>
+        </div>
+      )}
       <div ref={mapElementRef} className={expandBoth}>
-        <mapCTX.Provider value={{ map, projection: options.projection }}>
+        <mapCTX.Provider value={{ map, projection: viewOptions?.projection }}>
           {children}
         </mapCTX.Provider>
       </div>

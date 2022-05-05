@@ -97,3 +97,12 @@ export const wegasVectorLayerSchema: AvailableSchemas = {
     }),
   },
 };
+
+export const onLayerReadySchema = schemaProps.code({
+  label: 'On layer ready',
+  scriptProps: {
+    language: 'TypeScript',
+    returnType: ['(layer:any)=>void | undefined'],
+  },
+  value: 'undefined',
+});

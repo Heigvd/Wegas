@@ -1,4 +1,6 @@
+import { FeatureLike } from 'ol/Feature';
 import { Fill, Image, Stroke, Style, Text } from 'ol/style';
+import { StyleLike } from 'ol/style/Style';
 
 function strokeObjectToOLStroke(stroke: StrokeStyleObject | undefined) {
   return stroke != null ? new Stroke(stroke) : undefined;
@@ -41,7 +43,7 @@ function styleIsNotUndefined(style: Style | undefined): style is Style {
   return style != null;
 }
 
-export function styleObjectsToOLStyle(
+function styleObjectsToOLStyle(
   style: LayerStyleObject | LayerStyleObject[] | undefined,
 ): Style | Array<Style> | undefined {
   if (Array.isArray(style)) {
@@ -49,4 +51,16 @@ export function styleObjectsToOLStyle(
   } else {
     return styleObjectToOLStyle(style);
   }
+}
+
+export function styleSourceToOlStyle(style: StyleObject | undefined) {
+  let olStyle: StyleLike | undefined = undefined;
+  if (typeof style === 'function') {
+    olStyle = (feature: FeatureLike, resolution: number) => {
+      return styleObjectsToOLStyle(style(feature, resolution));
+    };
+  } else {
+    olStyle = styleObjectsToOLStyle(style);
+  }
+  return olStyle;
 }

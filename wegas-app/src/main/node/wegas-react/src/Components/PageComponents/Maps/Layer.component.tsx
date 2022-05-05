@@ -5,6 +5,7 @@ import { useDeepMemo } from '../../Hooks/useDeepMemo';
 import { useScriptObjectWithFallback } from '../../Hooks/useScript';
 import { layerObjectsToOLLayer } from '../../Maps/helpers/LayerHelpers';
 import {
+  onLayerReadySchema,
   wegasImageLayerSchema,
   wegasTileLayerSchema,
   wegasVectorLayerSchema,
@@ -19,14 +20,18 @@ import {
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 
+type OnLayerReadyFN = (layer: BaseLayer) => void;
+
 interface PlayerLayerProps extends WegasComponentProps {
   layerSource?: IScript | LayerSourceObject;
   layerStyle?: IScript | LayerStyleObject;
+  onLayerReady?: IScript | OnLayerReadyFN;
 }
 
 export default function PlayerLayer({
   layerSource,
   layerStyle,
+  onLayerReady,
   context,
   pageId,
   path,
@@ -35,7 +40,7 @@ export default function PlayerLayer({
   const state = usePagesContextStateStore(s => s);
   const { projection } = React.useContext(mapCTX);
 
-  const layerProps = useDeepMemo({ layerSource, layerStyle });
+  const layerProps = useDeepMemo({ layerSource, layerStyle, onLayerReady });
   const currentLayerProps = useScriptObjectWithFallback(layerProps);
 
   React.useEffect(() => {
@@ -48,6 +53,10 @@ export default function PlayerLayer({
         projection,
       ).then(newOLLayer => {
         setCurrentOLLayer(newOLLayer);
+        const onLayerReadyFN = currentLayerProps.onLayerReady;
+        if (onLayerReadyFN != null) {
+          onLayerReadyFN(newOLLayer);
+        }
       });
     }
   }, [context, currentLayerProps, projection, state]);
@@ -68,6 +77,7 @@ registerComponent(
     illustration: 'scatter',
     schema: {
       layerSource: wegasTileLayerSchema,
+      onLayerReady: onLayerReadySchema,
     },
   }),
 );
@@ -81,6 +91,7 @@ registerComponent(
     illustration: 'scatter',
     schema: {
       layerSource: wegasImageLayerSchema,
+      onLayerReady: onLayerReadySchema,
     },
   }),
 );
@@ -95,6 +106,7 @@ registerComponent(
     schema: {
       layerSource: wegasVectorLayerSchema,
       layerStyle: styleObjectSchema,
+      onLayerReady: onLayerReadySchema,
     },
   }),
 );

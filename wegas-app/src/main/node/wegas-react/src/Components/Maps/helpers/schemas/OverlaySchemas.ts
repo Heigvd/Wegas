@@ -3,6 +3,7 @@ import { pointSchema } from './HelperSchemas';
 
 export const overlaySchema = {
   overlayProps: schemaProps.hashlist({
+    label: 'Overlay options',
     choices: [
       {
         label: 'Overlay id',

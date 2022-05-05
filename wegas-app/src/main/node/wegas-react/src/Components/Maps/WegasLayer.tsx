@@ -1,10 +1,10 @@
 //Other libs
-import BaseLayer from 'ol/layer/Base';
+import BaseLayer, { Options } from 'ol/layer/Base';
 // React
 import * as React from 'react';
 import { mapCTX } from './WegasMap';
 
-interface WegasLayerProps {
+interface WegasLayerProps extends Options {
   layer: BaseLayer;
 }
 

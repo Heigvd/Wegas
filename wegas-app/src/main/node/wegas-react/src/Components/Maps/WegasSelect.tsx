@@ -1,39 +1,34 @@
 //Other libs
 // React
 import { Select } from 'ol/interaction';
-import Layer from 'ol/layer/Layer';
-import LayerRenderer from 'ol/renderer/Layer';
-import Source from 'ol/source/Source';
-import { Style } from 'ol/style';
+import { Options, SelectEvent } from 'ol/interaction/Select';
 import * as React from 'react';
-import { wlog } from '../../Helper/wegaslog';
 import { mapCTX } from './WegasMap';
 
-export interface WegasOverlayComponentProps {
-  inputRef: React.LegacyRef<HTMLElement>;
+/**
+ * A react implementation of OpenLayer Select object
+ * @link https://openlayers.org/en/latest/apidoc/module-ol_interaction_Select-Select.html
+ */
+export interface WegasSelectProps extends Options {
+  onSelect?: (event: SelectEvent) => void;
 }
 
-interface WegasSelectProps {
-  selectStyle: Style;
-  layers?:
-    | Layer<Source, LayerRenderer<any>>[]
-    | ((arg0: Layer<Source, LayerRenderer<any>>) => boolean);
-}
-
-export function WegasSelect({ selectStyle, layers }: WegasSelectProps) {
+export function WegasSelect({ onSelect, ...selectOptions }: WegasSelectProps) {
   const { map } = React.useContext(mapCTX);
   React.useEffect(() => {
-    const select = new Select({ style: selectStyle, layers });
-    map?.addInteraction(select);
+    if (map) {
+      const select = new Select(selectOptions);
+      map.addInteraction(select);
 
-    select.on('select', function (e) {
-      wlog(e);
-    });
+      if (onSelect) {
+        select.on('select', onSelect);
+      }
 
-    return () => {
-      map?.removeInteraction(select);
-    };
-  }, [layers, map, selectStyle]);
+      return () => {
+        map.removeInteraction(select);
+      };
+    }
+  }, [map, onSelect, selectOptions]);
 
   return null;
 }

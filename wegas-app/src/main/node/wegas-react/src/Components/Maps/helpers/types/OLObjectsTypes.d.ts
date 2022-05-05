@@ -1,6 +1,7 @@
 type PointLikeObject = [number, number];
 type ExtentLikeObject = [number, number, number, number];
 
+/// Overlay
 type PositioningOptions =
   | 'bottom-left'
   | 'bottom-center'
@@ -34,3 +35,6 @@ type FeatureFilter =
       allowClick: boolean;
     }
   | true;
+
+///Select
+type ConditionFN = (event: any) => boolean;
