@@ -1,16 +1,15 @@
-import { isEqual } from 'lodash-es';
 import BaseLayer from 'ol/layer/Base';
 import * as React from 'react';
-import { entityIs } from '../../../data/entities';
 import { usePagesContextStateStore } from '../../../data/Stores/pageContextStore';
-import { useScript } from '../../Hooks/useScript';
+import { useDeepMemo } from '../../Hooks/useDeepMemo';
+import { useScriptObjectWithFallback } from '../../Hooks/useScript';
 import { layerObjectsToOLLayer } from '../../Maps/helpers/LayerHelpers';
 import {
-  styleObjectSchema,
   wegasImageLayerSchema,
   wegasTileLayerSchema,
   wegasVectorLayerSchema,
-} from '../../Maps/helpers/OLTypesSchemas';
+} from '../../Maps/helpers/schemas/LayerSchemas';
+import { styleObjectSchema } from '../../Maps/helpers/schemas/StyleSchemas';
 import { WegasLayer } from '../../Maps/WegasLayer';
 import { mapCTX } from '../../Maps/WegasMap';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
@@ -32,48 +31,26 @@ export default function PlayerLayer({
   pageId,
   path,
 }: PlayerLayerProps) {
-  ///// SOURCE
-  const layerSourceObjectRef = React.useRef<LayerSourceObject>();
-  const scriptedLayerSource = useScript<LayerSourceObject>(
-    entityIs(layerSource, 'Script') ? layerSource : undefined,
-  );
-  const currentLayerSource = entityIs(layerSource, 'Script')
-    ? scriptedLayerSource
-    : layerSource;
-
-  ///// STYLE
-  const layerStyleObjectRef = React.useRef<StyleObject>();
-  const scriptedLayerStyle = useScript<StyleObject>(
-    entityIs(layerStyle, 'Script') ? layerStyle : undefined,
-  );
-  const currentLayerStyle = entityIs(layerStyle, 'Script')
-    ? scriptedLayerStyle
-    : layerStyle;
-
   const [currentOLLayer, setCurrentOLLayer] = React.useState<BaseLayer>();
   const state = usePagesContextStateStore(s => s);
   const { projection } = React.useContext(mapCTX);
 
+  const layerProps = useDeepMemo({ layerSource, layerStyle });
+  const currentLayerProps = useScriptObjectWithFallback(layerProps);
+
   React.useEffect(() => {
-    if (currentLayerSource) {
-      if (
-        !isEqual(currentLayerSource, layerSourceObjectRef.current) ||
-        !isEqual(currentLayerStyle, layerStyleObjectRef.current)
-      ) {
-        layerSourceObjectRef.current = currentLayerSource;
-        layerStyleObjectRef.current = currentLayerStyle;
-        layerObjectsToOLLayer(
-          currentLayerSource,
-          currentLayerStyle,
-          context,
-          state,
-          projection,
-        ).then(newOLLayer => {
-          setCurrentOLLayer(newOLLayer);
-        });
-      }
+    if (currentLayerProps.layerSource != null) {
+      layerObjectsToOLLayer(
+        currentLayerProps.layerSource,
+        currentLayerProps.layerStyle,
+        context,
+        state,
+        projection,
+      ).then(newOLLayer => {
+        setCurrentOLLayer(newOLLayer);
+      });
     }
-  }, [context, currentLayerSource, currentLayerStyle, projection, state]);
+  }, [context, currentLayerProps, projection, state]);
 
   if (currentOLLayer == null) {
     return <UncompleteCompMessage pageId={pageId} path={path} />;

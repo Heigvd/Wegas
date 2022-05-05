@@ -127,9 +127,19 @@ export default function MapTester() {
           // initialPosition={position.map((v) => v) as [number, number]}
         />
         {/* Movable overlay, can be clicked everywhere */}
+        {/* <WegasOverlay
+          OverlayComponent={overlayFactory('rgb(0,200,0,0.5)')}
+          positionOnClick
+        /> */}
         <WegasOverlay
           OverlayComponent={overlayFactory('rgb(0,200,0,0.5)')}
           positionOnClick
+          featuresFilter={{
+            filter: feature => {
+              return feature.get('OBJEKTART') === 'Gebaeude_Einzelhaus';
+            },
+            allowClick: true,
+          }}
         />
         <WegasSelect selectStyle={selectStyle} layers={[buildingLayer]} />
       </WegasMap>

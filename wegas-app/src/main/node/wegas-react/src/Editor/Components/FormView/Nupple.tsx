@@ -5,7 +5,7 @@ import { AvailableSchemas } from '.';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 
-interface NuppleView extends CommonView, LabeledView {
+export interface NuppleView extends CommonView, LabeledView {
   itemsSchema: Record<string, AvailableSchemas>;
 }
 

@@ -5,8 +5,7 @@ import { ViewOptions } from 'ol/View';
 import * as React from 'react';
 import { entityIs } from '../../../data/entities';
 import { useScript } from '../../Hooks/useScript';
-import { mapSchema } from '../../Maps/helpers/OLTypesSchemas';
-// import { useScript } from '../../Hooks/useScript';
+import { mapSchema } from '../../Maps/helpers/schemas/MapSchemas';
 import { WegasMap } from '../../Maps/WegasMap';
 import { childrenDeserializerFactory } from '../Layouts/FlexList.component';
 import {

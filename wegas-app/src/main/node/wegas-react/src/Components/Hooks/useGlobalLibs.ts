@@ -43,13 +43,13 @@ import WegasDashboardSrc from '!!raw-loader!../../../types/scripts/WegasDashboar
 import wegasEventsGlobalSrc from '!!raw-loader!../../../types/scripts/WegasEventsGlobals.d.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import layerSourceTypes from '!!raw-loader!../Maps/helpers/LayerSourceTypes.d.ts';
+import layerSourceTypes from '!!raw-loader!../Maps/helpers/types/LayerSourceTypes.d.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import layerStyleTypes from '!!raw-loader!../Maps/helpers/LayerStyleTypes.d.ts';
+import layerStyleTypes from '!!raw-loader!../Maps/helpers/types/LayerStyleTypes.d.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import olTypes from '!!raw-loader!../Maps/helpers/OLTypes.d.ts';
+import olTypes from '!!raw-loader!../Maps/helpers/types/OLObjectsTypes.d.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import libDom from '!!raw-loader!typescript/lib/lib.dom';

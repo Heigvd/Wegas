@@ -8,6 +8,7 @@ import {
   SchemaFromView,
 } from '../../../Editor/Components/FormView';
 import { CodeViewView } from '../../../Editor/Components/FormView/Code';
+import { NuppleView } from '../../../Editor/Components/FormView/Nupple';
 import { ScriptableViewView } from '../../../Editor/Components/FormView/Scriptable';
 import { WegasMethod } from '../../../Editor/editionConfig';
 import { createScript } from '../../../Helper/wegasEntites';
@@ -895,6 +896,42 @@ const simpleSchemaProps = {
       onLanguage,
       readOnly,
       type: 'scriptable',
+      layout,
+      borderTop,
+      noMarginTop,
+      description,
+    },
+  }),
+  nupple: ({
+    label,
+    required = false,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+    noMarginTop,
+    description,
+    visible,
+    currentLanguage,
+    readOnly,
+    onLanguage,
+    borderBottom,
+    itemsSchema,
+  }: CommonSchemaProps & NuppleView): SchemaFromView<'nupple'> => ({
+    required,
+    type: 'array',
+    index,
+    visible,
+    view: {
+      itemsSchema,
+      featureLevel,
+      index,
+      label,
+      borderBottom,
+      currentLanguage,
+      onLanguage,
+      readOnly,
+      type: 'nupple',
       layout,
       borderTop,
       noMarginTop,

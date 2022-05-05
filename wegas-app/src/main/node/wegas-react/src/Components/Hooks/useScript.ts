@@ -1,4 +1,4 @@
-import { cloneDeep, uniq } from 'lodash-es';
+import { cloneDeep, isEqual, uniq } from 'lodash-es';
 import * as React from 'react';
 import { transpile } from 'typescript';
 import {
@@ -810,4 +810,41 @@ export function useScriptWithFallback<T>(variable: T | IScript) {
   const isScript = entityIs(variable, 'Script');
   const scriptedVariable = useScript<T>(isScript ? variable : undefined);
   return isScript ? scriptedVariable : variable;
+}
+
+export function useScriptObjectWithFallback<
+  T extends Record<string, unknown>,
+  ReturnType = { [P in keyof T]: Exclude<T[P], IScript> },
+>(scriptObject: T): ReturnType {
+  const returnedObjectRef = React.useRef<ReturnType>();
+  const scripts = Object.entries(scriptObject).filter(([, v]) =>
+    entityIs(v, 'Script'),
+  );
+  const scriptKeys = scripts.map(([k]) => k);
+  const scriptValues = scripts.map(([, v]) => v as IScript);
+  const evaluatedScripts = useScript<ValueOf<T>[]>(scriptValues) || [];
+  const evaluatedObject = scriptKeys.reduce((o, k, i) => {
+    o[k as string] = evaluatedScripts[i];
+    return o;
+  }, {} as Record<string, unknown>) as ReturnType;
+
+  const values = Object.entries(scriptObject)
+    .filter(([, v]) => !entityIs(v, 'Script'))
+    .reduce((o, [k, v]) => {
+      o[k as string] = v;
+      return o;
+    }, {} as Record<string, unknown>) as ReturnType;
+
+  return React.useMemo(() => {
+    const newObject = { ...values, ...evaluatedObject };
+    if (
+      returnedObjectRef.current != null &&
+      isEqual(returnedObjectRef.current, newObject)
+    ) {
+      return returnedObjectRef.current;
+    } else {
+      returnedObjectRef.current = newObject;
+      return newObject;
+    }
+  }, [evaluatedObject, values]);
 }

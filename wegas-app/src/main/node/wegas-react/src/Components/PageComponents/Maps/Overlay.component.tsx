@@ -1,6 +1,6 @@
-import { FeatureLike } from 'ol/Feature';
 import * as React from 'react';
-import { useScriptWithFallback } from '../../Hooks/useScript';
+import { useScriptObjectWithFallback } from '../../Hooks/useScript';
+import { overlaySchema } from '../../Maps/helpers/schemas/OverlaySchemas';
 import { WegasOverlay } from '../../Maps/WegasOverlay';
 import { childrenDeserializerFactory } from '../Layouts/FlexList.component';
 import {
@@ -10,23 +10,25 @@ import {
 import { WegasComponentProps } from '../tools/EditableComponent';
 
 interface PlayerOverlayProps extends WegasComponentProps {
-  position?: IScript | [number, number];
-  positionOnClick?: IScript | boolean;
-  featuresFilter?:
-    | IScript
-    | { filter: (feature: FeatureLike) => boolean; allowClick: boolean }
-    | true;
+  overlayProps: {
+    overlayId?: IScript | string;
+    overlayClassName?: IScript | string;
+    position?: IScript | PointLikeObject;
+    offset?: IScript | PointLikeObject;
+    positioning?: IScript | PositioningOptions;
+    stopEvent?: IScript | boolean;
+    insertFirst?: IScript | boolean;
+    autoPan?: IScript | AutoPanOptions;
+    positionOnClick?: IScript | boolean;
+    featuresFilter?: IScript | FeatureFilter;
+  };
 }
 
 export default function PlayerOverlay({
   children,
-  position: pos,
-  positionOnClick: posOnClick,
-  featuresFilter: fFilter,
+  overlayProps,
 }: PlayerOverlayProps) {
-  const position = useScriptWithFallback(pos);
-  const positionOnClick = useScriptWithFallback(posOnClick);
-  const featuresFilter = useScriptWithFallback(fFilter);
+  const overlayEvaluatedProps = useScriptObjectWithFallback(overlayProps);
 
   const ChildrenOverlay = React.useMemo(
     () =>
@@ -39,9 +41,7 @@ export default function PlayerOverlay({
   return (
     <WegasOverlay
       OverlayComponent={ChildrenOverlay}
-      position={position}
-      positionOnClick={positionOnClick}
-      featuresFilter={featuresFilter}
+      {...overlayEvaluatedProps}
     />
   );
 }
@@ -56,7 +56,7 @@ registerComponent(
     name: 'Overlay',
     icon: 'map',
     illustration: 'scatter',
-    schema: {},
+    schema: overlaySchema,
     allowedVariables: ['InboxDescriptor'],
     getComputedPropsFromVariable: () => ({
       children: [],

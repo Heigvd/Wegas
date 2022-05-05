@@ -1,5 +1,7 @@
 //Other libs
 import { cx } from '@emotion/css';
+import useResizeObserver from '@react-hook/resize-observer';
+import { debounce } from 'lodash-es';
 // Open layer
 import { Collection } from 'ol';
 import BaseLayer from 'ol/layer/Base';
@@ -32,13 +34,26 @@ export function WegasMap({
   debug,
 }: React.PropsWithChildren<WegasMapProps>) {
   const [map, setMap] = React.useState<Map>();
-  const mapElement = React.useRef<HTMLDivElement>(null);
+  const mapElementRef = React.useRef<HTMLDivElement>(null);
+  const containerElementRef = React.useRef<HTMLDivElement>(null);
+
+  const debouncedMapResize = React.useMemo(
+    () =>
+      debounce(() => {
+        if (map != null) {
+          map.updateSize();
+        }
+      }, 100),
+    [map],
+  );
+
+  useResizeObserver(mapElementRef, debouncedMapResize);
 
   React.useEffect(() => {
-    if (mapElement.current) {
+    if (mapElementRef.current) {
       // create map
       const initialMap = new Map({
-        target: mapElement.current,
+        target: mapElementRef.current,
         layers: initialLayers,
         view: new View(options),
         controls: [],
@@ -98,8 +113,8 @@ export function WegasMap({
 
   // render component
   return (
-    <div className={cx(flex, flexRow, expandBoth)}>
-      <div ref={mapElement} className={expandBoth}>
+    <div ref={containerElementRef} className={cx(flex, flexRow, expandBoth)}>
+      <div ref={mapElementRef} className={expandBoth}>
         <mapCTX.Provider value={{ map, projection: options.projection }}>
           {children}
         </mapCTX.Provider>
