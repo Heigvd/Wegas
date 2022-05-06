@@ -451,7 +451,9 @@ export default function Header() {
                       }}
                       buttonClassName={transparentDropDownButton}
                       modalDisplay
-                      modalMessage={i18nValues.header.restartGame + '?'}
+                      modalMessage={ gameModel.type === 'PLAY' ? "BE AWARE!" :
+                        i18nValues.header.restartGame + '?'
+                      }
                     />
                   ),
                   value: 'restartGame',

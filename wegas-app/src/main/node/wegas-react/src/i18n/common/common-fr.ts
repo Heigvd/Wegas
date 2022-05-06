@@ -35,7 +35,8 @@ export const commonTranslationsFR: CommonTranslations = {
   header: {
     hide: 'Masquer l\'en-tête',
     show: 'Affiche  l\'en-tête',
-    restartGame: 'Recommence le jeu (appliqué à tous les scénaristes)',
+    restartGame: 'Recommencer le jeu (appliqué à tous les scénaristes)',
+    restartRealGame: 'ATTENTION, vous êtes sur le point de redémarrer une vraie partie. Toutes les équipes seront remises à zéro.',
     resetLayout: 'Réinitialiser mise en page',
     notifications: 'Notifications',
     teams: 'Equipes',

@@ -36,6 +36,7 @@ export const commonTranslationsDE: CommonTranslations = {
     hide: 'Header anzeigen',
     show: 'Header ausblenden',
     restartGame: 'Neustart des Spiels (gilt für jeden Szenaristen)',
+    restartRealGame: "VORSICHT, Sie sind dabei, ein echtes Spiel neu zu starten. Alle Teams werden zurückgesetzt.",
     resetLayout: 'Layout zurücksetzen',
     notifications: 'Benachrichtigungen',
     teams: 'Teams',
