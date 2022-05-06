@@ -31,6 +31,8 @@ export interface CommonTranslations {
   addVariable: string;
   role: string;
   header: {
+    hide: string;
+    show: string;
     restartGame: string;
     resetLayout: string;
     notifications: string;

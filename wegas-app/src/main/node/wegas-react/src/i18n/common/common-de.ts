@@ -33,6 +33,8 @@ export const commonTranslationsDE: CommonTranslations = {
   addVariable: 'Neue Variable hinzufügen',
   role: 'Benutzerrolle',
   header: {
+    hide: 'Header anzeigen',
+    show: 'Header ausblenden',
     restartGame: 'Neustart des Spiels (gilt für jeden Szenaristen)',
     resetLayout: 'Layout zurücksetzen',
     notifications: 'Benachrichtigungen',

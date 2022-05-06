@@ -33,6 +33,8 @@ export const commonTranslationsIT: CommonTranslations = {
   addVariable: 'Aggiungere una nuova variabile',
   role: 'Ruolo utente',
   header: {
+    hide: 'Nascondi intestazione',
+    show: 'Montare la intestazione',
     restartGame: 'Riavviare il gioco (applicato ad ogni scenarista)',
     resetLayout: 'Ripristinare il layout',
     notifications: 'Notifiche',

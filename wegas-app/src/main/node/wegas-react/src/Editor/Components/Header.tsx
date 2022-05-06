@@ -65,6 +65,18 @@ const reduceButtonStyle = css({
   },
 });
 
+const hideHeaderExpander = css({
+  maxHeight: '0px',
+  opacity: 0,
+  padding: 0,
+});
+
+const headerExpander = css({
+  maxHeight: '26px',
+  opacity: 1,
+  transition: 'all .8s ease',
+});
+
 const hideHeaderStyle = css({
   maxHeight: '0px',
   opacity: 0,
@@ -294,7 +306,8 @@ export default function Header() {
                   })}
                 >
                   <IconComp icon="external-link-alt" />
-                  { player.name }{ player.userId == null ? ` (${player.id})` : null}
+                  {player.name}
+                  {player.userId == null ? ` (${player.id})` : null}
                 </a>
               ),
               value: player.id,
@@ -307,14 +320,13 @@ export default function Header() {
   return (
     <>
       <Button
-        className={cx(reduceButtonStyle, {
-          [css({ borderBottom: '1px solid ' + themeVar.colors.DisabledColor })]:
-            showHeader,
+        className={cx(reduceButtonStyle, headerExpander, {
+          [hideHeaderExpander]: showHeader,
         })}
         noBackground={false}
-        icon={showHeader ? 'chevron-up' : 'chevron-down'}
-        tooltip={showHeader ? 'Hide header' : 'Show header'}
-        onClick={() => setShowHeader(showHeader => !showHeader)}
+        icon="chevron-down"
+        tooltip={i18nValues.header.show}
+        onClick={() => setShowHeader(true)}
       ></Button>
       <div
         className={cx(
@@ -404,6 +416,13 @@ export default function Header() {
           <span>
             <h1 className={css({ margin: 0 })}>{gameModel.name}</h1>
           </span>
+          <Button
+            className={reduceButtonStyle}
+            noBackground={false}
+            icon="chevron-up"
+            tooltip={i18nValues.header.hide}
+            onClick={() => setShowHeader(false)}
+          ></Button>
         </div>
         <div className={headerElementsStyle}>
           <span>

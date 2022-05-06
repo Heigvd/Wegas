@@ -33,6 +33,8 @@ export const commonTranslationsFR: CommonTranslations = {
   addVariable: 'Ajouter une variable',
   role: "Rôle de l'utilisateur",
   header: {
+    hide: 'Masquer l\'en-tête',
+    show: 'Affiche  l\'en-tête',
     restartGame: 'Recommence le jeu (appliqué à tous les scénaristes)',
     resetLayout: 'Réinitialiser mise en page',
     notifications: 'Notifications',
