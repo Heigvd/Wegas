@@ -48,11 +48,16 @@ interface EditorHandleProps {
    * isSelected - the component is selected
    */
   isSelected: boolean;
+  /**
+   * context - Page Context
+   */
+  context?: Record<string, unknown>;
 }
 
 export function EditHandle({
   name,
   componentType,
+  context,
   pageId,
   path,
   stackedHandles,
@@ -105,6 +110,10 @@ export function EditHandle({
               e.dataTransfer.setData('data', JSON.stringify(data));
               e.dataTransfer.setData(PAGEEDITOR_COMPONENT_TYPE, '');
             }}
+          />
+          <Button
+            icon="binoculars"
+            tooltip={ `Context: ${ JSON.stringify(context)}`}
           />
           <ConfirmButton
             icon="trash"
