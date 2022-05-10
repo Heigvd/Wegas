@@ -312,6 +312,35 @@ export const mapOptionsSchema = schemaProps.hashlist({
   label: 'Map options',
   choices: [
     {
+      label: 'Controls',
+      value: {
+        prop: 'controls',
+        schema: schemaProps.scriptable({
+          label: 'Controls',
+          scriptProps: {
+            language: 'TypeScript',
+            returnType: ['MapControls[]'],
+          },
+          literalSchema: {
+            type: 'array',
+            items: schemaProps.select({
+              values: [
+                'attribution',
+                'fullscreen',
+                'mousePosition',
+                'overviewMap',
+                'rotate',
+                'scaleLine',
+                'zoomSlider',
+                'zoomToExtent',
+                'zoom',
+              ],
+            }),
+          },
+        }),
+      },
+    },
+    {
       label: 'Pixel ratio',
       value: {
         prop: 'pixelRatio',

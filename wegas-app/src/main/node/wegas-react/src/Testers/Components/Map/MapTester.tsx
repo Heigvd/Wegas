@@ -2,6 +2,7 @@
 // Open layers
 // layer
 import { cx } from '@emotion/css';
+import { Zoom } from 'ol/control';
 import { fromLonLat } from 'ol/proj';
 /////////////////////////////////////////////////////////////////
 // React
@@ -102,7 +103,10 @@ export default function MapTester() {
           }}
         />
       </div> */}
-      <WegasMap viewOptions={defaultMapOptions}>
+      <WegasMap
+        viewOptions={defaultMapOptions}
+        mapOptions={{ controls: [new Zoom()] }}
+      >
         <WegasLayer layer={swissBuildingLayerWGS84} />
         <WegasLayer layer={swissBuildingLayer} />
         {/* <WegasLayer layer={buildingLayer} /> */}
