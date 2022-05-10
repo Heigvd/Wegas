@@ -1,5 +1,6 @@
 import { AvailableSchemas } from '../../../../Editor/Components/FormView';
 import { schemaProps } from '../../../PageComponents/tools/schemaProps';
+import { EPSGCodes } from '../epsgCodes';
 
 export const extentSchema: (
   label?: string,
@@ -51,4 +52,10 @@ export const pointSchema: (
         layout: 'shortInline',
       }),
     },
+  });
+
+export const projectionSchema = (label?: string) =>
+  schemaProps.select({
+    label,
+    values: EPSGCodes,
   });
