@@ -505,7 +505,7 @@ function WegasComponentTitle({
     filterChildrenName,
   } = {
     ...defaultPageComponentBehaviour,
-    ...registeredComponent.behaviour,
+    ...registeredComponent?.behaviour,
   };
 
   const onSelect = React.useCallback(() => {
@@ -638,7 +638,7 @@ function WegasComponentNode({
     );
   }
 
-  const { allowMove, allowChildren } = registeredComponent.behaviour || {};
+  const { allowMove, allowChildren } = registeredComponent?.behaviour || {};
 
   return (
     <TreeNode
