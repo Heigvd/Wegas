@@ -26,7 +26,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerSelect,
     componentType: 'Maps',
-    name: 'Select',
+    name: 'WegasMapSelect',
     icon: 'map',
     illustration: 'scatter',
     schema: { selectProps: selectSchema },

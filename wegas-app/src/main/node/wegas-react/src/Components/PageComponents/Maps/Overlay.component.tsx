@@ -46,7 +46,7 @@ registerComponent(
     container: {
       ChildrenDeserializer: childrenDeserializerFactory(),
     },
-    name: 'Overlay',
+    name: 'WegasMapOverlay',
     icon: 'map',
     illustration: 'scatter',
     schema: overlaySchema,

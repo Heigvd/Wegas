@@ -73,7 +73,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerLayer,
     componentType: 'Maps',
-    name: 'TileLayer',
+    name: 'WegasMapTileLayer',
     icon: 'map',
     illustration: 'scatter',
     schema: {
@@ -87,7 +87,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerLayer,
     componentType: 'Maps',
-    name: 'ImageLayer',
+    name: 'WegasMapImageLayer',
     icon: 'map',
     illustration: 'scatter',
     schema: {
@@ -101,7 +101,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerLayer,
     componentType: 'Maps',
-    name: 'VectorLayer',
+    name: 'WegasMapVectorLayer',
     icon: 'map',
     illustration: 'scatter',
     schema: {
