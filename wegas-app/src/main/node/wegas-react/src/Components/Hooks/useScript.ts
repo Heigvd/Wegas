@@ -114,7 +114,7 @@ export function createSandbox<T = unknown>() {
   // (window.top) and modify it from there.
   // to prevent such access, window, globalThis and top are hidden
   // by function parameters (see transpileToFunction function)
-  sandbox.setAttribute('sandbox', 'allow-same-origin');
+  sandbox.setAttribute('sandbox', 'allow-same-origin allow-scripts');
   sandbox.style.display = 'none';
   document.body.appendChild(sandbox);
 
@@ -481,13 +481,14 @@ function transpileToFunction(
 
   // script does not containes any return statement (eval-style returns last-evaluated statement)
   // such a statement must be added
-  // TODO: this function is not that robust... AST based transformation is required (quite a big job)
   const fnBody = injectReturn ? insertReturn(jsScript) : jsScript;
-  const fnScript = '"use strict"; undefined;' + fnBody;
+  //
+  const fnScript = 'eval = () => {throw new Error("Eval is evil");};return (function(){"use strict";undefined;' + fnBody + "})();";
 
   // hide forbidden object by overriding them with parameters
   // on call, provide undefined arguments
   return new globals.Function(
+    'Function',
     'globalThis',
     'window',
     'top',
@@ -574,6 +575,7 @@ const memoClientScriptEval = (() => {
       }
       // do not provide effective arguments ever !
       return scriptAsFunction(
+        undefined,
         undefined,
         undefined,
         undefined,
