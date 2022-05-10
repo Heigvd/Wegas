@@ -31,7 +31,10 @@ export interface CommonTranslations {
   addVariable: string;
   role: string;
   header: {
+    hide: string;
+    show: string;
     restartGame: string;
+    restartRealGame: string;
     resetLayout: string;
     notifications: string;
     teams: string;

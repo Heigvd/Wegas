@@ -1,12 +1,23 @@
+/** Unmount effect callback */
+type UnmoutEffectFn = () => void;
+
+/** Effect callback */
+type EffectFn = (() => void | UnmoutEffectFn)
+
 /**
  * list of registerd effects
  */
-const effects: (() => void)[] = [];
+const effects: EffectFn[] = [];
+
+/**
+ * List of unmount-effect callbacks
+ */
+let unmounters: UnmoutEffectFn[] = [];
 
 /**
  * register effect
  */
-export function registerEffect(effect: () => void) {
+export function registerEffect(effect: EffectFn) {
   effects.push(effect);
 }
 
@@ -14,12 +25,13 @@ export function registerEffect(effect: () => void) {
  * run all registered effects
  */
 export function runEffects() {
-  effects.forEach(e => e());
+  unmounters = effects.map(fn => fn()).flatMap(unmount => unmount ? [unmount] : []);
 }
 
 /**
  * Drop all effects
  */
 export function clearEffects() {
+  unmounters.forEach(fn => fn())
   effects.length = 0;
 }

@@ -33,7 +33,10 @@ export const commonTranslationsEN: CommonTranslations = {
   addVariable: 'Add new variable',
   role: 'User role',
   header: {
+    hide: 'Hide header',
+    show: 'Show header',
     restartGame: 'Restart the game (applied to every scenarist)',
+    restartRealGame: "BE CAREFUL, you're about to restart a real game. All teams will be reset.",
     resetLayout: 'Reset layout',
     notifications: 'Notifications',
     teams: 'Teams',

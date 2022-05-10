@@ -33,7 +33,10 @@ export const commonTranslationsFR: CommonTranslations = {
   addVariable: 'Ajouter une variable',
   role: "Rôle de l'utilisateur",
   header: {
-    restartGame: 'Recommence le jeu (appliqué à tous les scénaristes)',
+    hide: 'Masquer l\'en-tête',
+    show: 'Affiche  l\'en-tête',
+    restartGame: 'Recommencer le jeu (appliqué à tous les scénaristes)',
+    restartRealGame: 'ATTENTION, vous êtes sur le point de redémarrer une vraie partie. Toutes les équipes seront remises à zéro.',
     resetLayout: 'Réinitialiser mise en page',
     notifications: 'Notifications',
     teams: 'Equipes',

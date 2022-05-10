@@ -10,7 +10,7 @@ import {
   PeerReviewStateSelector,
 } from '../../API/peerReview.api';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
-import { runEffects } from '../../Helper/pageEffectsManager';
+import { clearEffects, runEffects } from '../../Helper/pageEffectsManager';
 import { manageResponseHandler, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import { entityIs } from '../entities';
@@ -208,6 +208,7 @@ export function reset(): EditingThunkResult {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.reset(gameModelId).then(res => {
       const r = dispatch(manageResponseHandler(res, dispatch, getState()));
+      clearEffects();
       runEffects();
       return r;
     });

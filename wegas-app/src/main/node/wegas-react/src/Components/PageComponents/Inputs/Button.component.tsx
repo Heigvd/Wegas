@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
+import { entityIs } from '../../../data/entities';
+import { AvailableSchemas } from '../../../Editor/Components/FormView';
 import { icons, Icons } from '../../../Editor/Components/Views/FontAwesome';
 import { createScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
@@ -19,7 +21,7 @@ import { schemaProps } from '../tools/schemaProps';
 
 export interface PlayerButtonProps extends WegasComponentProps {
   label?: IScript;
-  icon?: Icons;
+  icon?: IScript | Icons;
   prefixedLabel?: boolean;
   confirm?: boolean;
 }
@@ -42,12 +44,19 @@ function PlayerButton({
 }: PlayerButtonProps) {
   const translation = useScript<string>(label, context) || '';
 
+  const scriptedIcon = useScript<object>(
+    entityIs(icon, 'Script') ? icon : '',
+    context,
+  ) as Icons | undefined;
+
+  const effectiveIcon = entityIs(icon, 'Script') ? scriptedIcon : icon;
+
   const buttonProps: ButtonProps = React.useMemo(
     () => ({
       id: id,
       className: className,
       style: { margin: 'auto', ...style },
-      icon: icon,
+      icon: effectiveIcon,
       prefixedLabel: prefixedLabel,
       label:
         label && translation !== '' ? (
@@ -59,7 +68,7 @@ function PlayerButton({
     }),
     [
       className,
-      icon,
+      effectiveIcon,
       id,
       label,
       options.disabled,
@@ -91,13 +100,23 @@ function PlayerButton({
   );
 }
 
-export const buttonSchema = {
+export const buttonSchema: Record<string, AvailableSchemas> = {
   // action: schemaProps.script({ label: 'Action', mode: 'SET' }),
   label: schemaProps.scriptString({ label: 'Label', richText: true }),
-  icon: schemaProps.select({
-    label: 'Icon',
-    values: Object.keys(icons),
-  }),
+  icon: {
+    view: {
+      type: 'scriptable',
+      label: 'Icon',
+      literalSchema: schemaProps.select({
+        values: Object.keys(icons),
+      }),
+      scriptProps: {
+        language: 'TypeScript',
+        returnType: ['string'],
+      },
+    },
+  },
+
   prefixedLabel: schemaProps.boolean({ label: 'Prefixed label' }),
   confirm: schemaProps.boolean({ label: 'Ask confirmation' }),
   ...classStyleIdShema,

@@ -79,10 +79,16 @@ function PlayerSelectInput({
   const computedChoices: Choice[] =
     choicesFromProp == null || choicesFromProp.length === 0
       ? entityIs(descriptor, 'StringDescriptor')
-        ? (descriptor as SStringDescriptor).getAllowedValues().map(v => {
-            const value = translate(v.getLabel(), lang);
-            return { value, label: v.getName() || value };
-          })
+        ? (descriptor as SStringDescriptor)
+            .getAllowedValues()
+            .map(allowedValue => {
+              const label = translate(allowedValue.getLabel(), lang);
+              const value = allowedValue.getName();
+              return {
+                value: value,
+                label: label || value,
+              };
+            })
         : []
       : choicesFromProp;
 

@@ -719,6 +719,7 @@ export function ComponentContainer({
           componentType={componentType}
           pageId={pageId}
           path={path}
+          context={context}
           infoMessage={
             options.hidden
               ? 'This component is shown only in edit mode'
