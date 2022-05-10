@@ -17,9 +17,17 @@ interface MapContext {
 
 export const mapCTX = React.createContext<MapContext>({});
 
+// export interface WegasMapOptions
+//   extends Omit<
+//     MapOptions,
+//     'controls' | 'interactions' | 'layers' | 'overlays' | 'view'
+//   > {
+//   controls: MapControls[];
+// }
+
 export type WegasMapOptions = Omit<
   MapOptions,
-  'controls' | 'interactions' | 'layers' | 'overlays' | 'view'
+  'interactions' | 'layers' | 'overlays' | 'view'
 >;
 
 interface WegasMapProps {
@@ -60,7 +68,7 @@ export function WegasMap({
         target: mapElementRef.current,
         view: new View(viewOptions),
         ...mapOptions,
-        controls: [],
+        controls: mapOptions?.controls == null ? [] : mapOptions.controls,
       });
 
       if (debug) {

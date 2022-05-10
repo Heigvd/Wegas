@@ -1,6 +1,18 @@
 type PointLikeObject = [number, number];
 type ExtentLikeObject = [number, number, number, number];
 
+/// Map
+type MapControls =
+  | 'attribution'
+  | 'fullscreen'
+  | 'mousePosition'
+  | 'overviewMap'
+  | 'rotate'
+  | 'scaleLine'
+  | 'zoomSlider'
+  | 'zoomToExtent'
+  | 'zoom';
+
 /// Overlay
 type PositioningOptions =
   | 'bottom-left'

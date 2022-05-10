@@ -56,6 +56,13 @@ export default function PlayerLayer({
         const onLayerReadyFN = currentLayerProps.onLayerReady;
         if (onLayerReadyFN != null) {
           onLayerReadyFN(newOLLayer);
+
+          // if("getSource" in newOLLayer){
+          //   newOLLayer.getSource().getFeatures().map(feature=>{
+          //     feature.
+          //   });
+          // }
+          setInterval(() => {}, 1000);
         }
       });
     }

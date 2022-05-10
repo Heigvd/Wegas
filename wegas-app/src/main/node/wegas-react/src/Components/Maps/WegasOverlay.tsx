@@ -7,10 +7,6 @@ import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { mapCTX } from './WegasMap';
 
-export interface WegasOverlayComponentProps {
-  inputRef: React.LegacyRef<HTMLElement>;
-}
-
 /**
  * A react implementation of OpenLayer Overlay object
  * @link https://openlayers.org/en/latest/apidoc/module-ol_Overlay-Overlay.html
