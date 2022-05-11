@@ -852,7 +852,7 @@ export const WegasLobbyRestClient = function (
       },
       clearOnlineUsers: () => {
         const path = `${baseUrl}/Pusher/OnlineUser`;
-        return sendJsonRequest<OnlineUser[]>('GET', path, undefined, errorHandler);
+        return sendJsonRequest<void>('DELETE', path, undefined, errorHandler);
       },
     },
   };

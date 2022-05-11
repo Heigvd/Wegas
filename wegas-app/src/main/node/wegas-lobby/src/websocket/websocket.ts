@@ -9,7 +9,6 @@ import {
   IPlayerWithId,
   ITeamWithId,
 } from 'wegas-ts-api';
-import { getOnlineUsers } from '../API/api';
 import { entityIs } from '../API/entityHelper';
 import getLogger from '../logger';
 import { getStore, WegasLobbyState } from '../store/store';
@@ -168,6 +167,8 @@ export const decQueue = createAsyncThunk('wegas/decQueue', async (amount: number
 });
 
 export const reinitOnlineUsers = createAsyncThunk('admin/reinitOnlineUsers', async () => {});
+
+export const outdateOnlineUsers = createAsyncThunk('admin/outdateOnlineUsers', async () => {});
 
 export interface EntityBag {
   players: IPlayerWithId[];
@@ -358,7 +359,7 @@ export class WebSocketListener {
       getStore().dispatch(decQueue(amount));
       return;
     } else if (event === 'online-users') {
-      getStore().dispatch(getOnlineUsers());
+      getStore().dispatch(outdateOnlineUsers());
     } else {
       if (!eventFound) {
         logger.error(`Event [${event}] unchecked`, data);

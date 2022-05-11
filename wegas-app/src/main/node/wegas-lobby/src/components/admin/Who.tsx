@@ -45,11 +45,28 @@ const matchSearch = (search: string) => (data: KnownUser) => {
   });
 };
 
+function useUpToDateOnlineUsers() {
+  const dispatch = useAppDispatch();
+
+  const onlineUsers = useAppSelector(state => state.admin.onlineUsers, shallowEqual);
+
+  const status = useAppSelector(state => state.admin.onlineUsersStatus);
+
+  React.useEffect(() => {
+    if (status === 'NOT_INITIALIZED' || status === 'OUTDATED') {
+      dispatch(getOnlineUsers());
+    }
+  }, [status, dispatch]);
+
+  return { onlineUsers, status };
+}
+
 export default function Users(): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
 
-  const onlineUsers = useAppSelector(state => state.admin.onlineUsers, shallowEqual);
+  const { onlineUsers, status } = useUpToDateOnlineUsers();
+
   const [loadingUnknown, setLoadingUnknown] = React.useState<number[]>([]);
 
   const users = useAppSelector(state => {
@@ -73,12 +90,6 @@ export default function Users(): JSX.Element {
     }
     return status;
   }, customStateEquals);
-
-  React.useEffect(() => {
-    if (onlineUsers === 'NOT_INITIALIZED') {
-      dispatch(getOnlineUsers());
-    }
-  }, [onlineUsers, dispatch]);
 
   const allUserStates = useAppSelector(state => {
     return state.admin.userStatus;
@@ -118,111 +129,108 @@ export default function Users(): JSX.Element {
 
   const [filter, setFilter] = React.useState('');
 
-  if (onlineUsers === 'LOADING' || onlineUsers === 'NOT_INITIALIZED') {
-    return <InlineLoading />;
-  } else {
-    const filtered = filter ? users.known.filter(matchSearch(filter)) : users.known;
+  const filtered = filter ? users.known.filter(matchSearch(filter)) : users.known;
 
-    const theUsers = filtered.sort((a, b) => {
-      const reverse = sortBy.asc ? 1 : -1;
-      if (sortBy.key === 'lastSeenAt') {
-        return reverse * ((a.user.lastSeenAt || 0) - (b.user.lastSeenAt || 0));
-      } else if (sortBy.key === 'name') {
-        return reverse * (a.user.name || '').localeCompare(b.user.name || '');
-      } else {
-        return 0;
-      }
-    });
+  const theUsers = filtered.sort((a, b) => {
+    const reverse = sortBy.asc ? 1 : -1;
+    if (sortBy.key === 'lastSeenAt') {
+      return reverse * ((a.user.lastSeenAt || 0) - (b.user.lastSeenAt || 0));
+    } else if (sortBy.key === 'name') {
+      return reverse * (a.user.name || '').localeCompare(b.user.name || '');
+    } else {
+      return 0;
+    }
+  });
 
-    const mappedByRoles = theUsers.reduce<Record<RoleLevelTypes, KnownUser[]>>(
-      (map, user) => {
-        const roleN = user.onlineUser.highestRole;
-        map[roleN] = map[roleN] || [];
-        map[roleN].push(user);
-        return map;
-      },
-      { 0: [], 1: [], 2: [], 3: [], 4: [] },
-    );
+  const mappedByRoles = theUsers.reduce<Record<RoleLevelTypes, KnownUser[]>>(
+    (map, user) => {
+      const roleN = user.onlineUser.highestRole;
+      map[roleN] = map[roleN] || [];
+      map[roleN].push(user);
+      return map;
+    },
+    { 0: [], 1: [], 2: [], 3: [], 4: [] },
+  );
 
-    return (
-      <FitSpace
-        direction="column"
-        overflow="auto"
-        className={cx(panelPadding, css({ position: 'relative' }))}
+  return (
+    <FitSpace
+      direction="column"
+      overflow="auto"
+      className={cx(panelPadding, css({ position: 'relative' }))}
+    >
+      <Flex
+        justify="space-between"
+        align="center"
+        className={css({
+          flexShrink: 0,
+          height: '80px',
+        })}
       >
-        <Flex
-          justify="space-between"
-          align="center"
-          className={css({
-            flexShrink: 0,
-            height: '80px',
-          })}
-        >
-          <h3>
-            {Object.keys(onlineUsers).length} {i18n.connectedUsers}
-          </h3>
-          <ActionIconButton
-            title="sync"
-            onClick={async () => {
-              return dispatch(syncOnlineUsers());
-            }}
-            icon={faSync}
-          />
-          <SortBy options={sortOptions} current={sortBy} onChange={onSortChange} />
-          <DebouncedInput
-            size="SMALL"
-            value={filter}
-            placeholder={i18n.search}
-            onChange={setFilter}
-          />
-        </Flex>
+        <h3>
+          {Object.keys(onlineUsers).length} {i18n.connectedUsers}
+        </h3>
+        <ActionIconButton
+          title="sync"
+          onClick={async () => {
+            return dispatch(syncOnlineUsers());
+          }}
+          icon={faSync}
+        />
+        {status === 'LOADING' ? <InlineLoading /> : null}
+        <SortBy options={sortOptions} current={sortBy} onChange={onSortChange} />
+        <DebouncedInput
+          size="SMALL"
+          value={filter}
+          placeholder={i18n.search}
+          onChange={setFilter}
+        />
+      </Flex>
 
-        <CardContainer>
-          {roleLevels.map(level => {
-            const list = mappedByRoles[level];
-            if (list.length > 0) {
-              return (
-                <div key={level}>
-                  <h4>{i18n.userLevels[level]}</h4>
-                  {list.map(({ user, onlineUser }) => (
-                    <UserCard
-                      size="MEDIUM"
-                      key={user.id}
-                      user={user}
-                      extraDetails={
-                        <>
-                          <div className={cardSubDetailsStyle}>
-                            {i18n.lastActivityDate}{' '}
-                            {new Date(onlineUser.lastActivityDate || 0).toLocaleString()}
-                          </div>
-                          <div className={cardSubDetailsStyle}>{onlineUser.email}</div>
-                        </>
-                      }
-                    >
-                      {onlineUser.playerId ? (
-                        <>
-                          <CardMainWifButton
-                            icon="trainer"
-                            title={i18n.openGameAsTrainer}
-                            url={`./host.html?id=${onlineUser.playerId}`}
-                          />
-                          <CardMainButton
-                            icon={faEye}
-                            title={i18n.spyPlayer}
-                            url={`./game-lock.html?id=${onlineUser.playerId}`}
-                          />
-                        </>
-                      ) : null}
-                    </UserCard>
-                  ))}
-                </div>
-              );
-            } else {
-              return <></>;
-            }
-          })}
-        </CardContainer>
-      </FitSpace>
-    );
-  }
+      <CardContainer>
+        {roleLevels.map(level => {
+          const list = mappedByRoles[level];
+          if (list.length > 0) {
+            return (
+              <div key={level}>
+                <h4>{i18n.userLevels[level]}</h4>
+                {list.map(({ user, onlineUser }) => (
+                  <UserCard
+                    size="MEDIUM"
+                    key={user.id}
+                    user={user}
+                    extraDetails={
+                      <>
+                        <div className={cardSubDetailsStyle}>
+                          {i18n.lastActivityDate}{' '}
+                          {new Date(onlineUser.lastActivityDate || 0).toLocaleString()}
+                        </div>
+                        <div className={cardSubDetailsStyle}>{onlineUser.email}</div>
+                      </>
+                    }
+                  >
+                    {onlineUser.playerId ? (
+                      <>
+                        <CardMainWifButton
+                          icon="trainer"
+                          title={i18n.openGameAsTrainer}
+                          url={`./host.html?id=${onlineUser.playerId}`}
+                        />
+                        <CardMainButton
+                          icon={faEye}
+                          title={i18n.spyPlayer}
+                          url={`./game-lock.html?id=${onlineUser.playerId}`}
+                        />
+                      </>
+                    ) : null}
+                  </UserCard>
+                ))}
+              </div>
+            );
+          } else {
+            return <></>;
+          }
+        })}
+      </CardContainer>
+    </FitSpace>
+  );
 }
