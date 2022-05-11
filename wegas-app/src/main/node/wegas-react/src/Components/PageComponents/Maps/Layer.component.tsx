@@ -20,7 +20,7 @@ import {
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 
-type OnLayerReadyFN = (layer: BaseLayer) => void;
+type OnLayerReadyFN = ((layer: BaseLayer) => void) | undefined;
 
 interface PlayerLayerProps extends WegasComponentProps {
   layerSource?: IScript | VectorLayerObject;
