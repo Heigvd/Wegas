@@ -12,4 +12,8 @@ export const pagesTranslationsFR: PagesTranslations = {
   editComponent: 'Editer le componsant',
   obsoleteComponent:
     'Le composant a été mis a jour. Veuillez contacter votre formateur.',
+  allowExternalSources:
+    "Vous choisissez d'utiliser les données d'Open Street Map. Vous êtes sur le point de communiquer avec le serveur OSM, autorisez-vous cette action ?",
+  externalSourcesRefused:
+    'Vous ne pouvez pas utiliser ce composant car vous avez refusé de communiquer avec un serveur externe. Si vous souhaitez changer d\'avis, vous pouvez toujours utiliser le bouton "Accepter" ci-dessous.',
 };

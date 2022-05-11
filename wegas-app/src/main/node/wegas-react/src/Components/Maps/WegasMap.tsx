@@ -17,6 +17,8 @@ import {
   itemCenter,
   justifyCenter,
 } from '../../css/classes';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { pagesTranslations } from '../../i18n/pages/pages';
 import { Button } from '../Inputs/Buttons/Button';
 import './helpers/proj4js';
 
@@ -67,6 +69,9 @@ export function WegasMap({
       }, 100),
     [map],
   );
+
+  const { allowExternalSources, externalSourcesRefused } =
+    useInternalTranslate(pagesTranslations);
 
   useResizeObserver(mapElementRef, debouncedMapResize);
 
@@ -144,8 +149,8 @@ export function WegasMap({
         <div>
           <p>
             {OSMSourcesAllowed === undefined
-              ? 'You choose to use Open Street Map data. You are about to to communicate with OSM server, do you allow this action?'
-              : 'You cannot use this component because you refused to communicate with an external server. If you wish to change your mind, you still can use the accept button below'}
+              ? allowExternalSources
+              : externalSourcesRefused}
           </p>
           <div className={cx(flex, justifyCenter)}>
             <Button label="Accept" onClick={() => setOSMSourcesAllowed(true)} />
