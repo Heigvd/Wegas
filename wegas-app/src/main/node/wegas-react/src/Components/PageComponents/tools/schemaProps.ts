@@ -298,7 +298,7 @@ const simpleSchemaProps = {
     readOnly,
   }: CodeViewView &
     CommonSchemaProps &
-    ValueSchemaProps<UknownValuesObject | string>): SchemaFromView<'code'> => ({
+    ValueSchemaProps<IScript>): SchemaFromView<'code'> => ({
     required,
     type: 'object',
     value,

@@ -23,7 +23,6 @@ export interface CodeViewProps extends WidgetProps.BaseProps<CodeViewView> {
 
 export default function CodeView(props: CodeViewProps): JSX.Element {
   const { errorMessage, view, onChange, value } = props;
-
   const { label, description, scriptProps } = view;
 
   const valueRef = React.useRef(value);
