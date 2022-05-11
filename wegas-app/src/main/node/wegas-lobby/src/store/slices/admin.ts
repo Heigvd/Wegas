@@ -10,13 +10,14 @@ import { createSlice } from '@reduxjs/toolkit';
 import * as API from '../../API/api';
 import { ILevelDescriptor, OnlineUser } from '../../API/restClient';
 import { mapByKey } from '../../helper';
-import { reinitOnlineUsers } from '../../websocket/websocket';
+import { reinitOnlineUsers, outdateOnlineUsers } from '../../websocket/websocket';
 import { shallowEqual } from '../hooks';
 import { LoadingStatus } from '../store';
 
 export interface AdminState {
   // userId => OnlineUser;
-  onlineUsers: Record<number, OnlineUser> | 'NOT_INITIALIZED' | 'LOADING';
+  onlineUsers: Record<number, OnlineUser>;
+  onlineUsersStatus: 'NOT_INITIALIZED' | 'LOADING' | 'OUTDATED' | 'UP_TO_DATE';
   loggers: Record<string, ILevelDescriptor> | undefined | null;
   userStatus: LoadingStatus;
   rolesStatus: LoadingStatus;
@@ -25,7 +26,8 @@ export interface AdminState {
 const initialState: AdminState = {
   loggers: undefined,
   userStatus: 'NOT_INITIALIZED',
-  onlineUsers: 'NOT_INITIALIZED',
+  onlineUsers: {},
+  onlineUsersStatus: 'NOT_INITIALIZED',
   rolesStatus: 'NOT_INITIALIZED',
 };
 
@@ -47,10 +49,16 @@ const adminSlice = createSlice({
       .addCase(API.getAllRoles.fulfilled, state => {
         state.rolesStatus = 'READY';
       })
-      //      .addCase(API.getOnlineUsers.pending, state => {
-      //        state.onlineUsers = 'LOADING';
-      //      })
+      .addCase(outdateOnlineUsers.fulfilled, state => {
+        if (state.onlineUsersStatus === 'UP_TO_DATE') {
+          state.onlineUsersStatus = 'OUTDATED';
+        }
+      })
+      .addCase(API.getOnlineUsers.pending, state => {
+        state.onlineUsersStatus = 'LOADING';
+      })
       .addCase(API.getOnlineUsers.fulfilled, (state, action) => {
+        state.onlineUsersStatus = 'UP_TO_DATE';
         const s = state.onlineUsers;
         if (typeof s === 'string') {
           state.onlineUsers = mapByKey(action.payload, 'userId');
@@ -75,13 +83,14 @@ const adminSlice = createSlice({
         }
       })
       .addCase(API.syncOnlineUsers.pending, state => {
-        state.onlineUsers = 'LOADING';
+        state.onlineUsersStatus = 'LOADING';
       })
       .addCase(API.syncOnlineUsers.fulfilled, (state, action) => {
+        state.onlineUsersStatus = 'UP_TO_DATE';
         state.onlineUsers = mapByKey(action.payload, 'userId');
       })
       .addCase(reinitOnlineUsers.fulfilled, state => {
-        state.onlineUsers = 'NOT_INITIALIZED';
+        state.onlineUsersStatus = 'NOT_INITIALIZED';
       })
       .addCase(API.getLoggerLevels.pending, state => {
         // undefined means not-loaded
