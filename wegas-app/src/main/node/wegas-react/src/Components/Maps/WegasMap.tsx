@@ -73,6 +73,8 @@ export function WegasMap({
   const { allowExternalSources, externalSourcesRefused } =
     useInternalTranslate(pagesTranslations);
 
+  const displayMap = OSMSourcesAllowed === true || !OSMLayer;
+
   useResizeObserver(mapElementRef, debouncedMapResize);
 
   React.useEffect(() => {
@@ -80,15 +82,14 @@ export function WegasMap({
   }, [OSMSourcesAllowed]);
 
   React.useEffect(() => {
-    if (mapElementRef.current && OSMSourcesAllowed === true) {
+    if (mapElementRef.current && displayMap) {
       // create map
       const initialMap = new Map({
         target: mapElementRef.current,
         view: new View(viewOptions),
         ...mapOptions,
         controls: mapOptions?.controls == null ? [] : mapOptions.controls,
-        layers:
-          OSMLayer != null ? [new TileLayer({ source: new OSM() })] : undefined,
+        layers: OSMLayer ? [new TileLayer({ source: new OSM() })] : undefined,
       });
 
       if (debug) {
@@ -141,9 +142,9 @@ export function WegasMap({
         initialMap.dispose();
       };
     }
-  }, [OSMLayer, OSMSourcesAllowed, debug, mapOptions, viewOptions]);
+  }, [OSMLayer, displayMap, debug, mapOptions, viewOptions]);
 
-  if (!OSMSourcesAllowed) {
+  if (!displayMap) {
     return (
       <div className={cx(flex, flexRow, expandBoth, justifyCenter, itemCenter)}>
         <div>
