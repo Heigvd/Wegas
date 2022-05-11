@@ -613,32 +613,23 @@ public class WebsocketFacade {
      * @param hook
      */
     public void pusherChannelExistenceWebhook(PusherChannelExistenceWebhook hook) {
-        FencedLock onlineUsersLock = hazelcastInstance.getCPSubsystem().getLock(LOCKNAME);
-        onlineUsersLock.lock();
         this.maintainLocalListUpToDate = true;
-        try {
-            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getCPSubsystem().getAtomicLong(UPTODATE_KEY);
-            if (onlineUsersUpToDate.get() == 0) {
-                initOnlineUsers();
+        initOnlineUsersIfRequired();
+        if (hook.getName().equals("channel_occupied")) {
+            User user = this.getUserFromChannel(hook.getChannel());
+            if (user != null) {
+                this.registerUser(user);
+                userFacade.touchLastSeenAt(user);
             }
-            if (hook.getName().equals("channel_occupied")) {
-                User user = this.getUserFromChannel(hook.getChannel());
-                if (user != null) {
-                    this.registerUser(user);
-                    userFacade.touchLastSeenAt(user);
-                }
-            } else if (hook.getName().equals("channel_vacated")) {
-                Long userId = this.getUserIdFromChannel(hook.getChannel());
-                if (userId != null) {
-                    onlineUsers.remove(userId);
-                    userFacade.touchLastSeenAt(userId);
-                }
+        } else if (hook.getName().equals("channel_vacated")) {
+            Long userId = this.getUserIdFromChannel(hook.getChannel());
+            if (userId != null) {
+                onlineUsers.remove(userId);
+                userFacade.touchLastSeenAt(userId);
             }
-
-            this.propagateOnlineUsers();
-        } finally {
-            onlineUsersLock.unlock();
         }
+
+        this.propagateOnlineUsers();
     }
 
     @Asynchronous
@@ -658,17 +649,8 @@ public class WebsocketFacade {
         requestManager.su();
         try {
             if (pusher != null) {
-                FencedLock onlineUsersLock = hazelcastInstance.getCPSubsystem().getLock(LOCKNAME);
-                onlineUsersLock.lock();
-                try {
-                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getCPSubsystem().getAtomicLong(UPTODATE_KEY);
-                    if (onlineUsersUpToDate.get() == 0) {
-                        initOnlineUsers();
-                    }
-                    return this.getLocalOnlineUsers();
-                } finally {
-                    onlineUsersLock.unlock();
-                }
+                initOnlineUsersIfRequired();
+                return this.getLocalOnlineUsers();
             } else {
                 return new ArrayList<>();
             }
@@ -746,27 +728,39 @@ public class WebsocketFacade {
     /**
      * Build initial onlineUser list from pusher channels list
      */
-    private void initOnlineUsers() {
+    private void initOnlineUsersIfRequired() {
         if (pusher != null) {
             try {
-                this.clearOnlineUsers();
+                IAtomicLong onlineUsersUpToDate = hazelcastInstance.getCPSubsystem().getAtomicLong(UPTODATE_KEY);
+                if (onlineUsersUpToDate.get() != 1l) {
+                    // Get the Lock
+                    FencedLock onlineUsersLock = hazelcastInstance.getCPSubsystem().getLock(LOCKNAME);
+                    onlineUsersLock.lock();
+                    try {
+                        this.clearOnlineUsers();
 
-                Result get = pusher.get("/channels");
-                String message = get.getMessage();
+                        Result get = pusher.get("/channels");
+                        String message = get.getMessage();
 
-                ObjectMapper mapper = JacksonMapperProvider.getMapper();
-                HashMap<String, HashMap<String, Object>> readValue = mapper.readValue(message, HashMap.class);
-                HashMap<String, Object> channels = readValue.get("channels");
+                        ObjectMapper mapper = JacksonMapperProvider.getMapper();
+                        HashMap<String, HashMap<String, Object>> readValue = mapper.readValue(message, HashMap.class);
+                        HashMap<String, Object> channels = readValue.get("channels");
 
-                for (String channel : channels.keySet()) {
-                    this.registerUser(this.getUserFromChannel(channel));
+                        for (String channel : channels.keySet()) {
+                            this.registerUser(this.getUserFromChannel(channel));
+                        }
+
+                        if (maintainLocalListUpToDate) {
+                            // pusher hook maintains the list up to date
+                            onlineUsersUpToDate.set(1);
+                        } else {
+                            // there is NO pusher hook to maintain the list up to date
+                            onlineUsersUpToDate.set(0);
+                        }
+                    } finally {
+                        onlineUsersLock.unlock();
+                    }
                 }
-
-                if (maintainLocalListUpToDate) {
-                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getCPSubsystem().getAtomicLong(UPTODATE_KEY);
-                    onlineUsersUpToDate.set(1);
-                }
-
             } catch (IOException ex) {
                 logger.error("InitOnlineUser", ex);
             }
