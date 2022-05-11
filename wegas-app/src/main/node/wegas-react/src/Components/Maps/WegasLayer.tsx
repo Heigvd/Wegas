@@ -1,7 +1,10 @@
 //Other libs
 import BaseLayer, { Options } from 'ol/layer/Base';
+import TileLayer from 'ol/layer/Tile';
+import TileSource from 'ol/source/Tile';
 // React
 import * as React from 'react';
+import { initializeProjection } from './helpers/proj4js';
 import { mapCTX } from './WegasMap';
 
 interface WegasLayerProps extends Options {
@@ -10,6 +13,14 @@ interface WegasLayerProps extends Options {
 
 export function WegasLayer({ layer }: WegasLayerProps) {
   const { map } = React.useContext(mapCTX);
+
+  const projectionCode = (layer as TileLayer<TileSource>)
+    ?.getSource()
+    ?.getProjection()
+    ?.getCode();
+  if (projectionCode != null) {
+    initializeProjection(projectionCode);
+  }
 
   React.useEffect(() => {
     map?.addLayer(layer);

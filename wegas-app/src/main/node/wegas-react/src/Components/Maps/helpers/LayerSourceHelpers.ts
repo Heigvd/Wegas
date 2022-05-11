@@ -11,12 +11,14 @@ import { fileURL } from '../../../API/files.api';
 import { entityIs } from '../../../data/entities';
 import { PagesContextState } from '../../../data/Stores/pageContextStore';
 import { safeClientScriptEval } from '../../Hooks/useScript';
+import { initializeProjection } from './proj4js';
 
 export function imageObjectToSource(
   source: ImageLayerObject,
   context: UknownValuesObject | undefined,
   state: PagesContextState | undefined,
 ): ImageStatic {
+  initializeProjection(source.source.projection.code);
   return new ImageStatic({
     ...source.source,
     projection: new Projection(source.source.projection),

@@ -20,7 +20,7 @@ import {
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { pagesTranslations } from '../../i18n/pages/pages';
 import { Button } from '../Inputs/Buttons/Button';
-import './helpers/proj4js';
+import { initializeProjection } from './helpers/proj4js';
 
 interface MapContext {
   map?: Map;
@@ -83,6 +83,10 @@ export function WegasMap({
 
   React.useEffect(() => {
     if (mapElementRef.current && displayMap) {
+      if (typeof viewOptions?.projection === 'string') {
+        initializeProjection(viewOptions.projection);
+      }
+
       // create map
       const initialMap = new Map({
         target: mapElementRef.current,
