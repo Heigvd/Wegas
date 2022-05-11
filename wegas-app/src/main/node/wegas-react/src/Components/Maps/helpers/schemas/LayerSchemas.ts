@@ -1,6 +1,6 @@
 import { AvailableSchemas } from '../../../../Editor/Components/FormView';
 import { schemaProps } from '../../../PageComponents/tools/schemaProps';
-import { extentSchema, pointSchema } from './HelperSchemas';
+import { extentSchema, pointSchema, projectionSchema } from './HelperSchemas';
 
 export const wegasImageLayerSchema: AvailableSchemas = {
   type: 'object',
@@ -17,7 +17,7 @@ export const wegasImageLayerSchema: AvailableSchemas = {
             label: 'Projection',
           },
           properties: {
-            code: schemaProps.string({ label: 'code', value: 'xkcd-image' }),
+            code: projectionSchema(),
             units: schemaProps.select({
               label: 'Units',
               values: [
@@ -70,6 +70,36 @@ export const wegasTileLayerSchema: AvailableSchemas = {
   },
 };
 
+export const wegasPredefinedLayerSchema: AvailableSchemas = {
+  type: 'object',
+  properties: {
+    type: schemaProps.hidden({ type: 'string', value: 'PredefinedLayer' }),
+    source: {
+      type: 'object',
+      properties: {
+        type: schemaProps.hidden({ type: 'string', value: 'Tiff' }),
+        normalize: schemaProps.boolean({
+          label: 'Normalize',
+          required: false,
+        }),
+        sources: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              url: schemaProps.scriptPath({ label: 'File' }),
+            },
+          },
+          view: {
+            label: 'Sources',
+            type: 'array',
+          },
+        },
+      },
+    },
+  },
+};
+
 export const wegasVectorLayerSchema: AvailableSchemas = {
   type: 'object',
   properties: {
@@ -91,10 +121,7 @@ export const wegasVectorLayerSchema: AvailableSchemas = {
         required: false,
       }),
     }),
-    sourceProjection: schemaProps.string({
-      label: 'Source projection',
-      required: false,
-    }),
+    sourceProjection: projectionSchema('Source projection'),
   },
 };
 
@@ -102,7 +129,7 @@ export const onLayerReadySchema = schemaProps.code({
   label: 'On layer ready',
   scriptProps: {
     language: 'TypeScript',
-    returnType: ['(layer:any)=>void | undefined'],
+    returnType: ['((layer:any)=>void) | void'],
   },
   value: 'undefined',
 });

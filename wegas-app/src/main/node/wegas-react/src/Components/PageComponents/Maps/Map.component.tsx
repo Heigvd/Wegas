@@ -10,8 +10,6 @@ import {
   ZoomSlider,
   ZoomToExtent,
 } from 'ol/control';
-import TileLayer from 'ol/layer/Tile';
-import OSM from 'ol/source/OSM';
 import { ViewOptions } from 'ol/View';
 import * as React from 'react';
 import { useDeepMemo } from '../../Hooks/useDeepMemo';
@@ -27,6 +25,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
+import { schemaProps } from '../tools/schemaProps';
 
 function isOlControl(control: Control | undefined): control is Control {
   return control != null;
@@ -82,21 +81,21 @@ interface PlayerMapProps extends WegasComponentProps {
   viewOptions?: {
     [P in keyof ViewOptions]: ViewOptions[P] | IScript;
   };
+  debug?: boolean;
+  OSMLayer?: boolean;
 }
 
-const initialLayers = [
-  new TileLayer({
-    source: new OSM(),
-  }),
-];
+const defaultMapOptions: PayerMapOptions = { controls: [] };
 
 export default function PlayerMap({
   children,
   mapOptions: mapProps,
   viewOptions: viewProps,
+  debug,
+  OSMLayer,
 }: PlayerMapProps) {
   const { mapOptions, viewOptions } = useDeepMemo({
-    mapOptions: { ...mapProps, layers: initialLayers },
+    mapOptions: { ...defaultMapOptions, ...mapProps },
     viewOptions: { ...defaultViewOptions, ...viewProps },
   });
   const currentMapOptions = useScriptObjectWithFallback(mapOptions);
@@ -111,7 +110,8 @@ export default function PlayerMap({
     <WegasMap
       mapOptions={computedMapOptions}
       viewOptions={currentViewOptions}
-      debug
+      debug={debug}
+      OSMLayer={OSMLayer}
     >
       {children}
     </WegasMap>
@@ -128,18 +128,23 @@ registerComponent(
     name: 'WegasMap',
     icon: 'map',
     illustration: 'scatter',
-    schema: { mapOptions: mapOptionsSchema, viewOptions: viewOptionsSchema },
+    schema: {
+      mapOptions: mapOptionsSchema,
+      viewOptions: viewOptionsSchema,
+      debug: schemaProps.boolean({ label: 'Debug mode' }),
+      OSMLayer: schemaProps.boolean({ label: 'Insert OSM layer' }),
+    },
     allowedVariables: [],
     getComputedPropsFromVariable: () => ({
       children: [],
     }),
     behaviour: {
       filterChildrenName: [
-        'TileLayer',
-        'Overlay',
-        'ImageLayer',
-        'VectorLayer',
-        'Select',
+        'WegasMapTileLayer',
+        'WegasMapOverlay',
+        'WegasMapImageLayer',
+        'WegasMapVectorLayer',
+        'WegasMapSelect',
       ],
     },
   }),

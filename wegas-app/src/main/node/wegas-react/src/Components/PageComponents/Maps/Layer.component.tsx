@@ -23,7 +23,7 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 type OnLayerReadyFN = (layer: BaseLayer) => void;
 
 interface PlayerLayerProps extends WegasComponentProps {
-  layerSource?: IScript | LayerSourceObject;
+  layerSource?: IScript | VectorLayerObject;
   layerStyle?: IScript | LayerStyleObject;
   onLayerReady?: IScript | OnLayerReadyFN;
 }
@@ -73,6 +73,21 @@ registerComponent(
   pageComponentFactory({
     component: PlayerLayer,
     componentType: 'Maps',
+    name: 'WegasMapVectorLayer',
+    icon: 'map',
+    illustration: 'scatter',
+    schema: {
+      layerSource: wegasVectorLayerSchema,
+      layerStyle: styleObjectSchema,
+      onLayerReady: onLayerReadySchema,
+    },
+  }),
+);
+
+registerComponent(
+  pageComponentFactory({
+    component: PlayerLayer,
+    componentType: 'Maps',
     name: 'WegasMapTileLayer',
     icon: 'map',
     illustration: 'scatter',
@@ -96,39 +111,3 @@ registerComponent(
     },
   }),
 );
-
-registerComponent(
-  pageComponentFactory({
-    component: PlayerLayer,
-    componentType: 'Maps',
-    name: 'WegasMapVectorLayer',
-    icon: 'map',
-    illustration: 'scatter',
-    schema: {
-      layerSource: wegasVectorLayerSchema,
-      layerStyle: styleObjectSchema,
-      onLayerReady: onLayerReadySchema,
-    },
-  }),
-);
-
-// registerComponent(
-//   pageComponentFactory({
-//     component: PlayerLayer,
-//     componentType: 'Maps',
-//     name: 'Layer',
-//     icon: 'map',
-//     illustration: 'scatter',
-//     schema: {
-//       layerType: schemaProps.select({
-//         label: 'Layer type',
-//         values: ['ImageLayer', 'TileLayer', 'VectorLayer'],
-//       }),
-//     },
-//     allowedVariables: [],
-//     getComputedPropsFromVariable: () => ({}),
-//     behaviour: {
-//       filterChildrenName: ['Test'],
-//     },
-//   }),
-// );

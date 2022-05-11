@@ -142,6 +142,10 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
     [onOpen],
   );
 
+  const filteredItems = items.filter(
+    item => item.items == null || item.items.length > 0,
+  );
+
   return (
     <Downshift
       onStateChange={onStateChange}
@@ -203,7 +207,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                 ev.stopPropagation();
                 toggleMenu();
               }}
-              disabled={!adder || items == null || items.length > 0}
+              disabled={items.length === 0}
               className={buttonClassName + ' dropDownButton'}
               noBackground={noBackground}
             />
@@ -227,88 +231,86 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                   {adder}
                 </div>
               )}
-              {items
-                .filter(item => item.items && item.items.length > 0)
-                .map((item: MItem, index: number) => {
-                  const newPath = [...(path ? path : []), index];
-                  const trasher =
-                    deleter && (!deleter.filter || deleter.filter(item)) ? (
-                      <ConfirmButton
-                        icon="trash"
-                        onAction={() => deleter.onDelete(item)}
-                      />
-                    ) : null;
+              {filteredItems.map((item: MItem, index: number) => {
+                const newPath = [...(path ? path : []), index];
+                const trasher =
+                  deleter && (!deleter.filter || deleter.filter(item)) ? (
+                    <ConfirmButton
+                      icon="trash"
+                      onAction={() => deleter.onDelete(item)}
+                    />
+                  ) : null;
 
-                  const isSelected =
-                    selected == null
-                      ? false
-                      : Array.isArray(selected)
-                      ? !deepDifferent(selected[0], item.value)
-                      : !deepDifferent(selected, item.value);
+                const isSelected =
+                  selected == null
+                    ? false
+                    : Array.isArray(selected)
+                    ? !deepDifferent(selected[0], item.value)
+                    : !deepDifferent(selected, item.value);
 
-                  if (Array.isArray(item.items)) {
-                    return (
-                      <div
-                        key={index}
-                        {...(!item.disabled
-                          ? getItemProps({
-                              item: item,
-                              onClick: stopPropagation,
-                            })
-                          : undefined)}
-                        className={
-                          subMenuItemContainer(isSelected, item.disabled) +
-                          classNameOrEmpty(item.className)
-                        }
-                        style={item.style}
-                      >
-                        <DropMenu
-                          onSelect={(v, e) => {
-                            if (!item.noCloseMenu) {
-                              closeMenu();
-                            }
-                            if (onSelect) {
-                              onSelect(v as SelecteDropdMenuItem<T, MItem>, e);
-                            }
-                          }}
-                          items={item.items}
-                          direction={direction === 'right' ? 'left' : 'right'}
-                          label={item.label}
-                          selected={
-                            Array.isArray(selected)
-                              ? selected.slice(1)
-                              : undefined
-                          }
-                          path={newPath}
-                          buttonClassName={childDropMenuButtonStyle}
-                          containerClassName={expandWidth}
-                          openOnHover={openOnHoverChildren}
-                          openOnHoverChildren={openOnHoverChildren}
-                        />
-                        {trasher}
-                      </div>
-                    );
-                  }
+                if (Array.isArray(item.items)) {
                   return (
                     <div
                       key={index}
                       {...(!item.disabled
                         ? getItemProps({
-                            className: itemStyle,
                             item: item,
                             onClick: stopPropagation,
                           })
                         : undefined)}
                       className={
-                        cx(subMenuItemContainer(isSelected, item.disabled)) +
+                        subMenuItemContainer(isSelected, item.disabled) +
                         classNameOrEmpty(item.className)
                       }
+                      style={item.style}
                     >
-                      {item.label}
+                      <DropMenu
+                        onSelect={(v, e) => {
+                          if (!item.noCloseMenu) {
+                            closeMenu();
+                          }
+                          if (onSelect) {
+                            onSelect(v as SelecteDropdMenuItem<T, MItem>, e);
+                          }
+                        }}
+                        items={item.items}
+                        direction={direction === 'right' ? 'left' : 'right'}
+                        label={item.label}
+                        selected={
+                          Array.isArray(selected)
+                            ? selected.slice(1)
+                            : undefined
+                        }
+                        path={newPath}
+                        buttonClassName={childDropMenuButtonStyle}
+                        containerClassName={expandWidth}
+                        openOnHover={openOnHoverChildren}
+                        openOnHoverChildren={openOnHoverChildren}
+                      />
                       {trasher}
                     </div>
                   );
-                })}
+                }
+                return (
+                  <div
+                    key={index}
+                    {...(!item.disabled
+                      ? getItemProps({
+                          className: itemStyle,
+                          item: item,
+                          onClick: stopPropagation,
+                        })
+                      : undefined)}
+                    className={
+                      cx(subMenuItemContainer(isSelected, item.disabled)) +
+                      classNameOrEmpty(item.className)
+                    }
+                  >
+                    {item.label}
+                    {trasher}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

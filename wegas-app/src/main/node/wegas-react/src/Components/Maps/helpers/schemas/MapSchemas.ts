@@ -1,5 +1,5 @@
 import { schemaProps } from '../../../PageComponents/tools/schemaProps';
-import { extentSchema, pointSchema } from './HelperSchemas';
+import { extentSchema, pointSchema, projectionSchema } from './HelperSchemas';
 
 export const viewOptionsSchema = schemaProps.hashlist({
   label: 'View options',
@@ -22,14 +22,15 @@ export const viewOptionsSchema = schemaProps.hashlist({
       label: 'Projection',
       value: {
         prop: 'projection',
-        schema: schemaProps.scriptable({
-          label: 'Projection',
-          scriptProps: {
-            language: 'TypeScript',
-            returnType: ['string'],
-          },
-          literalSchema: schemaProps.string({}),
-        }),
+        schema: projectionSchema('Projection'),
+        // schemaProps.scriptable({
+        //   label: 'Projection',
+        //   scriptProps: {
+        //     language: 'TypeScript',
+        //     returnType: ['string'],
+        //   },
+        //   literalSchema: schemaProps.string({}),
+        // }),
       },
     },
     {

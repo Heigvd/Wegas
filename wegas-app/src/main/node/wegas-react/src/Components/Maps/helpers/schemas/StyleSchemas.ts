@@ -6,6 +6,7 @@ export const fillStyleSchema: (required?: boolean) => AvailableSchemas =
   required => ({
     required,
     type: 'object',
+    view: { label: 'Fill' },
     properties: {
       type: schemaProps.hidden({ type: 'string', value: 'FillStyle' }),
       color: schemaProps.string({ label: 'Color' }),
@@ -16,6 +17,7 @@ export const strokeStyleSchema: (required?: boolean) => AvailableSchemas =
   required => ({
     required,
     type: 'object',
+    view: { label: 'Stroke' },
     properties: {
       type: schemaProps.hidden({ type: 'string', value: 'StrokeStyle' }),
       color: schemaProps.string({ label: 'Color' }),
@@ -60,6 +62,7 @@ export const imageStyleSchema: (required: boolean) => AvailableSchemas =
   required => ({
     required,
     type: 'object',
+    view: { label: 'Image' },
     properties: {
       type: schemaProps.hidden({ type: 'string', value: 'ImageStyle' }),
       opacity: schemaProps.number({ label: 'Opacity' }),
@@ -71,6 +74,7 @@ export const textStyleSchema: (required: boolean) => AvailableSchemas =
   required => ({
     required,
     type: 'object',
+    view: { label: 'Text' },
     properties: {
       type: schemaProps.hidden({ type: 'string', value: 'TextStyle' }),
       font: schemaProps.string({ label: 'Font', required: false }),
@@ -118,7 +122,6 @@ export const styleObjectSchema: AvailableSchemas = {
       returnType: ['StyleObject'],
     },
     literalSchema: schemaProps.hashlist({
-      label: 'Style',
       choices: [
         {
           label: 'Geometry',
