@@ -1,6 +1,5 @@
 import { debounce, DebouncedFunc } from 'lodash-es';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { wlog } from '../../Helper/wegaslog';
 
 /**
  * Hook, debounce a value
