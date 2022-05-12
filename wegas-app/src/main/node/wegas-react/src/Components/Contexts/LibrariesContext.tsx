@@ -119,6 +119,10 @@ export function getModel(reactMonaco: MonacoEditor | null, modelPath: string) {
     : null;
 }
 
+export function getAllModelPath(reactMonaco: MonacoEditor): string[] {
+  return reactMonaco.editor.getModels().map(model => model.uri.toString());
+}
+
 export function createOrUpdateModel(
   reactMonaco: MonacoEditor,
   modelContent: string,
@@ -169,8 +173,11 @@ export interface LibraryWithStatus {
    * persisted - the current state of the library in the server
    */
   persisted: IGameModelContent;
+  monacoPath: string;
+  libraryType: LibraryType;
   modified: boolean;
   conflict: boolean;
+  readOnly?: boolean;
   visibility: IVisibility | undefined;
 }
 
@@ -307,6 +314,8 @@ const setLibrariesState = (
             ...o,
             [k]: {
               persisted: lib,
+              monacoPath: computeLibraryPath(k, librariesType),
+              libraryType: librariesType,
               modified: false,
               conflict: false,
               visibility: lib.visibility,
@@ -322,6 +331,8 @@ const setLibrariesState = (
         if (newState[libraryType][libraryName] == null) {
           newState[libraryType][libraryName] = {
             persisted: library,
+            libraryType: libraryType,
+            monacoPath: computeLibraryPath(libraryName, libraryType),
             modified: false,
             conflict: false,
             visibility: library.visibility,
