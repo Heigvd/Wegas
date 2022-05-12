@@ -1,4 +1,4 @@
-type ObjectColor = string | CanvasPattern | CanvasGradient;
+type ColorStyleObject = string | CanvasPattern | CanvasGradient;
 
 type FeatureGeometryType =
   | 'Point'
@@ -13,12 +13,12 @@ type FeatureGeometryType =
 
 interface FillStyleObject {
   type: 'FillStyle';
-  color: ObjectColor;
+  color: ColorStyleObject;
 }
 
 interface StrokeStyleObject {
   type: 'StrokeStyle';
-  color?: ObjectColor;
+  color?: ColorStyleObject;
   lineCap?: 'butt' | 'round' | 'square';
   lineJoin?: 'bevel' | 'round' | 'miter';
   lineDash?: number[];
@@ -27,19 +27,61 @@ interface StrokeStyleObject {
   width?: number;
 }
 
-interface SharedStyleProperties {
-  rotateWithView: boolean;
-  rotation: number;
-  scale: PointLikeObject;
-  displacement: PointLikeObject;
+interface SharedImageStyleProperties {
+  opacity?: number;
+  rotateWithView?: boolean;
+  rotation?: number;
+  scale?: PointLikeObject | number;
+  displacement?: PointLikeObject;
 }
 
-interface ImageStyleObject extends SharedStyleProperties {
-  type: 'ImageStyle';
-  opacity: number;
+interface CircleStyleObject extends SharedImageStyleProperties {
+  type: 'CircleStyle';
+  fill?: FillStyleObject;
+  stroke?: StrokeStyleObject;
+  radius: number;
 }
 
-interface TextStyleObject extends SharedStyleProperties {
+interface RegularShapeStyleObject
+  extends Omit<CircleStyleObject, 'type' | 'radius'> {
+  type: 'RegularShape';
+  points: number;
+  radius?: number;
+  radius1?: number;
+  radius2?: number;
+  angle?: number;
+}
+
+type AnchorUnitsStyleObject = 'fraction' | 'pixels';
+type AnchorPositionStyleObject =
+  | 'bottom-left'
+  | 'bottom-right'
+  | 'top-left'
+  | 'top-right';
+type CrossOriginStyleObject = 'anonymous' | 'use-credentials';
+
+interface IconStyleObject extends SharedImageStyleProperties {
+  type: 'IconStyle';
+  achor?: PointLikeObject;
+  anchorOrigin?: AnchorPositionStyleObject;
+  anchorXUnits?: AnchorUnitsStyleObject;
+  anchorYUnits?: AnchorUnitsStyleObject;
+  color?: string;
+  crossOrigin?: CrossOriginStyleObject;
+  img?: HTMLImageElement | HTMLCanvasElement;
+  offset?: PointLikeObject;
+  offsetOrigin?: PointLikeObject;
+  size?: PointLikeObject;
+  imgSize?: PointLikeObject;
+  src?: string;
+}
+
+type ImageStyleObject =
+  | CircleStyleObject
+  | RegularShapeStyleObject
+  | IconStyleObject;
+
+interface TextStyleObject extends Partial<SharedImageStyleProperties> {
   type: 'TextStyle';
   font?: 'string';
   maxAngle?: number;
@@ -103,7 +145,9 @@ type RendererFunction = (
 ) => void;
 
 type StyleFunction = (
-  feature: object,
+  feature: any,
   resolution: number,
 ) => LayerStyleObject | LayerStyleObject[];
 type StyleObject = LayerStyleObject | LayerStyleObject[] | StyleFunction;
+
+type OnLayerReadyFN = ((layer: any) => void) | void;

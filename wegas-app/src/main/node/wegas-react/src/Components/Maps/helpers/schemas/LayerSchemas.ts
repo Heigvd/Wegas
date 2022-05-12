@@ -130,6 +130,6 @@ export const onLayerReadySchema = schemaProps.code({
   required: false,
   scriptProps: {
     language: 'TypeScript',
-    returnType: ['((layer:any)=>void) | void'],
+    returnType: ['OnLayerReadyFN'],
   },
 });

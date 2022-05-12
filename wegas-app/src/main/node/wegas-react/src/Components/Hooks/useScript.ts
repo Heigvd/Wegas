@@ -482,7 +482,10 @@ function transpileToFunction(
   // such a statement must be added
   const fnBody = injectReturn ? insertReturn(jsScript) : jsScript;
   //
-  const fnScript = 'eval = () => {throw new Error("Eval is evil");};return (function(){"use strict";undefined;' + fnBody + "})();";
+  const fnScript =
+    'eval = () => {throw new Error("Eval is evil");};return (function(){"use strict";undefined;' +
+    fnBody +
+    '})();';
 
   // hide forbidden object by overriding them with parameters
   // on call, provide undefined arguments

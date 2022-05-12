@@ -3909,4 +3909,5 @@ export const EPSGCodes = [
   'EPSG:32766',
   'EPSG:900913',
   'EPSG:900914',
+  'HEIG-VD',
 ];

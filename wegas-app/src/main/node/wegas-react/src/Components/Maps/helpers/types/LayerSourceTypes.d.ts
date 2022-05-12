@@ -1,19 +1,4 @@
 //////////// Tile layer
-interface OSMSourceObject {
-  type: 'OSM';
-}
-
-interface BingSourceObject {
-  type: 'Bing';
-  key: string;
-  imagerySet:
-    | 'RoadOnDemand'
-    | 'Aerial'
-    | 'AerialWithLabelsOnDemand'
-    | 'CanvasDark'
-    | 'OrdnanceSurvey';
-}
-
 interface TiffSourceObject {
   type: 'Tiff';
   normalize?: boolean;
@@ -22,7 +7,7 @@ interface TiffSourceObject {
 
 interface TileLayerObject {
   type: 'TileLayer';
-  source: OSMSourceObject | BingSourceObject | TiffSourceObject;
+  source: TiffSourceObject;
 }
 
 ////////////////////////////////////////////////////////////////////////////

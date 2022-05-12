@@ -1,12 +1,50 @@
 import { FeatureLike } from 'ol/Feature';
-import { Fill, Image, Stroke, Style, Text } from 'ol/style';
+import {
+  Circle,
+  Fill,
+  Icon,
+  Image,
+  RegularShape,
+  Stroke,
+  Style,
+  Text,
+} from 'ol/style';
 import { StyleLike } from 'ol/style/Style';
 
 function strokeObjectToOLStroke(stroke: StrokeStyleObject | undefined) {
-  return stroke != null ? new Stroke(stroke) : undefined;
+  return stroke != null && Object.keys(stroke).length > 1
+    ? new Stroke(stroke)
+    : undefined;
 }
 function fillObjectToOLFill(fill: FillStyleObject | undefined) {
-  return fill != null ? new Fill(fill) : undefined;
+  return fill != null && Object.keys(fill).length > 1
+    ? new Fill(fill)
+    : undefined;
+}
+
+function imageObjectToOLImage(
+  image: ImageStyleObject | undefined,
+): Image | undefined {
+  if (image == null) {
+    return undefined;
+  } else {
+    switch (image.type) {
+      case 'CircleStyle':
+        return new Circle({
+          ...image,
+          stroke: strokeObjectToOLStroke(image.stroke),
+          fill: fillObjectToOLFill(image.fill),
+        });
+      case 'IconStyle':
+        return new Icon(image);
+      case 'RegularShape':
+        return new RegularShape({
+          ...image,
+          stroke: strokeObjectToOLStroke(image.stroke),
+          fill: fillObjectToOLFill(image.fill),
+        });
+    }
+  }
 }
 
 function styleObjectToOLStyle(style?: LayerStyleObject): Style | undefined {
@@ -19,7 +57,7 @@ function styleObjectToOLStyle(style?: LayerStyleObject): Style | undefined {
     return new Style({
       geometry: style.geometry,
       fill: fillObjectToOLFill(style.fill),
-      image: style.image ? new Image(style.image) : undefined,
+      image: imageObjectToOLImage(style.image),
       // renderer:style.renderer ? ...
       // hitDetectionRenderer: style.hitDetectionRenderer ? ...
       stroke: strokeObjectToOLStroke(style.stroke),

@@ -1,15 +1,14 @@
 import { AvailableSchemas } from '../../../../Editor/Components/FormView';
 import { schemaProps } from '../../../PageComponents/tools/schemaProps';
-import { extentSchema, pointSchema } from './HelperSchemas';
+import { extentSchema } from './HelperSchemas';
 
 export const fillStyleSchema: (required?: boolean) => AvailableSchemas =
   required => ({
     required,
     type: 'object',
-    view: { label: 'Fill' },
     properties: {
       type: schemaProps.hidden({ type: 'string', value: 'FillStyle' }),
-      color: schemaProps.string({ label: 'Color' }),
+      color: schemaProps.string({ label: 'Fill color' }),
     },
   });
 
@@ -48,15 +47,15 @@ export const strokeStyleSchema: (required?: boolean) => AvailableSchemas =
     },
   });
 
-const sharedStyleSchema: Record<string, AvailableSchemas> = {
-  rotateWithView: schemaProps.boolean({
-    label: 'Rotate with view',
-    required: true,
-  }),
-  rotation: schemaProps.number({ label: 'Rotation', required: true }),
-  scale: pointSchema('Scale', true),
-  displacement: pointSchema('Displacement', true),
-};
+// const sharedStyleSchema: Record<string, AvailableSchemas> = {
+//   opacity: schemaProps.number({ label: 'Opacity' }),
+//   rotateWithView: schemaProps.boolean({
+//     label: 'Rotate with view',
+//   }),
+//   rotation: schemaProps.number({ label: 'Rotation' }),
+//   scale: pointSchema('Scale', false),
+//   displacement: pointSchema('Displacement', false),
+// };
 
 export const imageStyleSchema: (required: boolean) => AvailableSchemas =
   required => ({
@@ -64,9 +63,11 @@ export const imageStyleSchema: (required: boolean) => AvailableSchemas =
     type: 'object',
     view: { label: 'Image' },
     properties: {
-      type: schemaProps.hidden({ type: 'string', value: 'ImageStyle' }),
-      opacity: schemaProps.number({ label: 'Opacity' }),
-      ...sharedStyleSchema,
+      type: schemaProps.hidden({ type: 'string', value: 'CircleStyle' }),
+      fill: fillStyleSchema(),
+      stroke: strokeStyleSchema(),
+      radius: schemaProps.number({ label: 'Radius', required: true }),
+      // ...sharedStyleSchema,
     },
   });
 
@@ -108,7 +109,7 @@ export const textStyleSchema: (required: boolean) => AvailableSchemas =
       fill: fillStyleSchema(false),
       stroke: strokeStyleSchema(false),
       padding: extentSchema('Padding', false),
-      ...sharedStyleSchema,
+      // ...sharedStyleSchema,
     },
   });
 

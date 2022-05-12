@@ -78,6 +78,7 @@
     "proj4": "^2.8.0",
     "pusher-js": "^5.1.1",
     "react": "^17.0.2",
+    "react-async-hook": "^4.0.0",
     "react-chartjs-2": "^4.0.1",
     "react-dnd": "^10.0.2",
     "react-dnd-html5-backend": "^10.0.2",
