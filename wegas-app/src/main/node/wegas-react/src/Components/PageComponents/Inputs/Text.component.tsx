@@ -7,7 +7,8 @@ import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useDebouncedOnChange } from '../../Hooks/useDebounce';
 import { useScript } from '../../Hooks/useScript';
-import HTMLEditor from '../../HTML/HTMLEditor';
+// import HTMLEditor from '../../HTML/HTMLEditor';
+import HTMLEditorMk2 from '../../HTML/HTMLEditorMk2';
 import {
   useOnCancelAction,
   Validate,
@@ -90,7 +91,7 @@ function PlayerTextInput({
     <Validate value={value} onValidate={onChange} onCancel={handleOnCancel}>
       {(value, onChange) => {
         return (
-          <HTMLEditor
+          <HTMLEditorMk2
             id={id}
             value={String(value)}
             onChange={onChange}
@@ -104,7 +105,7 @@ function PlayerTextInput({
       }}
     </Validate>
   ) : (
-    <HTMLEditor
+    <HTMLEditorMk2
       id={id}
       value={String(currentValue)}
       onChange={debouncedOnChange}
