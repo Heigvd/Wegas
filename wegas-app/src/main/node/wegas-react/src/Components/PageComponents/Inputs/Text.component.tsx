@@ -5,6 +5,7 @@ import { Player } from '../../../data/selectors';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { useDebouncedOnChange } from '../../Hooks/useDebounce';
 import { useScript } from '../../Hooks/useScript';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import {
@@ -81,6 +82,8 @@ function PlayerTextInput({
     [handleOnChange, text],
   );
 
+  const {currentValue, debouncedOnChange } = useDebouncedOnChange(value, onChange, 400);
+
   return text == null ? (
     <UncompleteCompMessage pageId={pageId} path={path} />
   ) : validator ? (
@@ -103,8 +106,8 @@ function PlayerTextInput({
   ) : (
     <HTMLEditor
       id={id}
-      value={value}
-      onChange={onChange}
+      value={String(currentValue)}
+      onChange={debouncedOnChange}
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
       placeholder={placeholderText}
