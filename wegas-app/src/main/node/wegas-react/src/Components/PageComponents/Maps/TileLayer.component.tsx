@@ -1,6 +1,7 @@
 import TileLayer from 'ol/layer/Tile';
 import GeoTIFF from 'ol/source/GeoTIFF';
 import * as React from 'react';
+import { fileURL } from '../../../API/files.api';
 import { useScript } from '../../Hooks/useScript';
 import {
   onLayerReadySchema,
@@ -35,7 +36,7 @@ export default function PlayerTileLayer({
     if (source != null && currentURLs != null) {
       const sources = currentURLs.map(url => {
         return {
-          url,
+          url: fileURL(url),
         };
       });
       return new TileLayer({ source: new GeoTIFF({ sources }) });

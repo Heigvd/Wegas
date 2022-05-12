@@ -2,6 +2,7 @@ import ImageLayer from 'ol/layer/Image';
 import { Projection } from 'ol/proj';
 import ImageStatic from 'ol/source/ImageStatic';
 import * as React from 'react';
+import { fileURL } from '../../../API/files.api';
 import { useScript } from '../../Hooks/useScript';
 import {
   onLayerReadySchema,
@@ -28,7 +29,7 @@ export default function PlayerImageLayer({
 }: PlayerImageLayerProps) {
   const onLayerReadyFn = useScript<OnLayerReadyFN>(onLayerReady);
   const source = layerSource?.source;
-  const currentURL = useScript<string>(source?.url);
+  const currentURL = useScript<string | undefined>(source?.url);
 
   const currentOLLayer = React.useMemo(() => {
     if (source != null && currentURL != null) {
@@ -36,7 +37,7 @@ export default function PlayerImageLayer({
         source: new ImageStatic({
           ...source,
           projection: new Projection(source.projection),
-          url: currentURL,
+          url: fileURL(currentURL),
         }),
       });
     } else {

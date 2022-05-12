@@ -10,6 +10,7 @@ import {
   Text,
 } from 'ol/style';
 import { StyleLike } from 'ol/style/Style';
+import { fileURL } from '../../../API/files.api';
 
 function strokeObjectToOLStroke(stroke: StrokeStyleObject | undefined) {
   return stroke != null && Object.keys(stroke).length > 1
@@ -36,7 +37,10 @@ function imageObjectToOLImage(
           fill: fillObjectToOLFill(image.fill),
         });
       case 'IconStyle':
-        return new Icon(image);
+        return new Icon({
+          ...image,
+          src: image.src ? fileURL(image.src) : undefined,
+        });
       case 'RegularShape':
         return new RegularShape({
           ...image,
