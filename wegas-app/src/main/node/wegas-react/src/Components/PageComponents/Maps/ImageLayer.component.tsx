@@ -1,0 +1,72 @@
+import ImageLayer from 'ol/layer/Image';
+import { Projection } from 'ol/proj';
+import ImageStatic from 'ol/source/ImageStatic';
+import * as React from 'react';
+import { useScript } from '../../Hooks/useScript';
+import {
+  onLayerReadySchema,
+  wegasImageLayerSchema,
+} from '../../Maps/helpers/schemas/LayerSchemas';
+import { WegasLayer } from '../../Maps/WegasLayer';
+import { UncompleteCompMessage } from '../../UncompleteCompMessage';
+import {
+  pageComponentFactory,
+  registerComponent,
+} from '../tools/componentFactory';
+import { WegasComponentProps } from '../tools/EditableComponent';
+
+interface PlayerImageLayerProps extends WegasComponentProps {
+  layerSource?: ImageLayerObject;
+  onLayerReady?: IScript;
+}
+
+export default function PlayerImageLayer({
+  layerSource,
+  onLayerReady,
+  pageId,
+  path,
+}: PlayerImageLayerProps) {
+  const onLayerReadyFn = useScript<OnLayerReadyFN>(onLayerReady);
+  const source = layerSource?.source;
+  const currentURL = useScript<string>(source?.url);
+
+  const currentOLLayer = React.useMemo(() => {
+    if (source != null && currentURL != null) {
+      return new ImageLayer({
+        source: new ImageStatic({
+          ...source,
+          projection: new Projection(source.projection),
+          url: currentURL,
+        }),
+      });
+    } else {
+      return undefined;
+    }
+  }, [currentURL, source]);
+
+  React.useEffect(() => {
+    if (onLayerReadyFn != null && currentOLLayer != null) {
+      onLayerReadyFn(currentOLLayer);
+    }
+  }, [currentOLLayer, onLayerReadyFn]);
+
+  if (currentOLLayer == null) {
+    return <UncompleteCompMessage pageId={pageId} path={path} />;
+  } else {
+    return <WegasLayer layer={currentOLLayer} />;
+  }
+}
+
+registerComponent(
+  pageComponentFactory({
+    component: PlayerImageLayer,
+    componentType: 'Maps',
+    name: 'WegasMapImageLayer',
+    icon: 'map',
+    illustration: 'scatter',
+    schema: {
+      layerSource: wegasImageLayerSchema,
+      onLayerReady: onLayerReadySchema,
+    },
+  }),
+);
