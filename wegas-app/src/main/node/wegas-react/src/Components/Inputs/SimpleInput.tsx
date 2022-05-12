@@ -1,7 +1,7 @@
 import { css, CSSObject } from '@emotion/css';
-import { debounce } from 'lodash-es';
 import * as React from 'react';
 import { classNameOrEmpty } from '../../Helper/className';
+import { useDebouncedOnChange } from '../Hooks/useDebounce';
 import { themeVar } from '../Theme/ThemeVars';
 
 export const inputDefaultCSS = {
@@ -117,19 +117,10 @@ export function SimpleInput({
   onFocus,
   fullWidth,
   inputType = 'text',
-  debouncingTime = 100,
+  debouncingTime = 400,
 }: SimpleInputProps) {
-  const isDebouncingRef = React.useRef(false);
-  const cancelDebouncedRef = React.useRef(() => {});
   const inputRef = React.useRef<HTMLInputElement>(null);
   const textAeraRef = React.useRef<HTMLTextAreaElement>(null);
-  const [currentValue, setCurrentValue] = React.useState(value);
-
-  React.useEffect(() => {
-    if (!isDebouncingRef.current) {
-      setCurrentValue(value);
-    }
-  }, [value]);
 
   React.useEffect(() => {
     if (autoFocus) {
@@ -138,34 +129,18 @@ export function SimpleInput({
     }
   }, [autoFocus]);
 
-  const debouncedOnChange = React.useCallback(
-    (value: string) => {
-      isDebouncingRef.current = true;
-      cancelDebouncedRef.current();
-      const debouncedFN = debounce((value: string) => {
-        onChange && onChange(value);
-        isDebouncingRef.current = false;
-      }, debouncingTime);
-      debouncedFN(value);
-      cancelDebouncedRef.current = debouncedFN.cancel;
-    },
-    [debouncingTime, onChange],
+  const { currentValue, debouncedOnChange, flush } = useDebouncedOnChange(
+    value,
+    onChange,
+    debouncingTime,
   );
 
-  const onInputChange = (
-    ev:
-      | React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-      | React.FocusEvent<HTMLTextAreaElement | HTMLInputElement>,
-  ) => {
-    const value = ev.currentTarget.value;
-    const type = ev.type;
-    setCurrentValue(value);
-    if (type === 'change') {
-      debouncedOnChange(value);
-    } else {
-      onChange && onChange(value);
-    }
-  };
+  const onInputChange = React.useCallback(
+    (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      debouncedOnChange(ev.currentTarget.value),
+    [debouncedOnChange],
+  );
+
   if (typeof rows === 'number') {
     return (
       <textarea
@@ -177,7 +152,7 @@ export function SimpleInput({
         rows={rows}
         onChange={onInputChange}
         placeholder={placeholder}
-        onBlur={onInputChange}
+        onBlur={flush}
         disabled={disabled}
         readOnly={readOnly}
         autoComplete={autoComplete ? 'on' : 'off'}
@@ -195,7 +170,7 @@ export function SimpleInput({
       value={undefToEmpty(currentValue)}
       onChange={onInputChange}
       placeholder={placeholder}
-      onBlur={onInputChange}
+      onBlur={flush}
       disabled={disabled}
       readOnly={readOnly}
       autoComplete={autoComplete ? 'on' : 'off'}
