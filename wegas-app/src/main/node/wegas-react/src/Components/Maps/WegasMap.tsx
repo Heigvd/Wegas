@@ -82,11 +82,13 @@ export function WegasMap({
   }, [OSMSourcesAllowed]);
 
   React.useEffect(() => {
-    if (mapElementRef.current && displayMap) {
-      if (typeof viewOptions?.projection === 'string') {
-        initializeProjection(viewOptions.projection);
-      }
+    if (typeof viewOptions?.projection === 'string') {
+      initializeProjection(viewOptions.projection);
+    }
+  }, [viewOptions?.projection]);
 
+  React.useEffect(() => {
+    if (mapElementRef.current && displayMap) {
       // create map
       const initialMap = new Map({
         target: mapElementRef.current,
@@ -146,7 +148,7 @@ export function WegasMap({
         initialMap.dispose();
       };
     }
-  }, [OSMLayer, displayMap, debug, mapOptions, viewOptions]);
+  }, [OSMLayer, debug, displayMap, mapOptions, viewOptions]);
 
   if (!displayMap) {
     return (

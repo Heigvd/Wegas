@@ -14,13 +14,15 @@ interface WegasLayerProps extends Options {
 export function WegasLayer({ layer }: WegasLayerProps) {
   const { map } = React.useContext(mapCTX);
 
-  const projectionCode = (layer as TileLayer<TileSource>)
-    ?.getSource()
-    ?.getProjection()
-    ?.getCode();
-  if (projectionCode != null) {
-    initializeProjection(projectionCode);
-  }
+  React.useEffect(() => {
+    const projectionCode = (layer as TileLayer<TileSource>)
+      ?.getSource()
+      ?.getProjection()
+      ?.getCode();
+    if (projectionCode != null) {
+      initializeProjection(projectionCode);
+    }
+  }, [layer]);
 
   React.useEffect(() => {
     map?.addLayer(layer);
