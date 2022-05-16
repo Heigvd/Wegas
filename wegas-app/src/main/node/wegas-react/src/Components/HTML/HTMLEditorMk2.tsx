@@ -412,6 +412,7 @@ export default function HTMLEditorMk2({
   return (
       <QuillReact
         value='some value'
+        onChange={onEditorChanges}
       />
     // <div
     //   className={editorStyle + classNameOrEmpty(className)}
