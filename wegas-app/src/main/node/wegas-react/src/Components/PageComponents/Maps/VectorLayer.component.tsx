@@ -1,5 +1,6 @@
 import GeoJSON from 'ol/format/GeoJSON';
 import BaseLayer from 'ol/layer/Base';
+import { Options } from 'ol/layer/BaseVector';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import osmtogeojson from 'osmtogeojson';
@@ -7,12 +8,14 @@ import * as React from 'react';
 import { useAsync } from 'react-async-hook';
 import { fileURL } from '../../../API/files.api';
 import { entityIs } from '../../../data/entities';
+import { useDeepMemo } from '../../Hooks/useDeepMemo';
 import { useScript, useScriptObjectWithFallback } from '../../Hooks/useScript';
 import { TumbleLoader } from '../../Loader';
 import { styleSourceToOlStyle } from '../../Maps/helpers/LayerStyleHelpers';
 import {
   onLayerReadySchema,
-  wegasVectorLayerSchema,
+  wegasVectorLayerPropsSchema,
+  wegasVectorLayerSourceSchema,
 } from '../../Maps/helpers/schemas/LayerSchemas';
 import { styleObjectSchema } from '../../Maps/helpers/schemas/StyleSchemas';
 import { WegasLayer } from '../../Maps/WegasLayer';
@@ -36,12 +39,14 @@ async function fetchSource(
 type OnLayerReadyFN = ((layer: BaseLayer) => void) | undefined;
 
 interface PlayerVectorLayerProps extends WegasComponentProps {
-  layerSource?: VectorLayerObject;
+  layerProps?: IScript | Omit<Options<VectorSource>, 'source' | 'style'>;
+  layerSource?: VectorLayerSourceObject;
   layerStyle?: IScript | LayerStyleObject;
   onLayerReady?: IScript;
 }
 
 export default function PlayerVectorLayer({
+  layerProps,
   layerSource,
   layerStyle,
   onLayerReady,
@@ -52,7 +57,12 @@ export default function PlayerVectorLayer({
   const { projection } = React.useContext(mapCTX);
 
   const onLayerReadyFn = useScript<OnLayerReadyFN>(onLayerReady);
-  const currentLayerProps = useScriptObjectWithFallback({ layerStyle });
+  const scriptableProps = useDeepMemo({
+    currentLayerStyle: layerStyle,
+    currentLayerProps: layerProps,
+  });
+  const computedProps = useScriptObjectWithFallback(scriptableProps);
+  const { currentLayerProps, currentLayerStyle } = computedProps;
 
   const source = layerSource?.source;
 
@@ -97,13 +107,15 @@ export default function PlayerVectorLayer({
     if (vectorSource != null) {
       return new VectorLayer({
         source: vectorSource,
-        style: styleSourceToOlStyle(currentLayerProps.layerStyle),
+        style: styleSourceToOlStyle(currentLayerStyle),
+        ...currentLayerProps,
       });
     }
     return null;
   }, [
     asyncData.result,
-    currentLayerProps.layerStyle,
+    currentLayerProps,
+    currentLayerStyle,
     layerSource,
     pathOrData,
     projection,
@@ -134,7 +146,8 @@ registerComponent(
     icon: 'map',
     illustration: 'scatter',
     schema: {
-      layerSource: wegasVectorLayerSchema,
+      layerProps: wegasVectorLayerPropsSchema,
+      layerSource: wegasVectorLayerSourceSchema,
       layerStyle: styleObjectSchema,
       onLayerReady: onLayerReadySchema,
     },

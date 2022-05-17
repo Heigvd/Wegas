@@ -5,7 +5,7 @@ interface TiffSourceObject {
   sources: { url: IScript }[];
 }
 
-interface TileLayerObject {
+interface TileLayerSourceObject {
   type: 'TileLayer';
   source: TiffSourceObject;
 }
@@ -25,7 +25,7 @@ interface StaticSourceObject {
   imageSize: PointLikeObject;
 }
 
-interface ImageLayerObject {
+interface ImageLayerSourceObject {
   type: 'ImageLayer';
   source: StaticSourceObject;
 }
@@ -34,11 +34,32 @@ interface ImageLayerObject {
 
 //////////// Vector layer
 
-interface VectorLayerObject {
+interface VectorLayerSourceObject {
   type: 'VectorLayer';
   dataType: 'OSM' | 'GeoJSON';
   source: IScript | string;
   sourceProjection?: string;
 }
 
-type LayerSourceObject = VectorLayerObject | ImageLayerObject | TileLayerObject;
+type LayerSourceObject =
+  | VectorLayerSourceObject
+  | ImageLayerSourceObject
+  | TileLayerSourceObject;
+
+interface VectorLayerProps {
+  className?: string;
+  opacity?: number;
+  visible?: boolean;
+  extent?: PointLikeObject;
+  zIndex?: number;
+  minResolution?: number;
+  maxResolution?: number;
+  minZoom?: number;
+  maxZoom?: number;
+  renderOrder?: (featureA: any, featureB: any) => number;
+  renderBuffer?: number;
+  declutter?: boolean;
+  background?: string;
+  updateWhileAnimating?: boolean;
+  updateWhileInteracting?: boolean;
+}

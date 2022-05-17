@@ -2,7 +2,7 @@ import { AvailableSchemas } from '../../../../Editor/Components/FormView';
 import { schemaProps } from '../../../PageComponents/tools/schemaProps';
 import { extentSchema, pointSchema, projectionSchema } from './HelperSchemas';
 
-export const wegasImageLayerSchema: AvailableSchemas = {
+export const wegasImageLayerSourceSchema: AvailableSchemas = {
   type: 'object',
   properties: {
     type: schemaProps.hidden({ type: 'string', value: 'ImageLayer' }),
@@ -40,7 +40,7 @@ export const wegasImageLayerSchema: AvailableSchemas = {
   },
 };
 
-export const wegasTileLayerSchema: AvailableSchemas = {
+export const wegasTileLayerSourceSchema: AvailableSchemas = {
   type: 'object',
   properties: {
     type: schemaProps.hidden({ type: 'string', value: 'TileLayer' }),
@@ -70,7 +70,7 @@ export const wegasTileLayerSchema: AvailableSchemas = {
   },
 };
 
-export const wegasPredefinedLayerSchema: AvailableSchemas = {
+export const wegasPredefinedLayerSourceSchema: AvailableSchemas = {
   type: 'object',
   properties: {
     type: schemaProps.hidden({ type: 'string', value: 'PredefinedLayer' }),
@@ -100,7 +100,7 @@ export const wegasPredefinedLayerSchema: AvailableSchemas = {
   },
 };
 
-export const wegasVectorLayerSchema: AvailableSchemas = {
+export const wegasVectorLayerSourceSchema: AvailableSchemas = {
   type: 'object',
   properties: {
     type: schemaProps.hidden({ type: 'string', value: 'VectorLayer' }),
@@ -124,6 +124,117 @@ export const wegasVectorLayerSchema: AvailableSchemas = {
     sourceProjection: projectionSchema('Source projection'),
   },
 };
+
+export const wegasVectorLayerPropsSchema: AvailableSchemas =
+  schemaProps.scriptable({
+    label: 'Layer properties',
+    scriptProps: {
+      language: 'TypeScript',
+      returnType: ['VectorLayerProps'],
+    },
+    literalSchema: schemaProps.hashlist({
+      choices: [
+        {
+          label: 'Classname',
+          value: {
+            prop: 'classname',
+            schema: schemaProps.string({}),
+          },
+        },
+        {
+          label: 'Opacity',
+          value: {
+            prop: 'opacity',
+            schema: schemaProps.number({ value: 1 }),
+          },
+        },
+        {
+          label: 'Visible',
+          value: {
+            prop: 'visible',
+            schema: schemaProps.boolean({ value: true }),
+          },
+        },
+        {
+          label: 'Extent',
+          value: {
+            prop: 'extent',
+            schema: extentSchema(),
+          },
+        },
+        {
+          label: 'Z-Index',
+          value: {
+            prop: 'zIndex',
+            schema: schemaProps.number({}),
+          },
+        },
+        {
+          label: 'Min resolution',
+          value: {
+            prop: 'minResolution',
+            schema: schemaProps.number({}),
+          },
+        },
+        {
+          label: 'Max resolution',
+          value: {
+            prop: 'maxResolution',
+            schema: schemaProps.number({}),
+          },
+        },
+        {
+          label: 'Min zoom',
+          value: {
+            prop: 'minZoom',
+            schema: schemaProps.number({}),
+          },
+        },
+        {
+          label: 'Max zoom',
+          value: {
+            prop: 'maxZoom',
+            schema: schemaProps.number({}),
+          },
+        },
+        {
+          label: 'Render buffer',
+          value: {
+            prop: 'renderBuffer',
+            schema: schemaProps.number({ value: 100 }),
+          },
+        },
+        {
+          label: 'Declutter',
+          value: {
+            prop: 'declutter',
+            schema: schemaProps.boolean({}),
+          },
+        },
+        {
+          label: 'Background color',
+          value: {
+            prop: 'background',
+            schema: schemaProps.string({}),
+          },
+        },
+        {
+          label: 'Update while animating',
+          value: {
+            prop: 'updateWhileAnimating',
+            schema: schemaProps.boolean({ value: false }),
+          },
+        },
+        {
+          label: 'Update while interacting',
+          value: {
+            prop: 'updateWhileInteracting',
+            schema: schemaProps.boolean({ value: false }),
+          },
+        },
+      ],
+    }),
+  });
 
 export const onLayerReadySchema = schemaProps.code({
   label: 'On layer ready',
