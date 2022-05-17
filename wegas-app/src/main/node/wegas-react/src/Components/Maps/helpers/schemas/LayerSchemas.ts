@@ -130,63 +130,63 @@ const sharedLayerProps = [
     label: 'Classname',
     value: {
       prop: 'classname',
-      schema: schemaProps.string({}),
+      schema: schemaProps.string({ label: 'Classname' }),
     },
   },
   {
     label: 'Opacity',
     value: {
       prop: 'opacity',
-      schema: schemaProps.number({ value: 1 }),
+      schema: schemaProps.number({ value: 1, label: 'Opacity' }),
     },
   },
   {
     label: 'Visible',
     value: {
       prop: 'visible',
-      schema: schemaProps.boolean({ value: true }),
+      schema: schemaProps.boolean({ value: true, label: 'Visible' }),
     },
   },
   {
     label: 'Extent',
     value: {
       prop: 'extent',
-      schema: extentSchema(),
+      schema: extentSchema('Extent'),
     },
   },
   {
     label: 'Z-Index',
     value: {
       prop: 'zIndex',
-      schema: schemaProps.number({}),
+      schema: schemaProps.number({ label: 'Z-Index' }),
     },
   },
   {
     label: 'Min resolution',
     value: {
       prop: 'minResolution',
-      schema: schemaProps.number({}),
+      schema: schemaProps.number({ label: 'Min resolution' }),
     },
   },
   {
     label: 'Max resolution',
     value: {
       prop: 'maxResolution',
-      schema: schemaProps.number({}),
+      schema: schemaProps.number({ label: 'Max resolution' }),
     },
   },
   {
     label: 'Min zoom',
     value: {
       prop: 'minZoom',
-      schema: schemaProps.number({}),
+      schema: schemaProps.number({ label: 'Min zoom' }),
     },
   },
   {
     label: 'Max zoom',
     value: {
       prop: 'maxZoom',
-      schema: schemaProps.number({}),
+      schema: schemaProps.number({ label: 'Max zoom' }),
     },
   },
 ];
@@ -205,35 +205,41 @@ export const wegasVectorLayerPropsSchema: AvailableSchemas =
           label: 'Render buffer',
           value: {
             prop: 'renderBuffer',
-            schema: schemaProps.number({ value: 100 }),
+            schema: schemaProps.number({ value: 100, label: 'Render buffer' }),
           },
         },
         {
           label: 'Declutter',
           value: {
             prop: 'declutter',
-            schema: schemaProps.boolean({}),
+            schema: schemaProps.boolean({ label: 'Declutter' }),
           },
         },
         {
           label: 'Background color',
           value: {
             prop: 'background',
-            schema: schemaProps.string({}),
+            schema: schemaProps.string({ label: 'Background color' }),
           },
         },
         {
           label: 'Update while animating',
           value: {
             prop: 'updateWhileAnimating',
-            schema: schemaProps.boolean({ value: false }),
+            schema: schemaProps.boolean({
+              value: false,
+              label: 'Update while animating',
+            }),
           },
         },
         {
           label: 'Update while interacting',
           value: {
             prop: 'updateWhileInteracting',
-            schema: schemaProps.boolean({ value: false }),
+            schema: schemaProps.boolean({
+              value: false,
+              label: 'Update while interacting',
+            }),
           },
         },
       ],
@@ -266,14 +272,17 @@ export const wegasTileLayerPropsSchema: AvailableSchemas =
           label: 'Preload',
           value: {
             prop: 'preload',
-            schema: schemaProps.number({ value: 0 }),
+            schema: schemaProps.number({ value: 0, label: 'Preload' }),
           },
         },
         {
           label: 'Use interim tiles on error',
           value: {
             prop: 'useInterimTilesOnError',
-            schema: schemaProps.boolean({ value: true }),
+            schema: schemaProps.boolean({
+              value: true,
+              label: 'Use interim tiles on error',
+            }),
           },
         },
       ],
