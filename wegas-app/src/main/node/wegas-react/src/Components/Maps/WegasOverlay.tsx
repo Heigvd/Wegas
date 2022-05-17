@@ -1,5 +1,6 @@
 //Other libs
 import { Overlay } from 'ol';
+import { Coordinate } from 'ol/coordinate';
 import * as Easing from 'ol/easing';
 import { Options, PanIntoViewOptions } from 'ol/Overlay';
 // React
@@ -23,8 +24,13 @@ export interface WegasOverlayProps extends Options {
   /**
    * A function that returns if the overlay can't be placed on feature
    * if true, the overlay cannot be placed on any feature
+   * if false or undefined, the overlay can be placed everywhere
    */
   featuresFilter?: FeatureFilter;
+  /**
+   * A callback function triggered when click
+   */
+  onClick?: (position: Coordinate) => void;
 }
 
 export function WegasOverlay({
@@ -39,12 +45,13 @@ export function WegasOverlay({
   autoPan: autoPanProp,
   positionOnClick,
   featuresFilter,
+  onClick,
 }: WegasOverlayProps) {
   const { map } = React.useContext(mapCTX);
   const overlayComponentRef = React.useRef<HTMLElement>(
     document.createElement('div'),
   );
-  const overlayRef = React.useRef<Overlay>();
+  const [olOverlay, setOlOverlay] = React.useState<Overlay>();
 
   React.useEffect(() => {
     if (overlayComponentRef.current) {
@@ -68,71 +75,70 @@ export function WegasOverlay({
           }
         }
       }
+      if (map) {
+        const overlay = new Overlay({
+          id,
+          className,
+          offset,
+          positioning,
+          stopEvent,
+          insertFirst,
+          autoPan,
+          element: overlayComponentRef.current,
+        });
 
-      const overlay = new Overlay({
-        id,
-        className,
-        offset,
-        positioning,
-        stopEvent,
-        insertFirst,
-        autoPan,
-        element: overlayComponentRef.current,
-      });
+        setOlOverlay(overlay);
 
-      overlayRef.current = overlay;
-
-      if (positionOnClick && map) {
-        map.on('click', function (evt) {
-          if (overlayComponentRef.current) {
+        if (positionOnClick) {
+          map.on('click', function (evt) {
             // get click position
             const coordinate = evt.coordinate;
 
-            // Check if the overlay can be placed here
-            let allowClick = true;
-            if (featuresFilter != null) {
-              let clickedFeatures = map.getFeaturesAtPixel(
-                map.getPixelFromCoordinate(evt.coordinate),
-              );
+            if (onClick != null) {
+              onClick(coordinate);
+            }
+            if (overlayComponentRef.current) {
+              // Check if the overlay can be placed here
+              let allowClick = true;
+              if (featuresFilter != null) {
+                let clickedFeatures = map.getFeaturesAtPixel(
+                  map.getPixelFromCoordinate(evt.coordinate),
+                );
 
-              // If featureFilter is an object, filter the features that blocks the click
-              if (featuresFilter === true) {
-                // If featureFilter is not an object then it is set to true and every features block the click
-                allowClick = clickedFeatures.length === 0;
-              } else {
-                clickedFeatures = clickedFeatures.filter(featuresFilter.filter);
-                if (featuresFilter.allowClick) {
-                  allowClick = clickedFeatures.length > 0;
-                } else {
+                // If featureFilter is an object, filter the features that blocks the click
+                if (featuresFilter === true) {
+                  // If featureFilter is not an object then it is set to true and every features block the click
                   allowClick = clickedFeatures.length === 0;
+                } else {
+                  clickedFeatures = clickedFeatures.filter(
+                    featuresFilter.filter,
+                  );
+                  if (featuresFilter.allowClick) {
+                    allowClick = clickedFeatures.length > 0;
+                  } else {
+                    allowClick = clickedFeatures.length === 0;
+                  }
                 }
               }
-            }
 
-            // avoid click on layers
-            if (allowClick) {
-              // set overlay position
-              overlay.setPosition(coordinate);
-              // center overlay
-              const elementSize =
-                overlayComponentRef.current.getBoundingClientRect();
-              overlay.setOffset([
-                -elementSize.width / 2,
-                -elementSize.height / 2,
-              ]);
-              // close overlay on click
-              overlayComponentRef.current.onclick = function () {
-                overlay.setPosition(undefined);
-              };
+              // avoid click on layers
+              if (allowClick) {
+                // set overlay position
+                overlay.setPosition(coordinate);
+                // close overlay on click
+                overlayComponentRef.current.onclick = function () {
+                  overlay.setPosition(undefined);
+                };
+              }
             }
-          }
-        });
+          });
+        }
+
+        map?.addOverlay(overlay);
+        return () => {
+          map?.removeOverlay(overlay);
+        };
       }
-
-      map?.addOverlay(overlay);
-      return () => {
-        map?.removeOverlay(overlay);
-      };
     }
   }, [
     autoPanProp,
@@ -142,20 +148,23 @@ export function WegasOverlay({
     insertFirst,
     map,
     offset,
+    onClick,
     positionOnClick,
     positioning,
     stopEvent,
   ]);
 
   React.useEffect(() => {
-    if (overlayRef.current != null) {
-      overlayRef.current.setPosition(position);
+    if (olOverlay != null) {
+      olOverlay.setPosition(position);
     }
-  }, [position]);
+  }, [olOverlay, position]);
 
-  return (
+  return map != null ? (
     <div style={{ display: 'none' }}>
       {createPortal(<OverlayComponent />, overlayComponentRef.current)}
     </div>
+  ) : (
+    <OverlayComponent />
   );
 }

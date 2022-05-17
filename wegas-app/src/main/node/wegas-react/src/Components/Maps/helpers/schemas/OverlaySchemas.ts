@@ -1,3 +1,4 @@
+import { defaultOverlayPositionKey } from '../../../PageComponents/Maps/Overlay.component';
 import { schemaProps } from '../../../PageComponents/tools/schemaProps';
 import { pointSchema } from './HelperSchemas';
 
@@ -154,6 +155,35 @@ export const overlaySchema = {
               language: 'TypeScript',
               returnType: ['FeatureFilter'],
             },
+          }),
+        },
+      },
+      {
+        label: 'Features filter',
+        value: {
+          prop: 'featuresFilter',
+          schema: schemaProps.code({
+            label: 'Features filter',
+            scriptProps: {
+              language: 'TypeScript',
+              returnType: ['FeatureFilter'],
+            },
+          }),
+        },
+      },
+      {
+        label: 'Expose position as',
+        value: {
+          prop: 'exposePositionAs',
+          schema: schemaProps.scriptable({
+            label: 'Expose position as',
+            scriptProps: {
+              language: 'TypeScript',
+              returnType: ['FeatureFilter'],
+            },
+            literalSchema: schemaProps.string({
+              value: defaultOverlayPositionKey,
+            }),
           }),
         },
       },
