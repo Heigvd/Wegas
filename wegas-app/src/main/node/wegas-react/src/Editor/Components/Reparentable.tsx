@@ -20,23 +20,30 @@ export function ReparentableRoot({ children }: { children: React.ReactNode }) {
   const [cache, setCache] = React.useState<
     Record<string, [React.ReactNode, HTMLDivElement, string]>
   >({});
-  const getNode = React.useCallback(
-    function getNode(child: React.ReactNode, id: string) {
-      if (id == null) {
-        throw Error('A key is required');
-      }
-      if (!cache[id]) {
-        const n = document.createElement('div');
-        setCache(c => ({ ...c, [id]: [child, n, id] }));
-        return n;
-      } else if (cache[id][0] !== child) {
-        setCache(c => ({ ...c, [id]: [child, cache[id][1], id] }));
-      }
 
-      return cache[id][1];
-    },
-    [cache],
-  );
+  // use a reference to the cache to prevent rebuilding a new getNode callback each time the cache change
+  const cacheRef = React.useRef(cache);
+  cacheRef.current = cache;
+
+  const getNode = React.useCallback(function getNode(
+    child: React.ReactNode,
+    id: string,
+  ) {
+    const cache = cacheRef.current;
+    if (id == null) {
+      throw Error('A key is required');
+    }
+    if (!cache[id]) {
+      const n = document.createElement('div');
+      setCache(c => ({ ...c, [id]: [child, n, id] }));
+      return n;
+    } else if (cache[id][0] !== child) {
+      setCache(c => ({ ...c, [id]: [child, cache[id][1], id] }));
+    }
+
+    return cache[id][1];
+  },
+  []);
   // Empty cache on destroy
   React.useEffect(() => () => setCache({}), []);
   return (
@@ -84,6 +91,9 @@ export function Reparentable({
       `${Reparentable.name} must be enclosed by a ${ReparentableRoot.name}`,
     );
   }
+
+  // useReactDepsComparator([innerClassName, getNode, children, id], `Reparentable ${id}`);
+
   React.useEffect(() => {
     const node = getNode(children, id);
     const container = n.current;
@@ -96,7 +106,7 @@ export function Reparentable({
         }
       };
     }
-  }, [n, innerClassName, getNode, children, id]);
+  }, [innerClassName, getNode, children, id]);
 
   const setRef = React.useCallback((element: HTMLDivElement | null) => {
     if (resizeObserver.current != null) {

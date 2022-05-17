@@ -8,7 +8,7 @@ import * as React from 'react';
 import { wlog } from './wegaslog';
 
 const defaultPropsCheckerProps = {
-  children: (_props: UknownValuesObject) => {},
+  children: (_props: UknownValuesObject) => { },
   compType: 'SIMPLE',
   verbose: false,
 };
@@ -44,7 +44,7 @@ function shallowCheck(a: unknown, b: unknown, verbose?: boolean) {
   }
   for (const k in keys) {
     if (simpleCheck(A[k], B[k])) {
-      verbose && console.log(`Object differ at key : ${k}`);
+      verbose && console.log(`Object differ at key : ${ k }`);
       return false;
     }
   }
@@ -94,14 +94,14 @@ export function ReactFnCompPropsChecker<T extends { [id: string]: unknown }>(
     if (oldProps === undefined) {
       console.log('First render : ');
       Object.keys(childrenProps).map(k =>
-        console.log(`${k} : ${childrenProps[k]}`),
+        console.log(`${ k } : ${ childrenProps[k] }`),
       );
     } else {
       const changedProps = Object.keys(childrenProps)
         .filter(k =>
           compFNSelection(compType)(oldProps[k], childrenProps[k], verbose),
         )
-        .map(k => `${k} : [OLD] ${oldProps[k]}, [NEW] ${childrenProps[k]}`);
+        .map(k => `${ k } : [OLD] ${ oldProps[k] }, [NEW] ${ childrenProps[k] }`);
       if (changedProps.length > 0) {
         console.log('Changed props : ');
         changedProps.map(console.log);
@@ -136,6 +136,27 @@ export function useComparator(
   });
 
   state.current = object;
+}
+
+export function useReactDepsComparator(deps: React.DependencyList, label: string) {
+  const labelRef = React.useRef(label);
+  labelRef.current = label;
+  const ref = React.useRef(deps);
+
+  React.useEffect(() => {
+    if (ref.current.length != deps.length) {
+      wlog(`DepComparator(${ labelRef.current }): Deps length differ`);
+    } else {
+      ref.current.forEach((a, i) => {
+        const b = deps[i];
+        if (a !== b) {
+          wlog(`DepComparator(${ labelRef.current }): Dep #${ i } changed: `, a, " =>  ", b);
+        }
+      })
+    }
+    ref.current = deps;
+    // eslint-disable-next-line
+  }, deps);
 }
 
 function timeDifference(start?: number, end?: number) {
@@ -176,8 +197,7 @@ export function useChronometer(label: string) {
   const start = Date.now();
   const last = checks.current[label];
   wlog(
-    `Chrono ${label} : ${
-      last === undefined ? 'Starting' : timeDifference(start, last)
+    `Chrono ${ label } : ${ last === undefined ? 'Starting' : timeDifference(start, last)
     }`,
   );
   checks.current[label] = start;
