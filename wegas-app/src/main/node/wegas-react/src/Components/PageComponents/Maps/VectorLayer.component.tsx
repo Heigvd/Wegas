@@ -10,6 +10,7 @@ import { entityIs } from '../../../data/entities';
 import { useScript, useScriptObjectWithFallback } from '../../Hooks/useScript';
 import { TumbleLoader } from '../../Loader';
 import { styleSourceToOlStyle } from '../../Maps/helpers/LayerStyleHelpers';
+import { initializeProjection } from '../../Maps/helpers/proj4js';
 import {
   onLayerReadySchema,
   wegasVectorLayerSchema,
@@ -36,12 +37,14 @@ async function fetchSource(
 type OnLayerReadyFN = ((layer: BaseLayer) => void) | undefined;
 
 interface PlayerVectorLayerProps extends WegasComponentProps {
+  layerId?: string;
   layerSource?: VectorLayerObject;
   layerStyle?: IScript | LayerStyleObject;
   onLayerReady?: IScript;
 }
 
 export default function PlayerVectorLayer({
+  layerId,
   layerSource,
   layerStyle,
   onLayerReady,
@@ -86,6 +89,9 @@ export default function PlayerVectorLayer({
 
     let vectorSource: VectorSource | undefined = undefined;
     if (data != null && layerSource != null) {
+      if (layerSource.sourceProjection) {
+        initializeProjection(layerSource.sourceProjection);
+      }
       vectorSource = new VectorSource({
         features: new GeoJSON().readFeatures(parsedData, {
           dataProjection: layerSource.sourceProjection,
@@ -98,6 +104,9 @@ export default function PlayerVectorLayer({
       return new VectorLayer({
         source: vectorSource,
         style: styleSourceToOlStyle(currentLayerProps.layerStyle),
+        properties: {
+          layerId: layerId,
+        },
       });
     }
     return null;
@@ -134,6 +143,7 @@ registerComponent(
     icon: 'map',
     illustration: 'scatter',
     schema: {
+      layerId: { value: '', view: { type: 'string', label: 'Layer id' } },
       layerSource: wegasVectorLayerSchema,
       layerStyle: styleObjectSchema,
       onLayerReady: onLayerReadySchema,
