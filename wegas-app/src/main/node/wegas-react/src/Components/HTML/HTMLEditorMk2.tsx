@@ -3,13 +3,17 @@ import { css } from '@emotion/css';
 import { ITinyEvents } from '@tinymce/tinymce-react/lib/cjs/main/ts/Events';
 import * as React from 'react';
 import { RawEditorSettings } from 'tinymce/tinymce';
+import { fileURL, generateAbsolutePath } from '../../API/files.api';
 // import { fileURL, generateAbsolutePath } from '../../API/files.api';
 import { useThemeStore } from '../../data/Stores/themeStore';
+import { FileBrowser } from '../../Editor/Components/FileBrowser/FileBrowser';
+import { wlog } from '../../Helper/wegaslog';
 // import { ErrorBoundary } from '../../Editor/Components/ErrorBoundary';
 // import { FileBrowser } from '../../Editor/Components/FileBrowser/FileBrowser';
 // import { classNameOrEmpty } from '../../Helper/className';
 import { classesCTX } from '../Contexts/ClassesProvider';
-import { inputDefaultCSS, inputStyleCSS } from '../Inputs/SimpleInput';
+// import { inputDefaultCSS, inputStyleCSS } from '../Inputs/SimpleInput';
+import { Modal } from '../Modal';
 // import { Modal } from '../Modal';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { themeCTX } from '../Theme/Theme';
@@ -24,18 +28,18 @@ const fontUrl =
 const fontItalicUrl =
   require('../../css/fonts/Raleway-Italic-VariableFont_wght.ttf').default;
 
-const toolbar = css({
-  width: '300px',
-});
+// const toolbar = css({
+//   width: '300px',
+// });
 
-const editorStyle = css({
-  minWidth: '25em',
-  minHeight: '200px',
-  '& .mce-content-body': {
-    ...inputDefaultCSS,
-    ...inputStyleCSS,
-  },
-});
+// const editorStyle = css({
+//   minWidth: '25em',
+//   minHeight: '200px',
+//   '& .mce-content-body': {
+//     ...inputDefaultCSS,
+//     ...inputStyleCSS,
+//   },
+// });
 
 type CallbackFN = (url: string) => void;
 
@@ -116,6 +120,7 @@ export interface HTMLEditorPropsMk2 extends ClassStyleId, DisabledReadonly {
    * display a custom toolbar
    */
   customToolbar?: string;
+
 }
 
 let HTMLEditorID = 0;
@@ -391,30 +396,62 @@ export default function HTMLEditorMk2({
     wegasStyle,
   ]);
 
-  React.useEffect(() => {
-    // Ugly workaround...
-    const tinyMCEModal = document.getElementsByClassName(
-      'tox-dialog-wrap',
-    )[0] as HTMLElement;
-    if (tinyMCEModal) {
-      tinyMCEModal.style.visibility = fileBrowsing.fn ? 'hidden' : 'visible';
-    }
-  }, [fileBrowsing.fn]);
+  // React.useEffect(() => {
+  //   // Ugly workaround...
+  //   const tinyMCEModal = document.getElementsByClassName(
+  //     'tox-dialog-wrap',
+  //   )[0] as HTMLElement;
+  //   if (tinyMCEModal) {
+  //     tinyMCEModal.style.visibility = fileBrowsing.fn ? 'hidden' : 'visible';
+  //   }
+  // }, [fileBrowsing.fn]);
 
-  React.useEffect(() => {
-    // wlog('START');
-    return () => {
-      // wlog('DESTROY');
-      HTMLEditor.current?.destroy();
-    };
-  }, []);
+  // React.useEffect(() => {
+  //   // wlog('START');
+  //   return () => {
+  //     // wlog('DESTROY');
+  //     HTMLEditor.current?.destroy();
+  //   };
+  // }, []);
+
+  const showFilePicker = React.useCallback((providePathCallBack: ((path: string) => void)) => {
+    //TODO show file picker
+    wlog('showing filepicker');
+    setFileBrowsing({fn: providePathCallBack})
+    // const path = 'https://img-9gag-fun.9cache.com/photo/a3Q5VW5_700bwp.webp';
+    // cb(path)
+  }, [])
 
   return (
+    <div>
       <QuillReact
-        value='some value'
+        value={keepInternalValue ? internalValue : value}
         onChange={onEditorChanges}
+        placeholder={placeholder}
+        // className={className}
+        // style={style}
+        // id={id}
+        showFilePickerFunc={showFilePicker}
       />
-    // <div
+        {fileBrowsing.fn && (
+        <Modal onExit={() => setFileBrowsing({})}>
+          <FileBrowser
+            onFileClick={file => {
+              setFileBrowsing({});
+              wlog('raw file name', file)
+              file &&
+                fileBrowsing.fn &&
+                fileBrowsing.fn(
+                  document.location.origin +
+                    fileURL(generateAbsolutePath(file)),
+                );
+            }}
+            pickType={'FILE'}
+            filter={{ fileType: 'image', filterType: 'show' }}
+          />
+        </Modal>
+      )}
+    </div>
     //   className={editorStyle + classNameOrEmpty(className)}
     //   style={style}
     //   id={id}
@@ -452,23 +489,7 @@ export default function HTMLEditorMk2({
     //       />
     //     </ErrorBoundary>
     //   </div>
-    //   {fileBrowsing.fn && (
-    //     <Modal onExit={() => setFileBrowsing({})}>
-    //       <FileBrowser
-    //         onFileClick={file => {
-    //           setFileBrowsing({});
-    //           file &&
-    //             fileBrowsing.fn &&
-    //             fileBrowsing.fn(
-    //               document.location.origin +
-    //                 fileURL(generateAbsolutePath(file)),
-    //             );
-    //         }}
-    //         pickType={'FILE'}
-    //         filter={{ fileType: 'image', filterType: 'show' }}
-    //       />
-    //     </Modal>
-    //   )}
+
     // </div>
   );
 }
