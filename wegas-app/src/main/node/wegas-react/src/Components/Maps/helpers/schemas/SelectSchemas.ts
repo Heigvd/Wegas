@@ -130,5 +130,18 @@ export const selectSchema = schemaProps.hashlist({
         }),
       },
     },
+    {
+      label: 'on Select',
+      value: {
+        prop: 'onSelect',
+        schema: schemaProps.code({
+          label: 'on Select',
+          scriptProps: {
+            language: 'TypeScript',
+            returnType: ['(event:any)=>void'],
+          },
+        }),
+      },
+    },
   ],
 });

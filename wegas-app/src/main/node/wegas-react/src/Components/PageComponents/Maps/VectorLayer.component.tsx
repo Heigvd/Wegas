@@ -12,6 +12,7 @@ import { useDeepMemo } from '../../Hooks/useDeepMemo';
 import { useScript, useScriptObjectWithFallback } from '../../Hooks/useScript';
 import { TumbleLoader } from '../../Loader';
 import { styleSourceToOlStyle } from '../../Maps/helpers/LayerStyleHelpers';
+import { initializeProjection } from '../../Maps/helpers/proj4js';
 import {
   onLayerReadySchema,
   wegasVectorLayerPropsSchema,
@@ -26,6 +27,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
+import { schemaProps } from '../tools/schemaProps';
 
 async function fetchSource(
   pathOrData: string | object | undefined,
@@ -41,12 +43,14 @@ type OnLayerReadyFN = ((layer: BaseLayer) => void) | undefined;
 interface PlayerVectorLayerProps extends WegasComponentProps {
   layerProps?: IScript | Omit<Options<VectorSource>, 'source' | 'style'>;
   layerSource?: VectorLayerSourceObject;
+  layerId?: string;
   layerStyle?: IScript | LayerStyleObject;
   onLayerReady?: IScript;
 }
 
 export default function PlayerVectorLayer({
   layerProps,
+  layerId,
   layerSource,
   layerStyle,
   onLayerReady,
@@ -96,6 +100,9 @@ export default function PlayerVectorLayer({
 
     let vectorSource: VectorSource | undefined = undefined;
     if (data != null && layerSource != null) {
+      if (layerSource.sourceProjection) {
+        initializeProjection(layerSource.sourceProjection);
+      }
       vectorSource = new VectorSource({
         features: new GeoJSON().readFeatures(parsedData, {
           dataProjection: layerSource.sourceProjection,
@@ -109,6 +116,9 @@ export default function PlayerVectorLayer({
         source: vectorSource,
         style: styleSourceToOlStyle(currentLayerStyle),
         ...currentLayerProps,
+        properties: {
+          layerId: layerId,
+        },
       });
     }
     return null;
@@ -116,6 +126,7 @@ export default function PlayerVectorLayer({
     asyncData.result,
     currentLayerProps,
     currentLayerStyle,
+    layerId,
     layerSource,
     pathOrData,
     projection,
@@ -149,6 +160,7 @@ registerComponent(
       layerProps: wegasVectorLayerPropsSchema,
       layerSource: wegasVectorLayerSourceSchema,
       layerStyle: styleObjectSchema,
+      layerId: schemaProps.string({ value: '', label: 'Layer id' }),
       onLayerReady: onLayerReadySchema,
     },
   }),

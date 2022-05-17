@@ -313,6 +313,21 @@ export const mapOptionsSchema = schemaProps.hashlist({
   label: 'Map options',
   choices: [
     {
+      label: 'on Click',
+      value: {
+        prop: 'onClick',
+        schema: schemaProps.code({
+          label: 'on Select',
+          scriptProps: {
+            language: 'TypeScript',
+            returnType: [
+              '((coord:[number, number], features:{features: Record<string, unknown>, layerId?: string}[])=>void)',
+            ],
+          },
+        }),
+      },
+    },
+    {
       label: 'Controls',
       value: {
         prop: 'controls',

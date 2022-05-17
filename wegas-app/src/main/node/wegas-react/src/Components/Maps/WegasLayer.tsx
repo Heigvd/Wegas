@@ -24,7 +24,10 @@ export function WegasLayer({ layer }: WegasLayerProps) {
     }
   }, [layer]);
 
-  React.useEffect(() => {
+  // As this effect mutates the DOM, useEffect causes the display to blink.
+  // Using useLayoutEffect resolves this point as all DOM mutations done within the effect are made visible only after
+  // the effect has been completed.
+  React.useLayoutEffect(() => {
     map?.addLayer(layer);
     return () => {
       map?.removeLayer(layer);
