@@ -31,15 +31,15 @@ export const strokeStyleSchema: (required?: boolean) => AvailableSchemas =
         values: ['bevel', 'round', 'miter'],
         value: 'round',
       }),
-      lineDash: schemaProps.number({
-        label: 'Line dash pattern',
+      lineDashOffset: schemaProps.number({
+          label: 'Line dash offset',
         required: false,
       }),
-      lineDashOffset: {
+      lineDash: {
         type: 'array',
-        items: schemaProps.number({ label: 'Dash' }),
+        items: schemaProps.number({}),
         view: {
-          label: 'Line dash offset',
+        label: 'Line dash pattern',
           type: 'array',
         },
       },
