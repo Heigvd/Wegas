@@ -3,6 +3,9 @@ import { cx } from '@emotion/css';
 import useResizeObserver from '@react-hook/resize-observer';
 import { debounce } from 'lodash-es';
 import TileLayer from 'ol/layer/Tile';
+import { createEmpty, extend } from 'ol/extent';
+import { fromExtent } from 'ol/geom/Polygon';
+import VectorSource from 'ol/source/Vector';
 import Map from 'ol/Map';
 import { MapOptions } from 'ol/PluggableMap';
 import { ProjectionLike } from 'ol/proj';
@@ -16,11 +19,13 @@ import {
   flexRow,
   itemCenter,
   justifyCenter,
+  pointer,
 } from '../../css/classes';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { pagesTranslations } from '../../i18n/pages/pages';
 import { Button } from '../Inputs/Buttons/Button';
 import { initializeProjection } from './helpers/proj4js';
+import Feature from 'ol/Feature';
 
 interface MapContext {
   map?: Map;
@@ -32,7 +37,15 @@ export const mapCTX = React.createContext<MapContext>({});
 export type WegasMapOptions = Omit<
   MapOptions,
   'interactions' | 'layers' | 'overlays' | 'view'
->;
+> & {
+  onClick?: (
+    coord: [number, number],
+    features: {
+      feature: Record<string, unknown>;
+      layerId: string | undefined;
+    }[],
+  ) => void;
+};
 
 interface WegasMapProps {
   mapOptions?: WegasMapOptions;
@@ -57,6 +70,7 @@ export function WegasMap({
   const [debugValues, setDebugValues] = React.useState({
     zoom: 0,
     center: [0, 0],
+    extent: createEmpty(),
   });
   const mapElementRef = React.useRef<HTMLDivElement>(null);
 
@@ -103,7 +117,29 @@ export function WegasMap({
           setDebugValues(ov => ({
             zoom: initialMap.getView().getZoom() || ov.zoom,
             center: initialMap.getView().getCenter() || ov.center,
+            extent: initialMap.getView().calculateExtent(initialMap.getSize()),
           }));
+        });
+      }
+
+      if (mapOptions?.onClick) {
+        initialMap.on('click', event => {
+          const coord = event.coordinate;
+          const features: any[] = [];
+          initialMap.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
+            // extract props but do not expose the geometry
+            const props = { ...feature.getProperties() };
+
+            if (feature instanceof Feature) {
+              delete props[feature.getGeometryName()];
+            }
+
+            features.push({
+              feature: props,
+              layerId: layer.get('layerId'),
+            });
+          });
+          mapOptions!.onClick!([coord[0], coord[1]], features);
         });
       }
 
@@ -150,6 +186,22 @@ export function WegasMap({
     }
   }, [OSMLayer, debug, displayMap, mapOptions, viewOptions]);
 
+  const zoomToLayersExentCb = React.useCallback(() => {
+    if (map) {
+      const extent = createEmpty();
+      // compute extent from layers
+      map.getAllLayers().forEach(l => {
+        const source = l.getSource();
+        if (source instanceof VectorSource) {
+          const layerExtent = source.getExtent();
+          extend(extent, layerExtent);
+        }
+      });
+      const shape = fromExtent(extent);
+      map.getView().fitInternal(shape);
+    }
+  }, [map]);
+
   if (!displayMap) {
     return (
       <div className={cx(flex, flexRow, expandBoth, justifyCenter, itemCenter)}>
@@ -186,8 +238,12 @@ export function WegasMap({
           >
             <ul>
               <li>{`zoom: ${debugValues.zoom}`}</li>
-              <li>{`position: [${debugValues.center.join(';')}]`}</li>
+              <li>{`center: [${debugValues.center.join(';')}]`}</li>
+              <li>{`extent: [${debugValues.extent.join(';')}]`}</li>
             </ul>
+            <div className={cx(pointer)} onClick={zoomToLayersExentCb}>
+              Zoom to layers
+            </div>
           </div>
         )}
         <div ref={mapElementRef} className={expandBoth}>
