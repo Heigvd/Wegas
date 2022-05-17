@@ -2,10 +2,12 @@ import TileLayer from 'ol/layer/Tile';
 import GeoTIFF from 'ol/source/GeoTIFF';
 import * as React from 'react';
 import { fileURL } from '../../../API/files.api';
+import { entityIs } from '../../../data/entities';
 import { useScript } from '../../Hooks/useScript';
 import {
   onLayerReadySchema,
-  wegasTileLayerSchema,
+  wegasTileLayerPropsSchema,
+  wegasTileLayerSourceSchema,
 } from '../../Maps/helpers/schemas/LayerSchemas';
 import { WegasLayer } from '../../Maps/WegasLayer';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
@@ -16,16 +18,22 @@ import {
 import { WegasComponentProps } from '../tools/EditableComponent';
 
 interface PlayerTileLayerProps extends WegasComponentProps {
-  layerSource?: TileLayerObject;
+  layerProps?: TileLayerProps | IScript;
+  layerSource?: TileLayerSourceObject;
   onLayerReady?: IScript;
 }
 
 export default function PlayerTileLayer({
+  layerProps,
   layerSource,
   onLayerReady,
   pageId,
   path,
 }: PlayerTileLayerProps) {
+  const currentLayerProps =
+    useScript<SharedLayerProps>(
+      entityIs(layerProps, 'Script') ? layerProps : undefined,
+    ) || (layerProps as SharedLayerProps | undefined);
   const onLayerReadyFn = useScript<OnLayerReadyFN>(onLayerReady);
   const source = layerSource?.source;
   const currentURLs = useScript<string[]>(
@@ -39,11 +47,14 @@ export default function PlayerTileLayer({
           url: fileURL(url),
         };
       });
-      return new TileLayer({ source: new GeoTIFF({ sources }) });
+      return new TileLayer({
+        source: new GeoTIFF({ sources }),
+        ...currentLayerProps,
+      });
     } else {
       return undefined;
     }
-  }, [currentURLs, source]);
+  }, [currentLayerProps, currentURLs, source]);
 
   React.useEffect(() => {
     if (onLayerReadyFn != null && currentOLLayer != null) {
@@ -62,11 +73,12 @@ registerComponent(
   pageComponentFactory({
     component: PlayerTileLayer,
     componentType: 'Maps',
-    name: 'WegasMapImageLayer',
+    name: 'WegasMapTileLayer',
     icon: 'map',
     illustration: 'scatter',
     schema: {
-      layerSource: wegasTileLayerSchema,
+      layerProps: wegasTileLayerPropsSchema,
+      layerSource: wegasTileLayerSourceSchema,
       onLayerReady: onLayerReadySchema,
     },
   }),

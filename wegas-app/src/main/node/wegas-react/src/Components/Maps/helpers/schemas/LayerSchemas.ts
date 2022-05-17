@@ -125,6 +125,72 @@ export const wegasVectorLayerSourceSchema: AvailableSchemas = {
   },
 };
 
+const sharedLayerProps = [
+  {
+    label: 'Classname',
+    value: {
+      prop: 'classname',
+      schema: schemaProps.string({}),
+    },
+  },
+  {
+    label: 'Opacity',
+    value: {
+      prop: 'opacity',
+      schema: schemaProps.number({ value: 1 }),
+    },
+  },
+  {
+    label: 'Visible',
+    value: {
+      prop: 'visible',
+      schema: schemaProps.boolean({ value: true }),
+    },
+  },
+  {
+    label: 'Extent',
+    value: {
+      prop: 'extent',
+      schema: extentSchema(),
+    },
+  },
+  {
+    label: 'Z-Index',
+    value: {
+      prop: 'zIndex',
+      schema: schemaProps.number({}),
+    },
+  },
+  {
+    label: 'Min resolution',
+    value: {
+      prop: 'minResolution',
+      schema: schemaProps.number({}),
+    },
+  },
+  {
+    label: 'Max resolution',
+    value: {
+      prop: 'maxResolution',
+      schema: schemaProps.number({}),
+    },
+  },
+  {
+    label: 'Min zoom',
+    value: {
+      prop: 'minZoom',
+      schema: schemaProps.number({}),
+    },
+  },
+  {
+    label: 'Max zoom',
+    value: {
+      prop: 'maxZoom',
+      schema: schemaProps.number({}),
+    },
+  },
+];
+
 export const wegasVectorLayerPropsSchema: AvailableSchemas =
   schemaProps.scriptable({
     label: 'Layer properties',
@@ -134,69 +200,7 @@ export const wegasVectorLayerPropsSchema: AvailableSchemas =
     },
     literalSchema: schemaProps.hashlist({
       choices: [
-        {
-          label: 'Classname',
-          value: {
-            prop: 'classname',
-            schema: schemaProps.string({}),
-          },
-        },
-        {
-          label: 'Opacity',
-          value: {
-            prop: 'opacity',
-            schema: schemaProps.number({ value: 1 }),
-          },
-        },
-        {
-          label: 'Visible',
-          value: {
-            prop: 'visible',
-            schema: schemaProps.boolean({ value: true }),
-          },
-        },
-        {
-          label: 'Extent',
-          value: {
-            prop: 'extent',
-            schema: extentSchema(),
-          },
-        },
-        {
-          label: 'Z-Index',
-          value: {
-            prop: 'zIndex',
-            schema: schemaProps.number({}),
-          },
-        },
-        {
-          label: 'Min resolution',
-          value: {
-            prop: 'minResolution',
-            schema: schemaProps.number({}),
-          },
-        },
-        {
-          label: 'Max resolution',
-          value: {
-            prop: 'maxResolution',
-            schema: schemaProps.number({}),
-          },
-        },
-        {
-          label: 'Min zoom',
-          value: {
-            prop: 'minZoom',
-            schema: schemaProps.number({}),
-          },
-        },
-        {
-          label: 'Max zoom',
-          value: {
-            prop: 'maxZoom',
-            schema: schemaProps.number({}),
-          },
-        },
+        ...sharedLayerProps,
         {
           label: 'Render buffer',
           value: {
@@ -230,6 +234,46 @@ export const wegasVectorLayerPropsSchema: AvailableSchemas =
           value: {
             prop: 'updateWhileInteracting',
             schema: schemaProps.boolean({ value: false }),
+          },
+        },
+      ],
+    }),
+  });
+
+export const wegasImageLayerPropsSchema: AvailableSchemas =
+  schemaProps.scriptable({
+    label: 'Layer properties',
+    scriptProps: {
+      language: 'TypeScript',
+      returnType: ['SharedLayerProps'],
+    },
+    literalSchema: schemaProps.hashlist({
+      choices: sharedLayerProps,
+    }),
+  });
+
+export const wegasTileLayerPropsSchema: AvailableSchemas =
+  schemaProps.scriptable({
+    label: 'Layer properties',
+    scriptProps: {
+      language: 'TypeScript',
+      returnType: ['TileLayerProps'],
+    },
+    literalSchema: schemaProps.hashlist({
+      choices: [
+        ...sharedLayerProps,
+        {
+          label: 'Preload',
+          value: {
+            prop: 'preload',
+            schema: schemaProps.number({ value: 0 }),
+          },
+        },
+        {
+          label: 'Use interim tiles on error',
+          value: {
+            prop: 'useInterimTilesOnError',
+            schema: schemaProps.boolean({ value: true }),
           },
         },
       ],

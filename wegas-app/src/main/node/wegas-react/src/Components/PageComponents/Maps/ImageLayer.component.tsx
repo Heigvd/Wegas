@@ -3,10 +3,12 @@ import { Projection } from 'ol/proj';
 import ImageStatic from 'ol/source/ImageStatic';
 import * as React from 'react';
 import { fileURL } from '../../../API/files.api';
+import { entityIs } from '../../../data/entities';
 import { useScript } from '../../Hooks/useScript';
 import {
   onLayerReadySchema,
-  wegasImageLayerSchema,
+  wegasImageLayerPropsSchema,
+  wegasImageLayerSourceSchema,
 } from '../../Maps/helpers/schemas/LayerSchemas';
 import { WegasLayer } from '../../Maps/WegasLayer';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
@@ -17,17 +19,24 @@ import {
 import { WegasComponentProps } from '../tools/EditableComponent';
 
 interface PlayerImageLayerProps extends WegasComponentProps {
-  layerSource?: ImageLayerObject;
+  layerSource?: ImageLayerSourceObject;
+  layerProps?: IScript | SharedLayerProps;
   onLayerReady?: IScript;
 }
 
 export default function PlayerImageLayer({
   layerSource,
+  layerProps,
   onLayerReady,
   pageId,
   path,
 }: PlayerImageLayerProps) {
   const onLayerReadyFn = useScript<OnLayerReadyFN>(onLayerReady);
+
+  const currentLayerProps =
+    useScript<SharedLayerProps>(
+      entityIs(layerProps, 'Script') ? layerProps : undefined,
+    ) || (layerProps as SharedLayerProps | undefined);
   const source = layerSource?.source;
   const currentURL = useScript<string | undefined>(source?.url);
 
@@ -35,6 +44,7 @@ export default function PlayerImageLayer({
     if (source != null && currentURL != null) {
       return new ImageLayer({
         source: new ImageStatic({
+          ...currentLayerProps,
           ...source,
           projection: new Projection(source.projection),
           url: fileURL(currentURL),
@@ -43,7 +53,7 @@ export default function PlayerImageLayer({
     } else {
       return undefined;
     }
-  }, [currentURL, source]);
+  }, [currentLayerProps, currentURL, source]);
 
   React.useEffect(() => {
     if (onLayerReadyFn != null && currentOLLayer != null) {
@@ -66,7 +76,8 @@ registerComponent(
     icon: 'map',
     illustration: 'scatter',
     schema: {
-      layerSource: wegasImageLayerSchema,
+      layerSource: wegasImageLayerSourceSchema,
+      layerProps: wegasImageLayerPropsSchema,
       onLayerReady: onLayerReadySchema,
     },
   }),

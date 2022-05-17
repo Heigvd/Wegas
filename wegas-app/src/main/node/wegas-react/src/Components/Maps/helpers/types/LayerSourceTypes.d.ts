@@ -46,7 +46,7 @@ type LayerSourceObject =
   | ImageLayerSourceObject
   | TileLayerSourceObject;
 
-interface VectorLayerProps {
+interface SharedLayerProps {
   className?: string;
   opacity?: number;
   visible?: boolean;
@@ -56,6 +56,14 @@ interface VectorLayerProps {
   maxResolution?: number;
   minZoom?: number;
   maxZoom?: number;
+}
+
+interface TileLayerProps extends SharedLayerProps {
+  preload?: number;
+  useInterimTilesOnError?: boolean;
+}
+
+interface VectorLayerProps extends SharedLayerProps {
   renderOrder?: (featureA: any, featureB: any) => number;
   renderBuffer?: number;
   declutter?: boolean;
