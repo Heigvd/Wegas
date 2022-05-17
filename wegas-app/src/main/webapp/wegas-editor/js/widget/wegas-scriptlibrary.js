@@ -113,7 +113,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                     },
                     on: Wegas.superbind({
                         success: function(data) {
-                            this.scripts = data.response.entity.get("val");
+                            this.scripts = data.response.entity;
                             this.syncWithLibrary();
                         },
                         failure: function() {
@@ -150,7 +150,6 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                     isEmpty = true,
                     cb = this.get(CONTENTBOX),
                     libraries = this.scripts || {};
-                delete libraries['@class'];
                 var keys = Object.keys(libraries).sort();
 
                 for (i in keys) {
@@ -361,7 +360,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                             '@class': 'GameModelContent',
                             content: this.aceField.getValue(),
                             visibility: this.visibilityField.getValue(),
-                            version: this.scripts[this.currentScriptName].version,
+                            version: this.scripts[this.currentScriptName].get("version"),
                             contentType: this.get('library') === 'CSS' ? 'text/css' : 'application/javascript'
                         }
                     },
