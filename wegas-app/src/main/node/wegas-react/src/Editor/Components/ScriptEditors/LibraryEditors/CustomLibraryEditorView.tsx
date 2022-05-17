@@ -41,7 +41,6 @@ interface LibraryNodeProps {
   selected: boolean;
 }
 
-
 interface LibraryTypeNodeLabelProps {
   libraryType: LibraryType;
   onNewLibrary: (message: LibrariesCallbackMessage) => void;

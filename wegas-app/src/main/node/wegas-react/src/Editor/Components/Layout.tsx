@@ -97,6 +97,10 @@ const availableLayoutTabs: LinearLayoutComponents = [
         tabId: 'Style',
         content: <StyleLibraryEditor />,
       },
+      {
+        tabId: 'AllLibrary',
+        content: <StyleLibraryEditor />,
+      },
     ],
   },
   {

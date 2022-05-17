@@ -119,9 +119,6 @@ export function getModel(reactMonaco: MonacoEditor | null, modelPath: string) {
     : null;
 }
 
-export function getAllModelPath(reactMonaco: MonacoEditor): string[] {
-  return reactMonaco.editor.getModels().map(model => model.uri.toString());
-}
 
 export function createOrUpdateModel(
   reactMonaco: MonacoEditor,
