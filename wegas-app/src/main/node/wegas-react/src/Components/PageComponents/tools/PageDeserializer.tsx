@@ -168,18 +168,30 @@ export function PageDeserializer({
 
   const wegasComponent = useStore(wegasComponentSelector, deepDifferent);
 
-  const { children, ...restProps } =
-    (wegasComponent && wegasComponent.props) || emptyObject;
-
   const componentSeletor = React.useCallback(
-    (s: PageComponentsState) =>
-      s[(wegasComponent && wegasComponent.type) || ''],
+    (s: PageComponentsState) => ({
+      ...s[(wegasComponent && wegasComponent.type) || ''],
+      // As we use 2 hooks with use effect here, the return off the second one will be done after a first render.
+      // We must store and use the wegasComponent given here in order to avoid giving old props to a new component.
+      currentWegasComponent: wegasComponent,
+    }),
     [wegasComponent],
   );
   const component = usePageComponentStore(
     componentSeletor,
     shallowDifferent,
-  ) as PageComponent;
+  ) as PageComponent & { currentWegasComponent: WegasComponent | undefined };
+
+  const {
+    WegasComponent,
+    container,
+    componentName,
+    obsoleteComponent,
+    currentWegasComponent,
+  } = component || emptyObject;
+
+  const { children, ...restProps } =
+    (currentWegasComponent && currentWegasComponent.props) || emptyObject;
 
   const optionsState = useOptions(
     pick(restProps, defaultOptionsKeys),
@@ -192,10 +204,7 @@ export function PageDeserializer({
     nbRendering.current += 1;
   }, []);
 
-  const { WegasComponent, container, componentName, obsoleteComponent } =
-    component || emptyObject;
-
-  if (!wegasComponent) {
+  if (!currentWegasComponent) {
     return <pre>JSON error in page</pre>;
   }
   if (!component) {
@@ -206,7 +215,7 @@ export function PageDeserializer({
         </div>
       );
     }
-    return <div>{`Unknown component : ${wegasComponent.type}`}</div>;
+    return <div>{`Unknown component : ${currentWegasComponent.type}`}</div>;
   }
 
   const Children =
@@ -226,7 +235,9 @@ export function PageDeserializer({
       context={context}
       vertical={
         container?.isVertical &&
-        container?.isVertical(wegasComponent.props as WegasComponentProps)
+        container?.isVertical(
+          currentWegasComponent.props as WegasComponentProps,
+        )
       }
       Container={Container}
       containerPropsKeys={containerPropsKeys}
@@ -237,7 +248,10 @@ export function PageDeserializer({
       onClickManaged={component.manageOnClick === true}
       className={optionsState.outerClassName}
     >
-      {displayObsoleteComponentManager(obsoleteComponent, wegasComponent) ? (
+      {displayObsoleteComponentManager(
+        obsoleteComponent,
+        currentWegasComponent,
+      ) ? (
         <ObsoleteComponentManager
           componentType={componentName}
           pageId={pageId}
@@ -262,7 +276,7 @@ export function PageDeserializer({
           editMode={editMode}
         >
           <Children
-            {...wegasComponent?.props}
+            {...currentWegasComponent?.props}
             wegasChildren={children}
             path={realPath}
             pageId={pageId}
