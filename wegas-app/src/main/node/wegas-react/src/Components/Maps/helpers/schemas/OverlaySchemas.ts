@@ -159,19 +159,6 @@ export const overlaySchema = {
         },
       },
       {
-        label: 'Features filter',
-        value: {
-          prop: 'featuresFilter',
-          schema: schemaProps.code({
-            label: 'Features filter',
-            scriptProps: {
-              language: 'TypeScript',
-              returnType: ['FeatureFilter'],
-            },
-          }),
-        },
-      },
-      {
         label: 'Expose position as',
         value: {
           prop: 'exposePositionAs',
