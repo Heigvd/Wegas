@@ -1,8 +1,19 @@
-import Quill from 'quill';
+import Quill, { EditorChangeHandler } from 'quill';
 import React from 'react';
 import { HTMLEditorPropsMk2 } from './HTMLEditorMk2';
 import { wlog } from '../../Helper/wegaslog';
 import "quill/dist/quill.snow.css";
+// import { css } from '@emotion/css';
+import './QuillStyle.css';
+import { css } from '@emotion/css';
+// import { themeVar } from '../Theme/ThemeVars';
+import sanitize from '../../Helper/sanitize';
+
+const myStyle = css({
+    '.ql-container' : {fontFamily: 'Raleway'}, 
+    '.ql-toolbar.ql-snow': {fontFamily: 'Raleway'}
+});
+
 // import { Modal } from '../Modal';
 // import {FileBrowser} from '../../Editor/Components/FileBrowser/FileBrowser';
 // import { fileURL, generateAbsolutePath } from '../../API/files.api';
@@ -123,6 +134,10 @@ export interface QuillEditorProps {
     */
     disabled?: boolean;
     /**
+     * read only mode
+     */
+    readonly?: boolean;
+    /**
      * onChange - function called each time the content of the editor changes
      */
     onChange?: (content: string) => void;
@@ -130,7 +145,7 @@ export interface QuillEditorProps {
      * Notifies the component to show the file picker
      * @param callback function to be called with full path to media
      */
-    showFilePickerFunc: (callback: (path: string) => void) => void;
+    showFilePickerFunc?: (callback: (path: string) => void) => void;
 }
 
 const toolbarOptions = [
@@ -142,7 +157,7 @@ const toolbarOptions = [
     [{ 'color': [] }, { 'background': [] }],
 
     [{ header: [false, 1, 2, 3, 4, 5, 6] }],
-    [{ size: [ 'small', false, 'large', 'huge' ]}],
+    // [{ size: [ 'small', false, 'large', 'huge' ]}],
 ]
 
 function addToolbarButtonHandler(quill: Quill, target: string, handlerFunc: (quill: Quill) => void): void {
@@ -165,14 +180,6 @@ export default function QuillReact(props : QuillEditorProps){
     const containerRef = React.useRef<HTMLDivElement>(null);
     const quill = React.useRef<Quill>();
 
-    // const showFilePickerFunc = React.useCallback(props.showFilePickerFunc);
-
-    // const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>(
-    //     {},
-    // );
-
-    // const customButton = React.useRef<QuillToolbarButton>();
-
     function updateProps(editor: Quill, props: HTMLEditorPropsMk2){
 
         editor.enable(!props.disabled);
@@ -182,10 +189,7 @@ export default function QuillReact(props : QuillEditorProps){
                 wlog('content set', props.value);
 
                 const sel = editor.getSelection();
-                // don't edit HTML directly => triggers 'user' changes
-                // editor.root.innerHTML = props.value;
-                // TODO sanitizer
-                editor.clipboard.dangerouslyPasteHTML(props.value, 'api');
+                editor.clipboard.dangerouslyPasteHTML(sanitize(props.value), 'api');
                 if(sel){ // best effort to keep current selection
                     editor.setSelection(sel);
                 }
@@ -196,39 +200,54 @@ export default function QuillReact(props : QuillEditorProps){
     React.useEffect(() => {
         if(quill.current){
             updateProps(quill.current, props);
-            //TODO update
         }
         else if(containerRef.current){
             wlog('creating quill editor');
 
+            const fontAttributor = Quill.import('formats/font');
+            const fonts = ['impact', 'courier', 'comic'];
+            // const lHeights = ['1.0','1.1','1.2','1.3','1.4','1.5','1.6'];
+            fontAttributor.whitelist = fonts;
+
+            Quill.register(fontAttributor, true);
             const q = new Quill(containerRef.current, {
                 modules: {
                     toolbar: toolbarOptions,
                 },
-                //placeholder: 'Compose an epic...',
+                //placeholder: '',
                 theme: 'snow',  // or 'bubble',
-                debug: 'debug'
+                debug: 'debug',
+                readOnly : props.readonly,
             });
 
             q.setText(props.value || '', 'silent');
 
+            // Handler to pick a media in WEGAS library
             addToolbarButtonHandler(q, 'image', (quill) => {
                 wlog('Hey pick an image !!!!');
                 const range = quill.getSelection();
                 const cursorPos = range ? range.index : 0;
                 // TODO build real WEGAS url
-                props.showFilePickerFunc((path) => {
-                    wlog('got path back', path);
-                    quill.insertEmbed(cursorPos, 'image', path, 'user');
-                    // quill.insertEmbed(cursorPos, 'image', 'https://img-9gag-fun.9cache.com/photo/a3Q5VW5_700bwp.webp', 'user');
-                });
+                if(props.showFilePickerFunc){
+                    props.showFilePickerFunc((path) => {
+                            wlog('got path back', path);
+                            quill.insertEmbed(cursorPos, 'image', path, 'user');
+                            // quill.insertEmbed(cursorPos, 'image', 'https://img-9gag-fun.9cache.com/photo/a3Q5VW5_700bwp.webp', 'user');
+                        });
+                }
             });
-            // editor.off('text-change'); TODO remove previous handler ?
+
+            //Handler to edit pure html
+            addToolbarButtonHandler(q, 'code-block', (quill) => {
+                
+            });
+
             q.on('text-change', ((_delta, _old, source) => {
                 if(props.onChange && source === 'user'){
                     // only trigger on user changes
                     wlog('text change : ', q.root.innerHTML, source);
-                    props.onChange(q.root.innerHTML);
+                    //TODO transform img links
+                    props.onChange(sanitize(q.root.innerHTML));
                 }
             }));
 
@@ -251,7 +270,7 @@ export default function QuillReact(props : QuillEditorProps){
     }, [props])
 
     return(
-        <div>
+        <div className={myStyle}>
             <div ref={containerRef}></div>
         </div>
     )

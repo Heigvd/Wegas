@@ -1,8 +1,8 @@
-import { css } from '@emotion/css';
+// import { css } from '@emotion/css';
 // import { Editor as TinyEditor } from '@tinymce/tinymce-react';
-import { ITinyEvents } from '@tinymce/tinymce-react/lib/cjs/main/ts/Events';
+// import { ITinyEvents } from '@tinymce/tinymce-react/lib/cjs/main/ts/Events';
 import * as React from 'react';
-import { RawEditorSettings } from 'tinymce/tinymce';
+// import { RawEditorSettings } from 'tinymce/tinymce';
 import { fileURL, generateAbsolutePath } from '../../API/files.api';
 // import { fileURL, generateAbsolutePath } from '../../API/files.api';
 import { useThemeStore } from '../../data/Stores/themeStore';
@@ -11,11 +11,11 @@ import { wlog } from '../../Helper/wegaslog';
 // import { ErrorBoundary } from '../../Editor/Components/ErrorBoundary';
 // import { FileBrowser } from '../../Editor/Components/FileBrowser/FileBrowser';
 // import { classNameOrEmpty } from '../../Helper/className';
-import { classesCTX } from '../Contexts/ClassesProvider';
+// import { classesCTX } from '../Contexts/ClassesProvider';
 // import { inputDefaultCSS, inputStyleCSS } from '../Inputs/SimpleInput';
 import { Modal } from '../Modal';
 // import { Modal } from '../Modal';
-import { isActionAllowed } from '../PageComponents/tools/options';
+// import { isActionAllowed } from '../PageComponents/tools/options';
 import { themeCTX } from '../Theme/Theme';
 import { defaultLightMode, modeStyle, themeVar } from '../Theme/ThemeVars';
 import QuillReact from './QuillReact';
@@ -52,19 +52,19 @@ type CallbackFN = (url: string) => void;
 //   tooltip?: string;
 // }
 
-interface ActionButton {
-  name: string;
-  text?: string;
-  icon?: TinyMCEIcons;
-  tooltip?: string;
-  disabled?: boolean;
-  active?: boolean;
-  onSetup?: (
-    api: TinyMCEButtonAPI,
-    editor: TinyMCEEditor,
-  ) => (api: TinyMCEButtonAPI) => void;
-  onAction: (api: TinyMCEButtonAPI, editor: TinyMCEEditor) => void;
-}
+// interface ActionButton {
+//   name: string;
+//   text?: string;
+//   icon?: TinyMCEIcons;
+//   tooltip?: string;
+//   disabled?: boolean;
+//   active?: boolean;
+//   onSetup?: (
+//     api: TinyMCEButtonAPI,
+//     editor: TinyMCEEditor,
+//   ) => (api: TinyMCEButtonAPI) => void;
+//   onAction: (api: TinyMCEButtonAPI, editor: TinyMCEEditor) => void;
+// }
 
 export interface HTMLEditorPropsMk2 extends ClassStyleId, DisabledReadonly {
   /**
@@ -123,16 +123,16 @@ export interface HTMLEditorPropsMk2 extends ClassStyleId, DisabledReadonly {
 
 }
 
-let HTMLEditorID = 0;
+// let HTMLEditorID = 0;
 
 export default function HTMLEditorMk2({
   value,
   onSave,
   onChange,
-  className,
-  style,
-  id,
-  inline = false,
+  // className,
+  // style,
+  // id,
+  // inline = false,
   placeholder,
   disabled,
   readOnly,
@@ -141,12 +141,12 @@ export default function HTMLEditorMk2({
   keepInternalValue,
   customToolbar,
 }: HTMLEditorPropsMk2) {
-  const toolBarIdRef = React.useRef('externalEditorToolbar' + String(HTMLEditorID++));
+  // const toolBarIdRef = React.useRef('externalEditorToolbar' + String(HTMLEditorID++));
   const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>({});
-  const [editorFocus, setEditorFocus] = React.useState<boolean>(false);
+  // const [editorFocus, setEditorFocus] = React.useState<boolean>(false);
   const HTMLContent = React.useRef('');
-  const HTMLEditor = React.useRef<{ focus: () => void; destroy: () => void }>();
-  const { classes } = React.useContext(classesCTX);
+  // const HTMLEditor = React.useRef<{ focus: () => void; destroy: () => void }>();
+  // const { classes } = React.useContext(classesCTX);
 
   const themesState = useThemeStore(s => s);
   const { currentContext, currentMode } = React.useContext(themeCTX);
@@ -163,12 +163,12 @@ export default function HTMLEditorMk2({
     setInternalValue(value);
   }, [value]);
 
-  const onIniteditor = React.useCallback<ITinyEvents['onInit']>(
-    (event, _editor) => {
-      HTMLEditor.current = event.target;
-    },
-    [],
-  );
+  // const onIniteditor = React.useCallback<ITinyEvents['onInit']>(
+  //   (event, _editor) => {
+  //     HTMLEditor.current = event.target;
+  //   },
+  //   [],
+  // );
 
   const onEditorChanges = React.useCallback(
     (v: string) => {
@@ -185,14 +185,15 @@ export default function HTMLEditorMk2({
     [onChange, value],
   );
 
-  function onFocus() {
-    setEditorFocus(true);
-  }
+  // function onFocus() {
+  //   setEditorFocus(true);
+  // }
 
-  function onBlur() {
-    setEditorFocus(false);
-  }
+  // function onBlur() {
+  //   setEditorFocus(false);
+  // }
 
+  /*
   const config = React.useMemo(() => {
     // const extraStyleButton: StyleButton[] = [
     //   {
@@ -388,31 +389,15 @@ export default function HTMLEditorMk2({
     readOnly,
     placeholder,
     onSave,
-    // customToolbar,
+    customToolbar,
     disabled,
     noResize,
     noRootBlock,
     classes,
     wegasStyle,
   ]);
+*/
 
-  // React.useEffect(() => {
-  //   // Ugly workaround...
-  //   const tinyMCEModal = document.getElementsByClassName(
-  //     'tox-dialog-wrap',
-  //   )[0] as HTMLElement;
-  //   if (tinyMCEModal) {
-  //     tinyMCEModal.style.visibility = fileBrowsing.fn ? 'hidden' : 'visible';
-  //   }
-  // }, [fileBrowsing.fn]);
-
-  // React.useEffect(() => {
-  //   // wlog('START');
-  //   return () => {
-  //     // wlog('DESTROY');
-  //     HTMLEditor.current?.destroy();
-  //   };
-  // }, []);
 
   const showFilePicker = React.useCallback((providePathCallBack: ((path: string) => void)) => {
     //TODO show file picker
@@ -428,6 +413,8 @@ export default function HTMLEditorMk2({
         value={keepInternalValue ? internalValue : value}
         onChange={onEditorChanges}
         placeholder={placeholder}
+        disabled={disabled}
+        readonly={readOnly}
         // className={className}
         // style={style}
         // id={id}
@@ -452,44 +439,6 @@ export default function HTMLEditorMk2({
         </Modal>
       )}
     </div>
-    //   className={editorStyle + classNameOrEmpty(className)}
-    //   style={style}
-    //   id={id}
-    // >
-    //   <div
-    //     style={{
-    //       visibility: fileBrowsing.fn ? 'hidden' : 'visible',
-    //       minWidth: 464,
-    //     }}
-    //   >
-    //     {inline && (
-    //       <div id={toolBarIdRef.current} className={toolbar}>
-    //         {!editorFocus && (
-    //           <img
-    //             src={
-    //               require(onSave
-    //                 ? '../../pictures/tinymcetoolbar.png'
-    //                 : '../../pictures/tinymcetoolbarnosave.png').default
-    //             }
-    //             onClick={() => HTMLEditor.current && HTMLEditor.current.focus()}
-    //           />
-    //         )}
-    //       </div>
-    //     )}
-    //     <ErrorBoundary>
-    //       <TinyEditor
-    //         apiKey="xkafxh5bjijfa83806ycen9yltz2aw447z0lwlgkn319sk6p"
-    //         value={keepInternalValue ? internalValue : value}
-    //         init={config}
-    //         onInit={onIniteditor}
-    //         onEditorChange={onEditorChanges}
-    //         onFocus={onFocus}
-    //         onBlur={onBlur}
-    //         disabled={disabled}
-    //       />
-    //     </ErrorBoundary>
-    //   </div>
 
-    // </div>
   );
 }
