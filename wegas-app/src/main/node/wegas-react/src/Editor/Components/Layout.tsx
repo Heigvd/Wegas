@@ -15,6 +15,7 @@ import {
 } from './LinearTabLayout/LinearLayout';
 import { PageContextProvider } from './Page/PageEditor';
 import { fullScreenLoaderStyle, PageLoader } from './Page/PageLoader';
+import { AllLibraryEditor } from './ScriptEditors/LibraryEditors/AllLibraryEditor';
 
 const StateMachineEditor = React.lazy(
   () => import('./StateMachine/StateMachineEditor'),
@@ -98,8 +99,8 @@ const availableLayoutTabs: LinearLayoutComponents = [
         content: <StyleLibraryEditor />,
       },
       {
-        tabId: 'AllLibrary',
-        content: <StyleLibraryEditor />,
+        tabId: 'AllLibs',
+        content: <AllLibraryEditor />,
       },
     ],
   },

@@ -84,8 +84,6 @@ function LibraryTypeNodeLabel({
   );
 }
 
-
-
 const labelStyle = css({
   width: '100%',
   ':hover': {
@@ -125,7 +123,7 @@ function LibraryNode({
 }
 
 interface CustomLibraryEditorPropsView {
-  libraryType: LibraryType;
+  libraryType?: LibraryType;
   libraryIndex: Record<string, LibraryWithStatus>;
 }
 
@@ -150,8 +148,8 @@ export function CustomLibraryEditorView({
     setMergeMode(false);
   }, [selectedLibraryName]);
 
-
-  const currentLibrary: LibraryWithStatus | undefined = selectedLibraryName != null ? libraryIndex[selectedLibraryName] : undefined;
+  const currentLibrary: LibraryWithStatus | undefined =
+    selectedLibraryName != null ? libraryIndex[selectedLibraryName] : undefined;
 
   const currentLibraryType = currentLibrary?.libraryType;
 
@@ -170,13 +168,17 @@ export function CustomLibraryEditorView({
     if (currentLibrary != null && !currentLibrary.readOnly) {
       return () => {
         if (currentLibrary != null) {
-          if (currentLibrary.libraryType != null && selectedLibraryName) {
-            saveLibrary(currentLibrary.libraryType, selectedLibraryName, setMessage);
+          if (currentLibrary.libraryType != null) {
+            saveLibrary(
+              currentLibrary.libraryType,
+              currentLibrary.monacoPath,
+              setMessage,
+            );
           }
         }
-      }
+      };
     }
-  }, [currentLibrary, selectedLibraryName, saveLibrary]);
+  }, [currentLibrary, saveLibrary]);
 
   const alloweVisibilities = React.useMemo(() => {
     if (currentLibrary) {
@@ -208,20 +210,20 @@ export function CustomLibraryEditorView({
   return (
     <ReflexContainer orientation="vertical">
       <ReflexElement flex={ 1 } className={ cx(flex, flexColumn) }>
-        { libraryType &&
+        { libraryType && (
           <LibraryTypeNodeLabel
             libraryType={ libraryType }
             onNewLibrary={ onNewLibrary }
           />
-        }
+        ) }
         <TreeView rootId={ String(GameModel.selectCurrent().id) }>
           { Object.entries(libraryIndex)
             /*Object.entries(librariesState[libraryType])*/
             .sort(([a], [b]) => a.localeCompare(b))
             .map(([libraryName, library]) => (
               <LibraryNode
-                key={ library.persisted.id! }
-                libraryName={ libraryName }
+                key={ library.monacoPath }
+                libraryName={ library.label }
                 library={ library }
                 onSelectLibrary={ () => setSelectedLibraryName(libraryName) }
                 selected={ libraryName === selectedLibraryName }
@@ -233,12 +235,12 @@ export function CustomLibraryEditorView({
       <ReflexElement flex={ 5 }>
         <Toolbar className={ expandBoth }>
           <Toolbar.Header className={ defaultPadding }>
-            { selectedLibraryName == null || currentLibrary == null ? (
+            { currentLibrary == null ? (
               'No library selected yet'
             ) : (
               <>
-                <h2>{ selectedLibraryName }</h2>
-                { currentLibraryType != null ?
+                <h2>{ currentLibrary.label }</h2>
+                { currentLibraryType != null ? (
                   <Selector
                     readOnly={
                       alloweVisibilities == null ||
@@ -249,13 +251,13 @@ export function CustomLibraryEditorView({
                     allowUndefined={ false }
                     onChange={ value =>
                       setLibraryVisibility(
-                        currentLibraryType,
-                        selectedLibraryName,
+                        currentLibrary.monacoPath,
                         value as IVisibility,
                       )
                     }
                     className={ cx(defaultMarginRight, css({ width: '10em' })) }
-                  /> : null }
+                  />
+                ) : null }
 
                 { message && (
                   <MessageString
@@ -267,9 +269,9 @@ export function CustomLibraryEditorView({
                 ) }
               </>
             ) }
-            { selectedLibraryName != null && currentLibrary && (
+            { currentLibrary && (
               <>
-                { onSave ?
+                { onSave ? (
                   currentLibrary.conflict ? (
                     <IconButton
                       icon="exclamation-triangle"
@@ -281,17 +283,21 @@ export function CustomLibraryEditorView({
                       icon="save"
                       onClick={ onSave }
                     />
-                  ) : null
-                }
+                  )
+                ) : null }
                 <IconButton icon="download" onClick={ downloadCb } />
-                { currentLibraryType != null ?
+                { currentLibraryType != null ? (
                   <ConfirmButton
                     icon="trash"
                     onAction={ success =>
-                      success && removeLibrary(currentLibraryType, selectedLibraryName)
+                      success &&
+                      removeLibrary(
+                        currentLibraryType,
+                        currentLibrary.monacoPath,
+                      )
                     }
                   />
-                  : null }
+                ) : null }
               </>
             ) }
           </Toolbar.Header>
@@ -307,7 +313,11 @@ export function CustomLibraryEditorView({
                   } }
                 />
               ) : (
-                <SrcEditor fileName={ currentLibrary.monacoPath } onSave={ onSave } />
+                <SrcEditor
+                  fileName={ currentLibrary.monacoPath }
+                  readOnly={ currentLibrary.readOnly }
+                  onSave={ onSave }
+                />
               )
             ) : (
               'No library selected yet'

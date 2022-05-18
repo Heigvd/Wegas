@@ -1,7 +1,9 @@
 import * as React from 'react';
 import {
+  filterByLibraryType,
   librariesCTX,
   LibraryType,
+  LibraryWithStatus,
 } from '../../../../Components/Contexts/LibrariesContext';
 import { CustomLibraryEditorView } from './CustomLibraryEditorView';
 
@@ -16,7 +18,10 @@ export function CustomLibraryEditor({ libraryType }: CustomLibraryEditorProps) {
   const { librariesState } =
     React.useContext(librariesCTX);
 
-  const libs = librariesState[libraryType];
+  const libs = filterByLibraryType(librariesState, libraryType).reduce<Record<string, LibraryWithStatus>>((acc, current) => {
+    acc[current.monacoPath] = current;
+    return acc;
+  }, {});
 
   return (
     <CustomLibraryEditorView

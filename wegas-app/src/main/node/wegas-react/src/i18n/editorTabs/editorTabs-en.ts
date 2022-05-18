@@ -11,6 +11,7 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     Styles: 'Styles',
     Client: 'Client',
     Server: 'Server',
+    AllLibs: 'All Libraries',
     Languages: 'Language Editor',
     'Client Console': 'Client Console',
     'Server Console': 'Server Console',

@@ -75,9 +75,10 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     private GameModel gameModel;
 
     @NotBlank
-    @JsonView(Views.ExportI.class)
+    //@JsonView(Views.ExportI.class)
     @WegasEntityProperty(
-        notSerialized = true,
+        //notSerialized = true,
+        initOnly = true,
         optional = false, nullable = false, proposal = EmptyString.class, ignoreNull = true,
         view = @View(label = "Key", readOnly = true, value = StringView.class))
     private String contentKey;
@@ -260,12 +261,10 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
         this.id = id;
     }
 
-    @JsonIgnore
     public String getContentKey() {
         return contentKey;
     }
 
-    @JsonIgnore
     public void setContentKey(String contentKey) {
         this.contentKey = contentKey;
     }
