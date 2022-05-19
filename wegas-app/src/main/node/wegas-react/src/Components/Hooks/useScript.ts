@@ -1,4 +1,4 @@
-import { cloneDeep, uniq } from 'lodash-es';
+import { cloneDeep, isEqual, uniq } from 'lodash-es';
 import * as React from 'react';
 import { transpile } from 'typescript';
 import {
@@ -20,6 +20,7 @@ import { APIScriptMethods } from '../../API/clientScriptHelper';
 import { fileURL } from '../../API/files.api';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
+import { entityIs } from '../../data/entities';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
@@ -463,8 +464,6 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.wlog = wlog;
 }
 
-export type ScriptReturnType = object | number | boolean | string | undefined;
-
 interface TranspileOptions {
   moduleName?: string;
   injectReturn?: boolean;
@@ -483,7 +482,10 @@ function transpileToFunction(
   // such a statement must be added
   const fnBody = injectReturn ? insertReturn(jsScript) : jsScript;
   //
-  const fnScript = 'eval = () => {throw new Error("Eval is evil");};return (function(){"use strict";undefined;' + fnBody + "})();";
+  const fnScript =
+    'eval = () => {throw new Error("Eval is evil");};return (function(){"use strict";undefined;' +
+    fnBody +
+    '})();';
 
   // hide forbidden object by overriding them with parameters
   // on call, provide undefined arguments
@@ -528,7 +530,7 @@ const memoClientScriptEval = (() => {
   // eslint-disable-next-line @typescript-eslint/ban-types
   const transpiledCache = createLRU<string, Function>(500);
 
-  return <T extends ScriptReturnType>(
+  return <T>(
     script?: string | IScript,
     context: PageComponentContext = {},
     state?: PagesContextState,
@@ -592,7 +594,7 @@ const memoClientScriptEval = (() => {
   };
 })();
 
-export function clientScriptEval<T extends ScriptReturnType>(
+export function clientScriptEval<T>(
   script: string | IScript | undefined,
   context:
     | {
@@ -637,7 +639,7 @@ function handleError(error: unknown, filename?: string): WegasScriptError {
   }
 }
 
-export function safeClientScriptEval<T extends ScriptReturnType>(
+export function safeClientScriptEval<T>(
   script: string | IScript | undefined,
   context:
     | {
@@ -673,13 +675,13 @@ export function safeClientScriptEval<T extends ScriptReturnType>(
  * @param script code to execute
  * @returns Last expression or undefined in case it errors.
  */
-export function useScript<T extends ScriptReturnType>(
+export function useScript<T>(
   script?: (string | IScript | undefined) | (string | IScript | undefined)[],
   context?: {
     [name: string]: unknown;
   },
   catchCB?: (e: Error) => void,
-): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
+): T | undefined {
   const oldContext = React.useRef<{
     [name: string]: unknown;
   }>();
@@ -740,7 +742,7 @@ export function useScript<T extends ScriptReturnType>(
  * @param script code to execute
  * @returns Last expression or LocalEvalError in case it errors.
  */
-export function useUnsafeScript<T extends ScriptReturnType>(
+export function useUnsafeScript<T>(
   script?: string | IScript,
   context?: {
     [name: string]: unknown;
@@ -811,4 +813,47 @@ export function parseAndRunClientScript(
   return isScript(script)
     ? { ...script, content: scriptContent }
     : scriptContent;
+}
+
+export function useScriptWithFallback<T>(variable: T | IScript) {
+  const isScript = entityIs(variable, 'Script');
+  const scriptedVariable = useScript<T>(isScript ? variable : undefined);
+  return isScript ? scriptedVariable : variable;
+}
+
+export function useScriptObjectWithFallback<
+  T extends Record<string, unknown>,
+  ReturnType = { [P in keyof T]: Exclude<T[P], IScript> },
+>(scriptObject: T): ReturnType {
+  const returnedObjectRef = React.useRef<ReturnType>();
+  const scripts = Object.entries(scriptObject).filter(([, v]) =>
+    entityIs(v, 'Script'),
+  );
+  const scriptKeys = scripts.map(([k]) => k);
+  const scriptValues = scripts.map(([, v]) => v as IScript);
+  const evaluatedScripts = useScript<ValueOf<T>[]>(scriptValues) || [];
+  const evaluatedObject = scriptKeys.reduce((o, k, i) => {
+    o[k as string] = evaluatedScripts[i];
+    return o;
+  }, {} as Record<string, unknown>) as ReturnType;
+
+  const values = Object.entries(scriptObject)
+    .filter(([, v]) => !entityIs(v, 'Script'))
+    .reduce((o, [k, v]) => {
+      o[k as string] = v;
+      return o;
+    }, {} as Record<string, unknown>) as ReturnType;
+
+  return React.useMemo(() => {
+    const newObject = { ...values, ...evaluatedObject };
+    if (
+      returnedObjectRef.current != null &&
+      isEqual(returnedObjectRef.current, newObject)
+    ) {
+      return returnedObjectRef.current;
+    } else {
+      returnedObjectRef.current = newObject;
+      return newObject;
+    }
+  }, [evaluatedObject, values]);
 }

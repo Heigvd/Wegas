@@ -7,4 +7,6 @@ export interface PagesTranslations {
   completeCompConfig: string;
   editComponent: string;
   obsoleteComponent: string;
+  allowExternalSources: string;
+  externalSourcesRefused: string;
 }

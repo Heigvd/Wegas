@@ -62,7 +62,7 @@ interface DefaultFormAction<T> {
 
 interface IconFormAction<T> extends DefaultFormAction<T> {
   type: 'IconAction';
-  label?: string;
+  label: string;
   confirm?: boolean;
   icon: Icon;
 }
@@ -170,6 +170,7 @@ export function Form<T>({
               {iconActions.map(({ icon, label, confirm, action, disabledFN }) =>
                 confirm ? (
                   <ConfirmButton
+                    key={label}
                     tooltip={label}
                     icon={icon}
                     disabled={
@@ -183,6 +184,7 @@ export function Form<T>({
                   />
                 ) : (
                   <Button
+                    key={label}
                     tooltip={label}
                     icon={icon}
                     disabled={

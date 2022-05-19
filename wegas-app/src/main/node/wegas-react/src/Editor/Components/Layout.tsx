@@ -51,7 +51,9 @@ const SourceEditor = React.lazy(() => import('./Page/SourceEditor'));
 
 const FindAndReplace = React.lazy(() => import('./FindAndReplace'));
 
-// const Tester = React.lazy(() => import('../../Testers/SchemaPropsTester'));
+// const Tester = React.lazy(
+//   () => import('../../Testers/Components/Map/MapTester'),
+// );
 
 const layout = css({
   display: 'flex',

@@ -2,7 +2,7 @@ import { Schema, setDefaultWidgets } from 'jsoninput';
 import ArrayWidget from './Array';
 import AttachmentSelector from './AttachmentSelector';
 import BooleanView from './Boolean';
-import { Code } from './Code';
+import CodeView from './Code';
 import ColorPickerView from './ColorPickerView';
 import { CustomScript } from './CustomScript';
 import DictionaryView from './Dictionary';
@@ -14,6 +14,7 @@ import hidden from './Hidden';
 import IconSelect from './IconSelect';
 import { LabeledHTMLEditor } from './LabeledHTMLEditor';
 import NumberInput from './Number';
+import Nupple from './Nupple';
 import ObjectView from './Object';
 import PageLoaderSelect from './PageLoaderSelect';
 import PageSelect from './PageSelect';
@@ -47,7 +48,7 @@ export const DEFINED_VIEWS = {
   array: ArrayWidget,
   attachment: AttachmentSelector,
   boolean: BooleanView,
-  code: Code,
+  code: CodeView,
   colorpicker: ColorPickerView,
   customscript: CustomScript,
   dictionary: DictionaryView,
@@ -63,6 +64,7 @@ export const DEFINED_VIEWS = {
   listchildren: ListChildrenSelectView,
   listchildrennull: ListChildrenNullSelectView,
   number: NumberInput,
+  nupple: Nupple,
   object: ObjectView,
   pageselect: PageSelect,
   pagesloaderselect: PageLoaderSelect,

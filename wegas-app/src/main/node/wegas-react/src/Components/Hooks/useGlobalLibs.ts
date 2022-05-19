@@ -43,6 +43,15 @@ import WegasDashboardSrc from '!!raw-loader!../../../types/scripts/WegasDashboar
 import wegasEventsGlobalSrc from '!!raw-loader!../../../types/scripts/WegasEventsGlobals.d.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+import layerSourceTypes from '!!raw-loader!../Maps/helpers/types/LayerSourceTypes.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import layerStyleTypes from '!!raw-loader!../Maps/helpers/types/LayerStyleTypes.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import olTypes from '!!raw-loader!../Maps/helpers/types/OLObjectsTypes.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasEntities.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -97,6 +106,9 @@ const clientLibs: MonacoDefinitionsLibrary[] = [
     name: 'RolesMethodsGlobal.d',
   },
   { content: SchemaHelper, name: 'SchemaHelper.d' },
+  { content: olTypes, name: 'olTypes.d' },
+  { content: layerStyleTypes, name: 'layerStyleTypes.d.ts' },
+  { content: layerSourceTypes, name: 'layerSourceTypes.d' },
 ];
 
 const serverLibs: MonacoDefinitionsLibrary[] = [

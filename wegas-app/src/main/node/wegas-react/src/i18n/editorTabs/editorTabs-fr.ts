@@ -171,6 +171,7 @@ export const editorTabsTranslationsFR: EditorTabsTranslations = {
       Input: 'Entrée',
       Output: 'Sortie',
       Advanced: 'Avancé',
+      Maps: 'Maps',
       Programmatic: 'Programmatique',
       Utility: 'Utilitaire',
     },

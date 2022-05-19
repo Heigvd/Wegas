@@ -27,7 +27,10 @@ export const FILE_BASE = (gameModelId?: number) =>
  * @param absolutePath the absolute path of the file to read
  */
 export const fileURL = (absolutePath: string, gameModelId?: number) => {
-  return API_ENDPOINT + FILE_BASE(gameModelId) + 'read' + absolutePath;
+  const splitter = absolutePath[0] === '/' ? '' : '/';
+  return (
+    API_ENDPOINT + FILE_BASE(gameModelId) + 'read' + splitter + absolutePath
+  );
 };
 
 /**
