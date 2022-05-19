@@ -18,15 +18,16 @@ import { Modal } from '../Modal';
 // import { isActionAllowed } from '../PageComponents/tools/options';
 import { themeCTX } from '../Theme/Theme';
 import { defaultLightMode, modeStyle, themeVar } from '../Theme/ThemeVars';
+import JoditReactEditor from './JoditReactEditor';
 import QuillReact from './QuillReact';
 
 // tinymce.EditorManager.execCommand('mceRemoveEditor', false, 'myEditor');
 // tinymce.EditorManager.execCommand('mceAddEditor', false, 'myEditor');
 
-const fontUrl =
-  require('../../css/fonts/Raleway-VariableFont_wght.ttf').default;
-const fontItalicUrl =
-  require('../../css/fonts/Raleway-Italic-VariableFont_wght.ttf').default;
+// const fontUrl =
+//   require('../../css/fonts/Raleway-VariableFont_wght.ttf').default;
+// const fontItalicUrl =
+//   require('../../css/fonts/Raleway-Italic-VariableFont_wght.ttf').default;
 
 // const toolbar = css({
 //   width: '300px',
@@ -409,7 +410,7 @@ export default function HTMLEditorMk2({
 
   return (
     <div>
-      <QuillReact
+      <JoditReactEditor
         value={keepInternalValue ? internalValue : value}
         onChange={onEditorChanges}
         placeholder={placeholder}
