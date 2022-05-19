@@ -1,8 +1,9 @@
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { roleCTX } from '../../Components/Contexts/RoleProvider';
 import { MaxiLoader } from '../../Components/MaxiLoader';
 import { themeVar } from '../../Components/Theme/ThemeVars';
+import { expandWidth } from '../../css/classes';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
 import { useStore } from '../../data/Stores/store';
@@ -212,15 +213,35 @@ export default function Layout() {
   }
 
   return (
-    <div className={layout} id="WegasLayout">
-      <Header />
-      <PageContextProvider layoutId={mainLayoutId}>
-        <DndLinearLayout
-          tabs={layoutPages}
-          initialLayout={initialLayout}
-          layoutId={mainLayoutId}
-        />
-      </PageContextProvider>
-    </div>
+    <>
+      {WEGAS_SAFE_MODE && (
+        <div
+          className={cx(
+            expandWidth,
+            css({
+              textAlign: 'center',
+              color: 'white',
+              fontSize: '20px',
+              lineHeight: '40px',
+              backgroundColor: 'var(--colors-errorcolor)',
+            }),
+          )}
+        >
+          SAFE MODE
+          <br />
+          All client scripts are disabled
+        </div>
+      )}
+      <div className={layout} id="WegasLayout">
+        <Header />
+        <PageContextProvider layoutId={mainLayoutId}>
+          <DndLinearLayout
+            tabs={layoutPages}
+            initialLayout={initialLayout}
+            layoutId={mainLayoutId}
+          />
+        </PageContextProvider>
+      </div>
+    </>
   );
 }

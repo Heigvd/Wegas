@@ -42,6 +42,7 @@
   <h:body>
     <div id="root" />
     <script type="application/javascript">
+      var WEGAS_SAFE_MODE = ${editorGameController.safeMode }
       var API_ENDPOINT = "#{request.contextPath}" + "/rest/";
       var API_VIEW = "Editor";
       var APP_CONTEXT = "Editor";
