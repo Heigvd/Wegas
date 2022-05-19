@@ -46,7 +46,7 @@ if (!isCI && PREPROD) {
 }
 
 const modules = {
-  devtool: PROD || PREPROD ? 'source-map' : 'inline-source-map',
+  devtool: PROD || PREPROD ? 'source-map' : 'source-map',
   optimization: {
     minimizer: [
       compiler => {
