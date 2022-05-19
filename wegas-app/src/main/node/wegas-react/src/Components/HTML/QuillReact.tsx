@@ -1,10 +1,9 @@
-import Quill, { EditorChangeHandler } from 'quill';
+import Quill from 'quill';
 import React from 'react';
 import { HTMLEditorPropsMk2 } from './HTMLEditorMk2';
 import { wlog } from '../../Helper/wegaslog';
 import "quill/dist/quill.snow.css";
 // import { css } from '@emotion/css';
-import './QuillStyle.css';
 import { css } from '@emotion/css';
 // import { themeVar } from '../Theme/ThemeVars';
 import sanitize from '../../Helper/sanitize';
@@ -155,6 +154,7 @@ const toolbarOptions = [
     ['image'],
     ['code-block'],
     [{ 'color': [] }, { 'background': [] }],
+    ['clean', 'blockquote'],
 
     [{ header: [false, 1, 2, 3, 4, 5, 6] }],
     // [{ size: [ 'small', false, 'large', 'huge' ]}],
@@ -165,18 +165,9 @@ function addToolbarButtonHandler(quill: Quill, target: string, handlerFunc: (qui
     module.addHandler(target, () => handlerFunc(quill));
 }
 
-// function insertImage(quill: Quill, )){
-
-// }
-
-// function buildInsertImageFunc(quill: Quill, showFilePicker : ((f : (path: string ) => void) => void ) ,handler: (() => void)){
-//     return 
-// }
-
 export default function QuillReact(props : QuillEditorProps){
 
     // wlog('Rendering QuillReact');
-
     const containerRef = React.useRef<HTMLDivElement>(null);
     const quill = React.useRef<Quill>();
 
@@ -204,16 +195,17 @@ export default function QuillReact(props : QuillEditorProps){
         else if(containerRef.current){
             wlog('creating quill editor');
 
-            const fontAttributor = Quill.import('formats/font');
-            const fonts = ['impact', 'courier', 'comic'];
-            // const lHeights = ['1.0','1.1','1.2','1.3','1.4','1.5','1.6'];
-            fontAttributor.whitelist = fonts;
+            // const fontAttributor = Quill.import('formats/font');
+            // const fonts = ['impact', 'courier', 'comic'];
+            // // const lHeights = ['1.0','1.1','1.2','1.3','1.4','1.5','1.6'];
+            // fontAttributor.whitelist = fonts;
+            // Quill.register(fontAttributor, true);
 
-            Quill.register(fontAttributor, true);
             const q = new Quill(containerRef.current, {
                 modules: {
                     toolbar: toolbarOptions,
                 },
+
                 //placeholder: '',
                 theme: 'snow',  // or 'bubble',
                 debug: 'debug',
@@ -230,16 +222,42 @@ export default function QuillReact(props : QuillEditorProps){
                 // TODO build real WEGAS url
                 if(props.showFilePickerFunc){
                     props.showFilePickerFunc((path) => {
-                            wlog('got path back', path);
-                            quill.insertEmbed(cursorPos, 'image', path, 'user');
-                            // quill.insertEmbed(cursorPos, 'image', 'https://img-9gag-fun.9cache.com/photo/a3Q5VW5_700bwp.webp', 'user');
-                        });
+                        wlog('got path back', path);
+                        quill.insertEmbed(cursorPos, 'image', path, 'user');
+                        // quill.insertEmbed(cursorPos, 'image', 'https://img-9gag-fun.9cache.com/photo/a3Q5VW5_700bwp.webp', 'user');
+                    });
                 }
             });
 
-            //Handler to edit pure html
-            addToolbarButtonHandler(q, 'code-block', (quill) => {
+            addToolbarButtonHandler(q, 'clean', (quill) => {
+                wlog('format test');
+                const range = quill.getSelection();
+                if(range){
+                    quill.formatText(range, {
+                        'bold': false,
+                        'color': 'rgb(0, 0, 255)'
+                    })
+                }
+            });
+
+            addToolbarButtonHandler(q, 'blockquote', (quill) => {
+                wlog('format line test');
+                const range = quill.getSelection();
                 
+                if(range){
+                    // const lines = quill.getLines(range);
+                    // wlog(lines);
+                    // wlog(range);
+                    // quill.formatLine(range.index, range.length, 'header', 1);
+                    // quill.formatLine(range.index, range.length, 'header', 1);
+
+                    quill.formatLine(range.index, range.length, 
+                    {
+                        'header': 3,
+                        'color': 'rgb(200, 100, 255)'
+                    }
+                    )
+                }
             });
 
             q.on('text-change', ((_delta, _old, source) => {

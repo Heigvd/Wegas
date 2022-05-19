@@ -10,6 +10,7 @@ import { useDebouncedOnChange } from '../../Hooks/useDebounce';
 import { useScript } from '../../Hooks/useScript';
 import HTMLEditor from '../../HTML/HTMLEditor';
 // import HTMLEditor from '../../HTML/HTMLEditor';
+// import HTMLEditor from '../../HTML/HTMLEditor';
 import HTMLEditorMk2 from '../../HTML/HTMLEditorMk2';
 import {
   useOnCancelAction,
@@ -94,7 +95,7 @@ function PlayerTextInput({
     <Validate value={value} onValidate={onChange} onCancel={handleOnCancel}>
       {(value, onChange) => {
         return (
-          <HTMLEditorMk2
+          <HTMLEditor
             id={id}
             value={String(value)}
             onChange={onChange}
@@ -117,6 +118,7 @@ function PlayerTextInput({
       placeholder={placeholderText}
       className={className}
       style={style}
+
     />
   );
 }
