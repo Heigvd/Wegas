@@ -122,6 +122,10 @@ export const wegasVectorLayerSourceSchema: AvailableSchemas = {
       }),
     }),
     sourceProjection: projectionSchema('Source projection'),
+    useSpatialIndex: schemaProps.boolean({
+      label: 'Use spatial index',
+      value: true,
+    }),
   },
 };
 

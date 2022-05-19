@@ -108,6 +108,7 @@ export default function PlayerVectorLayer({
           dataProjection: layerSource.sourceProjection,
           featureProjection: projection,
         }),
+        useSpatialIndex: layerSource.useSpatialIndex,
       });
     }
 
