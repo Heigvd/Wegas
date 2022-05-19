@@ -371,7 +371,7 @@ export default function HTMLEditor({
           ${Object.entries(wegasStyle)
             .map(([k, v]) => k + ':' + v)
             .join(';')}  ;
-          font-family: ${themeVar.others.TextFont2}; 
+          font-family: ${themeVar.others.TextFont2};
         }`,
       // init_instance_callback: function (editor) {
       //   editor.on('ExecCommand', function (e) {
@@ -454,6 +454,7 @@ export default function HTMLEditor({
       {fileBrowsing.fn && (
         <Modal onExit={() => setFileBrowsing({})}>
           <FileBrowser
+            pickOnly
             onFileClick={file => {
               setFileBrowsing({});
               file &&
