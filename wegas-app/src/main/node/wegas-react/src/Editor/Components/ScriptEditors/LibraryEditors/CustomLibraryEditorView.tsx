@@ -18,6 +18,8 @@ import { Toolbar } from '../../../../Components/Toolbar';
 import { TreeNode } from '../../../../Components/TreeView/TreeNode';
 import { TreeView } from '../../../../Components/TreeView/TreeView';
 import {
+  defaultMarginBottom,
+  defaultMarginLeft,
   defaultMarginRight,
   defaultPadding,
   expandBoth,
@@ -46,6 +48,15 @@ interface LibraryTypeNodeLabelProps {
   onNewLibrary: (message: LibrariesCallbackMessage) => void;
 }
 
+const unsaved = css({
+  fontWeight: 'bolder',
+});
+
+
+const conflict = css({
+  color: 'var(--colors-errorcolor)',
+});
+
 function LibraryTypeNodeLabel({
   libraryType,
   onNewLibrary,
@@ -55,7 +66,7 @@ function LibraryTypeNodeLabel({
   const { addLibrary } = React.useContext(librariesCTX);
 
   return (
-    <div className={ cx(flex, flexBetween) }>
+    <div className={ cx(flex, flexBetween, defaultMarginBottom, defaultMarginLeft) }>
       { !editState ? (
         <Button
           label={ `New ${ libraryType } library` }
@@ -110,6 +121,8 @@ function LibraryNode({
             flexBetween,
             cx({
               [globalSelection]: selected,
+              [unsaved]: library.modified,
+              [conflict]: library.conflict,
             }),
           ) }
         >
@@ -168,13 +181,10 @@ export function CustomLibraryEditorView({
     if (currentLibrary != null && !currentLibrary.readOnly) {
       return () => {
         if (currentLibrary != null) {
-          if (currentLibrary.libraryType != null) {
-            saveLibrary(
-              currentLibrary.libraryType,
-              currentLibrary.monacoPath,
-              setMessage,
-            );
-          }
+          saveLibrary(
+            currentLibrary.monacoPath,
+            setMessage,
+          );
         }
       };
     }
@@ -210,12 +220,18 @@ export function CustomLibraryEditorView({
   return (
     <ReflexContainer orientation="vertical">
       <ReflexElement flex={ 1 } className={ cx(flex, flexColumn) }>
-        { libraryType && (
+        { libraryType ? (
           <LibraryTypeNodeLabel
             libraryType={ libraryType }
             onNewLibrary={ onNewLibrary }
           />
-        ) }
+        ): <>
+
+            <LibraryTypeNodeLabel libraryType='client' onNewLibrary={ onNewLibrary } />
+            <LibraryTypeNodeLabel libraryType='server' onNewLibrary={ onNewLibrary } />
+            <LibraryTypeNodeLabel libraryType='style' onNewLibrary={ onNewLibrary } />
+        </>
+         }
         <TreeView rootId={ String(GameModel.selectCurrent().id) }>
           { Object.entries(libraryIndex)
             /*Object.entries(librariesState[libraryType])*/
@@ -286,13 +302,12 @@ export function CustomLibraryEditorView({
                   )
                 ) : null }
                 <IconButton icon="download" onClick={ downloadCb } />
-                { currentLibraryType != null ? (
+                { !currentLibrary.readOnly ? (
                   <ConfirmButton
                     icon="trash"
                     onAction={ success =>
                       success &&
                       removeLibrary(
-                        currentLibraryType,
                         currentLibrary.monacoPath,
                       )
                     }

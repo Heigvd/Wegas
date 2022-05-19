@@ -65,7 +65,7 @@ function libraryTypeToLanguage(libraryType: LibraryType): SrcEditorLanguages {
   }
 }
 
-function libraryTypeToFormat(libraryType: LibraryType): string {
+export function libraryTypeToFormat(libraryType: LibraryType): string {
   return languageToFormat(libraryTypeToLanguage(libraryType));
 }
 
@@ -388,7 +388,6 @@ interface LibrariesContext {
     addLibraryCB?: (message: LibrariesCallbackMessage) => void,
   ) => void;
   saveLibrary: (
-    libraryType: LibraryType,
     libraryName: string,
     saveLibraryCB?: (message: LibrariesCallbackMessage) => void,
   ) => void;
@@ -397,7 +396,6 @@ interface LibrariesContext {
     visibility: IVisibility,
   ) => void;
   removeLibrary: (
-    libraryType: LibraryType,
     libraryName: string,
     removeLibraryCB?: (message: LibrariesCallbackMessage) => void,
   ) => void;
@@ -555,7 +553,7 @@ export function LibrariesLoader(
     (updatedLibraryName: string) => {
       LibraryAPI.getLibrary('ClientScript', updatedLibraryName).then(
         (library: IGameModelContent) => {
-          const path = computeLibraryPath(updatedLibraryName, "server");
+          const path = computeLibraryPath(updatedLibraryName, "client");
           dispatchLibrariesState({
             actionType: 'UpdateLibrary',
             libraryType: 'client',
@@ -761,7 +759,6 @@ export function LibrariesLoader(
 
   const saveLibrary = React.useCallback<LibrariesContext['saveLibrary']>(
     (
-      libraryType: LibraryType,
       libraryPath: string,
       saveLibraryCB?: (message: LibrariesCallbackMessage) => void,
     ) => {
@@ -771,7 +768,7 @@ export function LibrariesLoader(
       const selectedMonacoModel =
         reactMonaco != null ? getModel(reactMonaco, libraryPath) : undefined;
 
-      const effectiveType = libraryTypeToServerLibraryType(libraryType);
+      const effectiveType = libraryTypeToServerLibraryType(selectedPersistedLibrary.libraryType);
       if (effectiveType == null) {
         return;
       }
@@ -787,16 +784,17 @@ export function LibrariesLoader(
 
         LibraryAPI.saveLibrary(
           effectiveType,
-          selectedPersistedLibrary.label,
+          selectedPersistedLibrary.persisted.contentKey,
           newLibrary,
         )
           .then(library => {
             let savedWithErrors = false;
-            if (libraryType === 'client') {
+            if (effectiveType === 'ClientScript') {
               try {
                 // set PageStore reloading status to true to prevent usePagesContextStateStore hooks to be triggered
                 // pageStore will be resumed after all clientscript libs will have been reloaded
                 setReloadingStatus(true);
+                // this execution is only made to catch errors
                 executeClientLibrary(selectedPersistedLibrary.label, library.content);
               } catch (e) {
                 savedWithErrors = true;
@@ -818,7 +816,7 @@ export function LibrariesLoader(
 
             dispatchLibrariesState({
               actionType: 'SaveLibrary',
-              libraryType,
+              libraryType: selectedPersistedLibrary.libraryType,
               libraryPath,
               library,
             });
@@ -842,7 +840,11 @@ export function LibrariesLoader(
   );
 
   const removeLibrary = React.useCallback<LibrariesContext['removeLibrary']>(
-    (libraryType, libraryPath, removeLibraryCB) => {
+    (libraryPath, removeLibraryCB) => {
+
+      const selectedPersistedLibrary = librariesState[libraryPath];
+      const libraryType = selectedPersistedLibrary.libraryType;
+
       const effectiveType = libraryTypeToServerLibraryType(libraryType);
       if (effectiveType ==null){
         return;
@@ -850,7 +852,7 @@ export function LibrariesLoader(
 
       LibraryAPI.deleteLibrary(
       effectiveType,
-        libraryPath,
+        selectedPersistedLibrary.persisted.contentKey,
       )
         .then(() => {
           // Remove library in state
@@ -869,7 +871,7 @@ export function LibrariesLoader(
             });
         });
     },
-    [i18nValues.scripts.libraryCannotDelete, reactMonaco],
+    [i18nValues.scripts.libraryCannotDelete, reactMonaco, librariesState],
   );
 
   const setLibraryVisibility = React.useCallback<

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  librariesCTX,
+  librariesCTX, libraryTypeToFormat, LibraryWithStatus,
 } from '../../../../Components/Contexts/LibrariesContext';
 import { CustomLibraryEditorView } from './CustomLibraryEditorView';
 
@@ -10,11 +10,19 @@ import { CustomLibraryEditorView } from './CustomLibraryEditorView';
 export function AllLibraryEditor() {
 
   const { librariesState } =
-    React.useContext(librariesCTX);
+    React.useContext(librariesCTX)
 
+      // label: `${ value.libraryType }/${ value.label }`
+  const index = Object.entries(librariesState).reduce<Record<string, LibraryWithStatus>>((acc, [key, value]) => {
+    acc[key] = {
+      ...value,
+      label: `${ value.libraryType }/${ value.label }.${ libraryTypeToFormat(value.libraryType)}`
+    }
+    return acc;
+  }, {});
   return (
     <CustomLibraryEditorView
-      libraryIndex={ librariesState }
+      libraryIndex={ index }
     />
   );
 }
