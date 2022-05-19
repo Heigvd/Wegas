@@ -61,6 +61,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerFileInput,
     componentType: 'Input',
+    id: 'File input',
     name: 'File input',
     icon: 'image',
     illustration: 'fileInput',

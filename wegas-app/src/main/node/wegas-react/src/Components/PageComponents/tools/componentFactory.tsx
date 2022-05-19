@@ -96,6 +96,10 @@ interface ComponentFactoryBasicParameters<
   T extends IVariableDescriptor['@class'],
 > {
   /**
+   * The id of the component
+   */
+  id: string;
+  /**
    * The name of the component
    */
   name: string;
@@ -173,7 +177,7 @@ export interface PageComponent<
     PageComponentOmitProps
   > {
   WegasComponent: React.FunctionComponent<P>;
-  componentName: string;
+  componentId: string;
   schema: {
     description: string;
     properties: { [prop: string]: AvailableSchemas };
@@ -295,7 +299,7 @@ export function pageComponentFactory<
   return {
     ...omit(param, pageComponentOmitProps),
     WegasComponent: param.component,
-    componentName: param.name,
+    componentId: param.id,
     schema: {
       description: param.name,
       properties: { ...classStyleIdShema, ...param.schema },
@@ -318,7 +322,7 @@ export const registerComponent: (component: PageComponent) => void =
   component => {
     componentsStore.dispatch(
       PageComponentActionCreator.ADD_COMPONENT(
-        component.componentName,
+        component.componentId,
         component,
       ),
     );

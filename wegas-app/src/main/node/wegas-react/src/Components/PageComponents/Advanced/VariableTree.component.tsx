@@ -62,6 +62,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerVariableTree,
     componentType: 'Advanced',
+    id: 'Variable tree',
     name: 'Variable tree',
     icon: 'atom',
     illustration: 'variableTree',
@@ -88,6 +89,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerVariableTree,
     componentType: 'Advanced',
+    id: 'File browser',
     name: 'File browser',
     icon: 'atom',
     illustration: 'fileBrowser',

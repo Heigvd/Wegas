@@ -63,6 +63,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerGauge,
     componentType: 'Output',
+    id: 'Gauge',
     name: 'Gauge',
     icon: 'tachometer-alt',
     illustration: 'gauge',

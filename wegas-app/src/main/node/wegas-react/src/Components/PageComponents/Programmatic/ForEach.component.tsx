@@ -100,6 +100,7 @@ registerComponent(
       ChildrenDeserializer,
       childrenLayoutOptionSchema: flexlayoutChoices,
     },
+    id: 'For each',
     name: 'For each',
     icon: 'code',
     illustration: 'forEach',

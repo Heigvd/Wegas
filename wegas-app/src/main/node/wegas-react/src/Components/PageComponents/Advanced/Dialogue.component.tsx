@@ -43,6 +43,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerDialogue,
     componentType: 'Advanced',
+    id: 'Dialogue',
     name: 'Dialogue',
     icon: 'comments',
     illustration: 'dialogue',

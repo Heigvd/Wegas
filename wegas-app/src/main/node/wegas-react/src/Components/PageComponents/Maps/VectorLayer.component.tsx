@@ -154,7 +154,8 @@ registerComponent(
   pageComponentFactory({
     component: PlayerVectorLayer,
     componentType: 'Maps',
-    name: 'WegasMapVectorLayer',
+    id: 'WegasMapVectorLayer',
+    name: 'Vector layer',
     icon: 'map',
     illustration: 'scatter',
     schema: {

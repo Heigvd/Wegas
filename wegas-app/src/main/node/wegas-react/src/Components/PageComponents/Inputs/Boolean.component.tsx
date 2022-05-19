@@ -93,6 +93,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerBoolean,
     componentType: 'Input',
+    id: 'Boolean',
     name: 'Boolean',
     icon: 'check-square',
     illustration: 'boolean',

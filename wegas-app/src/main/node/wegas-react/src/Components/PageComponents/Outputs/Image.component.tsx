@@ -51,6 +51,7 @@ registerComponent(
   pageComponentFactory({
     component: Image,
     componentType: 'Output',
+    id: 'Image',
     name: 'Image',
     icon: 'image',
     illustration: 'image',

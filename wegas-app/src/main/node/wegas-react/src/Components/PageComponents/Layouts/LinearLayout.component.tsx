@@ -169,7 +169,8 @@ const test = pageComponentFactory({
     ChildrenDeserializer,
     childrenLayoutKeys: [],
   },
-  name: CONTENT_TYPE,
+  id: CONTENT_TYPE,
+  name: 'Linear layout',
   icon: 'columns',
   illustration: 'linearLayout',
   schema: {

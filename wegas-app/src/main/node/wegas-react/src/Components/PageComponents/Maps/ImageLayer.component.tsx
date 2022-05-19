@@ -72,7 +72,8 @@ registerComponent(
   pageComponentFactory({
     component: PlayerImageLayer,
     componentType: 'Maps',
-    name: 'WegasMapImageLayer',
+    id: 'WegasMapImageLayer',
+    name: 'Image layer',
     icon: 'map',
     illustration: 'scatter',
     schema: {

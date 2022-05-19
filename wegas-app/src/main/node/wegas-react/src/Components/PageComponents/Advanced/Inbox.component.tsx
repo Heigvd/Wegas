@@ -43,6 +43,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerInbox,
     componentType: 'Advanced',
+    id: 'Inbox',
     name: 'Inbox',
     icon: 'envelope',
     illustration: 'inbox',

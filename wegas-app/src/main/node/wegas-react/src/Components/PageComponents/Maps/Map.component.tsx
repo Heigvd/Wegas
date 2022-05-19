@@ -125,7 +125,8 @@ registerComponent(
     container: {
       ChildrenDeserializer: childrenDeserializerFactory(),
     },
-    name: 'WegasMap',
+    id: 'WegasMap',
+    name: 'Map',
     icon: 'map',
     illustration: 'scatter',
     schema: {

@@ -126,6 +126,7 @@ registerComponent(
       ChildrenDeserializer: ChildrenDeserializer,
       childrenLayoutOptionSchema: flexlayoutChoices,
     },
+    id: 'State',
     name: 'State',
     icon: 'code',
     illustration: 'state',

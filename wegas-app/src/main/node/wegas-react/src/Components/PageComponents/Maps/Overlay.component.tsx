@@ -121,7 +121,8 @@ registerComponent(
     container: {
       ChildrenDeserializer,
     },
-    name: 'WegasMapOverlay',
+    id: 'WegasMapOverlay',
+    name: 'Overlay',
     icon: 'map',
     illustration: 'scatter',
     schema: overlaySchema,

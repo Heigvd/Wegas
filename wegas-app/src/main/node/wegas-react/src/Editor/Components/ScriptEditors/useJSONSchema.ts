@@ -59,7 +59,7 @@ export function useJSONSchema() {
       properties: {
         type: {
           type: 'string',
-          enum: [component.componentName],
+          enum: [component.componentId],
         },
         props: {
           type: 'object',

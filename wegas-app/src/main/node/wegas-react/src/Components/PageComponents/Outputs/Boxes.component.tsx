@@ -77,6 +77,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerBoxes,
     componentType: 'Output',
+    id: 'Boxes',
     name: 'Boxes',
     icon: 'ellipsis-h',
     illustration: 'boxes',
