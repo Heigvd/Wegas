@@ -39,6 +39,7 @@ interface VectorLayerSourceObject {
   dataType: 'OSM' | 'GeoJSON';
   source: IScript | string;
   sourceProjection?: string;
+  useSpatialIndex?: boolean;
 }
 
 type LayerSourceObject =

@@ -76,7 +76,9 @@ function PlayerStringInput({
       } else if (typeof text === 'object') {
         editingStore.dispatch(
           runScript(
-            `Variable.find(gameModel,"${ text.getName() }").setValue(self, ${ JSON.stringify(v) });`,
+            `Variable.find(gameModel,"${text.getName()}").setValue(self, ${JSON.stringify(
+              v,
+            )});`,
           ),
         );
       }
@@ -121,7 +123,8 @@ registerComponent(
   pageComponentFactory({
     component: PlayerStringInput,
     componentType: 'Input',
-    name: 'String input',
+    id: 'String input',
+    name: 'String',
     icon: 'paragraph',
     illustration: 'stringInput',
     schema: {

@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { HTMLText } from '../../Outputs/HTMLText';
-import {
-  registerComponent,
-  pageComponentFactory,
-} from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
-import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
+import { HTMLText } from '../../Outputs/HTMLText';
+import {
+  pageComponentFactory,
+  registerComponent,
+} from '../tools/componentFactory';
+import { WegasComponentProps } from '../tools/EditableComponent';
 import { classStyleIdShema } from '../tools/options';
+import { schemaProps } from '../tools/schemaProps';
 
 export interface PlayerTextProps extends WegasComponentProps {
   text?: IScript;
@@ -43,6 +43,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerText,
     componentType: 'Output',
+    id: 'Text',
     name: 'Text',
     icon: 'paragraph',
     illustration: 'text',

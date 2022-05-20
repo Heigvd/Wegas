@@ -106,6 +106,24 @@ interface GlobalClasses {
   };
 }
 
+const refs: Record<string, { current: unknown }> = {};
+/**
+ * Create and init a PageContext state.
+ * @param id the ref will be saved with this id
+ * @param value: initial state value
+ *
+ * @returns an object with a "current" prop that can be sat and will keep its value even when scripts are reloaded
+ */
+export const useRef: GlobalHelpersClass['useRef'] = <T>(
+  id: string,
+  value: T,
+) => {
+  if (!(id in refs)) {
+    refs[id] = { current: value };
+  }
+  return refs[id] as { current: T };
+};
+
 const globalDispatch = store.dispatch;
 
 export function createSandbox<T = unknown>() {
@@ -443,6 +461,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.Helpers = {
     cloneDeep: cloneDeep,
     uniq: uniq,
+    useRef,
     getState: getPageState,
     getLogger: getLogger,
     registerEffect: registerEffect,

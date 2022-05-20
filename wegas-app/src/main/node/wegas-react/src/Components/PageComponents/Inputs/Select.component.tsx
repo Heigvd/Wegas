@@ -129,7 +129,8 @@ registerComponent(
   pageComponentFactory({
     component: PlayerSelectInput,
     componentType: 'Input',
-    name: 'Select input',
+    id: 'Select input',
+    name: 'Select',
     icon: 'list-ul',
     illustration: 'selectInput',
     schema: {

@@ -73,7 +73,8 @@ registerComponent(
   pageComponentFactory({
     component: PlayerTileLayer,
     componentType: 'Maps',
-    name: 'WegasMapTileLayer',
+    id: 'WegasMapTileLayer',
+    name: 'Tile layer',
     icon: 'map',
     illustration: 'scatter',
     schema: {

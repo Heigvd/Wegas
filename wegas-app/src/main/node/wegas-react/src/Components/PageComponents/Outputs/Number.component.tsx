@@ -51,6 +51,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerNumber,
     componentType: 'Output',
+    id: 'Number',
     name: 'Number',
     icon: 'calculator',
     illustration: 'number',

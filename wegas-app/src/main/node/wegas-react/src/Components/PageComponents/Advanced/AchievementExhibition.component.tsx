@@ -1,11 +1,11 @@
 import * as React from 'react';
+import { AchievementExhibition } from '../../Achivements/AchievementExhibition';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { classStyleIdShema } from '../tools/options';
-import { AchievementExhibition } from '../../Achivements/AchievementExhibition';
 
 interface PlayerAchievementExhibitionProps extends WegasComponentProps {
   quest: string;
@@ -21,6 +21,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerAchievementExhibition,
     componentType: 'Advanced',
+    id: 'Achievement Exhibitions',
     name: 'Achievement Exhibitions',
     icon: 'star',
     illustration: 'achievementExhibition',

@@ -74,7 +74,9 @@ function PlayerTextInput({
       } else if (typeof text === 'object') {
         editingStore.dispatch(
           runScript(
-            `Variable.find(gameModel,"${ text.getName() }").setValue(self, ${ JSON.stringify(v) });`,
+            `Variable.find(gameModel,"${text.getName()}").setValue(self, ${JSON.stringify(
+              v,
+            )});`,
           ),
         );
       }
@@ -82,7 +84,11 @@ function PlayerTextInput({
     [handleOnChange, text],
   );
 
-  const {currentValue, debouncedOnChange } = useDebouncedOnChange(value, onChange, 400);
+  const { currentValue, debouncedOnChange } = useDebouncedOnChange(
+    value,
+    onChange,
+    400,
+  );
 
   return text == null ? (
     <UncompleteCompMessage pageId={pageId} path={path} />
@@ -121,7 +127,8 @@ registerComponent(
   pageComponentFactory({
     component: PlayerTextInput,
     componentType: 'Input',
-    name: 'Text input',
+    id: 'Text input',
+    name: 'Text',
     icon: 'paragraph',
     illustration: 'textInput',
     schema: {

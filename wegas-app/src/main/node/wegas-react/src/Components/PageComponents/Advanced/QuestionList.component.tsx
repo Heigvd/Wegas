@@ -48,7 +48,8 @@ registerComponent(
   pageComponentFactory({
     component: QuestionListDisplay,
     componentType: 'Advanced',
-    name: 'QuestionList',
+    id: 'QuestionList',
+    name: 'Question list',
     icon: 'bars',
     illustration: 'questionList',
     schema: {

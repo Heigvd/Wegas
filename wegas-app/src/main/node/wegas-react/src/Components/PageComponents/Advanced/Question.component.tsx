@@ -46,6 +46,7 @@ registerComponent(
   pageComponentFactory({
     component: QuestionDisplay,
     componentType: 'Advanced',
+    id: 'Question',
     name: 'Question',
     icon: 'question',
     illustration: 'question',

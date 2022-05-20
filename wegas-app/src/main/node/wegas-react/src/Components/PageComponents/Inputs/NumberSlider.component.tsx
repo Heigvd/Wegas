@@ -114,7 +114,8 @@ registerComponent(
   pageComponentFactory({
     component: PlayerNumberSlider,
     componentType: 'Input',
-    name: 'NumberSlider',
+    id: 'NumberSlider',
+    name: 'Number slider',
     icon: 'sliders-h',
     illustration: 'numberSlider',
     schema: {

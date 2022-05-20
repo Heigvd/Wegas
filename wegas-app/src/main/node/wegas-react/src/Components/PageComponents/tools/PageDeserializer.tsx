@@ -185,7 +185,7 @@ export function PageDeserializer({
   const {
     WegasComponent,
     container,
-    componentName,
+    componentId,
     obsoleteComponent,
     currentWegasComponent,
   } = component || emptyObject;
@@ -230,7 +230,7 @@ export function PageDeserializer({
       key={pageId}
       path={realPath}
       pageId={pageId}
-      componentType={componentName}
+      componentType={componentId}
       isContainer={container != null}
       context={context}
       vertical={
@@ -253,7 +253,7 @@ export function PageDeserializer({
         currentWegasComponent,
       ) ? (
         <ObsoleteComponentManager
-          componentType={componentName}
+          componentType={componentId}
           pageId={pageId}
           path={realPath}
           sanitizer={obsoleteComponent.sanitizer}
@@ -263,7 +263,7 @@ export function PageDeserializer({
           path={realPath}
           pageId={pageId}
           context={context}
-          componentType={componentName}
+          componentType={componentId}
           Container={Container}
           containerPropsKeys={containerPropsKeys}
           {...restProps}

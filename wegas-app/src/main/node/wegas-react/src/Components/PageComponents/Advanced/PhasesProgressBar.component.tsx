@@ -78,6 +78,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerPhasesProgressBar,
     componentType: 'Advanced',
+    id: 'Phases',
     name: 'Phases',
     icon: 'ellipsis-h',
     illustration: 'phases',

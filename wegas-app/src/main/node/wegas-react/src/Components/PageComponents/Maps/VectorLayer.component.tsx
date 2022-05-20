@@ -108,6 +108,7 @@ export default function PlayerVectorLayer({
           dataProjection: layerSource.sourceProjection,
           featureProjection: projection,
         }),
+        useSpatialIndex: layerSource.useSpatialIndex,
       });
     }
 
@@ -153,7 +154,8 @@ registerComponent(
   pageComponentFactory({
     component: PlayerVectorLayer,
     componentType: 'Maps',
-    name: 'WegasMapVectorLayer',
+    id: 'WegasMapVectorLayer',
+    name: 'Vector layer',
     icon: 'map',
     illustration: 'scatter',
     schema: {

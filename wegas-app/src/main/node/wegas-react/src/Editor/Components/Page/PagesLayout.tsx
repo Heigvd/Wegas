@@ -371,11 +371,11 @@ function ComponentAdder({
                   c.componentType === type &&
                   c.obsoleteComponent == null &&
                   (filterChildrenName == null ||
-                    filterChildrenName.includes(c.componentName)),
+                    filterChildrenName.includes(c.componentId)),
               )
               .map(v => ({
-                label: v.componentName,
-                id: v.componentName,
+                label: v.componentId,
+                id: v.componentId,
               })),
           }))}
         onSelect={({ id }) => {
