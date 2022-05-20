@@ -24,7 +24,9 @@ import {
   flex,
   globalSelection,
   grow,
+  highlightColorInsetShadowStyle,
   itemCenter,
+  thinHoverColorInsetShadowStyle,
 } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { State } from '../../../data/Reducer/reducers';
@@ -77,14 +79,15 @@ const titleStyle = css({
   [`&>.${CONTROLS_CLASSNAME}`]: {
     visibility: 'hidden',
   },
+  ':hover': thinHoverColorInsetShadowStyle,
   [`:hover>.${CONTROLS_CLASSNAME}`]: {
     visibility: 'visible',
   },
 });
 
 const focusedComponentStyle = css({
-  backgroundColor: themeVar.colors.HeaderColor,
-  border: 'solid black',
+  ...highlightColorInsetShadowStyle,
+  ':hover': highlightColorInsetShadowStyle,
 });
 
 const defaultPage = {
@@ -374,7 +377,7 @@ function ComponentAdder({
                     filterChildrenName.includes(c.componentId)),
               )
               .map(v => ({
-                label: v.componentId,
+                label: v.componentName,
                 id: v.componentId,
               })),
           }))}

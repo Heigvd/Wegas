@@ -282,13 +282,17 @@ export const hoverColorInsetShadow = css({
   boxShadow: 'inset 0 0 0 2px var(--colors-hovercolor)',
 });
 
-export const thinHoverColorInsetShadow = css({
+export const thinHoverColorInsetShadowStyle = {
   boxShadow: 'inset 0 0 0 1px var(--colors-hovercolor)',
-});
+};
 
-export const highlightColorInsetShadow = css({
+export const thinHoverColorInsetShadow = css(thinHoverColorInsetShadowStyle);
+
+export const highlightColorInsetShadowStyle = {
   boxShadow: 'inset 0 0 0 2px var(--colors-highlightcolor)',
-});
+};
+
+export const highlightColorInsetShadow = css(highlightColorInsetShadowStyle);
 
 export const hatchedBackground = css({
   background:
@@ -358,9 +362,9 @@ export const pointer = css({
 export const externalLlinkStyle = css({
   textDecoration: 'none',
   color: 'var(--colors-darktextcolor)',
-  "&:hover": {
+  '&:hover': {
     textDecoration: 'underline',
-  }
+  },
 });
 
 export const bolder = css({
