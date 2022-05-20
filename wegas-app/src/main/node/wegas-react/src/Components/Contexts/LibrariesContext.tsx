@@ -65,6 +65,21 @@ function libraryTypeToLanguage(libraryType: LibraryType): SrcEditorLanguages {
   }
 }
 
+
+function languageToLibraryType(language: SrcEditorLanguages): LibraryType | 'unknown' {
+  switch (language) {
+    case 'javascript':
+      return 'server';
+    case 'typescript':
+      return 'client';
+    case 'css':
+      return 'style';
+    case 'plaintext':
+    case 'json':
+      return 'unknown';
+  }
+}
+
 export function libraryTypeToFormat(libraryType: LibraryType): string {
   return languageToFormat(libraryTypeToLanguage(libraryType));
 }
@@ -98,20 +113,16 @@ function libraryTypeToMimeType(libraryType: LibraryType): string {
 
 let computedPathCounter = 1;
 
-function computePath(
-  fileName: string | undefined,
+function computeUniquePath(
+  rootPath: string,
   language: SrcEditorLanguages | undefined,
 ) {
-  if (fileName) {
-    return fileName;
-  } else {
-    // get current value then inc global counter
-    const currentCount = computedPathCounter++;
-    const timestamp = new Date().getTime();
-    return `file:///_generated_${ timestamp }_${ currentCount }.${ languageToFormat(
-      language,
-    ) }`;
-  }
+  // get current value then inc global counter
+  const currentCount = computedPathCounter++;
+  const timestamp = new Date().getTime();
+  return `file:///${ rootPath.endsWith("/") ? rootPath : `${ rootPath }/` }_generated_${ timestamp }_${ currentCount }.${ languageToFormat(
+    language,
+  ) }`;
 }
 
 export function computeLibraryPath(libName: string, libType: LibraryType) {
@@ -128,11 +139,10 @@ export function createOrUpdateModel(
   reactMonaco: MonacoEditor,
   modelContent: string,
   language: SrcEditorLanguages,
-  modelName?: string,
+  path: string,
   onCreateCB?: (model: MonacoEditorModel) => void,
 ) {
-  const name = computePath(modelName, language);
-  const libUri = reactMonaco.Uri.parse(name);
+  const libUri = reactMonaco.Uri.parse(path);
   let model = reactMonaco.editor.getModel(libUri);
 
   if (model != null) {
@@ -159,11 +169,15 @@ export function useTempModel(
   const [model, setModel] = React.useState<MonacoEditorModel | null>(null);
 
   React.useEffect(() => {
-    const currentModel = reactMonaco
-      ? createOrUpdateModel(reactMonaco, modelContent.current, language)
-      : null;
-    setModel(currentModel);
-    return () => currentModel?.dispose();
+    const libType = languageToLibraryType(language);
+    const path = computeUniquePath(libType, language);
+    if (reactMonaco) {
+      const currentModel = createOrUpdateModel(reactMonaco, modelContent.current, language, path)
+      setModel(currentModel);
+      return () => currentModel?.dispose();
+    } else {
+      setModel(null);
+    }
   }, [language, reactMonaco]);
 
   return model;
@@ -433,6 +447,7 @@ type ScriptEntry = [string, string];
  *Execute all client script
  */
 function execAllScripts(scripts: ScriptEntry[]) {
+  wlog("Eval All Client scripts");
   // set PageStore reloading status to true to prevent usePagesContextStateStore  hooks to be triggered
   setReloadingStatus(true);
   clearEffects();
@@ -846,12 +861,12 @@ export function LibrariesLoader(
       const libraryType = selectedPersistedLibrary.libraryType;
 
       const effectiveType = libraryTypeToServerLibraryType(libraryType);
-      if (effectiveType ==null){
+      if (effectiveType == null) {
         return;
       }
 
       LibraryAPI.deleteLibrary(
-      effectiveType,
+        effectiveType,
         selectedPersistedLibrary.persisted.contentKey,
       )
         .then(() => {
