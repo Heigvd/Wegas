@@ -68,10 +68,6 @@ export function useJSONSchema() {
             ...wegasComponentCommonSchema,
             ...componentSchemaProperties,
             ...hashListChoicesToSchema([
-              // ...Object.values(layoutChoices).reduce(
-              //   (o, c) => [...o, ...c],
-              //   [],
-              // ),
               ...childrenLayoutOptionSchema,
               ...layoutCommonChoices,
             ]),

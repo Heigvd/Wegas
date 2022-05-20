@@ -485,9 +485,9 @@ function WegasComponentTitle({
     icon = 'exclamation-triangle';
   }
 
-  let title = component.type;
+  let title = registeredComponent.componentName;
   if ('name' in component.props) {
-    title += ` ${component.props.name}`;
+    title += ` - ${component.props.name}`;
   }
 
   const isSelected =

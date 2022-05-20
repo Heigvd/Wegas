@@ -1,12 +1,10 @@
-import * as React from 'react';
-import { ComponentType } from '../../../Components/PageComponents/tools/componentFactory';
-import { defaultMarginRight } from '../../../css/classes';
-import { IconComp } from '../Views/FontAwesome';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { css } from '@emotion/css';
-
+import * as React from 'react';
+import { SVGProps } from 'react';
+import { ComponentType } from '../../../Components/PageComponents/tools/componentFactory';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { defaultMarginRight } from '../../../css/classes';
 /** Import of all svgs for compos icons */
-
 import AbsoluteLayoutIcon from '../../../pictures/componentsIcons/absoluteLayout.svg';
 import AchievementExhibition from '../../../pictures/componentsIcons/achievementExhibitions.svg';
 import BooleanIcon from '../../../pictures/componentsIcons/boolean.svg';
@@ -45,7 +43,7 @@ import StringInputIcon from '../../../pictures/componentsIcons/stringInput.svg';
 import TextIcon from '../../../pictures/componentsIcons/text.svg';
 import textInputIcon from '../../../pictures/componentsIcons/textInput.svg';
 import VariableTreeIcon from '../../../pictures/componentsIcons/variableTree.svg';
-import { SVGProps } from 'react';
+import { IconComp } from '../Views/FontAwesome';
 
 /**
  * To import new or updated Icon:
@@ -120,6 +118,8 @@ export function ComponentTypeIcon({ componentType }: ComponentTypeIconProps) {
         return 'atom';
       case 'Programmatic':
         return 'code';
+      case 'Maps':
+        return 'map';
     }
   }
   return (

@@ -178,6 +178,7 @@ export interface PageComponent<
   > {
   WegasComponent: React.FunctionComponent<P>;
   componentId: string;
+  componentName: string;
   schema: {
     description: string;
     properties: { [prop: string]: AvailableSchemas };
@@ -300,6 +301,7 @@ export function pageComponentFactory<
     ...omit(param, pageComponentOmitProps),
     WegasComponent: param.component,
     componentId: param.id,
+    componentName: param.name,
     schema: {
       description: param.name,
       properties: { ...classStyleIdShema, ...param.schema },
