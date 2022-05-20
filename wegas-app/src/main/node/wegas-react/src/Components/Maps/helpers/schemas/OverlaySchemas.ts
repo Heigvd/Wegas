@@ -63,11 +63,11 @@ export const overlaySchema = {
         },
       },
       {
-        label: 'Positionning',
+        label: 'Positioning',
         value: {
           prop: 'positioning',
           schema: schemaProps.scriptable({
-            label: 'Positionning',
+            label: 'Positioning',
             scriptProps: {
               language: 'TypeScript',
               returnType: ['PositionOptions'],
@@ -166,7 +166,7 @@ export const overlaySchema = {
             label: 'Expose position as',
             scriptProps: {
               language: 'TypeScript',
-              returnType: ['FeatureFilter'],
+              returnType: ['string'],
             },
             literalSchema: schemaProps.string({
               value: defaultOverlayPositionKey,
