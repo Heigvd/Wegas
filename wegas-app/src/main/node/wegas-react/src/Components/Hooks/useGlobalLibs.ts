@@ -52,6 +52,9 @@ import layerStyleTypes from '!!raw-loader!../Maps/helpers/types/LayerStyleTypes.
 import olTypes from '!!raw-loader!../Maps/helpers/types/OLObjectsTypes.d.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+import overlayTypes from '!!raw-loader!../Maps/helpers/types/OverlayTypes.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasEntities.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -107,8 +110,9 @@ const clientLibs: MonacoDefinitionsLibrary[] = [
   },
   { content: SchemaHelper, name: 'SchemaHelper.d' },
   { content: olTypes, name: 'olTypes.d' },
-  { content: layerStyleTypes, name: 'layerStyleTypes.d.ts' },
+  { content: layerStyleTypes, name: 'layerStyleTypes.d' },
   { content: layerSourceTypes, name: 'layerSourceTypes.d' },
+  { content: overlayTypes, name: 'overlayTypes.d' },
 ];
 
 const serverLibs: MonacoDefinitionsLibrary[] = [

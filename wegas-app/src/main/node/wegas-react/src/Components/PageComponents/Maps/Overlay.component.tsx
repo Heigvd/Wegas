@@ -32,14 +32,16 @@ const playerOverlayCTX = React.createContext<PlayerOverlayContext>(
   defaultPlayerOverlayCTX,
 );
 
+type ComputedOverlayProps = Omit<
+  WegasOverlayProps,
+  'OverlayComponent' | 'onClick'
+> & { exposePositionAs?: string };
+type ScriptableOverlayProps = {
+  [P in keyof ComputedOverlayProps]: ComputedOverlayProps[P] | IScript;
+};
+
 interface PlayerOverlayProps extends WegasComponentProps {
-  overlayProps?: {
-    [P in keyof Omit<WegasOverlayProps, 'OverlayComponent' | 'onClick'>]:
-      | WegasOverlayProps[P]
-      | IScript;
-  } & {
-    exposePositionAs?: IScript | string;
-  };
+  overlayProps?: ScriptableOverlayProps;
 }
 
 export default function PlayerOverlay({
@@ -49,26 +51,19 @@ export default function PlayerOverlay({
   const [clickedPosition, setClickedPosition] = React.useState<
     undefined | Coordinate
   >(undefined);
-  const props = useScriptObjectWithFallback(overlayProps || {});
+  const props = useScriptObjectWithFallback<ScriptableOverlayProps>(
+    overlayProps || {},
+  );
   const {
     exposePositionAs = defaultOverlayPositionKey,
     ...overlayEvaluatedProps
   } = props;
-  const ChildrenOverlay = React.useMemo(
-    () =>
-      function () {
-        return <>{children}</>;
-      },
-    [children],
-  );
 
   return (
     <playerOverlayCTX.Provider value={{ exposePositionAs, clickedPosition }}>
-      <WegasOverlay
-        OverlayComponent={ChildrenOverlay}
-        {...overlayEvaluatedProps}
-        onClick={setClickedPosition}
-      />
+      <WegasOverlay {...overlayEvaluatedProps} onClick={setClickedPosition}>
+        {children}
+      </WegasOverlay>
     </playerOverlayCTX.Provider>
   );
 }
@@ -126,7 +121,6 @@ registerComponent(
     icon: 'map',
     illustration: 'scatter',
     schema: overlaySchema,
-    allowedVariables: ['InboxDescriptor'],
     getComputedPropsFromVariable: () => ({
       children: [],
     }),

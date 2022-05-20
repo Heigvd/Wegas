@@ -12,11 +12,12 @@ import { mapCTX } from './WegasMap';
  * A react implementation of OpenLayer Overlay object
  * @link https://openlayers.org/en/latest/apidoc/module-ol_Overlay-Overlay.html
  */
-export interface WegasOverlayProps extends Options {
+export interface WegasOverlayProps
+  extends React.PropsWithChildren<Omit<Options, 'autoPan'>> {
   /**
-   * The component that shows in the overlay
+   * Pan the map when calling setPosition, so that the overlay is entirely visible in the current viewport?
    */
-  OverlayComponent: React.FunctionComponent<UknownValuesObject>;
+  autoPan?: AutoPanOptions;
   /**
    * Set the position of the overlay when a click occures on the map
    */
@@ -34,7 +35,6 @@ export interface WegasOverlayProps extends Options {
 }
 
 export function WegasOverlay({
-  OverlayComponent,
   id,
   className,
   position,
@@ -46,7 +46,8 @@ export function WegasOverlay({
   positionOnClick,
   featuresFilter,
   onClick,
-}: WegasOverlayProps) {
+  children,
+}: WegasOverlayProps): JSX.Element {
   const { map } = React.useContext(mapCTX);
   const overlayComponentRef = React.useRef<HTMLElement>(
     document.createElement('div'),
@@ -160,11 +161,13 @@ export function WegasOverlay({
     }
   }, [olOverlay, position]);
 
-  return map != null ? (
-    <div style={{ display: 'none' }}>
-      {createPortal(<OverlayComponent />, overlayComponentRef.current)}
-    </div>
-  ) : (
-    <OverlayComponent />
-  );
+  if (map != null) {
+    return (
+      <div style={{ display: 'none' }}>
+        {createPortal(children, overlayComponentRef.current)}
+      </div>
+    );
+  } else {
+    return <>children</>;
+  }
 }

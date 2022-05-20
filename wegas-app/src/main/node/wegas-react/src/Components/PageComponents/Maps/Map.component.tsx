@@ -143,6 +143,7 @@ registerComponent(
       filterChildrenName: [
         'WegasMapTileLayer',
         'WegasMapOverlay',
+        'WegasMapOverlays',
         'WegasMapImageLayer',
         'WegasMapVectorLayer',
         'WegasMapSelect',
