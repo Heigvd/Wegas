@@ -24,7 +24,6 @@ import { clearEffects, runEffects } from '../../Helper/pageEffectsManager';
 import { getLogger, wlog } from '../../Helper/wegaslog';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
-import { useDeepMemo } from '../Hooks/useDeepMemo';
 import { useGlobalLibs } from '../Hooks/useGlobalLibs';
 import {
   printWegasScriptError,
@@ -464,10 +463,20 @@ function execAllScripts(scripts: ScriptEntry[]) {
 export function LibrariesLoader(
   props: React.PropsWithChildren<UknownValuesObject>,
 ) {
+
+  const stateRef = React.useRef(defaultLibrariesState);
+
+  // enhanced reducer keeps stateRef up-to-date
+  const enhancedReducer = React.useCallback((state: LibrariesState, action: LibraryStateAction) => {
+    stateRef.current = setLibrariesState(state, action);
+    return stateRef.current;
+  }, []);
+
   const [librariesState, dispatchLibrariesState] = React.useReducer(
-    setLibrariesState,
+    enhancedReducer,
     defaultLibrariesState,
   );
+
   const globalContexts = useGlobalContexts();
   const reactMonaco = useMonaco();
   const globalLibs = useGlobalLibs();
@@ -556,13 +565,6 @@ export function LibrariesLoader(
     //   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const clientScripts =
-    useDeepMemo(
-      filterByLibraryType(librariesState, 'client')
-        .reduce<Record<string, string>>((acc, gmc) => {
-          acc[gmc.persisted.contentKey] = gmc.persisted.content;
-          return acc;
-        }, {}));
 
   const clientScriptEventHandler = React.useCallback(
     (updatedLibraryName: string) => {
@@ -575,11 +577,20 @@ export function LibrariesLoader(
             libraryPath: path,
             library,
           });
+
+          const clientScripts =
+            filterByLibraryType(stateRef.current, 'client')
+              .reduce<Record<string, string>>((acc, gmc) => {
+                acc[gmc.persisted.contentKey] = gmc.persisted.content;
+                return acc;
+              }, {});
+
+
           execAllScripts(Object.entries(clientScripts));
         },
       );
     },
-    [clientScripts],
+    [],
   );
   useWebsocketEvent('LibraryUpdate-ClientScript', clientScriptEventHandler);
 
