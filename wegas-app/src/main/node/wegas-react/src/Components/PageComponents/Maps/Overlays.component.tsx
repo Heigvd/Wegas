@@ -53,8 +53,6 @@ function ChildrenDeserializer({
         key = JSON.stringify([...(path ? path : []), index]);
       }
 
-      debugger;
-
       const childrenContent: JSX.Element =
         editMode && (!wegasChildren || wegasChildren.length === 0) ? (
           <EmptyComponentContainer
