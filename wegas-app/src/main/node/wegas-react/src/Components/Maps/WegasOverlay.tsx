@@ -13,7 +13,7 @@ import { mapCTX } from './WegasMap';
  * @link https://openlayers.org/en/latest/apidoc/module-ol_Overlay-Overlay.html
  */
 export interface WegasOverlayProps
-  extends React.PropsWithChildren<Omit<Options, 'autoPan'>> {
+  extends React.PropsWithChildren<Omit<Options, 'autoPan' | 'element'>> {
   /**
    * Pan the map when calling setPosition, so that the overlay is entirely visible in the current viewport?
    */

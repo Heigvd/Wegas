@@ -4,6 +4,8 @@ import ImageStatic from 'ol/source/ImageStatic';
 import * as React from 'react';
 import { fileURL } from '../../../API/files.api';
 import { entityIs } from '../../../data/entities';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { useScript } from '../../Hooks/useScript';
 import {
   onLayerReadySchema,
@@ -31,6 +33,7 @@ export default function PlayerImageLayer({
   pageId,
   path,
 }: PlayerImageLayerProps) {
+  const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const onLayerReadyFn = useScript<OnLayerReadyFN>(onLayerReady);
 
   const currentLayerProps =
@@ -62,7 +65,13 @@ export default function PlayerImageLayer({
   }, [currentOLLayer, onLayerReadyFn]);
 
   if (currentOLLayer == null) {
-    return <UncompleteCompMessage pageId={pageId} path={path} />;
+    return (
+      <UncompleteCompMessage
+        message={somethingIsUndefined('source layer')}
+        pageId={pageId}
+        path={path}
+      />
+    );
   } else {
     return <WegasLayer layer={currentOLLayer} />;
   }

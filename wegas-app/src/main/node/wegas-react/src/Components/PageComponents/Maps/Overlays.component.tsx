@@ -1,5 +1,10 @@
+import { transform } from 'ol/proj';
 import * as React from 'react';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { pagesTranslations } from '../../../i18n/pages/pages';
 import { useScript } from '../../Hooks/useScript';
+import { projectionSchema } from '../../Maps/helpers/schemas/HelperSchemas';
+import { mapCTX } from '../../Maps/WegasMap';
 import { WegasOverlay } from '../../Maps/WegasOverlay';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import { EmptyComponentContainer } from '../Layouts/FlexList.component';
@@ -17,7 +22,12 @@ import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerOverlaysProps extends WegasComponentProps {
   getItemsFn?: IScript;
-  exposeAs: string;
+  exposedValueKeys?: {
+    exposePayloadAs: string;
+    exposeResolutionAs: string;
+    exposeMapCoordAs: string;
+  };
+  projection?: string;
   itemKey: string;
 }
 
@@ -30,54 +40,94 @@ function ChildrenDeserializer({
   pageId,
   uneditable,
   context,
-  exposeAs,
   itemKey,
   getItemsFn,
+  exposedValueKeys,
+  projection,
   editMode,
   inheritedOptionsState,
   wegasChildren,
 }: ChildrenDeserializerProps<PlayerOverlaysProps>) {
+  const { forEach } = useInternalTranslate(pagesTranslations);
+  const { map } = React.useContext(mapCTX);
   const items = useScript<OverlayItem[]>(getItemsFn, context);
   let children: JSX.Element[] = [];
 
   if (items == undefined) {
-    return <UncompleteCompMessage pageId={pageId} path={path} />;
+    return (
+      <UncompleteCompMessage
+        message={forEach.noItems}
+        pageId={pageId}
+        path={path}
+      />
+    );
   } else {
-    children = items.map((item, index) => {
-      const newContext = { ...context, [exposeAs]: item };
+    const {
+      exposePayloadAs = 'payload',
+      exposeResolutionAs = 'resolution',
+      exposeMapCoordAs = 'mapCoord',
+    } = exposedValueKeys || {};
 
-      let key = '';
-      try {
-        key = JSON.stringify(item[itemKey]);
-      } catch (_e) {
-        key = JSON.stringify([...(path ? path : []), index]);
+    children = items.map((item, index) => {
+      let position = item.overlayProps.position;
+      if (map != null && projection != null) {
+        position = transform(
+          position,
+          projection,
+          map.getView().getProjection(),
+        ) as PointLikeObject;
       }
 
-      const childrenContent: JSX.Element =
-        editMode && (!wegasChildren || wegasChildren.length === 0) ? (
-          <EmptyComponentContainer
-            Container={DummyContainer}
-            path={path}
-            content={
-              'Place a component that you want to duplicate for each item of the For Each'
-            }
-          />
-        ) : (
-          <PageDeserializer
+      const newContext = {
+        ...context,
+        [exposePayloadAs]: item.payload,
+        [exposeResolutionAs]: map?.getView().getResolution(),
+        [exposeMapCoordAs]: position,
+      };
+
+      let key = undefined;
+      try {
+        key = JSON.stringify(item.payload[itemKey]);
+      } catch (_e) {
+        key = undefined;
+      }
+
+      if (typeof key !== 'string' && typeof key !== 'number') {
+        return (
+          <UncompleteCompMessage
+            key={JSON.stringify([...(path ? path : []), index])}
+            message={forEach.noKey(index)}
             pageId={pageId}
-            path={[...(path ? path : []), 0]}
-            uneditable={uneditable}
-            context={newContext}
-            dropzones={{}}
-            inheritedOptionsState={inheritedOptionsState}
+            path={path}
           />
         );
+      } else {
+        const childrenContent: JSX.Element =
+          editMode && (!wegasChildren || wegasChildren.length === 0) ? (
+            <EmptyComponentContainer
+              Container={DummyContainer}
+              path={path}
+              content={
+                'Place a component that you want to duplicate for each item of the For Each'
+              }
+            />
+          ) : (
+            <PageDeserializer
+              pageId={pageId}
+              path={[...(path ? path : []), 0]}
+              uneditable={uneditable}
+              context={newContext}
+              dropzones={{}}
+              inheritedOptionsState={inheritedOptionsState}
+            />
+          );
 
-      return (
-        <WegasOverlay {...item.overlayProps} key={key}>
-          {childrenContent}
-        </WegasOverlay>
-      );
+        return (
+          <WegasOverlay {...item.overlayProps} position={position} key={key}>
+            {childrenContent}
+          </WegasOverlay>
+        );
+      }
     });
   }
   return <>{editMode === false ? children : children.slice(0, 1)}</>;
@@ -100,16 +150,50 @@ registerComponent(
         language: 'TypeScript',
         returnType: ['Readonly<OverlayItem[]>'],
       }),
-      exposeAs: schemaProps.string({
-        label: 'Expose as',
-        required: true,
-        value: 'item',
-      }),
       itemKey: schemaProps.string({
-        label: 'Key',
+        label: 'Payload key',
         required: true,
         value: 'id',
       }),
+      exposedValueKeys: schemaProps.hashlist({
+        label: 'Exposed values',
+        choices: [
+          {
+            label: 'Expose payload as',
+            value: {
+              prop: 'exposePayloadAs',
+              schema: schemaProps.string({
+                label: 'Expose payload as',
+                required: true,
+                value: 'payload',
+              }),
+            },
+          },
+          {
+            label: 'Expose resolution as',
+            value: {
+              prop: 'exposeResolutionAs',
+              schema: schemaProps.string({
+                label: 'Expose resolution as',
+                required: true,
+                value: 'resolution',
+              }),
+            },
+          },
+          {
+            label: 'Expose map coordinate as',
+            value: {
+              prop: 'exposeMapCoordAs',
+              schema: schemaProps.string({
+                label: 'Expose map coordinate as',
+                required: true,
+                value: 'mapCoord',
+              }),
+            },
+          },
+        ],
+      }),
+      projection: projectionSchema('Projection'),
     },
     getComputedPropsFromVariable: () => ({
       children: [],

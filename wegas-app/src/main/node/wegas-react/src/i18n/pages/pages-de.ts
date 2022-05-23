@@ -16,4 +16,9 @@ export const pagesTranslationsDE: PagesTranslations = {
     'Sie möchten Open Street Map-Daten verwenden. Sie sind dabei, mit dem OSM-Server zu kommunizieren. Sind Sie mit dieser Aktion einverstanden?',
   externalSourcesRefused:
     'Sie können diese Komponente nicht verwenden, weil Sie die Kommunikation mit einem externen Server abgelehnt haben. Wenn Sie Ihre Meinung ändern möchten, können Sie jederzeit die Schaltfläche "Akzeptieren" unten verwenden.',
+  forEach: {
+    noItems: 'Die Komponente hat kein Array von item erhalten',
+    noKey: index => `Es fehlt der item für die Position #${index}`,
+  },
+  missingProperty: propName => `Es fehlt die Eigenschaft "${propName}"`,
 };

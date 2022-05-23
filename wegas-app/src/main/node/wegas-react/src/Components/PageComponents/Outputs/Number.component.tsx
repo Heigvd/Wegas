@@ -3,6 +3,8 @@ import { INumberDescriptor, IScript } from 'wegas-ts-api';
 import { halfOpacity } from '../../../css/classes';
 import { classOrNothing } from '../../../Helper/className';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
@@ -27,12 +29,17 @@ function PlayerNumber({
   pageId,
   path,
 }: PlayerNumberProps) {
+  const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const { instance, notFound } = useComponentScript<INumberDescriptor>(
     script,
     context,
   );
   return notFound ? (
-    <UncompleteCompMessage pageId={pageId} path={path} />
+    <UncompleteCompMessage
+      message={somethingIsUndefined('Number')}
+      pageId={pageId}
+      path={path}
+    />
   ) : (
     <div
       id={id}

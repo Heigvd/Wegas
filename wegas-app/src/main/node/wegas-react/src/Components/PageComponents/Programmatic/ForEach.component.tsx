@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { pagesTranslations } from '../../../i18n/pages/pages';
 import { useScript } from '../../Hooks/useScript';
 import {
   defaultFlexLayoutOptionsKeys,
@@ -48,44 +50,62 @@ function ChildrenDeserializer({
   wegasChildren,
   itemsOnly,
 }: ChildrenDeserializerProps<ForEachProps>) {
+  const { forEach } = useInternalTranslate(pagesTranslations);
   const items = useScript<{ [key: string]: any }[]>(getItemsFn, context);
   let children: JSX.Element[] = [];
 
   if (items == undefined) {
-    return <UncompleteCompMessage pageId={pageId} path={path} />;
+    return (
+      <UncompleteCompMessage
+        message={forEach.noItems}
+        pageId={pageId}
+        path={path}
+      />
+    );
   } else {
     children = items.map((item, index) => {
       const newContext = { ...context, [exposeAs]: item };
 
-      let key = '';
+      let key = item[itemKey];
       try {
         key = JSON.stringify(item[itemKey]);
       } catch (_e) {
-        key = JSON.stringify([...(path ? path : []), index]);
+        key = undefined;
       }
 
-      return editMode && (!wegasChildren || wegasChildren.length === 0) ? (
-        <EmptyComponentContainer
-          key={key}
-          Container={FlexItem}
-          path={path}
-          content={
-            'Place a component that you want to duplicate for each item of the For Each'
-          }
-        />
-      ) : (
-        <PageDeserializer
-          key={key}
-          pageId={pageId}
-          path={[...(path ? path : []), 0]}
-          uneditable={uneditable}
-          context={newContext}
-          Container={itemsOnly ? undefined : FlexItem}
-          containerPropsKeys={defaultFlexLayoutOptionsKeys}
-          dropzones={{}}
-          inheritedOptionsState={inheritedOptionsState}
-        />
-      );
+      if (typeof key !== 'string' && typeof key !== 'number') {
+        return (
+          <UncompleteCompMessage
+            key={JSON.stringify([...(path ? path : []), index])}
+            message={forEach.noKey(index)}
+            pageId={pageId}
+            path={path}
+          />
+        );
+      } else {
+        return editMode && (!wegasChildren || wegasChildren.length === 0) ? (
+          <EmptyComponentContainer
+            key={key}
+            Container={FlexItem}
+            path={path}
+            content={
+              'Place a component that you want to duplicate for each item of the For Each'
+            }
+          />
+        ) : (
+          <PageDeserializer
+            key={key}
+            pageId={pageId}
+            path={[...(path ? path : []), 0]}
+            uneditable={uneditable}
+            context={newContext}
+            Container={itemsOnly ? undefined : FlexItem}
+            containerPropsKeys={defaultFlexLayoutOptionsKeys}
+            dropzones={{}}
+            inheritedOptionsState={inheritedOptionsState}
+          />
+        );
+      }
     });
   }
   return <>{editMode === false ? children : children.slice(0, 1)}</>;

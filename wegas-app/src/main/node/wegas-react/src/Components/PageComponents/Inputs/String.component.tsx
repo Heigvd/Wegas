@@ -5,6 +5,8 @@ import { Player } from '../../../data/selectors';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { useScript } from '../../Hooks/useScript';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import {
@@ -55,6 +57,8 @@ function PlayerStringInput({
   pageId,
   path,
 }: PlayerStringInput) {
+  const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
+
   const placeholderText = useScript<string>(placeholder, context);
 
   const text = useScript<SStringDescriptor | string>(script, context);
@@ -87,7 +91,11 @@ function PlayerStringInput({
   );
 
   return text == null ? (
-    <UncompleteCompMessage pageId={pageId} path={path} />
+    <UncompleteCompMessage
+      message={somethingIsUndefined('String')}
+      pageId={pageId}
+      path={path}
+    />
   ) : validator ? (
     <Validate value={value} onValidate={onChange} onCancel={handleOnCancel}>
       {(value, onChange) => {

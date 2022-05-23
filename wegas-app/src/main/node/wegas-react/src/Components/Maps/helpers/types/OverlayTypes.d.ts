@@ -1,7 +1,7 @@
 interface OverlayProps {
   position: PointLikeObject;
-  overlayId?: string;
-  overlayClassName?: string;
+  id?: string;
+  className?: string;
   offset?: PointLikeObject;
   positioning?: PositioningOptions;
   stopEvent?: boolean;
@@ -12,5 +12,5 @@ interface OverlayProps {
 
 interface OverlayItem {
   overlayProps: OverlayProps;
-  [key: string]: unknown;
+  payload: { [id: string]: unknown };
 }

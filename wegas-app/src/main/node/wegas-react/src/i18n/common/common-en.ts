@@ -36,7 +36,8 @@ export const commonTranslationsEN: CommonTranslations = {
     hide: 'Hide header',
     show: 'Show header',
     restartGame: 'Restart the game (applied to every scenarist)',
-    restartRealGame: "BE CAREFUL, you're about to restart a real game. All teams will be reset.",
+    restartRealGame:
+      "BE CAREFUL, you're about to restart a real game. All teams will be reset.",
     resetLayout: 'Reset layout',
     notifications: 'Notifications',
     teams: 'Teams',
@@ -47,4 +48,5 @@ export const commonTranslationsEN: CommonTranslations = {
   serverDown: 'Reconnecting...',
   serverOutaded:
     'Your version of Wegas is not up to date, please refresh your browser.',
+  somethingIsUndefined: name => `${name} is undefined`,
 };

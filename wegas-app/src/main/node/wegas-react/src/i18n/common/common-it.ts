@@ -36,15 +36,17 @@ export const commonTranslationsIT: CommonTranslations = {
     hide: 'Nascondi intestazione',
     show: 'Montare la intestazione',
     restartGame: 'Riavviare il gioco (applicato ad ogni scenarista)',
-    restartRealGame: "ATTENZIONE, state per riavviare un gioco vero e proprio. Tutte le squadre saranno azzerate.",
+    restartRealGame:
+      'ATTENZIONE, state per riavviare un gioco vero e proprio. Tutte le squadre saranno azzerate.',
     resetLayout: 'Ripristinare il layout',
     notifications: 'Notifiche',
     teams: 'Squadre',
-    addExtraTestPlayer: "Aggiungi un test giocatore",
+    addExtraTestPlayer: 'Aggiungi un test giocatore',
   },
   noContent: 'Nessun contenuto',
   noSelectedTab: 'Nessun tab selezionato',
   serverDown: 'Riconnessione...',
   serverOutaded:
     'La sua versione di Wegas non è aggiornata, aggiorna il suo browser.',
+  somethingIsUndefined: name => `${name} è indefinito`,
 };
