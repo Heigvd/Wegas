@@ -12,5 +12,5 @@ interface OverlayProps {
 
 interface OverlayItem {
   overlayProps: OverlayProps;
-  payLoad: { [id: string]: unknown };
+  payload: { [id: string]: unknown };
 }
