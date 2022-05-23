@@ -10,15 +10,16 @@ import { isActionAllowed } from '../../Components/PageComponents/tools/options';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import {
-  defaultMargin,
   defaultMarginBottom,
+  defaultMarginRight,
   defaultPaddingLeft,
   defaultPaddingRight,
   expandHeight,
   flex,
-  flexColumn,
   flexRow,
+  flexWrap,
   grow,
+  itemCenter,
   toolboxHeaderStyle,
 } from '../../css/classes';
 import { EditingActionCreator } from '../../data/Reducer/editingState';
@@ -141,8 +142,19 @@ export function Form<T>({
 
   return (
     <Toolbar className={expandHeight}>
-      <Toolbar.Header className={cx(flex, flexColumn, toolboxHeaderStyle)}>
-        <div className={cx(flex, flexRow, toolboxContainerStyle)}>
+      <Toolbar.Header
+        className={cx(
+          flex,
+          flexRow,
+          flexWrap,
+          toolboxHeaderStyle,
+          toolboxContainerStyle,
+        )}
+      >
+        <div className={cx(grow, defaultMarginRight)}>
+          <h3 className={defaultMarginBottom}>{label}</h3>
+        </div>
+        <div className={cx(flex, flexRow, itemCenter)}>
           {isActionAllowed({
             disabled,
             readOnly,
@@ -235,20 +247,17 @@ export function Form<T>({
           }
         }}
       >
-        <div className={defaultMargin}>
-          <h3 className={defaultMarginBottom}>{label}</h3>
-          <JSONForm
-            // Ugly workaround to force update JSONForm when config changes or entity changes
-            key={JSON.stringify({ entity, config })}
-            ref={form}
-            value={val}
-            schema={config}
-            onChange={val => {
-              setVal(val);
-              onChange && onChange(val);
-            }}
-          />
-        </div>
+        <JSONForm
+          // Ugly workaround to force update JSONForm when config changes or entity changes
+          key={JSON.stringify({ entity, config })}
+          ref={form}
+          value={val}
+          schema={config}
+          onChange={val => {
+            setVal(val);
+            onChange && onChange(val);
+          }}
+        />
       </Toolbar.Content>
     </Toolbar>
   );
