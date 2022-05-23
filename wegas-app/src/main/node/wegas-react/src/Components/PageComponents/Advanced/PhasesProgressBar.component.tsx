@@ -2,6 +2,8 @@ import * as React from 'react';
 import { INumberDescriptor, IScript } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { wwarn } from '../../../Helper/wegaslog';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { PhasesProgressBar } from '../../Outputs/PhasesProgressBar';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
@@ -36,6 +38,8 @@ export default function PlayerPhasesProgressBar({
   pageId,
   path,
 }: PhasesProgressBarProps) {
+  const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
+
   const {
     content: phaseContent,
     instance: phaseInstance,
@@ -55,13 +59,31 @@ export default function PlayerPhasesProgressBar({
 
   if (phaseNotFound) {
     wwarn(`Current phase not found: ${phaseContent}`);
-    return <UncompleteCompMessage pageId={pageId} path={path} />;
+    return (
+      <UncompleteCompMessage
+        message={somethingIsUndefined('Current phase')}
+        pageId={pageId}
+        path={path}
+      />
+    );
   } else if (phaseMinNotFound) {
     wwarn(`Phase min not found: ${phaseMinContent}`);
-    return <UncompleteCompMessage pageId={pageId} path={path} />;
+    return (
+      <UncompleteCompMessage
+        message={somethingIsUndefined('Phase min')}
+        pageId={pageId}
+        path={path}
+      />
+    );
   } else if (phaseMaxNotFound) {
     wwarn(`Phase max not found: ${phaseMaxContent}`);
-    return <UncompleteCompMessage pageId={pageId} path={path} />;
+    return (
+      <UncompleteCompMessage
+        message={somethingIsUndefined('Phase max')}
+        pageId={pageId}
+        path={path}
+      />
+    );
   } else {
     return (
       <PhasesProgressBar

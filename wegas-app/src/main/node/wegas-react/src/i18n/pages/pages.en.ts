@@ -15,4 +15,9 @@ export const pagesTranslationsEN: PagesTranslations = {
     'You choose to use Open Street Map data. You are about to communicate with the OSM server, do you authorize this action?',
   externalSourcesRefused:
     'You cannot use this component because you have refused to communicate with an external server. If you wish to change your mind, you can always use the "Accept" button below.',
+  forEach: {
+    noItems: 'The component did not receive any array of items',
+    noKey: index => `The key is missing for item #${index}`,
+  },
+  missingProperty: propName => `The property "${propName}" is missing`,
 };

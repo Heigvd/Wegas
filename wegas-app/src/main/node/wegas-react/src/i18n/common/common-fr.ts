@@ -33,10 +33,11 @@ export const commonTranslationsFR: CommonTranslations = {
   addVariable: 'Ajouter une variable',
   role: "Rôle de l'utilisateur",
   header: {
-    hide: 'Masquer l\'en-tête',
-    show: 'Affiche  l\'en-tête',
+    hide: "Masquer l'en-tête",
+    show: "Affiche  l'en-tête",
     restartGame: 'Recommencer le jeu (appliqué à tous les scénaristes)',
-    restartRealGame: 'ATTENTION, vous êtes sur le point de redémarrer une vraie partie. Toutes les équipes seront remises à zéro.',
+    restartRealGame:
+      'ATTENTION, vous êtes sur le point de redémarrer une vraie partie. Toutes les équipes seront remises à zéro.',
     resetLayout: 'Réinitialiser mise en page',
     notifications: 'Notifications',
     teams: 'Equipes',
@@ -47,4 +48,5 @@ export const commonTranslationsFR: CommonTranslations = {
   serverDown: 'Reconnexion...',
   serverOutaded:
     "Votre version de Wegas n'est plus a jour, veuillez rafraichir votre navigateur.",
+  somethingIsUndefined: name => `${name} est indéfini`,
 };

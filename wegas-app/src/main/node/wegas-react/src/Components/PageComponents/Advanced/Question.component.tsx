@@ -2,6 +2,8 @@ import * as React from 'react';
 import { IScript, SQuestionDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { wwarn } from '../../../Helper/wegaslog';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { useScript } from '../../Hooks/useScript';
 import { ConnectedQuestionDisplay } from '../../Outputs/Question/Question';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
@@ -26,11 +28,18 @@ export default function QuestionDisplay({
   pageId,
   path,
 }: QuestionDisplayProps) {
+  const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const descriptor = useScript<SQuestionDescriptor>(question, context);
 
   if (descriptor == null) {
     wwarn(`${question?.content} Not found`);
-    return <UncompleteCompMessage pageId={pageId} path={path} />;
+    return (
+      <UncompleteCompMessage
+        message={somethingIsUndefined('Question')}
+        pageId={pageId}
+        path={path}
+      />
+    );
   } else {
     return (
       <ConnectedQuestionDisplay

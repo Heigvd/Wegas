@@ -220,7 +220,8 @@ function ChildrenDeserializer({
   inheritedOptionsState,
   ifCondition,
 }: ChildrenDeserializerProps<IfElseProps>) {
-  const { obsoleteComponent } = useInternalTranslate(pagesTranslations);
+  const { obsoleteComponent, missingProperty } =
+    useInternalTranslate(pagesTranslations);
 
   const condition = useScript<boolean>(ifCondition, context);
 
@@ -247,7 +248,13 @@ function ChildrenDeserializer({
     const children2 = wegasChildren[1].props.children![0];
 
     if (condition == null) {
-      return <UncompleteCompMessage pageId={pageId} path={path} />;
+      return (
+        <UncompleteCompMessage
+          message={missingProperty('condition')}
+          pageId={pageId}
+          path={path}
+        />
+      );
     } else if (editMode) {
       return (
         <>

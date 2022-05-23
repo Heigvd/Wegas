@@ -4,6 +4,8 @@ import { INumberDescriptor, IScript } from 'wegas-ts-api';
 import { Actions } from '../../../data';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import {
   DisplayMode,
@@ -51,8 +53,7 @@ function PlayerNumberSlider({
   options,
   ...restProps
 }: PlayerNumberSliderProps) {
-  // const number = useScript<SNumberDescriptor>(script, context);
-  // const player = useCurrentPlayer();
+  const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
 
   const { pageId, path } = restProps;
 
@@ -87,7 +88,11 @@ function PlayerNumberSlider({
   }, [doUpdate]);
 
   return notFound ? (
-    <UncompleteCompMessage pageId={pageId} path={path} />
+    <UncompleteCompMessage
+      message={somethingIsUndefined('Number')}
+      pageId={pageId}
+      path={path}
+    />
   ) : (
     <NumberSlider
       {...restProps}

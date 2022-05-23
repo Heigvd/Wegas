@@ -3,6 +3,8 @@ import GeoTIFF from 'ol/source/GeoTIFF';
 import * as React from 'react';
 import { fileURL } from '../../../API/files.api';
 import { entityIs } from '../../../data/entities';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { useScript } from '../../Hooks/useScript';
 import {
   onLayerReadySchema,
@@ -30,6 +32,7 @@ export default function PlayerTileLayer({
   pageId,
   path,
 }: PlayerTileLayerProps) {
+  const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const currentLayerProps =
     useScript<SharedLayerProps>(
       entityIs(layerProps, 'Script') ? layerProps : undefined,
@@ -63,7 +66,13 @@ export default function PlayerTileLayer({
   }, [currentOLLayer, onLayerReadyFn]);
 
   if (currentOLLayer == null) {
-    return <UncompleteCompMessage pageId={pageId} path={path} />;
+    return (
+      <UncompleteCompMessage
+        message={somethingIsUndefined('source layer')}
+        pageId={pageId}
+        path={path}
+      />
+    );
   } else {
     return <WegasLayer layer={currentOLLayer} />;
   }

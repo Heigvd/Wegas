@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { IDialogueDescriptor, IScript } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { DialogueDisplay } from '../../Outputs/Dialogue/Dialogue';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
@@ -22,12 +24,19 @@ export default function PlayerDialogue({
   pageId,
   path,
 }: PlayerDialogueProps) {
+  const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const { descriptor } = useComponentScript<IDialogueDescriptor>(
     dialogue,
     context,
   );
   if (descriptor === undefined) {
-    return <UncompleteCompMessage pageId={pageId} path={path} />;
+    return (
+      <UncompleteCompMessage
+        message={somethingIsUndefined('Dialogue')}
+        pageId={pageId}
+        path={path}
+      />
+    );
   }
 
   return (

@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { INumberDescriptor, IScript } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { NumberBox } from '../../Inputs/Number/NumberBox';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
@@ -44,11 +46,16 @@ function PlayerBoxes({
   pageId,
   path,
 }: PlayerBoxesProps) {
+  const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const { descriptor, instance, notFound } =
     useComponentScript<INumberDescriptor>(script, context);
 
   return notFound ? (
-    <UncompleteCompMessage pageId={pageId} path={path} />
+    <UncompleteCompMessage
+      message={somethingIsUndefined('Number')}
+      pageId={pageId}
+      path={path}
+    />
   ) : (
     <NumberBox
       className={className}

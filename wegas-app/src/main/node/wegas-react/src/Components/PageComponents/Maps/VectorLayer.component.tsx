@@ -8,6 +8,8 @@ import * as React from 'react';
 import { useAsync } from 'react-async-hook';
 import { fileURL } from '../../../API/files.api';
 import { entityIs } from '../../../data/entities';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { useDeepMemo } from '../../Hooks/useDeepMemo';
 import { useScript, useScriptObjectWithFallback } from '../../Hooks/useScript';
 import { TumbleLoader } from '../../Loader';
@@ -58,6 +60,8 @@ export default function PlayerVectorLayer({
   pageId,
   path,
 }: PlayerVectorLayerProps) {
+  const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
+
   const { projection } = React.useContext(mapCTX);
 
   const onLayerReadyFn = useScript<OnLayerReadyFN>(onLayerReady);
@@ -144,7 +148,13 @@ export default function PlayerVectorLayer({
   } else if (asyncData.error) {
     return <pre>{asyncData.error.message}</pre>;
   } else if (currentOLLayer == null) {
-    return <UncompleteCompMessage pageId={pageId} path={path} />;
+    return (
+      <UncompleteCompMessage
+        message={somethingIsUndefined('source layer')}
+        pageId={pageId}
+        path={path}
+      />
+    );
   } else {
     return <WegasLayer layer={currentOLLayer} />;
   }

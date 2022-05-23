@@ -44,4 +44,5 @@ export interface CommonTranslations {
   noSelectedTab: string;
   serverDown: string;
   serverOutaded: string;
+  somethingIsUndefined: (name: string) => string;
 }
