@@ -42,6 +42,7 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.json.stream.JsonParsingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -194,8 +195,12 @@ public class UtilsController {
             sb.append(", NinjaBuild");
         }
 
-        if (githubVersion != null && githubVersion > 0) {
-            sb.append(", github last build is #").append(githubVersion);
+        if (githubVersion != null) {
+            if (githubVersion > 0) {
+                sb.append(", github current build number is #").append(githubVersion);
+            } else if (githubVersion == -1) {
+                sb.append(", failed to fetch current github build number");
+            }
         }
 
         return sb.toString();
@@ -268,14 +273,20 @@ public class UtilsController {
             response.getEntity().writeTo(baos);
             String strResponse = baos.toString("UTF-8");
 
-            try ( JsonReader reader = Json.createReader(new StringReader(strResponse))) {
-                JsonObject r = reader.readObject();
-                JsonArray builds = r.getJsonArray("workflow_runs");
+            if (!Helper.isNullOrEmpty(strResponse)) {
+                try ( JsonReader reader = Json.createReader(new StringReader(strResponse))) {
+                    JsonObject r = reader.readObject();
+                    JsonArray builds = r.getJsonArray("workflow_runs");
 
-                if (builds != null && !builds.isEmpty()) {
-                    JsonObject build = builds.get(0).asJsonObject();
-                    return build.getInt("run_number", -1);
+                    if (builds != null && !builds.isEmpty()) {
+                        JsonObject build = builds.get(0).asJsonObject();
+                        return build.getInt("run_number", -1);
+                    }
+                } catch (JsonParsingException ex) {
+                    logger.error("Invalid JSON: {}", strResponse);
                 }
+            } else {
+                logger.error("Did not receive any content from github!");
             }
         } catch (URISyntaxException ex) {
             logger.error("Please review Github URL: {}", GITHUB_URL);

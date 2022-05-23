@@ -76,7 +76,7 @@ function PlayerStringInput({
       } else if (typeof text === 'object') {
         editingStore.dispatch(
           runScript(
-            `Variable.find(gameModel,"${text.getName()}").setValue(self, '${v}');`,
+            `Variable.find(gameModel,"${ text.getName() }").setValue(self, ${ JSON.stringify(v) });`,
           ),
         );
       }
