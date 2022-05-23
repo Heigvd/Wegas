@@ -1,6 +1,5 @@
 interface OverlayProps {
   position: PointLikeObject;
-  exposePositionAs?: string;
   overlayId?: string;
   overlayClassName?: string;
   offset?: PointLikeObject;
@@ -9,4 +8,9 @@ interface OverlayProps {
   insertFirst?: boolean;
   autoPan?: AutoPanOptions;
   featuresFilter?: FeatureFilter;
+}
+
+interface OverlayItem {
+  overlayProps: OverlayProps;
+  [key: string]: unknown;
 }

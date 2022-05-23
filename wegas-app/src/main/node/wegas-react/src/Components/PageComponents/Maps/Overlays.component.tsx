@@ -37,7 +37,7 @@ function ChildrenDeserializer({
   inheritedOptionsState,
   wegasChildren,
 }: ChildrenDeserializerProps<PlayerOverlaysProps>) {
-  const items = useScript<{ [key: string]: any }[]>(getItemsFn, context);
+  const items = useScript<OverlayItem[]>(getItemsFn, context);
   let children: JSX.Element[] = [];
 
   if (items == undefined) {
@@ -98,7 +98,7 @@ registerComponent(
       getItemsFn: schemaProps.customScript({
         label: 'Items',
         language: 'TypeScript',
-        returnType: ['Readonly<object&{overlayProps:OverlayProps}[]>'],
+        returnType: ['Readonly<OverlayItem[]>'],
       }),
       exposeAs: schemaProps.string({
         label: 'Expose as',
