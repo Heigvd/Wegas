@@ -45,6 +45,7 @@ export const wegasComponentCommonSchema = {
 };
 
 interface EditorProps<T = WegasComponentForm> {
+  label: string;
   entity: T;
   schema: Schema<BaseView>;
   update?: (variable: T) => void;
@@ -58,6 +59,7 @@ interface EditorProps<T = WegasComponentForm> {
 }
 
 async function WindowedEditor({
+  label,
   entity,
   schema,
   update,
@@ -77,6 +79,7 @@ async function WindowedEditor({
         onLabelVanish={error && error.onVanish}
       />
       <Form
+        label={label}
         entity={entity}
         update={value => update && update(value)}
         actions={actions}
@@ -259,16 +262,25 @@ export function ComponentProperties({
   actions,
   localDispatch,
 }: ComponentPropertiesProps) {
-  const schema = usePageComponentStore(s => {
+  const { schema, label } = usePageComponentStore(s => {
+    const component = entity && s[entity.type] ? s[entity.type] : undefined;
     const baseSchema =
-      entity && s[entity.type]
-        ? s[entity.type].schema
+      component != null
+        ? component.schema
         : { description: 'Unknown schema', properties: {} };
+    let label =
+      component != null ? component.componentName : 'Unknown component';
+    if (entity?.props?.name != null) {
+      label += ` - ${entity.props.name}`;
+    }
 
-    return wegasComponentSchema(
-      baseSchema,
-      parent ? s[parent.type].container : undefined,
-    ) as Schema<BaseView>;
+    return {
+      schema: wegasComponentSchema(
+        baseSchema,
+        parent ? s[parent.type].container : undefined,
+      ) as Schema<BaseView>,
+      label,
+    };
   }, deepDifferent);
 
   // customize schema
@@ -286,8 +298,10 @@ export function ComponentProperties({
   if (entity === undefined || schema === undefined) {
     return null;
   }
+
   return (
     <AsyncComponentForm
+      label={label}
       entity={wegasComponentToForm(entity.props)}
       schema={customSchema ? customSchema : schema}
       update={value =>

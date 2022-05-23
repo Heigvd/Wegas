@@ -271,6 +271,7 @@ registerComponent(
   pageComponentFactory({
     component: PeerReviewVariableEditor,
     componentType: 'Advanced',
+    id: 'Peer Review variable editor',
     name: 'Peer Review variable editor',
     icon: 'pen-alt',
     illustration: 'PRVariableEditor',

@@ -7,4 +7,11 @@ export interface PagesTranslations {
   completeCompConfig: string;
   editComponent: string;
   obsoleteComponent: string;
+  allowExternalSources: string;
+  externalSourcesRefused: string;
+  forEach: {
+    noItems: string;
+    noKey: (index: number) => string;
+  };
+  missingProperty: (propName: string) => string;
 }

@@ -142,6 +142,10 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
     [onOpen],
   );
 
+  const filteredItems = items.filter(
+    item => item.items == null || item.items.length > 0,
+  );
+
   return (
     <Downshift
       onStateChange={onStateChange}
@@ -196,16 +200,14 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
               label={label}
               prefixedLabel={prefixedLabel}
               tooltip={tooltip || undefined}
-              icon={withDefault(
-                icon,
-                !adder && items.length === 0
-                  ? { icon: 'circle', size: 'sm' }
-                  : { icon: `caret-${direction}` as IconName },
-              )}
+              icon={withDefault(icon, {
+                icon: `caret-${direction}` as IconName,
+              })}
               onClick={ev => {
                 ev.stopPropagation();
                 toggleMenu();
               }}
+              disabled={items.length === 0}
               className={buttonClassName + ' dropDownButton'}
               noBackground={noBackground}
             />
@@ -229,7 +231,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                   {adder}
                 </div>
               )}
-              {items.map((item: MItem, index: number) => {
+              {filteredItems.map((item: MItem, index: number) => {
                 const newPath = [...(path ? path : []), index];
                 const trasher =
                   deleter && (!deleter.filter || deleter.filter(item)) ? (

@@ -5,6 +5,8 @@ import { Player } from '../../../data/selectors';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { useDebouncedOnChange } from '../../Hooks/useDebounce';
 import { useScript } from '../../Hooks/useScript';
 import HTMLEditor from '../../HTML/HTMLEditor';
@@ -56,6 +58,7 @@ function PlayerTextInput({
   pageId,
   path,
 }: PlayerTextInputProps) {
+  const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const text = useScript<STextDescriptor | string>(script, context);
   const placeholderText = useScript<string>(placeholder, context);
 
@@ -74,7 +77,9 @@ function PlayerTextInput({
       } else if (typeof text === 'object') {
         editingStore.dispatch(
           runScript(
-            `Variable.find(gameModel,"${ text.getName() }").setValue(self, ${ JSON.stringify(v) });`,
+            `Variable.find(gameModel,"${text.getName()}").setValue(self, ${JSON.stringify(
+              v,
+            )});`,
           ),
         );
       }
@@ -82,10 +87,18 @@ function PlayerTextInput({
     [handleOnChange, text],
   );
 
-  const {currentValue, debouncedOnChange } = useDebouncedOnChange(value, onChange, 400);
+  const { currentValue, debouncedOnChange } = useDebouncedOnChange(
+    value,
+    onChange,
+    400,
+  );
 
   return text == null ? (
-    <UncompleteCompMessage pageId={pageId} path={path} />
+    <UncompleteCompMessage
+      message={somethingIsUndefined('Text')}
+      pageId={pageId}
+      path={path}
+    />
   ) : validator ? (
     <Validate value={value} onValidate={onChange} onCancel={handleOnCancel}>
       {(value, onChange) => {
@@ -121,7 +134,8 @@ registerComponent(
   pageComponentFactory({
     component: PlayerTextInput,
     componentType: 'Input',
-    name: 'Text input',
+    id: 'Text input',
+    name: 'Text',
     icon: 'paragraph',
     illustration: 'textInput',
     schema: {

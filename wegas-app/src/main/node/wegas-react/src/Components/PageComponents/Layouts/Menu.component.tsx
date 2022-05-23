@@ -72,7 +72,8 @@ registerComponent(
     component: PlayerMenuLabel,
     componentType: 'Utility',
     container: {},
-    name: PlayerMenuLabelName,
+    id: PlayerMenuLabelName,
+    name: 'Menu label',
     icon: 'bars',
     illustration: 'menu',
     schema: {},
@@ -94,7 +95,8 @@ registerComponent(
   pageComponentFactory({
     component: PlayerMenuItems,
     componentType: 'Utility',
-    name: PlayerMenuItemsName,
+    id: PlayerMenuItemsName,
+    name: 'Menu items',
     container: {
       childrenAdditionalShema: menuItemSchema,
     },
@@ -247,6 +249,7 @@ registerComponent(
       ChildrenDeserializer: ChildrenDeserializer,
     },
     dropzones: {},
+    id: 'Menu',
     name: 'Menu',
     icon: 'bars',
     illustration: 'menu',

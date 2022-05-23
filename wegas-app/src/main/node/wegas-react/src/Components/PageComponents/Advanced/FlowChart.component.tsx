@@ -1,24 +1,24 @@
 import * as React from 'react';
-import {
-  pageComponentFactory,
-  registerComponent,
-} from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
-import { WegasComponentProps } from '../tools/EditableComponent';
-import { useScript } from '../../Hooks/useScript';
 import { IScript } from 'wegas-ts-api';
 import { FlowChart, FlowChartProps } from '../../FlowChart/FlowChart';
-import {
-  OnVariableChange,
-  onVariableChangeSchema,
-  useOnVariableChange,
-} from '../Inputs/tools';
 import {
   LabeledFlowLine,
   LabeledFlowLineComponent,
   LabeledProcess,
   PlayerFlowChartProcessComponent,
 } from '../../FlowChart/PlayerFlowChartComponents';
+import { useScript } from '../../Hooks/useScript';
+import {
+  OnVariableChange,
+  onVariableChangeSchema,
+  useOnVariableChange,
+} from '../Inputs/tools';
+import {
+  pageComponentFactory,
+  registerComponent,
+} from '../tools/componentFactory';
+import { WegasComponentProps } from '../tools/EditableComponent';
+import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerFlowChartProps<
   F extends LabeledFlowLine,
@@ -90,6 +90,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerFlowChart,
     componentType: 'Advanced',
+    id: 'Flow chart',
     name: 'Flow chart',
     icon: 'atom',
     illustration: 'flowChart',

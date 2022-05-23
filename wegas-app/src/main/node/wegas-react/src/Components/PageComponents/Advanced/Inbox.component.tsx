@@ -2,6 +2,8 @@ import * as React from 'react';
 import { IInboxDescriptor, IScript } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { wwarn } from '../../../Helper/wegaslog';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { InboxDisplay } from '../../Outputs/Inbox';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
@@ -24,10 +26,17 @@ export default function PlayerInbox({
   pageId,
   path,
 }: PlayerInboxProps) {
+  const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const { descriptor } = useComponentScript<IInboxDescriptor>(inbox, context);
   if (descriptor === undefined) {
     wwarn(`No descriptor found for inbox ${name}`);
-    return <UncompleteCompMessage pageId={pageId} path={path} />;
+    return (
+      <UncompleteCompMessage
+        message={somethingIsUndefined('Inbox')}
+        pageId={pageId}
+        path={path}
+      />
+    );
   }
 
   return (
@@ -43,6 +52,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerInbox,
     componentType: 'Advanced',
+    id: 'Inbox',
     name: 'Inbox',
     icon: 'envelope',
     illustration: 'inbox',

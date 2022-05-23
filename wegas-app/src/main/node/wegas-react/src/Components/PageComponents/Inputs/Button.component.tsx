@@ -127,6 +127,7 @@ registerComponent(
     component: PlayerButton,
     componentType: 'Input',
     manageOnClick: true,
+    id: 'Button',
     name: 'Button',
     icon: 'hand-pointer',
     illustration: 'button',

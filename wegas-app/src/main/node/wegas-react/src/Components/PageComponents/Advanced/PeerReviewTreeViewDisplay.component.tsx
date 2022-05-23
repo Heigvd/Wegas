@@ -797,6 +797,7 @@ registerComponent(
   pageComponentFactory({
     component: PeerReviewTreeViewDisplay,
     componentType: 'Advanced',
+    id: 'Peer Review treeview display',
     name: 'Peer Review treeview display',
     icon: 'user-edit',
     illustration: 'PRTreeView',

@@ -59,7 +59,7 @@ export function useJSONSchema() {
       properties: {
         type: {
           type: 'string',
-          enum: [component.componentName],
+          enum: [component.componentId],
         },
         props: {
           type: 'object',
@@ -68,10 +68,6 @@ export function useJSONSchema() {
             ...wegasComponentCommonSchema,
             ...componentSchemaProperties,
             ...hashListChoicesToSchema([
-              // ...Object.values(layoutChoices).reduce(
-              //   (o, c) => [...o, ...c],
-              //   [],
-              // ),
               ...childrenLayoutOptionSchema,
               ...layoutCommonChoices,
             ]),

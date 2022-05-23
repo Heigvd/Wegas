@@ -49,7 +49,8 @@ registerComponent(
     component: PlayerIf,
     componentType: 'Utility',
     container: {},
-    name: PlayerIfName,
+    id: PlayerIfName,
+    name: 'If',
     icon: 'code',
     illustration: 'ifElse',
     schema: {},
@@ -72,7 +73,8 @@ registerComponent(
     component: PlayerElse,
     componentType: 'Utility',
     container: {},
-    name: PlayerElseName,
+    id: PlayerElseName,
+    name: 'Else',
     icon: 'code',
     illustration: 'ifElse',
     schema: {},
@@ -218,7 +220,8 @@ function ChildrenDeserializer({
   inheritedOptionsState,
   ifCondition,
 }: ChildrenDeserializerProps<IfElseProps>) {
-  const { obsoleteComponent } = useInternalTranslate(pagesTranslations);
+  const { obsoleteComponent, missingProperty } =
+    useInternalTranslate(pagesTranslations);
 
   const condition = useScript<boolean>(ifCondition, context);
 
@@ -245,7 +248,13 @@ function ChildrenDeserializer({
     const children2 = wegasChildren[1].props.children![0];
 
     if (condition == null) {
-      return <UncompleteCompMessage pageId={pageId} path={path} />;
+      return (
+        <UncompleteCompMessage
+          message={missingProperty('condition')}
+          pageId={pageId}
+          path={path}
+        />
+      );
     } else if (editMode) {
       return (
         <>
@@ -316,6 +325,7 @@ registerComponent(
       isVertical: () => false,
       ChildrenDeserializer,
     },
+    id: 'If Else',
     name: 'If Else',
     icon: 'code',
     illustration: 'ifElse',
@@ -332,5 +342,8 @@ registerComponent(
         { type: PlayerElseName, props: { children: [] } },
       ],
     }),
+    behaviour: {
+      allowChildren: () => false,
+    },
   }),
 );

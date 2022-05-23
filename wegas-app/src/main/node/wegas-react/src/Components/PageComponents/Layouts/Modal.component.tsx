@@ -121,6 +121,7 @@ registerComponent(
       childrenLayoutOptionSchema: flexlayoutChoices,
       childrenLayoutKeys: defaultFlexLayoutOptionsKeys,
     },
+    id: 'Modal',
     name: 'Modal',
     icon: 'glasses',
     illustration: 'modal',
