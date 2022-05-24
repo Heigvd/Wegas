@@ -2,30 +2,24 @@
 import { cx } from '@emotion/css';
 import useResizeObserver from '@react-hook/resize-observer';
 import { debounce } from 'lodash-es';
-import TileLayer from 'ol/layer/Tile';
 import { createEmpty, extend } from 'ol/extent';
+import Feature from 'ol/Feature';
 import { fromExtent } from 'ol/geom/Polygon';
-import VectorSource from 'ol/source/Vector';
+import TileLayer from 'ol/layer/Tile';
 import Map from 'ol/Map';
 import { MapOptions } from 'ol/PluggableMap';
 import { ProjectionLike } from 'ol/proj';
 import OSM from 'ol/source/OSM';
+import VectorSource from 'ol/source/Vector';
 import View, { ViewOptions } from 'ol/View';
 // React
 import * as React from 'react';
+import { expandBoth, flex, flexRow, pointer } from '../../css/classes';
 import {
-  expandBoth,
-  flex,
-  flexRow,
-  itemCenter,
-  justifyCenter,
-  pointer,
-} from '../../css/classes';
-import { useInternalTranslate } from '../../i18n/internalTranslator';
-import { pagesTranslations } from '../../i18n/pages/pages';
-import { Button } from '../Inputs/Buttons/Button';
+  Authorization,
+  authorizationsCTX,
+} from '../Contexts/AuthorizationsProvider';
 import { initializeProjection } from './helpers/proj4js';
-import Feature from 'ol/Feature';
 
 interface MapContext {
   map?: Map;
@@ -54,8 +48,6 @@ interface WegasMapProps {
   OSMLayer?: boolean;
 }
 
-let globalOSMSourcesAllowed: boolean | undefined = undefined;
-
 export function WegasMap({
   mapOptions,
   viewOptions,
@@ -63,9 +55,6 @@ export function WegasMap({
   OSMLayer,
   children,
 }: React.PropsWithChildren<WegasMapProps>) {
-  const [OSMSourcesAllowed, setOSMSourcesAllowed] = React.useState(
-    globalOSMSourcesAllowed,
-  );
   const [map, setMap] = React.useState<Map>();
   const [debugValues, setDebugValues] = React.useState({
     zoom: 0,
@@ -84,16 +73,10 @@ export function WegasMap({
     [map],
   );
 
-  const { allowExternalSources, externalSourcesRefused } =
-    useInternalTranslate(pagesTranslations);
-
-  const displayMap = OSMSourcesAllowed === true || !OSMLayer;
-
   useResizeObserver(mapElementRef, debouncedMapResize);
 
-  React.useEffect(() => {
-    globalOSMSourcesAllowed = OSMSourcesAllowed;
-  }, [OSMSourcesAllowed]);
+  const displayMap =
+    React.useContext(authorizationsCTX).authorizations.allowExternalUrl;
 
   React.useEffect(() => {
     if (typeof viewOptions?.projection === 'string') {
@@ -202,27 +185,8 @@ export function WegasMap({
     }
   }, [map]);
 
-  if (!displayMap) {
-    return (
-      <div className={cx(flex, flexRow, expandBoth, justifyCenter, itemCenter)}>
-        <div>
-          <p>
-            {OSMSourcesAllowed === undefined
-              ? allowExternalSources
-              : externalSourcesRefused}
-          </p>
-          <div className={cx(flex, justifyCenter)}>
-            <Button label="Accept" onClick={() => setOSMSourcesAllowed(true)} />
-            <Button
-              label="Refuse"
-              onClick={() => setOSMSourcesAllowed(false)}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  } else {
-    return (
+  return (
+    <Authorization authorizationKey="allowExternalUrl">
       <div className={cx(flex, flexRow, expandBoth)}>
         {debug && (
           <div
@@ -252,6 +216,6 @@ export function WegasMap({
           </mapCTX.Provider>
         </div>
       </div>
-    );
-  }
+    </Authorization>
+  );
 }

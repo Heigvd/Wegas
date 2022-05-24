@@ -49,4 +49,15 @@ export const commonTranslationsEN: CommonTranslations = {
   serverOutaded:
     'Your version of Wegas is not up to date, please refresh your browser.',
   somethingIsUndefined: name => `${name} is undefined`,
+  authorizations: {
+    authorizationsText: 'Authorizations',
+    authorizationNeeded: 'Authorization needed',
+    authorizations: {
+      allowExternalUrl: {
+        label: 'Allow access to external URLs',
+        description:
+          'You agree to expose your IP address to other websites so that wegas can obtain external resources (fonts, images, maps, etc...)',
+      },
+    },
+  },
 };
