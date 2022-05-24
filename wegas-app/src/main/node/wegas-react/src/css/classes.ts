@@ -379,6 +379,10 @@ export const pointer = css({
   cursor: 'pointer',
 });
 
+export const cursorHelp = css({
+  cursor: 'help',
+});
+
 export const externalLlinkStyle = css({
   textDecoration: 'none',
   color: 'var(--colors-darktextcolor)',

@@ -1,3 +1,5 @@
+import { AuthorizationData } from '../../Components/Contexts/AuthorizationsProvider';
+
 export interface CommonTranslations {
   plzChooseValue: string;
   newChanges: string;
@@ -45,4 +47,11 @@ export interface CommonTranslations {
   serverDown: string;
   serverOutaded: string;
   somethingIsUndefined: (name: string) => string;
+  authorizations: {
+    authorizationsText: string;
+    authorizationNeeded: string;
+    authorizations: {
+      [key in keyof AuthorizationData]: { label: string; description: string };
+    };
+  };
 }
