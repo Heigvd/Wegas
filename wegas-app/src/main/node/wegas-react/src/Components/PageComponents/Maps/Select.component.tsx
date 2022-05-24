@@ -29,7 +29,7 @@ registerComponent(
     id: 'WegasMapSelect',
     name: 'Features select',
     icon: 'map',
-    illustration: 'scatter',
+    illustration: 'selectInput',
     schema: { selectProps: selectSchema },
   }),
 );

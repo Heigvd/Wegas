@@ -167,7 +167,7 @@ registerComponent(
     id: 'WegasMapVectorLayer',
     name: 'Vector layer',
     icon: 'map',
-    illustration: 'scatter',
+    illustration: 'vectorLayer',
     schema: {
       layerProps: wegasVectorLayerPropsSchema,
       layerSource: wegasVectorLayerSourceSchema,

@@ -128,7 +128,7 @@ registerComponent(
     id: 'WegasMap',
     name: 'Map',
     icon: 'map',
-    illustration: 'scatter',
+    illustration: 'map',
     schema: {
       mapOptions: mapOptionsSchema,
       viewOptions: viewOptionsSchema,

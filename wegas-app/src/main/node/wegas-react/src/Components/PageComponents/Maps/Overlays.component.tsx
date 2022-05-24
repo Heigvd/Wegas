@@ -143,7 +143,7 @@ registerComponent(
     id: 'WegasMapOverlays',
     name: 'Overlays',
     icon: 'map',
-    illustration: 'scatter',
+    illustration: 'overlays',
     schema: {
       getItemsFn: schemaProps.customScript({
         label: 'Items',
