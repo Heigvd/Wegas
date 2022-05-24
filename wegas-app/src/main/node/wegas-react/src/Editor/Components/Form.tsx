@@ -10,17 +10,14 @@ import { isActionAllowed } from '../../Components/PageComponents/tools/options';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import {
-  defaultMarginBottom,
   defaultMarginRight,
   defaultPaddingLeft,
   defaultPaddingRight,
+  defaultToolboxButtonContainerStyle,
+  defaultToolboxHeaderStyle,
+  defaultToolboxLabelStyle,
   expandHeight,
-  flex,
-  flexRow,
-  flexWrap,
   grow,
-  itemCenter,
-  toolboxHeaderStyle,
 } from '../../css/classes';
 import { EditingActionCreator } from '../../data/Reducer/editingState';
 import {
@@ -34,13 +31,6 @@ import './FormView';
 import { MessageString } from './MessageString';
 import { Icon, IconComp } from './Views/FontAwesome';
 
-const toolboxContainerStyle = css({
-  position: 'sticky',
-  top: 0,
-  zIndex: 10,
-  padding: '1em',
-  backgroundColor: themeVar.colors.BackgroundColor,
-});
 const toolboxButtonStyle = css({
   margin: '0 5px',
   height: '35px',
@@ -101,7 +91,7 @@ interface EditorProps<T> extends DisabledReadonly {
   localDispatch: EditingStoreDispatch | undefined;
   error?: {
     message: string;
-    onRead: () => void;
+    onVanish: () => void;
   };
 }
 
@@ -142,19 +132,11 @@ export function Form<T>({
 
   return (
     <Toolbar className={expandHeight}>
-      <Toolbar.Header
-        className={cx(
-          flex,
-          flexRow,
-          flexWrap,
-          toolboxHeaderStyle,
-          toolboxContainerStyle,
-        )}
-      >
+      <Toolbar.Header className={defaultToolboxHeaderStyle}>
         <div className={cx(grow, defaultMarginRight)}>
-          <h3 className={defaultMarginBottom}>{label}</h3>
+          <h3 className={defaultToolboxLabelStyle}>{label}</h3>
         </div>
-        <div className={cx(flex, flexRow, itemCenter)}>
+        <div className={defaultToolboxButtonContainerStyle}>
           {isActionAllowed({
             disabled,
             readOnly,
@@ -232,7 +214,7 @@ export function Form<T>({
             value={error.message}
             type={'error'}
             duration={3000}
-            onLabelVanish={error.onRead}
+            onLabelVanish={error.onVanish}
           />
         )}
       </Toolbar.Header>

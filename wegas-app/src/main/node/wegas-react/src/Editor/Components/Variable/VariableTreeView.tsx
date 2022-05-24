@@ -13,11 +13,10 @@ import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
 import { OnMoveFn, TreeView } from '../../../Components/TreeView/TreeView';
 import {
-  defaultPadding,
+  defaultToolboxHeaderStyle,
   flex,
   flexBetween,
   flexRow,
-  toolboxHeaderStyle,
 } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { createVariable, Edition } from '../../../data/Reducer/editingState';
@@ -138,9 +137,7 @@ export function VariableTreeView({
 
   return (
     <Toolbar>
-      <Toolbar.Header
-        className={cx(toolboxHeaderStyle, flexBetween, defaultPadding)}
-      >
+      <Toolbar.Header className={defaultToolboxHeaderStyle}>
         {!noHeader && actionAllowed && (
           <>
             <div className={cx(flex, flexRow, flexBetween)}>

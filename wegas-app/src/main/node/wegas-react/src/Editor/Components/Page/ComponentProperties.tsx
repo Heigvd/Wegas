@@ -1,4 +1,3 @@
-import { cx } from '@emotion/css';
 import { BaseView, Schema } from 'jsoninput/typings/types';
 import { omit, pick } from 'lodash-es';
 import * as React from 'react';
@@ -26,12 +25,11 @@ import {
   WegasComponentOptionsActions,
 } from '../../../Components/PageComponents/tools/options';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
-import { defaultPadding, flex, flexColumn, grow } from '../../../css/classes';
+import { defaultPadding } from '../../../css/classes';
 import { store, StoreDispatch } from '../../../data/Stores/store';
 import { findComponent } from '../../../Helper/pages';
 import { FormAction } from '../Form';
 import { AvailableSchemas } from '../FormView';
-import { MessageString } from '../MessageString';
 import { pageCTX } from './PageEditor';
 
 /**
@@ -71,22 +69,15 @@ async function WindowedEditor({
     import('../Form').then(m => m.Form),
   ]);
   return (
-    <div className={cx(flex, grow, flexColumn)}>
-      <MessageString
-        value={error && error.message}
-        type={'error'}
-        duration={3000}
-        onLabelVanish={error && error.onVanish}
-      />
-      <Form
-        label={label}
-        entity={entity}
-        update={value => update && update(value)}
-        actions={actions}
-        config={schema}
-        localDispatch={localDispatch}
-      />
-    </div>
+    <Form
+      error={error}
+      label={label}
+      entity={entity}
+      update={value => update && update(value)}
+      actions={actions}
+      config={schema}
+      localDispatch={localDispatch}
+    />
   );
 }
 const AsyncComponentForm = asyncSFC<EditorProps>(

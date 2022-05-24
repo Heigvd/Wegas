@@ -1,10 +1,10 @@
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { cx, css } from '@emotion/css';
-import { InputProps } from '../SimpleInput';
+import { flex, grow, itemCenter, shrinkWidth } from '../../../css/classes';
+import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { Value } from '../../Outputs/Value';
-import { shrinkWidth, grow, flex, itemCenter } from '../../../css/classes';
-import { classOrNothing, classNameOrEmpty } from '../../../Helper/className';
 import { themeVar } from '../../Theme/ThemeVars';
+import { InputProps } from '../SimpleInput';
 
 const togglerStyle = css({
   display: 'flex',
