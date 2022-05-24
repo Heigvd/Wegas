@@ -119,7 +119,7 @@ registerComponent(
     id: 'WegasMapOverlay',
     name: 'Overlay',
     icon: 'map',
-    illustration: 'scatter',
+    illustration: 'overlay',
     schema: overlaySchema,
     getComputedPropsFromVariable: () => ({
       children: [],
