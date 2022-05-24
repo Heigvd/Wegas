@@ -20,7 +20,10 @@ import { TreeNode } from '../../../../Components/TreeView/TreeNode';
 import { TreeView } from '../../../../Components/TreeView/TreeView';
 import {
   defaultMarginRight,
-  defaultPadding,
+  defaultTooboxLabelContainerStyle,
+  defaultToolboxButtonContainerStyle,
+  defaultToolboxHeaderStyle,
+  defaultToolboxLabelStyle,
   expandBoth,
   flex,
   flexBetween,
@@ -131,11 +134,13 @@ interface CustomLibraryEditorProps {
  * LibraryEditor is a component for wegas library management
  */
 export function CustomLibraryEditor({ libraryType }: CustomLibraryEditorProps) {
-  const [message, setMessage] =
-    React.useState<LibrariesCallbackMessage | undefined>();
+  const [message, setMessage] = React.useState<
+    LibrariesCallbackMessage | undefined
+  >();
   const [mergeMode, setMergeMode] = React.useState(false);
-  const [selectedLibraryName, setSelectedLibraryName] =
-    React.useState<string | undefined>(undefined);
+  const [selectedLibraryName, setSelectedLibraryName] = React.useState<
+    string | undefined
+  >(undefined);
 
   const { librariesState, saveLibrary, setLibraryVisibility, removeLibrary } =
     React.useContext(librariesCTX);
@@ -209,7 +214,10 @@ export function CustomLibraryEditor({ libraryType }: CustomLibraryEditorProps) {
 
   return (
     <ReflexContainer orientation="vertical">
-      <ReflexElement flex={1} className={cx(flex, flexColumn)}>
+      <ReflexElement
+        flex={selectedLibraryName == null || currentLibrary == null ? 5 : 1}
+        className={cx(flex, flexColumn)}
+      >
         <LibraryTypeNodeLabel
           libraryType={libraryType}
           onNewLibrary={onNewLibrary}
@@ -229,14 +237,20 @@ export function CustomLibraryEditor({ libraryType }: CustomLibraryEditorProps) {
         </TreeView>
       </ReflexElement>
       <ReflexSplitter />
-      <ReflexElement flex={5}>
-        <Toolbar className={expandBoth}>
-          <Toolbar.Header className={defaultPadding}>
-            {selectedLibraryName == null || currentLibrary == null ? (
-              'No library selected yet'
-            ) : (
-              <>
-                <h2>{selectedLibraryName}</h2>
+      <ReflexElement
+        flex={selectedLibraryName == null || currentLibrary == null ? 1 : 5}
+      >
+        {selectedLibraryName == null || currentLibrary == null ? (
+          'No library selected yet'
+        ) : (
+          <Toolbar className={expandBoth}>
+            <Toolbar.Header className={defaultToolboxHeaderStyle}>
+              <div className={defaultTooboxLabelContainerStyle}>
+                <h3 className={defaultToolboxLabelStyle}>
+                  {selectedLibraryName}
+                </h3>
+              </div>
+              <div className={defaultToolboxButtonContainerStyle}>
                 <Selector
                   readOnly={
                     alloweVisibilities == null ||
@@ -254,7 +268,6 @@ export function CustomLibraryEditor({ libraryType }: CustomLibraryEditorProps) {
                   }
                   className={cx(defaultMarginRight, css({ width: '10em' }))}
                 />
-
                 {message && (
                   <MessageString
                     type={message.type}
@@ -263,10 +276,6 @@ export function CustomLibraryEditor({ libraryType }: CustomLibraryEditorProps) {
                     onLabelVanish={() => setMessage(undefined)}
                   />
                 )}
-              </>
-            )}
-            {selectedLibraryName != null && currentLibrary && (
-              <>
                 {currentLibrary.conflict ? (
                   <IconButton
                     icon="exclamation-triangle"
@@ -286,28 +295,28 @@ export function CustomLibraryEditor({ libraryType }: CustomLibraryEditorProps) {
                     success && removeLibrary(libraryType, selectedLibraryName)
                   }
                 />
-              </>
-            )}
-          </Toolbar.Header>
-          <Toolbar.Content>
-            {libraryPath != null && currentLibrary != null ? (
-              mergeMode ? (
-                <MergeEditor
-                  originalContent={currentLibrary.persisted.content}
-                  modifiedFileName={libraryPath}
-                  onResolved={() => {
-                    setMergeMode(false);
-                    onSave();
-                  }}
-                />
+              </div>
+            </Toolbar.Header>
+            <Toolbar.Content>
+              {libraryPath != null && currentLibrary != null ? (
+                mergeMode ? (
+                  <MergeEditor
+                    originalContent={currentLibrary.persisted.content}
+                    modifiedFileName={libraryPath}
+                    onResolved={() => {
+                      setMergeMode(false);
+                      onSave();
+                    }}
+                  />
+                ) : (
+                  <SrcEditor fileName={libraryPath} onSave={onSave} />
+                )
               ) : (
-                <SrcEditor fileName={libraryPath} onSave={onSave} />
-              )
-            ) : (
-              'No library selected yet'
-            )}
-          </Toolbar.Content>
-        </Toolbar>
+                'No library selected yet'
+              )}
+            </Toolbar.Content>
+          </Toolbar>
+        )}
       </ReflexElement>
     </ReflexContainer>
   );

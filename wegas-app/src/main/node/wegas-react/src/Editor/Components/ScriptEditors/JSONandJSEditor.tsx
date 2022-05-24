@@ -1,14 +1,12 @@
-import { cx } from '@emotion/css';
 import * as React from 'react';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { Toolbar } from '../../../Components/Toolbar';
 import {
-  defaultMarginRight,
+  defaultTooboxLabelContainerStyle,
   defaultToolboxButtonContainerStyle,
   defaultToolboxHeaderStyle,
   defaultToolboxLabelStyle,
   expandBoth,
-  grow,
 } from '../../../css/classes';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -50,7 +48,7 @@ export function JSONandJSEditor({
   return (
     <Toolbar className={expandBoth}>
       <Toolbar.Header className={defaultToolboxHeaderStyle}>
-        <div className={cx(grow, defaultMarginRight)}>
+        <div className={defaultTooboxLabelContainerStyle}>
           <h3 className={defaultToolboxLabelStyle}>{label}</h3>
         </div>
         <div className={defaultToolboxButtonContainerStyle}>

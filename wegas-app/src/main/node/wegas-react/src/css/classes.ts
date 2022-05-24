@@ -281,6 +281,8 @@ export const defaultToolboxHeaderStyle = cx(
   css({ overflowX: 'auto', overflowY: 'hidden', minHeight: '4em' }),
 );
 
+export const defaultTooboxLabelContainerStyle = cx(grow, defaultMarginRight);
+
 export const defaultToolboxLabelStyle = cx(
   defaultMarginBottom,
   defaultMarginTop,

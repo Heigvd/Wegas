@@ -10,9 +10,9 @@ import { isActionAllowed } from '../../Components/PageComponents/tools/options';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import {
-  defaultMarginRight,
   defaultPaddingLeft,
   defaultPaddingRight,
+  defaultTooboxLabelContainerStyle,
   defaultToolboxButtonContainerStyle,
   defaultToolboxHeaderStyle,
   defaultToolboxLabelStyle,
@@ -133,7 +133,7 @@ export function Form<T>({
   return (
     <Toolbar className={expandHeight}>
       <Toolbar.Header className={defaultToolboxHeaderStyle}>
-        <div className={cx(grow, defaultMarginRight)}>
+        <div className={defaultTooboxLabelContainerStyle}>
           <h3 className={defaultToolboxLabelStyle}>{label}</h3>
         </div>
         <div className={defaultToolboxButtonContainerStyle}>

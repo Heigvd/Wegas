@@ -1,15 +1,14 @@
-import { css, cx } from '@emotion/css';
+import { css } from '@emotion/css';
 import * as React from 'react';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { Toolbar } from '../../../Components/Toolbar';
 import {
-  defaultMarginRight,
+  defaultTooboxLabelContainerStyle,
   defaultToolboxButtonContainerStyle,
   defaultToolboxHeaderStyle,
   defaultToolboxLabelStyle,
   expandBoth,
-  grow,
 } from '../../../css/classes';
 import { useStore } from '../../../data/Stores/store';
 import { getPageIndexItemFromFolder } from '../../../Helper/pages';
@@ -80,7 +79,7 @@ export default function PageDisplay() {
   return (
     <Toolbar className={expandBoth + ' PAGE-DISPLAY'}>
       <Toolbar.Header className={defaultToolboxHeaderStyle}>
-        <div className={cx(grow, defaultMarginRight)}>
+        <div className={defaultTooboxLabelContainerStyle}>
           <h3 className={defaultToolboxLabelStyle}>{indexPage?.name}</h3>
         </div>
         <PageEditionToolbar />
