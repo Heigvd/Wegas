@@ -1,6 +1,7 @@
 /* global module*/
 import * as React from 'react';
 import { render } from 'react-dom';
+import { AuthorizationProvider } from './Components/Contexts/AuthorizationsProvider';
 import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
 import { FullscreenProvider } from './Components/Contexts/FullscreenContext';
@@ -17,21 +18,23 @@ importPageComponents();
 
 function mount() {
   render(
-    <FeaturesProvider>
-      <FullscreenProvider>
-        <ServerStatusManager>
-          <LanguagesProvider>
-            <ClassesProvider>
-              <LibrariesLoader>
-                <ThemeProvider contextName="player">
-                  <Player />
-                </ThemeProvider>
-              </LibrariesLoader>
-            </ClassesProvider>
-          </LanguagesProvider>
-        </ServerStatusManager>
-      </FullscreenProvider>
-    </FeaturesProvider>,
+    <AuthorizationProvider>
+      <FeaturesProvider>
+        <FullscreenProvider>
+          <ServerStatusManager>
+            <LanguagesProvider>
+              <ClassesProvider>
+                <LibrariesLoader>
+                  <ThemeProvider contextName="player">
+                    <Player />
+                  </ThemeProvider>
+                </LibrariesLoader>
+              </ClassesProvider>
+            </LanguagesProvider>
+          </ServerStatusManager>
+        </FullscreenProvider>
+      </FeaturesProvider>
+    </AuthorizationProvider>,
     document.getElementById('root'),
   );
 }
