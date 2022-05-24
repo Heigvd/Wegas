@@ -10,6 +10,8 @@ import Map from 'ol/Map';
 import { MapOptions } from 'ol/PluggableMap';
 import { ProjectionLike } from 'ol/proj';
 import OSM from 'ol/source/OSM';
+
+import 'ol/ol.css'
 import View, { ViewOptions } from 'ol/View';
 // React
 import * as React from 'react';
@@ -71,6 +73,7 @@ export function WegasMap({
     zoom: 0,
     center: [0, 0],
     extent: createEmpty(),
+    resolution: 0,
   });
   const mapElementRef = React.useRef<HTMLDivElement>(null);
 
@@ -118,6 +121,7 @@ export function WegasMap({
             zoom: initialMap.getView().getZoom() || ov.zoom,
             center: initialMap.getView().getCenter() || ov.center,
             extent: initialMap.getView().calculateExtent(initialMap.getSize()),
+            resolution: initialMap.getView().getResolution() || -1,
           }));
         });
       }
@@ -240,6 +244,7 @@ export function WegasMap({
               <li>{`zoom: ${debugValues.zoom}`}</li>
               <li>{`center: [${debugValues.center.join(';')}]`}</li>
               <li>{`extent: [${debugValues.extent.join(';')}]`}</li>
+              <li>{ `resolution: [${ debugValues.resolution}]`}</li>
             </ul>
             <div className={cx(pointer)} onClick={zoomToLayersExentCb}>
               Zoom to layers
