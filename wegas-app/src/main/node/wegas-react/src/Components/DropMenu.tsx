@@ -2,7 +2,13 @@ import { css, cx } from '@emotion/css';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
 import Downshift, { StateChangeOptions } from 'downshift';
 import * as React from 'react';
-import { expandWidth, flex, flexRow, itemCenter } from '../css/classes';
+import {
+  expandWidth,
+  flex,
+  flexRow,
+  flexRowReverse,
+  itemCenter,
+} from '../css/classes';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../Helper/className';
 import { lastKeyboardEvents } from '../Helper/keyboardEvents';
@@ -66,6 +72,7 @@ export interface DropMenuProps<
   tooltip?: string;
   openOnHover?: boolean;
   openOnHoverChildren?: boolean;
+  itemDirection?: DropDownDirection;
 }
 /**
  * returns an empty string
@@ -77,10 +84,14 @@ function emtpyStr(): '' {
 const subMenuItemContainer = (
   isSelected: boolean,
   isDisabled: boolean | undefined,
+  itemDirection: DropDownDirection,
 ) =>
   cx(
     flex,
-    flexRow,
+    {
+      [flexRow]: itemDirection !== 'left',
+      [flexRowReverse]: itemDirection === 'left',
+    },
     itemCenter,
     css({
       cursor: 'pointer',
@@ -114,7 +125,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
   id,
   onOpen,
   onSelect,
-  direction = 'down',
+  direction,
   label,
   prefixedLabel = true,
   path,
@@ -131,6 +142,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
   tooltip,
   openOnHover,
   openOnHoverChildren = true,
+  itemDirection,
 }: DropMenuProps<T, MItem>) {
   const timer = React.useRef<NodeJS.Timeout>();
   const onStateChange = React.useCallback(
@@ -146,6 +158,17 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
   const filteredItems = items.filter(
     item => item.items == null || item.items.length > 0,
   );
+
+  const computedDirection = direction || 'down';
+
+  let computedItemDirection: DropDownDirection;
+  if (itemDirection != null) {
+    computedItemDirection = itemDirection;
+  } else if (direction != null) {
+    computedItemDirection = direction;
+  } else {
+    computedItemDirection = 'right';
+  }
 
   return (
     <Downshift
@@ -199,10 +222,10 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
           >
             <Button
               label={label}
-              prefixedLabel={prefixedLabel && !(direction === 'left')}
+              prefixedLabel={prefixedLabel && !(computedDirection === 'left')}
               tooltip={tooltip || undefined}
               icon={withDefault(icon, {
-                icon: `caret-${direction}` as IconName,
+                icon: `caret-${computedDirection}` as IconName,
               })}
               onClick={ev => {
                 ev.stopPropagation();
@@ -224,12 +247,18 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                 justifyDropMenu(
                   n,
                   n?.parentElement?.querySelector('.dropDownButton'),
-                  direction,
+                  computedDirection,
                 );
               }}
             >
               {adder && (
-                <div className={subMenuItemContainer(false, false)}>
+                <div
+                  className={subMenuItemContainer(
+                    false,
+                    false,
+                    computedItemDirection,
+                  )}
+                >
                   {adder}
                 </div>
               )}
@@ -261,8 +290,11 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                           })
                         : undefined)}
                       className={
-                        subMenuItemContainer(isSelected, item.disabled) +
-                        classNameOrEmpty(item.className)
+                        subMenuItemContainer(
+                          isSelected,
+                          item.disabled,
+                          computedItemDirection,
+                        ) + classNameOrEmpty(item.className)
                       }
                       style={item.style}
                     >
@@ -276,13 +308,14 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                           }
                         }}
                         items={item.items}
-                        direction={direction === 'right' ? 'left' : 'right'}
+                        direction={computedItemDirection}
                         label={item.label}
                         selected={
                           Array.isArray(selected)
                             ? selected.slice(1)
                             : undefined
                         }
+                        itemDirection={itemDirection}
                         path={newPath}
                         buttonClassName={childDropMenuButtonStyle}
                         containerClassName={expandWidth}
@@ -304,8 +337,13 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                         })
                       : undefined)}
                     className={
-                      cx(subMenuItemContainer(isSelected, item.disabled)) +
-                      classNameOrEmpty(item.className)
+                      cx(
+                        subMenuItemContainer(
+                          isSelected,
+                          item.disabled,
+                          computedItemDirection,
+                        ),
+                      ) + classNameOrEmpty(item.className)
                     }
                   >
                     {item.label}

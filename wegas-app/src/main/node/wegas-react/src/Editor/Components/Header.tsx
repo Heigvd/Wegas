@@ -464,6 +464,7 @@ export default function Header() {
                   value: 'restartGame',
                 },
               ]}
+              itemDirection="left"
             />
           </span>
         </div>
