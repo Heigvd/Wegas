@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
-import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
-import { arrayRemoveDuplicates } from '../../../Helper/tools';
 import { css } from '@emotion/css';
+import * as React from 'react';
+import { grow, secondaryButtonCSS } from '../../../css/classes';
+import { IconComp, Icons } from '../../../Editor/Components/Views/FontAwesome';
+import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
+import { arrayRemoveDuplicates } from '../../../Helper/tools';
 import { themeVar } from '../../Theme/ThemeVars';
-import { secondaryButtonCSS } from '../../../css/classes';
 
 export const headerOutlineButtonStyle = css({
   border: '1px solid ' + themeVar.colors.DisabledColor,
@@ -207,6 +207,7 @@ export interface ButtonProps extends ClassStyleId, DisabledReadonly {
   noBackground?: boolean;
   mode?: 'active' | 'success' | 'warning' | 'error';
   dark?: boolean;
+  iconPositionning?: 'spread' | 'pack';
 }
 
 export const Button = React.forwardRef<
@@ -239,6 +240,7 @@ export const Button = React.forwardRef<
       noBackground,
       mode: buttonModes,
       dark,
+      iconPositionning,
       ...defaultButtonProps
     },
     ref,
@@ -285,10 +287,20 @@ export const Button = React.forwardRef<
         aria-label={tooltip || defaultButtonProps['aria-label']}
         aria-pressed={pressed || defaultButtonProps['aria-pressed']}
       >
-        {prefixedLabel && computedLabel}
+        {prefixedLabel && (
+          <>
+            {computedLabel}
+            {iconPositionning === 'spread' && <div className={grow} />}
+          </>
+        )}
         {icon && <IconComp icon={icon} />}
         {src && <img alt={tooltip} src={src} />}
-        {!prefixedLabel && computedLabel}
+        {!prefixedLabel && (
+          <>
+            {iconPositionning === 'spread' && <div className={grow} />}
+            {computedLabel}
+          </>
+        )}
       </button>
     );
   },

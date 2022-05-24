@@ -18,6 +18,7 @@ import { ConfirmButton } from './Inputs/Buttons/ConfirmButton';
 import { themeVar } from './Theme/ThemeVars';
 
 const childDropMenuButtonStyle = css({
+  padding: 0,
   backgroundColor: 'inherit',
   color: 'inherit',
   '&:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):not(.confirmBtn):hover':
@@ -198,7 +199,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
           >
             <Button
               label={label}
-              prefixedLabel={prefixedLabel}
+              prefixedLabel={prefixedLabel && !(direction === 'left')}
               tooltip={tooltip || undefined}
               icon={withDefault(icon, {
                 icon: `caret-${direction}` as IconName,
@@ -208,8 +209,9 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                 toggleMenu();
               }}
               disabled={items.length === 0}
-              className={buttonClassName + ' dropDownButton'}
+              className={cx(expandWidth, buttonClassName) + ' dropDownButton'}
               noBackground={noBackground}
+              iconPositionning="spread"
             />
           </div>
 
