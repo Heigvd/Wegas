@@ -112,14 +112,22 @@ function ChildrenDeserializer({
               }
             />
           ) : (
-            <PageDeserializer
-              pageId={pageId}
-              path={[...(path ? path : []), 0]}
-              uneditable={uneditable}
-              context={newContext}
-              dropzones={{}}
-              inheritedOptionsState={inheritedOptionsState}
-            />
+            <>
+              {wegasChildren?.map((_c, i) => {
+                const newPath = [...(path ? path : []), i];
+                return (
+                  <PageDeserializer
+                    key={JSON.stringify(newPath)}
+                    pageId={pageId}
+                    path={newPath}
+                    uneditable={uneditable}
+                    context={newContext}
+                    dropzones={{}}
+                    inheritedOptionsState={inheritedOptionsState}
+                  />
+                );
+              })}
+            </>
           );
 
         return (

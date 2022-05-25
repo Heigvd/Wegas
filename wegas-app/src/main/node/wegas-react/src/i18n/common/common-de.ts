@@ -50,8 +50,13 @@ export const commonTranslationsDE: CommonTranslations = {
     'Ihre Version von Wegas ist nicht auf dem neuesten Stand, bitte aktualisieren Sie Ihren Browser.',
   somethingIsUndefined: name => `${name} ist ungültig`,
   authorizations: {
+    authorize: 'Zulassen',
+    refuse: 'Ablehnen',
     authorizationsText: 'Berechtigungen',
     authorizationNeeded: 'Autorisierung erforderlich',
+    authorizationRefused:
+      'Die Komponente kann nicht angezeigt werden, da die Berechtigung verweigert wurde',
+    resetAllAuthorizations: 'Alle Berechtigungen zurücksetzen',
     authorizations: {
       allowExternalUrl: {
         label: 'Zugriff auf externe URLs erlauben',

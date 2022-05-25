@@ -295,9 +295,11 @@ export function ComponentProperties({
       label={label}
       entity={wegasComponentToForm(entity.props)}
       schema={customSchema ? customSchema : schema}
-      update={value =>
-        update && update({ ...entity, props: formToWegasComponent(value) })
-      }
+      update={value => {
+        if (update) {
+          update({ ...entity, props: formToWegasComponent(value) });
+        }
+      }}
       actions={actions}
       localDispatch={localDispatch}
     />
