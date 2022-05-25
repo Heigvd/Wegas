@@ -3,6 +3,7 @@ import JoditEditor, { Jodit } from "jodit";
 import 'jodit/build/jodit.min.css';
 import { wlog } from '../../Helper/wegaslog';
 import sanitize from '../../Helper/sanitize';
+import { ButtonsGroups } from 'jodit/types/types';
 
 
 export interface JoditEditorProps {
@@ -47,13 +48,14 @@ function cleanValue(value: string | undefined): string {
     return sanitize(v.replace(/\n/g, ''))
 }
 
-const buttonDefaultConfig = [
+const IMG_PLACEHOLDER = 'IMG_PLACEHOLDER';
+const buttonDefaultConfig: ButtonsGroups = [
     'italic', 'bold', 'underline', '|',
      'ul', 'ol', '|',
     'left', 'center', 'right', 'justify', '|',
-    'link', 'image', '|',
+    'link', 'IMG_PLACEHOLDER', '|',
     'source','table','|',
-    'paragraph', 'fontsize','brush'
+    'paragraph', 'fontsize','brush', //'font'
 ];
 
 export default function JoditReactEditor(props : JoditEditorProps) {
@@ -68,6 +70,7 @@ export default function JoditReactEditor(props : JoditEditorProps) {
         if(local !== updated){
             // wlog('RECEIVED', updated);
             // wlog('CURRENT', local);
+            // avoid triggering a change callback when setting the new value
             muteChanges.current = true;
             editor.setEditorValue(updated);
             muteChanges.current = false;
@@ -76,18 +79,41 @@ export default function JoditReactEditor(props : JoditEditorProps) {
         editor.setDisabled(props.disabled || false);
     }
 
+    // Editor setup or update
     React.useEffect(()=> {
         if(jodit.current){
           updateProps(jodit.current, props);  
         }
         else if(containerRef.current){
 
+            const idx = buttonDefaultConfig.findIndex((e) => e === IMG_PLACEHOLDER);
+            if(idx > -1){
+                buttonDefaultConfig[idx] = {
+                    icon: 'image',
+                    exec: function (editor: JoditEditor.Jodit) {
+                        if(props.showFilePickerFunc){
+                            props.showFilePickerFunc((path) => 
+                            {
+                                editor.selection.insertImage(path);
+                            })
+                        }
+                    }
+                }
+            }
+
             const config = Jodit.defaultOptions;
             config.defaultTimeout = props.innerEditorTimeout || 0;
+
             config.buttons = buttonDefaultConfig;
             config.buttonsMD = buttonDefaultConfig;
             config.buttonsSM = buttonDefaultConfig;
             config.buttonsXS = buttonDefaultConfig;
+
+            config.statusbar = false;
+            // config.controls.font.list = Jodit.atom({
+			// 	'Tahoma,Geneva,sans-serif': 'Tahoma',
+			// 	'Roboto Medium,Arial,sans-serif': 'Roboto',
+			// });
 
             const j = Jodit.make(containerRef.current, config);
 
@@ -98,8 +124,6 @@ export default function JoditReactEditor(props : JoditEditorProps) {
                 // wlog('NEW VALUE ', JSON.stringify(prev));
                 // wlog('OLD VALUE', JSON.stringify(v));
                 if(!muteChanges.current && props.onChange && v !== prev){
-                    // wlog(muteChanges);
-                    // wlog('calling on change', v);
                     props.onChange(v);
                 }
             });
