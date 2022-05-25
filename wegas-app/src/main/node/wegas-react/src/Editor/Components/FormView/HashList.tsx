@@ -151,7 +151,7 @@ const extractValues = (
     (o as Record<string, unknown>)[k] =
       isIntermediate && typeof v.value === 'object'
         ? extractValues(v.value, itemChoices)
-        : v.value || undefined;
+        : v.value;
     return o;
   }, {});
 const sortValues = (a: ImprovedObjectValue, b: ImprovedObjectValue) =>
