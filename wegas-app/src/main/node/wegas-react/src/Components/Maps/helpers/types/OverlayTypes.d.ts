@@ -6,8 +6,6 @@ interface OverlayProps {
   positioning?: PositioningOptions;
   stopEvent?: boolean;
   insertFirst?: boolean;
-  autoPan?: AutoPanOptions;
-  featuresFilter?: FeatureFilter;
 }
 
 interface OverlayItem {

@@ -61,7 +61,10 @@ export default function PlayerOverlay({
 
   return (
     <playerOverlayCTX.Provider value={{ exposePositionAs, clickedPosition }}>
-      <WegasOverlay {...overlayEvaluatedProps} onClick={setClickedPosition}>
+      <WegasOverlay
+        {...overlayEvaluatedProps}
+        onPositionChange={setClickedPosition}
+      >
         {children}
       </WegasOverlay>
     </playerOverlayCTX.Provider>

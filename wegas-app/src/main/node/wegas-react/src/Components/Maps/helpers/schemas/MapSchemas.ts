@@ -23,14 +23,6 @@ export const viewOptionsSchema = schemaProps.hashlist({
       value: {
         prop: 'projection',
         schema: projectionSchema('Projection'),
-        // schemaProps.scriptable({
-        //   label: 'Projection',
-        //   scriptProps: {
-        //     language: 'TypeScript',
-        //     returnType: ['string'],
-        //   },
-        //   literalSchema: schemaProps.string({}),
-        // }),
       },
     },
     {

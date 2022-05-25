@@ -1,6 +1,6 @@
 import { defaultOverlayPositionKey } from '../../../PageComponents/Maps/Overlay.component';
 import { schemaProps } from '../../../PageComponents/tools/schemaProps';
-import { pointSchema } from './HelperSchemas';
+import { pointSchema, projectionSchema } from './HelperSchemas';
 
 export const overlaySchema = {
   overlayProps: schemaProps.hashlist({
@@ -46,6 +46,13 @@ export const overlaySchema = {
             },
             literalSchema: pointSchema(),
           }),
+        },
+      },
+      {
+        label: 'Projection',
+        value: {
+          prop: 'projection',
+          schema: projectionSchema('Projection'),
         },
       },
       {
