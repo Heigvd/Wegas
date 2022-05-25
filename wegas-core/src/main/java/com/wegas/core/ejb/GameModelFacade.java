@@ -405,7 +405,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             throw WegasErrorMessage.error("No DebugTeam found");
         }
 
-
         /**
          * The debug team exists, let's create a test player within it
          */
@@ -1043,54 +1042,59 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
         while ((entry = zip.getNextEntry()) != null) {
-            String entryName = entry.getName();
+            try {
+                String entryName = entry.getName();
 
-            if (entryName.charAt(0) == '/') {
-                entryName = entryName.substring(1);
-            }
-            if (GM_DOT_JSON_NAME.equals(entryName)) {
-                InputStream stream = IOUtils.toBufferedInputStream(zip);
-                rgm.setGameModel(mapper.readValue(stream, GameModel.class));
-            } else if (FILESMETA_PREFIX.equals(entryName)) {
-                InputStream stream = IOUtils.toBufferedInputStream(zip);
+                if (entryName.charAt(0) == '/') {
+                    entryName = entryName.substring(1);
+                }
+                if (GM_DOT_JSON_NAME.equals(entryName)) {
+                    InputStream stream = IOUtils.toBufferedInputStream(zip);
+                    rgm.setGameModel(mapper.readValue(stream, GameModel.class));
+                } else if (FILESMETA_PREFIX.equals(entryName)) {
+                    InputStream stream = IOUtils.toBufferedInputStream(zip);
 
-                TypeReference<HashMap<String, FileMeta>> typeRef = new TypeReference<>() {
-                };
+                    TypeReference<HashMap<String, FileMeta>> typeRef = new TypeReference<>() {
+                    };
 
-                rgm.setFilesMeta(mapper.readValue(stream, typeRef));
-            } else {
-                Matcher matcher = LIB_PATTERN.matcher(entryName);
-                if (matcher.matches()) {
-                    String libType = matcher.group(1);
-
-                    String libName = matcher.group(2);
-
-                    String mimeType = extensionToMimeType(matcher.group(3));
-                    String libContent = IOUtils.toString(zip, StandardCharsets.UTF_8);
-
-                    libs.add(new GameModelContent(libName, libContent, mimeType, libType));
+                    rgm.setFilesMeta(mapper.readValue(stream, typeRef));
                 } else {
-                    matcher = PAGE_PATTERN.matcher(entryName);
+                    Matcher matcher = LIB_PATTERN.matcher(entryName);
                     if (matcher.matches()) {
-                        String pageId = matcher.group(1);
-                        String jsonPage = IOUtils.toString(zip, StandardCharsets.UTF_8);
-                        JsonNode page = mapper.readTree(jsonPage);
-                        pages.put(pageId, page);
+                        String libType = matcher.group(1);
+
+                        String libName = matcher.group(2);
+
+                        String mimeType = extensionToMimeType(matcher.group(3));
+                        String libContent = IOUtils.toString(zip, StandardCharsets.UTF_8);
+
+                        libs.add(new GameModelContent(libName, libContent, mimeType, libType));
                     } else {
-                        matcher = FILE_PATTERN.matcher(entryName);
+                        matcher = PAGE_PATTERN.matcher(entryName);
                         if (matcher.matches()) {
-                            String path = matcher.group(1);
-                            if (path.endsWith("/")) {
-                                // directories
-                                directories.add(path);
-                            } else {
-                                // files
-                                filesData.put(path, IOUtils.toByteArray(zip));
-                                mTimes.put(path, entry.getLastModifiedTime());
+                            String pageId = matcher.group(1);
+                            String jsonPage = IOUtils.toString(zip, StandardCharsets.UTF_8);
+                            JsonNode page = mapper.readTree(jsonPage);
+                            pages.put(pageId, page);
+                        } else {
+                            matcher = FILE_PATTERN.matcher(entryName);
+                            if (matcher.matches()) {
+                                String path = matcher.group(1);
+                                if (path.endsWith("/")) {
+                                    // directories
+                                    directories.add(path);
+                                } else {
+                                    // files
+                                    filesData.put(path, IOUtils.toByteArray(zip));
+                                    mTimes.put(path, entry.getLastModifiedTime());
+                                }
                             }
                         }
                     }
                 }
+            } catch (IOException ex) {
+                logger.error("Entry : {}", entry);
+                throw ex;
             }
         }
 

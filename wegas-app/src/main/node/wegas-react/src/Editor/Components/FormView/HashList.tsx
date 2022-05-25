@@ -335,7 +335,7 @@ function EntriesView({
     (i: number) => {
       onChange(
         Object.entries(currentValue)
-          .filter((_kv, vI) => vI !== i)
+          .filter(([_key, value]) => value.index !== i)
           .reduce((o, [k, v]) => ({ ...o, [k]: v }), {}),
       );
     },
