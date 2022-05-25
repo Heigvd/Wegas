@@ -7,6 +7,7 @@ import Feature from 'ol/Feature';
 import { fromExtent } from 'ol/geom/Polygon';
 import TileLayer from 'ol/layer/Tile';
 import Map from 'ol/Map';
+import 'ol/ol.css';
 import { MapOptions } from 'ol/PluggableMap';
 import { ProjectionLike } from 'ol/proj';
 import OSM from 'ol/source/OSM';
@@ -20,8 +21,6 @@ import {
   authorizationsCTX,
 } from '../Contexts/AuthorizationsProvider';
 import { initializeProjection } from './helpers/proj4js';
-
-import 'ol/ol.css'
 
 interface MapContext {
   map?: Map;
@@ -190,7 +189,7 @@ export function WegasMap({
   }, [map]);
 
   return (
-    <Authorization authorizationKey="allowExternalUrl">
+    <Authorization disabled={!OSMLayer} authorizationKey="allowExternalUrl">
       <div className={cx(flex, flexRow, expandBoth)}>
         {debug && (
           <div
@@ -208,7 +207,7 @@ export function WegasMap({
               <li>{`zoom: ${debugValues.zoom}`}</li>
               <li>{`center: [${debugValues.center.join(';')}]`}</li>
               <li>{`extent: [${debugValues.extent.join(';')}]`}</li>
-              <li>{ `resolution: [${ debugValues.resolution}]`}</li>
+              <li>{`resolution: [${debugValues.resolution}]`}</li>
             </ul>
             <div className={cx(pointer)} onClick={zoomToLayersExentCb}>
               Zoom to layers
