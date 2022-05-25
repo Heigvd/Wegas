@@ -1,6 +1,5 @@
-import { isEqual } from 'lodash-es';
 import * as React from 'react';
-import { AnyAction, Store } from 'redux';
+import { Store, AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { shallowIs } from '../../Helper/shallowIs';
 
@@ -11,7 +10,14 @@ export function shallowDifferent<T>(a: T, b: T) {
   return !shallowIs(a, b);
 }
 export function deepDifferent<T>(a: T, b: T) {
-  return !isEqual(a, b);
+  if (a === undefined && b === undefined) {
+    return false;
+  } else if (a === null && b === null) {
+    return false;
+  } else if (a == null || b == null) {
+    return true;
+  }
+  return JSON.stringify(a) !== JSON.stringify(b);
 }
 
 export type StoreType<S, A extends AnyAction> = Store<
