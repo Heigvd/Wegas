@@ -95,7 +95,7 @@ function PlayerTextInput({
     <Validate value={value} onValidate={onChange} onCancel={handleOnCancel}>
       {(value, onChange) => {
         return (
-          <HTMLEditor
+          <HTMLEditorMk2
             id={id}
             value={String(value)}
             onChange={onChange}

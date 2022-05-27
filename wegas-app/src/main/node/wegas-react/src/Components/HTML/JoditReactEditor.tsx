@@ -4,6 +4,7 @@ import 'jodit/build/jodit.min.css';
 import { wlog } from '../../Helper/wegaslog';
 import sanitize from '../../Helper/sanitize';
 import { ButtonsGroups } from 'jodit/types/types';
+import { css } from '@emotion/css';
 
 
 export interface JoditEditorProps {
@@ -37,6 +38,11 @@ export interface JoditEditorProps {
      * @param callback function to be called with full path to media
      */
     showFilePickerFunc?: (callback: (path: string) => void) => void;
+    /**
+     * Custom toolbar
+     * example  : 'bold italic underline | source'
+     */
+    customToolbar?: string;
 }
 
 /**
@@ -48,14 +54,17 @@ function cleanValue(value: string | undefined): string {
     return sanitize(v.replace(/\n/g, ''))
 }
 
+const wysiwygStyle = css({backgroundColor: 'white'});
+
 const IMG_PLACEHOLDER = 'IMG_PLACEHOLDER';
 const buttonDefaultConfig: ButtonsGroups = [
     'italic', 'bold', 'underline', '|',
      'ul', 'ol', '|',
     'left', 'center', 'right', 'justify', '|',
-    'link', 'IMG_PLACEHOLDER', '|',
+    'link', IMG_PLACEHOLDER, '|',
     'source','table','|',
-    'paragraph', 'fontsize','brush', //'font'
+    'paragraph', 'fontsize','brush', 
+    'classSpan'//'font'
 ];
 
 export default function JoditReactEditor(props : JoditEditorProps) {
@@ -70,13 +79,14 @@ export default function JoditReactEditor(props : JoditEditorProps) {
         if(local !== updated){
             // wlog('RECEIVED', updated);
             // wlog('CURRENT', local);
-            // avoid triggering a change callback when setting the new value
+            // hack : avoid triggering a change callback when setting the new value
             muteChanges.current = true;
             editor.setEditorValue(updated);
             muteChanges.current = false;
         }
         editor.setReadOnly(props.readonly || false);
         editor.setDisabled(props.disabled || false);
+
     }
 
     // Editor setup or update
@@ -86,9 +96,17 @@ export default function JoditReactEditor(props : JoditEditorProps) {
         }
         else if(containerRef.current){
 
-            const idx = buttonDefaultConfig.findIndex((e) => e === IMG_PLACEHOLDER);
+            let buttonsConfig :ButtonsGroups;
+            if(props.customToolbar){
+                buttonsConfig = props.customToolbar.trim().split(/\s+/);
+            }else{
+                buttonsConfig = buttonDefaultConfig;
+            }
+            // const buttonsConfig = props.customToolbar ? (props.customToolbar : buttonDefaultConfig;
+            const idx = buttonsConfig.findIndex((e) => e === IMG_PLACEHOLDER);
+            //custom button for WEGAS images
             if(idx > -1){
-                buttonDefaultConfig[idx] = {
+                buttonsConfig[idx] = {
                     icon: 'image',
                     exec: function (editor: JoditEditor.Jodit) {
                         if(props.showFilePickerFunc){
@@ -104,12 +122,19 @@ export default function JoditReactEditor(props : JoditEditorProps) {
             const config = Jodit.defaultOptions;
             config.defaultTimeout = props.innerEditorTimeout || 0;
 
-            config.buttons = buttonDefaultConfig;
-            config.buttonsMD = buttonDefaultConfig;
-            config.buttonsSM = buttonDefaultConfig;
-            config.buttonsXS = buttonDefaultConfig;
+            config.buttons = buttonsConfig;
+            config.buttonsMD = buttonsConfig;
+            config.buttonsSM = buttonsConfig;
+            config.buttonsXS = buttonsConfig;
+
+            wlog(config.controls.classSpan);
+
+            config.controls.classSpan.list = {x : 'xx', y : 'yy'};//['myStyle', 'yourStyle'];
 
             config.statusbar = false;
+            //Missing typings for placeholder...
+            (config as any).placeholder = props.placeholder;
+
             // config.controls.font.list = Jodit.atom({
 			// 	'Tahoma,Geneva,sans-serif': 'Tahoma',
 			// 	'Roboto Medium,Arial,sans-serif': 'Roboto',
@@ -117,12 +142,9 @@ export default function JoditReactEditor(props : JoditEditorProps) {
 
             const j = Jodit.make(containerRef.current, config);
 
-            wlog(j.defaultTimeout);
             j.events.on('change', (value, oldValue) => {
                 const prev = cleanValue(oldValue);
                 const v = cleanValue(value);
-                // wlog('NEW VALUE ', JSON.stringify(prev));
-                // wlog('OLD VALUE', JSON.stringify(v));
                 if(!muteChanges.current && props.onChange && v !== prev){
                     props.onChange(v);
                 }
@@ -135,9 +157,8 @@ export default function JoditReactEditor(props : JoditEditorProps) {
     }, [props]);
 
     return (
-        <div>
-            <textarea ref={containerRef}>
-            </textarea>
+        <div className={wysiwygStyle}>
+            <textarea ref={containerRef}></textarea>
         </div>
     );
 }
