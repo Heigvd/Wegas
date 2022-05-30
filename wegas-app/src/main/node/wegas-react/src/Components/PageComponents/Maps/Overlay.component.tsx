@@ -61,7 +61,10 @@ export default function PlayerOverlay({
 
   return (
     <playerOverlayCTX.Provider value={{ exposePositionAs, clickedPosition }}>
-      <WegasOverlay {...overlayEvaluatedProps} onClick={setClickedPosition}>
+      <WegasOverlay
+        {...overlayEvaluatedProps}
+        onPositionChange={setClickedPosition}
+      >
         {children}
       </WegasOverlay>
     </playerOverlayCTX.Provider>
@@ -119,7 +122,7 @@ registerComponent(
     id: 'WegasMapOverlay',
     name: 'Overlay',
     icon: 'map',
-    illustration: 'scatter',
+    illustration: 'overlay',
     schema: overlaySchema,
     getComputedPropsFromVariable: () => ({
       children: [],

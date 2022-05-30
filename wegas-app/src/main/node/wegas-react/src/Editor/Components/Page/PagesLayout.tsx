@@ -1,5 +1,5 @@
 import { css, cx } from '@emotion/css';
-import { omit } from 'lodash-es';
+import { isEqual, omit } from 'lodash-es';
 import * as React from 'react';
 import {
   featuresCTX,
@@ -494,8 +494,7 @@ function WegasComponentTitle({
   }
 
   const isSelected =
-    pageId === selectedPageId &&
-    JSON.stringify(componentPath) === JSON.stringify(selectedComponentPath);
+    pageId === selectedPageId && isEqual(componentPath, selectedComponentPath);
   const isFocused = usePagesStateStore(
     isComponentFocused(editMode, pageId, componentPath),
   );

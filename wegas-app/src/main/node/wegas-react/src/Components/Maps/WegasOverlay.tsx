@@ -3,6 +3,7 @@ import { Overlay } from 'ol';
 import { Coordinate } from 'ol/coordinate';
 import * as Easing from 'ol/easing';
 import { Options, PanIntoViewOptions } from 'ol/Overlay';
+import { ProjectionLike, transform } from 'ol/proj';
 // React
 import * as React from 'react';
 import { createPortal } from 'react-dom';
@@ -14,6 +15,10 @@ import { mapCTX } from './WegasMap';
  */
 export interface WegasOverlayProps
   extends React.PropsWithChildren<Omit<Options, 'autoPan' | 'element'>> {
+  /**
+   * The projection in witch the position is given
+   */
+  projection?: ProjectionLike;
   /**
    * Pan the map when calling setPosition, so that the overlay is entirely visible in the current viewport?
    */
@@ -29,15 +34,16 @@ export interface WegasOverlayProps
    */
   featuresFilter?: FeatureFilter;
   /**
-   * A callback function triggered when click
+   * A callback function triggered when the overlay position changes
    */
-  onClick?: (position: Coordinate) => void;
+  onPositionChange?: (position?: Coordinate) => void;
 }
 
 export function WegasOverlay({
   id,
   className,
   position,
+  projection,
   offset,
   positioning,
   stopEvent,
@@ -45,7 +51,7 @@ export function WegasOverlay({
   autoPan: autoPanProp,
   positionOnClick,
   featuresFilter,
-  onClick,
+  onPositionChange,
   children,
 }: WegasOverlayProps): JSX.Element {
   const { map } = React.useContext(mapCTX);
@@ -90,14 +96,21 @@ export function WegasOverlay({
 
         setOlOverlay(overlay);
 
+        overlay.on('change:position', event => {
+          if (onPositionChange) {
+            onPositionChange((event.target as Overlay).getPosition());
+          }
+        });
+
         if (positionOnClick) {
           map.on('click', function (evt) {
             // get click position
             const coordinate = evt.coordinate;
 
-            if (onClick != null) {
-              onClick(coordinate);
-            }
+            // if (onPositionChange != null) {
+            //   onPositionChange(coordinate);
+            // }
+
             if (overlayComponentRef.current) {
               // Check if the overlay can be placed here
               let allowClick = true;
@@ -149,7 +162,7 @@ export function WegasOverlay({
     insertFirst,
     map,
     offset,
-    onClick,
+    onPositionChange,
     positionOnClick,
     positioning,
     stopEvent,
@@ -157,9 +170,17 @@ export function WegasOverlay({
 
   React.useEffect(() => {
     if (olOverlay != null) {
-      olOverlay.setPosition(position);
+      let computedPosition = position;
+      if (position != null && map != null && projection != null) {
+        computedPosition = transform(
+          position,
+          projection,
+          map.getView().getProjection(),
+        ) as PointLikeObject;
+      }
+      olOverlay.setPosition(computedPosition);
     }
-  }, [olOverlay, position]);
+  }, [map, olOverlay, position, projection]);
 
   if (map != null) {
     return (
@@ -168,6 +189,6 @@ export function WegasOverlay({
       </div>
     );
   } else {
-    return <>children</>;
+    return <>{children}</>;
   }
 }

@@ -1,5 +1,6 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
+import { useAuthorizations } from '../../Components/Contexts/AuthorizationsProvider';
 import {
   featuresCTX,
   isFeatureEnabled,
@@ -22,13 +23,13 @@ import {
   componentMarginLeft,
   componentMarginRight,
   defaultMarginLeft,
+  externalLlinkStyle,
   flex,
   flexBetween,
   flexRow,
   foregroundContent,
   itemCenter,
   itemsTop,
-  externalLlinkStyle,
 } from '../../css/classes';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
@@ -252,6 +253,7 @@ export default function Header() {
   const roleToggler = useRolesToggler();
   const langSelector = useLangToggler();
   const loggerLevelTogglers = useLoggerLevelSelector();
+  const authorizationTogglers = useAuthorizations();
 
   const teams = useStore(s => {
     return Object.values(s.teams);
@@ -404,6 +406,7 @@ export default function Header() {
                     </div>
                   ),
                 },
+                authorizationTogglers,
               ]}
               buttonClassName={cx(
                 defaultMarginLeft,
@@ -451,8 +454,10 @@ export default function Header() {
                       }}
                       buttonClassName={transparentDropDownButton}
                       modalDisplay
-                      modalMessage={ gameModel.type === 'PLAY' ? "BE AWARE!" :
-                        i18nValues.header.restartGame + '?'
+                      modalMessage={
+                        gameModel.type === 'PLAY'
+                          ? 'BE AWARE!'
+                          : i18nValues.header.restartGame + '?'
                       }
                     />
                   ),

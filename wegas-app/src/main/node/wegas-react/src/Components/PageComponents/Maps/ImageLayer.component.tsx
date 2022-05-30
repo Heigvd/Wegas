@@ -84,7 +84,7 @@ registerComponent(
     id: 'WegasMapImageLayer',
     name: 'Image layer',
     icon: 'map',
-    illustration: 'scatter',
+    illustration: 'imageLayer',
     schema: {
       layerSource: wegasImageLayerSourceSchema,
       layerProps: wegasImageLayerPropsSchema,

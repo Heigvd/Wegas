@@ -85,7 +85,7 @@ registerComponent(
     id: 'WegasMapTileLayer',
     name: 'Tile layer',
     icon: 'map',
-    illustration: 'scatter',
+    illustration: 'tileLayer',
     schema: {
       layerProps: wegasTileLayerPropsSchema,
       layerSource: wegasTileLayerSourceSchema,

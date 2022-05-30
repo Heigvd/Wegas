@@ -49,4 +49,20 @@ export const commonTranslationsFR: CommonTranslations = {
   serverOutaded:
     "Votre version de Wegas n'est plus a jour, veuillez rafraichir votre navigateur.",
   somethingIsUndefined: name => `${name} est indéfini`,
+  authorizations: {
+    authorize: 'Autoriser',
+    refuse: 'Refuser',
+    authorizationsText: 'Autorisations',
+    authorizationNeeded: 'Autorization nécessaire',
+    authorizationRefused:
+      "Le composant ne peut pas être affiché car l'autorisation a été refusée",
+    resetAllAuthorizations: 'Réinitialiser toutes les autorisations',
+    authorizations: {
+      allowExternalUrl: {
+        label: "Autoriser l'acces aux URLs externes",
+        description:
+          "Vous acceptez d'exposer votre adresse IP à d'autres sites web afin que Wegas puisse obtenir des ressources externes.",
+      },
+    },
+  },
 };

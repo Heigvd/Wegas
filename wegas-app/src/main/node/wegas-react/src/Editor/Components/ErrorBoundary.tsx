@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Button } from '../../Components/Inputs/Buttons/Button';
 import { wwarn } from '../../Helper/wegaslog';
 // https://reactjs.org/docs/error-boundaries.html
 
@@ -24,7 +25,16 @@ export class ErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       // You can render any custom fallback UI
-      return <h1>Something went wrong.</h1>;
+      return (
+        <div /*className={cx(expandBoth, flexColumn, itemCenter, flexDistribute)}*/
+        >
+          <h1>Something went wrong.</h1>
+          <Button
+            label={'Retry'}
+            onClick={() => this.setState({ hasError: false })}
+          />
+        </div>
+      );
     }
 
     return this.props.children;
