@@ -9,6 +9,7 @@ import {
   ScriptCallback,
   useScript,
   useScriptCallback,
+  useUpdatedContextRef,
 } from '../../Hooks/useScript';
 import {
   onLayerReadySchema,
@@ -37,6 +38,7 @@ export default function PlayerTileLayer({
   path,
   context,
 }: PlayerTileLayerProps) {
+  const contextRef = useUpdatedContextRef(context);
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const currentLayerProps =
     useScript<SharedLayerProps>(
@@ -44,7 +46,7 @@ export default function PlayerTileLayer({
     ) || (layerProps as SharedLayerProps | undefined);
   const onLayerReadyFn = useScriptCallback<OnLayerReadyFN>(
     onLayerReady,
-    context,
+    contextRef,
   );
   const source = layerSource?.source;
   const currentURLs = useScript<string[]>(

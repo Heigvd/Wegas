@@ -15,6 +15,7 @@ import {
   useScript,
   useScriptCallback,
   useScriptObjectWithFallback,
+  useUpdatedContextRef,
 } from '../../Hooks/useScript';
 import { TumbleLoader } from '../../Loader';
 import { styleSourceToOlStyle } from '../../Maps/helpers/LayerStyleHelpers';
@@ -48,7 +49,7 @@ interface PlayerVectorLayerProps extends WegasComponentProps {
   layerProps?: IScript | Omit<Options<VectorSource>, 'source' | 'style'>;
   layerSource?: VectorLayerSourceObject;
   layerId?: string;
-  layerStyle?: ScriptCallback | LayerStyleObject;
+  layerStyle?: ScriptCallback | StyleObject;
   onLayerReady?: ScriptCallback;
 }
 
@@ -62,13 +63,14 @@ export default function PlayerVectorLayer({
   pageId,
   path,
 }: PlayerVectorLayerProps) {
+  const contextRef = useUpdatedContextRef(context);
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
 
   const { projection } = React.useContext(mapCTX);
 
   const onLayerReadyFn = useScriptCallback<OnLayerReadyFN>(
     onLayerReady,
-    context,
+    contextRef,
   );
 
   const scriptableProps = useDeepMemo({
@@ -76,7 +78,10 @@ export default function PlayerVectorLayer({
     currentLayerStyle: layerStyle,
     currentLayerProps: layerProps,
   });
-  const computedProps = useScriptObjectWithFallback(scriptableProps, context);
+  const computedProps = useScriptObjectWithFallback(
+    scriptableProps,
+    contextRef,
+  );
   const { currentLayerProps, currentLayerStyle } = computedProps;
 
   const source = layerSource?.source;

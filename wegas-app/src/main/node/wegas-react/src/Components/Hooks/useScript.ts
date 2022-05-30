@@ -52,7 +52,6 @@ import {
   isFeatureEnabled,
 } from '../Contexts/FeaturesProvider';
 import { LanguagesContext, languagesCTX } from '../Contexts/LanguagesProvider';
-import { EmptyPageComponentProps } from '../PageComponents/tools/EditableComponent';
 import { PageComponentContext } from '../PageComponents/tools/options';
 import {
   schemaProps,
@@ -861,10 +860,14 @@ export function parseAndRunClientScript(
     : scriptContent;
 }
 
-export function useScriptWithFallback<T>(variable: T | IScript) {
-  const isScript = entityIs(variable, 'Script');
-  const scriptedVariable = useScript<T>(isScript ? variable : undefined);
-  return isScript ? scriptedVariable : variable;
+export type ContextRef = React.MutableRefObject<UknownValuesObject | undefined>;
+
+export function useUpdatedContextRef(context: UknownValuesObject | undefined) {
+  const contextRef = React.useRef(context);
+  React.useEffect(() => {
+    contextRef.current = context;
+  });
+  return contextRef;
 }
 
 export interface ScriptCallback {
@@ -930,14 +933,15 @@ export function safeScriptCallbackEval<T>(
 export function useScriptObjectWithFallback<
   T extends Record<string, unknown>,
   ReturnType = { [P in keyof T]: Exclude<T[P], IScript | ScriptCallback> },
->(scriptObject: T, context: EmptyPageComponentProps['context']): ReturnType {
+>(scriptObject: T, contextRef: ContextRef): ReturnType {
   const returnedObjectRef = React.useRef<ReturnType>();
   const scripts = Object.entries(scriptObject).filter(([, v]) =>
     entityIs(v, 'Script'),
   );
   const scriptKeys = scripts.map(([k]) => k);
   const scriptValues = scripts.map(([, v]) => v as IScript);
-  const evaluatedScripts = useScript<ValueOf<T>[]>(scriptValues, context) || [];
+  const evaluatedScripts =
+    useScript<ValueOf<T>[]>(scriptValues, contextRef.current) || [];
   const evaluatedScriptsObject = scriptKeys.reduce((o, k, i) => {
     o[k as string] = evaluatedScripts[i];
     return o;
@@ -946,9 +950,11 @@ export function useScriptObjectWithFallback<
   const callbacks = Object.entries(scriptObject).filter(([, v]) =>
     isScriptCallback(v),
   );
+
   const callbackKeys = callbacks.map(([k]) => k);
   const callbackValues = callbacks.map(([, v]) => v as ScriptCallback);
-  const evaluatedCallbacks = useScriptCallbacks(callbackValues, context) || [];
+  const evaluatedCallbacks =
+    useScriptCallbacks(callbackValues, contextRef) || [];
   const evaluatedCallbacksObject = callbackKeys.reduce((o, k, i) => {
     o[k as string] = evaluatedCallbacks[i];
     return o;
@@ -956,6 +962,7 @@ export function useScriptObjectWithFallback<
 
   const values = Object.entries(scriptObject)
     .filter(([, v]) => !entityIs(v, 'Script'))
+    .filter(([, v]) => !isScriptCallback(v))
     .reduce((o, [k, v]) => {
       o[k as string] = v;
       return o;
@@ -979,21 +986,18 @@ export function useScriptObjectWithFallback<
   }, [evaluatedCallbacksObject, evaluatedScriptsObject, values]);
 }
 
-export function computeCB<T extends (...args: unknown[]) => void>(
-  callbackScript: ScriptCallback,
-  context: EmptyPageComponentProps['context'],
-  state: PagesContextState | undefined,
-) {
-  // const strFunction = `function(${callbackScript.args.join(',')}){${
-  //   callbackScript.content
-  // }}`;
+type AnyFunction = (...args: unknown[]) => unknown;
 
+export function computeCB<T extends AnyFunction>(
+  callbackScript: ScriptCallback,
+  contextRef: ContextRef | undefined,
+): T {
   return function (...cbArgs: Parameters<T>) {
     return safeScriptCallbackEval(
       callbackScript,
-      context,
+      contextRef?.current,
       undefined,
-      state,
+      pagesContextStateStore.getState(),
       {
         injectReturn: true,
       },
@@ -1004,42 +1008,37 @@ export function computeCB<T extends (...args: unknown[]) => void>(
 
 const emptyCallback = createScriptCallback('', []);
 
-export function useScriptCallback<T extends (...args: unknown[]) => void>(
+export function useScriptCallback<T extends AnyFunction>(
   callbackScript: ScriptCallback = emptyCallback,
-  context: EmptyPageComponentProps['context'],
+  contextRef: ContextRef,
 ) {
-  const lastProps = React.useRef<unknown>();
+  const lastScript = React.useRef<unknown>();
   const lastReturn = React.useRef<T>();
-  const state = usePagesContextStateStore(s => s);
 
   return React.useMemo(() => {
-    const newProps = { callbackScript, context, state };
-    if (!isEqual(newProps, lastProps.current)) {
-      lastProps.current = newProps;
-      const newReturn = computeCB<T>(callbackScript, context, state);
+    if (!isEqual(callbackScript, lastScript.current)) {
+      lastScript.current = callbackScript;
+      const newReturn = computeCB<T>(callbackScript, contextRef);
       lastReturn.current = newReturn;
     }
     return lastReturn.current;
-  }, [callbackScript, context, state]);
+  }, [callbackScript, contextRef]);
 }
 
 function useScriptCallbacks(
   scriptCallbacks: ScriptCallback[],
-  context: EmptyPageComponentProps['context'],
-) {
-  const lastProps = React.useRef<unknown>();
-  const lastReturns = React.useRef<((...args: unknown[]) => void)[]>();
-  const state = usePagesContextStateStore(s => s);
-
+  contextRef: ContextRef,
+): AnyFunction[] {
+  const lastScripts = React.useRef<ScriptCallback[]>();
+  const lastReturns = React.useRef<((...args: unknown[]) => void)[]>([]);
   return React.useMemo(() => {
-    const newProps = { scriptCallbacks, context, state };
-    if (!isEqual(newProps, lastProps.current)) {
-      lastProps.current = newProps;
+    if (!isEqual(scriptCallbacks, lastScripts.current)) {
+      lastScripts.current = scriptCallbacks;
       const newReturns = scriptCallbacks.map(scriptCB =>
-        computeCB(scriptCB, context, state),
+        computeCB(scriptCB, contextRef),
       );
       lastReturns.current = newReturns;
     }
     return lastReturns.current;
-  }, [context, scriptCallbacks, state]);
+  }, [scriptCallbacks]);
 }

@@ -1,5 +1,8 @@
 import * as React from 'react';
-import { useScriptObjectWithFallback } from '../../Hooks/useScript';
+import {
+  useScriptObjectWithFallback,
+  useUpdatedContextRef,
+} from '../../Hooks/useScript';
 import { styleSourceToOlStyle } from '../../Maps/helpers/LayerStyleHelpers';
 import { selectSchema } from '../../Maps/helpers/schemas/SelectSchemas';
 import { WegasSelect, WegasSelectProps } from '../../Maps/WegasSelect';
@@ -19,9 +22,10 @@ export default function PlayerSelect({
   selectProps,
   context,
 }: PlayerSelectProps) {
+  const contextRef = useUpdatedContextRef(context);
   const selectEvaluatedProps = useScriptObjectWithFallback(
     selectProps,
-    context,
+    contextRef,
   );
   const style = styleSourceToOlStyle(selectEvaluatedProps.style);
 

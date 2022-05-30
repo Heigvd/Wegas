@@ -66,7 +66,7 @@ export default function ScriptableCallbackView(
    */
   const switchToLiteralMode = React.useCallback(() => {
     if (isScriptCallback(valueRef.current)) {
-      const evaluated = computeCB(valueRef.current, undefined, undefined)();
+      const evaluated = computeCB(valueRef.current, undefined);
       if (evaluated != null) {
         onChange(evaluated);
       } else {

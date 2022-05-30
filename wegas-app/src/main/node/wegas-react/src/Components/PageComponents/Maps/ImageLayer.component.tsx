@@ -10,6 +10,7 @@ import {
   ScriptCallback,
   useScript,
   useScriptCallback,
+  useUpdatedContextRef,
 } from '../../Hooks/useScript';
 import {
   onLayerReadySchema,
@@ -38,10 +39,11 @@ export default function PlayerImageLayer({
   path,
   context,
 }: PlayerImageLayerProps) {
+  const contextRef = useUpdatedContextRef(context);
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const onLayerReadyFn = useScriptCallback<OnLayerReadyFN>(
     onLayerReady,
-    context,
+    contextRef,
   );
 
   const currentLayerProps =
