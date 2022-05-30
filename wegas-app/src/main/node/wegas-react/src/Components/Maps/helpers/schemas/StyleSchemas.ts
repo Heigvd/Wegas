@@ -32,14 +32,14 @@ export const strokeStyleSchema: (required?: boolean) => AvailableSchemas =
         value: 'round',
       }),
       lineDashOffset: schemaProps.number({
-          label: 'Line dash offset',
+        label: 'Line dash offset',
         required: false,
       }),
       lineDash: {
         type: 'array',
         items: schemaProps.number({}),
         view: {
-        label: 'Line dash pattern',
+          label: 'Line dash pattern',
           type: 'array',
         },
       },
@@ -117,10 +117,13 @@ export const styleObjectSchema: AvailableSchemas = {
   type: 'object',
   view: {
     label: 'Style',
-    type: 'scriptable',
-    scriptProps: {
-      language: 'TypeScript',
-      returnType: ['StyleObject'],
+    type: 'scriptablecallback',
+    callbackProps: {
+      args: [
+        ['feature', ['any']],
+        ['resolution', ['number']],
+      ],
+      returnType: ['LayerStyleObject', 'LayerStyleObject[]'],
     },
     literalSchema: schemaProps.hashlist({
       choices: [

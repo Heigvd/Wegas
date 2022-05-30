@@ -5,13 +5,17 @@ import { fileURL } from '../../../API/files.api';
 import { entityIs } from '../../../data/entities';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { useScript } from '../../Hooks/useScript';
+import {
+  ScriptCallback,
+  useScript,
+  useScriptCallback,
+} from '../../Hooks/useScript';
 import {
   onLayerReadySchema,
   wegasTileLayerPropsSchema,
   wegasTileLayerSourceSchema,
 } from '../../Maps/helpers/schemas/LayerSchemas';
-import { WegasLayer } from '../../Maps/WegasLayer';
+import { OnLayerReadyFN, WegasLayer } from '../../Maps/WegasLayer';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
@@ -22,7 +26,7 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 interface PlayerTileLayerProps extends WegasComponentProps {
   layerProps?: TileLayerProps | IScript;
   layerSource?: TileLayerSourceObject;
-  onLayerReady?: IScript;
+  onLayerReady?: ScriptCallback;
 }
 
 export default function PlayerTileLayer({
@@ -31,13 +35,17 @@ export default function PlayerTileLayer({
   onLayerReady,
   pageId,
   path,
+  context,
 }: PlayerTileLayerProps) {
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const currentLayerProps =
     useScript<SharedLayerProps>(
       entityIs(layerProps, 'Script') ? layerProps : undefined,
     ) || (layerProps as SharedLayerProps | undefined);
-  const onLayerReadyFn = useScript<OnLayerReadyFN>(onLayerReady);
+  const onLayerReadyFn = useScriptCallback<OnLayerReadyFN>(
+    onLayerReady,
+    context,
+  );
   const source = layerSource?.source;
   const currentURLs = useScript<string[]>(
     source?.sources.map(source => source.url),

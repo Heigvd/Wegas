@@ -7,6 +7,8 @@ import * as React from 'react';
 import { initializeProjection } from './helpers/proj4js';
 import { mapCTX } from './WegasMap';
 
+export type OnLayerReadyFN = (layer: BaseLayer) => void;
+
 interface WegasLayerProps extends Options {
   layer: BaseLayer;
 }

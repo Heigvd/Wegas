@@ -1,5 +1,4 @@
 import GeoJSON from 'ol/format/GeoJSON';
-import BaseLayer from 'ol/layer/Base';
 import { Options } from 'ol/layer/BaseVector';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
@@ -11,7 +10,12 @@ import { entityIs } from '../../../data/entities';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { useDeepMemo } from '../../Hooks/useDeepMemo';
-import { useScript, useScriptObjectWithFallback } from '../../Hooks/useScript';
+import {
+  ScriptCallback,
+  useScript,
+  useScriptCallback,
+  useScriptObjectWithFallback,
+} from '../../Hooks/useScript';
 import { TumbleLoader } from '../../Loader';
 import { styleSourceToOlStyle } from '../../Maps/helpers/LayerStyleHelpers';
 import { initializeProjection } from '../../Maps/helpers/proj4js';
@@ -21,7 +25,7 @@ import {
   wegasVectorLayerSourceSchema,
 } from '../../Maps/helpers/schemas/LayerSchemas';
 import { styleObjectSchema } from '../../Maps/helpers/schemas/StyleSchemas';
-import { WegasLayer } from '../../Maps/WegasLayer';
+import { OnLayerReadyFN, WegasLayer } from '../../Maps/WegasLayer';
 import { mapCTX } from '../../Maps/WegasMap';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
@@ -40,14 +44,12 @@ async function fetchSource(
   return undefined;
 }
 
-type OnLayerReadyFN = ((layer: BaseLayer) => void) | undefined;
-
 interface PlayerVectorLayerProps extends WegasComponentProps {
   layerProps?: IScript | Omit<Options<VectorSource>, 'source' | 'style'>;
   layerSource?: VectorLayerSourceObject;
   layerId?: string;
-  layerStyle?: IScript | LayerStyleObject;
-  onLayerReady?: IScript;
+  layerStyle?: ScriptCallback | LayerStyleObject;
+  onLayerReady?: ScriptCallback;
 }
 
 export default function PlayerVectorLayer({
@@ -64,12 +66,17 @@ export default function PlayerVectorLayer({
 
   const { projection } = React.useContext(mapCTX);
 
-  const onLayerReadyFn = useScript<OnLayerReadyFN>(onLayerReady);
+  const onLayerReadyFn = useScriptCallback<OnLayerReadyFN>(
+    onLayerReady,
+    context,
+  );
+
   const scriptableProps = useDeepMemo({
+    onLayerReady,
     currentLayerStyle: layerStyle,
     currentLayerProps: layerProps,
   });
-  const computedProps = useScriptObjectWithFallback(scriptableProps);
+  const computedProps = useScriptObjectWithFallback(scriptableProps, context);
   const { currentLayerProps, currentLayerStyle } = computedProps;
 
   const source = layerSource?.source;

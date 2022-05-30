@@ -308,13 +308,17 @@ export const mapOptionsSchema = schemaProps.hashlist({
       label: 'on Click',
       value: {
         prop: 'onClick',
-        schema: schemaProps.code({
-          label: 'on Select',
-          scriptProps: {
-            language: 'TypeScript',
-            returnType: [
-              '((coord:[number, number], features:{features: Record<string, unknown>, layerId?: string}[])=>void)',
+        schema: schemaProps.callback({
+          label: 'on Click',
+          callbackProps: {
+            args: [
+              ['coord', ['[number, number]']],
+              [
+                'features',
+                ['{features: Record<string, unknown>, layerId?: string}[]'],
+              ],
             ],
+            returnType: ['void'],
           },
         }),
       },

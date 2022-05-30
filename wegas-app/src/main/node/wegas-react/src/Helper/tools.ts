@@ -2,6 +2,28 @@ import { cloneDeep } from 'lodash-es';
 import { wwarn } from './wegaslog';
 
 /**
+ *
+ * @param item any item to visit
+ * @param callbackFN a function that return if the visit should continue
+ * @param path the starting path (undefined if )
+ */
+export function visitDSF(
+  item: unknown,
+  callbackFN: (item: unknown, path: string[]) => boolean,
+  path?: string[],
+) {
+  if (
+    callbackFN(item, path || []) &&
+    item != null &&
+    typeof item === 'object'
+  ) {
+    Object.entries(item).forEach(([key, value]) =>
+      visitDSF(value, callbackFN, [...(path || []), key]),
+    );
+  }
+}
+
+/**
  * Inspired from :
  * https://stackoverflow.com/questions/5306680/move-an-array-element-from-one-array-position-to-another
  * */

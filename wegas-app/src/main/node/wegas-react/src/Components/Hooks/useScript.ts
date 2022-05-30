@@ -41,7 +41,7 @@ import {
 } from '../../Editor/Components/FormView/translatable';
 import { insertReturn } from '../../Editor/Components/ScriptEditors/TempScriptEditor';
 import { registerEffect } from '../../Helper/pageEffectsManager';
-import { createLRU, replace } from '../../Helper/tools';
+import { createLRU, replace, visitDSF } from '../../Helper/tools';
 import { createScript, isScript } from '../../Helper/wegasEntites';
 import { getLogger, wlog, wwarn } from '../../Helper/wegaslog';
 import { ClassesContext, classesCTX } from '../Contexts/ClassesProvider';
@@ -52,6 +52,7 @@ import {
   isFeatureEnabled,
 } from '../Contexts/FeaturesProvider';
 import { LanguagesContext, languagesCTX } from '../Contexts/LanguagesProvider';
+import { EmptyPageComponentProps } from '../PageComponents/tools/EditableComponent';
 import { PageComponentContext } from '../PageComponents/tools/options';
 import {
   schemaProps,
@@ -493,6 +494,7 @@ interface TranspileOptions {
 function transpileToFunction(
   script: string,
   { injectReturn = true }: TranspileOptions = {},
+  extraArgs: string[] = [],
 ) {
   // transpile first
   const jsScript = transpile(script);
@@ -515,6 +517,7 @@ function transpileToFunction(
     'top',
     '__WegasModules',
     'exports',
+    ...extraArgs,
     fnScript,
   );
 }
@@ -550,10 +553,11 @@ const memoClientScriptEval = (() => {
   const transpiledCache = createLRU<string, Function>(500);
 
   return <T>(
-    script?: string | IScript,
+    script?: string | IScript | ScriptCallback,
     context: PageComponentContext = {},
     state?: PagesContextState,
     options?: TranspileOptions,
+    argValues: unknown[] = [],
   ): T extends WegasScriptEditorReturnType ? T : unknown => {
     const currentState = addSetterToState(
       state || pagesContextStateStore.getState(),
@@ -575,7 +579,11 @@ const memoClientScriptEval = (() => {
         // IScript not in cache -> transpile it
         transpiledCache.set(
           script.content,
-          transpileToFunction(script.content, options)!,
+          transpileToFunction(
+            script.content,
+            options,
+            isScriptCallback(script) ? script.args : undefined,
+          )!,
         );
       }
       // fetch from cache
@@ -602,6 +610,7 @@ const memoClientScriptEval = (() => {
         undefined,
         undefined,
         exports,
+        ...argValues,
       );
     } else {
       return undefined as any;
@@ -701,6 +710,8 @@ export function useScript<T>(
     [name: string]: unknown;
   }>();
 
+  const isFirstRun = React.useRef(true);
+
   const newContext = React.useMemo(() => {
     if (deepDifferent(context, oldContext.current)) {
       oldContext.current = context;
@@ -743,9 +754,33 @@ export function useScript<T>(
     }
   }, [script, newContext, state, catchCB]);
 
+  React.useEffect(() => {
+    isFirstRun.current = true;
+  }, [fn]);
+
   const returnValue = useStore(s => {
     //ref +state.reloading
     setGlobals(globalContexts, s);
+
+    const returnValue = fn();
+    if (isFirstRun.current) {
+      visitDSF(returnValue, item => {
+        if (
+          entityIs(item, 'VariableDescriptor', true) ||
+          entityIs(item, 'VariableInstance', true)
+        ) {
+          return false;
+        } else {
+          if (typeof item === 'function') {
+            throw Error(
+              'You should never return a function from a useScript because function type variables are not comparable. To do that, use the useScriptCallback hook',
+            );
+          }
+          return true;
+        }
+      });
+    }
+
     return fn();
   }, deepDifferent);
 
@@ -784,10 +819,6 @@ export function parseAndRunClientScript(
   },
 ) {
   let scriptContent = isScript(script) ? script.content : script;
-
-  //const test1 = runClientScript("JKJKJ")
-  //const test2 = runClientScript(const salut = 2;)
-  //const test3 = runClientScript(ohmama())
 
   const regexStart = /(runClientScript\(["|'|`])/g;
   const regexEnd = /(["|'|`]\))/g;
@@ -836,19 +867,90 @@ export function useScriptWithFallback<T>(variable: T | IScript) {
   return isScript ? scriptedVariable : variable;
 }
 
+export interface ScriptCallback {
+  readonly '@class': 'ScriptCallback';
+  content: string;
+  args: string[];
+}
+
+export function iScriptArgsToCallbackArgs(
+  args: [string, string[]][] = [],
+): string[] {
+  return args.map(([name]) => name);
+}
+
+export function createScriptCallback(
+  content: string = '',
+  args: string[] = [],
+): ScriptCallback {
+  return { '@class': 'ScriptCallback', content, args };
+}
+
+export function isScriptCallback(script: unknown): script is ScriptCallback {
+  return (
+    script != null &&
+    typeof script === 'object' &&
+    '@class' in script &&
+    (script as { '@class': string })['@class'] === 'ScriptCallback'
+  );
+}
+
+export function safeScriptCallbackEval<T>(
+  script: ScriptCallback | undefined,
+  context:
+    | {
+        [name: string]: unknown;
+      }
+    | undefined,
+  catchCB: ((e: Error) => void) | undefined,
+  state: PagesContextState | undefined,
+  options: TranspileOptions | undefined,
+  argValues: unknown[] = [],
+): T extends WegasScriptEditorReturnType ? T : unknown {
+  try {
+    return memoClientScriptEval<T>(script, context, state, options, argValues);
+  } catch (e) {
+    const error = handleError(e, options?.moduleName);
+    if (catchCB) {
+      catchCB(error);
+    } else {
+      const scriptContent =
+        typeof script === 'string' ? script : script?.content;
+      wwarn(
+        `${printWegasScriptError(error)}
+        \n\nScript content is :\n${scriptContent}\n\nTranspiled content is :\n${
+          scriptContent != null ? transpile(scriptContent) : undefined
+        }`,
+      );
+    }
+    return undefined as any;
+  }
+}
+
 export function useScriptObjectWithFallback<
   T extends Record<string, unknown>,
-  ReturnType = { [P in keyof T]: Exclude<T[P], IScript> },
->(scriptObject: T): ReturnType {
+  ReturnType = { [P in keyof T]: Exclude<T[P], IScript | ScriptCallback> },
+>(scriptObject: T, context: EmptyPageComponentProps['context']): ReturnType {
   const returnedObjectRef = React.useRef<ReturnType>();
   const scripts = Object.entries(scriptObject).filter(([, v]) =>
     entityIs(v, 'Script'),
   );
   const scriptKeys = scripts.map(([k]) => k);
   const scriptValues = scripts.map(([, v]) => v as IScript);
-  const evaluatedScripts = useScript<ValueOf<T>[]>(scriptValues) || [];
-  const evaluatedObject = scriptKeys.reduce((o, k, i) => {
+  const evaluatedScripts = useScript<ValueOf<T>[]>(scriptValues, context) || [];
+  const evaluatedScriptsObject = scriptKeys.reduce((o, k, i) => {
     o[k as string] = evaluatedScripts[i];
+    return o;
+  }, {} as Record<string, unknown>) as ReturnType;
+
+  const callbacks = Object.entries(scriptObject).filter(([, v]) =>
+    isScriptCallback(v),
+  );
+  const callbackKeys = callbacks.map(([k]) => k);
+  const callbackValues = callbacks.map(([, v]) => v as ScriptCallback);
+  const evaluatedCallbacks = useScriptCallbacks(callbackValues, context) || [];
+  const evaluatedCallbacksObject = callbackKeys.reduce((o, k, i) => {
+    o[k as string] = evaluatedCallbacks[i];
     return o;
   }, {} as Record<string, unknown>) as ReturnType;
 
@@ -860,7 +962,11 @@ export function useScriptObjectWithFallback<
     }, {} as Record<string, unknown>) as ReturnType;
 
   return React.useMemo(() => {
-    const newObject = { ...values, ...evaluatedObject };
+    const newObject = {
+      ...values,
+      ...evaluatedScriptsObject,
+      ...evaluatedCallbacksObject,
+    };
     if (
       returnedObjectRef.current != null &&
       isEqual(returnedObjectRef.current, newObject)
@@ -870,5 +976,70 @@ export function useScriptObjectWithFallback<
       returnedObjectRef.current = newObject;
       return newObject;
     }
-  }, [evaluatedObject, values]);
+  }, [evaluatedCallbacksObject, evaluatedScriptsObject, values]);
+}
+
+export function computeCB<T extends (...args: unknown[]) => void>(
+  callbackScript: ScriptCallback,
+  context: EmptyPageComponentProps['context'],
+  state: PagesContextState | undefined,
+) {
+  // const strFunction = `function(${callbackScript.args.join(',')}){${
+  //   callbackScript.content
+  // }}`;
+
+  return function (...cbArgs: Parameters<T>) {
+    return safeScriptCallbackEval(
+      callbackScript,
+      context,
+      undefined,
+      state,
+      {
+        injectReturn: true,
+      },
+      cbArgs,
+    );
+  } as T;
+}
+
+const emptyCallback = createScriptCallback('', []);
+
+export function useScriptCallback<T extends (...args: unknown[]) => void>(
+  callbackScript: ScriptCallback = emptyCallback,
+  context: EmptyPageComponentProps['context'],
+) {
+  const lastProps = React.useRef<unknown>();
+  const lastReturn = React.useRef<T>();
+  const state = usePagesContextStateStore(s => s);
+
+  return React.useMemo(() => {
+    const newProps = { callbackScript, context, state };
+    if (!isEqual(newProps, lastProps.current)) {
+      lastProps.current = newProps;
+      const newReturn = computeCB<T>(callbackScript, context, state);
+      lastReturn.current = newReturn;
+    }
+    return lastReturn.current;
+  }, [callbackScript, context, state]);
+}
+
+function useScriptCallbacks(
+  scriptCallbacks: ScriptCallback[],
+  context: EmptyPageComponentProps['context'],
+) {
+  const lastProps = React.useRef<unknown>();
+  const lastReturns = React.useRef<((...args: unknown[]) => void)[]>();
+  const state = usePagesContextStateStore(s => s);
+
+  return React.useMemo(() => {
+    const newProps = { scriptCallbacks, context, state };
+    if (!isEqual(newProps, lastProps.current)) {
+      lastProps.current = newProps;
+      const newReturns = scriptCallbacks.map(scriptCB =>
+        computeCB(scriptCB, context, state),
+      );
+      lastReturns.current = newReturns;
+    }
+    return lastReturns.current;
+  }, [context, scriptCallbacks, state]);
 }

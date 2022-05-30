@@ -15,8 +15,14 @@ interface PlayerSelectProps extends WegasComponentProps {
   } & { style?: StyleObject | IScript };
 }
 
-export default function PlayerSelect({ selectProps }: PlayerSelectProps) {
-  const selectEvaluatedProps = useScriptObjectWithFallback(selectProps);
+export default function PlayerSelect({
+  selectProps,
+  context,
+}: PlayerSelectProps) {
+  const selectEvaluatedProps = useScriptObjectWithFallback(
+    selectProps,
+    context,
+  );
   const style = styleSourceToOlStyle(selectEvaluatedProps.style);
 
   return <WegasSelect {...selectEvaluatedProps} style={style} />;

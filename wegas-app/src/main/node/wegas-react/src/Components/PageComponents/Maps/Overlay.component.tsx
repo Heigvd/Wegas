@@ -47,12 +47,14 @@ interface PlayerOverlayProps extends WegasComponentProps {
 export default function PlayerOverlay({
   children,
   overlayProps,
+  context,
 }: PlayerOverlayProps) {
   const [clickedPosition, setClickedPosition] = React.useState<
     undefined | Coordinate
   >(undefined);
   const props = useScriptObjectWithFallback<ScriptableOverlayProps>(
     overlayProps || {},
+    context,
   );
   const {
     exposePositionAs = defaultOverlayPositionKey,
