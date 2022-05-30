@@ -278,7 +278,7 @@ export default function HTMLEditor({
         },
         {
           title: 'Wegas styles',
-          items: classes.map(c => ({ title: c, block: 'div', classes: c })),
+          items: Object.keys(classes).map(c => ({ title: c, block: 'div', classes: c })),
         },
         // {
         //   title: 'User styles',

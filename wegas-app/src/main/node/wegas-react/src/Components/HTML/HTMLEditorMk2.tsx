@@ -120,11 +120,11 @@ export interface HTMLEditorPropsMk2 extends ClassStyleId, DisabledReadonly {
   /**
    * display a custom toolbar
    */
-  customToolbar?: string;
+  customToolbar?: "full" | "player";
 
 }
 
-// let HTMLEditorID = 0;
+let HTMLEditorID = 0;
 
 export default function HTMLEditorMk2({
   value,
@@ -140,7 +140,7 @@ export default function HTMLEditorMk2({
   noResize,
   noRootBlock,
   keepInternalValue,
-  customToolbar,
+  customToolbar: toolbarLayout,
 }: HTMLEditorPropsMk2) {
   // const toolBarIdRef = React.useRef('externalEditorToolbar' + String(HTMLEditorID++));
   const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>({});
@@ -166,6 +166,7 @@ export default function HTMLEditorMk2({
 
   const onEditorChanges = React.useCallback(
     (v: string) => {
+      //TODO clean up
       if (
         value !== v &&
         !(value === '<p></p>' && v === '') &&
@@ -197,7 +198,7 @@ export default function HTMLEditorMk2({
           placeholder={placeholder}
           disabled={disabled}
           readonly={readOnly}
-          customToolbar={customToolbar}
+          toolbarLayout={toolbarLayout}
           showFilePickerFunc={showFilePicker}
         />
           {fileBrowsing.fn && (

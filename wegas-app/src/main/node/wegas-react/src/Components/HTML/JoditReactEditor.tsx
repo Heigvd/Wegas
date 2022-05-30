@@ -2,9 +2,10 @@ import React from 'react';
 import JoditEditor, { Jodit } from "jodit";
 import 'jodit/build/jodit.min.css';
 import { wlog } from '../../Helper/wegaslog';
-import sanitize from '../../Helper/sanitize';
+import sanitize, { toFullUrl, toInjectorStyle } from '../../Helper/sanitize';
 import { ButtonsGroups } from 'jodit/types/types';
 import { css } from '@emotion/css';
+import { classesCTX } from '../Contexts/ClassesProvider';
 
 
 export interface JoditEditorProps {
@@ -39,10 +40,10 @@ export interface JoditEditorProps {
      */
     showFilePickerFunc?: (callback: (path: string) => void) => void;
     /**
-     * Custom toolbar
-     * example  : 'bold italic underline | source'
+     * full => with link and image insertion and html raw edition
+     * player => w/o
      */
-    customToolbar?: string;
+    toolbarLayout?: "full" | "player";
 }
 
 /**
@@ -57,7 +58,7 @@ function cleanValue(value: string | undefined): string {
 const wysiwygStyle = css({backgroundColor: 'white'});
 
 const IMG_PLACEHOLDER = 'IMG_PLACEHOLDER';
-const buttonDefaultConfig: ButtonsGroups = [
+const buttonFullConfig: ButtonsGroups = [
     'italic', 'bold', 'underline', '|',
      'ul', 'ol', '|',
     'left', 'center', 'right', 'justify', '|',
@@ -67,18 +68,29 @@ const buttonDefaultConfig: ButtonsGroups = [
     'classSpan'//'font'
 ];
 
+// without image and link buttons
+const buttonPlayerConfig: ButtonsGroups = [
+    'italic', 'bold', 'underline', '|',
+     'ul', 'ol', '|',
+    'left', 'center', 'right', 'justify', '|',
+    'table','|',
+    'paragraph', 'fontsize','brush', 
+    'classSpan'//'font'
+];
+
 export default function JoditReactEditor(props : JoditEditorProps) {
 
     const containerRef = React.useRef<HTMLTextAreaElement>(null);
     const jodit = React.useRef<JoditEditor.Jodit>();
     const muteChanges = React.useRef<boolean>(false);
+    const { classes } = React.useContext(classesCTX);
 
     function updateProps(editor :JoditEditor.Jodit, props: JoditEditorProps){
         const local = cleanValue(editor.value);
-        const updated = cleanValue(props.value);
+        const updated = cleanValue(toFullUrl(props.value));
         if(local !== updated){
-            // wlog('RECEIVED', updated);
-            // wlog('CURRENT', local);
+            wlog('RECEIVED', updated);
+            wlog('CURRENT', local);
             // hack : avoid triggering a change callback when setting the new value
             muteChanges.current = true;
             editor.setEditorValue(updated);
@@ -96,13 +108,20 @@ export default function JoditReactEditor(props : JoditEditorProps) {
         }
         else if(containerRef.current){
 
-            let buttonsConfig :ButtonsGroups;
-            if(props.customToolbar){
-                buttonsConfig = props.customToolbar.trim().split(/\s+/);
-            }else{
-                buttonsConfig = buttonDefaultConfig;
+            let buttonsConfig: ButtonsGroups;
+
+            switch(props.toolbarLayout){
+                case 'full':
+                    buttonsConfig = buttonFullConfig;
+                    break;
+                case 'player':
+                    buttonsConfig = buttonPlayerConfig;
+                    break;
+                default:
+                    buttonsConfig = buttonPlayerConfig;
+
             }
-            // const buttonsConfig = props.customToolbar ? (props.customToolbar : buttonDefaultConfig;
+            
             const idx = buttonsConfig.findIndex((e) => e === IMG_PLACEHOLDER);
             //custom button for WEGAS images
             if(idx > -1){
@@ -129,7 +148,9 @@ export default function JoditReactEditor(props : JoditEditorProps) {
 
             wlog(config.controls.classSpan);
 
-            config.controls.classSpan.list = {x : 'xx', y : 'yy'};//['myStyle', 'yourStyle'];
+            if(Object.keys(classes).length){
+                config.controls.classSpan.list = classes;
+            }
 
             config.statusbar = false;
             //Missing typings for placeholder...
@@ -143,10 +164,14 @@ export default function JoditReactEditor(props : JoditEditorProps) {
             const j = Jodit.make(containerRef.current, config);
 
             j.events.on('change', (value, oldValue) => {
+                // wlog('on change : ', value);
                 const prev = cleanValue(oldValue);
                 const v = cleanValue(value);
                 if(!muteChanges.current && props.onChange && v !== prev){
-                    props.onChange(v);
+                    // wlog('Triggering change : ', value);
+                    const injected =toInjectorStyle(v);
+                    wlog(injected) 
+                    props.onChange(injected);
                 }
             });
 
@@ -154,7 +179,7 @@ export default function JoditReactEditor(props : JoditEditorProps) {
             jodit.current = j;
             updateProps(j, props);
         }
-    }, [props]);
+    }, [props, classes]);
 
     return (
         <div className={wysiwygStyle}>
