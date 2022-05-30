@@ -72,7 +72,7 @@ YUI.add('wegas-model-propagator', function(Y) {
         },
         syncDiff: function(response) {
             if (response.response.entity) {
-                var diff = response.response.entity.get("val");
+                var diff = response.response.entity;
                 this.content.setContent(this._genOutput(diff));
             } else {
                 this.content.setContent("Nothing to propagate");
