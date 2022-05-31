@@ -17,7 +17,7 @@ import {
   transitionContainerStyle,
   transitionMoreInfosStyle,
 } from '../../../Components/FlowChart/TransitionFlowLineComponent';
-import HTMLEditor from '../../../Components/HTML/HTMLEditor';
+import HTMLEditorMk2 from '../../../Components/HTML/HTMLEditorMk2';
 import { Validate } from '../../../Components/Inputs/Validate';
 import { HTMLText } from '../../../Components/Outputs/HTMLText';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
@@ -154,10 +154,11 @@ export function LiteFlowLineComponentFactory<
                 vertical
               >
                 {(value, onChange) => (
-                  <HTMLEditor
+                  <HTMLEditorMk2
                     value={value}
                     onChange={onChange}
-                    customToolbar="bold italic underline bullist fontsizeselect"
+                    toolbarLayout='player'
+                    // customToolbar="bold italic underline bullist fontsizeselect"
                   />
                 )}
               </Validate>

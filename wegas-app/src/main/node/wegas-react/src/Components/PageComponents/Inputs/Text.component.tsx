@@ -8,9 +8,6 @@ import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { wlog } from '../../../Helper/wegaslog';
 import { useDebouncedOnChange } from '../../Hooks/useDebounce';
 import { useScript } from '../../Hooks/useScript';
-import HTMLEditor from '../../HTML/HTMLEditor';
-// import HTMLEditor from '../../HTML/HTMLEditor';
-// import HTMLEditor from '../../HTML/HTMLEditor';
 import HTMLEditorMk2 from '../../HTML/HTMLEditorMk2';
 import {
   useOnCancelAction,
@@ -104,6 +101,7 @@ function PlayerTextInput({
             placeholder={placeholderText}
             className={className}
             style={style}
+            toolbarLayout='full'
           />
         );
       }}
@@ -118,7 +116,8 @@ function PlayerTextInput({
       placeholder={placeholderText}
       className={className}
       style={style}
-
+      toolbarLayout='full'
+      
     />
   );
 }

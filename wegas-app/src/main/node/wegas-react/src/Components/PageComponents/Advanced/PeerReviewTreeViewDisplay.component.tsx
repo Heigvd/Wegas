@@ -52,7 +52,7 @@ import { PeerReviewTranslations } from '../../../i18n/peerReview/definitions';
 import { peerReviewTranslations } from '../../../i18n/peerReview/peerReview';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { useScript } from '../../Hooks/useScript';
-import HTMLEditor from '../../HTML/HTMLEditor';
+import HTMLEditorMk2 from '../../HTML/HTMLEditorMk2';
 import { Button } from '../../Inputs/Buttons/Button';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';
 import { useOkCancelModal } from '../../Modal';
@@ -307,7 +307,7 @@ function EvalutationEditor({
 
   if (scriptableEntityIs(iEvaluation, 'TextEvaluationInstance')) {
     comp = (
-      <HTMLEditor
+      <HTMLEditorMk2
         value={value == null ? undefined : String(value)}
         onChange={onChangeNotify}
         disabled={disabled || waitingState}

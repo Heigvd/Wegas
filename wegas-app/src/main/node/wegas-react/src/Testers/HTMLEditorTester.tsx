@@ -1,6 +1,6 @@
 import { cx } from '@emotion/css';
 import * as React from 'react';
-import HTMLEditor from '../Components/HTML/HTMLEditor';
+import HTMLEditorMk2 from '../Components/HTML/HTMLEditorMk2';
 import { Toggler } from '../Components/Inputs/Boolean/Toggler';
 import { expandBoth, flex, flexColumn } from '../css/classes';
 
@@ -10,7 +10,7 @@ export default function WegasScriptEditorTester() {
     <div className={cx(flex, expandBoth, flexColumn)}>
       <div style={{ height: '100%' }}>
         <Toggler value={enabled} onChange={setEnabled} />
-        <HTMLEditor disabled={!enabled} />
+        <HTMLEditorMk2 disabled={!enabled} />
       </div>
     </div>
   );

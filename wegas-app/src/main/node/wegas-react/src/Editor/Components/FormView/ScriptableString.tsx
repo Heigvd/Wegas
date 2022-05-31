@@ -13,7 +13,8 @@ import {
 } from 'typescript';
 import { IScript } from 'wegas-ts-api';
 import { DropMenu } from '../../../Components/DropMenu';
-import HTMLEditor from '../../../Components/HTML/HTMLEditor';
+// import HTMLEditor from '../../../Components/HTML/HTMLEditor';
+import HTMLEditorMk2 from '../../../Components/HTML/HTMLEditorMk2';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import {
   componentMarginLeft,
@@ -209,7 +210,7 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
               </div>
             ) : inputMode === 'Text' ? (
               props.view.richText ? (
-                <HTMLEditor
+                <HTMLEditorMk2
                   value={textValue}
                   onChange={value => {
                     const stringified = JSON.stringify(value);
@@ -219,6 +220,7 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
                         : createScript(stringified),
                     );
                   }}
+                  toolbarLayout='full'
                 />
               ) : (
                 <SimpleInput

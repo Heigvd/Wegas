@@ -1,7 +1,6 @@
 import React from 'react';
 import JoditEditor, { Jodit } from "jodit";
 import 'jodit/build/jodit.min.css';
-import { wlog } from '../../Helper/wegaslog';
 import sanitize, { toFullUrl, toInjectorStyle } from '../../Helper/sanitize';
 import { ButtonsGroups } from 'jodit/types/types';
 import { css } from '@emotion/css';
@@ -10,10 +9,6 @@ import { classesCTX } from '../Contexts/ClassesProvider';
 
 export interface JoditEditorProps {
 
-    /**
-     * Timeout of Jodit. Defaults to 0
-     */
-    innerEditorTimeout?: number;
     /**
      * value - content to inject in the editor
      */
@@ -35,13 +30,13 @@ export interface JoditEditorProps {
      */
     onChange?: (content: string) => void;
     /**
-     * Notifies the component to show the file picker
-     * @param callback function to be called with full path to media
+     * Notifies the parent component to show the file picker
+     * @param callback function to be called with path to media
      */
     showFilePickerFunc?: (callback: (path: string) => void) => void;
     /**
      * full => with link and image insertion and html raw edition
-     * player => w/o
+     * player => w/o the above
      */
     toolbarLayout?: "full" | "player";
 }
@@ -75,8 +70,9 @@ const buttonPlayerConfig: ButtonsGroups = [
     'left', 'center', 'right', 'justify', '|',
     'table','|',
     'paragraph', 'fontsize','brush', 
-    'classSpan'//'font'
 ];
+
+const disabledPlugins = ['add-new-line', 'drag-and-drop', 'drag-and-drop-element', 'iframe', 'video', 'print', 'media', 'powered-by-jodit'];
 
 export default function JoditReactEditor(props : JoditEditorProps) {
 
@@ -89,8 +85,6 @@ export default function JoditReactEditor(props : JoditEditorProps) {
         const local = cleanValue(editor.value);
         const updated = cleanValue(toFullUrl(props.value));
         if(local !== updated){
-            wlog('RECEIVED', updated);
-            wlog('CURRENT', local);
             // hack : avoid triggering a change callback when setting the new value
             muteChanges.current = true;
             editor.setEditorValue(updated);
@@ -139,42 +133,39 @@ export default function JoditReactEditor(props : JoditEditorProps) {
             }
 
             const config = Jodit.defaultOptions;
-            config.defaultTimeout = props.innerEditorTimeout || 0;
+            //required to avoid triggering change events when the value is updated from outside
+            config.defaultTimeout = 0;
 
             config.buttons = buttonsConfig;
             config.buttonsMD = buttonsConfig;
             config.buttonsSM = buttonsConfig;
             config.buttonsXS = buttonsConfig;
 
-            wlog(config.controls.classSpan);
+            config.disablePlugins = disabledPlugins;
 
             if(Object.keys(classes).length){
                 config.controls.classSpan.list = classes;
+            }else{
+                config.removeButtons = ['classSpan'];
             }
 
             config.statusbar = false;
-            //Missing typings for placeholder...
-            (config as any).placeholder = props.placeholder;
 
-            // config.controls.font.list = Jodit.atom({
-			// 	'Tahoma,Geneva,sans-serif': 'Tahoma',
-			// 	'Roboto Medium,Arial,sans-serif': 'Roboto',
-			// });
+            //Missing typings for placeholder...
+            (config as unknown as {placeholder: string}).placeholder = props.placeholder || '';
 
             const j = Jodit.make(containerRef.current, config);
 
             j.events.on('change', (value, oldValue) => {
-                // wlog('on change : ', value);
                 const prev = cleanValue(oldValue);
                 const v = cleanValue(value);
                 if(!muteChanges.current && props.onChange && v !== prev){
-                    // wlog('Triggering change : ', value);
                     const injected =toInjectorStyle(v);
-                    wlog(injected) 
                     props.onChange(injected);
                 }
             });
 
+            // triggered on keyboard input
             // j.events.on('input', (value, oldValue) => { }, )
             jodit.current = j;
             updateProps(j, props);

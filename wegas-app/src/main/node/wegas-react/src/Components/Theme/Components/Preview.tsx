@@ -20,7 +20,7 @@ import { IconComp, icons } from '../../../Editor/Components/Views/FontAwesome';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { DropMenu } from '../../DropMenu';
-import HTMLEditor from '../../HTML/HTMLEditor';
+import HTMLEditorMk2 from '../../HTML/HTMLEditorMk2';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Toggler } from '../../Inputs/Boolean/Toggler';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
@@ -204,14 +204,13 @@ export default function Preview() {
                 </ReflexElement>
                 <ReflexSplitter />
                 <ReflexElement className={reflexElementStyle}>
-                  <HTMLEditor
+                  <HTMLEditorMk2
                     value={textVar}
                     onChange={v =>
                       setPreviewState(o => ({ ...o, textVar: String(v) }))
                     }
                     disabled={disabled}
                     readOnly={readOnly}
-                    noRootBlock
                   />
                 </ReflexElement>
               </ReflexContainer>
