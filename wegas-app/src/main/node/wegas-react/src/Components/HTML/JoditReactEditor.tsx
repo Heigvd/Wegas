@@ -52,78 +52,74 @@ function cleanValue(value: string | undefined): string {
 
 const wysiwygStyle = css({backgroundColor: 'white'});
 
+
 const IMG_PLACEHOLDER = 'IMG_PLACEHOLDER';
-const buttonFullConfig: ButtonsGroups = [
-    'italic', 'bold', 'underline', '|',
-     'ul', 'ol', '|',
-    'left', 'center', 'right', 'justify', '|',
-    'link', IMG_PLACEHOLDER, '|',
-    'source','table','|',
-    'paragraph', 'fontsize','brush', 
-    'classSpan'//'font'
+function getButtonConfig(layout: "full" | "player" | undefined): ButtonsGroups {
+
+    switch(layout){
+        case 'full':
+            return [
+                'italic', 'bold', 'underline', '|',
+                 'ul', 'ol', '|',
+                'left', 'center', 'right', 'justify', '|',
+                'link', IMG_PLACEHOLDER, '|',
+                'source','table','|',
+                'paragraph', 'fontsize','brush',
+                'classSpan'//'font'
+            ];
+        case 'player':
+        default:
+            // without image, link and raw html buttons
+            return [
+                'italic', 'bold', 'underline', '|',
+                 'ul', 'ol', '|',
+                'left', 'center', 'right', 'justify', '|',
+                'table','|',
+                'paragraph', 'fontsize','brush',
+            ];
+    }
+}
+
+const disabledPlugins = [
+    'add-new-line',
+    'drag-and-drop',
+    'drag-and-drop-element',
+    'iframe',
+    'video',
+    'print',
+    'media',
+    'powered-by-jodit'
 ];
 
-// without image and link buttons
-const buttonPlayerConfig: ButtonsGroups = [
-    'italic', 'bold', 'underline', '|',
-     'ul', 'ol', '|',
-    'left', 'center', 'right', 'justify', '|',
-    'table','|',
-    'paragraph', 'fontsize','brush', 
-];
-
-const disabledPlugins = ['add-new-line', 'drag-and-drop', 'drag-and-drop-element', 'iframe', 'video', 'print', 'media', 'powered-by-jodit'];
-
-export default function JoditReactEditor(props : JoditEditorProps) {
+export default function JoditReactEditor({
+    value,
+    onChange,
+    placeholder,
+    readonly,
+    disabled,
+    showFilePickerFunc,
+    toolbarLayout
+} : JoditEditorProps) {
 
     const containerRef = React.useRef<HTMLTextAreaElement>(null);
     const jodit = React.useRef<JoditEditor.Jodit>();
     const muteChanges = React.useRef<boolean>(false);
     const { classes } = React.useContext(classesCTX);
 
-    function updateProps(editor :JoditEditor.Jodit, props: JoditEditorProps){
-        const local = cleanValue(editor.value);
-        const updated = cleanValue(toFullUrl(props.value));
-        if(local !== updated){
-            // hack : avoid triggering a change callback when setting the new value
-            muteChanges.current = true;
-            editor.setEditorValue(updated);
-            muteChanges.current = false;
-        }
-        editor.setReadOnly(props.readonly || false);
-        editor.setDisabled(props.disabled || false);
-
-    }
-
-    // Editor setup or update
+    // Main setup
     React.useEffect(()=> {
-        if(jodit.current){
-          updateProps(jodit.current, props);  
-        }
-        else if(containerRef.current){
+        if(containerRef.current){
 
-            let buttonsConfig: ButtonsGroups;
+            const buttonsConfig: ButtonsGroups = getButtonConfig(toolbarLayout);
 
-            switch(props.toolbarLayout){
-                case 'full':
-                    buttonsConfig = buttonFullConfig;
-                    break;
-                case 'player':
-                    buttonsConfig = buttonPlayerConfig;
-                    break;
-                default:
-                    buttonsConfig = buttonPlayerConfig;
-
-            }
-            
             const idx = buttonsConfig.findIndex((e) => e === IMG_PLACEHOLDER);
             //custom button for WEGAS images
             if(idx > -1){
                 buttonsConfig[idx] = {
                     icon: 'image',
                     exec: function (editor: JoditEditor.Jodit) {
-                        if(props.showFilePickerFunc){
-                            props.showFilePickerFunc((path) => 
+                        if(showFilePickerFunc){
+                            showFilePickerFunc((path) => 
                             {
                                 editor.selection.insertImage(path);
                             })
@@ -152,25 +148,45 @@ export default function JoditReactEditor(props : JoditEditorProps) {
             config.statusbar = false;
 
             //Missing typings for placeholder...
-            (config as unknown as {placeholder: string}).placeholder = props.placeholder || '';
+            (config as unknown as {placeholder: string}).placeholder = placeholder || '';
 
             const j = Jodit.make(containerRef.current, config);
 
             j.events.on('change', (value, oldValue) => {
                 const prev = cleanValue(oldValue);
                 const v = cleanValue(value);
-                if(!muteChanges.current && props.onChange && v !== prev){
-                    const injected =toInjectorStyle(v);
-                    props.onChange(injected);
+                if(!muteChanges.current && onChange && v !== prev){
+                    const injected = toInjectorStyle(v);
+                    onChange(injected);
                 }
             });
 
             // triggered on keyboard input
             // j.events.on('input', (value, oldValue) => { }, )
             jodit.current = j;
-            updateProps(j, props);
+
+            return () => {
+                jodit.current?.destruct();
+                jodit.current = undefined;
+            }
         }
-    }, [props, classes]);
+    }, [classes, onChange, placeholder, showFilePickerFunc, toolbarLayout]);
+
+    React.useEffect(() =>{
+        if(jodit.current){
+            const editor = jodit.current;
+            const local = cleanValue(editor.value);
+            const updated = cleanValue(toFullUrl(value));
+            if(local !== updated){
+                // hack : avoid triggering a change callback when setting the new value
+                muteChanges.current = true;
+                editor.setEditorValue(updated);
+                muteChanges.current = false;
+            }
+            editor.setReadOnly(readonly || false);
+            editor.setDisabled(disabled || false);
+        }
+    }, [disabled, readonly, value]);
 
     return (
         <div className={wysiwygStyle}>

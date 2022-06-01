@@ -52,7 +52,9 @@ export default function HTMLEditorMk2({
   readOnly,
   toolbarLayout: toolbarLayout,
 }: HTMLEditorPropsMk2) {
-  const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>({});
+  const [showFileBrowsing, setShowFileBrowsing] = React.useState(false);
+
+  const fileBrowsingFunc = React.useRef<CallbackFN>(()=> {});
 
   const onEditorChanges = React.useCallback(
     (v: string) => {
@@ -64,7 +66,8 @@ export default function HTMLEditorMk2({
   );
 
   const showFilePicker = React.useCallback((providePathCallBack: ((path: string) => void)) => {
-    setFileBrowsing({fn: providePathCallBack})
+    setShowFileBrowsing(true);
+    fileBrowsingFunc.current = providePathCallBack;
   }, [])
 
   return (
@@ -82,14 +85,14 @@ export default function HTMLEditorMk2({
           toolbarLayout={toolbarLayout}
           showFilePickerFunc={showFilePicker}
         />
-          {fileBrowsing.fn && (
-          <Modal onExit={() => setFileBrowsing({})}>
+          {showFileBrowsing && (
+          <Modal onExit={() => setShowFileBrowsing(false)}>
             <FileBrowser
               onFileClick={file => {
-                setFileBrowsing({});
+                setShowFileBrowsing(false);
                 file &&
-                  fileBrowsing.fn &&
-                  fileBrowsing.fn(
+                  fileBrowsingFunc.current &&
+                  fileBrowsingFunc.current(
                     document.location.origin +
                       fileURL(generateAbsolutePath(file)),
                   );
