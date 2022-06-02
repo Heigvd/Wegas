@@ -2,7 +2,7 @@ import { css, cx } from '@emotion/css';
 import { WidgetProps } from 'jsoninput/typings/types';
 import * as React from 'react';
 // import HTMLEditor from '../../../Components/HTML/HTMLEditor';
-import HTMLEditorMk2 from '../../../Components/HTML/HTMLEditorMk2';
+import HTMLEditor from '../../../Components/HTML/HTMLEditor';
 import { defaultMarginTop, flex, flexColumn } from '../../../css/classes';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
@@ -48,7 +48,7 @@ export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
           {({ labelNode, inputId }) => (
             <div className={cx(flex, flexColumn, defaultMarginTop)}>
               {labelNode}
-              <HTMLEditorMk2
+              <HTMLEditor
                 value={this.state.value}
                 onChange={this.props.onChange}
                 className={labeledHTMLEditorStyle}

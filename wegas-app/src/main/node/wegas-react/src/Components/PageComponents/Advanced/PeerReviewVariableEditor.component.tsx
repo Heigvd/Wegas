@@ -36,7 +36,7 @@ import { peerReviewTranslations } from '../../../i18n/peerReview/peerReview';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { useScript } from '../../Hooks/useScript';
-import HTMLEditorMk2 from '../../HTML/HTMLEditorMk2';
+import HTMLEditor from '../../HTML/HTMLEditor';
 import { Button } from '../../Inputs/Buttons/Button';
 import { NumberInput } from '../../Inputs/Number/NumberInput';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';
@@ -193,7 +193,7 @@ export default function PeerReviewVariableEditor({
         let inputComponent = null;
         if (scriptableEntityIs(variableToReview, 'TextDescriptor')) {
           inputComponent = (
-            <HTMLEditorMk2
+            <HTMLEditor
               id={id}
               value={String(value)}
               onChange={onChange}

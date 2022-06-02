@@ -14,7 +14,7 @@ import {
 import { IScript } from 'wegas-ts-api';
 import { DropMenu } from '../../../Components/DropMenu';
 // import HTMLEditor from '../../../Components/HTML/HTMLEditor';
-import HTMLEditorMk2 from '../../../Components/HTML/HTMLEditorMk2';
+import HTMLEditor from '../../../Components/HTML/HTMLEditor';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import {
   componentMarginLeft,
@@ -210,7 +210,7 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
               </div>
             ) : inputMode === 'Text' ? (
               props.view.richText ? (
-                <HTMLEditorMk2
+                <HTMLEditor
                   value={textValue}
                   onChange={value => {
                     const stringified = JSON.stringify(value);

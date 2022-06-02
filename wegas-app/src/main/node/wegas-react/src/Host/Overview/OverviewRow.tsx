@@ -1,7 +1,7 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
-import HTMLEditorMk2 from '../../Components/HTML/HTMLEditorMk2';
+import HTMLEditor from '../../Components/HTML/HTMLEditor';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { Validate } from '../../Components/Inputs/Validate';
 import { themeVar } from '../../Components/Theme/ThemeVars';
@@ -131,7 +131,7 @@ export function OverviewRow({
               <Validate value={team.getNotes() || ''} onValidate={editTeam} onCancel={()=> {}}>
                 {(value, onChange) => {
                   return (
-                    <HTMLEditorMk2
+                    <HTMLEditor
                       value={String(value)}
                       onChange={onChange}
                     />

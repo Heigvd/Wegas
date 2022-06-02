@@ -7,7 +7,7 @@ import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useDebouncedOnChange } from '../../Hooks/useDebounce';
 import { useScript } from '../../Hooks/useScript';
-import HTMLEditorMk2 from '../../HTML/HTMLEditorMk2';
+import HTMLEditor from '../../HTML/HTMLEditor';
 import {
   useOnCancelAction,
   Validate,
@@ -67,19 +67,23 @@ function PlayerTextInput({
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
   const { handleOnCancel } = useOnCancelAction(onCancel, context);
 
+  const textRef = React.useRef(text);
+
+  React.useEffect(() => {textRef.current = text}, [text]);
+
   const onChange = React.useCallback(
     (v: React.ReactText) => {
       if (handleOnChange) {
         handleOnChange(v);
-      } else if (typeof text === 'object') {
+      } else if (typeof textRef.current === 'object') {
         editingStore.dispatch(
           runScript(
-            `Variable.find(gameModel,"${ text.getName() }").setValue(self, ${ JSON.stringify(v) });`,
+            `Variable.find(gameModel,"${ textRef.current.getName() }").setValue(self, ${ JSON.stringify(v) });`,
           ),
         );
       }
     },
-    [handleOnChange, text],
+    [handleOnChange, textRef],
   );
 
   const {currentValue, debouncedOnChange } = useDebouncedOnChange(value, onChange, 400);
@@ -90,7 +94,7 @@ function PlayerTextInput({
     <Validate value={value} onValidate={onChange} onCancel={handleOnCancel}>
       {(value, onChange) => {
         return (
-          <HTMLEditorMk2
+          <HTMLEditor
             id={id}
             value={String(value)}
             onChange={onChange}
@@ -105,7 +109,7 @@ function PlayerTextInput({
       }}
     </Validate>
   ) : (
-    <HTMLEditorMk2
+    <HTMLEditor
       id={id}
       value={String(currentValue)}
       onChange={debouncedOnChange}

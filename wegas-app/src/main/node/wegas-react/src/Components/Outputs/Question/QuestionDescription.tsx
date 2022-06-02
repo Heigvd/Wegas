@@ -7,7 +7,7 @@ import { TranslatableContent } from '../../../data/i18n';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { createTranslatableContent } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import HTMLEditorMk2 from '../../HTML/HTMLEditorMk2';
+import HTMLEditor from '../../HTML/HTMLEditor';
 import { Validate } from '../../Inputs/Validate';
 import { themeVar } from '../../Theme/ThemeVars';
 import { HTMLText } from '../HTMLText';
@@ -80,7 +80,7 @@ export function QuestionDescription({
       validatorClassName={'none'}
     >
       {(value, onChange) => (
-        <HTMLEditorMk2
+        <HTMLEditor
           value={value}
           onChange={onChange}
           toolbarLayout='player'

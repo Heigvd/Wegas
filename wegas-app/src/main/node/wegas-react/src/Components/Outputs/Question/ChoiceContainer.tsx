@@ -19,7 +19,7 @@ import {
 } from '../../../Editor/Components/FormView/translatable';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import HTMLEditorMk2 from '../../HTML/HTMLEditorMk2';
+import HTMLEditor from '../../HTML/HTMLEditor';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { TumbleLoader } from '../../Loader';
@@ -250,7 +250,7 @@ export function ChoiceContainer({
             <>
               <div className={cx(flex, flexColumn, defaultMarginBottom)}>
                 <div className={choiceLabelStyle}>Description</div>
-                <HTMLEditorMk2
+                <HTMLEditor
                   value={values.description}
                   onChange={value =>
                     setValues(o => ({ ...o, description: value }))
@@ -261,7 +261,7 @@ export function ChoiceContainer({
               </div>
               <div className={cx(flex, flexColumn, defaultMarginBottom)}>
                 <div className={choiceLabelStyle}>Feedback</div>
-                <HTMLEditorMk2
+                <HTMLEditor
                   value={values.feedback}
                   onChange={value =>
                     setValues(o => ({ ...o, feedback: value }))

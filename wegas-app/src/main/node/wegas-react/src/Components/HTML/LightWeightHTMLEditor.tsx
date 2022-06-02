@@ -3,9 +3,9 @@ import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { useOnClickOutside } from '../Hooks/useOnClickOutside';
 import { DummyHTMLEditor } from './DummyHTMLEditor';
-import { HTMLEditorPropsMk2 } from './HTMLEditorMk2';
+import { HTMLEditorPropsMk2 } from './HTMLEditor';
 
-const HTMLEditorMk2 = React.lazy(() => import('./HTMLEditorMk2'));
+const HTMLEditorMk2 = React.lazy(() => import('./HTMLEditor'));
 
 export function LightWeightHTMLEditor(props: HTMLEditorPropsMk2) {
   const container = React.useRef<HTMLDivElement>(null);

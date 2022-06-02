@@ -31,7 +31,7 @@ import {
   translate,
 } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import HTMLEditorMk2 from '../../HTML/HTMLEditorMk2';
+import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';
@@ -174,7 +174,7 @@ function WhChoiceDisplay({
           readOnly={readOnly}
         />
       ) : (
-        <HTMLEditorMk2
+        <HTMLEditor
           value={translate((choiceI as IStringInstance).trValue, lang)}
           onChange={v => {
             const newChoiceI = cloneDeep(choiceI as IStringInstance);

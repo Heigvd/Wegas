@@ -18,7 +18,7 @@ import {
   useEditableLanguages,
   useTranslatableLanguages,
 } from '../../../Components/Hooks/useLanguages';
-import HTMLEditorMk2 from '../../../Components/HTML/HTMLEditorMk2';
+import HTMLEditor from '../../../Components/HTML/HTMLEditor';
 import { CheckBox } from '../../../Components/Inputs/Boolean/CheckBox';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
@@ -228,7 +228,7 @@ function TranslationItemView({
         </div>
       </div>
       {view === 'i18nhtml' ? (
-        <HTMLEditorMk2
+        <HTMLEditor
           value={value || ''}
           onChange={onValueChange}
           disabled={disabled}
