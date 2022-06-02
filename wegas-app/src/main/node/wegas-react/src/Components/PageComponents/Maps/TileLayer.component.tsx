@@ -17,6 +17,7 @@ import {
   wegasTileLayerSourceSchema,
 } from '../../Maps/helpers/schemas/LayerSchemas';
 import { OnLayerReadyFN, WegasLayer } from '../../Maps/WegasLayer';
+import { mapCTX } from '../../Maps/WegasMap';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
@@ -40,6 +41,7 @@ export default function PlayerTileLayer({
 }: PlayerTileLayerProps) {
   const contextRef = useUpdatedContextRef(context);
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
+  const { projection, map } = React.useContext(mapCTX);
   const currentLayerProps =
     useScript<SharedLayerProps>(
       entityIs(layerProps, 'Script') ? layerProps : undefined,
@@ -71,9 +73,9 @@ export default function PlayerTileLayer({
 
   React.useEffect(() => {
     if (onLayerReadyFn != null && currentOLLayer != null) {
-      onLayerReadyFn(currentOLLayer);
+      onLayerReadyFn(currentOLLayer, map);
     }
-  }, [currentOLLayer, onLayerReadyFn]);
+  }, [currentOLLayer, map, onLayerReadyFn, projection]);
 
   if (currentOLLayer == null) {
     return (

@@ -1,4 +1,5 @@
 //Other libs
+import { Map } from 'ol';
 import BaseLayer, { Options } from 'ol/layer/Base';
 import TileLayer from 'ol/layer/Tile';
 import TileSource from 'ol/source/Tile';
@@ -7,7 +8,7 @@ import * as React from 'react';
 import { initializeProjection } from './helpers/proj4js';
 import { mapCTX } from './WegasMap';
 
-export type OnLayerReadyFN = (layer: BaseLayer) => void;
+export type OnLayerReadyFN = (layer: BaseLayer, map: Map | undefined) => void;
 
 interface WegasLayerProps extends Options {
   layer: BaseLayer;

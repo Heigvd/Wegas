@@ -66,7 +66,7 @@ export default function PlayerVectorLayer({
   const contextRef = useUpdatedContextRef(context);
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
 
-  const { projection } = React.useContext(mapCTX);
+  const { projection, map } = React.useContext(mapCTX);
 
   const onLayerReadyFn = useScriptCallback<OnLayerReadyFN>(
     onLayerReady,
@@ -151,9 +151,9 @@ export default function PlayerVectorLayer({
 
   React.useEffect(() => {
     if (onLayerReadyFn != null && currentOLLayer != null) {
-      onLayerReadyFn(currentOLLayer);
+      onLayerReadyFn(currentOLLayer, map);
     }
-  }, [currentOLLayer, onLayerReadyFn]);
+  }, [currentOLLayer, map, onLayerReadyFn, projection]);
 
   if (asyncData.loading) {
     return <TumbleLoader />;

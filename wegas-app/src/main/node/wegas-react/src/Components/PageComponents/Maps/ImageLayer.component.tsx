@@ -18,6 +18,7 @@ import {
   wegasImageLayerSourceSchema,
 } from '../../Maps/helpers/schemas/LayerSchemas';
 import { OnLayerReadyFN, WegasLayer } from '../../Maps/WegasLayer';
+import { mapCTX } from '../../Maps/WegasMap';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
@@ -40,6 +41,7 @@ export default function PlayerImageLayer({
   context,
 }: PlayerImageLayerProps) {
   const contextRef = useUpdatedContextRef(context);
+  const { projection, map } = React.useContext(mapCTX);
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const onLayerReadyFn = useScriptCallback<OnLayerReadyFN>(
     onLayerReady,
@@ -70,9 +72,9 @@ export default function PlayerImageLayer({
 
   React.useEffect(() => {
     if (onLayerReadyFn != null && currentOLLayer != null) {
-      onLayerReadyFn(currentOLLayer);
+      onLayerReadyFn(currentOLLayer, map);
     }
-  }, [currentOLLayer, onLayerReadyFn]);
+  }, [currentOLLayer, map, onLayerReadyFn, projection]);
 
   if (currentOLLayer == null) {
     return (

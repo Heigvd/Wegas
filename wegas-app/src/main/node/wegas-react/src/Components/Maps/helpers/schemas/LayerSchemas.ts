@@ -297,7 +297,10 @@ export const onLayerReadySchema = schemaProps.callback({
   label: 'On layer ready',
   required: false,
   callbackProps: {
-    args: [['layer', ['any']]],
+    args: [
+      ['layer', ['any']],
+      ['map', ['any']],
+    ],
     returnType: ['void'],
   },
 });
