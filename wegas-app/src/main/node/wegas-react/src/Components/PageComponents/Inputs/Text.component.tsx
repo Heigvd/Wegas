@@ -5,7 +5,6 @@ import { Player } from '../../../data/selectors';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { wlog } from '../../../Helper/wegaslog';
 import { useDebouncedOnChange } from '../../Hooks/useDebounce';
 import { useScript } from '../../Hooks/useScript';
 import HTMLEditorMk2 from '../../HTML/HTMLEditorMk2';
@@ -70,7 +69,6 @@ function PlayerTextInput({
 
   const onChange = React.useCallback(
     (v: React.ReactText) => {
-      wlog(v);
       if (handleOnChange) {
         handleOnChange(v);
       } else if (typeof text === 'object') {

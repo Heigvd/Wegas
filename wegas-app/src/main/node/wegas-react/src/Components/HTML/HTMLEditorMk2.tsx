@@ -2,6 +2,7 @@ import * as React from 'react';
 import { fileURL, generateAbsolutePath } from '../../API/files.api';
 import { FileBrowser } from '../../Editor/Components/FileBrowser/FileBrowser';
 import { classNameOrEmpty } from '../../Helper/className';
+import { wlog } from '../../Helper/wegaslog';
 import { Modal } from '../Modal';
 import JoditReactEditor from './JoditReactEditor';
 
@@ -58,6 +59,7 @@ export default function HTMLEditorMk2({
 
   const onEditorChanges = React.useCallback(
     (v: string) => {
+      wlog('HTML editor on change', v);
       if (value !== v && onChange) {
         onChange(v);
       }

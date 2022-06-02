@@ -152,15 +152,6 @@ export default function JoditReactEditor({
 
             const j = Jodit.make(containerRef.current, config);
 
-            j.events.on('change', (value, oldValue) => {
-                const prev = cleanValue(oldValue);
-                const v = cleanValue(value);
-                if(!muteChanges.current && onChange && v !== prev){
-                    const injected = toInjectorStyle(v);
-                    onChange(injected);
-                }
-            });
-
             // triggered on keyboard input
             // j.events.on('input', (value, oldValue) => { }, )
             jodit.current = j;
@@ -170,7 +161,19 @@ export default function JoditReactEditor({
                 jodit.current = undefined;
             }
         }
-    }, [classes, onChange, placeholder, showFilePickerFunc, toolbarLayout]);
+    }, [classes, placeholder, showFilePickerFunc, toolbarLayout]);
+
+    React.useEffect(() => {
+        jodit.current?.events.off('change');
+        jodit.current?.events.on('change', (value, oldValue) => {
+            const prev = cleanValue(oldValue);
+            const v = cleanValue(value);
+            if(!muteChanges.current && onChange && v !== prev){
+                const injected = toInjectorStyle(v);
+                onChange(injected);
+            }
+        });
+    }, [onChange]);
 
     React.useEffect(() =>{
         if(jodit.current){
