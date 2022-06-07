@@ -5,10 +5,9 @@ import { classNameOrEmpty } from '../../Helper/className';
 import { Modal } from '../Modal';
 import JoditReactEditor from './JoditReactEditor';
 
-
 type CallbackFN = (url: string) => void;
 
-export interface HTMLEditorPropsMk2 extends ClassStyleId, DisabledReadonly {
+export interface HTMLEditorProps extends ClassStyleId, DisabledReadonly {
   /**
    * value - content to inject in the editor
    */
@@ -36,10 +35,8 @@ export interface HTMLEditorPropsMk2 extends ClassStyleId, DisabledReadonly {
   /**
    * display a custom toolbar
    */
-  toolbarLayout?: "full" | "player";
-
+  toolbarLayout?: 'full' | 'player';
 }
-
 
 export default function HTMLEditor({
   value,
@@ -51,13 +48,15 @@ export default function HTMLEditor({
   disabled,
   readOnly,
   toolbarLayout: toolbarLayout,
-}: HTMLEditorPropsMk2) {
+}: HTMLEditorProps) {
   const [showFileBrowsing, setShowFileBrowsing] = React.useState(false);
 
-  const fileBrowsingFunc = React.useRef<CallbackFN>(()=> {});
+  const fileBrowsingFunc = React.useRef<CallbackFN>(() => {});
 
   const valueRef = React.useRef(value);
-  React.useEffect(() =>{ valueRef.current = value;}, [value]);
+  React.useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
 
   const onEditorChanges = React.useCallback(
     (v: string) => {
@@ -68,44 +67,42 @@ export default function HTMLEditor({
     [onChange, valueRef],
   );
 
-  const showFilePicker = React.useCallback((providePathCallBack: ((path: string) => void)) => {
-    setShowFileBrowsing(true);
-    fileBrowsingFunc.current = providePathCallBack;
-  }, [])
+  const showFilePicker = React.useCallback(
+    (providePathCallBack: (path: string) => void) => {
+      setShowFileBrowsing(true);
+      fileBrowsingFunc.current = providePathCallBack;
+    },
+    [],
+  );
 
   return (
-    <div
-    className={classNameOrEmpty(className)}
-    style={style}
-    id={id}
-    >
-        <JoditReactEditor
-          value={value}
-          onChange={onEditorChanges}
-          placeholder={placeholder}
-          disabled={disabled}
-          readonly={readOnly}
-          toolbarLayout={toolbarLayout}
-          showFilePickerFunc={showFilePicker}
-        />
-          {showFileBrowsing && (
-          <Modal onExit={() => setShowFileBrowsing(false)}>
-            <FileBrowser
-              onFileClick={file => {
-                setShowFileBrowsing(false);
-                file &&
-                  fileBrowsingFunc.current &&
-                  fileBrowsingFunc.current(
-                    document.location.origin +
-                      fileURL(generateAbsolutePath(file)),
-                  );
-              }}
-              pickType={'FILE'}
-              filter={{ fileType: 'image', filterType: 'show' }}
-            />
-          </Modal>
-        )}
+    <div className={classNameOrEmpty(className)} style={style} id={id}>
+      <JoditReactEditor
+        value={value}
+        onChange={onEditorChanges}
+        placeholder={placeholder}
+        disabled={disabled}
+        readonly={readOnly}
+        toolbarLayout={toolbarLayout}
+        showFilePickerFunc={showFilePicker}
+      />
+      {showFileBrowsing && (
+        <Modal onExit={() => setShowFileBrowsing(false)}>
+          <FileBrowser
+            onFileClick={file => {
+              setShowFileBrowsing(false);
+              file &&
+                fileBrowsingFunc.current &&
+                fileBrowsingFunc.current(
+                  document.location.origin +
+                    fileURL(generateAbsolutePath(file)),
+                );
+            }}
+            pickType={'FILE'}
+            filter={{ fileType: 'image', filterType: 'show' }}
+          />
+        </Modal>
+      )}
     </div>
-
   );
 }
