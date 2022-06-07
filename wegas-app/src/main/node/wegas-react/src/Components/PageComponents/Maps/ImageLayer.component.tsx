@@ -6,13 +6,19 @@ import { fileURL } from '../../../API/files.api';
 import { entityIs } from '../../../data/entities';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { useScript } from '../../Hooks/useScript';
+import {
+  ScriptCallback,
+  useScript,
+  useScriptCallback,
+  useUpdatedContextRef,
+} from '../../Hooks/useScript';
 import {
   onLayerReadySchema,
   wegasImageLayerPropsSchema,
   wegasImageLayerSourceSchema,
 } from '../../Maps/helpers/schemas/LayerSchemas';
-import { WegasLayer } from '../../Maps/WegasLayer';
+import { OnLayerReadyFN, WegasLayer } from '../../Maps/WegasLayer';
+import { mapCTX } from '../../Maps/WegasMap';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
@@ -23,7 +29,7 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 interface PlayerImageLayerProps extends WegasComponentProps {
   layerSource?: ImageLayerSourceObject;
   layerProps?: IScript | SharedLayerProps;
-  onLayerReady?: IScript;
+  onLayerReady?: ScriptCallback;
 }
 
 export default function PlayerImageLayer({
@@ -32,9 +38,15 @@ export default function PlayerImageLayer({
   onLayerReady,
   pageId,
   path,
+  context,
 }: PlayerImageLayerProps) {
+  const contextRef = useUpdatedContextRef(context);
+  const { projection, map } = React.useContext(mapCTX);
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
-  const onLayerReadyFn = useScript<OnLayerReadyFN>(onLayerReady);
+  const onLayerReadyFn = useScriptCallback<OnLayerReadyFN>(
+    onLayerReady,
+    contextRef,
+  );
 
   const currentLayerProps =
     useScript<SharedLayerProps>(
@@ -60,9 +72,9 @@ export default function PlayerImageLayer({
 
   React.useEffect(() => {
     if (onLayerReadyFn != null && currentOLLayer != null) {
-      onLayerReadyFn(currentOLLayer);
+      onLayerReadyFn(currentOLLayer, map);
     }
-  }, [currentOLLayer, onLayerReadyFn]);
+  }, [currentOLLayer, map, onLayerReadyFn, projection]);
 
   if (currentOLLayer == null) {
     return (

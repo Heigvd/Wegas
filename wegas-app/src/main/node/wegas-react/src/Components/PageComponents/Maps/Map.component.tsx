@@ -13,7 +13,11 @@ import {
 import { ViewOptions } from 'ol/View';
 import * as React from 'react';
 import { useDeepMemo } from '../../Hooks/useDeepMemo';
-import { useScriptObjectWithFallback } from '../../Hooks/useScript';
+import {
+  ScriptCallback,
+  useScriptObjectWithFallback,
+  useUpdatedContextRef,
+} from '../../Hooks/useScript';
 import {
   mapOptionsSchema,
   viewOptionsSchema,
@@ -70,8 +74,10 @@ const defaultViewOptions: ViewOptions = {
   center: [775277, 5831039],
 };
 
-interface PayerMapOptions extends Omit<WegasMapOptions, 'controls'> {
+interface PayerMapOptions
+  extends Omit<WegasMapOptions, 'controls' | 'onClick'> {
   controls: MapControls[];
+  onClick?: ScriptCallback;
 }
 
 interface PlayerMapProps extends WegasComponentProps {
@@ -85,7 +91,8 @@ interface PlayerMapProps extends WegasComponentProps {
   OSMLayer?: boolean;
 }
 
-const defaultMapOptions: PayerMapOptions = { controls: [] };
+const defaultControls: MapControls[] = [];
+const defaultMapOptions: PayerMapOptions = { controls: defaultControls };
 
 export default function PlayerMap({
   children,
@@ -93,14 +100,19 @@ export default function PlayerMap({
   viewOptions: viewProps,
   debug,
   OSMLayer,
+  context,
 }: PlayerMapProps) {
+  const contextRef = useUpdatedContextRef(context);
+
   const { mapOptions, viewOptions } = useDeepMemo({
     mapOptions: { ...defaultMapOptions, ...mapProps },
     viewOptions: { ...defaultViewOptions, ...viewProps },
   });
-  const currentMapOptions = useScriptObjectWithFallback(mapOptions);
-  const currentViewOptions = useScriptObjectWithFallback(viewOptions);
-
+  const currentMapOptions = useScriptObjectWithFallback(mapOptions, contextRef);
+  const currentViewOptions = useScriptObjectWithFallback(
+    viewOptions,
+    contextRef,
+  );
   const computedMapOptions = useDeepMemo({
     ...currentMapOptions,
     controls: wegasControlsToOlControls(currentMapOptions.controls),

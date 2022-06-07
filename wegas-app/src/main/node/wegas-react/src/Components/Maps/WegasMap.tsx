@@ -29,17 +29,19 @@ interface MapContext {
 
 export const mapCTX = React.createContext<MapContext>({});
 
+export type OnMapClick = (
+  coord: [number, number],
+  features: {
+    feature: Record<string, unknown>;
+    layerId: string | undefined;
+  }[],
+) => void;
+
 export type WegasMapOptions = Omit<
   MapOptions,
   'interactions' | 'layers' | 'overlays' | 'view'
 > & {
-  onClick?: (
-    coord: [number, number],
-    features: {
-      feature: Record<string, unknown>;
-      layerId: string | undefined;
-    }[],
-  ) => void;
+  onClick?: OnMapClick;
 };
 
 interface WegasMapProps {

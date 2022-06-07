@@ -1,7 +1,10 @@
 import { Coordinate } from 'ol/coordinate';
 import * as React from 'react';
 import { useDeepMemo } from '../../Hooks/useDeepMemo';
-import { useScriptObjectWithFallback } from '../../Hooks/useScript';
+import {
+  useScriptObjectWithFallback,
+  useUpdatedContextRef,
+} from '../../Hooks/useScript';
 import { overlaySchema } from '../../Maps/helpers/schemas/OverlaySchemas';
 import { WegasOverlay, WegasOverlayProps } from '../../Maps/WegasOverlay';
 import { EmptyComponentContainer } from '../Layouts/FlexList.component';
@@ -47,12 +50,15 @@ interface PlayerOverlayProps extends WegasComponentProps {
 export default function PlayerOverlay({
   children,
   overlayProps,
+  context,
 }: PlayerOverlayProps) {
+  const contextRef = useUpdatedContextRef(context);
   const [clickedPosition, setClickedPosition] = React.useState<
     undefined | Coordinate
   >(undefined);
   const props = useScriptObjectWithFallback<ScriptableOverlayProps>(
     overlayProps || {},
+    contextRef,
   );
   const {
     exposePositionAs = defaultOverlayPositionKey,
