@@ -966,7 +966,7 @@ export default function PagesLayout() {
         // Now the drag element comes from outside the tree
         else {
           if (isPageComponentNode(to.data)) {
-            const sourceType = from.data.componentName;
+            const sourceType = from.data.componentId;
             const destPageId = to.data.pageId;
             const destPage = pages[destPageId];
             const destPath = to.data.componentPath;

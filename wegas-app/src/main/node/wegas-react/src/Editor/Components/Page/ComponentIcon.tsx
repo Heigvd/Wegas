@@ -113,7 +113,7 @@ const componentIconStyle = css({
 
 interface ComponentTypeIconProps {
   /**
-   * componentName - the name of the component
+   * componentType - the type of the component
    */
   componentType: ComponentType;
 }
@@ -141,7 +141,7 @@ export function ComponentTypeIcon({ componentType }: ComponentTypeIconProps) {
 
 interface ComponentIconProps extends SVGProps<SVGSVGElement> {
   /**
-   * componentName - the name of the component
+   * componentIllu - the illustration of the component
    */
   componentIllu: IconComponentType;
 }

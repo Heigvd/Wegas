@@ -406,18 +406,18 @@ export function PageContextProvider({
       let componentPageId = selectedPageId;
       let componentPage = selectedPage;
       let componentPath: number[] | undefined;
-      let componentName: string | undefined;
+      let componentId: string | undefined;
 
       if (!isDnDComponent(dndComponent)) {
         componentPageId = dndComponent.pageId;
         componentPage = store.getState().pages[componentPageId];
         componentPath = dndComponent.componentPath;
-        componentName = undefined;
+        componentId = undefined;
       } else {
         componentPageId = selectedPageId;
         componentPage = selectedPage;
         componentPath = dndComponent.path;
-        componentName = dndComponent.componentName;
+        componentId = dndComponent.componentId;
       }
 
       if (selectedPageId != null && selectedPage != null) {
@@ -427,9 +427,9 @@ export function PageContextProvider({
 
         if (computedPage != null) {
           // Dropping new component
-          if (componentPath == null && componentName != null) {
+          if (componentPath == null && componentId != null) {
             const computedProps = computeProps(
-              components[componentName],
+              components[componentId],
               props,
               undefined,
             );
@@ -437,7 +437,7 @@ export function PageContextProvider({
             const newComponent = createComponent(
               computedPage,
               path,
-              componentName,
+              componentId,
               computedProps,
               index,
             );
