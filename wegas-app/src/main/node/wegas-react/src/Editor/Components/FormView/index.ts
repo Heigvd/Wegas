@@ -44,6 +44,7 @@ import {
   TreeVariableSelect,
   TreeVSelect,
 } from './TreeVariableSelect';
+import undefinedable from './undefinedable';
 import uneditable from './Uneditable';
 
 export const DEFINED_VIEWS = {
@@ -89,6 +90,7 @@ export const DEFINED_VIEWS = {
   timestamp: TimestampView,
   treeselect: TreeVSelect,
   uneditable,
+  undefinedable,
   variableInput: VariableInput,
   variableselect: TreeVariableSelect,
 };
