@@ -138,7 +138,7 @@ export const selectSchema = schemaProps.hashlist({
           label: 'on Select',
           callbackProps: {
             args: [['event', ['any']]],
-            returnType: ['boolean'],
+            returnType: ['void'],
           },
         }),
       },
