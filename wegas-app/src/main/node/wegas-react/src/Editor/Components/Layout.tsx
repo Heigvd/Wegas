@@ -1,12 +1,18 @@
 import { css } from '@emotion/css';
 import * as React from 'react';
+import { IPeerReviewDescriptor } from 'wegas-ts-api';
+import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { roleCTX } from '../../Components/Contexts/RoleProvider';
 import { MaxiLoader } from '../../Components/MaxiLoader';
+import { TabLayoutComponent } from '../../Components/TabLayout/TabLayout';
 import { themeVar } from '../../Components/Theme/ThemeVars';
+import { entityIs } from '../../data/entities';
+import { translate } from '../../data/i18n';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
 import { useStore } from '../../data/Stores/store';
 import { visitIndex } from '../../Helper/pages';
+import PeerReviewPage from '../../Host/PeerReview/PeerReviewPage';
 import { mainLayoutId } from '../layouts';
 import Header from './Header';
 import {
@@ -153,6 +159,7 @@ function scenaristPagesSelector(s: State) {
 
 export default function Layout() {
   const timer = React.useRef<NodeJS.Timeout | undefined>();
+  const { lang } = React.useContext(languagesCTX);
   const [loading, setLoading] = React.useState(true);
   const { currentRole } = React.useContext(roleCTX);
 
@@ -163,12 +170,24 @@ export default function Layout() {
     }),
   );
 
+  const peerReviews = useStore((s) => {
+     return Object.values(s.variableDescriptors).filter(descriptor =>
+      entityIs(descriptor, 'PeerReviewDescriptor'),
+    ) as IPeerReviewDescriptor[];
+  });
+
+
+  const peerReviewTabs = peerReviews.map<TabLayoutComponent>(peerReview => ({
+    tabId: `Peer review ${translate(peerReview?.label, lang)}`,
+    content: <PeerReviewPage peerReview={peerReview} />,
+  }));
+
   const allowedPages = useStore(s => {
     const role = s.global.roles.roles[currentRole];
     return role == null || role.availableTabs;
   });
 
-  const layoutPages = [...availableLayoutTabs, ...scenaristPages].filter(
+  const layoutPages = [...availableLayoutTabs, ...scenaristPages, ...peerReviewTabs].filter(
     ({ tabId }) => allowedPages === true || allowedPages.includes(tabId),
   );
 
