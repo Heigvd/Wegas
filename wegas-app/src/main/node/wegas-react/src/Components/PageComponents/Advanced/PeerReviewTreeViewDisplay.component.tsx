@@ -34,6 +34,7 @@ import {
   justifyCenter,
 } from '../../../css/classes';
 import { entityIs, scriptableEntityIs } from '../../../data/entities';
+import { translate } from '../../../data/i18n';
 import { liveEdition } from '../../../data/Reducer/gameModel';
 import {
   asynchSaveReview,
@@ -45,7 +46,6 @@ import { Player, Team } from '../../../data/selectors';
 import * as VariableDescriptorSelector from '../../../data/selectors/VariableDescriptorSelector';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
-import { translate } from '../../../Editor/Components/FormView/translatable';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { PeerReviewTranslations } from '../../../i18n/peerReview/definitions';

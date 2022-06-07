@@ -52,6 +52,7 @@ import {
 import { Actions } from '../../../data';
 import { manageResponseHandler } from '../../../data/actions';
 import { entityIs } from '../../../data/entities';
+import { unsafeTranslate } from '../../../data/i18n';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { EditingState } from '../../../data/Reducer/editingState';
 import { GlobalState } from '../../../data/Reducer/globalState';
@@ -71,7 +72,6 @@ import {
   IAttributes,
   testCode,
 } from '../FormView/Script/Expressions/expressionEditorHelpers';
-import { unsafeTranslate } from '../FormView/translatable';
 import { IconComp, withDefault } from '../Views/FontAwesome';
 
 const langaugeVisitorHeaderStyle = css({

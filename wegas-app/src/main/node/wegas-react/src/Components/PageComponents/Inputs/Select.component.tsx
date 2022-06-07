@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { IScript, SNumberDescriptor, SStringDescriptor } from 'wegas-ts-api';
 import { entityIs } from '../../../data/entities';
+import { translate } from '../../../data/i18n';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
-import { translate } from '../../../Editor/Components/FormView/translatable';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { wwarn } from '../../../Helper/wegaslog';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';

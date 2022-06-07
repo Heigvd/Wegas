@@ -3,9 +3,9 @@ import * as React from 'react';
 import { useDrag } from 'react-dnd';
 import { IAbstractState, IFSMDescriptor } from 'wegas-ts-api';
 import { entityIs } from '../../data/entities';
+import { translate } from '../../data/i18n';
 import { instantiate } from '../../data/scriptable';
 import { Player, VariableDescriptor } from '../../data/selectors';
-import { translate } from '../../Editor/Components/FormView/translatable';
 import {
   StateProcess,
   TransitionFlowLine,

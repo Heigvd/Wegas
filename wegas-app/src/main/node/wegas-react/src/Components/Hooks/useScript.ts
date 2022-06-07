@@ -20,6 +20,7 @@ import { APIScriptMethods } from '../../API/clientScriptHelper';
 import { fileURL } from '../../API/files.api';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
+import { createTranslatableContent, createTranslation, translate } from '../../data/i18n';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
@@ -33,11 +34,6 @@ import {
   usePagesContextStateStore,
 } from '../../data/Stores/pageContextStore';
 import { store, useStore } from '../../data/Stores/store';
-import {
-  createTranslatableContent,
-  createTranslation,
-  translate,
-} from '../../Editor/Components/FormView/translatable';
 import { insertReturn } from '../../Editor/Components/ScriptEditors/TempScriptEditor';
 import { registerEffect } from '../../Helper/pageEffectsManager';
 import { createLRU, replace } from '../../Helper/tools';

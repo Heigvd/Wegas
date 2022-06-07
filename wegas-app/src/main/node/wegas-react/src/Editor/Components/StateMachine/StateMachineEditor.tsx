@@ -24,6 +24,7 @@ import { useOnEditionChangesModal } from '../../../Components/Modal';
 import { grow, mediumPadding } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
+import { createTranslatableContent } from '../../../data/i18n';
 import {
   editorLabel,
   getInstance,
@@ -49,7 +50,6 @@ import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { mainLayoutId } from '../../layouts';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
-import { createTranslatableContent } from '../FormView/translatable';
 import { focusTab } from '../LinearTabLayout/LinearLayout';
 import { LiteFlowLineComponentFactory } from './LiteFlowLineComponent';
 import { LiteStateProcessComponentFactory } from './LiteProcessComponent';

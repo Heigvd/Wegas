@@ -10,9 +10,9 @@ import {
 } from '../Components/TabLayout/TabLayout';
 import { themeVar } from '../Components/Theme/ThemeVars';
 import { entityIs } from '../data/entities';
+import { translate } from '../data/i18n';
 import { State } from '../data/Reducer/reducers';
 import { useStore } from '../data/Stores/store';
-import { translate } from '../Editor/Components/FormView/translatable';
 import {
   fullScreenLoaderStyle,
   PageLoader,

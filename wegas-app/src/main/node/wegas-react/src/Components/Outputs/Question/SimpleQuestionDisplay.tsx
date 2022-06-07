@@ -12,6 +12,7 @@ import {
   justifyCenter,
 } from '../../../css/classes';
 import { Actions } from '../../../data';
+import { createTranslatableContent } from '../../../data/i18n';
 import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
@@ -19,7 +20,6 @@ import {
   editingStore,
   EditingStoreDispatch,
 } from '../../../data/Stores/editingStore';
-import { createTranslatableContent } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { themeVar } from '../../Theme/ThemeVars';
@@ -177,7 +177,7 @@ export function SimpleQuestionDisplay({
   }
 
   const canReply =
-    !questionI.validated  &&
+    !questionI.validated &&
     (questionD.maxReplies == null ||
       validatedReplies.length < questionD.maxReplies) &&
     isActionAllowed(options);

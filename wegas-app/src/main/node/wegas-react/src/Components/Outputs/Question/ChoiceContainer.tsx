@@ -11,14 +11,12 @@ import {
 } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
+import { createTranslatableContent } from '../../../data/i18n';
 import { IWhChoiceDescriptor } from '../../../data/scriptable/impl/QuestionDescriptor';
 import { editingStore } from '../../../data/Stores/editingStore';
-import {
-  createTranslatableContent,
-  useTranslate,
-} from '../../../Editor/Components/FormView/translatable';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { useTranslate } from '../../Hooks/useTranslate';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { SimpleInput } from '../../Inputs/SimpleInput';
