@@ -107,7 +107,7 @@ const ComponentTextStyle = css({
 });
 
 export interface DnDComponent {
-  componentName: string;
+  componentId: string;
   path?: number[];
 }
 
@@ -118,8 +118,8 @@ export function isDnDComponent(
   return (
     typeof item === 'object' &&
     item != null &&
-    'componentName' in item &&
-    typeof item.componentName === 'string'
+    'componentId' in item &&
+    typeof item.componentId === 'string'
   );
 }
 
