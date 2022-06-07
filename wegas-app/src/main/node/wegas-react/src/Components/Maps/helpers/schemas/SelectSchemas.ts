@@ -42,11 +42,11 @@ export const selectSchema = schemaProps.hashlist({
       label: 'Filter',
       value: {
         prop: 'filter',
-        schema: schemaProps.code({
+        schema: schemaProps.callback({
           label: 'Filter',
-          scriptProps: {
-            language: 'TypeScript',
-            returnType: ['(feature:any)=>boolean'],
+          callbackProps: {
+            args: [['feature', ['any']]],
+            returnType: ['boolean'],
           },
         }),
       },
@@ -82,11 +82,11 @@ export const selectSchema = schemaProps.hashlist({
       label: 'Condition',
       value: {
         prop: 'condition',
-        schema: schemaProps.code({
+        schema: schemaProps.callback({
           label: 'Condition',
-          scriptProps: {
-            language: 'TypeScript',
-            returnType: ['(event:any)=>boolean'],
+          callbackProps: {
+            args: [['event', ['any']]],
+            returnType: ['boolean'],
           },
         }),
       },
@@ -95,11 +95,11 @@ export const selectSchema = schemaProps.hashlist({
       label: 'Add condition',
       value: {
         prop: 'addCondition',
-        schema: schemaProps.code({
+        schema: schemaProps.callback({
           label: 'Add condition',
-          scriptProps: {
-            language: 'TypeScript',
-            returnType: ['(event:any)=>boolean'],
+          callbackProps: {
+            args: [['event', ['any']]],
+            returnType: ['boolean'],
           },
         }),
       },
@@ -108,11 +108,11 @@ export const selectSchema = schemaProps.hashlist({
       label: 'Remove condition',
       value: {
         prop: 'removeCondition',
-        schema: schemaProps.code({
+        schema: schemaProps.callback({
           label: 'Remove condition',
-          scriptProps: {
-            language: 'TypeScript',
-            returnType: ['(event:any)=>boolean'],
+          callbackProps: {
+            args: [['event', ['any']]],
+            returnType: ['boolean'],
           },
         }),
       },
@@ -121,11 +121,11 @@ export const selectSchema = schemaProps.hashlist({
       label: 'Toggle condition',
       value: {
         prop: 'toggleCondition',
-        schema: schemaProps.code({
+        schema: schemaProps.callback({
           label: 'Toggle condition',
-          scriptProps: {
-            language: 'TypeScript',
-            returnType: ['(event:any)=>boolean'],
+          callbackProps: {
+            args: [['event', ['any']]],
+            returnType: ['boolean'],
           },
         }),
       },
@@ -134,11 +134,11 @@ export const selectSchema = schemaProps.hashlist({
       label: 'on Select',
       value: {
         prop: 'onSelect',
-        schema: schemaProps.code({
+        schema: schemaProps.callback({
           label: 'on Select',
-          scriptProps: {
-            language: 'TypeScript',
-            returnType: ['(event:any)=>void'],
+          callbackProps: {
+            args: [['event', ['any']]],
+            returnType: ['boolean'],
           },
         }),
       },
