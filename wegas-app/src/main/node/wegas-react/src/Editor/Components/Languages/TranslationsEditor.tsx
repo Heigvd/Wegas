@@ -232,7 +232,6 @@ function TranslationItemView({
           value={value || ''}
           onChange={onValueChange}
           disabled={disabled}
-          // keepInternalValue
         />
       ) : (
         <SimpleInput

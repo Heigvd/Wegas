@@ -255,7 +255,8 @@ export function ChoiceContainer({
                   onChange={value =>
                     setValues(o => ({ ...o, description: value }))
                   }
-                  customToolbar="bold italic underline bullist"
+                  toolbarLayout='player'
+                  // customToolbar="bold italic underline bullist"
                 />
               </div>
               <div className={cx(flex, flexColumn, defaultMarginBottom)}>
@@ -265,7 +266,7 @@ export function ChoiceContainer({
                   onChange={value =>
                     setValues(o => ({ ...o, feedback: value }))
                   }
-                  customToolbar="bold italic underline bullist"
+                  toolbarLayout='player'
                 />
               </div>
             </>

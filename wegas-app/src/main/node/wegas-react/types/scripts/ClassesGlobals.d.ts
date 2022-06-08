@@ -1,4 +1,4 @@
 interface GlobalClassesClass {
-  addClass: (className: string) => void;
+  addClass: (className: string, label: string) => void;
   removeClass: (className: string) => void;
 }
