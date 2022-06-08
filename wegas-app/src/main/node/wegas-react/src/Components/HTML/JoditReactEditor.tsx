@@ -1,9 +1,9 @@
 import { css } from '@emotion/css';
-import JoditEditor,{ Jodit } from 'jodit';
+import JoditEditor, { Jodit } from 'jodit';
 import 'jodit/build/jodit.min.css';
 import { ButtonsGroups } from 'jodit/types/types';
 import React from 'react';
-import sanitize,{ toFullUrl,toInjectorStyle } from '../../Helper/sanitize';
+import sanitize, { toFullUrl, toInjectorStyle } from '../../Helper/sanitize';
 import { classesCTX } from '../Contexts/ClassesProvider';
 import { themeVar } from '../Theme/ThemeVars';
 
@@ -201,17 +201,25 @@ export default function JoditReactEditor({
     }
   }, [classes, placeholder, showFilePickerFunc, toolbarLayout]);
 
-  React.useEffect(() => {
-    jodit.current?.events.off('change'); //removes all listeners
-    jodit.current?.events.on('change', (value, oldValue) => {
+  const onChangeCallback = React.useCallback(
+    (value, oldValue) => {
       const prev = cleanValue(oldValue);
       const v = cleanValue(value);
       if (onChange && v !== prev) {
         const injected = toInjectorStyle(v);
         onChange(injected);
       }
-    });
-  }, [onChange]);
+    },
+    [onChange],
+  );
+
+  React.useEffect(() => {
+    //jodit.current?.events.off('change', onChangeCallback); //removes onChangeCallback
+    jodit.current?.events.on('change', onChangeCallback);
+    return () => {
+      jodit.current?.events.off('change', onChangeCallback); //removes onChangeCallback
+    };
+  }, [onChangeCallback]);
 
   React.useEffect(() => {
     if (jodit.current) {
