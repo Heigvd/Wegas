@@ -53,6 +53,7 @@ export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
                 onChange={this.props.onChange}
                 className={labeledHTMLEditorStyle}
                 id={inputId}
+                toolbarLayout='full'
                 // noResize={this.props.view.noResize}
               />
             </div>

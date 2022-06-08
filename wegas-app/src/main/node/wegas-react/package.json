@@ -63,7 +63,7 @@
     "fast-json-patch": "^3.0.0-1",
     "immer": "5.3.6",
     "immutable": "^4.0.0-rc.12",
-    "jodit": "^3.18.5",
+    "jodit": "^3.18.7",
     "jsoninput": "github:heigvd/jsoninput",
     "jsplumb": "^2.11.2",
     "less": "^3.12.2",

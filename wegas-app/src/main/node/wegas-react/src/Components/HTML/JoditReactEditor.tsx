@@ -1,9 +1,9 @@
 import { css } from '@emotion/css';
-import JoditEditor, { Jodit } from 'jodit';
+import JoditEditor,{ Jodit } from 'jodit';
 import 'jodit/build/jodit.min.css';
 import { ButtonsGroups } from 'jodit/types/types';
 import React from 'react';
-import sanitize, { toFullUrl, toInjectorStyle } from '../../Helper/sanitize';
+import sanitize,{ toFullUrl,toInjectorStyle } from '../../Helper/sanitize';
 import { classesCTX } from '../Contexts/ClassesProvider';
 import { themeVar } from '../Theme/ThemeVars';
 
@@ -55,6 +55,8 @@ const wysiwygStyle = css({
 });
 
 const IMG_PLACEHOLDER = 'IMG_PLACEHOLDER';
+const SRC_PLACEHOLDER = 'SRC_PLACEHOLDER';
+
 function getButtonConfig(layout: 'full' | 'player' | undefined): ButtonsGroups {
   switch (layout) {
     case 'full':
@@ -74,7 +76,7 @@ function getButtonConfig(layout: 'full' | 'player' | undefined): ButtonsGroups {
         'link',
         IMG_PLACEHOLDER,
         '|',
-        'source',
+        SRC_PLACEHOLDER,
         'table',
         '|',
         'paragraph',
@@ -129,7 +131,6 @@ export default function JoditReactEditor({
 }: JoditEditorProps) {
   const containerRef = React.useRef<HTMLTextAreaElement>(null);
   const jodit = React.useRef<JoditEditor.Jodit>();
-  const muteChanges = React.useRef<boolean>(false);
   const { classes } = React.useContext(classesCTX);
 
   // Main setup
@@ -137,10 +138,10 @@ export default function JoditReactEditor({
     if (containerRef.current) {
       const buttonsConfig: ButtonsGroups = getButtonConfig(toolbarLayout);
 
-      const idx = buttonsConfig.findIndex(e => e === IMG_PLACEHOLDER);
+      const imgIndex = buttonsConfig.findIndex(e => e === IMG_PLACEHOLDER);
       //custom button for WEGAS images
-      if (idx > -1) {
-        buttonsConfig[idx] = {
+      if (imgIndex > -1) {
+        buttonsConfig[imgIndex] = {
           icon: 'image',
           exec: function (editor: JoditEditor.Jodit) {
             if (showFilePickerFunc) {
@@ -152,9 +153,21 @@ export default function JoditReactEditor({
         };
       }
 
+      const sourceIndex = buttonsConfig.findIndex(e => e === SRC_PLACEHOLDER);
+      //custom button for source mode
+      if (sourceIndex > -1) {
+        buttonsConfig[sourceIndex] = {
+          icon: 'source',
+          exec: function (editor: JoditEditor.Jodit) {
+            const WYSIWYG = Jodit.constants.MODE_WYSIWYG;
+            const SPLIT = Jodit.constants.MODE_SPLIT;
+            const currMode = editor.getMode();
+            editor.setMode(currMode === WYSIWYG ? SPLIT : WYSIWYG);
+          },
+        };
+      }
+
       const config = Jodit.defaultOptions;
-      //required to avoid triggering change events when the value is updated from outside
-      config.defaultTimeout = 0;
 
       config.buttons = buttonsConfig;
       config.buttonsMD = buttonsConfig;
@@ -189,11 +202,11 @@ export default function JoditReactEditor({
   }, [classes, placeholder, showFilePickerFunc, toolbarLayout]);
 
   React.useEffect(() => {
-    jodit.current?.events.off('change');
+    jodit.current?.events.off('change'); //removes all listeners
     jodit.current?.events.on('change', (value, oldValue) => {
       const prev = cleanValue(oldValue);
       const v = cleanValue(value);
-      if (!muteChanges.current && onChange && v !== prev) {
+      if (onChange && v !== prev) {
         const injected = toInjectorStyle(v);
         onChange(injected);
       }
@@ -206,11 +219,9 @@ export default function JoditReactEditor({
       const local = cleanValue(editor.value);
       const updated = cleanValue(toFullUrl(value));
       if (local !== updated) {
-        // hack : avoid triggering a change callback when setting the new value
-        muteChanges.current = true;
-        editor.setEditorValue(updated);
-        muteChanges.current = false;
+        editor.setNativeEditorValue(updated);
       }
+
       editor.setReadOnly(readonly || false);
       editor.setDisabled(disabled || false);
     }
