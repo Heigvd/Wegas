@@ -1,7 +1,7 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { entityIs } from '../../data/entities';
-import { translate } from '../../Editor/Components/FormView/translatable';
+import { translate } from '../../data/i18n';
 import {
   StateProcess,
   TransitionFlowLine,

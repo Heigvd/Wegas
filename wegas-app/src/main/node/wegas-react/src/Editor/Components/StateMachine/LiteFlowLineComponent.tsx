@@ -24,13 +24,13 @@ import { isActionAllowed } from '../../../Components/PageComponents/tools/option
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
+import { createTranslatableContent, translate } from '../../../data/i18n';
 import { deleteTransition } from '../../../data/Reducer/editingState';
 import {
   editingStore,
   EditingStoreDispatch,
 } from '../../../data/Stores/editingStore';
 import { classOrNothing } from '../../../Helper/className';
-import { createTranslatableContent, translate } from '../FormView/translatable';
 import { EditHandle } from './EditHandle';
 import { StateProcess, TransitionFlowLine } from './StateMachineEditor';
 

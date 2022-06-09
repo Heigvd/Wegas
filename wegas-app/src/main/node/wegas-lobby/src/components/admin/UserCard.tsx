@@ -285,6 +285,9 @@ export default function UserCard({
     <Card
       key={user.id}
       size={size}
+      title={
+        entityIs(account, 'AaiAccount') && account.verified ? 'Edu-Id account' : 'Wegas account'
+      }
       illustration={
         entityIs(account, 'AbstractAccount', true) && account.verified ? verifiedIllu : userIllu
       }

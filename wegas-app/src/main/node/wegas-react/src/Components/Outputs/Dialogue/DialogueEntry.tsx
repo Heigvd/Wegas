@@ -11,9 +11,9 @@ import {
 } from '../../../css/classes';
 import { HTMLText } from '../HTMLText';
 import { Global } from '../../../data/selectors';
-import { useTranslate } from '../../../Editor/Components/FormView/translatable';
 import { themeVar } from '../../Theme/ThemeVars';
 import { WaitingLoader } from './WaitingLoader';
+import { useTranslate } from '../../Hooks/useTranslate';
 
 const dialogueEntryStyle = (player?: boolean) =>
   css({

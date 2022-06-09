@@ -17,7 +17,7 @@ import {
   justifyCenter,
 } from '../../../css/classes';
 import { Actions } from '../../../data';
-import { TranslatableContent } from '../../../data/i18n';
+import { createTranslatableContent, TranslatableContent } from '../../../data/i18n';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { read } from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
@@ -25,7 +25,6 @@ import { Player } from '../../../data/selectors';
 import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
-import { createTranslatableContent } from '../../../Editor/Components/FormView/translatable';
 import {
   IconComp,
   Icons,
