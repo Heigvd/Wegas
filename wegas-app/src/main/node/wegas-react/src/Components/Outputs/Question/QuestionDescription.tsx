@@ -83,7 +83,8 @@ export function QuestionDescription({
         <HTMLEditor
           value={value}
           onChange={onChange}
-          customToolbar="bold italic underline"
+          toolbarLayout='player'
+          // customToolbar="bold italic underline"
         />
       )}
     </Validate>

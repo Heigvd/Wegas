@@ -3,6 +3,7 @@ import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import HTMLEditor from '../../Components/HTML/HTMLEditor';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { Validate } from '../../Components/Inputs/Validate';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import {
   flex,
@@ -13,6 +14,7 @@ import {
 } from '../../css/classes';
 import { Actions } from '../../data';
 import { store } from '../../data/Stores/store';
+import { wlog } from '../../Helper/wegaslog';
 import EyeIcon from '../../pictures/icon_eye.svg';
 import { ActionItem, DataItem, DataType, OverviewClickType } from './Overview';
 import {
@@ -38,6 +40,7 @@ export function OverviewRow({
 
   const editTeam = React.useCallback(
     (value: string) => {
+      wlog('edit team');
       const newTeam: ITeam = {
         ...team.getEntity(),
         notes: value,
@@ -125,12 +128,16 @@ export function OverviewRow({
                 </ul>
               </div>
               <div>
-                <HTMLEditor
-                  value={team.getNotes() || ''}
-                  noResize
-                  onSave={editTeam}
-                  keepInternalValue
-                />
+              <Validate value={team.getNotes() || ''} onValidate={editTeam} onCancel={()=> {}}>
+                {(value, onChange) => {
+                  return (
+                    <HTMLEditor
+                      value={String(value)}
+                      onChange={onChange}
+                    />
+                  );
+                }}
+              </Validate>
               </div>
             </div>
           </td>

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ITranslatableContent } from 'wegas-ts-api';
 import { halfOpacity } from '../../css/classes';
 import { classNameOrEmpty, classOrNothing } from '../../Helper/className';
-import sanitize from '../../Helper/sanitize';
+import sanitize, { toFullUrl } from '../../Helper/sanitize';
 import { useTranslate } from '../Hooks/useTranslate';
 
 interface TextProps extends ClassStyleId {
@@ -19,7 +19,7 @@ export function HTMLText({ text, style, className, id, disabled }: TextProps) {
       }
       style={style}
       dangerouslySetInnerHTML={{
-        __html: sanitize(text || ''),
+        __html: sanitize(toFullUrl(text)),
       }}
     />
   );

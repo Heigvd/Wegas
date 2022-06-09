@@ -27,7 +27,7 @@ const loggers: Record<string, Logger> = {};
 
 function mapArgs(...args: unknown[]): unknown[] {
   return args.map(arg => {
-    const argP = typeof arg === 'function' ? arg() : arg;
+    const argP = typeof arg === 'function' ? arg.toString() : arg;
     try {
       return typeof argP === 'object' ? JSON.stringify(argP) : arg;
     } catch {

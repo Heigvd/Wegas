@@ -2,12 +2,12 @@ import { omit } from 'lodash';
 import * as React from 'react';
 
 export interface ClassesContext extends GlobalClassesClass {
-  classes: string[];
+  classes: Record<string, string>;
 }
 export const classesCTX = React.createContext<ClassesContext>({
   addClass: () => {},
   removeClass: () => {},
-  classes: [],
+  classes: {},
 });
 
 function ClassesHandler({
@@ -15,8 +15,8 @@ function ClassesHandler({
 }: React.PropsWithChildren<UknownValuesObject>) {
   const [classes, setClasses] = React.useState({});
 
-  function addClass(className: string) {
-    setClasses(oc => ({ ...oc, [className]: className }));
+  function addClass(className: string, label: string) {
+    setClasses(oc => ({ ...oc, [className]: label }));
   }
   function removeClass(className: string) {
     setClasses(oc => omit(oc, className));
@@ -26,7 +26,7 @@ function ClassesHandler({
       value={{
         addClass,
         removeClass,
-        classes: Object.keys(classes),
+        classes: classes,
       }}
     >
       {children}
