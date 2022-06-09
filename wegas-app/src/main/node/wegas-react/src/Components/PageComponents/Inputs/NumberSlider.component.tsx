@@ -1,12 +1,15 @@
 import { debounce } from 'lodash-es';
 import * as React from 'react';
-import { INumberDescriptor, IScript } from 'wegas-ts-api';
+import { IScript, SNumberDescriptor } from 'wegas-ts-api';
 import { Actions } from '../../../data';
+import { entityIs } from '../../../data/entities';
+import { Player } from '../../../data/selectors';
 import { editingStore } from '../../../data/Stores/editingStore';
+import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { useComponentScript } from '../../Hooks/useComponentScript';
+import { useScript } from '../../Hooks/useScript';
 import {
   DisplayMode,
   displayModes,
@@ -43,6 +46,12 @@ interface PlayerNumberSliderProps extends WegasComponentProps {
   onVariableChange?: OnVariableChange;
 }
 
+interface NumberSliderNumber {
+  value: number;
+  min: number;
+  max: number;
+}
+
 function PlayerNumberSlider({
   script,
   context,
@@ -54,31 +63,36 @@ function PlayerNumberSlider({
   ...restProps
 }: PlayerNumberSliderProps) {
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
-
   const { pageId, path } = restProps;
 
-  const { descriptor, instance, notFound } =
-    useComponentScript<INumberDescriptor>(script, context);
+  const number = useScript<SNumberDescriptor | NumberSliderNumber>(
+    script,
+    context,
+  );
+
+  const value = useStore(() =>
+    entityIs(number, 'NumberDescriptor')
+      ? (number as SNumberDescriptor).getValue(Player.self())
+      : (number as NumberSliderNumber).value,
+  );
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
-
-  const variableName = descriptor?.getName();
 
   const doUpdate = React.useCallback(
     (newValue: number) => {
       if (handleOnChange) {
         handleOnChange(newValue);
-      } else {
-        if (variableName) {
-          editingStore.dispatch(
-            Actions.VariableInstanceActions.runScript(
-              `Variable.find(gameModel,"${variableName}").setValue(self, ${newValue});`,
-            ),
-          );
-        }
+      } else if (entityIs(number, 'NumberDescriptor')) {
+        editingStore.dispatch(
+          Actions.VariableInstanceActions.runScript(
+            `Variable.find(gameModel,"${(
+              number as SNumberDescriptor
+            ).getName()}").setValue(self, ${newValue});`,
+          ),
+        );
       }
     },
-    [handleOnChange, variableName],
+    [handleOnChange, number],
   );
 
   const debouncedOnChange = React.useMemo(() => {
@@ -87,7 +101,7 @@ function PlayerNumberSlider({
     }, 300);
   }, [doUpdate]);
 
-  return notFound ? (
+  return number == null ? (
     <UncompleteCompMessage
       message={somethingIsUndefined('Number')}
       pageId={pageId}
@@ -99,7 +113,7 @@ function PlayerNumberSlider({
       className={className}
       style={style}
       id={id}
-      value={instance?.getValue()}
+      value={value}
       onChange={(v, i) => {
         if (i === 'DragEnd') {
           doUpdate(v);
@@ -107,8 +121,16 @@ function PlayerNumberSlider({
           debouncedOnChange(v);
         }
       }}
-      min={descriptor?.getMinValue() != null ? descriptor.getMinValue()! : -100}
-      max={descriptor?.getMaxValue() != null ? descriptor.getMaxValue()! : 100}
+      min={
+        entityIs(number, 'NumberDescriptor')
+          ? (number as SNumberDescriptor).getMinValue() ?? -100
+          : (number as NumberSliderNumber).min
+      }
+      max={
+        entityIs(number, 'NumberDescriptor')
+          ? (number as SNumberDescriptor).getMaxValue() ?? 100
+          : (number as NumberSliderNumber).max
+      }
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
     />
@@ -127,7 +149,10 @@ registerComponent(
       script: schemaProps.scriptVariable({
         label: 'Variable',
         required: true,
-        returnType: ['SNumberDescriptor'],
+        returnType: [
+          'SNumberDescriptor',
+          '{value:number; min:number; max:number}',
+        ],
       }),
       steps: schemaProps.number({ label: 'Steps' }),
       displayValues: schemaProps.select({
