@@ -1,3 +1,4 @@
+import { fileURL } from '../API/files.api';
 import { werror } from './wegaslog';
 
 // detect youtube url
@@ -108,4 +109,36 @@ export default function sanitize(html: string): string {
     }
   }
   return '';
+}
+
+/**
+ * Replace data-file attribute with complete href and src
+ * @param {string} content
+ */
+ export function toFullUrl(content?: string) {
+  let updated = content || '';
+  if (updated) {
+      updated = updated.replace(
+          new RegExp('data-file="([^"]*)"', 'gi'),
+          `src="${fileURL('')}$1"
+           href="${fileURL('')}$1"`,
+      ); // @hack Place both href and src so it
+      // will work for both <a> and <img>
+      // elements
+  }
+  return updated;
+}
+
+/**
+* Replace href/src with injector style data-file attribute
+* @param {string} content
+*/
+export function toInjectorStyle(content: string) {
+  
+  return content
+      .replace(
+          new RegExp('((src|href)="[^"]*/rest/GameModel/[^"]*/File/read([^"]*)")', 'gi'),
+          'data-file="$3"',
+      ) // Replace absolute path with injector style path
+  
 }

@@ -3,7 +3,7 @@ import { ITranslatableContent } from 'wegas-ts-api';
 import { halfOpacity } from '../../css/classes';
 import { useTranslate } from '../../Editor/Components/FormView/translatable';
 import { classNameOrEmpty, classOrNothing } from '../../Helper/className';
-import sanitize from '../../Helper/sanitize';
+import sanitize, { toFullUrl } from '../../Helper/sanitize';
 
 interface TextProps extends ClassStyleId {
   text?: string;
@@ -19,7 +19,7 @@ export function HTMLText({ text, style, className, id, disabled }: TextProps) {
       }
       style={style}
       dangerouslySetInnerHTML={{
-        __html: sanitize(text || ''),
+        __html: sanitize(toFullUrl(text)),
       }}
     />
   );

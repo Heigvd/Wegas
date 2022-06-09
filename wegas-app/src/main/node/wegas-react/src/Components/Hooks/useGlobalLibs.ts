@@ -262,7 +262,7 @@ export function useGlobalLibs() {
         declare const Schemas : SchemaClass;
 
         type GlobalClasses =
-        ${classes.length === 0 ? 'never' : classes.join('\n| ')};
+        ${Object.keys(classes).length === 0 ? 'never' : Object.keys(classes).join('\n| ')};
         interface ClassesClass extends GlobalClassesClass{
           removeClass: (className: GlobalClasses) => void;
         }

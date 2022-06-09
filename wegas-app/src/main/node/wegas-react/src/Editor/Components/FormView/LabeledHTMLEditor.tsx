@@ -1,6 +1,7 @@
 import { css, cx } from '@emotion/css';
 import { WidgetProps } from 'jsoninput/typings/types';
 import * as React from 'react';
+// import HTMLEditor from '../../../Components/HTML/HTMLEditor';
 import HTMLEditor from '../../../Components/HTML/HTMLEditor';
 import { defaultMarginTop, flex, flexColumn } from '../../../css/classes';
 import { CommonView, CommonViewContainer } from './commonView';
@@ -52,7 +53,8 @@ export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
                 onChange={this.props.onChange}
                 className={labeledHTMLEditorStyle}
                 id={inputId}
-                noResize={this.props.view.noResize}
+                toolbarLayout='full'
+                // noResize={this.props.view.noResize}
               />
             </div>
           )}
