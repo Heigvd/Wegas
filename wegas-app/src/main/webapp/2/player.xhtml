@@ -46,6 +46,7 @@
   <h:body style="height: 100%; margin: 0">
     <div id="root" />
     <script type="application/javascript">
+      var WEGAS_SAFE_MODE = #{requestController.safeMode};
       var API_ENDPOINT = "#{request.contextPath}" + "/rest/";
       var API_VIEW = "Public";
       var APP_CONTEXT = "Player";

@@ -45,9 +45,6 @@ public class EditorGameController extends AbstractGameController {
     @Inject @HttpParam
     private Long teamId;
 
-    @Inject @HttpParam
-    private Boolean safeMode;
-
     /**
      *
      */
@@ -169,12 +166,4 @@ public class EditorGameController extends AbstractGameController {
     public void setGameModelId(Long gameModelId) {
         this.gameModelId = gameModelId;
     }
-
-	public Boolean getSafeMode() {
-		return safeMode;
-	}
-
-	public void setSafeMode(Boolean safeMode) {
-		this.safeMode = safeMode;
-	}
 }
