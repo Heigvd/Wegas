@@ -19,7 +19,11 @@ import {
   DndLinearLayout,
   LinearLayoutComponents,
 } from './LinearTabLayout/LinearLayout';
-import { PageContextProvider } from './Page/PageEditor';
+import {
+  defaultPageCTX,
+  PageContextProvider,
+  pageCTX,
+} from './Page/PageEditor';
 import { fullScreenLoaderStyle, PageLoader } from './Page/PageLoader';
 
 const StateMachineEditor = React.lazy(
@@ -166,16 +170,19 @@ export default function Layout() {
   const scenaristPages = useStore(scenaristPagesSelector).map(
     ({ name, id }) => ({
       tabId: name,
-      content: <PageLoader selectedPageId={id} />,
+      content: (
+        <pageCTX.Provider value={defaultPageCTX}>
+          <PageLoader selectedPageId={id} />
+        </pageCTX.Provider>
+      ),
     }),
   );
 
-  const peerReviews = useStore((s) => {
-     return Object.values(s.variableDescriptors).filter(descriptor =>
+  const peerReviews = useStore(s => {
+    return Object.values(s.variableDescriptors).filter(descriptor =>
       entityIs(descriptor, 'PeerReviewDescriptor'),
     ) as IPeerReviewDescriptor[];
   });
-
 
   const peerReviewTabs = peerReviews.map<TabLayoutComponent>(peerReview => ({
     tabId: `Peer review ${translate(peerReview?.label, lang)}`,
@@ -187,7 +194,11 @@ export default function Layout() {
     return role == null || role.availableTabs;
   });
 
-  const layoutPages = [...availableLayoutTabs, ...scenaristPages, ...peerReviewTabs].filter(
+  const layoutPages = [
+    ...availableLayoutTabs,
+    ...scenaristPages,
+    ...peerReviewTabs,
+  ].filter(
     ({ tabId }) => allowedPages === true || allowedPages.includes(tabId),
   );
 
