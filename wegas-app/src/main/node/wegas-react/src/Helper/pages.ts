@@ -1,7 +1,4 @@
-import { css } from '@emotion/css';
 import { cloneDeep } from 'lodash-es';
-import { IScript } from 'wegas-ts-api';
-import { themeVar } from '../Components/Theme/ThemeVars';
 
 export function isPageItem(
   pageItemIndex?: PageIndexItem,
@@ -98,24 +95,27 @@ export function getPageIndexItem(
 
 export function pageItemsToTreeItem(
   pageItems: PageIndexItem[],
-  itemClassName?: (item: PageIndexItem) => string | undefined,
+  // itemClassName?: (item: PageIndexItem) => string | undefined,
 ): Item<PageIndexItem>[] {
   return pageItems.map(i => ({
     label: i.name,
     selectable: isPageItem(i),
     value: i,
     items: isFolderItem(i)
-      ? pageItemsToTreeItem(i.items, itemClassName)
+      ? pageItemsToTreeItem(i.items /*, itemClassName */)
       : undefined,
-    className: itemClassName && itemClassName(i),
+    // className: itemClassName && itemClassName(i),
   }));
 }
 
 export function indexToTree(index: PageIndex): Item<PageIndexItem>[] {
-  return pageItemsToTreeItem(index.root.items, item =>
+  return pageItemsToTreeItem(
+    index.root.items,
+    /*, item =>
     isPageItem(item) && item.id === index.defaultPageId
       ? css({ color: themeVar.colors.SuccessColor })
       : undefined,
+      */
   );
 }
 
@@ -162,7 +162,7 @@ export const PAGE_LOADER_COMPONENT_TYPE = 'PageLoader';
 
 export interface PageLoaderComponentProps {
   name?: string;
-  initialSelectedPageId: IScript;
+  initialSelectedPageId: string;
   loadTimer?: number;
 }
 
