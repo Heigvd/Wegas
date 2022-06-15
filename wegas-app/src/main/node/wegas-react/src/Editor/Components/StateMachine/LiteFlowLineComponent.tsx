@@ -7,6 +7,7 @@ import {
   IFSMDescriptor,
 } from 'wegas-ts-api';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { EmptyMessage } from '../../../Components/EmptyMessage';
 import {
   CustomFlowLineComponent,
   FlowLineComponentProps,
@@ -22,6 +23,7 @@ import { Validate } from '../../../Components/Inputs/Validate';
 import { HTMLText } from '../../../Components/Outputs/HTMLText';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { block, expandWidth, textCenter } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
 import { createTranslatableContent, translate } from '../../../data/i18n';
@@ -157,7 +159,7 @@ export function LiteFlowLineComponentFactory<
                   <HTMLEditor
                     value={value}
                     onChange={onChange}
-                    toolbarLayout='player'
+                    toolbarLayout="player"
                     // customToolbar="bold italic underline bullist fontsizeselect"
                   />
                 )}
@@ -177,7 +179,13 @@ export function LiteFlowLineComponentFactory<
               onClick={e => onClick && onClick(e, startProcess, flowline)}
             >
               <div className="StateLabelTextStyle">
-                <HTMLText text={textValue || 'Empty'} />
+                {textValue ? (
+                  <HTMLText text={textValue} />
+                ) : (
+                  <EmptyMessage
+                    className={cx(expandWidth, textCenter, block)}
+                  />
+                )}
               </div>
             </div>
           )}

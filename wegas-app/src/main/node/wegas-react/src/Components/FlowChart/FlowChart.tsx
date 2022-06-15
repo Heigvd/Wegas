@@ -265,7 +265,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
       }
     },
     canDrop: (_item, mon) => {
-      return mon.isOver({ shallow: true });
+      return mon.isOver({ shallow: false });
     },
     drop: ({ processes, flowline, backward }, mon) => {
       setTempFlow(undefined);
@@ -419,8 +419,8 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
         <Toolbar.Content
           style={{ position: 'relative' }}
           ref={ref => {
-            drop(ref);
             if (ref != null) {
+              drop(ref);
               container.current = ref;
               // mo.observe(ref);
             }

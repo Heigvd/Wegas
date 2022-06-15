@@ -1,10 +1,10 @@
-import * as React from 'react';
 import { css } from '@emotion/css';
-import { themeVar } from '../Theme/ThemeVars';
+import * as React from 'react';
 import { useDrag } from 'react-dnd';
-import { FlowLine, Process, Processes } from './FlowChart';
-import { XYPosition } from '../Hooks/useMouseEventDnd';
 import { classNameOrEmpty } from '../../Helper/className';
+import { XYPosition } from '../Hooks/useMouseEventDnd';
+import { themeVar } from '../Theme/ThemeVars';
+import { FlowLine, Process, Processes } from './FlowChart';
 
 export const PROCESS_HANDLE_DND_TYPE = 'DND_PROCESS_HANDLE';
 
@@ -63,7 +63,7 @@ export const FLOW_HANDLE_SIDE = 30;
 const flowHandleStyle = (selected: boolean) =>
   css({
     position: 'absolute',
-    zIndex: selected ? 1000 : 1,
+    zIndex: selected ? 1000 : 'initial',
     width: `${FLOW_HANDLE_SIDE}px`,
     height: `${FLOW_HANDLE_SIDE}px`,
     borderRadius: `${FLOW_HANDLE_SIDE / 2}px`,

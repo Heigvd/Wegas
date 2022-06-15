@@ -88,6 +88,7 @@ export const stateBoxButtonStyle = {
   height: '30px',
   justifyContent: 'center',
   alignItems: 'center',
+  cursor: 'pointer',
   '&:hover': {
     color: themeVar.colors.PrimaryColorShade,
   },
@@ -102,6 +103,7 @@ export const editHandle = css({
   borderRadius: '5px 5px 0 0',
   padding: '3px',
   border: '2px solid ' + themeVar.colors.PrimaryColor,
+  cursor: 'initial',
 });
 
 const handleForTransition = css({
