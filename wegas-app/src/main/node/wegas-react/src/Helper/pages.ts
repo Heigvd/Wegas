@@ -95,7 +95,6 @@ export function getPageIndexItem(
 
 export function pageItemsToTreeItem(
   pageItems: PageIndexItem[],
-  // itemClassName?: (item: PageIndexItem) => string | undefined,
 ): Item<PageIndexItem>[] {
   return pageItems.map(i => ({
     label: i.name,
@@ -104,19 +103,11 @@ export function pageItemsToTreeItem(
     items: isFolderItem(i)
       ? pageItemsToTreeItem(i.items /*, itemClassName */)
       : undefined,
-    // className: itemClassName && itemClassName(i),
   }));
 }
 
 export function indexToTree(index: PageIndex): Item<PageIndexItem>[] {
-  return pageItemsToTreeItem(
-    index.root.items,
-    /*, item =>
-    isPageItem(item) && item.id === index.defaultPageId
-      ? css({ color: themeVar.colors.SuccessColor })
-      : undefined,
-      */
-  );
+  return pageItemsToTreeItem(index.root.items);
 }
 
 export function visitComponents(

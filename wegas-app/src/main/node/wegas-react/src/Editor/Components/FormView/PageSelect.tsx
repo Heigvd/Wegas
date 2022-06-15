@@ -29,18 +29,11 @@ export default function PageSelect({
   view,
   errorMessage,
 }: PageSelectProps) {
-  //const [pageValue, setPageValue] = React.useState<string>();
   const index = useStore(pageIndexSelector);
-  //const pageId = useScript<string>(pageValue);
-
-  // React.useEffect(() => {
-  //   setPageValue(value);
-  // }, [value]);
 
   const onPageChange = React.useCallback(
     (value?: string) => {
       if (value != null) {
-        // setPageValue(value);
         onChange(value);
       }
     },
