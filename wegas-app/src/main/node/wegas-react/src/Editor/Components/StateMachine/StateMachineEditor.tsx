@@ -56,6 +56,10 @@ import { LiteStateProcessComponentFactory } from './LiteProcessComponent';
 import { StateMachineLegend } from './StateMachineLegend';
 
 const emptyPath: (string | number)[] = [];
+const defaultProcessInitialSize = {
+  width: 200,
+  height: 66,
+};
 
 export interface TransitionFlowLine extends FlowLine {
   transition: ITransition | IDialogueTransition;
@@ -441,6 +445,7 @@ export function StateMachineEditor<
       isProcessSelected={isProcessSelected}
       Process={Process}
       Flowline={Flowline}
+      processInitialSize={defaultProcessInitialSize}
       {...options}
     />
   );

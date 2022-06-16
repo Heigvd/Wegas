@@ -21,6 +21,11 @@ import {
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
 
+const defaultProcessInitialSize = {
+  width: 100,
+  height: 50,
+};
+
 interface PlayerFlowChartProps<
   F extends LabeledFlowLine,
   P extends LabeledProcess<F>,
@@ -78,6 +83,7 @@ export default function PlayerFlowChart<
       id={id}
       Flowline={LabeledFlowLineComponent}
       Process={PlayerFlowChartProcessComponent}
+      processInitialSize={defaultProcessInitialSize}
       disabled={editMode || options.disabled || options.locked}
       readOnly={options.readOnly}
     />
