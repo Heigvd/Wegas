@@ -266,7 +266,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
       }
     },
     canDrop: (_item, mon) => {
-      return mon.isOver({ shallow: false });
+      return mon.isOver({ shallow: true });
     },
     drop: ({ processes, flowline, backward }, mon) => {
       setTempFlow(undefined);
