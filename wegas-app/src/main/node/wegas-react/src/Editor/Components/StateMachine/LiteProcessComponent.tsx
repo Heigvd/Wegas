@@ -73,19 +73,33 @@ export function LiteStateProcessComponentFactory<
 
     const onEdit = React.useCallback(
       (e: ModifierKeysEvent) => {
-        if (!entityIs(process.state, 'State')) {
-          setEditing(true);
-        } else {
-          onClick && onClick(e, process);
+        if (
+          isActionAllowed({
+            disabled: disabled,
+            readOnly: readOnly,
+          })
+        ) {
+          if (!entityIs(process.state, 'State')) {
+            setEditing(true);
+          } else {
+            onClick && onClick(e, process);
+          }
         }
       },
-      [onClick, process],
+      [disabled, onClick, process, readOnly],
     );
 
     const onTrash = React.useCallback(() => {
-      dispatch(deleteState(stateMachine, Number(process.id)));
-      setEditing(false);
-    }, [process.id]);
+      if (
+        isActionAllowed({
+          disabled: disabled,
+          readOnly: readOnly,
+        })
+      ) {
+        dispatch(deleteState(stateMachine, Number(process.id)));
+        setEditing(false);
+      }
+    }, [disabled, process.id, readOnly]);
 
     const onValidate = React.useCallback(
       (value: string) => {

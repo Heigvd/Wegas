@@ -46,7 +46,6 @@ import {
 import { store, useStore } from '../../../data/Stores/store';
 import { lastKeyboardEvents } from '../../../Helper/keyboardEvents';
 import { createScript } from '../../../Helper/wegasEntites';
-import { wlog } from '../../../Helper/wegaslog';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { mainLayoutId } from '../../layouts';
@@ -96,12 +95,8 @@ export function StateMachineEditor<
   lite,
   ...options
 }: StateMachineEditorProps<IFSM>) {
-  wlog('blup');
-
   type TState = IFSM['states'][0];
   type TTransition = TState['transitions'][0];
-
-  // const computedForceLocalDispatch = !lite && forceLocalDispatch;
 
   const { lang } = React.useContext(languagesCTX);
   const onEditionChanges = useOnEditionChangesModal(
@@ -533,6 +528,7 @@ export function ConnectedStateMachineEditor({
           stateMachineInstance={editingState.instance}
           search={search}
           editPath={editingState.editPath}
+          lite={true}
           {...options}
         />
       </div>

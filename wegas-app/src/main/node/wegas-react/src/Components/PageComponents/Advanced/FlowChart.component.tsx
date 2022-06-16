@@ -1,24 +1,25 @@
 import * as React from 'react';
-import {
-  pageComponentFactory,
-  registerComponent,
-} from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
-import { WegasComponentProps } from '../tools/EditableComponent';
-import { useScript } from '../../Hooks/useScript';
 import { IScript } from 'wegas-ts-api';
+import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { FlowChart, FlowChartProps } from '../../FlowChart/FlowChart';
-import {
-  OnVariableChange,
-  onVariableChangeSchema,
-  useOnVariableChange,
-} from '../Inputs/tools';
 import {
   LabeledFlowLine,
   LabeledFlowLineComponent,
   LabeledProcess,
   PlayerFlowChartProcessComponent,
 } from '../../FlowChart/PlayerFlowChartComponents';
+import { useScript } from '../../Hooks/useScript';
+import {
+  OnVariableChange,
+  onVariableChangeSchema,
+  useOnVariableChange,
+} from '../Inputs/tools';
+import {
+  pageComponentFactory,
+  registerComponent,
+} from '../tools/componentFactory';
+import { WegasComponentProps } from '../tools/EditableComponent';
+import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerFlowChartProps<
   F extends LabeledFlowLine,
@@ -47,6 +48,7 @@ export default function PlayerFlowChart<
   id,
   options,
 }: PlayerFlowChartProps<F, P>) {
+  const { editMode } = React.useContext(pageCTX);
   const titleText = useScript<string>(title, context);
   const scriptProcesses = useScript<LabeledProcess<F>[]>(processes);
 
@@ -76,7 +78,7 @@ export default function PlayerFlowChart<
       id={id}
       Flowline={LabeledFlowLineComponent}
       Process={PlayerFlowChartProcessComponent}
-      disabled={options.disabled || options.locked}
+      disabled={editMode || options.disabled || options.locked}
       readOnly={options.readOnly}
     />
   );

@@ -2,6 +2,7 @@ import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { useDrag } from 'react-dnd';
 import { IAbstractState, IFSMDescriptor } from 'wegas-ts-api';
+import { block, expandWidth, textCenter } from '../../css/classes';
 import { entityIs } from '../../data/entities';
 import { translate } from '../../data/i18n';
 import { instantiate } from '../../data/scriptable';
@@ -12,6 +13,7 @@ import {
 } from '../../Editor/Components/StateMachine/StateMachineEditor';
 import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
+import { EmptyMessage } from '../EmptyMessage';
 import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { themeVar } from '../Theme/ThemeVars';
@@ -209,7 +211,9 @@ export function StateBox({
 }: StateBoxProps) {
   const [isShown, setIsShown] = React.useState(false);
   const { lang } = React.useContext(languagesCTX);
-
+  const textValue = entityIs(state.state, 'State')
+    ? state.state.label
+    : translate(state.state.text, lang);
   return (
     <div
       style={state.style}
@@ -235,13 +239,11 @@ export function StateBox({
           <p>{state.id}</p>
         </div>
         <div className="StateLabelTextStyle">
-          <HTMLText
-            text={
-              (entityIs(state.state, 'State')
-                ? state.state.label
-                : translate(state.state.text, lang)) || 'Empty'
-            }
-          />
+          {textValue ? (
+            <HTMLText text={textValue} />
+          ) : (
+            <EmptyMessage className={cx(expandWidth, textCenter, block)} />
+          )}
         </div>
         {isActionAllowed({ readOnly, disabled }) && (
           <StateProcessHandle sourceProcess={state} />

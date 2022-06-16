@@ -109,25 +109,39 @@ export function LiteFlowLineComponentFactory<
 
     const onEdit = React.useCallback(
       (e: ModifierKeysEvent) => {
-        if (!entityIs(startProcess.state, 'State')) {
-          setEditing(true);
-        } else {
-          onClick && onClick(e, startProcess, flowline);
+        if (
+          isActionAllowed({
+            disabled: disabled,
+            readOnly: readOnly,
+          })
+        ) {
+          if (!entityIs(startProcess.state, 'State')) {
+            setEditing(true);
+          } else {
+            onClick && onClick(e, startProcess, flowline);
+          }
         }
       },
-      [flowline, onClick, startProcess],
+      [disabled, flowline, onClick, readOnly, startProcess],
     );
 
     const onTrash = React.useCallback(() => {
-      editingStore.dispatch(
-        deleteTransition(
-          stateMachine,
-          Number(startProcess.id),
-          Number(flowline.id),
-        ),
-      );
-      setEditing(false);
-    }, [flowline.id, startProcess.id]);
+      if (
+        isActionAllowed({
+          disabled: disabled,
+          readOnly: readOnly,
+        })
+      ) {
+        editingStore.dispatch(
+          deleteTransition(
+            stateMachine,
+            Number(startProcess.id),
+            Number(flowline.id),
+          ),
+        );
+        setEditing(false);
+      }
+    }, [disabled, flowline.id, readOnly, startProcess.id]);
 
     return (
       <CustomFlowLineComponent
