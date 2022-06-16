@@ -280,6 +280,7 @@ export function StateProcessHandle<F extends FlowLine, P extends Process<F>>({
   sourceProcess,
 }: ProcessHandleProps<F, P>) {
   const [, drag] = useDrag<DnDFlowchartHandle<F, P>, unknown, unknown>({
+    type: PROCESS_HANDLE_DND_TYPE,
     item: {
       type: PROCESS_HANDLE_DND_TYPE,
       processes: { sourceProcess },

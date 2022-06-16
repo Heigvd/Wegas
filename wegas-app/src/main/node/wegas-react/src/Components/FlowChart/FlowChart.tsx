@@ -6,6 +6,7 @@ import {
   expandBoth,
   flex,
   flexRow,
+  relative,
 } from '../../css/classes';
 import { classNameOrEmpty } from '../../Helper/className';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
@@ -417,14 +418,13 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
           />
         </Toolbar.Header>
         <Toolbar.Content
-          style={{ position: 'relative' }}
           ref={ref => {
             if (ref != null) {
               drop(ref);
               container.current = ref;
-              // mo.observe(ref);
             }
           }}
+          className={relative}
         >
           <svg
             style={{
