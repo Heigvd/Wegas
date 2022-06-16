@@ -1,5 +1,7 @@
+import { isEqual } from 'lodash';
 import * as React from 'react';
 import { ActionCreator } from '../../../data/actions';
+import { entityIs } from '../../../data/entities';
 import { State } from '../../../data/Reducer/reducers';
 import { store, useStore } from '../../../data/Stores/store';
 import {
@@ -21,13 +23,20 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import { classStyleIdShema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
-type PlayerPageLoaderProps = WegasComponentProps & PageLoaderComponentProps;
+interface PlayerPageLoaderProps
+  extends WegasComponentProps,
+    Omit<PageLoaderComponentProps, 'initialSelectedPageId'> {
+  initialSelectedPageId: string | IScript;
+}
 
 const defaultPageAsScript = () =>
-  createScript(JSON.stringify(store.getState().pages.index.defaultPageId));
+  createScript(
+    JSON.stringify(store.getState().pages.index.defaultPageId),
+    'TypeScript',
+  );
 
 function PlayerPageLoader({
-  initialSelectedPageId = defaultPageAsScript(),
+  initialSelectedPageId,
   name,
   context = {},
   className,
@@ -36,6 +45,8 @@ function PlayerPageLoader({
   loadTimer,
   options,
 }: PlayerPageLoaderProps) {
+  const { pageIdPath } = React.useContext(pageCTX);
+
   const pageScriptSelector = React.useCallback(
     (s: State) => {
       if (name != null) {
@@ -46,16 +57,32 @@ function PlayerPageLoader({
   );
   let pageScript = useStore(pageScriptSelector);
 
-  const { pageIdPath } = React.useContext(pageCTX);
-  if (name != null && !pageScript) {
+  const initialSelectedPageIdScript = entityIs(initialSelectedPageId, 'Script')
+    ? initialSelectedPageId
+    : createScript(JSON.stringify(initialSelectedPageId), 'TypeScript');
+
+  const initialSelectedPageIdScriptRef = React.useRef(
+    initialSelectedPageIdScript,
+  );
+
+  if (
+    name != null &&
+    (!pageScript ||
+      !isEqual(
+        initialSelectedPageIdScript,
+        initialSelectedPageIdScriptRef.current,
+      ))
+  ) {
+    initialSelectedPageIdScriptRef.current = initialSelectedPageIdScript;
     store.dispatch(
       ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
         name,
-        pageId: initialSelectedPageId,
+        pageId: initialSelectedPageIdScript,
       }),
     );
-    pageScript = initialSelectedPageId;
+    pageScript = initialSelectedPageIdScript;
   }
+
   const pageId = (useScript(pageScript, context) as string | undefined) || '';
 
   return pageIdPath.includes(pageId) ? (
@@ -92,7 +119,18 @@ registerComponent(
     icon: 'window-maximize',
     illustration: 'pageLoader',
     schema: {
-      initialSelectedPageId: schemaProps.pageSelect({ label: 'Page' }),
+      initialSelectedPageId: {
+        type: ['object', 'string'],
+        view: {
+          type: 'scriptable',
+          label: 'Choices',
+          scriptProps: {
+            language: 'TypeScript',
+            returnType: ['string'],
+          },
+          literalSchema: schemaProps.pageSelect({ label: 'Page' }),
+        },
+      },
       loadTimer: schemaProps.number({ label: 'Loading timer (ms)' }),
       ...classStyleIdShema,
     },

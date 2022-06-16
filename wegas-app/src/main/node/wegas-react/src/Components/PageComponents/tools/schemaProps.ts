@@ -421,7 +421,7 @@ const simpleSchemaProps = {
   }: CommonSchemaProps): SchemaFromView<'pageselect'> => {
     return {
       required,
-      type: 'object',
+      type: 'string',
       index,
       visible,
       view: {
