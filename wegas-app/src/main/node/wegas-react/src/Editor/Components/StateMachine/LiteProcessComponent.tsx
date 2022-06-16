@@ -3,6 +3,7 @@ import produce, { Immutable } from 'immer';
 import * as React from 'react';
 import { IDialogueDescriptor, IFSMDescriptor } from 'wegas-ts-api';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { EmptyMessage } from '../../../Components/EmptyMessage';
 import {
   CustomProcessComponent,
   ProcessComponentProps,
@@ -24,6 +25,7 @@ import { Validate } from '../../../Components/Inputs/Validate';
 import { HTMLText } from '../../../Components/Outputs/HTMLText';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { block, expandWidth, textCenter } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
 import { createTranslatableContent, translate } from '../../../data/i18n';
@@ -71,19 +73,33 @@ export function LiteStateProcessComponentFactory<
 
     const onEdit = React.useCallback(
       (e: ModifierKeysEvent) => {
-        if (!entityIs(process.state, 'State')) {
-          setEditing(true);
-        } else {
-          onClick && onClick(e, process);
+        if (
+          isActionAllowed({
+            disabled: disabled,
+            readOnly: readOnly,
+          })
+        ) {
+          if (!entityIs(process.state, 'State')) {
+            setEditing(true);
+          } else {
+            onClick && onClick(e, process);
+          }
         }
       },
-      [onClick, process],
+      [disabled, onClick, process, readOnly],
     );
 
     const onTrash = React.useCallback(() => {
-      dispatch(deleteState(stateMachine, Number(process.id)));
-      setEditing(false);
-    }, [process.id]);
+      if (
+        isActionAllowed({
+          disabled: disabled,
+          readOnly: readOnly,
+        })
+      ) {
+        dispatch(deleteState(stateMachine, Number(process.id)));
+        setEditing(false);
+      }
+    }, [disabled, process.id, readOnly]);
 
     const onValidate = React.useCallback(
       (value: string) => {
@@ -146,7 +162,7 @@ export function LiteStateProcessComponentFactory<
                   <HTMLEditor
                     value={value}
                     onChange={onChange}
-                    toolbarLayout='player'
+                    toolbarLayout="player"
                     // customToolbar="bold italic underline bullist fontsizeselect"
                   />
                 )}
@@ -164,7 +180,13 @@ export function LiteStateProcessComponentFactory<
               onMouseLeave={() => !disabled && setIsShown(false)}
             >
               <div className="StateLabelTextStyle">
-                <HTMLText text={textValue || 'Empty'} />
+                {textValue ? (
+                  <HTMLText text={textValue} />
+                ) : (
+                  <EmptyMessage
+                    className={cx(expandWidth, textCenter, block)}
+                  />
+                )}
               </div>
               {isActionAllowed({ readOnly, disabled }) && (
                 <StateProcessHandle sourceProcess={process} />

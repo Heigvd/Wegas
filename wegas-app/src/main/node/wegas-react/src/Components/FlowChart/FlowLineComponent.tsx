@@ -14,9 +14,9 @@ import {
 const childrenContainerStyle = (selected: boolean) =>
   css({
     position: 'absolute',
-    zIndex: selected ? 1000 : 2,
+    zIndex: selected ? 1000 : 'initial',
     ':hover': {
-      zIndex: selected ? 1000 : 10,
+      zIndex: selected ? 1000 : 'initial',
     },
   });
 

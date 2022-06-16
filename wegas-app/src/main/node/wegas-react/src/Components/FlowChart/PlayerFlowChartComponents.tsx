@@ -116,7 +116,10 @@ function PlayerFlowChartProcessBox<
           <HTMLText text={process.label} />
         </div>
       </div>
-      <StateProcessHandle sourceProcess={process} />
+      {isActionAllowed({
+        disabled: disabled,
+        readOnly: readOnly,
+      }) && <StateProcessHandle sourceProcess={process} />}
     </div>
   );
 }
