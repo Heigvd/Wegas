@@ -1,4 +1,5 @@
 import { cloneDeep } from 'lodash-es';
+import * as React from 'react';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import {
   actionsChoices,
@@ -15,6 +16,21 @@ import { wegasComponentCommonSchema } from '../Page/ComponentProperties';
  */
 export function useJSONSchema() {
   const components = usePageComponentStore(s => s);
+
+  const pageStoreRef = React.useRef(components);
+
+  const resultRef = React.useRef<unknown>(undefined);
+
+  if (components === pageStoreRef.current && resultRef.current != null) {
+    // As this funciton is quite slow (deepClone of big objects), mitigates recomputation
+    //
+    // page store did not change && and result has already been computed
+    // return saved value
+    return resultRef.current;
+  }
+
+  pageStoreRef.current = components;
+
   const childrenLayoutOptionSchema = Object.values(components)
     .filter(component => component.container?.childrenLayoutOptionSchema)
     .reduce((o, c) => [...o, ...c.container!.childrenLayoutOptionSchema!], []);
@@ -47,10 +63,10 @@ export function useJSONSchema() {
       ...hashListChoicesToSchema(decorationsChoices),
     };
 
-    const requiredProperties = Object.entries(properties).reduce(
-      (o, [type, component]) => (component.required ? [...o, type] : o),
-      [],
-    );
+    //  extract name of required properties
+    const requiredProperties = Object.entries(properties)
+      .filter(([, comp]) => comp.required)
+      .map(([type]) => type);
 
     return {
       type: 'object',
@@ -80,7 +96,7 @@ export function useJSONSchema() {
     };
   });
 
-  return {
+  const result = {
     oneOf: componentSchemas.filter(component => component.isContainer),
     definitions: {
       ___self: {
@@ -111,4 +127,7 @@ export function useJSONSchema() {
       },
     },
   };
+
+  resultRef.current = result;
+  return result;
 }
