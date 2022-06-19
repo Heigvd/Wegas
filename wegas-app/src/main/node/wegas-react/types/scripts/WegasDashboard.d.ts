@@ -1,4 +1,5 @@
 type STeam = import('wegas-ts-api').STeam;
+type SVariableInstance = import('wegas-ts-api').SVariableInstance;
 
 interface WegasDashboardConfig {
   dashboard?: string;
@@ -8,7 +9,7 @@ interface WegasDashboardConfig {
 
 type ValueKind = 'number' | 'string' | 'text' | 'boolean' | 'object' | 'inbox';
 
-interface WegasDashboardVariableConfig<T = null> extends WegasDashboardConfig {
+interface WegasDashboardVariableConfig<T extends SVariableInstance = SVariableInstance> extends WegasDashboardConfig {
   id?: string;
   kind?: ValueKind;
   formatter?: (variable: T) => string | { component: string; props: {} };
@@ -17,9 +18,16 @@ interface WegasDashboardVariableConfig<T = null> extends WegasDashboardConfig {
   sortable?: boolean;
   preventClick?: boolean;
   sortFn?: (variableA: T, variableB: T) => number;
-  mapFn?: (variable: T) => unknown;
-  mapFnExtraArgs?: unknown[];
+  mapFn?: (teamId: number, instance: T, ...extraArgs: SVariableInstance[]) => unknown;
+  mapFnExtraArgs?: string[];
 }
+
+type WegasDashboardRegisterVariable = (
+  id: string,
+  config?: WegasDashboardVariableConfig,
+) => void;
+
+
 
 interface WegasDashboardActionConfig extends WegasDashboardConfig {
   icon?: string;
@@ -55,3 +63,9 @@ type WegasDashboardRegisterQuest = (
     react: true
   }
 ) => void;
+
+declare const WegasDashboard : {
+  registerAction: WegasDashboardRegisterAction;
+  registerQuest: WegasDashboardRegisterQuest;
+  registerVariable: WegasDashboardRegisterVariable;
+};
