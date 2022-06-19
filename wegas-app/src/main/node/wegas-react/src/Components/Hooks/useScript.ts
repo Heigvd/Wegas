@@ -1,4 +1,4 @@
-import { cloneDeep, isEqual, uniq } from 'lodash-es';
+import { cloneDeep, isEqual, uniq, escapeRegExp } from 'lodash-es';
 import * as React from 'react';
 import { transpile } from 'typescript';
 import {
@@ -457,6 +457,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.Helpers = {
     cloneDeep: cloneDeep,
     uniq: uniq,
+    escapeRegExp: escapeRegExp,
     useRef,
     getState: getPageState,
     getLogger: getLogger,
