@@ -1,6 +1,7 @@
 /* global module*/
 import * as React from 'react';
 import { render } from 'react-dom';
+import { AuthorizationProvider } from './Components/Contexts/AuthorizationsProvider';
 import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { DefaultDndProvider } from './Components/Contexts/DefaultDndProvider';
 import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
@@ -20,27 +21,29 @@ importPageComponents();
 
 function mount() {
   render(
-    <FeaturesProvider>
-      <FullscreenProvider>
-        <ServerStatusManager>
-          <LanguagesProvider>
-            <ClassesProvider>
-              <LibrariesLoader>
-                <ThemeProvider contextName="trainer">
-                  <PopupManager>
-                    <DefaultDndProvider>
-                      <PageContextProvider>
-                        <HostLayout />
-                      </PageContextProvider>
-                    </DefaultDndProvider>
-                  </PopupManager>
-                </ThemeProvider>
-              </LibrariesLoader>
-            </ClassesProvider>
-          </LanguagesProvider>
-        </ServerStatusManager>
-      </FullscreenProvider>
-    </FeaturesProvider>,
+    <AuthorizationProvider>
+      <FeaturesProvider>
+        <FullscreenProvider>
+          <ServerStatusManager>
+            <LanguagesProvider>
+              <ClassesProvider>
+                <LibrariesLoader>
+                  <ThemeProvider contextName="trainer">
+                    <PopupManager>
+                      <DefaultDndProvider>
+                        <PageContextProvider>
+                          <HostLayout />
+                        </PageContextProvider>
+                      </DefaultDndProvider>
+                    </PopupManager>
+                  </ThemeProvider>
+                </LibrariesLoader>
+              </ClassesProvider>
+            </LanguagesProvider>
+          </ServerStatusManager>
+        </FullscreenProvider>
+      </FeaturesProvider>
+    </AuthorizationProvider>,
     document.getElementById('root'),
   );
 }

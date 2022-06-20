@@ -57,9 +57,12 @@ export function TreeChildren<T = unknown>({
         display: 'flex',
         flexDirection: 'column',
       }}
-      className={classNameOrEmpty(className) + cx({
-        [dragDownStyle]: dragMargin,
-      })}
+      className={
+        classNameOrEmpty(className) +
+        cx({
+          [dragDownStyle]: dragMargin,
+        })
+      }
     >
       {children != null && childrenLength === 0 ? (
         <div
@@ -71,6 +74,7 @@ export function TreeChildren<T = unknown>({
       ) : (
         React.Children.map(children, (child, index) => (
           <passedPropsCTX.Provider
+            key={id + index}
             value={{
               parentData: data,
               parentId: id,

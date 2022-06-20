@@ -8,6 +8,8 @@ import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { wwarn } from '../../../Helper/wegaslog';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { useScript } from '../../Hooks/useScript';
 import { Choice, Selector } from '../../Selector';
@@ -49,6 +51,7 @@ function PlayerSelectInput({
   pageId,
   path,
 }: PlayerSelectInputProps) {
+  const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const descriptor = useScript<SStringDescriptor | SNumberDescriptor | string>(
     script,
     context,
@@ -70,7 +73,13 @@ function PlayerSelectInput({
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
   if (descriptor == null) {
-    return <UncompleteCompMessage pageId={pageId} path={path} />;
+    return (
+      <UncompleteCompMessage
+        message={somethingIsUndefined('String/Number')}
+        pageId={pageId}
+        path={path}
+      />
+    );
   }
   const choicesFromProp = entityIs(choices, 'Script')
     ? scriptedChoices
@@ -129,7 +138,8 @@ registerComponent(
   pageComponentFactory({
     component: PlayerSelectInput,
     componentType: 'Input',
-    name: 'Select input',
+    id: 'Select input',
+    name: 'Select',
     icon: 'list-ul',
     illustration: 'selectInput',
     schema: {

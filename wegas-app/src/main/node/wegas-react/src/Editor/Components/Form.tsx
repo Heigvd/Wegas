@@ -62,7 +62,7 @@ interface DefaultFormAction<T> {
 
 interface IconFormAction<T> extends DefaultFormAction<T> {
   type: 'IconAction';
-  label?: string;
+  label: string;
   confirm?: boolean;
   icon: Icon;
 }

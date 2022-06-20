@@ -5,6 +5,8 @@ import { Player } from '../../../data/selectors';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { useScript } from '../../Hooks/useScript';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Toggler } from '../../Inputs/Boolean/Toggler';
@@ -51,6 +53,7 @@ function PlayerBoolean({
   pageId,
   path,
 }: PlayerBooleanProps) {
+  const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const bool = useScript<SBooleanDescriptor | boolean>(script, context);
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
@@ -64,7 +67,11 @@ function PlayerBoolean({
   );
 
   return bool == null ? (
-    <UncompleteCompMessage pageId={pageId} path={path} />
+    <UncompleteCompMessage
+      message={somethingIsUndefined('Boolean')}
+      pageId={pageId}
+      path={path}
+    />
   ) : (
     <BooleanComponent
       className={className}
@@ -93,6 +100,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerBoolean,
     componentType: 'Input',
+    id: 'Boolean',
     name: 'Boolean',
     icon: 'check-square',
     illustration: 'boolean',

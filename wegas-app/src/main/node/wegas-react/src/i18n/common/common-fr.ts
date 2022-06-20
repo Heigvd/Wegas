@@ -33,10 +33,11 @@ export const commonTranslationsFR: CommonTranslations = {
   addVariable: 'Ajouter une variable',
   role: "Rôle de l'utilisateur",
   header: {
-    hide: 'Masquer l\'en-tête',
-    show: 'Affiche  l\'en-tête',
+    hide: "Masquer l'en-tête",
+    show: "Affiche  l'en-tête",
     restartGame: 'Recommencer le jeu (appliqué à tous les scénaristes)',
-    restartRealGame: 'ATTENTION, vous êtes sur le point de redémarrer une vraie partie. Toutes les équipes seront remises à zéro.',
+    restartRealGame:
+      'ATTENTION, vous êtes sur le point de redémarrer une vraie partie. Toutes les équipes seront remises à zéro.',
     resetLayout: 'Réinitialiser mise en page',
     notifications: 'Notifications',
     teams: 'Equipes',
@@ -47,4 +48,21 @@ export const commonTranslationsFR: CommonTranslations = {
   serverDown: 'Reconnexion...',
   serverOutaded:
     "Votre version de Wegas n'est plus a jour, veuillez rafraichir votre navigateur.",
+  somethingIsUndefined: name => `${name} est indéfini`,
+  authorizations: {
+    authorize: 'Autoriser',
+    refuse: 'Refuser',
+    authorizationsText: 'Autorisations',
+    authorizationNeeded: 'Autorization nécessaire',
+    authorizationRefused:
+      "Le composant ne peut pas être affiché car l'autorisation a été refusée",
+    resetAllAuthorizations: 'Réinitialiser toutes les autorisations',
+    authorizations: {
+      allowExternalUrl: {
+        label: "Autoriser l'acces aux URLs externes",
+        description:
+          "Vous acceptez d'exposer votre adresse IP à d'autres sites web afin que Wegas puisse obtenir des ressources externes.",
+      },
+    },
+  },
 };

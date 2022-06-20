@@ -1,10 +1,5 @@
 import * as React from 'react';
 import {
-  pageComponentFactory,
-  registerComponent,
-} from '../tools/componentFactory';
-import { classStyleIdShema } from '../tools/options';
-import {
   defaultGridLayoutOptionsKeys,
   Grid,
   GridItem,
@@ -12,7 +7,12 @@ import {
   GridProps,
   gridSchema,
 } from '../../Layouts/Grid';
+import {
+  pageComponentFactory,
+  registerComponent,
+} from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
+import { classStyleIdShema } from '../tools/options';
 import { childrenDeserializerFactory } from './FlexList.component';
 
 interface PlayerGridLayoutProps extends GridProps, WegasComponentProps {
@@ -36,7 +36,8 @@ registerComponent(
       childrenLayoutOptionSchema: gridItemChoices,
       childrenLayoutKeys: defaultGridLayoutOptionsKeys,
     },
-    name: 'Grid',
+    id: 'Grid',
+    name: 'Grid layout',
     icon: 'table',
     illustration: 'grid',
     schema: { ...gridSchema, ...classStyleIdShema },

@@ -2,7 +2,8 @@ import { Schema, setDefaultWidgets } from 'jsoninput';
 import ArrayWidget from './Array';
 import AttachmentSelector from './AttachmentSelector';
 import BooleanView from './Boolean';
-import { Code } from './Code';
+import CallbackView from './Callback';
+import CodeView from './Code';
 import ColorPickerView from './ColorPickerView';
 import { CustomScript } from './CustomScript';
 import DictionaryView from './Dictionary';
@@ -14,6 +15,7 @@ import hidden from './Hidden';
 import IconSelect from './IconSelect';
 import { LabeledHTMLEditor } from './LabeledHTMLEditor';
 import NumberInput from './Number';
+import Nupple from './Nupple';
 import ObjectView from './Object';
 import PageLoaderSelect from './PageLoaderSelect';
 import PageSelect from './PageSelect';
@@ -24,6 +26,7 @@ import { Script } from './Script/Script';
 import { VariableInput } from './Script/VariableInput';
 import Scriptable from './Scriptable';
 import { ScriptableBoolean } from './ScriptableBoolean';
+import ScriptableCallbackView from './ScriptableCallback';
 import { ScriptablePath } from './ScriptablePath';
 import { ScriptableString } from './ScriptableString';
 import Select, {
@@ -41,13 +44,15 @@ import {
   TreeVariableSelect,
   TreeVSelect,
 } from './TreeVariableSelect';
+import undefinedable from './undefinedable';
 import uneditable from './Uneditable';
 
 export const DEFINED_VIEWS = {
   array: ArrayWidget,
   attachment: AttachmentSelector,
   boolean: BooleanView,
-  code: Code,
+  code: CodeView,
+  callback: CallbackView,
   colorpicker: ColorPickerView,
   customscript: CustomScript,
   dictionary: DictionaryView,
@@ -63,6 +68,7 @@ export const DEFINED_VIEWS = {
   listchildren: ListChildrenSelectView,
   listchildrennull: ListChildrenNullSelectView,
   number: NumberInput,
+  nupple: Nupple,
   object: ObjectView,
   pageselect: PageSelect,
   pagesloaderselect: PageLoaderSelect,
@@ -70,6 +76,7 @@ export const DEFINED_VIEWS = {
   questselect: QuestSelect,
   script: Script,
   scriptable: Scriptable,
+  scriptablecallback: ScriptableCallbackView,
   scriptableBoolean: ScriptableBoolean,
   scriptableString: ScriptableString,
   scriptableVariableSelect: LabeledScripableVariableSelect,
@@ -83,6 +90,7 @@ export const DEFINED_VIEWS = {
   timestamp: TimestampView,
   treeselect: TreeVSelect,
   uneditable,
+  undefinedable,
   variableInput: VariableInput,
   variableselect: TreeVariableSelect,
 };

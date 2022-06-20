@@ -2,6 +2,8 @@ import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import { setPagesContextState } from '../../../data/Stores/pageContextStore';
 import { createScript } from '../../../Helper/wegasEntites';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { pagesTranslations } from '../../../i18n/pages/pages';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import {
   FlexItem,
@@ -44,6 +46,8 @@ function ChildrenDeserializer({
   const initRef = React.useRef<boolean>(false);
   const exposeAsRef = React.useRef<string>();
 
+  const { missingProperty } = useInternalTranslate(pagesTranslations);
+
   const init = safeClientScriptEval(
     initialState,
     context,
@@ -80,7 +84,15 @@ function ChildrenDeserializer({
   }, [exposeAs, init, localState]);
 
   if (initialState == null || exposeAs == null) {
-    return <UncompleteCompMessage pageId={pageId} path={path} />;
+    return (
+      <UncompleteCompMessage
+        message={missingProperty(
+          initialState == null ? 'initialState' : 'exposeAs',
+        )}
+        pageId={pageId}
+        path={path}
+      />
+    );
   }
 
   return (
@@ -91,10 +103,7 @@ function ChildrenDeserializer({
         wegasChildren?.map((_c, i) => {
           return (
             <PageDeserializer
-              key={
-                JSON.stringify([...path, i])
-                //JSON.stringify(newContext ? newContext[exposeAs] : 'undefined')
-              }
+              key={JSON.stringify([...path, i])}
               pageId={pageId}
               path={[...path, i]}
               uneditable={uneditable}
@@ -126,6 +135,7 @@ registerComponent(
       ChildrenDeserializer: ChildrenDeserializer,
       childrenLayoutOptionSchema: flexlayoutChoices,
     },
+    id: 'State',
     name: 'State',
     icon: 'code',
     illustration: 'state',

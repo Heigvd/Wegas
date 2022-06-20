@@ -1,17 +1,17 @@
+import { omit } from 'lodash-es';
 import * as React from 'react';
-import {
-  pageComponentFactory,
-  registerComponent,
-} from '../tools/componentFactory';
-import { WegasComponentProps } from '../tools/EditableComponent';
-import { schemaProps } from '../tools/schemaProps';
-import { classStyleIdShema } from '../tools/options';
 import {
   Icon,
   IconComp,
   icons,
 } from '../../../Editor/Components/Views/FontAwesome';
-import { omit } from 'lodash-es';
+import {
+  pageComponentFactory,
+  registerComponent,
+} from '../tools/componentFactory';
+import { WegasComponentProps } from '../tools/EditableComponent';
+import { classStyleIdShema } from '../tools/options';
+import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerIconProps extends WegasComponentProps {
   icon?: Icon;
@@ -32,6 +32,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerIcon,
     componentType: 'Output',
+    id: 'Icon',
     name: 'Icon',
     icon: 'icons',
     illustration: 'icon',

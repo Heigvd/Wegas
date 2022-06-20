@@ -71,10 +71,12 @@ interface InboxDisplayProps extends DisabledReadonly {
 }
 
 export function InboxDisplay({ inbox, disabled, readOnly }: InboxDisplayProps) {
-  const messagesSelector = React.useCallback(
-    () => getInstance(inbox, Player.selectCurrent())!.messages,
-    [inbox],
-  );
+  const messagesSelector = React.useCallback(() => {
+    const messages = getInstance(inbox, Player.selectCurrent())!.messages;
+    return [...messages].sort((a, b) => {
+      return (a.time ?? 0) - (b.time ?? 0);
+    });
+  }, [inbox]);
 
   const messages = useStore(messagesSelector);
 

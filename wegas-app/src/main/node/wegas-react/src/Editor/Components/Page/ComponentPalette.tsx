@@ -107,7 +107,7 @@ const ComponentTextStyle = css({
 });
 
 export interface DnDComponent {
-  componentName: string;
+  componentId: string;
   path?: number[];
 }
 
@@ -118,8 +118,8 @@ export function isDnDComponent(
   return (
     typeof item === 'object' &&
     item != null &&
-    'componentName' in item &&
-    typeof item.componentName === 'string'
+    'componentId' in item &&
+    typeof item.componentId === 'string'
   );
 }
 
@@ -131,13 +131,13 @@ export interface DragMonitor {
 interface ComponentTypeElementProps {
   componentType: ComponentType;
   enabled: boolean;
-  componentNames: string[];
+  componentIds: string[];
 }
 
 function ComponentTypeElement({
   componentType,
   enabled,
-  componentNames,
+  componentIds,
 }: ComponentTypeElementProps) {
   const [opened, setOpened] = React.useState(false);
   const i18nValues = useInternalTranslate(editorTabsTranslations);
@@ -175,10 +175,10 @@ function ComponentTypeElement({
         )}
       >
         <div className={cx(defaultMargin, flex, flexWrap)}>
-          {componentNames.map(k => (
+          {componentIds.map(id => (
             <ComponentElement
-              key={k}
-              componentName={k}
+              key={id}
+              componentId={id}
               componentType={componentType}
             />
           ))}
@@ -189,16 +189,16 @@ function ComponentTypeElement({
 }
 
 interface ComponentElementProps {
-  componentName: string;
+  componentId: string;
   componentType: ComponentType | undefined;
 }
 
 function ComponentElement({
-  componentName,
+  componentId,
   componentType,
 }: ComponentElementProps) {
   const i18nValues = useInternalTranslate(editorTabsTranslations);
-  const component = usePageComponentStore(s => s[componentName]);
+  const component = usePageComponentStore(s => s[componentId]);
   return (
     <>
       {component.componentType === componentType && (
@@ -206,11 +206,11 @@ function ComponentElement({
           draggable
           onDragStart={e => {
             e.stopPropagation();
-            e.dataTransfer.setData('data', JSON.stringify({ componentName }));
+            e.dataTransfer.setData('data', JSON.stringify({ componentId }));
             e.dataTransfer.setData(PAGEEDITOR_COMPONENT_TYPE, '');
           }}
           className={componentStyle}
-          title={componentName}
+          title={componentId}
         >
           {component ? (
             <>
@@ -219,10 +219,10 @@ function ComponentElement({
               ) : (
                 <IconComp icon={component.icon} />
               )}
-              <p className={ComponentTextStyle}>{componentName}</p>
+              <p className={ComponentTextStyle}>{component.componentName}</p>
             </>
           ) : (
-            <span>{`${i18nValues.pageEditor.unknownComponent} "${componentName}"`}</span>
+            <span>{`${i18nValues.pageEditor.unknownComponent} "${componentId}"`}</span>
           )}
         </div>
       )}
@@ -235,7 +235,7 @@ export default function ComponentPalette() {
 
   const { editMode, setEditMode } = React.useContext(pageCTX);
 
-  const componentNames = usePageComponentStore(
+  const componentIds = usePageComponentStore(
     s =>
       Object.entries(s)
         .filter(([, component]) => component.obsoleteComponent == null)
@@ -260,7 +260,7 @@ export default function ComponentPalette() {
                 key={t}
                 componentType={t}
                 enabled={editMode}
-                componentNames={componentNames}
+                componentIds={componentIds}
               />
             ))}
           </div>

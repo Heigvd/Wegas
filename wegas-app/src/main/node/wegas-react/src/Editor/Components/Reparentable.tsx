@@ -7,10 +7,9 @@ import * as React from 'react';
 import { createPortal } from 'react-dom';
 import ResizeObserver from 'resize-observer-polyfill';
 
-const ctx =
-  React.createContext<
-    undefined | ((children: React.ReactNode, id: string) => HTMLDivElement)
-  >(undefined);
+const ctx = React.createContext<
+  undefined | ((children: React.ReactNode, id: string) => HTMLDivElement)
+>(undefined);
 /**
  * React Component.
  *
@@ -92,19 +91,23 @@ export function Reparentable({
     );
   }
 
-  // useReactDepsComparator([innerClassName, getNode, children, id], `Reparentable ${id}`);
+  // useReactDepsComparator(
+  //   [innerClassName, getNode, children, id],
+  //   `Reparentable ${id}`,
+  // );
 
   React.useEffect(() => {
     const node = getNode(children, id);
     const container = n.current;
     if (container) {
       node.className = innerClassName ? innerClassName : '';
-      container.appendChild(node);
-      return () => {
-        if (node.parentNode === container) {
-          container.removeChild(node);
+      if (node.parentNode !== container) {
+        if (node.parentNode != null) {
+          node.parentNode.removeChild(node);
         }
-      };
+        container.innerHTML = '';
+        container.appendChild(node);
+      }
     }
   }, [innerClassName, getNode, children, id]);
 

@@ -114,7 +114,8 @@ registerComponent(
   pageComponentFactory({
     component: PlayerPageLoader,
     componentType: 'Layout',
-    name: PAGE_LOADER_COMPONENT_TYPE,
+    id: PAGE_LOADER_COMPONENT_TYPE,
+    name: 'Page loader',
     icon: 'window-maximize',
     illustration: 'pageLoader',
     schema: {

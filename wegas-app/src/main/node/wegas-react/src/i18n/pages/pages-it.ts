@@ -12,4 +12,9 @@ export const pagesTranslationsIT: PagesTranslations = {
   editComponent: 'Modifica componente',
   obsoleteComponent:
     'Il componente è stato aggiornato. Contatta il tuo trainer.',
+  forEach: {
+    noItems: 'Il componente non ha ricevuto alcun array di items',
+    noKey: index => `Manca la key per l'item #${index}`,
+  },
+  missingProperty: propName => `Manca la proprietà "${propName}"`,
 };

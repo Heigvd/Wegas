@@ -9,12 +9,14 @@ import { Button } from './Inputs/Buttons/Button';
 import { themeVar } from './Theme/ThemeVars';
 
 interface UncompleteCompMessageProps {
+  message: string;
   color?: string;
   pageId: string | undefined;
   path: number[];
 }
 
 export function UncompleteCompMessage({
+  message,
   color = themeVar.colors.DarkTextColor,
   pageId,
   path,
@@ -40,6 +42,7 @@ export function UncompleteCompMessage({
     >
       <CompNeedConfigIcon />
       <p>{i18nValues.completeCompConfig}</p>
+      <p>{message}</p>
       {APP_CONTEXT === 'Editor' && (
         <Button
           label={i18nValues.editComponent}

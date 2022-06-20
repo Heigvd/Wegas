@@ -1,12 +1,10 @@
-import * as React from 'react';
-import { ComponentType } from '../../../Components/PageComponents/tools/componentFactory';
-import { defaultMarginRight } from '../../../css/classes';
-import { IconComp } from '../Views/FontAwesome';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { css } from '@emotion/css';
-
+import * as React from 'react';
+import { SVGProps } from 'react';
+import { ComponentType } from '../../../Components/PageComponents/tools/componentFactory';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { defaultMarginRight } from '../../../css/classes';
 /** Import of all svgs for compos icons */
-
 import AbsoluteLayoutIcon from '../../../pictures/componentsIcons/absoluteLayout.svg';
 import AchievementExhibition from '../../../pictures/componentsIcons/achievementExhibitions.svg';
 import BooleanIcon from '../../../pictures/componentsIcons/boolean.svg';
@@ -24,12 +22,16 @@ import GridIcon from '../../../pictures/componentsIcons/grid.svg';
 import IconIcon from '../../../pictures/componentsIcons/icon.svg';
 import IfElseIcon from '../../../pictures/componentsIcons/ifElse.svg';
 import ImageIcon from '../../../pictures/componentsIcons/image.svg';
+import ImageLayer from '../../../pictures/componentsIcons/imageLayer.svg'
 import InboxIcon from '../../../pictures/componentsIcons/inbox.svg';
 import LinearLayoutIcon from '../../../pictures/componentsIcons/linearLayout.svg';
+import Map from '../../../pictures/componentsIcons/map.svg';
 import MenuIcon from '../../../pictures/componentsIcons/menu.svg';
 import ModalIcon from '../../../pictures/componentsIcons/modal.svg';
 import NumberIcon from '../../../pictures/componentsIcons/number.svg';
 import NumberSliderIcon from '../../../pictures/componentsIcons/numberSlider.svg';
+import Overlay from '../../../pictures/componentsIcons/overlay.svg';
+import Overlays from '../../../pictures/componentsIcons/overlays.svg';
 import PageLoaderIcon from '../../../pictures/componentsIcons/pageLoader.svg';
 import PhasesIcon from '../../../pictures/componentsIcons/phases.svg';
 import PRTreeIcon from '../../../pictures/componentsIcons/PRTreeView.svg';
@@ -43,9 +45,11 @@ import StateIcon from '../../../pictures/componentsIcons/state.svg';
 import StateMachineIcon from '../../../pictures/componentsIcons/stateMachine.svg';
 import StringInputIcon from '../../../pictures/componentsIcons/stringInput.svg';
 import TextIcon from '../../../pictures/componentsIcons/text.svg';
+import TileLayer from '../../../pictures/componentsIcons/tileLayer.svg';
 import textInputIcon from '../../../pictures/componentsIcons/textInput.svg';
 import VariableTreeIcon from '../../../pictures/componentsIcons/variableTree.svg';
-import { SVGProps } from 'react';
+import VectorLayer from '../../../pictures/componentsIcons/vectorLayer.svg';
+import { IconComp } from '../Views/FontAwesome';
 
 /**
  * To import new or updated Icon:
@@ -71,12 +75,16 @@ const iconComponents = {
   icon: IconIcon,
   ifElse: IfElseIcon,
   image: ImageIcon,
+  imageLayer: ImageLayer,
   inbox: InboxIcon,
   linearLayout: LinearLayoutIcon,
+  map: Map,
   menu: MenuIcon,
   modal: ModalIcon,
   number: NumberIcon,
   numberSlider: NumberSliderIcon,
+  overlay: Overlay,
+  overlays: Overlays,
   pageLoader: PageLoaderIcon,
   phases: PhasesIcon,
   PRTreeView: PRTreeIcon,
@@ -91,7 +99,9 @@ const iconComponents = {
   stringInput: StringInputIcon,
   text: TextIcon,
   textInput: textInputIcon,
+  tileLayer: TileLayer,
   variableTree: VariableTreeIcon,
+  vectorLayer: VectorLayer,
 };
 
 export type IconComponentType = keyof typeof iconComponents;
@@ -103,7 +113,7 @@ const componentIconStyle = css({
 
 interface ComponentTypeIconProps {
   /**
-   * componentName - the name of the component
+   * componentType - the type of the component
    */
   componentType: ComponentType;
 }
@@ -120,6 +130,8 @@ export function ComponentTypeIcon({ componentType }: ComponentTypeIconProps) {
         return 'atom';
       case 'Programmatic':
         return 'code';
+      case 'Maps':
+        return 'map';
     }
   }
   return (
@@ -129,7 +141,7 @@ export function ComponentTypeIcon({ componentType }: ComponentTypeIconProps) {
 
 interface ComponentIconProps extends SVGProps<SVGSVGElement> {
   /**
-   * componentName - the name of the component
+   * componentIllu - the illustration of the component
    */
   componentIllu: IconComponentType;
 }

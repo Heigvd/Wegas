@@ -245,8 +245,9 @@ export const actionsChoices: HashListChoices = [
         properties: {
           script: schemaProps.code({
             label: 'Local script',
-            required: true,
-            language: 'TypeScript',
+            scriptProps: {
+              language: 'TypeScript',
+            },
           }),
           priority: schemaProps.number({ label: 'Priority' }),
         },

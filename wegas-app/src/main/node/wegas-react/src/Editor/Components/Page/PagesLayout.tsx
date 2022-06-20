@@ -1,5 +1,5 @@
 import { css, cx } from '@emotion/css';
-import { omit } from 'lodash-es';
+import { isEqual, omit } from 'lodash-es';
 import * as React from 'react';
 import {
   featuresCTX,
@@ -24,7 +24,9 @@ import {
   flex,
   globalSelection,
   grow,
+  highlightColorInsetShadowStyle,
   itemCenter,
+  thinHoverColorInsetShadowStyle,
 } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { State } from '../../../data/Reducer/reducers';
@@ -77,14 +79,15 @@ const titleStyle = css({
   [`&>.${CONTROLS_CLASSNAME}`]: {
     visibility: 'hidden',
   },
+  ':hover': thinHoverColorInsetShadowStyle,
   [`:hover>.${CONTROLS_CLASSNAME}`]: {
     visibility: 'visible',
   },
 });
 
 const focusedComponentStyle = css({
-  backgroundColor: themeVar.colors.HeaderColor,
-  border: 'solid black',
+  ...highlightColorInsetShadowStyle,
+  ':hover': highlightColorInsetShadowStyle,
 });
 
 const defaultPage = {
@@ -339,27 +342,45 @@ function IndexItemModifer({
 }
 
 interface ComponentAdderProps extends LayoutButtonProps {
+  filterChildrenType?: string[];
+  filterChildrenName?: string[];
   onSelect: (componentType: string) => void;
 }
 
-function ComponentAdder({ className, tooltip, onSelect }: ComponentAdderProps) {
+function ComponentAdder({
+  className,
+  tooltip,
+  filterChildrenType,
+  filterChildrenName,
+  onSelect,
+}: ComponentAdderProps) {
   const components = usePageComponentStore(s => s);
+
   return (
     <div className={className} title={tooltip}>
       <DropMenu
         icon="plus"
-        items={usableComponentType.map(type => ({
-          label: type,
-          id: type,
-          items: Object.values(components)
-            .filter(
-              c => c.componentType === type && c.obsoleteComponent == null,
-            )
-            .map(v => ({
-              label: v.componentName,
-              id: v.componentName,
-            })),
-        }))}
+        items={usableComponentType
+          .filter(
+            type =>
+              filterChildrenType == null || filterChildrenType.includes(type),
+          )
+          .map(type => ({
+            label: type,
+            id: type,
+            items: Object.values(components)
+              .filter(
+                c =>
+                  c.componentType === type &&
+                  c.obsoleteComponent == null &&
+                  (filterChildrenName == null ||
+                    filterChildrenName.includes(c.componentId)),
+              )
+              .map(v => ({
+                label: v.componentName,
+                id: v.componentId,
+              })),
+          }))}
         onSelect={({ id }) => {
           if (!usableComponentType.includes(id)) {
             onSelect(id);
@@ -382,7 +403,7 @@ interface LayoutNodeTitleProps extends ClassStyleId {
   title: string;
   advancedTitle?: string;
   tooltip?: string;
-  onMouseUp?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   onMouseOver?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   onMouseOut?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   classSelector?: string[];
@@ -394,7 +415,7 @@ function LayoutNodeTitle({
   title,
   advancedTitle,
   tooltip,
-  onMouseUp,
+  onClick,
   onMouseOver,
   onMouseOut,
   className,
@@ -411,7 +432,7 @@ function LayoutNodeTitle({
 
   return (
     <div
-      onMouseUp={onMouseUp}
+      onClick={onClick}
       className={cx(
         { [actionNodeContentStyle]: notSelectable },
         titleStyle,
@@ -467,21 +488,26 @@ function WegasComponentTitle({
     icon = 'exclamation-triangle';
   }
 
-  let title = component.type;
+  let title = registeredComponent.componentName;
   if ('name' in component.props) {
-    title += ` ${component.props.name}`;
+    title += ` - ${component.props.name}`;
   }
 
   const isSelected =
-    pageId === selectedPageId &&
-    JSON.stringify(componentPath) === JSON.stringify(selectedComponentPath);
+    pageId === selectedPageId && isEqual(componentPath, selectedComponentPath);
   const isFocused = usePagesStateStore(
     isComponentFocused(editMode, pageId, componentPath),
   );
 
-  const { allowChildren, allowDelete, allowEdit } = {
+  const {
+    allowChildren,
+    allowDelete,
+    allowEdit,
+    filterChildrenType,
+    filterChildrenName,
+  } = {
     ...defaultPageComponentBehaviour,
-    ...registeredComponent.behaviour,
+    ...registeredComponent?.behaviour,
   };
 
   const onSelect = React.useCallback(() => {
@@ -500,7 +526,7 @@ function WegasComponentTitle({
           ? i18nValues.pageEditor.unknownComponent
           : undefined
       }
-      onMouseUp={onSelect}
+      onClick={onSelect}
       onMouseOver={e => {
         if (editMode /*&& !isDragging*/) {
           e.stopPropagation();
@@ -521,6 +547,8 @@ function WegasComponentTitle({
       {allowChildren(component) && (
         <ComponentAdder
           tooltip={i18nValues.pageEditor.addComponent}
+          filterChildrenType={filterChildrenType}
+          filterChildrenName={filterChildrenName}
           onSelect={componentType => {
             onNewLayoutComponent(
               pageId,
@@ -612,7 +640,8 @@ function WegasComponentNode({
     );
   }
 
-  const { allowMove, allowChildren } = registeredComponent.behaviour || {};
+  const { allowMove, allowChildren } = registeredComponent?.behaviour || {};
+
   return (
     <TreeNode
       label={
@@ -676,7 +705,7 @@ function PageIndexTitle({
       advancedTitle={
         indexItem.name + (isPageItem(indexItem) ? ` ${indexItem.id}` : '')
       }
-      onMouseUp={() => isPageItem(indexItem) && onPageClick(indexItem.id!)}
+      onClick={() => isPageItem(indexItem) && onPageClick(indexItem.id!)}
       className={cx({
         [globalSelection]:
           isPageItem(indexItem) && indexItem.id === selectedPageId,
@@ -937,7 +966,7 @@ export default function PagesLayout() {
         // Now the drag element comes from outside the tree
         else {
           if (isPageComponentNode(to.data)) {
-            const sourceType = from.data.componentName;
+            const sourceType = from.data.componentId;
             const destPageId = to.data.pageId;
             const destPage = pages[destPageId];
             const destPath = to.data.componentPath;

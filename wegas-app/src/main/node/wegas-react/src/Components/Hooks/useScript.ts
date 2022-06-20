@@ -1,4 +1,4 @@
-import { cloneDeep, uniq } from 'lodash-es';
+import { cloneDeep, isEqual, uniq, escapeRegExp } from 'lodash-es';
 import * as React from 'react';
 import { transpile } from 'typescript';
 import {
@@ -20,6 +20,7 @@ import { APIScriptMethods } from '../../API/clientScriptHelper';
 import { fileURL } from '../../API/files.api';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
+import { entityIs } from '../../data/entities';
 import { createTranslatableContent, createTranslation, translate } from '../../data/i18n';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
@@ -36,7 +37,7 @@ import {
 import { store, useStore } from '../../data/Stores/store';
 import { insertReturn } from '../../Editor/Components/ScriptEditors/TempScriptEditor';
 import { registerEffect } from '../../Helper/pageEffectsManager';
-import { createLRU, replace } from '../../Helper/tools';
+import { createLRU, replace, visitDSF } from '../../Helper/tools';
 import { createScript, isScript } from '../../Helper/wegasEntites';
 import { getLogger, wlog, wwarn } from '../../Helper/wegaslog';
 import { ClassesContext, classesCTX } from '../Contexts/ClassesProvider';
@@ -100,6 +101,24 @@ interface GlobalClasses {
     };
   };
 }
+
+const refs: Record<string, { current: unknown }> = {};
+/**
+ * Create and init a PageContext state.
+ * @param id the ref will be saved with this id
+ * @param value: initial state value
+ *
+ * @returns an object with a "current" prop that can be sat and will keep its value even when scripts are reloaded
+ */
+export const useRef: GlobalHelpersClass['useRef'] = <T>(
+  id: string,
+  value: T,
+) => {
+  if (!(id in refs)) {
+    refs[id] = { current: value };
+  }
+  return refs[id] as { current: T };
+};
 
 const globalDispatch = store.dispatch;
 
@@ -438,6 +457,8 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.Helpers = {
     cloneDeep: cloneDeep,
     uniq: uniq,
+    escapeRegExp: escapeRegExp,
+    useRef,
     getState: getPageState,
     getLogger: getLogger,
     registerEffect: registerEffect,
@@ -459,8 +480,6 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.wlog = wlog;
 }
 
-export type ScriptReturnType = object | number | boolean | string | undefined;
-
 interface TranspileOptions {
   moduleName?: string;
   injectReturn?: boolean;
@@ -471,6 +490,7 @@ interface TranspileOptions {
 function transpileToFunction(
   script: string,
   { injectReturn = true }: TranspileOptions = {},
+  extraArgs: string[] = [],
 ) {
   // transpile first
   const jsScript = transpile(script);
@@ -479,7 +499,10 @@ function transpileToFunction(
   // such a statement must be added
   const fnBody = injectReturn ? insertReturn(jsScript) : jsScript;
   //
-  const fnScript = 'eval = () => {throw new Error("Eval is evil");};return (function(){"use strict";undefined;' + fnBody + "})();";
+  const fnScript =
+    'eval = () => {throw new Error("Eval is evil");};return (function(){"use strict";undefined;' +
+    fnBody +
+    '})();';
 
   // hide forbidden object by overriding them with parameters
   // on call, provide undefined arguments
@@ -490,6 +513,7 @@ function transpileToFunction(
     'top',
     '__WegasModules',
     'exports',
+    ...extraArgs,
     fnScript,
   );
 }
@@ -524,11 +548,12 @@ const memoClientScriptEval = (() => {
   // eslint-disable-next-line @typescript-eslint/ban-types
   const transpiledCache = createLRU<string, Function>(500);
 
-  return <T extends ScriptReturnType>(
-    script?: string | IScript,
+  return <T>(
+    script?: string | IScript | ScriptCallback,
     context: PageComponentContext = {},
     state?: PagesContextState,
     options?: TranspileOptions,
+    argValues: unknown[] = [],
   ): T extends WegasScriptEditorReturnType ? T : unknown => {
     const currentState = addSetterToState(
       state || pagesContextStateStore.getState(),
@@ -550,7 +575,11 @@ const memoClientScriptEval = (() => {
         // IScript not in cache -> transpile it
         transpiledCache.set(
           script.content,
-          transpileToFunction(script.content, options)!,
+          transpileToFunction(
+            script.content,
+            options,
+            isScriptCallback(script) ? script.args : undefined,
+          )!,
         );
       }
       // fetch from cache
@@ -569,6 +598,10 @@ const memoClientScriptEval = (() => {
           globals.__WegasModules[options?.moduleName] = exports;
         }
       }
+      if (WEGAS_SAFE_MODE) {
+        wlog("Drop script exec !")
+        return undefined as any;
+      }
       // do not provide effective arguments ever !
       return scriptAsFunction(
         undefined,
@@ -577,6 +610,7 @@ const memoClientScriptEval = (() => {
         undefined,
         undefined,
         exports,
+        ...argValues,
       );
     } else {
       return undefined as any;
@@ -584,7 +618,7 @@ const memoClientScriptEval = (() => {
   };
 })();
 
-export function clientScriptEval<T extends ScriptReturnType>(
+export function clientScriptEval<T>(
   script: string | IScript | undefined,
   context:
     | {
@@ -629,7 +663,7 @@ function handleError(error: unknown, filename?: string): WegasScriptError {
   }
 }
 
-export function safeClientScriptEval<T extends ScriptReturnType>(
+export function safeClientScriptEval<T>(
   script: string | IScript | undefined,
   context:
     | {
@@ -665,16 +699,18 @@ export function safeClientScriptEval<T extends ScriptReturnType>(
  * @param script code to execute
  * @returns Last expression or undefined in case it errors.
  */
-export function useScript<T extends ScriptReturnType>(
+export function useScript<T>(
   script?: (string | IScript | undefined) | (string | IScript | undefined)[],
   context?: {
     [name: string]: unknown;
   },
   catchCB?: (e: Error) => void,
-): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
+): T | undefined {
   const oldContext = React.useRef<{
     [name: string]: unknown;
   }>();
+
+  const isFirstRun = React.useRef(true);
 
   const newContext = React.useMemo(() => {
     if (deepDifferent(context, oldContext.current)) {
@@ -718,9 +754,33 @@ export function useScript<T extends ScriptReturnType>(
     }
   }, [script, newContext, state, catchCB]);
 
+  React.useEffect(() => {
+    isFirstRun.current = true;
+  }, [fn]);
+
   const returnValue = useStore(s => {
     //ref +state.reloading
     setGlobals(globalContexts, s);
+
+    const returnValue = fn();
+    if (isFirstRun.current) {
+      visitDSF(returnValue, item => {
+        if (
+          entityIs(item, 'VariableDescriptor', true) ||
+          entityIs(item, 'VariableInstance', true)
+        ) {
+          return false;
+        } else {
+          if (typeof item === 'function') {
+            throw Error(
+              'You should never return a function from a useScript because function type variables are not comparable. To do that, use the useScriptCallback hook',
+            );
+          }
+          return true;
+        }
+      });
+    }
+
     return fn();
   }, deepDifferent);
 
@@ -732,7 +792,7 @@ export function useScript<T extends ScriptReturnType>(
  * @param script code to execute
  * @returns Last expression or LocalEvalError in case it errors.
  */
-export function useUnsafeScript<T extends ScriptReturnType>(
+export function useUnsafeScript<T>(
   script?: string | IScript,
   context?: {
     [name: string]: unknown;
@@ -759,10 +819,6 @@ export function parseAndRunClientScript(
   },
 ) {
   let scriptContent = isScript(script) ? script.content : script;
-
-  //const test1 = runClientScript("JKJKJ")
-  //const test2 = runClientScript(const salut = 2;)
-  //const test3 = runClientScript(ohmama())
 
   const regexStart = /(runClientScript\(["|'|`])/g;
   const regexEnd = /(["|'|`]\))/g;
@@ -803,4 +859,187 @@ export function parseAndRunClientScript(
   return isScript(script)
     ? { ...script, content: scriptContent }
     : scriptContent;
+}
+
+export type ContextRef = React.MutableRefObject<UknownValuesObject | undefined>;
+
+export function useUpdatedContextRef(context: UknownValuesObject | undefined) {
+  const contextRef = React.useRef(context);
+  React.useEffect(() => {
+    contextRef.current = context;
+  });
+  return contextRef;
+}
+
+export interface ScriptCallback {
+  readonly '@class': 'ScriptCallback';
+  content: string;
+  args: string[];
+}
+
+export function iScriptArgsToCallbackArgs(
+  args: [string, string[]][] = [],
+): string[] {
+  return args.map(([name]) => name);
+}
+
+export function createScriptCallback(
+  content: string = '',
+  args: string[] = [],
+): ScriptCallback {
+  return { '@class': 'ScriptCallback', content, args };
+}
+
+export function isScriptCallback(script: unknown): script is ScriptCallback {
+  return (
+    script != null &&
+    typeof script === 'object' &&
+    '@class' in script &&
+    (script as { '@class': string })['@class'] === 'ScriptCallback'
+  );
+}
+
+export function safeScriptCallbackEval<T>(
+  script: ScriptCallback | undefined,
+  context:
+    | {
+        [name: string]: unknown;
+      }
+    | undefined,
+  catchCB: ((e: Error) => void) | undefined,
+  state: PagesContextState | undefined,
+  options: TranspileOptions | undefined,
+  argValues: unknown[] = [],
+): T extends WegasScriptEditorReturnType ? T : unknown {
+  try {
+    return memoClientScriptEval<T>(script, context, state, options, argValues);
+  } catch (e) {
+    const error = handleError(e, options?.moduleName);
+    if (catchCB) {
+      catchCB(error);
+    } else {
+      const scriptContent =
+        typeof script === 'string' ? script : script?.content;
+      wwarn(
+        `${printWegasScriptError(error)}
+        \n\nScript content is :\n${scriptContent}\n\nTranspiled content is :\n${
+          scriptContent != null ? transpile(scriptContent) : undefined
+        }`,
+      );
+    }
+    return undefined as any;
+  }
+}
+
+export function useScriptObjectWithFallback<
+  T extends Record<string, unknown>,
+  ReturnType = { [P in keyof T]: Exclude<T[P], IScript | ScriptCallback> },
+>(scriptObject: T, contextRef: ContextRef): ReturnType {
+  const returnedObjectRef = React.useRef<ReturnType>();
+  const scripts = Object.entries(scriptObject).filter(([, v]) =>
+    entityIs(v, 'Script'),
+  );
+  const scriptKeys = scripts.map(([k]) => k);
+  const scriptValues = scripts.map(([, v]) => v as IScript);
+  const evaluatedScripts =
+    useScript<ValueOf<T>[]>(scriptValues, contextRef.current) || [];
+  const evaluatedScriptsObject = scriptKeys.reduce((o, k, i) => {
+    o[k as string] = evaluatedScripts[i];
+    return o;
+  }, {} as Record<string, unknown>) as ReturnType;
+
+  const callbacks = Object.entries(scriptObject).filter(([, v]) =>
+    isScriptCallback(v),
+  );
+
+  const callbackKeys = callbacks.map(([k]) => k);
+  const callbackValues = callbacks.map(([, v]) => v as ScriptCallback);
+  const evaluatedCallbacks =
+    useScriptCallbacks(callbackValues, contextRef) || [];
+  const evaluatedCallbacksObject = callbackKeys.reduce((o, k, i) => {
+    o[k as string] = evaluatedCallbacks[i];
+    return o;
+  }, {} as Record<string, unknown>) as ReturnType;
+
+  const values = Object.entries(scriptObject)
+    .filter(([, v]) => !entityIs(v, 'Script'))
+    .filter(([, v]) => !isScriptCallback(v))
+    .reduce((o, [k, v]) => {
+      o[k as string] = v;
+      return o;
+    }, {} as Record<string, unknown>) as ReturnType;
+
+  return React.useMemo(() => {
+    const newObject = {
+      ...values,
+      ...evaluatedScriptsObject,
+      ...evaluatedCallbacksObject,
+    };
+    if (
+      returnedObjectRef.current != null &&
+      isEqual(returnedObjectRef.current, newObject)
+    ) {
+      return returnedObjectRef.current;
+    } else {
+      returnedObjectRef.current = newObject;
+      return newObject;
+    }
+  }, [evaluatedCallbacksObject, evaluatedScriptsObject, values]);
+}
+
+type AnyFunction = (...args: unknown[]) => unknown;
+
+export function computeCB<T extends AnyFunction>(
+  callbackScript: ScriptCallback,
+  contextRef: ContextRef | undefined,
+): T {
+  return function (...cbArgs: Parameters<T>) {
+    return safeScriptCallbackEval(
+      callbackScript,
+      contextRef?.current,
+      undefined,
+      pagesContextStateStore.getState(),
+      {
+        injectReturn: true,
+      },
+      cbArgs,
+    );
+  } as T;
+}
+
+const emptyCallback = createScriptCallback('', []);
+
+export function useScriptCallback<T extends AnyFunction>(
+  callbackScript: ScriptCallback = emptyCallback,
+  contextRef: ContextRef,
+) {
+  const lastScript = React.useRef<unknown>();
+  const lastReturn = React.useRef<T>();
+
+  return React.useMemo(() => {
+    if (!isEqual(callbackScript, lastScript.current)) {
+      lastScript.current = callbackScript;
+      const newReturn = computeCB<T>(callbackScript, contextRef);
+      lastReturn.current = newReturn;
+    }
+    return lastReturn.current;
+  }, [callbackScript, contextRef]);
+}
+
+function useScriptCallbacks(
+  scriptCallbacks: ScriptCallback[],
+  contextRef: ContextRef,
+): AnyFunction[] {
+  const lastScripts = React.useRef<ScriptCallback[]>();
+  const lastReturns = React.useRef<((...args: unknown[]) => void)[]>([]);
+  return React.useMemo(() => {
+    if (!isEqual(scriptCallbacks, lastScripts.current)) {
+      lastScripts.current = scriptCallbacks;
+      const newReturns = scriptCallbacks.map(scriptCB =>
+        computeCB(scriptCB, contextRef),
+      );
+      lastReturns.current = newReturns;
+    }
+    return lastReturns.current;
+  }, [scriptCallbacks]);
 }
