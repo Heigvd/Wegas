@@ -121,11 +121,43 @@ function saveLayoutInLocal(
   rolesId: string,
   role: string,
   layouts: ManagedLayoutMap,
+  gameModelId: number = CurrentGM.id!,
 ) {
   window.localStorage.setItem(
-    `DnDGridLayoutData.${layoutId}.${rolesId}.${role}`,
+    `DnDGridLayoutData.${gameModelId}.${layoutId}.${rolesId}.${role}`,
     JSON.stringify(layouts),
   );
+}
+
+/**
+ * Get previously saved layout in local storage
+ */
+export function getLayoutInLocal(
+  layoutId: string,
+  rolesId: string,
+  role: string,
+  gameModelId: number = CurrentGM.id!,
+) {
+  let savedLayoutData = window.localStorage.getItem(
+    `DnDGridLayoutData.${gameModelId}.${layoutId}.${rolesId}.${role}`,
+  );
+
+  if (savedLayoutData == null) {
+    // Getting layout from previous way of storing layout
+    savedLayoutData = window.localStorage.getItem(
+      `DnDGridLayoutData.${layoutId}.${rolesId}.${role}`,
+    );
+  }
+
+  if (savedLayoutData == null) {
+    return undefined;
+  }
+
+  try {
+    return JSON.parse(savedLayoutData);
+  } catch (_) {
+    return undefined;
+  }
 }
 
 interface LinearLayoutItemComponent {
@@ -943,12 +975,8 @@ export function MainLinearLayout({
   );
 
   React.useEffect(() => {
-    const savedLayoutJSON = window.localStorage.getItem(
-      `DnDGridLayoutData.${layoutId}.${rolesId}.${currentRole}`,
-    );
-    const savedLayout = savedLayoutJSON
-      ? (JSON.parse(savedLayoutJSON) as ManagedLayoutMap)
-      : null;
+    const savedLayout = getLayoutInLocal(layoutId, rolesId, currentRole);
+
     if (savedLayout != null) {
       dispatchLayout({ type: 'RESET', newLayout: savedLayout });
     } else {
