@@ -31,7 +31,7 @@ export default function SerializeView({
 
   let parsed: undefined;
   try {
-    parsed = JSON.parse(typeof value === 'string' ? value : '{}');
+    parsed = typeof value === 'string' ? JSON.parse(value) : undefined;
   } catch {
     parsed = undefined;
   }
