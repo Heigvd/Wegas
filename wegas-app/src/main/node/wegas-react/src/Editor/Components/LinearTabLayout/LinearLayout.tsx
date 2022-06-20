@@ -113,30 +113,20 @@ interface ManagedLayoutMap {
   layoutMap: LayoutMap;
 }
 
-// const filterMap = (
-//   map: TabLayoutComponent[],
-//   filterFN: (k: string, i: number) => boolean,
-// ) =>
-//   Object.keys(map)
-//     .filter(filterFN)
-//     .reduce<ComponentMap>(
-//       (newComponents, k) => ({ ...newComponents, [k]: map[k] }),
-//       {},
-//     );
-
-//     function visitLayoutMap(
-//       data: LayoutMap,
-//       visitFN: (item: LayoutNode) => 'STOP' | 'CONTINUE',
-//     ) {
-//       for (const key in data) {
-//         const item = data[key];
-//         if (visitFN(item) === 'STOP') {
-//           return;
-//         }
-//       if (item.type === "ReflexLayoutNode") {
-//         visitLayoutMap(item.children)
-//       }
-//     }
+/**
+ * Save layout structure in local storage
+ */
+function saveLayoutInLocal(
+  layoutId: string,
+  rolesId: string,
+  role: string,
+  layouts: ManagedLayoutMap,
+) {
+  window.localStorage.setItem(
+    `DnDGridLayoutData.${layoutId}.${rolesId}.${role}`,
+    JSON.stringify(layouts),
+  );
+}
 
 interface LinearLayoutItemComponent {
   tabId: string;
@@ -641,6 +631,7 @@ const setLayout =
   <T extends ManagedLayoutMap>(layouts: T, action: TabLayoutsAction) =>
     u(layouts, (layouts: ManagedLayoutMap) => {
       if (action.type === 'RESET') {
+        saveLayoutInLocal(layoutId, rolesId, role, action.newLayout);
         return action.newLayout;
       }
       let newLayouts = layouts;
@@ -691,6 +682,7 @@ const setLayout =
           if (action.type === 'SELECT' || action.type === 'EXTERNALSELECT') {
             newLayouts.layoutMap[srcTabLayoutKey.parentKey].defaultActive =
               action.tabKey as string;
+            saveLayoutInLocal(layoutId, rolesId, role, newLayouts);
             return newLayouts;
           }
           // Remaining actions are drop actions, always remove tab from source TabLayout when dropping
@@ -842,11 +834,7 @@ const setLayout =
           );
         }
       }
-      // Saving layout in local storage
-      window.localStorage.setItem(
-        `DnDGridLayoutData.${layoutId}.${rolesId}.${role}`,
-        JSON.stringify(newLayouts),
-      );
+      saveLayoutInLocal(layoutId, rolesId, role, newLayouts);
       return newLayouts;
     });
 
