@@ -43,6 +43,18 @@ import WegasDashboardSrc from '!!raw-loader!../../../types/scripts/WegasDashboar
 import wegasEventsGlobalSrc from '!!raw-loader!../../../types/scripts/WegasEventsGlobals.d.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+import layerSourceTypes from '!!raw-loader!../Maps/helpers/types/LayerSourceTypes.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import layerStyleTypes from '!!raw-loader!../Maps/helpers/types/LayerStyleTypes.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import olTypes from '!!raw-loader!../Maps/helpers/types/OLObjectsTypes.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import overlayTypes from '!!raw-loader!../Maps/helpers/types/OverlayTypes.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasEntities.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -67,40 +79,44 @@ const ambientEntitiesSrc = makeAmbient(entitiesSrc);
 const ambientScriptableEntitiesSrc = makeAmbient(scriptableEntitiesSrc);
 
 const clientLibs: MonacoDefinitionsLibrary[] = [
-  { content: ambientEntitiesSrc, name: 'ts:filename/ambientEntities.d.ts' },
+  { content: ambientEntitiesSrc, name: 'ambientEntities.d' },
   {
     content: ambientScriptableEntitiesSrc,
-    name: 'ts:filename/ambientScriptableEntities.d.ts',
+    name: 'ambientScriptableEntities.d',
   },
-  { content: generalTypes, name: 'ts:filename/generalTypes.d.ts' },
-  { content: editorGlobalSrc, name: 'ts:filename/editorGlobal.d.ts' },
+  { content: generalTypes, name: 'generalTypes.d' },
+  { content: editorGlobalSrc, name: 'editorGlobal.d' },
   {
     content: clientMethodGlobalSrc,
-    name: 'ts:filename/clientMethodGlobal.d.ts',
+    name: 'clientMethodGlobal.d',
   },
   {
     content: serverMethodGlobalSrc,
-    name: 'ts:filename/serverMethodGlobal.d.ts',
+    name: 'serverMethodGlobal.d',
   },
-  { content: schemaGlobalSrc, name: 'ts:filename/schemaGlobal.d.ts' },
-  { content: classesGlobalSrc, name: 'ts:filename/classesGlobal.d.ts' },
-  { content: popupsGlobalSrc, name: 'ts:filename/popupsGlobal.d.ts' },
+  { content: schemaGlobalSrc, name: 'schemaGlobal.d' },
+  { content: classesGlobalSrc, name: 'classesGlobal.d' },
+  { content: popupsGlobalSrc, name: 'popupsGlobal.d' },
   {
     content: wegasEventsGlobalSrc,
-    name: 'ts:filename/wegasEventsGlobal.d.ts',
+    name: 'wegasEventsGlobal.d',
   },
-  { content: i18nGlobalSrc, name: 'ts:filename/i18nGlobal.d.ts' },
-  { content: APIMethodsGlobalSrc, name: 'ts:filename/APIMethodsGlobal.d.ts' },
-  { content: HelpersGlobalSrc, name: 'ts:filename/HelpersGlobal.d.ts' },
+  { content: i18nGlobalSrc, name: 'i18nGlobal.d' },
+  { content: APIMethodsGlobalSrc, name: 'APIMethodsGlobal.d' },
+  { content: HelpersGlobalSrc, name: 'HelpersGlobal.d' },
   {
     content: RolesMethodsGlobalSrc,
-    name: 'ts:filename/RolesMethodsGlobal.d.ts',
+    name: 'RolesMethodsGlobal.d',
   },
-  { content: SchemaHelper, name: 'ts:filename/SchemaHelper.d.ts' },
+  { content: SchemaHelper, name: 'SchemaHelper.d' },
+  { content: olTypes, name: 'olTypes.d' },
+  { content: layerStyleTypes, name: 'layerStyleTypes.d' },
+  { content: layerSourceTypes, name: 'layerSourceTypes.d' },
+  { content: overlayTypes, name: 'overlayTypes.d' },
 ];
 
 const serverLibs: MonacoDefinitionsLibrary[] = [
-  { content: WegasDashboardSrc, name: 'ts:filename/WegasDashboard.d.ts' },
+  { content: WegasDashboardSrc, name: 'WegasDashboard.d' },
 ];
 // We'll keep it for later uses
 // const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
@@ -310,7 +326,7 @@ export function useGlobalLibs() {
         content: `
     ${libs}\n
   `,
-        name: 'file:///VariablesTypes.d.ts',
+        name: 'VariablesTypes.d',
       },
       ...(scriptContext === 'Client' ? clientLibs : serverLibs),
     ];

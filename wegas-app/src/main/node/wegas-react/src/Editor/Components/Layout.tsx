@@ -1,4 +1,4 @@
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { IPeerReviewDescriptor } from 'wegas-ts-api';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
@@ -6,6 +6,7 @@ import { roleCTX } from '../../Components/Contexts/RoleProvider';
 import { MaxiLoader } from '../../Components/MaxiLoader';
 import { TabLayoutComponent } from '../../Components/TabLayout/TabLayout';
 import { themeVar } from '../../Components/Theme/ThemeVars';
+import { expandWidth } from '../../css/classes';
 import { entityIs } from '../../data/entities';
 import { translate } from '../../data/i18n';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
@@ -25,6 +26,7 @@ import {
   pageCTX,
 } from './Page/PageEditor';
 import { fullScreenLoaderStyle, PageLoader } from './Page/PageLoader';
+import { AllLibraryEditor } from './ScriptEditors/LibraryEditors/AllLibraryEditor';
 
 const StateMachineEditor = React.lazy(
   () => import('./StateMachine/StateMachineEditor'),
@@ -59,7 +61,9 @@ const SourceEditor = React.lazy(() => import('./Page/SourceEditor'));
 
 const FindAndReplace = React.lazy(() => import('./FindAndReplace'));
 
-// const Tester = React.lazy(() => import('../../Testers/SchemaPropsTester'));
+// const Tester = React.lazy(
+//   () => import('../../Testers/Components/Map/MapTester'),
+// );
 
 const layout = css({
   display: 'flex',
@@ -106,6 +110,10 @@ const availableLayoutTabs: LinearLayoutComponents = [
       {
         tabId: 'Style',
         content: <StyleLibraryEditor />,
+      },
+      {
+        tabId: 'AllLibs',
+        content: <AllLibraryEditor />,
       },
     ],
   },
@@ -237,15 +245,35 @@ export default function Layout() {
   }
 
   return (
-    <div className={layout} id="WegasLayout">
-      <Header />
-      <PageContextProvider layoutId={mainLayoutId}>
-        <DndLinearLayout
-          tabs={layoutPages}
-          initialLayout={initialLayout}
-          layoutId={mainLayoutId}
-        />
-      </PageContextProvider>
-    </div>
+    <>
+      {WEGAS_SAFE_MODE && (
+        <div
+          className={cx(
+            expandWidth,
+            css({
+              textAlign: 'center',
+              color: 'white',
+              fontSize: '20px',
+              lineHeight: '40px',
+              backgroundColor: 'var(--colors-errorcolor)',
+            }),
+          )}
+        >
+          SAFE MODE
+          <br />
+          All client scripts are disabled
+        </div>
+      )}
+      <div className={layout} id="WegasLayout">
+        <Header />
+        <PageContextProvider layoutId={mainLayoutId}>
+          <DndLinearLayout
+            tabs={layoutPages}
+            initialLayout={initialLayout}
+            layoutId={mainLayoutId}
+          />
+        </PageContextProvider>
+      </div>
+    </>
   );
 }

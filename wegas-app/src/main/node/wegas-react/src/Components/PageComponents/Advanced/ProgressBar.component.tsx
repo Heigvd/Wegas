@@ -1,12 +1,12 @@
 import * as React from 'react';
+import { ProgressBar } from '../../Achivements/AchievementProgressBar';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { classStyleIdShema } from '../tools/options';
-import { ProgressBar } from '../../Achivements/AchievementProgressBar';
+import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerProgressBarProps extends WegasComponentProps {
   quest: string;
@@ -28,7 +28,8 @@ registerComponent(
   pageComponentFactory({
     component: PlayerProgressBar,
     componentType: 'Advanced',
-    name: 'Quest Progress Bar',
+    id: 'Quest Progress Bar',
+    name: 'Progress Bar',
     icon: 'certificate',
     illustration: 'questProgressBar',
     schema: {

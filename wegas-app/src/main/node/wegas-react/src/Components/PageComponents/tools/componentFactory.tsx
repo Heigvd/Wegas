@@ -25,6 +25,7 @@ export const usableComponentType = [
   'Output',
   'Advanced',
   'Programmatic',
+  'Maps',
 ] as const;
 
 export const componentTypes = [
@@ -64,6 +65,10 @@ interface PageComponentBehaviour {
   allowMove: (props: WegasComponent) => boolean;
   /** Can it accept drop */
   allowChildren: (props: WegasComponent) => boolean;
+  /** Accept only specific children types */
+  filterChildrenType: string[] | undefined;
+  /** Accept only specific children names */
+  filterChildrenName: string[] | undefined;
   /** Can it be edited */
   allowEdit: (props: WegasComponent) => boolean;
 }
@@ -78,6 +83,8 @@ export const defaultPageComponentBehaviour: PageComponentBehaviour = {
   allowChildren: function (component) {
     return component.props?.children != null;
   },
+  filterChildrenType: undefined,
+  filterChildrenName: undefined,
   allowEdit: function () {
     return true;
   },
@@ -88,6 +95,10 @@ interface ComponentFactoryBasicParameters<
   C extends ContainerComponent<P> | undefined,
   T extends IVariableDescriptor['@class'],
 > {
+  /**
+   * The id of the component
+   */
+  id: string;
   /**
    * The name of the component
    */
@@ -166,6 +177,7 @@ export interface PageComponent<
     PageComponentOmitProps
   > {
   WegasComponent: React.FunctionComponent<P>;
+  componentId: string;
   componentName: string;
   schema: {
     description: string;
@@ -288,6 +300,7 @@ export function pageComponentFactory<
   return {
     ...omit(param, pageComponentOmitProps),
     WegasComponent: param.component,
+    componentId: param.id,
     componentName: param.name,
     schema: {
       description: param.name,
@@ -311,7 +324,7 @@ export const registerComponent: (component: PageComponent) => void =
   component => {
     componentsStore.dispatch(
       PageComponentActionCreator.ADD_COMPONENT(
-        component.componentName,
+        component.componentId,
         component,
       ),
     );

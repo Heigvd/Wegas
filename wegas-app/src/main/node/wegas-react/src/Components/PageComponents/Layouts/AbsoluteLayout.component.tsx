@@ -1,16 +1,16 @@
 import {
-  pageComponentFactory,
-  registerComponent,
-} from '../tools/componentFactory';
-import {
   AbsoluteItem,
   AbsoluteLayout,
   absolutelayoutChoices,
   defaultAbsoluteLayoutPropsKeys,
 } from '../../Layouts/Absolute';
-import { childrenDeserializerFactory } from './FlexList.component';
-import { classStyleIdShema } from '../tools/options';
 import { onVariableChangeSchema } from '../Inputs/tools';
+import {
+  pageComponentFactory,
+  registerComponent,
+} from '../tools/componentFactory';
+import { classStyleIdShema } from '../tools/options';
+import { childrenDeserializerFactory } from './FlexList.component';
 
 function isVertical() {
   return undefined;
@@ -30,7 +30,8 @@ registerComponent(
       childrenLayoutOptionSchema: absolutelayoutChoices,
       childrenLayoutKeys: defaultAbsoluteLayoutPropsKeys,
     },
-    name: 'AbsoluteLayout',
+    id: 'AbsoluteLayout',
+    name: 'Absolute layout',
     icon: 'images',
     illustration: 'absoluteLayout',
     dropzones: {

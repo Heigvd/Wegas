@@ -1,19 +1,19 @@
+import { css, CSSInterpolation, cx } from '@emotion/css';
 import * as React from 'react';
-import { CSSInterpolation, css, cx } from '@emotion/css';
-import Slider from './react-input-slider/react-number-slider';
 import {
   flex,
   flexColumn,
   halfOpacity,
   textCenter,
 } from '../../../css/classes';
-import { CheckMinMax } from './numberComponentHelper';
-import { Value } from '../../Outputs/Value';
-import { InputProps } from '../SimpleInput';
-import { NumberInput } from './NumberInput';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { themeVar } from '../../Theme/ThemeVars';
+import { Value } from '../../Outputs/Value';
 import { isActionAllowed } from '../../PageComponents/tools/options';
+import { themeVar } from '../../Theme/ThemeVars';
+import { InputProps } from '../SimpleInput';
+import { CheckMinMax } from './numberComponentHelper';
+import { NumberInput } from './NumberInput';
+import Slider from './react-input-slider/react-number-slider';
 
 const valueDisplayStyle = css({
   textAlign: 'center',
@@ -179,6 +179,8 @@ export function NumberSlider({
     value,
   ]);
 
+  const computedSteps = Math.abs(max - min) / (steps ?? 100);
+
   return (
     <div id={id} className={textCenter + classNameOrEmpty(className)}>
       {typeof label === 'string' ? <Value value={label} /> : label}
@@ -202,9 +204,13 @@ export function NumberSlider({
         axis="x"
         xmax={max}
         xmin={min}
-        xstep={Math.abs(max - min) / (steps ? steps : 100)}
+        xstep={computedSteps}
         x={internalValue}
-        onChange={({ x }) => !readOnly && onNumberChange(x, 'Change')}
+        onChange={({ x }) => {
+          if (isActionAllowed({ readOnly, disabled })) {
+            onNumberChange(parseFloat(x.toFixed(10)), 'Change');
+          }
+        }}
         onDragEnd={() =>
           !readOnly && onChange && onChange(refValue.current, 'DragEnd')
         }

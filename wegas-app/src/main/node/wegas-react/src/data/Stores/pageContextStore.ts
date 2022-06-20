@@ -1,5 +1,5 @@
-import * as React from 'react';
 import u from 'immer';
+import * as React from 'react';
 import { applyMiddleware, compose, createStore, Reducer } from 'redux';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { registerEffect } from '../../Helper/pageEffectsManager';
@@ -103,7 +103,6 @@ let name = 0;
 
 /**
  * Create and init a PageContext state.
- * @param exposeAs state will be exposed as "Context[esposeAs]" in client scripts
  * @param value: initial state value
  *
  * @returns function to update the state

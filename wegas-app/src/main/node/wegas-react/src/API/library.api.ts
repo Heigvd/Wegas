@@ -49,6 +49,7 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
     ): Promise<IGameModelContent> {
       const newLib: IGameModelContent = {
         '@class': 'GameModelContent',
+        contentKey: name,
         content: content,
         contentType: mimeType,
         version: 0,

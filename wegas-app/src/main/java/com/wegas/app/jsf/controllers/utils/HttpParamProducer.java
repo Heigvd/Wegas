@@ -43,4 +43,10 @@ public class HttpParamProducer {
         return null;
     }
 
+	@Produces
+    @HttpParam
+    Boolean getHttpParamAsBoolean(InjectionPoint ip) {
+        String httpParam = this.getHttpParam(ip);
+		return "true".equals(httpParam);
+    }
 }

@@ -44,6 +44,7 @@ public class EditorGameController extends AbstractGameController {
      */
     @Inject @HttpParam
     private Long teamId;
+
     /**
      *
      */

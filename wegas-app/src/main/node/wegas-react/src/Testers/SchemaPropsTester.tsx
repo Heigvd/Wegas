@@ -21,7 +21,10 @@ const testSchema = {
   number: schemaProps.number({ label: 'Number' }),
   string: schemaProps.string({ label: 'String' }),
   script: schemaProps.script({ label: 'Script' }),
-  code: schemaProps.code({ label: 'Code' }),
+  code: schemaProps.code({
+    label: 'Code',
+    scriptProps: { language: 'TypeScript' },
+  }),
   select: schemaProps.select({
     label: 'Select',
     required: true,

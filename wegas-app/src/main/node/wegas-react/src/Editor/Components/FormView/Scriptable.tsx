@@ -13,18 +13,17 @@ import { TempScriptEditor } from '../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 
+export interface ScriptableViewView extends LabeledView, CommonView {
+  scriptProps: {
+    language?: CodeLanguage;
+    returnType?: string[];
+    args?: [string, string[]][];
+  };
+  literalSchema: AvailableSchemas;
+}
+
 export interface ScriptableViewProps
-  extends WidgetProps.BaseProps<
-    LabeledView &
-      CommonView & {
-        scriptProps: {
-          language?: CodeLanguage;
-          returnType?: string[];
-          args?: [string, string[]][];
-        };
-        literalSchema: AvailableSchemas;
-      }
-  > {
+  extends WidgetProps.BaseProps<ScriptableViewView> {
   value?: IScript | string;
   onChange: (code?: IScript | unknown) => void;
 }
@@ -51,7 +50,7 @@ export default function ScriptableView(
   const switchToScriptMode = React.useCallback(() => {
     let scripted;
     try {
-      scripted = JSON.stringify(valueRef.current);
+      scripted = '(' + JSON.stringify(valueRef.current) + ')';
     } catch {
       scripted = valueRef.current;
     }

@@ -1,3 +1,5 @@
+import { AuthorizationData } from '../../Components/Contexts/AuthorizationsProvider';
+
 export interface CommonTranslations {
   plzChooseValue: string;
   newChanges: string;
@@ -44,4 +46,16 @@ export interface CommonTranslations {
   noSelectedTab: string;
   serverDown: string;
   serverOutaded: string;
+  somethingIsUndefined: (name: string) => string;
+  authorizations: {
+    authorize: string;
+    refuse: string;
+    authorizationsText: string;
+    authorizationNeeded: string;
+    authorizationRefused: string;
+    resetAllAuthorizations: string;
+    authorizations: {
+      [key in keyof AuthorizationData]: { label: string; description: string };
+    };
+  };
 }

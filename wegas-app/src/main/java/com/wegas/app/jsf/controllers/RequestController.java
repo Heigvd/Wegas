@@ -52,6 +52,9 @@ public class RequestController implements Serializable {
     @Inject @HttpParam
     private String debug;
 
+    @Inject @HttpParam
+    private Boolean safeMode;
+
     /**
      *
      */
@@ -83,7 +86,7 @@ public class RequestController implements Serializable {
 
     /**
      * Such a hack to injext %lt;flash:message%gt; tag
-     * @return 
+     * @return
      */
     public String getFlashMessageTag(){
         return "<flash:messages></flash:messages>";
@@ -216,4 +219,12 @@ public class RequestController implements Serializable {
         }
         return Boolean.valueOf(this.getDebug());
     }
+
+	public Boolean getSafeMode() {
+		return safeMode;
+	}
+
+	public void setSafeMode(Boolean safeMode) {
+		this.safeMode = safeMode;
+	}
 }

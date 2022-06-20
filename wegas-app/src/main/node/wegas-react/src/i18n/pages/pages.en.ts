@@ -11,4 +11,9 @@ export const pagesTranslationsEN: PagesTranslations = {
   editComponent: 'Edit component',
   obsoleteComponent:
     'The component has been updated. Please contact your trainer.',
+  forEach: {
+    noItems: 'The component did not receive any array of items',
+    noKey: index => `The key is missing for item #${index}`,
+  },
+  missingProperty: propName => `The property "${propName}" is missing`,
 };

@@ -36,7 +36,8 @@ export const commonTranslationsDE: CommonTranslations = {
     hide: 'Header anzeigen',
     show: 'Header ausblenden',
     restartGame: 'Neustart des Spiels (gilt für jeden Szenaristen)',
-    restartRealGame: "VORSICHT, Sie sind dabei, ein echtes Spiel neu zu starten. Alle Teams werden zurückgesetzt.",
+    restartRealGame:
+      'VORSICHT, Sie sind dabei, ein echtes Spiel neu zu starten. Alle Teams werden zurückgesetzt.',
     resetLayout: 'Layout zurücksetzen',
     notifications: 'Benachrichtigungen',
     teams: 'Teams',
@@ -47,4 +48,21 @@ export const commonTranslationsDE: CommonTranslations = {
   serverDown: 'Wiederverbindung...',
   serverOutaded:
     'Ihre Version von Wegas ist nicht auf dem neuesten Stand, bitte aktualisieren Sie Ihren Browser.',
+  somethingIsUndefined: name => `${name} ist ungültig`,
+  authorizations: {
+    authorize: 'Zulassen',
+    refuse: 'Ablehnen',
+    authorizationsText: 'Berechtigungen',
+    authorizationNeeded: 'Autorisierung erforderlich',
+    authorizationRefused:
+      'Die Komponente kann nicht angezeigt werden, da die Berechtigung verweigert wurde',
+    resetAllAuthorizations: 'Alle Berechtigungen zurücksetzen',
+    authorizations: {
+      allowExternalUrl: {
+        label: 'Zugriff auf externe URLs erlauben',
+        description:
+          'Sie erklären sich damit einverstanden, Ihre IP-Adresse anderen Websites zur Verfügung zu stellen, damit Wegas externe Ressourcen (Schriftarten, Bilder, Karten, usw.) erhalten kann.',
+      },
+    },
+  },
 };

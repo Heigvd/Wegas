@@ -7,6 +7,10 @@ import {
   DEFINED_VIEWS,
   SchemaFromView,
 } from '../../../Editor/Components/FormView';
+import { CallbackViewView } from '../../../Editor/Components/FormView/Callback';
+import { CodeViewView } from '../../../Editor/Components/FormView/Code';
+import { NuppleView } from '../../../Editor/Components/FormView/Nupple';
+import { ScriptableViewView } from '../../../Editor/Components/FormView/Scriptable';
 import { WegasMethod } from '../../../Editor/editionConfig';
 import { createScript } from '../../../Helper/wegasEntites';
 import { Choices } from '../../Selector';
@@ -283,7 +287,6 @@ const simpleSchemaProps = {
   code: ({
     label,
     required = false,
-    language = 'JavaScript',
     value,
     featureLevel = 'DEFAULT',
     index = 0,
@@ -291,24 +294,60 @@ const simpleSchemaProps = {
     borderTop,
     noMarginTop,
     description,
-    visible,
-  }: {
-    language?: CodeLanguage;
-  } & CommonSchemaProps &
-    ValueSchemaProps<UknownValuesObject | string>): SchemaFromView<'code'> => ({
+    scriptProps,
+    borderBottom,
+    readOnly,
+  }: CodeViewView &
+    CommonSchemaProps &
+    ValueSchemaProps<IScript>): SchemaFromView<'code'> => ({
     required,
     type: 'object',
     value,
     index,
-    visible,
     view: {
+      scriptProps,
       borderTop,
+      borderBottom,
+      readOnly,
       noMarginTop,
       index,
       featureLevel,
       label,
-      language,
       type: 'code',
+      layout,
+      description,
+    },
+  }),
+  callback: ({
+    label,
+    required = false,
+    value,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+    noMarginTop,
+    description,
+    callbackProps,
+    borderBottom,
+    readOnly,
+  }: CallbackViewView &
+    CommonSchemaProps &
+    ValueSchemaProps<IScript>): SchemaFromView<'callback'> => ({
+    required,
+    type: 'object',
+    value,
+    index,
+    view: {
+      callbackProps,
+      borderTop,
+      borderBottom,
+      readOnly,
+      noMarginTop,
+      index,
+      featureLevel,
+      label,
+      type: 'callback',
       layout,
       description,
     },
@@ -845,6 +884,89 @@ const simpleSchemaProps = {
       label,
       required,
       type: 'scriptablepath',
+      layout,
+      borderTop,
+      noMarginTop,
+      description,
+    },
+  }),
+  scriptable: ({
+    label,
+    required = false,
+    featureLevel = 'DEFAULT',
+    valueType,
+    index = 0,
+    layout,
+    borderTop,
+    noMarginTop,
+    description,
+    visible,
+    literalSchema,
+    scriptProps,
+    currentLanguage,
+    readOnly,
+    onLanguage,
+    borderBottom,
+  }: CommonSchemaProps &
+    ScriptableViewView & {
+      valueType?: TYPESTRING | TYPESTRING[];
+    }): SchemaFromView<'scriptable'> => ({
+    required,
+    type:
+      valueType != null
+        ? Array.isArray(valueType)
+          ? ['object', ...valueType]
+          : ['object', valueType]
+        : 'object',
+    index,
+    visible,
+    view: {
+      featureLevel,
+      index,
+      label,
+      literalSchema,
+      scriptProps,
+      borderBottom,
+      currentLanguage,
+      onLanguage,
+      readOnly,
+      type: 'scriptable',
+      layout,
+      borderTop,
+      noMarginTop,
+      description,
+    },
+  }),
+  nupple: ({
+    label,
+    required = false,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+    noMarginTop,
+    description,
+    visible,
+    currentLanguage,
+    readOnly,
+    onLanguage,
+    borderBottom,
+    itemsSchema,
+  }: CommonSchemaProps & NuppleView): SchemaFromView<'nupple'> => ({
+    required,
+    type: 'array',
+    index,
+    visible,
+    view: {
+      itemsSchema,
+      featureLevel,
+      index,
+      label,
+      borderBottom,
+      currentLanguage,
+      onLanguage,
+      readOnly,
+      type: 'nupple',
       layout,
       borderTop,
       noMarginTop,

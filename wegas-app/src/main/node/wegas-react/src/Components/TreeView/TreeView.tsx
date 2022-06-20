@@ -383,9 +383,9 @@ export function TreeView<T = unknown>({
 
           path = parsePath(path, position);
 
-          let fromPath;
-          let fromId;
-          let fromData;
+          let fromPath: number[] | undefined;
+          let fromId: string | undefined;
+          let fromData: T | undefined;
 
           try {
             fromPath = JSON.parse(e.dataTransfer.getData('path'));
@@ -404,6 +404,7 @@ export function TreeView<T = unknown>({
           }
 
           const dropInItself =
+            fromPath != null &&
             path.slice(0, fromPath.length).join(',') === fromPath.join(',');
           if (!dropInItself) {
             onMove(

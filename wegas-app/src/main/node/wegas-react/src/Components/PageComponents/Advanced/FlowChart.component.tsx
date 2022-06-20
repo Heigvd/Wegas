@@ -98,6 +98,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerFlowChart,
     componentType: 'Advanced',
+    id: 'Flow chart',
     name: 'Flow chart',
     icon: 'atom',
     illustration: 'flowChart',

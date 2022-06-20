@@ -102,6 +102,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerStateMachine,
     componentType: 'Advanced',
+    id: 'State machine',
     name: 'State machine',
     icon: 'atom',
     illustration: 'stateMachine',
