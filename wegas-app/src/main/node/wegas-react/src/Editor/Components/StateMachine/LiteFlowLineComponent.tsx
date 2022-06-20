@@ -7,6 +7,7 @@ import {
   IFSMDescriptor,
 } from 'wegas-ts-api';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { EmptyMessage } from '../../../Components/EmptyMessage';
 import {
   CustomFlowLineComponent,
   FlowLineComponentProps,
@@ -22,6 +23,7 @@ import { Validate } from '../../../Components/Inputs/Validate';
 import { HTMLText } from '../../../Components/Outputs/HTMLText';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { block, expandWidth, textCenter } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
 import { createTranslatableContent, translate } from '../../../data/i18n';
@@ -107,25 +109,39 @@ export function LiteFlowLineComponentFactory<
 
     const onEdit = React.useCallback(
       (e: ModifierKeysEvent) => {
-        if (!entityIs(startProcess.state, 'State')) {
-          setEditing(true);
-        } else {
-          onClick && onClick(e, startProcess, flowline);
+        if (
+          isActionAllowed({
+            disabled: disabled,
+            readOnly: readOnly,
+          })
+        ) {
+          if (!entityIs(startProcess.state, 'State')) {
+            setEditing(true);
+          } else {
+            onClick && onClick(e, startProcess, flowline);
+          }
         }
       },
-      [flowline, onClick, startProcess],
+      [disabled, flowline, onClick, readOnly, startProcess],
     );
 
     const onTrash = React.useCallback(() => {
-      editingStore.dispatch(
-        deleteTransition(
-          stateMachine,
-          Number(startProcess.id),
-          Number(flowline.id),
-        ),
-      );
-      setEditing(false);
-    }, [flowline.id, startProcess.id]);
+      if (
+        isActionAllowed({
+          disabled: disabled,
+          readOnly: readOnly,
+        })
+      ) {
+        editingStore.dispatch(
+          deleteTransition(
+            stateMachine,
+            Number(startProcess.id),
+            Number(flowline.id),
+          ),
+        );
+        setEditing(false);
+      }
+    }, [disabled, flowline.id, readOnly, startProcess.id]);
 
     return (
       <CustomFlowLineComponent
@@ -157,7 +173,7 @@ export function LiteFlowLineComponentFactory<
                   <HTMLEditor
                     value={value}
                     onChange={onChange}
-                    toolbarLayout='player'
+                    toolbarLayout="player"
                     // customToolbar="bold italic underline bullist fontsizeselect"
                   />
                 )}
@@ -177,7 +193,13 @@ export function LiteFlowLineComponentFactory<
               onClick={e => onClick && onClick(e, startProcess, flowline)}
             >
               <div className="StateLabelTextStyle">
-                <HTMLText text={textValue || 'Empty'} />
+                {textValue ? (
+                  <HTMLText text={textValue} />
+                ) : (
+                  <EmptyMessage
+                    className={cx(expandWidth, textCenter, block)}
+                  />
+                )}
               </div>
             </div>
           )}

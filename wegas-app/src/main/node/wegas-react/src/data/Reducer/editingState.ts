@@ -302,17 +302,18 @@ export function editVariable(
 
 export function deleteState<T extends IFSMDescriptor | IDialogueDescriptor>(
   stateMachine: Immutable<T>,
-  id: number,
+  index: number,
 ): EditingThunkResult {
   return function (dispatch) {
     const newStateMachine = produce((stateMachine: T) => {
       const { states } = stateMachine;
-      delete states[id];
+
+      delete states[index];
       // delete transitions pointing to deleted state
       for (const s in states) {
         (states[s] as IAbstractState).transitions = (
           states[s].transitions as IAbstractTransition[]
-        ).filter(t => t.nextStateId !== id);
+        ).filter(t => t.nextStateId !== index);
       }
     })(stateMachine);
 

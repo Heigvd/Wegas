@@ -642,9 +642,9 @@ export function ComponentContainer({
 
   const dragEnter = React.useCallback(
     e => {
-      e.preventDefault();
-      e.stopPropagation();
       if (editable) {
+        e.preventDefault();
+        e.stopPropagation();
         setDragHoverState(true);
       }
     },

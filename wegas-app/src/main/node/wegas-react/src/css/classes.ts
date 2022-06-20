@@ -256,6 +256,10 @@ export const contentStyle = css({
   margin: '5px',
 });
 
+export const indent = css({
+  paddingLeft: '1em',
+});
+
 export const childrenHeaderStyle = css({
   backgroundColor: themeVar.colors.ActiveColor,
   borderBottom: 'none',

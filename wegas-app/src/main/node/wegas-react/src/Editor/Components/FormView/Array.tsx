@@ -122,6 +122,7 @@ function ArrayItem({
     unknown,
     DnDArrayDragMonitor
   >({
+    type: dndItemType,
     item: { type: dndItemType, index },
     collect: monitor => {
       return {

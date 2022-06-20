@@ -98,6 +98,13 @@ const modules = {
         exclude: /node_modules/,
         loader: 'babel-loader',
       },
+      // Specifically made for react-dnd@16
+      {
+        test: /\.m?js$/,
+        resolve: {
+          fullySpecified: false, // disable the behavior
+        },
+      },
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],

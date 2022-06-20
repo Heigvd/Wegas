@@ -56,6 +56,10 @@ import { LiteStateProcessComponentFactory } from './LiteProcessComponent';
 import { StateMachineLegend } from './StateMachineLegend';
 
 const emptyPath: (string | number)[] = [];
+const defaultProcessInitialSize = {
+  width: 200,
+  height: 66,
+};
 
 export interface TransitionFlowLine extends FlowLine {
   transition: ITransition | IDialogueTransition;
@@ -97,8 +101,6 @@ export function StateMachineEditor<
 }: StateMachineEditorProps<IFSM>) {
   type TState = IFSM['states'][0];
   type TTransition = TState['transitions'][0];
-
-  // const computedForceLocalDispatch = !lite && forceLocalDispatch;
 
   const { lang } = React.useContext(languagesCTX);
   const onEditionChanges = useOnEditionChangesModal(
@@ -443,6 +445,7 @@ export function StateMachineEditor<
       isProcessSelected={isProcessSelected}
       Process={Process}
       Flowline={Flowline}
+      processInitialSize={defaultProcessInitialSize}
       {...options}
     />
   );
@@ -530,6 +533,7 @@ export function ConnectedStateMachineEditor({
           stateMachineInstance={editingState.instance}
           search={search}
           editPath={editingState.editPath}
+          lite={true}
           {...options}
         />
       </div>

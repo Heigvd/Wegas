@@ -8,6 +8,7 @@ import {
   ComponentWithFormFlexValues,
   flexValuesSchema,
 } from '../../../Editor/Components/FormView/ComponentWithForm';
+import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { StateMachineEditor } from '../../../Editor/Components/StateMachine/StateMachineEditor';
 import { shallowDifferent } from '../../Hooks/storeHookFactory';
 import { useScript } from '../../Hooks/useScript';
@@ -39,6 +40,7 @@ export default function PlayerStateMachine({
   id,
   options,
 }: PlayerStateMachineProps) {
+  const { editMode } = React.useContext(pageCTX);
   const titleText = useScript<string>(title, context);
   const FSM = useScript<SFSMDescriptor>(stateMachine, context);
   const descriptor = FSM?.getEntity();
@@ -64,7 +66,7 @@ export default function PlayerStateMachine({
           ? localState.editing.path
           : undefined
       }
-      disabled={options.disabled || options.locked}
+      disabled={editMode || options.disabled || options.locked}
       readOnly={options.readOnly}
       lite={lite}
       forceLocalDispatch
@@ -86,7 +88,7 @@ export default function PlayerStateMachine({
               localState?.type === 'VariableFSM' ? localState.path : undefined
             }
             forceLocalDispatch
-            disabled={options.disabled || options.locked}
+            disabled={editMode || options.disabled || options.locked}
             readOnly={options.readOnly}
             lite={lite}
           />

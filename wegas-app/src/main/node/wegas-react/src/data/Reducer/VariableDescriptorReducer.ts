@@ -18,7 +18,7 @@ import { Game, GameModel, Player } from '../selectors';
 import { EditingThunkResult } from '../Stores/editingStore';
 import { store, ThunkResult } from '../Stores/store';
 import { deepRemove } from '../updateUtils';
-import { editVariable } from './editingState';
+import { deleteState, editVariable } from './editingState';
 
 export interface VariableDescriptorState {
   [id: string]: Readonly<IVariableDescriptor> | undefined;
@@ -193,6 +193,14 @@ export function deleteDescriptor(
 ): EditingThunkResult {
   return function (dispatch, getState) {
     if (path.length > 0) {
+      // Manage state deletion specificaly
+      if (
+        path.length === 2 &&
+        (entityIs(variableDescriptor, 'FSMDescriptor') ||
+          entityIs(variableDescriptor, 'DialogueDescriptor'))
+      ) {
+        return dispatch(deleteState(variableDescriptor, Number(path[1])));
+      }
       const vs = deepRemove(variableDescriptor, path) as IVariableDescriptor;
       return dispatch(updateDescriptor(vs));
     }

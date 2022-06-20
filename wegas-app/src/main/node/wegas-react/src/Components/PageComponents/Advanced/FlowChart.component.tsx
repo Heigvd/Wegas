@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
+import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { FlowChart, FlowChartProps } from '../../FlowChart/FlowChart';
 import {
   LabeledFlowLine,
@@ -19,6 +20,11 @@ import {
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
+
+const defaultProcessInitialSize = {
+  width: 100,
+  height: 50,
+};
 
 interface PlayerFlowChartProps<
   F extends LabeledFlowLine,
@@ -47,6 +53,7 @@ export default function PlayerFlowChart<
   id,
   options,
 }: PlayerFlowChartProps<F, P>) {
+  const { editMode } = React.useContext(pageCTX);
   const titleText = useScript<string>(title, context);
   const scriptProcesses = useScript<LabeledProcess<F>[]>(processes);
 
@@ -76,7 +83,8 @@ export default function PlayerFlowChart<
       id={id}
       Flowline={LabeledFlowLineComponent}
       Process={PlayerFlowChartProcessComponent}
-      disabled={options.disabled || options.locked}
+      processInitialSize={defaultProcessInitialSize}
+      disabled={editMode || options.disabled || options.locked}
       readOnly={options.readOnly}
     />
   );
