@@ -103,6 +103,7 @@ export function TabLayoutContent({
   components,
   activeTab,
 }: TabLayoutContentProps) {
+  // debugger;
   const i18nValues = useInternalTranslate(commonTranslations);
   const component = components.find(
     comp => comp != null && comp.tabId === activeTab,
@@ -168,9 +169,7 @@ export function TabLayoutContentWithFullScreen({
         >
           <div className={cx(modalTitleDivStyle, flexRow)}>
             <Tab className={cx(tabsStyle(true), fullScreenTabStyle)}>
-              <span className="tab-label">
-                {translatedLabel}
-              </span>
+              <span className="tab-label">{translatedLabel}</span>
               <IconButton
                 icon="compress-alt"
                 tooltip="Remove tab"

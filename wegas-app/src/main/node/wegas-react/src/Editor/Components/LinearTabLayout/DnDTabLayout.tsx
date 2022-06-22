@@ -109,6 +109,22 @@ function translateTabs(
   });
 }
 
+function flatFindUsableTabs(tabs: DnDTabs): DnDTabs {
+  return tabs
+    .flatMap(tab => {
+      if (tab.items == null) {
+        return tab;
+      } else {
+        return flatFindUsableTabs(tab.items);
+      }
+    })
+    .filter(function (
+      tab: DropMenuItem<string> | undefined,
+    ): tab is DropMenuItem<string> {
+      return tab != null;
+    });
+}
+
 interface DnDTabLayoutHeaderProps
   extends Pick<
       DnDTabLayoutProps,
@@ -142,8 +158,17 @@ function DnDTabLayoutHeader({
 }: DnDTabLayoutHeaderProps) {
   const i18nTabsNames = useInternalTranslate(editorTabsTranslations);
   const tabsClassNameFn = tabsClassName ? tabsClassName : tabsStyle;
+
+  const showAddTab =
+    otherTabs != null && flatFindUsableTabs(otherTabs).length > 0;
+
   return (
     <div className={cx(flex, grow, autoScroll, headerTabStyle)}>
+      <DropTab
+        dndAcceptType={dndAcceptType}
+        position={'FIRST'}
+        onDrop={onDropTab(0)}
+      />
       {components.map(({ tabId: label }, i, array) => {
         const translatedOrUndefLabel =
           i18nTabsNames.tabsNames[
@@ -155,11 +180,13 @@ function DnDTabLayoutHeader({
 
         return (
           <React.Fragment key={`DnDTab-${label}#${i}`}>
-            <DropTab
-              dndAcceptType={dndAcceptType}
-              position={i === 0 ? 'FIRST' : 'MIDDLE'}
-              onDrop={onDropTab(i)}
-            />
+            {i > 0 && (
+              <DropTab
+                dndAcceptType={dndAcceptType}
+                position={'MIDDLE'}
+                onDrop={onDropTab(i)}
+              />
+            )}{' '}
             <DragTab
               key={label}
               label={label}
@@ -171,9 +198,7 @@ function DnDTabLayoutHeader({
               dndAcceptType={dndAcceptType}
               CustomTab={CustomTab}
             >
-              <span className="tab-label">
-                {translatedLabel}
-              </span>
+              <span className="tab-label">{translatedLabel}</span>
               <IconButton
                 icon="times"
                 tooltip="Remove tab"
@@ -182,33 +207,32 @@ function DnDTabLayoutHeader({
               />
             </DragTab>
             {i === array.length - 1 && (
-              <>
-                <DropTab
-                  dndAcceptType={dndAcceptType}
-                  position={'LAST'}
-                  onDrop={onDropTab(i + 1)}
-                />
-                {otherTabs && otherTabs.length > 0 && (
-                  <CustomTab
-                    className={
-                      plusTabClassName ? plusTabClassName : plusTabStyle
-                    }
-                  >
-                    <DropMenu
-                      items={translateTabs(otherTabs, i18nTabsNames)}
-                      icon="plus"
-                      onSelect={i => {
-                        onSelect && onSelect(i.value);
-                        onNewTab(String(i.value));
-                      }}
-                    />
-                  </CustomTab>
-                )}
-              </>
+              <DropTab
+                dndAcceptType={dndAcceptType}
+                position={'LAST'}
+                onDrop={onDropTab(i + 1)}
+              />
             )}
           </React.Fragment>
         );
       })}
+      {showAddTab && (
+        <CustomTab
+          className={plusTabClassName ? plusTabClassName : plusTabStyle}
+        >
+          <DropMenu
+            items={translateTabs(otherTabs, i18nTabsNames)}
+            icon="plus"
+            onSelect={i => {
+              onSelect && onSelect(i.value);
+              onNewTab(String(i.value));
+            }}
+          />
+        </CustomTab>
+      )}
+      {!showAddTab && components.length === 0 && (
+        <h3>{i18nTabsNames.miscellaneous.noAvailableTabs}</h3>
+      )}
     </div>
   );
 }

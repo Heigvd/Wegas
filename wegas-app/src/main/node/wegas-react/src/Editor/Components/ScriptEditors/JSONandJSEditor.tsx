@@ -1,8 +1,13 @@
-import { css } from '@emotion/css';
 import * as React from 'react';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { Toolbar } from '../../../Components/Toolbar';
-import { defaultPadding } from '../../../css/classes';
+import {
+  defaultTooboxLabelContainerStyle,
+  defaultToolboxButtonContainerStyle,
+  defaultToolboxHeaderStyle,
+  defaultToolboxLabelStyle,
+  expandBoth,
+} from '../../../css/classes';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { MessageString, MessageStringStyle } from '../MessageString';
@@ -10,22 +15,20 @@ import { EmbeddedEditor } from './EmbeddedSrcEditor';
 
 const infoDuration = 5000;
 
-const fullHeight = css({
-  height: '100%',
-});
-
 export interface OnSaveStatus {
   status?: MessageStringStyle;
   text?: string;
 }
 
 interface JSONandJSEditorProps {
+  label: string;
   content: string;
   onSave: (content: string) => OnSaveStatus | void;
   status?: OnSaveStatus;
 }
 
 export function JSONandJSEditor({
+  label,
   content,
   onSave,
   status,
@@ -43,21 +46,26 @@ export function JSONandJSEditor({
   };
 
   return (
-    <Toolbar className={fullHeight}>
-      <Toolbar.Header className={defaultPadding}>
-        <IconButton
-          icon="save"
-          tooltip={i18nValues.save}
-          chipStyle
-          onClick={trySave}
-        />
-        {error !== undefined && (
-          <MessageString
-            type={error.status}
-            value={error.text}
-            duration={infoDuration}
+    <Toolbar className={expandBoth}>
+      <Toolbar.Header className={defaultToolboxHeaderStyle}>
+        <div className={defaultTooboxLabelContainerStyle}>
+          <h3 className={defaultToolboxLabelStyle}>{label}</h3>
+        </div>
+        <div className={defaultToolboxButtonContainerStyle}>
+          <IconButton
+            icon="save"
+            tooltip={i18nValues.save}
+            chipStyle
+            onClick={trySave}
           />
-        )}
+          {error !== undefined && (
+            <MessageString
+              type={error.status}
+              value={error.text}
+              duration={infoDuration}
+            />
+          )}
+        </div>
       </Toolbar.Header>
       <Toolbar.Content>
         <EmbeddedEditor

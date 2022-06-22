@@ -21,7 +21,10 @@ import {
   defaultMarginBottom,
   defaultMarginLeft,
   defaultMarginRight,
-  defaultPadding,
+  defaultTooboxLabelContainerStyle,
+  defaultToolboxButtonContainerStyle,
+  defaultToolboxHeaderStyle,
+  defaultToolboxLabelStyle,
   expandBoth,
   flex,
   flexBetween,
@@ -52,7 +55,6 @@ const unsaved = css({
   fontWeight: 'bolder',
 });
 
-
 const conflict = css({
   color: 'var(--colors-errorcolor)',
 });
@@ -66,18 +68,20 @@ function LibraryTypeNodeLabel({
   const { addLibrary } = React.useContext(librariesCTX);
 
   return (
-    <div className={ cx(flex, flexBetween, defaultMarginBottom, defaultMarginLeft) }>
-      { !editState ? (
+    <div
+      className={cx(flex, flexBetween, defaultMarginBottom, defaultMarginLeft)}
+    >
+      {!editState ? (
         <Button
-          label={ `New ${ libraryType } library` }
+          label={`New ${libraryType} library`}
           icon="plus"
-          onClick={ () => setEditState(true) }
+          onClick={() => setEditState(true)}
         />
       ) : (
         <TextPrompt
-          placeholder={ i18nValues.scripts.libraryName }
+          placeholder={i18nValues.scripts.libraryName}
           defaultFocus
-          onAction={ (success, value) => {
+          onAction={(success, value) => {
             if (success) {
               if (value !== '') {
                 addLibrary(libraryType, value, onNewLibrary);
@@ -86,11 +90,11 @@ function LibraryTypeNodeLabel({
             } else {
               setEditState(false);
             }
-          } }
-          onBlur={ () => setEditState(false) }
+          }}
+          onBlur={() => setEditState(false)}
           applyOnEnter
         />
-      ) }
+      )}
     </div>
   );
 }
@@ -114,8 +118,8 @@ function LibraryNode({
       notDroppable
       label={
         <div
-          onClick={ onSelectLibrary }
-          className={ cx(
+          onClick={onSelectLibrary}
+          className={cx(
             labelStyle,
             flex,
             flexBetween,
@@ -124,11 +128,11 @@ function LibraryNode({
               [unsaved]: library.modified,
               [conflict]: library.conflict,
             }),
-          ) }
+          )}
         >
-          { libraryName }
-          { library.modified && ' [unsaved]' }
-          { library.conflict && ' [outdated]' }
+          {libraryName}
+          {library.modified && ' [unsaved]'}
+          {library.conflict && ' [outdated]'}
         </div>
       }
     />
@@ -147,11 +151,13 @@ export function CustomLibraryEditorView({
   libraryIndex,
   libraryType,
 }: CustomLibraryEditorPropsView) {
-  const [message, setMessage] =
-    React.useState<LibrariesCallbackMessage | undefined>();
+  const [message, setMessage] = React.useState<
+    LibrariesCallbackMessage | undefined
+  >();
   const [mergeMode, setMergeMode] = React.useState(false);
-  const [selectedLibraryName, setSelectedLibraryName] =
-    React.useState<string | undefined>(undefined);
+  const [selectedLibraryName, setSelectedLibraryName] = React.useState<
+    string | undefined
+  >(undefined);
 
   const { setLibraryVisibility, removeLibrary, saveLibrary } =
     React.useContext(librariesCTX);
@@ -163,8 +169,6 @@ export function CustomLibraryEditorView({
 
   const currentLibrary: LibraryWithStatus | undefined =
     selectedLibraryName != null ? libraryIndex[selectedLibraryName] : undefined;
-
-  const currentLibraryType = currentLibrary?.libraryType;
 
   const onNewLibrary = React.useCallback(
     (message: LibrariesCallbackMessage) => {
@@ -181,10 +185,7 @@ export function CustomLibraryEditorView({
     if (currentLibrary != null && !currentLibrary.readOnly) {
       return () => {
         if (currentLibrary != null) {
-          saveLibrary(
-            currentLibrary.monacoPath,
-            setMessage,
-          );
+          saveLibrary(currentLibrary.monacoPath, setMessage);
         }
       };
     }
@@ -219,126 +220,133 @@ export function CustomLibraryEditorView({
 
   return (
     <ReflexContainer orientation="vertical">
-      <ReflexElement flex={ 1 } className={ cx(flex, flexColumn) }>
-        { libraryType ? (
+      <ReflexElement
+        flex={currentLibrary == null ? 5 : 1}
+        className={cx(flex, flexColumn)}
+      >
+        {libraryType ? (
           <LibraryTypeNodeLabel
-            libraryType={ libraryType }
-            onNewLibrary={ onNewLibrary }
+            libraryType={libraryType}
+            onNewLibrary={onNewLibrary}
           />
-        ): <>
-
-            <LibraryTypeNodeLabel libraryType='client' onNewLibrary={ onNewLibrary } />
-            <LibraryTypeNodeLabel libraryType='server' onNewLibrary={ onNewLibrary } />
-            <LibraryTypeNodeLabel libraryType='style' onNewLibrary={ onNewLibrary } />
-        </>
-         }
-        <TreeView rootId={ String(GameModel.selectCurrent().id) }>
-          { Object.entries(libraryIndex)
+        ) : (
+          <>
+            <LibraryTypeNodeLabel
+              libraryType="client"
+              onNewLibrary={onNewLibrary}
+            />
+            <LibraryTypeNodeLabel
+              libraryType="server"
+              onNewLibrary={onNewLibrary}
+            />
+            <LibraryTypeNodeLabel
+              libraryType="style"
+              onNewLibrary={onNewLibrary}
+            />
+          </>
+        )}
+        <TreeView rootId={String(GameModel.selectCurrent().id)}>
+          {Object.entries(libraryIndex)
             /*Object.entries(librariesState[libraryType])*/
             .sort(([a], [b]) => a.localeCompare(b))
             .map(([libraryName, library]) => (
               <LibraryNode
-                key={ library.monacoPath }
-                libraryName={ library.label }
-                library={ library }
-                onSelectLibrary={ () => setSelectedLibraryName(libraryName) }
-                selected={ libraryName === selectedLibraryName }
+                key={library.monacoPath}
+                libraryName={library.label}
+                library={library}
+                onSelectLibrary={() => setSelectedLibraryName(libraryName)}
+                selected={libraryName === selectedLibraryName}
               />
-            )) }
+            ))}
         </TreeView>
       </ReflexElement>
       <ReflexSplitter />
-      <ReflexElement flex={ 5 }>
-        <Toolbar className={ expandBoth }>
-          <Toolbar.Header className={ defaultPadding }>
-            { currentLibrary == null ? (
-              'No library selected yet'
-            ) : (
-              <>
-                <h2>{ currentLibrary.label }</h2>
-                { currentLibraryType != null ? (
-                  <Selector
-                    readOnly={
-                      alloweVisibilities == null ||
-                      alloweVisibilities.length === 1
-                    }
-                    value={ currentLibrary.visibility }
-                    choices={ alloweVisibilities || [] }
-                    allowUndefined={ false }
-                    onChange={ value =>
-                      setLibraryVisibility(
-                        currentLibrary.monacoPath,
-                        value as IVisibility,
-                      )
-                    }
-                    className={ cx(defaultMarginRight, css({ width: '10em' })) }
-                  />
-                ) : null }
-
-                { message && (
+      <ReflexElement flex={currentLibrary == null ? 1 : 5}>
+        {currentLibrary == null ? (
+          'No library selected yet'
+        ) : (
+          <Toolbar className={expandBoth}>
+            <Toolbar.Header className={defaultToolboxHeaderStyle}>
+              <div className={defaultTooboxLabelContainerStyle}>
+                <h3 className={defaultToolboxLabelStyle}>
+                  {currentLibrary.label}
+                </h3>
+              </div>
+              <div className={defaultToolboxButtonContainerStyle}>
+                <Selector
+                  readOnly={
+                    alloweVisibilities == null ||
+                    alloweVisibilities.length === 1
+                  }
+                  value={currentLibrary.visibility}
+                  choices={alloweVisibilities || []}
+                  allowUndefined={false}
+                  onChange={value =>
+                    setLibraryVisibility(
+                      currentLibrary.monacoPath,
+                      value as IVisibility,
+                    )
+                  }
+                  className={cx(defaultMarginRight, css({ width: '10em' }))}
+                />
+                {message && (
                   <MessageString
-                    type={ message.type }
-                    value={ message.message }
-                    duration={ 5000 }
-                    onLabelVanish={ () => setMessage(undefined) }
+                    type={message.type}
+                    value={message.message}
+                    duration={5000}
+                    onLabelVanish={() => setMessage(undefined)}
                   />
-                ) }
-              </>
-            ) }
-            { currentLibrary && (
-              <>
-                { onSave ? (
+                )}
+                {onSave ? (
                   currentLibrary.conflict ? (
                     <IconButton
                       icon="exclamation-triangle"
-                      onClick={ () => setMergeMode(true) }
+                      onClick={() => setMergeMode(true)}
                     />
                   ) : (
                     <IconButton
-                      disabled={ !currentLibrary.modified }
+                      disabled={!currentLibrary.modified}
                       icon="save"
-                      onClick={ onSave }
+                      onClick={onSave}
                     />
                   )
-                ) : null }
-                <IconButton icon="download" onClick={ downloadCb } />
-                { !currentLibrary.readOnly ? (
+                ) : null}
+                <IconButton icon="download" onClick={downloadCb} />
+                {!currentLibrary.readOnly ? (
                   <ConfirmButton
                     icon="trash"
-                    onAction={ success =>
-                      success &&
-                      removeLibrary(
-                        currentLibrary.monacoPath,
-                      )
+                    onAction={success =>
+                      success && removeLibrary(currentLibrary.monacoPath)
                     }
                   />
-                ) : null }
-              </>
-            ) }
-          </Toolbar.Header>
-          <Toolbar.Content>
-            { currentLibrary != null ? (
-              mergeMode ? (
-                <MergeEditor
-                  originalContent={ currentLibrary.persisted.content }
-                  modifiedFileName={ currentLibrary.monacoPath }
-                  onResolved={ () => {
-                    setMergeMode(false);
-                    onSave && onSave();
-                  } }
-                />
+                ) : null}
+              </div>
+            </Toolbar.Header>
+            <Toolbar.Content>
+              {currentLibrary.monacoPath != null && currentLibrary != null ? (
+                mergeMode ? (
+                  <MergeEditor
+                    originalContent={currentLibrary.persisted.content}
+                    modifiedFileName={currentLibrary.monacoPath}
+                    onResolved={() => {
+                      setMergeMode(false);
+                      if (onSave) {
+                        onSave();
+                      }
+                    }}
+                  />
+                ) : (
+                  <SrcEditor
+                    fileName={currentLibrary.monacoPath}
+                    onSave={onSave}
+                  />
+                )
               ) : (
-                <SrcEditor
-                  fileName={ currentLibrary.monacoPath }
-                  readOnly={ currentLibrary.readOnly }
-                  onSave={ onSave }
-                />
-              )
-            ) : (
-              'No library selected yet'
-            ) }
-          </Toolbar.Content>
-        </Toolbar>
+                'No library selected yet'
+              )}
+            </Toolbar.Content>
+          </Toolbar>
+        )}{' '}
       </ReflexElement>
     </ReflexContainer>
   );

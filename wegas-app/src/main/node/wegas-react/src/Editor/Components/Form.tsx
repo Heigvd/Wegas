@@ -10,16 +10,14 @@ import { isActionAllowed } from '../../Components/PageComponents/tools/options';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import {
-  defaultMargin,
-  defaultMarginBottom,
   defaultPaddingLeft,
   defaultPaddingRight,
+  defaultTooboxLabelContainerStyle,
+  defaultToolboxButtonContainerStyle,
+  defaultToolboxHeaderStyle,
+  defaultToolboxLabelStyle,
   expandHeight,
-  flex,
-  flexColumn,
-  flexRow,
   grow,
-  toolboxHeaderStyle,
 } from '../../css/classes';
 import { EditingActionCreator } from '../../data/Reducer/editingState';
 import {
@@ -33,13 +31,6 @@ import './FormView';
 import { MessageString } from './MessageString';
 import { Icon, IconComp } from './Views/FontAwesome';
 
-const toolboxContainerStyle = css({
-  position: 'sticky',
-  top: 0,
-  zIndex: 10,
-  padding: '1em',
-  backgroundColor: themeVar.colors.BackgroundColor,
-});
 const toolboxButtonStyle = css({
   margin: '0 5px',
   height: '35px',
@@ -100,7 +91,7 @@ interface EditorProps<T> extends DisabledReadonly {
   localDispatch: EditingStoreDispatch | undefined;
   error?: {
     message: string;
-    onRead: () => void;
+    onVanish: () => void;
   };
 }
 
@@ -141,8 +132,11 @@ export function Form<T>({
 
   return (
     <Toolbar className={expandHeight}>
-      <Toolbar.Header className={cx(flex, flexColumn, toolboxHeaderStyle)}>
-        <div className={cx(flex, flexRow, toolboxContainerStyle)}>
+      <Toolbar.Header className={defaultToolboxHeaderStyle}>
+        <div className={defaultTooboxLabelContainerStyle}>
+          <h3 className={defaultToolboxLabelStyle}>{label}</h3>
+        </div>
+        <div className={defaultToolboxButtonContainerStyle}>
           {isActionAllowed({
             disabled,
             readOnly,
@@ -220,7 +214,7 @@ export function Form<T>({
             value={error.message}
             type={'error'}
             duration={3000}
-            onLabelVanish={error.onRead}
+            onLabelVanish={error.onVanish}
           />
         )}
       </Toolbar.Header>
@@ -237,20 +231,17 @@ export function Form<T>({
           }
         }}
       >
-        <div className={defaultMargin}>
-          <h3 className={defaultMarginBottom}>{label}</h3>
-          <JSONForm
-            // Ugly workaround to force update JSONForm when config changes or entity changes
-            key={JSON.stringify({ entity, config })}
-            ref={form}
-            value={val}
-            schema={config}
-            onChange={val => {
-              setVal(val);
-              onChange && onChange(val);
-            }}
-          />
-        </div>
+        <JSONForm
+          // Ugly workaround to force update JSONForm when config changes or entity changes
+          key={JSON.stringify({ entity, config })}
+          ref={form}
+          value={val}
+          schema={config}
+          onChange={val => {
+            setVal(val);
+            onChange && onChange(val);
+          }}
+        />
       </Toolbar.Content>
     </Toolbar>
   );

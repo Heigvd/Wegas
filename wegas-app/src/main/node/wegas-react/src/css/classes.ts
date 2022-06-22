@@ -267,9 +267,32 @@ export const childrenHeaderStyle = css({
 });
 
 export const toolboxHeaderStyle = css({
+  flex: 'none',
   paddingBottom: '10px',
   borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
 });
+
+export const toolboxContainerStyle = css({
+  padding: '.75em',
+  backgroundColor: themeVar.colors.BackgroundColor,
+});
+
+export const defaultToolboxHeaderStyle = cx(
+  flex,
+  flexRow,
+  flexWrap,
+  toolboxHeaderStyle,
+  toolboxContainerStyle,
+  css({ overflowX: 'auto', overflowY: 'auto', minHeight: '4em' }),
+);
+
+export const defaultTooboxLabelContainerStyle = cx(grow, defaultMarginRight);
+
+export const defaultToolboxLabelStyle = cx(
+  defaultMarginBottom,
+  defaultMarginTop,
+);
+export const defaultToolboxButtonContainerStyle = cx(flex, flexRow, itemCenter);
 
 export const disabledColorStyle = css({
   color: themeVar.colors.DisabledColor,

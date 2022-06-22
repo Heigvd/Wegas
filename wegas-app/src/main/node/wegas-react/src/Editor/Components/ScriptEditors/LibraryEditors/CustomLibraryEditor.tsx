@@ -15,18 +15,16 @@ interface CustomLibraryEditorProps {
  * LibraryEditor is a component for wegas library management
  */
 export function CustomLibraryEditor({ libraryType }: CustomLibraryEditorProps) {
-  const { librariesState } =
-    React.useContext(librariesCTX);
+  const { librariesState } = React.useContext(librariesCTX);
 
-  const libs = filterByLibraryType(librariesState, libraryType).reduce<Record<string, LibraryWithStatus>>((acc, current) => {
+  const libs = filterByLibraryType(librariesState, libraryType).reduce<
+    Record<string, LibraryWithStatus>
+  >((acc, current) => {
     acc[current.monacoPath] = current;
     return acc;
   }, {});
 
   return (
-    <CustomLibraryEditorView
-      libraryType={ libraryType }
-      libraryIndex={ libs }
-    />
+    <CustomLibraryEditorView libraryType={libraryType} libraryIndex={libs} />
   );
 }

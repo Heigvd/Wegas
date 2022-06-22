@@ -73,7 +73,7 @@ export default function LinearLayoutTester() {
     },
   ];
 
-  const initTabs = ['Variables', 'Files', 'Page Editor'];
+  const initTabs = ['Variables', 'Files'];
 
   return (
     <DndLinearLayout

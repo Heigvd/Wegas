@@ -6,8 +6,7 @@ import { FlexItem } from '../../../Components/Layouts/FlexList';
 import { TextLoader, TumbleLoader } from '../../../Components/Loader';
 import { PageDeserializer } from '../../../Components/PageComponents/tools/PageDeserializer';
 import { themeCTX, ThemeProvider } from '../../../Components/Theme/Theme';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
-import { expandHeight, flex } from '../../../css/classes';
+import { expandBoth, flex } from '../../../css/classes';
 import { State } from '../../../data/Reducer/reducers';
 import { useStore } from '../../../data/Stores/store';
 import { classNameOrEmpty } from '../../../Helper/className';
@@ -32,14 +31,8 @@ export const fullScreenLoaderStyle = css({
   transition: '2s background-color',
 });
 
-const editStyle = css({
-  borderTop: '2px solid ' + themeVar.colors.ActiveColor,
-  overflow: 'auto',
-});
-
 interface PageLoaderProps extends ClassStyleId {
   selectedPageId?: string;
-  displayFrame?: boolean;
   themeMode?: string;
   loadTimer?: number;
   context?: {
@@ -53,7 +46,6 @@ const voidObject = {};
 
 export function PageLoader({
   selectedPageId,
-  displayFrame,
   themeMode,
   className,
   style,
@@ -102,10 +94,7 @@ export function PageLoader({
           fallback={<TextLoader text={i18nCommonValues.buildingWorld} />}
         >
           <div
-            className={
-              cx(flex, { [editStyle]: displayFrame }, expandHeight) +
-              classNameOrEmpty(className)
-            }
+            className={cx(flex, expandBoth) + classNameOrEmpty(className)}
             style={style}
             id={id}
           >

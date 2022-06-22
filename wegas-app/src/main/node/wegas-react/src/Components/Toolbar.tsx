@@ -5,9 +5,13 @@ import { classNameOrEmpty } from '../Helper/className';
 
 const vertical = css(flex, {
   flexDirection: 'row',
+  overflowX: 'auto',
+  overflowY: 'hidden',
 });
 const horizontal = css(flex, {
   flexDirection: 'column',
+  overflowY: 'auto',
+  overflowX: 'hidden',
 });
 const toolbar = css({
   display: 'flex',

@@ -1,6 +1,10 @@
 import { EditorTabsTranslations } from './definitions';
 
 export const editorTabsTranslationsIT: EditorTabsTranslations = {
+  miscellaneous: {
+    noAvailableTabs:
+      'Nessuna scheda disponibile. Provare a cambiare il proprio ruolo nel menu di amministrazione in alto a sinistra',
+  },
   tabsNames: {
     Tester: 'Tester',
     Variables: 'Variabili',
@@ -20,7 +24,7 @@ export const editorTabsTranslationsIT: EditorTabsTranslations = {
     Theme: 'Tema',
     Preview: 'Anteprima',
     Modes: 'Modi',
-    'Page Editor': 'Editore di pagina',
+    Pages: 'Pagine',
     'Component Palette': 'Palette di componenti',
     'Page Display': 'Visualizzazione pagina',
     'Pages Layout': 'Layout di pagine',

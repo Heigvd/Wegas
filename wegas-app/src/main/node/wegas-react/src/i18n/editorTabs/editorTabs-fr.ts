@@ -1,6 +1,10 @@
 import { EditorTabsTranslations } from './definitions';
 
 export const editorTabsTranslationsFR: EditorTabsTranslations = {
+  miscellaneous: {
+    noAvailableTabs:
+      "Aucun onglet disponible. Essayer de changer votre rôle dans le menu d'administration en haut à gauche.",
+  },
   tabsNames: {
     Tester: 'Testeur',
     Variables: 'Variables',
@@ -20,7 +24,7 @@ export const editorTabsTranslationsFR: EditorTabsTranslations = {
     Theme: 'Thème',
     Preview: 'Aperçu',
     Modes: 'Modes',
-    'Page Editor': 'Éditeur de page',
+    Pages: 'Pages',
     'Component Palette': 'Palette de composants',
     'Page Display': 'Affichage page',
     'Pages Layout': 'Liste des pages',
