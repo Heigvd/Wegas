@@ -267,6 +267,7 @@ export const childrenHeaderStyle = css({
 });
 
 export const toolboxHeaderStyle = css({
+  flex: 'none',
   paddingBottom: '10px',
   borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
 });
@@ -282,7 +283,7 @@ export const defaultToolboxHeaderStyle = cx(
   flexWrap,
   toolboxHeaderStyle,
   toolboxContainerStyle,
-  css({ overflowX: 'auto', overflowY: 'hidden', minHeight: '4em' }),
+  css({ overflowX: 'auto', overflowY: 'auto', minHeight: '4em' }),
 );
 
 export const defaultTooboxLabelContainerStyle = cx(grow, defaultMarginRight);
