@@ -160,6 +160,31 @@ export function getLayoutInLocal(
   }
 }
 
+/**
+ * Get previously saved layout in local storage
+ */
+export function removeLayoutInLocal(
+  layoutId: string,
+  rolesId: string,
+  role: string,
+  gameModelId: number = CurrentGM.id!,
+) {
+  try {
+    const newSavedLayoutData = `DnDGridLayoutData.${gameModelId}.${layoutId}.${rolesId}.${role}`;
+    window.localStorage.removeItem(newSavedLayoutData);
+  } catch (_) {
+    //Do nothing;
+  }
+
+  try {
+    // Getting layout from previous way of storing layout
+    const oldSavedLayoutData = `DnDGridLayoutData.${layoutId}.${rolesId}.${role}`;
+    window.localStorage.removeItem(oldSavedLayoutData);
+  } catch (_) {
+    //Do nothing;
+  }
+}
+
 interface LinearLayoutItemComponent {
   tabId: string;
   content: React.ReactNode;

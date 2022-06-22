@@ -1,6 +1,10 @@
 import { EditorTabsTranslations } from './definitions';
 
 export const editorTabsTranslationsEN: EditorTabsTranslations = {
+  miscellaneous: {
+    noAvailableTabs:
+      'No tab available. You should try to change you role in the top left admin menu',
+  },
   tabsNames: {
     Tester: 'Tester',
     Variables: 'Variables',
@@ -20,7 +24,7 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     Theme: 'Theme',
     Preview: 'Preview',
     Modes: 'Modes',
-    'Page Editor': 'Page Editor',
+    Pages: 'Pages',
     'Component Palette': 'Component Palette',
     'Page Display': 'Page Display',
     'Pages Layout': 'Pages Layout',

@@ -212,7 +212,7 @@ export default function Layout() {
 
   const initTabs =
     currentRole === DEFAULT_ROLES.SCENARIO_EDITOR.id
-      ? ['Variables', 'Files', 'Page Editor']
+      ? ['Variables', 'Files']
       : layoutPages.map(page => page.tabId);
   const allowedInitTabs = initTabs.filter(
     t => allowedPages === true || allowedPages.includes(t),
@@ -227,7 +227,7 @@ export default function Layout() {
     }
 
     timer.current = setTimeout(() => {
-      setLoading(Object.keys(layoutPages).length === 0);
+      setLoading(false);
     }, 2500);
     return () => {
       if (timer.current != null) {

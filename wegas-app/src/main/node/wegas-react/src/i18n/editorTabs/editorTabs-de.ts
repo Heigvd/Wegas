@@ -1,6 +1,10 @@
 import { EditorTabsTranslations } from './definitions';
 
 export const editorTabsTranslationsDE: EditorTabsTranslations = {
+  miscellaneous: {
+    noAvailableTabs:
+      'Keine Registerkarte verfügbar. Versuchen Sie Ihre Rolle im Admin-Menü oben links zu ändern',
+  },
   tabsNames: {
     Tester: 'Tester',
     Variables: 'Variablen',
@@ -20,7 +24,7 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
     Theme: 'Thema',
     Preview: 'Vorschau',
     Modes: 'Modi',
-    'Page Editor': 'Seite Editor',
+    Pages: 'Seiten',
     'Component Palette': 'Komponenten-Palette',
     'Page Display': 'Anzeige der Seite',
     'Pages Layout': 'Seitenlayout',

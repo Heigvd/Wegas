@@ -221,7 +221,7 @@ export function CustomLibraryEditorView({
   return (
     <ReflexContainer orientation="vertical">
       <ReflexElement
-        flex={selectedLibraryName == null || currentLibrary == null ? 5 : 1}
+        flex={currentLibrary == null ? 5 : 1}
         className={cx(flex, flexColumn)}
       >
         {libraryType ? (
@@ -261,17 +261,15 @@ export function CustomLibraryEditorView({
         </TreeView>
       </ReflexElement>
       <ReflexSplitter />
-      <ReflexElement
-        flex={selectedLibraryName == null || currentLibrary == null ? 1 : 5}
-      >
-        {selectedLibraryName == null || currentLibrary == null ? (
+      <ReflexElement flex={currentLibrary == null ? 1 : 5}>
+        {currentLibrary == null ? (
           'No library selected yet'
         ) : (
           <Toolbar className={expandBoth}>
             <Toolbar.Header className={defaultToolboxHeaderStyle}>
               <div className={defaultTooboxLabelContainerStyle}>
                 <h3 className={defaultToolboxLabelStyle}>
-                  {selectedLibraryName}
+                  {currentLibrary.label}
                 </h3>
               </div>
               <div className={defaultToolboxButtonContainerStyle}>

@@ -1,6 +1,9 @@
 import { ComponentType } from '../../Components/PageComponents/tools/componentFactory';
 
 export interface EditorTabsTranslations {
+  miscellaneous: {
+    noAvailableTabs: string;
+  };
   tabsNames: {
     Tester: string;
     Variables: string;
@@ -20,7 +23,7 @@ export interface EditorTabsTranslations {
     Theme: string;
     Preview: string;
     Modes: string;
-    'Page Editor': string;
+    Pages: string;
     'Component Palette': string;
     'Page Display': string;
     'Pages Layout': string;

@@ -48,7 +48,7 @@ import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { mainLayoutId } from '../layouts';
 import { parseEvent } from './EntityEditor';
-import { getLayoutInLocal } from './LinearTabLayout/LinearLayout';
+import { removeLayoutInLocal } from './LinearTabLayout/LinearLayout';
 import { FontAwesome, IconComp } from './Views/FontAwesome';
 
 const transparentDropDownButton = css({
@@ -394,12 +394,10 @@ export default function Header() {
                   label: (
                     <div
                       onClick={() => {
-                        window.localStorage.removeItem(
-                          getLayoutInLocal(
-                            mainLayoutId,
-                            store.getState().global.roles.rolesId,
-                            currentRole,
-                          ),
+                        removeLayoutInLocal(
+                          mainLayoutId,
+                          store.getState().global.roles.rolesId,
+                          currentRole,
                         );
                         window.location.reload();
                       }}
