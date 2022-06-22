@@ -1,20 +1,32 @@
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
+import { IPeerReviewDescriptor } from 'wegas-ts-api';
+import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { roleCTX } from '../../Components/Contexts/RoleProvider';
 import { MaxiLoader } from '../../Components/MaxiLoader';
+import { TabLayoutComponent } from '../../Components/TabLayout/TabLayout';
 import { themeVar } from '../../Components/Theme/ThemeVars';
+import { expandWidth } from '../../css/classes';
+import { entityIs } from '../../data/entities';
+import { translate } from '../../data/i18n';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
 import { useStore } from '../../data/Stores/store';
 import { visitIndex } from '../../Helper/pages';
+import PeerReviewPage from '../../Host/PeerReview/PeerReviewPage';
 import { mainLayoutId } from '../layouts';
 import Header from './Header';
 import {
   DndLinearLayout,
   LinearLayoutComponents,
 } from './LinearTabLayout/LinearLayout';
-import { PageContextProvider } from './Page/PageEditor';
+import {
+  defaultPageCTX,
+  PageContextProvider,
+  pageCTX,
+} from './Page/PageEditor';
 import { fullScreenLoaderStyle, PageLoader } from './Page/PageLoader';
+import { AllLibraryEditor } from './ScriptEditors/LibraryEditors/AllLibraryEditor';
 
 const StateMachineEditor = React.lazy(
   () => import('./StateMachine/StateMachineEditor'),
@@ -99,6 +111,10 @@ const availableLayoutTabs: LinearLayoutComponents = [
         tabId: 'Style',
         content: <StyleLibraryEditor />,
       },
+      {
+        tabId: 'AllLibs',
+        content: <AllLibraryEditor />,
+      },
     ],
   },
   {
@@ -155,22 +171,42 @@ function scenaristPagesSelector(s: State) {
 
 export default function Layout() {
   const timer = React.useRef<NodeJS.Timeout | undefined>();
+  const { lang } = React.useContext(languagesCTX);
   const [loading, setLoading] = React.useState(true);
   const { currentRole } = React.useContext(roleCTX);
 
   const scenaristPages = useStore(scenaristPagesSelector).map(
     ({ name, id }) => ({
       tabId: name,
-      content: <PageLoader selectedPageId={id} />,
+      content: (
+        <pageCTX.Provider value={defaultPageCTX}>
+          <PageLoader selectedPageId={id} />
+        </pageCTX.Provider>
+      ),
     }),
   );
+
+  const peerReviews = useStore(s => {
+    return Object.values(s.variableDescriptors).filter(descriptor =>
+      entityIs(descriptor, 'PeerReviewDescriptor'),
+    ) as IPeerReviewDescriptor[];
+  });
+
+  const peerReviewTabs = peerReviews.map<TabLayoutComponent>(peerReview => ({
+    tabId: `Peer review ${translate(peerReview?.label, lang)}`,
+    content: <PeerReviewPage peerReview={peerReview} />,
+  }));
 
   const allowedPages = useStore(s => {
     const role = s.global.roles.roles[currentRole];
     return role == null || role.availableTabs;
   });
 
-  const layoutPages = [...availableLayoutTabs, ...scenaristPages].filter(
+  const layoutPages = [
+    ...availableLayoutTabs,
+    ...scenaristPages,
+    ...peerReviewTabs,
+  ].filter(
     ({ tabId }) => allowedPages === true || allowedPages.includes(tabId),
   );
 
@@ -209,15 +245,35 @@ export default function Layout() {
   }
 
   return (
-    <div className={layout} id="WegasLayout">
-      <Header />
-      <PageContextProvider layoutId={mainLayoutId}>
-        <DndLinearLayout
-          tabs={layoutPages}
-          initialLayout={initialLayout}
-          layoutId={mainLayoutId}
-        />
-      </PageContextProvider>
-    </div>
+    <>
+      {WEGAS_SAFE_MODE && (
+        <div
+          className={cx(
+            expandWidth,
+            css({
+              textAlign: 'center',
+              color: 'white',
+              fontSize: '20px',
+              lineHeight: '40px',
+              backgroundColor: 'var(--colors-errorcolor)',
+            }),
+          )}
+        >
+          SAFE MODE
+          <br />
+          All client scripts are disabled
+        </div>
+      )}
+      <div className={layout} id="WegasLayout">
+        <Header />
+        <PageContextProvider layoutId={mainLayoutId}>
+          <DndLinearLayout
+            tabs={layoutPages}
+            initialLayout={initialLayout}
+            layoutId={mainLayoutId}
+          />
+        </PageContextProvider>
+      </div>
+    </>
   );
 }

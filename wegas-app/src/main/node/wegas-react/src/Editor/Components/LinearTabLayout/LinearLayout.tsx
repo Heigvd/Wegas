@@ -113,30 +113,52 @@ interface ManagedLayoutMap {
   layoutMap: LayoutMap;
 }
 
-// const filterMap = (
-//   map: TabLayoutComponent[],
-//   filterFN: (k: string, i: number) => boolean,
-// ) =>
-//   Object.keys(map)
-//     .filter(filterFN)
-//     .reduce<ComponentMap>(
-//       (newComponents, k) => ({ ...newComponents, [k]: map[k] }),
-//       {},
-//     );
+/**
+ * Save layout structure in local storage
+ */
+function saveLayoutInLocal(
+  layoutId: string,
+  rolesId: string,
+  role: string,
+  layouts: ManagedLayoutMap,
+  gameModelId: number = CurrentGM.id!,
+) {
+  window.localStorage.setItem(
+    `DnDGridLayoutData.${gameModelId}.${layoutId}.${rolesId}.${role}`,
+    JSON.stringify(layouts),
+  );
+}
 
-//     function visitLayoutMap(
-//       data: LayoutMap,
-//       visitFN: (item: LayoutNode) => 'STOP' | 'CONTINUE',
-//     ) {
-//       for (const key in data) {
-//         const item = data[key];
-//         if (visitFN(item) === 'STOP') {
-//           return;
-//         }
-//       if (item.type === "ReflexLayoutNode") {
-//         visitLayoutMap(item.children)
-//       }
-//     }
+/**
+ * Get previously saved layout in local storage
+ */
+export function getLayoutInLocal(
+  layoutId: string,
+  rolesId: string,
+  role: string,
+  gameModelId: number = CurrentGM.id!,
+) {
+  let savedLayoutData = window.localStorage.getItem(
+    `DnDGridLayoutData.${gameModelId}.${layoutId}.${rolesId}.${role}`,
+  );
+
+  if (savedLayoutData == null) {
+    // Getting layout from previous way of storing layout
+    savedLayoutData = window.localStorage.getItem(
+      `DnDGridLayoutData.${layoutId}.${rolesId}.${role}`,
+    );
+  }
+
+  if (savedLayoutData == null) {
+    return undefined;
+  }
+
+  try {
+    return JSON.parse(savedLayoutData);
+  } catch (_) {
+    return undefined;
+  }
+}
 
 interface LinearLayoutItemComponent {
   tabId: string;
@@ -641,6 +663,7 @@ const setLayout =
   <T extends ManagedLayoutMap>(layouts: T, action: TabLayoutsAction) =>
     u(layouts, (layouts: ManagedLayoutMap) => {
       if (action.type === 'RESET') {
+        saveLayoutInLocal(layoutId, rolesId, role, action.newLayout);
         return action.newLayout;
       }
       let newLayouts = layouts;
@@ -691,6 +714,7 @@ const setLayout =
           if (action.type === 'SELECT' || action.type === 'EXTERNALSELECT') {
             newLayouts.layoutMap[srcTabLayoutKey.parentKey].defaultActive =
               action.tabKey as string;
+            saveLayoutInLocal(layoutId, rolesId, role, newLayouts);
             return newLayouts;
           }
           // Remaining actions are drop actions, always remove tab from source TabLayout when dropping
@@ -842,11 +866,7 @@ const setLayout =
           );
         }
       }
-      // Saving layout in local storage
-      window.localStorage.setItem(
-        `DnDGridLayoutData.${layoutId}.${rolesId}.${role}`,
-        JSON.stringify(newLayouts),
-      );
+      saveLayoutInLocal(layoutId, rolesId, role, newLayouts);
       return newLayouts;
     });
 
@@ -955,12 +975,8 @@ export function MainLinearLayout({
   );
 
   React.useEffect(() => {
-    const savedLayoutJSON = window.localStorage.getItem(
-      `DnDGridLayoutData.${layoutId}.${rolesId}.${currentRole}`,
-    );
-    const savedLayout = savedLayoutJSON
-      ? (JSON.parse(savedLayoutJSON) as ManagedLayoutMap)
-      : null;
+    const savedLayout = getLayoutInLocal(layoutId, rolesId, currentRole);
+
     if (savedLayout != null) {
       dispatchLayout({ type: 'RESET', newLayout: savedLayout });
     } else {

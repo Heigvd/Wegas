@@ -24,15 +24,12 @@ import {
   itemCenter,
   showOverflow,
 } from '../../css/classes';
+import { createTranslatableContent, translate } from '../../data/i18n';
 import { updateDescriptor } from '../../data/Reducer/VariableDescriptorReducer';
 import { instantiate } from '../../data/scriptable';
 import { Game, GameModel, Player } from '../../data/selectors';
 import { editingStore } from '../../data/Stores/editingStore';
 import { store, useStore } from '../../data/Stores/store';
-import {
-  createTranslatableContent,
-  translate,
-} from '../../Editor/Components/FormView/translatable';
 import { createScript } from '../../Helper/wegasEntites';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';

@@ -1,5 +1,5 @@
 import { css, cx } from '@emotion/css';
-import { pick } from 'lodash-es';
+import { isEqual, pick } from 'lodash-es';
 import * as React from 'react';
 import {
   flex,
@@ -604,7 +604,7 @@ export function ComponentContainer({
   const editable = editMode && isNotFirstComponent;
   const showComponent = !options.hidden;
 
-  const isSelected = JSON.stringify(path) === JSON.stringify(editedPath);
+  const isSelected = isEqual(path, editedPath);
   const isFocused = usePagesStateStore(
     isComponentFocused(editMode, pageId, path),
   );
@@ -642,9 +642,9 @@ export function ComponentContainer({
 
   const dragEnter = React.useCallback(
     e => {
-      e.preventDefault();
-      e.stopPropagation();
       if (editable) {
+        e.preventDefault();
+        e.stopPropagation();
         setDragHoverState(true);
       }
     },

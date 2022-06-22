@@ -293,11 +293,20 @@ export const wegasTileLayerPropsSchema: AvailableSchemas =
     }),
   });
 
-export const onLayerReadySchema = schemaProps.code({
-  label: 'On layer ready',
-  required: false,
-  scriptProps: {
-    language: 'TypeScript',
-    returnType: ['OnLayerReadyFN'],
-  },
-});
+export const onLayerReadySchema: AvailableSchemas = {
+  view: {
+    label: 'On layer ready',
+    type: 'undefinedable',
+    schema:
+      schemaProps.callback({
+        required: false,
+        callbackProps: {
+          args: [
+            ['layer', ['any']],
+            ['map', ['any']],
+          ],
+          returnType: ['void'],
+        },
+      })
+  }
+}

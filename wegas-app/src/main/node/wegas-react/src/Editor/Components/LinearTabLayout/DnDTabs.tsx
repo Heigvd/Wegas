@@ -74,12 +74,15 @@ export function DragTab({
   CustomTab = Tab,
 }: DragTabProps) {
   const [, drag] = useDrag<DnDItem, unknown, unknown>({
-    item: {
-      label: label,
-      type: dndAcceptType,
-      children: children,
+    type: dndAcceptType,
+    item: () => {
+      onDrag && onDrag(label);
+      return {
+        label: label,
+        type: dndAcceptType,
+        children: children,
+      };
     },
-    begin: () => onDrag && onDrag(label),
   });
 
   if (children === null) {

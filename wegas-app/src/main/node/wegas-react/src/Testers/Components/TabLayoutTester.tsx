@@ -9,7 +9,7 @@ import {
   DndLinearLayout,
   LinearLayoutComponents,
 } from '../../Editor/Components/LinearTabLayout/LinearLayout';
-import LibraryEditor from '../../Editor/Components/ScriptEditors/LibraryEditor';
+import ClientLibraryEditor from '../../Editor/Components/ScriptEditors/LibraryEditors/ClientLibraryEditor';
 import { wlog } from '../../Helper/wegaslog';
 
 export function TabLayoutTester() {
@@ -63,7 +63,7 @@ export function TabLayoutTester() {
 export default function LinearLayoutTester() {
   const availableLayoutTabs: LinearLayoutComponents = [
     { tabId: 'Files', content: <FileBrowserWithMeta /> },
-    { tabId: 'Scripts', content: <LibraryEditor /> },
+    { tabId: 'Scripts', content: <ClientLibraryEditor /> },
     {
       tabId: 'Languages',
       items: [

@@ -12,12 +12,12 @@ import { readMessage } from '../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../data/selectors';
 import { editingStore } from '../../data/Stores/editingStore';
 import { useStore } from '../../data/Stores/store';
-import { useTranslate } from '../../Editor/Components/FormView/translatable';
 import {
   DefaultEntityChooserLabel,
   EntityChooser,
   EntityChooserLabelProps,
 } from '../EntityChooser';
+import { useTranslate } from '../Hooks/useTranslate';
 import { TranslatableText } from './HTMLText';
 
 interface MessageLabelProps {
@@ -71,10 +71,12 @@ interface InboxDisplayProps extends DisabledReadonly {
 }
 
 export function InboxDisplay({ inbox, disabled, readOnly }: InboxDisplayProps) {
-  const messagesSelector = React.useCallback(
-    () => getInstance(inbox, Player.selectCurrent())!.messages,
-    [inbox],
-  );
+  const messagesSelector = React.useCallback(() => {
+    const messages = getInstance(inbox, Player.selectCurrent())!.messages;
+    return [...messages].sort((a, b) => {
+      return (a.time ?? 0) - (b.time ?? 0);
+    });
+  }, [inbox]);
 
   const messages = useStore(messagesSelector);
 

@@ -6,6 +6,7 @@ import {
   expandBoth,
   flex,
   flexRow,
+  relative,
 } from '../../css/classes';
 import { classNameOrEmpty } from '../../Helper/className';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
@@ -148,6 +149,13 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
    */
   Flowline?: React.FunctionComponent<FlowLineComponentProps<F, P>>;
   /**
+   * allows the flowchart to offset the drop position in order to make a new process appear at the center of the drop position
+   */
+  processInitialSize?: {
+    width: number;
+    height: number;
+  };
+  /**
    * a callback triggered when a component has been moved
    */
   onMove: (process: P, newPosition: XYPosition, e: MouseEvent) => void;
@@ -194,6 +202,10 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
 }
 
 const emptyProcesses: Process<FlowLine>[] = [];
+const defaultInitialSize = {
+  width: 0,
+  height: 0,
+};
 
 export function FlowChart<F extends FlowLine, P extends Process<F>>({
   title,
@@ -213,6 +225,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   id,
   readOnly,
   disabled,
+  processInitialSize = defaultInitialSize,
 }: FlowChartProps<F, P>) {
   const actionsAllowed = isActionAllowed({ disabled, readOnly });
 
@@ -256,7 +269,10 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
         containerY != null
       ) {
         setTempFlow({
-          position: { x: newX - containerX, y: newY - containerY },
+          position: {
+            x: newX - containerX,
+            y: newY - containerY,
+          },
           processElements,
           zoom,
         });
@@ -288,8 +304,15 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
             scrollX != null &&
             scrollY != null
             ? {
-                x: newX - containerX + scrollX,
-                y: newY - containerY + scrollY,
+                x:
+                  (newX - containerX + scrollX - processInitialSize.width / 2) /
+                  zoom,
+                y:
+                  (newY -
+                    containerY +
+                    scrollY -
+                    processInitialSize.height / 2) /
+                  zoom,
               }
             : { x: 0, y: 0 },
           flowline,
@@ -417,14 +440,13 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
           />
         </Toolbar.Header>
         <Toolbar.Content
-          style={{ position: 'relative' }}
           ref={ref => {
-            drop(ref);
             if (ref != null) {
+              drop(ref);
               container.current = ref;
-              // mo.observe(ref);
             }
           }}
+          className={relative}
         >
           <svg
             style={{

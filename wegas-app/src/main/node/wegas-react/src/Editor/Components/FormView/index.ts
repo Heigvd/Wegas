@@ -2,6 +2,7 @@ import { Schema, setDefaultWidgets } from 'jsoninput';
 import ArrayWidget from './Array';
 import AttachmentSelector from './AttachmentSelector';
 import BooleanView from './Boolean';
+import CallbackView from './Callback';
 import CodeView from './Code';
 import ColorPickerView from './ColorPickerView';
 import { CustomScript } from './CustomScript';
@@ -25,6 +26,7 @@ import { Script } from './Script/Script';
 import { VariableInput } from './Script/VariableInput';
 import Scriptable from './Scriptable';
 import { ScriptableBoolean } from './ScriptableBoolean';
+import ScriptableCallbackView from './ScriptableCallback';
 import { ScriptablePath } from './ScriptablePath';
 import { ScriptableString } from './ScriptableString';
 import Select, {
@@ -42,6 +44,7 @@ import {
   TreeVariableSelect,
   TreeVSelect,
 } from './TreeVariableSelect';
+import undefinedable from './undefinedable';
 import uneditable from './Uneditable';
 
 export const DEFINED_VIEWS = {
@@ -49,6 +52,7 @@ export const DEFINED_VIEWS = {
   attachment: AttachmentSelector,
   boolean: BooleanView,
   code: CodeView,
+  callback: CallbackView,
   colorpicker: ColorPickerView,
   customscript: CustomScript,
   dictionary: DictionaryView,
@@ -72,6 +76,7 @@ export const DEFINED_VIEWS = {
   questselect: QuestSelect,
   script: Script,
   scriptable: Scriptable,
+  scriptablecallback: ScriptableCallbackView,
   scriptableBoolean: ScriptableBoolean,
   scriptableString: ScriptableString,
   scriptableVariableSelect: LabeledScripableVariableSelect,
@@ -85,6 +90,7 @@ export const DEFINED_VIEWS = {
   timestamp: TimestampView,
   treeselect: TreeVSelect,
   uneditable,
+  undefinedable,
   variableInput: VariableInput,
   variableselect: TreeVariableSelect,
 };

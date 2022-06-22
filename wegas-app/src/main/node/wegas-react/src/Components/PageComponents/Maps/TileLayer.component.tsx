@@ -5,13 +5,19 @@ import { fileURL } from '../../../API/files.api';
 import { entityIs } from '../../../data/entities';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { useScript } from '../../Hooks/useScript';
+import {
+  ScriptCallback,
+  useScript,
+  useScriptCallback,
+  useUpdatedContextRef,
+} from '../../Hooks/useScript';
 import {
   onLayerReadySchema,
   wegasTileLayerPropsSchema,
   wegasTileLayerSourceSchema,
 } from '../../Maps/helpers/schemas/LayerSchemas';
-import { WegasLayer } from '../../Maps/WegasLayer';
+import { OnLayerReadyFN, WegasLayer } from '../../Maps/WegasLayer';
+import { mapCTX } from '../../Maps/WegasMap';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
@@ -22,7 +28,7 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 interface PlayerTileLayerProps extends WegasComponentProps {
   layerProps?: TileLayerProps | IScript;
   layerSource?: TileLayerSourceObject;
-  onLayerReady?: IScript;
+  onLayerReady?: ScriptCallback;
 }
 
 export default function PlayerTileLayer({
@@ -31,13 +37,19 @@ export default function PlayerTileLayer({
   onLayerReady,
   pageId,
   path,
+  context,
 }: PlayerTileLayerProps) {
+  const contextRef = useUpdatedContextRef(context);
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
+  const { projection, map } = React.useContext(mapCTX);
   const currentLayerProps =
     useScript<SharedLayerProps>(
       entityIs(layerProps, 'Script') ? layerProps : undefined,
     ) || (layerProps as SharedLayerProps | undefined);
-  const onLayerReadyFn = useScript<OnLayerReadyFN>(onLayerReady);
+  const onLayerReadyFn = useScriptCallback<OnLayerReadyFN>(
+    onLayerReady,
+    contextRef,
+  );
   const source = layerSource?.source;
   const currentURLs = useScript<string[]>(
     source?.sources.map(source => source.url),
@@ -61,9 +73,9 @@ export default function PlayerTileLayer({
 
   React.useEffect(() => {
     if (onLayerReadyFn != null && currentOLLayer != null) {
-      onLayerReadyFn(currentOLLayer);
+      onLayerReadyFn(currentOLLayer, map);
     }
-  }, [currentOLLayer, onLayerReadyFn]);
+  }, [currentOLLayer, map, onLayerReadyFn, projection]);
 
   if (currentOLLayer == null) {
     return (

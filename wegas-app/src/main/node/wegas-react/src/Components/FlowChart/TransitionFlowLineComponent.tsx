@@ -1,12 +1,14 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
+import { block, expandWidth, textCenter } from '../../css/classes';
 import { entityIs } from '../../data/entities';
-import { translate } from '../../Editor/Components/FormView/translatable';
+import { translate } from '../../data/i18n';
 import {
   StateProcess,
   TransitionFlowLine,
 } from '../../Editor/Components/StateMachine/StateMachineEditor';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
+import { EmptyMessage } from '../EmptyMessage';
 import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { themeVar } from '../Theme/ThemeVars';
@@ -110,8 +112,16 @@ export function TransitionBox({
 }: TransitionBoxProps) {
   const [isShown, setIsShown] = React.useState(false);
   const { lang } = React.useContext(languagesCTX);
+  const textValue = entityIs(transition.transition, 'Transition')
+    ? transition.transition.label
+    : translate(transition.transition.actionText, lang);
   return (
-    <div className={cx(transitionContainerStyle, className)} onClick={onClick}>
+    <div
+      className={cx(transitionContainerStyle, className)}
+      onClick={e =>
+        isActionAllowed({ disabled, readOnly }) && onClick && onClick(e)
+      }
+    >
       <div
         ref={labelComponent}
         className={cx(transitionBoxStyle, {
@@ -121,19 +131,12 @@ export function TransitionBox({
         onMouseEnter={() => !disabled && setIsShown(true)}
         onMouseLeave={() => !disabled && setIsShown(false)}
       >
-        {/*  {/* {transition.isDialogBox && (
-        <div className="speakerImg">
-          <img src="" alt="" />
-        </div>
-        )} */}
         <div className="StateLabelTextStyle">
-          <HTMLText
-            text={
-              (entityIs(transition.transition, 'Transition')
-                ? transition.transition.label
-                : translate(transition.transition.actionText, lang)) || 'Empty'
-            }
-          />
+          {textValue ? (
+            <HTMLText text={textValue} />
+          ) : (
+            <EmptyMessage className={cx(expandWidth, textCenter, block)} />
+          )}
         </div>
       </div>
       {isShown &&

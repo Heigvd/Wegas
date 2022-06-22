@@ -57,8 +57,9 @@ function themeModeClass(
   contextName: ThemeContext,
   modeName?: string,
 ) {
+  // in case selectedTheme is unknown (or not yet known due to async state initialisation), select default theme
   const currentTheme =
-    themesState.themes[themesState.selectedThemes[contextName]];
+    themesState.themes[themesState.selectedThemes[contextName]] || themesState.themes.default;
   const computedModeName = modeName ? modeName : currentTheme.baseMode;
   return currentTheme.modeClasses[computedModeName];
 }
@@ -71,7 +72,7 @@ function themeModeClass(
 export function useModeClass(modeName: string | undefined) {
   const { themesState, currentContext } = React.useContext(themeCTX);
   const currentTheme =
-    themesState.themes[themesState.selectedThemes[currentContext]];
+    themesState.themes[themesState.selectedThemes[currentContext]] ||  themesState.themes.default;
   return modeName ? currentTheme.modeClasses[modeName] : '';
 }
 

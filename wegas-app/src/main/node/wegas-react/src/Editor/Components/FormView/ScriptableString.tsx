@@ -13,6 +13,7 @@ import {
 } from 'typescript';
 import { IScript } from 'wegas-ts-api';
 import { DropMenu } from '../../../Components/DropMenu';
+// import HTMLEditor from '../../../Components/HTML/HTMLEditor';
 import HTMLEditor from '../../../Components/HTML/HTMLEditor';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import {
@@ -219,6 +220,7 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
                         : createScript(stringified),
                     );
                   }}
+                  toolbarLayout='full'
                 />
               ) : (
                 <SimpleInput

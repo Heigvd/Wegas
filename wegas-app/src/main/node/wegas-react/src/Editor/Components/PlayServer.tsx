@@ -2,7 +2,8 @@ import { css } from '@emotion/css';
 import * as React from 'react';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { defaultMargin } from '../../css/classes';
-import { runScript } from '../../data/Reducer/VariableInstanceReducer';
+import { manageResponseHandler } from '../../data/actions';
+import { asyncRunScript } from '../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../data/selectors';
 import { editingStore } from '../../data/Stores/editingStore';
 import { handleError } from './FormView/Script/Script';
@@ -15,12 +16,19 @@ const filename = 'play:server.js';
 
 export default function PlayServer() {
   const [script, setScript] = React.useState('');
+  const [output, setOutput] = React.useState<string>('');
   const [error, setError] = React.useState<string | undefined>();
 
   const playScript = React.useCallback(() => {
     try {
-      editingStore.dispatch(runScript(script, Player.selectCurrent()));
       setError(undefined);
+      setOutput('');
+      asyncRunScript(CurrentGM.id!, script, Player.selectCurrent()).then(
+        result => {
+          setOutput(JSON.stringify(result));
+          editingStore.dispatch(manageResponseHandler(result));
+        },
+      );
     } catch (error) {
       setError(handleError(error));
     }
@@ -37,6 +45,7 @@ export default function PlayServer() {
         <div className={defaultMargin}>
           <Button onClick={playScript} label="Run script" />
           <div>{error}</div>
+          <pre>{output}</pre>
         </div>
       </div>
     </div>

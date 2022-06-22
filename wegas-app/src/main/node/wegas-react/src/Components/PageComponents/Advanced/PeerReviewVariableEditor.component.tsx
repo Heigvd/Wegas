@@ -18,6 +18,7 @@ import {
   itemBottom,
 } from '../../../css/classes';
 import { entityIs, scriptableEntityIs } from '../../../data/entities';
+import { createTranslatableContent } from '../../../data/i18n';
 import { liveEdition } from '../../../data/Reducer/gameModel';
 import { submitToReview } from '../../../data/Reducer/VariableDescriptorReducer';
 import {
@@ -29,7 +30,6 @@ import { GameModel, Player, Team } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { store, useStore } from '../../../data/Stores/store';
-import { createTranslatableContent } from '../../../Editor/Components/FormView/translatable';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../../i18n/peerReview/peerReview';

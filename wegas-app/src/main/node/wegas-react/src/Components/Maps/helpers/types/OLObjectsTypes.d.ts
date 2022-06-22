@@ -1,4 +1,10 @@
+/**
+ * [x, y]
+ */
 type PointLikeObject = [number, number];
+/**
+ * [minx, miny, maxx, maxy]
+ */
 type ExtentLikeObject = [number, number, number, number];
 
 /// Map

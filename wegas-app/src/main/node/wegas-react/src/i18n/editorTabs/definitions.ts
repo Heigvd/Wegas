@@ -11,6 +11,7 @@ export interface EditorTabsTranslations {
     Styles: string;
     Client: string;
     Server: string;
+    AllLibs: string;
     Languages: string;
     'Client Console': string;
     'Server Console': string;

@@ -1,16 +1,24 @@
 import * as React from 'react';
 import { ITranslatableContent } from 'wegas-ts-api';
 import { halfOpacity } from '../../css/classes';
-import { useTranslate } from '../../Editor/Components/FormView/translatable';
 import { classNameOrEmpty, classOrNothing } from '../../Helper/className';
-import sanitize from '../../Helper/sanitize';
+import sanitize, { toFullUrl } from '../../Helper/sanitize';
+import { useTranslate } from '../Hooks/useTranslate';
 
 interface TextProps extends ClassStyleId {
   text?: string;
   disabled?: boolean;
+  onPointerOver?: () => void;
 }
 
-export function HTMLText({ text, style, className, id, disabled }: TextProps) {
+export function HTMLText({
+  text,
+  style,
+  className,
+  id,
+  disabled,
+  onPointerOver,
+}: TextProps) {
   return (
     <div
       id={id}
@@ -18,8 +26,9 @@ export function HTMLText({ text, style, className, id, disabled }: TextProps) {
         classNameOrEmpty(className) + classOrNothing(halfOpacity, disabled)
       }
       style={style}
+      onPointerOver={onPointerOver}
       dangerouslySetInnerHTML={{
-        __html: sanitize(text || ''),
+        __html: sanitize(toFullUrl(text)),
       }}
     />
   );

@@ -11,6 +11,7 @@ import {
 } from 'wegas-ts-api';
 import { autoMargin, halfOpacity } from '../../../css/classes';
 import { Actions } from '../../../data';
+import { createTranslatableContent, translate } from '../../../data/i18n';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { State } from '../../../data/Reducer/reducers';
 import {
@@ -26,10 +27,6 @@ import {
   editingStore,
   EditingStoreDispatch,
 } from '../../../data/Stores/editingStore';
-import {
-  createTranslatableContent,
-  translate,
-} from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
@@ -188,8 +185,6 @@ function WhChoiceDisplay({
           }}
           disabled={questionI.validated || disabled}
           readOnly={readOnly}
-          inline={false}
-          // keepInternalValue
         />
       )}
     </ChoiceContainer>

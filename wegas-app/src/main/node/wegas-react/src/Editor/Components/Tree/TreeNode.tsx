@@ -1,7 +1,8 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
+import { isEqual } from 'lodash-es';
+import * as React from 'react';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { flexRow, flex, flexColumn } from '../../../css/classes';
+import { flex, flexColumn, flexRow } from '../../../css/classes';
 
 const pointerStyle = css({
   cursor: 'pointer',
@@ -191,8 +192,7 @@ export default function TreeNode<T>(props: TreeNodeProps<T>): JSX.Element {
           className={`${treeHeadStyle} ${cx({
             [noSelectStyle]: !selectable,
             [pointerStyle]: selectable,
-            [selectedStyle]:
-              !!selected && JSON.stringify(selected) === JSON.stringify(value),
+            [selectedStyle]: !!selected && isEqual(selected, value),
           })}`}
         >
           {label !== undefined

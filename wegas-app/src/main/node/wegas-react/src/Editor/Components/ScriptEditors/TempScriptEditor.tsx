@@ -1,4 +1,4 @@
-import { cx } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { Monaco } from '@monaco-editor/react';
 import * as React from 'react';
 import * as ts from 'typescript';
@@ -458,7 +458,9 @@ export function TempScriptEditor(props: TempScriptEditorProps) {
   );
 
   return (
-    <div className={cx(flex, flexColumn, expandBoth)}>
+    <div
+      className={cx(flex, flexColumn, expandBoth, css({ minWidth: '500px' }))}
+    >
       {error && <MessageString value={error} type="error" />}
       {resizable ? (
         <ResizeHandle

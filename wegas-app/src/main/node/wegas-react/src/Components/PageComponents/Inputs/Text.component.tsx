@@ -70,21 +70,27 @@ function PlayerTextInput({
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
   const { handleOnCancel } = useOnCancelAction(onCancel, context);
 
+  const textRef = React.useRef(text);
+
+  React.useEffect(() => {
+    textRef.current = text;
+  }, [text]);
+
   const onChange = React.useCallback(
     (v: React.ReactText) => {
       if (handleOnChange) {
         handleOnChange(v);
-      } else if (typeof text === 'object') {
+      } else if (typeof textRef.current === 'object') {
         editingStore.dispatch(
           runScript(
-            `Variable.find(gameModel,"${text.getName()}").setValue(self, ${JSON.stringify(
+            `Variable.find(gameModel,"${textRef.current.getName()}").setValue(self, ${JSON.stringify(
               v,
             )});`,
           ),
         );
       }
     },
-    [handleOnChange, text],
+    [handleOnChange, textRef],
   );
 
   const { currentValue, debouncedOnChange } = useDebouncedOnChange(
@@ -112,6 +118,7 @@ function PlayerTextInput({
             placeholder={placeholderText}
             className={className}
             style={style}
+            toolbarLayout="full"
           />
         );
       }}
@@ -126,6 +133,7 @@ function PlayerTextInput({
       placeholder={placeholderText}
       className={className}
       style={style}
+      toolbarLayout="full"
     />
   );
 }

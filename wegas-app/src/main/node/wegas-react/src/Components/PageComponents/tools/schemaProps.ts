@@ -7,6 +7,7 @@ import {
   DEFINED_VIEWS,
   SchemaFromView,
 } from '../../../Editor/Components/FormView';
+import { CallbackViewView } from '../../../Editor/Components/FormView/Callback';
 import { CodeViewView } from '../../../Editor/Components/FormView/Code';
 import { NuppleView } from '../../../Editor/Components/FormView/Nupple';
 import { ScriptableViewView } from '../../../Editor/Components/FormView/Scriptable';
@@ -317,6 +318,40 @@ const simpleSchemaProps = {
       description,
     },
   }),
+  callback: ({
+    label,
+    required = false,
+    value,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+    noMarginTop,
+    description,
+    callbackProps,
+    borderBottom,
+    readOnly,
+  }: CallbackViewView &
+    CommonSchemaProps &
+    ValueSchemaProps<IScript>): SchemaFromView<'callback'> => ({
+    required,
+    type: 'object',
+    value,
+    index,
+    view: {
+      callbackProps,
+      borderTop,
+      borderBottom,
+      readOnly,
+      noMarginTop,
+      index,
+      featureLevel,
+      label,
+      type: 'callback',
+      layout,
+      description,
+    },
+  }),
   select: <V extends string | SelectItem>({
     label,
     required = false,
@@ -386,7 +421,7 @@ const simpleSchemaProps = {
   }: CommonSchemaProps): SchemaFromView<'pageselect'> => {
     return {
       required,
-      type: 'object',
+      type: 'string',
       index,
       visible,
       view: {

@@ -46,7 +46,7 @@ if (!isCI && PREPROD) {
 }
 
 const modules = {
-  devtool: PROD || PREPROD ? 'source-map' : 'inline-source-map',
+  devtool: PROD || PREPROD ? 'source-map' : 'source-map',
   optimization: {
     minimizer: [
       compiler => {
@@ -97,6 +97,13 @@ const modules = {
         test: /\.(ts)x?$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
+      },
+      // Specifically made for react-dnd@16
+      {
+        test: /\.m?js$/,
+        resolve: {
+          fullySpecified: false, // disable the behavior
+        },
       },
       {
         test: /\.css$/,

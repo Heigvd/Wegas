@@ -211,7 +211,6 @@ export default function Preview() {
                     }
                     disabled={disabled}
                     readOnly={readOnly}
-                    noRootBlock
                   />
                 </ReflexElement>
               </ReflexContainer>

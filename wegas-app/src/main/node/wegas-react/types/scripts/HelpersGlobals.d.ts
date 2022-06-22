@@ -1,6 +1,7 @@
 interface GlobalHelpersClass {
   cloneDeep: <T>(className: T | Readonly<T>) => T;
   uniq: <T>(array: T[] | null | undefined) => T[];
+  escapeRegExp: (s?: string) => string;
   useRef: <T>(id: string, value: T) => { current: T };
   getState: <T>(
     initialValue: T,

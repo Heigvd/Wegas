@@ -1,11 +1,11 @@
-import * as React from 'react';
 import { cx } from '@emotion/css';
-import { flex, expandBoth, flexColumn } from '../css/classes';
+import * as React from 'react';
 import {
   FlowChart,
   FlowLine,
   Process,
 } from '../Components/FlowChart/FlowChart';
+import { expandBoth, flex, flexColumn } from '../css/classes';
 import { wlog } from '../Helper/wegaslog';
 
 const processes: Process<FlowLine>[] = [

@@ -1,5 +1,5 @@
 import { css, cx } from '@emotion/css';
-import { omit } from 'lodash-es';
+import { isEqual, omit } from 'lodash-es';
 import * as React from 'react';
 import {
   featuresCTX,
@@ -494,8 +494,7 @@ function WegasComponentTitle({
   }
 
   const isSelected =
-    pageId === selectedPageId &&
-    JSON.stringify(componentPath) === JSON.stringify(selectedComponentPath);
+    pageId === selectedPageId && isEqual(componentPath, selectedComponentPath);
   const isFocused = usePagesStateStore(
     isComponentFocused(editMode, pageId, componentPath),
   );
@@ -967,7 +966,7 @@ export default function PagesLayout() {
         // Now the drag element comes from outside the tree
         else {
           if (isPageComponentNode(to.data)) {
-            const sourceType = from.data.componentName;
+            const sourceType = from.data.componentId;
             const destPageId = to.data.pageId;
             const destPage = pages[destPageId];
             const destPath = to.data.componentPath;

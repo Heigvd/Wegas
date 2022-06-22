@@ -149,5 +149,3 @@ type StyleFunction = (
   resolution: number,
 ) => LayerStyleObject | LayerStyleObject[];
 type StyleObject = LayerStyleObject | LayerStyleObject[] | StyleFunction;
-
-type OnLayerReadyFN = ((layer: any) => void) | void;

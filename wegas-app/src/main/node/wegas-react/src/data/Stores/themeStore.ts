@@ -25,9 +25,9 @@ import {
   ThemeValues,
   trainerTheme,
 } from '../../Components/Theme/ThemeVars';
-import { createTranslatableContent } from '../../Editor/Components/FormView/translatable';
 import { wwarn } from '../../Helper/wegaslog';
 import { createStoreConnector } from '../connectStore';
+import { createTranslatableContent } from '../i18n';
 import { store } from './store';
 
 const globalDispatch = store.dispatch;

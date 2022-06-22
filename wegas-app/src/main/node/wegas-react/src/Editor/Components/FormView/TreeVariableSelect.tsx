@@ -1,5 +1,6 @@
 import { css, cx } from '@emotion/css';
 import { WidgetProps } from 'jsoninput/typings/types';
+import { isEqual } from 'lodash-es';
 import * as React from 'react';
 import { IScript, IVariableDescriptor } from 'wegas-ts-api';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
@@ -104,7 +105,7 @@ function getItems<T>(
 ) {
   let ret: TreeSelectItem<T>[] = [];
   for (const item of items) {
-    if (JSON.stringify(item[key]) === JSON.stringify(val)) {
+    if (isEqual(item[key], val)) {
       ret.push(item);
     }
     if (ret.length >= limit) {
