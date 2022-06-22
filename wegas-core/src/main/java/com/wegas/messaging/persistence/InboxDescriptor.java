@@ -17,6 +17,7 @@ import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.view.I18nHtmlView;
@@ -211,7 +212,10 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
             label = "token",
             description = "Message identifier used to reference the message within FSM/Trigger conditions"
         )) String token,
-        @Param(view = @View(label = "attachements")) List<Attachment> attachments) {
+        @Param(
+            view = @View(label = "attachements"),
+            proposal = EmptyArray.class
+        ) List<Attachment> attachments) {
         return this.getInstance(p).sendMessage(from, subject, body, date, token, attachments);
     }
 

@@ -80,7 +80,8 @@ export function WegasMap({
   useResizeObserver(mapElementRef, debouncedMapResize);
 
   const displayMap =
-    React.useContext(authorizationsCTX).authorizations.allowExternalUrl;
+    React.useContext(authorizationsCTX).authorizations.allowExternalUrl
+    || !OSMLayer;
 
   React.useEffect(() => {
     if (typeof viewOptions?.projection === 'string') {
