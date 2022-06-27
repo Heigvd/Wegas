@@ -39,6 +39,7 @@ export default function StringInput({
                 placeholder={view.placeholder}
                 id={inputId}
                 fullWidth={view.fullWidth}
+                rows={view.rows}
               />
             </>
           );
