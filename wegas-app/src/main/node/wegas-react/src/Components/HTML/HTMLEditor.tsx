@@ -54,9 +54,8 @@ export default function HTMLEditor({
   const fileBrowsingFunc = React.useRef<CallbackFN>(() => {});
 
   const valueRef = React.useRef(value);
-  React.useEffect(() => {
-    valueRef.current = value;
-  }, [value]);
+  // keep valueRef up-to-date
+  valueRef.current = value;
 
   const onEditorChanges = React.useCallback(
     (v: string) => {
@@ -64,7 +63,7 @@ export default function HTMLEditor({
         onChange(v);
       }
     },
-    [onChange, valueRef],
+    [onChange],
   );
 
   const showFilePicker = React.useCallback(
