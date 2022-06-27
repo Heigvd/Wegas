@@ -137,7 +137,7 @@ export function toInjectorStyle(content: string) {
   
   return content
       .replace(
-          new RegExp('((src|href)="[^"]*/rest/GameModel/[^"]*/File/read([^"]*)")', 'gi'),
+          new RegExp('((src|href)="[^"]*/rest/GameModel/[^"]*/File/read/([^"]*)")', 'gi'),
           'data-file="$3"',
       ) // Replace absolute path with injector style path
   
