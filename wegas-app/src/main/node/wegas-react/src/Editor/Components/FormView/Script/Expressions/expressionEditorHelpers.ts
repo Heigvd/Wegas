@@ -17,7 +17,7 @@ import { StringOrT } from '../../TreeVariableSelect';
 import { handleError, isScriptCondition } from '../Script';
 import { parseStatement } from './astManagement';
 
-const booleanOperators = {
+const comparisonOperators = {
   '!==': { label: 'not equals' },
   '===': { label: 'equals' },
   '>': { label: 'greater than' },
@@ -26,7 +26,7 @@ const booleanOperators = {
   '<=': { label: 'lesser or equals than' },
 };
 
-export type WegasOperators = keyof typeof booleanOperators;
+export type WegasOperators = keyof typeof comparisonOperators;
 
 interface CallItemValue {
   type: 'variable' | 'global';
@@ -173,10 +173,10 @@ function filterVariableMethods(
 function filterOperators(
   methodReturns: WegasMethod['returns'],
 ): SelectOperator[] {
-  return Object.keys(booleanOperators)
+  return Object.keys(comparisonOperators)
     .filter(k => methodReturns === 'number' || k === '===' || k === '!==')
     .map((k: WegasOperators) => ({
-      label: booleanOperators[k].label,
+      label: comparisonOperators[k].label,
       value: k,
     }));
 }

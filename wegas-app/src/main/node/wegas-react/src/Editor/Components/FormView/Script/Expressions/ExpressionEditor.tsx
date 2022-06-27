@@ -339,8 +339,23 @@ export function ExpressionEditor({
         <Form
           value={attributes}
           schema={schema}
-          onChange={(v: IInitAttributes, e) => {
-            if (deepDifferent(v, attributes)) {
+            onChange={ (v: IInitAttributes, e) => {
+
+            // TODO: better typings
+            //
+            // hack: extract "left part" of expression
+            // If the left part changed, rebuild a full schema
+            const majorProperties =  ['initExpression', 'variableName', 'methodName'];
+            // other properties are:
+            //  - operator & comparator
+            // [number] : arguments
+            const prevConfig = pick(attributes, majorProperties);
+            const newConfig = pick(v, majorProperties);
+
+            if (deepDifferent(prevConfig, newConfig)) {
+              // Config just changed
+              // rebuild full schema
+
               // if (e && e.length > 0) {
               //   dispatchFormState({
               //     type: 'SET_IF_DEF',
@@ -362,6 +377,12 @@ export function ExpressionEditor({
                 }),
               );
               // }
+            } else if (deepDifferent(v, attributes)) {
+              // minor change, no need te recompute the schema
+              dispatchFormState({
+                type: 'SET_IF_DEF',
+                payload: { attributes, softError: e.join('\n') },
+              });
             }
           }}
           context={attributes}
