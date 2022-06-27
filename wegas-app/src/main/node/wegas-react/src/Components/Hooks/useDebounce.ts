@@ -100,10 +100,10 @@ export function useDebouncedOnChange<T>(
 
     // The famous debounced function
     const debouncedFN = debounce((value: T) => {
-      // Trigger the change
-      onChangeRef.current && onChangeRef.current(value);
       // stack debounced value
       sentRef.current.push(value);
+      // Trigger the change
+      onChangeRef.current && onChangeRef.current(value);
     }, delay);
 
     debouncedRef.current = debouncedFN;
