@@ -10,7 +10,13 @@ import { pageCTX, patchPage } from './PageEditor';
 export default function SourceEditor() {
   const { loading, selectedPage, selectedPageId } = React.useContext(pageCTX);
   const indexPage = useStore(
-    s => getPageIndexItemFromFolder(s.pages.index.root, selectedPageId),
+    s => {
+      if (s.pages.index){
+        return getPageIndexItemFromFolder(s.pages.index.root, selectedPageId)
+      } else {
+        return undefined
+      }
+    },
     deepDifferent,
   );
   const i18nValues = useInternalTranslate(pagesTranslations);

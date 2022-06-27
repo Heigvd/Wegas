@@ -68,10 +68,13 @@ function PageEditionToolbar() {
 export default function PageDisplay() {
   const { selectedPageId, loading } = React.useContext(pageCTX);
   const i18nValues = useInternalTranslate(pagesTranslations);
-  const indexPage = useStore(
-    s => getPageIndexItemFromFolder(s.pages.index.root, selectedPageId),
-    deepDifferent,
-  );
+  const indexPage = useStore(s => {
+    if (s.pages.index) {
+      return getPageIndexItemFromFolder(s.pages.index.root, selectedPageId);
+    } else {
+      return undefined;
+    }
+  }, deepDifferent);
 
   if (loading) {
     return <pre>{i18nValues.loadingPages}</pre>;
