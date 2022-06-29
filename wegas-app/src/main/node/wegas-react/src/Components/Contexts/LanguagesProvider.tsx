@@ -102,7 +102,7 @@ export function LanguageSelector({
     : availableLang;
   return (
     <DropMenu
-      label={`${label && label + ':'} ${currentLanguage}`}
+      label={`${label ? label + ':' :''} ${currentLanguage}`}
       items={languages.map(language => ({
         value: language,
         label: `${language.code} : ${language.lang}`,
