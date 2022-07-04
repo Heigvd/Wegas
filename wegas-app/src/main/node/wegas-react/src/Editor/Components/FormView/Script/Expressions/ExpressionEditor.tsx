@@ -277,7 +277,7 @@ export function ExpressionEditor({
             const { error } = parseStatement(statement, mode);
             if (!error) {
               newCode = generate(statement).code;
-              onChange && onChange(generate(statement).code);
+              onChange && onChange(newCode);
             }
           }
 
@@ -339,13 +339,16 @@ export function ExpressionEditor({
         <Form
           value={attributes}
           schema={schema}
-            onChange={ (v: IInitAttributes, e) => {
-
+          onChange={(v: IInitAttributes, e) => {
             // TODO: better typings
             //
             // hack: extract "left part" of expression
             // If the left part changed, rebuild a full schema
-            const majorProperties =  ['initExpression', 'variableName', 'methodName'];
+            const majorProperties = [
+              'initExpression',
+              'variableName',
+              'methodName',
+            ];
             // other properties are:
             //  - operator & comparator
             // [number] : arguments
@@ -379,9 +382,21 @@ export function ExpressionEditor({
               // }
             } else if (deepDifferent(v, attributes)) {
               // minor change, no need te recompute the schema
+
+              const statement = generateStatement(v, schema!, mode);
+              let newCode = undefined;
+              if (statement) {
+                // Try to parse statement back before sending new code
+                const { error } = parseStatement(statement, mode);
+                if (!error) {
+                  newCode = generate(statement).code;
+                  onChange && onChange(newCode);
+                }
+              }
+
               dispatchFormState({
                 type: 'SET_IF_DEF',
-                payload: { attributes, softError: e.join('\n') },
+                payload: { attributes: v, softError: e.join('\n') },
               });
             }
           }}
