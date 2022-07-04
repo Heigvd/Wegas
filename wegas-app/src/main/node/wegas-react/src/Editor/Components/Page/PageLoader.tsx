@@ -15,6 +15,7 @@ import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { pagesTranslations } from '../../../i18n/pages/pages';
 
 export const PAGE_LOADER_DEFAULT_ID = 'PAGE_LOADER_DEFAULT_ID';
+export const PAGE_LOADER_CLASS = 'wegas-pageloader';
 
 export const fullScreenLoaderStyle = css({
   zIndex: 10000,
@@ -68,7 +69,7 @@ export function PageLoader({
   const [waiting, setWaiting] = React.useState(false);
 
   React.useEffect(() => {
-    let timeout: NodeJS.Timeout;
+    let timeout: ReturnType<typeof setTimeout>;
     if (loadTimer != null) {
       setWaiting(true);
       timeout = setTimeout(() => {
@@ -94,7 +95,12 @@ export function PageLoader({
           fallback={<TextLoader text={i18nCommonValues.buildingWorld} />}
         >
           <div
-            className={cx(flex, expandBoth) + classNameOrEmpty(className)}
+            className={
+              PAGE_LOADER_CLASS +
+              ' ' +
+              cx(flex, expandBoth) +
+              classNameOrEmpty(className)
+            }
             style={style}
             id={id}
           >

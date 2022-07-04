@@ -58,6 +58,16 @@ interface PlayerModalProps
    * attachedTo - the ID of the element to insert the modal (will cover the whole element). By default, gets the last themeCTX provider
    */
   attachedToId?: string;
+  /**
+   * attachToClosest - CSS selector. Modal will be attached to nearest parent which match the given selector.
+   * Ignored if <code>attachedToId</code> is defined
+   */
+  attachToClosest?: string;
+  /**
+   * attachToClosest - CSS selector. Modal will be attached to farthest parent which match the given selector
+   * Ignored if <code>attachedToId</code> or <code>attachToClosest</code> is defined
+   */
+  attachToMostDistant?: string;
 }
 
 function PlayerModal({
@@ -66,6 +76,8 @@ function PlayerModal({
   context,
   editMode,
   attachedToId,
+  attachToClosest,
+  attachToMostDistant,
   id,
   style,
   className,
@@ -98,6 +110,8 @@ function PlayerModal({
   return (
     <Modal
       attachedToId={attachedToId}
+      attachToClosest={attachToClosest}
+      attachToMostDistant={attachToMostDistant}
       onExit={onExit}
       style={editMode ? { position: 'relative' } : undefined}
       innerStyle={style}
@@ -132,6 +146,12 @@ registerComponent(
         choices: clientAndServerScriptChoices,
       }),
       attachedToId: schemaProps.string({ label: 'Attach to id' }),
+      attachToClosest: schemaProps.string({
+        label: 'Attach to closest matching element',
+      }),
+      attachToMostDistant: schemaProps.string({
+        label: 'Attach to most distant matching element',
+      }),
       ...flexListSchema,
       ...classStyleIdShema,
     },

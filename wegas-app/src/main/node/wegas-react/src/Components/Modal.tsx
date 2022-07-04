@@ -110,10 +110,20 @@ export type ModalProps = React.PropsWithChildren<
      */
     unattached?: boolean;
     /**
-     * attachedTo - the ID of the element to insert the modal (will cover the whole element). By default, gets the last themeCTX provider
-     * if unattached is set to true, this prop won't be used.
+     * attachedToId - the ID of the element to insert the modal (will cover the whole element). By default, gets the last themeCTX provider
+     * <strike>if unattached is set to true, this prop won't be used</strike>
      */
     attachedToId?: string;
+    /**
+     * attachToClosest - CSS selector. Modal will be attached to nearest parent which match the given selector.
+     * Ignored if <code>attachedToId</code> is defined
+     */
+    attachToClosest?: string;
+    /**
+     * attachToMostDistant - CSS selector. Modal will be attached to farthest parent which match the given selector
+     * Ignored if <code>attachedToId</code> or <code>attachToClosest</code> is defined
+     */
+    attachToMostDistant?: string;
     /**
      * innerClassName - the class to apply on the inner component
      * if false, will simply render in the parent element.
@@ -126,11 +136,39 @@ export type ModalProps = React.PropsWithChildren<
   } & ClassStyleId
 >;
 
+function findClosestParent(
+  element: Element | null | undefined,
+  selector: string,
+): Element | null {
+  return element?.parentElement?.closest(selector) || null;
+}
+
+function findMostDistantParent(
+  element: Element | null | undefined,
+  selector: string,
+): Element | null {
+  let current: Element | null = element || null;
+  let parent: Element | null = null;
+
+  do {
+    const x = findClosestParent(current, selector);
+    current = null;
+    if (x) {
+      parent = x;
+      current = x;
+    }
+  } while (current != null);
+
+  return parent;
+}
+
 export function Modal({
   children,
   onExit,
   unattached,
   attachedToId,
+  attachToClosest,
+  attachToMostDistant,
   className,
   style,
   innerStyle,
@@ -138,13 +176,25 @@ export function Modal({
   id,
 }: ModalProps) {
   const { themeRoot } = React.useContext(themeCTX);
-  const container = React.useRef<HTMLElement | null>(null);
+  const container = React.useRef<Element | null>(null);
   const modal = React.useRef<HTMLDivElement | null>(null);
 
+  //const divRef = React.useRef<HTMLDivElement>(null);
+  const [divRef, setDivRef] = React.useState<Element | null>(null);
+
+  let effectiveContainer: Element | null = null;
   if (attachedToId) {
-    container.current = document.getElementById(attachedToId);
+    effectiveContainer = document.getElementById(attachedToId);
+  } else if (attachToClosest) {
+    effectiveContainer = findClosestParent(divRef, attachToClosest);
+  } else if (attachToMostDistant) {
+    effectiveContainer = findMostDistantParent(divRef, attachToMostDistant);
   } else if (!unattached && themeRoot?.current) {
-    container.current = themeRoot?.current;
+    effectiveContainer = themeRoot?.current;
+  }
+
+  if (effectiveContainer != null) {
+    container.current = effectiveContainer;
   }
 
   const onEscape = React.useCallback(
@@ -182,7 +232,7 @@ export function Modal({
         className={
           cx(
             layoutStyle,
-            modalStyle(!attachedToId),
+            modalStyle(!(attachedToId || attachToClosest || attachToMostDistant)),
             flex,
             flexColumn,
             justifyCenter,
@@ -215,6 +265,8 @@ export function Modal({
     );
   }, [
     attachedToId,
+    attachToMostDistant,
+    attachToClosest,
     bgClick,
     children,
     className,
@@ -225,11 +277,19 @@ export function Modal({
     style,
   ]);
 
-  if (container.current) {
-    return container.current && createPortal(modalComponent, container.current);
-  } else {
-    return modalComponent;
-  }
+  return (
+    <div
+      ref={ref => {
+        if (ref !== divRef) {
+          setDivRef(ref);
+        }
+      }}
+    >
+      {container.current
+        ? createPortal(modalComponent, container.current)
+        : modalComponent}
+    </div>
+  );
 }
 
 interface OkCancelModalProps {
