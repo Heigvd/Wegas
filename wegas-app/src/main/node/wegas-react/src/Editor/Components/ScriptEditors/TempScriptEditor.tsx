@@ -8,11 +8,8 @@ import { getLogger } from '../../../Helper/wegaslog';
 import { MessageString } from '../MessageString';
 import { ResizeHandle } from '../ResizeHandle';
 import {
-  MonacoCodeEditor,
-  MonacoEditor,
   SrcEditorAction,
   SrcEditorLanguages,
-  textToArray,
 } from './editorHelpers';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
 
@@ -29,9 +26,7 @@ function makeArgs(args?: [string, string[]][]): string {
 const header = (returnType: string = '', args: string = '') => {
   return `/* Please always respect the return type : ${returnType} */\n(${args}) : ${returnType} => {`;
 };
-const headerSize = textToArray(header()).length;
 export const footer = () => `\n};`;
-const footerSize = textToArray(footer()).length - 1;
 
 function clearIndentation(script: string, numLevel?: number) {
   let regex: RegExp | undefined;
@@ -407,31 +402,12 @@ export function TempScriptEditor(props: TempScriptEditorProps) {
   );
 
   const actions = React.useCallback(
-    (monaco: Monaco): SrcEditorAction[] => [
-      ...(defaultActions ? defaultActions(monaco) : []),
-      ...(returnType && returnType.length > 0
-        ? [
-            {
-              id: 'SelectAllWithScriptFunction',
-              label: 'Ctrl + A avoiding header and footer',
-              keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_A],
-              run: (_monaco: MonacoEditor, editor: MonacoCodeEditor) => {
-                const editorLines = textToArray(editor.getValue());
-                const lastEditableLine =
-                  textToArray(editor.getValue()).length - footerSize;
-                const range = {
-                  startColumn: 1,
-                  endColumn: editorLines[lastEditableLine - 1].length,
-                  startLineNumber: headerSize,
-                  endLineNumber: lastEditableLine,
-                };
-                editor.setSelection(range);
-              },
-            },
-          ]
-        : []),
-    ],
-    [defaultActions, returnType],
+    (monaco: Monaco): SrcEditorAction[] => {
+      return [
+        ...(defaultActions ? defaultActions(monaco) : []),
+      ];
+    },
+    [defaultActions],
   );
 
   const handleChange = React.useCallback(() => {
