@@ -197,17 +197,22 @@ function SrcEditor({
       // default function
       const openEditorBase = editorService.openCodeEditor.bind(editorService);
       editorService.openCodeEditor = async (input, source) => {
-        //call default function
-        const result = await openEditorBase(input, source);
+        // since editorServivce is a singleton, make sure the event comes from the current editor
+        if (source === editor) {
+          //call default function
+          const result = await openEditorBase(input, source);
 
-        if (result === null) {
-          // default function does not return anything, it means the ctrl-click target
-          // is outside the current model
-          if (onOpenCodeEditor) {
-            onOpenCodeEditor(input, source);
+          if (result === null) {
+            // default function does not return anything, it means the ctrl-click target
+            // is outside the current model
+            if (onOpenCodeEditor) {
+              onOpenCodeEditor(input, source);
+            }
           }
+          return result; // always return the base result
+        } else {
+          return await openEditorBase(input, source);
         }
-        return result; // always return the base result
       };
     }
   }, [editor, onOpenCodeEditor]);

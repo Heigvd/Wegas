@@ -171,6 +171,8 @@ export function CustomLibraryEditorView({
   const currentLibrary: LibraryWithStatus | undefined =
     selectedLibraryName != null ? libraryIndex[selectedLibraryName] : undefined;
 
+  const readOnly = currentLibrary == null || currentLibrary.readOnly;
+
   const onNewLibrary = React.useCallback(
     (message: LibrariesCallbackMessage) => {
       if (message.type === 'succes') {
@@ -193,7 +195,7 @@ export function CustomLibraryEditorView({
   }, [currentLibrary, saveLibrary]);
 
   const alloweVisibilities = React.useMemo(() => {
-    if (currentLibrary) {
+    if (currentLibrary && !currentLibrary.readOnly) {
       return visibilities
         .filter(v => isVisibilityAllowed(currentLibrary, v))
         .map(v => ({
@@ -227,10 +229,14 @@ export function CustomLibraryEditorView({
       if (lib != null) {
         setSelectedLibraryName(fullPath);
 
-        editor.setSelection(codeLocation.options.selection);
-        editor.revealLineInCenter(
-          codeLocation.options.selection.startLineNumber,
-        );
+        // move cursor to the targeted position
+        // Delay this operation slightly, so that React can render the component
+        setTimeout(() => {
+          editor.setSelection(codeLocation.options.selection);
+          editor.revealLineInCenter(
+            codeLocation.options.selection.startLineNumber,
+          );
+        }, 0);
       }
     },
     [libraryIndex],
@@ -356,6 +362,7 @@ export function CustomLibraryEditorView({
                 ) : (
                   <SrcEditor
                     fileName={currentLibrary.monacoPath}
+                    readOnly={readOnly}
                     onOpenCodeEditor={openCodeEditorCb}
                     onSave={onSave}
                   />
