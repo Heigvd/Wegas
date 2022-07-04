@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import * as React from 'react';
-import { globals } from '../../Components/Hooks/useScript';
+import { globals } from '../../Components/Hooks/sandbox';
 import { HTMLText } from '../../Components/Outputs/HTMLText';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { IconComp } from '../../Editor/Components/Views/FontAwesome';

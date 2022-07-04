@@ -1,3 +1,4 @@
+import { globals } from '../Components/Hooks/sandbox';
 import { ActionCreator } from '../data/actions';
 import { LoggerLevel } from '../data/Reducer/globalState';
 import { store } from '../data/Stores/store';
@@ -27,9 +28,14 @@ const loggers: Record<string, Logger> = {};
 
 function mapArgs(...args: unknown[]): unknown[] {
   return args.map(arg => {
-    const argP = typeof arg === 'function' ? arg.toString() : arg;
+    if (arg instanceof Error || arg instanceof globals.Error) {
+      return arg;
+    }
+    if (typeof arg === 'function') {
+      return arg.toString();
+    }
     try {
-      return typeof argP === 'object' ? JSON.stringify(argP) : arg;
+      return typeof arg === 'object' ? JSON.stringify(arg) : arg;
     } catch {
       return arg;
     }
@@ -130,7 +136,6 @@ export const wwarn = (message?: unknown, ...optionalParams: unknown[]): void =>
 export const werror = (message?: unknown, ...optionalParams: unknown[]): void =>
   getLogger('default').error(message, ...optionalParams);
 
-
 export const useLogger = (name: string) => {
   getLogger(name);
-}
+};

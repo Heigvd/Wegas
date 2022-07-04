@@ -2,7 +2,7 @@ import { css, cx } from '@emotion/css';
 import JSONForm from 'jsoninput';
 import * as React from 'react';
 import { IPlayer } from 'wegas-ts-api';
-import { globals } from '../../../Components/Hooks/useScript';
+import { globals } from '../../../Components/Hooks/sandbox';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { TabLayout } from '../../../Components/TabLayout/TabLayout';

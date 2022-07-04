@@ -3,7 +3,7 @@ import { useMonaco } from '@monaco-editor/react';
 import * as React from 'react';
 import { transpile } from 'typescript';
 import { createOrUpdateModel } from '../Components/Contexts/LibrariesContext';
-import { createSandbox } from '../Components/Hooks/useScript';
+import { createSandbox } from '../Components/Hooks/sandbox';
 import { expandBoth, flex, flexColumn, grow } from '../css/classes';
 import { TempScriptEditor } from '../Editor/Components/ScriptEditors/TempScriptEditor';
 import { getEntry, setEntry } from '../Helper/tools';

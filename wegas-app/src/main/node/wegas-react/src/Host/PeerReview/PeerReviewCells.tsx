@@ -1,7 +1,7 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
-import { globals } from '../../Components/Hooks/useScript';
+import { globals } from '../../Components/Hooks/sandbox';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { HTMLText } from '../../Components/Outputs/HTMLText';
 import { themeVar } from '../../Components/Theme/ThemeVars';
