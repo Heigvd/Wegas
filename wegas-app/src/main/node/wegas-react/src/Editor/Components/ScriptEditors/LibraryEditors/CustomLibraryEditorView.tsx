@@ -36,8 +36,9 @@ import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { MessageString } from '../../MessageString';
 import { TextPrompt } from '../../TextPrompt';
+import { MonacoIEditor } from '../editorHelpers';
 import MergeEditor from '../MergeEditor';
-import SrcEditor from '../SrcEditor';
+import SrcEditor, { CodeLocation } from '../SrcEditor';
 
 interface LibraryNodeProps {
   libraryName: string;
@@ -218,6 +219,23 @@ export function CustomLibraryEditorView({
     }
   }, [currentLibrary]);
 
+  const openCodeEditorCb = React.useCallback(
+    (codeLocation: CodeLocation, editor: MonacoIEditor) => {
+      const fullPath = `${codeLocation.resource.scheme}://${codeLocation.resource.path}`;
+
+      const lib = libraryIndex[fullPath];
+      if (lib != null) {
+        setSelectedLibraryName(fullPath);
+
+        editor.setSelection(codeLocation.options.selection);
+        editor.revealLineInCenter(
+          codeLocation.options.selection.startLineNumber,
+        );
+      }
+    },
+    [libraryIndex],
+  );
+
   return (
     <ReflexContainer orientation="vertical">
       <ReflexElement
@@ -338,6 +356,7 @@ export function CustomLibraryEditorView({
                 ) : (
                   <SrcEditor
                     fileName={currentLibrary.monacoPath}
+                    onOpenCodeEditor={openCodeEditorCb}
                     onSave={onSave}
                   />
                 )

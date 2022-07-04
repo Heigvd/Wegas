@@ -11,6 +11,9 @@ export type MonacoEditor = Monaco;
 export type MonacoEditorProperties = Exclude<EditorProps['options'], undefined>;
 export type MonacoLangaugesServices =
   MonacoEditor['languages']['typescript']['typescriptDefaults'];
+
+export type MonacoIEditor = monaco.editor.IEditor;
+
 export type MonacoSCodeEditor = monaco.editor.IStandaloneCodeEditor;
 export type MonacoSDiffEditor = monaco.editor.IStandaloneDiffEditor;
 export type MonacoCodeEditor = Parameters<
@@ -19,10 +22,7 @@ export type MonacoCodeEditor = Parameters<
 export type MonacoEditorCursorEvent = Parameters<
   Parameters<MonacoCodeEditor['onDidChangeCursorSelection']>[0]
 >[0];
-export type MonacoEditorModel = Exclude<
-  ReturnType<MonacoSCodeEditor['getModel']>,
-  null
->;
+export type MonacoEditorModel = monaco.editor.ITextModel;
 export interface MonacoEditorSimpleToken {
   offset: number;
   type: string;

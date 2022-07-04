@@ -9,6 +9,7 @@ import {
   MonacoDefinitionsLibrary,
   MonacoEditor,
   MonacoEditorProperties,
+  MonacoIEditor,
   MonacoLangaugesServices,
   MonacoSCodeEditor,
   SrcEditorAction,
@@ -16,6 +17,29 @@ import {
 } from './editorHelpers';
 
 const logger = getLogger('monaco');
+
+/**
+ * Monaco Typings are, indeed, well defined and well documented
+ */
+export interface CodeLocation {
+  resource: {
+    /** absolute path, without scheme (eg. /my/path/myFile.ts) */
+    path: string;
+    /** schem part (eg. the part before double-slash) */
+    scheme: string;
+  };
+  options: {
+    selection: {
+      startLineNumber: number;
+      startColumn: number;
+      endLineNumber: number;
+      endColumn: number;
+    };
+    /** no idea */
+    selectionRevealType: number;
+  };
+}
+
 export interface SrcEditorProps {
   /**
    * filename - the name of the file to edit
@@ -65,6 +89,13 @@ export interface SrcEditorProps {
    * defaultProperties - Add specific properties for monaco-editor
    */
   defaultProperties?: MonacoEditorProperties;
+  /**
+   * to handle ctrl-click
+   */
+  onOpenCodeEditor?: (
+    codeLocation: CodeLocation,
+    source: MonacoIEditor,
+  ) => void;
 }
 
 const errorStyle = css({
@@ -131,6 +162,12 @@ export function languageToFormat(language: SrcEditorLanguages | undefined) {
   }
 }
 
+interface WithEditorService {
+  _codeEditorService: {
+    openCodeEditor: (input: CodeLocation, source: MonacoIEditor) => unknown;
+  };
+}
+
 /**
  * SrcEditor is a component uses monaco-editor to create a code edition panel
  */
@@ -146,10 +183,34 @@ function SrcEditor({
   onBlur,
   onSave,
   defaultActions,
+  onOpenCodeEditor,
 }: SrcEditorProps) {
   const [editor, setEditor] = React.useState<MonacoSCodeEditor>();
   const [reactMonaco, setReactMonaco] = React.useState<MonacoEditor>();
   const i18nValues = useInternalTranslate(commonTranslations);
+
+  React.useEffect(() => {
+    if (editor) {
+      /** intercept ctrl-click */
+      const editorService = (editor as unknown as WithEditorService)
+        ._codeEditorService;
+      // default function
+      const openEditorBase = editorService.openCodeEditor.bind(editorService);
+      editorService.openCodeEditor = async (input, source) => {
+        //call default function
+        const result = await openEditorBase(input, source);
+
+        if (result === null) {
+          // default function does not return anything, it means the ctrl-click target
+          // is outside the current model
+          if (onOpenCodeEditor) {
+            onOpenCodeEditor(input, source);
+          }
+        }
+        return result; // always return the base result
+      };
+    }
+  }, [editor, onOpenCodeEditor]);
 
   const onMount = React.useCallback(
     (editor: MonacoSCodeEditor) => {
