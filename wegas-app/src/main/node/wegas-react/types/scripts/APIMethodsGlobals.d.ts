@@ -2,6 +2,18 @@ type IVariableDescriptor = import('wegas-ts-api').IVariableDescriptor;
 type SAbstractEntity = import('wegas-ts-api').SAbstractEntity;
 type IVariableInstance = import('wegas-ts-api').IVariableInstance;
 
+interface DestroyedEntity {
+  '@class': IAbstractEntity['@class'];
+  id: number;
+}
+
+interface IManagedResponse {
+  '@class': 'ManagedResponse';
+  deletedEntities: DestroyedEntity[];
+  updatedEntities: unknown[];
+  events: WegasEvent[];
+}
+
 /**
  * These methods will work only in editor context
  */
@@ -28,6 +40,6 @@ interface APIMethodsClass {
   runScript: (
     script: string,
     context: Record<string, unknown>,
-  ) => Promise<unknown>;
+  ) => Promise<IManagedResponse>;
   getServerTime: () => Promise<number>;
 }

@@ -12,6 +12,7 @@ import {
 import { instantiate } from '../data/scriptable';
 import { editingStore } from '../data/Stores/editingStore';
 import { store } from '../data/Stores/store';
+import { IManagedResponse } from './rest';
 import { UtilsAPI } from './utils.api';
 import { VariableDescriptorAPI } from './variableDescriptor.api';
 
@@ -59,7 +60,9 @@ export const APIScriptMethods: APIMethodsClass = {
           instantiate<IVariableDescriptor>(
             res.updatedEntities.find(
               // entity => entityIs(entity, 'AbstractEntity', true) && entity.id === variable.id,
-              entity => entityIs(entity, variable['@class']) && entity.id === variable.id,
+              entity =>
+                entityIs(entity, variable['@class']) &&
+                entity.id === variable.id,
             ) as IVariableDescriptor,
           ),
         );
@@ -69,7 +72,7 @@ export const APIScriptMethods: APIMethodsClass = {
   updateVariable: variable => dispatch(updateDescriptor(variable)),
   deleteVariable: variable => dispatch(deleteDescriptor(variable)),
   updateInstance: instance => dispatch(updateInstance(instance)),
-  runScript: async (script, context) => {
+  runScript: async (script, context): Promise<IManagedResponse> => {
     const gameModelId = store.getState().global.currentGameModelId;
 
     const result = await asyncRunLoadedScript(
@@ -80,7 +83,9 @@ export const APIScriptMethods: APIMethodsClass = {
       { Context: context },
     );
 
-    return dispatch(manageResponseHandler(result));
+    dispatch(manageResponseHandler(result));
+
+    return result;
   },
 
   getServerTime: () => UtilsAPI.getServerTime(),

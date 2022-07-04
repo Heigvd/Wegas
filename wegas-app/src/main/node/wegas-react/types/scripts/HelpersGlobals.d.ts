@@ -20,4 +20,5 @@ interface GlobalHelpersClass {
     getLevel: () => 'OFF' | 'ERROR' | 'WARN' | 'LOG' | 'INFO' | 'DEBUG';
     setLevel: (l: 'OFF' | 'ERROR' | 'WARN' | 'LOG' | 'INFO' | 'DEBUG') => void;
   };
+  downloadDataAsFile: (filename: string, data: string) => void;
 }

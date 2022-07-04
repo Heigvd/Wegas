@@ -1,4 +1,4 @@
-import { cloneDeep, isEqual, uniq, escapeRegExp } from 'lodash-es';
+import { cloneDeep, escapeRegExp, isEqual, uniq } from 'lodash-es';
 import * as React from 'react';
 import { transpile } from 'typescript';
 import {
@@ -21,7 +21,11 @@ import { fileURL } from '../../API/files.api';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
 import { entityIs } from '../../data/entities';
-import { createTranslatableContent, createTranslation, translate } from '../../data/i18n';
+import {
+  createTranslatableContent,
+  createTranslation,
+  translate,
+} from '../../data/i18n';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
@@ -119,6 +123,18 @@ export const useRef: GlobalHelpersClass['useRef'] = <T>(
   }
   return refs[id] as { current: T };
 };
+
+function downloadDataAsFile(filename: string, data: string) {
+  // create a fake anchor element
+  const pom: HTMLAnchorElement = document.createElement('a');
+  // insert textual data in href attribute
+  pom.setAttribute(
+    'href',
+    'data:text/plain;charset=utf-8,' + encodeURIComponent(data),
+  );
+  pom.setAttribute('download', filename);
+  pom.click();
+}
 
 const globalDispatch = store.dispatch;
 
@@ -463,6 +479,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     getLogger: getLogger,
     registerEffect: registerEffect,
     getFilePath: fileURL,
+    downloadDataAsFile,
   };
 
   globals.Roles = {
@@ -599,7 +616,7 @@ const memoClientScriptEval = (() => {
         }
       }
       if (WEGAS_SAFE_MODE) {
-        wlog("Drop script exec !")
+        wlog('Drop script exec !');
         return undefined as any;
       }
       // do not provide effective arguments ever !
