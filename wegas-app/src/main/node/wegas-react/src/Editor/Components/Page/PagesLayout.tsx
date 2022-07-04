@@ -682,12 +682,14 @@ function WegasComponentNode({
 }
 
 interface PageIndexTitleProps {
+  open: boolean;
   newPath: string[];
   indexItem: PageIndexItem;
   defaultPageId: string;
 }
 
 function PageIndexTitle({
+  open,
   newPath,
   indexItem,
   defaultPageId,
@@ -700,8 +702,11 @@ function PageIndexTitle({
 
   return (
     <LayoutNodeTitle
-      icon={isPageItem(indexItem) ? 'file' : 'folder'}
+      icon={
+        isPageItem(indexItem) ? 'file-invoice' : open ? 'folder-open' : 'folder'
+      }
       title={indexItem.name}
+      tooltip={isPageItem(indexItem) ? ` ${indexItem.id}` : ''}
       advancedTitle={
         indexItem.name + (isPageItem(indexItem) ? ` ${indexItem.id}` : '')
       }
@@ -854,13 +859,14 @@ function PageIndexItemNode({
   return isPageItem(indexItem) ? (
     page ? (
       <TreeNode
-        label={
+        label={open => (
           <PageIndexTitle
+            open={open}
             newPath={newPath}
             indexItem={indexItem}
             defaultPageId={defaultPageId}
           />
-        }
+        )}
         data={data}
         id={'PAGE' + indexItem.id}
         type={PAGE_LAYOUT_ITEM}
@@ -881,13 +887,14 @@ function PageIndexItemNode({
     )
   ) : (
     <TreeNode
-      label={
+      label={open => (
         <PageIndexTitle
+          open={open}
           newPath={newPath}
           indexItem={indexItem}
           defaultPageId={defaultPageId}
         />
-      }
+      )}
       // id={JSON.stringify(id)}
       data={data}
       type={PAGE_LAYOUT_ITEM}

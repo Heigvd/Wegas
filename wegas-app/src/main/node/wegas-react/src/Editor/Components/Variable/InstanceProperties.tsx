@@ -127,6 +127,7 @@ export function InstanceProperties({
   const subpath = isEditingVariable(editing) ? editing.path : undefined;
   const title = descriptor ? (
     <VariableTreeTitle
+      open={false}
       variable={descriptor}
       subPath={subpath}
       className={cx(grow, titleStyle)}

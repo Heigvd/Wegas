@@ -1,3 +1,4 @@
+import { css } from '@emotion/css';
 import produce from 'immer';
 import { Schema } from 'jsoninput';
 import { cloneDeep, get } from 'lodash-es';
@@ -36,11 +37,12 @@ import { store, StoreDispatch } from '../../data/Stores/store';
 import { deepUpdate } from '../../data/updateUtils';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
-import getEditionConfig, { getClassLabel } from '../editionConfig';
+import getEditionConfig, { getClassLabel, getIcon } from '../editionConfig';
 import { ErrorBoundary } from './ErrorBoundary';
 import { FormAction } from './Form';
 import { AvailableViews } from './FormView';
 import { InstanceProperties } from './Variable/InstanceProperties';
+import { IconComp, withDefault } from './Views/FontAwesome';
 
 export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
@@ -226,15 +228,23 @@ async function WindowedEditor<T extends IMergeable>({
   return (
     <Form
       entity={pathEntity}
-      label={editorTitle({
-        label: entity
-          ? (entity as { label?: ITranslatableContent }).label
-          : undefined,
-        editorTag: entity
-          ? (entity as { editorTag?: string }).editorTag
-          : undefined,
-        name: getClassLabel(pathEntity),
-      })}
+      label={
+        <>
+          <IconComp
+            icon={withDefault(getIcon(entity!), 'pen')}
+            className={css({ marginRight: '2px' })}
+          />
+          {editorTitle({
+            label: entity
+              ? (entity as { label?: ITranslatableContent }).label
+              : undefined,
+            editorTag: entity
+              ? (entity as { editorTag?: string }).editorTag
+              : undefined,
+            name: getClassLabel(pathEntity),
+          })}
+        </>
+      }
       update={variable =>
         update != null
           ? update(deepUpdate(entity, path, variable) as T)

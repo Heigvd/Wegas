@@ -20,7 +20,7 @@ export interface TreeNodePassedProps<T = unknown> {
 interface TreeNodeProps<T = unknown> extends ClassStyleId {
   // id: string;
   data?: T | null;
-  label: React.ReactNode;
+  label: React.ReactNode | ((open: boolean) => React.ReactNode);
   type?: string;
   acceptTypes?: string[];
   forceOpenClose?: boolean;
@@ -114,6 +114,10 @@ export function TreeNode<T = unknown>({
         endDrag();
         setDragging(false);
       }}
+      onDoubleClick={e => {
+        toggleNode(id);
+        e.stopPropagation();
+      }}
       style={{
         ...{ display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr)' },
         ...style,
@@ -194,7 +198,7 @@ export function TreeNode<T = unknown>({
         data-treenode-parent-not-droppable={parentNotDroppable}
         data-treenode-parent-accept-types={JSON.stringify(parentAcceptTypes)}
       >
-        {label}
+        {typeof label === 'function' ? label(!!open) : label}
       </div>
       {children != null && (!dragging || keepOpenOnDrag) && joinOpen && (
         <>

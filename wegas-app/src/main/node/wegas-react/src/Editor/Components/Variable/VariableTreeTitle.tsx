@@ -1,22 +1,24 @@
-import * as React from 'react';
-import { entityIs } from '../../../data/entities';
-import { getIcon } from '../../editionConfig';
 import { css } from '@emotion/css';
-import { withDefault, IconComp } from '../Views/FontAwesome';
-import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
+import * as React from 'react';
 import {
-  IVariableDescriptor,
   IEvaluationDescriptorContainer,
   IResult,
+  IVariableDescriptor,
 } from 'wegas-ts-api';
+import { entityIs } from '../../../data/entities';
+import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
+import { getIcon } from '../../editionConfig';
+import { IconComp, withDefault } from '../Views/FontAwesome';
 
 interface VariableTreeTitleProps extends ClassStyleId {
   variable?: IVariableDescriptor | IResult | IEvaluationDescriptorContainer;
   subPath?: (string | number)[];
+  open: boolean;
 }
 
 export function VariableTreeTitle({
   variable,
+  open,
   subPath,
   className,
   style,
@@ -24,7 +26,7 @@ export function VariableTreeTitle({
   return (
     <div className={className} style={style}>
       <IconComp
-        icon={withDefault(getIcon(variable!), 'question')}
+        icon={withDefault(getIcon(variable!, open), 'question')}
         className={css({ marginRight: '2px' })}
       />
       {entityIs(variable, 'EvaluationDescriptorContainer')

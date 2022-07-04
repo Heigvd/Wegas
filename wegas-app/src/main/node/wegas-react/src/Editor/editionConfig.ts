@@ -226,14 +226,17 @@ export async function getVariableMethodConfig<T extends SAbstractEntity>(
   );
 }
 
-export function getIcon<T extends IMergeable>(entity: T): Icons | undefined {
+export function getIcon<T extends IMergeable>(
+  entity: T,
+  open: boolean = false,
+): Icons | undefined {
   switch (entity['@class'] as WegasClassNames) {
     case 'ChoiceDescriptor':
       return ['square', { icon: 'check-double', color: 'white', size: 'sm' }];
     case 'FSMDescriptor':
       return 'project-diagram';
     case 'ListDescriptor':
-      return 'folder';
+      return open ? 'folder-open' : 'folder';
     case 'NumberDescriptor':
       return ['circle', { value: 'ℝ', color: 'white', fontSize: '0.7em' }];
     case 'QuestionDescriptor':

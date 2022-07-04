@@ -338,7 +338,7 @@ export function CTree({
           entityIs(variable, 'QuestionDescriptor', true) ||
           entityIs(variable, 'ChoiceDescriptor', true)
         }
-        label={
+        label={open => (
           <div
             className={cx(flex, flexBetween, nodeStyle, {
               [globalSelection]: editing,
@@ -355,6 +355,7 @@ export function CTree({
             }}
           >
             <VariableTreeTitle
+              open={open}
               variable={variable}
               subPath={subPath}
               className={nodeLabelStyle}
@@ -388,7 +389,7 @@ export function CTree({
                 />
               ) : null)}
           </div>
-        }
+        )}
         data={variable}
         id={String(variable.id)}
       >
