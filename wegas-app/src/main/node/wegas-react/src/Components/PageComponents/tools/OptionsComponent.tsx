@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { State } from '../../../data/Reducer/reducers';
 import { useStore } from '../../../data/Stores/store';
+import { useDeepMemo } from '../../Hooks/useDeepMemo';
 import { useScript } from '../../Hooks/useScript';
 import { themeCTX } from '../../Theme/Theme';
 import { WegasComponentOptions } from './EditableComponent';
@@ -23,6 +24,7 @@ interface OptionProps {
   tooltip: WegasComponentOptions['tooltip'];
   themeMode: WegasComponentOptions['themeMode'];
   conditionnalClassNames: WegasComponentOptions['conditionnalClassNames'];
+  computedAttributes: WegasComponentOptions['computedAttributes'];
   disableIf: WegasComponentOptions['disableIf'];
   hideIf: WegasComponentOptions['hideIf'];
   readOnlyIf: WegasComponentOptions['readOnlyIf'];
@@ -35,6 +37,7 @@ export const defaultOptionsKeys: (keyof OptionProps)[] = [
   'tooltip',
   'themeMode',
   'conditionnalClassNames',
+  'computedAttributes',
   'disableIf',
   'hideIf',
   'readOnlyIf',
@@ -65,6 +68,7 @@ export interface OptionsState extends HeritableOptionsState {
   hidden?: boolean;
   locked?: boolean;
   infoBulletProps?: PlayerInfoBulletProps;
+  attributes: Record<string, string>;
 }
 
 // interface ComponentOptionsManagerProps {
@@ -91,6 +95,7 @@ export function useOptions(
     tooltip,
     themeMode,
     conditionnalClassNames = [],
+    computedAttributes = [],
     disableIf,
     hideIf,
     readOnlyIf,
@@ -108,7 +113,8 @@ export function useOptions(
   );
   const locked = useStore(lockedSelector);
 
-  const infoBulletProps = useComputeUnreadCount(unreadCount, context) || infoBullet;
+  const infoBulletProps =
+    useComputeUnreadCount(unreadCount, context) || infoBullet;
 
   const { themesState, currentContext } = React.useContext(themeCTX);
   const themeModeClassName =
@@ -137,34 +143,33 @@ export function useOptions(
     .map(item => item.className)
     .join(' ');
 
-  return React.useMemo(
-    () => ({
-      tooltip,
-      themeModeClassName,
-      innerClassName,
-      outerClassName,
-      disabled:
-        disabled === undefined ? inheritedOptionsState.disabled : disabled,
-      hidden,
-      readOnly:
-        readOnly === undefined ? inheritedOptionsState.readOnly : readOnly,
-      locked,
-      infoBulletProps,
-    }),
-    [
-      disabled,
-      hidden,
-      infoBulletProps,
-      inheritedOptionsState.disabled,
-      inheritedOptionsState.readOnly,
-      innerClassName,
-      locked,
-      outerClassName,
-      readOnly,
-      themeModeClassName,
-      tooltip,
-    ],
-  );
+  const attributes = useScript<string[]>(
+    computedAttributes.map(item => item.attrValue),
+    context,
+  )!
+    .map((attrValue, i) => ({
+      attrValue,
+      attrName: computedAttributes[i].attrName,
+    }))
+    .reduce<OptionsState['attributes']>((acc, cur) => {
+      acc[cur.attrName] = cur.attrValue;
+      return acc;
+    }, {});
+
+  return useDeepMemo({
+    tooltip,
+    themeModeClassName,
+    innerClassName,
+    outerClassName,
+    disabled:
+      disabled === undefined ? inheritedOptionsState.disabled : disabled,
+    hidden,
+    readOnly:
+      readOnly === undefined ? inheritedOptionsState.readOnly : readOnly,
+    locked,
+    infoBulletProps,
+    attributes,
+  });
 }
 
 // export function ComponentOptionsManager({

@@ -2,7 +2,10 @@ import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { flex, grow } from '../../css/classes';
 import { classNameOrEmpty } from '../../Helper/className';
-import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
+import {
+  sanitizeExtraAttributes,
+  WegasComponentItemProps,
+} from '../PageComponents/tools/EditableComponent';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 
 export const alignItemsValues = [
@@ -124,6 +127,7 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
       style = {},
       tooltip,
       children,
+      extraAttributes,
       ...layout
     },
     ref,
@@ -144,6 +148,7 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
           ...style,
         }}
         title={tooltip}
+        {...sanitizeExtraAttributes(extraAttributes)}
       >
         {children}
       </div>

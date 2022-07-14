@@ -355,9 +355,15 @@ export interface WegasConditionnalClassName {
   condition?: IScript;
 }
 
+export interface WegasComputedAttribute {
+  attrName: string;
+  attrValue?: IScript;
+}
+
 // OPTIONS -> LAYOUT CONDITIONNAL
 export interface WegasComponentLayoutConditionnalOptions {
   conditionnalClassNames?: WegasConditionnalClassName[];
+  computedAttributes?: WegasComputedAttribute[];
   disableIf?: IScript;
   hideIf?: IScript;
   readOnlyIf?: IScript;
@@ -365,6 +371,19 @@ export interface WegasComponentLayoutConditionnalOptions {
 }
 
 export const layoutConditionnalChoices: HashListChoices = [
+  {
+    label: 'Computed attributes',
+    value: {
+      prop: 'computedAttributes',
+      schema: schemaProps.array({
+        label: 'Computed attributes',
+        itemSchema: {
+          attrName: schemaProps.string({ label: 'Attribute Name)' }),
+          attrValue: schemaProps.scriptString({ label: 'Attribute Value' }),
+        },
+      }),
+    },
+  },
   {
     label: 'Conditionnal classes',
     value: {

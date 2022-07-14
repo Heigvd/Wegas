@@ -1,10 +1,13 @@
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { cx, css } from '@emotion/css';
-import { classNameOrEmpty } from '../../Helper/className';
 import { flex, flexColumn, flexRow } from '../../css/classes';
-import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
-import { themeVar } from '../Theme/ThemeVars';
+import { classNameOrEmpty } from '../../Helper/className';
+import {
+  sanitizeExtraAttributes,
+  WegasComponentItemProps,
+} from '../PageComponents/tools/EditableComponent';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
+import { themeVar } from '../Theme/ThemeVars';
 
 const SPLITTER_SELECTOR = 'fonkyflex-splitter';
 const CONTENT_SELECTOR = 'fonkyflex-content';
@@ -316,6 +319,7 @@ export const FonkyFlexContent = React.forwardRef<
     onDragLeave,
     onDragEnd,
     tooltip,
+    extraAttributes,
   } = props;
   return (
     <div
@@ -338,6 +342,7 @@ export const FonkyFlexContent = React.forwardRef<
       onDragLeave={onDragLeave}
       onDragEnd={onDragEnd}
       title={tooltip}
+      {...sanitizeExtraAttributes(extraAttributes)}
     >
       {children}
     </div>

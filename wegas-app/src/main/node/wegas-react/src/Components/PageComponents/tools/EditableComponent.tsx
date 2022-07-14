@@ -449,6 +449,23 @@ function LockedOverlay({ locked }: LockedOverlayProps) {
 }
 
 /**
+ * Make sure attributes start with "data-"
+ */
+export function sanitizeExtraAttributes(
+  attrs: Record<string, string> = {},
+): Record<string, string> {
+  return Object.entries(attrs).reduce<Record<string, string>>(
+    (acc, [attrName, attrValue]) => {
+      attrName.startsWith('data-') ? attrName : `data-${attrName}`;
+      acc[attrName.startsWith('data-') ? attrName : `data-${attrName}`] =
+        attrValue;
+      return acc;
+    },
+    {},
+  );
+}
+
+/**
  * WegasComponentItemProps - Required props for a layout item component
  */
 export interface WegasComponentItemProps extends ClassStyleId {
@@ -484,6 +501,10 @@ export interface WegasComponentItemProps extends ClassStyleId {
    * tooltip - a descriptive text that apprear when the cursor is idle over the element
    */
   tooltip?: string;
+  /**
+   * extraAttributes - Extra attribute to set.
+   */
+  extraAttributes?: Record<string, string>;
 }
 
 /**
@@ -704,6 +725,7 @@ export function ComponentContainer({
       onDragOver={dragEnter}
       onDragLeave={dragLeave}
       tooltip={options.tooltip}
+      extraAttributes={options.attributes}
     >
       {dragHoverState && editable && dropzones.side && (
         <ComponentDropZone

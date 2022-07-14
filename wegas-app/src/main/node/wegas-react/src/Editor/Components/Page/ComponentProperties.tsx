@@ -116,6 +116,7 @@ const defaultLayoutOptionsKeys = [
 ];
 
 const defaultLayoutConditions: WegasComponentLayoutConditionnalOptions = {
+  computedAttributes: undefined,
   conditionnalClassNames: undefined,
   disableIf: undefined,
   hideIf: undefined,

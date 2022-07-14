@@ -16,6 +16,7 @@ import {
 import {
   ComponentContainer,
   ItemContainer,
+  sanitizeExtraAttributes,
   WegasComponentItemProps,
   WegasComponentProps,
 } from './EditableComponent';
@@ -88,6 +89,7 @@ export const DummyContainer: ItemContainer = React.forwardRef<
       tooltip,
       children,
       id,
+      extraAttributes,
     },
     ref,
   ) => {
@@ -105,6 +107,7 @@ export const DummyContainer: ItemContainer = React.forwardRef<
         className={className}
         style={style}
         title={tooltip}
+        {...sanitizeExtraAttributes(extraAttributes)}
       >
         {children}
       </div>

@@ -10,6 +10,7 @@ import {
   useOnVariableChange,
 } from '../PageComponents/Inputs/tools';
 import {
+  sanitizeExtraAttributes,
   WegasComponentItemProps,
   WegasComponentProps,
 } from '../PageComponents/tools/EditableComponent';
@@ -160,6 +161,7 @@ export const AbsoluteItem = React.forwardRef<HTMLDivElement, AbsoluteItemProps>(
       onDragLeave,
       onDragEnd,
       children,
+      extraAttributes,
       ...layout
     },
     ref,
@@ -177,6 +179,7 @@ export const AbsoluteItem = React.forwardRef<HTMLDivElement, AbsoluteItemProps>(
         onDragLeave={onDragLeave}
         onDragEnd={onDragEnd}
         className={className}
+        {...sanitizeExtraAttributes(extraAttributes)}
       >
         {children}
       </div>
