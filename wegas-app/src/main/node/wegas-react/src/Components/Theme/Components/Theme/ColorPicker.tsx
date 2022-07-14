@@ -160,6 +160,13 @@ export function ColorPicker({
         >
           <ChromePicker
             color={color}
+            styles={{
+              default : {
+                picker: {
+                  boxShadow: 'none',
+                }
+              }
+            }}
             onChangeComplete={newColor => {
               setColor(newColor.rgb);
             }}
