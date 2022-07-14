@@ -170,6 +170,12 @@ export function useGlobalLibs() {
 
       try {
         const internalLib = `
+        declare namespace console {
+            function time(label: string, ...data: unknown[]);
+            function timeLog(label: string, ...data: unknown[]);
+            function timeEnd(label: string, ...data: unknown[]);
+        };
+
         declare const gameModel: SGameModel;
         declare const teams: STeam[];
         declare const self: SPlayer;
