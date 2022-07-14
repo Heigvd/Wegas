@@ -41,7 +41,7 @@ public class EntityListener {
     private Beanjection beans;
 
     @PrePersist
-    void onPrePersist(Object o) {
+    /* lifecycle */ void onPrePersist(Object o) {
         logger.trace("PrePersist {}", o);
         if (o instanceof JCRClient) {
             this.injectJTABean((JCRClient) o);
@@ -53,7 +53,7 @@ public class EntityListener {
     }
 
     @PostPersist
-    void onPostPersist(Object o) {
+    /* lifecycle */ void onPostPersist(Object o) {
         logger.trace("PostPersist {}", o);
 
         if (o instanceof Mergeable) {
@@ -78,14 +78,10 @@ public class EntityListener {
             logger.debug("PropagateNew: {} :: {}", o.getClass().getSimpleName(), ((AbstractEntity) o).getId());
             requestManager.addUpdatedEntity((AbstractEntity) o);
         }
-
-        if (o instanceof GameModelContent) {
-            requestManager.addUpdatedGameModelContent((GameModelContent) o);
-        }
     }
 
     @PostUpdate
-    void onPostUpdate(Object o) {
+    /* lifecycle */ void onPostUpdate(Object o) {
         logger.trace("PostUpdate {}", o);
 
         if (o instanceof WithPermission) {
@@ -100,14 +96,10 @@ public class EntityListener {
             logger.debug("PropagateUpdate: {} :: {}", o.getClass().getSimpleName(), ((AbstractEntity) o).getId());
             requestManager.addUpdatedEntity((AbstractEntity) o);
         }
-
-        if (o instanceof GameModelContent) {
-            requestManager.addUpdatedGameModelContent((GameModelContent) o);
-        }
     }
 
     @PreRemove
-    void onPreRemove(Object o) {
+    /* lifecycle */ void onPreRemove(Object o) {
         logger.trace("PreRemove {}", o);
         if (o instanceof WithPermission) {
             WithPermission ae = (WithPermission) o;
@@ -126,7 +118,7 @@ public class EntityListener {
     }
 
     @PostLoad
-    void onPostLoad(Object o) {
+    /* lifecycle */ void onPostLoad(Object o) {
         logger.trace("PostLoad {}", o);
         if (o instanceof AcceptInjection) {
             AcceptInjection id = (AcceptInjection) o;

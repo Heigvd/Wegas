@@ -511,6 +511,18 @@ public class WebsocketFacade {
         }
     }
 
+    /**
+     * Inform connected users the given library has been destroyed
+     *
+     * @param content  the destroyed library
+     * @param socketId socket Id which identifies the user who initiated the destruction
+     */
+    public void gameModelContentDestroy(GameModelContent content, String socketId) {
+        if (pusher != null) {
+            pusher.trigger(content.getGameModel().getChannel(), "LibraryDestroy-" + content.getLibraryType(), content.getContentKey(), socketId);
+        }
+    }
+
     public final Object parseJSON(String json) throws IOException {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
         return mapper.readValue(json, Object.class);

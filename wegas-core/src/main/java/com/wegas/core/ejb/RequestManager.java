@@ -308,11 +308,6 @@ public class RequestManager implements RequestManagerI {
     private Long exceptionCounter = 0L;
 
     /**
-     * List of all updated gameModelContent
-     */
-    private final List<GameModelContent> updatedGameModelContent = new ArrayList<>();
-
-    /**
      * Contains all updated entities
      */
     private final Set<AbstractEntity> updatedEntities = new HashSet<>();
@@ -904,16 +899,6 @@ public class RequestManager implements RequestManagerI {
      */
     public Set<AbstractEntity> getUpdatedEntities() {
         return updatedEntities;
-    }
-
-    public void addUpdatedGameModelContent(GameModelContent gmContent) {
-        if (gmContent != null && !updatedGameModelContent.contains(gmContent)) {
-            updatedGameModelContent.add(gmContent);
-        }
-    }
-
-    public List<GameModelContent> getUpdatedGameModelContent() {
-        return updatedGameModelContent;
     }
 
     /**

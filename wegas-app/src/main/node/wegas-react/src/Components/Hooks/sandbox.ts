@@ -105,3 +105,9 @@ export interface GlobalClasses {
 
 export const { sandbox, globals } = createSandbox<GlobalClasses>();
 
+
+export function clearModule(moduleName: string){
+  delete globals.__WegasModules[moduleName];
+}
+
+

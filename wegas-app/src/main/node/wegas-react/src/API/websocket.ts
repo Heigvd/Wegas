@@ -103,6 +103,9 @@ const webSocketEvents = [
   'LibraryUpdate-CSS',
   'LibraryUpdate-ClientScript',
   'LibraryUpdate-ServerScript',
+  'LibraryDestroy-CSS',
+  'LibraryDestroy-ClientScript',
+  'LibraryDestroy-ServerScript',
   'LockEvent',
   'LifeCycleEvent',
   'OutdatedEntitiesEvent',
@@ -367,7 +370,7 @@ export function useLiveUpdate(
   variableIdToWatch: number | undefined,
   delay: number = 500,
 ) {
-  const waitTimer = React.useRef<NodeJS.Timeout | null>();
+  const waitTimer = React.useRef<ReturnType<typeof setTimeout> | null>();
   const [waitingState, setWaitingState] = React.useState(false);
 
   useWebsocketEvent(

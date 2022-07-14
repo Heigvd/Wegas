@@ -24,6 +24,7 @@ import { clearEffects, runEffects } from '../../Helper/pageEffectsManager';
 import { getLogger, wlog } from '../../Helper/wegaslog';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { clearModule } from '../Hooks/sandbox';
 import { useGlobalLibs } from '../Hooks/useGlobalLibs';
 import {
   printWegasScriptError,
@@ -565,6 +566,13 @@ export function LibrariesLoader(
     //   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const destroyEventHandler = React.useCallback((name: string, libType: LibraryType) => {
+    const path = computeLibraryPath(name, libType);
+    dispatchLibrariesState({
+      actionType: 'RemoveLibrary',
+      libraryPath : path,
+    });
+  }, []);
 
   const clientScriptEventHandler = React.useCallback(
     (updatedLibraryName: string) => {
@@ -594,6 +602,12 @@ export function LibrariesLoader(
   );
   useWebsocketEvent('LibraryUpdate-ClientScript', clientScriptEventHandler);
 
+  const clientScriptDestroyEventHandler = React.useCallback((name: string) => {
+    destroyEventHandler(name, 'client');
+    clearModule(`./${name}`);
+  }, [destroyEventHandler]);
+  useWebsocketEvent('LibraryDestroy-ClientScript', clientScriptDestroyEventHandler);
+
   const serverScriptEventHandler = React.useCallback(
     (updatedLibraryName: string) => {
       LibraryAPI.getLibrary('ServerScript', updatedLibraryName).then(
@@ -612,7 +626,14 @@ export function LibrariesLoader(
   );
   useWebsocketEvent('LibraryUpdate-ServerScript', serverScriptEventHandler);
 
-  const styleScriptEventHandler = React.useCallback(
+  const serverScriptDestroyEventHandler = React.useCallback((name: string) => {
+    destroyEventHandler(name, 'server');
+  }, [destroyEventHandler]);
+  useWebsocketEvent('LibraryDestroy-ServerScript', serverScriptDestroyEventHandler);
+
+
+
+  const stylesheetEventHandler = React.useCallback(
     (updatedLibraryName: string) => {
       LibraryAPI.getLibrary('CSS', updatedLibraryName).then(
         (library: IGameModelContent) => {
@@ -628,7 +649,14 @@ export function LibrariesLoader(
     },
     [],
   );
-  useWebsocketEvent('LibraryUpdate-CSS', styleScriptEventHandler);
+  useWebsocketEvent('LibraryUpdate-CSS', stylesheetEventHandler);
+
+  const cssDestroyEventHandler = React.useCallback((name: string) => {
+    destroyEventHandler(name, 'style');
+  }, [destroyEventHandler]);
+  useWebsocketEvent('LibraryDestroy-CSS', cssDestroyEventHandler);
+
+
 
   // Refreshing globals when global contexts changes should any global changes trigger a new script reevalutation???
   // Should the store state also be a trigger???

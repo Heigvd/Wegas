@@ -24,7 +24,7 @@ import javax.inject.Inject;
  */
 @Stateless
 @LocalBean
-public class LibraryFacade {
+public class LibraryFacade extends WegasAbstractFacade {
 
     /**
      *
@@ -90,6 +90,7 @@ public class LibraryFacade {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         GameModelContent gameModelContent = gameModel.findLibrary(libraryName, key);
         if (gameModelContent != null) {
+            getEntityManager().remove(gameModelContent);
             gameModel.removeLib(gameModelContent);
         }
     }

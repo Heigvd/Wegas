@@ -17,6 +17,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.GameModelContent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -248,9 +249,17 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 requestManager.markPropagationEndTime();
             }
 
-            requestManager.getUpdatedGameModelContent().forEach(gameModelContent
-                -> websocketFacade.gameModelContentUpdate(gameModelContent, eSocketId)
-            );
+            requestManager.getAllUpdatedEntities().stream()
+                .filter(entity -> entity instanceof GameModelContent)
+                .forEach(gameModelContent
+                    -> websocketFacade.gameModelContentUpdate((GameModelContent)gameModelContent, eSocketId)
+                );
+
+            requestManager.getDestroyedEntities().stream()
+                .filter(entity -> entity instanceof GameModelContent)
+                .forEach(gameModelContent
+                    -> websocketFacade.gameModelContentDestroy((GameModelContent)gameModelContent, eSocketId)
+                );
         }
 
         //requestFacade.flushClear();
