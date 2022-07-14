@@ -30,7 +30,7 @@ export const inputStyleCSS: CSSObject = {
   },
   '&[readonly], &[disabled]': {
     color: themeVar.colors.DisabledColor,
-    pointerEvents: 'none',
+    //pointerEvents: 'none', // ability to select readonly text is quite useful!
   },
 };
 
