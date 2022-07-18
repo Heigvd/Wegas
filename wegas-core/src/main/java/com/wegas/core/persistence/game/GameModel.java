@@ -12,7 +12,6 @@ import ch.albasim.wegas.annotations.ProtectionLevel;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -136,6 +135,10 @@ import org.slf4j.LoggerFactory;
 @NamedQuery(
     name = "GameModel.findReference",
     query = "SELECT gm FROM GameModel gm where gm.basedOn.id = :id AND gm.type =  com.wegas.core.persistence.game.GameModel.GmType.REFERENCE"
+)
+@NamedQuery(
+    name = "GameModel.findByCreator",
+    query = "SELECT gm from GameModel gm where gm.createdBy.id = :createdById"
 )
 @Table(
     indexes = {

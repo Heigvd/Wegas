@@ -931,6 +931,34 @@ public class UserController {
         return userFacade.addRole(userId, roleId);
     }
 
+    /**
+     * Merge two users. The first user, identified by <code>userId</code>, will integrate all data
+     * from second one (<code>otherUserId</code>). More precisely:
+     * <ul>
+     * <li> all <code>otherUser</code>'s players will be transmitted to <code>user</code>
+     * <li> all <code>generatedBy</code> indications (on games, teams and gameModels) will reference
+     * <code>user</code>
+     * <li><code>user</code> will inherit all <code>otherUser</code> roles
+     * <li><code>user</code> will inherit all <code>otherUser</code> permissions
+     * <li> all <code>otherUser</code>'s accounts will be transmitted to <code>user</code>
+     * </ul>
+     * <p>
+     * <code>otherUser</code> will no longer exist.
+     *
+     * @param userId      if of the user who will swallow the other
+     * @param otherUserId is of the user who will be swallowed
+     *
+     * @return the one merged user
+     */
+    @PUT
+    @RequiresRoles("Administrator")
+    @Path("{userId : [1-9][0-9]*}/Merge/{otherUserId : [1-9][0-9]*}")
+    public User mergeUsers(
+        @PathParam("userId") Long userId,
+        @PathParam("otherUserId") Long otherUserId) {
+        return userFacade.mergeUsers(userId, otherUserId);
+    }
+
     @PUT
     @RequiresRoles("Administrator")
     @Path("{userId : [1-9][0-9]*}/Remove/{roleId : [1-9][0-9]*}")

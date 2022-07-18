@@ -106,6 +106,10 @@ import javax.validation.constraints.Pattern;
     name = "Game.findAllIdByLogId",
     query = "SELECT g.id FROM Game g WHERE g.gameModel.type = com.wegas.core.persistence.game.GameModel.GmType.PLAY AND g.gameModel.properties.logID = :logId"
 )
+@NamedQuery(
+    name = "Game.findByCreator",
+    query = "SELECT g from Game g where g.createdBy.id = :createdById"
+)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Game extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, NamedEntity, AcceptInjection {
 

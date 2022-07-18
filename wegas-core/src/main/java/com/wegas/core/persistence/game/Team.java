@@ -83,9 +83,18 @@ import javax.validation.constraints.NotNull;
     @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
 })
 
-@NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.gameTeams.game.id = :gameId")
-
-@NamedQuery(name = "Team.findToPopulate", query = "SELECT a FROM Team a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
+@NamedQuery(
+    name = "Team.findByGameIdAndName",
+    query = "SELECT a FROM Team a WHERE a.name = :name AND a.gameTeams.game.id = :gameId"
+)
+@NamedQuery(
+    name = "Team.findToPopulate",
+    query = "SELECT a FROM Team a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'"
+)
+@NamedQuery(
+    name = "Team.findByCreator",
+    query = "SELECT t from Team t where t.createdBy.id = :createdById"
+)
 public class Team extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, Populatable, AcceptInjection {
 
     private static final long serialVersionUID = 1L;
@@ -212,9 +221,6 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     public void prePersist() {
         // setting createdBy is only allowed before team is actually presisted
         this.createdBy = createdBy_transient;
-        if (createdBy != null) {
-            createdBy.getTeams().add(this);
-        }
     }
 
     public GameTeams getGameTeams() {
@@ -545,7 +551,6 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         users.forEach(user -> {
             map.put(user.getChannel(), entities);
         });
-
 
         // send it to admins too
         map.put(WebsocketFacade.ADMIN_LOBBY_CHANNEL, entities);

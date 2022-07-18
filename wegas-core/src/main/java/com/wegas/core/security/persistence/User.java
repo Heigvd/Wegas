@@ -91,15 +91,6 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     @JsonIgnore
     private List<Player> players = new ArrayList<>();
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "createdBy", cascade = {
-        CascadeType.DETACH,
-        CascadeType.MERGE,
-        CascadeType.PERSIST,
-        CascadeType.REFRESH
-    } /* , orphanRemoval = true */)
-    private List<Team> teams = new ArrayList<>();
-
     /**
      *
      */
@@ -163,14 +154,6 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     //@JsonManagedReference(value = "player-user")
     public void setPlayers(List<Player> players) {
         this.players = players;
-    }
-
-    public List<Team> getTeams() {
-        return teams;
-    }
-
-    public void setTeams(List<Team> teams) {
-        this.teams = teams;
     }
 
     /**

@@ -460,6 +460,48 @@ public class UserFacade extends BaseFacade<User> {
         logger.info("  done");
     }
 
+    /**
+     * Retrieve all gameModels created by the given user
+     *
+     * @param user the creator
+     *
+     * @return list of all gameModel created by the user
+     */
+    private List<GameModel> getGameModelsByCreator(User user) {
+        TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findByCreator", GameModel.class);
+
+        query.setParameter("createdById", user.getId());
+        return query.getResultList();
+    }
+
+    /**
+     * Retrieve all games created by the given user
+     *
+     * @param user the creator
+     *
+     * @return list of all games created by the user
+     */
+    private List<Game> getGamesByCreator(User user) {
+        TypedQuery<Game> query = this.getEntityManager().createNamedQuery("Game.findByCreator", Game.class);
+
+        query.setParameter("createdById", user.getId());
+        return query.getResultList();
+    }
+
+    /**
+     * Retrieve all teams created by the given user
+     *
+     * @param user the creator
+     *
+     * @return list of all teams created by the user
+     */
+    private List<Team> getTeamsByCreator(User user) {
+        TypedQuery<Team> query = this.getEntityManager().createNamedQuery("Team.findByCreator", Team.class);
+
+        query.setParameter("createdById", user.getId());
+        return query.getResultList();
+    }
+
     @Override
     public void remove(User entity) {
         for (Role r : entity.getRoles()) {
@@ -476,8 +518,16 @@ public class UserFacade extends BaseFacade<User> {
             player.setUser(null);
         }
 
-        for (Team team : entity.getTeams()) {
+        for (Team team : getTeamsByCreator(entity)) {
             team.setCreatedBy(null);
+        }
+
+        for (Game game : getGamesByCreator(entity)) {
+            game.setCreatedBy(null);
+        }
+
+        for (GameModel gm : getGameModelsByCreator(entity)) {
+            gm.setCreatedBy(null);
         }
 
         getEntityManager().remove(entity);
@@ -738,7 +788,7 @@ public class UserFacade extends BaseFacade<User> {
         // load the game to make sure it exists
         Game game = gameFacade.find(gameId);
         requestManager.assertGameTrainer(game);
-        try (Sudoer su = requestManager.sudoer()) {
+        try ( Sudoer su = requestManager.sudoer()) {
             if (game != null) {
                 User user = this.find(trainerId);
                 this.addUserPermission(user, "Game:View,Edit:g" + gameId);
@@ -752,7 +802,7 @@ public class UserFacade extends BaseFacade<User> {
         // load the game to make sure it exists
         Game game = gameFacade.find(gameId);
         requestManager.assertGameTrainer(game);
-        try (Sudoer su = requestManager.sudoer()) {
+        try ( Sudoer su = requestManager.sudoer()) {
             if (this.getCurrentUser().equals(trainer)) {
                 throw WegasErrorMessage.error("Cannot remove yourself");
             }
@@ -774,7 +824,7 @@ public class UserFacade extends BaseFacade<User> {
     public void grantGameModelPermissionToUser(Long userId, Long gameModelId, String permissions) {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
-        try (Sudoer su = requestManager.sudoer()) {
+        try ( Sudoer su = requestManager.sudoer()) {
             User user = this.find(userId);
 
             /*
@@ -793,7 +843,7 @@ public class UserFacade extends BaseFacade<User> {
     public void removeScenarist(Long gameModelId, User scenarist) {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
-        try (Sudoer su = requestManager.sudoer()) {
+        try ( Sudoer su = requestManager.sudoer()) {
             if (this.getCurrentUser().equals(scenarist)) {
                 throw WegasErrorMessage.error("Cannot remove yourself");
             }
@@ -941,6 +991,63 @@ public class UserFacade extends BaseFacade<User> {
         this.refresh(user);
         /* for (Player p : user.getPlayers()) { p.setName(user.getName()); } */
         return user;
+    }
+
+    public User mergeUsers(User user, User otherUser) {
+
+        if (user == null || otherUser == null) {
+            throw WegasErrorMessage.error("Object not found");
+        }
+
+        // Move players
+        List<Player> playerList = user.getPlayers();
+        for (Player player : otherUser.getPlayers()) {
+            player.setUser(user);
+            playerList.add(player);
+        }
+        otherUser.setPlayers(new ArrayList<>());
+
+        // entites "createdBy" otherUser
+        for (Team team : getTeamsByCreator(otherUser)) {
+            team.setCreatedBy(user);
+            // MUST call prePersist to make the change effective!
+            team.prePersist();
+        }
+
+        for (Game game : getGamesByCreator(otherUser)) {
+            game.setCreatedBy(user);
+        }
+
+        for (GameModel gameModel : getGameModelsByCreator(otherUser)) {
+            gameModel.setCreatedBy(user);
+        }
+
+        // Roles
+        for (Role r : otherUser.getRoles()) {
+            r.removeUser(otherUser);
+            user.addRole(r);
+        }
+
+        // permissions
+        for (Permission p : otherUser.getPermissions()) {
+            user.addPermission(p.getValue());
+        }
+
+        // Migrate accounts
+        for (AbstractAccount account : otherUser.getAccounts()) {
+            user.addAccount(account);
+        }
+        otherUser.setAccounts(new ArrayList<>());
+
+        // make sure to flush before removing otherUser
+        this.getEntityManager().flush();
+        this.remove(otherUser);
+
+        return user;
+    }
+
+    public User mergeUsers(Long userId, Long otherUserId) {
+        return this.mergeUsers(this.find(userId), this.find(otherUserId));
     }
 
     public void addRole(User u, Role r) {
