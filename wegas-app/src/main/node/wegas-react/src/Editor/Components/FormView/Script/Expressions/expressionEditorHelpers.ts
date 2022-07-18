@@ -28,10 +28,18 @@ const comparisonOperators = {
 
 export type WegasOperators = keyof typeof comparisonOperators;
 
-interface CallItemValue {
-  type: 'variable' | 'global';
+interface VariableCall {
+  type: 'variable';
+  variableName: string;
   script: string;
 }
+
+interface GlobalCall {
+  type: 'global';
+  script: string;
+}
+
+type CallItemValue = VariableCall | GlobalCall;
 
 interface BooleanItemValue {
   type: 'boolean';
@@ -337,6 +345,7 @@ export function makeItems(
     ? {
         type,
         script: `Variable.find(gameModel,'${value}')`,
+        variableName: value,
       }
     : type === 'global'
     ? {

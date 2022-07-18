@@ -580,14 +580,14 @@ export function parseStatement(
     }
   } else if (isScriptCondition(mode)) {
     if (isConditionCallStatement(statement)) {
+      const varName = getVariable(statement.expression);
       return {
         attributes: {
-          variableName: getVariable(statement.expression),
+          variableName: varName,
           initExpression: {
             type: 'variable',
-            script: `Variable.find(gameModel,'${getVariable(
-              statement.expression,
-            )}')`,
+            script: `Variable.find(gameModel,'${varName}')`,
+            variableName: varName,
           },
           methodName: getMethodName(statement.expression),
           ...getParameters(statement.expression),
@@ -595,13 +595,13 @@ export function parseStatement(
         error,
       };
     } else if (isConditionStatement(statement)) {
+      const varName = getVariable(statement.expression.left);
       return {
         attributes: {
           initExpression: {
             type: 'variable',
-            script: `Variable.find(gameModel,'${getVariable(
-              statement.expression.left,
-            )}')`,
+            script: `Variable.find(gameModel,'${varName}')`,
+            variableName: varName,
           },
           methodName: getMethodName(statement.expression.left),
           ...getParameters(statement.expression.left),
@@ -615,13 +615,13 @@ export function parseStatement(
     }
   } else {
     if (isImpactStatement(statement)) {
+      const varName = getVariable(statement.expression);
       return {
         attributes: {
           initExpression: {
             type: 'variable',
-            script: `Variable.find(gameModel,'${getVariable(
-              statement.expression,
-            )}')`,
+            script: `Variable.find(gameModel,'${varName}')`,
+            variableName: varName,
           },
           methodName: getMethodName(statement.expression),
           ...getParameters(statement.expression),
