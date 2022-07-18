@@ -4,6 +4,7 @@ import { schemaProps } from '../../../Components/PageComponents/tools/schemaProp
 import { flex, flexColumn } from '../../../css/classes';
 import JSONForm from 'jsoninput';
 import { OverviewItem, OverviewState } from '../Overview';
+import { AvailableSchemas } from '../../../Editor/Components/FormView';
 
 export interface FilterState {
   [subColumnId: string]: { [columnId: string]: boolean };
@@ -15,6 +16,8 @@ export interface FilterModalContentProps {
   onNewFilterState: (newFilterState: FilterState) => void;
 }
 
+type Schema = Record<string, AvailableSchemas>;
+
 export function FilterModalContent({
   overviewState,
   filterState,
@@ -22,23 +25,23 @@ export function FilterModalContent({
 }: FilterModalContentProps) {
   const filterSchema = {
     description: 'Filter',
-    properties: overviewState?.header.reduce(
-      (o, r) => ({
-        ...o,
-        [r.id]: schemaProps.object({
-          label: r.title,
-          properties: (r.items as OverviewItem[]).reduce(
-            (o, i) => ({
-              ...o,
-              [i.id]: schemaProps.boolean({
-                label: i.label,
+    properties: overviewState?.header.reduce<Schema>(
+      (groupProperties, group) => {
+        groupProperties[group.id] = schemaProps.object({
+          label: group.title || group.id,
+          properties: (group.items as OverviewItem[]).reduce<Schema>(
+            (properties, item) => {
+              properties[item.id] = schemaProps.boolean({
+                label: item.label || item.id,
                 layout: 'flexInline',
-              }),
-            }),
+              });
+              return properties;
+            },
             {},
           ),
-        }),
-      }),
+        });
+        return groupProperties;
+      },
       {},
     ),
   };
@@ -51,14 +54,16 @@ export function FilterModalContent({
       <JSONForm
         value={
           filterState ||
-          overviewState?.header.reduce(
-            (o, r) => ({
-              ...o,
-              [r.id]: (r.items as OverviewItem[]).reduce(
-                (o, i) => ({ ...o, [i.id]: true }),
-                {},
-              ),
-            }),
+          overviewState?.header.reduce<Record<string, Record<string, boolean>>>(
+            (groups, group) => {
+              groups[group.id] = (group.items as OverviewItem[]).reduce<
+                Record<string, boolean>
+              >((items, item) => {
+                items[item.id] = true;
+                return items;
+              }, {});
+              return groups;
+            },
             {},
           )
         }
