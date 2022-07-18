@@ -98,8 +98,10 @@ const webSocketEvents = [
   'EntityDestroyedEvent',
   'CustomEvent',
   'PageUpdate',
-  'LibraryUpdate-Theme',
-  'LibraryUpdate-SelectedThemes',
+  'LibraryUpdate-Theme', // TODO
+  'LibraryUpdate-SelectedThemes', // TODO
+  'LibraryDestroy-Theme', // TODO
+  'LibraryDestroy-SelectedThemes', // TODO
   'LibraryUpdate-CSS',
   'LibraryUpdate-ClientScript',
   'LibraryUpdate-ServerScript',
