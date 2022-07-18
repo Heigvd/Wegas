@@ -279,6 +279,31 @@ export type TreeVariableSelectProps = TreeVSelectProps<string> & {
   noLabel?: boolean;
 };
 
+function autoExpand(items: TreeSelectItem<string>[], needle: string) {
+  const ancestor: TreeSelectItem<string>[] = [];
+
+  function process(list: TreeSelectItem<string>[]) {
+    for (const item of list) {
+      if (item.value === needle) {
+        return true;
+      } else if (item.items) {
+        ancestor.push(item);
+        if (process(item.items)) {
+          return true;
+        } else {
+          ancestor.pop();
+        }
+      }
+    }
+  }
+
+  process(items);
+
+  for (const item of ancestor) {
+    item.expanded = true;
+  }
+}
+
 export function TreeVariableSelect(
   props: TreeVariableSelectProps,
 ): JSX.Element {
@@ -303,6 +328,9 @@ export function TreeVariableSelect(
         ...props.view.items,
       ]
     : varItems;
+
+  autoExpand(filteredItems, props.value || '');
+
   return props.noLabel ? (
     <TreeVSelect
       {...props}
@@ -321,14 +349,14 @@ export interface LabeledScripableVariableSelectProps
   onChange: (code: IScript) => void;
 }
 
-export interface ScripableVariableSelectProps
+export interface ScriptableVariableSelectProps
   extends LabeledScripableVariableSelectProps {
   labelNode?: React.ReactNode;
   inputId?: string;
 }
 
-export function ScripableVariableSelect(
-  props: ScripableVariableSelectProps,
+export function ScriptableVariableSelect(
+  props: ScriptableVariableSelectProps,
 ): JSX.Element {
   const script = props.value ? props.value.content : '';
   const [srcMode, setSrcMode] = React.useState(false);
@@ -423,7 +451,7 @@ export function LabeledScripableVariableSelect(
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>
         {({ labelNode, inputId }) => (
-          <ScripableVariableSelect
+          <ScriptableVariableSelect
             {...props}
             labelNode={labelNode}
             inputId={inputId}

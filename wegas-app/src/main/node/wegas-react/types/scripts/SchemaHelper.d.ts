@@ -30,6 +30,7 @@ interface Item<T> extends ClassStyleId {
   label: React.ReactNode;
   value?: T;
   selectable?: boolean;
+  expanded?: boolean;
   items?: Item<T>[];
 }
 
