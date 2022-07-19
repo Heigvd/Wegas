@@ -180,7 +180,7 @@ export default function Layout() {
       tabId: name,
       content: (
         <pageCTX.Provider value={defaultPageCTX}>
-          <PageLoader selectedPageId={id} />
+          <PageLoader selectedPageId={id} themeContext="player" />
         </pageCTX.Provider>
       ),
     }),
