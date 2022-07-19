@@ -247,7 +247,10 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
     VariableDescriptorAPI.runScript(
       GameModel.selectCurrent().id!,
       Player.selectCurrent().id!,
-      createScript(`ReviewHelper.summarize("${peerReview.name}")`),
+      createScript(
+        `ReviewHelper.summarize("${peerReview.name}")`,
+        'JavaScript',
+      ),
       undefined,
       true,
     ).then((res: PeerReviewData) => {

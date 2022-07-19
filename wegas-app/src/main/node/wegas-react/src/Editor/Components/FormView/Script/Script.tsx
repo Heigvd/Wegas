@@ -195,7 +195,7 @@ export function Script({
     (value: string) => {
       if (value !== script.current) {
         script.current = value;
-        onChange(createScript(value));
+        onChange(createScript(value, 'JavaScript'));
       }
     },
     [onChange],
