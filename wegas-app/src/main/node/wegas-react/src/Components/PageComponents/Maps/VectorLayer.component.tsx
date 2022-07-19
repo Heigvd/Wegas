@@ -150,7 +150,7 @@ export default function PlayerVectorLayer({
   ]);
 
   React.useEffect(() => {
-    if (onLayerReadyFn != null && currentOLLayer != null) {
+    if (onLayerReadyFn != null && currentOLLayer != null && map) {
       onLayerReadyFn(currentOLLayer, map);
     }
   }, [currentOLLayer, map, onLayerReadyFn, projection]);
