@@ -67,7 +67,7 @@ public class LibraryFacade extends WegasAbstractFacade {
                 content.setVisibility(ModelScoped.Visibility.PRIVATE);
             }
         } else {
-            throw new WegasConflictException();
+            throw WegasErrorMessage.error("Library already exists","GameModelContent.Create.AlreadyExists");
         }
 
         return content;
@@ -81,7 +81,7 @@ public class LibraryFacade extends WegasAbstractFacade {
             content.setContentKey(content.getContentKey());
             lib.merge(content);
         } else {
-            throw WegasErrorMessage.error("Library does not exists");
+            throw WegasErrorMessage.error("Library does not exist","GameModelContent.Update.DoesNotExist");
         }
         return lib;
     }

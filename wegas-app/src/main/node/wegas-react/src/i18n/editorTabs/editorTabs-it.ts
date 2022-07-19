@@ -71,7 +71,8 @@ export const editorTabsTranslationsIT: EditorTabsTranslations = {
     cannotGetScripts: 'Impossibile ottenere gli script',
     librarySavedErrors:
       'La biblioteca è stata salvata ma lo script contiene errori',
-    libraryCannotSave: 'La biblioteca non può essere salvata',
+    libraryIsOutdated:
+      'La biblioteca è obsoleta e non può essere salvata. Riprovare o unire.',
     libraryCannotDelete: 'La biblioteca non può essere cancellata',
     libraryName: 'Nome della biblioteca',
     libraryMustName: 'La biblioteca deve avere un nome',

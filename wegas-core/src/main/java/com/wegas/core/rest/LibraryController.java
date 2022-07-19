@@ -57,7 +57,7 @@ public class LibraryController {
      *                                gameModel
      */
     @GET
-    @Path("{library:.*}")
+    @Path("{library}")
     public Map get(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library) {
 
@@ -76,7 +76,7 @@ public class LibraryController {
      *                                gameModel
      */
     @GET
-    @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
+    @Path("{library}/{key : [a-zA-Z0-9_]+}")
     public GameModelContent read(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key) {
@@ -97,7 +97,7 @@ public class LibraryController {
      *                                gameModel
      */
     @PUT
-    @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
+    @Path("{library}/{key : [a-zA-Z0-9_]+}")
     public GameModelContent edit(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key, GameModelContent script) {
@@ -118,7 +118,7 @@ public class LibraryController {
      *                                gameModel
      */
     @POST
-    @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
+    @Path("{library}/{key : [a-zA-Z0-9_]+}")
     public GameModelContent create(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key, GameModelContent script) {
@@ -138,7 +138,7 @@ public class LibraryController {
      *                                gameModel
      */
     @DELETE
-    @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
+    @Path("{library}/{key : [a-zA-Z0-9_]+}")
     public GameModel delete(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key) {

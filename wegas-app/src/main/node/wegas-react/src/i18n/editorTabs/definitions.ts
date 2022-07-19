@@ -63,7 +63,7 @@ export interface EditorTabsTranslations {
     cannotDeleteScript: string;
     cannotGetScripts: string;
     librarySavedErrors: string;
-    libraryCannotSave: string;
+    libraryIsOutdated: string;
     libraryCannotDelete: string;
     libraryMustName: string;
     libraryName: string;

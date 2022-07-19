@@ -73,7 +73,8 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
     cannotGetScripts: 'Kann die Skripte nicht erhalten',
     librarySavedErrors:
       'Die Bibliothek wurde gespeichert, aber das Skript enthält Fehler',
-    libraryCannotSave: 'Die Bibliothek kann nicht gespeichert werden',
+    libraryIsOutdated:
+      'Die Bibliothek ist veraltet und kann nicht gespeichert werden. Versuchen Sie es erneut oder fügen Sie es zusammen.',
     libraryCannotDelete: 'Die Bibliothek kann nicht gelöscht werden',
     libraryName: 'Name der Bibliothek',
     libraryMustName: 'Die Bibliothek muss einen Namen haben',

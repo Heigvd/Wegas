@@ -92,3 +92,62 @@ export function managedModeRequest(
     .then(data => data.json() as Promise<IManagedResponse>)
     .catch(data => data.json() as Promise<IManagedResponse>);
 }
+
+export function extractExceptions(
+  managedResponse: IManagedResponse,
+  exceptionsToExtract: Partial<WegasExceptions>[],
+) {
+  // Trying to extract known error
+  const remainingExceptionsToExtract: (Partial<WegasExceptions> | null)[] = [
+    ...exceptionsToExtract,
+  ];
+  const remainingEvents: WegasEvent[] = [];
+  const exceptionsFound: (true | undefined)[] = [];
+  for (const event of managedResponse.events) {
+    if (event['@class'] === 'ExceptionEvent') {
+      const remainingExceptions: WegasExceptions[] = [];
+      for (const exception of event.exceptions) {
+        for (let i = 0; i < remainingExceptionsToExtract.length; ++i) {
+          const exceptionToExtract = remainingExceptionsToExtract[i];
+          if (
+            exceptionToExtract != null &&
+            exception['@class'] === exceptionToExtract['@class']
+          ) {
+            if (
+              exception['@class'] === 'WegasErrorMessage' &&
+              exceptionToExtract['@class'] === 'WegasErrorMessage'
+            ) {
+              if (exception.messageId === exceptionToExtract.messageId) {
+                exceptionsFound[i] = true;
+                remainingExceptionsToExtract[i] = null;
+              } else {
+                remainingExceptions.push(exception);
+              }
+            } else {
+              exceptionsFound[i] = true;
+              remainingExceptionsToExtract[i] = null;
+            }
+          } else {
+            remainingExceptions.push(exception);
+          }
+        }
+      }
+      // Only push exception event if he still has exceptions in it
+      if (remainingExceptions.length > 0) {
+        remainingEvents.push({
+          ...event,
+          exceptions: remainingExceptions,
+        });
+      }
+    } else {
+      remainingEvents.push(event);
+    }
+  }
+
+  const cleanedManagedResponse: IManagedResponse = {
+    ...managedResponse,
+    events: remainingEvents,
+  };
+
+  return { managedResponse: cleanedManagedResponse, exceptionsFound };
+}
