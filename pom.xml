@@ -131,7 +131,7 @@
 
         <jakarta.version>8.0.0</jakarta.version>
 
-        <shiro.version>1.8.0</shiro.version>
+        <shiro.version>1.9.1</shiro.version>
         <payara.version>5.2021.4</payara.version>
         <payara.micro.version>5.2021.4</payara.micro.version>
         <!--<payara.micro.version>5.2020.5-albasim-p1</payara.micro.version>-->
