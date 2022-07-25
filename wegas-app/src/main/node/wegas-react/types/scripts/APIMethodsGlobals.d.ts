@@ -1,7 +1,3 @@
-type IVariableDescriptor = import('wegas-ts-api').IVariableDescriptor;
-type SAbstractEntity = import('wegas-ts-api').SAbstractEntity;
-type IVariableInstance = import('wegas-ts-api').IVariableInstance;
-
 interface DestroyedEntity {
   '@class': IAbstractEntity['@class'];
   id: number;

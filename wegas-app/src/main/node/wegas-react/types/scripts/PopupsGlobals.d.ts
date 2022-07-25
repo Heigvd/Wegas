@@ -1,5 +1,3 @@
-type ITranslatableContent = import('wegas-ts-api').ITranslatableContent;
-
 interface GlobalPopupClass {
   addPopup: (
     id: string,

@@ -1,5 +1,3 @@
-type WegasEntitiesNamesAndClasses = import('wegas-ts-api').WegasEntitiesNamesAndClasses;
-
 interface WegasScriptEditorNameAndTypes extends WegasEntitiesNamesAndClasses {
   boolean: boolean;
   'boolean[]': boolean[];
@@ -36,11 +34,11 @@ interface ArrayedTypeMap<T = {}> {
   array: T[keyof T][];
 }
 
-
 type WegasScriptEditorReturnTypeName = keyof WegasScriptEditorNameAndTypes;
 
 /** @deprecated */
-type WegasScriptEditorReturnType = WegasScriptEditorNameAndTypes[WegasScriptEditorReturnTypeName];
+type WegasScriptEditorReturnType =
+  WegasScriptEditorNameAndTypes[WegasScriptEditorReturnTypeName];
 
 /** @deprecated */
 type ArrayedAndNot<T extends {}> = ArrayedTypeMap<T>[keyof ArrayedTypeMap];
@@ -64,7 +62,7 @@ type ClientMethodAdd = <
   >,
   ART extends ArrayedTypeMap<Pick<WegasScriptEditorNameAndTypes, RT>>,
   RA extends keyof ART,
-  MET extends (...arg: ARG) => ART[RA]
+  MET extends (...arg: ARG) => ART[RA],
 >(
   name: string,
   parameters: PT,
@@ -78,9 +76,7 @@ type ClientMethodAdd = <
  */
 interface ClientMethodPayload {
   name: string;
-  parameters: readonly ReadonlyTuple<
-    [string, string]
-  >[];
+  parameters: readonly ReadonlyTuple<[string, string]>[];
   returnTypes: string[];
   returnStyle: keyof ArrayedTypeMap;
   method: (...elements: any[]) => any;
