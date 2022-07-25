@@ -69,6 +69,10 @@ export function isScriptCondition(mode?: ScriptMode) {
   return mode === 'GET' || mode === 'GET_CLIENT';
 }
 
+export function isClientMode(mode?: ScriptMode) {
+  return mode === 'GET_CLIENT' || mode === 'SET_CLIENT';
+}
+
 export function returnTypes(mode?: ScriptMode): string[] | undefined {
   return mode === 'GET_CLIENT' ? ['boolean'] : undefined;
 }

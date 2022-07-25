@@ -10,13 +10,13 @@ import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/editingState';
 import { EditingThunkResult } from '../data/Stores/editingStore';
 import { wwarn } from '../Helper/wegaslog';
-import { AvailableViews } from './Components/FormView';
+import { AvailableViews, SchemaFromView } from './Components/FormView';
 import { Icons } from './Components/Views/FontAwesome';
 import { formValidation } from './formValidation';
 
 export type WegasMethodParameter = {
   type: WegasTypeString;
-} & Schema<AvailableViews>;
+} & SchemaFromView<'object'>;
 
 export const wegasMethodReturnValues = ['number', 'string', 'boolean'] as const;
 

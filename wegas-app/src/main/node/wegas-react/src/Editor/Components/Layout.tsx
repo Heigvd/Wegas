@@ -61,9 +61,7 @@ const SourceEditor = React.lazy(() => import('./Page/SourceEditor'));
 
 const FindAndReplace = React.lazy(() => import('./FindAndReplace'));
 
-// const Tester = React.lazy(
-//   () => import('../../Testers/Components/Map/MapTester'),
-// );
+const Tester = React.lazy(() => import('../../Testers/ScriptTester'));
 
 const layout = css({
   display: 'flex',
@@ -76,10 +74,10 @@ const layout = css({
 });
 
 const availableLayoutTabs: LinearLayoutComponents = [
-  // {
-  //   tabId: 'Tester',
-  //   content: <Tester />,
-  // },
+  {
+    tabId: 'Tester',
+    content: <Tester />,
+  },
   {
     tabId: 'Variables',
     content: <TreeView />,
