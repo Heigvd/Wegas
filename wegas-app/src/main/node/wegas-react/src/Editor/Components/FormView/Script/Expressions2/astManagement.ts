@@ -1,12 +1,9 @@
 import {
   arrayExpression,
   ArrayExpression,
-  BinaryExpression,
   booleanLiteral,
   BooleanLiteral,
   CallExpression,
-  Expression,
-  ExpressionStatement,
   identifier,
   Identifier,
   isArrayExpression,
@@ -21,21 +18,16 @@ import {
   isNumericLiteral,
   isObjectExpression,
   isObjectProperty,
-  isPrivateName,
   isStringLiteral,
   isUnaryExpression,
-  Literal,
-  MemberExpression,
   Node,
   nullLiteral,
-  NullLiteral,
   numericLiteral,
   NumericLiteral,
   objectExpression,
   ObjectExpression,
   objectProperty,
   ObjectProperty,
-  PrivateName,
   Statement,
   stringLiteral,
   StringLiteral,
@@ -48,9 +40,8 @@ import {
   GlobalExpressionAttributes,
   isWegasBooleanOperator,
   LiteralExpressionAttributes,
-  LiteralExpressionValue,
   VariableExpressionAttributes,
-  WegasOperators,
+  WyiswygExpressionSchema,
 } from './expressionEditorHelpers';
 
 /////////////////////////////////////////////
@@ -64,28 +55,28 @@ export const allowedArgumentTypes = {
     parser: (
       expression: ArrayExpression,
       parser: (node: Node | null) => unknown,
-    ) => expression.elements.map(e => parser(e)),
+    ) => expression.elements.map(parser),
   },
   boolean: {
     checker: isBooleanLiteral,
     generator: booleanLiteral,
-    parser: (expression: BooleanLiteral) => expression.value,
+    parser: (expression: BooleanLiteral): boolean => expression.value,
   },
   identifier: {
     checker: isIdentifier,
     generator: identifier,
-    parser: (expression: Identifier) =>
+    parser: (expression: Identifier): string | undefined =>
       expression.name === 'undefined' ? undefined : expression.name,
   },
   null: {
     checker: isNullLiteral,
     generator: nullLiteral,
-    parser: () => null,
+    parser: (): null => null,
   },
   number: {
     checker: isNumericLiteral,
     generator: numericLiteral,
-    parser: (expression: NumericLiteral) => expression.value,
+    parser: (expression: NumericLiteral): number => expression.value,
   },
   prefixedNumber: {
     checker: (
@@ -93,7 +84,9 @@ export const allowedArgumentTypes = {
       opts?: object | null | undefined,
     ) => isUnaryExpression(node, opts) && isNumericLiteral(node.argument),
     generator: numericLiteral,
-    parser: (expression: UnaryExpression & { argument: NumericLiteral }) =>
+    parser: (
+      expression: UnaryExpression & { argument: NumericLiteral },
+    ): number =>
       expression.operator === '-'
         ? -expression.argument.value
         : expression.argument.value,
@@ -101,7 +94,7 @@ export const allowedArgumentTypes = {
   string: {
     checker: isStringLiteral,
     generator: stringLiteral,
-    parser: (expression: StringLiteral) => expression.value,
+    parser: (expression: StringLiteral): string => expression.value,
   },
   object: {
     checker: isObjectExpression,
@@ -136,380 +129,6 @@ function methodParameterParse(node: Node | null) {
   throw Error(`Argument's node ${node?.type} cannot be parsed`);
 }
 
-// const generateMethodStatement = (
-//   scriptAttributes: PartialAttributes,
-//   schemaAttributes: WyiswygExpressionSchema['properties'],
-//   tolerateTypeVariation?: boolean,
-// ) => {
-//   if (scriptAttributes.initExpression) {
-//     const initStatement = parse(scriptAttributes.initExpression.script, {
-//       sourceType: 'script',
-//     }).program.body[0];
-//     if (isExpressionStatement(initStatement)) {
-//       const expression = initStatement.expression;
-//       if (isMemberExpression(expression) || isIdentifier(initStatement)) {
-//         return expressionStatement(
-//           generateCallExpression(
-//             expression,
-//             scriptAttributes,
-//             schemaAttributes,
-//             tolerateTypeVariation,
-//           ),
-//         );
-//       }
-//     }
-//   }
-//   return emptyStatement();
-// };
-
-/////////////////////////////////////////////
-// VARIABLES METHODS ////////////////////////
-/////////////////////////////////////////////
-
-/**
- * Variable.find(gameModel, "x").getValue(self, "a", 2)
- */
-type ImpactExpression = CallExpression & {
-  // Variable.find(gameModel, "x").getValue
-  callee: MemberExpression & {
-    // Variable.find(gameModel, "x")
-    object: CallExpression & {
-      // Variable.find
-      callee: MemberExpression;
-      // gameModel, "varName"
-      arguments: [Identifier, StringLiteral];
-    };
-    // getValue
-    property: Identifier;
-  };
-  // [self, "a", 2]
-  arguments: Expression[];
-};
-
-type ImpactStatement = Statement & {
-  expression: ImpactExpression;
-};
-
-type ConditionExpression = BinaryExpression & {
-  left: ImpactExpression;
-  right: {
-    value: unknown;
-  };
-  operator: WegasOperators;
-};
-
-type ConditionStatement = ExpressionStatement & {
-  expression: ConditionExpression;
-};
-
-type ConditionCallStatement = ExpressionStatement & {
-  expression: ImpactExpression;
-};
-
-type GlobalMethodIdentifierObject = {
-  name: string;
-};
-
-type GlobalMethodObject = {
-  object: GlobalMethodObject;
-};
-
-type GlobalMethodCallee = MemberExpression & {
-  object: GlobalMethodIdentifierObject | GlobalMethodObject;
-};
-
-type GlobalMethodCallStatement = ExpressionStatement & {
-  expression: CallExpression & {
-    callee: GlobalMethodCallee;
-  };
-};
-
-function isLiteralExpression(expression: Expression): expression is Literal {
-  return (
-    (isIdentifier(expression) && expression.name === 'undefined') ||
-    expression.type === 'BooleanLiteral' ||
-    expression.type === 'NullLiteral' ||
-    expression.type === 'NumericLiteral' ||
-    expression.type === 'StringLiteral'
-  );
-}
-
-function isVariableObject(expression: Expression) {
-  return isIdentifier(expression) && expression.name === 'Variable';
-}
-function isFindProperty(expression: Expression | PrivateName) {
-  return isIdentifier(expression) && expression.name === 'find';
-}
-
-function isImpactStatement(
-  statement: Expression | Statement,
-): statement is ImpactStatement {
-  return (
-    isExpressionStatement(statement) &&
-    // Variable.find(gm, "x").getValue(self)
-    isCallExpression(statement.expression) &&
-    // Variable.find(gm, "x").getValue
-    isMemberExpression(statement.expression.callee) &&
-    // getValue
-    isIdentifier(statement.expression.callee.property) &&
-    // Variable.find(gm, "x")
-    isCallExpression(statement.expression.callee.object) &&
-    // Variable.find
-    isMemberExpression(statement.expression.callee.object.callee) &&
-    // Variable
-    isVariableObject(statement.expression.callee.object.callee.object) &&
-    // find
-    isFindProperty(statement.expression.callee.object.callee.property) &&
-    // [gameModel, 'varName']
-    statement.expression.callee.object.arguments.length >= 0 &&
-    // gameModel
-    isIdentifier(statement.expression.callee.object.arguments[0]) &&
-    // varName
-    isStringLiteral(statement.expression.callee.object.arguments[1])
-  );
-}
-
-function getVariable(expression: ImpactExpression) {
-  return expression.callee.object.arguments[1].value;
-}
-function getMethodName(expression: ImpactExpression) {
-  return expression.callee.property.name;
-}
-
-function listToObject<T>(list: T[]): { [id: string]: T } {
-  return list.reduce((o, p, i) => ({ ...o, [i]: p }), {});
-}
-
-function getParameters(expression: CallExpression) {
-  return listToObject(expression.arguments.map(methodParameterParse));
-}
-function isConditionStatement(
-  statement: Statement,
-): statement is ConditionStatement {
-  return (
-    isExpressionStatement(statement) &&
-    isBinaryExpression(statement.expression) &&
-    !isPrivateName(statement.expression.left) &&
-    isImpactStatement({
-      ...statement,
-      type: 'ExpressionStatement',
-      expression: statement.expression.left,
-    }) &&
-    isLiteralExpression(statement.expression.right)
-  );
-}
-function isConditionCallStatement(
-  statement: Statement,
-): statement is ConditionCallStatement {
-  return (
-    isExpressionStatement(statement) && isCallExpression(statement.expression)
-  );
-}
-
-function getGlobalMethodCallObject(object: Expression): string | undefined {
-  if (isIdentifier(object) && typeof object.name === 'string') {
-    return object.name;
-  } else if (isMemberExpression(object)) {
-    return getGlobalMethodCallObject(object.object);
-  } else {
-    return undefined;
-  }
-}
-
-function isGlobalMethodCallStatement(
-  statement: Statement,
-): statement is GlobalMethodCallStatement {
-  if (
-    isExpressionStatement(statement) &&
-    isCallExpression(statement.expression) &&
-    isMemberExpression(statement.expression.callee)
-  ) {
-    const objectName = getGlobalMethodCallObject(
-      statement.expression.callee.object,
-    );
-    if (objectName != null && objectName !== 'Variable') {
-      return true;
-    }
-  }
-  return false;
-}
-
-function getGlobalMethodScript(
-  object: GlobalMethodCallee | Expression,
-): string | undefined {
-  if (isIdentifier(object) && typeof object.name === 'string') {
-    return object.name;
-  } else if (isMemberExpression(object) && isIdentifier(object.property)) {
-    object.object;
-    return getGlobalMethodScript(object.object) + '.' + object.property.name;
-  } else {
-    return undefined;
-  }
-}
-
-function getOperator(expression: ConditionExpression) {
-  return expression.operator;
-}
-
-function getComparator(expression: ConditionExpression) {
-  return expression.right.value;
-}
-
-function variableToASTNode(
-  variable: unknown,
-  type?: WegasTypeString | WegasTypeString[],
-  tolerateTypeVariation?: boolean,
-):
-  | BooleanLiteral
-  | Identifier
-  | NullLiteral
-  | NumericLiteral
-  | ArrayExpression
-  | ObjectExpression
-  | StringLiteral {
-  let usedType;
-  const variableType = Array.isArray(variable) ? 'array' : typeof variable;
-  if (type === undefined) {
-    usedType = variableType;
-  } else if (Array.isArray(type)) {
-    if (type.includes(variableType as WegasTypeString)) {
-      usedType = variableType as WegasTypeString;
-    } else if (type.includes('identifier') && variableType === 'string') {
-      usedType = 'identifier';
-    } else if (tolerateTypeVariation) {
-      if (type.length > 0) {
-        usedType = variableType;
-      } else {
-        usedType = variableType;
-      }
-    } else {
-      throw Error(
-        `The current variable (${variableType}) type doesn't match the allowed types (${JSON.stringify(
-          type,
-        )})`,
-      );
-    }
-  } else {
-    if (variableType === type) {
-      usedType = type;
-    } else if (variableType === 'string' && type === 'identifier') {
-      usedType = 'identifier';
-    } else if (tolerateTypeVariation) {
-      usedType = variableType;
-    } else {
-      throw Error(
-        `The current variable (${variableType}) type doesn't match the allowed type (${type})`,
-      );
-    }
-  }
-  switch (usedType) {
-    case 'array':
-      return arrayExpression(
-        (variable as unknown[]).map(v => variableToASTNode(v)),
-      );
-    case 'boolean':
-      return booleanLiteral(variable as boolean);
-    case 'identifier':
-      return identifier(variable as string);
-    case 'null':
-      return nullLiteral();
-    case 'number':
-      return numericLiteral(variable as number);
-    case 'string':
-      return stringLiteral(variable as string);
-    case 'object': {
-      const objVariable = variable as object;
-      return objectExpression(
-        Object.keys(objVariable).map((k: keyof typeof objVariable) =>
-          objectProperty(stringLiteral(k), variableToASTNode(objVariable[k])),
-        ),
-      );
-    }
-    case 'undefined':
-      return identifier(usedType);
-    default:
-      throw Error(
-        `Type ${variableType} for method arguments not implemented yet`,
-      );
-  }
-}
-
-// function generateCallExpression(
-//   callee: Expression,
-//   scriptAttributes: PartialAttributes,
-//   schemaAttributes: SchemaProperties,
-//   tolerateTypeVariation?: boolean,
-// ) {
-//   return callExpression(
-//     callee,
-//     Object.keys(
-//       omit(scriptAttributes, Object.keys(defaultConditionAttributes)),
-//     ).map(arg => {
-//       const numberArg = Number(arg);
-//       const schemaArg = schemaAttributes[numberArg];
-//       return variableToASTNode(
-//         scriptAttributes[numberArg],
-//         schemaArg ? schemaArg.oldType : undefined,
-//         tolerateTypeVariation,
-//       );
-//     }),
-//   );
-// }
-// function generateExpressionWithInitValue(value: string) {
-//   const parsedStatements = parse(value, {
-//     sourceType: 'script',
-//   }).program.body;
-//   if (parsedStatements.length > 0) {
-//     const parsedStatement = parsedStatements[0];
-//     if (isExpressionStatement(parsedStatement)) {
-//       const parsedExpression = parsedStatement.expression;
-//       if (isCallExpression(parsedExpression)) {
-//         return parsedExpression;
-//       }
-//     }
-//   }
-//   return callExpression(identifier('undefined'), []);
-// }
-
-// function generateImpactExpression(
-//   scriptAttributes: IAttributes,
-//   schemaAttributes: PartialSchemaAttributes,
-//   tolerateTypeVariation?: boolean,
-// ) {
-//   return generateCallExpression(
-//     memberExpression(
-//       generateExpressionWithInitValue(scriptAttributes.initExpression.script),
-//       identifier(scriptAttributes.methodName),
-//     ),
-//     scriptAttributes,
-//     schemaAttributes,
-//     tolerateTypeVariation,
-//   );
-// }
-
-// function generateConditionStatement(
-//   scriptAttributes: IConditionAttributes,
-//   schemaAttributes: PartialSchemaAttributes,
-//   methodReturn: WegasMethodReturnType,
-//   tolerateTypeVariation?: boolean,
-// ) {
-//   return expressionStatement(
-//     binaryExpression(
-//       scriptAttributes.operator,
-//       generateImpactExpression(
-//         scriptAttributes,
-//         schemaAttributes,
-//         tolerateTypeVariation,
-//       ),
-//       variableToASTNode(
-//         scriptAttributes.comparator,
-//         methodReturn,
-//         tolerateTypeVariation,
-//       ),
-//     ),
-//   );
-// }
-
 /////////////////////////////////////////////
 // ALL PURPOSE //////////////////////////////
 /////////////////////////////////////////////
@@ -520,7 +139,7 @@ type WegasAllowedLiteral =
   | NumericLiteral
   | Identifier;
 
-export function isWegasAllowedLiteral(
+function isWegasAllowedLiteral(
   expression: any,
 ): expression is WegasAllowedLiteral {
   return (
@@ -531,7 +150,13 @@ export function isWegasAllowedLiteral(
   );
 }
 
-export type LiteralExpressionValue = string | boolean | number | undefined;
+export type LiteralExpressionValue =
+  | string
+  | boolean
+  | number
+  | undefined
+  | null
+  | object;
 
 function parseLiteralExpression(
   expression: WegasAllowedLiteral,
@@ -588,7 +213,7 @@ function parseVariableFindExpression(
                   isIdentifier(selfArgument) &&
                   selfArgument.name === 'self'
                 ) {
-                  attributesArguments = valueArguments;
+                  attributesArguments = ['self', ...valueArguments];
                 }
               }
               return {
@@ -603,6 +228,22 @@ function parseVariableFindExpression(
           }
         }
       }
+    } else if (
+      isIdentifier(variableMethodCaleeObject) &&
+      variableMethodCaleeObject.name === 'Variable' &&
+      isIdentifier(variableMethodCaleeProperty) &&
+      variableMethodCaleeProperty.name === 'find' &&
+      variableMethodArguments.length === 2
+    ) {
+      const variableNameNode = variableMethodArguments[1];
+      if (isStringLiteral(variableNameNode)) {
+        return {
+          expression: {
+            type: 'variable',
+            variableName: variableNameNode.value,
+          },
+        };
+      }
     }
   }
   return undefined;
@@ -613,7 +254,7 @@ function parseGlobalMethodExpression(
   mode?: ScriptMode,
 ):
   | ({ expression: GlobalExpressionAttributes } & CommonExpressionAttributes)
-  | undefined {
+  | string {
   // Global method are not yet allowed in client scripts
   if (!isClientMode(mode)) {
     let expression = callExpression.callee;
@@ -633,11 +274,13 @@ function parseGlobalMethodExpression(
           type: 'global',
           globalObject: objectChain.join('.'),
         },
-        arguments: callExpression.arguments
-          .filter(isWegasAllowedLiteral)
-          .map(parseLiteralExpression),
+        arguments: callExpression.arguments.map(methodParameterParse),
       };
+    } else {
+      return 'Cannot parse code as Global or Variable Method';
     }
+  } else {
+    return 'Global methods cannot be used in client scripts';
   }
 }
 
@@ -703,42 +346,14 @@ export function parseStatement(
                   left,
                   mode,
                 );
-                if (globalExpressionAttributes != null) {
+                if (typeof globalExpressionAttributes === 'string') {
+                  error = globalExpressionAttributes;
+                } else {
                   return {
                     type,
                     ...globalExpressionAttributes,
                   };
                 }
-                error = 'Cannot parse code as Global or Variable Method';
-                // const objectChain: string[] = [];
-                // let expression = left.callee;
-                // while (
-                //   isMemberExpression(expression) &&
-                //   isIdentifier(expression.property)
-                // ) {
-                //   objectChain.unshift(expression.property.name);
-                //   expression = expression.object;
-                // }
-
-                // return {
-                //   type: 'condition',
-                //   leftExpression: {
-                //     type: 'global',
-                //     globalObject:
-                //       objectChain.join('.') +
-                //       `(${left.arguments
-                //         .map(arg => {
-                //           if (isWegasAllowedLiteral(arg)) {
-                //             return isLiteral(arg)
-                //               ? String(arg.value)
-                //               : 'undefined';
-                //           } else {
-                //             throw 'One of the argument is not parsable';
-                //           }
-                //         })
-                //         .join(',')})`,
-                //   },
-                // };
               }
             } else {
               error =
@@ -769,13 +384,14 @@ export function parseStatement(
             expression,
             mode,
           );
-          if (globalExpressionAttributes != null) {
+          if (typeof globalExpressionAttributes === 'string') {
+            error = globalExpressionAttributes;
+          } else {
             return {
               type,
               ...globalExpressionAttributes,
             };
           }
-          error = 'Cannot parse code as Global or Variable Method';
         }
       }
     }
@@ -787,56 +403,6 @@ export function parseStatement(
   throw error;
 }
 
-// export function generateStatement(
-//   attributes: Attributes,
-//   schema: WyiswygExpressionSchema,
-//   mode?: ScriptMode,
-// ): Statement | undefined {
-//   const properties = schema.properties;
-//   try {
-//     let newStatement: EmptyStatement | ExpressionStatement | undefined;
-//     if (attributes.initExpression) {
-//       if (attributes.initExpression.type === 'global') {
-//         newStatement = generateMethodStatement(attributes, properties, true);
-//       } else {
-//         if (
-//           isScriptCondition(mode) &&
-//           isConditionAttributes(attributes) &&
-//           isConditionSchemaAttributes(properties)
-//         ) {
-//           const comparatorExpectedType = properties.comparator.type;
-//           const comparatorCurrentType = typeof attributes.comparator;
-//           newStatement = generateConditionStatement(
-//             attributes,
-//             properties,
-//             comparatorExpectedType
-//               ? comparatorExpectedType
-//               : isWegasMethodReturnType(comparatorCurrentType)
-//               ? comparatorCurrentType
-//               : 'string',
-//             true,
-//           );
-//         } else {
-//           if (isAttributes(attributes)) {
-//             newStatement = expressionStatement(
-//               generateImpactExpression(attributes, properties, true),
-//             );
-//           } else {
-//             if (isBooleanExpression(attributes)) {
-//               newStatement = expressionStatement(
-//                 booleanLiteral(attributes.initExpression.script === 'true'),
-//               );
-//             }
-//           }
-//         }
-//       }
-//     }
-//     return newStatement;
-//   } catch (e) {
-//     return undefined;
-//   }
-// }
-
 function leftExpressionToCode(
   expression:
     | LiteralExpressionAttributes
@@ -847,13 +413,16 @@ function leftExpressionToCode(
     case 'global':
       return expression.globalObject;
     case 'variable':
-      return `Variable.find(gamemodel,${expression.variableName})`;
+      return `Variable.find(gameModel,'${expression.variableName}')`;
     case 'literal':
       return String(expression.literal);
   }
 }
 
-function methodAndArgsToCode(attributes: NonNullable<Attributes>): string {
+function methodAndArgsToCode(
+  attributes: NonNullable<Attributes>,
+  schema: WyiswygExpressionSchema | undefined,
+): string {
   let newCode = '';
   const expression =
     attributes.type === 'condition'
@@ -867,28 +436,46 @@ function methodAndArgsToCode(attributes: NonNullable<Attributes>): string {
       newCode += `.${attributes.methodId}`;
     }
     newCode += '(';
-    if (attributes.arguments != null) {
-      newCode += attributes.arguments.map(arg => arg?.toString).join(',');
+    if (
+      attributes.arguments != null &&
+      schema?.properties.arguments?.properties != null
+    ) {
+      const schemaProperties = schema.properties.arguments.properties;
+      newCode += attributes.arguments
+        .map((arg, i) => {
+          const realType = schemaProperties[i].view?.oldType;
+          if (realType === 'identifier' && typeof arg === 'string') {
+            return arg;
+          } else if (typeof arg === 'undefined') {
+            return typeof arg;
+          } else {
+            return JSON.stringify(arg);
+          }
+        })
+        .join(',');
     }
-    newCode += ');';
+    newCode += ')';
   }
   return newCode;
 }
 
-export function generateCode(attributes: NonNullable<Attributes>): string {
+export function generateCode(
+  attributes: NonNullable<Attributes>,
+  schema: WyiswygExpressionSchema | undefined,
+): string {
   let newCode = '';
   if (attributes.type === 'impact') {
     if (attributes.expression != null) {
       newCode +=
         leftExpressionToCode(attributes.expression) +
-        methodAndArgsToCode(attributes);
+        methodAndArgsToCode(attributes, schema);
     }
     return newCode;
   } else {
     if (attributes.leftExpression != null) {
       newCode +=
         leftExpressionToCode(attributes.leftExpression) +
-        methodAndArgsToCode(attributes);
+        methodAndArgsToCode(attributes, schema);
       if (
         attributes.booleanOperator != null &&
         attributes.rightExpression != null

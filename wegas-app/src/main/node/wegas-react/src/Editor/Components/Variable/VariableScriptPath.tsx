@@ -24,6 +24,9 @@ interface VariableScriptPathProps {
 }
 
 export function VariableScriptPath({ script }: VariableScriptPathProps) {
+  if (script == null) {
+    return <pre>No given script</pre>;
+  }
   return (
     <div className={variableScriptPathStyle}>
       {getVariablePath(

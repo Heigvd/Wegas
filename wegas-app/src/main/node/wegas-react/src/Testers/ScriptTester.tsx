@@ -13,7 +13,10 @@ import { TempScriptEditor } from '../Editor/Components/ScriptEditors/TempScriptE
 
 export default function SchemaPropsTester() {
   const [value, setValue] = React.useState<string>(
-    'DelayedEvent.delayedFire(1,2,"YOE")',
+    // '',
+    // 'DelayedEvent.delayedFire(1,2,"YOE")',
+    "Variable.find(gameModel,'MyNumber')",
+    // "Variable.find(gameModel,'MyNumber').add(self,12)",
   );
   const [errors, setErrors] = React.useState<ValidationError[]>([]);
   const editorRef = React.useRef<editor.IStandaloneCodeEditor>();
@@ -43,10 +46,11 @@ export default function SchemaPropsTester() {
           onEditorReady={editor => (editorRef.current = editor)}
         />
       </div>
-      {/* <ExpressionEditor code={value} onChange={setValues} mode="GET" />
-      <ExpressionEditor code={value} onChange={setValues} mode="GET_CLIENT" /> */}
-      <ExpressionEditor code={value} onChange={setValues} mode="SET" />
-      {/* <ExpressionEditor code={value} onChange={setValues} mode="SET_CLIENT" /> */}
+      {/* <ExpressionEditor code={value} onChange={setValues} /> */}
+      <ExpressionEditor code={value} onChange={setValues} mode="GET" />
+      <ExpressionEditor code={value} onChange={setValues} mode="GET_CLIENT" />
+      <ExpressionEditor code={value} onChange={setValues} mode="SET" debug />
+      <ExpressionEditor code={value} onChange={setValues} mode="SET_CLIENT" />
       <div
         style={{
           margin: '20px',

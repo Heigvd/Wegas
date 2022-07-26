@@ -4,7 +4,6 @@ import u from 'immer';
 import Form from 'jsoninput';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { isArray, pick } from 'lodash-es';
-import { editor } from 'monaco-editor';
 import * as React from 'react';
 import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
 import { Button } from '../../../../../Components/Inputs/Buttons/Button';
@@ -21,10 +20,16 @@ import { returnTypes, scriptEditStyle, ScriptView } from '../Script';
 import { generateCode, LiteralExpressionValue } from './astManagement';
 import {
   Attributes,
+  ConditionAttributes,
   generateSchema,
+  GlobalExpressionAttributes,
+  ImpactAttributes,
+  isExpressionReady,
+  LiteralExpressionAttributes,
   makeItems,
   testCode,
   typeCleaner,
+  VariableExpressionAttributes,
   WyiswygExpressionSchema,
 } from './expressionEditorHelpers';
 
@@ -41,7 +46,7 @@ interface ExpressionEditorState {
   schema?: WyiswygExpressionSchema;
   error?: string | false;
   softError?: string;
-  code?: string;
+  // code?: string;
 }
 
 function variableIdsSelector(s: State) {
@@ -112,28 +117,33 @@ export interface ExpressionEditorProps extends ScriptView {
   id?: string;
   onChange?: (code: string) => void;
   mode?: ScriptMode;
+  debug?: boolean;
 }
+
+function debugDebugger(debug: boolean | undefined) {
+  if (debug) {
+    debugger;
+  }
+}
+
+const debugLog: (debug: boolean | undefined) => typeof console.log =
+  debug =>
+  (...arg) => {
+    if (debug) {
+      console.log(...arg);
+    }
+  };
 
 export function ExpressionEditor({
   code,
   id,
   mode,
   onChange,
+  debug,
 }: ExpressionEditorProps) {
   const [srcMode, setSrcMode] = React.useState(false);
   const [{ attributes, error, softError, schema }, dispatchFormState] =
     React.useReducer(setFormState, {});
-
-  const editorRef = React.useRef<editor.IStandaloneCodeEditor>();
-  React.useEffect(() => {
-    if (editorRef.current != null) {
-      editorRef.current.setValue(code);
-    }
-  }, [code]);
-
-  React.useEffect(() => {
-    console.log(schema);
-  }, [schema]);
 
   React.useEffect(() => {
     if (error) {
@@ -147,70 +157,99 @@ export function ExpressionEditor({
     );
   }, deepDifferent);
 
+  const codeRef = React.useRef<string>();
+  const modeRef = React.useRef<ScriptMode>();
+  const variablesItemsRef =
+    React.useRef<
+      TreeSelectItem<
+        | string
+        | LiteralExpressionAttributes
+        | GlobalExpressionAttributes
+        | VariableExpressionAttributes
+      >[]
+    >();
+
   React.useEffect(() => {
-    const parsedCode = testCode(code, mode);
-    if (typeof parsedCode === 'string') {
-      dispatchFormState({ type: 'SET_ERROR', payload: { error: parsedCode } });
-    } else {
-      generateSchema(parsedCode, variablesItems, mode).then(schema => {
-        if (
-          parsedCode != null &&
-          parsedCode.arguments != null &&
-          schema.properties.arguments != null
-        ) {
-          // Validating statement with schema
-          for (const index in parsedCode.arguments) {
-            const argument = parsedCode.arguments[index];
-            const argType = Array.isArray(argument) ? 'array' : typeof argument;
-            const schemaArgument = schema.properties.arguments.properties
-              ? schema.properties.arguments.properties[index]
-              : undefined;
-            if (!schemaArgument) {
-              dispatchFormState({
-                type: 'SET_ERROR',
-                payload: { error: 'Too much arguments' },
-              });
-              return;
-            } else if (
-              argType !== 'undefined' &&
-              argType !== schemaArgument.type
-            ) {
-              dispatchFormState({
-                type: 'SET_ERROR',
-                payload: {
-                  error: `Argument type mismatch.\nExpected type : ${schemaArgument.type}\nArgument type : ${argType}`,
-                },
-              });
-              return;
+    if (
+      codeRef.current !== code ||
+      modeRef.current !== mode ||
+      deepDifferent(variablesItemsRef.current, variablesItems)
+    ) {
+      codeRef.current = code;
+      modeRef.current = mode;
+      variablesItemsRef.current = variablesItems;
+
+      const parsedCode = testCode(code, mode);
+      if (typeof parsedCode === 'string') {
+        dispatchFormState({
+          type: 'SET_ERROR',
+          payload: { error: parsedCode },
+        });
+      } else {
+        generateSchema(parsedCode, variablesItems, mode).then(schema => {
+          if (
+            parsedCode != null &&
+            parsedCode.arguments != null &&
+            schema.properties.arguments != null
+          ) {
+            // Validating statement with schema
+            for (const index in parsedCode.arguments) {
+              const argument = parsedCode.arguments[index];
+              const argType = Array.isArray(argument)
+                ? 'array'
+                : typeof argument;
+              const schemaArgument = schema.properties.arguments.properties
+                ? schema.properties.arguments.properties[index]
+                : undefined;
+              if (!schemaArgument) {
+                dispatchFormState({
+                  type: 'SET_ERROR',
+                  payload: { error: 'Too much arguments' },
+                });
+                return;
+              } else if (
+                argType !== 'undefined' &&
+                argType !== schemaArgument.type
+              ) {
+                dispatchFormState({
+                  type: 'SET_ERROR',
+                  payload: {
+                    error: `Argument type mismatch.\nExpected type : ${schemaArgument.type}\nArgument type : ${argType}`,
+                  },
+                });
+                return;
+              }
             }
           }
-        }
-        dispatchFormState({
-          type: 'SET_IF_DEF',
-          payload: { schema, attributes: parsedCode, error: false },
+          dispatchFormState({
+            type: 'SET_IF_DEF',
+            payload: { schema, attributes: parsedCode, error: false },
+          });
         });
-      });
+      }
     }
   }, [code, mode, variablesItems]);
 
   const onAttributesChange = React.useCallback(
-    (newAttributes: NonNullable<Attributes>) => {
-      const newCode = generateCode(newAttributes);
-      const error = testCode(newCode, mode);
-      onChange && onChange(newCode);
-      if (typeof error === 'string') {
-        return {
-          attributes: newAttributes,
-          schema,
-          code: newCode,
-        };
-      } else {
-        return {
-          error,
-        };
+    (
+      attributes: NonNullable<Attributes>,
+      schema: WyiswygExpressionSchema | undefined,
+    ) => {
+      const newCode = generateCode(attributes, schema);
+      codeRef.current = newCode;
+
+      debugDebugger(debug);
+
+      if (isExpressionReady(attributes, schema)) {
+        onChange && onChange(newCode);
       }
+
+      return {
+        attributes,
+        schema,
+      };
     },
-    [mode, onChange, schema],
+    [debug, onChange],
   );
 
   const computeState = React.useCallback(
@@ -245,14 +284,13 @@ export function ExpressionEditor({
                 ) as LiteralExpressionValue;
               },
             );
-
           newAttributes = {
             ...newAttributes,
             ...(extractedArguments ? { arguments: extractedArguments } : {}),
           };
         }
 
-        return onAttributesChange(newAttributes);
+        return onAttributesChange(newAttributes, schema);
       });
     },
     [mode, onAttributesChange, variablesItems],
@@ -264,9 +302,22 @@ export function ExpressionEditor({
     (value: string) => {
       try {
         parse(value).program.body[0];
-        dispatchFormState({
-          type: 'UNSET_ERROR',
-        });
+        const newAttributes = testCode(value, mode);
+        if (typeof newAttributes === 'string') {
+          dispatchFormState({
+            type: 'SET_ERROR',
+            payload: {
+              error: newAttributes,
+            },
+          });
+        } else {
+          dispatchFormState({
+            type: 'SET_IF_DEF',
+            payload: { attributes: newAttributes },
+          }),
+            onChange && onChange(value);
+        }
+
         onChange && onChange(value);
       } catch (e) {
         dispatchFormState({
@@ -277,7 +328,74 @@ export function ExpressionEditor({
         });
       }
     },
-    [onChange],
+    [mode, onChange],
+  );
+
+  React.useEffect(() => {
+    debugLog(debug)(schema);
+  }, [debug, schema]);
+
+  const onFormChange = React.useCallback(
+    (v: Attributes, e: any) => {
+      if (v == null) {
+        dispatchFormState({
+          type: 'SET_IF_DEF',
+          payload: {
+            attributes: v,
+            softError: e.join('\n'),
+          },
+        });
+      } else {
+        const currentConfig = attributes as ImpactAttributes &
+          Pick<ConditionAttributes, 'leftExpression'>;
+        const newConfig = v as ImpactAttributes &
+          Pick<ConditionAttributes, 'leftExpression'>;
+
+        // If type or first expression has changed, keep only type and expression and regenerate schema and send changes
+        if (
+          currentConfig.type !== newConfig.type ||
+          deepDifferent(currentConfig.expression, newConfig.expression) ||
+          deepDifferent(currentConfig.leftExpression, newConfig.leftExpression)
+        ) {
+          computeState(
+            pick(newConfig, ['type', 'expression', 'leftExpression']),
+          ).then(({ attributes, schema }) =>
+            dispatchFormState({
+              type: 'SET_IF_DEF',
+              payload: { attributes, schema, softError: e.join('\n') },
+            }),
+          );
+        }
+        // If method has changed, keep only type, expression and method and regenerate schema and send changes
+        else if (deepDifferent(currentConfig.methodId, newConfig.methodId)) {
+          computeState(
+            pick(newConfig, [
+              'type',
+              'expression',
+              'leftExpression',
+              'methodId',
+            ]),
+          ).then(({ attributes, schema }) =>
+            dispatchFormState({
+              type: 'SET_IF_DEF',
+              payload: { attributes, schema, softError: e.join('\n') },
+            }),
+          );
+        }
+        // If arguments, operator or rightExpression has changed, keep current schema and send changes
+        else {
+          onAttributesChange(newConfig, schema);
+          dispatchFormState({
+            type: 'SET_IF_DEF',
+            payload: {
+              attributes: v,
+              softError: e.join('\n'),
+            },
+          });
+        }
+      }
+    },
+    [attributes, computeState, onAttributesChange, schema],
   );
 
   return (
@@ -292,6 +410,7 @@ export function ExpressionEditor({
         <div className={scriptEditStyle}>
           <MessageString type="error" value={error || softError} />
           <TempScriptEditor
+            key={code}
             language={isServerScript ? 'javascript' : 'typescript'}
             initialValue={code}
             onChange={onScriptEditorChange}
@@ -299,70 +418,13 @@ export function ExpressionEditor({
             minimap={false}
             returnType={returnTypes(mode)}
             resizable
-            onEditorReady={editor => (editorRef.current = editor)}
           />
         </div>
       ) : (
         <Form
           value={attributes}
           schema={schema}
-          onChange={(v: Attributes, e) => {
-            // Extract expression object and method
-            const majorProperties = [
-              'expression',
-              'methodId',
-              'leftExpression',
-            ];
-            // other properties can be:
-            //  - operator
-            //  - comparator
-            //  - arguments
-            const prevConfig = pick(attributes, majorProperties);
-            const newConfig = pick(v, majorProperties);
-
-            if (v == null) {
-              dispatchFormState({
-                type: 'SET_IF_DEF',
-                payload: {
-                  attributes: v,
-                  softError: e.join('\n'),
-                },
-              });
-            } else if (deepDifferent(prevConfig, newConfig)) {
-              // Config just changed
-              // rebuild full schema
-              let newAttributes: Attributes = v;
-              if (v.type === 'condition') {
-                newAttributes = {
-                  type: 'condition',
-                  leftExpression: v.leftExpression,
-                };
-              } else {
-                newAttributes = { type: 'impact', expression: v.expression };
-              }
-
-              computeState(newAttributes).then(({ attributes, schema }) =>
-                dispatchFormState({
-                  type: 'SET_IF_DEF',
-                  payload: { attributes, schema, softError: e.join('\n') },
-                }),
-              );
-            } else if (deepDifferent(v, attributes)) {
-              // minor change, no need te recompute the schema
-              // const revivedAttributes: Attributes = { ...v };
-              // if (v.initExpression.type === 'variable') {
-              //   revivedAttributes.variableName = v.initExpression.variableName;
-              // }
-              onAttributesChange(v);
-              dispatchFormState({
-                type: 'SET_IF_DEF',
-                payload: {
-                  attributes: v,
-                  softError: e.join('\n'),
-                },
-              });
-            }
-          }}
+          onChange={onFormChange}
           context={attributes}
         />
       )}

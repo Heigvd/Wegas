@@ -1,11 +1,11 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
+import * as React from 'react';
 import {
   featuresCTX,
   isFeatureEnabled,
 } from '../../../Components/Contexts/FeaturesProvider';
-import { flex, flexRow, itemCenter } from '../../../css/classes';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { flex, flexRow, itemCenter } from '../../../css/classes';
 import { classNameOrEmpty } from '../../../Helper/className';
 
 const containerStyle = css({
@@ -47,14 +47,12 @@ const longInline = css({
   maxWidth: '21em',
 });
 
-
 const fullWidth = css({
   minWidth: '25em',
   flexGrow: 1,
 });
 
-
-export const LAYOUTS = {
+export const LAYOUTS: { [key in SchemaLayout]: string } = {
   shortInline: shortInline,
   inline: css({
     display: 'inline-block',
@@ -62,8 +60,8 @@ export const LAYOUTS = {
   }),
   extraShortInline: css(shortInline, {
     maxWidth: '5em',
-}),
-  longInline: longInline,
+  }),
+  longinline: longInline,
   flexInline: cx(flex, flexRow, itemCenter),
   fullWidth: fullWidth,
 };
@@ -105,11 +103,17 @@ export function CommonViewContainer({
   ) {
     return (
       <div
-        className={cx(containerStyle, layout, marginBottomStyle, classNameOrEmpty(className), {
-          [`${borderTop}`]: Boolean(view.borderTop),
-          [`${borderBottom}`]: Boolean(view.borderBottom),
-          [marginTopStyle]: !view.noMarginTop,
-        })}
+        className={cx(
+          containerStyle,
+          layout,
+          marginBottomStyle,
+          classNameOrEmpty(className),
+          {
+            [`${borderTop}`]: Boolean(view.borderTop),
+            [`${borderBottom}`]: Boolean(view.borderBottom),
+            [marginTopStyle]: !view.noMarginTop,
+          },
+        )}
       >
         {children}
         <div className={errorStyle}>{error}</div>
@@ -118,4 +122,3 @@ export function CommonViewContainer({
   }
   return null;
 }
-

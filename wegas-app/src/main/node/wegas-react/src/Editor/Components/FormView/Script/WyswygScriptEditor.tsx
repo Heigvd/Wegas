@@ -61,7 +61,7 @@ export function WyswygScriptEditor({
                 }),
               },
               userOnChildAdd: () => ({
-                statement: mode === 'GET' ? 'true' : ';',
+                statement: isScriptCondition(mode) ? 'true' : ';',
               }),
             }),
           },

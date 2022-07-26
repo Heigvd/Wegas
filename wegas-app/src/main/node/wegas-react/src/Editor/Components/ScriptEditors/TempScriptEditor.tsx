@@ -7,10 +7,7 @@ import { expandBoth, flex, flexColumn } from '../../../css/classes';
 import { getLogger } from '../../../Helper/wegaslog';
 import { MessageString } from '../MessageString';
 import { ResizeHandle } from '../ResizeHandle';
-import {
-  SrcEditorAction,
-  SrcEditorLanguages,
-} from './editorHelpers';
+import { SrcEditorAction, SrcEditorLanguages } from './editorHelpers';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
 
 const logger = getLogger('monaco');
@@ -403,9 +400,7 @@ export function TempScriptEditor(props: TempScriptEditorProps) {
 
   const actions = React.useCallback(
     (monaco: Monaco): SrcEditorAction[] => {
-      return [
-        ...(defaultActions ? defaultActions(monaco) : []),
-      ];
+      return [...(defaultActions ? defaultActions(monaco) : [])];
     },
     [defaultActions],
   );
@@ -446,9 +441,6 @@ export function TempScriptEditor(props: TempScriptEditorProps) {
           <SrcEditor
             {...props}
             fileName={srcModel?.uri.toString()}
-            // value={functionalizeScript(props.value || '', returnType, args)}
-            // language={language}
-            // onChange={handleChange}
             onBlur={handleBlur}
             onSave={handleSave}
             defaultActions={actions}
@@ -458,9 +450,6 @@ export function TempScriptEditor(props: TempScriptEditorProps) {
         <SrcEditor
           {...props}
           fileName={srcModel?.uri.toString()}
-          // value={functionalizeScript(props.value || '', returnType, args)}
-          // language={language}
-          // onChange={handleChange}
           onBlur={handleBlur}
           onSave={handleSave}
           defaultActions={actions}

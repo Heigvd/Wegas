@@ -11,6 +11,7 @@ import { CallbackViewView } from '../../../Editor/Components/FormView/Callback';
 import { CodeViewView } from '../../../Editor/Components/FormView/Code';
 import { NuppleView } from '../../../Editor/Components/FormView/Nupple';
 import { ScriptableViewView } from '../../../Editor/Components/FormView/Scriptable';
+import { LabeledTreeVSelectProps } from '../../../Editor/Components/FormView/TreeVariableSelect';
 import { WegasMethod } from '../../../Editor/editionConfig';
 import { createScript } from '../../../Helper/wegasEntites';
 import { Choices } from '../../Selector';
@@ -540,11 +541,13 @@ const simpleSchemaProps = {
     borderBottom,
     description,
     visible,
+    variableScriptFactory,
   }: {
     items?: TreeSelectItem<T>[];
     returnType?: WegasScriptEditorReturnTypeName[];
     type?: TYPESTRING | TYPESTRING[];
     borderBottom?: boolean;
+    variableScriptFactory?: LabeledTreeVSelectProps<T>['view']['variableScriptFactory'];
   } & CommonSchemaProps): SchemaFromView<'treeselect'> => ({
     required,
     type,
@@ -563,6 +566,7 @@ const simpleSchemaProps = {
       layout,
       items,
       description,
+      variableScriptFactory,
     },
   }),
   scriptVariable: ({

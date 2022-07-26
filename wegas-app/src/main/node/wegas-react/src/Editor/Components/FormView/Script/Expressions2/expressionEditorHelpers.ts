@@ -150,10 +150,10 @@ export interface IParameterSchemaAtributes {
 
 export type ImpactSchema = {
   [key in keyof Omit<ImpactAttributes, 'arguments'>]: AvailableSchemas;
-} & { arguments?: Schema.Object<AvailableViews> };
+} & { arguments?: Schema.Object<AvailableViews & { oldType: string }> };
 export type ConditionSchema = {
   [key in keyof Omit<ConditionAttributes, 'arguments'>]: AvailableSchemas;
-} & { arguments?: Schema.Object<AvailableViews> };
+} & { arguments?: Schema.Object<AvailableViews & { oldType: string }> };
 
 export type SchemaProperties = ImpactSchema | ConditionSchema;
 
@@ -228,7 +228,7 @@ export function typeCleaner(
   if (variableCurrentType === expectedType) {
     return variable;
   } else if (typeof variable === 'undefined') {
-    return variable;
+    return defaultValue != null ? defaultValue : variable;
   } else {
     switch (expectedType) {
       case 'boolean': {
@@ -409,6 +409,18 @@ export function makeItems(
   }
 }
 
+function variableScriptFactory(
+  value:
+    | string
+    | LiteralExpressionAttributes
+    | GlobalExpressionAttributes
+    | VariableExpressionAttributes,
+): string | undefined {
+  if (typeof value === 'object' && value.type === 'variable') {
+    return `Variable.find(gameModel,'${value.variableName}')`;
+  }
+}
+
 export function makeSchemaInitExpression(
   variablesItems:
     | TreeSelectItem<
@@ -421,6 +433,7 @@ export function makeSchemaInitExpression(
   mode?: ScriptMode,
 ): SchemaProperties {
   const expressionSchema = schemaProps.tree({
+    variableScriptFactory,
     items: [
       {
         label: 'Variables',
@@ -481,7 +494,7 @@ function makeSchemaMethodSelector(methods?: MethodConfig) {
             })),
             returnType: 'string',
             index: 1,
-            layout: 'inline',
+            layout: 'longinline',
           }),
         }
       : {}),
@@ -489,23 +502,28 @@ function makeSchemaMethodSelector(methods?: MethodConfig) {
 }
 
 function makeSchemaParameters(
-  // index: number,
   parameters: WegasMethodParameter[],
-): Schema.Object<AvailableViews> {
+): Schema.Object<AvailableViews & { oldType: string }> {
   return {
     type: 'object',
+    index: 2,
     view: {
       type: 'object',
+      oldType: 'object',
     },
     properties: parameters.reduce<
-      Record<string, AvailableSchemas & { oldType: WegasTypeString }>
+      Record<
+        string,
+        AvailableSchemas & { view: AvailableViews & { oldType: string } }
+      >
     >((o, p, i) => {
       o[i] = {
         ...p,
+        index: i,
         type: p.type === 'identifier' ? 'string' : p.type,
-        oldType: p.type,
         view: {
           layout: 'shortInline',
+          oldType: p.type,
           ...p.view,
         },
       };
@@ -514,37 +532,46 @@ function makeSchemaParameters(
   };
 }
 
+function defaultRightExpressionValue(method: WegasMethod) {
+  switch (method.returns) {
+    case 'boolean':
+      return true;
+    case 'number':
+      return 0;
+    case 'string':
+      return '';
+    default:
+      return undefined;
+  }
+}
+
 function makeSchemaConditionAttributes(
-  index: number,
   method?: WegasMethod,
   mode?: ScriptMode,
 ): Pick<ConditionSchema, 'booleanOperator' | 'rightExpression'> | EmptyObject {
-  return {
-    ...(method && isScriptCondition(mode) && method.returns !== 'boolean'
-      ? {
-          booleanOperator: schemaProps.select({
-            values: filterOperators(method.returns),
-            returnType: 'string',
-            index: method.parameters.length + index,
-            layout: 'inline',
-            required: true,
-            value: {
-              label: 'equals',
-              value: '===',
-            },
-          }),
-          rightExpression: schemaProps.custom({
-            label: undefined,
-            type: method.returns,
-            viewType: method.returns,
-            index: method.parameters.length + index,
-            layout: 'inline',
-            required: true,
-            value: 0,
-          }) as AvailableSchemas,
-        }
-      : {}),
-  };
+  if (method && isScriptCondition(mode)) {
+    return {
+      booleanOperator: schemaProps.select({
+        values: filterOperators(method.returns),
+        returnType: 'string',
+        index: 3,
+        layout: 'longinline',
+        required: true,
+        value: '===',
+      }),
+      rightExpression: schemaProps.custom({
+        label: undefined,
+        type: method.returns,
+        viewType: method.returns,
+        value: defaultRightExpressionValue(method),
+        index: 4,
+        layout: 'longinline',
+        required: true,
+      }) as AvailableSchemas,
+    };
+  } else {
+    return {};
+  }
 }
 
 export async function generateSchema(
@@ -564,7 +591,6 @@ export async function generateSchema(
     attributes?.type === 'condition'
       ? attributes?.leftExpression
       : attributes?.expression;
-
   if (expression != null) {
     let configArg: MethodSearchers;
     switch (expression.type) {
@@ -575,7 +601,7 @@ export async function generateSchema(
         configArg = {
           type: expression.type,
           value: safeClientScriptEval<SVariableDescriptor>(
-            `Variable.find(gamemodel,${expression.variableName})`,
+            `Variable.find(gameModel,'${expression.variableName}')`,
             undefined,
             undefined,
             undefined,
@@ -587,7 +613,6 @@ export async function generateSchema(
       default:
         configArg = { type: 'boolean' };
     }
-
     const methods = await getMethodConfig(configArg);
     let method: WegasMethod | undefined = undefined;
     switch (expression.type) {
@@ -603,9 +628,7 @@ export async function generateSchema(
         break;
       }
     }
-    let propsIndex = 1;
     if (expression.type === 'variable') {
-      propsIndex += 1;
       newSchemaProps = {
         ...newSchemaProps,
         ...makeSchemaMethodSelector(methods),
@@ -619,7 +642,7 @@ export async function generateSchema(
     if (isScriptCondition(mode)) {
       newSchemaProps = {
         ...newSchemaProps,
-        ...makeSchemaConditionAttributes(propsIndex, method, mode),
+        ...makeSchemaConditionAttributes(method, mode),
       };
     }
   }
@@ -658,4 +681,38 @@ export function testCode(
   } catch (e) {
     return handleError(e);
   }
+}
+
+export function isExpressionReady(
+  attributes: Attributes,
+  schema: WyiswygExpressionSchema | undefined,
+): boolean {
+  if (attributes == null) {
+    return false;
+  } else if (
+    schema?.properties.arguments?.properties != null &&
+    Object.keys(schema?.properties.arguments?.properties).length !==
+      attributes.arguments?.length
+  ) {
+    return false;
+  } else if (attributes.type === 'impact') {
+    if (
+      attributes.expression == null ||
+      (attributes.expression.type === 'variable' &&
+        attributes.methodId === null)
+    ) {
+      return false;
+    }
+  } else if (attributes.type === 'condition') {
+    if (
+      attributes.leftExpression == null ||
+      (attributes.leftExpression.type === 'variable' &&
+        attributes.methodId === null) ||
+      attributes.booleanOperator == null ||
+      attributes.rightExpression == null
+    ) {
+      return false;
+    }
+  }
+  return true;
 }

@@ -10,13 +10,13 @@ import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/editingState';
 import { EditingThunkResult } from '../data/Stores/editingStore';
 import { wwarn } from '../Helper/wegaslog';
-import { AvailableViews, SchemaFromView } from './Components/FormView';
+import { AvailableSchemas, AvailableViews } from './Components/FormView';
 import { Icons } from './Components/Views/FontAwesome';
 import { formValidation } from './formValidation';
 
 export type WegasMethodParameter = {
   type: WegasTypeString;
-} & SchemaFromView<'object'>;
+} & AvailableSchemas;
 
 export const wegasMethodReturnValues = ['number', 'string', 'boolean'] as const;
 
@@ -221,9 +221,9 @@ export async function getEntityActions(
 export async function getVariableMethodConfig<T extends SAbstractEntity>(
   entity: T,
 ): Promise<MethodConfig> {
-  return fetchConfig(entity.getJSONClassName() + '.json').then(res =>
-    methodConfigUpdater(res.methods, injectRef),
-  );
+  return fetchConfig(entity.getJSONClassName() + '.json').then(res => {
+    return methodConfigUpdater(res.methods, injectRef);
+  });
 }
 
 export function getIcon<T extends IMergeable>(

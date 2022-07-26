@@ -4,7 +4,9 @@ type SchemaLayout =
   | 'inline'
   | 'shortInline'
   | 'extraShortInline'
-  | 'flexInline';
+  | 'flexInline'
+  | 'longinline'
+  | 'fullWidth';
 
 type WegasTypeString = TYPESTRING | 'identifier';
 
@@ -92,7 +94,7 @@ interface ReadOnlySchemaProps {
 }
 
 interface ValueSchemaProps<T> {
-  value?: T;
+  value?: T | string;
 }
 
 type SchemaPropsHiddenFn = (
