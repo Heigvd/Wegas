@@ -3,7 +3,7 @@ import { css } from '@emotion/css';
 import u from 'immer';
 import Form from 'jsoninput';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { isArray, pick } from 'lodash-es';
+import { debounce, isArray, pick } from 'lodash-es';
 import { editor } from 'monaco-editor';
 import * as React from 'react';
 import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
@@ -13,11 +13,7 @@ import { State } from '../../../../../data/Reducer/reducers';
 import { GameModel } from '../../../../../data/selectors';
 import { useStore } from '../../../../../data/Stores/store';
 import { MessageString } from '../../../MessageString';
-import {
-  functionalizeScript,
-  makeReturnTypes,
-  TempScriptEditor,
-} from '../../../ScriptEditors/TempScriptEditor';
+import { TempScriptEditor } from '../../../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
 import { Labeled, LabeledView } from '../../labeled';
 import { genVarItems } from '../../TreeVariableSelect';
@@ -128,7 +124,7 @@ export function ExpressionEditor({
   code,
   id,
   mode,
-  onChange,
+  onChange: instantOnChange,
 }: ExpressionEditorProps) {
   const [srcMode, setSrcMode] = React.useState(false);
   const [{ attributes, error, softError, schema }, dispatchFormState] =
@@ -160,6 +156,15 @@ export function ExpressionEditor({
 
   const editorRef = React.useRef<editor.IStandaloneCodeEditor>();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const onChange = React.useCallback(
+    debounce(
+      (code: string) => (instantOnChange ? instantOnChange(code) : undefined),
+      1000,
+    ),
+    [instantOnChange],
+  );
+
   React.useEffect(() => {
     if (
       codeRef.current !== code ||
@@ -169,10 +174,6 @@ export function ExpressionEditor({
       codeRef.current = code;
       modeRef.current = mode;
       variablesItemsRef.current = variablesItems;
-
-      editorRef.current?.setValue(
-        functionalizeScript(code, makeReturnTypes(returnTypes(mode))),
-      );
 
       const parsedCode = testCode(code, mode);
       if (typeof parsedCode === 'string') {
@@ -417,7 +418,6 @@ export function ExpressionEditor({
         <div className={scriptEditStyle}>
           <MessageString type="error" value={error || softError} />
           <TempScriptEditor
-            // key={code}
             language={isServerScript ? 'javascript' : 'typescript'}
             initialValue={code}
             onChange={onScriptEditorChange}
@@ -436,7 +436,6 @@ export function ExpressionEditor({
           context={attributes}
         />
       )}
-      <pre>{JSON.stringify(attributes)}</pre>
     </div>
   );
 }

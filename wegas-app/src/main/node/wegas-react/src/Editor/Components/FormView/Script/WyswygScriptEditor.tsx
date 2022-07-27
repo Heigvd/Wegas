@@ -68,7 +68,9 @@ export function WyswygScriptEditor({
         }}
         value={{
           statements: forceEmptyExpressions(expr, mode).map(e => ({
-            statement: generate(e ? e : createNewExpression(mode)).code,
+            statement: generate(e ? e : createNewExpression(mode), {
+              compact: false,
+            }).code,
           })),
         }}
         onChange={value => {

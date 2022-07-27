@@ -15,6 +15,7 @@ import {
   LogicalExpression,
   logicalExpression,
   program,
+  Program,
   Statement,
 } from '@babel/types';
 import { css, cx } from '@emotion/css';
@@ -199,15 +200,20 @@ export function Script({
     (value: string) => {
       if (value !== script.current) {
         script.current = value;
-        onChange(createScript(value, 'JavaScript'));
+        onChange(
+          createScript(
+            value,
+            isClientMode(view.mode) ? 'typescript' : 'javascript',
+          ),
+        );
       }
     },
-    [onChange],
+    [onChange, view.mode],
   );
 
   const onStatementsChange = React.useCallback(
     (statements: Statement[], operator: Operator) => {
-      let returnedProgram = program(statements ? statements : []);
+      let returnedProgram: Program;
       if (statements.length > 0 && isScriptCondition(view.mode)) {
         try {
           returnedProgram = program(
@@ -215,6 +221,7 @@ export function Script({
           );
         } catch (e) {
           setError([handleError(e)]);
+          returnedProgram = program(statements ? statements : []);
         }
       } else {
         returnedProgram = program(statements);

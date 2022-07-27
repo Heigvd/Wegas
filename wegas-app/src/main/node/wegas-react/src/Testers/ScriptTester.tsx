@@ -11,7 +11,33 @@ import { ExpressionEditor } from '../Editor/Components/FormView/Script/Expressio
 import { MessageString } from '../Editor/Components/MessageString';
 import { TempScriptEditor } from '../Editor/Components/ScriptEditors/TempScriptEditor';
 
-export default function SchemaPropsTester() {
+export default function ScriptTester() {
+  // const forbidenKeys = ['c', 'd'];
+  // const a = {
+  //   a: 1,
+  //   b: {
+  //     // a: 'abc',
+  //     b: 20,
+  //     c: 30,
+  //   },
+  // };
+  // const cleanA = deepRemoveKeys(a, forbidenKeys);
+  // const b = {
+  //   a: 1,
+  //   b: {
+  //     // a: 'abc',
+  //     b: 20,
+  //     c: 40,
+  //   },
+  // };
+  // const cleanB = deepRemoveKeys(b, forbidenKeys);
+
+  // const test = isEqual(a, b);
+  // const cleanTest = isEqual(cleanA, cleanB);
+  // wlog(test);
+  // wlog(cleanTest);
+  // debugger;
+
   const [value, setValue] = React.useState<string>(
     // '',
     // 'DelayedEvent.delayedFire(1,2,"YOE")',

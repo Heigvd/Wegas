@@ -21,7 +21,7 @@ import PageLoaderSelect from './PageLoaderSelect';
 import PageSelect from './PageSelect';
 import PathSelector from './PathSelector';
 import QuestSelect from './QuestSelect';
-import StatementView from './Script/Expressions/ExpressionEditor';
+import StatementView from './Script/Expressions2/ExpressionEditor';
 import { Script } from './Script/Script';
 import { VariableInput } from './Script/VariableInput';
 import Scriptable from './Scriptable';
