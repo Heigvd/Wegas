@@ -4,6 +4,7 @@ import u from 'immer';
 import Form from 'jsoninput';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { isArray, pick } from 'lodash-es';
+import { editor } from 'monaco-editor';
 import * as React from 'react';
 import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
 import { Button } from '../../../../../Components/Inputs/Buttons/Button';
@@ -12,7 +13,11 @@ import { State } from '../../../../../data/Reducer/reducers';
 import { GameModel } from '../../../../../data/selectors';
 import { useStore } from '../../../../../data/Stores/store';
 import { MessageString } from '../../../MessageString';
-import { TempScriptEditor } from '../../../ScriptEditors/TempScriptEditor';
+import {
+  functionalizeScript,
+  makeReturnTypes,
+  TempScriptEditor,
+} from '../../../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
 import { Labeled, LabeledView } from '../../labeled';
 import { genVarItems } from '../../TreeVariableSelect';
@@ -117,29 +122,13 @@ export interface ExpressionEditorProps extends ScriptView {
   id?: string;
   onChange?: (code: string) => void;
   mode?: ScriptMode;
-  debug?: boolean;
 }
-
-function debugDebugger(debug: boolean | undefined) {
-  if (debug) {
-    debugger;
-  }
-}
-
-const debugLog: (debug: boolean | undefined) => typeof console.log =
-  debug =>
-  (...arg) => {
-    if (debug) {
-      console.log(...arg);
-    }
-  };
 
 export function ExpressionEditor({
   code,
   id,
   mode,
   onChange,
-  debug,
 }: ExpressionEditorProps) {
   const [srcMode, setSrcMode] = React.useState(false);
   const [{ attributes, error, softError, schema }, dispatchFormState] =
@@ -169,6 +158,8 @@ export function ExpressionEditor({
       >[]
     >();
 
+  const editorRef = React.useRef<editor.IStandaloneCodeEditor>();
+
   React.useEffect(() => {
     if (
       codeRef.current !== code ||
@@ -179,6 +170,10 @@ export function ExpressionEditor({
       modeRef.current = mode;
       variablesItemsRef.current = variablesItems;
 
+      editorRef.current?.setValue(
+        functionalizeScript(code, makeReturnTypes(returnTypes(mode))),
+      );
+
       const parsedCode = testCode(code, mode);
       if (typeof parsedCode === 'string') {
         dispatchFormState({
@@ -188,6 +183,24 @@ export function ExpressionEditor({
       } else {
         generateSchema(parsedCode, variablesItems, mode).then(schema => {
           if (
+            schema.properties.methodId != null &&
+            parsedCode?.methodId != null
+          ) {
+            const method = schema.properties.methodId as
+              | { enum: string[] }
+              | undefined;
+            const choices = method?.enum;
+            // If the method is unknown
+            if (!choices || !choices.includes(parsedCode.methodId)) {
+              dispatchFormState({
+                type: 'SET_ERROR',
+                payload: {
+                  error: `Unknown WYSIWYG method : "${parsedCode.methodId}"`,
+                },
+              });
+              return;
+            }
+          } else if (
             parsedCode != null &&
             parsedCode.arguments != null &&
             schema.properties.arguments != null
@@ -238,8 +251,6 @@ export function ExpressionEditor({
       const newCode = generateCode(attributes, schema);
       codeRef.current = newCode;
 
-      debugDebugger(debug);
-
       if (isExpressionReady(attributes, schema)) {
         onChange && onChange(newCode);
       }
@@ -249,7 +260,7 @@ export function ExpressionEditor({
         schema,
       };
     },
-    [debug, onChange],
+    [onChange],
   );
 
   const computeState = React.useCallback(
@@ -323,17 +334,13 @@ export function ExpressionEditor({
         dispatchFormState({
           type: 'SET_ERROR',
           payload: {
-            error: 'Script cannot be parsed',
+            error: (e as Error).message,
           },
         });
       }
     },
     [mode, onChange],
   );
-
-  React.useEffect(() => {
-    debugLog(debug)(schema);
-  }, [debug, schema]);
 
   const onFormChange = React.useCallback(
     (v: Attributes, e: any) => {
@@ -410,7 +417,7 @@ export function ExpressionEditor({
         <div className={scriptEditStyle}>
           <MessageString type="error" value={error || softError} />
           <TempScriptEditor
-            key={code}
+            // key={code}
             language={isServerScript ? 'javascript' : 'typescript'}
             initialValue={code}
             onChange={onScriptEditorChange}
@@ -418,6 +425,7 @@ export function ExpressionEditor({
             minimap={false}
             returnType={returnTypes(mode)}
             resizable
+            onEditorReady={editor => (editorRef.current = editor)}
           />
         </div>
       ) : (

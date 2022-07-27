@@ -365,7 +365,7 @@ export function parseStatement(
         }
       } else {
         error =
-          'The script cannot be parsed as a known expression (empty, boolean literal or binary expression)';
+          'The script cannot be parsed as a known condition expression (empty, boolean literal or binary expression)';
       }
     } else {
       type = 'impact';
@@ -393,6 +393,8 @@ export function parseStatement(
             };
           }
         }
+      } else {
+        error = 'The script cannot be parsed as an impact expression';
       }
     }
   } else {

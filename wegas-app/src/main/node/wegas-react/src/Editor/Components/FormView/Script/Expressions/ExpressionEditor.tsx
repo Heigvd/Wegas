@@ -382,12 +382,16 @@ export function ExpressionEditor({
               // }
             } else if (deepDifferent(v, attributes)) {
               // minor change, no need te recompute the schema
-              const revivedAttributes ={...v};
-              if (v.initExpression.type === 'variable'){
+              const revivedAttributes = { ...v };
+              if (v.initExpression.type === 'variable') {
                 revivedAttributes.variableName = v.initExpression.variableName;
               }
 
-              const statement = generateStatement(revivedAttributes, schema!, mode);
+              const statement = generateStatement(
+                revivedAttributes,
+                schema!,
+                mode,
+              );
               let newCode = undefined;
               if (statement) {
                 // Try to parse statement back before sending new code
@@ -400,7 +404,10 @@ export function ExpressionEditor({
 
               dispatchFormState({
                 type: 'SET_IF_DEF',
-                payload: { attributes: revivedAttributes, softError: e.join('\n') },
+                payload: {
+                  attributes: revivedAttributes,
+                  softError: e.join('\n'),
+                },
               });
             }
           }}

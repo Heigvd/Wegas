@@ -12,7 +12,7 @@ import SrcEditor, { SrcEditorProps } from './SrcEditor';
 
 const logger = getLogger('monaco');
 
-function makeReturnTypes(returnType?: string[]) {
+export function makeReturnTypes(returnType?: string[]) {
   return returnType?.join(' | ') || '';
 }
 
