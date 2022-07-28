@@ -7,7 +7,7 @@ import { themeVar } from '../Components/Theme/ThemeVars';
 import { autoScroll, expandBoth, flex, flexColumn } from '../css/classes';
 //It's really important to import index.ts in order to have the widjets allready registered before using Form
 import '../Editor/Components/FormView';
-import { ExpressionEditor } from '../Editor/Components/FormView/Script/Expressions2/ExpressionEditor';
+import { ExpressionEditor } from '../Editor/Components/FormView/Script/Expressions/ExpressionEditor';
 import { MessageString } from '../Editor/Components/MessageString';
 import { TempScriptEditor } from '../Editor/Components/ScriptEditors/TempScriptEditor';
 
@@ -19,7 +19,9 @@ export default function ScriptTester() {
     // "Variable.find(gameModel,'MyNumber').getId() === 1",
     // "Variable.find(gameModel,'MyNumber').add(self,12)",
     // "Event.fired('lkdlsk') === true",
-    "!Event.fired('lkdlsk')",
+    // "!Event.fired('lkdlsk')",
+    // "Variable.find(gameModel, 'MyNumber').getValue(self) === 1",
+    `Variable.find(gameModel, 'welcome').setValue(self, {"@class":"TranslatableContent","translations":{"FR":{"@class":"Translation","lang":"FR","status":"","translation":"<p>Salut comment v'asjakdjs?</p>"}},"version":0})`,
   );
   const [errors, setErrors] = React.useState<ValidationError[]>([]);
   const editorRef = React.useRef<editor.IStandaloneCodeEditor>();
@@ -56,10 +58,10 @@ export default function ScriptTester() {
         />
       </div>
       {/* <ExpressionEditor code={value} onChange={setValues} /> */}
-      <ExpressionEditor code={value} onChange={setValues} mode="GET" />
-      {/* <ExpressionEditor code={value} onChange={setValues} mode="GET_CLIENT" /> */}
+      {/* <ExpressionEditor code={value} onChange={setValues} mode="GET" /> */}
+      <ExpressionEditor code={value} onChange={setValues} mode="GET_CLIENT" />
       {/* <ExpressionEditor code={value} onChange={setValues} mode="SET" /> */}
-      {/* <ExpressionEditor code={value} onChange={setValues} mode="SET_CLIENT" /> */}
+      <ExpressionEditor code={value} onChange={setValues} mode="SET_CLIENT" />
       <div
         style={{
           margin: '20px',

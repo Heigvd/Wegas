@@ -730,7 +730,7 @@ const simpleSchemaProps = {
   } & CommonSchemaProps &
     ValueSchemaProps<Statement>): SchemaFromView<'statement'> => ({
     required,
-    type: 'object',
+    type: 'string',
     index,
     visible,
     value,

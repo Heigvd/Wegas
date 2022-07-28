@@ -143,3 +143,54 @@ export function DotLoader({
     </div>
   );
 }
+
+const customDotLoaderStyle = (size: number = 80, color?: string) =>
+  css({
+    display: 'inline-block',
+    position: 'relative',
+    width: `${size}px`,
+    height: `${size}px`,
+    '& div': {
+      position: 'absolute',
+      top: `${(33 / 80) * size}px`,
+      width: `${(13 / 80) * size}px`,
+      height: `${(13 / 80) * size}px`,
+      borderRadius: '50%',
+      background: color,
+      animationTimingFunction: 'cubic-bezier(0, 1, 1, 0)',
+    },
+    '& div:nth-child(1)': {
+      left: `${(8 / 80) * size}px`,
+      animation: `${dotLoaderAnimation1} 0.6s infinite`,
+    },
+    '& div:nth-child(2)': {
+      left: `${(8 / 80) * size}px`,
+      animation: `${dotLoaderAnimation2} 0.6s infinite`,
+    },
+    '& div:nth-child(3)': {
+      left: `${(32 / 80) * size}px`,
+      animation: `${dotLoaderAnimation2} 0.6s infinite`,
+    },
+    '& div:nth-child(4)': {
+      left: `${(56 / 80) * size}px`,
+      animation: `${dotLoaderAnimation3} 0.6s infinite`,
+    },
+  });
+
+interface CustomDotLoaderProps extends DotLoaderProps {
+  size?: number;
+}
+
+export function CustomDotLoader({
+  color = themeVar.colors.ActiveColor,
+  size,
+}: CustomDotLoaderProps) {
+  return (
+    <div className={customDotLoaderStyle(size, color)}>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  );
+}

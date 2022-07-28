@@ -1,90 +1,46 @@
-import generate from '@babel/generator';
-import { parse } from '@babel/parser';
-import {
-  booleanLiteral,
-  emptyStatement,
-  expressionStatement,
-  Statement,
-} from '@babel/types';
-import Form from 'jsoninput';
 import * as React from 'react';
-import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
+import { DragDropArray } from '../Array';
+import { ExpressionEditor } from './Expressions/ExpressionEditor';
 import { isScriptCondition, ScriptView } from './Script';
 
-function createNewExpression(mode?: ScriptMode) {
-  return isScriptCondition(mode)
-    ? expressionStatement(booleanLiteral(true))
-    : emptyStatement();
-}
-
-function forceEmptyExpressions(
-  expressions: Statement[] | null,
-  mode?: ScriptMode,
-): Statement[] {
-  return expressions == null || expressions.length === 0
-    ? [createNewExpression(mode)]
-    : expressions;
+function createNewExpression(mode?: ScriptMode): string {
+  return isScriptCondition(mode) ? 'true' : ';';
 }
 
 interface WyswygScriptEditorProps extends ScriptView {
-  expressions: Statement[] | null;
-  onChange: (script: Statement[]) => void;
-  controls?: React.ReactNode;
+  expressions: string[];
+  onChange: (script: string[]) => void;
 }
 
 export function WyswygScriptEditor({
   expressions,
   onChange,
   mode,
-  controls,
 }: WyswygScriptEditorProps) {
-  // These state and effect are here just to avoid loosing focus when changes occures
-  const [expr, setExpr] = React.useState(expressions);
-  React.useEffect(() => {
-    setExpr(expressions);
-  }, [expressions]);
-
   return (
-    <>
-      <Form
-        schema={{
-          description: 'multipleStatementForm',
-          view: { noMarginTop: true },
-          properties: {
-            statements: schemaProps.array({
-              controls,
-              itemSchema: {
-                statement: schemaProps.statement({
-                  required: true,
-                  mode,
-                  noMarginTop: true,
-                }),
-              },
-              userOnChildAdd: () => ({
-                statement: isScriptCondition(mode) ? 'true' : ';',
-              }),
-            }),
-          },
-        }}
-        value={{
-          statements: forceEmptyExpressions(expr, mode).map(e => ({
-            statement: generate(e ? e : createNewExpression(mode), {
-              compact: false,
-            }).code,
-          })),
-        }}
-        onChange={value => {
-          const cleanValue: Statement[] = value.statements.map(
-            (s: { statement: string }) => {
-              return s
-                ? parse(s.statement).program.body[0] || emptyStatement()
-                : createNewExpression(mode);
-            },
-          );
-          setExpr(forceEmptyExpressions(cleanValue, mode));
-          onChange(cleanValue);
-        }}
-      />
-    </>
+    <DragDropArray
+      array={expressions}
+      onChildAdd={() => {
+        expressions.push(createNewExpression(mode));
+        onChange(expressions);
+      }}
+      onChildRemove={index => {
+        expressions.splice(index, 1);
+        onChange(expressions);
+      }}
+      onMove={(expressions: string[]) => onChange(expressions)}
+    >
+      {expressions?.map((expression, index) => (
+        <ExpressionEditor
+          key={index}
+          code={expression}
+          mode={mode}
+          onChange={value => {
+            expressions[index] = value;
+            onChange(expressions);
+          }}
+        />
+      ))}
+    </DragDropArray>
   );
 }

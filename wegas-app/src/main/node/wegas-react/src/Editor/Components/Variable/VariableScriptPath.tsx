@@ -27,17 +27,17 @@ export function VariableScriptPath({ script }: VariableScriptPathProps) {
   if (script == null) {
     return <pre>No given script</pre>;
   }
+  const variable = safeClientScriptEval<SVariableDescriptor>(
+    script,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+  )?.getEntity();
+
   return (
     <div className={variableScriptPathStyle}>
-      {getVariablePath(
-        safeClientScriptEval<SVariableDescriptor>(
-          script,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-        ).getEntity(),
-      )}
+      {variable ? getVariablePath(variable) : 'Unknown variable'}
     </div>
   );
 }
