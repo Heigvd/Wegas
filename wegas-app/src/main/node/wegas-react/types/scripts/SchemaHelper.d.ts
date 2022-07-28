@@ -86,7 +86,7 @@ interface CommonSchemaProps extends SimpleSchemaProps {
   borderTop?: boolean;
   noMarginTop?: boolean;
   description?: string;
-  visible?: (value: any, formValue: any, path: string[]) => boolean;
+  visible?: (value: unknown, formValue: unknown, path: string[]) => boolean;
 }
 
 interface ReadOnlySchemaProps {

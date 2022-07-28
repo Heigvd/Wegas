@@ -38,7 +38,7 @@ export function handleError(error: unknown): string {
 
 export const scriptEditStyle = css({
   minHeight: '5em',
-  width: '500px',
+  //width: '500px',
 });
 
 const operators = ['&&', '||'] as const;

@@ -10,6 +10,7 @@ import { classNameOrEmpty } from '../../../Helper/className';
 
 const containerStyle = css({
   position: 'relative',
+  width: '100%',
 });
 const marginTopStyle = css({
   marginTop: '10px',

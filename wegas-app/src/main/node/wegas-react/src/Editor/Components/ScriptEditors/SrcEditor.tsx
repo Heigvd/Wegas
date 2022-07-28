@@ -117,7 +117,11 @@ const overflowHide = css({
   height: '100%',
 });
 
-export const editorStyle = cx(overflowHide, errorStyle);
+export const editorStyle = cx(overflowHide, errorStyle, css({"> section": {
+  // "!important is used to overide "style" attribute, injected by monaco itself...
+  // https://github.com/frenic/csstype/issues/114
+  position: 'absolute !important'as 'absolute'
+}}));
 
 export const addExtraLib = (
   service: MonacoLangaugesServices,
