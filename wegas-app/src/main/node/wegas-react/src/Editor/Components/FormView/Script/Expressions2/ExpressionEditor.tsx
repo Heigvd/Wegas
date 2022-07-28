@@ -25,6 +25,7 @@ import {
   generateSchema,
   GlobalExpressionAttributes,
   ImpactAttributes,
+  isCodeEqual,
   isExpressionReady,
   LiteralExpressionAttributes,
   makeItems,
@@ -47,7 +48,6 @@ interface ExpressionEditorState {
   schema?: WyiswygExpressionSchema;
   error?: string | false;
   softError?: string;
-  // code?: string;
 }
 
 function variableIdsSelector(s: State) {
@@ -167,7 +167,7 @@ export function ExpressionEditor({
 
   React.useEffect(() => {
     if (
-      codeRef.current !== code ||
+      !isCodeEqual(codeRef.current, code) ||
       modeRef.current !== mode ||
       deepDifferent(variablesItemsRef.current, variablesItems)
     ) {
@@ -358,7 +358,6 @@ export function ExpressionEditor({
           Pick<ConditionAttributes, 'leftExpression'>;
         const newConfig = v as ImpactAttributes &
           Pick<ConditionAttributes, 'leftExpression'>;
-
         // If type or first expression has changed, keep only type and expression and regenerate schema and send changes
         if (
           currentConfig.type !== newConfig.type ||

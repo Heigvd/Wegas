@@ -19,8 +19,10 @@ import { handleError, isScriptCondition } from '../Script';
 import { LiteralExpressionValue, parseStatement } from './astManagement';
 
 export const comparisonOperators = {
-  '!==': { label: 'not equals' },
+  isTrue: { label: 'is true' },
+  isFalse: { label: 'is not true' },
   '===': { label: 'equals' },
+  '!==': { label: 'not equals' },
   '>': { label: 'greater than' },
   '>=': { label: 'greater or equals than' },
   '<': { label: 'lesser than' },
@@ -207,14 +209,27 @@ function filterVariableMethods(
 }
 
 function filterOperators(
+  k: WegasOperators,
+  methodReturn: WegasMethod['returns'],
+) {
+  if (methodReturn === 'boolean') {
+    return k === 'isTrue' || k === 'isFalse';
+  } else {
+    return k !== 'isTrue' && k !== 'isFalse';
+  }
+}
+
+function generateOperators(
   methodReturns: WegasMethod['returns'],
 ): SelectOperator[] {
   return Object.keys(comparisonOperators)
-    .filter(k => methodReturns === 'number' || k === '===' || k === '!==')
-    .map((k: WegasOperators) => ({
-      label: comparisonOperators[k].label,
-      value: k,
-    }));
+    .filter((k: WegasOperators) => filterOperators(k, methodReturns))
+    .map((k: WegasOperators) => {
+      return {
+        label: comparisonOperators[k].label,
+        value: k,
+      };
+    });
 }
 
 export function typeCleaner(
@@ -545,33 +560,90 @@ function defaultRightExpressionValue(method: WegasMethod) {
   }
 }
 
+export function isBooleanOperatorVisible(
+  schema: SchemaProperties | undefined,
+  attributes: Attributes,
+): boolean {
+  // We are forced to check if the getValue method is renamed is true,
+  // In this case, do not add boolean comparison attributes
+  // A best way to do that is to duplicate getValue for BooleanDescriptor
+  // and offer getValue, isTrue, isFalse so we know we just need avoid comparison for isTrue and isFalse methods
+  if (schema?.methodId != null && schema.methodId.view != null) {
+    const choices = (
+      schema.methodId.view as {
+        choices: { label: string; value: string }[];
+      }
+    ).choices;
+    const selectedChoice = choices.find(
+      choice => choice.value === attributes?.methodId,
+    );
+    if (
+      selectedChoice != null &&
+      selectedChoice.value === attributes?.methodId
+    ) {
+      if (
+        selectedChoice.value === 'getValue' &&
+        selectedChoice.label === 'is true'
+      ) {
+        return false;
+      }
+    }
+  }
+
+  return (
+    attributes?.type === 'condition' &&
+    attributes.methodId !== 'isTrue' &&
+    attributes.methodId !== 'isFalse'
+  );
+}
+
+export function isRightExpressionVisible(
+  schema: SchemaProperties | undefined,
+  attributes: Attributes,
+) {
+  return (
+    isBooleanOperatorVisible(schema, attributes) &&
+    attributes?.type === 'condition' &&
+    attributes.booleanOperator !== 'isTrue' &&
+    attributes.booleanOperator !== 'isFalse'
+  );
+}
+
 function makeSchemaConditionAttributes(
+  currentSchema: SchemaProperties,
   method?: WegasMethod,
   mode?: ScriptMode,
-): Pick<ConditionSchema, 'booleanOperator' | 'rightExpression'> | EmptyObject {
+): SchemaProperties {
+  const conditionAttributesSchema:
+    | Pick<ConditionSchema, 'booleanOperator' | 'rightExpression'>
+    | EmptyObject = {};
   if (method && isScriptCondition(mode)) {
-    return {
-      booleanOperator: schemaProps.select({
-        values: filterOperators(method.returns),
-        returnType: 'string',
-        index: 3,
-        layout: 'longinline',
-        required: true,
-        value: '===',
-      }),
-      rightExpression: schemaProps.custom({
-        label: undefined,
-        type: method.returns,
-        viewType: method.returns,
-        value: defaultRightExpressionValue(method),
-        index: 4,
-        layout: 'longinline',
-        required: true,
-      }) as AvailableSchemas,
-    };
-  } else {
-    return {};
+    conditionAttributesSchema['booleanOperator'] = schemaProps.select({
+      values: generateOperators(method.returns),
+      returnType: 'string',
+      index: 3,
+      layout: 'longinline',
+      required: true,
+      value: method.returns === 'boolean' ? 'isTrue' : '===',
+      visible: (_value: LiteralExpressionValue, formValue: Attributes) =>
+        isBooleanOperatorVisible(currentSchema, formValue),
+    });
+    conditionAttributesSchema['rightExpression'] = schemaProps.custom({
+      label: undefined,
+      type: method.returns,
+      viewType: method.returns,
+      value: defaultRightExpressionValue(method),
+      index: 4,
+      layout: 'longinline',
+      required: true,
+      visible: (_value: LiteralExpressionValue, formValue: Attributes) =>
+        isRightExpressionVisible(currentSchema, formValue),
+    }) as AvailableSchemas;
   }
+  return {
+    ...currentSchema,
+    ...conditionAttributesSchema,
+  };
 }
 
 export async function generateSchema(
@@ -640,10 +712,11 @@ export async function generateSchema(
     }
 
     if (isScriptCondition(mode)) {
-      newSchemaProps = {
-        ...newSchemaProps,
-        ...makeSchemaConditionAttributes(method, mode),
-      };
+      newSchemaProps = makeSchemaConditionAttributes(
+        newSchemaProps,
+        method,
+        mode,
+      );
     }
   }
 
@@ -651,6 +724,13 @@ export async function generateSchema(
     description: 'WyiswygExpression',
     properties: newSchemaProps,
   };
+}
+
+export function isCodeEqual(
+  codeA: string | undefined,
+  codeB: string | undefined,
+) {
+  return codeA?.replace(/[;]*$/, '') === codeB?.replace(/[;]*$/, '');
 }
 
 export function testCode(
@@ -708,8 +788,10 @@ export function isExpressionReady(
       attributes.leftExpression == null ||
       (attributes.leftExpression.type === 'variable' &&
         attributes.methodId === null) ||
-      attributes.booleanOperator == null ||
-      attributes.rightExpression == null
+      (isBooleanOperatorVisible(schema?.properties, attributes) &&
+        attributes.booleanOperator == null) ||
+      (isRightExpressionVisible(schema?.properties, attributes) &&
+        attributes.rightExpression == null)
     ) {
       return false;
     }

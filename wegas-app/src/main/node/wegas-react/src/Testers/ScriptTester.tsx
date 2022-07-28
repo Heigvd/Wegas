@@ -12,38 +12,14 @@ import { MessageString } from '../Editor/Components/MessageString';
 import { TempScriptEditor } from '../Editor/Components/ScriptEditors/TempScriptEditor';
 
 export default function ScriptTester() {
-  // const forbidenKeys = ['c', 'd'];
-  // const a = {
-  //   a: 1,
-  //   b: {
-  //     // a: 'abc',
-  //     b: 20,
-  //     c: 30,
-  //   },
-  // };
-  // const cleanA = deepRemoveKeys(a, forbidenKeys);
-  // const b = {
-  //   a: 1,
-  //   b: {
-  //     // a: 'abc',
-  //     b: 20,
-  //     c: 40,
-  //   },
-  // };
-  // const cleanB = deepRemoveKeys(b, forbidenKeys);
-
-  // const test = isEqual(a, b);
-  // const cleanTest = isEqual(cleanA, cleanB);
-  // wlog(test);
-  // wlog(cleanTest);
-  // debugger;
-
   const [value, setValue] = React.useState<string>(
     // '',
     // 'DelayedEvent.delayedFire(1,2,"YOE")',
     // "Variable.find(gameModel,'MyNumber')",
-    "Variable.find(gameModel,'MyNumber').getId() === 1",
+    // "Variable.find(gameModel,'MyNumber').getId() === 1",
     // "Variable.find(gameModel,'MyNumber').add(self,12)",
+    // "Event.fired('lkdlsk') === true",
+    "!Event.fired('lkdlsk')",
   );
   const [errors, setErrors] = React.useState<ValidationError[]>([]);
   const editorRef = React.useRef<editor.IStandaloneCodeEditor>();
@@ -79,11 +55,11 @@ export default function ScriptTester() {
           onEditorReady={editor => (editorRef.current = editor)}
         />
       </div>
-      <ExpressionEditor code={value} onChange={setValues} />
+      {/* <ExpressionEditor code={value} onChange={setValues} /> */}
       <ExpressionEditor code={value} onChange={setValues} mode="GET" />
-      <ExpressionEditor code={value} onChange={setValues} mode="GET_CLIENT" />
-      <ExpressionEditor code={value} onChange={setValues} mode="SET" />
-      <ExpressionEditor code={value} onChange={setValues} mode="SET_CLIENT" />
+      {/* <ExpressionEditor code={value} onChange={setValues} mode="GET_CLIENT" /> */}
+      {/* <ExpressionEditor code={value} onChange={setValues} mode="SET" /> */}
+      {/* <ExpressionEditor code={value} onChange={setValues} mode="SET_CLIENT" /> */}
       <div
         style={{
           margin: '20px',

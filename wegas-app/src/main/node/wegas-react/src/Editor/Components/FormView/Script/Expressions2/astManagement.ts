@@ -41,6 +41,7 @@ import {
   isWegasBooleanOperator,
   LiteralExpressionAttributes,
   VariableExpressionAttributes,
+  WegasOperators,
   WyiswygExpressionSchema,
 } from './expressionEditorHelpers';
 
@@ -159,15 +160,19 @@ export type LiteralExpressionValue =
   | object;
 
 function parseLiteralExpression(
-  expression: WegasAllowedLiteral,
+  expression: WegasAllowedLiteral | undefined,
 ): LiteralExpressionValue {
-  switch (expression.type) {
-    case 'StringLiteral':
-    case 'BooleanLiteral':
-    case 'NumericLiteral':
-      return expression.value;
-    default:
-      return undefined;
+  if (expression == null) {
+    return undefined;
+  } else {
+    switch (expression.type) {
+      case 'StringLiteral':
+      case 'BooleanLiteral':
+      case 'NumericLiteral':
+        return expression.value;
+      default:
+        return undefined;
+    }
   }
 }
 
@@ -284,6 +289,45 @@ function parseGlobalMethodExpression(
   }
 }
 
+function parseCallStatement(
+  callExpression: CallExpression,
+  mode: ScriptMode | undefined,
+  operator?: WegasOperators,
+  right?: WegasAllowedLiteral,
+): Attributes | string {
+  const type = isScriptCondition(mode) ? 'condition' : 'impact';
+  const variableExpressionAttributes =
+    parseVariableFindExpression(callExpression);
+  if (variableExpressionAttributes != null) {
+    return {
+      type,
+      leftExpression: variableExpressionAttributes.expression,
+      methodId: variableExpressionAttributes.methodId,
+      arguments: variableExpressionAttributes.arguments,
+      booleanOperator: operator,
+      rightExpression: parseLiteralExpression(right),
+    };
+  } else {
+    const globalExpressionAttributes = parseGlobalMethodExpression(
+      callExpression,
+      mode,
+    );
+    if (typeof globalExpressionAttributes === 'string') {
+      return globalExpressionAttributes;
+    } else {
+      return {
+        type,
+        ...(type === 'condition'
+          ? { leftExpression: globalExpressionAttributes.expression }
+          : { expression: globalExpressionAttributes.expression }),
+        methodId: globalExpressionAttributes.methodId,
+        arguments: globalExpressionAttributes.arguments,
+        booleanOperator: operator,
+      };
+    }
+  }
+}
+
 export function parseStatement(
   statement: Statement,
   mode?: ScriptMode,
@@ -310,6 +354,7 @@ export function parseStatement(
     if (isScriptCondition(mode)) {
       type = 'condition';
       // If statement is boolean literal, use its value
+      // Example : true
       if (isBooleanLiteral(expression)) {
         return {
           type,
@@ -318,7 +363,9 @@ export function parseStatement(
             literal: expression.value,
           },
         };
-      } else if (isBinaryExpression(expression)) {
+      }
+      //Example : LeftExpression.call() === 123
+      else if (isBinaryExpression(expression)) {
         const left = expression.left;
         const right = expression.right;
         const operator = expression.operator;
@@ -329,31 +376,16 @@ export function parseStatement(
         if (isCallExpression(left)) {
           if (isWegasBooleanOperator(operator)) {
             if (isWegasAllowedLiteral(right)) {
-              // Try to get the variable name in case the expression is a Variable.find call
-              const variableExpressionAttributes =
-                parseVariableFindExpression(left);
-              if (variableExpressionAttributes != null) {
-                return {
-                  type,
-                  leftExpression: variableExpressionAttributes.expression,
-                  methodId: variableExpressionAttributes.methodId,
-                  arguments: variableExpressionAttributes.arguments,
-                  booleanOperator: operator,
-                  rightExpression: parseLiteralExpression(right),
-                };
+              const parsedAttributes = parseCallStatement(
+                left,
+                mode,
+                operator,
+                right,
+              );
+              if (typeof parsedAttributes === 'string') {
+                error = parsedAttributes;
               } else {
-                const globalExpressionAttributes = parseGlobalMethodExpression(
-                  left,
-                  mode,
-                );
-                if (typeof globalExpressionAttributes === 'string') {
-                  error = globalExpressionAttributes;
-                } else {
-                  return {
-                    type,
-                    ...globalExpressionAttributes,
-                  };
-                }
+                return parsedAttributes;
               }
             } else {
               error =
@@ -363,6 +395,35 @@ export function parseStatement(
             error = `The use boolean operator (${operator})cannot be parsed`;
           }
         }
+      }
+      //Example : Expression.call()
+      else if (isCallExpression(expression)) {
+        const parsedAttributes = parseCallStatement(expression, mode, 'isTrue');
+        if (typeof parsedAttributes === 'string') {
+          error = parsedAttributes;
+        } else {
+          return parsedAttributes;
+        }
+      }
+      //Example : !Expression.call()
+      else if (isUnaryExpression(expression)) {
+        if (
+          expression.operator === '!' &&
+          isCallExpression(expression.argument)
+        ) {
+          const parsedAttributes = parseCallStatement(
+            expression.argument,
+            mode,
+            'isFalse',
+          );
+          if (typeof parsedAttributes === 'string') {
+            error = parsedAttributes;
+          } else {
+            return parsedAttributes;
+          }
+        } else {
+          error = 'The only allowed unary expression operator is !';
+        }
       } else {
         error =
           'The script cannot be parsed as a known condition expression (empty, boolean literal or binary expression)';
@@ -370,28 +431,11 @@ export function parseStatement(
     } else {
       type = 'impact';
       if (isCallExpression(expression)) {
-        const variableExpressionAttributes =
-          parseVariableFindExpression(expression);
-        if (variableExpressionAttributes) {
-          return {
-            type,
-            expression: variableExpressionAttributes.expression,
-            methodId: variableExpressionAttributes.methodId,
-            arguments: variableExpressionAttributes.arguments,
-          };
+        const parsedAttributes = parseCallStatement(expression, mode);
+        if (typeof parsedAttributes === 'string') {
+          error = parsedAttributes;
         } else {
-          const globalExpressionAttributes = parseGlobalMethodExpression(
-            expression,
-            mode,
-          );
-          if (typeof globalExpressionAttributes === 'string') {
-            error = globalExpressionAttributes;
-          } else {
-            return {
-              type,
-              ...globalExpressionAttributes,
-            };
-          }
+          return parsedAttributes;
         }
       } else {
         error = 'The script cannot be parsed as an impact expression';
@@ -415,7 +459,7 @@ function leftExpressionToCode(
     case 'global':
       return expression.globalObject;
     case 'variable':
-      return `Variable.find(gameModel,'${expression.variableName}')`;
+      return `Variable.find(gameModel, '${expression.variableName}')`;
     case 'literal':
       return String(expression.literal);
   }
@@ -454,7 +498,7 @@ function methodAndArgsToCode(
             return JSON.stringify(arg);
           }
         })
-        .join(',');
+        .join(', ');
     }
     newCode += ')';
   }
@@ -480,9 +524,13 @@ export function generateCode(
         methodAndArgsToCode(attributes, schema);
       if (
         attributes.booleanOperator != null &&
+        attributes.booleanOperator != 'isTrue' &&
+        attributes.booleanOperator != 'isFalse' &&
         attributes.rightExpression != null
       ) {
         newCode += ` ${attributes.booleanOperator} ${attributes.rightExpression}`;
+      } else if (attributes.booleanOperator === 'isFalse') {
+        newCode = '!' + newCode;
       }
     }
     return newCode;
