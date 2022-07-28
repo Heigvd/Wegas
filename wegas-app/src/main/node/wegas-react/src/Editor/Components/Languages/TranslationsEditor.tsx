@@ -73,6 +73,7 @@ import {
   generateSchema,
   testCode,
 } from '../FormView/Script/Expressions/expressionEditorHelpers';
+import { isClientMode } from '../FormView/Script/Script';
 import { IconComp, withDefault } from '../Views/FontAwesome';
 
 const langaugeVisitorHeaderStyle = css({
@@ -537,8 +538,9 @@ async function AsyncScriptView({
     properties: { [key: string]: { view: { mode: ScriptMode } } };
   };
   const mode = parentSchema.properties[fieldName].view.mode;
-  const parsedExpressions = parse(value.content, { sourceType: 'script' })
-    .program.body;
+  const parsedExpressions = parse(value.content, {
+    sourceType: isClientMode(mode) ? 'module' : 'script',
+  }).program.body;
 
   const expressions: TranslatableExpression[] = [];
   let offsetIndex = 0;

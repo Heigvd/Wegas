@@ -14,7 +14,7 @@ import {
   WegasMethodParameter,
 } from '../../../../editionConfig';
 import { StringOrT } from '../../TreeVariableSelect';
-import { handleError, isScriptCondition } from '../Script';
+import { handleError, isClientMode, isScriptCondition } from '../Script';
 import { LiteralExpressionValue, parseStatement } from './astManagement';
 
 const comparisonOperators = {
@@ -648,7 +648,7 @@ export function testCode(
   let newStatement: Statement = emptyStatement();
   try {
     const statements = parse(code, {
-      sourceType: 'script',
+      sourceType: isClientMode(mode) ? 'module' : 'script',
     }).program.body;
 
     if (statements.length <= 1) {

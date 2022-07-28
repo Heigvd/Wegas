@@ -14,6 +14,7 @@ import {
   isEmptyStatement,
   isExpressionStatement,
   isIdentifier,
+  isImportDeclaration,
   isLogicalExpression,
   isMemberExpression,
   isNullLiteral,
@@ -63,8 +64,15 @@ export function parseCodeIntoExpressions(
   mode: ScriptMode | undefined,
 ): string[] {
   const astStatements = parse(code, {
-    sourceType: 'script',
+    sourceType: isClientMode(mode) ? 'module' : 'script',
   }).program.body;
+
+  //Check for import statements
+  for (const statement of astStatements) {
+    if (isImportDeclaration(statement)) {
+      throw 'Cannot use wysiwyg editor with import declarations';
+    }
+  }
 
   const newStatements: string[] = [];
   if (isScriptCondition(mode)) {

@@ -86,8 +86,8 @@ export function Script({
   const [operator, setOperator] = React.useState<Operator>(operators[0]);
   const i18nValues = useInternalTranslate(editorTabsTranslations);
 
-  const { mode } = view;
-  const splitter = isScriptCondition(view.mode) ? operator : ';';
+  const { mode, label, description } = view;
+  const splitter = isScriptCondition(mode) ? operator : ';';
 
   const testScript = React.useCallback(
     value => {
@@ -108,14 +108,11 @@ export function Script({
       if (value !== script.current) {
         script.current = value;
         onChange(
-          createScript(
-            value,
-            isClientMode(view.mode) ? 'typescript' : 'javascript',
-          ),
+          createScript(value, isClientMode(mode) ? 'typescript' : 'javascript'),
         );
       }
     },
-    [onChange, view.mode],
+    [onChange, mode],
   );
 
   const onStatementsChange = React.useCallback(
@@ -124,7 +121,7 @@ export function Script({
         statements.map(removeFinalSemicolon).join(splitter + '\n') + ';';
       try {
         parse(newValue, {
-          sourceType: 'script',
+          sourceType: isClientMode(mode) ? 'module' : 'script',
         }).program.body;
 
         onCodeChange(newValue);
@@ -133,7 +130,7 @@ export function Script({
         setError([handleError(e)]);
       }
     },
-    [onCodeChange, splitter],
+    [mode, onCodeChange, splitter],
   );
 
   const onSelectOperator = React.useCallback(
@@ -174,8 +171,8 @@ export function Script({
       if (newValue === '') {
         setStatements([]);
       } else {
+        const newStatements = parseCodeIntoExpressions(newValue, mode);
         setStatements(oldStatements => {
-          const newStatements = parseCodeIntoExpressions(newValue, mode);
           if (isEqual(oldStatements, newStatements)) {
             return oldStatements;
           } else {
@@ -191,7 +188,7 @@ export function Script({
 
   return (
     <CommonViewContainer view={view} errorMessage={error}>
-      <Labeled label={view.label} description={view.description}>
+      <Labeled label={label} description={description}>
         {({ labelNode }) => {
           return (
             <>
@@ -204,14 +201,14 @@ export function Script({
                   pressed={error !== undefined}
                   onClick={() => setSrcMode(sm => !sm)}
                 />
-                {view.mode === 'SET' && (
+                {mode === 'SET' && (
                   <IconButton
                     icon="play"
                     tooltip={i18nValues.variableProperties.runScripts}
                     onClick={() => testScript(script.current)}
                   />
                 )}
-                {isScriptCondition(view.mode) && (
+                {!srcMode && isScriptCondition(mode) && (
                   <DropMenu
                     label={operator}
                     items={operators.map(o => ({ label: o, value: o }))}
@@ -235,14 +232,14 @@ export function Script({
                     onChange={onCodeChange}
                     minimap={false}
                     noGutter={true}
-                    returnType={returnTypes(view.mode)}
+                    returnType={returnTypes(mode)}
                     resizable
                   />
                 ) : (
                   <WyswygScriptEditor
                     expressions={statements}
                     onChange={onStatementsChange}
-                    mode={view.mode}
+                    mode={mode}
                   />
                 )}
               </div>
