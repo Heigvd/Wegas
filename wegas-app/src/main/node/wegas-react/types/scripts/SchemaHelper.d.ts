@@ -20,7 +20,7 @@ type CodeLanguage = ScriptLanguage | 'PlainText';
 
 interface SelectItem {
   label: string;
-  value: {};
+  value: any;
 }
 
 interface Item<T> extends ClassStyleId {
@@ -101,25 +101,25 @@ type SchemaPropsHiddenFn = (
   props: {
     type?: TYPESTRING | TYPESTRING[];
   } & SimpleSchemaProps,
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsBooleanFn = (
   props: CommonSchemaProps & ReadOnlySchemaProps & ValueSchemaProps<boolean>,
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsNumberFn = (
   props: CommonSchemaProps & ReadOnlySchemaProps & ValueSchemaProps<number>,
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsStringFn = (
   props: CommonSchemaProps & ReadOnlySchemaProps & ValueSchemaProps<string>,
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsHTMLFn = (
   props: CommonSchemaProps &
     ReadOnlySchemaProps &
     ValueSchemaProps<ITranslatableContent> & { noResize?: boolean },
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsCustomFn = (
   props: {
@@ -128,7 +128,7 @@ type SchemaPropsCustomFn = (
   } & CommonSchemaProps &
     ReadOnlySchemaProps &
     ValueSchemaProps<WegasScriptEditorNameAndTypes[WegasMethodReturnType]>,
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsScriptFn = (
   props: {
@@ -136,7 +136,7 @@ type SchemaPropsScriptFn = (
     language?: ScriptLanguage;
   } & CommonSchemaProps &
     ValueSchemaProps<string>,
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsCustomScriptFn = (
   props: {
@@ -145,14 +145,14 @@ type SchemaPropsCustomScriptFn = (
     args?: [string, string[]][];
   } & CommonSchemaProps &
     ValueSchemaProps<string>,
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsCodeFn = (
   props: {
     language?: CodeLanguage;
   } & CommonSchemaProps &
-    ValueSchemaProps<{} | string>,
-) => {};
+    ValueSchemaProps<AnyValuesObject | string>,
+) => AnyValuesObject;
 
 type SchemaPropsSelectFn = <V extends string | SelectItem>(
   props: {
@@ -161,16 +161,16 @@ type SchemaPropsSelectFn = <V extends string | SelectItem>(
     openChoices?: boolean;
   } & CommonSchemaProps &
     ValueSchemaProps<V>,
-) => {};
+) => AnyValuesObject;
 
-type SchemaPropsCommonFn = (props: CommonSchemaProps) => {};
+type SchemaPropsCommonFn = (props: CommonSchemaProps) => AnyValuesObject;
 
 type SchemaPropsVariableFn = (
   props: {
     returnType?: string[];
     items?: TreeSelectItem<string>[];
   } & CommonSchemaProps,
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsTreeFn = <T>(
   props: {
@@ -179,42 +179,42 @@ type SchemaPropsTreeFn = <T>(
     type?: TYPESTRING | TYPESTRING[];
     borderBottom?: boolean;
   } & CommonSchemaProps,
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsScriptVariableFn = (
   props: {
     returnType?: string[];
   } & CommonSchemaProps,
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsScriptStringFn = (
   props: {
     richText?: boolean;
   } & CommonSchemaProps &
     ValueSchemaProps<IScript>,
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsScriptBooleanFn = (
   props: CommonSchemaProps & ValueSchemaProps<IScript>,
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsArrayFn = (
   props: {
-    itemSchema: {};
-    userOnChildAdd?: (value?: {}) => {};
+    itemSchema: AnyValuesObject;
+    userOnChildAdd?: (value?: AnyValuesObject) => AnyValuesObject;
     requiredItems?: boolean;
     itemType?: TYPESTRING;
     highlight?: boolean;
     sortable?: boolean;
   } & CommonSchemaProps,
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsStatementFn = (
   props: {
     mode?: ScriptMode;
   } & CommonSchemaProps &
     ValueSchemaProps<unknown>,
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsHashlistFn = (
   props: {
@@ -223,7 +223,7 @@ type SchemaPropsHashlistFn = (
     cleaning?: CleaningHashmapMethods;
   } & CommonSchemaProps &
     ValueSchemaProps<object>,
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsFileFn = (
   props: {
@@ -231,7 +231,7 @@ type SchemaPropsFileFn = (
     filter?: FileFilter;
   } & CommonSchemaProps &
     ValueSchemaProps<IAbstractContentDescriptor>,
-) => {};
+) => AnyValuesObject;
 
 type SchemaPropsPathFn = (
   props: {
@@ -240,7 +240,7 @@ type SchemaPropsPathFn = (
     scriptable?: boolean;
   } & CommonSchemaProps &
     ValueSchemaProps<string>,
-) => {};
+) => AnyValuesObject;
 
 interface SimpleSchemaPropsType {
   hidden: SchemaPropsHiddenFn;
@@ -279,7 +279,7 @@ type SchemaPropsObjectFn = (
     properties?: { [key: string]: SimpleSchemaPropsDefinedSchemas };
   } & CommonSchemaProps &
     ValueSchemaProps<object>,
-) => {};
+) => AnyValuesObject;
 
 interface ObjectSchemaPropsType {
   object: SchemaPropsObjectFn;

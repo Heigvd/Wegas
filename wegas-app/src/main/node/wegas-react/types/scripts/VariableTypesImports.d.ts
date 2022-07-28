@@ -17,3 +17,4 @@ type STeam = import('wegas-ts-api').STeam;
 type SVariableInstance = import('wegas-ts-api').SVariableInstance;
 type IDestroyedEntity = import('wegas-ts-api').IDestroyedEntity;
 type IUser = import('wegas-ts-api').IUser;
+type IAbstractEntity = import('wegas-ts-api').IAbstractEntity;

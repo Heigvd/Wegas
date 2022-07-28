@@ -1,5 +1,5 @@
 type SimpleSchema =
-  | {}
+  | AnyValuesObject
   | {
       properties?: {
         [props: string]: SimpleSchema;

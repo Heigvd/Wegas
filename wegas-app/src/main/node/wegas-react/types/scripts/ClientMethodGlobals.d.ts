@@ -29,7 +29,7 @@ interface WegasScriptEditorNameAndTypes extends WegasEntitiesNamesAndClasses {
   'Readonly<undefined[]>': Readonly<undefined[]>;
 }
 
-interface ArrayedTypeMap<T = {}> {
+interface ArrayedTypeMap<T = AnyValuesObject> {
   single: T[keyof T];
   array: T[keyof T][];
 }
@@ -41,7 +41,8 @@ type WegasScriptEditorReturnType =
   WegasScriptEditorNameAndTypes[WegasScriptEditorReturnTypeName];
 
 /** @deprecated */
-type ArrayedAndNot<T extends {}> = ArrayedTypeMap<T>[keyof ArrayedTypeMap];
+type ArrayedAndNot<T extends AnyValuesObject> =
+  ArrayedTypeMap<T>[keyof ArrayedTypeMap];
 
 /** @deprecated */
 type ArgumentsType = [string, WegasScriptEditorReturnTypeName][];

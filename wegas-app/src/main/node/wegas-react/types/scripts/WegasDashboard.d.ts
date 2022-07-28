@@ -11,7 +11,9 @@ interface WegasDashboardVariableConfig<
 > extends WegasDashboardConfig {
   id?: string;
   kind?: ValueKind;
-  formatter?: (variable: T) => string | { component: string; props: {} };
+  formatter?: (
+    variable: T,
+  ) => string | { component: string; props: AnyValuesObject };
   index?: number;
   active?: boolean;
   sortable?: boolean;
