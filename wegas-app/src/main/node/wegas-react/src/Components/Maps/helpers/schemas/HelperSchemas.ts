@@ -1,4 +1,4 @@
-import { AvailableSchemas } from '../../../../Editor/Components/FormView';
+import { AvailableSchemas } from '../../../FormView';
 import { schemaProps } from '../../../PageComponents/tools/schemaProps';
 import { EPSGCodes } from '../epsgCodes';
 

@@ -1,14 +1,14 @@
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import {
   flex,
   flexColumn,
   flexRow,
-  justifyCenter,
   itemCenter,
+  justifyCenter,
   layoutStyle,
 } from '../../../css/classes';
-import { cx, css } from '@emotion/css';
-import { MessageString } from '../../../Editor/Components/MessageString';
+import { MessageString } from '../../MessageString';
 import { themeVar } from '../../Theme/ThemeVars';
 import { Button } from '../Buttons/Button';
 

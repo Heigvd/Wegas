@@ -64,9 +64,9 @@ import { buildGlobalServerMethods } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
 import { GameModel } from '../../data/selectors';
 import { useStore } from '../../data/Stores/store';
-import { MonacoDefinitionsLibrary } from '../../Editor/Components/ScriptEditors/editorHelpers';
 import { wwarn } from '../../Helper/wegaslog';
 import { classesCTX } from '../Contexts/ClassesProvider';
+import { MonacoDefinitionsLibrary } from '../ScriptEditors/editorHelpers';
 import { deepDifferent } from './storeHookFactory';
 
 const stripRegex = /\/\* STRIP FROM \*\/[\s\S]*?\/\* STRIP TO \*\//gm;
@@ -268,7 +268,11 @@ export function useGlobalLibs() {
         declare const Schemas : SchemaClass;
 
         type GlobalClasses =
-        ${Object.keys(classes).length === 0 ? 'never' : Object.keys(classes).join('\n| ')};
+        ${
+          Object.keys(classes).length === 0
+            ? 'never'
+            : Object.keys(classes).join('\n| ')
+        };
         interface ClassesClass extends GlobalClassesClass{
           removeClass: (className: GlobalClasses) => void;
         }

@@ -1,15 +1,15 @@
 import * as React from 'react';
+import { DnDTabLayout } from '../../Components/LinearTabLayout/DnDTabLayout';
+import {
+  DndLinearLayout,
+  LinearLayoutComponents,
+} from '../../Components/LinearTabLayout/LinearLayout';
+import ClientLibraryEditor from '../../Components/ScriptEditors/LibraryEditors/ClientLibraryEditor';
 import { TabLayoutComponent } from '../../Components/TabLayout/TabLayout';
 import { tabLayoutChildrenClassNames } from '../../Components/TabLayout/tabLayoutStyles';
 import FileBrowserWithMeta from '../../Editor/Components/FileBrowser/FileBrowser';
 import LanguageEditor from '../../Editor/Components/Languages/LanguageEditor';
 import { TranslationEditor } from '../../Editor/Components/Languages/TranslationsEditor';
-import { DnDTabLayout } from '../../Editor/Components/LinearTabLayout/DnDTabLayout';
-import {
-  DndLinearLayout,
-  LinearLayoutComponents,
-} from '../../Editor/Components/LinearTabLayout/LinearLayout';
-import ClientLibraryEditor from '../../Editor/Components/ScriptEditors/LibraryEditors/ClientLibraryEditor';
 import { wlog } from '../../Helper/wegaslog';
 
 export function TabLayoutTester() {

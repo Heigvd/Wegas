@@ -1,9 +1,9 @@
+import { css } from '@emotion/css';
+import { IconProp, Transform } from '@fortawesome/fontawesome-svg-core';
 import * as React from 'react';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
-import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
-import { css } from '@emotion/css';
 import { themeVar } from '../../Theme/ThemeVars';
-import { IconProp, Transform } from '@fortawesome/fontawesome-svg-core';
+import { IconComp, Icons } from '../../Views/FontAwesome';
 
 export const iconButtonStyle = css({
   display: 'flex',
@@ -74,11 +74,10 @@ export const iconButtonStyle = css({
       backgroundColor: themeVar.colors.DisabledColor,
       color: themeVar.colors.LightTextColor,
     },
-   ['&:not(.disabled):not(.readOnly):hover']:
-      {
-        backgroundColor: themeVar.colors.ActiveColor,
-        color: themeVar.colors.LightTextColor,
-      },
+    ['&:not(.disabled):not(.readOnly):hover']: {
+      backgroundColor: themeVar.colors.ActiveColor,
+      color: themeVar.colors.LightTextColor,
+    },
     ['&.shadow']: {
       boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.15)',
     },
@@ -158,7 +157,7 @@ export const IconButton = React.forwardRef<
         aria-pressed={pressed}
         type={type}
       >
-        {<IconComp icon={icon} mask={mask} transform={transform}/>}
+        {<IconComp icon={icon} mask={mask} transform={transform} />}
         {src && <img alt={tooltip} src={src} />}
       </button>
     );

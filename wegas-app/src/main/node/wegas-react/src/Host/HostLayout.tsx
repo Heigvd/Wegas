@@ -5,6 +5,10 @@ import { IPeerReviewDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 import { languagesCTX } from '../Components/Contexts/LanguagesProvider';
 import { TumbleLoader } from '../Components/Loader';
 import {
+  fullScreenLoaderStyle,
+  PageLoader,
+} from '../Components/Page/PageLoader';
+import {
   TabLayout,
   TabLayoutComponent,
 } from '../Components/TabLayout/TabLayout';
@@ -13,10 +17,6 @@ import { entityIs } from '../data/entities';
 import { translate } from '../data/i18n';
 import { State } from '../data/Reducer/reducers';
 import { useStore } from '../data/Stores/store';
-import {
-  fullScreenLoaderStyle,
-  PageLoader,
-} from '../Editor/Components/Page/PageLoader';
 import { ReparentableRoot } from '../Editor/Components/Reparentable';
 import { visitIndex } from '../Helper/pages';
 import HostHeader from './HostHeader';

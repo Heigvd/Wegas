@@ -3,11 +3,11 @@ import * as React from 'react';
 import { grow } from '../../../css/classes';
 import { State } from '../../../data/Reducer/reducers';
 import { useStore } from '../../../data/Stores/store';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { deepDifferent, shallowDifferent } from '../../Hooks/storeHookFactory';
 import { useDeepMemo } from '../../Hooks/useDeepMemo';
 import { TumbleLoader } from '../../Loader';
+import { pageCTX } from '../../Page/PageEditor';
 import {
   PageComponent,
   PageComponentsState,

@@ -1,8 +1,11 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { editHandle, stateBoxButtonStyle } from '../../../Components/FlowChart/StateProcessComponent';
+import {
+  editHandle,
+  stateBoxButtonStyle,
+} from '../../../Components/FlowChart/StateProcessComponent';
+import { IconComp } from '../../../Components/Views/FontAwesome';
 import { flex, flexRow } from '../../../css/classes';
-import { IconComp } from '../Views/FontAwesome';
 
 const editButtonStyle = css(stateBoxButtonStyle);
 

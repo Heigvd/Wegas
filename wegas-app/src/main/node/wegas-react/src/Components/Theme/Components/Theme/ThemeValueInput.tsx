@@ -1,4 +1,4 @@
-import { cx, css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import {
   flex,
@@ -7,11 +7,11 @@ import {
   itemCenter,
   justifyCenter,
 } from '../../../../css/classes';
-import { MessageString } from '../../../../Editor/Components/MessageString';
-import { IconComp } from '../../../../Editor/Components/Views/FontAwesome';
 import { inputStyleCSS } from '../../../Inputs/inputStyles';
 import { SimpleInput } from '../../../Inputs/SimpleInput';
+import { MessageString } from '../../../MessageString';
 import { useOkCancelModal } from '../../../Modal';
+import { IconComp } from '../../../Views/FontAwesome';
 import { ThemeValues, themeVar } from '../../ThemeVars';
 import { ColorPicker, rgbaToString, valueStyle } from './ColorPicker';
 import {
@@ -56,8 +56,9 @@ export function ThemeValueInput<
 }: ThemeValueModifierProps<T, K, V>) {
   const { showModal, OkCancelModal } = useOkCancelModal(attachedToId);
 
-  const [value, setValue] =
-    React.useState<ThemeInputValue | undefined>(undefined);
+  const [value, setValue] = React.useState<ThemeInputValue | undefined>(
+    undefined,
+  );
 
   const accept: (value?: ThemeInputValue) => string | undefined =
     React.useCallback(

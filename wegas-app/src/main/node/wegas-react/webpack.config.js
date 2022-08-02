@@ -41,7 +41,7 @@ const plugins = [
   }),
 ];
 
-if (!isCI && PREPROD) {
+if (!isCI && (PREPROD || STATS)) {
   plugins.push(new BundleAnalyzerPlugin());
 }
 

@@ -18,7 +18,7 @@ import {
 } from 'wegas-ts-api';
 import { Actions as ACTIONS, Actions } from '..';
 import { FileAPI } from '../../API/files.api';
-import { AvailableViews } from '../../Editor/Components/FormView';
+import { AvailableViews } from '../../Components/FormView';
 import { triggerEventHandlers } from '../actions';
 import { ActionType, ActionTypeValues } from '../actionTypes';
 import { NormalizedData } from '../normalize';

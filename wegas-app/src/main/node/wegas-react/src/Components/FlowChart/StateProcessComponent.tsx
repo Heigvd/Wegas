@@ -11,12 +11,12 @@ import {
   StateProcess,
   TransitionFlowLine,
 } from '../../Editor/Components/StateMachine/StateMachineEditor';
-import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
 import { EmptyMessage } from '../EmptyMessage';
 import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { themeVar } from '../Theme/ThemeVars';
+import { IconComp } from '../Views/FontAwesome';
 import { FlowLine, Process } from './FlowChart';
 import {
   DnDFlowchartHandle,

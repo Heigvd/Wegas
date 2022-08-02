@@ -8,13 +8,13 @@ import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
 import { FullscreenProvider } from './Components/Contexts/FullscreenContext';
 import { LanguagesProvider } from './Components/Contexts/LanguagesProvider';
 import { LibrariesLoader } from './Components/Contexts/LibrariesContext';
+import { PageContextProvider } from './Components/Page/PageEditor';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
 import { PopupManager } from './Components/PopupManager';
 import { ServerStatusManager } from './Components/ServerStatusManager';
 import { ThemeProvider } from './Components/Theme/Theme';
 import './css/global.css';
 import './data/Stores/store';
-import { PageContextProvider } from './Editor/Components/Page/PageEditor';
 import HostLayout from './Host/HostLayout';
 
 importPageComponents();

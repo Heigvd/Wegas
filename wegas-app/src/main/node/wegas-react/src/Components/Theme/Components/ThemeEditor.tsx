@@ -10,12 +10,12 @@ import {
   setSelectedTheme,
   useThemeStore,
 } from '../../../data/Stores/themeStore';
-import { MainLinearLayout } from '../../../Editor/Components/LinearTabLayout/LinearLayout';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { DropMenu } from '../../DropMenu';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { outlineButtonStyle } from '../../Inputs/Buttons/Button';
+import { MainLinearLayout } from '../../LinearTabLayout/LinearLayout';
 import { tabLayoutChildrenClassNames } from '../../TabLayout/tabLayoutStyles';
 import { Toolbar } from '../../Toolbar';
 import { themeVar } from '../ThemeVars';

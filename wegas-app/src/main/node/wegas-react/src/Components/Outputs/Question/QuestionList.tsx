@@ -17,7 +17,10 @@ import {
   justifyCenter,
 } from '../../../css/classes';
 import { Actions } from '../../../data';
-import { createTranslatableContent, TranslatableContent } from '../../../data/i18n';
+import {
+  createTranslatableContent,
+  TranslatableContent,
+} from '../../../data/i18n';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { read } from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
@@ -25,12 +28,6 @@ import { Player } from '../../../data/selectors';
 import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
-import {
-  IconComp,
-  Icons,
-  withDefault,
-} from '../../../Editor/Components/Views/FontAwesome';
-import { getClassLabel, getIcon } from '../../../Editor/editionConfig';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { wwarn } from '../../../Helper/wegaslog';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
@@ -42,11 +39,13 @@ import {
   EntityChooserLabelProps,
   entityChooserLabelStyle,
 } from '../../EntityChooser';
+import { getClassLabel, getIcon } from '../../FormView/Script/editionConfig';
 import { asyncSFC } from '../../HOC/asyncSFC';
 import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { Validate } from '../../Inputs/Validate';
 import { themeVar } from '../../Theme/ThemeVars';
+import { IconComp, Icons, withDefault } from '../../Views/FontAwesome';
 // import { AddMenu } from './AddMenu';
 import {
   ConnectedQuestionDisplay,

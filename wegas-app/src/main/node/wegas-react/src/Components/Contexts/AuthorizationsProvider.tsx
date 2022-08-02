@@ -11,11 +11,11 @@ import {
   itemCenter,
   justifyCenter,
 } from '../../css/classes';
-import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { CheckBox } from '../Inputs/Boolean/CheckBox';
 import { Button } from '../Inputs/Buttons/Button';
+import { IconComp } from '../Views/FontAwesome';
 
 const authorizationContainerStyle = css({
   backgroundColor: '#7a7a7a',

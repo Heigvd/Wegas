@@ -3,13 +3,13 @@ import Form from 'jsoninput';
 import { ValidationError } from 'jsonschema/lib';
 import * as React from 'react';
 import { IAbstractContentDescriptor, IScript } from 'wegas-ts-api';
+//It's really important to import index.ts in order to have the widjets allready registered before using Form
+import '../Components/FormView';
+import { MessageString } from '../Components/MessageString';
 import { Value } from '../Components/Outputs/Value';
 import { schemaProps } from '../Components/PageComponents/tools/schemaProps';
 import { themeVar } from '../Components/Theme/ThemeVars';
 import { autoScroll, expandBoth, flex, flexColumn } from '../css/classes';
-//It's really important to import index.ts in order to have the widjets allready registered before using Form
-import '../Editor/Components/FormView';
-import { MessageString } from '../Editor/Components/MessageString';
 import { createScript } from '../Helper/wegasEntites';
 
 const testSchema = {

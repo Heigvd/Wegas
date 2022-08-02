@@ -6,10 +6,15 @@ import { IGameModel, IGameModelLanguage } from 'wegas-ts-api';
 import gameModelLanguageSchema from 'wegas-ts-api/src/generated/schemas/GameModelLanguage.json';
 import { LanguagesAPI } from '../../../API/languages.api';
 import { IManagedResponse } from '../../../API/rest';
+import { overrideSchema, parseEvent } from '../../../Components/EntityEditor';
+import '../../../Components/FormView';
+import { AvailableViews } from '../../../Components/FormView';
+import { ISelectProps } from '../../../Components/FormView/Select';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { useTranslatableLanguages } from '../../../Components/Hooks/useLanguages';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ListView } from '../../../Components/ListView';
+import { MessageString } from '../../../Components/MessageString';
 import {
   defaultMarginLeft,
   flex,
@@ -29,11 +34,6 @@ import { wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { overrideSchema, parseEvent } from '../EntityEditor';
-import '../FormView';
-import { AvailableViews } from '../FormView';
-import { ISelectProps } from '../FormView/Select';
-import { MessageString } from '../MessageString';
 
 const languagePanelStyle = css({ width: '50%' });
 const languageInnerPanelStyle = css({ width: '80%' });

@@ -2,6 +2,7 @@ import { css, cx } from '@emotion/css';
 import Form from 'jsoninput';
 import React from 'react';
 import { FindAndReplaceAPI } from '../../API/utils.api';
+import { AvailableSchemas } from '../../Components/FormView';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { HTMLText } from '../../Components/Outputs/HTMLText';
 import { schemaProps } from '../../Components/PageComponents/tools/schemaProps';
@@ -15,7 +16,6 @@ import {
 import { findAndReplaceStyle } from '../../css/findAndReplace';
 import { manageResponseHandler } from '../../data/actions';
 import { store } from '../../data/Stores/store';
-import { AvailableSchemas } from './FormView';
 
 const findAndReplaceSchema: {
   description: string;

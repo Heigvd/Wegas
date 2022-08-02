@@ -3,7 +3,8 @@ import * as React from 'react';
 import { globals } from '../../Components/Hooks/sandbox';
 import { HTMLText } from '../../Components/Outputs/HTMLText';
 import { themeVar } from '../../Components/Theme/ThemeVars';
-import { IconComp } from '../../Editor/Components/Views/FontAwesome';
+import { IconComp } from '../../Components/Views/FontAwesome';
+import MailIcon from '../../pictures/icon_mail.svg';
 import {
   componentOrRawHTML,
   components,
@@ -17,7 +18,6 @@ import {
   OverviewClickType,
 } from './Overview';
 import { OverviewButton } from './OverviewButton';
-import MailIcon from '../../pictures/icon_mail.svg';
 
 export const fixedCellStyle = css({
   position: 'absolute',

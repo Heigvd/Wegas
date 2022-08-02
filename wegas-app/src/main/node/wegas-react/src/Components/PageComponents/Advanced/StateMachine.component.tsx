@@ -3,15 +3,15 @@ import { IScript, SFSMDescriptor } from 'wegas-ts-api';
 import { createStoreConnector } from '../../../data/connectStore';
 import { Player } from '../../../data/selectors';
 import { editingStoreFactory } from '../../../data/Stores/editingStore';
+import { StateMachineEditor } from '../../../Editor/Components/StateMachine/StateMachineEditor';
 import {
   ComponentWithForm,
   ComponentWithFormFlexValues,
   flexValuesSchema,
-} from '../../../Editor/Components/FormView/ComponentWithForm';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
-import { StateMachineEditor } from '../../../Editor/Components/StateMachine/StateMachineEditor';
+} from '../../FormView/ComponentWithForm';
 import { shallowDifferent } from '../../Hooks/storeHookFactory';
 import { useScript } from '../../Hooks/useScript';
+import { pageCTX } from '../../Page/PageEditor';
 import {
   pageComponentFactory,
   registerComponent,

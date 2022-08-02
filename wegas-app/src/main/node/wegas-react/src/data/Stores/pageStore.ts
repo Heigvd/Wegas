@@ -1,7 +1,7 @@
 import u from 'immer';
 import { applyMiddleware, compose, createStore, Reducer } from 'redux';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
-import { FocusedComponent } from '../../Editor/Components/Page/PageEditor';
+import { FocusedComponent } from '../../Components/Page/PageEditor';
 import { createStoreConnector } from '../connectStore';
 
 const composeEnhancers: typeof compose =

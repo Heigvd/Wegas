@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import { store } from '../../../data/Stores/store';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { pagesTranslations } from '../../../i18n/pages/pages';
+import { useScript } from '../../Hooks/useScript';
+import { Button } from '../../Inputs/Buttons/Button';
+import { defaultFlexLayoutOptionsKeys, FlexItem } from '../../Layouts/FlexList';
 import {
   computeProps,
   createComponent,
   moveComponent,
   pageCTX,
   patchPage,
-} from '../../../Editor/Components/Page/PageEditor';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { pagesTranslations } from '../../../i18n/pages/pages';
-import { useScript } from '../../Hooks/useScript';
-import { Button } from '../../Inputs/Buttons/Button';
-import { defaultFlexLayoutOptionsKeys, FlexItem } from '../../Layouts/FlexList';
+} from '../../Page/PageEditor';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import { emptyLayoutItemStyle } from '../Layouts/FlexList.component';
 import {

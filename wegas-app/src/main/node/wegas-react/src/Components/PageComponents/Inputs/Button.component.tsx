@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
 import { entityIs } from '../../../data/entities';
-import { AvailableSchemas } from '../../../Editor/Components/FormView';
-import { icons, Icons } from '../../../Editor/Components/Views/FontAwesome';
 import { createScript } from '../../../Helper/wegasEntites';
+import { AvailableSchemas } from '../../FormView';
 import { useScript } from '../../Hooks/useScript';
 import { Button, ButtonProps } from '../../Inputs/Buttons/Button';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 import { HTMLText } from '../../Outputs/HTMLText';
+import { icons, Icons } from '../../Views/FontAwesome';
 import {
   pageComponentFactory,
   registerComponent,

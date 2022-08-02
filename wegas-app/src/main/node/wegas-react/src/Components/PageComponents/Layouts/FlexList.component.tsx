@@ -1,6 +1,5 @@
 import { css } from '@emotion/css';
 import * as React from 'react';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import {
   defaultFlexLayoutOptionsKeys,
   FlexItem,
@@ -10,6 +9,7 @@ import {
   flexListSchema,
   isVertical,
 } from '../../Layouts/FlexList';
+import { pageCTX } from '../../Page/PageEditor';
 import {
   pageComponentFactory,
   registerComponent,

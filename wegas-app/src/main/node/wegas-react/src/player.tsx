@@ -12,7 +12,7 @@ import { ServerStatusManager } from './Components/ServerStatusManager';
 import { ThemeProvider } from './Components/Theme/Theme';
 import './css/global.css';
 import './data/Stores/store';
-import { Player } from './Editor/Components/Player';
+import { Player } from './Player/Player';
 
 importPageComponents();
 

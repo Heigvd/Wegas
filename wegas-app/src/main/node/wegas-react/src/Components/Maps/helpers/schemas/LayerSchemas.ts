@@ -1,4 +1,4 @@
-import { AvailableSchemas } from '../../../../Editor/Components/FormView';
+import { AvailableSchemas } from '../../../FormView';
 import { schemaProps } from '../../../PageComponents/tools/schemaProps';
 import { extentSchema, pointSchema, projectionSchema } from './HelperSchemas';
 
@@ -297,16 +297,15 @@ export const onLayerReadySchema: AvailableSchemas = {
   view: {
     label: 'On layer ready',
     type: 'undefinedable',
-    schema:
-      schemaProps.callback({
-        required: false,
-        callbackProps: {
-          args: [
-            ['layer', ['any']],
-            ['map', ['any']],
-          ],
-          returnType: ['void'],
-        },
-      })
-  }
-}
+    schema: schemaProps.callback({
+      required: false,
+      callbackProps: {
+        args: [
+          ['layer', ['any']],
+          ['map', ['any']],
+        ],
+        returnType: ['void'],
+      },
+    }),
+  },
+};

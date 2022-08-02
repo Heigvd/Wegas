@@ -24,26 +24,23 @@ import {
   usePagesStateStore,
 } from '../../../data/Stores/pageStore';
 import { store } from '../../../data/Stores/store';
-import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
-import {
-  DnDComponent,
-  isDnDComponent,
-} from '../../../Editor/Components/Page/ComponentPalette';
-import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
-import { Handles, pageCTX } from '../../../Editor/Components/Page/PageEditor';
-import {
-  ALLOWED_PAGE_EDITOR_COMPONENTS,
-  isPageComponentNode,
-  PageComponentNode,
-} from '../../../Editor/Components/Page/PagesLayout';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { wwarn } from '../../../Helper/wegaslog';
 import {
   dropZoneFocus,
   dropZoneHover,
 } from '../../Contexts/DefaultDndProvider';
+import { ErrorBoundary } from '../../ErrorBoundary';
 import { addSetterToState } from '../../Hooks/useScript';
 import { TumbleLoader } from '../../Loader';
+import { DnDComponent, isDnDComponent } from '../../Page/ComponentPalette';
+import { WegasComponentCommonProperties } from '../../Page/ComponentProperties';
+import { Handles, pageCTX } from '../../Page/PageEditor';
+import {
+  ALLOWED_PAGE_EDITOR_COMPONENTS,
+  isPageComponentNode,
+  PageComponentNode,
+} from '../../Page/PagesLayout';
 import { themeVar } from '../../Theme/ThemeVars';
 import { allowDrag } from '../../TreeView/TreeView';
 import { EditHandle } from './EditHandle';

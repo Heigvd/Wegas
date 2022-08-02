@@ -3,7 +3,21 @@ import * as React from 'react';
 import { IPeerReviewDescriptor } from 'wegas-ts-api';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { roleCTX } from '../../Components/Contexts/RoleProvider';
+import {
+  DndLinearLayout,
+  LinearLayoutComponents,
+} from '../../Components/LinearTabLayout/LinearLayout';
 import { MaxiLoader } from '../../Components/MaxiLoader';
+import {
+  defaultPageCTX,
+  PageContextProvider,
+  pageCTX,
+} from '../../Components/Page/PageEditor';
+import {
+  fullScreenLoaderStyle,
+  PageLoader,
+} from '../../Components/Page/PageLoader';
+import { AllLibraryEditor } from '../../Components/ScriptEditors/LibraryEditors/AllLibraryEditor';
 import { TabLayoutComponent } from '../../Components/TabLayout/TabLayout';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { expandWidth } from '../../css/classes';
@@ -16,34 +30,28 @@ import { visitIndex } from '../../Helper/pages';
 import PeerReviewPage from '../../Host/PeerReview/PeerReviewPage';
 import { mainLayoutId } from '../layouts';
 import Header from './Header';
-import {
-  DndLinearLayout,
-  LinearLayoutComponents,
-} from './LinearTabLayout/LinearLayout';
-import {
-  defaultPageCTX,
-  PageContextProvider,
-  pageCTX,
-} from './Page/PageEditor';
-import { fullScreenLoaderStyle, PageLoader } from './Page/PageLoader';
-import { AllLibraryEditor } from './ScriptEditors/LibraryEditors/AllLibraryEditor';
 
 const StateMachineEditor = React.lazy(
   () => import('./StateMachine/StateMachineEditor'),
 );
-const TreeView = React.lazy(() => import('./Variable/VariableTreeView'));
-const EntityEditor = React.lazy(() => import('./EntityEditor'));
+const TreeView = React.lazy(
+  () => import('../../Components/Variable/VariableTreeView'),
+);
+const EntityEditor = React.lazy(() => import('../../Components/EntityEditor'));
 const FileBrowserWithMeta = React.lazy(
   () => import('./FileBrowser/FileBrowser'),
 );
 const ClientLibraryEditor = React.lazy(
-  () => import('./ScriptEditors/LibraryEditors/ClientLibraryEditor'),
+  () =>
+    import('../../Components/ScriptEditors/LibraryEditors/ClientLibraryEditor'),
 );
 const ServerLibraryEditor = React.lazy(
-  () => import('./ScriptEditors/LibraryEditors/ServerLibraryEditor'),
+  () =>
+    import('../../Components/ScriptEditors/LibraryEditors/ServerLibraryEditor'),
 );
 const StyleLibraryEditor = React.lazy(
-  () => import('./ScriptEditors/LibraryEditors/StyleLibraryEditor'),
+  () =>
+    import('../../Components/ScriptEditors/LibraryEditors/StyleLibraryEditor'),
 );
 const PlayLocal = React.lazy(() => import('./PlayLocal'));
 const PlayServer = React.lazy(() => import('./PlayServer'));
@@ -51,13 +59,21 @@ const ThemeEditor = React.lazy(
   () => import('../../Components/Theme/Components/ThemeEditor'),
 );
 const Languages = React.lazy(() => import('./Languages/Languages'));
-const ComponentPalette = React.lazy(() => import('./Page/ComponentPalette'));
-const ConnectedComponentProperties = React.lazy(
-  () => import('./Page/ComponentProperties'),
+const ComponentPalette = React.lazy(
+  () => import('../../Components/Page/ComponentPalette'),
 );
-const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
-const PagesLayout = React.lazy(() => import('./Page/PagesLayout'));
-const SourceEditor = React.lazy(() => import('./Page/SourceEditor'));
+const ConnectedComponentProperties = React.lazy(
+  () => import('../../Components/Page/ComponentProperties'),
+);
+const PageDisplay = React.lazy(
+  () => import('../../Components/Page/PageDisplay'),
+);
+const PagesLayout = React.lazy(
+  () => import('../../Components/Page/PagesLayout'),
+);
+const SourceEditor = React.lazy(
+  () => import('../../Components/Page/SourceEditor'),
+);
 
 const FindAndReplace = React.lazy(() => import('./FindAndReplace'));
 

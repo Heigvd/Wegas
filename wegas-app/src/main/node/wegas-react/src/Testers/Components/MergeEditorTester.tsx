@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useTempModel } from '../../Components/Contexts/LibrariesContext';
-import MergeEditor from '../../Editor/Components/ScriptEditors/MergeEditor';
+import MergeEditor from '../../Components/ScriptEditors/MergeEditor';
 
 const originalContent =
   "const salut = '123';\nconst yomama = salut;\nconst yoloo = 123;";

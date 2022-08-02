@@ -4,7 +4,6 @@ import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
 import { editingStore } from '../../../data/Stores/editingStore';
-import { PAGE_LOADER_DEFAULT_ID } from '../../../Editor/Components/Page/PageLoader';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import {
   defaultFlexLayoutOptionsKeys,
@@ -15,6 +14,7 @@ import {
   isVertical,
 } from '../../Layouts/FlexList';
 import { Modal } from '../../Modal';
+import { PAGE_LOADER_DEFAULT_ID } from '../../Page/PageLoader';
 import {
   pageComponentFactory,
   registerComponent,

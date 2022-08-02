@@ -3,6 +3,9 @@ import * as React from 'react';
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
 import { FileAPI, generateAbsolutePath } from '../../../API/files.api';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
+import { ComponentWithForm } from '../../../Components/FormView/ComponentWithForm';
+import { focusTab } from '../../../Components/LinearTabLayout/LinearLayout';
+import { MessageString } from '../../../Components/MessageString';
 import { grow, halfOpacity, mediumPadding } from '../../../css/classes';
 import { EditingState } from '../../../data/Reducer/editingState';
 import { useEditingStore } from '../../../data/Stores/editingStore';
@@ -11,9 +14,6 @@ import { classNameOrEmpty } from '../../../Helper/className';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { mainLayoutId } from '../../layouts';
-import { ComponentWithForm } from '../FormView/ComponentWithForm';
-import { focusTab } from '../LinearTabLayout/LinearLayout';
-import { MessageString } from '../MessageString';
 import { FileBrowserNode, FileBrowserNodeProps } from './FileBrowserNode';
 
 const fileBrowserStyle = css({

@@ -1,11 +1,8 @@
 import * as React from 'react';
 import { store } from '../../../data/Stores/store';
-import {
-  patchPage,
-  updateComponent,
-} from '../../../Editor/Components/Page/PageEditor';
 import { wwarn } from '../../../Helper/wegaslog';
 import { Button } from '../../Inputs/Buttons/Button';
+import { patchPage, updateComponent } from '../../Page/PageEditor';
 import { getComponentFromPath } from './PageDeserializer';
 
 export interface ObsoleteComponent {

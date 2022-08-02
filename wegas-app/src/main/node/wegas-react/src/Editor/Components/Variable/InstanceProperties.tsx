@@ -3,11 +3,19 @@ import { Schema } from 'jsoninput';
 import * as React from 'react';
 import { IVariableInstance } from 'wegas-ts-api';
 import { VariableInstanceAPI } from '../../../API/variableInstance.api';
+import {
+  AsyncVariableForm,
+  EditorProps,
+  parseEventFromIndex,
+} from '../../../Components/EntityEditor';
+import { AvailableViews } from '../../../Components/FormView';
+import getEditionConfig from '../../../Components/FormView/Script/editionConfig';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { useOnEditionChangesModal } from '../../../Components/Modal';
 import { ThemeComponent } from '../../../Components/Theme/Theme';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
+import { VariableTreeTitle } from '../../../Components/Variable/VariableTreeTitle';
 import {
   flex,
   flexBetween,
@@ -32,14 +40,6 @@ import {
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import getEditionConfig from '../../editionConfig';
-import {
-  AsyncVariableForm,
-  EditorProps,
-  parseEventFromIndex,
-} from '../EntityEditor';
-import { AvailableViews } from '../FormView';
-import { VariableTreeTitle } from './VariableTreeTitle';
 
 const listBox = css({
   width: '100%',

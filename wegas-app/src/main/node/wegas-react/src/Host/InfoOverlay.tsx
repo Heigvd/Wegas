@@ -4,8 +4,8 @@ import { useOnClickOutside } from '../Components/Hooks/useOnClickOutside';
 import { HTMLText } from '../Components/Outputs/HTMLText';
 import { themeVar } from '../Components/Theme/ThemeVars';
 import { Toolbar } from '../Components/Toolbar';
+import { IconComp } from '../Components/Views/FontAwesome';
 import { flex } from '../css/classes';
-import { IconComp } from '../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../Helper/className';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

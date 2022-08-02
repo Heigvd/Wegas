@@ -8,9 +8,9 @@ import {
   validateQuestion,
 } from '../../../data/Reducer/VariableInstanceReducer';
 import { EditingStoreDispatch } from '../../../data/Stores/editingStore';
-import { MessageString } from '../../../Editor/Components/MessageString';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
+import { MessageString } from '../../MessageString';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { themeVar } from '../../Theme/ThemeVars';
 import { ChoiceContainer, choiceInputStyle } from './ChoiceContainer';

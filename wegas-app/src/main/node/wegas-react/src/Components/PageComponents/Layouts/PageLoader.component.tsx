@@ -5,16 +5,13 @@ import { entityIs } from '../../../data/entities';
 import { State } from '../../../data/Reducer/reducers';
 import { store, useStore } from '../../../data/Stores/store';
 import {
-  defaultPageCTX,
-  pageCTX,
-} from '../../../Editor/Components/Page/PageEditor';
-import { PageLoader } from '../../../Editor/Components/Page/PageLoader';
-import {
   PageLoaderComponentProps,
   PAGE_LOADER_COMPONENT_TYPE,
 } from '../../../Helper/pages';
 import { createScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
+import { defaultPageCTX, pageCTX } from '../../Page/PageEditor';
+import { PageLoader } from '../../Page/PageLoader';
 import {
   pageComponentFactory,
   registerComponent,

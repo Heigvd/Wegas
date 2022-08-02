@@ -4,8 +4,8 @@ import * as React from 'react';
 import { transpile } from 'typescript';
 import { createOrUpdateModel } from '../Components/Contexts/LibrariesContext';
 import { createSandbox } from '../Components/Hooks/sandbox';
+import { TempScriptEditor } from '../Components/ScriptEditors/TempScriptEditor';
 import { expandBoth, flex, flexColumn, grow } from '../css/classes';
-import { TempScriptEditor } from '../Editor/Components/ScriptEditors/TempScriptEditor';
 import { getEntry, setEntry } from '../Helper/tools';
 
 const { sandbox, globals } = createSandbox<{

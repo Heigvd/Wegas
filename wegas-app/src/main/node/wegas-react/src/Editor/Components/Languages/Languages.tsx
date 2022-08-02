@@ -1,6 +1,6 @@
 import * as React from 'react';
+import { MainLinearLayout } from '../../../Components/LinearTabLayout/LinearLayout';
 import { tabLayoutChildrenClassNames } from '../../../Components/TabLayout/tabLayoutStyles';
-import { MainLinearLayout } from '../LinearTabLayout/LinearLayout';
 import LanguageEditor from './LanguageEditor';
 import { TranslationEditor } from './TranslationsEditor';
 

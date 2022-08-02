@@ -4,11 +4,11 @@ import { useDebounce } from '../../Components/Hooks/useDebounce';
 import { clientScriptEval, useScript } from '../../Components/Hooks/useScript';
 import { Toggler } from '../../Components/Inputs/Boolean/Toggler';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { TempScriptEditor } from '../../Components/ScriptEditors/TempScriptEditor';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import { defaultPadding, flex } from '../../css/classes';
 import { shallowIs } from '../../Helper/shallowIs';
-import { TempScriptEditor } from './ScriptEditors/TempScriptEditor';
 
 const container = css({
   width: '100%',

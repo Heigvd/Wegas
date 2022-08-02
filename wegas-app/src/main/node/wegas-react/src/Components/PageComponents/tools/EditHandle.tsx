@@ -1,14 +1,14 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { flex, flexColumn, flexRow, textCenter } from '../../../css/classes';
-import { MessageString } from '../../../Editor/Components/MessageString';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import { Button } from '../../Inputs/Buttons/Button';
+import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
+import { MessageString } from '../../MessageString';
+import { pageCTX } from '../../Page/PageEditor';
 import {
   PageComponentNode,
   PAGEEDITOR_COMPONENT_TYPE,
-} from '../../../Editor/Components/Page/PagesLayout';
-import { Button } from '../../Inputs/Buttons/Button';
-import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
+} from '../../Page/PagesLayout';
 import { themeVar } from '../../Theme/ThemeVars';
 import { WegasComponentProps } from './EditableComponent';
 
@@ -113,7 +113,7 @@ export function EditHandle({
           />
           <Button
             icon="binoculars"
-            tooltip={ `Context: ${ JSON.stringify(context)}`}
+            tooltip={`Context: ${JSON.stringify(context)}`}
           />
           <ConfirmButton
             icon="trash"

@@ -1,10 +1,10 @@
 import { css } from '@emotion/css';
 import * as React from 'react';
 import { grow, secondaryButtonCSS } from '../../../css/classes';
-import { IconComp, Icons } from '../../../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { arrayRemoveDuplicates } from '../../../Helper/tools';
 import { themeVar } from '../../Theme/ThemeVars';
+import { IconComp, Icons } from '../../Views/FontAwesome';
 
 export const headerOutlineButtonStyle = css({
   border: '1px solid ' + themeVar.colors.DisabledColor,

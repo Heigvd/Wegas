@@ -1,10 +1,6 @@
 import { omit } from 'lodash-es';
 import * as React from 'react';
-import {
-  Icon,
-  IconComp,
-  icons,
-} from '../../../Editor/Components/Views/FontAwesome';
+import { Icon, IconComp, icons } from '../../Views/FontAwesome';
 import {
   pageComponentFactory,
   registerComponent,

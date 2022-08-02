@@ -3,15 +3,15 @@ import { useMonaco } from '@monaco-editor/react';
 import * as React from 'react';
 import { transpile } from 'typescript';
 import { useTempModel } from '../Components/Contexts/LibrariesContext';
-import { expandBoth, flex, flexColumn, grow } from '../css/classes';
-import { MessageString } from '../Editor/Components/MessageString';
-import SrcEditor from '../Editor/Components/ScriptEditors/SrcEditor';
+import { MessageString } from '../Components/MessageString';
+import SrcEditor from '../Components/ScriptEditors/SrcEditor';
 import {
   defunctionalizeScript,
   functionalizeScript,
   insertReturn,
   TempScriptEditor,
-} from '../Editor/Components/ScriptEditors/TempScriptEditor';
+} from '../Components/ScriptEditors/TempScriptEditor';
+import { expandBoth, flex, flexColumn, grow } from '../css/classes';
 
 const RETURN_TYPES = ['string'];
 const STR_RETURN_TYPES = RETURN_TYPES.join(' | ');

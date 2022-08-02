@@ -16,10 +16,10 @@ import {
   setThemeValue,
   useThemeStore,
 } from '../../../../data/Stores/themeStore';
-import { borderBottom } from '../../../../Editor/Components/FormView/commonView';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { DropMenu } from '../../../DropMenu';
+import { borderBottom } from '../../../FormView/commonView';
 import { deepDifferent } from '../../../Hooks/storeHookFactory';
 import { CheckBox } from '../../../Inputs/Boolean/CheckBox';
 import { Toolbar } from '../../../Toolbar';

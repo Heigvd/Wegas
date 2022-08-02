@@ -15,11 +15,10 @@ import {
 } from '../../../css/classes';
 import { useThemeStore } from '../../../data/Stores/themeStore';
 import FileBrowser from '../../../Editor/Components/FileBrowser/FileBrowser';
-import { borderBottom } from '../../../Editor/Components/FormView/commonView';
-import { IconComp, icons } from '../../../Editor/Components/Views/FontAwesome';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { DropMenu } from '../../DropMenu';
+import { borderBottom } from '../../FormView/commonView';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Toggler } from '../../Inputs/Boolean/Toggler';
@@ -32,6 +31,7 @@ import { HTMLText } from '../../Outputs/HTMLText';
 import { StandardGauge } from '../../Outputs/StandardGauge';
 import { Selector } from '../../Selector';
 import { Toolbar } from '../../Toolbar';
+import { IconComp, icons } from '../../Views/FontAwesome';
 import { SelectedThemes } from '../ThemeVars';
 
 const MIN_VALUE = 0;

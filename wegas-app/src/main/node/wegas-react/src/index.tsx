@@ -8,6 +8,7 @@ import { FullscreenProvider } from './Components/Contexts/FullscreenContext';
 import { LanguagesProvider } from './Components/Contexts/LanguagesProvider';
 import { LibrariesLoader } from './Components/Contexts/LibrariesContext';
 import { RoleProvider } from './Components/Contexts/RoleProvider';
+import './Components/FormView/index';
 import { ModalProvider } from './Components/Modal';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
 import { PopupManager } from './Components/PopupManager';
@@ -15,7 +16,6 @@ import { ServerStatusManager } from './Components/ServerStatusManager';
 import { ThemeProvider } from './Components/Theme/Theme';
 import './css/global.css';
 import './data/Stores/store';
-import './Editor/Components/FormView/index';
 import Layout from './Editor/Components/Layout';
 // import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
 

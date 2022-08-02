@@ -1,10 +1,10 @@
 import { cx } from '@emotion/css';
+import JSONForm from 'jsoninput';
 import * as React from 'react';
+import { AvailableSchemas } from '../../../Components/FormView';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { flex, flexColumn } from '../../../css/classes';
-import JSONForm from 'jsoninput';
 import { OverviewItem, OverviewState } from '../Overview';
-import { AvailableSchemas } from '../../../Editor/Components/FormView';
 
 export interface FilterState {
   [subColumnId: string]: { [columnId: string]: boolean };

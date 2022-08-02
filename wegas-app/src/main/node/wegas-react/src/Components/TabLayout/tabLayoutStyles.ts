@@ -1,6 +1,6 @@
 import { css, cx } from '@emotion/css';
 import { childrenHeaderStyle } from '../../css/classes';
-import { DnDClassNames } from '../../Editor/Components/LinearTabLayout/DnDTabLayout';
+import { DnDClassNames } from '../LinearTabLayout/DnDTabLayout';
 import { themeVar } from '../Theme/ThemeVars';
 
 const inactiveTabStyle = css({

@@ -1,11 +1,11 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { defaultPadding, flex, flexColumn, itemCenter } from '../css/classes';
-import { pageCTX } from '../Editor/Components/Page/PageEditor';
 import { useInternalTranslate } from '../i18n/internalTranslator';
 import { pagesTranslations } from '../i18n/pages/pages';
 import CompNeedConfigIcon from '../pictures/compNeedConfig.svg';
 import { Button } from './Inputs/Buttons/Button';
+import { pageCTX } from './Page/PageEditor';
 import { themeVar } from './Theme/ThemeVars';
 
 interface UncompleteCompMessageProps {

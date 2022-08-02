@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { IScript, SListDescriptor } from 'wegas-ts-api';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import {
   ComponentWithForm,
   ComponentWithFormFlexValues,
   flexValuesSchema,
-} from '../../../Editor/Components/FormView/ComponentWithForm';
-import { VariableTreeView } from '../../../Editor/Components/Variable/VariableTreeView';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
+} from '../../FormView/ComponentWithForm';
 import { useScript } from '../../Hooks/useScript';
+import { VariableTreeView } from '../../Variable/VariableTreeView';
 import {
   pageComponentFactory,
   registerComponent,

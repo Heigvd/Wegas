@@ -1,7 +1,6 @@
 import * as React from 'react';
 import 'react-reflex/styles.css';
 import { expandBoth } from '../../../css/classes';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { classNameOrEmpty } from '../../../Helper/className';
 import {
   FonkyFlexContainer,
@@ -9,6 +8,7 @@ import {
   FonkyFlexContent,
   FonkyFlexSplitter,
 } from '../../Layouts/FonkyFlex';
+import { pageCTX } from '../../Page/PageEditor';
 import { themeCTX } from '../../Theme/Theme';
 import {
   pageComponentFactory,

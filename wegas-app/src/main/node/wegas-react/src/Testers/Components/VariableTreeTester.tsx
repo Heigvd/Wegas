@@ -2,6 +2,7 @@ import { cx /*,css*/ } from '@emotion/css';
 import * as React from 'react';
 import { useGameModel } from '../../Components/Hooks/useGameModel';
 import { Toggler } from '../../Components/Inputs/Boolean/Toggler';
+import { VariableTreeView } from '../../Components/Variable/VariableTreeView';
 import {
   expandBoth,
   expandHeight,
@@ -11,7 +12,6 @@ import {
   flexRow,
   grow,
 } from '../../css/classes';
-import { VariableTreeView } from '../../Editor/Components/Variable/VariableTreeView';
 
 export default function MenuTester() {
   const [treeState, setTreeState] = React.useState({

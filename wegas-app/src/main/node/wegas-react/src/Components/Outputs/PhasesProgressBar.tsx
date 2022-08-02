@@ -1,19 +1,19 @@
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import {
+  flex,
+  flexColumn,
+  flexDistribute,
+  grow,
+  halfOpacity,
+  itemCenter,
   justifyCenter,
   textCenter,
-  flexColumn,
-  grow,
-  flex,
-  flexDistribute,
-  itemCenter,
-  halfOpacity,
 } from '../../css/classes';
-import { Value } from './Value';
-import { cx, css } from '@emotion/css';
-import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../../Helper/className';
 import { themeVar } from '../Theme/ThemeVars';
+import { IconComp } from '../Views/FontAwesome';
+import { Value } from './Value';
 
 const phasePathStyle = css({
   height: '0.5em',

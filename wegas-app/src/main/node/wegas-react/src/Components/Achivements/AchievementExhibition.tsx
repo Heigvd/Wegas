@@ -1,13 +1,13 @@
-import * as React from 'react';
 import { css } from '@emotion/css';
+import { IconName } from '@fortawesome/fontawesome-svg-core';
+import * as React from 'react';
+import { IAchievementDescriptor, IAchievementInstance } from 'wegas-ts-api';
+import { flex } from '../../css/classes';
+import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { all } from '../../data/selectors/VariableDescriptorSelector';
 import { useStore } from '../../data/Stores/store';
-import { IAchievementDescriptor, IAchievementInstance } from 'wegas-ts-api';
-import { getInstance } from '../../data/methods/VariableDescriptorMethods';
-import { IconComp } from '../../Editor/Components/Views/FontAwesome';
-import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { TranslatableText } from '../Outputs/HTMLText';
-import { flex } from '../../css/classes';
+import { IconComp } from '../Views/FontAwesome';
 
 export interface AchievementExhibitionProps {
   /**

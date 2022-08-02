@@ -1,16 +1,16 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
+import '../../../Components/FormView';
 import { Modal } from '../../../Components/Modal';
-import '../../../Editor/Components/FormView';
-import {
-  ImpactModalContent,
-  ImpactModalContentProps,
-} from './ImpactModalContent';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import {
   FilterModalContent,
   FilterModalContentProps,
 } from './FilterModalContent';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
+import {
+  ImpactModalContent,
+  ImpactModalContentProps,
+} from './ImpactModalContent';
 import { MailModalContent } from './MailModalContent';
 
 const modalStyle = css({

@@ -1,20 +1,20 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import {
-  flex,
-  flexRow,
-  justifyCenter,
-  itemCenter,
   defaultMarginLeft,
   defaultMarginRight,
+  flex,
+  flexRow,
+  itemCenter,
+  justifyCenter,
 } from '../../../css/classes';
-import { MessageString } from '../../../Editor/Components/MessageString';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { modalTranslations } from '../../../i18n/modal/modal';
 import { DropMenu } from '../../DropMenu';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { SimpleInput } from '../../Inputs/SimpleInput';
+import { MessageString } from '../../MessageString';
 
 interface AdderSelectorProps {
   items: { value: string; label: JSX.Element }[];

@@ -1,9 +1,9 @@
 import { cx } from '@emotion/css';
 import * as React from 'react';
-import { Icon, IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../../Helper/className';
 import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
+import { Icon, IconComp } from '../Views/FontAwesome';
 import { FlowLine, Process } from './FlowChart';
 import {
   CustomFlowLineComponent,

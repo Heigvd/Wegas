@@ -12,12 +12,15 @@ import {
   useRolesToggler,
 } from '../../Components/Contexts/RoleProvider';
 import { DropMenu } from '../../Components/DropMenu';
+import { parseEvent } from '../../Components/EntityEditor';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { CheckBox } from '../../Components/Inputs/Boolean/CheckBox';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
+import { removeLayoutInLocal } from '../../Components/LinearTabLayout/LinearLayout';
 import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
 import { themeVar } from '../../Components/Theme/ThemeVars';
+import { FontAwesome, IconComp } from '../../Components/Views/FontAwesome';
 import {
   bolder,
   componentMarginLeft,
@@ -47,9 +50,6 @@ import { store, useStore } from '../../data/Stores/store';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { mainLayoutId } from '../layouts';
-import { parseEvent } from './EntityEditor';
-import { removeLayoutInLocal } from './LinearTabLayout/LinearLayout';
-import { FontAwesome, IconComp } from './Views/FontAwesome';
 
 const transparentDropDownButton = css({
   backgroundColor: 'transparent',

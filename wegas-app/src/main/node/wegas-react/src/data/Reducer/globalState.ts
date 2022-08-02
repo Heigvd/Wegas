@@ -3,8 +3,8 @@ import { omit } from 'lodash';
 import { Reducer } from 'redux';
 import { IScript, IUser, WegasClassNames } from 'wegas-ts-api';
 import { LockEventData } from '../../API/websocket';
+import { WegasMethodParameter } from '../../Components/FormView/Script/editionConfig';
 import { Popup } from '../../Components/PopupManager';
-import { WegasMethodParameter } from '../../Editor/editionConfig';
 import { ActionCreator, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import {

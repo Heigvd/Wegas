@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { FlowChart, FlowChartProps } from '../../FlowChart/FlowChart';
 import {
   LabeledFlowLine,
@@ -9,6 +8,7 @@ import {
   PlayerFlowChartProcessComponent,
 } from '../../FlowChart/PlayerFlowChartComponents';
 import { useScript } from '../../Hooks/useScript';
+import { pageCTX } from '../../Page/PageEditor';
 import {
   OnVariableChange,
   onVariableChangeSchema,

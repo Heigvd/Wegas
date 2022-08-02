@@ -1,27 +1,27 @@
 import { cx } from '@emotion/css';
 import * as React from 'react';
-import { ReflexElement, ReflexSplitter, ReflexContainer } from 'react-reflex';
+import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import {
-  flex,
   contentStyle,
-  justifyEnd,
+  defaultPadding,
+  flex,
   flexRow,
   itemCenter,
-  defaultPadding,
+  justifyEnd,
 } from '../../../../css/classes';
 import {
-  useThemeStore,
   getThemeDispatch,
   setModeValue,
   setNextMode,
+  useThemeStore,
 } from '../../../../data/Stores/themeStore';
-import { borderBottom } from '../../../../Editor/Components/FormView/commonView';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { DropMenu } from '../../../DropMenu';
+import { borderBottom } from '../../../FormView/commonView';
 import { CheckBox } from '../../../Inputs/Boolean/CheckBox';
 import { Toolbar } from '../../../Toolbar';
-import { ThemeValues, ModeValues, Theme } from '../../ThemeVars';
+import { ModeValues, Theme, ThemeValues } from '../../ThemeVars';
 import { ModeValueModifier } from './ModeValueModifier';
 
 export function ModeEdition() {

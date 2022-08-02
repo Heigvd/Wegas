@@ -13,13 +13,6 @@ import { useWebsocketEvent } from '../../API/websocket';
 import { GameModel } from '../../data/selectors';
 import { setReloadingStatus } from '../../data/Stores/pageContextStore';
 import { store } from '../../data/Stores/store';
-import { MessageStringStyle } from '../../Editor/Components/MessageString';
-import {
-  MonacoEditor,
-  MonacoEditorModel,
-  SrcEditorLanguages,
-} from '../../Editor/Components/ScriptEditors/editorHelpers';
-import { useJSONSchema } from '../../Editor/Components/ScriptEditors/useJSONSchema';
 import { clearEffects, runEffects } from '../../Helper/pageEffectsManager';
 import { getLogger, wlog } from '../../Helper/wegaslog';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
@@ -32,6 +25,13 @@ import {
   setGlobals,
   useGlobalContexts,
 } from '../Hooks/useScript';
+import { MessageStringStyle } from '../MessageString';
+import {
+  MonacoEditor,
+  MonacoEditorModel,
+  SrcEditorLanguages,
+} from '../ScriptEditors/editorHelpers';
+import { useJSONSchema } from '../ScriptEditors/useJSONSchema';
 
 const monacoLogger = getLogger('monaco');
 const contextLogger = getLogger('Libraries Context');
@@ -65,8 +65,9 @@ function libraryTypeToLanguage(libraryType: LibraryType): SrcEditorLanguages {
   }
 }
 
-
-function languageToLibraryType(language: SrcEditorLanguages): LibraryType | 'unknown' {
+function languageToLibraryType(
+  language: SrcEditorLanguages,
+): LibraryType | 'unknown' {
   switch (language) {
     case 'javascript':
       return 'server';
@@ -120,13 +121,13 @@ function computeUniquePath(
   // get current value then inc global counter
   const currentCount = computedPathCounter++;
   const timestamp = new Date().getTime();
-  return `file:///${ rootPath.endsWith("/") ? rootPath : `${ rootPath }/` }_generated_${ timestamp }_${ currentCount }.${ languageToFormat(
-    language,
-  ) }`;
+  return `file:///${
+    rootPath.endsWith('/') ? rootPath : `${rootPath}/`
+  }_generated_${timestamp}_${currentCount}.${languageToFormat(language)}`;
 }
 
 export function computeLibraryPath(libName: string, libType: LibraryType) {
-  return `file:///${ libType }/${ libName }.${ libraryTypeToFormat(libType) }`;
+  return `file:///${libType}/${libName}.${libraryTypeToFormat(libType)}`;
 }
 
 export function getModel(reactMonaco: MonacoEditor | null, modelPath: string) {
@@ -172,7 +173,12 @@ export function useTempModel(
     const libType = languageToLibraryType(language);
     const path = computeUniquePath(libType, language);
     if (reactMonaco) {
-      const currentModel = createOrUpdateModel(reactMonaco, modelContent.current, language, path)
+      const currentModel = createOrUpdateModel(
+        reactMonaco,
+        modelContent.current,
+        language,
+        path,
+      );
       setModel(currentModel);
       return () => currentModel?.dispose();
     } else {
@@ -215,9 +221,13 @@ type LibrariesState = LibrariesWithStatus;
 //  return libraryTypes.includes(entry[0] as LibraryType);
 //}
 
-export function filterByLibraryType(state: LibrariesState, libraryType: LibraryType): LibraryWithStatus[] {
-  return Object.values(state)
-    .filter(entry => entry.libraryType === libraryType);
+export function filterByLibraryType(
+  state: LibrariesState,
+  libraryType: LibraryType,
+): LibraryWithStatus[] {
+  return Object.values(state).filter(
+    entry => entry.libraryType === libraryType,
+  );
 }
 
 interface SetUpLibrariesStateAction {
@@ -318,7 +328,10 @@ const setLibrariesState = (
         const { librariesType, libraries } = action;
 
         Object.values(libraries).forEach(gameModelContent => {
-          const path = computeLibraryPath(gameModelContent.contentKey, librariesType);
+          const path = computeLibraryPath(
+            gameModelContent.contentKey,
+            librariesType,
+          );
           newState[path] = {
             persisted: gameModelContent,
             monacoPath: path,
@@ -405,25 +418,21 @@ interface LibrariesContext {
     libraryName: string,
     saveLibraryCB?: (message: LibrariesCallbackMessage) => void,
   ) => void;
-  setLibraryVisibility: (
-    libraryName: string,
-    visibility: IVisibility,
-  ) => void;
+  setLibraryVisibility: (libraryName: string, visibility: IVisibility) => void;
   removeLibrary: (
     libraryName: string,
     removeLibraryCB?: (message: LibrariesCallbackMessage) => void,
   ) => void;
 }
 
-const defaultLibrariesState: LibrariesState = {
-};
+const defaultLibrariesState: LibrariesState = {};
 
 export const librariesCTX = React.createContext<LibrariesContext>({
   librariesState: defaultLibrariesState,
-  addLibrary: () => { },
-  saveLibrary: () => { },
-  setLibraryVisibility: () => { },
-  removeLibrary: () => { },
+  addLibrary: () => {},
+  saveLibrary: () => {},
+  setLibraryVisibility: () => {},
+  removeLibrary: () => {},
 });
 
 const librariesLoaderLogger = getLogger('LibrariesLoader');
@@ -435,7 +444,7 @@ function executeClientLibrary(libraryName: string, libraryContent: string) {
     e => librariesLoaderLogger.warn(printWegasScriptError(e)),
     undefined,
     {
-      moduleName: `./${ libraryName }`,
+      moduleName: `./${libraryName}`,
       injectReturn: false,
     },
   );
@@ -447,7 +456,7 @@ type ScriptEntry = [string, string];
  *Execute all client script
  */
 function execAllScripts(scripts: ScriptEntry[]) {
-  wlog("Eval All Client scripts");
+  wlog('Eval All Client scripts');
   // set PageStore reloading status to true to prevent usePagesContextStateStore  hooks to be triggered
   setReloadingStatus(true);
   clearEffects();
@@ -464,14 +473,16 @@ function execAllScripts(scripts: ScriptEntry[]) {
 export function LibrariesLoader(
   props: React.PropsWithChildren<UknownValuesObject>,
 ) {
-
   const stateRef = React.useRef(defaultLibrariesState);
 
   // enhanced reducer keeps stateRef up-to-date
-  const enhancedReducer = React.useCallback((state: LibrariesState, action: LibraryStateAction) => {
-    stateRef.current = setLibrariesState(state, action);
-    return stateRef.current;
-  }, []);
+  const enhancedReducer = React.useCallback(
+    (state: LibrariesState, action: LibraryStateAction) => {
+      stateRef.current = setLibrariesState(state, action);
+      return stateRef.current;
+    },
+    [],
+  );
 
   const [librariesState, dispatchLibrariesState] = React.useReducer(
     enhancedReducer,
@@ -566,19 +577,22 @@ export function LibrariesLoader(
     //   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const destroyEventHandler = React.useCallback((name: string, libType: LibraryType) => {
-    const path = computeLibraryPath(name, libType);
-    dispatchLibrariesState({
-      actionType: 'RemoveLibrary',
-      libraryPath : path,
-    });
-  }, []);
+  const destroyEventHandler = React.useCallback(
+    (name: string, libType: LibraryType) => {
+      const path = computeLibraryPath(name, libType);
+      dispatchLibrariesState({
+        actionType: 'RemoveLibrary',
+        libraryPath: path,
+      });
+    },
+    [],
+  );
 
   const clientScriptEventHandler = React.useCallback(
     (updatedLibraryName: string) => {
       LibraryAPI.getLibrary('ClientScript', updatedLibraryName).then(
         (library: IGameModelContent) => {
-          const path = computeLibraryPath(updatedLibraryName, "client");
+          const path = computeLibraryPath(updatedLibraryName, 'client');
           dispatchLibrariesState({
             actionType: 'UpdateLibrary',
             libraryType: 'client',
@@ -586,13 +600,13 @@ export function LibrariesLoader(
             library,
           });
 
-          const clientScripts =
-            filterByLibraryType(stateRef.current, 'client')
-              .reduce<Record<string, string>>((acc, gmc) => {
-                acc[gmc.persisted.contentKey] = gmc.persisted.content;
-                return acc;
-              }, {});
-
+          const clientScripts = filterByLibraryType(
+            stateRef.current,
+            'client',
+          ).reduce<Record<string, string>>((acc, gmc) => {
+            acc[gmc.persisted.contentKey] = gmc.persisted.content;
+            return acc;
+          }, {});
 
           execAllScripts(Object.entries(clientScripts));
         },
@@ -602,17 +616,23 @@ export function LibrariesLoader(
   );
   useWebsocketEvent('LibraryUpdate-ClientScript', clientScriptEventHandler);
 
-  const clientScriptDestroyEventHandler = React.useCallback((name: string) => {
-    destroyEventHandler(name, 'client');
-    clearModule(`./${name}`);
-  }, [destroyEventHandler]);
-  useWebsocketEvent('LibraryDestroy-ClientScript', clientScriptDestroyEventHandler);
+  const clientScriptDestroyEventHandler = React.useCallback(
+    (name: string) => {
+      destroyEventHandler(name, 'client');
+      clearModule(`./${name}`);
+    },
+    [destroyEventHandler],
+  );
+  useWebsocketEvent(
+    'LibraryDestroy-ClientScript',
+    clientScriptDestroyEventHandler,
+  );
 
   const serverScriptEventHandler = React.useCallback(
     (updatedLibraryName: string) => {
       LibraryAPI.getLibrary('ServerScript', updatedLibraryName).then(
         (library: IGameModelContent) => {
-          const path = computeLibraryPath(updatedLibraryName, "server");
+          const path = computeLibraryPath(updatedLibraryName, 'server');
           dispatchLibrariesState({
             actionType: 'UpdateLibrary',
             libraryType: 'server',
@@ -626,18 +646,22 @@ export function LibrariesLoader(
   );
   useWebsocketEvent('LibraryUpdate-ServerScript', serverScriptEventHandler);
 
-  const serverScriptDestroyEventHandler = React.useCallback((name: string) => {
-    destroyEventHandler(name, 'server');
-  }, [destroyEventHandler]);
-  useWebsocketEvent('LibraryDestroy-ServerScript', serverScriptDestroyEventHandler);
-
-
+  const serverScriptDestroyEventHandler = React.useCallback(
+    (name: string) => {
+      destroyEventHandler(name, 'server');
+    },
+    [destroyEventHandler],
+  );
+  useWebsocketEvent(
+    'LibraryDestroy-ServerScript',
+    serverScriptDestroyEventHandler,
+  );
 
   const stylesheetEventHandler = React.useCallback(
     (updatedLibraryName: string) => {
       LibraryAPI.getLibrary('CSS', updatedLibraryName).then(
         (library: IGameModelContent) => {
-          const path = computeLibraryPath(updatedLibraryName, "style");
+          const path = computeLibraryPath(updatedLibraryName, 'style');
           dispatchLibrariesState({
             actionType: 'UpdateLibrary',
             libraryType: 'style',
@@ -651,12 +675,13 @@ export function LibrariesLoader(
   );
   useWebsocketEvent('LibraryUpdate-CSS', stylesheetEventHandler);
 
-  const cssDestroyEventHandler = React.useCallback((name: string) => {
-    destroyEventHandler(name, 'style');
-  }, [destroyEventHandler]);
+  const cssDestroyEventHandler = React.useCallback(
+    (name: string) => {
+      destroyEventHandler(name, 'style');
+    },
+    [destroyEventHandler],
+  );
   useWebsocketEvent('LibraryDestroy-CSS', cssDestroyEventHandler);
-
-
 
   // Refreshing globals when global contexts changes should any global changes trigger a new script reevalutation???
   // Should the store state also be a trigger???
@@ -710,22 +735,21 @@ export function LibrariesLoader(
   React.useEffect(() => {
     if (reactMonaco != null) {
       const libs = globalLibs.reduce<ILibraries>((acc, current) => {
-
         acc[current.name] = {
-          "@class": 'GameModelContent',
+          '@class': 'GameModelContent',
           contentKey: current.name,
           content: current.content,
           visibility: 'INTERNAL',
           version: 0,
           contentType: 'application/typescript',
-        }
+        };
         return acc;
       }, {});
 
       dispatchLibrariesState({
         actionType: 'SetUpLibrariesState',
         librariesType: 'clientInternal',
-        libraries: libs
+        libraries: libs,
       });
     }
   }, [globalLibs, reactMonaco]);
@@ -816,13 +840,14 @@ export function LibrariesLoader(
       libraryPath: string,
       saveLibraryCB?: (message: LibrariesCallbackMessage) => void,
     ) => {
-
       const selectedPersistedLibrary = librariesState[libraryPath];
 
       const selectedMonacoModel =
         reactMonaco != null ? getModel(reactMonaco, libraryPath) : undefined;
 
-      const effectiveType = libraryTypeToServerLibraryType(selectedPersistedLibrary.libraryType);
+      const effectiveType = libraryTypeToServerLibraryType(
+        selectedPersistedLibrary.libraryType,
+      );
       if (effectiveType == null) {
         return;
       }
@@ -849,7 +874,10 @@ export function LibrariesLoader(
                 // pageStore will be resumed after all clientscript libs will have been reloaded
                 setReloadingStatus(true);
                 // this execution is only made to catch errors
-                executeClientLibrary(selectedPersistedLibrary.label, library.content);
+                executeClientLibrary(
+                  selectedPersistedLibrary.label,
+                  library.content,
+                );
               } catch (e) {
                 savedWithErrors = true;
               }
@@ -895,7 +923,6 @@ export function LibrariesLoader(
 
   const removeLibrary = React.useCallback<LibrariesContext['removeLibrary']>(
     (libraryPath, removeLibraryCB) => {
-
       const selectedPersistedLibrary = librariesState[libraryPath];
       const libraryType = selectedPersistedLibrary.libraryType;
 
@@ -942,31 +969,31 @@ export function LibrariesLoader(
 
   return (
     <>
-      { CurrentGM.properties.cssUri?.split(';').map(cssUrl => (
+      {CurrentGM.properties.cssUri?.split(';').map(cssUrl => (
         <link
-          key={ cssUrl }
+          key={cssUrl}
           className="WegasStaticStyle"
           rel="stylesheet"
           type="text/css"
-          href={ cssUrl }
+          href={cssUrl}
         />
-      )) }
-      { }
-      { stylesheets.map(stylesheet => (
-        <style className="WegasStyle" key={ stylesheet.persisted.contentKey }>
-          { stylesheet.persisted.content }
+      ))}
+      {}
+      {stylesheets.map(stylesheet => (
+        <style className="WegasStyle" key={stylesheet.persisted.contentKey}>
+          {stylesheet.persisted.content}
         </style>
-      )) }
+      ))}
       <librariesCTX.Provider
-        value={ {
+        value={{
           librariesState,
           addLibrary,
           saveLibrary,
           setLibraryVisibility,
           removeLibrary,
-        } }
+        }}
       >
-        { props.children }
+        {props.children}
       </librariesCTX.Provider>
     </>
   );

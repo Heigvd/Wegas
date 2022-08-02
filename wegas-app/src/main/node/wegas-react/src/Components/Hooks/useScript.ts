@@ -35,7 +35,6 @@ import {
   usePagesContextStateStore,
 } from '../../data/Stores/pageContextStore';
 import { store, useStore } from '../../data/Stores/store';
-import { insertReturn } from '../../Editor/Components/ScriptEditors/TempScriptEditor';
 import { registerEffect } from '../../Helper/pageEffectsManager';
 import { createLRU, replace, visitDSF } from '../../Helper/tools';
 import { createScript, isScript } from '../../Helper/wegasEntites';
@@ -49,13 +48,11 @@ import {
 } from '../Contexts/FeaturesProvider';
 import { LanguagesContext, languagesCTX } from '../Contexts/LanguagesProvider';
 import { PageComponentContext } from '../PageComponents/tools/options';
-import {
-  schemaProps,
-} from '../PageComponents/tools/schemaProps';
+import { schemaProps } from '../PageComponents/tools/schemaProps';
 import { addPopup } from '../PopupManager';
-import { deepDifferent } from './storeHookFactory';
-
+import { insertReturn } from '../ScriptEditors/TempScriptEditor';
 import { globals } from './sandbox';
+import { deepDifferent } from './storeHookFactory';
 
 const refs: Record<string, { current: unknown }> = {};
 /**

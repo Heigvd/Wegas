@@ -7,10 +7,10 @@ import {
   IVariableDescriptor,
   WegasClassNameAndScriptableTypes,
 } from 'wegas-ts-api';
-import { AvailableSchemas } from '../../../Editor/Components/FormView';
-import { IconComponentType } from '../../../Editor/Components/Page/ComponentIcon';
-import { Icon } from '../../../Editor/Components/Views/FontAwesome';
+import { AvailableSchemas } from '../../FormView';
 import { useAnyStore } from '../../Hooks/storeHookFactory';
+import { IconComponentType } from '../../Page/ComponentIcon';
+import { Icon } from '../../Views/FontAwesome';
 import {
   DropZones,
   PageComponentProps,

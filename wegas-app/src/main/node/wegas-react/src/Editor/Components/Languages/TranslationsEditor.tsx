@@ -11,6 +11,15 @@ import {
   LanguagesAPI,
 } from '../../../API/languages.api';
 import { DropMenu } from '../../../Components/DropMenu';
+import { borderBottom } from '../../../Components/FormView/commonView';
+import getEditionConfig, {
+  getIcon,
+} from '../../../Components/FormView/Script/editionConfig';
+import {
+  generateSchema,
+  IAttributes,
+  testCode,
+} from '../../../Components/FormView/Script/Expressions/expressionEditorHelpers';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
@@ -28,6 +37,7 @@ import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { useOkCancelModal } from '../../../Components/Modal';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
+import { IconComp, withDefault } from '../../../Components/Views/FontAwesome';
 import {
   componentMarginRight,
   defaultMargin,
@@ -65,14 +75,6 @@ import { getDispatch, useStore } from '../../../data/Stores/store';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { languagesTranslations } from '../../../i18n/languages/languages';
-import getEditionConfig, { getIcon } from '../../editionConfig';
-import { borderBottom } from '../FormView/commonView';
-import {
-  generateSchema,
-  IAttributes,
-  testCode,
-} from '../FormView/Script/Expressions/expressionEditorHelpers';
-import { IconComp, withDefault } from '../Views/FontAwesome';
 
 const langaugeVisitorHeaderStyle = css({
   borderBottom: `solid 1px ${themeVar.colors.PrimaryColor}`,

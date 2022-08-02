@@ -9,7 +9,6 @@ import {
   flexRowReverse,
   itemCenter,
 } from '../css/classes';
-import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../Helper/className';
 import { lastKeyboardEvents } from '../Helper/keyboardEvents';
 import {
@@ -22,6 +21,7 @@ import { deepDifferent } from './Hooks/storeHookFactory';
 import { Button } from './Inputs/Buttons/Button';
 import { ConfirmButton } from './Inputs/Buttons/ConfirmButton';
 import { themeVar } from './Theme/ThemeVars';
+import { withDefault } from './Views/FontAwesome';
 
 const childDropMenuButtonStyle = css({
   padding: 0,

@@ -1,19 +1,18 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
-import { FontAwesome } from '../Editor/Components/Views/FontAwesome';
+import * as React from 'react';
+import { Button } from '../Components/Inputs/Buttons/Button';
+import { Title } from '../Components/Inputs/String/Title';
+import { FontAwesome } from '../Components/Views/FontAwesome';
 // import { LangToggler } from '../Components/Contexts/LanguagesProvider';
 import {
-  flex,
-  itemCenter,
-  grow,
-  foregroundContent,
   componentMarginLeft,
+  flex,
   flexColumn,
+  foregroundContent,
+  grow,
+  itemCenter,
   justifyStart,
-  // defaultMarginRight,
 } from '../css/classes';
-import { Title } from '../Components/Inputs/String/Title';
-import { Button } from '../Components/Inputs/Buttons/Button';
 
 const headerStyle = css({
   marginBottom: '10px',
@@ -27,7 +26,9 @@ export default function HostHeader() {
   return (
     <div className={cx(flex, itemCenter, foregroundContent, headerStyle)}>
       <div className={cx(flex, grow, flexColumn, justifyStart)}>
-        <Title level={'2'} className={TitleStyle}>{CurrentGame.name}</Title>
+        <Title level={'2'} className={TitleStyle}>
+          {CurrentGame.name}
+        </Title>
         <p className={TitleStyle}>Scenario: {CurrentGM.name}</p>
       </div>
       {/* <LangToggler className={defaultMarginRight}/> */}

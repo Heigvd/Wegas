@@ -1,10 +1,10 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { isDnDComponent } from '../../Editor/Components/Page/ComponentPalette';
-import { pageCTX } from '../../Editor/Components/Page/PageEditor';
-import { isPageComponentNode } from '../../Editor/Components/Page/PagesLayout';
 import { classNameOrEmpty } from '../../Helper/className';
 import { wwarn } from '../../Helper/wegaslog';
+import { isDnDComponent } from '../Page/ComponentPalette';
+import { pageCTX } from '../Page/PageEditor';
+import { isPageComponentNode } from '../Page/PagesLayout';
 import {
   OnVariableChange,
   useOnVariableChange,

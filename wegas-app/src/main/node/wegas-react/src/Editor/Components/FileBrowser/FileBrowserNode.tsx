@@ -6,7 +6,9 @@ import { IAbstractContentDescriptor } from 'wegas-ts-api';
 import { FileAPI, fileURL, generateAbsolutePath } from '../../../API/files.api';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
+import { MessageString } from '../../../Components/MessageString';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
+import { TextPrompt } from '../../../Components/TextPrompt';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import {
   block,
@@ -40,8 +42,6 @@ import {
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { MessageString } from '../MessageString';
-import { TextPrompt } from '../TextPrompt';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // styles

@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { titleStyle } from '../../Editor/Components/FormView/labeled';
 import { cx } from '@emotion/css';
-import { flexRow, flex } from '../../css/classes';
+import * as React from 'react';
+import { flex, flexRow } from '../../css/classes';
+import { titleStyle } from '../FormView/labeled';
 
 export interface ValueProps extends ClassStyleId {
   value: string | number | object;

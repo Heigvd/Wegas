@@ -21,18 +21,18 @@ import {
   saveEditor,
 } from '../data/Reducer/editingState';
 import { editingStore } from '../data/Stores/editingStore';
-import { focusTab } from '../Editor/Components/LinearTabLayout/LinearLayout';
-import { CTreeProps } from '../Editor/Components/Variable/CTree';
-import { SharedTreeProps } from '../Editor/Components/Variable/VariableTreeView';
-import { IconComp } from '../Editor/Components/Views/FontAwesome';
 import { mainLayoutId } from '../Editor/layouts';
 import { classNameOrEmpty } from '../Helper/className';
 import { commonTranslations } from '../i18n/common/common';
 import { useInternalTranslate } from '../i18n/internalTranslator';
 import { modalTranslations } from '../i18n/modal/modal';
 import { Button } from './Inputs/Buttons/Button';
+import { focusTab } from './LinearTabLayout/LinearLayout';
 import { themeCTX } from './Theme/Theme';
 import { themeVar } from './Theme/ThemeVars';
+import { CTreeProps } from './Variable/CTree';
+import { SharedTreeProps } from './Variable/VariableTreeView';
+import { IconComp } from './Views/FontAwesome';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // styles
@@ -232,7 +232,9 @@ export function Modal({
         className={
           cx(
             layoutStyle,
-            modalStyle(!(attachedToId || attachToClosest || attachToMostDistant)),
+            modalStyle(
+              !(attachedToId || attachToClosest || attachToMostDistant),
+            ),
             flex,
             flexColumn,
             justifyCenter,

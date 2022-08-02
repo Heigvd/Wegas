@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { MessageString } from '../../../Editor/Components/MessageString';
+import { MessageString } from '../../MessageString';
 
 interface CheckMinMaxProps {
   min?: number;

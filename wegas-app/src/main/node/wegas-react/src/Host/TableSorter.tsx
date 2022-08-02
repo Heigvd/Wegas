@@ -1,8 +1,8 @@
 import { cx } from '@emotion/css';
 import * as React from 'react';
 import { Button } from '../Components/Inputs/Buttons/Button';
-import { flex, flexRow, contentCenter } from '../css/classes';
-import { Icons } from '../Editor/Components/Views/FontAwesome';
+import { Icons } from '../Components/Views/FontAwesome';
+import { contentCenter, flex, flexRow } from '../css/classes';
 
 export type SortMode = 'NONE' | 'ASC' | 'DESC';
 

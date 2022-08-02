@@ -2,13 +2,16 @@ import { css, cx } from '@emotion/css';
 import JSONForm, { Schema } from 'jsoninput';
 import * as React from 'react';
 import { DropMenu } from '../../Components/DropMenu';
+import '../../Components/FormView';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
+import { MessageString } from '../../Components/MessageString';
 import { isActionAllowed } from '../../Components/PageComponents/tools/options';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
+import { Icon, IconComp } from '../../Components/Views/FontAwesome';
 import {
   defaultPaddingLeft,
   defaultPaddingRight,
@@ -27,9 +30,6 @@ import {
 import { wwarn } from '../../Helper/wegaslog';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
-import './FormView';
-import { MessageString } from './MessageString';
-import { Icon, IconComp } from './Views/FontAwesome';
 
 const toolboxButtonStyle = css({
   margin: '0 5px',

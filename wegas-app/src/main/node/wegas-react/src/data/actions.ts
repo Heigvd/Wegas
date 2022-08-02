@@ -8,9 +8,9 @@ import {
   WegasClassNames,
 } from 'wegas-ts-api';
 import { IManagedResponse } from '../API/rest';
+import { getEntityActions } from '../Components/FormView/Script/editionConfig';
 import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
 import { Popup } from '../Components/PopupManager';
-import { getEntityActions } from '../Editor/editionConfig';
 import { ActionType, ActionTypeValues } from './actionTypes';
 import { EditorLanguagesCode } from './i18n';
 import { discriminant, normalizeDatas, NormalizedData } from './normalize';

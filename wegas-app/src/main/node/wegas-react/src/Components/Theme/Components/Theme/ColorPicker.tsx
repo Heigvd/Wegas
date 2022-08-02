@@ -13,8 +13,8 @@ import {
   mediumPadding,
   relative,
 } from '../../../../css/classes';
-import { borderBottom } from '../../../../Editor/Components/FormView/commonView';
 import { justifyDropMenu } from '../../../DropDown';
+import { borderBottom } from '../../../FormView/commonView';
 import { useOnClickOutside } from '../../../Hooks/useOnClickOutside';
 import {
   Button,
@@ -161,11 +161,11 @@ export function ColorPicker({
           <ChromePicker
             color={color}
             styles={{
-              default : {
+              default: {
                 picker: {
                   boxShadow: 'none',
-                }
-              }
+                },
+              },
             }}
             onChangeComplete={newColor => {
               setColor(newColor.rgb);

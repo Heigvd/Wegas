@@ -1,13 +1,12 @@
-import * as React from 'react';
-import { expandBoth, flex, flexColumn } from '../css/classes';
 import { cx } from '@emotion/css';
 import { ValidationError } from 'jsonschema/lib';
-import { MessageString } from '../Editor/Components/MessageString';
-
+import * as React from 'react';
 //It's really important to import index.ts in order to have the widjets allready registered before using Form
-import '../Editor/Components/FormView';
+import '../Components/FormView';
+import { ExpressionEditor } from '../Components/FormView/Script/Expressions/ExpressionEditor';
+import { MessageString } from '../Components/MessageString';
 import { themeVar } from '../Components/Theme/ThemeVars';
-import { ExpressionEditor } from '../Editor/Components/FormView/Script/Expressions/ExpressionEditor';
+import { expandBoth, flex, flexColumn } from '../css/classes';
 
 export default function SchemaPropsTester() {
   const [statement, setStatement] = React.useState<string>(

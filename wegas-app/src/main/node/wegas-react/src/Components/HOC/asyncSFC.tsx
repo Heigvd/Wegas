@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
 import { useAsync } from '../Hooks/useAsync';
+import { FontAwesome } from '../Views/FontAwesome';
 
 function Loading() {
   return <FontAwesome icon="cog" /*size="5x"*/ spin />;

@@ -2,17 +2,17 @@ import { emptyStatement, Statement } from '@babel/types';
 import { TYPESTRING } from 'jsoninput/typings/types';
 import * as React from 'react';
 import { IAbstractContentDescriptor, IScript } from 'wegas-ts-api';
+import { createScript } from '../../../Helper/wegasEntites';
 import {
   AvailableSchemas,
   DEFINED_VIEWS,
   SchemaFromView,
-} from '../../../Editor/Components/FormView';
-import { CallbackViewView } from '../../../Editor/Components/FormView/Callback';
-import { CodeViewView } from '../../../Editor/Components/FormView/Code';
-import { NuppleView } from '../../../Editor/Components/FormView/Nupple';
-import { ScriptableViewView } from '../../../Editor/Components/FormView/Scriptable';
-import { WegasMethod } from '../../../Editor/editionConfig';
-import { createScript } from '../../../Helper/wegasEntites';
+} from '../../FormView';
+import { CallbackViewView } from '../../FormView/Callback';
+import { CodeViewView } from '../../FormView/Code';
+import { NuppleView } from '../../FormView/Nupple';
+import { WegasMethod } from '../../FormView/Script/editionConfig';
+import { ScriptableViewView } from '../../FormView/Scriptable';
 import { Choices } from '../../Selector';
 
 const simpleSchemaProps = {
