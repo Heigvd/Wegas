@@ -7,6 +7,7 @@ import { Button } from '../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import { expandWidth } from '../../css/classes';
+import { TeamState } from '../../data/Reducer/teams';
 import { instantiate } from '../../data/scriptable';
 import { Game, GameModel, Player } from '../../data/selectors';
 import { useStore } from '../../data/Stores/store';
@@ -180,11 +181,20 @@ export default function Overview() {
     setNewData(true);
   });
 
+  const game = Game.selectCurrent();
+
   const isRealGame = GameModel.selectCurrent().type === 'PLAY';
 
   const i18nValues = useInternalTranslate(commonTranslations);
   const i18nValuesTrainer = useInternalTranslate(trainerTranslations);
-  const teams = useStore(s => s.teams, deepDifferent);
+  const teams = useStore(s => {
+    return Object.entries(s.teams)
+      .filter(([, team]) => team.parentId === game.id)
+      .reduce<TeamState>((teams, [teamId, team]) => {
+        teams[teamId] = team;
+        return teams;
+      }, {});
+  }, deepDifferent);
 
   const refreshOverview = React.useCallback(() => {
     setNewData(false);
