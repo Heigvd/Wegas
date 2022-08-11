@@ -55,6 +55,8 @@
     "@fortawesome/react-fontawesome": "0.1.15",
     "@monaco-editor/react": "^4.3.1",
     "@react-hook/resize-observer": "^1.2.5",
+    "@turf/helpers": "^6.5.0",
+    "@turf/line-intersect": "^6.5.0",
     "@types/less": "^3.0.1",
     "cesium": "^1.92.0",
     "chart.js": "^3.7.0",
