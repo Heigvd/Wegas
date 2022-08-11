@@ -57,7 +57,8 @@ import { deepDifferent } from './storeHookFactory';
 
 import { globals } from './sandbox';
 
-import * as turf from '@turf/turf';
+import { polygon, lineString } from '@turf/helpers';
+import * as lineIntersect from '@turf/line-intersect';
 
 
 const refs: Record<string, { current: unknown }> = {};
@@ -403,7 +404,11 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
 
   globals.wlog = wlog;
 
-  globals.Turf = turf;
+  globals.Turf = {
+    lineIntersect: lineIntersect.default,
+    lineString: lineString,
+    polygon: polygon
+  }
 
 }
 

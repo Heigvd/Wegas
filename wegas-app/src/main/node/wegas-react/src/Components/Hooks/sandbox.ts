@@ -8,7 +8,8 @@ import {
   SVariableInstance,
 } from 'wegas-ts-api';
 import { SchemaPropsType } from '../PageComponents/tools/schemaProps';
-import * as turf from '@turf/turf';
+import { polygon, lineString } from '@turf/helpers';
+import * as lineIntersect from '@turf/line-intersect';
 
 
 interface GlobalVariableClass {
@@ -56,7 +57,12 @@ export interface GlobalClasses {
       [exported: string]: unknown;
     };
   };
-  Turf: typeof turf,
+  //Turf: typeof turf,
+  Turf: {
+    lineIntersect: typeof lineIntersect.default,
+    polygon: typeof polygon,
+    lineString: typeof lineString
+  }
 }
 
   export function createSandbox<T = unknown>() {
