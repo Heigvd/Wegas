@@ -69,6 +69,7 @@ import { wwarn } from '../../Helper/wegaslog';
 import { classesCTX } from '../Contexts/ClassesProvider';
 import { deepDifferent } from './storeHookFactory';
 
+
 const stripRegex = /\/\* STRIP FROM \*\/[\s\S]*?\/\* STRIP TO \*\//gm;
 
 function makeAmbient(source: string) {

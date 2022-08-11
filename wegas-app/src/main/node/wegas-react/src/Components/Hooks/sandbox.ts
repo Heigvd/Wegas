@@ -8,6 +8,7 @@ import {
   SVariableInstance,
 } from 'wegas-ts-api';
 import { SchemaPropsType } from '../PageComponents/tools/schemaProps';
+import * as turf from '@turf/turf';
 
 
 interface GlobalVariableClass {
@@ -55,6 +56,7 @@ export interface GlobalClasses {
       [exported: string]: unknown;
     };
   };
+  Turf: typeof turf,
 }
 
   export function createSandbox<T = unknown>() {
