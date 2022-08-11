@@ -57,6 +57,10 @@ import { deepDifferent } from './storeHookFactory';
 
 import { globals } from './sandbox';
 
+import { polygon, lineString } from '@turf/helpers';
+import * as lineIntersect from '@turf/line-intersect';
+
+
 const refs: Record<string, { current: unknown }> = {};
 /**
  * Create and init a PageContext state.
@@ -125,6 +129,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   // Global variables
   globals.gameModel = instantiate(gameModel);
   globals.teams = instantiate(teams);
+
 
   globals.self = instantiate(player);
   globals.schemaProps = schemaProps;
@@ -398,6 +403,13 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   };
 
   globals.wlog = wlog;
+
+  globals.Turf = {
+    lineIntersect: lineIntersect.default,
+    lineString: lineString,
+    polygon: polygon
+  }
+
 }
 
 interface TranspileOptions {

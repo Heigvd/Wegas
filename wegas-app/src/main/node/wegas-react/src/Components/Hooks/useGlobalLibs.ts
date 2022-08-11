@@ -69,6 +69,7 @@ import { wwarn } from '../../Helper/wegaslog';
 import { classesCTX } from '../Contexts/ClassesProvider';
 import { deepDifferent } from './storeHookFactory';
 
+
 const stripRegex = /\/\* STRIP FROM \*\/[\s\S]*?\/\* STRIP TO \*\//gm;
 
 function makeAmbient(source: string) {
@@ -175,6 +176,10 @@ export function useGlobalLibs() {
             function timeLog(label: string, ...data: unknown[]);
             function timeEnd(label: string, ...data: unknown[]);
         };
+
+        declare namespace performance {
+          function now();
+        }
 
         declare const gameModel: SGameModel;
         declare const teams: STeam[];
@@ -293,6 +298,21 @@ export function useGlobalLibs() {
         declare const Roles : RolesMehtods;
 
         declare const wlog : (...args: unknown[])=>void;
+
+        type BBox2d = [number, number, number, number];
+        type BBox3d = [number, number, number, number, number, number];
+        type BBox = BBox2d | BBox3d;
+
+        type TurfGeometryOption = {
+          bbox?: BBox,
+          id?: string|number
+        }
+
+        declare const Turf : {
+          lineIntersect: ((geom1: unknown, geom2: unknown) => any),
+          lineString: ((coordinates: number[][], properties?: AnyValuesObject, options?: TurfGeometryOption) => any),
+          polygon: ((points: number[][][], properties?: AnyValuesObject, options?: TurfGeometryOption) => any),
+        };
         `
             : `${buildGlobalServerMethods(globalServerMethods)}
 
