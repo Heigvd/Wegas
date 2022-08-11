@@ -8,10 +8,14 @@ import {
   Tooltip,
 } from 'chart.js';
 import 'chartjs-plugin-dragdata';
+
+import ZoomPlugin from 'chartjs-plugin-zoom';
+
 import * as React from 'react';
 import { Scatter } from 'react-chartjs-2';
+import { ChartJSOrUndefined } from 'react-chartjs-2/dist/types';
 import { IScript } from 'wegas-ts-api';
-import { halfOpacity } from '../../../css/classes';
+import { flex, halfOpacity } from '../../../css/classes';
 import { entityIs } from '../../../data/entities';
 import { classOrNothing } from '../../../Helper/className';
 //////////////////////////////////////////////////////
@@ -19,7 +23,9 @@ import { classOrNothing } from '../../../Helper/className';
 //////////////////////////////////////////////////////
 import { wlog } from '../../../Helper/wegaslog';
 import { useDeepMemo } from '../../Hooks/useDeepMemo';
-import { useScript } from '../../Hooks/useScript';
+import { ScriptCallback, useScript, useScriptCallback } from '../../Hooks/useScript';
+import { CheckBox } from '../../Inputs/Boolean/CheckBox';
+import { IconButton } from '../../Inputs/Buttons/IconButton';
 import {
   pageComponentFactory,
   registerComponent,
@@ -81,6 +87,7 @@ ChartJS.register(ChartJSDoubleClickPlugin);
 //////////////////////////////////////////////////////
 
 ChartJS.register(LinearScale, PointElement, LineElement, Legend, Tooltip);
+ChartJS.register(ZoomPlugin);
 
 type Point = { x: number; y: number };
 
@@ -149,18 +156,20 @@ export interface PlayerScatterChartProps extends WegasComponentProps {
   height?: number;
   series: IScript;
   showLine: boolean;
+  allowZoom: boolean;
   allowDoubleClick: boolean;
-  onDblClickCallback?: IScript;
+  onDblClickCallback?: ScriptCallback;
   allowDrag?: boolean;
-  onDragCallback: IScript;
-  onDragStartCallback: IScript;
-  onDragEndCallback: IScript;
+  onDragCallback: ScriptCallback;
+  onDragStartCallback: ScriptCallback;
+  onDragEndCallback: ScriptCallback;
   scales?: Scales | IScript;
 }
 
 function PlayerScatterChart({
   height,
   showLine,
+  allowZoom,
   series,
   allowDoubleClick,
   onDblClickCallback,
@@ -177,11 +186,14 @@ function PlayerScatterChart({
 }: PlayerScatterChartProps): JSX.Element {
   const evaluatedData = useScript<Data[]>(series, context);
 
-  const dblCb = useScript<ValueCb>(onDblClickCallback, context);
+  const contextRef = React.useRef(context);
+  contextRef.current = context;
 
-  const dragStartCb = useScript<DragCb>(onDragStartCallback, context);
-  const dragCb = useScript<DragCb>(onDragCallback, context);
-  const dragEndCb = useScript<DragCb>(onDragEndCallback, context);
+  const dblCb = useScriptCallback<ValueCb>(onDblClickCallback, contextRef);
+
+  const dragStartCb = useScriptCallback<DragCb>(onDragStartCallback, contextRef);
+  const dragCb = useScriptCallback<DragCb>(onDragCallback, contextRef);
+  const dragEndCb = useScriptCallback<DragCb>(onDragEndCallback, contextRef);
 
   const scales = useScales(scriptableScales, context);
 
@@ -212,6 +224,32 @@ function PlayerScatterChart({
     scales: scales,
   };
 
+  const chartRef = React.useRef<ChartJSOrUndefined<"scatter">>();
+  const [zoomEnabled, setZoomEnabled] = React.useState(false);
+
+  const toggleZoomCb = React.useCallback(() => {
+    setZoomEnabled(s => !s);
+  }, [setZoomEnabled]);
+
+  const resetZoomCb = React.useCallback(() => {
+    if (chartRef.current) {
+      chartRef.current.resetZoom();
+    }
+  }, []);
+
+  if (allowZoom) {
+    chartOptions.plugins!.zoom = {
+      zoom: {
+        wheel: {
+          enabled: zoomEnabled,
+        }
+      },
+      pan: {
+        enabled: true,
+      }
+    }
+  }
+
   if (allowDrag) {
     chartOptions.plugins!.dragData = {
       dragX: true,
@@ -231,14 +269,20 @@ function PlayerScatterChart({
 
   return (
     <div
-      id={id}
+      id={ id }
       className={
         className +
         classOrNothing(halfOpacity, options.disabled || options.locked)
       }
-      style={style}
+      style={ style }
     >
-      <Scatter data={chartData} options={memoChartOptions} height={height} />
+      <Scatter ref={ chartRef } data={ chartData } options={ memoChartOptions } height={ height } />
+      <div className={ flex }>
+        { allowZoom ? <>
+          <IconButton icon='undo' tooltip='reset zoom' onClick={ resetZoomCb } />
+          <CheckBox value={ zoomEnabled } onChange={ toggleZoomCb } label='enable zoom' />
+        </> : null }
+      </div>
     </div>
   );
 }
@@ -273,18 +317,18 @@ registerComponent(
       onDblClickCallback: {
         type: 'object',
         value: {
-          '@class': 'Script',
-          language: 'typescript',
-          content: 'undefined;',
+          '@class': 'ScriptCallback',
+          args: [],
+          content: '',
         },
         view: {
           label: 'onDblClick callback',
-          type: 'customscript',
-          language: 'TypeScript',
-          returnType: [
-            'undefined',
-            '((value: { x: number; y: number }) => void)',
-          ],
+          type: 'callback',
+          callbackProps: {
+            args: [
+              ["value", ["{ x: number; y: number }"]]
+            ],
+          },
         },
         visible: (_value, formValue) => {
           return formValue?.componentProperties?.allowDoubleClick;
@@ -300,18 +344,22 @@ registerComponent(
       onDragCallback: {
         type: 'object',
         value: {
-          '@class': 'Script',
-          language: 'typescript',
-          content: 'undefined;',
+          '@class': 'ScriptCallback',
+          args: [],
+          content: '',
         },
         view: {
           label: 'onDrag callback',
-          type: 'customscript',
-          language: 'TypeScript',
-          returnType: [
-            'undefined',
-            '((e: MouseEvent, datasetIndex: number, index: number, value: { x: number; y: number }) => boolean)',
-          ],
+          type: 'callback',
+          callbackProps: {
+            args: [
+              ["e", ["MouseEvent"]],
+              ["datasetIndex", ["number"]],
+              ["index", ["number"]],
+              ["value", ["{ x: number; y: number }"]],
+            ],
+            returnType: ['boolean']
+          }
         },
         visible: (_value, formValue) => {
           return formValue?.componentProperties?.allowDrag;
@@ -320,18 +368,22 @@ registerComponent(
       onDragStartCallback: {
         type: 'object',
         value: {
-          '@class': 'Script',
-          language: 'typescript',
-          content: 'undefined;',
+          '@class': 'ScriptCallback',
+          args: [],
+          content: ';',
         },
         view: {
           label: 'onDragStart callback',
-          type: 'customscript',
-          language: 'TypeScript',
-          returnType: [
-            'undefined',
-            '((e: MouseEvent, datasetIndex: number, index: number, value: { x: number; y: number }) => boolean)',
-          ],
+          type: 'callback',
+          callbackProps: {
+            args: [
+              ["e", ["MouseEvent"]],
+              ["datasetIndex", ["number"]],
+              ["index", ["number"]],
+              ["value", ["{ x: number; y: number }"]],
+            ],
+            returnType: ['boolean']
+          }
         },
         visible: (_value, formValue) => {
           return formValue?.componentProperties?.allowDrag;
@@ -340,18 +392,22 @@ registerComponent(
       onDragEndCallback: {
         type: 'object',
         value: {
-          '@class': 'Script',
-          language: 'typescript',
-          content: 'undefined;',
+          '@class': 'ScriptCallback',
+          args: [],
+          content: ';',
         },
         view: {
           label: 'onDragStart callback',
-          type: 'customscript',
-          language: 'TypeScript',
-          returnType: [
-            'undefined',
-            '((e: MouseEvent, datasetIndex: number, index: number, value: { x: number; y: number }) => boolean)',
-          ],
+          type: 'callback',
+          callbackProps: {
+            args: [
+              ["e", ["MouseEvent"]],
+              ["datasetIndex", ["number"]],
+              ["index", ["number"]],
+              ["value", ["{ x: number; y: number }"]],
+            ],
+            returnType: ['boolean']
+          }
         },
         visible: (_value, formValue) => {
           return formValue?.componentProperties?.allowDrag;
@@ -364,6 +420,10 @@ registerComponent(
       }),
       showLine: schemaProps.boolean({
         label: 'Show lines',
+        value: false,
+      }),
+      allowZoom: schemaProps.boolean({
+        label: 'Allow zoom',
         value: false,
       }),
       scales: {
