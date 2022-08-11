@@ -57,7 +57,6 @@ export interface GlobalClasses {
       [exported: string]: unknown;
     };
   };
-  //Turf: typeof turf,
   Turf: {
     lineIntersect: typeof lineIntersect.default,
     polygon: typeof polygon,
