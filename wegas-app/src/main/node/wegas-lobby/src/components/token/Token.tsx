@@ -6,11 +6,12 @@
  * Licensed under the MIT License
  */
 
-import { faPlusCircle, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {css} from '@emotion/css';
+import {faPlusCircle, faSignOutAlt} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import * as React from 'react';
-import { Redirect } from 'react-router-dom';
-import { ITokenWithId } from 'wegas-ts-api';
+import {Redirect} from 'react-router-dom';
+import {ITokenWithId} from 'wegas-ts-api';
 import {
   getRestClient,
   reloadCurrentUser,
@@ -18,14 +19,15 @@ import {
   signInWithToken,
   signOut,
 } from '../../API/api';
-import { entityIs } from '../../API/entityHelper';
-import { buildLinkWithQueryParam, getDisplayName } from '../../helper';
-import useTranslations from '../../i18n/I18nContext';
-import getLogger, { INFO } from '../../logger';
-import { useCurrentUser } from '../../selectors/userSelector';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import {entityIs} from '../../API/entityHelper';
+import {buildLinkWithQueryParam, getDisplayName} from '../../helper';
+import useTranslations, {WegasTranslations} from '../../i18n/I18nContext';
+import getLogger, {INFO} from '../../logger';
+import {useCurrentUser} from '../../selectors/userSelector';
+import {useAppDispatch, useAppSelector} from '../../store/hooks';
+import Button from '../common/Button';
 import IconButton from '../common/IconButton';
-import { InlineLink } from '../common/Link';
+import {InlineLink} from '../common/Link';
 import Loading from '../common/Loading';
 
 const logger = getLogger('Token');
@@ -36,7 +38,16 @@ interface TokenProps {
   hash: string;
 }
 
-export default function Token({ accountId, hash }: TokenProps): JSX.Element {
+function getProcessConfirmMessage(token: ITokenWithId, i18n: WegasTranslations): string {
+
+  if (i18n.processMessages[token["@class"]]) {
+    return i18n.processMessages[token["@class"]];
+  } else {
+    return i18n.defaultProcessMessage;
+  }
+}
+
+export default function Token({accountId, hash}: TokenProps): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
 
@@ -47,7 +58,10 @@ export default function Token({ accountId, hash }: TokenProps): JSX.Element {
   const [token, setToken] = React.useState<ITokenWithId | 'NOT_FOUND' | 'NOT_INITIALIZED'>(
     'NOT_INITIALIZED',
   );
-  const { currentAccount, status: userStatus } = useCurrentUser();
+
+  const [readyToProcess, setReadyToProcess] = React.useState(false);
+
+  const {currentAccount, status: userStatus} = useCurrentUser();
 
   const aaiConfig = useAppSelector(state => state.auth.aaiConfig);
 
@@ -108,30 +122,30 @@ export default function Token({ accountId, hash }: TokenProps): JSX.Element {
     ? currentAccount['@class']
     : undefined;
 
+  const processCb = React.useCallback(() => {
+    if (entityIs(token, 'Token', true)) {
+      getRestClient()
+        .Token.processToken(token)
+        .then(processedToken => {
+          const redirect = processedToken.redirectTo;
+          if (redirect != null) {
+            window.location.href = `${APP_ENDPOINT}/${redirect}`;
+          } else {
+            window.location.href = `${APP_ENDPOINT}`;
+          }
+        });
+    }
+  }, [token]);
+
   // The ProcessToken Effect
   React.useEffect(() => {
-    const process = () => {
-      if (entityIs(token, 'Token', true)) {
-        getRestClient()
-          .Token.processToken(token)
-          .then(processedToken => {
-            const redirect = processedToken.redirectTo;
-            if (redirect != null) {
-              window.location.href = `${APP_ENDPOINT}/${redirect}`;
-            } else {
-              window.location.href = `${APP_ENDPOINT}`;
-            }
-          });
-      }
-    };
-
     if (currentAccountId != null && entityIs(token, 'Token', true)) {
       if (token.autoLogin && token.account == null && accountType === 'GuestJpaAccount') {
         // token is made for guest, current user is one
-        process();
+        setReadyToProcess(true);
       } else if (tokenAccountId != null && tokenAccountId === currentAccountId) {
         // token is made for a specific user, and it is the current one
-        process();
+        setReadyToProcess(true);
       }
     }
   }, [currentAccountId, token, tokenAccountId, accountType]);
@@ -140,12 +154,27 @@ export default function Token({ accountId, hash }: TokenProps): JSX.Element {
   React.useEffect(() => {
     if (userStatus === 'NOT_AUTHENTICATED' && entityIs(token, 'Token', true) && token.autoLogin) {
       if (tokenAccountId) {
-        dispatch(signInWithToken({ accountId: tokenAccountId, token: hash }));
+        dispatch(signInWithToken({accountId: tokenAccountId, token: hash}))
+          .then(result => {
+            if (result.meta.requestStatus === 'rejected') {
+              setToken("NOT_FOUND");
+            }
+          })
       } else {
         dispatch(signInAsGuest());
       }
     }
   }, [dispatch, hash, token, tokenAccountId, userStatus]);
+
+  if (readyToProcess && entityIs(token, "Token", true) != null) {
+    const msg = getProcessConfirmMessage(token as ITokenWithId, i18n);
+
+    return <Loading animated={false}>
+      <div className={css({margin:"20px"})}>
+        <Button onClick={processCb} label={msg} />
+      </div>
+    </Loading>;
+  }
 
   if (userStatus === 'UNKNOWN' || userStatus === 'LOADING' || token === 'NOT_INITIALIZED') {
     return <Loading>{<div>{i18n.pleaseWait}</div>}</Loading>;
@@ -212,7 +241,7 @@ export default function Token({ accountId, hash }: TokenProps): JSX.Element {
           );
         } else if (entityIs(token.account, 'AaiAccount')) {
           if (typeof aaiConfig === 'object') {
-            const url = buildLinkWithQueryParam(aaiConfig.loginUrl, { redirect: redirectBack });
+            const url = buildLinkWithQueryParam(aaiConfig.loginUrl, {redirect: redirectBack});
             window.location.href = url;
           }
         }
@@ -235,12 +264,11 @@ export default function Token({ accountId, hash }: TokenProps): JSX.Element {
       return (
         <Loading animated={false}>
           <div>
-            please{' '}
-            <InlineLink to={buildLinkWithQueryParam('/SignIn', { redirectTo: redirectBack })}>
+            <InlineLink to={buildLinkWithQueryParam('/SignIn', {redirectTo: redirectBack})}>
               {i18n.login}
             </InlineLink>
             {' or '}
-            <InlineLink to={buildLinkWithQueryParam('/SignUp', { redirectTo: redirectBack })}>
+            <InlineLink to={buildLinkWithQueryParam('/SignUp', {redirectTo: redirectBack})}>
               <FontAwesomeIcon icon={faPlusCircle} /> {i18n.createAnAccount}
             </InlineLink>
           </div>

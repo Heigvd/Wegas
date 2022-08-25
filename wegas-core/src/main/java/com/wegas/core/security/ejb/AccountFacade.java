@@ -36,6 +36,7 @@ import com.wegas.core.security.util.Sudoer;
 import com.wegas.core.security.util.TokenInfo;
 import com.wegas.messaging.ejb.EMailFacade;
 import com.wegas.survey.persistence.SurveyDescriptor;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.ejb.EJBException;
@@ -624,7 +625,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             throw WegasErrorMessage.error("Please log in to consume token");
         }
 
-        try (Sudoer su = requestManager.sudoer()) {
+        try ( Sudoer su = requestManager.sudoer()) {
             Token token = this.findToken(tokenId);
             AbstractAccount account = token.getAccount();
 
@@ -798,7 +799,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      */
     public void requestPasswordReset(String email, HttpServletRequest request) {
         // as the subject who requires such a lin is unauthenticated, we have to promote it
-        try (Sudoer su = requestManager.sudoer()) {
+        try ( Sudoer su = requestManager.sudoer()) {
             JpaAccount account = this.findJpaByEmail(email);
             if (account != null) {
 
@@ -815,10 +816,17 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
                 token.setToken(Helper.genToken(128));
 
+                // print GMT date
+                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy hh:mm:ss a");
+                sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+                String expire = sdf.format(token.getExpiryDate());
+
                 this.persistAndSendDisposableToken(token, request, account.getEmail(), null,
                     "[Albasim Wegas] Reset Password Request",
                     "Hi " + account.getName() + ", <br /><br />Click <a href='{{link}}'>here</a> to reset your password.<br /><br />"
-                    + "If you did't request this email, then simply ignore this message");
+                    + "If you did't request this email, then simply ignore this message<br /><br />"
+                    + " <hr />"
+                    + "<em>This link will be valid until " + expire + "</em>");
             }
             this.flush();
         } catch (WegasNoResultException ex) {
