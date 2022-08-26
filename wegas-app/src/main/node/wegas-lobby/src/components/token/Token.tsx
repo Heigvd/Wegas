@@ -129,7 +129,7 @@ export default function Token({accountId, hash}: TokenProps): JSX.Element {
         .then(processedToken => {
           const redirect = processedToken.redirectTo;
           if (redirect != null) {
-            window.location.href = `${APP_ENDPOINT}/${redirect}`;
+            window.location.href = `${APP_ENDPOINT}${redirect.startsWith("/") ? '' : '/'}${redirect}`;
           } else {
             window.location.href = `${APP_ENDPOINT}`;
           }
@@ -170,7 +170,7 @@ export default function Token({accountId, hash}: TokenProps): JSX.Element {
     const msg = getProcessConfirmMessage(token as ITokenWithId, i18n);
 
     return <Loading animated={false}>
-      <div className={css({margin:"20px"})}>
+      <div className={css({margin: "20px"})}>
         <Button onClick={processCb} label={msg} />
       </div>
     </Loading>;

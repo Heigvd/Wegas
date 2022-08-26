@@ -819,7 +819,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                 // print GMT date
                 SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy hh:mm:ss a");
                 sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-                String expire = sdf.format(token.getExpiryDate());
+                String expire = sdf.format(token.getExpiryDate()) + " GMT";
 
                 this.persistAndSendDisposableToken(token, request, account.getEmail(), null,
                     "[Albasim Wegas] Reset Password Request",
