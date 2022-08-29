@@ -1,7 +1,7 @@
 import { cx } from '@emotion/css';
 import Form from 'jsoninput';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { cloneDeep, omit } from 'lodash-es';
+import { omit } from 'lodash-es';
 import * as React from 'react';
 import { AvailableSchemas } from '.';
 import { SelecteDropdMenuItem } from '../../../Components/DropMenu';
@@ -163,7 +163,7 @@ const getKeyPath = (
 ): string[] | undefined => {
   const newPath = [...path];
   const keyPath: string[] = [];
-  let choice: HashListChoices | undefined = cloneDeep(choices);
+  let choice: HashListChoices | undefined = choices;
   while (newPath.length > 0) {
     const key = newPath.shift();
     if (choice == null || key == null || choice[key] == null) {
