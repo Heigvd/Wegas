@@ -310,9 +310,22 @@ export function useGlobalLibs() {
 
         declare const Turf : {
           lineIntersect: ((geom1: unknown, geom2: unknown) => any),
+          bboxClip: ((feature: unknown, bbox: [number, number, number, number]) => any),
           lineString: ((coordinates: number[][], properties?: AnyValuesObject, options?: TurfGeometryOption) => any),
+          multiLineString: ((coordinates: number[][][], properties?: AnyValuesObject, options?: TurfGeometryOption) => any),
           polygon: ((points: number[][][], properties?: AnyValuesObject, options?: TurfGeometryOption) => any),
+          multiPolygon : ((points: number[][][][], properties?: AnyValuesObject, options?: TurfGeometryOption) => any),
         };
+
+        declare const OpenLayer: {
+          format: {
+            GeoJSON : any,
+          },
+          source: {
+            VectorSource : any 
+          }
+        }
+
         `
             : `${buildGlobalServerMethods(globalServerMethods)}
 

@@ -57,8 +57,12 @@ import { deepDifferent } from './storeHookFactory';
 
 import { globals } from './sandbox';
 
-import { polygon, lineString } from '@turf/helpers';
+import { polygon, lineString, multiPolygon, multiLineString, feature } from '@turf/helpers';
 import * as lineIntersect from '@turf/line-intersect';
+import * as bboxClip from '@turf/bbox-clip';
+
+import * as GeoJSON from 'ol/format/GeoJSON';
+import * as VectorSource from 'ol/source/Vector';
 
 
 const refs: Record<string, { current: unknown }> = {};
@@ -407,7 +411,20 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.Turf = {
     lineIntersect: lineIntersect.default,
     lineString: lineString,
-    polygon: polygon
+    multiLineString: multiLineString,
+    polygon: polygon,
+    multiPolygon: multiPolygon,
+    feature : feature,
+    bboxClip: bboxClip.default
+  }
+
+  globals.OpenLayer = {
+    format :{
+      GeoJSON : GeoJSON.default,
+    },
+    source : {
+      VectorSource : VectorSource.default
+    }
   }
 
 }
