@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 
-import { IGameModel } from 'wegas-ts-api';
+import {IGameModel} from 'wegas-ts-api';
 
 export const en = {
   formatDate: (timestamp: number) => new Date(timestamp).toLocaleDateString('en'),
@@ -336,6 +336,13 @@ export const en = {
   logoutForPrivacy: 'To ensure your privacy, you have to log out',
   logoutToContinue: 'In order to continue, you have to log out',
   invalidToken: 'Invalid Token',
+  defaultProcessMessage: 'Process',
+  processMessages: {
+    InviteToJoinToken: "Join the game",
+    ValidateAddressToken: "Validate address",
+    ResetPasswordToken: "Reset password",
+    SurveyToken: "Take the survey",
+  },
   processing: 'processing...',
   andXMore: (x: number) => `and ${x} more...`,
   status: {

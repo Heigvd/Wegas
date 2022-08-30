@@ -1,3 +1,5 @@
+import { wwarn } from "./wegaslog";
+
 /** Unmount effect callback */
 type UnmoutEffectFn = () => void;
 
@@ -25,7 +27,14 @@ export function registerEffect(effect: EffectFn) {
  * run all registered effects
  */
 export function runEffects() {
-  unmounters = effects.map(fn => fn()).flatMap(unmount => unmount ? [unmount] : []);
+  unmounters = effects.map(fn => {
+    try {
+      return fn();
+    } catch (e) {
+      wwarn(e);
+    }
+  }
+  ).flatMap(unmount => unmount ? [unmount] : []);
 }
 
 /**
