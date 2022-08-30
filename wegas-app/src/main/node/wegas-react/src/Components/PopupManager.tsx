@@ -51,7 +51,7 @@ export interface PopupState {
 
 export function PopupManager({
   children,
-}: React.PropsWithChildren<UknownValuesObject>) {
+}: React.PropsWithChildren<UnknownValuesObject>) {
   const popups = useStore(s => s.global.popups);
   const { lang } = React.useContext(languagesCTX);
   return (

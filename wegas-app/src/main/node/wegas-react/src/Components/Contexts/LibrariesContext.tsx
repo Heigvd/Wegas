@@ -473,7 +473,7 @@ function execAllScripts(scripts: ScriptEntry[]) {
 }
 
 export function LibrariesLoader(
-  props: React.PropsWithChildren<UknownValuesObject>,
+  props: React.PropsWithChildren<UnknownValuesObject>,
 ) {
   const stateRef = React.useRef(defaultLibrariesState);
 

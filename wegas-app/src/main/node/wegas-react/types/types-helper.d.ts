@@ -54,5 +54,8 @@ type ExtractTuppleArray<
   : RET;
 
 type EmptyObject = Record<string, never>;
-type UknownValuesObject = Record<string, unknown>;
+type UnknownValuesObject = Record<string, unknown>;
+/**
+ * @deprecated
+ */
 type AnyValuesObject = Record<string, any>;

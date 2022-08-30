@@ -3,7 +3,7 @@ interface RuntimeException {
 }
 interface WegasAccessDenied extends RuntimeException {
   '@class': 'WegasAccessDenied';
-  entity: AnyValuesObject;
+  entity: UnknownValuesObject;
   mode: string;
   user: IUser;
 }
@@ -66,7 +66,7 @@ interface ClientEvent {
 interface CustomEvent {
   '@class': 'CustomEvent';
   type: string;
-  payload: AnyValuesObject;
+  payload: UnknownValuesObject;
 }
 interface EntityDestroyedEvent {
   '@class': 'EntityDestroyedEvent';

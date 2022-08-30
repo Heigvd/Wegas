@@ -134,9 +134,9 @@ interface SchemaPropsTesterState {
   code: object;
   select: string;
   undefSelect?: string;
-  // simpleHashList: UknownValuesObject;
-  customizedHashList: UknownValuesObject;
-  // multiLevelHashList: UknownValuesObject;
+  // simpleHashList: UnknownValuesObject;
+  customizedHashList: UnknownValuesObject;
+  // multiLevelHashList: UnknownValuesObject;
   file?: IAbstractContentDescriptor;
   greyFilterfile?: IAbstractContentDescriptor;
   objectArray?: { className?: string; condition?: IScript }[];

@@ -53,7 +53,7 @@ export function getComponentFromPath(page: WegasComponent, path: number[]) {
   return cloneDeep(component);
 }
 
-export type ChildrenDeserializerProps<P = UknownValuesObject> = P & {
+export type ChildrenDeserializerProps<P = UnknownValuesObject> = P & {
   editMode: boolean;
   wegasChildren?: WegasComponent[];
   path: number[];

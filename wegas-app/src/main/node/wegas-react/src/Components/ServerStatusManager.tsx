@@ -30,7 +30,7 @@ function ServerStatusModal({
 
 export function ServerStatusManager({
   children,
-}: React.PropsWithChildren<UknownValuesObject>) {
+}: React.PropsWithChildren<UnknownValuesObject>) {
   const serverStatus = useStore(s => s.global.serverStatus);
   return (
     <>
