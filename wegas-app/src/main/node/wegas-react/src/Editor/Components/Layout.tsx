@@ -61,7 +61,7 @@ const SourceEditor = React.lazy(() => import('./Page/SourceEditor'));
 
 const FindAndReplace = React.lazy(() => import('./FindAndReplace'));
 
-const Tester = React.lazy(() => import('../../Testers/ScriptTester'));
+//const Tester = React.lazy(() => import('../../Testers/ScriptTester'));
 
 const layout = css({
   display: 'flex',
@@ -74,10 +74,10 @@ const layout = css({
 });
 
 const availableLayoutTabs: LinearLayoutComponents = [
-  {
+  /*{
     tabId: 'Tester',
     content: <Tester />,
-  },
+  },*/
   {
     tabId: 'Variables',
     content: <TreeView />,
@@ -168,7 +168,7 @@ function scenaristPagesSelector(s: State) {
 }
 
 export default function Layout() {
-  const timer = React.useRef<NodeJS.Timeout | undefined>();
+  const timer = React.useRef<ReturnType<typeof setTimeout>>();
   const { lang } = React.useContext(languagesCTX);
   const [loading, setLoading] = React.useState(true);
   const { currentRole } = React.useContext(roleCTX);
