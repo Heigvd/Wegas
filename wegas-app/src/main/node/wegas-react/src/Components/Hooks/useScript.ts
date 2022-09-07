@@ -13,7 +13,7 @@ import {
   WegasClassNames,
 } from 'wegas-ts-api';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
-import { fileURL } from '../../API/files.api';
+import { downloadFile, fileURL } from '../../API/files.api';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
 import { entityIs } from '../../data/entities';
@@ -391,6 +391,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     getLogger: getLogger,
     registerEffect: registerEffect,
     getFilePath: fileURL,
+    downloadFile: downloadFile,
     downloadDataAsFile,
   };
 
