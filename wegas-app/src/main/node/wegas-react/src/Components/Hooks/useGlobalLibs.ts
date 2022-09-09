@@ -323,7 +323,8 @@ export function useGlobalLibs() {
           },
           source: {
             VectorSource : any 
-          }
+          },
+          transformExtent : ((extent : ExtentLikeObject, srcProj : ProjectionLike, destProj : ProjectionLike) => ExtentLikeObject)
         }
 
         `
