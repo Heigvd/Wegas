@@ -5,7 +5,7 @@ type SchemaLayout =
   | 'shortInline'
   | 'extraShortInline'
   | 'flexInline'
-  | 'longinline'
+  | 'longInline'
   | 'fullWidth';
 
 type WegasTypeString = TYPESTRING | 'identifier';
@@ -20,7 +20,7 @@ type CodeLanguage = ScriptLanguage | 'PlainText';
 
 interface SelectItem {
   label: string;
-  value: any;
+  value: unknown;
 }
 
 interface Item<T> extends ClassStyleId {

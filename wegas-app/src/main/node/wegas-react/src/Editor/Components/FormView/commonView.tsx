@@ -62,7 +62,7 @@ export const LAYOUTS: { [key in SchemaLayout]: string } = {
   extraShortInline: css(shortInline, {
     maxWidth: '5em',
   }),
-  longinline: longInline,
+  longInline: longInline,
   flexInline: cx(flex, flexRow, itemCenter),
   fullWidth: fullWidth,
 };
