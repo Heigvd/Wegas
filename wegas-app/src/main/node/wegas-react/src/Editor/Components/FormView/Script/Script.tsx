@@ -240,6 +240,7 @@ export function Script({
                     expressions={statements}
                     onChange={onStatementsChange}
                     mode={mode}
+                      setError={ errors => setError(errors)}
                   />
                 )}
               </div>

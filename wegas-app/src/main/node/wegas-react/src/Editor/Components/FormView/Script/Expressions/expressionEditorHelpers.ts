@@ -418,7 +418,7 @@ function makeSchemaMethodSelector(methods?: MethodConfig) {
             })),
             returnType: 'string',
             index: 1,
-            layout: 'longinline',
+            layout: 'longInline',
           }),
         }
       : {}),
@@ -531,7 +531,7 @@ function makeSchemaConditionAttributes(
       values: generateOperators(method.returns),
       returnType: 'string',
       index: 3,
-      layout: 'longinline',
+      layout: 'longInline',
       required: true,
       value: method.returns === 'boolean' ? 'isTrue' : '===',
       visible: (_value: LiteralExpressionValue, formValue: Attributes) =>
@@ -543,7 +543,7 @@ function makeSchemaConditionAttributes(
       viewType: method.returns,
       value: defaultRightExpressionValue(method),
       index: 4,
-      layout: 'longinline',
+      layout: 'longInline',
       required: true,
       visible: (_value: LiteralExpressionValue, formValue: Attributes) =>
         isRightExpressionVisible(currentSchema, formValue),

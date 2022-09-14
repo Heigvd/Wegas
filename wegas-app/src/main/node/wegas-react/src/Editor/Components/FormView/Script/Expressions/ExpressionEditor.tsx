@@ -7,7 +7,6 @@ import { debounce, isArray, pick } from 'lodash-es';
 import { editor } from 'monaco-editor';
 import * as React from 'react';
 import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
-import { Button } from '../../../../../Components/Inputs/Buttons/Button';
 import { CustomDotLoader } from '../../../../../Components/Loader';
 import { themeVar } from '../../../../../Components/Theme/ThemeVars';
 import { defaultMarginLeft } from '../../../../../css/classes';
@@ -35,6 +34,8 @@ import {
   WyiswygExpressionSchema,
 } from './expressionEditorHelpers';
 
+type FormOnChange = React.ComponentProps<typeof Form>['onChange'];
+
 const expressionEditorStyle = css({
   backgroundColor: themeVar.colors.HeaderColor,
   padding: '2px',
@@ -47,7 +48,7 @@ interface ExpressionEditorState {
   attributes?: Attributes;
   schema?: WyiswygExpressionSchema;
   error?: string | false;
-  softError?: string;
+  softError?: string[];
 }
 
 function variableIdsSelector(s: State) {
@@ -106,7 +107,7 @@ function setFormState(state: ExpressionEditorState, action: FormStateActions) {
         break;
       }
       case 'SET_SOFT_ERROR': {
-        state.softError = action.payload.error;
+        state.softError = [action.payload.error];
         break;
       }
     }
@@ -118,6 +119,7 @@ export interface ExpressionEditorProps extends ScriptView {
   id?: string;
   onChange?: (code: string) => void;
   mode?: ScriptMode;
+  setError?: (errors: string[] | undefined) => void;
 }
 
 export function ExpressionEditor({
@@ -125,6 +127,7 @@ export function ExpressionEditor({
   id,
   mode,
   onChange: instantOnChange,
+  setError,
 }: ExpressionEditorProps) {
   const codeRef = React.useRef<string>();
   const modeRef = React.useRef<ScriptMode>();
@@ -147,9 +150,13 @@ export function ExpressionEditor({
 
   React.useEffect(() => {
     if (error) {
-      setSrcMode(true);
+      if (setError) {
+        setError([error, ...(softError || [])]);
+      } else {
+        setSrcMode(true);
+      }
     }
-  }, [error]);
+  }, [error, softError, setError]);
 
   const variablesItems = useStore(s => {
     return genVarItems(variableIdsSelector(s), selectableFn, undefined, value =>
@@ -356,15 +363,15 @@ export function ExpressionEditor({
     [mode, onChange],
   );
 
-  const onFormChange = React.useCallback(
-    (v: Attributes, e: any) => {
+  const onFormChange: FormOnChange = React.useCallback(
+    (v: Attributes, e) => {
       if (mountedRef.current === true) {
         if (v == null) {
           dispatchFormState({
             type: 'SET_IF_DEF',
             payload: {
               attributes: v,
-              softError: e.join('\n'),
+              softError: e.map(error => error.toString()),
             },
           });
         } else {
@@ -386,7 +393,11 @@ export function ExpressionEditor({
             ).then(({ attributes, schema }) =>
               dispatchFormState({
                 type: 'SET_IF_DEF',
-                payload: { attributes, schema, softError: e.join('\n') },
+                payload: {
+                  attributes,
+                  schema,
+                  softError: e.map(error => error.toString()),
+                },
               }),
             );
           }
@@ -402,7 +413,11 @@ export function ExpressionEditor({
             ).then(({ attributes, schema }) =>
               dispatchFormState({
                 type: 'SET_IF_DEF',
-                payload: { attributes, schema, softError: e.join('\n') },
+                payload: {
+                  attributes,
+                  schema,
+                  softError: e.map(e => e.toString()),
+                },
               }),
             );
           }
@@ -413,7 +428,7 @@ export function ExpressionEditor({
               type: 'SET_IF_DEF',
               payload: {
                 attributes: v,
-                softError: e.join('\n'),
+                softError: e.map(e => e.toString()),
               },
             });
           }
@@ -429,17 +444,10 @@ export function ExpressionEditor({
         <div className={defaultMarginLeft}>
           <CustomDotLoader size={21} color={themeVar.colors.PrimaryColor} />
         </div>
-      ) : (
-        <Button
-          icon="code"
-          disabled={typeof error === 'string'}
-          pressed={srcMode}
-          onClick={() => setSrcMode(srcMode => !srcMode)}
-        />
-      )}
+      ) : null}
       {typeof error === 'string' || srcMode ? (
         <div className={scriptEditStyle}>
-          <MessageString type="error" value={error || softError} />
+          <MessageString type="error" value={(softError || []).join('\n')} />
           <TempScriptEditor
             language={isServerScript ? 'javascript' : 'typescript'}
             initialValue={code}

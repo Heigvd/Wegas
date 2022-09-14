@@ -10,12 +10,14 @@ function createNewExpression(mode?: ScriptMode): string {
 interface WyswygScriptEditorProps extends ScriptView {
   expressions: string[];
   onChange: (script: string[]) => void;
+  setError: (errors: string[] | undefined) => void;
 }
 
 export function WyswygScriptEditor({
   expressions,
   onChange,
   mode,
+  setError,
 }: WyswygScriptEditorProps) {
   return (
     <DragDropArray
@@ -35,6 +37,7 @@ export function WyswygScriptEditor({
           key={index}
           code={expression}
           mode={mode}
+          setError={setError}
           onChange={value => {
             expressions[index] = value;
             onChange(expressions);
