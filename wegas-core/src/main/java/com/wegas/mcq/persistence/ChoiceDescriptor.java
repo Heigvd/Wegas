@@ -97,6 +97,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         proposal = EmptyArray.class,
         optional = false, nullable = false,
         view = @View(
+            index = 5,
             value = Hidden.class,
             label = ""
         ))
@@ -129,7 +130,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * Total number of replies allowed. No default value.
      */
     @WegasEntityProperty(view = @View(
-        index = 2,
+        index = 10,
         label = "Max. number replies",
         value = NumberView.WithInfinityPlaceholder.class,
         layout = CommonView.LAYOUT.shortInline
