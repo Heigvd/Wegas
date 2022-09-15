@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -8,12 +7,13 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.exception.client.WegasConflictException;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.variable.ModelScoped;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -56,18 +56,62 @@ public class LibraryFacade extends WegasAbstractFacade {
         return ret.toString();
     }
 
-    public GameModelContent create(Long gameModelId, String libraryName, String key, GameModelContent content) {
+    /**
+     * Check if a folder already exists.
+     * To check if such a folder exists,
+     *
+     * @param gameModel lib owner
+     * @param libType   lib type
+     * @param path      path to check
+     *
+     * @return true if there the folder already exists
+     */
+    private boolean doesFolderExist(GameModel gameModel, String libType, String path) {
+        if (path == null) {
+            // root always exists
+            return true;
+        }
+
+        Optional<GameModelContent> exists = gameModel.getLibrariesAsList(libType)
+            .stream()
+            .filter(lib -> {
+                return lib.getContentKey().startsWith(path);
+            })
+            .findFirst();
+
+        return exists.isPresent();
+    }
+
+    public GameModelContent create(Long gameModelId, String libraryType, String pathArg, GameModelContent content) {
+        // make sure path does not start with a slash.
+        String path = Helper.cleanFilename(pathArg);
+
+        String pathToTest = path + '/'; // make sure pathToTest ends with a slash
+
         GameModel gameModel = gameModelFacade.find(gameModelId);
-        if (gameModel.findLibrary(libraryName, key) == null) {
-            content.setLibraryType(libraryName);
-            content.setContentKey(key);
+        if (gameModel.findLibrary(libraryType, path) == null) {
+            if (doesFolderExist(gameModel, libraryType, pathToTest)) {
+                // e.f new path is /hello, but /hello/world already exists
+                throw WegasErrorMessage.error("Folder already exists", "GameModelContent.Create.FolderAlreadyExists");
+            }
+            List<String> allPaths = Helper.getAllPaths(path);
+
+            allPaths.forEach(p -> {
+                if (gameModel.findLibrary(libraryType, p) != null) {
+                    // e.f new path is /hello/world, but /hello already exists and /hello is not a folder
+                    throw WegasErrorMessage.error("Folder already exists", "GameModelContent.Create.FolderAlreadyExists");
+                }
+            });
+
+            content.setLibraryType(libraryType);
+            content.setContentKey(path);
             gameModel.addLibrary(content);
 
             if (!gameModel.isModel()) {
                 content.setVisibility(ModelScoped.Visibility.PRIVATE);
             }
         } else {
-            throw WegasErrorMessage.error("Library already exists","GameModelContent.Create.AlreadyExists");
+            throw WegasErrorMessage.error("Library already exists", "GameModelContent.Create.AlreadyExists");
         }
 
         return content;
@@ -81,7 +125,7 @@ public class LibraryFacade extends WegasAbstractFacade {
             content.setContentKey(content.getContentKey());
             lib.merge(content);
         } else {
-            throw WegasErrorMessage.error("Library does not exist","GameModelContent.Update.DoesNotExist");
+            throw WegasErrorMessage.error("Library does not exist", "GameModelContent.Update.DoesNotExist");
         }
         return lib;
     }

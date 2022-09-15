@@ -93,56 +93,67 @@ export function managedModeRequest(
     .catch(data => data.json() as Promise<IManagedResponse>);
 }
 
+/**
+ * Check if exception match the partial pattern
+ */
+function exceptionMatch(
+  ex: WegasExceptions,
+  pattern: Partial<WegasExceptions>,
+): boolean {
+  const keysToCheck = Object.keys(pattern);
+  for (const key of keysToCheck) {
+    if (
+      (ex as unknown as Record<string, unknown>)[key] !==
+      (pattern as unknown as Record<string, unknown>)[key]
+    ) {
+      // property does not match
+      return false;
+    }
+  }
+
+  return true;
+}
+
 export function extractExceptions(
   managedResponse: IManagedResponse,
   exceptionsToExtract: Partial<WegasExceptions>[],
-) {
-  // Trying to extract known error
-  const remainingExceptionsToExtract: (Partial<WegasExceptions> | null)[] = [
-    ...exceptionsToExtract,
-  ];
+): { managedResponse: IManagedResponse; exceptionsFound: WegasExceptions[] } {
+  // Extract known error
   const remainingEvents: WegasEvent[] = [];
-  const exceptionsFound: (true | undefined)[] = [];
-  for (const event of managedResponse.events) {
+  const exceptionsFound: WegasExceptions[] = [];
+
+  managedResponse.events.forEach(event => {
     if (event['@class'] === 'ExceptionEvent') {
-      const remainingExceptions: WegasExceptions[] = [];
-      for (const exception of event.exceptions) {
-        for (let i = 0; i < remainingExceptionsToExtract.length; ++i) {
-          const exceptionToExtract = remainingExceptionsToExtract[i];
+      const ex = event.exceptions.reduce<{
+        extract: WegasExceptions[];
+        keep: WegasExceptions[];
+      }>(
+        (acc, cur) => {
           if (
-            exceptionToExtract != null &&
-            exception['@class'] === exceptionToExtract['@class']
+            exceptionsToExtract.find(pattern => exceptionMatch(cur, pattern))
           ) {
-            if (
-              exception['@class'] === 'WegasErrorMessage' &&
-              exceptionToExtract['@class'] === 'WegasErrorMessage'
-            ) {
-              if (exception.messageId === exceptionToExtract.messageId) {
-                exceptionsFound[i] = true;
-                remainingExceptionsToExtract[i] = null;
-              } else {
-                remainingExceptions.push(exception);
-              }
-            } else {
-              exceptionsFound[i] = true;
-              remainingExceptionsToExtract[i] = null;
-            }
+            acc.extract.push(cur);
           } else {
-            remainingExceptions.push(exception);
+            acc.keep.push(cur);
           }
-        }
+          return acc;
+        },
+        { extract: [], keep: [] },
+      );
+
+      if (ex.keep.length > 0) {
+        // some unhandled exception, keep event minus extract exceptions
+        remainingEvents.push({ ...event, exceptions: ex.keep });
       }
-      // Only push exception event if he still has exceptions in it
-      if (remainingExceptions.length > 0) {
-        remainingEvents.push({
-          ...event,
-          exceptions: remainingExceptions,
-        });
+
+      if (ex.extract.length > 0) {
+        exceptionsFound.push(...ex.extract);
       }
     } else {
+      // event not extracted
       remainingEvents.push(event);
     }
-  }
+  });
 
   const cleanedManagedResponse: IManagedResponse = {
     ...managedResponse,

@@ -803,7 +803,8 @@ export function LibrariesLoader(
         'PRIVATE',
       ).then((managedResponse: IManagedResponse) => {
         const library = managedResponse.updatedEntities[0];
-        let error: 'NOTNEW' | 'UNKNOWN' | undefined = undefined;
+        let error: 'NODE_EXISTS' | 'FOLDER_EXISTS' | 'UNKNOWN' | undefined =
+          undefined;
         if (entityIs(library, 'GameModelContent')) {
           const path = computeLibraryPath(libraryName, libraryType);
           dispatchLibrariesState({
@@ -824,26 +825,45 @@ export function LibrariesLoader(
               '@class': 'WegasErrorMessage',
               messageId: 'GameModelContent.Create.AlreadyExists',
             },
+            {
+              '@class': 'WegasErrorMessage',
+              messageId: 'GameModelContent.Create.FolderAlreadyExists',
+            },
           ]);
 
-        if (exceptionsFound[0]) {
-          error = 'NOTNEW';
+        for (const ex of exceptionsFound) {
+          if (ex['@class'] === 'WegasErrorMessage') {
+            if (ex.messageId === 'GameModelContent.Create.AlreadyExists') {
+              error = 'NODE_EXISTS';
+            } else if (
+              ex.messageId === 'GameModelContent.Create.FolderAlreadyExists'
+            ) {
+              error = 'FOLDER_EXISTS';
+            }
+          }
         }
 
+        error = error == null && exceptionsFound.length > 0 ? 'UNKNOWN' : error;
         // Dispatch the rest of the response to the main store
         store.dispatch(manageResponseHandler(newManagedResponse));
 
         // Manage localy the error
         if (error != null) {
           switch (error) {
-            case 'NOTNEW':
+            case 'NODE_EXISTS':
               addLibrary &&
                 addLibrary({
                   type: 'error',
                   message: i18nValues.scripts.scriptNameNotAvailable,
                 });
               break;
-            case 'UNKNOWN':
+            case 'FOLDER_EXISTS':
+              addLibrary &&
+                addLibrary({
+                  type: 'error',
+                  message: i18nValues.scripts.scriptFolderNotAvailable,
+                });
+              break;
             default:
               addLibrary &&
                 addLibrary({
