@@ -27,8 +27,10 @@ import {
   hideOverflow,
   relative,
 } from '../../../css/classes';
-import { EditorTabsTranslations } from '../../../i18n/editorTabs/definitions';
-import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import {
+  EditorTabsTranslations,
+  editorTabsTranslations,
+} from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { DragTab, DropTab } from './DnDTabs';
 import { DropActionType } from './LinearLayout';

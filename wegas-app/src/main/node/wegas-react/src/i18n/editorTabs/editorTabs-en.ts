@@ -1,6 +1,18 @@
-import { EditorTabsTranslations } from './definitions';
+import { ComponentType } from '../../Components/PageComponents/tools/componentFactory';
 
-export const editorTabsTranslationsEN: EditorTabsTranslations = {
+/** use separate const to have formal typings */
+const compTypes: Record<ComponentType, string> = {
+  Other: 'Other',
+  Layout: 'Layout',
+  Input: 'Input',
+  Output: 'Output',
+  Advanced: 'Advanced',
+  Maps: 'Maps',
+  Programmatic: 'Programmatic',
+  Utility: 'Utility',
+};
+
+export const editorTabsTranslationsEN = {
   miscellaneous: {
     noAvailableTabs:
       'No tab available. You should try to change you role in the top left admin menu',
@@ -40,7 +52,7 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
   },
   fileBrowser: {
     fileInsertFailed: 'File insertion failed',
-    overrideFile: fileName =>
+    overrideFile: (fileName: string) =>
       `Are you sure that you want to override the file [${fileName}]?`,
     deleteFolder:
       'Are you sure to delete the folder and all its subdirectories ?',
@@ -52,19 +64,23 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     newPage: 'New page',
     pageName: 'Page name',
     folderName: 'Folder name',
-    itemMustName: item => `The ${item ? item : 'item'} must have a name`,
+    itemMustName: (item?: string) =>
+      `The ${item ? item : 'item'} must have a name`,
     page: 'page',
     folder: 'folder',
     openFile: 'Open file',
-    changeType: (fromFileType, toFileType) =>
+    changeType: (fromFileType: string, toFileType: string) =>
       `Are you sure that you want to change the file type from ${fromFileType} to ${toFileType}?`,
     directoryName: 'Directory name',
-    uploading: nbUploadingFiles => `Uploading ${nbUploadingFiles} files`,
-    directory: directoryName => `Directory ${directoryName} allready exists`,
+    uploading: (nbUploadingFiles: string) =>
+      `Uploading ${nbUploadingFiles} files`,
+    directory: (directoryName: string) =>
+      `Directory ${directoryName} allready exists`,
   },
   scripts: {
     scriptNameNotAvailable:
       'Script name not available (script already exists or the name contains bad characters)',
+    scriptFolderNotAvailable: 'Folder already exists',
     cannotCreateScript: 'Cannot create the script',
     cannotDeleteScript: 'Cannot delete the script',
     cannotGetScripts: 'Cannot get the scripts',
@@ -93,14 +109,14 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
   },
   themeEditor: {
     contexts: 'Contexts',
-    themeNameVal: name => `${name}'s theme :`,
+    themeNameVal: (name: string) => `${name}'s theme :`,
     themeAlreadyExists: 'The theme already exists',
-    theme: t => `Theme: ${t}`,
+    theme: (t: string) => `Theme: ${t}`,
     themeName: 'Theme Name',
     addTheme: 'Add a theme',
     deleteTheme: 'Delete theme',
     modeAlreadyExists: 'The mode already exists',
-    mode: m => `Mode: ${m}`,
+    mode: (m: string) => `Mode: ${m}`,
     modeName: 'Mode name',
     addMode: 'Add a mode',
     showSection: 'Show section',
@@ -116,12 +132,12 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     nextMode: 'Next mode : ',
     deleteMode: 'Delete mode',
     setMainMode: 'Set as main mode',
-    states: state => {
+    states: (state: string) => {
       if (state === 'disabled') return 'Disabled';
       else if (state === 'readOnly') return 'Read only';
       else return state;
     },
-    sections: section => {
+    sections: (section: string) => {
       switch (section) {
         case 'colors':
           return 'Colors';
@@ -162,20 +178,11 @@ export const editorTabsTranslationsEN: EditorTabsTranslations = {
     scenaristPage: 'Scenarist page',
     trainerPage: 'Trainer page',
     folderMustEmpty: 'The folder must be empty to delete it',
-    deletePageOrFolder: item => `Delete the ${item}`,
+    deletePageOrFolder: (item: string) => `Delete the ${item}`,
     editorMustEnabled: 'Edit mode must be enabled to use the palette.',
     enableEditMode: 'Enable edit mode',
     back: 'Back',
-    componentTypes: {
-      Other: 'Other',
-      Layout: 'Layout',
-      Input: 'Input',
-      Output: 'Output',
-      Advanced: 'Advanced',
-      Maps: 'Maps',
-      Programmatic: 'Programmatic',
-      Utility: 'Utility',
-    },
+    componentTypes: compTypes,
   },
   languageEditor: {
     languages: 'Languages',

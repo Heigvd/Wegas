@@ -1,4 +1,4 @@
-import { EditorTabsTranslations } from './definitions';
+import { EditorTabsTranslations } from './editorTabs';
 
 export const editorTabsTranslationsIT: EditorTabsTranslations = {
   miscellaneous: {
@@ -66,6 +66,7 @@ export const editorTabsTranslationsIT: EditorTabsTranslations = {
   scripts: {
     scriptNameNotAvailable:
       'Nome dello script non disponibile (lo script esiste già o il nome contiene caratteri sbagliati)',
+    scriptFolderNotAvailable: 'La directory esiste già',
     cannotCreateScript: 'Impossibile creare lo script',
     cannotDeleteScript: 'Impossibile cancellare lo script',
     cannotGetScripts: 'Impossibile ottenere gli script',

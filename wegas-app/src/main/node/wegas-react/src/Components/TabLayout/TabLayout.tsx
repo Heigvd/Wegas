@@ -13,8 +13,10 @@ import {
 } from '../../css/classes';
 import { Reparentable } from '../../Editor/Components/Reparentable';
 import { commonTranslations } from '../../i18n/common/common';
-import { EditorTabsTranslations } from '../../i18n/editorTabs/definitions';
-import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
+import {
+  EditorTabsTranslations,
+  editorTabsTranslations,
+} from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { Loader } from '../HOC/Loader';
 import { IconButton } from '../Inputs/Buttons/IconButton';
