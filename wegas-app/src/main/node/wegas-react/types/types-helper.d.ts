@@ -59,3 +59,5 @@ type UnknownValuesObject = Record<string, unknown>;
  * @deprecated
  */
 type AnyValuesObject = Record<string, any>;
+
+type Timer = ReturnType<typeof setTimeout>;

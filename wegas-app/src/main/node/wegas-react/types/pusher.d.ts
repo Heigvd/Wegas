@@ -3,6 +3,8 @@
 // Definitions by: Qubo <https://github.com/tkqubo>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
+type PusherBindCallback = (...args: unknown[]) => void;
+
 declare module 'pusher-js' {
   export namespace Pusher {
     interface PusherStatic {
@@ -15,8 +17,8 @@ declare module 'pusher-js' {
       unsubscribe(name: string): void;
       channel(name: string): Channel;
       allChannels(): Channel[];
-      bind(eventName: string, callback: Function): PusherSocket;
-      bind_all(callback: Function): PusherSocket;
+      bind(eventName: string, callback: PusherBindCallback): PusherSocket;
+      bind_all(callback: PusherBindCallback): PusherSocket;
       disconnect(): void;
       key: string;
       config: Config; //TODO: add GlobalConfig typings
@@ -109,10 +111,18 @@ declare module 'pusher-js' {
 
     interface GenericEventsDispatcher<Self extends EventsDispatcher>
       extends EventsDispatcher {
-      bind(eventName: string, callback: Function, context?: any): Self;
-      bind_global(callback: Function): Self;
-      unbind(eventName?: string, callback?: Function, context?: any): Self;
-      unbind_global(callback?: Function): Self;
+      bind(
+        eventName: string,
+        callback: PusherBindCallback,
+        context?: any,
+      ): Self;
+      bind_global(callback: PusherBindCallback): Self;
+      unbind(
+        eventName?: string,
+        callback?: PusherBindCallback,
+        context?: any,
+      ): Self;
+      unbind_global(callback?: PusherBindCallback): Self;
       unbind_all(): Self;
       emit(eventName: string, data?: any): Self;
     }
@@ -126,7 +136,7 @@ declare module 'pusher-js' {
       /**
        * Authenticates the connection as a member of the channel.
        * @param  {String} socketId
-       * @param  {Function} callback
+       * @param  {PusherBindCallback} callback
        */
       authorize(socketId: string, callback: (data: any) => void): void;
     }
@@ -134,16 +144,19 @@ declare module 'pusher-js' {
     interface EventsDispatcher {
       bind(
         eventName: string,
-        callback: Function,
+        callback: PusherBindCallback,
         context?: any,
       ): EventsDispatcher;
-      bind_all(callback: Function): EventsDispatcher;
+      bind_all(callback: PusherBindCallback): EventsDispatcher;
       unbind(
         eventName?: string,
-        callback?: Function,
+        callback?: PusherBindCallback,
         context?: any,
       ): EventsDispatcher;
-      unbind_all(eventName?: string, callback?: Function): EventsDispatcher;
+      unbind_all(
+        eventName?: string,
+        callback?: PusherBindCallback,
+      ): EventsDispatcher;
       emit(eventName: string, data?: any): EventsDispatcher;
     }
 
@@ -218,7 +231,7 @@ declare module 'pusher-js' {
       /**
        * Calls back for each member in unspecified order.
        *
-       * @param  {Function} callback
+       * @param  {PusherBindCallback} callback
        */
       each(callback: (member: any) => void): void;
       members: { [id: number]: UserInfo<T> };
