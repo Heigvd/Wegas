@@ -14,6 +14,7 @@ import * as bboxClip from '@turf/bbox-clip';
 
 import * as GeoJSON from 'ol/format/GeoJSON';
 import * as VectorSource from 'ol/source/Vector';
+import {transformExtent} from 'ol/proj';
 
 
 interface GlobalVariableClass {
@@ -76,7 +77,8 @@ export interface GlobalClasses {
     },
     source : {
       VectorSource : typeof VectorSource.default
-    }
+    },
+    transformExtent : typeof transformExtent
   }
 }
 

@@ -13,7 +13,7 @@ import {
   WegasClassNames,
 } from 'wegas-ts-api';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
-import { fileURL } from '../../API/files.api';
+import { downloadFile, fileURL } from '../../API/files.api';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
 import { entityIs } from '../../data/entities';
@@ -63,6 +63,8 @@ import * as bboxClip from '@turf/bbox-clip';
 
 import * as GeoJSON from 'ol/format/GeoJSON';
 import * as VectorSource from 'ol/source/Vector';
+import { transformExtent } from 'ol/proj';
+import { initializeProjection } from '../Maps/helpers/proj4js';
 
 
 const refs: Record<string, { current: unknown }> = {};
@@ -391,6 +393,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     getLogger: getLogger,
     registerEffect: registerEffect,
     getFilePath: fileURL,
+    downloadFile: downloadFile,
     downloadDataAsFile,
   };
 
@@ -424,9 +427,17 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     },
     source : {
       VectorSource : VectorSource.default
-    }
+    },
+    transformExtent : transformExtentWrapper
   }
 
+}
+
+function transformExtentWrapper(ext: ExtentLikeObject, srcProj: string, destProj: string, opt_stops: number | undefined ): ExtentLikeObject {
+
+  initializeProjection(srcProj);
+  initializeProjection(destProj);
+  return transformExtent(ext, srcProj, destProj, opt_stops) as ExtentLikeObject;
 }
 
 interface TranspileOptions {
