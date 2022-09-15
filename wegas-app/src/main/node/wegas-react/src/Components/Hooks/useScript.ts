@@ -13,7 +13,7 @@ import {
   WegasClassNames,
 } from 'wegas-ts-api';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
-import { fileURL } from '../../API/files.api';
+import { downloadFile, fileURL } from '../../API/files.api';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
 import { entityIs } from '../../data/entities';
@@ -56,6 +56,16 @@ import { addPopup } from '../PopupManager';
 import { deepDifferent } from './storeHookFactory';
 
 import { globals } from './sandbox';
+
+import { polygon, lineString, multiPolygon, multiLineString, feature } from '@turf/helpers';
+import * as lineIntersect from '@turf/line-intersect';
+import * as bboxClip from '@turf/bbox-clip';
+
+import * as GeoJSON from 'ol/format/GeoJSON';
+import * as VectorSource from 'ol/source/Vector';
+import { transformExtent } from 'ol/proj';
+import { initializeProjection } from '../Maps/helpers/proj4js';
+
 
 const refs: Record<string, { current: unknown }> = {};
 /**
@@ -125,6 +135,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   // Global variables
   globals.gameModel = instantiate(gameModel);
   globals.teams = instantiate(teams);
+
 
   globals.self = instantiate(player);
   globals.schemaProps = schemaProps;
@@ -382,6 +393,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     getLogger: getLogger,
     registerEffect: registerEffect,
     getFilePath: fileURL,
+    downloadFile: downloadFile,
     downloadDataAsFile,
   };
 
@@ -398,6 +410,34 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   };
 
   globals.wlog = wlog;
+
+  globals.Turf = {
+    lineIntersect: lineIntersect.default,
+    lineString: lineString,
+    multiLineString: multiLineString,
+    polygon: polygon,
+    multiPolygon: multiPolygon,
+    feature : feature,
+    bboxClip: bboxClip.default
+  }
+
+  globals.OpenLayer = {
+    format :{
+      GeoJSON : GeoJSON.default,
+    },
+    source : {
+      VectorSource : VectorSource.default
+    },
+    transformExtent : transformExtentWrapper
+  }
+
+}
+
+function transformExtentWrapper(ext: ExtentLikeObject, srcProj: string, destProj: string, opt_stops: number | undefined ): ExtentLikeObject {
+
+  initializeProjection(srcProj);
+  initializeProjection(destProj);
+  return transformExtent(ext, srcProj, destProj, opt_stops) as ExtentLikeObject;
 }
 
 interface TranspileOptions {

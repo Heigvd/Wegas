@@ -41,6 +41,10 @@ interface PlayerStringInput
    * placeholder - the grey text inside the box when nothing is written
    */
   placeholder?: IScript;
+  /**
+   * Rows: multiline input
+   */
+  rows?: number;
 }
 
 function PlayerStringInput({
@@ -56,6 +60,7 @@ function PlayerStringInput({
   onCancel,
   pageId,
   path,
+  rows,
 }: PlayerStringInput) {
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
 
@@ -109,6 +114,7 @@ function PlayerStringInput({
             className={className}
             style={style}
             id={id}
+            rows={rows}
           />
         );
       }}
@@ -123,6 +129,7 @@ function PlayerStringInput({
       className={className}
       style={style}
       id={id}
+      rows={rows}
     />
   );
 }
@@ -146,6 +153,14 @@ registerComponent(
         richText: true,
       }),
       onVariableChange: onVariableChangeSchema('On text change action'),
+      rows: {
+        type: ['number', 'null'],
+        view: {
+          label: 'multiline',
+          type:'number',
+          placeholder: '1',
+        }
+      },
       ...validatorSchema,
       ...classStyleIdShema,
     },

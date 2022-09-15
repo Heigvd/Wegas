@@ -33,6 +33,28 @@ export const fileURL = (absolutePath: string, gameModelId?: number) => {
   );
 };
 
+
+/**
+ * @param absolutePath
+ * @param fileType text, json or blob
+ * @returns 
+ */
+export const downloadFile: GlobalHelpersClass['downloadFile'] = async (absolutePath, fileType) => {
+  const res = await fetch(fileURL(absolutePath));
+
+  switch(fileType){
+    case 'TEXT':
+      return res.text();
+    case 'BLOB':
+      return res.blob();
+    case 'JSON':
+      return res.json();
+  }
+
+  throw new Error('Bad file type ' + fileType)
+
+};
+
 /**
  * FileAPIFactory - generates en object containing methods to manage files
  * @param gameModelId

@@ -337,6 +337,13 @@ export const fr: WegasTranslations = {
     loginAsGuest: "Préparation d'un compte invité en cours...",
   },
   tokenNotFound: 'Jeton introuvable',
+  defaultProcessMessage: 'Poursuivre',
+  processMessages: {
+    InviteToJoinToken: "Rejoindre la partie",
+    ValidateAddressToken: "Valider votre adresse",
+    ResetPasswordToken: "Mettre à jour votre mot de passe",
+    SurveyToken: "Participer au sondage",
+  },
   youAreConnectedAsUser: (user: string) => `Vous êtes actuellement connecter en tant que "${user}"`,
   butCraftedFor: (user: string) => `alors que votre lien a été préparer pour "${user}"`,
   logoutForPrivacy: 'Pour garantir votre anonymat, vous devez vous déconnecter',

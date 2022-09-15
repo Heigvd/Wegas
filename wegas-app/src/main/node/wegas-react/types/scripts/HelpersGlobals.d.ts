@@ -11,6 +11,7 @@ interface GlobalHelpersClass {
    */
   registerEffect: (effect: () => void) => void;
   getFilePath: (absolutePath: string) => string;
+  downloadFile: <T extends 'JSON' | 'TEXT' | 'BLOB'>(absolutePath: string, fileType : T) => Promise<T extends 'JSON'? unknown : (T extends 'BLOB' ? Blob : string)>;
   getLogger: (name: string) => {
     error: (...args: unknown[]) => void;
     warn: (...args: unknown[]) => void;

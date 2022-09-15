@@ -42,6 +42,8 @@ export default function CallbackView(props: CallbackViewProps): JSX.Element {
     [callbackProps.args, onChange],
   );
 
+  const effectiveReturnType = callbackProps.returnType?.length ? callbackProps.returnType: ['void'];
+
   return (
     <CommonViewContainer errorMessage={errorMessage} view={view}>
       <Labeled label={label} description={description}>
@@ -50,7 +52,7 @@ export default function CallbackView(props: CallbackViewProps): JSX.Element {
             <div className={flex}>{labelNode}</div>
             <TempScriptEditor
               language={'typescript'}
-              returnType={callbackProps.returnType}
+              returnType={effectiveReturnType}
               args={callbackProps.args}
               initialValue={value ? value.content : ''}
               onChange={onScriptContentChange}

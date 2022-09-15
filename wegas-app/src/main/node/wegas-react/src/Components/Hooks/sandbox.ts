@@ -8,6 +8,13 @@ import {
   SVariableInstance,
 } from 'wegas-ts-api';
 import { SchemaPropsType } from '../PageComponents/tools/schemaProps';
+import { polygon, multiPolygon, lineString, multiLineString, feature } from '@turf/helpers';
+import * as lineIntersect from '@turf/line-intersect';
+import * as bboxClip from '@turf/bbox-clip';
+
+import * as GeoJSON from 'ol/format/GeoJSON';
+import * as VectorSource from 'ol/source/Vector';
+import {transformExtent} from 'ol/proj';
 
 
 interface GlobalVariableClass {
@@ -55,6 +62,24 @@ export interface GlobalClasses {
       [exported: string]: unknown;
     };
   };
+  Turf: {
+    lineIntersect: typeof lineIntersect.default,
+    polygon: typeof polygon,
+    multiPolygon: typeof multiPolygon,
+    lineString: typeof lineString,
+    multiLineString: typeof multiLineString,
+    feature: typeof feature,
+    bboxClip: typeof bboxClip.default
+  };
+  OpenLayer : {
+    format : {
+      GeoJSON : typeof GeoJSON.default,
+    },
+    source : {
+      VectorSource : typeof VectorSource.default
+    },
+    transformExtent : typeof transformExtent
+  }
 }
 
   export function createSandbox<T = unknown>() {
