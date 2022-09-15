@@ -40,7 +40,8 @@
       #{gameController.currentGame.name} -
       #{gameController.currentGameModel.name}
     </title>
-    <link rel="icon" type="image/ico" href="/Wegas/favicon_orange.ico" />
+    <link rel="icon" href="#{request.contextPath}/${requestController.favicon}.ico" />
+    <link rel="icon" type="image/png" href="#{request.contextPath}/${requestController.favicon}.png" />
     <link rel="preload" href="../wegas-react/dist/player.js" as="script" />
   </h:head>
   <h:body style="height: 100%; margin: 0">
