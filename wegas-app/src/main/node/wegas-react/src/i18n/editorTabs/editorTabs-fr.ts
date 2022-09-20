@@ -1,4 +1,4 @@
-import { EditorTabsTranslations } from './definitions';
+import { EditorTabsTranslations } from './editorTabs';
 
 export const editorTabsTranslationsFR: EditorTabsTranslations = {
   miscellaneous: {
@@ -64,13 +64,15 @@ export const editorTabsTranslationsFR: EditorTabsTranslations = {
   },
   scripts: {
     scriptNameNotAvailable:
-      'Nom de script non disponible (le script existe déjà ou le nom contient des mauvais caractères)',
+      'Nom de script non disponible (le script existe déjà ou le nom contient des caractères spéciaux)',
+    scriptFolderNotAvailable: 'Le dossier existe déjà',
     cannotCreateScript: 'Impossible de créer le script',
     cannotDeleteScript: 'Impossible de supprimer le script',
     cannotGetScripts: 'Impossible de récupérer les scripts',
     librarySavedErrors:
       'La bibliothèque a été sauvegardée mais le script contient des erreurs',
-    libraryCannotSave: 'La bibliothèque ne peut pas être enregistrée',
+    libraryIsOutdated:
+      'La bibliothèque est périmée et ne peut être sauvegardée. Ressayez de sauvegarder ou fusionner',
     libraryCannotDelete: 'La bibliothèque ne peut pas être supprimée',
     libraryName: 'Nom de la bibliothèque',
     libraryMustName: 'La bibliothèque doit avoir un nom',

@@ -104,7 +104,7 @@ export type ViewTypes = keyof typeof DEFINED_VIEWS;
 /**
  * Retrieve properties of the view identifed by its type name P. And inject {type: P} property
  * */
-type View<P extends ViewTypes> = React.ComponentProps<
+export type View<P extends ViewTypes> = React.ComponentProps<
   typeof DEFINED_VIEWS[P]
 >['view'] & { type?: P };
 

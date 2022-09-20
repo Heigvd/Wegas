@@ -34,7 +34,7 @@ export function isFeatureEnabled(
 
 function FeaturesContext({
   children,
-}: React.PropsWithChildren<UknownValuesObject>) {
+}: React.PropsWithChildren<UnknownValuesObject>) {
   const [features, setFeatures] = React.useState<FeatureLevel[]>(['DEFAULT']);
 
   const enableFeature = React.useCallback((feature: FeatureLevel) => {

@@ -394,7 +394,7 @@ export const modalCTX = React.createContext<ModalContext>({
 
 export function ModalProvider({
   children,
-}: React.PropsWithChildren<UknownValuesObject>) {
+}: React.PropsWithChildren<UnknownValuesObject>) {
   const { showModal, closeModal, Modal } = useModal();
   const [modalContent, setModalContent] = React.useState<React.ReactNode>(null);
 

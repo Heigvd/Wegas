@@ -1,12 +1,9 @@
-type IDestroyedEntity = import('wegas-ts-api').IDestroyedEntity;
-type IUser = import('wegas-ts-api').IUser;
-
 interface RuntimeException {
   message: string;
 }
 interface WegasAccessDenied extends RuntimeException {
   '@class': 'WegasAccessDenied';
-  entity: {};
+  entity: UnknownValuesObject;
   mode: string;
   user: IUser;
 }
@@ -69,7 +66,7 @@ interface ClientEvent {
 interface CustomEvent {
   '@class': 'CustomEvent';
   type: string;
-  payload: {};
+  payload: UnknownValuesObject;
 }
 interface EntityDestroyedEvent {
   '@class': 'EntityDestroyedEvent';

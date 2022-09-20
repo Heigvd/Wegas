@@ -26,7 +26,9 @@ import {
   trainerTheme,
 } from '../../Components/Theme/ThemeVars';
 import { wwarn } from '../../Helper/wegaslog';
+import { manageResponseHandler } from '../actions';
 import { createStoreConnector } from '../connectStore';
+import { entityIs } from '../entities';
 import { createTranslatableContent } from '../i18n';
 import { store } from './store';
 
@@ -42,7 +44,7 @@ const themeActionsTypes = {
   UPDATE_SELECTED_THEMES: 'UPDATE_SELECTED_THEMES',
 } as const;
 
-const themeActionCreator = {
+export const themeActionCreator = {
   GET_ALL_THEMES: (themes: Themes) => ({
     type: themeActionsTypes.GET_ALL_THEMES,
     payload: themes,
@@ -150,6 +152,21 @@ export const themeStore = createStore(
 export const { useStore: useThemeStore, getDispatch: getThemeDispatch } =
   createStoreConnector(themeStore);
 
+export function libraryToTheme(library: IGameModelContent) {
+  const theme: Theme = JSON.parse(library.content);
+  // Updating css classes in browser
+  theme.modeClasses = Object.entries(theme.modes).reduce((o, [k, v]) => {
+    try {
+      modeClass(theme.values, v);
+    } catch (e) {
+      wwarn(e);
+    }
+
+    return { ...o, [k]: modeClass(theme.values, v) };
+  }, {});
+  return theme;
+}
+
 export type ThemeThunkResult<R = void> = ThunkAction<
   R,
   ThemesState,
@@ -163,21 +180,7 @@ export function getAllThemes(): ThemeThunkResult {
       .then((libs: ILibraries) => {
         try {
           Object.entries(libs).reduce((o, l) => {
-            const theme: Theme = JSON.parse(l[1].content);
-            // Updating css classes in browser
-            theme.modeClasses = Object.entries(theme.modes).reduce(
-              (o, [k, v]) => {
-                try {
-                  modeClass(theme.values, v);
-                } catch (e) {
-                  wwarn(e);
-                }
-
-                return { ...o, [k]: modeClass(theme.values, v) };
-              },
-              {},
-            );
-            return { ...o, [l[0]]: theme };
+            return { ...o, [l[0]]: libraryToTheme(l[1]) };
           }, {});
         } catch (e) {
           wwarn(e);
@@ -251,8 +254,9 @@ export function addNewLib(
       'json',
       themeName,
       JSON.stringify(newTheme),
-    )
-      .then((lib: IGameModelContent) => {
+    ).then((managedResponse: IManagedResponse) => {
+      const lib = managedResponse.updatedEntities[0];
+      if (entityIs(lib, 'GameModelContent')) {
         if (libType === 'Theme') {
           return dispatch(
             themeActionCreator.UPDATE_THEME(
@@ -266,16 +270,9 @@ export function addNewLib(
             themeActionCreator.UPDATE_SELECTED_THEMES(JSON.parse(lib.content)),
           );
         }
-      })
-      .catch((e: Error) => {
-        globalDispatch(
-          addPopup(
-            'addNewThemeError',
-            createTranslatableContent(undefined, e.message),
-            10000,
-          ),
-        );
-      });
+      }
+      globalDispatch(manageResponseHandler(managedResponse));
+    });
   };
 }
 
@@ -294,19 +291,14 @@ export function deleteTheme(themeName: string): ThemeThunkResult {
       );
       return;
     } else {
-      return LibraryAPI.deleteLibrary('Theme', themeName)
-        .then(() => {
-          return dispatch(themeActionCreator.DELETE_THEME(themeName));
-        })
-        .catch((e: Error) => {
-          globalDispatch(
-            addPopup(
-              'deleteThemeError',
-              createTranslatableContent(undefined, e.message),
-              10000,
-            ),
+      return LibraryAPI.deleteLibrary('Theme', themeName).then(
+        managedResponse => {
+          return (
+            dispatch(themeActionCreator.DELETE_THEME(themeName)) &&
+            globalDispatch(manageResponseHandler(managedResponse))
           );
-        });
+        },
+      );
     }
   };
 }
@@ -343,29 +335,28 @@ function saveLib(
       .then((lib: IGameModelContent) => {
         const newLib = cloneDeep(lib);
         newLib.content = JSON.stringify(newTheme);
-        return LibraryAPI.saveLibrary(libType, themeName, newLib)
-          .then(lib => {
-            const newTheme = JSON.parse(lib.content);
-
-            if (isTheme(newTheme)) {
-              return dispatch(
-                themeActionCreator.UPDATE_THEME(themeName, newTheme, modeName),
-              );
-            } else {
-              return dispatch(
-                themeActionCreator.UPDATE_SELECTED_THEMES(newTheme),
-              );
+        return LibraryAPI.saveLibrary(libType, themeName, newLib).then(
+          managedResponse => {
+            const lib = managedResponse.updatedEntities[0];
+            if (entityIs(lib, 'GameModelContent')) {
+              const newTheme = JSON.parse(lib.content);
+              if (isTheme(newTheme)) {
+                return dispatch(
+                  themeActionCreator.UPDATE_THEME(
+                    themeName,
+                    newTheme,
+                    modeName,
+                  ),
+                );
+              } else {
+                return dispatch(
+                  themeActionCreator.UPDATE_SELECTED_THEMES(newTheme),
+                );
+              }
             }
-          })
-          .catch((e: Error) => {
-            globalDispatch(
-              addPopup(
-                'addNewThemeError',
-                createTranslatableContent(undefined, e.message),
-                10000,
-              ),
-            );
-          });
+            globalDispatch(manageResponseHandler(managedResponse));
+          },
+        );
       })
       .catch((e: Error) => {
         if (e.message === NOCONTENTMESSAGE) {

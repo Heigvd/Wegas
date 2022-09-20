@@ -368,7 +368,7 @@ function EvalutationsEditor({
 }: EvalutationsEditorProps) {
   const evaluations = review[phase];
 
-  const timer = React.useRef<NodeJS.Timeout | null>();
+  const timer = React.useRef<ReturnType<typeof setTimeout> | null>();
   const modifiedReview = React.useRef({
     ...review,
     [phase]: review[phase].map(f =>

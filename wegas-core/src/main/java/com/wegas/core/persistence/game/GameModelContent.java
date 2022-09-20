@@ -165,7 +165,6 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
         hash = 29 * hash + Objects.hashCode(this.id);
         hash = 29 * hash + Objects.hashCode(gameModel);
         hash = 29 * hash + Objects.hashCode(contentType);
-        hash = 29 * hash + Objects.hashCode(libraryType);
         hash = 29 * hash + Objects.hashCode(this.contentKey);
         return hash;
     }
@@ -186,15 +185,6 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
             return false;
         }
         if (!Objects.equals(this.id, other.id)) {
-            return false;
-        }
-        if (!Objects.equals(this.gameModel, other.gameModel)) {
-            return false;
-        }
-        if (!Objects.equals(this.libraryType, other.libraryType)) {
-            return false;
-        }
-        if (!Objects.equals(this.contentType, other.contentType)) {
             return false;
         }
         return true;

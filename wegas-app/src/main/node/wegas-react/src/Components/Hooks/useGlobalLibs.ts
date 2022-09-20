@@ -43,6 +43,9 @@ import WegasDashboardSrc from '!!raw-loader!../../../types/scripts/WegasDashboar
 import wegasEventsGlobalSrc from '!!raw-loader!../../../types/scripts/WegasEventsGlobals.d.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+import typesHelpers from '!!raw-loader!../../../types/types-helper.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import layerSourceTypes from '!!raw-loader!../Maps/helpers/types/LayerSourceTypes.d.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -85,6 +88,7 @@ const clientLibs: MonacoDefinitionsLibrary[] = [
     content: ambientScriptableEntitiesSrc,
     name: 'ambientScriptableEntities.d',
   },
+  { content: typesHelpers, name: 'typesHelpers.d' },
   { content: generalTypes, name: 'generalTypes.d' },
   { content: editorGlobalSrc, name: 'editorGlobal.d' },
   {
@@ -273,7 +277,11 @@ export function useGlobalLibs() {
         declare const Schemas : SchemaClass;
 
         type GlobalClasses =
-        ${Object.keys(classes).length === 0 ? 'never' : Object.keys(classes).join('\n| ')};
+        ${
+          Object.keys(classes).length === 0
+            ? 'never'
+            : Object.keys(classes).join('\n| ')
+        };
         interface ClassesClass extends GlobalClassesClass{
           removeClass: (className: GlobalClasses) => void;
         }

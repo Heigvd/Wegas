@@ -1,6 +1,6 @@
 import { IAbstractContentDescriptor, IGameModelContent } from 'wegas-ts-api';
 import { GameModel } from '../data/selectors';
-import { rest } from './rest';
+import { managedModeRequest, rest } from './rest';
 
 export const NOCONTENTMESSAGE = 'No content';
 
@@ -46,7 +46,7 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
       name: string,
       content: string,
       visibility?: IAbstractContentDescriptor['visibility'],
-    ): Promise<IGameModelContent> {
+    ) {
       const newLib: IGameModelContent = {
         '@class': 'GameModelContent',
         contentKey: name,
@@ -55,42 +55,40 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
         version: 0,
         visibility: visibility,
       };
-      return rest(LIBRARY_BASE(libType, gameModelId) + '/' + name, {
-        method: 'POST',
-        body: JSON.stringify(newLib),
-      })
-        .then((res: Response) => {
-          return res.json();
-        })
-        .catch((e: Error) => {
-          if (e.message === 'Bad Request') {
-            throw Error('NOTNEW');
-          } else {
-            throw Error('UNKNOWN');
-          }
-        });
+      return managedModeRequest(
+        LIBRARY_BASE(libType, gameModelId) + '/' + name,
+        {
+          method: 'POST',
+          body: JSON.stringify(newLib),
+        },
+      ).catch((e: Error) => {
+        if (e.message === 'Bad Request') {
+          throw Error('NOTNEW');
+        } else {
+          throw Error('UNKNOWN');
+        }
+      });
     },
     saveLibrary(
       libType: ServerLibraryType,
       name: string,
       library: IGameModelContent,
-    ): Promise<IGameModelContent> {
-      return rest(
+    ) {
+      return managedModeRequest(
         LIBRARY_BASE(libType, gameModelId) + '/' + name,
         {
           method: 'PUT',
           body: JSON.stringify(library),
         },
-        'Editor',
-        'application/json',
-      ).then((res: Response) => {
-        return res.json();
-      });
+      );
     },
     deleteLibrary(libType: ServerLibraryType, name: string) {
-      return rest(LIBRARY_BASE(libType, gameModelId) + '/' + name, {
-        method: 'DELETE',
-      });
+      return managedModeRequest(
+        LIBRARY_BASE(libType, gameModelId) + '/' + name,
+        {
+          method: 'DELETE',
+        },
+      );
     },
   };
 };

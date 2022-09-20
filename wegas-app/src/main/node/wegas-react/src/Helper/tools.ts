@@ -298,3 +298,17 @@ export function createLRU<K, V>(maxSize?: number): LRU<K, V> {
     },
   };
 }
+
+export function deepRemoveKeys(obj: any, keys: string[]) {
+  if (typeof obj === 'object' && obj != null) {
+    const newObject = {} as any;
+    for (const key in obj) {
+      if (!keys.includes(key)) {
+        newObject[key] = deepRemoveKeys(obj[key], keys);
+      }
+    }
+    return newObject;
+  } else {
+    return obj;
+  }
+}

@@ -67,11 +67,13 @@ import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { languagesTranslations } from '../../../i18n/languages/languages';
 import getEditionConfig, { getIcon } from '../../editionConfig';
 import { borderBottom } from '../FormView/commonView';
+import { generateCode } from '../FormView/Script/Expressions/astManagement';
 import {
+  Attributes,
   generateSchema,
-  IAttributes,
   testCode,
 } from '../FormView/Script/Expressions/expressionEditorHelpers';
+import { isClientMode } from '../FormView/Script/Script';
 import { IconComp, withDefault } from '../Views/FontAwesome';
 
 const langaugeVisitorHeaderStyle = css({
@@ -442,7 +444,7 @@ function TranslatableContentView({
 
 type ExtractedAttributes = {
   [key: string]: ITranslatableContent;
-} & IAttributes;
+} & Attributes;
 
 type TranslatableEntry = [
   string,
@@ -453,6 +455,7 @@ interface TranslatableExpression {
   attributes: ExtractedAttributes;
   translatableEntries: TranslatableEntry[];
   offsetIndex: number;
+  script: string;
 }
 
 interface ExpressionViewProps
@@ -484,12 +487,12 @@ function ExpressionView({
         layoutStyle,
       )}
     >
-      {expression.attributes.initExpression.script}
+      {expression.script}
       <div>
         {expression.translatableEntries.map(([k, v], i) => {
           const translatable = expression.attributes[k];
           const viewLabel =
-            v?.view?.label || expression.attributes.methodName || k;
+            v?.view?.label || expression.attributes.methodId || k;
           const view = v?.view?.type || 'i18nstring';
           const index = i + expression.offsetIndex;
 
@@ -535,8 +538,9 @@ async function AsyncScriptView({
     properties: { [key: string]: { view: { mode: ScriptMode } } };
   };
   const mode = parentSchema.properties[fieldName].view.mode;
-  const parsedExpressions = parse(value.content, { sourceType: 'script' })
-    .program.body;
+  const parsedExpressions = parse(value.content, {
+    sourceType: isClientMode(mode) ? 'module' : 'script',
+  }).program.body;
 
   const expressions: TranslatableExpression[] = [];
   let offsetIndex = 0;
@@ -549,6 +553,8 @@ async function AsyncScriptView({
 
     if (typeof attributes !== 'string') {
       const schema = await generateSchema(attributes, [], mode);
+      const script = generateCode(attributes, schema);
+
       const translatableEntries = Object.entries(schema.properties).filter(
         ([k, v]) =>
           !isNaN(Number(k)) &&
@@ -561,6 +567,7 @@ async function AsyncScriptView({
           attributes,
           translatableEntries,
           offsetIndex,
+          script,
         });
       }
 

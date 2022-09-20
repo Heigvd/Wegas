@@ -16,7 +16,7 @@ interface Field {
 // mimic Wegas validation without accessing db
 function leafs(
   ref: ref,
-): (val: unknown, formValue: UknownValuesObject) => unknown {
+): (val: unknown, formValue: UnknownValuesObject) => unknown {
   switch (ref.type) {
     case 'Const':
       return () => ref.const;
@@ -24,8 +24,8 @@ function leafs(
       return val => val;
     case 'Field':
       return (
-        _val: UknownValuesObject,
-        formVal: IAbstractEntity & { [key: string]: UknownValuesObject },
+        _val: UnknownValuesObject,
+        formVal: IAbstractEntity & { [key: string]: UnknownValuesObject },
       ) => {
         return formVal[ref.fieldName];
       };

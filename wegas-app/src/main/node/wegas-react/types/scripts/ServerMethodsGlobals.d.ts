@@ -16,7 +16,7 @@ interface ServerGlobalMethod {
   '@class': 'ServerGlobalMethod';
   label: string;
   returns?: string;
-  parameters: {}[];
+  parameters: AnyValuesObject[];
 }
 
 interface ServerGlobalObject {
@@ -46,7 +46,7 @@ type ServerGlobalMethodRegister = (
 ) => void;
 
 interface ServerVariableMethod {
-  parameters: {}[];
+  parameters: AnyValuesObject[];
   returns: 'number' | 'string' | 'boolean' | undefined;
   serverCode: string;
 }
@@ -65,7 +65,7 @@ interface ServerVariableMethods {
 type ServerVariableMethodRegister = (
   variableClass: string,
   label: string,
-  parameters: {}[],
+  parameters: AnyValuesObject[],
   returns: 'number' | 'string' | 'boolean' | undefined,
   serverCode: string,
 ) => void;

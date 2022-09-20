@@ -32,7 +32,7 @@ const impactContainerStyle = css({
 
 function recurscript(
   functions: string[],
-  payloads: UknownValuesObject[],
+  payloads: UnknownValuesObject[],
   player: Readonly<IPlayer> | undefined,
   team: STeam | undefined,
   onExit: () => void,
@@ -79,7 +79,7 @@ export function ImpactModalComputedContent({
   actions,
   refreshOverview,
 }: ImpactModalComputedContentProps) {
-  const [payloads, setPayloads] = React.useState<UknownValuesObject[]>([]);
+  const [payloads, setPayloads] = React.useState<UnknownValuesObject[]>([]);
 
   const functions = actions.map(({ doFn }) => {
     return `(${doFn})(team,payload)`;

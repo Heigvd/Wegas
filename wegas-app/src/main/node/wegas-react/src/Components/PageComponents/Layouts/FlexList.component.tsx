@@ -115,7 +115,7 @@ export function childrenDeserializerFactory(
     editMode,
     containerPropsKeys,
     inheritedOptionsState,
-  }: ChildrenDeserializerProps<UknownValuesObject>) {
+  }: ChildrenDeserializerProps<UnknownValuesObject>) {
     return (
       <>
         {editMode && (!wegasChildren || wegasChildren.length === 0) ? (

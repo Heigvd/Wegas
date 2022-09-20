@@ -1,8 +1,8 @@
-import * as React from 'react';
 import { css, cx } from '@emotion/css';
-import { defaultThemesState, SelectedThemes, ThemesState } from './ThemeVars';
+import * as React from 'react';
 import { expandBoth } from '../../css/classes';
 import { useThemeStore } from '../../data/Stores/themeStore';
+import { defaultThemesState, SelectedThemes, ThemesState } from './ThemeVars';
 
 export interface ThemeComponent {
   modeName?: string;
@@ -59,7 +59,8 @@ function themeModeClass(
 ) {
   // in case selectedTheme is unknown (or not yet known due to async state initialisation), select default theme
   const currentTheme =
-    themesState.themes[themesState.selectedThemes[contextName]] || themesState.themes.default;
+    themesState.themes[themesState.selectedThemes[contextName]] ||
+    themesState.themes.default;
   const computedModeName = modeName ? modeName : currentTheme.baseMode;
   return currentTheme.modeClasses[computedModeName];
 }
@@ -72,7 +73,8 @@ function themeModeClass(
 export function useModeClass(modeName: string | undefined) {
   const { themesState, currentContext } = React.useContext(themeCTX);
   const currentTheme =
-    themesState.themes[themesState.selectedThemes[currentContext]] ||  themesState.themes.default;
+    themesState.themes[themesState.selectedThemes[currentContext]] ||
+    themesState.themes.default;
   return modeName ? currentTheme.modeClasses[modeName] : '';
 }
 

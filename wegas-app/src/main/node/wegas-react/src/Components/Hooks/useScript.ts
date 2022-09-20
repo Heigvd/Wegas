@@ -821,9 +821,9 @@ export function parseAndRunClientScript(
     : scriptContent;
 }
 
-export type ContextRef = React.MutableRefObject<UknownValuesObject | undefined>;
+export type ContextRef = React.MutableRefObject<UnknownValuesObject | undefined>;
 
-export function useUpdatedContextRef(context: UknownValuesObject | undefined) {
+export function useUpdatedContextRef(context: UnknownValuesObject | undefined) {
   const contextRef = React.useRef(context);
   React.useEffect(() => {
     contextRef.current = context;

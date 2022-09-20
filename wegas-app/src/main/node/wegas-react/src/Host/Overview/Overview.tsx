@@ -201,7 +201,7 @@ export default function Overview() {
     VariableDescriptorAPI.runScript(
       GameModel.selectCurrent().id!,
       Player.selectCurrent().id!,
-      createScript('WegasDashboard.getOverview();'),
+      createScript('WegasDashboard.getOverview();', 'JavaScript'),
       undefined,
       true,
     ).then((res: OverviewData) => {

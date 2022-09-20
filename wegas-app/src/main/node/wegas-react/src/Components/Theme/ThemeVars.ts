@@ -105,19 +105,19 @@ export type ModeComponent<
   C extends { [entry: string]: ModeColor } | undefined = undefined,
   D extends { [entry: string]: ModeDimension } | undefined = undefined,
   O extends { [entry: string]: ModeOther } | undefined = undefined,
-> = UknownValuesObject &
+> = UnknownValuesObject &
   (C extends undefined
-    ? UknownValuesObject
+    ? UnknownValuesObject
     : {
         colors: C;
       }) &
   (D extends undefined
-    ? UknownValuesObject
+    ? UnknownValuesObject
     : {
         dimensions: D;
       }) &
   (O extends undefined
-    ? UknownValuesObject
+    ? UnknownValuesObject
     : {
         others: O;
       });

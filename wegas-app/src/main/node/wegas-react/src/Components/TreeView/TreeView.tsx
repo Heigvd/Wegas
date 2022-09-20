@@ -180,7 +180,7 @@ export function TreeView<T = unknown>({
   className,
   style,
 }: React.PropsWithChildren<TreeViewProps<T>>) {
-  const oppeningTimer = React.useRef<NodeJS.Timer | null>(null);
+  const oppeningTimer = React.useRef<Timer | null>(null);
 
   const {
     minimumNodeHeight = MINIMUM_NODE_LABEL_HEIGHT,

@@ -75,7 +75,7 @@ const availableLayoutTabs: TabLayoutComponent[] = [
 ];
 
 export default function HostLayout() {
-  const timer = React.useRef<NodeJS.Timeout | undefined>();
+  const timer = React.useRef<Timer | undefined>();
   const { lang } = React.useContext(languagesCTX);
   const [loading, setLoading] = React.useState(true);
   const { trainerPages, peerReviews } =

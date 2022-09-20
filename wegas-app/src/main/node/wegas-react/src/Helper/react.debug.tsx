@@ -8,7 +8,7 @@ import * as React from 'react';
 import { wlog } from './wegaslog';
 
 const defaultPropsCheckerProps = {
-  children: (_props: UknownValuesObject) => { },
+  children: (_props: UnknownValuesObject) => { },
   compType: 'SIMPLE',
   verbose: false,
 };

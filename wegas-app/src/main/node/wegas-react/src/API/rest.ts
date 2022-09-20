@@ -92,3 +92,73 @@ export function managedModeRequest(
     .then(data => data.json() as Promise<IManagedResponse>)
     .catch(data => data.json() as Promise<IManagedResponse>);
 }
+
+/**
+ * Check if exception match the partial pattern
+ */
+function exceptionMatch(
+  ex: WegasExceptions,
+  pattern: Partial<WegasExceptions>,
+): boolean {
+  const keysToCheck = Object.keys(pattern);
+  for (const key of keysToCheck) {
+    if (
+      (ex as unknown as Record<string, unknown>)[key] !==
+      (pattern as unknown as Record<string, unknown>)[key]
+    ) {
+      // property does not match
+      return false;
+    }
+  }
+
+  return true;
+}
+
+export function extractExceptions(
+  managedResponse: IManagedResponse,
+  exceptionsToExtract: Partial<WegasExceptions>[],
+): { managedResponse: IManagedResponse; exceptionsFound: WegasExceptions[] } {
+  // Extract known error
+  const remainingEvents: WegasEvent[] = [];
+  const exceptionsFound: WegasExceptions[] = [];
+
+  managedResponse.events.forEach(event => {
+    if (event['@class'] === 'ExceptionEvent') {
+      const ex = event.exceptions.reduce<{
+        extract: WegasExceptions[];
+        keep: WegasExceptions[];
+      }>(
+        (acc, cur) => {
+          if (
+            exceptionsToExtract.find(pattern => exceptionMatch(cur, pattern))
+          ) {
+            acc.extract.push(cur);
+          } else {
+            acc.keep.push(cur);
+          }
+          return acc;
+        },
+        { extract: [], keep: [] },
+      );
+
+      if (ex.keep.length > 0) {
+        // some unhandled exception, keep event minus extract exceptions
+        remainingEvents.push({ ...event, exceptions: ex.keep });
+      }
+
+      if (ex.extract.length > 0) {
+        exceptionsFound.push(...ex.extract);
+      }
+    } else {
+      // event not extracted
+      remainingEvents.push(event);
+    }
+  });
+
+  const cleanedManagedResponse: IManagedResponse = {
+    ...managedResponse,
+    events: remainingEvents,
+  };
+
+  return { managedResponse: cleanedManagedResponse, exceptionsFound };
+}

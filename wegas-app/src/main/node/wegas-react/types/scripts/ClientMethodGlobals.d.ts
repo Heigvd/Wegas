@@ -1,5 +1,3 @@
-type WegasEntitiesNamesAndClasses = import('wegas-ts-api').WegasEntitiesNamesAndClasses;
-
 interface WegasScriptEditorNameAndTypes extends WegasEntitiesNamesAndClasses {
   boolean: boolean;
   'boolean[]': boolean[];
@@ -31,19 +29,20 @@ interface WegasScriptEditorNameAndTypes extends WegasEntitiesNamesAndClasses {
   'Readonly<undefined[]>': Readonly<undefined[]>;
 }
 
-interface ArrayedTypeMap<T = {}> {
+interface ArrayedTypeMap<T = AnyValuesObject> {
   single: T[keyof T];
   array: T[keyof T][];
 }
 
-
 type WegasScriptEditorReturnTypeName = keyof WegasScriptEditorNameAndTypes;
 
 /** @deprecated */
-type WegasScriptEditorReturnType = WegasScriptEditorNameAndTypes[WegasScriptEditorReturnTypeName];
+type WegasScriptEditorReturnType =
+  WegasScriptEditorNameAndTypes[WegasScriptEditorReturnTypeName];
 
 /** @deprecated */
-type ArrayedAndNot<T extends {}> = ArrayedTypeMap<T>[keyof ArrayedTypeMap];
+type ArrayedAndNot<T extends AnyValuesObject> =
+  ArrayedTypeMap<T>[keyof ArrayedTypeMap];
 
 /** @deprecated */
 type ArgumentsType = [string, WegasScriptEditorReturnTypeName][];
@@ -64,7 +63,7 @@ type ClientMethodAdd = <
   >,
   ART extends ArrayedTypeMap<Pick<WegasScriptEditorNameAndTypes, RT>>,
   RA extends keyof ART,
-  MET extends (...arg: ARG) => ART[RA]
+  MET extends (...arg: ARG) => ART[RA],
 >(
   name: string,
   parameters: PT,
@@ -78,9 +77,7 @@ type ClientMethodAdd = <
  */
 interface ClientMethodPayload {
   name: string;
-  parameters: readonly ReadonlyTuple<
-    [string, string]
-  >[];
+  parameters: readonly ReadonlyTuple<[string, string]>[];
   returnTypes: string[];
   returnStyle: keyof ArrayedTypeMap;
   method: (...elements: any[]) => any;

@@ -10,8 +10,10 @@ import {
   flexWrap,
   grow,
 } from '../../../../css/classes';
-import { EditorTabsTranslations } from '../../../../i18n/editorTabs/definitions';
-import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
+import {
+  EditorTabsTranslations,
+  editorTabsTranslations,
+} from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { ConfirmButton } from '../../../Inputs/Buttons/ConfirmButton';
 import { SimpleInput } from '../../../Inputs/SimpleInput';

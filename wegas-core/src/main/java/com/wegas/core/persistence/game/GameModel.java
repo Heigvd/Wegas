@@ -1356,10 +1356,6 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         this.libraries.remove(gameModelContent);
     }
 
-    public Object getLibrary(String CLIENT_SCRIPT, String CLIENT_SCRIPTNAME) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     public enum GmType {
         /**
          * A model
