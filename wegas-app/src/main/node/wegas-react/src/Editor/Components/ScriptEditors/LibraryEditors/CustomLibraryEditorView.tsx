@@ -20,8 +20,6 @@ import { Toolbar } from '../../../../Components/Toolbar';
 import { TreeNode } from '../../../../Components/TreeView/TreeNode';
 import { TreeView } from '../../../../Components/TreeView/TreeView';
 import {
-  defaultMarginBottom,
-  defaultMarginLeft,
   defaultMarginRight,
   defaultTooboxLabelContainerStyle,
   defaultToolboxButtonContainerStyle,
@@ -42,9 +40,11 @@ import { MonacoIEditor } from '../editorHelpers';
 import MergeEditor from '../MergeEditor';
 import SrcEditor, { CodeLocation } from '../SrcEditor';
 
-interface LibraryTypeNodeLabelProps {
-  libraryType: LibraryType;
-  onNewLibrary: (message: LibrariesCallbackMessage) => void;
+function normalizeFilename(path: string): string {
+  return path
+    .split(/\/+/)
+    .filter(x => x)
+    .join('/');
 }
 
 const unsaved = css({
@@ -55,41 +55,56 @@ const conflict = css({
   color: 'var(--colors-errorcolor)',
 });
 
-function LibraryTypeNodeLabel({
+const addLibButtonStyle = css({
+  padding: '10px',
+});
+
+interface CreateLibButtonProps {
+  className?: string;
+  label?: string;
+  libraryType: LibraryType;
+  onNewLibrary: (message: LibrariesCallbackMessage) => void;
+  basePath?: string;
+}
+
+function CreateLibButton({
+  className,
   libraryType,
   onNewLibrary,
-}: LibraryTypeNodeLabelProps) {
+  basePath,
+  label,
+}: CreateLibButtonProps) {
   const [editState, setEditState] = React.useState(false);
   const i18nValues = useInternalTranslate(editorTabsTranslations);
   const { addLibrary } = React.useContext(librariesCTX);
 
   return (
-    <div
-      className={cx(flex, flexBetween, defaultMarginBottom, defaultMarginLeft)}
-    >
+    <div className={cx(flex, flexBetween, className)}>
       {!editState ? (
-        <Button
-          label={`New ${libraryType} library`}
-          icon="plus"
-          onClick={() => setEditState(true)}
-        />
+        <Button label={label} icon="plus" onClick={() => setEditState(true)} />
       ) : (
-        <TextPrompt
-          placeholder={i18nValues.scripts.libraryName}
-          defaultFocus
-          onAction={(success, value) => {
-            if (success) {
-              if (value !== '') {
-                addLibrary(libraryType, value, onNewLibrary);
+        <>
+          <TextPrompt
+            placeholder={i18nValues.scripts.libraryName}
+            defaultFocus
+            onAction={(success, value) => {
+              if (success) {
+                if (value !== '') {
+                  addLibrary(
+                    libraryType,
+                    normalizeFilename((basePath || '') + '/' + value),
+                    onNewLibrary,
+                  );
+                  setEditState(false);
+                }
+              } else {
                 setEditState(false);
               }
-            } else {
-              setEditState(false);
-            }
-          }}
-          onBlur={() => setEditState(false)}
-          applyOnEnter
-        />
+            }}
+            onBlur={() => setEditState(false)}
+            applyOnEnter
+          />
+        </>
       )}
     </div>
   );
@@ -156,9 +171,19 @@ interface FolderProps {
   entries: (FileProps | FolderProps)[];
   selectLibrary: (libName: string) => void;
   selectedLib: string;
+  libType: LibraryType | null;
+  setMessage: SetMessageFn,
 }
 
-function Folder({ fullPath, entries }: FolderProps): JSX.Element {
+type SetMessageFn = React.Dispatch<React.SetStateAction<LibrariesCallbackMessage>>;
+
+function Folder({
+  fullPath,
+  entries,
+  libType,
+  selectLibrary,
+  setMessage,
+}: FolderProps): JSX.Element {
   const label = fullPath
     .split('/')
     .filter(x => x)
@@ -169,8 +194,22 @@ function Folder({ fullPath, entries }: FolderProps): JSX.Element {
       notDraggable
       notDroppable
       label={open => (
-        <div>
-          <FontAwesomeIcon icon={open ? faFolderOpen : faFolder} /> {label}
+        <div className={css({ display: 'flex', alignItems: 'center' })}>
+          <FontAwesomeIcon icon={open ? faFolderOpen : faFolder} />
+          <div className={css({ paddingLeft: '1ex' })}>{label} </div>
+          {libType && (
+            <CreateLibButton
+              libraryType={libType}
+              basePath={fullPath}
+              onNewLibrary={message => {
+                if (message.type === 'succes') {
+                  selectLibrary(message.message);
+                } else {
+                  setMessage(message)
+                }
+              }}
+            />
+          )}
         </div>
       )}
     >
@@ -190,6 +229,8 @@ function buildTree(
   entries: LibraryWithStatus[],
   selectedLib: string,
   selectLib: (name: string) => void,
+  setMessage: SetMessageFn,
+  libType: LibraryType | undefined | null,
 ): FolderProps {
   const folders: Record<string, LibraryWithStatus[]> = {};
   const files: FileProps[] = [];
@@ -226,8 +267,23 @@ function buildTree(
       list,
       selectedLib,
       selectLib,
+      setMessage,
+      libType,
     );
   });
+
+  let eLib = libType;
+  if (eLib === undefined) {
+    if (currentPath.startsWith('clientInternal')) {
+      eLib = null;
+    } else if (currentPath.startsWith('client')) {
+      eLib = 'client';
+    } else if (currentPath.startsWith('server')) {
+      eLib = 'server';
+    } else if (currentPath.startsWith('style')) {
+      eLib = 'style';
+    }
+  }
 
   return {
     type: 'Folder',
@@ -238,6 +294,8 @@ function buildTree(
     ],
     selectedLib: selectedLib,
     selectLibrary: selectLib,
+    libType: eLib || null,
+    setMessage,
   };
 }
 
@@ -343,6 +401,8 @@ export function CustomLibraryEditorView({
     Object.values(libraryIndex),
     selectedLibraryName || '',
     setSelectedLibraryName,
+    setMessage,
+    libraryType,
   );
   const nodes = tree.entries.map(entry => {
     if (entry.type === 'File') {
@@ -359,26 +419,42 @@ export function CustomLibraryEditorView({
         className={cx(flex, flexColumn)}
       >
         {libraryType ? (
-          <LibraryTypeNodeLabel
+          <CreateLibButton
+            className={addLibButtonStyle}
             libraryType={libraryType}
             onNewLibrary={onNewLibrary}
+            label={`New ${libraryType} library`}
           />
         ) : (
           <>
-            <LibraryTypeNodeLabel
+            <CreateLibButton
+              className={addLibButtonStyle}
               libraryType="client"
+              label={`New client library`}
               onNewLibrary={onNewLibrary}
             />
-            <LibraryTypeNodeLabel
+            <CreateLibButton
+              className={addLibButtonStyle}
               libraryType="server"
+              label={`New server library`}
               onNewLibrary={onNewLibrary}
             />
-            <LibraryTypeNodeLabel
+            <CreateLibButton
+              className={addLibButtonStyle}
               libraryType="style"
+              label={`New stylesheet`}
               onNewLibrary={onNewLibrary}
             />
           </>
         )}
+        { message && (
+          <MessageString
+            type={ message.type }
+            value={ message.message }
+            duration={ 5000 }
+            onLabelVanish={ () => setMessage(undefined) }
+          />
+        ) }
         <TreeView rootId={String(GameModel.selectCurrent().id)}>
           {nodes}
         </TreeView>
