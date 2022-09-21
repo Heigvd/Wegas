@@ -557,13 +557,14 @@ const memoClientScriptEval = (() => {
           // and add it to modules store
           globals.__WegasModules[options?.moduleName] = exports;
         }
+        globals.__WegasCurrentModule = options.moduleName
       }
       if (WEGAS_SAFE_MODE) {
         wlog('Drop script exec !');
         return undefined as any;
       }
       // do not provide effective arguments ever !
-      return scriptAsFunction(
+      const v = scriptAsFunction(
         undefined,
         undefined,
         undefined,
@@ -572,6 +573,9 @@ const memoClientScriptEval = (() => {
         exports,
         ...argValues,
       );
+      // clear current module
+      globals.__WegasCurrentModule = undefined
+      return v;
     } else {
       return undefined as any;
     }

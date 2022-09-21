@@ -395,6 +395,8 @@ public class GameModelController {
                 GameModel newVersion = combined.getGameModel();
 
                 if (newVersion != null) {
+                    // clear libs name to allow renaming them
+                    gameModel.getGameModel().getLibraries().forEach(lib -> lib.setContentKey(null));
                     gameModel = gameModelFacade.patch(gameModel, newVersion);
                     ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, WorkspaceType.FILES);
                     PatchUtils.doPatch(combined, gameModel, connector);

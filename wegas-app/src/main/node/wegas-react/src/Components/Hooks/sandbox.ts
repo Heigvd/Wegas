@@ -8,14 +8,19 @@ import {
   SVariableInstance,
 } from 'wegas-ts-api';
 import { SchemaPropsType } from '../PageComponents/tools/schemaProps';
-import { polygon, multiPolygon, lineString, multiLineString, feature } from '@turf/helpers';
+import {
+  polygon,
+  multiPolygon,
+  lineString,
+  multiLineString,
+  feature,
+} from '@turf/helpers';
 import * as lineIntersect from '@turf/line-intersect';
 import * as bboxClip from '@turf/bbox-clip';
 
 import * as GeoJSON from 'ol/format/GeoJSON';
 import * as VectorSource from 'ol/source/Vector';
-import {transformExtent} from 'ol/proj';
-
+import { transformExtent } from 'ol/proj';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -30,7 +35,6 @@ interface GlobalVariableClass {
     itemsIds: number[],
   ) => Readonly<T[]>;
 }
-
 
 export interface GlobalClasses {
   Error: typeof globalThis['Error'];
@@ -62,27 +66,49 @@ export interface GlobalClasses {
       [exported: string]: unknown;
     };
   };
+  __WegasCurrentModule: string | undefined;
   Turf: {
-    lineIntersect: typeof lineIntersect.default,
-    polygon: typeof polygon,
-    multiPolygon: typeof multiPolygon,
-    lineString: typeof lineString,
-    multiLineString: typeof multiLineString,
-    feature: typeof feature,
-    bboxClip: typeof bboxClip.default
+    lineIntersect: typeof lineIntersect.default;
+    polygon: typeof polygon;
+    multiPolygon: typeof multiPolygon;
+    lineString: typeof lineString;
+    multiLineString: typeof multiLineString;
+    feature: typeof feature;
+    bboxClip: typeof bboxClip.default;
   };
-  OpenLayer : {
-    format : {
-      GeoJSON : typeof GeoJSON.default,
-    },
-    source : {
-      VectorSource : typeof VectorSource.default
-    },
-    transformExtent : typeof transformExtent
-  }
+  OpenLayer: {
+    format: {
+      GeoJSON: typeof GeoJSON.default;
+    };
+    source: {
+      VectorSource: typeof VectorSource.default;
+    };
+    transformExtent: typeof transformExtent;
+  };
 }
 
-  export function createSandbox<T = unknown>() {
+
+function combinePath(path1: string | undefined, path2: string) : string{
+  if (path1 == null){
+    return path2;
+  }
+
+  const p1 = path1.split("/");
+  const p2 = path2.split("/");
+
+  p1.pop(); // drop filename
+  for (const seg of p2){
+    if (seg === '..'){
+      p1.pop();
+    } else if (seg && seg !== '.'){
+      p1.push(seg);
+    }
+  }
+
+  return p1.join("/");
+}
+
+export function createSandbox<T = unknown>() {
   const sandbox = document.createElement('iframe');
   // This is used to prevent unwanted modification from scripts.
   // One can still access main window from the sandbox
@@ -100,7 +126,8 @@ export interface GlobalClasses {
     w.__WegasModules = {};
 
     // to load esModule
-    w.require = (moduleName: string) => {
+    w.require = (moduleNameRelative: string) => {
+      const moduleName = combinePath(w.__WegasCurrentModule, moduleNameRelative);
       // get or create module
       let mod = w.__WegasModules[moduleName];
       if (mod == null) {
@@ -130,9 +157,6 @@ export interface GlobalClasses {
 
 export const { sandbox, globals } = createSandbox<GlobalClasses>();
 
-
-export function clearModule(moduleName: string){
+export function clearModule(moduleName: string) {
   delete globals.__WegasModules[moduleName];
 }
-
-

@@ -181,6 +181,11 @@ export function useGlobalLibs() {
             function timeEnd(label: string, ...data: unknown[]);
         };
 
+        declare const setTimeout : (callback: () => void, delay: number) => number;
+        declare const clearTimeout : (id: number) => void;
+        declare const setInterval : (callback: () => void, delay: number) => number;
+        declare const clearInterval : (id: number) => void;
+
         declare namespace performance {
           function now();
         }
