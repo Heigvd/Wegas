@@ -68,7 +68,7 @@ const layout = css({
   flexDirection: 'column',
   height: '100%',
   backgroundColor: themeVar.colors.SecondaryBackgroundColor,
-  padding: '0 2em 1em 2em',
+  padding: '1em',
   fontFamily: themeVar.others.TextFont2,
   color: themeVar.colors.DarkTextColor,
 });

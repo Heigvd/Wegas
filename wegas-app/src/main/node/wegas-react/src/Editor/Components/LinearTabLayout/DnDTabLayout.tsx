@@ -65,7 +65,6 @@ const dropBottomZone = css({
 });
 
 const headerTabStyle = css({
-  paddingTop: '20px',
   columnGap: '5px',
 });
 
