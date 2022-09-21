@@ -68,7 +68,7 @@ export const authorizationsCTX = React.createContext<AuthorizationsContext>(
 
 function AuthorizationContext({
   children,
-}: React.PropsWithChildren<UknownValuesObject>) {
+}: React.PropsWithChildren<UnknownValuesObject>) {
   const [authorizations, setAuthorizations] = React.useState<AuthorizationData>(
     defaultAuthorizationContext.authorizations,
   );

@@ -1,7 +1,7 @@
 // import PusherConstructor, { Pusher } from 'pusher-js';
 // import { inflate } from 'pako';
 import * as React from 'react';
-import { IAbstractEntity } from 'wegas-ts-api';
+import { IAbstractEntity, IGameModelContent } from 'wegas-ts-api';
 import { Actions } from '../data';
 import { manageResponseHandler } from '../data/actions';
 import { entityIs } from '../data/entities';
@@ -9,7 +9,14 @@ import { editorEvent } from '../data/Reducer/editingState';
 import { updatePusherStatus, WegasStatus } from '../data/Reducer/globalState';
 import { editingStore } from '../data/Stores/editingStore';
 import { store } from '../data/Stores/store';
+import {
+  deleteTheme,
+  getThemeDispatch,
+  libraryToTheme,
+  themeActionCreator,
+} from '../data/Stores/themeStore';
 import { werror, wwarn } from '../Helper/wegaslog';
+import { LibraryAPI } from './library.api';
 import { DestroyedEntity } from './rest';
 
 const CHANNEL_PREFIX = {
@@ -305,6 +312,24 @@ class WebSocketListener {
           );
         }
 
+        return;
+      }
+      case 'LibraryUpdate-Theme': {
+        const themeName = String(data);
+        LibraryAPI.getLibrary('Theme', themeName).then(
+          (library: IGameModelContent) => {
+            getThemeDispatch()(
+              themeActionCreator.UPDATE_THEME(
+                themeName,
+                libraryToTheme(library),
+              ),
+            );
+          },
+        );
+        return;
+      }
+      case 'LibraryDestroy-Theme': {
+        getThemeDispatch()(deleteTheme(String(data)));
         return;
       }
       case 'CustomEvent':

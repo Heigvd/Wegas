@@ -50,7 +50,7 @@ export interface Submenus {
 /**
  * ContainerComponent - Defines the type and management of a container component
  */
-export interface ContainerComponent<P = UknownValuesObject> {
+export interface ContainerComponent<P = UnknownValuesObject> {
   isVertical?: (props?: P) => boolean | undefined;
   ChildrenDeserializer?: React.FunctionComponent<ChildrenDeserializerProps<P>>;
   childrenAdditionalShema?: { [prop: string]: AvailableSchemas };

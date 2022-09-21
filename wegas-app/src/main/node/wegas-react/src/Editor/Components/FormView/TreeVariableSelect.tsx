@@ -135,6 +135,7 @@ function labelForValue<T>(items: TreeSelectItem<T>[], value?: T) {
 interface LabeledTreeVSelectView<T> extends ScriptableView {
   items?: TreeSelectItem<T>[];
   returnType?: string[];
+  variableScriptFactory?: (object: T | undefined) => string | undefined;
 }
 
 export interface LabeledTreeVSelectProps<T>
@@ -225,7 +226,12 @@ export function Searcher<T>({
   );
 }
 
-function isValueScript(value: any): value is { type: string; script: string } {
+export interface VariableValue {
+  type: 'variable';
+  script: string;
+}
+
+function isVariableValue(value: any): value is VariableValue {
   return (
     value != null &&
     typeof value === 'object' &&
@@ -242,11 +248,17 @@ export interface TreeVSelectProps<T> extends LabeledTreeVSelectProps<T> {
 export function TreeVSelect<T>(
   props: TreeVSelectProps<T> & { items: TreeSelectItem<T>[] },
 ) {
+  const variableScriptFactory = props.view.variableScriptFactory;
+  let script: string | undefined = undefined;
+  if (variableScriptFactory != null) {
+    script = variableScriptFactory(props.value);
+  } else if (isVariableValue(props.value)) {
+    script = props.value.script;
+  }
+
   return (
     <div className={cx(flex, flexColumn)}>
-      {isValueScript(props.value) && (
-        <VariableScriptPath script={props.value.script} />
-      )}
+      {script != null && <VariableScriptPath script={script} />}
       <Searcher {...props} ChildrenComp={TreeSelect} />
     </div>
   );

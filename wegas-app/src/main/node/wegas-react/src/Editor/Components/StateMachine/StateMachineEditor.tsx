@@ -141,8 +141,8 @@ export function StateMachineEditor<
           ...{
             version: 0,
             nextStateId,
-            preStateImpact: createScript(),
-            triggerCondition: createScript(),
+            preStateImpact: createScript('', 'JavaScript'),
+            triggerCondition: createScript('', 'JavaScript'),
             dependencies: [],
             index,
           },
@@ -273,7 +273,7 @@ export function StateMachineEditor<
       const newState: TState = {
         ...{
           version: 0,
-          onEnterEvent: createScript(),
+          onEnterEvent: createScript('', 'JavaScript'),
           x: position.x >= 10 ? position.x : 10,
           y: position.y >= 10 ? position.y : 10,
           transitions: (backward && transition != null

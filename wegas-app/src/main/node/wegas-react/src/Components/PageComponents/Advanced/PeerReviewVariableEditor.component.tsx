@@ -71,7 +71,7 @@ export default function PeerReviewVariableEditor({
   options,
 }: PeerReviewVariableEditorProps) {
   const lastVal = React.useRef<string | number | undefined>();
-  const timer = React.useRef<NodeJS.Timeout | null>();
+  const timer = React.useRef<Timer | null>();
   const { lang } = React.useContext(languagesCTX);
   const i18nValues = useInternalTranslate(peerReviewTranslations);
   const sPR = useScript<SPeerReviewDescriptor | undefined>(peerReview, context);

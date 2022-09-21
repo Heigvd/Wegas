@@ -144,7 +144,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
   openOnHoverChildren = true,
   itemDirection,
 }: DropMenuProps<T, MItem>) {
-  const timer = React.useRef<NodeJS.Timeout>();
+  const timer = React.useRef<Timer>();
   const onStateChange = React.useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (changes: StateChangeOptions<any>) => {

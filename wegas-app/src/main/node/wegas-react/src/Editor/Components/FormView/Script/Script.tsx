@@ -1,35 +1,13 @@
-import generate from '@babel/generator';
 import { parse } from '@babel/parser';
-import {
-  BinaryExpression,
-  BooleanLiteral,
-  CallExpression,
-  Expression,
-  expressionStatement,
-  isBinaryExpression,
-  isBooleanLiteral,
-  isCallExpression,
-  isEmptyStatement,
-  isExpressionStatement,
-  isLogicalExpression,
-  LogicalExpression,
-  logicalExpression,
-  program,
-  Statement,
-} from '@babel/types';
-import { css, cx } from '@emotion/css';
+import { css } from '@emotion/css';
 import { WidgetProps } from 'jsoninput/typings/types';
+import { isEqual } from 'lodash-es';
 import * as React from 'react';
 import { IScript, IVariableDescriptor, IVariableInstance } from 'wegas-ts-api';
 import { DropMenu } from '../../../../Components/DropMenu';
 import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
 import { themeVar } from '../../../../Components/Theme/ThemeVars';
-import {
-  flex,
-  grow,
-  justifyEnd,
-  secondaryButtonStyle,
-} from '../../../../css/classes';
+import { flex, grow, secondaryButtonStyle } from '../../../../css/classes';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
 import { editingStore } from '../../../../data/Stores/editingStore';
@@ -40,6 +18,8 @@ import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { TempScriptEditor } from '../../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { Labeled, LabeledView } from '../labeled';
+import { parseCodeIntoExpressions } from './Expressions/astManagement';
+import { removeFinalSemicolon } from './Expressions/expressionEditorHelpers';
 import { WyswygScriptEditor } from './WyswygScriptEditor';
 
 /**
@@ -65,89 +45,20 @@ const operators = ['&&', '||'] as const;
 
 type Operator = typeof operators[number];
 
+export function isServerScript(mode?: ScriptMode) {
+  return mode === 'GET' || mode === 'GET_CLIENT';
+}
+
 export function isScriptCondition(mode?: ScriptMode) {
   return mode === 'GET' || mode === 'GET_CLIENT';
 }
 
+export function isClientMode(mode?: ScriptMode) {
+  return mode === 'GET_CLIENT' || mode === 'SET_CLIENT';
+}
+
 export function returnTypes(mode?: ScriptMode): string[] | undefined {
   return mode === 'GET_CLIENT' ? ['boolean'] : undefined;
-}
-
-function conditionGenerator(
-  operator: Operator,
-  expression: Expression,
-  prevStatement: Statement[] = [],
-): Statement[] {
-  if (isLogicalExpression(expression) && expression.operator === operator) {
-    return conditionGenerator(operator, expression.left, [
-      expressionStatement(expression.right),
-      ...prevStatement,
-    ]);
-  } else {
-    return [expressionStatement(expression), ...prevStatement];
-  }
-}
-
-function concatBinaryExpressionsToLogicalExpression(
-  operator: Operator,
-  binaryExpressions: (BinaryExpression | BooleanLiteral | CallExpression)[],
-  index: number = 0,
-): LogicalExpression {
-  if (index === binaryExpressions.length - 2) {
-    return logicalExpression(
-      operator,
-      binaryExpressions[index],
-      binaryExpressions[index + 1],
-    );
-  } else {
-    return logicalExpression(
-      operator,
-      binaryExpressions[index],
-      concatBinaryExpressionsToLogicalExpression(
-        operator,
-        binaryExpressions,
-        index + 1,
-      ),
-    );
-  }
-}
-
-function concatStatementsToCondition(
-  operator: Operator,
-  statements: Statement[],
-): Statement[] {
-  const binaryExpressions: (
-    | BinaryExpression
-    | BooleanLiteral
-    | CallExpression
-  )[] = [];
-  let canBeMerged = true;
-  statements.forEach(s => {
-    if (
-      isExpressionStatement(s) &&
-      (isBinaryExpression(s.expression) ||
-        isBooleanLiteral(s.expression) ||
-        isCallExpression(s.expression))
-    ) {
-      binaryExpressions.push(s.expression);
-    } else {
-      canBeMerged = isEmptyStatement(s);
-    }
-  });
-
-  if (canBeMerged) {
-    if (binaryExpressions.length === 1) {
-      return [expressionStatement(binaryExpressions[0])];
-    } else {
-      const binaryCondition = concatBinaryExpressionsToLogicalExpression(
-        operator,
-        binaryExpressions,
-      );
-      return [expressionStatement(binaryCondition)];
-    }
-  } else {
-    throw Error("Condition's expressions cannot be merged");
-  }
 }
 
 export interface ScriptView {
@@ -171,11 +82,12 @@ export function Script({
   const [error, setError] = React.useState(errorMessage);
   const [srcMode, setSrcMode] = React.useState(false);
   const script = React.useRef('');
-  const [statements, setStatements] = React.useState<Statement[] | null>(null);
+  const [statements, setStatements] = React.useState<string[]>([]);
   const [operator, setOperator] = React.useState<Operator>(operators[0]);
   const i18nValues = useInternalTranslate(editorTabsTranslations);
 
-  const isServerScript = view.mode === 'SET' || view.mode === 'GET';
+  const { mode, label, description } = view;
+  const splitter = isScriptCondition(mode) ? operator : ';';
 
   const testScript = React.useCallback(
     value => {
@@ -195,30 +107,30 @@ export function Script({
     (value: string) => {
       if (value !== script.current) {
         script.current = value;
-        onChange(createScript(value));
+        onChange(
+          createScript(value, isClientMode(mode) ? 'typescript' : 'javascript'),
+        );
       }
     },
-    [onChange],
+    [onChange, mode],
   );
 
   const onStatementsChange = React.useCallback(
-    (statements: Statement[], operator: Operator) => {
-      let returnedProgram = program(statements ? statements : []);
-      if (statements.length > 0 && isScriptCondition(view.mode)) {
-        try {
-          returnedProgram = program(
-            concatStatementsToCondition(operator, statements),
-          );
-        } catch (e) {
-          setError([handleError(e)]);
-        }
-      } else {
-        returnedProgram = program(statements);
+    (statements: string[]) => {
+      const newValue =
+        statements.map(removeFinalSemicolon).join(splitter + '\n') + ';';
+      try {
+        parse(newValue, {
+          sourceType: isClientMode(mode) ? 'module' : 'script',
+        }).program.body;
+
+        onCodeChange(newValue);
+        setStatements(statements);
+      } catch (e) {
+        setError([handleError(e)]);
       }
-      onCodeChange(generate(returnedProgram).code);
-      setStatements(statements);
     },
-    [onCodeChange, view.mode],
+    [mode, onCodeChange, splitter],
   );
 
   const onSelectOperator = React.useCallback(
@@ -227,7 +139,7 @@ export function Script({
       if (!error && !srcMode) {
         // TODO : Something could be done when in src mode
         if (statements !== null) {
-          onStatementsChange(statements, operator);
+          onStatementsChange(statements);
         }
       }
     },
@@ -257,47 +169,54 @@ export function Script({
       const newValue =
         value == null ? '' : typeof value === 'string' ? value : value.content;
       if (newValue === '') {
-        setStatements(null);
+        setStatements([]);
       } else {
-        let newExpressions = parse(newValue, { sourceType: 'script' }).program
-          .body;
-
-        if (isScriptCondition(view.mode)) {
-          if (newExpressions.length === 1) {
-            const condition = newExpressions[0];
-            if (isExpressionStatement(condition)) {
-              newExpressions = conditionGenerator(
-                operator,
-                condition.expression,
-              );
-            } else {
-              setError([i18nValues.scripts.canntoBeParsed]);
-            }
+        const newStatements = parseCodeIntoExpressions(newValue, mode);
+        setStatements(oldStatements => {
+          if (isEqual(oldStatements, newStatements)) {
+            return oldStatements;
           } else {
-            setError([i18nValues.scripts.canntoBeParsedCondition]);
+            return newStatements;
           }
-        }
-        setStatements(newExpressions);
+        });
       }
       setError(undefined);
     } catch (e) {
       setError([handleError(e)]);
     }
-  }, [
-    i18nValues.scripts.canntoBeParsed,
-    i18nValues.scripts.canntoBeParsedCondition,
-    operator,
-    value,
-    view.mode,
-  ]);
+  }, [mode, value]);
 
   return (
     <CommonViewContainer view={view} errorMessage={error}>
-      <Labeled label={view.label} description={view.description}>
+      <Labeled label={label} description={description}>
         {({ labelNode }) => {
           return (
             <>
-              {labelNode}
+              <div className={flex}>
+                <div className={grow}>{labelNode}</div>
+                <IconButton
+                  icon="code"
+                  disabled={error != null}
+                  tooltip={i18nValues.variableProperties.toggleCoding}
+                  pressed={error !== undefined}
+                  onClick={() => setSrcMode(sm => !sm)}
+                />
+                {mode === 'SET' && (
+                  <IconButton
+                    icon="play"
+                    tooltip={i18nValues.variableProperties.runScripts}
+                    onClick={() => testScript(script.current)}
+                  />
+                )}
+                {!srcMode && isScriptCondition(mode) && (
+                  <DropMenu
+                    label={operator}
+                    items={operators.map(o => ({ label: o, value: o }))}
+                    onSelect={({ label }) => onSelectOperator(label)}
+                    buttonClassName={secondaryButtonStyle}
+                  />
+                )}
+              </div>
               <div
                 className={css({
                   border: '1px solid ' + themeVar.colors.DisabledColor,
@@ -305,64 +224,23 @@ export function Script({
                 })}
               >
                 {srcMode ? (
-                  <>
-                    <div
-                      className={css({
-                        display: 'flex',
-                        justifyContent: 'flex-end',
-                      })}
-                    >
-                      <IconButton
-                        icon="code"
-                        tooltip={i18nValues.variableProperties.toggleCoding}
-                        pressed={error !== undefined}
-                        onClick={() => setSrcMode(sm => !sm)}
-                      />
-                    </div>
-                    <TempScriptEditor
-                      language={isServerScript ? 'javascript' : 'typescript'}
-                      initialValue={script.current}
-                      onChange={onCodeChange}
-                      minimap={false}
-                      noGutter={true}
-                      returnType={returnTypes(view.mode)}
-                      resizable
-                    />
-                  </>
+                  <TempScriptEditor
+                    language={
+                      isServerScript(mode) ? 'javascript' : 'typescript'
+                    }
+                    initialValue={script.current}
+                    onChange={onCodeChange}
+                    minimap={false}
+                    noGutter={true}
+                    returnType={returnTypes(mode)}
+                    resizable
+                  />
                 ) : (
                   <WyswygScriptEditor
                     expressions={statements}
-                    onChange={e => {
-                      onStatementsChange(e, operator);
-                    }}
-                    mode={view.mode}
-                    controls={
-                      <div className={cx(flex, justifyEnd, grow)}>
-                        {!error && (
-                          <IconButton
-                            icon="code"
-                            tooltip={i18nValues.variableProperties.toggleCoding}
-                            pressed={error !== undefined}
-                            onClick={() => setSrcMode(sm => !sm)}
-                          />
-                        )}
-                        {view.mode === 'SET' && (
-                          <IconButton
-                            icon="play"
-                            tooltip={i18nValues.variableProperties.runScripts}
-                            onClick={() => testScript(script.current)}
-                          />
-                        )}
-                        {isScriptCondition(view.mode) && (
-                          <DropMenu
-                            label={operator}
-                            items={operators.map(o => ({ label: o, value: o }))}
-                            onSelect={({ label }) => onSelectOperator(label)}
-                            buttonClassName={secondaryButtonStyle}
-                          />
-                        )}
-                      </div>
-                    }
+                    onChange={onStatementsChange}
+                    mode={mode}
+                      setError={ errors => setError(errors)}
                   />
                 )}
               </div>

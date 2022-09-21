@@ -88,7 +88,7 @@ export default function PageDisplay() {
         <PageEditionToolbar />
       </Toolbar.Header>
       <Toolbar.Content>
-        <PageLoader selectedPageId={selectedPageId} />
+        <PageLoader selectedPageId={selectedPageId} themeContext="player" />
       </Toolbar.Content>
     </Toolbar>
   );

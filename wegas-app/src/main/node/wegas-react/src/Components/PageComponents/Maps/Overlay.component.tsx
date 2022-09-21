@@ -86,7 +86,7 @@ function ChildrenDeserializer({
   editMode,
   containerPropsKeys,
   inheritedOptionsState,
-}: ChildrenDeserializerProps<UknownValuesObject>) {
+}: ChildrenDeserializerProps<UnknownValuesObject>) {
   const { exposePositionAs, clickedPosition } =
     React.useContext(playerOverlayCTX);
   const newContext = useDeepMemo({

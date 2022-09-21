@@ -45,7 +45,7 @@ function show_help {
 # A POSIX variable
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
-while getopts "h?dm:t:n:p:w:j:s:" opt; do
+while getopts "h?dm:t:n:p:w:j:s:g:" opt; do
     case "$opt" in
     h|\?)
         show_help

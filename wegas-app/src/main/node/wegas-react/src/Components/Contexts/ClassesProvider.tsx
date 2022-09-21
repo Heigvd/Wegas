@@ -12,7 +12,7 @@ export const classesCTX = React.createContext<ClassesContext>({
 
 function ClassesHandler({
   children,
-}: React.PropsWithChildren<UknownValuesObject>) {
+}: React.PropsWithChildren<UnknownValuesObject>) {
   const [classes, setClasses] = React.useState({});
 
   function addClass(className: string, label: string) {

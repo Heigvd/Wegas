@@ -33,6 +33,7 @@ export const commonServerMethods: ServerGlobalObject = {
       label: 'Fire event',
       parameters: [
         {
+          view: { label: 'Event name', type: 'string' },
           type: 'string',
           required: true,
         },
@@ -44,6 +45,7 @@ export const commonServerMethods: ServerGlobalObject = {
       label: 'Event has been fired',
       parameters: [
         {
+          view: { label: 'Event name', type: 'string' },
           type: 'string',
           required: true,
         },

@@ -1,4 +1,6 @@
 import { css, cx } from '@emotion/css';
+import { faFolder, faFolderOpen } from '@fortawesome/free-solid-svg-icons/';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import {
@@ -39,13 +41,6 @@ import { TextPrompt } from '../../TextPrompt';
 import { MonacoIEditor } from '../editorHelpers';
 import MergeEditor from '../MergeEditor';
 import SrcEditor, { CodeLocation } from '../SrcEditor';
-
-interface LibraryNodeProps {
-  libraryName: string;
-  library: LibraryWithStatus;
-  onSelectLibrary: () => void;
-  selected: boolean;
-}
 
 interface LibraryTypeNodeLabelProps {
   libraryType: LibraryType;
@@ -107,42 +102,143 @@ const labelStyle = css({
   },
 });
 
-function LibraryNode({
-  libraryName,
-  library,
-  onSelectLibrary,
-  selected,
-}: LibraryNodeProps) {
+interface CustomLibraryEditorPropsView {
+  libraryType?: LibraryType;
+  libraryIndex: Record<string, LibraryWithStatus>;
+}
+
+interface FileProps {
+  type: 'File';
+  fullPath: string;
+  file: LibraryWithStatus;
+  selectLibrary: (libName: string) => void;
+  selectedLib: string;
+}
+
+function File({ file, selectedLib, selectLibrary }: FileProps): JSX.Element {
+  const label = file.label
+    .split('/')
+    .filter(x => x)
+    .slice(-1)[0];
+
   return (
     <TreeNode
       notDraggable
       notDroppable
       label={
         <div
-          onClick={onSelectLibrary}
+          onClick={() => {
+            selectLibrary(file.monacoPath);
+          }}
           className={cx(
             labelStyle,
             flex,
             flexBetween,
             cx({
-              [globalSelection]: selected,
-              [unsaved]: library.modified,
-              [conflict]: library.conflict,
+              [globalSelection]: selectedLib === file.monacoPath,
+              [unsaved]: file.modified,
+              [conflict]: file.conflict,
             }),
           )}
         >
-          {libraryName}
-          {library.modified && ' [unsaved]'}
-          {library.conflict && ' [outdated]'}
+          {label}
+          {file.modified && ' [unsaved]'}
+          {file.conflict && ' [outdated]'}
         </div>
       }
     />
   );
 }
 
-interface CustomLibraryEditorPropsView {
-  libraryType?: LibraryType;
-  libraryIndex: Record<string, LibraryWithStatus>;
+interface FolderProps {
+  type: 'Folder';
+  fullPath: string;
+  entries: (FileProps | FolderProps)[];
+  selectLibrary: (libName: string) => void;
+  selectedLib: string;
+}
+
+function Folder({ fullPath, entries }: FolderProps): JSX.Element {
+  const label = fullPath
+    .split('/')
+    .filter(x => x)
+    .splice(-1)[0];
+
+  return (
+    <TreeNode
+      notDraggable
+      notDroppable
+      label={open => (
+        <div>
+          <FontAwesomeIcon icon={open ? faFolderOpen : faFolder} /> {label}
+        </div>
+      )}
+    >
+      {entries.map(entry => {
+        if (entry.type === 'File') {
+          return <File key={entry.fullPath} {...entry} />;
+        } else {
+          return <Folder key={entry.fullPath} {...entry} />;
+        }
+      })}
+    </TreeNode>
+  );
+}
+
+function buildTree(
+  currentPath: string,
+  entries: LibraryWithStatus[],
+  selectedLib: string,
+  selectLib: (name: string) => void,
+): FolderProps {
+  const folders: Record<string, LibraryWithStatus[]> = {};
+  const files: FileProps[] = [];
+
+  entries.forEach(item => {
+    const fullPath = item.label;
+    const path = fullPath.replace(currentPath || '', '');
+
+    const segments = path.split('/').filter(x => x);
+
+    if (segments.length > 1) {
+      // Folder
+      const folderName = segments[0];
+
+      if (folders[folderName] == null) {
+        folders[folderName] = [];
+      }
+      folders[folderName].push(item);
+    } else {
+      // File
+      files.push({
+        type: 'File',
+        file: item,
+        fullPath: fullPath,
+        selectLibrary: selectLib,
+        selectedLib: selectedLib,
+      });
+    }
+  });
+
+  const f = Object.entries(folders).map(([path, list]) => {
+    return buildTree(
+      (currentPath ? currentPath + '/' : currentPath) + path,
+      list,
+      selectedLib,
+      selectLib,
+    );
+  });
+
+  return {
+    type: 'Folder',
+    fullPath: currentPath,
+    entries: [
+      ...f,
+      ...files.sort((a, b) => a.fullPath.localeCompare(b.fullPath)),
+    ],
+    selectedLib: selectedLib,
+    selectLibrary: selectLib,
+  };
 }
 
 /**
@@ -242,6 +338,20 @@ export function CustomLibraryEditorView({
     [libraryIndex],
   );
 
+  const tree = buildTree(
+    '',
+    Object.values(libraryIndex),
+    selectedLibraryName || '',
+    setSelectedLibraryName,
+  );
+  const nodes = tree.entries.map(entry => {
+    if (entry.type === 'File') {
+      return <File key={entry.fullPath} {...entry} />;
+    } else {
+      return <Folder key={entry.fullPath} {...entry} />;
+    }
+  });
+
   return (
     <ReflexContainer orientation="vertical">
       <ReflexElement
@@ -270,18 +380,7 @@ export function CustomLibraryEditorView({
           </>
         )}
         <TreeView rootId={String(GameModel.selectCurrent().id)}>
-          {Object.entries(libraryIndex)
-            /*Object.entries(librariesState[libraryType])*/
-            .sort(([a], [b]) => a.localeCompare(b))
-            .map(([libraryName, library]) => (
-              <LibraryNode
-                key={library.monacoPath}
-                libraryName={library.label}
-                library={library}
-                onSelectLibrary={() => setSelectedLibraryName(libraryName)}
-                selected={libraryName === selectedLibraryName}
-              />
-            ))}
+          {nodes}
         </TreeView>
       </ReflexElement>
       <ReflexSplitter />

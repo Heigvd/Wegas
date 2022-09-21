@@ -99,7 +99,7 @@ export const asyncRunScript = async (
     throw Error('Missing persisted gameModel');
   }
   const finalScript: IScript =
-    'string' === typeof script ? createScript(script) : script;
+    'string' === typeof script ? createScript(script, 'JavaScript') : script;
   return VariableDescriptorAPI.runScript(
     gameModelId,
     p.id,
@@ -135,7 +135,7 @@ export async function asyncRunLoadedScript(
     throw Error('Missing persisted player');
   }
   const finalScript: IScript =
-    'string' === typeof script ? createScript(script) : script;
+    'string' === typeof script ? createScript(script, 'JavaScript') : script;
   return VariableDescriptorAPI.runLoadedScript(
     gameModelId,
     p.id,

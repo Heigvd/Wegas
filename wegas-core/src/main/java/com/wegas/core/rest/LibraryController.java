@@ -57,7 +57,7 @@ public class LibraryController {
      *                                gameModel
      */
     @GET
-    @Path("{library:.*}")
+    @Path("{library}")
     public Map get(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library) {
 
@@ -66,9 +66,9 @@ public class LibraryController {
 
     /**
      *
-     * @param gameModelId
-     * @param library
-     * @param key
+     * @param gameModelId id of the library owner
+     * @param library     type of library
+     * @param key         library filename
      *
      * @return up to date library entry content
      *
@@ -76,7 +76,7 @@ public class LibraryController {
      *                                gameModel
      */
     @GET
-    @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
+    @Path("{library}/{key : [a-zA-Z0-9_/]+}")
     public GameModelContent read(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key) {
@@ -85,11 +85,12 @@ public class LibraryController {
     }
 
     /**
+     * Update existing library
      *
-     * @param gameModelId
-     * @param library
-     * @param script
-     * @param key
+     * @param gameModelId id of the library owner
+     * @param library     type of library
+     * @param script      content
+     * @param key         library filename
      *
      * @return game model with the new library entry
      *
@@ -97,7 +98,7 @@ public class LibraryController {
      *                                gameModel
      */
     @PUT
-    @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
+    @Path("{library}/{key : [a-zA-Z0-9_/]+}")
     public GameModelContent edit(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key, GameModelContent script) {
@@ -106,11 +107,13 @@ public class LibraryController {
     }
 
     /**
+     * Create a new file. The new filename may contains alphanumeric characters, '_' and '/'.
+     * Slashes are used to mimic folders,
      *
-     * @param gameModelId
-     * @param library
-     * @param script
-     * @param key
+     * @param gameModelId id of the library owner
+     * @param library     type of library
+     * @param script      content
+     * @param key         library filename
      *
      * @return game model with the new library entry
      *
@@ -118,7 +121,7 @@ public class LibraryController {
      *                                gameModel
      */
     @POST
-    @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
+    @Path("{library}/{key : [a-zA-Z0-9_/]+}")
     public GameModelContent create(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key, GameModelContent script) {
@@ -138,7 +141,7 @@ public class LibraryController {
      *                                gameModel
      */
     @DELETE
-    @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
+    @Path("{library}/{key : [a-zA-Z0-9_/]+}")
     public GameModel delete(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key) {

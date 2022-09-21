@@ -773,6 +773,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     private static final String NO_SLASH_GROUP = "([^/]+)";
+    private static final String ANY_LAZY_GROUP = "(.*?)";
 
     private static final String GM_PREFIX = "gameModel/";
     private static final String LIBS_PREFIX = GM_PREFIX + "libs/";
@@ -784,7 +785,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     private static final Pattern LIB_PATTERN = Pattern.compile(LIBS_PREFIX
         + NO_SLASH_GROUP// libType
-        + "/" + NO_SLASH_GROUP// libName
+        + "/" + ANY_LAZY_GROUP // libName  / libPath
         + "\\." + NO_SLASH_GROUP); //libExtension
 
     private static final Pattern PAGE_PATTERN = Pattern.compile(PAGES_PREFIX

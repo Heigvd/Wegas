@@ -18,7 +18,7 @@ function Error(err: unknown) {
  */
 export function asyncSFC<T>(
   PComp: (props: T) => Promise<React.ReactElement | null>,
-  Loader: React.FunctionComponent<UknownValuesObject> = Loading,
+  Loader: React.FunctionComponent<UnknownValuesObject> = Loading,
   Err: React.FunctionComponent<{ err: unknown }> = Error,
 ) {
   function AsyncDeps(props: T): React.ReactElement {

@@ -36,7 +36,8 @@
       content="#{requestController.locale.toLanguageTag()}"
     />
     <title>#{editorGameController.currentGameModel.name}</title>
-    <link rel="icon" type="image/ico" href="/Wegas/favicon_green.ico" />
+    <link rel="icon" href="#{request.contextPath}/${requestController.favicon}.ico" />
+    <link rel="icon" type="image/png" href="#{request.contextPath}/${requestController.favicon}.png" />
     <link rel="preload" href="../wegas-react/dist/editor.js" as="script" />
   </h:head>
   <h:body>

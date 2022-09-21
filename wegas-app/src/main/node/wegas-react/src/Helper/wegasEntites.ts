@@ -1,4 +1,4 @@
-import { WegasClassNames, IScript, SVariableDescriptor } from 'wegas-ts-api';
+import { IScript, SVariableDescriptor, WegasClassNames } from 'wegas-ts-api';
 
 export function toScriptableClassName(classes?: WegasClassNames[]) {
   return classes
@@ -16,7 +16,7 @@ export function scriptableClassNameToClassFilter(classes?: string[]) {
 
 export function createScript(
   content: string = '',
-  language: string = 'JavaScript',
+  language: string = 'TypeScript',
 ): IScript {
   return { '@class': 'Script', content, language };
 }
@@ -37,7 +37,7 @@ export function createFindVariableScript<
     ? ({
         '@class': 'Script',
         content: `Variable.find(gameModel, "${variable.getName()}")`,
-        language: 'JavaScript',
+        language: 'TypeScript',
       } as any)
     : (undefined as any);
 }

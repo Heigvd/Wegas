@@ -6,6 +6,7 @@ import { FlexItem } from '../../../Components/Layouts/FlexList';
 import { TextLoader, TumbleLoader } from '../../../Components/Loader';
 import { PageDeserializer } from '../../../Components/PageComponents/tools/PageDeserializer';
 import { themeCTX, ThemeProvider } from '../../../Components/Theme/Theme';
+import { SelectedThemes } from '../../../Components/Theme/ThemeVars';
 import { expandBoth, flex } from '../../../css/classes';
 import { State } from '../../../data/Reducer/reducers';
 import { useStore } from '../../../data/Stores/store';
@@ -34,6 +35,7 @@ export const fullScreenLoaderStyle = css({
 
 interface PageLoaderProps extends ClassStyleId {
   selectedPageId?: string;
+  themeContext?: keyof SelectedThemes;
   themeMode?: string;
   loadTimer?: number;
   context?: {
@@ -47,6 +49,7 @@ const voidObject = {};
 
 export function PageLoader({
   selectedPageId,
+  themeContext,
   themeMode,
   className,
   style,
@@ -63,8 +66,7 @@ export function PageLoader({
     [selectedPageId],
   );
   const selectedPage = useStore(selectedPageSelector, deepDifferent);
-  const { currentContext, currentMode = themeMode } =
-    React.useContext(themeCTX);
+  const { currentContext, currentMode } = React.useContext(themeCTX);
 
   const [waiting, setWaiting] = React.useState(false);
 
@@ -90,7 +92,10 @@ export function PageLoader({
 
   return (
     <DefaultDndProvider>
-      <ThemeProvider contextName={currentContext} modeName={currentMode}>
+      <ThemeProvider
+        contextName={themeContext || currentContext}
+        modeName={themeMode || currentMode}
+      >
         <React.Suspense
           fallback={<TextLoader text={i18nCommonValues.buildingWorld} />}
         >

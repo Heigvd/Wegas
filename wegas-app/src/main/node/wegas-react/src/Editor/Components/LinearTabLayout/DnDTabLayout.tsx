@@ -21,14 +21,15 @@ import {
   expandBoth,
   expandWidth,
   flex,
-  grow,
   hatchedBackground,
   headerStyle,
   hideOverflow,
   relative,
 } from '../../../css/classes';
-import { EditorTabsTranslations } from '../../../i18n/editorTabs/definitions';
-import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
+import {
+  EditorTabsTranslations,
+  editorTabsTranslations,
+} from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { DragTab, DropTab } from './DnDTabs';
 import { DropActionType } from './LinearLayout';
@@ -68,6 +69,35 @@ const headerTabStyle = css({
   columnGap: '5px',
 });
 
+const gapStyle = css({
+  columnGap: '5px',
+});
+
+const toolsStyle = css({
+  position: 'relative',
+  display: 'flex',
+});
+
+const fadeStyle = css({
+  position: 'absolute',
+  display: "none", // TODO: do something with tabLayoutChildrenClassNames
+  height: '100%',
+  width: '24px',
+  right: '100%',
+  background:
+    'linear-gradient(90deg, rgba(255, 255, 255, 0), rgb(241, 239, 243) 100%)',
+  pointerEvents: 'none',
+});
+
+const noPadding = css({
+  padding: 0,
+});
+
+const spacerStyle = css({
+  flexShrink: 100, // big shrink value so spacer is the first to be shorten
+  maxWidth: "5px",
+});
+
 export type DropAction = (item: { label: string; type: string }) => void;
 
 /**
@@ -95,13 +125,10 @@ function translateTabs(
   i18nTabsNames: EditorTabsTranslations,
 ): DnDTabs {
   return dndTabs.map(dndTab => {
-    const translatedOrUndefLabel =
+    const translatedLabel =
       i18nTabsNames.tabsNames[
         dndTab.label as keyof EditorTabsTranslations['tabsNames']
-      ];
-    const translatedLabel = translatedOrUndefLabel
-      ? translatedOrUndefLabel
-      : dndTab.label;
+      ] || dndTab.label;
     const translatedItems = dndTab.items
       ? translateTabs(dndTab.items, i18nTabsNames)
       : undefined;
@@ -162,77 +189,105 @@ function DnDTabLayoutHeader({
   const showAddTab =
     otherTabs != null && flatFindUsableTabs(otherTabs).length > 0;
 
-  return (
-    <div className={cx(flex, grow, autoScroll, headerTabStyle)}>
-      <DropTab
-        dndAcceptType={dndAcceptType}
-        position={'FIRST'}
-        onDrop={onDropTab(0)}
-      />
-      {components.map(({ tabId: label }, i, array) => {
-        const translatedOrUndefLabel =
-          i18nTabsNames.tabsNames[
-            label as keyof EditorTabsTranslations['tabsNames']
-          ];
-        const translatedLabel = translatedOrUndefLabel
-          ? translatedOrUndefLabel
-          : label;
+  const allTabs: DnDTabs = components.map(c => {
+      return {
+        value: c.tabId,
+        label: c.tabId,
+      }
+  });
 
-        return (
-          <React.Fragment key={`DnDTab-${label}#${i}`}>
-            {i > 0 && (
-              <DropTab
+  return (
+    <div className={cx(flex, headerTabStyle, expandWidth)}>
+      <div className={cx(flex, autoScroll, gapStyle)}>
+        <DropTab
+          dndAcceptType={dndAcceptType}
+          position={'FIRST'}
+          onDrop={onDropTab(0)}
+        />
+        {components.map(({ tabId: label }, i, array) => {
+          const translatedOrUndefLabel =
+            i18nTabsNames.tabsNames[
+              label as keyof EditorTabsTranslations['tabsNames']
+            ];
+          const translatedLabel = translatedOrUndefLabel
+            ? translatedOrUndefLabel
+            : label;
+
+          return (
+            <React.Fragment key={`DnDTab-${label}#${i}`}>
+              {i > 0 && (
+                <DropTab
+                  dndAcceptType={dndAcceptType}
+                  position={'MIDDLE'}
+                  onDrop={onDropTab(i)}
+                />
+              )}{' '}
+              <DragTab
+                key={label}
+                label={label}
+                className={tabsClassNameFn(activeTab === label)}
+                onClick={e => {
+                  onSelect && onSelect(label);
+                  e.target instanceof Element && e.target.scrollIntoView();
+                }}
+                onDoubleClick={onFullScreen}
                 dndAcceptType={dndAcceptType}
-                position={'MIDDLE'}
-                onDrop={onDropTab(i)}
-              />
-            )}{' '}
-            <DragTab
-              key={label}
-              label={label}
-              className={tabsClassNameFn(activeTab === label)}
-              onClick={() => {
-                onSelect && onSelect(label);
-              }}
-              onDoubleClick={onFullScreen}
-              dndAcceptType={dndAcceptType}
-              CustomTab={CustomTab}
-            >
-              <span className="tab-label">{translatedLabel}</span>
-              <IconButton
-                icon="times"
-                tooltip="Remove tab"
-                onClick={() => onDeleteTab(label)}
-                className={'close-btn'}
-              />
-            </DragTab>
-            {i === array.length - 1 && (
-              <DropTab
-                dndAcceptType={dndAcceptType}
-                position={'LAST'}
-                onDrop={onDropTab(i + 1)}
-              />
-            )}
-          </React.Fragment>
-        );
-      })}
-      {showAddTab && (
+                CustomTab={CustomTab}
+              >
+                <span className="tab-label">{translatedLabel}</span>
+                <IconButton
+                  icon="times"
+                  tooltip="Remove tab"
+                  onClick={() => onDeleteTab(label)}
+                  className={'close-btn'}
+                />
+              </DragTab>
+              {i === array.length - 1 && (
+                <DropTab
+                  dndAcceptType={dndAcceptType}
+                  position={'LAST'}
+                  onDrop={onDropTab(i + 1)}
+                />
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+      <div className={spacerStyle}></div>
+      <div className={toolsStyle}>
+        <div className={fadeStyle}></div>
         <CustomTab
           className={plusTabClassName ? plusTabClassName : plusTabStyle}
         >
           <DropMenu
-            items={translateTabs(otherTabs, i18nTabsNames)}
-            icon="plus"
+            items={translateTabs(allTabs, i18nTabsNames)}
+            icon="caret-down"
+            buttonClassName={noPadding}
             onSelect={i => {
               onSelect && onSelect(i.value);
-              onNewTab(String(i.value));
             }}
           />
         </CustomTab>
-      )}
-      {!showAddTab && components.length === 0 && (
-        <h3>{i18nTabsNames.miscellaneous.noAvailableTabs}</h3>
-      )}
+
+        {showAddTab && (
+          <CustomTab
+            className={plusTabClassName ? plusTabClassName : plusTabStyle}
+          >
+            <DropMenu
+              items={translateTabs(otherTabs, i18nTabsNames)}
+              icon="plus"
+              buttonClassName={noPadding}
+              onSelect={i => {
+                onSelect && onSelect(i.value);
+                onNewTab(String(i.value));
+              }}
+            />
+          </CustomTab>
+        )}
+        {!showAddTab && components.length === 0 && (
+          <h3>{i18nTabsNames.miscellaneous.noAvailableTabs}</h3>
+        )}
+      </div>
     </div>
   );
 }
