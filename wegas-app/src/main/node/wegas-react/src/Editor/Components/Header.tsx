@@ -89,7 +89,7 @@ const showHeaderStyle = css({
   maxHeight: '200px',
   opacity: 1,
   overflow: 'hidden',
-  padding: '2em 0',
+  paddingBottom: '2em',
   transition: 'all .8s ease',
 });
 
