@@ -11,6 +11,7 @@ import { TempScriptEditor } from './ScriptEditors/TempScriptEditor';
 
 const container = css({ width: '100%' });
 const editor = css({ width: '100%', height: '400px' });
+const preStyle = css({ whiteSpace:'break-spaces'});
 
 const filename = 'play:server.js';
 
@@ -45,7 +46,7 @@ export default function PlayServer() {
         <div className={defaultMargin}>
           <Button onClick={playScript} label="Run script" />
           <div>{error}</div>
-          <pre>{output}</pre>
+          <pre className={preStyle}>{output}</pre>
         </div>
       </div>
     </div>
