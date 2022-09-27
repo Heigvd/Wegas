@@ -289,7 +289,7 @@ function buildTree(
     type: 'Folder',
     fullPath: currentPath,
     entries: [
-      ...f,
+      ...f.sort((a, b) => a.fullPath.localeCompare(b.fullPath)),
       ...files.sort((a, b) => a.fullPath.localeCompare(b.fullPath)),
     ],
     selectedLib: selectedLib,
