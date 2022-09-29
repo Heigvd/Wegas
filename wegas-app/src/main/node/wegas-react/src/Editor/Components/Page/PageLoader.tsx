@@ -9,6 +9,7 @@ import { themeCTX, ThemeProvider } from '../../../Components/Theme/Theme';
 import { SelectedThemes } from '../../../Components/Theme/ThemeVars';
 import { expandBoth, flex } from '../../../css/classes';
 import { State } from '../../../data/Reducer/reducers';
+import { useIsReadyForPageDisplay } from '../../../data/selectors/InitStatusesSelector';
 import { useStore } from '../../../data/Stores/store';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -72,7 +73,7 @@ export function PageLoader({
 
   React.useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
-    if (loadTimer != null) {
+    if (loadTimer != null && loadTimer > 0) {
       setWaiting(true);
       timeout = setTimeout(() => {
         setWaiting(false);
@@ -89,6 +90,8 @@ export function PageLoader({
       readOnly,
     };
   }, [disabled, readOnly]);
+
+  const isReady = useIsReadyForPageDisplay();
 
   return (
     <DefaultDndProvider>
@@ -109,20 +112,20 @@ export function PageLoader({
             style={style}
             id={id}
           >
-            {selectedPage ? (
-              <PageDeserializer
-                pageId={selectedPageId}
-                Container={FlexItem}
-                dropzones={voidObject}
-                context={context}
-                inheritedOptionsState={inheritedOptionsState}
-              />
-            ) : (
-              <pre>{i18nPagesValues.pageUndefined}</pre>
-            )}
-            {((waiting && loadTimer != null) ||
+            {isReady &&
+              (selectedPage ? (
+                <PageDeserializer
+                  pageId={selectedPageId}
+                  Container={FlexItem}
+                  dropzones={voidObject}
+                  context={context}
+                  inheritedOptionsState={inheritedOptionsState}
+                />
+              ) : (
+                <pre>{i18nPagesValues.pageUndefined}</pre>
+              ))}
+            {(waiting || !selectedPage || !isReady) && (
               // Petit tweak pour laisser la page se charger (si un scénario à un problème par contre, on verra le loader tourner éternellement)
-              !selectedPage) && (
               <div className={fullScreenLoaderStyle}>
                 <TumbleLoader />
               </div>

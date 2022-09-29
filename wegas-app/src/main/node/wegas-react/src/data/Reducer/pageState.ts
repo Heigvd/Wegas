@@ -62,9 +62,11 @@ export function getAll(): ThunkResult {
     return PageAPI.getIndex()
       .then(index => {
         dispatch(ActionCreator.PAGE_INDEX({ index }));
-        return PageAPI.getAll().then(pages =>
-          dispatch(ActionCreator.PAGE_FETCH({ pages })),
-        );
+        return PageAPI.getAll().then(pages => {
+          const result = dispatch(ActionCreator.PAGE_FETCH({ pages }));
+          dispatch(ActionCreator.INIT_STATE_SET('pages', true));
+          return result;
+        });
       })
       .catch((res: Response) =>
         dispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),

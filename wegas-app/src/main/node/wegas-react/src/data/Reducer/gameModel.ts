@@ -92,9 +92,11 @@ export function createExtraTestPlayer(gameModelId: number): EditingThunkResult {
 }
 
 export function getGameModel(gameModelId: number): ThunkResult {
-  return function () {
-    return GameModelApi.get(gameModelId).then(res =>
-      editingStore.dispatch(manageResponseHandler(res)),
-    );
+  return function (dispatch) {
+    return GameModelApi.get(gameModelId).then(res => {
+      const result = editingStore.dispatch(manageResponseHandler(res));
+      dispatch(ActionCreator.INIT_STATE_SET('gameModel', true));
+      return result;
+    });
   };
 }

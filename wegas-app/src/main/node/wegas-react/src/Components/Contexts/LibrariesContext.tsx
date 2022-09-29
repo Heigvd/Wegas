@@ -10,9 +10,10 @@ import {
 } from '../../API/library.api';
 import { extractExceptions } from '../../API/rest';
 import { useWebsocketEvent } from '../../API/websocket';
-import { manageResponseHandler } from '../../data/actions';
+import { ActionCreator, manageResponseHandler } from '../../data/actions';
 import { entityIs } from '../../data/entities';
 import { GameModel } from '../../data/selectors';
+import { useIsReadyForClientScript } from '../../data/selectors/InitStatusesSelector';
 import { setReloadingStatus } from '../../data/Stores/pageContextStore';
 import { store } from '../../data/Stores/store';
 import { MessageStringStyle } from '../../Editor/Components/MessageString';
@@ -23,7 +24,7 @@ import {
 } from '../../Editor/Components/ScriptEditors/editorHelpers';
 import { useJSONSchema } from '../../Editor/Components/ScriptEditors/useJSONSchema';
 import { clearEffects, runEffects } from '../../Helper/pageEffectsManager';
-import { getLogger, wlog } from '../../Helper/wegaslog';
+import { getLogger, wwarn } from '../../Helper/wegaslog';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { clearModule } from '../Hooks/sandbox';
@@ -501,7 +502,6 @@ function execAllScripts(
   scripts: ScriptEntry[],
   setErrorStatus: (path: string, error: string) => void,
 ) {
-  wlog('Eval All Client scripts');
   // set PageStore reloading status to true to prevent usePagesContextStateStore  hooks to be triggered
   setReloadingStatus(true);
   clearEffects();
@@ -548,31 +548,42 @@ export function LibrariesLoader(
     });
   }, []);
 
+  const isReadyForClientScript = useIsReadyForClientScript();
+
   // Effect triggers on first rendering only
   React.useEffect(() => {
-    // TODO: init only once store is ready (variables, instances, games, teams,...)
-    LibraryAPI.getAllLibraries('ClientScript')
-      .then((libraries: ILibraries) => {
-        try {
-          dispatchLibrariesState({
-            actionType: 'SetUpLibrariesState',
-            librariesType: 'client',
-            libraries,
-          });
-          execAllScripts(
-            Object.entries(libraries).map(([k, v]) => {
-              return [k, v.content];
-            }),
-            setErrorCb,
+    if (isReadyForClientScript) {
+      LibraryAPI.getAllLibraries('ClientScript')
+        .then((libraries: ILibraries) => {
+          try {
+            dispatchLibrariesState({
+              actionType: 'SetUpLibrariesState',
+              librariesType: 'client',
+              libraries,
+            });
+            execAllScripts(
+              Object.entries(libraries).map(([k, v]) => {
+                return [k, v.content];
+              }),
+              setErrorCb,
+            );
+          } catch (e) {
+            wwarn(e);
+          }
+          // initial client script evaluation done !
+          store.dispatch(
+            ActionCreator.INIT_STATE_SET('clientScriptsEvaluationDone', true),
           );
-        } catch (e) {
-          wlog(e);
-        }
-      })
-      .catch(() => {
-        librariesLoaderLogger.warn('Cannot get client scripts');
-      });
+        })
+        .catch(() => {
+          librariesLoaderLogger.warn('Cannot get client scripts');
+        });
+    }
+  }, [setErrorCb, isReadyForClientScript]);
 
+  // Effect triggers on first rendering only
+  // stylesheets and server script can be safely loaded at any time
+  React.useEffect(() => {
     LibraryAPI.getAllLibraries('ServerScript')
       .then((libraries: ILibraries) => {
         dispatchLibrariesState({
@@ -628,8 +639,6 @@ export function LibrariesLoader(
     //         });
     //     }
     //   });
-    //   // No trigger here in order to fill the library state only once
-    //   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setErrorCb]);
 
   const destroyEventHandler = React.useCallback(

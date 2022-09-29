@@ -67,6 +67,8 @@ export const ActionType = {
   LANGUAGES_EDITON_ALLOWED: 'LANGUAGES/EDITON/ALLOWED',
 
   LOGGER_LEVEL_SET: 'LOGGER/LEVEL/SET',
+
+  INIT_STATE_SET: 'INIT_STATE/SET',
 } as const;
 
 export type ActionTypeValues = ValueOf<typeof ActionType>;

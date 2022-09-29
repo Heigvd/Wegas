@@ -45,7 +45,11 @@ export function getTeams(): ThunkResult {
   return function () {
     const gameId = store.getState().global.currentGameId;
     return TeamAPI.getAll(gameId).then(res => {
-      return store.dispatch(ActionCreator.TEAM_FETCH_ALL({ teams: res }));
+      const result = store.dispatch(
+        ActionCreator.TEAM_FETCH_ALL({ teams: res }),
+      );
+      store.dispatch(ActionCreator.INIT_STATE_SET('teams', true));
+      return result;
     });
   };
 }

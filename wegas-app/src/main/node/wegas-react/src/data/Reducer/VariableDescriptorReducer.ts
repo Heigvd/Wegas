@@ -11,7 +11,7 @@ import {
 } from '../../API/peerReview.api';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { runEffects, unmountEffects } from '../../Helper/pageEffectsManager';
-import { manageResponseHandler, StateActions } from '../actions';
+import { ActionCreator, manageResponseHandler, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import { entityIs } from '../entities';
 import { Game, GameModel, Player } from '../selectors';
@@ -58,7 +58,9 @@ export function getAll(): ThunkResult {
   return function (dispatch) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.getAll(gameModelId).then(res => {
-      return dispatch(manageResponseHandler(res));
+      const result = dispatch(manageResponseHandler(res));
+      dispatch(ActionCreator.INIT_STATE_SET('variables', true));
+      return result;
     });
   };
 }

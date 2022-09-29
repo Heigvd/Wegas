@@ -42,7 +42,9 @@ export function getGame(): ThunkResult {
   return function () {
     const gameId = store.getState().global.currentGameId;
     return GameAPI.get(gameId).then(res => {
-      return store.dispatch(ActionCreator.GAME_FETCH({ game: res }));
+      const result = store.dispatch(ActionCreator.GAME_FETCH({ game: res }));
+      store.dispatch(ActionCreator.INIT_STATE_SET('game', true));
+      return result;
     });
   };
 }

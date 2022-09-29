@@ -25,7 +25,7 @@ import { QuestionDescriptorAPI } from '../../API/questionDescriptor.api';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { VariableInstanceAPI } from '../../API/variableInstance.api';
 import { createScript } from '../../Helper/wegasEntites';
-import { manageResponseHandler, StateActions } from '../actions';
+import { ActionCreator, manageResponseHandler, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import { getInstance } from '../methods/VariableDescriptorMethods';
 import { Player } from '../selectors';
@@ -78,10 +78,12 @@ export function updateInstance(
 }
 
 export function getAll(): ThunkResult<Promise<StateActions>> {
-  return function () {
-    return VariableInstanceAPI.getByPlayer().then(res =>
-      editingStore.dispatch(manageResponseHandler(res)),
-    );
+  return function (dispatch) {
+    return VariableInstanceAPI.getByPlayer().then(res => {
+      const result = editingStore.dispatch(manageResponseHandler(res));
+      dispatch(ActionCreator.INIT_STATE_SET('instances', true));
+      return result;
+    });
   };
 }
 
