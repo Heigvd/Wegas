@@ -74,16 +74,28 @@ function PlayerPageLoader({
       ))
   ) {
     initialSelectedPageIdScriptRef.current = initialSelectedPageIdScript;
-    store.dispatch(
-      ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
-        name,
-        pageId: initialSelectedPageIdScript,
-      }),
-    );
     pageScript = initialSelectedPageIdScript;
   }
 
-  const pageId = (useScript(pageScript, context) as string | undefined) || '';
+  React.useEffect(() => {
+    if (
+      name != null &&
+      (!pageScript ||
+        !isEqual(
+          initialSelectedPageIdScript,
+          initialSelectedPageIdScriptRef.current,
+        ))
+    ) {
+      store.dispatch(
+        ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
+          name,
+          pageId: initialSelectedPageIdScript,
+        }),
+      );
+    }
+  }, [name, pageScript, initialSelectedPageIdScript]);
+
+  const pageId = useScript<string | undefined>(pageScript, context) || '';
 
   return pageIdPath.includes(pageId) ? (
     <pre className={className} style={style} id={id}>
