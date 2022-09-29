@@ -1,5 +1,9 @@
 import { css, cx } from '@emotion/css';
-import { faFolder, faFolderOpen } from '@fortawesome/free-solid-svg-icons/';
+import {
+  faBug,
+  faFolder,
+  faFolderOpen,
+} from '@fortawesome/free-solid-svg-icons/';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
@@ -148,7 +152,7 @@ function File({ file, selectedLib, selectLibrary }: FileProps): JSX.Element {
           className={cx(
             labelStyle,
             flex,
-            flexBetween,
+            //flexBetween,
             cx({
               [globalSelection]: selectedLib === file.monacoPath,
               [unsaved]: file.modified,
@@ -156,6 +160,15 @@ function File({ file, selectedLib, selectLibrary }: FileProps): JSX.Element {
             }),
           )}
         >
+          {file.execError && (
+            <FontAwesomeIcon
+              className={css({
+                paddingRight: '0.5ex',
+              })}
+              icon={faBug}
+              title={file.execError}
+            />
+          )}
           {label}
           {file.modified && ' [unsaved]'}
           {file.conflict && ' [outdated]'}
@@ -172,10 +185,12 @@ interface FolderProps {
   selectLibrary: (libName: string) => void;
   selectedLib: string;
   libType: LibraryType | null;
-  setMessage: SetMessageFn,
+  setMessage: SetMessageFn;
 }
 
-type SetMessageFn = React.Dispatch<React.SetStateAction<LibrariesCallbackMessage>>;
+type SetMessageFn = React.Dispatch<
+  React.SetStateAction<LibrariesCallbackMessage>
+>;
 
 function Folder({
   fullPath,
@@ -205,7 +220,7 @@ function Folder({
                 if (message.type === 'succes') {
                   selectLibrary(message.message);
                 } else {
-                  setMessage(message)
+                  setMessage(message);
                 }
               }}
             />
@@ -447,14 +462,12 @@ export function CustomLibraryEditorView({
             />
           </>
         )}
-        { message && (
           <MessageString
-            type={ message.type }
-            value={ message.message }
-            duration={ 5000 }
-            onLabelVanish={ () => setMessage(undefined) }
+            type={ message?.type || 'normal'}
+            value={message?.message || ''}
+            duration={5000}
+            onLabelVanish={() => setMessage(undefined)}
           />
-        ) }
         <TreeView rootId={String(GameModel.selectCurrent().id)}>
           {nodes}
         </TreeView>

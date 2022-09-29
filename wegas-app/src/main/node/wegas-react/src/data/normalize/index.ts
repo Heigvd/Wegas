@@ -1,10 +1,10 @@
 import {
-  IVariableDescriptor,
-  IVariableInstance,
-  IGameModel,
   IGame,
+  IGameModel,
   IPlayer,
   ITeam,
+  IVariableDescriptor,
+  IVariableInstance,
 } from 'wegas-ts-api/typings/WegasEntities';
 import { wwarn } from '../../Helper/wegaslog';
 import { entityIs } from '../entities';
@@ -52,6 +52,11 @@ export const discriminant = (input: {
   }
   if (cls.endsWith('Instance')) {
     return 'variableInstances';
+  }
+  if (cls === 'GameModelContent') {
+    // ignoring GameModelContent is the expected behaviour
+    // LibrariesContext handles such entites on its own
+    return undefined;
   }
   wwarn(`${cls} not handled`);
   return undefined;

@@ -36,7 +36,7 @@ import {
 } from '../../data/Stores/pageContextStore';
 import { store, useStore } from '../../data/Stores/store';
 import { insertReturn } from '../../Editor/Components/ScriptEditors/TempScriptEditor';
-import { registerEffect } from '../../Helper/pageEffectsManager';
+import { registerEffect, useRef } from '../../Helper/pageEffectsManager';
 import { createLRU, replace, visitDSF } from '../../Helper/tools';
 import { createScript, isScript } from '../../Helper/wegasEntites';
 import { getLogger, wlog, wwarn } from '../../Helper/wegaslog';
@@ -67,23 +67,6 @@ import { transformExtent } from 'ol/proj';
 import { initializeProjection } from '../Maps/helpers/proj4js';
 
 
-const refs: Record<string, { current: unknown }> = {};
-/**
- * Create and init a PageContext state.
- * @param id the ref will be saved with this id
- * @param value: initial state value
- *
- * @returns an object with a "current" prop that can be sat and will keep its value even when scripts are reloaded
- */
-export const useRef: GlobalHelpersClass['useRef'] = <T>(
-  id: string,
-  value: T,
-) => {
-  if (!(id in refs)) {
-    refs[id] = { current: value };
-  }
-  return refs[id] as { current: T };
-};
 
 function downloadDataAsFile(filename: string, data: string) {
   // create a fake anchor element

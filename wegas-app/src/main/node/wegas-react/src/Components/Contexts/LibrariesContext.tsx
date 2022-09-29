@@ -202,6 +202,7 @@ export interface LibraryWithStatus {
   modified: boolean;
   conflict: boolean;
   readOnly: boolean;
+  execError: string;
   visibility: IVisibility | undefined;
 }
 
@@ -260,6 +261,18 @@ interface UpdateLibrary {
   library: IGameModelContent;
 }
 
+interface SetLibraryError {
+  actionType: 'SetLibraryError';
+  /**
+   * libraryPath - the path of the inserted library
+   */
+  libraryPath: string;
+  /**
+   * error
+   */
+  error: string;
+}
+
 interface SaveLibraryAction {
   actionType: 'SaveLibrary';
   /**
@@ -312,6 +325,7 @@ type LibraryStateAction =
   | SetUpLibrariesStateAction
   | SaveLibraryAction
   | UpdateLibrary
+  | SetLibraryError
   | RemoveLibraryAction
   | ModifyLibraryModelAction
   | ModifyLibraryVisibilityAction;
@@ -341,6 +355,7 @@ const setLibrariesState = (
             libraryType: librariesType,
             modified: false,
             conflict: false,
+            execError: '',
             readOnly: librariesType === 'clientInternal',
             visibility: gameModelContent.visibility,
           };
@@ -359,6 +374,7 @@ const setLibrariesState = (
             monacoPath: libraryPath,
             modified: false,
             conflict: false,
+            execError: '',
             readOnly: libraryType === 'clientInternal',
             visibility: library.visibility,
           };
@@ -380,6 +396,15 @@ const setLibrariesState = (
         }
         break;
       }
+      case 'SetLibraryError':
+        {
+          const { libraryPath, error } = action;
+
+          if (newState[libraryPath] != null) {
+            newState[libraryPath].execError = error;
+          }
+        }
+        break;
       case 'RemoveLibrary': {
         const { libraryPath } = action;
         if (newState[libraryPath] != null) {
@@ -439,32 +464,50 @@ export const librariesCTX = React.createContext<LibrariesContext>({
 
 const librariesLoaderLogger = getLogger('LibrariesLoader');
 
-function executeClientLibrary(libraryName: string, libraryContent: string) {
+function executeClientLibrary(
+  libraryName: string,
+  libraryContent: string,
+  setErrorStatus: (path: string, error: string) => void,
+) {
+  const path = computeLibraryPath(libraryName, 'client');
+  let error = '';
   safeClientScriptEval(
     libraryContent,
     undefined,
-    e => librariesLoaderLogger.warn(printWegasScriptError(e)),
+    e => {
+      error = printWegasScriptError(e);
+    },
     undefined,
     {
       moduleName: `./${libraryName}`,
       injectReturn: false,
     },
   );
+  setErrorStatus(path, error);
+  if (error) {
+    librariesLoaderLogger.warn(error);
+  }
 }
 
-type ScriptEntry = [string, string];
+type ScriptName = string;
+type ScriptContent = string;
+
+type ScriptEntry = [ScriptName, ScriptContent];
 
 /**
  *Execute all client script
  */
-function execAllScripts(scripts: ScriptEntry[]) {
+function execAllScripts(
+  scripts: ScriptEntry[],
+  setErrorStatus: (path: string, error: string) => void,
+) {
   wlog('Eval All Client scripts');
   // set PageStore reloading status to true to prevent usePagesContextStateStore  hooks to be triggered
   setReloadingStatus(true);
   clearEffects();
 
-  scripts.forEach(([k, v]) => {
-    executeClientLibrary(k, v);
+  scripts.forEach(([libName, libContent]) => {
+    executeClientLibrary(libName, libContent, setErrorStatus);
   });
 
   runEffects();
@@ -497,8 +540,17 @@ export function LibrariesLoader(
   const jsonSchema = useJSONSchema();
   const i18nValues = useInternalTranslate(editorTabsTranslations);
 
+  const setErrorCb = React.useCallback((path: string, error: string) => {
+    dispatchLibrariesState({
+      actionType: 'SetLibraryError',
+      libraryPath: path,
+      error: error,
+    });
+  }, []);
+
   // Effect triggers on first rendering only
   React.useEffect(() => {
+    // TODO: init only once store is ready (variables, instances, games, teams,...)
     LibraryAPI.getAllLibraries('ClientScript')
       .then((libraries: ILibraries) => {
         try {
@@ -511,6 +563,7 @@ export function LibrariesLoader(
             Object.entries(libraries).map(([k, v]) => {
               return [k, v.content];
             }),
+            setErrorCb,
           );
         } catch (e) {
           wlog(e);
@@ -577,7 +630,7 @@ export function LibrariesLoader(
     //   });
     //   // No trigger here in order to fill the library state only once
     //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setErrorCb]);
 
   const destroyEventHandler = React.useCallback(
     (name: string, libType: LibraryType) => {
@@ -610,11 +663,11 @@ export function LibrariesLoader(
             return acc;
           }, {});
 
-          execAllScripts(Object.entries(clientScripts));
+          execAllScripts(Object.entries(clientScripts), setErrorCb);
         },
       );
     },
-    [],
+    [setErrorCb],
   );
   useWebsocketEvent('LibraryUpdate-ClientScript', clientScriptEventHandler);
 
@@ -877,6 +930,7 @@ export function LibrariesLoader(
     [
       i18nValues.scripts.cannotCreateScript,
       i18nValues.scripts.scriptNameNotAvailable,
+      i18nValues.scripts.scriptFolderNotAvailable,
     ],
   );
 
@@ -913,34 +967,11 @@ export function LibrariesLoader(
         ).then(managedResponse => {
           const library = managedResponse.updatedEntities[0];
           if (entityIs(library, 'GameModelContent')) {
-            let savedWithErrors = false;
-            if (effectiveType === 'ClientScript') {
-              try {
-                // set PageStore reloading status to true to prevent usePagesContextStateStore hooks to be triggered
-                // pageStore will be resumed after all clientscript libs will have been reloaded
-                setReloadingStatus(true);
-                // this execution is only made to catch errors
-                executeClientLibrary(
-                  selectedPersistedLibrary.label,
-                  library.content,
-                );
-              } catch (e) {
-                savedWithErrors = true;
-              }
-            }
-            if (savedWithErrors) {
-              saveLibraryCB &&
-                saveLibraryCB({
-                  type: 'warning',
-                  message: i18nValues.scripts.librarySavedErrors,
-                });
-            } else {
-              saveLibraryCB &&
-                saveLibraryCB({
-                  type: 'succes',
-                  message: i18nValues.scripts.scriptSaved,
-                });
-            }
+            saveLibraryCB &&
+              saveLibraryCB({
+                type: 'succes',
+                message: i18nValues.scripts.scriptSaved,
+              });
 
             dispatchLibrariesState({
               actionType: 'SaveLibrary',
@@ -948,6 +979,20 @@ export function LibrariesLoader(
               libraryPath,
               library,
             });
+
+            if (effectiveType === 'ClientScript') {
+              // event if only one script changed, all scripts
+              // must been re-evaluated
+              const clientScripts = filterByLibraryType(
+                stateRef.current,
+                'client',
+              ).reduce<Record<string, string>>((acc, gmc) => {
+                acc[gmc.persisted.contentKey] = gmc.persisted.content;
+                return acc;
+              }, {});
+
+              execAllScripts(Object.entries(clientScripts), setErrorCb);
+            }
           }
 
           const { managedResponse: newManagedResponse, exceptionsFound } =
@@ -1002,10 +1047,10 @@ export function LibrariesLoader(
     [
       addLibrary,
       i18nValues.scripts.libraryIsOutdated,
-      i18nValues.scripts.librarySavedErrors,
       i18nValues.scripts.scriptSaved,
       librariesState,
       reactMonaco,
+      setErrorCb,
     ],
   );
 
