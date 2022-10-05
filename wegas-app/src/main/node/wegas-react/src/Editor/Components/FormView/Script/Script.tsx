@@ -46,7 +46,7 @@ const operators = ['&&', '||'] as const;
 type Operator = typeof operators[number];
 
 export function isServerScript(mode?: ScriptMode) {
-  return mode === 'GET' || mode === 'GET_CLIENT';
+  return mode === 'GET' || mode === 'SET';
 }
 
 export function isScriptCondition(mode?: ScriptMode) {
