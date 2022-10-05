@@ -195,6 +195,10 @@ function DnDTabLayoutHeader({
       }
   });
 
+
+  // since componenets may have empty slot
+  const indexedComponents = [...components.map((component, index) => ({ component, index}))].filter(x => x);
+
   return (
     <div className={cx(flex, headerTabStyle, expandWidth)}>
       <div className={cx(flex, autoScroll, gapStyle)}>
@@ -203,7 +207,9 @@ function DnDTabLayoutHeader({
           position={'FIRST'}
           onDrop={onDropTab(0)}
         />
-        {components.map(({ tabId: label }, i, array) => {
+        { indexedComponents.map((indexedComp, i, array) => {
+          const label = indexedComp.component.tabId;
+          const compIndex = indexedComp.index;
           const translatedOrUndefLabel =
             i18nTabsNames.tabsNames[
               label as keyof EditorTabsTranslations['tabsNames']
@@ -213,12 +219,12 @@ function DnDTabLayoutHeader({
             : label;
 
           return (
-            <React.Fragment key={`DnDTab-${label}#${i}`}>
+            <React.Fragment key={ `DnDTab-${ label }#${ compIndex}`}>
               {i > 0 && (
                 <DropTab
                   dndAcceptType={dndAcceptType}
                   position={'MIDDLE'}
-                  onDrop={onDropTab(i)}
+                  onDrop={ onDropTab(compIndex)}
                 />
               )}{' '}
               <DragTab
@@ -245,7 +251,7 @@ function DnDTabLayoutHeader({
                 <DropTab
                   dndAcceptType={dndAcceptType}
                   position={'LAST'}
-                  onDrop={onDropTab(i + 1)}
+                  onDrop={ onDropTab(compIndex + 1)}
                 />
               )}
             </React.Fragment>

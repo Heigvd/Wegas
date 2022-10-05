@@ -18,21 +18,40 @@ function triangleDropStyle(
       display: 'block',
       width: 0,
       height: 0,
-      position: 'relative',
+      position: 'absolute',
       zIndex: 10,
-      top: '-20px',
+      top: '0',
       left:
         position === 'FIRST'
           ? 0
           : position === 'LAST'
-          ? DROP_SPACE_WIDTH / 2 + 'px'
-          : 'calc(50% - 10px)',
-      borderLeft: position === 'FIRST' ? 'none' : '10px solid transparent',
-      borderRight: position === 'LAST' ? 'none' : '10px solid transparent',
-      borderTop: isOverCurrent
-        ? '20px solid ' + themeVar.colors.HighlightColor
+          ? ((DROP_SPACE_WIDTH / 2) - 4) + 'px'
+          : 'calc(50% - 4px)',
+      border: isOverCurrent
+        ? '4px solid ' + themeVar.colors.HighlightColor
         : canDrop
-        ? '20px solid ' + themeVar.colors.DisabledColor
+        ? '4px solid ' + themeVar.colors.DisabledColor
+        : 'transparent',
+      borderRadius: "4px",
+    },
+   '&:after': {
+      content: '""',
+      display: 'block',
+      width: "2px",
+      top: 0,
+      bottom: 0,
+      position: 'absolute',
+      zIndex: 10,
+      left:
+        position === 'FIRST'
+          ? "3px"
+          : position === 'LAST'
+          ? ((DROP_SPACE_WIDTH / 2 ) - 1) + 'px'
+          : 'calc(50% - 1px)',
+      backgroundColor: isOverCurrent
+        ?  themeVar.colors.HighlightColor
+        : canDrop
+        ? themeVar.colors.DisabledColor
         : 'transparent',
     },
   });
@@ -131,6 +150,7 @@ export function DropTab({ dndAcceptType, onDrop, position }: DropTabProps) {
     <div
       ref={dropTab}
       style={{
+        position: 'relative',
         zIndex: 10,
         width:
           position === 'MIDDLE'
