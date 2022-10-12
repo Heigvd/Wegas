@@ -132,7 +132,20 @@ function translateTabs(
       ? translateTabs(dndTab.items, i18nTabsNames)
       : undefined;
     return { ...dndTab, label: translatedLabel, items: translatedItems };
-  });
+  }).sort((a,b) => {
+    if (typeof a.label === "string" && typeof b.label === "string") {
+      // both label are strings
+      return a.label.localeCompare(b.label);
+    } else if (typeof a.label === "string") {
+      // b is a ReactNode, sort a first
+      return -1;
+    } else if (typeof b.label === "string") {
+      // a is a ReactNode, sort b first
+      return 1;
+    } else {
+      return 0;
+    }
+  })
 }
 
 function flatFindUsableTabs(tabs: DnDTabs): DnDTabs {
