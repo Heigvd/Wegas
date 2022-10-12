@@ -54,3 +54,20 @@ export type EditingThunkResult<R = void> = ThunkAction<
   undefined,
   EditingStateActions
 >;
+
+/**
+ * Helper to create well-typed actions easily
+ */
+export function createEditingAction<Payload, ReturnType>(
+  cb: (
+    payload: Payload,
+    dispatch: EditingStoreDispatch,
+    getState: () => EditingState,
+  ) => ReturnType,
+): (payload: Payload) => EditingThunkResult<ReturnType> {
+  return (payload: Payload) => {
+    return (dispatch: EditingStoreDispatch, getState: () => EditingState) => {
+      return cb(payload, dispatch, getState);
+    };
+  };
+}

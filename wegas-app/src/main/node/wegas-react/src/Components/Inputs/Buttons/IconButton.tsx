@@ -4,6 +4,9 @@ import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
 import { css } from '@emotion/css';
 import { themeVar } from '../../Theme/ThemeVars';
 import { IconProp, Transform } from '@fortawesome/fontawesome-svg-core';
+import { internalButtonStyle, loadingOverlayStyle, loadingStyle } from './Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 export const iconButtonStyle = css({
   display: 'flex',
@@ -101,6 +104,7 @@ export interface IconButtonProps extends ClassStyleId, DisabledReadonly {
   dark?: boolean;
   chipStyle?: boolean;
   shadow?: boolean;
+  loading?: boolean;
 }
 
 export const IconButton = React.forwardRef<
@@ -111,6 +115,7 @@ export const IconButton = React.forwardRef<
     {
       onClick,
       disabled,
+      loading,
       readOnly,
       noHover,
       className,
@@ -158,8 +163,15 @@ export const IconButton = React.forwardRef<
         aria-pressed={pressed}
         type={type}
       >
+        <div className={loading ? loadingStyle : internalButtonStyle}>
         {<IconComp icon={icon} mask={mask} transform={transform}/>}
         {src && <img alt={tooltip} src={src} />}
+        </div>
+        {loading && (
+          <div className={loadingOverlayStyle}>
+            <FontAwesomeIcon icon={faSpinner} pulse />
+          </div>
+        )}
       </button>
     );
   },

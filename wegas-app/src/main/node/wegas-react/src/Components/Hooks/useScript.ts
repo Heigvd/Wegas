@@ -67,6 +67,24 @@ import { transformExtent } from 'ol/proj';
 import { initializeProjection } from '../Maps/helpers/proj4js';
 
 
+export interface IClientScript {
+  "@class": "ClientScript";
+  language: 'TypeScript';
+  content: string;
+  returnType: string | undefined;
+}
+
+export function createClientScript(
+  content: string = '',
+  returnType: string | undefined,
+): IClientScript {
+  return {
+    '@class': 'ClientScript',
+    language: 'TypeScript',
+    returnType,
+    content,
+  };
+}
 
 function downloadDataAsFile(filename: string, data: string) {
   // create a fake anchor element
@@ -513,11 +531,12 @@ const memoClientScriptEval = (() => {
       if (!script.content) {
         return undefined as any;
       }
+      const scriptKey = `IR_${ options?.injectReturn ?? 'nope' }::M_${ options?.moduleName ?? 'nope' }::${ script.content}`
 
-      if (!transpiledCache.has(script.content)) {
+      if (!transpiledCache.has(scriptKey)) {
         // IScript not in cache -> transpile it
         transpiledCache.set(
-          script.content,
+          scriptKey,
           transpileToFunction(
             script.content,
             options,
@@ -526,7 +545,7 @@ const memoClientScriptEval = (() => {
         );
       }
       // fetch from cache
-      scriptAsFunction = transpiledCache.get(script.content);
+      scriptAsFunction = transpiledCache.get(scriptKey);
     }
 
     if (scriptAsFunction) {
@@ -576,6 +595,23 @@ export function clientScriptEval<T>(
   options: TranspileOptions | undefined,
 ): T extends WegasScriptEditorReturnType ? T : unknown {
   return memoClientScriptEval(script, context, state, options);
+}
+
+export function customClientScriptEval<T>(
+  script: IClientScript,
+  context:
+    | {
+        [name: string]: unknown;
+      }
+    | undefined,
+): T extends WegasScriptEditorReturnType ? T : unknown {
+  return memoClientScriptEval({
+    "@class": "Script",
+    language: 'TypeScript',
+    content: script.content
+  }, context, undefined, {
+    injectReturn: !!script.returnType
+  });
 }
 
 interface WegasScriptError extends Error {
@@ -652,6 +688,7 @@ export function useScript<T>(
     [name: string]: unknown;
   },
   catchCB?: (e: Error) => void,
+  options?: TranspileOptions | undefined,
 ): T | undefined {
   const oldContext = React.useRef<{
     [name: string]: unknown;
@@ -687,7 +724,7 @@ export function useScript<T>(
           newContext,
           catchCB,
           state,
-          undefined,
+          options,
         ),
       );
     } else {
@@ -696,10 +733,10 @@ export function useScript<T>(
         newContext,
         catchCB,
         state,
-        undefined,
+        options,
       );
     }
-  }, [script, newContext, state, catchCB]);
+  }, [script, newContext, state, catchCB, options]);
 
   React.useEffect(() => {
     isFirstRun.current = true;
@@ -732,6 +769,25 @@ export function useScript<T>(
   }, deepDifferent);
 
   return returnValue as any;
+}
+
+export function useClientScript<T>(
+  clientScript?: IClientScript,
+  context?: {
+    [name: string]: unknown;
+  },
+  catchCB?: (e: Error) => void,
+): T | undefined {
+
+  const script: IScript = {
+    "@class": "Script",
+    language: 'TypeScript',
+    content: clientScript?.content || '',
+  };
+
+  return useScript<T>(script, context, catchCB, {
+      injectReturn: !!clientScript?.returnType
+  });
 }
 
 /**

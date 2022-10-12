@@ -5,6 +5,7 @@ import BooleanView from './Boolean';
 import CallbackView from './Callback';
 import CodeView from './Code';
 import ColorPickerView from './ColorPickerView';
+import { CustomClientScript } from './CustomClientScript';
 import { CustomScript } from './CustomScript';
 import DictionaryView from './Dictionary';
 import EntityArrayFieldSelect from './EntityArrayFieldSelect';
@@ -55,6 +56,7 @@ export const DEFINED_VIEWS = {
   callback: CallbackView,
   colorpicker: ColorPickerView,
   customscript: CustomScript,
+  customclientscript: CustomClientScript,
   dictionary: DictionaryView,
   entityarrayfieldselect: EntityArrayFieldSelect,
   file: FileSelector,

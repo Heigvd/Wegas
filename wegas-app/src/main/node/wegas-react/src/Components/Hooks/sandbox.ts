@@ -38,6 +38,7 @@ interface GlobalVariableClass {
 
 export interface GlobalClasses {
   Error: typeof globalThis['Error'];
+  Promise: typeof globalThis['Promise'];
   Function: typeof globalThis['Function'];
   gameModel?: Readonly<SGameModel>;
   teams?: Readonly<Readonly<STeam>[]>;

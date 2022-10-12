@@ -23,7 +23,7 @@ import { editingStore } from '../../../data/Stores/editingStore';
 import { store } from '../../../data/Stores/store';
 import { createScript } from '../../../Helper/wegasEntites';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
-import { clientScriptEval, useScript } from '../../Hooks/useScript';
+import { clientScriptEval, customClientScriptEval, IClientScript, useScript } from '../../Hooks/useScript';
 import { PlayerInfoBulletProps } from './InfoBullet';
 import { schemaProps } from './schemaProps';
 
@@ -52,7 +52,7 @@ interface ImpactVariableAction {
   impact: IScript;
 }
 interface LocalScriptEvalAction {
-  script: IScript;
+  script: IClientScript;
   context?: PageComponentContext;
 }
 interface OpenPopupPageAction {
@@ -99,7 +99,7 @@ export interface WegasComponentActions {
   openUrl: (props: OpenURLAction) => void;
   openFile: (props: OpenFileAction) => void;
   impactVariable: (props: ImpactVariableAction) => void;
-  localScriptEval: (props: LocalScriptEvalAction) => void;
+  localScriptEval: (props: LocalScriptEvalAction) => Promise<unknown> | unknown;
   openPopupPage: (props: OpenPopupPageAction) => void;
   playSound: (props: PlaySoundAction) => void;
   printVariable: (props: PrintVariableAction) => void;
@@ -154,9 +154,10 @@ export const wegasComponentActions: WegasComponentActions = {
     }
   },
   localScriptEval: props => {
-    clientScriptEval(props.script, props.context, undefined, {
-      injectReturn: false,
-    });
+    return customClientScriptEval<Promise<unknown> | unknown>(
+      props.script,
+      props.context,
+    );
   },
   openPopupPage: props => {
     //TODO : Discuss that with Maxence
@@ -230,7 +231,11 @@ export const actionsChoices: HashListChoices = [
       schema: schemaProps.object({
         label: 'Impact variable',
         properties: {
-          impact: schemaProps.script({ label: 'Impact', required: true }),
+          impact: schemaProps.script({
+            label: 'Impact',
+            required: true,
+            language: 'JavaScript',
+          }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
       }),
@@ -241,14 +246,14 @@ export const actionsChoices: HashListChoices = [
     value: {
       prop: 'localScriptEval',
       schema: schemaProps.object({
-        label: 'Local script eval',
         properties: {
-          script: schemaProps.code({
-            label: 'Local script',
-            scriptProps: {
-              language: 'TypeScript',
-            },
-          }),
+          script: {
+            view: {
+              type: 'customclientscript',
+              label: 'Local script',
+              returnType: ['Promise<unknown>', 'void'],
+            }
+          },
           priority: schemaProps.number({ label: 'Priority' }),
         },
       }),

@@ -80,23 +80,33 @@ function PlayerButton({
       translation,
     ],
   );
+  const [loading, setLoading] = React.useState(false);
 
-  const onClick = React.useCallback(
-    onComponentClick(restProps, context, stopPropagation, confirmClick),
-    [restProps, context],
-  );
+  const onClick = React.useMemo(() => {
+      return onComponentClick(
+        setLoading,
+        restProps,
+        context,
+        stopPropagation,
+        confirmClick,
+      );
+  }, [confirmClick, context, restProps, stopPropagation]);
+
 
   return confirm ? (
     <ConfirmButton
       onAction={(success, event) => {
-        if (success && event) {
+        if (onClick && success && event) {
           onClick(event);
         }
       }}
       {...buttonProps}
+      loading={ loading }
     />
   ) : (
-    <Button onClick={event => onClick(event)} {...buttonProps} />
+    <Button onClick={onClick} {...buttonProps}
+        loading={ loading}
+    />
   );
 }
 

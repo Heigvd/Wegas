@@ -10,8 +10,8 @@ import {
 import { manageResponseHandler } from '../../../data/actions';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import {
+  createEditingAction,
   editingStore,
-  EditingThunkResult,
 } from '../../../data/Stores/editingStore';
 import {
   PagesContextState,
@@ -42,6 +42,7 @@ import {
   dropZoneFocus,
   dropZoneHover,
 } from '../../Contexts/DefaultDndProvider';
+import { globals } from '../../Hooks/sandbox';
 import { addSetterToState } from '../../Hooks/useScript';
 import { TumbleLoader } from '../../Loader';
 import { themeVar } from '../../Theme/ThemeVars';
@@ -120,12 +121,11 @@ export function assembleStateAndContext(
   };
 }
 
-function awaitExecute(
-  actions: [string, WegasComponentOptionsAction][],
+const asynExecute = createEditingAction(async ({actions, context}: {
+  actions: [keyof WegasComponentOptionsActions, WegasComponentOptionsAction][],
   context?: PageComponentContext,
-): EditingThunkResult {
-  return async function (dispatch, getState) {
-    const sortedActions = actions.sort(
+}, dispatch, getState) => {
+     const sortedActions = actions.sort(
       ([, v1], [, v2]) =>
         (v1.priority ? v1.priority : 0) - (v2.priority ? v2.priority : 0),
     );
@@ -146,15 +146,22 @@ function awaitExecute(
 
           dispatch(manageResponseHandler(result, dispatch, getState()));
         }
+      } else if (k === 'localScriptEval') {
+        const result = wegasComponentActions.localScriptEval({
+          ...(v as any),
+          context,
+        });
+        if (result instanceof globals.Promise || result instanceof Promise) {
+          await result;
+        }
       } else {
-        wegasComponentActions[k as keyof WegasComponentOptionsActions]({
+        wegasComponentActions[k]({
           ...(v as any),
           context,
         });
       }
     }
-  };
-}
+});
 
 /**
  * onComponentClick - onClick factory that can be used by components and override classic onClick
@@ -164,6 +171,7 @@ function awaitExecute(
  * @param confirmClick
  */
 export function onComponentClick(
+  setLoading: (l: boolean) => void,
   componentProps: { [props: string]: unknown },
   context?: { [variable: string]: unknown },
   stopPropagation?: boolean,
@@ -174,9 +182,14 @@ export function onComponentClick(
       componentProps,
       Object.keys(defaultWegasComponentOptionsActions),
     ) as WegasComponentOptionsActions,
-  );
+  ) as [keyof WegasComponentOptionsActions, WegasComponentOptionsAction][];
+
+  if (onClickActions.length === 0) {
+    return undefined;
+  }
 
   return function (event: React.MouseEvent<HTMLElement, MouseEvent>) {
+    setLoading(true);
     if (stopPropagation) {
       event.stopPropagation();
     }
@@ -186,7 +199,13 @@ export function onComponentClick(
       // eslint-disable-next-line no-alert
       confirm(confirmClick)
     ) {
-      editingStore.dispatch(awaitExecute(onClickActions, context));
+      return editingStore
+        .dispatch(asynExecute({actions: onClickActions, context}))
+        .then(() => {
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
     }
   };
 }
@@ -428,6 +447,7 @@ const lockedOverlayStyle = css({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
+  justifyContent: 'center',
 });
 
 interface LockedOverlayProps {
@@ -625,17 +645,26 @@ export function ComponentContainer({
   const editable = editMode && isNotFirstComponent;
   const showComponent = !options.hidden;
 
+  const [loading, setLoading] = React.useState(false);
+
   const isSelected = isEqual(path, editedPath);
   const isFocused = usePagesStateStore(
     isComponentFocused(editMode, pageId, path),
   );
 
-  const onClick = React.useCallback(
-    onClickManaged
-      ? () => {}
-      : onComponentClick(restProps, context, stopPropagation, confirmClick),
-    [stopPropagation, confirmClick, restProps, context, onClickManaged],
-  );
+  const onClick = React.useMemo(() => {
+    if (onClickManaged) {
+      return undefined;
+    } else {
+      return onComponentClick(
+        setLoading,
+        restProps,
+        context,
+        stopPropagation,
+        confirmClick,
+      );
+    }
+  }, [confirmClick, context, onClickManaged, restProps, stopPropagation]);
 
   const onMouseOver = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -662,7 +691,7 @@ export function ComponentContainer({
   }, [editable]);
 
   const dragEnter = React.useCallback(
-    e => {
+    (e: React.DragEvent) => {
       if (editable) {
         e.preventDefault();
         e.stopPropagation();
@@ -673,8 +702,8 @@ export function ComponentContainer({
   );
 
   const dragLeave = React.useCallback(
-    e => {
-      if (editable) {
+    (e: React.DragEvent) => {
+      if (editable && e.relatedTarget instanceof Node) {
         if (e.currentTarget.contains(e.relatedTarget)) {
           return;
         }
@@ -767,7 +796,9 @@ export function ComponentContainer({
           dropPosition="AFTER"
         />
       )}
-      {options.locked === true && <LockedOverlay locked={options.locked} />}
+      {(loading || options.locked === true) && (
+        <LockedOverlay locked />
+      )}
     </Container>
   ) : null;
 }

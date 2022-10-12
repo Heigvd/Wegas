@@ -57,6 +57,7 @@ export function ConfirmButton({
   dontResetOnBlur,
   readOnly,
   disabled,
+  loading,
   noHover,
   disableBorders,
   className,
@@ -115,6 +116,7 @@ export function ConfirmButton({
           onClick={onClickVerify}
           tooltip={tooltip}
           disabled={confirmation || disabled}
+          loading={loading}
           readOnly={readOnly}
           noHover={noHover}
           className={buttonClassName}
@@ -130,6 +132,7 @@ export function ConfirmButton({
           disableBorders={disableBorders}
           tooltip={tooltip}
           disabled={confirmation || disabled}
+          loading={loading}
           readOnly={readOnly}
           noHover={noHover}
           className={buttonClassName}

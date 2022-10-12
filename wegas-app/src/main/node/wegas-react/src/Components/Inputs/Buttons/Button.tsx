@@ -1,4 +1,6 @@
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
 import { grow, secondaryButtonCSS } from '../../../css/classes';
 import { IconComp, Icons } from '../../../Editor/Components/Views/FontAwesome';
@@ -31,6 +33,18 @@ export const outlinePrimaryButtonStyle = css({
     backgroundColor: themeVar.colors.HeaderColor,
   },
 });
+
+export const internalButtonStyle = css({
+  display: 'flex',
+  alignItems: 'center',
+});
+
+export const loadingStyle = cx(
+  internalButtonStyle,
+  css({
+    opacity: 0,
+  }),
+);
 
 export const buttonStyle = css({
   display: 'flex',
@@ -208,7 +222,19 @@ export interface ButtonProps extends ClassStyleId, DisabledReadonly {
   mode?: 'active' | 'success' | 'warning' | 'error';
   dark?: boolean;
   iconPositionning?: 'spread' | 'pack';
+  loading?: boolean;
 }
+
+export const loadingOverlayStyle = css({
+  position: 'absolute',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+});
 
 export const Button = React.forwardRef<
   HTMLButtonElement,
@@ -224,6 +250,7 @@ export const Button = React.forwardRef<
       onClick,
       disabled,
       readOnly,
+      loading,
       noHover,
       disableBorders,
       className,
@@ -287,19 +314,26 @@ export const Button = React.forwardRef<
         aria-label={tooltip || defaultButtonProps['aria-label']}
         aria-pressed={pressed || defaultButtonProps['aria-pressed']}
       >
-        {prefixedLabel && (
-          <>
-            {computedLabel}
-            {iconPositionning === 'spread' && <div className={grow} />}
-          </>
-        )}
-        {icon && <IconComp icon={icon} />}
-        {src && <img alt={tooltip} src={src} />}
-        {!prefixedLabel && (
-          <>
-            {iconPositionning === 'spread' && <div className={grow} />}
-            {computedLabel}
-          </>
+        <div className={loading ? loadingStyle : internalButtonStyle}>
+          {prefixedLabel && (
+            <>
+              {computedLabel}
+              {iconPositionning === 'spread' && <div className={grow} />}
+            </>
+          )}
+          {icon && <IconComp icon={icon} />}
+          {src && <img alt={tooltip} src={src} />}
+          {!prefixedLabel && (
+            <>
+              {iconPositionning === 'spread' && <div className={grow} />}
+              {computedLabel}
+            </>
+          )}
+        </div>
+        {loading && (
+          <div className={loadingOverlayStyle}>
+            <FontAwesomeIcon icon={faSpinner} pulse />
+          </div>
         )}
       </button>
     );
