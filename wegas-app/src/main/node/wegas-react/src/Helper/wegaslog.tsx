@@ -60,6 +60,7 @@ function getLogger(name: string): Logger {
     };
 
     // let currentLevel: LoggerLevel = LoggerLevels.WARN;
+    const prefix = '[' + name + ']';
     const logger: Logger = {
       getLevel,
       setLevel: (level: LoggerLevel) => {
@@ -74,35 +75,35 @@ function getLogger(name: string): Logger {
         const currentLevel = LoggerLevels[getLevel()];
         if (currentLevel >= LoggerLevels.DEBUG) {
           // eslint-disable-next-line no-console
-          console.log(...mapArgs(...params));
+          console.log(prefix, ...mapArgs(...params));
         }
       },
       info: (...params: unknown[]): void => {
         const currentLevel = LoggerLevels[getLevel()];
         if (currentLevel >= LoggerLevels.INFO) {
           // eslint-disable-next-line no-console
-          console.log(...mapArgs(...params));
+          console.log(prefix, ...mapArgs(...params));
         }
       },
       log: (...params: unknown[]): void => {
         const currentLevel = LoggerLevels[getLevel()];
         if (currentLevel >= LoggerLevels.LOG) {
           // eslint-disable-next-line no-console
-          console.log(...mapArgs(...params));
+          console.log(prefix, ...mapArgs(...params));
         }
       },
       warn: (...params: unknown[]): void => {
         const currentLevel = LoggerLevels[getLevel()];
         if (currentLevel >= LoggerLevels.WARN) {
           // eslint-disable-next-line no-console
-          console.warn(...mapArgs(...params));
+          console.warn(prefix, ...mapArgs(...params));
         }
       },
       error: (...params: unknown[]): void => {
         const currentLevel = LoggerLevels[getLevel()];
         if (currentLevel >= LoggerLevels.ERROR) {
           // eslint-disable-next-line no-console
-          console.error(...mapArgs(...params));
+          console.error(prefix, ...mapArgs(...params));
         }
       },
     };
