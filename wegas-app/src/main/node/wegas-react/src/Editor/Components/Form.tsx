@@ -111,13 +111,21 @@ export function Form<T>({
   localDispatch,
   error,
 }: EditorProps<T>) {
-  const oldReceivedEntity = React.useRef(entity);
   const form = React.useRef<JSONForm>(null);
+
+  // keep track of previous received entity props
+  const oldReceivedEntity = React.useRef(entity);
+  // store the entity being edited
   const [val, setVal] = React.useState(entity);
 
   const iconActions = actions.filter(isIconAction).sort(sortFormAction);
   const toolboxActions = actions.filter(isToolboxAction).sort(sortFormAction);
   const i18nValues = useInternalTranslate(commonTranslations);
+
+  const [message, setMessage] = React.useState<{
+    type: 'succes' | 'warning' | 'error';
+    message: string;
+  }>();
 
   React.useEffect(() => {
     oldReceivedEntity.current = entity;
@@ -127,7 +135,10 @@ export function Form<T>({
     deepDifferent(entity, oldReceivedEntity.current) &&
     deepDifferent(entity, val)
   ) {
+    // entity is different than previous one and is different than the one being editing
+    // it means its a brand new entity
     setVal(entity);
+    setMessage(undefined);
   }
 
   return (
@@ -142,6 +153,12 @@ export function Form<T>({
             readOnly,
           }) && (
             <>
+              <MessageString
+                type={message?.type || 'normal'}
+                value={message?.message || ''}
+                duration={5000}
+                onLabelVanish={() => setMessage(undefined)}
+              />
               {update && (
                 <IconButton
                   icon="save"
@@ -153,8 +170,16 @@ export function Form<T>({
                       const validation = form.current.validate();
                       if (validation.length) {
                         wwarn(val, JSON.stringify(validation, null, 2));
+                        setMessage({
+                          type: 'error',
+                          message: i18nValues.changesNotSaved,
+                        });
                       } else if (val != null) {
                         update(val);
+                        setMessage({
+                          type: 'succes',
+                          message: i18nValues.changesSaved,
+                        });
                       }
                     }
                   }}
