@@ -4,8 +4,6 @@ import {
   featuresCTX,
   isFeatureEnabled,
 } from '../../../Components/Contexts/FeaturesProvider';
-import { LanguageSelector } from '../../../Components/Contexts/LanguagesProvider';
-import { componentMarginLeft } from '../../../css/classes';
 
 export const titleStyle = css({
   margin: '5px 0px',
@@ -23,7 +21,6 @@ export interface LabeledView {
   label?: React.ReactNode;
   description?: string;
   index?: number;
-  onLanguage?: (lang: string) => void;
   currentLanguage?: string;
 }
 
@@ -41,7 +38,6 @@ export const Labeled: React.FunctionComponent<LabeledProps> = ({
   children,
   description,
   index,
-  onLanguage,
   currentLanguage,
 }: LabeledProps) => {
   const internalId = React.useRef(`__labelInput__${id++}`);
@@ -57,18 +53,10 @@ export const Labeled: React.FunctionComponent<LabeledProps> = ({
       >
         <span style={{ display: 'inline-flex' }}>
           {label}
+          {currentLanguage && <span style={{ marginLeft: '5px' }}>[{currentLanguage}]</span> }
           {isFeatureEnabled(currentFeatures, 'INTERNAL') && index != null && (
             <span style={{ marginLeft: '1em' }}>{index}</span>
           )}
-          {onLanguage &&
-            (isFeatureEnabled(currentFeatures, 'ADVANCED') ? (
-              <LanguageSelector
-                onSelect={item => onLanguage(item.value.code)}
-                className={componentMarginLeft}
-              />
-            ) : (
-              `[${currentLanguage}]`
-            ))}
         </span>
       </label>
     ),

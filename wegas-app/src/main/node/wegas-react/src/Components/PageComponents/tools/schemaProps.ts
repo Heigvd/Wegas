@@ -909,7 +909,6 @@ const simpleSchemaProps = {
     scriptProps,
     currentLanguage,
     readOnly,
-    onLanguage,
     borderBottom,
   }: CommonSchemaProps &
     ScriptableViewView & {
@@ -932,7 +931,6 @@ const simpleSchemaProps = {
       scriptProps,
       borderBottom,
       currentLanguage,
-      onLanguage,
       readOnly,
       type: 'scriptable',
       layout,
@@ -953,7 +951,6 @@ const simpleSchemaProps = {
     visible,
     currentLanguage,
     readOnly,
-    onLanguage,
     borderBottom,
     itemsSchema,
   }: CommonSchemaProps & NuppleView): SchemaFromView<'nupple'> => ({
@@ -968,7 +965,6 @@ const simpleSchemaProps = {
       label,
       borderBottom,
       currentLanguage,
-      onLanguage,
       readOnly,
       type: 'nupple',
       layout,

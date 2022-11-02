@@ -30,21 +30,15 @@ export default function translatable<P extends EndProps>(
   function Translated(
     props: TranslatableProps & Omit<P, 'value' | 'onChange'>,
   ) {
-    const { lang, availableLang } = React.useContext(languagesCTX);
-    const [currentLanguage, setCurrentLanguage] = React.useState<string>(lang);
-
-    React.useEffect(() => {
-      setCurrentLanguage(lang);
-    }, [lang]);
+    const {lang, availableLang } = React.useContext(languagesCTX);
 
     const view = React.useMemo(
       () => ({
         ...props.view,
         label: <span>{`${props.view.label}`}</span>,
-        onLanguage: setCurrentLanguage,
-        currentLanguage,
+        currentLanguage: lang,
       }),
-      [props.view, currentLanguage],
+      [props.view, lang],
     );
 
     const pvalue: ITranslatableContent =
@@ -52,7 +46,7 @@ export default function translatable<P extends EndProps>(
       entityIs(props.value, 'TranslatableContent')
         ? props.value
         : createTranslatableContent(
-            currentLanguage,
+            lang,
             props.value == null
               ? ''
               : typeof props.value === 'string'
@@ -60,11 +54,11 @@ export default function translatable<P extends EndProps>(
               : JSON.stringify(props.value),
           );
 
-    const currTranslation = pvalue.translations[currentLanguage];
+    const currTranslation = pvalue.translations[lang];
 
     if ((view as any).readOnly) {
       // variable is protected by the model
-      const theLanguage = availableLang.find(al => al.code === currentLanguage);
+      const theLanguage = availableLang.find(al => al.code === lang);
       if (theLanguage != null && theLanguage.visibility === 'PRIVATE') {
         // but this language is not defined by the model
         if (
@@ -88,11 +82,11 @@ export default function translatable<P extends EndProps>(
             ...pvalue,
             translations: {
               ...pvalue.translations,
-              [currentLanguage]: {
-                ...pvalue.translations[currentLanguage],
+              [lang]: {
+                ...pvalue.translations[lang],
                 status: '',
                 translation: value,
-                lang: currentLanguage,
+                lang: lang,
               },
             },
           };
