@@ -51,8 +51,8 @@ export function useAnyStore<R, S, A extends AnyAction>(
     };
   }, []);
   const stateUpdater = React.useCallback(() => {
-    const value = selector(store.getState());
     if (mounted.current === true) {
+      const value = selector(store.getState());
       setSelected(v => {
         if (shouldUpdate(v, value)) {
           return value;

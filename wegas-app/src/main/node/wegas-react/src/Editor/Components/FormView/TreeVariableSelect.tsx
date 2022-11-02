@@ -319,15 +319,20 @@ function autoExpand(items: TreeSelectItem<string>[], needle: string) {
 export function TreeVariableSelect(
   props: TreeVariableSelectProps,
 ): JSX.Element {
-  const varItems = useStore(
-    () =>
-      genVarItems(
-        GameModel.selectCurrent().itemsIds,
-        undefined,
-        scriptableClassNameToClassFilter(props.view.returnType),
-      ),
-    deepDifferent,
-  );
+
+  const genCb = React.useCallback(() => {
+    const list = genVarItems(
+      GameModel.selectCurrent().itemsIds,
+      undefined,
+      scriptableClassNameToClassFilter(props.view.returnType),
+    );
+
+    autoExpand(list, props.value || '');
+
+    return list;
+  }, [props.view.returnType, props.value]);
+
+  const varItems = useStore(genCb, deepDifferent);
 
   const filteredItems: TreeSelectItem<string>[] = props.view.items
     ? [
@@ -341,7 +346,6 @@ export function TreeVariableSelect(
       ]
     : varItems;
 
-  autoExpand(filteredItems, props.value || '');
 
   return props.noLabel ? (
     <TreeVSelect
