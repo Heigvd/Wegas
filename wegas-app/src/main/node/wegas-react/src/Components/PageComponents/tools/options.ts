@@ -251,7 +251,7 @@ export const actionsChoices: HashListChoices = [
             view: {
               type: 'customclientscript',
               label: 'Local script',
-              returnType: ['Promise<unknown>', 'void'],
+              returnType: ['Promise<unknown>', 'void', 'undefined'],
             }
           },
           priority: schemaProps.number({ label: 'Priority' }),
