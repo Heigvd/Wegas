@@ -206,6 +206,7 @@ export function Selector<T extends true | false>({
       value={currentOption}
       onChange={onChangeCb}
       styles={selectStyles}
+      menuPosition='fixed'
     />
   );
 }

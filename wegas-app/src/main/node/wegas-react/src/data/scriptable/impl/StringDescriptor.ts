@@ -1,15 +1,15 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { TranslatableContent } from '../../i18n';
 import {
   SStringDescriptor,
   SStringInstance,
   SPlayer,
   STranslatableContent,
 } from 'wegas-ts-api';
+import { translate } from '../../i18n';
 
 export class SStringDescriptorImpl extends SStringDescriptor {
   public getValue(p: Readonly<SPlayer>): string {
-    return TranslatableContent.toString(this.getInstance(p).getTrValue());
+    return translate(this.getInstance(p).getTrValue(), p.getLang());
   }
 
   private parseStringValues(self: Readonly<SPlayer>): string[] {

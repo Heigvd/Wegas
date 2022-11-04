@@ -2,7 +2,7 @@ import {
   getItems,
   getScriptableInstance,
 } from '../../methods/VariableDescriptorMethods';
-import { TranslatableContent } from '../../i18n';
+import { translate } from '../../i18n';
 import {
   SPlayer,
   SWhQuestionDescriptor,
@@ -17,7 +17,7 @@ export class SWhQuestionDescriptorImpl extends SWhQuestionDescriptor {
     return !this.isReplied(p);
   }
   public getFeedback(p: Readonly<SPlayer>): string {
-    return TranslatableContent.toString(this.getInstance(p).getFeedback());
+    return translate(this.getInstance(p).getFeedback());
   }
   public getInstance(
     player: Readonly<SPlayer>,

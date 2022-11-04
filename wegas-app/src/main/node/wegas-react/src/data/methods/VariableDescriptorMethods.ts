@@ -1,4 +1,4 @@
-import { TranslatableContent } from '../i18n';
+import { translate } from '../i18n';
 import {
   VariableDescriptor,
   VariableInstance,
@@ -23,7 +23,7 @@ export function editorLabel(vd?: {
   editorTag?: string | null;
   name?: string;
 }) {
-  const label = TranslatableContent.toString(vd?.label);
+  const label = translate(vd?.label);
   // if (!showTag && label) {
   //   return label;
   // }
@@ -38,7 +38,7 @@ export function editorTitle({label, editorTag, name}: {
   editorTag?: string | null;
   name?: string;
 }) {
-  const trLabel = TranslatableContent.toString(label);
+  const trLabel = translate(label);
   return [editorTag, trLabel, name].filter(s => s).join(' - ');
 }
 

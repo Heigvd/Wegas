@@ -3,7 +3,6 @@ import produce from 'immer';
 import * as React from 'react';
 import { IQuestionDescriptor, IWhQuestionDescriptor } from 'wegas-ts-api';
 import { Actions } from '../../../data';
-import { TranslatableContent } from '../../../data/i18n';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { createTranslatableContent } from '../../../data/i18n';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
@@ -12,6 +11,7 @@ import { Validate } from '../../Inputs/Validate';
 import { themeVar } from '../../Theme/ThemeVars';
 import { HTMLText } from '../HTMLText';
 import { buttonFactory } from './QuestionList';
+import { useTranslate } from '../../Hooks/useTranslate';
 
 const descriptionStyle = css({
   position: 'relative',
@@ -47,7 +47,7 @@ export function QuestionDescription({
   const { lang } = React.useContext(languagesCTX);
   const [isEditing, setEditing] = React.useState(false);
 
-  const textValue = TranslatableContent.toString(questionD.description);
+  const textValue = useTranslate(questionD.description);
 
   const onValidate = React.useCallback(
     (value: string) => {

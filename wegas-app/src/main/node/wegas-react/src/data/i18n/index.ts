@@ -1,6 +1,5 @@
-import { Player } from '../selectors';
-import { ITranslatableContent } from 'wegas-ts-api';
-import { STranslatableContent } from 'wegas-ts-api';
+import { Player, GameModel } from '../selectors';
+import { ITranslatableContent, STranslatableContent } from 'wegas-ts-api';
 import { entityIs } from '../entities';
 
 export const editorLanguages = {
@@ -13,7 +12,7 @@ export const editorLanguages = {
 export type EditorLanguages = typeof editorLanguages;
 export type EditorLanguagesCode = keyof EditorLanguages;
 
-export const EditorLanguageData = `EditorLanguageData.${CurrentGM.id}`;
+export const EditorLanguageData = `EditorLanguageData.${ CurrentGM.id }`;
 
 export function getSavedLanguage() {
   return window.localStorage.getItem(
@@ -28,31 +27,6 @@ export function getUserLanguage(): EditorLanguagesCode {
       JSON.parse(wegasConfig).commons.language,
     ).toUpperCase() as EditorLanguagesCode;
 }
-
-export const TranslatableContent = {
-  /**
-   * Transforms a given TranslatableContent to a string according to player choice
-   *
-   * @param content translatable content
-   * @param code force language code
-   */
-  toString<
-    T extends ITranslatableContent | STranslatableContent | null | undefined,
-  >(content: T | null, code?: string): string {
-    if (content) {
-      if ('@class' in content) {
-        const tr = content.translations[code || Player.selectCurrent().lang];
-        return tr ? tr.translation : '';
-      } else {
-        // STranslatableConent
-        const tr =
-          content.getTranslations()[code || Player.selectCurrent().lang];
-        return tr ? tr.getTranslation() : '';
-      }
-    }
-    return '';
-  },
-};
 
 export function createTranslation(lang: string, value?: string): ITranslation {
   return {
@@ -74,11 +48,11 @@ export function createTranslatableContent(
       ...oldTranlatable?.translations,
       ...(lang === undefined
         ? {
-            DEF: createTranslation('DEF', value),
-          }
+          DEF: createTranslation('DEF', value),
+        }
         : {
-            [lang]: createTranslation(lang, value),
-          }),
+          [lang]: createTranslation(lang, value),
+        }),
     },
     version: 0,
   };
@@ -114,24 +88,53 @@ export function unsafeTranslate(
 }
 
 /**
+ * Get all languages defined in the gameModel.
+ * Active languages first, inactives afterwards.
+ * Except for that, intial order is respected.
+ */
+export function orderGameModelLanguages(langs: IGameModelLanguage[]): IGameModelLanguage[] {
+  const separated = langs.reduce<{ actives: IGameModelLanguage[], inactives: IGameModelLanguage[] }>((acc, cur) => {
+
+    if (cur.active) {
+      acc.actives.push(cur);
+    } else {
+      acc.inactives.push(cur);
+    }
+
+    return acc;
+  }, {
+    actives: [],
+    inactives: [],
+  });
+
+  return [...separated.actives, ...separated.inactives];
+}
+
+/**
  * According to requested language, returns the most relevant translation found within the given translatable content
  */
 export function translate(
   translatable: ITranslatableContent | STranslatableContent | undefined | null,
-  lang: string,
-  availableLanguages: IGameModelLanguage[] = [],
+  langArg?: string,
+  availableLanguagesArg?: IGameModelLanguage[],
 ): string {
   if (!translatable) {
     return '';
   }
+
+  const lang = langArg ? langArg : Player.selectCurrent().lang;
+
+  const availableLanguages = availableLanguagesArg
+    ? availableLanguagesArg
+    : orderGameModelLanguages(GameModel.selectCurrent().languages);
 
   // Make sure to have a map of ITranslation
   const translations =
     translatable instanceof STranslatableContent
       ? translatable.getEntity().translations
       : entityIs(translatable, 'TranslatableContent')
-      ? translatable.translations
-      : {};
+        ? translatable.translations
+        : {};
 
   // List of code, ordered by languages ''importance''
   const languages =

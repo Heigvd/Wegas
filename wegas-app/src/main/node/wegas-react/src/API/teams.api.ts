@@ -1,5 +1,5 @@
 import { managedModeRequest, rest } from './rest';
-import { ITeam } from 'wegas-ts-api';
+import { IPlayer, ITeam } from 'wegas-ts-api';
 
 /*
 GET	/Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{s: /?}Game/{gameId : ([1-9][0-9]*)?}{s2: /?}Team
@@ -41,4 +41,10 @@ export const TeamAPI = {
       { method: 'PUT', body: JSON.stringify(team) },
     );
   },
+  updatePlayer(gameModelId: number, gameId: number, teamId: number, player: IPlayer,) {
+     return managedModeRequest(
+      `/GameModel/${gameModelId}/Game/${gameId}/Team/${teamId!}/Player/${player.id}`,
+      { method: 'PUT', body: JSON.stringify(player) },
+    );
+  }
 };

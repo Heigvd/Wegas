@@ -3,13 +3,13 @@ import {
   useVariableDescriptor,
   useVariableInstance,
 } from '../../Hooks/useVariable';
-import { TranslatableContent } from '../../../data/i18n';
 import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
 import { css } from '@emotion/css';
 import { themeVar } from '../../Theme/ThemeVars';
 import { INumberDescriptor } from 'wegas-ts-api';
 import { TumbleLoader } from '../../Loader';
 import { wwarn } from '../../../Helper/wegaslog';
+import { useTranslate } from '../../Hooks/useTranslate';
 
 const containerStyle = css({
   minWidth: '8em',
@@ -67,6 +67,8 @@ export default function Gauge(props: {
 }) {
   const descriptor = useVariableDescriptor<INumberDescriptor>(props.variable);
   const instance = useVariableInstance(descriptor);
+  const dLabel = useTranslate(descriptor?.label);
+
   if (descriptor === undefined || instance === undefined) {
     wwarn(`Not found: ${props.variable}`);
     return <TumbleLoader />;
@@ -123,7 +125,7 @@ export default function Gauge(props: {
         />
       </svg>
       <div className={textStyle}>
-        <div>{TranslatableContent.toString(descriptor.label)}</div>
+        <div>{dLabel}</div>
         <div>{instance.getValue()}</div>
       </div>
     </div>

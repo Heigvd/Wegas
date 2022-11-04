@@ -17,7 +17,7 @@ import {
   justifyCenter,
 } from '../../../css/classes';
 import { Actions } from '../../../data';
-import { createTranslatableContent, TranslatableContent } from '../../../data/i18n';
+import { createTranslatableContent } from '../../../data/i18n';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { read } from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
@@ -44,6 +44,7 @@ import {
 } from '../../EntityChooser';
 import { asyncSFC } from '../../HOC/asyncSFC';
 import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
+import { useTranslate } from '../../Hooks/useTranslate';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { Validate } from '../../Inputs/Validate';
 import { themeVar } from '../../Theme/ThemeVars';
@@ -185,7 +186,7 @@ export function QuestionLabel({
   const { lang } = React.useContext(languagesCTX);
   useOnClickOutside(label, () => onFinishEditing && onFinishEditing());
 
-  const textValue = TranslatableContent.toString(questionD.label);
+  const questionDLabel = useTranslate(questionD.label);
 
   const onValidate = React.useCallback(
     (value: string) => {
@@ -228,7 +229,7 @@ export function QuestionLabel({
       )} */}
       {editing ? (
         <Validate
-          value={textValue}
+          value={questionDLabel}
           onValidate={onValidate}
           onCancel={() => onFinishEditing && onFinishEditing()}
           vertical
@@ -246,7 +247,7 @@ export function QuestionLabel({
         </Validate>
       ) : (
         <div className={flex}>
-          {TranslatableContent.toString(questionD.label)}
+            { questionDLabel }
         </div>
       )}
     </div>

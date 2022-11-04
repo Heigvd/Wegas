@@ -1,5 +1,5 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { TranslatableContent } from '../../i18n';
+import { translate } from '../../i18n';
 import {
   STextDescriptor,
   STextInstance,
@@ -9,7 +9,7 @@ import {
 
 export class STextDescriptorImpl extends STextDescriptor {
   public getValue(p: Readonly<SPlayer>): string {
-    return TranslatableContent.toString(this.getInstance(p).getTrValue());
+    return translate(this.getInstance(p).getTrValue(), p.getLang());
   }
 
   public getInstance(player: Readonly<SPlayer>): Readonly<STextInstance> {

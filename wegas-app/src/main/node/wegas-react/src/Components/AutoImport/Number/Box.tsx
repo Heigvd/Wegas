@@ -1,6 +1,5 @@
 import { css } from '@emotion/css';
 import * as React from 'react';
-import { TranslatableContent } from '../../../data/i18n';
 import {
   useVariableDescriptor,
   useVariableInstance,
@@ -9,6 +8,7 @@ import { themeVar } from '../../Theme/ThemeVars';
 import { INumberDescriptor } from 'wegas-ts-api';
 import { wwarn } from '../../../Helper/wegaslog';
 import { TumbleLoader } from '../../Loader';
+import { useTranslate } from '../../Hooks/useTranslate';
 
 const boxStyle = css({
   backgroundColor: themeVar.colors.HeaderColor,
@@ -28,6 +28,7 @@ function box(count: number) {
 export default function NumberValue(props: { variable: string }) {
   const descriptor = useVariableDescriptor<INumberDescriptor>(props.variable);
   const instance = useVariableInstance(descriptor);
+  const label = useTranslate(descriptor?.label);
   if (descriptor === undefined || instance === undefined) {
     wwarn(`Not found: ${props.variable}`);
     return <TumbleLoader />;
@@ -35,7 +36,7 @@ export default function NumberValue(props: { variable: string }) {
 
   return (
     <div>
-      {TranslatableContent.toString(descriptor.label)}
+      {label}
       <div>{box(instance.getValue())}</div>
     </div>
   );
