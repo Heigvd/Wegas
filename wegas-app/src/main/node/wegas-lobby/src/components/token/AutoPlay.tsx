@@ -163,10 +163,15 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
     }
   }, [playIndividually, currentUser.status, game, player, dispatch]);
 
-  if (entityIs(player, 'Player')) {
+  if (entityIs(player, 'Player') && entityIs(gameModel, 'GameModel')) {
     //Player found => let's play
     logger.info("Player found => let's play");
-    window.location.href = `${APP_ENDPOINT}/game-play.html?id=${player.id}`;
+    if (gameModel.uiversion === 2) {
+      window.location.href = `${APP_ENDPOINT}/2/player.html?id=${player.id}`;
+    } else {
+      window.location.href = `${APP_ENDPOINT}/game-play.html?id=${player.id}`;
+    }
+
     return <Loading>{loadingMessage ? <div>{loadingMessage}</div> : null}</Loading>;
   } else if (
     player === 'NOT_FOUND' &&
