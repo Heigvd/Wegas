@@ -9,7 +9,7 @@
 import { css } from '@emotion/css';
 import { faClipboard, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import QRCode from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
 import * as React from 'react';
 import { IGameModelLanguageWithId, IGameModelWithId, IGameWithId } from 'wegas-ts-api';
 import { getGameModelById, updateGame, updateGameModel, updateLanguages } from '../../API/api';
@@ -96,7 +96,7 @@ function GameAdvancedSettings({ game, gameModel, onGameModelUpdate }: SettingsPr
   const i18n = useTranslations();
   const { isAdmin } = useCurrentUser();
 
-  const [qrSmall, setQrSmale] = React.useState(true);
+  const [qrSmall, setQrSmall] = React.useState(true);
 
   const [individual, setIndividual] = React.useState(gameModel.properties.freeForAll);
 
@@ -124,15 +124,14 @@ function GameAdvancedSettings({ game, gameModel, onGameModelUpdate }: SettingsPr
         {gameModel.properties.guestAllowed ? i18n.gameLinkGuest : i18n.gameLink}
       </div>
       <Flex className={indent} align="center" overflow="auto" shrink={0}>
-        <QRCode
+        <QRCodeSVG
           className={css({
             cursor: qrSmall ? 'zoom-in' : 'zoom-out',
           })}
-          onClick={() => setQrSmale(small => !small)}
+          onClick={() => setQrSmall(small => !small)}
           value={playUrl}
           size={qrSmall ? 32 : 256}
           includeMargin={true}
-          renderAs={'canvas'}
         />
         <div>{playUrl}</div>
         <ActionIconButton

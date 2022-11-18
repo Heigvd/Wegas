@@ -36,6 +36,8 @@ import PageLoaderIcon from '../../../pictures/componentsIcons/pageLoader.svg';
 import PhasesIcon from '../../../pictures/componentsIcons/phases.svg';
 import PRTreeIcon from '../../../pictures/componentsIcons/PRTreeView.svg';
 import PRVariableIcon from '../../../pictures/componentsIcons/PRVariableEditor.svg';
+import QRCode from '../../../pictures/componentsIcons/qrCode.svg';
+import QRScanner from '../../../pictures/componentsIcons/qrScanner.svg';
 import QuestionIcon from '../../../pictures/componentsIcons/question.svg';
 import QuestionListIcon from '../../../pictures/componentsIcons/questionList.svg';
 import QuestProgressBar from '../../../pictures/componentsIcons/questProgressBar.svg';
@@ -89,6 +91,8 @@ const iconComponents = {
   phases: PhasesIcon,
   PRTreeView: PRTreeIcon,
   PRVariableEditor: PRVariableIcon,
+  qrCode: QRCode,
+  qrScanner: QRScanner,
   question: QuestionIcon,
   questionList: QuestionListIcon,
   questProgressBar: QuestProgressBar,
