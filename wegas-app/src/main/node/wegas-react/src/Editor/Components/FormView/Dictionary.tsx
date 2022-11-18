@@ -85,7 +85,9 @@ export type ImprovedValues = { [prop: string]: ImprovedObjectValue };
 const normalizeValues =
   (nv: object) =>
   (ov?: ImprovedValues): ImprovedValues =>
-    Object.entries(nv).reduce((o, [k, v], i) => {
+    Object.entries(nv)
+      .sort(([a], [b]) => a.localeCompare(b, undefined, {numeric: true}))
+      .reduce((o, [k, v], i) => {
       return {
         ...o,
         [k]: {

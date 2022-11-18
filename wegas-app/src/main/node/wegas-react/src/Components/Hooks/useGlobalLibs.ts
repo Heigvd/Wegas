@@ -181,6 +181,9 @@ export function useGlobalLibs() {
             function timeEnd(label: string, ...data: unknown[]);
         };
 
+        declare const atob : (string) => string;
+        declare const btoa : (string) => string;
+
         declare const setTimeout : (callback: () => void, delay: number) => number;
         declare const clearTimeout : (id: number) => void;
         declare const setInterval : (callback: () => void, delay: number) => number;

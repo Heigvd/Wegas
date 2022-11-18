@@ -98,6 +98,10 @@ function downloadDataAsFile(filename: string, data: string) {
   pom.click();
 }
 
+function getWegasUrl() : string {
+  return (location.origin + API_ENDPOINT).replace(/rest\/$/, "");
+}
+
 const globalDispatch = store.dispatch;
 
 type GlobalContexts = FeatureContext & LanguagesContext & ClassesContext;
@@ -396,6 +400,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     getFilePath: fileURL,
     downloadFile: downloadFile,
     downloadDataAsFile,
+    getWegasUrl: getWegasUrl,
   };
 
   globals.Roles = {
