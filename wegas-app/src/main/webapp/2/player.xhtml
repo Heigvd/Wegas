@@ -62,6 +62,7 @@
           applicationKey: "#{gameController.getWegasProperty('pusher.key')}",
           cluster: "#{gameController.getWegasProperty('pusher.cluster')}"
       };
+      var forcedDefaultPageId = "${gameController.getPageIdIfSufficientRights()}";
     </script>
     <!-- <script type="application/javascript" src="dist/manifest.js"/> -->
     <!-- <script type="application/javascript" src="dist/vendors.js"/> -->

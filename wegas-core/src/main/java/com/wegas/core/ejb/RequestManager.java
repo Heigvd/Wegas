@@ -2040,6 +2040,9 @@ public class RequestManager implements RequestManagerI {
      * @return whether or not the currentUser can read the gameModel
      */
     public boolean hasGameModelReadRight(final GameModel gameModel) {
+        if (gameModel == null){
+            return false;
+        }
         return this.hasPermission(gameModel.getAssociatedReadPermission());
     }
 
@@ -2048,6 +2051,9 @@ public class RequestManager implements RequestManagerI {
      */
     @Override
     public boolean hasGameModelWriteRight(final GameModel gameModel) {
+        if (gameModel == null){
+            return false;
+        }
         return this.hasPermission(gameModel.getAssociatedWritePermission());
     }
 
@@ -2056,6 +2062,9 @@ public class RequestManager implements RequestManagerI {
      */
     @Override
     public boolean hasGameModelTranslateRight(final GameModel gameModel) {
+        if (gameModel == null){
+            return false;
+        }
         return this.hasPermission(gameModel.getAssociatedTranslatePermission(""));
     }
 
@@ -2067,6 +2076,9 @@ public class RequestManager implements RequestManagerI {
      * @return whether or not the currentUser can act as a player from the team
      */
     public boolean hasTeamRight(final Team team) {
+        if (team == null){
+            return false;
+        }
         return this.hasPermission(team.getAssociatedWritePermission());
     }
 
@@ -2078,6 +2090,9 @@ public class RequestManager implements RequestManagerI {
      * @return whether or not the currentUser can act as the player
      */
     public boolean hasPlayerRight(final Player player) {
+        if (player == null){
+            return false;
+        }
         return this.hasPermission(player.getAssociatedWritePermission());
     }
 
@@ -2089,6 +2104,9 @@ public class RequestManager implements RequestManagerI {
      * @return whether or not the user can move gameModel from the bin
      */
     public boolean canRestoreGameModel(final GameModel gameModel) {
+        if (gameModel == null){
+            return false;
+        }
         String id = "gm" + gameModel.getId();
         return this.isPermitted("GameModel:View:" + id)
             || this.isPermitted("GameModel:Edit" + id)
@@ -2104,6 +2122,9 @@ public class RequestManager implements RequestManagerI {
      * @return whether or not the user can instantiate the gameModel
      */
     public boolean canInstantiateGameModel(final GameModel gameModel) {
+        if (gameModel == null){
+            return false;
+        }
         GameModel theOne;
         if (gameModel.isPlay() && gameModel.getBasedOnId() != null) {
             theOne = gameModel.getBasedOn();
@@ -2122,6 +2143,9 @@ public class RequestManager implements RequestManagerI {
      * @return whether or not the user can duplicate gameModel
      */
     public boolean canDuplicateGameModel(final GameModel gameModel) {
+        if (gameModel == null){
+            return false;
+        }
         GameModel theOne;
         if (gameModel.isPlay() && gameModel.getBasedOnId() != null) {
             theOne = gameModel.getBasedOn();
@@ -2141,6 +2165,10 @@ public class RequestManager implements RequestManagerI {
      * @return whether or not the user can move gameModel to the bin
      */
     public boolean canDeleteGameModel(final GameModel gameModel) {
+        if (gameModel == null){
+            return false;
+        }
+
         String id = "gm" + gameModel.getId();
         return this.isPermitted("GameModel:Delete:" + id);
     }

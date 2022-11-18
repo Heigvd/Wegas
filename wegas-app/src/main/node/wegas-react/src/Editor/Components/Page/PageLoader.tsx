@@ -19,6 +19,12 @@ import { pagesTranslations } from '../../../i18n/pages/pages';
 export const PAGE_LOADER_DEFAULT_ID = 'PAGE_LOADER_DEFAULT_ID';
 export const PAGE_LOADER_CLASS = 'wegas-pageloader';
 
+/**
+ * main page loaders (ie editor/host tabs which laod pages, player main view) expose their size by default.
+ * Others (ie subpage laoder) shall not use any default value)
+ *  */
+export const MAIN_PAGE_EXPOSE_SIZE_AS = 'mainPageSize';
+
 export const fullScreenLoaderStyle = css({
   zIndex: 10000,
   position: 'absolute',
@@ -44,6 +50,7 @@ interface PageLoaderProps extends ClassStyleId {
   };
   disabled?: boolean;
   readOnly?: boolean;
+  exposeSizeAs?: string;
 }
 
 const voidObject = {};
@@ -59,6 +66,7 @@ export function PageLoader({
   context = voidObject,
   disabled,
   readOnly,
+  exposeSizeAs,
 }: PageLoaderProps) {
   const i18nCommonValues = useInternalTranslate(commonTranslations);
   const i18nPagesValues = useInternalTranslate(pagesTranslations);
@@ -93,6 +101,49 @@ export function PageLoader({
 
   const isReady = useIsReadyForPageDisplay();
 
+  const [size, setSize] = React.useState<{ width: number; height: number }>();
+
+  const newContext = React.useMemo(() => {
+    if (context && exposeSizeAs) {
+      return {
+        ...context,
+        [exposeSizeAs]: {
+          ...size,
+        },
+      };
+    } else {
+      return context;
+    }
+  }, [context, exposeSizeAs, size]);
+
+  const resizeObserver = React.useRef<ResizeObserver | undefined>();
+
+  const setRef = React.useCallback((element: HTMLDivElement | null) => {
+
+    if (resizeObserver.current != null) {
+      resizeObserver.current.disconnect();
+      resizeObserver.current = undefined;
+    }
+
+    if (element != null) {
+      //n.current = element;
+
+      const ro = new ResizeObserver(() => {
+        if (element != null) {
+          const rect = element.getBoundingClientRect();
+          setSize({
+            height: rect.height,
+            width: rect.width,
+          });
+        }
+      });
+
+      ro.observe(element);
+      resizeObserver.current = ro;
+    }
+  }, []);
+
+
   return (
     <DefaultDndProvider>
       <ThemeProvider
@@ -103,6 +154,7 @@ export function PageLoader({
           fallback={<TextLoader text={i18nCommonValues.buildingWorld} />}
         >
           <div
+            ref={setRef}
             className={
               PAGE_LOADER_CLASS +
               ' ' +
@@ -118,7 +170,7 @@ export function PageLoader({
                   pageId={selectedPageId}
                   Container={FlexItem}
                   dropzones={voidObject}
-                  context={context}
+                  context={newContext}
                   inheritedOptionsState={inheritedOptionsState}
                 />
               ) : (

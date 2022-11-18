@@ -25,7 +25,11 @@ import {
   PageContextProvider,
   pageCTX,
 } from './Page/PageEditor';
-import { fullScreenLoaderStyle, PageLoader } from './Page/PageLoader';
+import {
+  fullScreenLoaderStyle,
+  MAIN_PAGE_EXPOSE_SIZE_AS,
+  PageLoader,
+} from './Page/PageLoader';
 import { AllLibraryEditor } from './ScriptEditors/LibraryEditors/AllLibraryEditor';
 
 const StateMachineEditor = React.lazy(
@@ -178,7 +182,11 @@ export default function Layout() {
       tabId: name,
       content: (
         <pageCTX.Provider value={defaultPageCTX}>
-          <PageLoader selectedPageId={id} themeContext="player" />
+          <PageLoader
+            selectedPageId={id}
+            themeContext="player"
+            exposeSizeAs={MAIN_PAGE_EXPOSE_SIZE_AS}
+          />
         </pageCTX.Provider>
       ),
     }),

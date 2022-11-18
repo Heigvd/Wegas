@@ -16,3 +16,4 @@ declare const PusherApp: {
   applicationKey: string;
   cluster: string;
 };
+declare const forcedDefaultPageId: string | undefined;

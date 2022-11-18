@@ -15,6 +15,7 @@ import { State } from '../data/Reducer/reducers';
 import { useStore } from '../data/Stores/store';
 import {
   fullScreenLoaderStyle,
+  MAIN_PAGE_EXPOSE_SIZE_AS,
   PageLoader,
 } from '../Editor/Components/Page/PageLoader';
 import { ReparentableRoot } from '../Editor/Components/Reparentable';
@@ -82,7 +83,12 @@ export default function HostLayout() {
     useStore<TrainerPagesSelector>(trainerPagesSelector);
   const trainerTabs = trainerPages.map<TabLayoutComponent>(page => ({
     tabId: page.name,
-    content: <PageLoader selectedPageId={page.id} />,
+    content: (
+      <PageLoader
+        selectedPageId={page.id}
+        exposeSizeAs={MAIN_PAGE_EXPOSE_SIZE_AS}
+      />
+    ),
   }));
   const peerReviewTabs = peerReviews.map<TabLayoutComponent>(peerReview => ({
     tabId: `Peer review ${translate(peerReview?.label, lang)}`,

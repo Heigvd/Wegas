@@ -16,7 +16,7 @@ import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { pagesTranslations } from '../../../i18n/pages/pages';
 import { pageCTX } from './PageEditor';
-import { PageLoader } from './PageLoader';
+import { MAIN_PAGE_EXPOSE_SIZE_AS, PageLoader } from './PageLoader';
 
 const toggleButtonStyle = css({
   display: 'flex',
@@ -88,7 +88,11 @@ export default function PageDisplay() {
         <PageEditionToolbar />
       </Toolbar.Header>
       <Toolbar.Content>
-        <PageLoader selectedPageId={selectedPageId} themeContext="player" />
+        <PageLoader
+          selectedPageId={selectedPageId}
+          themeContext="player"
+          exposeSizeAs={MAIN_PAGE_EXPOSE_SIZE_AS}
+        />
       </Toolbar.Content>
     </Toolbar>
   );

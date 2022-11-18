@@ -3,20 +3,32 @@ import { PageAPI } from '../../API/pages.api';
 import { useWebsocketEvent } from '../../API/websocket';
 import { TumbleLoader } from '../../Components/Loader';
 import { defaultPageCTX, pageCTX } from './Page/PageEditor';
-import { fullScreenLoaderStyle, PageLoader } from './Page/PageLoader';
+import {
+  fullScreenLoaderStyle,
+  MAIN_PAGE_EXPOSE_SIZE_AS,
+  PageLoader,
+} from './Page/PageLoader';
 
 export function Player() {
   const [selectedPageId, setSelectedPageId] = React.useState<string>();
 
   React.useEffect(() => {
     PageAPI.getIndex().then(index => {
-      setSelectedPageId(index.defaultPageId);
+      if (forcedDefaultPageId) {
+        setSelectedPageId(forcedDefaultPageId);
+      } else {
+        setSelectedPageId(index.defaultPageId);
+      }
     });
   }, []);
 
   useWebsocketEvent('PageUpdate', () =>
     PageAPI.getIndex().then(index => {
-      setSelectedPageId(index.defaultPageId);
+      if (forcedDefaultPageId) {
+        setSelectedPageId(forcedDefaultPageId);
+      } else {
+        setSelectedPageId(index.defaultPageId);
+      }
     }),
   );
 
@@ -35,7 +47,10 @@ export function Player() {
         pageIdPath: [selectedPageId],
       }}
     >
-      <PageLoader selectedPageId={selectedPageId} />
+      <PageLoader
+        selectedPageId={selectedPageId}
+        exposeSizeAs={MAIN_PAGE_EXPOSE_SIZE_AS}
+      />
     </pageCTX.Provider>
   );
 }

@@ -27,6 +27,7 @@ interface PlayerPageLoaderProps
   extends WegasComponentProps,
     Omit<PageLoaderComponentProps, 'initialSelectedPageId'> {
   initialSelectedPageId: string | IScript;
+  exposePageSizeAs?: string;
 }
 
 const defaultPageAsScript = () =>
@@ -44,6 +45,7 @@ function PlayerPageLoader({
   id,
   loadTimer,
   options,
+  exposePageSizeAs,
 }: PlayerPageLoaderProps) {
   const { pageIdPath } = React.useContext(pageCTX);
 
@@ -117,6 +119,7 @@ function PlayerPageLoader({
         context={context}
         disabled={options.disabled}
         readOnly={options.readOnly}
+        exposeSizeAs={exposePageSizeAs}
       />
     </pageCTX.Provider>
   );
@@ -142,6 +145,13 @@ registerComponent(
           },
           literalSchema: schemaProps.pageSelect({ label: 'Page' }),
         },
+      },
+      exposePageSizeAs: {
+        value: '',
+        view:{
+          type: 'string',
+          label: 'expose page size in Context as',
+        }
       },
       loadTimer: schemaProps.number({ label: 'Loading timer (ms)' }),
       ...classStyleIdShema,

@@ -56,6 +56,13 @@ public class GameController extends AbstractGameController {
     @HttpParam
     private Long gameModelId;
     /**
+     * if set, bypass the default page and display the given one
+     * This feature is available to trainer/scenarist only!
+     */
+    @Inject
+    @HttpParam
+    private String pageId;
+    /**
      *
      */
     @Inject
@@ -182,4 +189,39 @@ public class GameController extends AbstractGameController {
     public void setGameModelId(Long gameModelId) {
         this.gameModelId = gameModelId;
     }
+
+	/**
+	 * get forced pagedId, if any
+	 * @return the pageOd of empty string if none
+	 */
+	public String getPageId() {
+		return pageId  == null ? "" : pageId;
+	}
+
+	/**
+	 * Set the pageId
+	 * @param pageId id of the page to load
+	 */
+	public void setPageId(String pageId) {
+		this.pageId = pageId;
+	}
+
+	/**
+	 * Get the forced pageId if user has sufficient rights (trainer / scenarist)
+	 *
+	 * @return thepageId to load, if any. empty string if none or if user has not enough rights
+	 */
+	public String getPageIdIfSufficientRights() {
+		if (currentPlayer == null){
+			return "";
+		}
+	    GameModel gameModel = currentPlayer.getGameModel();
+
+		if (requestManager.hasGameModelWriteRight(gameModel)){
+			return pageId  == null ? "" : pageId;
+		}
+
+		return "";
+	}
+
 }
