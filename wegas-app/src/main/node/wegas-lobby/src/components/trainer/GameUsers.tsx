@@ -22,6 +22,7 @@ import {
   getRestClient,
   kickTeam,
   leaveGame,
+  updateGame,
   shareGame,
   unshareGame,
 } from '../../API/api';
@@ -38,6 +39,7 @@ import IconButton from '../common/IconButton';
 import { userIllu, verifiedIllu } from '../common/illustrations/illustrationHelper';
 import InlineLoading from '../common/InlineLoading';
 import Tabs, { Tab } from '../common/Tabs';
+import Toggler from '../common/Toggler';
 import { TeamCreator } from '../player/JoinGame';
 import {
   cardDetailsStyle,
@@ -140,6 +142,9 @@ interface GameProps {
 function GameComposition({ game }: GameProps): JSX.Element {
   const teams = useTeams(game.id);
   const dispatch = useAppDispatch();
+  const i18n = useTranslations();
+
+  const playersCanCreate = !game.preventPlayerCreatingTeams;
 
   React.useEffect(() => {
     if (teams === 'UNSET') {
@@ -164,6 +169,16 @@ function GameComposition({ game }: GameProps): JSX.Element {
             <TeamDetails key={team.id} team={team} />
           ))}
         </CardContainer>
+        <Flex className={css({ padding: '10px 10px 0px 10px' })}>
+          <Toggler
+            title={playersCanCreate ? i18n.playersCanCreateTeams : i18n.playersCantCreateTeams}
+            label={playersCanCreate ? i18n.playersCanCreateTeams : i18n.playersCantCreateTeams}
+            value={playersCanCreate}
+            onChange={() => {
+              dispatch(updateGame({ ...game, preventPlayerCreatingTeams: playersCanCreate }));
+            }}
+          />
+        </Flex>
         <TeamCreator game={game} hideAfterCreation={false} />
       </FitSpace>
     );

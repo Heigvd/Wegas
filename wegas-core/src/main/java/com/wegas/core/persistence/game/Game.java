@@ -34,6 +34,7 @@ import com.wegas.core.security.persistence.token.InviteToJoinToken;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators;
 import com.wegas.editor.ValueGenerators.Open;
 import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
@@ -186,6 +187,16 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
         optional = false, nullable = false, proposal = Open.class,
         view = @View(label = "Access"))
     private GameAccess access = GameAccess.OPEN;
+
+    /**
+     * If set to true, player will not be able to create teams on their own.
+     * They may only join an existing one.
+     * The trainer is still able to create teams
+     */
+    @WegasEntityProperty(
+        optional = false, nullable = false, proposal = ValueGenerators.False.class,
+        view = @View(label = "Players may create teams"))
+    private Boolean preventPlayerCreatingTeams = false;
 
     /**
      *
@@ -557,6 +568,24 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     public void setAccess(GameAccess access) {
         this.access = access;
+    }
+
+    /**
+     * Do player have the ability to create teams?
+     *
+     * @return player ability to create teams
+     */
+    public Boolean getPreventPlayerCreatingTeams() {
+        return preventPlayerCreatingTeams;
+    }
+
+    /**
+     * Give or remove the ability for players to create teams
+     *
+     * @param preventPlayerCreatingTeams new right
+     */
+    public void setPreventPlayerCreatingTeams(Boolean preventPlayerCreatingTeams) {
+        this.preventPlayerCreatingTeams = preventPlayerCreatingTeams;
     }
 
     /**

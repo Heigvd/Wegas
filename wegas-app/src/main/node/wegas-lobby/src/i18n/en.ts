@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 
-import {IGameModel} from 'wegas-ts-api';
+import { IGameModel } from 'wegas-ts-api';
 
 export const en = {
   formatDate: (timestamp: number) => new Date(timestamp).toLocaleDateString('en'),
@@ -124,6 +124,8 @@ export const en = {
   all: 'all',
   gameIsOpen: 'open to new players',
   gameIsClosed: 'closed to new players',
+  playersCanCreateTeams: 'Players can create teams',
+  playersCantCreateTeams: "Players can't create teams",
 
   //
   kickPlayer: 'remove player',
@@ -338,10 +340,10 @@ export const en = {
   invalidToken: 'Invalid Token',
   defaultProcessMessage: 'Process',
   processMessages: {
-    InviteToJoinToken: "Join the game",
-    ValidateAddressToken: "Validate address",
-    ResetPasswordToken: "Reset password",
-    SurveyToken: "Take the survey",
+    InviteToJoinToken: 'Join the game',
+    ValidateAddressToken: 'Validate address',
+    ResetPasswordToken: 'Reset password',
+    SurveyToken: 'Take the survey',
   },
   processing: 'processing...',
   andXMore: (x: number) => `and ${x} more...`,

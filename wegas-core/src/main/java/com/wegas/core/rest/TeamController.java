@@ -94,6 +94,12 @@ public class TeamController {
     public Response create(@PathParam("gameId") Long gameId, Team entity) {
         Game g = gameFacade.find(gameId);
         if (g.getAccess() == Game.GameAccess.OPEN) {
+            Boolean prevents = g.getPreventPlayerCreatingTeams();
+            if (prevents != null && prevents) {
+                // Only trainers may create teams!
+                requestManager.assertGameTrainer(g);
+            }
+
             Team team = this.teamFacade.create(gameId, entity);
             teamFacade.detach(team);
             team = teamFacade.find(entity.getId());

@@ -189,7 +189,7 @@ function ShowTeams({ closePanel, game }: ShowTeamsProps): JSX.Element {
           </WindowedContainer>
         </>
       )}
-      <TeamCreator game={game} />
+      {!game.preventPlayerCreatingTeams && <TeamCreator game={game} />}
     </FitSpace>
   );
 }

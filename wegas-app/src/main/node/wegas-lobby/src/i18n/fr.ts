@@ -125,6 +125,8 @@ export const fr: WegasTranslations = {
   all: 'tous',
   gameIsOpen: 'ouvert aux nouveaux joueurs',
   gameIsClosed: 'fermé aux nouveaux joueurs',
+  playersCanCreateTeams: 'Les joueurs peuvent créer des équipes',
+  playersCantCreateTeams: "Les joueurs ne peuvent pas créer d'équipe",
 
   //
   kickPlayer: 'supprimer le joueur',

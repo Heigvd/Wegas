@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -158,7 +157,7 @@ public class GameModelFacadeTest extends AbstractArquillianTestMinimal {
         try {
             teamFacade.create(g.getId(), t1);
 
-            teamFacade.create(g.getId(), t1);
+            teamFacade.create(g.getId(), t2);
         } catch (Exception e) {
             System.out.println("ERROR: " + e);
         }
