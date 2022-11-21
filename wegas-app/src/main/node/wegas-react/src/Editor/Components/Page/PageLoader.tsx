@@ -15,6 +15,7 @@ import { classNameOrEmpty } from '../../../Helper/className';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { pagesTranslations } from '../../../i18n/pages/pages';
+import ResizeObserver from 'resize-observer-polyfill';
 
 export const PAGE_LOADER_DEFAULT_ID = 'PAGE_LOADER_DEFAULT_ID';
 export const PAGE_LOADER_CLASS = 'wegas-pageloader';
