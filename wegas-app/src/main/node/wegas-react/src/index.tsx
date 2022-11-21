@@ -15,6 +15,7 @@ import { ServerStatusManager } from './Components/ServerStatusManager';
 import { ThemeProvider } from './Components/Theme/Theme';
 import './css/global.css';
 import './data/Stores/store';
+import { ErrorBoundary } from './Editor/Components/ErrorBoundary';
 import './Editor/Components/FormView/index';
 import Layout from './Editor/Components/Layout';
 // import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
@@ -23,6 +24,7 @@ importPageComponents();
 
 function mount() {
   render(
+  <ErrorBoundary>
     <AuthorizationProvider>
       <FeaturesProvider>
         <FullscreenProvider>
@@ -45,7 +47,9 @@ function mount() {
           </ServerStatusManager>
         </FullscreenProvider>
       </FeaturesProvider>
-    </AuthorizationProvider>,
+    </AuthorizationProvider>
+  </ErrorBoundary>
+    ,
     document.getElementById('root'),
   );
 }
