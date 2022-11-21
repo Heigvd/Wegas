@@ -6,7 +6,7 @@ import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
 import { FullscreenProvider } from './Components/Contexts/FullscreenContext';
 import { LanguagesProvider } from './Components/Contexts/LanguagesProvider';
-import { LibrariesLoader } from './Components/Contexts/LibrariesContext';
+import PlayerLibrariesLoader from './Components/Contexts/PlayerLibrariesLoader';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
 import { ServerStatusManager } from './Components/ServerStatusManager';
 import { ThemeProvider } from './Components/Theme/Theme';
@@ -24,11 +24,11 @@ function mount() {
           <ServerStatusManager>
             <LanguagesProvider>
               <ClassesProvider>
-                <LibrariesLoader>
+                <PlayerLibrariesLoader>
                   <ThemeProvider contextName="player">
                     <Player />
                   </ThemeProvider>
-                </LibrariesLoader>
+                </PlayerLibrariesLoader>
               </ClassesProvider>
             </LanguagesProvider>
           </ServerStatusManager>
