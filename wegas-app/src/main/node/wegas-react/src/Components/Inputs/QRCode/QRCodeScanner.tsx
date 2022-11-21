@@ -142,7 +142,7 @@ export default function QRCodeScanner({
       )}
       {state === 'SCAN' && (
         <>
-          <div ref={initReader}></div>
+          <div className="qrCodeScanne__scanner" ref={initReader}></div>
           <div className={toolbarStyle}>
             {devices.length > 1 && (
               <span
