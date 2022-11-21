@@ -13,7 +13,9 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.exception.client.WegasAccessDenied;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.security.persistence.User;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
@@ -32,17 +34,20 @@ public class EditorGameController extends AbstractGameController {
     /**
      *
      */
-    @Inject @HttpParam
+    @Inject
+    @HttpParam
     private Long gameId;
     /**
      *
      */
-    @Inject @HttpParam
+    @Inject
+    @HttpParam
     private Long gameModelId;
     /**
      *
      */
-    @Inject @HttpParam
+    @Inject
+    @HttpParam
     private Long teamId;
 
     /**
@@ -68,48 +73,56 @@ public class EditorGameController extends AbstractGameController {
     @PostConstruct
     public void init() {
         //HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        User user = requestManager.getCurrentUser();
+        if (user == null){
+            errorController.pleaseLogIn();
+            return;
+        }
+        try {
+            if (this.playerId != null) {                                            // If a playerId is provided, we use it
+                currentPlayer = playerFacade.find(this.getPlayerId());
 
-        if (this.playerId != null) {                                            // If a playerId is provided, we use it
-            currentPlayer = playerFacade.find(this.getPlayerId());
+            } else if (this.teamId != null) {                                       // If a team id is provided
+                try {
+                    currentPlayer = teamFacade.find(this.teamId).getPlayers().get(0);// Return the first player
 
-        } else if (this.teamId != null) {                                       // If a team id is provided
-            try {
-                currentPlayer = teamFacade.find(this.teamId).getPlayers().get(0);// Return the first player
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                    errorController.dispatchMessagePage("Empty Game", "Team " + teamFacade.find(this.teamId).getName() + " has no player.");
 
-            } catch (ArrayIndexOutOfBoundsException ex) {
-                errorController.dispatch("Empty Game", "Team " + teamFacade.find(this.teamId).getName() + " has no player.");
+                }
 
-            }
+            } else if (this.gameModelId != null) {                                  // If we only have a gameModel id
+                currentPlayer = playerFacade.findDebugPlayerByGameModelId(this.gameModelId);
+                if (currentPlayer == null) {
 
-        } else if (this.gameModelId != null) {                                  // If we only have a gameModel id
-            currentPlayer = playerFacade.findDebugPlayerByGameModelId(this.gameModelId);
-            if (currentPlayer == null) {
+                    errorController.dispatchMessagePage("Empty GameModel", "Model " + gameModelFacade.find(this.gameModelId).getName() + " has no players.");
+                }
 
-                errorController.dispatch("Empty GameModel", "Model " + gameModelFacade.find(this.gameModelId).getName() + " has no players.");
-            }
+            } else if (this.gameId != null) {
+                // If a game id is provided, select any test player in that game
+                currentPlayer = playerFacade.findDebugPlayerByGameId(this.gameId);
 
-        } else if (this.gameId != null) {
-            // If a game id is provided, select any test player in that game
-            currentPlayer = playerFacade.findDebugPlayerByGameId(this.gameId);
-
-            if (currentPlayer == null) {
-                Game g = gameFacade.find(this.gameId);
-                if (g != null) {
-                    errorController.dispatch("Empty Game", "Game " + g.getName() + " has no players.");
-                } else {
-                    errorController.gameNotFound();
+                if (currentPlayer == null) {
+                    Game g = gameFacade.find(this.gameId);
+                    if (g != null) {
+                        errorController.dispatchMessagePage("Empty Game", "Game " + g.getName() + " has no players.");
+                    } else {
+                        errorController.gameNotFound();
+                    }
                 }
             }
-        }
-        if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
-            errorController.dispatch("Empty Team", "Team " + teamFacade.find(this.teamId).getName() + " has no player.");
-        } else if (!requestManager.hasGameWriteRight(currentPlayer.getGame())
-                && !requestManager.hasGameModelTranslateRight(currentPlayer.getGameModel())
-                // Enable preview on games on which the user has read rights :
-                && !requestManager.hasGameModelReadRight(currentPlayer.getGameModel())) {
+            if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
+                errorController.dispatchMessagePage("Empty Team", "Team " + teamFacade.find(this.teamId).getName() + " has no player.");
+            } else if (!requestManager.hasGameWriteRight(currentPlayer.getGame())
+                    && !requestManager.hasGameModelTranslateRight(currentPlayer.getGameModel())
+                    // Enable preview on games on which the user has read rights :
+                    && !requestManager.hasGameModelReadRight(currentPlayer.getGameModel())) {
+                errorController.accessDenied();
+            }
+
+        } catch (WegasAccessDenied ex) {
             errorController.accessDenied();
         }
-
     }
 
     /**
@@ -117,7 +130,7 @@ public class EditorGameController extends AbstractGameController {
      */
     public String assertHasGameWriteRight() {
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
-            errorController.dispatch("Empty Team", "Team " + teamFacade.find(this.teamId).getName() + " has no player.");
+            errorController.dispatchMessagePage("Empty Team", "Team " + teamFacade.find(this.teamId).getName() + " has no player.");
         } else if (!requestManager.hasGameWriteRight(currentPlayer.getGame())) {
             errorController.accessDenied();
         }

@@ -12,6 +12,7 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.exception.client.WegasAccessDenied;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
@@ -19,6 +20,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -56,8 +58,8 @@ public class GameController extends AbstractGameController {
     @HttpParam
     private Long gameModelId;
     /**
-     * if set, bypass the default page and display the given one
-     * This feature is available to trainer/scenarist only!
+     * if set, bypass the default page and display the given one This feature is available to
+     * trainer/scenarist only!
      */
     @Inject
     @HttpParam
@@ -94,70 +96,81 @@ public class GameController extends AbstractGameController {
      */
     @PostConstruct
     public void init() {
-        final ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-        long currentUserId = userFacade.getCurrentUser().getId();
-
-        if (this.playerId != null) {
-            // use the player which matches playerId
-            currentPlayer = playerFacade.find(this.getPlayerId());
+        User user = requestManager.getCurrentUser();
+        if (user == null) {
+            errorController.pleaseLogIn();
+            return;
         }
 
-        if (this.gameId != null) {
-            Game game = gameFacade.find(this.gameId);
-            if (game != null) {
-                if (game instanceof DebugGame) {
-                    // use the debug player
-                    currentPlayer = game.getPlayers().get(0);
-                } else {
-                    // use the player owned by the current user
-                    currentPlayer = playerFacade.findPlayer(this.gameId, currentUserId);
+        try {
+            final ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+            long currentUserId = userFacade.getCurrentUser().getId();
 
-                    if (currentPlayer == null) {
-                        // fallback: use the test player
-                        for (Team t : game.getTeams()) {
-                            if (t instanceof DebugTeam) {
-                                currentPlayer = t.getAnyLivePlayer();
-                                break;
+            if (this.playerId != null) {
+                // use the player which matches playerId
+                currentPlayer = playerFacade.find(this.getPlayerId());
+            }
+
+            if (this.gameId != null) {
+                Game game = gameFacade.find(this.gameId);
+                if (game != null) {
+                    if (game instanceof DebugGame) {
+                        // use the debug player
+                        currentPlayer = game.getPlayers().get(0);
+                    } else {
+                        // use the player owned by the current user
+                        currentPlayer = playerFacade.findPlayer(this.gameId, currentUserId);
+
+                        if (currentPlayer == null) {
+                            // fallback: use the test player
+                            for (Team t : game.getTeams()) {
+                                if (t instanceof DebugTeam) {
+                                    currentPlayer = t.getAnyLivePlayer();
+                                    break;
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        if (this.gameModelId != null) {
-            GameModel gameModel = gameModelFacade.find(this.gameModelId);
-            if (gameModel != null) {
-                if (gameModel.isScenario() || gameModel.isModel()) {
-                    // use the debug player from the debug game
-                    currentPlayer = gameModel.getTestPlayer();
-                } else {
-                    currentPlayer = playerFacade.findPlayerInGameModel(this.gameModelId, currentUserId);
-
-                    if (currentPlayer == null) {
-                        // fallback: use a test player
+            if (this.gameModelId != null) {
+                GameModel gameModel = gameModelFacade.find(this.gameModelId);
+                if (gameModel != null) {
+                    if (gameModel.isScenario() || gameModel.isModel()) {
+                        // use the debug player from the debug game
                         currentPlayer = gameModel.getTestPlayer();
+                    } else {
+                        currentPlayer = playerFacade.findPlayerInGameModel(this.gameModelId, currentUserId);
+
+                        if (currentPlayer == null) {
+                            // fallback: use a test player
+                            currentPlayer = gameModel.getTestPlayer();
+                        }
                     }
                 }
             }
-        }
 
-        if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
-            errorController.gameNotFound();
-        } else if (currentPlayer.getStatus().equals(Status.SURVEY)) {
-            errorController.accessForSurveyOnly();
-        } else if (!currentPlayer.getStatus().equals(Status.LIVE)) {
-            try {
-                externalContext.dispatch("/wegas-app/jsf/error/waiting.xhtml");
-            } catch (IOException ex) {
-                logger.error("Dispatch error: {}", ex);
+            if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
+                errorController.gameNotFound();
+            } else if (currentPlayer.getStatus().equals(Status.SURVEY)) {
+                errorController.accessForSurveyOnly();
+            } else if (!currentPlayer.getStatus().equals(Status.LIVE)) {
+                try {
+                    externalContext.dispatch("/wegas-app/jsf/error/waiting.xhtml");
+                } catch (IOException ex) {
+                    logger.error("Dispatch error: {}", ex);
+                }
+            } else if (currentPlayer.getGame().getStatus().equals(Game.Status.DELETE)
+                    || currentPlayer.getGame().getStatus().equals(Game.Status.SUPPRESSED)) {
+                currentPlayer = null;
+                errorController.gameDeleted();
+            } else if (!requestManager.hasPlayerRight(currentPlayer)) {
+                currentPlayer = null;
+                errorController.accessDenied();
             }
-        } else if (currentPlayer.getGame().getStatus().equals(Game.Status.DELETE)
-            || currentPlayer.getGame().getStatus().equals(Game.Status.SUPPRESSED)) {
-            currentPlayer = null;
-            errorController.gameDeleted();
-        } else if (!requestManager.hasPlayerRight(currentPlayer)) {
-            currentPlayer = null;
+
+        } catch (WegasAccessDenied ex) {
             errorController.accessDenied();
         }
     }
@@ -190,38 +203,40 @@ public class GameController extends AbstractGameController {
         this.gameModelId = gameModelId;
     }
 
-	/**
-	 * get forced pagedId, if any
-	 * @return the pageOd of empty string if none
-	 */
-	public String getPageId() {
-		return pageId  == null ? "" : pageId;
-	}
+    /**
+     * get forced pagedId, if any
+     *
+     * @return the pageOd of empty string if none
+     */
+    public String getPageId() {
+        return pageId == null ? "" : pageId;
+    }
 
-	/**
-	 * Set the pageId
-	 * @param pageId id of the page to load
-	 */
-	public void setPageId(String pageId) {
-		this.pageId = pageId;
-	}
+    /**
+     * Set the pageId
+     *
+     * @param pageId id of the page to load
+     */
+    public void setPageId(String pageId) {
+        this.pageId = pageId;
+    }
 
-	/**
-	 * Get the forced pageId if user has sufficient rights (trainer / scenarist)
-	 *
-	 * @return thepageId to load, if any. empty string if none or if user has not enough rights
-	 */
-	public String getPageIdIfSufficientRights() {
-		if (currentPlayer == null){
-			return "";
-		}
-	    GameModel gameModel = currentPlayer.getGameModel();
+    /**
+     * Get the forced pageId if user has sufficient rights (trainer / scenarist)
+     *
+     * @return thepageId to load, if any. empty string if none or if user has not enough rights
+     */
+    public String getPageIdIfSufficientRights() {
+        if (currentPlayer == null) {
+            return "";
+        }
+        GameModel gameModel = currentPlayer.getGameModel();
 
-		if (requestManager.hasGameModelWriteRight(gameModel)){
-			return pageId  == null ? "" : pageId;
-		}
+        if (requestManager.hasGameModelWriteRight(gameModel)) {
+            return pageId == null ? "" : pageId;
+        }
 
-		return "";
-	}
+        return "";
+    }
 
 }

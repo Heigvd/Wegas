@@ -43,7 +43,7 @@ public class ErrorController implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("errorMessage", errorMessage);
     }
 
-    public void dispatch(String title, String errorMsg) {
+    public void dispatchMessagePage(String title, String errorMsg) {
         this.setErrorTitle(title);
         this.setErrorMessage(errorMsg);
         try {
@@ -55,22 +55,31 @@ public class ErrorController implements Serializable {
     }
 
     public void dispatch(String errorMsg) {
-        this.dispatch(null, errorMsg);
+        this.dispatchMessagePage(null, errorMsg);
     }
 
     public void gameNotFound() {
-        this.dispatch("Game not found", "The game you are looking for could not be found");
+        this.dispatchMessagePage("Game not found", "The game you are looking for could not be found");
     }
 
     public void accessDenied() {
-        this.dispatch("Access Denied", "You do not have access to this game");
+        this.dispatchMessagePage("Access Denied", "You do not have access to this game");
+    }
+
+    public void pleaseLogIn() {
+        try {
+            ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+            externalContext.dispatch("/wegas-app/jsf/error/pleaseLogIn.xhtml");
+        } catch (IOException ex) {
+            logger.error("Unable to find error page", ex);
+        }
     }
 
     public void accessForSurveyOnly() {
-        this.dispatch("Access Denied", "You do not have access to this game");
+        this.dispatchMessagePage("Access Denied", "You do not have access to this game");
     }
 
     void gameDeleted() {
-        this.dispatch("Game has been deleted", "The game you are looking for has been deleted");
+        this.dispatchMessagePage("Game has been deleted", "The game you are looking for has been deleted");
     }
 }
