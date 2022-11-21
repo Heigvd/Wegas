@@ -6,10 +6,8 @@
  * Licensed under the MIT License
  */
 
-import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
-import { Redirect } from 'react-router-dom';
+import { NavLink, Redirect } from 'react-router-dom';
 import { IGameWithId, IPlayerWithId } from 'wegas-ts-api';
 import {
   getGameModelById,
@@ -25,7 +23,6 @@ import getLogger, { INFO } from '../../logger';
 import { useCurrentUser } from '../../selectors/userSelector';
 import { useGameModel } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
-import { InlineLink } from '../common/Link';
 import Loading from '../common/Loading';
 
 const logger = getLogger('AutoPlay');
@@ -186,13 +183,13 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
       <Loading animated={false}>
         <div>
           please{' '}
-          <InlineLink to={buildLinkWithQueryParam('/SignIn', { redirectTo: `/play/${token}` })}>
+          <NavLink to={buildLinkWithQueryParam('/SignIn', { redirectTo: `/play/${token}` })}>
             {i18n.login}
-          </InlineLink>
+          </NavLink>
           {' or '}
-          <InlineLink to={buildLinkWithQueryParam('/SignUp', { redirectTo: `/play/${token}` })}>
-            <FontAwesomeIcon icon={faPlusCircle} /> {i18n.createAnAccount}
-          </InlineLink>
+          <NavLink to={buildLinkWithQueryParam('/SignUp', { redirectTo: `/play/${token}` })}>
+            {i18n.createAnAccount}
+          </NavLink>
         </div>
       </Loading>
     );
