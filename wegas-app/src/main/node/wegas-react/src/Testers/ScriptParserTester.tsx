@@ -3,13 +3,13 @@ import { useMonaco } from '@monaco-editor/react';
 import * as React from 'react';
 import { transpile } from 'typescript';
 import { useTempModel } from '../Components/Contexts/LibrariesContext';
+import { insertReturn } from '../Components/Hooks/useScript';
 import { expandBoth, flex, flexColumn, grow } from '../css/classes';
 import { MessageString } from '../Editor/Components/MessageString';
 import SrcEditor from '../Editor/Components/ScriptEditors/SrcEditor';
 import {
   defunctionalizeScript,
   functionalizeScript,
-  insertReturn,
   TempScriptEditor,
 } from '../Editor/Components/ScriptEditors/TempScriptEditor';
 

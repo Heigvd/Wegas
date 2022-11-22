@@ -3,6 +3,7 @@ import { Monaco } from '@monaco-editor/react';
 import * as React from 'react';
 import * as ts from 'typescript';
 import { useTempModel } from '../../../Components/Contexts/LibrariesContext';
+import { insertReturn } from '../../../Components/Hooks/useScript';
 import { expandBoth, flex, flexColumn } from '../../../css/classes';
 import { getLogger } from '../../../Helper/wegaslog';
 import { MessageString } from '../MessageString';
@@ -37,47 +38,10 @@ function clearIndentation(script: string, numLevel?: number) {
     regex = new RegExp('^\\t*', 'gm');
   }
   if (regex) {
-    return script.replaceAll(regex, '');
+    return script.replace(regex, '');
   }
   return script;
 }
-
-function indent(script: string, numLevel?: number) {
-  const t = '\t'.repeat(numLevel || 1);
-  return t + script.replaceAll(/(\r?\n)/g, '$1' + t);
-}
-
-export const insertReturn = (val: string) => {
-  let code = val;
-
-  if (val === '{};' || val === '{}') {
-    // hack: AST will parse "{};" as en empty block + empty statement rather than an empty object;
-    //       in such a case, generated code would be "{}; return;"
-    //       correct code is "return {};"
-    return '\treturn {};';
-  }
-
-  const sourceFile = ts.createSourceFile(
-    'Testedfile',
-    code,
-    ts.ScriptTarget.ESNext,
-    true,
-  );
-
-  if (ts.isSourceFile(sourceFile)) {
-    // Find the last import before another statement
-    const lastStatement =
-      sourceFile.statements[sourceFile.statements.length - 1];
-    if (lastStatement) {
-      const p = lastStatement.getStart();
-      if (!ts.isReturnStatement(lastStatement)) {
-        code = code.substring(0, p) + 'return ' + code.substring(p);
-      }
-      return indent(code);
-    }
-  }
-  return val;
-};
 
 /**
  * formatScriptToFunction - if the return type is defined, return the script wrapped in a function

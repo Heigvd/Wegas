@@ -1,6 +1,6 @@
 import { cloneDeep, escapeRegExp, isEqual, uniq } from 'lodash-es';
 import * as React from 'react';
-import { transpile } from 'typescript';
+import * as ts from 'typescript';
 import {
   IScript,
   IVariableDescriptor,
@@ -35,7 +35,6 @@ import {
   usePagesContextStateStore,
 } from '../../data/Stores/pageContextStore';
 import { store, useStore } from '../../data/Stores/store';
-import { insertReturn } from '../../Editor/Components/ScriptEditors/TempScriptEditor';
 import { registerEffect, useRef } from '../../Helper/pageEffectsManager';
 import { createLRU, replace, visitDSF } from '../../Helper/tools';
 import { createScript, isScript } from '../../Helper/wegasEntites';
@@ -446,6 +445,44 @@ function transformExtentWrapper(ext: ExtentLikeObject, srcProj: string, destProj
   return transformExtent(ext, srcProj, destProj, opt_stops) as ExtentLikeObject;
 }
 
+function indent(script: string, numLevel?: number) {
+  const t = '\t'.repeat(numLevel || 1);
+  return t + script.replace(/(\r?\n)/g, '$1' + t);
+}
+
+
+export const insertReturn = (val: string) => {
+  let code = val;
+
+  if (val === '{};' || val === '{}') {
+    // hack: AST will parse "{};" as en empty block + empty statement rather than an empty object;
+    //       in such a case, generated code would be "{}; return;"
+    //       correct code is "return {};"
+    return '\treturn {};';
+  }
+
+  const sourceFile = ts.createSourceFile(
+    'Testedfile',
+    code,
+    ts.ScriptTarget.ESNext,
+    true,
+  );
+
+  if (ts.isSourceFile(sourceFile)) {
+    // Find the last import before another statement
+    const lastStatement =
+      sourceFile.statements[sourceFile.statements.length - 1];
+    if (lastStatement) {
+      const p = lastStatement.getStart();
+      if (!ts.isReturnStatement(lastStatement)) {
+        code = code.substring(0, p) + 'return ' + code.substring(p);
+      }
+      return indent(code);
+    }
+  }
+  return val;
+};
+
 interface TranspileOptions {
   moduleName?: string;
   injectReturn?: boolean;
@@ -459,7 +496,7 @@ function transpileToFunction(
   extraArgs: string[] = [],
 ) {
   // transpile first
-  const jsScript = transpile(script);
+  const jsScript = ts.transpile(script);
 
   // script does not containes any return statement (eval-style returns last-evaluated statement)
   // such a statement must be added
@@ -674,7 +711,7 @@ export function safeClientScriptEval<T>(
       wwarn(
         `${printWegasScriptError(error)}
         \n\nScript content is :\n${scriptContent}\n\nTranspiled content is :\n${
-          scriptContent != null ? transpile(scriptContent) : undefined
+          scriptContent != null ? ts.transpile(scriptContent) : undefined
         }`,
       );
     }
@@ -931,7 +968,7 @@ export function safeScriptCallbackEval<T>(
       wwarn(
         `${printWegasScriptError(error)}
         \n\nScript content is :\n${scriptContent}\n\nTranspiled content is :\n${
-          scriptContent != null ? transpile(scriptContent) : undefined
+          scriptContent != null ? ts.transpile(scriptContent) : undefined
         }`,
       );
     }
