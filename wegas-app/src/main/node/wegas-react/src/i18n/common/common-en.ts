@@ -65,4 +65,10 @@ export const commonTranslationsEN: CommonTranslations = {
       },
     },
   },
+  qrCode: {
+    notAuthorizedToUseCamera : "Access to camera is forbidden",
+    tabSetting: "Check if you've blocked the camera (camera icon in the address bar)",
+    iOSSettingsHint: (navigator: string) => `Check you iPad/iPhone settings (Settings / ${navigator})`,
+    androidSettingsHint: (navigator: string) => `Check your smartphone/tablet settings (Settings / Applications / ${navigator} / Authorizations / Camera)`
+  },
 };

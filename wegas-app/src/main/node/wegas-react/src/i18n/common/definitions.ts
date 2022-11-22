@@ -58,4 +58,10 @@ export interface CommonTranslations {
       [key in keyof AuthorizationData]: { label: string; description: string };
     };
   };
+  qrCode: {
+    notAuthorizedToUseCamera :string;
+    tabSetting: string;
+    iOSSettingsHint: (navigator: string) => string;
+    androidSettingsHint: (navigator: string) => string;
+  }
 }

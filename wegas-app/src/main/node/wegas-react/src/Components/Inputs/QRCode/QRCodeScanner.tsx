@@ -3,7 +3,7 @@ import * as React from 'react';
 import { css, cx } from '@emotion/css';
 import {
   faArrowLeft,
-  faArrowsAltH,
+  faRedo,
   faCamera,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,6 +11,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Html5Qrcode } from 'html5-qrcode';
 import { CameraDevice } from 'html5-qrcode/core';
 import { TumbleLoader } from '../../Loader';
+
+import CameraRotate from './camera-rotate.svg';
+
+import { getLogger } from '../../../Helper/wegaslog';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { commonTranslations } from '../../../i18n/common/common';
+
+const logger = getLogger('QRScanner');
 
 const clickableStyle = css({
   cursor: 'pointer',
@@ -32,6 +40,81 @@ interface QRCodeScannerProps {
   onScan: (data: string) => void;
 }
 
+type Navigator = 'Firefox' | 'Chrome' | 'Safari' | '';
+
+type System = 'MacOS' | 'Linux' | 'Windows' | 'Android' | 'iOS' | '';
+
+function guessSystem(): System {
+  const ua = navigator.userAgent;
+
+  if (/iPad|iPod|iPhone/i.test(ua)) {
+    return 'iOS';
+  }
+
+  if (/Android/i.test(ua)) {
+    return 'Android';
+  }
+
+  if (/Macintosh/i.test(ua)) {
+    return 'MacOS';
+  }
+
+  if (/Linux/i.test(ua)) {
+    return 'Linux';
+  }
+
+  if (/Windows/i.test(ua)) {
+    return 'Windows';
+  }
+
+  return '';
+}
+
+function guessNavigator(): Navigator {
+  const ua = navigator.userAgent;
+
+  if (/Firefox/i.test(ua) && !/Seamonkey/i.test(ua)) {
+    return 'Firefox';
+  }
+
+  if (/Chrome|Chromium/i.test(ua)) {
+    return 'Chrome';
+  }
+
+  if (/Safari/.test(ua)) {
+    return 'Safari';
+  }
+
+  return '';
+}
+
+function Hint(): JSX.Element {
+  const nav = guessNavigator();
+  const system = guessSystem();
+
+  const i18n = useInternalTranslate(commonTranslations);
+
+  let specificHint = '';
+
+  if (system === 'iOS') {
+    specificHint = i18n.qrCode.iOSSettingsHint(nav);
+  } else if (system === 'Android') {
+    specificHint = i18n.qrCode.androidSettingsHint(nav);
+  }
+
+  return (
+    <div>
+      <h4>{i18n.qrCode.notAuthorizedToUseCamera}</h4>
+      <div>
+        <em>{i18n.qrCode.tabSetting}</em>
+      </div>
+      <div>
+        <em>{specificHint}</em>
+      </div>
+    </div>
+  );
+}
+
 /**
  * Open user camera and allow to scan qrCode
  */
@@ -43,9 +126,9 @@ export default function QRCodeScanner({
 
   const [reader, setReader] = React.useState<Html5Qrcode>();
 
-  const [state, setState] = React.useState<'LOADING' | 'IDLE' | 'SCAN'>(
-    'LOADING',
-  );
+  const [state, setState] = React.useState<
+    'UNDEF' | 'LOADING' | 'IDLE' | 'SCAN' | 'ERROR'
+  >('UNDEF');
 
   const cancelCb = React.useCallback(() => {
     setState('IDLE');
@@ -54,6 +137,11 @@ export default function QRCodeScanner({
   const initScanCb = React.useCallback(() => {
     setState('SCAN');
   }, []);
+
+  const restartCb = React.useCallback(() => {
+    setState('UNDEF');
+  }, []);
+
   const switchCameraCb = React.useCallback(() => {
     if (reader) {
       const currentDeviceId = reader.getRunningTrackSettings().deviceId;
@@ -66,24 +154,28 @@ export default function QRCodeScanner({
   }, [reader, selectDevice, devices]);
 
   React.useEffect(() => {
-    let alive = true;
-    Html5Qrcode.getCameras().then(devices => {
-      if (alive) {
-        //
-        const uniqueDevices = devices.reduce<CameraDevice[]>((acc, device) => {
-          if (!acc.find(d => d.id === device.id)) {
-            acc.push(device);
-          }
-          return acc;
-        }, []);
-        setDevices(uniqueDevices);
-        setState('IDLE');
-      }
-    });
-    return () => {
-      alive = false;
-    };
-  }, []);
+    if (state === 'UNDEF') {
+      setState('LOADING');
+      Html5Qrcode.getCameras()
+        .then(devices => {
+          const uniqueDevices = devices.reduce<CameraDevice[]>(
+            (acc, device) => {
+              if (!acc.find(d => d.id === device.id)) {
+                acc.push(device);
+              }
+              return acc;
+            },
+            [],
+          );
+          setDevices(uniqueDevices);
+          setState('IDLE');
+        })
+        .catch(error => {
+          logger.warn('Get Cameras error:', error);
+          setState('ERROR');
+        });
+    }
+  }, [state]);
 
   // each time the div which contains the reader changed
   const initReader = React.useCallback((divRef: HTMLDivElement | null) => {
@@ -118,8 +210,8 @@ export default function QRCodeScanner({
           onScan(decodedText);
           setState('IDLE');
         },
-        () => {
-          //wlog('QR Scan Error: ', errorMessage);
+        error => {
+          logger.warn('QR Scan Error: ', error);
         },
       );
     }
@@ -146,14 +238,10 @@ export default function QRCodeScanner({
           <div className={toolbarStyle}>
             {devices.length > 1 && (
               <span
-                className={cx(clickableStyle, 'fa-layers', 'fa-fw', 'fa-4x')}
+                className={cx(clickableStyle, 'fa-layers', 'fa-4x')}
                 onClick={switchCameraCb}
               >
-                <FontAwesomeIcon icon={faCamera} transform="shrink-5 up-5" />
-                <FontAwesomeIcon
-                  icon={faArrowsAltH}
-                  transform="shrink-5 down-5"
-                />
+                <CameraRotate />
               </span>
             )}
             <FontAwesomeIcon
@@ -165,7 +253,18 @@ export default function QRCodeScanner({
           </div>
         </>
       )}
-      {state === 'LOADING' && <TumbleLoader />}
+      {(state === 'LOADING' || state === 'UNDEF') && <TumbleLoader />}
+      {state === 'ERROR' && (
+        <div>
+          <Hint />
+          <FontAwesomeIcon
+            className={cx(clickableStyle, 'fa-4x', css({ paddingTop: '20px' }))}
+            icon={faRedo}
+            onClick={restartCb}
+            size="4x"
+          />
+        </div>
+      )}
     </div>
   );
 }

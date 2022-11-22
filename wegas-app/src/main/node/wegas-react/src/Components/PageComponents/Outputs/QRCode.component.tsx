@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import {
-  useScript,
-} from '../../Hooks/useScript';
+import { useScript } from '../../Hooks/useScript';
 import { QRCodeCanvas } from 'qrcode.react';
 import {
   pageComponentFactory,
@@ -28,14 +26,20 @@ function PlayerQRCode({
 }: PlayerQRCodeProps) {
   const content = useScript<string>(text, context);
 
-  return (<QRCodeCanvas
-          id={id}
-          className={className}
-          style={style}
-          value={content || ''}
-          size={size}
-          includeMargin={true}
-        />);
+  // HACK: qrcode.react by the size by `window.devicePixelRatio`
+  // we DO NOT WANT such a cranky behaviour
+  const eSize = size ? size / window.devicePixelRatio : undefined;
+
+  return (
+    <QRCodeCanvas
+      id={id}
+      className={className}
+      style={style}
+      value={content || ''}
+      size={eSize}
+      includeMargin={true}
+    />
+  );
 }
 
 registerComponent(
@@ -49,14 +53,13 @@ registerComponent(
     schema: {
       text: schemaProps.scriptString({ label: 'Text', richText: true }),
       size: {
-        view: {label:'Size', type:'number'},
-        errored: (val) => {
-          if (val < 0){
+        view: { label: 'Size', type: 'number' },
+        errored: val => {
+          if (val < 0) {
             return 'Negative size';
           }
           return '';
-        }
-
+        },
       },
       ...classStyleIdShema,
     },

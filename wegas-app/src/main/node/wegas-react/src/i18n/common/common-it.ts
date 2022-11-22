@@ -65,4 +65,11 @@ export const commonTranslationsIT: CommonTranslations = {
       },
     },
   },
+  qrCode: {
+    notAuthorizedToUseCamera : "L'accesso alla telecamera è proibito",
+    tabSetting: 'Controllare se la telecamera è stata bloccata (icona della telecamera nella barra degli indirizzi).',
+    iOSSettingsHint: (navigator: string) => `Controllare le configurazioni dell'iPad/iPhone (Configurazioni / ${navigator})`,
+    androidSettingsHint: (navigator: string) => `Controllare le impostazioni del proprio smartphone/tablet (Impostazioni / Applicazioni / ${ navigator
+} / Autorizzazioni / Fotocamera`
+  },
 };

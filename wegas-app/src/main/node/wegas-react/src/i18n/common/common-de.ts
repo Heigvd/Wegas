@@ -65,4 +65,10 @@ export const commonTranslationsDE: CommonTranslations = {
       },
     },
   },
+  qrCode: {
+    notAuthorizedToUseCamera : "Der Zugriff zur Kamera ist verboten",
+    tabSetting: 'Prüfen Sie, ob Sie die Kamera blockiert haben (Kamerasymbol in der Adressleiste)',
+    iOSSettingsHint: (navigator: string) => `Überprüfen Sie Ihre iPad/iPhone-Einstellungen (Einstellungen / ${navigator})`,
+    androidSettingsHint: (navigator: string) => `Überprüfen Sie die Einstellungen Ihre Smartphone/Tablet (Einstellungen / Anwendungen / ${navigator} / Berechtigungen / Kamera`,
+  },
 };

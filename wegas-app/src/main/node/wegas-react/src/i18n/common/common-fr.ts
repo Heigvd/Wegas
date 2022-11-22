@@ -65,4 +65,10 @@ export const commonTranslationsFR: CommonTranslations = {
       },
     },
   },
+  qrCode: {
+    notAuthorizedToUseCamera : "L'accès à la camera n'est pas autorisé",
+    tabSetting: "Vérifiez si vous avez bloqué la caméra (icône de la caméra dans la barre d'adresse)",
+    iOSSettingsHint: (navigator: string) => `Vérifiez les réglages de votre iPad/iPhone (Réglages / ${navigator})`,
+    androidSettingsHint: (navigator: string) => `Vérifiez les réglages de votre téléphone/tablette (Paramètres / Applications / ${navigator} / Autorisations / Appareil Photo`
+  },
 };
