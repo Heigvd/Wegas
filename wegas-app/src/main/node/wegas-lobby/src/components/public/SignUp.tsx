@@ -148,7 +148,7 @@ export default function SignUp(props: Props): JSX.Element {
   );
 
   return (
-    <MelonContainer below={<PolicyDisclaimer />}>
+    <MelonContainer uberBelow={<PolicyDisclaimer />}>
       <Form fields={fields} value={defData} submitLabel={i18n.createAnAccount} onSubmit={createCb}>
         <InlineLink
           className={css({ alignSelf: 'flex-end' })}

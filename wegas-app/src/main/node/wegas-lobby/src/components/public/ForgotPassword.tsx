@@ -48,20 +48,22 @@ export default (props: Props): JSX.Element => {
   ];
 
   return (
-    <MelonContainer below={<PolicyDisclaimer />}>
-      <Form
-        onSubmit={onSubmitCb}
-        value={{ email: '' }}
-        fields={formFields}
-        submitLabel={i18n.sendMePassword}
-      >
-        <InlineLink
-          className={css({ alignSelf: 'center' })}
-          to={buildLinkWithQueryParam('/SignIn', { redirectTo: props.redirectTo })}
+    <>
+      <MelonContainer uberBelow={<PolicyDisclaimer />}>
+        <Form
+          onSubmit={onSubmitCb}
+          value={{ email: '' }}
+          fields={formFields}
+          submitLabel={i18n.sendMePassword}
         >
-          {i18n.cancel}
-        </InlineLink>
-      </Form>
-    </MelonContainer>
+          <InlineLink
+            className={css({ alignSelf: 'center' })}
+            to={buildLinkWithQueryParam('/SignIn', { redirectTo: props.redirectTo })}
+          >
+            {i18n.cancel}
+          </InlineLink>
+        </Form>
+      </MelonContainer>
+    </>
   );
 };

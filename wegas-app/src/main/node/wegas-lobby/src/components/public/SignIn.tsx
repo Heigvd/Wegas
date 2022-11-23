@@ -120,23 +120,21 @@ export default function SignInForm({ username, redirectTo }: Props): JSX.Element
     <>
       <MelonContainer
         below={
-          <>
-            <Flex justify="space-evenly">
-              {showAaiButton ? (
-                <a className={aaiLinkStyle} href={aaiUrl} rel="noreferer">
-                  <AAILogo className={aaiStyle} />
-                  AAI Login
-                </a>
-              ) : null}
-              {showEduIdButton ? (
-                <a className={aaiLinkStyle} href={eduIdUrl} rel="noreferer">
-                  <EduIDLogo className={eduIDStyle} />
-                </a>
-              ) : null}
-            </Flex>
-            <PolicyDisclaimer />
-          </>
+          <Flex justify="space-evenly">
+            {showAaiButton ? (
+              <a className={aaiLinkStyle} href={aaiUrl} rel="noreferer">
+                <AAILogo className={aaiStyle} />
+                AAI Login
+              </a>
+            ) : null}
+            {showEduIdButton ? (
+              <a className={aaiLinkStyle} href={eduIdUrl} rel="noreferer">
+                <EduIDLogo className={eduIDStyle} />
+              </a>
+            ) : null}
+          </Flex>
         }
+        uberBelow={<PolicyDisclaimer />}
       >
         <Form
           value={{ ...defCred, identifier: username || '' }}

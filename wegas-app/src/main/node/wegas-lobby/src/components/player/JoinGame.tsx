@@ -177,7 +177,7 @@ function ShowTeams({ closePanel, game }: ShowTeamsProps): JSX.Element {
         <InlineLoading />
       ) : (
         <>
-          <span>{i18n.joinOrCreateATeam}</span>
+          <span>{game.preventPlayerCreatingTeams ? i18n.joinATeam : i18n.joinOrCreateATeam}</span>
           <WindowedContainer
             gradientHeight={100}
             bgColor="var(--bgColor)"

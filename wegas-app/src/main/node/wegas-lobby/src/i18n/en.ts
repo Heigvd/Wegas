@@ -86,6 +86,7 @@ export const en = {
   teamSize: 'size',
   createTeam: 'create team',
   joinTeam: 'Join Team',
+  joinATeam: 'Join a team',
   joinOrCreateATeam: 'Join an existing team or create a new one',
   alreadyJoined: 'You have already joined the game',
   join: 'Join',
