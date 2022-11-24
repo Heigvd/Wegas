@@ -19,6 +19,8 @@ export interface MelonProps {
   uberBelow?: React.ReactNode;
 }
 
+const mediaQ = "@media (max-height: 600px)";
+
 export default function MelonContainer({children, below, uberBelow}: MelonProps): JSX.Element {
   return (
     <div className={cx(fullPageStyle)}>
@@ -28,6 +30,9 @@ export default function MelonContainer({children, below, uberBelow}: MelonProps)
           css({
             margin: 'auto',
             overflow: 'auto',
+            [mediaQ]: {
+              margin: 0,
+            }
           }),
         )}
       >
@@ -41,6 +46,10 @@ export default function MelonContainer({children, below, uberBelow}: MelonProps)
               overflow: 'auto',
               padding: '32px 32px',
               borderRadius: '6px',
+              [mediaQ]: {
+                padding: "8px",
+                overflow: 'unset',
+              }
             }),
           )}
         >
@@ -57,6 +66,9 @@ export default function MelonContainer({children, below, uberBelow}: MelonProps)
                 maxHeight: '50px',
                 width: '300px',
                 margin: 'auto',
+                [mediaQ]: {
+                    display: "none"
+                }
               })}
             />
             {children}
