@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <domain application-root="${com.sun.aas.instanceRoot}/applications" version="740" log-root="${com.sun.aas.instanceRoot}/logs">
-  <hazelcast-runtime-configuration generate-names="true" start-port="6900" discovery-mode="multicast" multicast-group="224.2.2.4" multicast-port="2904"/>
+  <hazelcast-runtime-configuration generate-names="true" start-port="${hazelcast.startport}" discovery-mode="multicast" multicast-group="224.2.2.4" multicast-port="2904"/>
   <security-configurations>
     <authorization-service default="true" name="authorizationService">
       <security-provider provider-name="simpleAuthorizationProvider" name="simpleAuthorization" type="Simple">
