@@ -57,6 +57,7 @@ Thumbs.db
 /wegas-ts-api/src/main/webapp/typings/
 
 node_modules/
+*.swp
 
 # Cypress generated files #
 ###########################
@@ -64,3 +65,4 @@ node_modules/
 /wegas-runtime/src/test/node/cypress/videos/
 /wegas-runtime/src/test/node/test-results.xml
 /wegas-runtime/src/test/node/cypress/screenshots/
+
