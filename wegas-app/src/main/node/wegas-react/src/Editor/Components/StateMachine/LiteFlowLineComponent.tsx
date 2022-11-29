@@ -204,16 +204,16 @@ export function LiteFlowLineComponentFactory<
             </div>
           )}
           {isShown &&
-            (flowline.transition.preStateImpact.content ||
-              flowline.transition.triggerCondition.content) && (
+            (flowline.transition.preStateImpact?.content ||
+              flowline.transition.triggerCondition?.content) && (
               <div className={transitionMoreInfosStyle}>
-                {flowline.transition.preStateImpact.content != '' && (
+                {flowline.transition.preStateImpact?.content && (
                   <div>
                     <strong>Impact</strong>
                     <p> {flowline.transition.preStateImpact.content}</p>
                   </div>
                 )}
-                {flowline.transition.triggerCondition.content != '' && (
+                {flowline.transition.triggerCondition?.content && (
                   <div>
                     <strong>Conditions</strong>
                     <p>{flowline.transition.triggerCondition.content}</p>

@@ -193,7 +193,7 @@ export function LiteStateProcessComponentFactory<
               )}
             </div>
           )}
-          {isShown && process.state.onEnterEvent.content != '' && (
+          {isShown && process.state.onEnterEvent?.content && (
             <div className={stateMoreInfosStyle}>
               <strong>Impact</strong>
               <p>{process.state.onEnterEvent.content}</p>

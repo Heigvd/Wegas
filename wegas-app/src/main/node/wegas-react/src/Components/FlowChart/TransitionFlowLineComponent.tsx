@@ -140,16 +140,16 @@ export function TransitionBox({
         </div>
       </div>
       {isShown &&
-        (transition.transition.preStateImpact.content ||
-          transition.transition.triggerCondition.content) && (
+        (transition.transition.preStateImpact?.content ||
+          transition.transition.triggerCondition?.content) && (
           <div className={transitionMoreInfosStyle}>
-            {transition.transition.preStateImpact.content != '' && (
+            {transition.transition.preStateImpact?.content && (
               <div>
                 <strong>Impact</strong>
                 <p> {transition.transition.preStateImpact.content}</p>
               </div>
             )}
-            {transition.transition.triggerCondition.content != '' && (
+            {transition.transition.triggerCondition?.content && (
               <div>
                 <strong>Conditions</strong>
                 <p>{transition.transition.triggerCondition.content}</p>
