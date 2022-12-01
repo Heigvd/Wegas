@@ -1,6 +1,7 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
+import { fullscreenCTX } from '../../../Components/Contexts/FullscreenContext';
 import { DropMenu } from '../../../Components/DropMenu';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { Tab } from '../../../Components/TabLayout/Tab';
@@ -367,7 +368,17 @@ export function DnDTabLayout({
 }: DnDTabLayoutProps) {
   const { general, header, content, tabsClassName, plusTabClassName } =
     classNames;
-  const [fullScreen, setFullScreen] = React.useState(false);
+
+  //HACK: due to bad design, there is two fullScreen state...
+  const [localFullScreen, setLocalFullScreen] = React.useState(false);
+  const { fullscreen : globalFullScreen, setFullscreen : setGlobalFullScreen } = React.useContext(fullscreenCTX);
+
+  const setFullScreen = React.useCallback((v : boolean) => {
+    setLocalFullScreen(v);
+    setGlobalFullScreen(v);
+  }, [setGlobalFullScreen]);
+  const fullScreen = globalFullScreen && localFullScreen;
+
 
   React.useEffect(() => {
     if (

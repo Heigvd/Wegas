@@ -3,10 +3,14 @@ import * as React from 'react';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import { fullscreenCTX } from '../../../Components/Contexts/FullscreenContext';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { autoScroll, flex, grow, halfOpacity } from '../../../css/classes';
 import { createStoreConnector } from '../../../data/connectStore';
-import { Edition } from '../../../data/Reducer/editingState';
+import {
+  EditingActionCreator,
+  Edition,
+} from '../../../data/Reducer/editingState';
 import {
   editingStoreFactory,
   useEditingStore,
@@ -77,15 +81,11 @@ export function ComponentWithForm({
   const { useStore: useLocalStore, getDispatch: getLocalDispatch } =
     React.useMemo(() => createStoreConnector(editingStoreFactory()), []);
 
-  const globalState = useEditingStore(state => state.editing);
-
-  const fullscreenFSM = globalState?.type === 'VariableFSM' && fullscreen;
-
-  const localState = (fullscreenFSM ? useEditingStore : useLocalStore)(
+  const localState = (fullscreen ? useEditingStore : useLocalStore)(
     s => s,
     shallowDifferent,
   );
-  const localDispatch = fullscreenFSM ? store.dispatch : getLocalDispatch();
+  const localDispatch = fullscreen ? store.dispatch : getLocalDispatch();
   const localEntity = getEntity(localState.editing);
 
   return (
@@ -106,19 +106,27 @@ export function ComponentWithForm({
       </ReflexElement>
       {localState.editing && localEntity && <ReflexSplitter />}
       {localState.editing && localEntity && (
-        <ReflexElement
-          flex={
-            flexValues.form == null ? defaultFlexValues.form : flexValues.form
-          }
-        >
-          <VariableForm
-            editing={localState.editing}
-            entity={getEntity(localState.editing)}
-            events={localState.events}
-            readOnly={readOnly}
-            localDispatch={localDispatch}
-          />
-        </ReflexElement>
+        <>
+          <ReflexElement
+            flex={
+              flexValues.form == null ? defaultFlexValues.form : flexValues.form
+            }
+          >
+            <IconButton
+              icon="times"
+              onClick={() => {
+                localDispatch(EditingActionCreator.CLOSE_EDITOR() as any);
+              }}
+            />
+            <VariableForm
+              editing={localState.editing}
+              entity={getEntity(localState.editing)}
+              events={localState.events}
+              readOnly={readOnly}
+              localDispatch={localDispatch}
+            />
+          </ReflexElement>
+        </>
       )}
     </ReflexContainer>
   );
