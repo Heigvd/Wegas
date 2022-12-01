@@ -2,14 +2,16 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.rest;
 
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.core.security.ejb.RoleFacade;
+import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -22,6 +24,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 
 /**
  *
@@ -43,11 +46,12 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
      * Retrieve a specific game model
      *
      * @param entityId role id
+     *
      * @return the role matching entityId
      */
     @Override
     @GET
-    @Path("{entityId : [1-9][0-9]*}")                                           // @Path annotations are not inherited
+    @Path("{entityId : [1-9][0-9]*}")
     @RequiresPermissions("User:Edit")
     public Role get(@PathParam("entityId") Long entityId) {
         return super.get(entityId);
@@ -57,6 +61,7 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
      * Create a new role
      *
      * @param entity role to create
+     *
      * @return the new role or HTTP Forbidden status if user is not an admin
      */
     @Override
@@ -70,11 +75,12 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
      *
      * @param entityId if of role to update
      * @param entity   role to read new values from
+     *
      * @return up to date role or HTTP Forbidden status if user is not an admin
      */
     @Override
     @PUT
-    @Path("{entityId : [1-9][0-9]*}")                                           // @Path annotations are not inherited
+    @Path("{entityId : [1-9][0-9]*}")
     @RequiresPermissions("User:Edit")
     public Role update(@PathParam("entityId") Long entityId, Role entity) {
         return super.update(entityId, entity);
@@ -84,11 +90,12 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
      * copy a role
      *
      * @param entityId
+     *
      * @return role copy or HTTP Forbidden status if user is not an admin
      */
     @Override
     @POST
-    @Path("{entityId : [1-9][0-9]*}/Duplicate")                                 // @Path annotations are not inherited
+    @Path("{entityId : [1-9][0-9]*}/Duplicate")
     @RequiresPermissions("User:Edit")
     public Role duplicate(@PathParam("entityId") Long entityId) {
         throw new NoSuchMethodError("Role duplication not implemented");
@@ -98,15 +105,72 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
      * Delete a role
      *
      * @param entityId
-     * @return just deleted role or HTTP Forbidden status if user is not an
-     *         admin
+     *
+     * @return just deleted role or HTTP Forbidden status if user is not an admin
      */
     @Override
     @DELETE
-    @Path("{entityId : [1-9][0-9]*}")                                           // @Path annotations are not inherited
+    @Path("{entityId : [1-9][0-9]*}")
     @RequiresPermissions("User:Edit")
     public Role delete(@PathParam("entityId") Long entityId) {
         return super.delete(entityId);
+    }
+
+    @POST
+    @RequiresRoles("Administrator")
+    @Path("Permission/{roleId : [1-9][0-9]*}")
+    public Permission createPermission(@PathParam("roleId") Long roleId, Permission permission) {
+        return roleFacade.createPermission(roleId, permission);
+    }
+
+    /**
+     * Grant given permission to the given role to the specified gameModel. Previous role
+     * permissions to gameModel will be revoked
+     *
+     * @param gameModelId id of the gameModel
+     * @param permission  (View|Edit|Delete|Duplicate|Instantiate), comma separated
+     * @param accountId   user accountId
+     */
+    @POST
+    @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{permission: (View|Edit|Delete|Duplicate|Instantiate|Translate-[A-Z]*|,)*}/{roleId : [1-9][0-9]*}")
+    public Permission shareGameModel(@PathParam("gameModelId") Long gameModelId,
+        @PathParam("permission") String permission,
+        @PathParam("roleId") Long roleId) {
+
+        return roleFacade.grantGameModelPermission(roleId, permission, gameModelId);
+    }
+
+    @DELETE
+    @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{roleId : [1-9][0-9]*}")
+    public List<Permission> unshareGameModelRole(@PathParam("gameModelId") Long gameModelId,
+        @PathParam("roleId") Long roleId) {
+
+        return roleFacade.revokeGameModelPermissions(gameModelId, roleId);
+    }
+
+    /**
+     * Grant given permission to the given role to the specified game. Previous role permissions to
+     * game will be revoked
+     *
+     * @param gameId     id of the game
+     * @param permission (View|Edit|Delete|Duplicate|Instantiate), comma separated
+     * @param accountId  user accountId
+     */
+    @POST
+    @Path("ShareGame/{gameId : [1-9][0-9]*}/{roleId : [1-9][0-9]*}")
+    public Permission shareGame(@PathParam("gameId") Long gameId,
+        @PathParam("permission") String permission,
+        @PathParam("roleId") Long roleId) {
+
+        return roleFacade.grantGamePermission(roleId, gameId);
+    }
+
+    @DELETE
+    @Path("ShareGame/{gameId : [1-9][0-9]*}/{roleId : [1-9][0-9]*}")
+    public List<Permission> unshareGameRole(@PathParam("gameId") Long gameId,
+        @PathParam("roleId") Long roleId) {
+
+        return roleFacade.revokeGamePermissions(gameId, roleId);
     }
 
     /**

@@ -25,7 +25,10 @@
         <meta name="audience" content="General" />
         <meta name="distribution" content="Global" />
         <meta name="revisit-after" content="30 days" />
-        <link rel="icon" type="image/ico" href="#{request.contextPath}/favicon.ico" />
+
+        <link rel="icon" href="#{request.contextPath}/${requestController.favicon}.ico" />
+        <link rel="icon" type="image/png" href="#{request.contextPath}/${requestController.favicon}.png" />
+
         <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,700i" rel="stylesheet"/>
 
         <!-- Warn against IE when user arrives directly without visiting the lobby -->

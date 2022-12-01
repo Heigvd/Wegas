@@ -2,12 +2,12 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.async;
 
-import com.hazelcast.core.ILock;
+import com.hazelcast.cp.lock.FencedLock;
 import com.wegas.core.Helper;
 import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
@@ -130,7 +130,7 @@ public class PopulatorScheduler {
     protected Future<Integer> internalScheduleCreation() {
 
         Future<Integer> future;
-        ILock lock = populatorFacade.getLock();
+        FencedLock lock = populatorFacade.getLock();
         lock.lock();
         try {
             //Helper.printWegasStackTrace(new Exception());
@@ -175,9 +175,9 @@ public class PopulatorScheduler {
      */
     protected void stopLocalPopulating() {
         logger.info("Stop all local populators");
-        // inform getNextOwnert to quit rather than selecting some work 
+        // inform getNextOwnert to quit rather than selecting some work
         populatorFacade.setForceQuit(true);
-        // Wait 
+        // Wait
         for (Future<Integer> future : creators.values()) {
             try {
                 logger.info("Wait");

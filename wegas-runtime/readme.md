@@ -6,10 +6,14 @@
 #Install brew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
+#Install OpenJDK 11
+brew tap AdoptOpenJDK/openjdk
+brew cask install adoptopenjdk11
+or
+brew install --cask adoptopenjdk11
+
 #Install node and change version to 11.10.1
 brew install node
-npm install -g n 
-n 11.10.1
 
 #Install yarn
 brew install yarn
@@ -19,11 +23,9 @@ brew install maven
 
 #Install docker
 brew cask install docker
+or
+brew install --cask docker
 #Press ⌘ + Space to bring up Spotlight Search and enter "Docker" to launch Docker
-
-#Install OpenJDK 11
-brew tap AdoptOpenJDK/openjdk
-brew cask install adoptopenjdk11
 ```
 
 ## Install services
@@ -79,7 +81,7 @@ mvn -f .. -DskipCategory=com.wegas.unit.PrivateRelatedTest clean install
 Run `./run` to start wegas.
 
 #### Java 11
-Wegas is designed to run on Java 11. If your default JVM is <> 11, you must provide the path to a JVM 11 using the -j option.
+Wegas is designed to run on Java 11. If your default JVM is lower or higher than 11, you must provide the path to a JVM 11 using the -j option.
 
 #### Options
 Option | Default Value | Description 

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.editor.view;
@@ -67,6 +67,19 @@ public abstract class FlatVariableSelectView extends CommonView {
         return selectableLevels;
     }
 
+    /**
+     * Default flat variable select which shows all variables.
+     */
+    public static class VariableFlatSelector extends FlatVariableSelectView {
+
+        public VariableFlatSelector() {
+            super(null, null);
+        }
+    }
+
+    /**
+     * Flat variable selector which shows task descriptor only.
+     */
     public static class TaskFlatSelector extends FlatVariableSelectView {
 
         public TaskFlatSelector() {
@@ -74,6 +87,9 @@ public abstract class FlatVariableSelectView extends CommonView {
         }
     }
 
+    /**
+     * Flat variable selector which shows numbers and texts.
+     */
     public static class TextOrNumberSelector extends FlatVariableSelectView {
 
         public TextOrNumberSelector() {

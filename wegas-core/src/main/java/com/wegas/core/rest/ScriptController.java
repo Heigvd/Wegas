@@ -1,8 +1,9 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -11,6 +12,7 @@ import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptCheck;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -22,6 +24,8 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.rest.util.LoadedScript;
+import com.wegas.core.security.util.ActAsPlayer;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
@@ -70,7 +74,10 @@ public class ScriptController {
      *
      */
     @Inject
-    private PlayerFacade playerFacadeFacade;
+    private PlayerFacade playerFacade;
+
+    @Inject
+    private RequestManager requestManager;
     /**
      *
      */
@@ -106,9 +113,48 @@ public class ScriptController {
         }
         logger.info("script for player {} : {}", playerId, script.getContent());
 
-        Object r = scriptFacade.eval(playerId, script, context);
-        requestFacade.commit(playerId);
-        return r;
+        Player player = playerFacade.find(playerId);
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            Object r = scriptFacade.eval(player, script, context);
+            requestFacade.commit(player);
+            return r;
+        }
+    }
+
+    /**
+     *
+     * @param gameModelId
+     * @param playerId
+     * @param variableDescritptorId
+     * @param scriptAndContext
+     *
+     * @return whatever the evaluated loadedScript returns
+     */
+    @POST
+    @Path("/LoadedRun/{playerId : [1-9][0-9]*}{sep: /?}{variableDescriptorId : ([1-9][0-9]*)?}")
+    public Object runWithContext(@PathParam("gameModelId") Long gameModelId,
+        @PathParam("playerId") Long playerId,
+        @PathParam("variableDescriptorId") Long variableDescritptorId,
+        LoadedScript loadedScript) {
+
+        VariableDescriptor context;
+        if (variableDescritptorId != null && variableDescritptorId > 0) {
+            context = variableDescriptorFacade.find(variableDescritptorId);
+        } else {
+            context = null;
+        }
+
+        Script script = loadedScript.getScript();
+        Map<String, Object> payload = loadedScript.getPayload();
+
+        logger.info("script for player {} : {}", playerId, script.getContent());
+
+        Player player = playerFacade.find(playerId);
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            Object r = scriptFacade.eval(player, script, context, payload);
+            requestFacade.commit(player);
+            return r;
+        }
     }
 
     /**
@@ -141,9 +187,12 @@ public class ScriptController {
         }
 
         for (Integer playerId : playerIdList) {
-            Object r = scriptFacade.eval(playerId.longValue(), script, context);
-            results.add(r);
-            requestFacade.commit(playerFacadeFacade.find(playerId.longValue()));
+            Player player = playerFacade.find(playerId.longValue());
+            try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+                Object r = scriptFacade.eval(player, script, context);
+                results.add(r);
+                requestFacade.commit(player);
+            }
         }
         requestFacade.flushClear();
         return results;

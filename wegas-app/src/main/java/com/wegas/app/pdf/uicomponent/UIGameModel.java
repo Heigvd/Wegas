@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.pdf.uicomponent;
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * mode: indicates whether or not a full export (mode = "editor") or a player
  *       export (mode != "editor") shall be done. Editor mode is only
  *       available for users that have the 'edit' permission on the specified GameModel.
- *       If mode != "editor" or currentUser hasn't this 'edit' permission, mode is degraded to "player"
+ *       If mode != "editor" or != 'reader' or currentUser hasn't this 'edit' permission, mode is degraded to "player"
  * </pre>
  * <p>
  * See WEB-INF/web.xml & WEB-INF/wegas-taglib.xml for tag and params definitions
@@ -52,19 +52,23 @@ import org.slf4j.LoggerFactory;
  */
 /*
  *
- * Faces 2.2 @FacesComponent(value="com.wegas.app.pdf.uicomponent.GameModel",
- *                           createTag = true, tagName = "GameModel",
- *                           namespace ="http://www.albasim.ch/wegas/pdf")
- * But still missing attributes definitions....
+ * Faces 2.2 @FacesComponent(value="com.wegas.app.pdf.uicomponent.GameModel", createTag = true,
+ * tagName = "GameModel", namespace ="http://www.albasim.ch/wegas/pdf") But still missing attributes
+ * definitions....
  */
 //@FacesComponent("com.wegas.app.pdf.uicomponent.GameModel")
 @FacesComponent(value = "com.wegas.app.pdf.uicomponent.GameModel", createTag = true, tagName = "Gamemodel", namespace = "http://www.albasim.ch/wegas/pdf")
-
 public class UIGameModel extends UIComponentBase {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private boolean editorMode;
+    public enum Mode {
+        PLAYER,
+        READER,
+        EDITOR,
+    }
+
+    private Mode mode;
     private boolean defaultValues;
     private boolean includeInactive;
     private I18nFacade i18nFacade;
@@ -94,10 +98,23 @@ public class UIGameModel extends UIComponentBase {
         Boolean displayPath = "true".equals((String) getAttributes().get("displayPath"));
         String[] roots;
 
-        boolean hasEditRightOnGameModel = SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gm.getId());
+        boolean hasEditRightOnGameModel = SecurityUtils.getSubject()
+            .isPermitted("GameModel:Edit:gm" + gm.getId());
         // editor mode and default values only allowedif current user has edit permission on gamemodel
         defaultValues = "true".equals(defVal) && hasEditRightOnGameModel;
-        editorMode = "editor".equals(modeParam) && hasEditRightOnGameModel;
+
+        if (modeParam != null) {
+            try {
+                this.mode = Mode.valueOf(modeParam.toUpperCase());
+            } catch (IllegalArgumentException ex) {
+                this.mode = Mode.PLAYER;
+            }
+        }
+
+        if (!hasEditRightOnGameModel || mode == null) {
+            this.mode = Mode.PLAYER;
+        }
+
         includeInactive = "true".equals(inactiveParam) && hasEditRightOnGameModel;
 
         ResponseWriter writer = context.getResponseWriter();
@@ -153,8 +170,7 @@ public class UIGameModel extends UIComponentBase {
         ArrayList<String> path = new ArrayList<>();
 
         /*
-         * when root is specified, do not print headers and start printing
-         * vardesc from root node
+         * when root is specified, do not print headers and start printing vardesc from root node
          */
         if (root == null || root.isEmpty()) {
             encodeGameModelHeader(context, writer, gm);
@@ -178,7 +194,8 @@ public class UIGameModel extends UIComponentBase {
                             break;
                         } else {
                             current = (VariableDescriptor) parent;
-                            path.add(getI18nFacade().interpolate(current.getLabel().translateOrEmpty(player), player));
+                            path.add(getI18nFacade().interpolate(current.getLabel()
+                                .translateOrEmpty(player), player));
                         }
                     }
                 }
@@ -189,7 +206,8 @@ public class UIGameModel extends UIComponentBase {
 
         if (!path.isEmpty()) {
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_FOLDER);
-            UIHelper.startSpan(writer, UIHelper.CSS_CLASS_VARIABLE_TITLE + "  wegas-pdf-listdescriptor");
+            UIHelper
+                .startSpan(writer, UIHelper.CSS_CLASS_VARIABLE_TITLE + "  wegas-pdf-listdescriptor");
             for (int i = path.size() - 1; i >= 0; i--) {
                 writer.write(path.get(i));
                 if (i > 0) {
@@ -200,7 +218,7 @@ public class UIGameModel extends UIComponentBase {
         }
 
         for (VariableDescriptor vd : vds) {
-            UIVariableDescriptor uiVd = new UIVariableDescriptor(vd, player, editorMode, defaultValues, includeInactive);
+            UIVariableDescriptor uiVd = new UIVariableDescriptor(vd, player, mode, defaultValues, includeInactive);
             uiVd.encodeAll(context);
         }
 
@@ -220,15 +238,15 @@ public class UIGameModel extends UIComponentBase {
      * @throws IOException
      */
     private void encodeGameModelHeader(FacesContext context, ResponseWriter writer, GameModel gm) throws IOException {
-        UIHelper.printPropertyTextArea(context, writer, "Description", gm.getDescription(), false, editorMode);
+        UIHelper
+            .printPropertyTextArea(context, writer, "Description", gm.getDescription(), false, mode == Mode.EDITOR);
 
         UIHelper.startSpan(writer, UIHelper.CSS_CLASS_MAIN_IMAGE);
+        //HtmlGraphicImage image = new HtmlGraphicImage();
+        //String imgSrc = "wegas-lobby/images/wegas-game-thumb.png";
 
-        HtmlGraphicImage image = new HtmlGraphicImage();
-        String imgSrc = "wegas-lobby/images/wegas-game-thumb.png";
-
-        image.setValue(imgSrc);
-        image.encodeAll(context);
+        //image.setValue(imgSrc);
+        //image.encodeAll(context);*/
         UIHelper.endSpan(writer);
     }
 }

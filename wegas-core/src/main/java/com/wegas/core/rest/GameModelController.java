@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -14,6 +14,10 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.cron.EjbTimerFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.jcr.content.ContentConnector;
+import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
+import com.wegas.core.jcr.helpers.PatchUtils;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.merge.patch.WegasPatch.PatchDiff;
 import com.wegas.core.persistence.AbstractEntity;
@@ -21,6 +25,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.tools.FindAndReplacePayload;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +37,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -88,6 +94,9 @@ public class GameModelController {
      */
     @Inject
     private EjbTimerFacade ejbTimerFacade;
+
+    @Inject
+    private JCRConnectorProvider jcrConnectorProvider;
 
     /**
      *
@@ -264,6 +273,20 @@ public class GameModelController {
     }
 
     /**
+     * Add a test player in the gameModel. The gamemodel must be a scenario or a model. A debug Game
+     * must exist. A debugTesm must exist
+     *
+     * @param gameModelId id of the gameModelId to add a testPlayer within
+     *
+     * @return the brand new test player
+     */
+    @POST
+    @Path("{gameModelId : [1-9][0-9]*}/ExtraTestPlayer")
+    public Player templateCreate(@PathParam("gameModelId") Long gameModelId) {
+        return gameModelFacade.addTestPlayer(gameModelId);
+    }
+
+    /**
      * EXPERIMENTAL
      * <p>
      * update default instance based on given player ones
@@ -334,9 +357,12 @@ public class GameModelController {
             gameModelFacade.createWithDebugGame(gameModel);
             return gameModel;
         } else if (details.getContentDisposition().getFileName().endsWith(".wgz")) {
-            try (ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
-                return gameModelFacade.unzip(zip);
+            try ( ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
+                return gameModelFacade.createFromWgz(zip);
             }
+        } else if (details.getContentDisposition().getFileName().endsWith(".zip")) {
+            // create from
+            throw new WegasIncompatibleType("Not Yet implemented");
         } else {
             throw new WegasIncompatibleType("Unknown file type");
         }
@@ -350,21 +376,36 @@ public class GameModelController {
         @FormDataParam("file") FormDataBodyPart details) throws IOException, RepositoryException {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
-        GameModel newVersion = null;
 
         if (details.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE)) {
-            newVersion = JacksonMapperProvider.getMapper().readValue(file, GameModel.class);
+            GameModel newVersion = JacksonMapperProvider.getMapper().readValue(file, GameModel.class);
+            if (newVersion != null) {
+                return gameModelFacade.patch(gameModel, newVersion);
+            }
         } else if (details.getContentDisposition().getFileName().endsWith(".wgz")) {
-            try (ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
-                newVersion = gameModelFacade.extractGameModelFromWGZ(zip);
+            try ( ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
+                GameModel newVersion = gameModelFacade.extractGameModelFromWGZ(zip);
+                if (newVersion != null) {
+                    return gameModelFacade.patch(gameModel, newVersion);
+                }
+            }
+        } else if (details.getContentDisposition().getFileName().endsWith(".zip")) {
+            try ( ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
+                GameModelFacade.RecombinedGameModel combined = gameModelFacade.extractFromExplodedZip(zip);
+                GameModel newVersion = combined.getGameModel();
+
+                if (newVersion != null) {
+                    // // clear libs name to allow renaming them
+                    // gameModel.getGameModel().getLibraries().forEach(lib -> lib.setContentKey(null));
+                    gameModel = gameModelFacade.patch(gameModel, newVersion);
+                    ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, WorkspaceType.FILES);
+                    PatchUtils.doPatch(combined, gameModel, connector);
+                    return gameModel;
+                }
             }
         }
 
-        if (gameModel != null && newVersion != null) {
-            return gameModelFacade.patch(gameModel, newVersion);
-        } else {
-            throw WegasErrorMessage.error("Nothing to patch...");
-        }
+        throw WegasErrorMessage.error("Nothing to patch...");
     }
 
     @PUT
@@ -376,12 +417,20 @@ public class GameModelController {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
         GameModel newVersion = null;
+        PatchDiff filesDiff = null;
 
         if (details.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE)) {
             newVersion = JacksonMapperProvider.getMapper().readValue(file, GameModel.class);
         } else if (details.getContentDisposition().getFileName().endsWith(".wgz")) {
-            try (ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
+            try ( ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
                 newVersion = gameModelFacade.extractGameModelFromWGZ(zip);
+            }
+        } else if (details.getContentDisposition().getFileName().endsWith(".zip")) {
+            try ( ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
+                GameModelFacade.RecombinedGameModel combined = gameModelFacade.extractFromExplodedZip(zip);
+                newVersion = combined.getGameModel();
+                ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, WorkspaceType.FILES);
+                filesDiff = PatchUtils.getFilesDiff(combined, connector);
             }
         }
 
@@ -391,7 +440,19 @@ public class GameModelController {
             newVersion.setName(gameModel.getName());
 
             WegasEntityPatch diff = new WegasEntityPatch(gameModel, newVersion, true);
-            return diff.diffForce();
+            PatchDiff gmDiff = diff.diffForce();
+            List<PatchDiff> list = new ArrayList<>();
+            if (gmDiff != null) {
+                list.add(gmDiff);
+            }
+            if (filesDiff != null) {
+                list.add(filesDiff);
+            }
+            if (!list.isEmpty()) {
+                return new WegasEntityPatch.DiffCollection("GameModel", list);
+            } else {
+                return null;
+            }
         } else {
             return null;
         }
@@ -410,8 +471,30 @@ public class GameModelController {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
 
-        StreamingOutput output = gameModelFacade.zip(gameModelId);
+        StreamingOutput output = gameModelFacade.archiveAsWGZ(gameModelId);
         String filename = URLEncoder.encode(gameModelFacade.find(gameModelId).getName().replaceAll("\\" + "s+", "_") + ".wgz", StandardCharsets.UTF_8.displayName());
+
+        return Response.ok(output, "application/zip").
+            header("content-disposition",
+                "attachment; filename="
+                + filename).build();
+    }
+
+    /**
+     * @param gameModelId
+     *
+     * @return ZIP export which contains the game model and its files
+     *
+     */
+    @GET
+    @Path("{gameModelId : [1-9][0-9]*}.zip")
+    public Response exportExplodedZIP(@PathParam("gameModelId") Long gameModelId) throws RepositoryException, UnsupportedEncodingException, CloneNotSupportedException {
+
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gameModel);
+
+        StreamingOutput output = gameModelFacade.archiveAsExplodedZip(gameModelId);
+        String filename = URLEncoder.encode(gameModelFacade.find(gameModelId).getName().replaceAll("\\" + "s+", "_") + ".zip", StandardCharsets.UTF_8.displayName());
 
         return Response.ok(output, "application/zip").
             header("content-disposition",
@@ -430,6 +513,12 @@ public class GameModelController {
     @Path("{entityId : [1-9][0-9]*}")
     public GameModel get(@PathParam("entityId") Long entityId) {
         return gameModelFacade.find(entityId);
+    }
+
+    @GET
+    @Path("ByIds/{ids}")
+    public List<GameModel> getByIds(@PathParam("ids") String ids) {
+        return getIdsFromString(ids).stream().map(id -> gameModelFacade.find(id)).collect(Collectors.toList());
     }
 
     @GET
@@ -651,6 +740,19 @@ public class GameModelController {
         return gameModelFacade.findAllFiredEvents(gameModelId);
     }
 
+    /**
+     * Find all quest defined in achievements of the given project
+     *
+     * @param gameModelId if of the gameModel
+     *
+     * @return set of quest name
+     */
+    @GET
+    @Path("{gameModelId: [1-9][0-9]*}/FindAllQuests")
+    public Set<String> findAllQuests(@PathParam("gameModelId") Long gameModelId) {
+        return gameModelFacade.findAllQuests(gameModelId);
+    }
+
     @GET
     @Path("{gameModelId: [1-9][0-9]*}/FindAllRefToFiles/{variableId: ([1-9][0-9]*)?}")
     public Set<String> findRefToFiles(
@@ -674,5 +776,18 @@ public class GameModelController {
     @Path("LiveEdition/{channel}")
     public void propagateLiveEdition(@PathParam("channel") String channel, AbstractEntity entity) {
         gameModelFacade.liveUpdate(channel, entity);
+    }
+
+    /**
+     * Get all permission linked to a gameModel
+     *
+     * @param gmId
+     *
+     * @return list of permission
+     */
+    @GET
+    @Path("Permissions/{gmId}")
+    public List<Permission> getPermission(@PathParam("gmId") Long gmId) {
+        return gameModelFacade.getPermissions(gmId);
     }
 }

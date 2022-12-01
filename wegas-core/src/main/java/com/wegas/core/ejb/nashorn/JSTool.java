@@ -2,16 +2,15 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb.nashorn;
 
 // !!! This is what jdk9+ version could be
 import com.wegas.core.exception.client.WegasRuntimeException;
-
 import java.util.Set;
-
+import jdk.nashorn.api.scripting.NashornException;
 import jdk.nashorn.api.tree.CompilationUnitTree;
 import jdk.nashorn.api.tree.DoWhileLoopTree;
 import jdk.nashorn.api.tree.ExpressionTree;
@@ -38,11 +37,24 @@ public class JSTool {
     }
 
     /**
+     * Insert
+     *
+     * @param script
+     *
+     * @return
+     */
+    public static String makeScriptInterruptible(String script) {
+        return JSTool.sanitize(script, "RequestManager.isInterrupted();");
+    }
+
+    /**
      * Convert code in String form to it's AST from. Nashorn's AST
      *
      * @param code source
      *
      * @return AST
+     * @throws NullPointerException if code is null
+     * @throws NashornException if parse fails
      */
     public static CompilationUnitTree parse(String code) {
 
@@ -199,16 +211,6 @@ public class JSTool {
             block.accept(this, null);
             res.insert(Math.toIntExact(block.getEndPosition() + off), "}");
             off += 1;
-        }
-    }
-
-    /**
-     * To be injected as {@value #JS_TOOL_INSTANCE_NAME} in the scriptEngine
-     */
-    public static class JSToolInstance {
-
-        public String inject(String code, String injection) {
-            return JSTool.sanitize(code, injection);
         }
     }
 

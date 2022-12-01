@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
@@ -28,7 +28,7 @@ public class DialogueTransition extends AbstractTransition {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Text", value = I18nHtmlView.class))
+            view = @View(label = "Text", value = I18nHtmlView.class, index = 500))
     private TranslatableContent actionText;
 
     /**

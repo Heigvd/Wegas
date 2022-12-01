@@ -1,8 +1,9 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -266,45 +267,51 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     }
 
     private void createCss(GameModel theModel, String uniqueToken) {
-        Map<String, GameModelContent> cssLibrary = theModel.getCssLibrary();
-
         GameModelContent css = new GameModelContent();
+        css.setLibraryType(GameModelContent.CSS);
         css.setContent(".model_rule { color: red}");
         css.setContentType("text/css");
         css.setVisibility(Visibility.INTERNAL);
-        cssLibrary.put("modelCss", css);
+        css.setContentKey("modelCss");
+        theModel.addLibrary(css);
 
         css = new GameModelContent();
+        css.setLibraryType(GameModelContent.CSS);
         css.setContent(".protected_rule { color: red}");
         css.setContentType("text/css");
         css.setVisibility(Visibility.PROTECTED);
-        cssLibrary.put("protectedCss", css);
+        css.setContentKey("protectedCss");
+        theModel.addLibrary(css);
 
         css = new GameModelContent();
+        css.setLibraryType(GameModelContent.CSS);
         css.setContent(".inherited_rule { color: red}");
         css.setContentType("text/css");
         css.setVisibility(Visibility.INHERITED);
-        cssLibrary.put("inheritedCss", css);
+        css.setContentKey("inheritedCss");
+        theModel.addLibrary(css);
 
         css = new GameModelContent();
+        css.setLibraryType(GameModelContent.CSS);
         css.setContent(".private_rule { color: red}");
         css.setContentType("text/css");
         css.setVisibility(Visibility.PRIVATE);
-        cssLibrary.put("privateCss", css);
+        css.setContentKey("privateCss");
+        theModel.addLibrary(css);
 
         css = new GameModelContent();
+        css.setLibraryType(GameModelContent.CSS);
         css.setContent(".private_rule { color: red}");
         css.setContentType("text/css");
         css.setVisibility(Visibility.PRIVATE);
-        cssLibrary.put("privateCss" + uniqueToken, css);
+        css.setContentKey("privateCss" + uniqueToken);
+        theModel.addLibrary(css);
 
-        theModel.setCssLibrary(cssLibrary);
     }
 
     private void updateCss(GameModel gm, String previousColor, String newColor) {
-        Map<String, GameModelContent> css = gm.getCssLibrary();
-        for (Entry<String, GameModelContent> entry : css.entrySet()) {
-            GameModelContent value = entry.getValue();
+        List<GameModelContent> styles = gm.getLibrariesAsList(GameModelContent.CSS);
+        for (GameModelContent value : styles) {
             value.setContent(value.getContent().replace(previousColor, newColor));
         }
         gameModelFacade.merge(gm);
@@ -452,7 +459,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         printLibraries(model);
 
         // restore model css visibilities
-        Map<String, GameModelContent> cssLibrary = model.getCssLibrary();
+        Map<String, GameModelContent> cssLibrary = model.getLibrariesAsMap(GameModelContent.CSS);
         for (Entry<String, GameModelContent> entry : cssLibrary.entrySet()) {
             String key = entry.getKey();
             GameModelContent value = entry.getValue();
@@ -483,9 +490,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         /**
          * ASSERTS
          */
-        Map<String, GameModelContent> modelCss = model.getCssLibrary();
-        Map<String, GameModelContent> gameModel1Css = gameModel1.getCssLibrary();
-        Map<String, GameModelContent> gameModel2Css = gameModel2.getCssLibrary();
+        Map<String, GameModelContent> modelCss = model.getLibrariesAsMap(GameModelContent.CSS);
+        Map<String, GameModelContent> gameModel1Css = gameModel1.getLibrariesAsMap(GameModelContent.CSS);
+        Map<String, GameModelContent> gameModel2Css = gameModel2.getLibrariesAsMap(GameModelContent.CSS);
 
         // modelCss and protected always set to model colour
         Assert.assertTrue(modelCss.get("modelCss").getContent().contains("red"));
@@ -521,9 +528,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-        modelCss = model.getCssLibrary();
-        gameModel1Css = gameModel1.getCssLibrary();
-        gameModel2Css = gameModel2.getCssLibrary();
+        modelCss = model.getLibrariesAsMap(GameModelContent.CSS);
+        gameModel1Css = gameModel1.getLibrariesAsMap(GameModelContent.CSS);
+        gameModel2Css = gameModel2.getLibrariesAsMap(GameModelContent.CSS);
 
         /**
          * ASSERTS
@@ -550,7 +557,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
     private String stringifyLibraries(GameModel gameModel) {
         StringBuilder sb = new StringBuilder();
-        for (Entry<String, Map<String, GameModelContent>> entry : gameModel.getLibraries().entrySet()) {
+        for (Entry<String, Map<String, GameModelContent>> entry : gameModel.getLibrariesAsMap().entrySet()) {
             String libraryName = entry.getKey();
             sb.append("  ").append(libraryName).append("\n");
             for (Entry<String, GameModelContent> content : entry.getValue().entrySet()) {
@@ -1314,7 +1321,6 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         /**
          * Change Y default value and move to root
-         * <p>
          */
         NumberDescriptor y1 = (NumberDescriptor) getDescriptor(model, "y");
 
@@ -1391,6 +1397,54 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         nd.getDefaultInstance().setValue(value);
 
         variableDescriptorFacade.update(nd.getId(), nd);
+    }
+
+    @Test
+    public void testItemsOrder() throws RepositoryException, WegasNoResultException, CloneNotSupportedException {
+        GameModel model = new GameModel();
+
+        model.setName("The Model");
+        model.setType(GameModel.GmType.MODEL);
+        gameModelFacade.createWithDebugGame(model);
+
+        ListDescriptor folder = wegasFactory.createList(model, model, "aFolder", "");
+        folder.setVisibility(Visibility.INHERITED);
+        variableDescriptorFacade.update(folder.getId(), folder);
+
+        NumberDescriptor third = wegasFactory.createNumberDescriptor(model, folder, "third", "third", Visibility.INHERITED, null, null, 3.0);
+
+        modelFacade.propagateModel(model.getId());
+
+        GameModel scenario = gameModelFacade.createScenarioWithDebugGame(model.getId());
+
+        ListDescriptor folder_gm1 = (ListDescriptor) scenario.getChildVariableDescriptors().get(0);
+        folder_gm1.getItems();
+
+        Assert.assertEquals(1, folder_gm1.getItems().size());
+
+        NumberDescriptor second = wegasFactory.createNumberDescriptor(model, folder, "second", "second", Visibility.INHERITED, null, null, 2.0);
+        NumberDescriptor first = wegasFactory.createNumberDescriptor(model, folder, "first", "first", Visibility.INHERITED, null, null, 1.0);
+
+        variableDescriptorFacade.move(second.getId(), folder.getId(), 0);
+        variableDescriptorFacade.move(first.getId(), folder.getId(), 0);
+
+        modelFacade.propagateModel(model.getId());
+
+        folder_gm1 = (ListDescriptor) variableDescriptorFacade.find(folder_gm1.getId());
+        Assert.assertEquals(3, folder_gm1.getItems().size());
+
+        Assert.assertEquals("first", folder_gm1.getItems().get(0).getName());
+        Assert.assertEquals("second", folder_gm1.getItems().get(1).getName());
+        Assert.assertEquals("third", folder_gm1.getItems().get(2).getName());
+
+        jpaCacheHelper.clearCacheLocal();
+
+        folder_gm1 = (ListDescriptor) variableDescriptorFacade.find(folder_gm1.getId());
+        Assert.assertEquals(3, folder_gm1.getItems().size());
+
+        Assert.assertEquals("first", folder_gm1.getItems().get(0).getName());
+        Assert.assertEquals("second", folder_gm1.getItems().get(1).getName());
+        Assert.assertEquals("third", folder_gm1.getItems().get(2).getName());
     }
 
     @Test

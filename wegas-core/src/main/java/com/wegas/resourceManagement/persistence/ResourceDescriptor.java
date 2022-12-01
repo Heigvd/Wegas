@@ -2,12 +2,13 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
 
 import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
@@ -158,7 +159,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      *
      * @return value matching the key from given player's instance, cast to double, or Double.NaN
      */
-    @Scriptable(label = "get number property")
+    @Scriptable(label = "get number property", dependsOn = DependencyScope.SELF)
     public double getNumberInstanceProperty(Player p, String key) {
         String value = this.getInstance(p).getProperty(key);
         double parsedValue;
@@ -177,7 +178,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      *
      * @return value matching the key from given player's instance
      */
-    @Scriptable(label = "get text property")
+    @Scriptable(label = "get text property", dependsOn = DependencyScope.SELF)
     public String getStringInstanceProperty(Player p, String key) {
         return this.getInstance(p).getProperty(key);
     }
@@ -198,7 +199,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      * @param key
      * @param value
      */
-    @Scriptable(label = "add to property")
+    @Scriptable(label = "add to property", dependsOn = DependencyScope.NONE)
     public void addNumberAtInstanceProperty(Player p,
         @Param(view = @View(label = "Key")) String key,
         @Param(view = @View(label = "Value")) String value) {
@@ -217,7 +218,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      * @param time
      * @param editable
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void addOccupation(Player p,
         @Param(view = @View(label = "period")) int time,
         @Param(view = @View(label = "editable")) Boolean editable) {
@@ -348,7 +349,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      *
      * @return true is the player's resourceInstance is active
      */
-    @Scriptable(label = "is active")
+    @Scriptable(label = "is active", dependsOn = DependencyScope.SELF)
     public boolean getActive(Player p) {
         ResourceInstance instance = this.getInstance(p);
         return instance.getActive();
@@ -368,7 +369,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void activate(Player p) {
         this.setActive(p, true);
     }
@@ -382,7 +383,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
         this.deactivate(p);
     }
 
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void deactivate(Player p) {
         this.setActive(p, false);
     }

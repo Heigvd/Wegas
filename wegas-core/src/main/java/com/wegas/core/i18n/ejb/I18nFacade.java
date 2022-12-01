@@ -3,7 +3,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.i18n.ejb;
@@ -69,7 +69,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.naming.NamingException;
-import org.glassfish.jersey.internal.util.ReflectionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1198,10 +1197,10 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
     /**
      * Copy translation from one set of mergeables to another one
      *
-     * @param target       entiy to update
+     * @param target       entity to update
      * @param source       entity to fetch translations in
      * @param sourceRef    code of the language to copy from the source
-     * @param languageCode code og the language to set in the target
+     * @param languageCode code of the language to set in the target
      */
     public void importTranslations(Mergeable target, Mergeable source, Mergeable sourceRef, String languageCode) {
         MergeHelper.visitMergeable(target, Boolean.TRUE, new TranslationsImporter(languageCode, this), source, sourceRef);

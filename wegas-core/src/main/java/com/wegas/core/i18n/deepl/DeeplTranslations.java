@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.i18n.deepl;
@@ -19,6 +19,11 @@ public class DeeplTranslations {
 
     private List<DeeplTranslation> translations;
 
+    @JsonProperty("@class")
+    public String getJSONClassName() {
+        return this.getClass().getSimpleName();
+    }
+
     public List<DeeplTranslation> getTranslations() {
         return translations;
     }
@@ -33,6 +38,11 @@ public class DeeplTranslations {
 
         @JsonProperty("detected_source_language")
         private String lang;
+
+        @JsonProperty("@class")
+        public String getJSONClassName() {
+            return this.getClass().getSimpleName();
+        }
 
         public String getText() {
             return text;

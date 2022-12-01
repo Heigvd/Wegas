@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -144,6 +144,7 @@ public class HistoryController {
      */
     @GET
     @Path("Restore/{path: .*}")
+    @Produces(MediaType.APPLICATION_JSON)
     public GameModel restoreVersion(@PathParam("gameModelId") Long gameModelId,
         @PathParam("path") String path) throws IOException {
 
@@ -161,11 +162,16 @@ public class HistoryController {
      */
     @GET
     @Path("CreateFromVersion/{path: .*}")
+    @Produces(MediaType.APPLICATION_JSON)
     public GameModel createFromVersion(@PathParam("gameModelId") Long gameModelId,
         @PathParam("path") String path) throws IOException {
 
         GameModel original = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(original);
+
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
 
         // Retrieve file from content repository
         InputStream file = jcrFacade.getFile(original, WorkspaceType.HISTORY, path);

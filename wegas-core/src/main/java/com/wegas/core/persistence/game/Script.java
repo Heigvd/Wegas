@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -25,7 +25,7 @@ import javax.persistence.Transient;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Embeddable
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "@class")
 public class Script implements Serializable, Mergeable {
 
     private static final long serialVersionUID = 1L;
@@ -135,6 +135,6 @@ public class Script implements Serializable, Mergeable {
 
     @Override
     public String toString() {
-        return "ScriptEntity(" + "language:" + this.language + ", content:{\n" + this.content + "\n})";
+        return "Script(" + "language:" + this.language + ", content:{\n" + this.content + "\n})";
     }
 }

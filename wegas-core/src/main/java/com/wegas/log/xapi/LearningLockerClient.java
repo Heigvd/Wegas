@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.log.xapi;
@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +94,16 @@ public class LearningLockerClient {
     }
 
     /**
+     * Convert ...args to list
+     *
+     * @param values
+     * @return a list
+     */
+    public static List l(Object... values) {
+        return Arrays.stream(values).collect(Collectors.toList());
+    }
+
+    /**
      * Transform list of key value into a Map.
      * <p>
      * One could use Map.of but such method is limited to 10 entries
@@ -129,7 +140,7 @@ public class LearningLockerClient {
 
         // make sure to fetch statement for correct source
         newPipeLine.add(m("$match", m("statement.actor.account.homePage", homePage)));
-        newPipeLine.addAll(List.of((Map<String, Object>[]) pipeline));
+        newPipeLine.addAll(l((Map<String, Object>[]) pipeline));
 
         params.add(new BasicNameValuePair("pipeline", mapper.writeValueAsString(newPipeLine)));
 
@@ -176,7 +187,7 @@ public class LearningLockerClient {
     }
 
     public static Map matchAll(Map... ands) {
-        return matchAll(List.of((Map[]) ands));
+        return matchAll(l((Map[]) ands));
     }
 
     public static Map matchAll(List<Map> ands) {
@@ -188,11 +199,11 @@ public class LearningLockerClient {
     }
 
     public static Map equals(Object key, Object value) {
-        return m("$eq", List.of(key, value));
+        return m("$eq", l(key, value));
     }
 
     public static Map and(Map... ands) {
-        return and(List.of((Map[]) ands));
+        return and(l((Map[]) ands));
     }
 
     public static Map and(List<Map> ands) {
@@ -200,7 +211,7 @@ public class LearningLockerClient {
     }
 
     public static Map or(Map... ors) {
-        return or(List.of((Map[]) ors));
+        return or(l((Map[]) ors));
     }
 
     public static Map or(List<Map> or) {
@@ -213,14 +224,14 @@ public class LearningLockerClient {
 
     public static Map lastPart(Object value, String delimiter) {
         return m("$arrayElemAt",
-            List.of(m("$split", List.of(value, delimiter)),
+            l(m("$split", l(value, delimiter)),
                 -1
             )
         );
     }
 
     public static Map elemAt(Object value, int index) {
-        return m("$arrayElemAt", List.of(value, index)
+        return m("$arrayElemAt", l(value, index)
         );
     }
 
@@ -288,7 +299,7 @@ public class LearningLockerClient {
             m("$project", m("_id", lastPart(elemAt(m("$filter",
                 m("input", "$_id",
                     "as", "item",
-                    "cond", equals(m("$substrCP", List.of("$$item", 0, 22)),
+                    "cond", equals(m("$substrCP", l("$$item", 0, 22)),
                         "internal://wegas/game/"
                     )
                 )
@@ -314,7 +325,7 @@ public class LearningLockerClient {
      */
     public List<ProjectedStatement> getStatements(String logId, List<Long> gameIds, String activityPattern) throws IOException {
 
-        List<Map> ands = List.of(
+        List<Map> ands = l(
             equals(LOG_ID, Xapi.LOG_ID_PREFIX + logId),
             getByAnyGamesFilter(gameIds)
         );
@@ -330,7 +341,7 @@ public class LearningLockerClient {
     }
 
     public List<ProjectedStatement> getStatementsByTeams(String logId, List<Long> teamsIds, String activityPattern) throws IOException {
-        List<Map> ands = List.of(
+        List<Map> ands = l(
             equals(LOG_ID, Xapi.LOG_ID_PREFIX + logId),
             getByAnyTeamsFilter(teamsIds)
         );

@@ -1,9 +1,8 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.ejb;
@@ -243,9 +242,9 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
             /*
              * Real Game: evict test or "ghost" instance(s)
              *
-             * In case peerreview variable is game/gameModel scoped, there will be only one
-             * instance for the whole game and such an instance will be evicted.... For the
-             * time, it sounds like OK since such a review seems useless
+             * In case peerreview variable is game/gameModel scoped, there will be only one instance
+             * for the whole game and such an instance will be evicted.... For the time, it sounds
+             * like OK since such a review seems useless
              */
             for (Game game : prd.getGameModel().getGames()) {
                 for (Team team : game.getTeams()) {
@@ -254,8 +253,10 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
                             // 1 instance per team: evict empty team instances
                             TeamScope tScope = (TeamScope) scope;
                             PeerReviewInstance instance = (PeerReviewInstance) variableInstanceFacade.getTeamInstance(tScope, team);
-                            if (team.getPlayers().isEmpty() || team instanceof DebugTeam) {
-                                // Discared instance
+
+                            if (team.getAnyLivePlayer() == null || team instanceof DebugTeam) {
+                                // if team is a debug team or the team does not contain any LIVE
+                                // player, discard this instance
                                 instance.setReviewState(PeerReviewDescriptor.ReviewingState.DISCARDED);
                                 variableInstanceFacade.merge(instance);
                                 touched.add(instance);
@@ -357,10 +358,8 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
             }
         }
 
-        /*for (PeerReviewInstance pri : pris) {
-            variableInstanceFacade.merge(pri);
-            em.flush();
-        }*/
+        /* for (PeerReviewInstance pri : pris) { variableInstanceFacade.merge(pri); em.flush();
+        } */
         return touched;
     }
 
@@ -428,16 +427,14 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
         PeerReviewInstance reviewer = review.getReviewer();
 
         /*
-         * if author is posting and only if review state is notified:
-         * update comments only
+         * if author is posting and only if review state is notified: update comments only
          */
         if (pri == author && review.getReviewState() == Review.ReviewState.NOTIFIED) {
             mergeEvaluations(other.getComments());
         }
 
         /*
-         * if reviewer is posting and only if review state is dispatched:
-         * update evaluation
+         * if reviewer is posting and only if review state is dispatched: update evaluation
          */
         if (pri == reviewer && review.getReviewState() == Review.ReviewState.DISPATCHED) {
             mergeEvaluations(other.getFeedback());

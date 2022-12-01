@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global Variable, self, gameModel, Event, Java, com, QuestionFacade, I18n */
@@ -105,7 +105,7 @@ var WegasHelper = (function() {
 
     // JSON view of a Wegas "object" (i.e. a hashmap).
     // Handles nested objects as well, i.e. when the value is a string representation of a JSON object.
-    function getObjectContent(objectInstance, objectName, teamName) {
+    function getObjectContent(objectInstance) {
         var list = {},
             props = objectInstance.getProperties(),
             n = 0;
@@ -117,7 +117,7 @@ var WegasHelper = (function() {
             }
             n++;
         }
-        return {"title": teamName + ": " + objectName, "body": JSON.stringify(list), "empty": n === 0};
+        return list;
     }
 
 

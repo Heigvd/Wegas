@@ -2,12 +2,13 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.persistence;
 
 import ch.albasim.wegas.annotations.CommonView;
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.IMergeable;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
@@ -21,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.annotations.WegasConditions.And;
 import com.wegas.core.persistence.annotations.WegasConditions.Equals;
 import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
@@ -40,10 +42,10 @@ import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.One;
 import com.wegas.editor.ValueGenerators.Zero;
+import com.wegas.editor.Visible;
 import com.wegas.editor.view.Hidden;
 import com.wegas.editor.view.I18nHtmlView;
 import com.wegas.editor.view.NumberView;
-import com.wegas.editor.Visible;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +58,6 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
 /**
@@ -89,28 +90,29 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      */
     @OneToMany(mappedBy = "choiceDescriptor", cascade = CascadeType.ALL, orphanRemoval = true)
     //    @OrderBy("id")
-    @OrderColumn
+    //@OrderColumn
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(callback = ResultMergeCallback.class,
-            proposal = EmptyArray.class,
-            optional = false, nullable = false,
-            view = @View(
-                    value = Hidden.class,
-                    label = ""
-            ))
+        proposal = EmptyArray.class,
+        optional = false, nullable = false,
+        view = @View(
+            index = 5,
+            value = Hidden.class,
+            label = ""
+        ))
     private List<Result> results = new ArrayList<>();
     /**
      *
      */
     @OneToOne(cascade = CascadeType.ALL)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(
-                    index = 1,
-                    label = "Description",
-                    value = I18nHtmlView.class
-            ))
+        optional = false, nullable = false, proposal = EmptyI18n.class,
+        view = @View(
+            index = 1,
+            label = "Description",
+            value = I18nHtmlView.class
+        ))
     private TranslatableContent description;
 
     /**
@@ -128,10 +130,10 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * Total number of replies allowed. No default value.
      */
     @WegasEntityProperty(view = @View(
-            index = 2,
-            label = "Max. number replies",
-            value = NumberView.WithInfinityPlaceholder.class,
-            layout = CommonView.LAYOUT.shortInline
+        index = 10,
+        label = "Max. number replies",
+        value = NumberView.WithInfinityPlaceholder.class,
+        layout = CommonView.LAYOUT.shortInline
     ))
     @Visible(IsNotQuestionCbxOrMaxEqOne.class)
     private Integer maxReplies = null;
@@ -154,7 +156,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void setCurrentResult(Player player, String resultName) throws WegasNoResultException {
         ChoiceInstance instance = this.getInstance(player);
         Result resultByName = getResultByName(resultName);
@@ -183,7 +185,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public Result getResultByName(String name) throws WegasNoResultException {
-        for (Result r : this.getResults()) {
+        for (Result r : this.getRawResults()) {
             if (r.getName().equals(name)) {
                 return r;
             }
@@ -195,7 +197,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void activate(Player p) {
         this.getInstance(p).activate();
     }
@@ -209,7 +211,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         this.deactivate(p);
     }
 
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void deactivate(Player p) {
         this.getInstance(p).deactivate();
     }
@@ -263,6 +265,14 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * @return the results
      */
     public List<Result> getResults() {
+        return Helper.copyAndSortModifiable(this.results, new EntityComparators.OrderComparator<>());
+    }
+
+    /**
+     * @return the results
+     */
+    @JsonIgnore
+    public List<Result> getRawResults() {
         return results;
     }
 
@@ -271,8 +281,10 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      */
     public void setResults(List<Result> results) {
         if (results != null) {
+            int i=0;
             for (Result r : results) {
                 r.setChoiceDescriptor(this);
+                r.setIndex(i++);
             }
         }
         this.results = results;
@@ -284,7 +296,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * @param p <p>
      * @return player instance active status
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean isActive(Player p) {
         return this.getInstance(p).getActive();
     }
@@ -298,7 +310,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @return true only if the choice is not selectable any longer
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean hasBeenIgnored(Player p) {
         // Is there any not ignored validated reply link to this choice
         for (Reply r : this.getInstance(p).getReplies(Boolean.TRUE)) {
@@ -322,14 +334,14 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     }
 
     /**
-     * Is the choice selectable.
-     * This method only cares about the choice itself not the whole question.
-     * It means is will return true even when the question is no longer answerable
+     * Is the choice selectable. This method only cares about the choice itself not the whole
+     * question. It means is will return true even when the question is no longer answerable
      *
      * @param p
      *
      * @return
      */
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean isSelectable(Player p) {
         if (this.getMaxReplies() != null) {
             // maximum limit reached ?
@@ -343,8 +355,8 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * has the choice not (yet) been validated ? <br>
      * Such a case happened for
      * <ul>
-     * <li>MCQ Questions, after the question has been validated, for all
-     * unselected choices, or before the validation, for all choices</li>
+     * <li>MCQ Questions, after the question has been validated, for all unselected choices, or
+     * before the validation, for all choices</li>
      * <li>Standard question, if the choice is not linked to any validated reply </li>
      * </ul>
      *
@@ -352,7 +364,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @return return true if this choice can be selected by the player
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean hasNotBeenSelected(Player p) {
         return !this.hasBeenSelected(p);
     }
@@ -362,10 +374,9 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * <p>
      * @param p the player
      * <p>
-     * @return true if one or more question replies referencing this choice
-     *         exist
+     * @return true if one or more question replies referencing this choice exist
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean hasBeenSelected(Player p) {
         for (Reply r : this.getInstance(p).getReplies(Boolean.TRUE)) {
             if (!r.getIgnored()) {
@@ -380,8 +391,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * <p>
      * @param p      the player
      * @param result <p>
-     * @return true if one or more question reply referencing the given result
-     *         exist
+     * @return true if one or more question reply referencing the given result exist
      */
     public boolean hasResultBeenApplied(Player p, Result result) {
         for (Reply r : this.getInstance(p).getReplies()) {
@@ -398,12 +408,11 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * @param p          the player
      * @param resultName result name
      * <p>
-     * @return true if one or more question reply referencing the given result
-     *         exist
+     * @return true if one or more question reply referencing the given result exist
      *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean hasResultBeenApplied(Player p, String resultName) throws WegasNoResultException {
         return this.hasResultBeenApplied(p, this.getResultByName(resultName));
     }
@@ -516,16 +525,16 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
 
         public IsNotQuestionCbxOrMaxEqOne() {
             super(new Or(
-                    new And(
-                            // choice is answerable only once in CBX questions
-                            new IsDefined(new Field(QuestionDescriptor.class, "cbx")),
-                            new IsTrue(new Field(QuestionDescriptor.class, "cbx"))
-                    ),
-                    new And(
-                            // choice is answerable only once if global max is one
-                            new IsDefined(new Field(QuestionDescriptor.class, "maxReplies")),
-                            new Equals(new Field(QuestionDescriptor.class, "maxReplies"), new Const(1))
-                    )
+                new And(
+                    // choice is answerable only once in CBX questions
+                    new IsDefined(new Field(QuestionDescriptor.class, "cbx")),
+                    new IsTrue(new Field(QuestionDescriptor.class, "cbx"))
+                ),
+                new And(
+                    // choice is answerable only once if global max is one
+                    new IsDefined(new Field(QuestionDescriptor.class, "maxReplies")),
+                    new Equals(new Field(QuestionDescriptor.class, "maxReplies"), new Const(1))
+                )
             )
             );
         }

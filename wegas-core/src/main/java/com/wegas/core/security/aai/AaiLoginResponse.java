@@ -2,15 +2,18 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.aai;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * @author jarle.hulaas@heig-vd.ch on 07.03.2017.
  */
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class AaiLoginResponse {
     private String message;
     private boolean ok;

@@ -2,12 +2,13 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
 
 import static ch.albasim.wegas.annotations.CommonView.LAYOUT.shortInline;
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
@@ -23,8 +24,8 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.EmptyMap;
-import com.wegas.editor.view.HashListView;
 import com.wegas.editor.jsonschema.ListOfTasksSchema;
+import com.wegas.editor.view.HashListView;
 import com.wegas.editor.view.I18nHtmlView;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -51,9 +52,9 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @Table(
-        indexes = {
-            @Index(columnList = "description_id")
-        }
+    indexes = {
+        @Index(columnList = "description_id")
+    }
 )
 public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements Propertable {
 
@@ -65,8 +66,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Description", value = I18nHtmlView.class))
+        optional = false, nullable = false, proposal = EmptyI18n.class,
+        view = @View(label = "Description", value = I18nHtmlView.class))
     private TranslatableContent description;
 
     /**
@@ -74,8 +75,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      */
     @Column(length = 24)
     @WegasEntityProperty(
-            optional = false, nullable = false,
-            view = @View(label = "Task Number", layout = shortInline, index = -471))
+        optional = false, nullable = false,
+        view = @View(label = "Task Number", layout = shortInline, index = -471))
     private String index;
     /**
      *
@@ -83,18 +84,18 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     @ElementCollection
     @JsonIgnore
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyMap.class,
-            view = @View(label = "Descriptor properties", value = HashListView.class))
+        optional = false, nullable = false, proposal = EmptyMap.class,
+        view = @View(label = "Descriptor properties", value = HashListView.class))
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
      */
     @ManyToMany
     @JoinTable(
-            joinColumns = {
-                @JoinColumn(name = "taskdescriptor_id")},
-            inverseJoinColumns = {
-                @JoinColumn(name = "predecessor_id")})// prevent change in the db
+        joinColumns = {
+            @JoinColumn(name = "taskdescriptor_id")},
+        inverseJoinColumns = {
+            @JoinColumn(name = "predecessor_id")})// prevent change in the db
     @JsonIgnore
     private List<TaskDescriptor> predecessors = new ArrayList<>();
     /*
@@ -108,12 +109,12 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      */
     @Transient
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Predecessors"),
-            schema = ListOfTasksSchema.class)
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(label = "Predecessors"),
+        schema = ListOfTasksSchema.class)
     private Set<String> predecessorNames/*
-             * = new ArrayList<>()
-             */;
+         * = new ArrayList<>()
+         */;
 
     @JsonIgnore
     @Override
@@ -222,7 +223,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      * @return double castes player instance property
      */
-    @Scriptable(label = "Get number property")
+    @Scriptable(label = "Get number property", dependsOn = DependencyScope.SELF)
     public double getNumberInstanceProperty(Player p, String key) {
         String value = this.getInstance(p).getProperty(key);
         double parsedValue;
@@ -241,7 +242,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      * @return player instance string property
      */
-    @Scriptable(label = "Get text property")
+    @Scriptable(label = "Get text property", dependsOn = DependencyScope.SELF)
     public String getStringInstanceProperty(Player p, String key) {
         return this.getInstanceProperty(p, key);
     }
@@ -264,10 +265,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @param key
      * @param value
      */
-    @Scriptable(label = "Set property")
+    @Scriptable(label = "Set property", dependsOn = DependencyScope.NONE)
     public void setInstanceProperty(Player p,
-            @Param(view = @View(label = "Key")) String key,
-            @Param(view = @View(label = "Value")) String value) {
+        @Param(view = @View(label = "Key")) String key,
+        @Param(view = @View(label = "Value")) String value) {
         // TODO: fire property change
         this.getInstance(p).setProperty(key, value);
     }
@@ -278,10 +279,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @param key
      * @param value
      */
-    @Scriptable(label = "Add to property")
+    @Scriptable(label = "Add to property", dependsOn = DependencyScope.NONE)
     public void addNumberAtInstanceProperty(Player p,
-            @Param(view = @View(label = "Key")) String key,
-            @Param(view = @View(label = "Value")) String value) {
+        @Param(view = @View(label = "Key")) String key,
+        @Param(view = @View(label = "Value")) String value) {
         try {
             TaskInstance instance = this.getInstance(p);
             double oldValue = instance.getPropertyD(key);
@@ -365,7 +366,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      * @return true if the player instance is active
      */
-    @Scriptable(label = "is active")
+    @Scriptable(label = "is active", dependsOn = DependencyScope.SELF)
     public boolean getActive(Player p) {
         TaskInstance instance = this.getInstance(p);
         return instance.getActive();
@@ -385,7 +386,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      * @param p
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void activate(Player p) {
         this.setActive(p, true);
     }
@@ -399,7 +400,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
         this.deactivate(p);
     }
 
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void deactivate(Player p) {
         this.setActive(p, false);
     }
@@ -470,8 +471,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
         /*
          * if (this.getDefaultInstance().getIterations() == null ||
          * this.getDefaultInstance().getIterations().isEmpty()) {
-         * this.getDefaultInstance().setIterations(iterations);
-         * }
+         * this.getDefaultInstance().setIterations(iterations); }
          */
     }
 

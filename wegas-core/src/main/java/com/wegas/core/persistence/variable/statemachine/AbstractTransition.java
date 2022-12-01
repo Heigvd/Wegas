@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
@@ -17,29 +17,45 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.WegasConditions.Equals;
+import com.wegas.core.persistence.annotations.WegasRefs;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyScript;
 import com.wegas.editor.ValueGenerators.Zero;
+import com.wegas.editor.Visible;
+import com.wegas.editor.view.ArrayView;
 import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.ManualOrAutoSelectView;
 import com.wegas.editor.view.NumberView;
 import com.wegas.editor.view.ScriptView;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -60,9 +76,23 @@ import javax.persistence.Version;
     }
 )
 @JsonIgnoreProperties({"stateId"})
-public abstract class AbstractTransition extends AbstractEntity {
+public abstract class AbstractTransition extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Strategy to detect the variables this transition depends on
+     */
+    public enum DependsOnStrategy {
+        /**
+         * Default. Try to detect dependencies by parsing the script
+         */
+        AUTO,
+        /**
+         * Manual mode: list must be set by hand
+         */
+        MANUAL,
+    };
 
     /**
      *
@@ -73,7 +103,7 @@ public abstract class AbstractTransition extends AbstractEntity {
     private Long id;
 
     @Version
-    @Column(columnDefinition = "bigint default '0'::bigint")
+    @Column(columnDefinition = "bigint default 0::bigint")
     @WegasEntityProperty(
         nullable = false, optional = false, proposal = Zero.class,
         sameEntityOnly = true, view = @View(
@@ -118,8 +148,8 @@ public abstract class AbstractTransition extends AbstractEntity {
     })
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(
-        nullable = false, optional = false, proposal = EmptyScript.class,
-        view = @View(label = "Impact", value = ScriptView.Impact.class))
+        nullable = true, optional = true, proposal = EmptyScript.class,
+        view = @View(label = "Impact(s)", value = ScriptView.Impact.class, index = 604))
     private Script preStateImpact;
 
     /**
@@ -127,9 +157,36 @@ public abstract class AbstractTransition extends AbstractEntity {
      */
     @Embedded
     @WegasEntityProperty(
-        nullable = false, optional = false, proposal = EmptyScript.class,
-        view = @View(label = "Condition", value = ScriptView.Condition.class))
+        nullable = true, optional = true, proposal = EmptyScript.class,
+        view = @View(label = "Condition(s)", value = ScriptView.Condition.class, index = 603))
     private Script triggerCondition;
+
+    /**
+     * DependsOn strategy
+     */
+    @WegasEntityProperty(
+        nullable = false,
+        view = @View(
+            label = "Depends on strategy",
+            value = ManualOrAutoSelectView.class,
+            index = 602
+        ))
+    @Column(length = 10, columnDefinition = "character varying(10) default 'AUTO'::character varying")
+    @Enumerated(value = EnumType.STRING)
+    private DependsOnStrategy dependsOnStrategy = DependsOnStrategy.AUTO;
+
+    /**
+     * List of variable the condition depends on. Empty means the condition MUST be evaluated in all
+     * cases.
+     */
+    @OneToMany(mappedBy = "transition", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty(
+        optional = false, nullable = false,
+        proposal = EmptyArray.class,
+        view = @View(label = "Depends on", value = ArrayView.Highlight.class)
+    )
+    @Visible(IsManual.class)
+    private Set<TransitionDependency> dependencies = new HashSet<>();
 
     @Override
     public Long getId() {
@@ -223,6 +280,48 @@ public abstract class AbstractTransition extends AbstractEntity {
         this.touchTriggerCondition();
     }
 
+    /**
+     * get dependsOn strategy
+     *
+     * @return manual or auto ?
+     */
+    public DependsOnStrategy getDependsOnStrategy() {
+        return dependsOnStrategy;
+    }
+
+    /**
+     * Set dependsOn strategy
+     *
+     * @param dependsOnStrategy the new strategy
+     */
+    public void setDependsOnStrategy(DependsOnStrategy dependsOnStrategy) {
+        this.dependsOnStrategy = dependsOnStrategy;
+    }
+
+    /**
+     * get all dependencies
+     *
+     * @return list of deps
+     */
+    public Set<TransitionDependency> getDependencies() {
+        return dependencies;
+    }
+
+    /**
+     * Set list of dependencies
+     *
+     * @param dependencies lsit of dependencies
+     */
+    public void setDependencies(Set<TransitionDependency> dependencies) {
+        this.dependencies = dependencies;
+        if (this.dependencies != null) {
+            for (var dep : this.dependencies) {
+                dep.setTransition(this);
+                dep.registerInVariable();
+            }
+        }
+    }
+
     public Long getVersion() {
         return version;
     }
@@ -242,13 +341,32 @@ public abstract class AbstractTransition extends AbstractEntity {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        // same as the state (including the translator right) see issue #1441
-        return this.getState().getRequieredUpdatePermission();
+    public Map<String, List<AbstractEntity>> getEntities() {
+        return this.getState().getEntities();
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getState().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        // same as the state (including the translator right) see issue #1441
+        return this.getState().getRequieredUpdatePermission(context);
     }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return this.getState().getRequieredReadPermission(context);
+    }
+
+    /**
+     * Form condition to toggle display of conditions
+     */
+    public static class IsManual extends Equals {
+
+        public IsManual() {
+            super(
+                new WegasRefs.Field(null, "dependsOnStrategy"),
+                new WegasRefs.Const(DependsOnStrategy.MANUAL)
+            );
+        }
+    }
+
 }

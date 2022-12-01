@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -10,7 +10,7 @@ package com.wegas.core.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
+import com.hazelcast.cp.lock.FencedLock;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PageFacade;
@@ -101,7 +101,7 @@ public class PageController {
         throws RepositoryException {
 
         GameModel gm = gameModelFacade.find(gameModelId);
-        requestManager.assertUpdateRight(gm);
+        requestManager.assertReadRight(gm);
 
         return Response.ok(gm.getPages(), MediaType.APPLICATION_JSON).header("Page", "*").build();
     }
@@ -220,7 +220,7 @@ public class PageController {
     }
 
     /**
-     * @param gameModelId 
+     * @param gameModelId
      * @param payload contains the path of the item to delete
      *
      * @throws RepositoryException
@@ -281,7 +281,7 @@ public class PageController {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
 
-        final ILock gameModelLock = hzInstance.getLock("page-" + gameModelId);
+        final FencedLock gameModelLock = hzInstance.getCPSubsystem().getLock("page-" + gameModelId);
         gameModelLock.lock();
         try {
             PageIndex newIndex = pageFacade.createIndexItem(gm, payload);
@@ -313,7 +313,7 @@ public class PageController {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
 
-        final ILock gameModelLock = hzInstance.getLock("page-" + gameModelId);
+        final FencedLock gameModelLock = hzInstance.getCPSubsystem().getLock("page-" + gameModelId);
         gameModelLock.lock();
         try {
             Page page = pageFacade.duplicatePage(gm, pageId);

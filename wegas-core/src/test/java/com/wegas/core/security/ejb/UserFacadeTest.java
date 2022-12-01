@@ -1,8 +1,9 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.ejb;
@@ -50,6 +51,8 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
 
     @Inject
     private EjbTimerFacade ejbTimerFacade;
+
+    @Inject SecurityTestFacade securityTestFacade;
 
     @Before
     public void setUp() throws Exception {
@@ -280,5 +283,10 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
         dumb.getPassword();
         WegasUser dumber = new WegasUser(dumb.getUser(), "dumb@local", "123abcde");
         this.login(dumber);
+    }
+
+    @Test
+    public void testSu() {
+        securityTestFacade.inFacadeSuTest(admin.getUser(), u.getUser());
     }
 }

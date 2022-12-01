@@ -1,8 +1,9 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.ejb;
@@ -12,6 +13,7 @@ import com.wegas.core.api.QuestionDescriptorFacadeI;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
+import static com.wegas.core.ejb.RequestManager.RequestContext.INTERNAL_SCRIPT;
 import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -28,6 +30,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.PrimitiveDescriptorI;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
+import com.wegas.core.security.util.ScriptExecutionContext;
 import com.wegas.log.xapi.Xapi;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.ChoiceInstance;
@@ -110,7 +113,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     public Result findResult(final ChoiceDescriptor choiceDescriptor, final String name) throws WegasNoResultException {
         //if (!Helper.isNullOrEmpty(name)) {
         if (name != null) {
-            for (Result result : choiceDescriptor.getResults()) {
+            for (Result result : choiceDescriptor.getRawResults()) {
                 if (name.equals(result.getName())) {
                     return result;
                 }
@@ -202,7 +205,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             }
         } else if (choiceInstance.getCurrentResultIndex() != null
             && choiceInstance.getCurrentResultIndex() >= 0
-            && choiceInstance.getCurrentResultIndex() < choice.getResults().size()) {
+            && choiceInstance.getCurrentResultIndex() < choice.getRawResults().size()) {
             // Backward compat
 
             logger.error(" !!!!  REVIVE RESULT BY INDEX !!!! (so 2013...)");
@@ -260,7 +263,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         if (!isCbx
             && questionDescriptor.getMaxReplies() != null
             && questionInstance.getReplies(player).size() >= questionDescriptor.getMaxReplies()) {
-            //if (questionDescriptor.getMaxReplies() == 1) { } else {}; specific message ??? 
+            //if (questionDescriptor.getMaxReplies() == 1) { } else {}; specific message ???
             throw WegasErrorMessage.error("You have already answered this question");
         }
 
@@ -638,10 +641,13 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             final ChoiceDescriptor choiceDescriptor = reply.getResult().getChoiceDescriptor();
             reply.setResult(choiceDescriptor.getInstance(player).getResult());// Refresh the current result
 
-            if (reply.getIgnored()) {
-                scriptManager.eval(player, reply.getResult().getIgnorationImpact(), choiceDescriptor);
-            } else {
-                scriptManager.eval(player, reply.getResult().getImpact(), choiceDescriptor);
+            // result impacts are intrernal scripts
+            try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
+                if (reply.getIgnored()) {
+                    scriptManager.eval(player, reply.getResult().getIgnorationImpact(), choiceDescriptor);
+                } else {
+                    scriptManager.eval(player, reply.getResult().getImpact(), choiceDescriptor);
+                }
             }
             ChoiceInstance choiceInstance = reply.getChoiceInstance();
 

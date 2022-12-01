@@ -1,14 +1,19 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.rest;
 
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.ReadableInstance;
@@ -46,6 +51,12 @@ public class QuestionController {
     @Inject
     private RequestFacade requestFacade;
 
+    @Inject
+    private RequestManager requestManager;
+
+    @Inject
+    private PlayerFacade playerFacade;
+
     /**
      *
      * @param playerId
@@ -58,11 +69,14 @@ public class QuestionController {
     @POST
     @Path("/SelectAndValidateChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public Response selectAnValidateChoice(
-            @PathParam("playerId") Long playerId,
-            @PathParam("choiceId") Long choiceId) throws WegasScriptException {
+        @PathParam("playerId") Long playerId,
+        @PathParam("choiceId") Long choiceId) throws WegasScriptException {
 
-        questionDescriptorFacade.selectAndValidateChoice(choiceId, playerId);
-        requestFacade.commit(playerId);
+        Player player = playerFacade.find(playerId);
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            questionDescriptorFacade.selectAndValidateChoice(choiceId, playerId);
+            requestFacade.commit(playerId);
+        }
 
         return Response.ok().build();
     }
@@ -79,12 +93,15 @@ public class QuestionController {
     @POST
     @Path("/ValidateQuestion/{questionInstanceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public Response validateQuestion(
-            @PathParam("questionInstanceId") Long questionInstanceId,
-            @PathParam("playerId") Long playerId) throws WegasScriptException {
+        @PathParam("questionInstanceId") Long questionInstanceId,
+        @PathParam("playerId") Long playerId) throws WegasScriptException {
 
-        // !!!!!   CHECK TYPE OF RETURN PARAM   !!!!
-        questionDescriptorFacade.validateQuestion(questionInstanceId, playerId);
-        requestFacade.commit(playerId);
+        Player player = playerFacade.find(playerId);
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            // !!!!!   CHECK TYPE OF RETURN PARAM   !!!!
+            questionDescriptorFacade.validateQuestion(questionInstanceId, playerId);
+            requestFacade.commit(playerId);
+        }
 
         return Response.ok().build();
     }
@@ -94,18 +111,21 @@ public class QuestionController {
      * @param playerId
      * @param replyId
      *
-     * @return questionInstance with up to date replies list (not containing)
-     *         the canceled one anymore)
+     * @return questionInstance with up to date replies list (not containing) the canceled one
+     *         anymore)
      */
     @GET
     @Path("/ValidateReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public QuestionInstance validateReply(
-            @PathParam("playerId") Long playerId,
-            @PathParam("replyId") Long replyId) {
+        @PathParam("playerId") Long playerId,
+        @PathParam("replyId") Long replyId) {
 
-        Reply reply = questionDescriptorFacade.validateReply(playerId, replyId);
-        requestFacade.commit(playerId);
-        return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+        Player player = playerFacade.find(playerId);
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            Reply reply = questionDescriptorFacade.validateReply(playerId, replyId);
+            requestManager.commit(player);
+            return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+        }
     }
 
     /**
@@ -113,18 +133,21 @@ public class QuestionController {
      * @param playerId
      * @param replyId
      *
-     * @return questionInstance with up to date replies list (not containing)
-     *         the cancelled one anymore)
+     * @return questionInstance with up to date replies list (not containing) the cancelled one
+     *         anymore)
      */
     @GET
     @Path("/CancelReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public QuestionInstance cancelReply(
-            @PathParam("playerId") Long playerId,
-            @PathParam("replyId") Long replyId) {
+        @PathParam("playerId") Long playerId,
+        @PathParam("replyId") Long replyId) {
 
-        Reply reply = questionDescriptorFacade.cancelReply(playerId, replyId);
-        requestFacade.commit(playerId);
-        return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+        Player player = playerFacade.find(playerId);
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            Reply reply = questionDescriptorFacade.cancelReply(playerId, replyId);
+            requestFacade.commit(playerId);
+            return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+        }
     }
 
     /**
@@ -134,18 +157,21 @@ public class QuestionController {
      * @param playerId
      * @param replyId
      *
-     * @return questionInstance with up to date replies list (not containing)
-     *         the cancelled one anymore)
+     * @return questionInstance with up to date replies list (not containing) the cancelled one
+     *         anymore)
      */
     @GET
     @Path("/QuietCancelReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public QuestionInstance quietCancelReply(
-            @PathParam("playerId") Long playerId,
-            @PathParam("replyId") Long replyId) {
+        @PathParam("playerId") Long playerId,
+        @PathParam("replyId") Long replyId) {
 
-        Reply reply = questionDescriptorFacade.quietCancelReply(playerId, replyId);
+        Player player = playerFacade.find(playerId);
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            Reply reply = questionDescriptorFacade.quietCancelReply(playerId, replyId);
 
-        return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+            return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+        }
     }
 
     /**
@@ -159,15 +185,19 @@ public class QuestionController {
     @GET
     @Path("/SelectChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [0-9]*}")
     public QuestionInstance selectChoice(
-            @PathParam("playerId") Long playerId,
-            @PathParam("choiceId") Long choiceId,
-            @PathParam("startTime") Long startTime) {
+        @PathParam("playerId") Long playerId,
+        @PathParam("choiceId") Long choiceId,
+        @PathParam("startTime") Long startTime
+    ) {
 
-        Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, startTime);
+        Player player = playerFacade.find(playerId);
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, startTime);
 
-        requestFacade.commit(playerId);
+            requestFacade.commit(playerId);
 
-        return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+            return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+        }
     }
 
     /**
@@ -182,14 +212,18 @@ public class QuestionController {
 
     @Path("/DeselectOthersAndSelectChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [0-9]*}")
     public QuestionInstance deselectOthersAndselectChoice(
-            @PathParam("playerId") Long playerId,
-            @PathParam("choiceId") Long choiceId,
-            @PathParam("startTime") Long startTime) {
+        @PathParam("playerId") Long playerId,
+        @PathParam("choiceId") Long choiceId,
+        @PathParam("startTime") Long startTime
+    ) {
 
-        Reply reply = questionDescriptorFacade.deselectOthersAndSelectChoice(choiceId, playerId, startTime);
+        Player player = playerFacade.find(playerId);
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            Reply reply = questionDescriptorFacade.deselectOthersAndSelectChoice(choiceId, playerId, startTime);
 
-        //requestFacade.commit(playerId);
-        return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+            //requestFacade.commit(playerId);
+            return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+        }
     }
 
     /**
@@ -201,7 +235,8 @@ public class QuestionController {
      */
     @PUT
     @Path("Reply/{entityId: [1-9][0-9]*}")
-    public Reply update(@PathParam("entityId") Long replyId, Reply reply) {
+    public Reply update(@PathParam("entityId") Long replyId, Reply reply
+    ) {
 
         //SecurityUtils.getSubject().checkPermission("Game:Edit:g" + VariableInstanceFacade.findGame(entityId).getId());
         return questionDescriptorFacade.updateReply(replyId, reply);
@@ -218,8 +253,9 @@ public class QuestionController {
     @PUT
     @Path("Read/{playerId : [1-9][0-9]*}/{descId: [1-9][0-9]*}")
     public ReadableInstance readQuestion(
-            @PathParam("playerId") Long playerId,
-            @PathParam("descId") Long id) {
+        @PathParam("playerId") Long playerId,
+        @PathParam("descId") Long id
+    ) {
         return questionDescriptorFacade.readQuestion(playerId, id);
     }
 }

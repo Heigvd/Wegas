@@ -2,11 +2,12 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
@@ -81,7 +82,7 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
      *
      * @return number of property in the payer instance
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public int size(Player p) {
         return this.getInstance(p).getProperties().size();
     }
@@ -94,7 +95,7 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
      *
      * @return the value of the property in the player instance
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public String getProperty(Player p, String key) {
         return this.getInstance(p).getProperties().get(key);
     }
@@ -105,7 +106,7 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
      * @param key
      * @param value
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void setProperty(Player p,
         @Param(view = @View(label = "Key")) String key,
         @Param(view = @View(label = "Value")) String value) {

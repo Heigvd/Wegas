@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -10,7 +10,7 @@
  * @author maxence.laurent gmail.com
  */
 /*global YUI, Chartist, I18n */
-YUI.add('wegas-chart', function(Y) {
+YUI.add('wegas-chart', function (Y) {
     'use strict';
     var CONTENTBOX = 'contentBox', Chart;
     Chart = Y.Base.create('wegas-chart', Y.Widget,
@@ -20,18 +20,18 @@ YUI.add('wegas-chart', function(Y) {
             '</div>' +
             '<div class="legend"></div>' +
             '</div>',
-        initializer: function() {
+        initializer: function () {
             this.handlers = [];
             if (this.get('xLabelMapper')) {
-                this._xLabelMapper = eval('(' + this.get('xLabelMapper') + ')');
+                this._xLabelMapper = W.Sandbox.eval('(' + this.get('xLabelMapper') + ')');
             }
         },
-        bindUI: function() {
+        bindUI: function () {
             this.handlers.push(
                 Y.Wegas.Facade.Variable.after('update', this.syncUI, this)
                 );
         },
-        renderUI: function() {
+        renderUI: function () {
             var variables, i, vd, legendNode, label;
             this.options = {
                 width: this.get('width'),
@@ -50,7 +50,7 @@ YUI.add('wegas-chart', function(Y) {
                     type: Chartist.AutoScaleAxis,
                     position: this.get('yLabelPosition'),
                     showLabel: this.get('showYLabels'),
-                    labelInterpolationFnc: function(value) {
+                    labelInterpolationFnc: function (value) {
                         return I18n.formatNumber(value);
                     }
                 }
@@ -95,12 +95,11 @@ YUI.add('wegas-chart', function(Y) {
             }
             this.chart;
         },
-        syncUI: function() {
+        syncUI: function () {
             var vd,
                 i,
                 variables = this.get('variables'),
-                history,
-                promises = [],
+                series = [],
                 ctx = this;
             this.data = {labels: [], series: []};
             this.counter = variables.length;
@@ -110,18 +109,16 @@ YUI.add('wegas-chart', function(Y) {
                     this.showMessage('error', 'Variable ' + variables[i].name + ' not found');
                     return;
                 }
-                promises.push(this.updateHistory(vd, i));
+                series.push(this.updateHistory(vd, i));
             }
 
-            Y.Promise.all(promises).then(function(a) {
-                var v;
-                for (i = 0; i < a.length; i += 1) {
-                    v = a[i];
-                    ctx.updateSerie(v.serie, i, v.label);
-                }
-            });
+            var v;
+            for (i = 0; i < series.length; i += 1) {
+                v = series[i];
+                ctx.updateSerie(v.serie, i, v.label);
+            }
         },
-        updateSerie: function(serie, i, label) {
+        updateSerie: function (serie, i, label) {
             var k, max, data = this.data;
             this.counter -= 1;
             this.data.series.push({
@@ -160,7 +157,7 @@ YUI.add('wegas-chart', function(Y) {
                 }
             }
         },
-        generateTooltip: function() {
+        generateTooltip: function () {
             var chart, tooltip, CB = this.get(CONTENTBOX);
             chart = CB.one('.ct-chart');
             chart.append('<div class="tooltip"></div>');
@@ -170,7 +167,7 @@ YUI.add('wegas-chart', function(Y) {
             this.handlers.push(
                 CB.delegate(
                     'mouseenter',
-                    function(e) {
+                    function (e) {
                         var value, name;
                         name = e.target
                             .getDOMNode()
@@ -186,7 +183,7 @@ YUI.add('wegas-chart', function(Y) {
             this.handlers.push(
                 CB.delegate(
                     'mouseleave',
-                    function(e) {
+                    function (e) {
                         this.get(CONTENTBOX).one('.tooltip').hide();
                     },
                     '.ct-point',
@@ -196,7 +193,7 @@ YUI.add('wegas-chart', function(Y) {
             this.handlers.push(
                 chart.on(
                     'mousemove',
-                    function(e) {
+                    function (e) {
                         var tooltip = this.get(CONTENTBOX).one('.tooltip');
                         tooltip.setStyle('left', e.pageX + 10 + 'px');
                         tooltip.setStyle('top', e.pageY + 10 + 'px');
@@ -205,7 +202,7 @@ YUI.add('wegas-chart', function(Y) {
                     )
                 );
         },
-        destructor: function() {
+        destructor: function () {
             var i;
             if (this.chart) {
                 this.chart.detach();
@@ -214,35 +211,20 @@ YUI.add('wegas-chart', function(Y) {
                 this.handlers[i].detach();
             }
         },
-        updateHistory: function(vd, i) {
-            var ctx = this,
-                promise = Y.Promise(function(resolve, reject) {
-                    Y.Wegas.Facade.Variable.cache.getWithView(vd.getInstance(), 'Extended', {
-                        on: {
-                            success: Y.bind(function(e) {
-                                var entity = e.response.entity, label;
-                                if (this.get('variables')[i].label) {
-                                    label = Y.Template.Micro.compile(
-                                        this.get('variables')[i].label || '')();
-                                } else {
-                                    label = vd.get('label');
-                                }
-                                resolve({
-                                    serie: entity.get('history').concat(entity.get('value')),
-                                    label: label
-                                });
-                            }, ctx),
-                            failure: function(r) {
-                                Y.error('Error by loading history data');
-                                resolve({
-                                    serie: [],
-                                    label: vd.get('label')
-                                });
-                            }
-                        }
-                    }, ctx);
-                });
-            return promise;
+        updateHistory: function (vd, i) {
+            var entity = vd.getInstance(),
+                label;
+            if (this.get('variables')[i].label) {
+                label = Y.Template.Micro.compile(
+                    this.get('variables')[i].label || '')();
+            } else {
+                label = I18n.t(vd.get('label'));
+            }
+
+            return {
+                serie: entity.get('history').concat(entity.get('value')),
+                label: label
+            };
         }
     }, {
         EDITORNAME: 'Chart',

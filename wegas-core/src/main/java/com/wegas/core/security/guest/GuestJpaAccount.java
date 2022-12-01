@@ -2,11 +2,12 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.guest;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.util.AuthenticationMethod;
 import javax.persistence.Entity;
@@ -30,6 +31,7 @@ public class GuestJpaAccount extends AbstractAccount {
     }
 
     @Override
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public Boolean isVerified() {
         return false;
     }

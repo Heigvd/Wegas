@@ -2,17 +2,20 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.rest.GameController;
+import com.wegas.core.rest.TeamController;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import javax.inject.Inject;
+import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -28,6 +31,9 @@ public class GameFacadeTest extends AbstractArquillianTest {
 
     @Inject
     private GameController gameController;
+
+    @Inject
+    private TeamController teamController;
 
     @Test
     public void testNames() throws Exception {
@@ -103,5 +109,118 @@ public class GameFacadeTest extends AbstractArquillianTest {
 
         assertEquals(1, newGame.getTeams().size()); // Is debug team here ?
         assertEquals(1, newGame.getTeams().get(0).getPlayers().size()); // Is anybody within debug team ?
+    }
+
+    @Test
+    public void joiningClosedGameNotPossible() throws CloneNotSupportedException {
+        WegasUser user = this.signup("user@test.local", "myPasswordIsSecure");
+        WegasUser user2 = this.signup("user2@test.local", "myPasswordIsSecureToo");
+
+        login(trainer);
+        Game g = new Game("newGame");
+        g.setAccess(Game.GameAccess.OPEN);
+        g.setGameModel(gameModel);
+
+        gameFacade.publishAndCreate(gameModel.getId(), g);
+        g = gameFacade.find(g.getId());
+        // there is one team: the test one
+        Assert.assertEquals(1, g.getTeams().size());
+
+        login(user);
+        // Game is open, joining is fine
+        Team team1 = new Team();
+        team1.setName("test-team-1");
+        teamController.create(g.getId(), team1);
+
+
+        // close access
+        login(admin);
+        g = gameFacade.find(g.getId());
+        // test team + team1
+        Assert.assertEquals(2, g.getTeams().size());
+
+        g.setAccess(Game.GameAccess.CLOSE);
+        gameFacade.update(g.getId(), g);
+
+        try {
+            // Game is open, joining is fine
+            login(user2);
+            Team team2 = new Team();
+            team2.setName("test-team-2");
+            teamController.create(g.getId(), team2);
+            Assert.fail("Game access is closed. Join should have failed");
+        } catch (Exception ex) {
+            // expected !
+            System.out.println("Fails to join: game access is closed");
+        }
+
+        login(admin);
+        // reaload game
+        g = gameFacade.find(g.getId());
+        // and assert there is one solely team (plus the test one)
+        Assert.assertEquals(2, g.getTeams().size());
+    }
+
+
+    @Test
+    public void creatingTeamNotPossible() throws CloneNotSupportedException {
+        WegasUser user = this.signup("user@test.local", "myPasswordIsSecure");
+        WegasUser user2 = this.signup("user2@test.local", "myPasswordIsSecureToo");
+
+
+        login(trainer);
+        Game g = new Game("newGame");
+        g.setAccess(Game.GameAccess.OPEN);
+        g.setGameModel(gameModel);
+
+        gameFacade.publishAndCreate(gameModel.getId(), g);
+        // reaload game
+        g = gameFacade.find(g.getId());
+        // and assert there is no teams but the test one
+        Assert.assertEquals(1, g.getTeams().size());
+
+
+        login(user);
+        // Game is open and player may create teams, joining is fine
+        Team team1 = new Team();
+        team1.setName("test-team-1");
+        teamController.create(g.getId(), team1);
+
+        // reaload game
+        login(trainer);
+        g = gameFacade.find(g.getId());
+        // and assert there is one solely team (plus the test one)
+        Assert.assertEquals(2, g.getTeams().size());
+
+        // prevent player to create teams
+        g.setPreventPlayerCreatingTeams(true);
+        gameFacade.update(g.getId(), g);
+
+        try {
+            // Game is open, joining is fine
+            login(user2);
+            Team team2 = new Team();
+            team2.setName("test-team-2");
+            teamController.create(g.getId(), team2);
+            Assert.fail("Game access is closed. Join should have failed");
+        } catch (Exception ex) {
+            // expected !
+            System.out.println("Fails to join: game access is closed");
+        }
+
+        // reaload game
+        login(trainer);
+        g = gameFacade.find(g.getId());
+        // and assert there is still one solely team (+ the test one)
+        Assert.assertEquals(2, g.getTeams().size());
+
+        // Trainer is still able to create teams
+        Team team2 = new Team();
+        team2.setName("test-team-2");
+        teamController.create(g.getId(), team2);
+
+        g = gameFacade.find(g.getId());
+        // and assert there is two teams (plus the test one)
+        Assert.assertEquals(3, g.getTeams().size());
     }
 }

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.test.arquillian;
@@ -106,7 +106,6 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestMinim
         player = gameFacade.joinTeam(team.getId(), user.getId(), null);
 
         login(admin);
-        requestFacade.setPlayer(player.getId());
         this.initTime = System.currentTimeMillis();
         requestManager.clearEntities();
     }
@@ -132,7 +131,6 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestMinim
         player22 = gameFacade.joinTeam(team2.getId(), user22.getId(), null);
 
         login(admin);
-        requestFacade.setPlayer(player.getId());
     }
 
     public void reseAndSetUpDB() throws SQLException, NamingException, WegasNoResultException, CloneNotSupportedException {

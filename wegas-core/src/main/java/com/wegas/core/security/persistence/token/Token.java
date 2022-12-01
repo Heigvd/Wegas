@@ -2,14 +2,15 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
 package com.wegas.core.security.persistence.token;
 
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
@@ -130,6 +131,7 @@ public abstract class Token extends AbstractEntity {
      *
      * @return the account or null
      */
+    @WegasExtraProperty
     public AbstractAccount getAccount() {
         return account;
     }
@@ -138,6 +140,7 @@ public abstract class Token extends AbstractEntity {
         this.account = account;
     }
 
+    @WegasExtraProperty(nullable = false, optional = false)
     public boolean isAutoLogin() {
         return autoLogin;
     }
@@ -149,8 +152,9 @@ public abstract class Token extends AbstractEntity {
     /**
      * Get the expiryDate. null means infinity
      *
-     * @return the epiry date or null
+     * @return the expiry date or null
      */
+    @WegasExtraProperty
     public Date getExpiryDate() {
         if (expiryDate != null) {
             return new Date(expiryDate.getTime());
@@ -185,6 +189,7 @@ public abstract class Token extends AbstractEntity {
      *
      * @return new client location
      */
+    @WegasExtraProperty
     public abstract String getRedirectTo();
 
     /**
@@ -212,9 +217,9 @@ public abstract class Token extends AbstractEntity {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         if (account != null) {
-            return account.getRequieredUpdatePermission();
+            return account.getRequieredUpdatePermission(context);
         } else {
             // admin only
             return WegasMembership.ADMIN;

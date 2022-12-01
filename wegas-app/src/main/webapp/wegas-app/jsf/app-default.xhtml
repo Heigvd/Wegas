@@ -15,7 +15,15 @@
             <h:body class="yui3-skin-sam wegas-app-default #{cookie['customstyle'].value} wegas-stdmode #{requestController.currentRoles} #{extraBodyClass}">
 
                 <!-- Loading -->
-                <div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>
+                <div class='wegas-loading-app'>
+                    <div class='wegas-loading-app-content'>
+                        <img class='wegas-loading-app-logo' src="#{request.contextPath}/wegas-app/images/wegas-logowhite-80.png" />
+                        <div class='wegas-loading-app-bar'>
+                            <div class='wegas-loading-app-current'>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Rollbar error tracking -->
                 <!--<ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
@@ -54,34 +62,34 @@
                 <!-- YUI 3 config -->
                 <!-- Will be use for every call to the YUI(cfg) function. Can be overridden by the cfg parameter -->
                 <script type="text/javascript">
-                    YUI_config = {
-                        useBrowserConsole: true,
-                        insertBefore: 'customstyles',
-                        lang: "#{requestController.locale.toLanguageTag()}",
-                        preferredLocale: "#{requestController.getPreferredLocale()}",
-                        charset: "#{wegasConfig.encoding}",
-                        debug: #{requestController.debugMode()},
-                        throwFail:#{requestController.debugMode()}, //          // If throwFail is set, Y.error will generate or re-throw a JS Error. Otherwise the failure is logged.
-                        errorFn: function(msg, e, src) {
-                            if (window.Rollbar) {
-                                window.Rollbar.error(msg, e);                   // Send Rollbar event
-                            }
-                            if (window.console) {
-                                console.error("Wegas.App", msg, e, src);        // Log in console
-                            }
-                            // Y.log(msg /*+ ( ( e.stack ) ? e.stack : e )*/, "error", '');// YUI log
+                          YUI_config = {
+                              useBrowserConsole: true,
+                              insertBefore: 'customstyles',
+                              lang: "#{requestController.locale.toLanguageTag()}",
+                              preferredLocale: "#{requestController.getPreferredLocale()}",
+                              charset: "#{wegasConfig.encoding}",
+                              debug: #{requestController.debugMode()},
+                              throwFail:#{requestController.debugMode()}, //          // If throwFail is set, Y.error will generate or re-throw a JS Error. Otherwise the failure is logged.
+                              errorFn: function(msg, e, src) {
+                                  if (window.Rollbar) {
+                                      window.Rollbar.error(msg, e);                   // Send Rollbar event
+                                  }
+                                  if (window.console) {
+                                      console.error("Wegas.App", msg, e, src);        // Log in console
+                                  }
+                                  // Y.log(msg /*+ ( ( e.stack ) ? e.stack : e )*/, "error", '');// YUI log
 
-                            return !#{requestController.debugMode()};           // Returning true from this function will stop the Error from being thrown.
-                        },
-                        //filter: "raw",
-                        //filters: {yui: "raw", loader: 'debug'},               // Like filter, but can be set for each module
-                        //loadOptional: true,
-                        Wegas: {
-                            base: "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
-                            scheme: "#{request.scheme}",
-                            mode: "#{wegasMode}"
-                        }
-                    };
+                                  return !#{requestController.debugMode()};           // Returning true from this function will stop the Error from being thrown.
+                              },
+                              //filter: "raw",
+                              //filters: {yui: "raw", loader: 'debug'},               // Like filter, but can be set for each module
+                              //loadOptional: true,
+                              Wegas: {
+                                  base: "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
+                                  scheme: "#{request.scheme}",
+                                  mode: "#{wegasMode}"
+                              }
+                          };
                 </script>
 
                 <ui:fragment rendered="#{!requestController.useYUICDN()}">

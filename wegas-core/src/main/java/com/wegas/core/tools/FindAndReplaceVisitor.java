@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.tools;
@@ -125,7 +125,9 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
     public void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references) {
         if (!this.isProtected(ancestors.peekFirst(), protectionLevel)
             && field != null && field.getAnnotation() != null && field.getAnnotation().searchable()) {
-            if (target instanceof String && field.getType() == WegasFieldProperties.FieldType.PROPERTY) {
+            if (target instanceof String
+                && (field.getType() == WegasFieldProperties.FieldType.PROPERTY
+                || field.getType() == WegasFieldProperties.FieldType.CHILDREN)) {
                 String newContent = this.replace((String) target);
                 if (newContent != null) {
                     this.genEntry(ancestors, target, field, (String) target, newContent);
@@ -268,9 +270,7 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
             Mergeable ancestor = it.next();
             if (ancestor instanceof GameModel == false) {
                 String name = genName(ancestor);
-                /*if (Helper.isNullOrEmpty(name)) {
-                name = ancestor.getClass().getSimpleName();
-                }*/
+                /* if (Helper.isNullOrEmpty(name)) { name = ancestor.getClass().getSimpleName(); } */
                 if (!Helper.isNullOrEmpty(name)) {
                     sb.append(name);
                     if (it.hasNext()) {
@@ -338,12 +338,12 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
     }
 
     public void processStyles(GameModel gameModel) {
-        this.processLibrary(gameModel.getCssLibraryList(), "Stylesheet");
+        this.processLibrary(gameModel.getLibrariesAsList(GameModelContent.CSS), "Stylesheet");
     }
 
     public void processScripts(GameModel gameModel) {
-        this.processLibrary(gameModel.getClientScriptLibraryList(), "Client Script");
-        this.processLibrary(gameModel.getScriptLibraryList(), "Server Script");
+        this.processLibrary(gameModel.getLibrariesAsList(GameModelContent.CLIENT_SCRIPT), "Client Script");
+        this.processLibrary(gameModel.getLibrariesAsList(GameModelContent.SERVER_SCRIPT), "Server Script");
     }
 
     public void propagate(GameModel gameModel, WebsocketFacade websocketFacade) {

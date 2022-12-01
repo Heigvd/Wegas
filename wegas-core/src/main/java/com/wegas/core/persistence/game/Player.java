@@ -1,9 +1,8 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -17,10 +16,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.google.common.base.Objects;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
+import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
@@ -41,8 +42,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -93,11 +97,16 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "user_id"),
     @Index(columnList = "team_id")
 })
-public class Player extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, Populatable {
+public class Player extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, Populatable, AcceptInjection {
 
     private static final Logger logger = LoggerFactory.getLogger(Player.class);
 
     private static final long serialVersionUID = 1L;
+
+    @JsonIgnore
+    @Transient
+    protected Beanjection beans;
+
     @Id
     @GeneratedValue
     private Long id;
@@ -198,6 +207,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
         //this.teamId = team.getId();
     }
 
+    @WegasExtraProperty
     public Integer getQueueSize() {
         return queueSize;
     }
@@ -271,6 +281,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     /**
      * @return the userId
      */
+    @WegasExtraProperty
     public Long getUserId() {
         return (this.user != null ? user.getId() : null);
     }
@@ -321,15 +332,19 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      */
     @JsonView({
         Views.EditorI.class
-    /*Views.LobbyI.class*/
+    /* Views.LobbyI.class */
     })
-    @WegasExtraProperty
+    @WegasExtraProperty(nullable = false, optional = false)
     public String getName() {
         if (this.getUser() != null) {
             AbstractAccount account = this.getUser().getMainAccount();
             return account.getName();
         } else {
-            return "Test player";
+            if (getTeam() instanceof DebugTeam || this.getGame() instanceof DebugGame) {
+                return "Test player";
+            } else {
+                return "Anonymous";
+            }
         }
     }
 
@@ -341,6 +356,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     /**
      * @return the joinTime
      */
+    @WegasExtraProperty
     public Date getJoinTime() {
         return joinTime != null ? new Date(joinTime.getTime()) : null;
     }
@@ -353,6 +369,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     }
 
     @Override
+    @WegasExtraProperty
     public Status getStatus() {
         return status;
     }
@@ -367,6 +384,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      */
     @JsonProperty
     @JsonView(Views.EditorI.class)
+    @WegasExtraProperty(nullable = false, optional = false)
     public Boolean isVerifiedId() {
         if (this.user != null) {
             return user.getMainAccount().isVerified();
@@ -376,9 +394,11 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     }
 
     /*
-    * @return the user's verified homeOrg if it's an AaiAccount or equivalent, otherwise return the empty string
+     * @return the user's verified homeOrg if it's an AaiAccount or equivalent, otherwise return the
+     * empty string
      */
     @JsonView(Views.EditorI.class)
+    @WegasExtraProperty(nullable = false, optional = false)
     public String getHomeOrg() {
         if (this.user != null) {
             AbstractAccount account = user.getMainAccount();
@@ -433,7 +453,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     @JsonIgnore
     public Player getUserLivePlayer(User user) {
         if (this.getStatus().equals(Status.LIVE)
-            && Objects.equal(this.user, user)) {
+            && Objects.equals(this.user, user)) {
             return this;
         } else {
             return null;
@@ -448,7 +468,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     public Player getUserLiveOrSurveyPlayer(User user) {
         if ((this.getStatus().equals(Status.LIVE)
             || this.getStatus().equals(Status.SURVEY))
-            && Objects.equal(this.user, user)) {
+            && Objects.equals(this.user, user)) {
             return this;
         } else {
             return null;
@@ -477,15 +497,52 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
         return "Player{" + this.getName() + ", " + this.getId() + ")";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
-        String audience = this.getTeam().getChannel();
-
-        Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
-        map.put(audience, entities);
+
+        // Fetch all user who with any access to the game
+        Set<User> users = new HashSet<>();
+        Game game = this.getGame();
+        Game gameModel = this.getGame();
+
+        if (gameModel != null) {
+            // all scenarists
+            users.addAll(beans.getGameModelFacade().findScenarists(gameModel.getId()));
+        }
+
+        if (game != null) {
+            // all trainers
+            users.addAll(beans.getGameFacade().findTrainers(game.getId()));
+        }
+
+        // the player ownwer
+        if (user != null) {
+            users.add(this.user);
+        }
+
+        // Send update through each user channel
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+        users.forEach(u -> {
+            map.put(u.getChannel(), entities);
+        });
+
+        //and send it to admins too
+        map.put(WebsocketFacade.ADMIN_LOBBY_CHANNEL, entities);
+
+        // and eventually to the player channel
+        map.put(this.getChannel(), entities);
+
         return map;
+    }
+
+    @Override
+    public void setBeanjection(Beanjection beanjection) {
+        this.beans = beanjection;
     }
 
     @Override
@@ -517,27 +574,26 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
         return null;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         // ?? strange, should be either this.getChannel() to have a very incognito mode
         // but, with broadcastScope, should be GameModel.Read, nope ? TBT
-        return this.getTeam().getRequieredReadPermission();
+        return this.getTeam().getRequieredReadPermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         return WegasPermission.getAsCollection(this.getAssociatedWritePermission());
     }
 
-    /*@Override
-    public Collection<WegasPermission> getRequieredDeletePermission() {
-        // One must have the right to delete its own team from the game
-        return this.getGame().getGameTeams().getRequieredUpdatePermission();
-    }*/
+    /* @Override public Collection<WegasPermission> getRequieredDeletePermission() { // One must have
+     * the right to delete its own team from the game return
+     * this.getGame().getGameTeams().getRequieredUpdatePermission();
+    } */
     @Override
     public WegasPermission getAssociatedReadPermission() {
         return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.PLAYER);

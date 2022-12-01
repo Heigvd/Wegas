@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.survey.persistence.input;
@@ -26,7 +26,6 @@ import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -72,7 +71,6 @@ public class SurveyChoicesDescriptor
     /**
      * Tells if these choices should be presented as a scale
      */
-    @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
         optional = false, nullable = false, proposal = ValueGenerators.False.class,
         view = @View(label = "Present as a scale", value = Hidden.class))
@@ -81,7 +79,6 @@ public class SurveyChoicesDescriptor
     /**
      * Tells if these choices should be presented as an analog slider
      */
-    @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
         optional = false, nullable = false, proposal = ValueGenerators.False.class,
         view = @View(label = "Present as a slider", value = Hidden.class))

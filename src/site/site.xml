@@ -5,7 +5,7 @@
          xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
     <bannerLeft>
         <name>Wegas</name>
-        <src>http://wegas.albasim.ch/wegas-app/images/wegas-logo-50.png</src>
+        <src>http://wegas.albasim.ch/wegas-app/images/wegas-logo.png</src>
         <href>http://github.com/Heigvd/Wegas</href>
     </bannerLeft>
     <skin>

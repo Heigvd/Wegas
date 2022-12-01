@@ -2,11 +2,12 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import com.wegas.core.i18n.persistence.TranslatableContent;
@@ -44,7 +45,7 @@ public class TextDescriptor extends VariableDescriptor<TextInstance>
      * @param p
      * @param value
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void setValue(
         Player p,
         @Param(view = @View(label = "", value = I18nHtmlView.class)) TranslatableContent value) {
@@ -60,7 +61,7 @@ public class TextDescriptor extends VariableDescriptor<TextInstance>
         this.getInstance(p).setValue(value);
     }
 
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.NONE)
     public void setValueIfChanged(
         Player p,
         @Param(view = @View(label = "", value = I18nHtmlView.class)) TranslatableContent newValue) {
@@ -107,7 +108,7 @@ public class TextDescriptor extends VariableDescriptor<TextInstance>
      * @return value of player instance
      */
     @Override
-    @Scriptable(label = "value")
+    @Scriptable(label = "value", dependsOn = DependencyScope.SELF)
     public String getValue(Player p) {
         return this.getInstance(p).getValue();
     }

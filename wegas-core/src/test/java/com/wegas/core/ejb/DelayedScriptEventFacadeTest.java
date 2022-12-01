@@ -1,8 +1,9 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -13,6 +14,7 @@ import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
+import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -69,10 +71,12 @@ public class DelayedScriptEventFacadeTest extends AbstractArquillianTest {
 
         //send std 'noDelay' event  AND '3secDelay' delayed event
         final Script fireEvents = new Script("JavaScript", "Event.fire('" + eventName + "');DelayedEvent.delayedFire(0, 3, \"" + delayedEventName + "\");");
-        scriptFacade.eval(player.getId(), fireEvents, null);
-        // eval trigger
-        requestFacade.commit(player);
-
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            a.setFlushOnExit(false);
+            scriptFacade.eval(player.getId(), fireEvents, null);
+            // eval trigger
+            requestFacade.commit(player);
+        }
 
         // before delay timeout
         Assert.assertEquals("String 1 value is not the original one", str1OriValue, ((StringDescriptor) variableDescriptorFacade.find(scenario, str1Name)).getValue(player)); // not yet

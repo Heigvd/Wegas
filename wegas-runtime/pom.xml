@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ch.albasim.wegas</groupId>
@@ -14,7 +15,7 @@
         <skip.surefire.tests>${skipTests}</skip.surefire.tests>
     </properties>
 
-    <dependencyManagement>
+    <!--<dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
@@ -24,7 +25,7 @@
                 <scope>import</scope>
             </dependency>
         </dependencies>
-    </dependencyManagement>
+    </dependencyManagement>-->
 
     <dependencies>
 
@@ -44,10 +45,10 @@
             <groupId>fish.payara.extras</groupId>
             <artifactId>payara-micro</artifactId>
         </dependency>
-        <dependency>
+        <!--        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-        </dependency>
+        </dependency>-->
         <!--
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -95,8 +96,6 @@
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
-
-
         <dependency>
             <groupId>net.sourceforge.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
@@ -104,11 +103,11 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-core</artifactId>
-            <version>1.4.1.Final</version>
             <scope>test</scope>
             <type>jar</type>
         </dependency>
@@ -119,28 +118,29 @@
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
-            <version>8.0.0</version>
+            <scope>provided</scope>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.eclipse.microprofile</groupId>
             <artifactId>microprofile</artifactId>
             <type>pom</type>
             <scope>provided</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>fish.payara.api</groupId>
             <artifactId>payara-api</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>fish.payara.arquillian</groupId>
             <artifactId>arquillian-payara-micro-managed</artifactId>
-            <version>1.1</version>
             <scope>test</scope>
         </dependency>
 
@@ -152,6 +152,27 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>yarn install</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>yarn</executable>
+                            <arguments>
+                                <argument>--frozen-lockfile</argument>
+                                <argument>install</argument>
+                            </arguments>
+                            <workingDirectory>${project.basedir}/src/test/node/</workingDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Download and copy Payara Micro artefact -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -197,13 +218,13 @@
                         <!-- used in domain.xml -->
                         <payara.randomHttpPort>false</payara.randomHttpPort>
                         <payara.microJar>${project.basedir}/target/payara-micro.current.jar</payara.microJar>
-                        <payara.bindHttpPort>28080</payara.bindHttpPort>
+                        <!-- <payara.bindHttpPort>28080</payara.bindHttpPort> -->
                         <payara.clusterEnabled>true</payara.clusterEnabled>
                         <!-- want to debug ? add next line to cmdOptions and inpect the log to find
                         the HTTP port to connect to -->
                         <!-- -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n -->
-                        <payara.cmdOptions>-Dwegas.http.threads=9 -Dwegas.db.name=wegas_test -Djcr.repository.URI= -Dwegas.db.host=localhost -Dwegas.nb_populators=3 -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager -Declipselink.cache.coordination.channel=WegasLocalTest </payara.cmdOptions>
-                        <payara.extraMicroOptions>--port 28080 --addlibs ${project.basedir}/target/extra-libs --domainconfig ${project.basedir}/src/main/resources/domain.xml --logproperties ${project.basedir}/../wegas-core/src/test/resources/logging.properties --interfaces 127.0.0.1</payara.extraMicroOptions>
+                        <payara.cmdOptions>-Dwegas.http.threads=9 -Dwegas.db.name=wegas_test -Djcr.repository.URI= -Dhazelcast.startport=16900 -Dwegas.db.host=localhost -Dwegas.nb_populators=3 -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager -Declipselink.cache.coordination.channel=WegasLocalTest </payara.cmdOptions>
+                        <payara.extraMicroOptions>--port 28080 --addlibs ${project.basedir}/target/extra-libs --domainconfig ${project.basedir}/src/main/resources/domain.xml --logproperties ${project.basedir}/../wegas-core/src/test/resources/logging.properties --interfaces 127.0.0.1 --clustermode tcpip:127.0.0.1:16900</payara.extraMicroOptions>
                     </systemProperties>
                 </configuration>
             </plugin>

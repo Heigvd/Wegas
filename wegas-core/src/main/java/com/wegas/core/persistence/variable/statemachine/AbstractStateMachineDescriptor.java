@@ -2,11 +2,12 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
@@ -43,10 +44,10 @@ import javax.persistence.OneToMany;
     @JsonSubTypes.Type(name = "DialogueDescriptor", value = DialogueDescriptor.class)
 })
 @NamedQueries(
-        @NamedQuery(
-                name = "StateMachineDescriptor.findAllForGameModelId",
-                query = "SELECT DISTINCT sm FROM StateMachineDescriptor sm WHERE sm.gameModel.id = :gameModelId"
-        )
+    @NamedQuery(
+        name = "StateMachineDescriptor.findAllForGameModelId",
+        query = "SELECT DISTINCT sm FROM StateMachineDescriptor sm WHERE sm.gameModel.id = :gameModelId"
+    )
 )
 public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>, U extends AbstractTransition> extends VariableDescriptor<StateMachineInstance> {
 
@@ -58,8 +59,8 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     @MapKeyColumn(name = "fsm_statekey")
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(ignoreNull = true, protectionLevel = ProtectionLevel.INHERITED,
-            optional = false, nullable = false, proposal = EmptyMap.class,
-            view = @View(label = "", value = Hidden.class))
+        optional = false, nullable = false, proposal = EmptyMap.class,
+        view = @View(label = "", value = Hidden.class))
     private Set<AbstractState<U>> states = new HashSet<>();
 
     /**
@@ -115,7 +116,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     @JsonIgnore
     public AbstractState getState(Long currentStateId) {
         for (AbstractState<U> state : this.states) {
-            if (state.getIndex().equals(currentStateId)){
+            if (state.getIndex().equals(currentStateId)) {
                 return state;
             }
         }
@@ -134,7 +135,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     /**
      * @param p
      */
-    @Scriptable(label = "activate")
+    @Scriptable(label = "activate", dependsOn = DependencyScope.NONE)
     public void enable(Player p) {
         this.getInstance(p).setEnabled(Boolean.TRUE);
     }
@@ -142,7 +143,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     /**
      * @param p
      */
-    @Scriptable(label = "deactivate")
+    @Scriptable(label = "deactivate", dependsOn = DependencyScope.NONE)
     public void disable(Player p) {
         this.getInstance(p).setEnabled(Boolean.FALSE);
     }
@@ -152,7 +153,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
      *
      * @return is player instance enabled ?
      */
-    @Scriptable(label = "is active")
+    @Scriptable(label = "is active", dependsOn = DependencyScope.SELF)
     public boolean isEnabled(Player p) {
         return this.getInstance(p).getEnabled();
     }
@@ -162,7 +163,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
      *
      * @return is player instance disabled ?
      */
-    @Scriptable(label = "is inactive")
+    @Scriptable(label = "is inactive", dependsOn = DependencyScope.SELF)
     public boolean isDisabled(Player p) {
         return !this.getInstance(p).getEnabled();
     }
@@ -178,7 +179,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
         return null;
     }
 
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean wentThroughState(Player p, Long stateKey) {
         List<Long> transitionHistory = this.getInstance(p).getTransitionHistory();
 
@@ -192,7 +193,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
         return false;
     }
 
-    @Scriptable(label = "did not went through state")
+    @Scriptable(label = "did not went through state", dependsOn = DependencyScope.SELF)
     public boolean notWentThroughState(Player p, Long stateKey) {
         return !this.wentThroughState(p, stateKey);
     }

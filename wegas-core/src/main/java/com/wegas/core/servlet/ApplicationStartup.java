@@ -2,13 +2,13 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.servlet;
 
+import com.hazelcast.cluster.Member;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.Member;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.MetricsFacade;
@@ -48,7 +48,6 @@ public class ApplicationStartup extends HttpServlet {
 
     @Inject
     private MetricsFacade metricsFacade;
-
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -100,7 +99,7 @@ public class ApplicationStartup extends HttpServlet {
         logger.info("Servlet Destroy: {}", count);
 
         /*
-         * is the last instance ? 
+         * is the last instance ?
          */
         if (count <= 1) {
             // inform clients webapp is down

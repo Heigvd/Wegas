@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.persistence;
@@ -13,10 +13,12 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
+import com.wegas.core.persistence.Orderable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.annotations.WegasConditions.And;
 import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
@@ -76,12 +78,12 @@ import javax.persistence.Version;
     }
 )
 @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor.id=:choicedescriptorId AND res.name LIKE :name")
-public class Result extends AbstractEntity implements LabelledEntity {
+public class Result extends AbstractEntity implements LabelledEntity, Orderable {
 
     private static final long serialVersionUID = 1L;
 
     @Version
-    @Column(columnDefinition = "bigint default '0'::bigint")
+    @Column(columnDefinition = "bigint default 0::bigint")
     @WegasEntityProperty(
         nullable = false, optional = false, proposal = Zero.class,
         sameEntityOnly = true, view = @View(
@@ -148,6 +150,9 @@ public class Result extends AbstractEntity implements LabelledEntity {
     @Visible(IsQuestionCbx.class)
     private TranslatableContent ignorationAnswer;
 
+    @JsonIgnore
+    private Integer index;
+
     /*
      *
      */
@@ -197,6 +202,20 @@ public class Result extends AbstractEntity implements LabelledEntity {
     @Override
     public Long getId() {
         return this.id;
+    }
+
+    @Override
+    @JsonIgnore
+    public Integer getOrder() {
+        return getIndex();
+    }
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
     }
 
     /**
@@ -446,16 +465,16 @@ public class Result extends AbstractEntity implements LabelledEntity {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        Collection<WegasPermission> perms = this.getMergeableParent().getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        Collection<WegasPermission> perms = this.getMergeableParent().getRequieredUpdatePermission(context);
         // see issue #1441
         perms.add(this.getParentGameModel().getAssociatedTranslatePermission(""));
         return perms;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getChoiceDescriptor().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return this.getChoiceDescriptor().getRequieredReadPermission(context);
     }
 
     /*

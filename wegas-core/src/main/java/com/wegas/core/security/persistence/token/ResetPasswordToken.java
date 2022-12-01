@@ -2,14 +2,13 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
 package com.wegas.core.security.persistence.token;
 
 import com.wegas.core.security.ejb.AccountFacade;
-import com.wegas.core.security.persistence.token.Token;
 import javax.persistence.Entity;
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,6 +24,7 @@ public class ResetPasswordToken extends Token {
      *
      * @return user profile edition page location
      */
+    @Override
     public String getRedirectTo() {
         // the lobby location
         return "/#/user-profile";

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.content;
@@ -268,6 +268,11 @@ public class FileDescriptor extends AbstractContentDescriptor {
 
         public void setContent(byte[] content) {
             this.content = Arrays.copyOf(content, content.length);
+        }
+
+        @Override
+        public String toString() {
+            return "FileContent{" + "contentLength=" + content.length + '}';
         }
 
         @Override

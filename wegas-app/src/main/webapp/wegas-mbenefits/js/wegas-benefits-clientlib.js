@@ -27,6 +27,17 @@ app.once("render",
             return "no";
         };
 
+        Y.Wegas.MBenefitsHelper.toggleEEMInDiagram = function(nodeSelector, className) {
+            var docNode = Y.one(nodeSelector);
+            docNode.toggleClass(className);
+
+            docNode.all(".wegas-line").each(function(node) {
+                Y.Widget.getByNode(node).syncUI();
+            });
+        };
+
+        W.Sandbox.exposeInY("Wegas", "MBenefitsHelper", Y.Wegas.MBenefitsHelper);
+
         Y.use('wegas-mbenefits-css', function() {});
     }
 );

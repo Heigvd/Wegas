@@ -2,15 +2,19 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.poi.ss.usermodel.BuiltinFormats;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -21,6 +25,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.omg.CORBA.CharSeqHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -233,6 +238,39 @@ public class XlsxSpreadsheet {
         } else if (value instanceof RichTextString) {
             cell.setCellValue((RichTextString) value);
             setDateStyle(cell, style);
+        } else if (value instanceof ScriptObjectMirror) {
+            // first attemps: pretty print simple object
+            ScriptObjectMirror jsObject = (ScriptObjectMirror) value;
+            StringBuilder content = new StringBuilder();
+            boolean failed = false;
+
+            for (String key : jsObject.getOwnKeys(true)) {
+                Object member = jsObject.getMember(key);
+                if (member != null) {
+                    if (member instanceof Number) {
+                        content.append(key).append(": ").append(((Number) member).doubleValue());
+                    } else if (member instanceof CharSequence) {
+                        content.append(key).append(": ").append(((CharSequence) member));
+                    } else {
+                        logger.error("Unhandled object member (k: {}): {}", key, member);
+                        failed = true;
+                        break;
+                    }
+                    content.append(System.lineSeparator());
+                }
+            }
+            if (!failed) {
+                cell.setCellValue(content.toString());
+            } else {
+                // not possible? so serialize whole object
+                ObjectMapper mapper = JacksonMapperProvider.getMapper();
+                try {
+                    String asString = mapper.writeValueAsString(value);
+                    cell.setCellValue(asString);
+                } catch (JsonProcessingException ex) {
+                    logger.error("Stringify JsObject fails");
+                }
+            }
         } else {
             logger.error("Unhandled value: {} ", value);
         }

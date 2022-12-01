@@ -52,6 +52,9 @@ public class RequestController implements Serializable {
     @Inject @HttpParam
     private String debug;
 
+    @Inject @HttpParam
+    private Boolean safeMode;
+
     /**
      *
      */
@@ -75,6 +78,18 @@ public class RequestController implements Serializable {
      */
     public void setLang(String lang) {
         this.lang = lang;
+    }
+
+    public String getFavicon(){
+        return Helper.getWegasProperty("favicon", "favicon_red");
+    }
+
+    /**
+     * Such a hack to injext %lt;flash:message%gt; tag
+     * @return
+     */
+    public String getFlashMessageTag(){
+        return "<flash:messages></flash:messages>";
     }
 
     /**
@@ -204,4 +219,12 @@ public class RequestController implements Serializable {
         }
         return Boolean.valueOf(this.getDebug());
     }
+
+	public Boolean getSafeMode() {
+		return safeMode;
+	}
+
+	public void setSafeMode(Boolean safeMode) {
+		this.safeMode = safeMode;
+	}
 }

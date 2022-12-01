@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.persistence;
@@ -10,13 +10,16 @@ package com.wegas.reviewing.persistence;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.ReviewingNotStarted;
-import com.wegas.editor.view.Hidden;
+import com.wegas.editor.Visible;
+import com.wegas.editor.view.ReviewStateSelectView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -52,7 +55,10 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
     @Enumerated(value = EnumType.STRING)
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = ReviewingNotStarted.class,
-            view = @View(label = "Review State"))
+            view = @View(
+                    label = "Review State",
+                    value = ReviewStateSelectView.class))
+    @Visible(VariableInstance.IsNotDefaultInstance.class)
     private PeerReviewDescriptor.ReviewingState reviewState = PeerReviewDescriptor.ReviewingState.NOT_STARTED;
 
     /**
@@ -61,7 +67,8 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
     @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "To review", value = Hidden.class))
+            view = @View(label = "To review"))
+    @Visible(VariableInstance.IsNotDefaultInstance.class)
     private List<Review> toReview = new ArrayList<>();
 
     /**
@@ -70,7 +77,8 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Reviewed", value = Hidden.class))
+            view = @View(label = "Reviewed"))
+    @Visible(VariableInstance.IsNotDefaultInstance.class)
     private List<Review> reviewed = new ArrayList<>();
 
     /**
@@ -148,20 +156,20 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        Collection<WegasPermission> ps = super.getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        Collection<WegasPermission> ps = super.getRequieredReadPermission(context);
 
         // reviewer also have right to read
         for (Review r : getReviewed()) {
             // review may not be fully loaded yet...
             r.setBeanjection(this.beans);
-            ps.addAll(r.getRequieredReadPermission());
+            ps.addAll(r.getRequieredReadPermission(context));
         }
         // so authors have
         for (Review r : getToReview()) {
             // review may not be fully loaded yet...
             r.setBeanjection(this.beans);
-            ps.addAll(r.getRequieredReadPermission());
+            ps.addAll(r.getRequieredReadPermission(context));
         }
         return ps;
     }
@@ -170,23 +178,23 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
      * Skip this {@link #getRequieredUpdatePermission() } implementation.
      * call super one.
      */
-    private Collection<WegasPermission> getSuperRequieredUpdatePermission() {
-        return super.getRequieredUpdatePermission();
+    private Collection<WegasPermission> getSuperRequieredUpdatePermission(RequestContext context) {
+        return super.getRequieredUpdatePermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        Collection<WegasPermission> ps = super.getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        Collection<WegasPermission> ps = super.getRequieredUpdatePermission(context);
         for (Review r : getReviewed()) {
             // when they'er reviewing, reviewers also have right to write (optmisticlock = cascade on variableinstance !)
             if (r.getInitialReviewState().equals(Review.ReviewState.DISPATCHED)) {
-                ps.addAll(r.getReviewer().getSuperRequieredUpdatePermission()); // avoid infinite loop
+                ps.addAll(r.getReviewer().getSuperRequieredUpdatePermission(context)); // avoid infinite loop
             }
         }
         for (Review r : getToReview()) {
             // when they'er commenting the feedback, authors also have right to write (optmisticlock = cascade on variableinstance !)
             if (r.getInitialReviewState().equals(Review.ReviewState.NOTIFIED)) {
-                ps.addAll(r.getAuthor().getSuperRequieredUpdatePermission()); // avoid infinite loop
+                ps.addAll(r.getAuthor().getSuperRequieredUpdatePermission(context)); // avoid infinite loop
             }
         }
         return ps;

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.merge.patch;
@@ -403,6 +403,7 @@ public final class WegasChildrenPatch extends WegasPatch {
         return sb;
     }
 
+    @Override
     protected PatchDiff buildDiff(boolean bypassVisibility) {
         List<PatchDiff> subs = new ArrayList<>();
 
@@ -413,7 +414,9 @@ public final class WegasChildrenPatch extends WegasPatch {
             }
         }
         if (!subs.isEmpty()) {
-            return new WegasEntityPatch.DiffCollection(null, subs);
+            return new WegasEntityPatch.DiffCollection(
+                this.identifier != null ? identifier.toString() : null,
+                 subs);
         } else {
             return null;
         }

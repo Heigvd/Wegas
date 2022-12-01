@@ -2,13 +2,14 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
 
 import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
 import static ch.albasim.wegas.annotations.CommonView.LAYOUT.shortInline;
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.IMergeable;
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import ch.albasim.wegas.annotations.Scriptable;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
@@ -28,6 +30,7 @@ import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.LabelledEntity;
+import com.wegas.core.persistence.Orderable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.annotations.WegasConditions.And;
@@ -40,6 +43,7 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.primitive.AchievementDescriptor;
 import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
@@ -53,16 +57,19 @@ import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
+import com.wegas.core.persistence.variable.statemachine.TransitionDependency;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.ValueGenerators.IsolationVal;
 import com.wegas.editor.ValueGenerators.TeamScopeVal;
 import com.wegas.editor.ValueGenerators.Zero;
 import com.wegas.editor.Visible;
 import com.wegas.editor.view.I18nStringView;
+import com.wegas.editor.view.IsolationSelectView;
 import com.wegas.editor.view.NumberView;
 import com.wegas.editor.view.SelectView;
 import com.wegas.editor.view.Textarea;
@@ -85,8 +92,10 @@ import com.wegas.survey.persistence.input.SurveyTextDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -102,6 +111,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.QueryHint;
 import javax.persistence.Table;
@@ -138,7 +148,8 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "gamemodel_id"),
     @Index(columnList = "dtype"),
     @Index(columnList = "scope_id"),
-    @Index(columnList = "label_id")
+    @Index(columnList = "label_id"),
+    @Index(columnList = "gamemodel_id, refid", unique = true)
 })
 @NamedQuery(
     name = "VariableDescriptor.findAllNamesInModelAndItsScenarios",
@@ -148,17 +159,17 @@ import org.slf4j.LoggerFactory;
     + "JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
     + "WHERE model.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
 )
-/*@NamedQuery(
-            name = "VariableDescriptor.findAllNamesInScenarioAndItsModelCluster",
-            query = "SELECT DISTINCT(vd.name)"
-            + " FROM GameModel scen "
-            + " LEFT JOIN GameModel model ON (scen.basedOn = model)"
-            + " LEFT JOIN GameModel other ON (scen.basedOn IS NOT NULL "
-            + "                               AND other.basedOn = model "
-            + "                               AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
-            + " JOIN VariableDescriptor vd ON (vd.gameModel = other OR vd.gameModel = model)"
-            + " WHERE scen.id = :gameModelId"
-    )*/
+//@NamedQuery(
+//            name = "VariableDescriptor.findAllNamesInScenarioAndItsModelCluster",
+//            query = "SELECT DISTINCT(vd.name)"
+//            + " FROM GameModel scen "
+//            + " LEFT JOIN GameModel model ON (scen.basedOn = model)"
+//            + " LEFT JOIN GameModel other ON (scen.basedOn IS NOT NULL "
+//            + "                               AND other.basedOn = model "
+//            + "                               AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
+//            + " JOIN VariableDescriptor vd ON (vd.gameModel = other OR vd.gameModel = model)"
+//            + " WHERE scen.id = :gameModelId"
+//    )
 @NamedQuery(
     name = "VariableDescriptor.findAllNamesInScenarioAndItsModel",
     query = "SELECT DISTINCT(vd.name)"
@@ -172,12 +183,24 @@ import org.slf4j.LoggerFactory;
     query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
 )
 @NamedQuery(
+    name = "VariableDescriptor.findReadableByRootGameModelId",
+    query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.root AS gm WHERE gm.id = :gameModelId AND vd.isolation <> com.wegas.core.persistence.variable.VariableDescriptor.Isolation.HIDDEN"
+)
+@NamedQuery(
+    name = "VariableDescriptor.findReadableByParentListId",
+    query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.parentList AS parent WHERE parent.id = :parentId AND vd.isolation <> com.wegas.core.persistence.variable.VariableDescriptor.Isolation.HIDDEN"
+)
+@NamedQuery(
     name = "VariableDescriptor.findCherryPickablesIndex",
     query = "SELECT vd.gameModel.id, vd.gameModel.name, vd.id, vd.name, vd.label FROM VariableDescriptor vd where vd.gameModel.id in :gameModelIds AND TYPE(vd) IN :types"
 )
 @NamedQuery(
     name = "VariableDescriptor.findCherryPickables",
     query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id in :gameModelIds AND TYPE(vd) IN :types"
+)
+@NamedQuery(
+    name = "VariableDescriptor.findReadableDescriptors",
+    query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.isolation <> com.wegas.core.persistence.variable.VariableDescriptor.Isolation.HIDDEN"
 )
 @NamedQuery(
     name = "VariableDescriptor.findByGameModelIdAndName",
@@ -214,23 +237,43 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "SurveyTextDescriptor", value = SurveyTextDescriptor.class),
     @JsonSubTypes.Type(name = "SurveyNumberDescriptor", value = SurveyNumberDescriptor.class),
     @JsonSubTypes.Type(name = "SurveyChoicesDescriptor", value = SurveyChoicesDescriptor.class),
-    @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
+    @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class),
+    @JsonSubTypes.Type(name = "AchievementDescriptor", value = AchievementDescriptor.class)
 })
 //@MappedSuperclass
 @WegasEntity(callback = VariableDescriptor.VdMergeCallback.class)
 public abstract class VariableDescriptor<T extends VariableInstance>
     extends AbstractEntity
-    implements LabelledEntity, Broadcastable, AcceptInjection, ModelScoped {
+    implements LabelledEntity, Broadcastable, AcceptInjection, ModelScoped, Orderable {
 
     private static final long serialVersionUID = 1L;
 
     protected static final Logger logger = LoggerFactory.getLogger(VariableDescriptor.class);
 
     /**
+     *
+     */
+    public enum Isolation {
+        /**
+         * Indicates the variable is fully accessible to players. It means it can be modified
+         * directly with a script submitted through the REST API
+         */
+        OPEN,
+        /**
+         * Indicates the variable is not directly writeable by players.
+         */
+        SECURED,
+        /**
+         * The variable is not even visible to players.
+         */
+        HIDDEN
+    }
+
+    /**
      * HACK
      * <p>
-     * Injecting VariableDescriptorFacade here don't bring business logic within data because the very only
-     * functionality that is being used here aims to replace some slow JPA mechanisms
+     * Injecting VariableDescriptorFacade here don't bring business logic within data because the
+     * very only functionality that is being used here aims to replace some slow JPA mechanisms
      * <p>
      */
     @JsonIgnore
@@ -260,7 +303,8 @@ public abstract class VariableDescriptor<T extends VariableInstance>
      *
      * The default instance for this variable.
      * <p>
-     * According to WegasPatch spec, OVERRIDE should not be propagated to the instance when the descriptor is protected
+     * According to WegasPatch spec, OVERRIDE should not be propagated to the instance when the
+     * descriptor is protected
      * <p>
      * Here we cannot use type T, otherwise jpa won't handle the db ref correctly
      */
@@ -300,6 +344,9 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     @JsonIgnore
     private WhQuestionDescriptor parentWh;
 
+    @JsonIgnore
+    private Integer indexOrder;
+
     @ManyToOne
     @JsonIgnore
     private GameModel root;
@@ -315,6 +362,18 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         ))
     @Visible(ModelScoped.BelongsToModel.class)
     private Visibility visibility = Visibility.PRIVATE;
+
+    @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
+    @Enumerated(value = EnumType.STRING)
+    @WegasEntityProperty(nullable = false,
+        proposal = IsolationVal.class,
+        view = @View(
+            featureLevel = ADVANCED,
+            label = "Isolation",
+            value = IsolationSelectView.class,
+            index = -299
+        ))
+    private Isolation isolation = Isolation.OPEN;
 
     /**
      * a token to prefix the label with. For editors only
@@ -333,7 +392,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     /**
      * Variable descriptor human readable name Player visible
      */
-    @OneToOne(cascade = CascadeType.ALL /*, orphanRemoval = true*/)
+    @OneToOne(cascade = CascadeType.ALL /* , orphanRemoval = true */)
     @WegasEntityProperty(searchable = true,
         nullable = false, optional = false, proposal = EmptyI18n.class,
         view = @View(
@@ -366,7 +425,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
 
     //@BatchFetch(BatchFetchType.JOIN)
     //@JsonManagedReference
-    @OneToOne(cascade = {CascadeType.ALL}/*, orphanRemoval = true*/, optional = false)
+    @OneToOne(cascade = {CascadeType.ALL}/* , orphanRemoval = true */, optional = false)
     @JoinFetch
     //@JsonView(value = Views.WithScopeI.class)
     //@WegasEntityProperty(callback = VdMergeCallback.class)
@@ -400,7 +459,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     private ScopeType broadcastScope;
 
     @Version
-    @Column(columnDefinition = "bigint default '0'::bigint")
+    @Column(columnDefinition = "bigint default 0::bigint")
     @WegasEntityProperty(sameEntityOnly = true,
         nullable = false, optional = false,
         proposal = Zero.class,
@@ -415,13 +474,9 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     )
     private Long version;
 
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
-    }
+    @JsonIgnore
+    @OneToMany(mappedBy = "variable", cascade = CascadeType.ALL)
+    private Set<TransitionDependency> mayTrigger = new HashSet<>();
 
     /**
      *
@@ -451,6 +506,42 @@ public abstract class VariableDescriptor<T extends VariableInstance>
      */
     public VariableDescriptor(T defaultInstance) {
         this.defaultInstance = defaultInstance;
+    }
+
+    /**
+     * get current version
+     *
+     * @return the version
+     */
+    public Long getVersion() {
+        return version;
+    }
+
+    /**
+     * Update descriptor version
+     *
+     * @param version new version
+     */
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    /**
+     * Get the list an update of an instance of this descriptor may trigger
+     *
+     * @return
+     */
+    public Set<TransitionDependency> getMayTrigger() {
+        return mayTrigger;
+    }
+
+    /**
+     * Set the list of transtions an update of an instance of this descriptor may trigger
+     *
+     * @param mayTrigger list of transitions
+     */
+    public void setMayTrigger(Set<TransitionDependency> mayTrigger) {
+        this.mayTrigger = mayTrigger;
     }
 
     /**
@@ -536,6 +627,20 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         }
     }
 
+    @Override
+    @JsonIgnore
+    public Integer getOrder() {
+        return getIndexOrder();
+    }
+
+    public Integer getIndexOrder() {
+        return indexOrder;
+    }
+
+    public void setIndexOrder(Integer indexOrder) {
+        this.indexOrder = indexOrder;
+    }
+
     public WhQuestionDescriptor getParentWh() {
         return parentWh;
     }
@@ -610,26 +715,48 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     @JsonIgnore
     public T findInstance(VariableInstance variableInstance, User user) {
 
-        // if the given VariableInstance is a default instance, return the descripto default instance
+        // if the given VariableInstance is a default instance, return the descriptor default instance
         if (variableInstance.isDefaultInstance()) {
             return this.getDefaultInstance();
         }
 
-        InstanceOwner owner = variableInstance.getOwner();
-        List<Player> players = owner.getLivePlayers();
-
-        if (players == null || players.isEmpty()) {
-            return null;
+        if (scope instanceof GameModelScope) {
+            //this scope is the global scope : same instance for everybody
+            return (T) ((GameModelScope) scope).getVariableInstance();
         } else {
-            if (user != null) {
-                for (Player p : players) {
-                    if (user.equals(p.getUser())) {
-                        return (T) scope.getVariableInstance(p);
+            InstanceOwner owner = variableInstance.getOwner();
+            if (owner instanceof Team && scope instanceof TeamScope) {
+                // team looks for its instance
+                return (T) scope.getVariableInstance((Team) owner);
+            } else if (owner instanceof Player && scope instanceof TeamScope) {
+                // player looks for its team instance
+                return (T) scope.getVariableInstance(((Player) owner).getTeam());
+            } else if (owner instanceof Player && scope instanceof PlayerScope) {
+                // player looks for its instance
+                return (T) scope.getVariableInstance((Player) owner);
+            }
+
+            // effective owner is unpredictable
+            // first find a LIVE player which match the user
+            List<Player> players = owner.getLivePlayers();
+
+            if (players == null || players.isEmpty()) {
+                return null;
+            } else {
+                if (user != null) {
+                    for (Player p : players) {
+                        if (user.equals(p.getUser())) {
+                            return (T) scope.getVariableInstance(p);
+                        }
                     }
                 }
             }
+
+            // fallback => try with the first player
+            // This case is dedicated to trainer/scenarist and admin
+            // AccessDenied will be thrown to std player
+            return (T) scope.getVariableInstance(players.get(0));
         }
-        return (T) scope.getVariableInstance(players.get(0));
     }
 
     /**
@@ -639,7 +766,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
      *
      * @return variableInstance belonging to the player
      */
-    @Scriptable(wysiwyg = false)
+    @Scriptable(wysiwyg = false, dependsOn = DependencyScope.SELF)
     public T getInstance(Player player) {
         return (T) this.getScope().getVariableInstance(player);
     }
@@ -655,7 +782,8 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     /**
-     * @param defaultInstance indicate whether one wants the default instance r the one belonging to player
+     * @param defaultInstance indicate whether one wants the default instance r the one belonging to
+     *                        player
      * @param player          the player
      *
      * @return either the default instance of the one belonging to player
@@ -825,19 +953,28 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         this.visibility = visibility;
     }
 
+    public Isolation getIsolation() {
+        return isolation;
+    }
+
+    public void setIsolation(Isolation isolation) {
+        this.isolation = isolation;
+    }
+
     /**
      *
      */
     //@PrePersist
     public void prePersist() {
-        /*if (this.getScope() == null) {
-            this.setScope(new TeamScope());
-        }*/
+//        if (this.getScope() == null) {
+//            this.setScope(new TeamScope());
+//        }
     }
 
     /**
-     * @param context allow to circumscribe the propagation within the given context. It may be an instance of
-     *                GameModel, Game, Team, or Player
+     * @param context allow to circumscribe the propagation within the given context. It may be an
+     *                instance of GameModel, Game, Team, or Player
+     * @param create
      */
     public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         int sFlag = 0;
@@ -871,7 +1008,11 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
-        map.put(this.getGameModel().getChannel(), entities);
+        if (this.getIsolation() == Isolation.HIDDEN) {
+            map.put(this.getGameModel().getEditorChannel(), entities);
+        } else {
+            map.put(this.getGameModel().getChannel(), entities);
+        }
         return map;
     }
 
@@ -946,13 +1087,17 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getGameModel().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        if (context == RequestContext.EXTERNAL && this.getIsolation() == Isolation.HIDDEN) {
+            return this.getGameModel().getRequieredUpdatePermission(context);
+        } else {
+            return this.getGameModel().getRequieredReadPermission(context);
+        }
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getGameModel().getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        return this.getGameModel().getRequieredUpdatePermission(context);
     }
 
     public static class CheckScope extends Or {

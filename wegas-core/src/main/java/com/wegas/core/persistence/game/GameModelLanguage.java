@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -10,9 +10,11 @@ package com.wegas.core.persistence.game;
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.Orderable;
@@ -60,7 +62,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
      */
     @Id
     @GeneratedValue
-    @JsonView(Views.IndexI.class)
+    @JsonView({Views.IndexI.class, Views.LobbyI.class})
     private Long id;
 
     /**
@@ -71,7 +73,6 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
             optional = false, nullable = false,
             view = @View(
                     label = "Language code",
-                    readOnly = true,
                     value = StringView.class
             ))
     private String code;
@@ -150,6 +151,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
         return indexOrder;
     }
 
+    @WegasExtraProperty
     public Integer getIndexOrder() {
         return indexOrder;
     }
@@ -248,13 +250,13 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getGameModel().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return this.getGameModel().getRequieredReadPermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getGameModel().getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        return this.getGameModel().getRequieredUpdatePermission(context);
     }
 
     @Override

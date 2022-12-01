@@ -1,17 +1,18 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
 
 import ch.albasim.wegas.annotations.ProtectionLevel;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.AlphanumericComparator;
 import com.wegas.core.Helper;
 import com.wegas.core.api.VariableDescriptorFacadeI;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.ejb.I18nFacade;
@@ -23,6 +24,7 @@ import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.merge.utils.WegasFieldProperties;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.Game;
@@ -48,11 +50,10 @@ import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
-import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
-import com.wegas.core.persistence.variable.statemachine.DialogueState;
-import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
+import com.wegas.core.persistence.variable.statemachine.AbstractStateMachineDescriptor;
 import com.wegas.core.tools.FindAndReplacePayload;
 import com.wegas.core.tools.FindAndReplaceVisitor;
+import com.wegas.core.tools.RenameVariableVisitor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.Result;
@@ -105,6 +106,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     private VariableInstanceFacade variableInstanceFacade;
 
     @Inject
+    private StateMachineFacade stateMachineFacade;
+
+    @Inject
     private ResourceFacade resourceFacade;
 
     @Inject
@@ -121,6 +125,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
     @Inject
     private I18nFacade i18nFacade;
+
+    @Inject
+    private Beanjection beans;
 
     /**
      *
@@ -144,32 +151,67 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         vd.merge(entity);
 
         /*
-         * This flush is required by several EntityRevivedEvent listener,
-         * which opperate some SQL queries (which didn't return anything before
-         * entites have been flushed to database
+         * This flush is required by several EntityRevivedEvent listener, which opperate some SQL
+         * queries (which didn't return anything before entites have been flushed to database
          *
-         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
-         * it will not return any result if this flush not occurs
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name, it will not
+         * return any result if this flush not occurs
          */
         this.getEntityManager().flush();
 
         // flush
         this.revive(vd.getGameModel(), vd, false);
+
+        this.getEntityManager().flush();
+
+        this.reviveScopedInstancesRecursively(vd);
         return vd;
+    }
+
+    public Collection<VariableDescriptor> getReadableDescriptor(GameModel gameModel) {
+
+        TypedQuery<VariableDescriptor> query = getEntityManager().createNamedQuery(
+            "VariableDescriptor.findReadableDescriptors", VariableDescriptor.class);
+        query.setParameter("gameModelId", gameModel.getId());
+
+        return query.getResultList();
+    }
+
+    public List<VariableDescriptor> getReadableChildren(GameModel gameModel) {
+        TypedQuery<VariableDescriptor> query = getEntityManager().createNamedQuery(
+            "VariableDescriptor.findReadableByRootGameModelId", VariableDescriptor.class);
+        query.setParameter("gameModelId", gameModel.getId());
+
+        return Helper.copyAndSortModifiable(query.getResultList(), new EntityComparators.OrderComparator<>());
+    }
+
+    public List<VariableDescriptor> getReadableChildren(ListDescriptor list) {
+        TypedQuery<VariableDescriptor> query = getEntityManager().createNamedQuery(
+            "VariableDescriptor.findReadableByParentListId", VariableDescriptor.class);
+        query.setParameter("parentId", list.getId());
+
+        return Helper.copyAndSortModifiable(query.getResultList(), new EntityComparators.OrderComparator<>());
     }
 
     /**
      * Create a new descriptor in a DescriptorListI
      *
-     * @param gameModel the gameModel
-     * @param list      new descriptor parent
-     * @param entity    new descriptor to create
+     * @param gameModel   the gameModel
+     * @param list        new descriptor parent
+     * @param entity      new descriptor to create
+     * @param resetNames  should completely reset names or try to keep provideds ?
+     * @param resetRefIds should generate brand new refIds ?
      *
      * @return the new descriptor
      */
+    @Override
     public VariableDescriptor createChild(final GameModel gameModel,
         final DescriptorListI<VariableDescriptor> list,
-        final VariableDescriptor entity, boolean resetNames) {
+        final VariableDescriptor entity, boolean resetNames, boolean resetRefIds) {
+
+        if (resetRefIds) {
+            MergeHelper.resetRefIds(entity, null, true);
+        }
 
         List<String> usedNames = this.findDistinctNames(gameModel, entity.getRefId());
         List<TranslatableContent> usedLabels = this.findDistinctLabels(list);
@@ -193,34 +235,40 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
         Map<String, String> newNames = Helper.setUniqueName(entity, usedNames, gameModel, resetNames);
 
-        // some impacts may impact renamed variable. -> update them to impact the new variable name
-        for (Entry<String, String> newName : newNames.entrySet()) {
-            FindAndReplacePayload payload = new FindAndReplacePayload();
-            payload.setRegex(false);
-            payload.setFind("Variable.find(gameModel, \"" + newName.getKey() + "\")");
-            payload.setReplace("Variable.find(gameModel, \"" + newName.getValue() + "\")");
-            payload.setPretend(false);
 
-            FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);
-            MergeHelper.visitMergeable(entity, true, replacer);
-        }
+//        for (Entry<String, String> newName : newNames.entrySet()) {
+//
+//            // some impacts may impact renamed variable. -> update them to impact the new variable name
+//            FindAndReplacePayload payload = new FindAndReplacePayload();
+//            payload.setRegex(true);
+//            payload.setFind("Variable.find\\(gameModel, ([\"'])" + Pattern.quote(newName.getKey()) + "([\"'])\\)");
+//            payload.setReplace("Variable.find(gameModel, $1" + newName.getValue() + "$2)");
+//            payload.setPretend(false);
+//
+//            FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);
+//            MergeHelper.visitMergeable(entity, true, replacer);
+//
+//            // some variable may references others by their name (eg. task pred, )
+//        }
+        RenameVariableVisitor visitor = new RenameVariableVisitor(newNames);
+        MergeHelper.visitMergeable(entity, true, visitor);
 
         Helper.setUniqueLabel(entity, usedLabels, gameModel);
 
         list.addItem(entity);
 
         /*
-         * This flush is required by several EntityRevivedEvent listener,
-         * which opperate some SQL queries (which didn't return anything before
-         * entites have been flushed to database
+         * This flush is required by several EntityRevivedEvent listener, which opperate some SQL
+         * queries (which didn't return anything before entites have been flushed to database
          *
-         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
-         * it will not return any result if this flush not occurs
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name, it will not
+         * return any result if this flush not occurs
          */
         this.getEntityManager().flush();
 
         this.revive(gameModel, entity, true);
-
+        this.getEntityManager().flush();
+        this.reviveScopedInstancesRecursively(entity);
         return entity;
     }
 
@@ -269,8 +317,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
         // @TODO find a smarter way to decide to propagate or not to propatate...
         if (propagate) {
-            entity.getScope().setBeanjection(new Beanjection(variableInstanceFacade));
-            gameModelFacade.resetAndReviveScopeInstances(entity);
+            entity.getScope().setBeanjection(beans);
+            gameModelFacade.resetScopedInstances(entity);
+            //gameModelFacade.resetAndReviveScopeInstances(entity);
         }
 
         if (gameModel != null) {
@@ -296,22 +345,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             reviewingFacade.revivePeerReviewDescriptor((PeerReviewDescriptor) vd);
         } else if (vd instanceof TaskDescriptor) {
             resourceFacade.reviveTaskDescriptor((TaskDescriptor) vd);
-        } else if (vd instanceof DialogueDescriptor) {
-            this.reviveDialogue(gm, (DialogueDescriptor) vd);
-        }
-    }
-
-    public void reviveDialogue(GameModel gameModel, DialogueDescriptor dialogueDescriptor) {
-        for (DialogueState s : dialogueDescriptor.getInternalStates()) {
-            if (s.getText() != null) {
-                s.getText().setParentDescriptor(dialogueDescriptor);
-            }
-
-            for (DialogueTransition t : s.getTransitions()) {
-                if (t.getActionText() != null) {
-                    t.getActionText().setParentDescriptor(dialogueDescriptor);
-                }
-            }
+        } else if (vd instanceof AbstractStateMachineDescriptor) {
+            stateMachineFacade.reviveStateMachine(gm, (AbstractStateMachineDescriptor) vd);
         }
     }
 
@@ -432,7 +467,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      */
     public VariableDescriptor createChild(final Long parentDescriptorId, final VariableDescriptor entity) {
         VariableDescriptor parent = this.find(parentDescriptorId);
-        return this.createChild(parent.getGameModel(), (DescriptorListI) parent, entity, false);
+        return this.createChild(parent.getGameModel(), (DescriptorListI) parent, entity, false, false);
     }
 
     /**
@@ -443,17 +478,16 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      */
     public void create(final Long gameModelId, final VariableDescriptor variableDescriptor) {
         GameModel find = this.gameModelFacade.find(gameModelId);
-        /*
-        for (Game g : find.getGames()) {
-            logger.error("Game {}",  g);
-            for (Team t : g.getTeams()) {
-                logger.error("  Team {} -> {}",  t, t.getStatus());
-                for (Player p : t.getPlayers()) {
-                    logger.error("    Player {} -> {}",  p, p.getStatus());
-                }
-            }
-        } // */
-        this.createChild(find, find, variableDescriptor, false);
+//        for (Game g : find.getGames()) {
+//            logger.error("Game {}",  g);
+//            for (Team t : g.getTeams()) {
+//                logger.error("  Team {} -> {}",  t, t.getStatus());
+//                for (Player p : t.getPlayers()) {
+//                    logger.error("    Player {} -> {}",  p, p.getStatus());
+//                }
+//            }
+//        }
+        this.createChild(find, find, variableDescriptor, false, false);
     }
 
     /**
@@ -469,14 +503,12 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         final VariableDescriptor oldEntity = this.find(entityId); // Retrieve the entity to duplicate
         final VariableDescriptor newEntity = (VariableDescriptor) oldEntity.duplicate();
 
-        // reset reference id for all new entites within newEntity
-        MergeHelper.resetRefIds(newEntity, null, true);
         if (oldEntity.belongsToProtectedGameModel()) {
             MergeHelper.resetVisibility(newEntity, Visibility.PRIVATE);
         }
 
         final DescriptorListI list = oldEntity.getParent();
-        this.createChild(oldEntity.getGameModel(), list, newEntity, true);
+        this.createChild(oldEntity.getGameModel(), list, newEntity, true, true);
         return newEntity;
     }
 
@@ -512,7 +544,23 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
     public VariableDescriptor changeScopeRecursively(Long vdId,
         AbstractScope.ScopeType newScopeType) {
-        return this.changeScopeRecursively(this.find(vdId), newScopeType);
+        VariableDescriptor vd = this.changeScopeRecursively(this.find(vdId), newScopeType);
+        this.reviveScopedInstancesRecursively(vd);
+
+        return vd;
+    }
+
+    private void reviveScopedInstancesRecursively(VariableDescriptor vd) {
+        gameModelFacade.reviveScopedInstances(vd);
+        if (vd instanceof DescriptorListI) {
+            for (VariableDescriptor child : (List<? extends VariableDescriptor>) ((DescriptorListI) vd).getItems()) {
+                this.reviveScopedInstancesRecursively(child);
+            }
+        }
+    }
+
+    public void reviveAllScopedInstances(GameModel gameModel) {
+        gameModel.getVariableDescriptors().forEach(vd -> this.reviveScopedInstancesRecursively(vd));
     }
 
     public VariableDescriptor convertToStaticText(VariableDescriptor vd) {
@@ -533,6 +581,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                 staticText.setDefaultInstance(new StaticTextInstance());
                 staticText.setEditorTag(vd.getEditorTag());
                 String vdName = vd.getName();
+                Visibility vdVisib = vd.getVisibility();
                 staticText.setScope(new GameModelScope());
                 staticText.getScope().setBroadcastScope(AbstractScope.ScopeType.GameModelScope);
 
@@ -544,8 +593,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
                 staticText.setLabel(label);
                 staticText.setText(value);
+                staticText.setVisibility(vdVisib);
 
-                this.createChild(gameModel, parent, staticText, false);
+                this.createChild(gameModel, parent, staticText, false, false);
 
                 staticText.setName(vdName);
             }
@@ -570,6 +620,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                     text.setDefaultInstance(new TextInstance());
                     text.setEditorTag(vd.getEditorTag());
                     String vdName = vd.getName();
+                    Visibility vdVisibility = vd.getVisibility();
                     text.setScope(new TeamScope());
                     text.getScope().setBroadcastScope(AbstractScope.ScopeType.TeamScope);
 
@@ -583,8 +634,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
                     text.setName(vdName);
                     text.setLabel(label);
+                    text.setVisibility(vdVisibility);
 
-                    this.createChild(gameModel, parent, text, false);
+                    this.createChild(gameModel, parent, text, false, false);
                 }
             }
         }
@@ -830,6 +882,26 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     }
 
     /**
+     * Is the given <code>item</cpde> an ancetor of <code>other</code>.
+     *
+     * @param item  a description
+     * @param other a DescriptorList
+     *
+     * @return true if item is an ancestor of other or if both equals
+     */
+    private boolean isAncestorOf(VariableDescriptor item, DescriptorListI<? extends VariableDescriptor> other) {
+        if (item != null && other != null) {
+            if (item.equals(other)) {
+                return true;
+            }
+            if (other instanceof VariableDescriptor) {
+                return isAncestorOf(item, ((VariableDescriptor<VariableInstance>) other).getParent());
+            }
+        }
+        return false;
+    }
+
+    /**
      *
      * @param descriptorId         id of the descriptor to move
      * @param targetListDescriptor new parent
@@ -842,8 +914,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         DescriptorListI from = vd.getParent();
 
         Visibility targetVisibility = targetListDescriptor instanceof ModelScoped ? ((ModelScoped) targetListDescriptor).getVisibility() : Visibility.INHERITED;
-
-        if (!vd.belongsToProtectedGameModel() || (vd.getVisibility() == ModelScoped.Visibility.PRIVATE)) {
+        if (from != null && targetListDescriptor != null
+            && !isAncestorOf(vd, targetListDescriptor)
+            && (!vd.belongsToProtectedGameModel() || (vd.getVisibility() == ModelScoped.Visibility.PRIVATE))) {
             if (!vd.belongsToProtectedGameModel() || targetVisibility != Visibility.INTERNAL) {
                 from.localRemove(vd);
                 targetListDescriptor.addItem(index, vd);
@@ -855,7 +928,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                 }
             }
         } else {
-            throw WegasErrorMessage.error("Moving \"" + vd.getLabel().translateOrEmpty(vd.getGameModel()) + "\" is not authorized");
+            throw WegasErrorMessage.error("Moving \"" + vd.getEditorLabel() + "\" is not authorized");
         }
     }
 
@@ -872,9 +945,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     /**
      * Move given descriptor in targetListDescriptor at specified position.
      *
-     * @param descriptorId           id of the descrptor to move
+     * @param descriptorId           id of the descriptor to move
      * @param targetListDescriptorId id of the new list
-     * @param index                  new position in the targetlist
+     * @param index                  new position in the targetList
      */
     public void move(final Long descriptorId, final Long targetListDescriptorId, final Integer index) {
         this.move(descriptorId, (DescriptorListI) this.find(targetListDescriptorId), index);
@@ -963,7 +1036,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         vd.setScope(newScope);
         this.getEntityManager().persist(vd);
         vd = this.find(vd.getId());
-        gameModelFacade.resetAndReviveScopeInstances(vd);
+        gameModelFacade.resetScopedInstances(vd);
+        //gameModelFacade.resetAndReviveScopeInstances(vd);
     }
 
     /**
@@ -1023,7 +1097,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             if (theVar != null) {
                 // update ???
                 if (newScopeType != null) {
-                    this.changeScopeRecursively(theVar, newScopeType);
+                    this.changeScopeRecursively(theVar.getId(), newScopeType);
                 }
                 throw WegasErrorMessage.error("Patch not yet implemented");
             } else {
@@ -1058,8 +1132,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                         });
                     }
 
-                    theVar = this.createChild(target, target,
-                        theVar, false);
+                    theVar = this.createChild(target, target, theVar, false, false);
 
                     ContentConnector srcRepo = jcrConnectorProvider.getContentConnector(source,
                         WorkspaceType.FILES);
@@ -1186,6 +1259,26 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         return results.values();
     }
 
+    /**
+     * Starting from the fiven variable, get the variable and all its children recursively.
+     *
+     * @param root root vartiable
+     *
+     * @return
+     */
+    public List<VariableDescriptor> getAllChildren(VariableDescriptor root) {
+        List<VariableDescriptor> list = new ArrayList<>();
+        list.add(root);
+        if (root instanceof DescriptorListI) {
+            List<VariableDescriptor> items = ((DescriptorListI) root).getItems();
+            items.forEach((item) -> {
+                list.addAll(getAllChildren(item));
+            });
+        }
+        return list;
+    }
+
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
     public static class VariableIndex {
 
         private final GameModel gameModel;

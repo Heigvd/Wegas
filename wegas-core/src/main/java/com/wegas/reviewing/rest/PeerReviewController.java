@@ -2,14 +2,16 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -18,7 +20,9 @@ import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
 import com.wegas.reviewing.persistence.Review;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -59,13 +63,11 @@ public class PeerReviewController {
     private PlayerFacade playerFacade;
 
     /**
-     * Return the VariableInstance to review, according to given peer review
-     * descriptor and given review
+     * Return the VariableInstance to review, according to given peer review descriptor and given
+     * review
      *
-     * @param prdId  ID of the peer review descriptor which specify the
-     *               variable to review
-     * @param rId    ID of the review indicating whom the variable to review
-     *               belongs
+     * @param prdId  ID of the peer review descriptor which specify the variable to review
+     * @param rId    ID of the review indicating whom the variable to review belongs
      * @param selfId
      *
      * @return the variable instance to review
@@ -74,9 +76,9 @@ public class PeerReviewController {
 
     @Path("/{reviewDescriptorId : [1-9][0-9]*}/ToReview/{reviewId : [1-9][0-9]*}/{playerId: [1-9][0-9]*}")
     public VariableInstance getInstanceToReview(
-            @PathParam("reviewDescriptorId") Long prdId,
-            @PathParam("reviewId") Long rId,
-            @PathParam("playerId") Long selfId) {
+        @PathParam("reviewDescriptorId") Long prdId,
+        @PathParam("reviewId") Long rId,
+        @PathParam("playerId") Long selfId) {
 
         playerFacade.find(selfId);
         Review review = reviewFacade.findReview(rId);
@@ -103,20 +105,18 @@ public class PeerReviewController {
     }
 
     /**
-     * Let a player submit his variable. It means the variable become ready to
-     * be reviewed
+     * Let a player submit his variable. It means the variable become ready to be reviewed
      *
      * @param playerId id of the player who submit
-     * @param prdId    the peer review descriptor containing the variable to
-     *                 submit
+     * @param prdId    the peer review descriptor containing the variable to submit
      *
      * @return Standard HTTP OK
      */
     @POST
     @Path("/{reviewDescriptorId : [1-9][0-9]*}/Submit/{playerId : [1-9][0-9]*}")
     public Response submit(
-            @PathParam("playerId") Long playerId,
-            @PathParam("reviewDescriptorId") Long prdId) {
+        @PathParam("playerId") Long playerId,
+        @PathParam("reviewDescriptorId") Long prdId) {
 
         reviewFacade.submit(prdId, playerId);
         requestFacade.commit(playerId); // Player scoped
@@ -125,8 +125,8 @@ public class PeerReviewController {
     }
 
     /**
-     * Called by the teacher, it will take each PeerReviewInstance matching the
-     * given peer review descriptor and dispatch them (who review who?)
+     * Called by the teacher, it will take each PeerReviewInstance matching the given peer review
+     * descriptor and dispatch them (who review who?)
      *
      * @param prdId  the peer review descriptor
      * @param gameId the current game
@@ -136,8 +136,8 @@ public class PeerReviewController {
     @POST
     @Path("/{reviewDescriptorId : [1-9][0-9]*}/Dispatch/{gameId: [1-9][0-9]*}")
     public Response dispatch(
-            @PathParam("reviewDescriptorId") Long prdId,
-            @PathParam("gameId") Long gameId
+        @PathParam("reviewDescriptorId") Long prdId,
+        @PathParam("gameId") Long gameId
     ) {
         List<PeerReviewInstance> touched = reviewFacade.dispatch(prdId);
         this.commit(touched);
@@ -162,10 +162,9 @@ public class PeerReviewController {
     }
 
     /**
-     * Submitting a review occurs twice in the whole process First time when the
-     * reviewer post his review. In this case, the review switch from DISPATCHED
-     * to REVIEWED. The second time is when the author post his comments, switch
-     * from NOTIFIED to COMPLETED
+     * Submitting a review occurs twice in the whole process First time when the reviewer post his
+     * review. In this case, the review switch from DISPATCHED to REVIEWED. The second time is when
+     * the author post his comments, switch from NOTIFIED to COMPLETED
      *
      * @param review   review to submit
      * @param playerId
@@ -193,8 +192,8 @@ public class PeerReviewController {
     @POST
     @Path("/{reviewDescriptorId : [1-9][0-9]*}/Notify/{gameId: [1-9][0-9]*}")
     public Response notify(
-            @PathParam("reviewDescriptorId") Long prdId,
-            @PathParam("gameId") Long gameId
+        @PathParam("reviewDescriptorId") Long prdId,
+        @PathParam("gameId") Long gameId
     ) {
         List<PeerReviewInstance> touched = reviewFacade.notify(prdId);
         this.commit(touched);
@@ -213,20 +212,39 @@ public class PeerReviewController {
     @POST
     @Path("/{reviewDescriptorId : [1-9][0-9]*}/Close/{gameId: [1-9][0-9]*}")
     public Response close(
-            @PathParam("reviewDescriptorId") Long prdId,
-            @PathParam("gameId") Long gameId
+        @PathParam("reviewDescriptorId") Long prdId,
+        @PathParam("gameId") Long gameId
     ) {
         List<PeerReviewInstance> touched = reviewFacade.close(prdId);
         this.commit(touched);
         return Response.ok().build();
     }
 
+    /**
+     * Force state machine evaluation for each team/playe involved.
+     *
+     * @param instances list of instances, each game g
+     */
     private void commit(List<PeerReviewInstance> instances) {
+        RequestManager requestManager = requestFacade.getRequestManager();
+
+        /*
+         * Make to harvest all just updated entites
+         */
+        requestManager.flush();
+
+        /* And keep a copy of the set */
+        Set< AbstractEntity> justACopy = new HashSet<>(requestManager.getJustUpdatedEntities());
+
         for (PeerReviewInstance pri : instances) {
             InstanceOwner owner = pri.getOwner();
             if (owner != null) {
                 Player p = owner.getAnyLivePlayer();
                 if (p != null) {
+                    // Hack:
+                    // Since justUpdateEntities is clear after each commit,
+                    // re-inject updated entites ir
+                    requestManager.addUpdatedEntities(justACopy);
                     requestFacade.commit(p);
                 }
             }

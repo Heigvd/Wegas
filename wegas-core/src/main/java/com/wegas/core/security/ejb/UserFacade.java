@@ -1,9 +1,8 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.ejb;
@@ -11,6 +10,7 @@ package com.wegas.core.security.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -36,6 +36,7 @@ import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.core.security.util.AuthenticationMethod;
 import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.JpaAuthentication;
+import com.wegas.core.security.util.Sudoer;
 import com.wegas.core.security.util.TokenInfo;
 import com.wegas.messaging.ejb.EMailFacade;
 import java.util.*;
@@ -93,6 +94,12 @@ public class UserFacade extends BaseFacade<User> {
     /**
      *
      */
+    @Inject
+    private GameModelFacade gameModelFacade;
+
+    /**
+     *
+     */
     public UserFacade() {
         super(User.class);
     }
@@ -121,17 +128,15 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * Check is username is already in use
+     * Check is username is already in use (case-insensitive !)
      *
      * @param username username to check
      *
      * @return true is username is already in use
      */
     public boolean checkExistingUsername(String username) {
-        try {
-            return this.getUserByUsername(username) != null;
-        } catch (RuntimeException ex) {
-            return true;
+        try ( Sudoer root = requestManager.sudoer()) {
+            return !accountFacade.findAllByEmailOrUsername(username).isEmpty();
         }
     }
 
@@ -189,7 +194,7 @@ public class UserFacade extends BaseFacade<User> {
         try {
             requestManager.su();
 
-            for (AbstractAccount account : accountFacade.findAllByEmailOrUsername(username)) {
+            for (AbstractAccount account : accountFacade.findAllByEmailOrUsernameCaseSensitive(username)) {
                 AuthenticationMethod m = account.getAuthenticationMethod();
                 if (m != null) {
                     methods.add(m);
@@ -198,6 +203,9 @@ public class UserFacade extends BaseFacade<User> {
 
         } finally {
             requestManager.releaseSu();
+        }
+        if (methods.isEmpty()) {
+            methods.add(this.getDefaultAuthMethod());
         }
 
         return methods;
@@ -333,7 +341,7 @@ public class UserFacade extends BaseFacade<User> {
     public AbstractAccount getCurrentAccount() {
         final Subject subject = SecurityUtils.getSubject();
 
-        if (Helper.isLoggedIn(subject)){
+        if (Helper.isLoggedIn(subject)) {
             return accountFacade.find((Long) subject.getPrincipal());
         }
         throw new WegasNotFoundException("Unable to find an account");
@@ -363,9 +371,7 @@ public class UserFacade extends BaseFacade<User> {
     }
 
 
-    /*private void setCurrentUser(User user) {
-        requestManager.setCurrentUser(user);
-    }*/
+    /* private void setCurrentUser(User user) { requestManager.setCurrentUser(user); } */
     /**
      * @param username String representing the username
      *
@@ -399,20 +405,14 @@ public class UserFacade extends BaseFacade<User> {
     public void create(User user) {
 //        AbstractAccount account = user.getMainAccount();
         /*
-        // The following check is now done by caller UserController.signup()
-        try {
-            // @fixme This is only done to have a nice error and not the unparsable ConstraintViolationException
-            if (account instanceof JpaAccount)
-                String mail = ((JpaAccount) account).getEmail();
-                if (mail != null && !mail.isEmpty()) {
-                    accountFacade.findByEmail(mail);
-                    throw WegasErrorMessage.error("This email is already associated with an existing account.");
-                }
-            }
-        } catch (WegasNoResultException | InjectTransactionRolledbackException e) {
-            // GOTCHA
-            // E-Mail not yet registered -> proceed
-        }
+         * // The following check is now done by caller UserController.signup() try { // @fixme
+         * This is only done to have a nice error and not the unparsable
+         * ConstraintViolationException if (account instanceof JpaAccount) String mail =
+         * ((JpaAccount) account).getEmail(); if (mail != null && !mail.isEmpty()) {
+         * accountFacade.findByEmail(mail); throw WegasErrorMessage.error("This email is already
+         * associated with an existing account."); } } } catch (WegasNoResultException |
+         * InjectTransactionRolledbackException e) { // GOTCHA // E-Mail not yet registered ->
+         * proceed }
          */
         // setup shadow storage for each account
         for (AbstractAccount account : user.getAccounts()) {
@@ -442,7 +442,8 @@ public class UserFacade extends BaseFacade<User> {
 
         this.touchLastSeenAt(user);
         /*
-         * Very strange behaviour: without this flush, RequestManages faild to be injected within others beans...
+         * Very strange behaviour: without this flush, RequestManages faild to be injected within
+         * others beans...
          */
         this.getEntityManager().flush();
     }
@@ -610,8 +611,7 @@ public class UserFacade extends BaseFacade<User> {
      * @return all role members
      */
     public List<User> findUsersWithRole(Long role_id) {
-        /* Why not using JPA ?
-        return roleFacade.find(role_id).getUsers(); ??????
+        /* Why not using JPA ? return roleFacade.find(role_id).getUsers(); ??????
          */
         final TypedQuery<User> findWithRole = getEntityManager()
             .createNamedQuery("User.findUsersWithRole", User.class);
@@ -619,13 +619,14 @@ public class UserFacade extends BaseFacade<User> {
         return findWithRole.getResultList();
     }
 
-    private void deletePermission(Permission p) {
+    public void deletePermission(Permission p) {
         if (p.getUser() != null) {
             this.find(p.getUser().getId()).removePermission(p);
         }
         if (p.getRole() != null) {
             roleFacade.find(p.getRole().getId()).removePermission(p);
         }
+        this.getEntityManager().remove(p);
     }
 
     public List<Role> findRoles(User user) {
@@ -736,22 +737,31 @@ public class UserFacade extends BaseFacade<User> {
     public void addTrainerToGame(Long trainerId, Long gameId) {
         // load the game to make sure it exists
         Game game = gameFacade.find(gameId);
-        if (game != null) {
-            User user = this.find(trainerId);
-            this.addUserPermission(user, "Game:View,Edit:g" + gameId);
+        requestManager.assertGameTrainer(game);
+        try (Sudoer su = requestManager.sudoer()) {
+            if (game != null) {
+                User user = this.find(trainerId);
+                this.addUserPermission(user, "Game:View,Edit:g" + gameId);
+                // make sure to send game too
+                requestManager.addUpdatedEntity(game);
+            }
         }
     }
 
     public void removeTrainer(Long gameId, User trainer) {
+        // load the game to make sure it exists
+        Game game = gameFacade.find(gameId);
+        requestManager.assertGameTrainer(game);
+        try (Sudoer su = requestManager.sudoer()) {
+            if (this.getCurrentUser().equals(trainer)) {
+                throw WegasErrorMessage.error("Cannot remove yourself");
+            }
 
-        if (this.getCurrentUser().equals(trainer)) {
-            throw WegasErrorMessage.error("Cannot remove yourself");
-        }
-
-        if (this.findEditors("g" + gameId).size() <= 1) {
-            throw WegasErrorMessage.error("Cannot remove last trainer");
-        } else {
-            this.deletePermissions(trainer, "Game:%Edit%:g" + gameId);
+            if (this.findEditors("g" + gameId).size() <= 1) {
+                throw WegasErrorMessage.error("Cannot remove last trainer");
+            } else {
+                this.deletePermissions(trainer, "Game:%Edit%:g" + gameId);
+            }
         }
     }
 
@@ -762,28 +772,39 @@ public class UserFacade extends BaseFacade<User> {
      * @param permissions
      */
     public void grantGameModelPermissionToUser(Long userId, Long gameModelId, String permissions) {
-        User user = this.find(userId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
+        try (Sudoer su = requestManager.sudoer()) {
+            User user = this.find(userId);
 
-        /*
-         * Revoke previous permissions (do not use removeScenarist method since
-         * this method prevents to remove one own permissions,
-         */
-        this.deletePermissions(user, "GameModel:%:gm" + gameModelId);
+            /*
+             * Revoke previous permissions (do not use removeScenarist method since this method
+             * prevents to remove one own permissions,
+             */
+            this.deletePermissions(user, "GameModel:%:gm" + gameModelId);
 
-        // Grant new permission
-        this.addUserPermission(user, "GameModel:" + permissions + ":gm" + gameModelId);
+            // Grant new permission
+            this.addUserPermission(user, "GameModel:" + permissions + ":gm" + gameModelId);
+            // make sure to send the gameModel too
+            requestManager.addUpdatedEntity(gm);
+        }
     }
 
     public void removeScenarist(Long gameModelId, User scenarist) {
-        if (this.getCurrentUser().equals(scenarist)) {
-            throw WegasErrorMessage.error("Cannot remove yourself");
-        }
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
+        try (Sudoer su = requestManager.sudoer()) {
+            if (this.getCurrentUser().equals(scenarist)) {
+                throw WegasErrorMessage.error("Cannot remove yourself");
+            }
 
-        if (this.findEditors("gm" + gameModelId).size() <= 1) {
-            throw WegasErrorMessage.error("Cannot remove last scenarist");
-        } else {
-            //remove all permission matching  both gameModelId and userId
-            this.deletePermissions(scenarist, "GameModel:%:gm" + gameModelId);
+            List<User> editors = this.findEditors("gm" + gameModelId);
+            if (editors.size() <= 1 && editors.contains(scenarist)) {
+                throw WegasErrorMessage.error("Cannot remove last scenarist");
+            } else {
+                //remove all permission matching  both gameModelId and userId
+                this.deletePermissions(scenarist, "GameModel:%:gm" + gameModelId);
+            }
         }
     }
 
@@ -918,9 +939,7 @@ public class UserFacade extends BaseFacade<User> {
         accountFacade.remove(guest.getId());
 
         this.refresh(user);
-        /*for (Player p : user.getPlayers()) {
-            p.setName(user.getName());
-        }*/
+        /* for (Player p : user.getPlayers()) { p.setName(user.getName()); } */
         return user;
     }
 
@@ -930,10 +949,69 @@ public class UserFacade extends BaseFacade<User> {
         //this.merge(u);
     }
 
-    public void addRole(Long uId, Long rId) {
+    public User addRole(Long uId, Long rId) {
         User u = this.find(uId);
         Role r = roleFacade.find(rId);
         this.addRole(u, r);
+        return u;
+    }
+
+    public void removeRole(User u, Role r) {
+        u.removeRole(r);
+        r.removeUser(u);
+        //this.merge(u);
+    }
+
+    public User removeRole(Long uId, Long rId) {
+        User u = this.find(uId);
+        Role r = roleFacade.find(rId);
+        this.removeRole(u, r);
+        return u;
+    }
+
+    /**
+     * Give a permission to the user identified by the given id
+     *
+     * @param userId     id of the user
+     * @param permission the permission
+     *
+     * @return the newly persisted permission
+     */
+    public Permission createPermission(Long userId, Permission permission) {
+        User user = this.find(userId);
+        permission.setUser(user);
+        permission.setRole(null);
+        user.addPermission(permission);
+        this.getEntityManager().persist(permission);
+
+        return permission;
+    }
+
+    /**
+     * Update a permission
+     *
+     * @param permission new value
+     *
+     * @return updated managed permission
+     */
+    public Permission updatePermission(Permission permission) {
+        Long id = permission.getId();
+        Permission p = this.getEntityManager().find(Permission.class, id);
+        p.setValue(permission.getValue());
+        return p;
+    }
+
+    /**
+     * Delete a permission
+     *
+     * @param id id of the permission to delete
+     *
+     * @return just deleted permission
+     */
+    public Permission deletePermission(Long id) {
+        Permission p = this.getEntityManager().find(Permission.class, id);
+        this.deletePermission(p);
+        return p;
     }
 
     /**

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.persistence;
@@ -10,7 +10,10 @@ package com.wegas.core.security.persistence;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.ejb.RequestManager.RequestContext;
+import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -18,6 +21,9 @@ import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,6 +47,7 @@ import org.slf4j.LoggerFactory;
 @Entity
 @NamedQuery(name = "Permission.findByPermission", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission")
 @NamedQuery(name = "Permission.findByPermissionAndUser", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission AND p.user.id = :userId")
+@NamedQuery(name = "Permission.findByPermissionAndRole", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission AND p.role.id = :roleId")
 @NamedQuery(name = "Permission.findByRole", query = "SELECT p FROM Permission p WHERE p.role.id = :roleId",
     hints = {
         @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
@@ -56,7 +63,7 @@ import org.slf4j.LoggerFactory;
         @Index(columnList = "user_id")
     }
 )
-public class Permission extends AbstractEntity {
+public class Permission extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
 
@@ -78,8 +85,7 @@ public class Permission extends AbstractEntity {
     /**
      *
      */
-    /*@ManyToOne
-     private AbstractAccount account;*/
+    /* @ManyToOne private AbstractAccount account; */
     @ManyToOne
     @JsonIgnore
     private User user;
@@ -169,12 +175,28 @@ public class Permission extends AbstractEntity {
         this.role = role;
     }
 
-    private boolean isPermId(String id) {
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+
+        if (this.getUser() != null) {
+            List.of(this);
+            map.put(this.getUser().getChannel(), List.of(this));
+        } else if (this.getRole() != null) {
+            map.put(this.getRole().getChannel(), List.of(this));
+        }
+
+        map.put(WebsocketFacade.ADMIN_LOBBY_CHANNEL, List.of(this));
+
+        return map;
+    }
+
+    private static boolean isPermId(String id) {
         return id.matches("(g|gm)\\d+");
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         String[] split = this.getValue().split(":");
 
         if (split.length == 3) {
@@ -184,17 +206,14 @@ public class Permission extends AbstractEntity {
                 if ("GameModel".equals(split[0])) {
                     // One should have super right on the gameModel the permission give access to
                     return WegasPermission.getAsCollection(GameModel.getAssociatedWritePermission(Long.parseLong(perm.replaceFirst("gm", ""))));
-                    /*GameModel gameModel = GameModelFacade.lookup().find(Long.parseLong(perm.replaceFirst("gm", "")));
-                        if (gameModel != null) {
-                            return gameModel.getRequieredUpdatePermission();
-                        }*/
+                    /* GameModel gameModel =
+                     * GameModelFacade.lookup().find(Long.parseLong(perm.replaceFirst("gm", "")));
+                     * if (gameModel != null) { return gameModel.getRequieredUpdatePermission(); } */
                 } else if ("Game".equals(split[0])) {
                     // One should have super right on the game the permission give access to
                     return WegasPermission.getAsCollection(Game.getAssociatedWritePermission(Long.parseLong(perm.replaceFirst("g", ""))));
-                    /*Game game = GameFacade.lookup().find(Long.parseLong(perm.replaceFirst("g", "")));
-                        if (game != null) {
-                            return game.getRequieredUpdatePermission();
-                    }*/
+                    /* Game game = GameFacade.lookup().find(Long.parseLong(perm.replaceFirst("g",
+                     * ""))); if (game != null) { return game.getRequieredUpdatePermission(); } */
                 }
             }
         }
@@ -202,13 +221,17 @@ public class Permission extends AbstractEntity {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         return null;
     }
 
     @Override
     public WithPermission getMergeableParent() {
-        return null;
+        if (this.user != null) {
+            return this.user;
+        } else {
+            return this.role;
+        }
     }
 
     @Override

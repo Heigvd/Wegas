@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "@class")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "GameModel", value = GameModel.class),
     @JsonSubTypes.Type(name = "Game", value = Game.class),
@@ -64,7 +65,7 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
 
     private static final long serialVersionUID = -2538440276749623728L;
 
-    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractEntity.class);
+    static final protected org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractEntity.class);
 
     @WegasEntityProperty(
         nullable = false,
@@ -340,20 +341,20 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
      */
     @JsonIgnore
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
-        return this.getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
+        return this.getRequieredUpdatePermission(context);
     }
 
     @JsonIgnore
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return this.getRequieredUpdatePermission(context);
     }
 
     @JsonIgnore
     @Override
-    public Collection<WegasPermission> getRequieredDeletePermission() {
-        return this.getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredDeletePermission(RequestContext context) {
+        return this.getRequieredUpdatePermission(context);
     }
 
     public boolean isPersisted() {

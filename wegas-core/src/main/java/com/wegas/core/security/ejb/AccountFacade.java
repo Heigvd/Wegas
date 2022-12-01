@@ -1,9 +1,8 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.ejb;
@@ -24,19 +23,20 @@ import com.wegas.core.security.aai.AaiUserDetails;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
-import com.wegas.core.security.persistence.token.ResetPasswordToken;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.Shadow;
-import com.wegas.core.security.persistence.token.Token;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.persistence.token.InviteToJoinToken;
+import com.wegas.core.security.persistence.token.ResetPasswordToken;
 import com.wegas.core.security.persistence.token.SurveyToken;
+import com.wegas.core.security.persistence.token.Token;
 import com.wegas.core.security.persistence.token.ValidateAddressToken;
 import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.Sudoer;
 import com.wegas.core.security.util.TokenInfo;
 import com.wegas.messaging.ejb.EMailFacade;
 import com.wegas.survey.persistence.SurveyDescriptor;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.ejb.EJBException;
@@ -91,6 +91,15 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
+     * Get the current account
+     *
+     * @return the current account or null
+     */
+    public AbstractAccount getCurrentAccount() {
+        return requestManager.getCurrentAccount();
+    }
+
+    /**
      * Update an account
      *
      * @param entityId id of account to update
@@ -128,22 +137,23 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
             oAccount.shadowEmail();
 
-            /*
-             * Only an administrator can modify memberships
-             * And only if given account contains roles by itself
-             */
-            if (requestManager.isAdmin() && account.getDeserialisedRoles() != null) {
-                Set<Role> revivedRoles = new HashSet<>();
-                for (Role r : account.getDeserialisedRoles()) {
-                    try {
-                        revivedRoles.add(roleFacade.find(r.getId()));
-                    } catch (EJBException e) {
-                        // not able to revive this role
-                        logger.error("Fails to add role {} to {}", r, account);
-                    }
-                }
-                oAccount.getUser().setRoles(revivedRoles);
-            }
+// @Deprecated: Admin shall update membershipness with dedicated methods
+//            /*
+//             * Only an administrator can modify memberships And only if given account contains roles
+//             * by itself
+//             */
+//            if (requestManager.isAdmin() && account.getDeserialisedRoles() != null) {
+//                Set<Role> revivedRoles = new HashSet<>();
+//                for (Role r : account.getDeserialisedRoles()) {
+//                    try {
+//                        revivedRoles.add(roleFacade.find(r.getId()));
+//                    } catch (EJBException e) {
+//                        // not able to revive this role
+//                        logger.error("Fails to add role {} to {}", r, account);
+//                    }
+//                }
+//                oAccount.getUser().setRoles(revivedRoles);
+//            }
         }
 
         return oAccount;
@@ -182,7 +192,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      * @return all JPAAccounts
      */
     public List<JpaAccount> findAllRegisteredJpa() {
-        final TypedQuery<JpaAccount> query = getEntityManager().createNamedQuery("JpaAccount.findExactClass", JpaAccount.class);
+        final TypedQuery<JpaAccount> query = getEntityManager()
+            .createNamedQuery("JpaAccount.findExactClass", JpaAccount.class);
         return query.getResultList();
     }
 
@@ -192,7 +203,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      * @return all AaiAccounts
      */
     public List<AaiAccount> findAllRegisteredAai() {
-        final TypedQuery<AaiAccount> query = getEntityManager().createNamedQuery("AaiAccount.findExactClass", AaiAccount.class);
+        final TypedQuery<AaiAccount> query = getEntityManager()
+            .createNamedQuery("AaiAccount.findExactClass", AaiAccount.class);
         return query.getResultList();
     }
 
@@ -202,7 +214,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      * @return all registered accounts
      */
     public List<AbstractAccount> findAllRegistered() {
-        final TypedQuery<AbstractAccount> query = getEntityManager().createNamedQuery("AbstractAccount.findAllNonGuests", AbstractAccount.class);
+        final TypedQuery<AbstractAccount> query = getEntityManager()
+            .createNamedQuery("AbstractAccount.findAllNonGuests", AbstractAccount.class);
         return query.getResultList();
     }
 
@@ -216,7 +229,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      * @throws WegasNoResultException if no such a user exists
      */
     public AbstractAccount findByUsername(String username) throws WegasNoResultException {
-        final TypedQuery<AbstractAccount> query = getEntityManager().createNamedQuery("AbstractAccount.findByUsername", AbstractAccount.class);
+        final TypedQuery<AbstractAccount> query = getEntityManager()
+            .createNamedQuery("AbstractAccount.findByUsername", AbstractAccount.class);
         query.setParameter("username", username);
         try {
             return query.getSingleResult();
@@ -235,7 +249,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      * @throws WegasNoResultException if no such a user exists
      */
     public JpaAccount findJpaByUsername(String username) throws WegasNoResultException {
-        final TypedQuery<JpaAccount> query = getEntityManager().createNamedQuery("JpaAccount.findByUsername", JpaAccount.class);
+        final TypedQuery<JpaAccount> query = getEntityManager()
+            .createNamedQuery("JpaAccount.findByUsername", JpaAccount.class);
         query.setParameter("username", username);
         try {
             return query.getSingleResult();
@@ -253,7 +268,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      */
     public AbstractAccount findByEmail(String email) throws WegasNoResultException {
         try {
-            final TypedQuery<AbstractAccount> query = getEntityManager().createNamedQuery("AbstractAccount.findByEmail", AbstractAccount.class);
+            final TypedQuery<AbstractAccount> query = getEntityManager()
+                .createNamedQuery("AbstractAccount.findByEmail", AbstractAccount.class);
             query.setParameter("email", email);
             return query.getSingleResult();
         } catch (NoResultException ex) {
@@ -264,12 +280,26 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     /**
      * @param name
      *
-     * @return all accounts which match the given name
+     * @return all accounts which match the given name (case-insensitive)
      *
      */
     public List<AbstractAccount> findAllByEmailOrUsername(String name) {
         TypedQuery<AbstractAccount> query = getEntityManager()
             .createNamedQuery("AbstractAccount.findByEmailOrUserName",
+                AbstractAccount.class);
+        query.setParameter("name", name);
+        return query.getResultList();
+    }
+
+    /**
+     * @param name
+     *
+     * @return all accounts which match the given name (case sensitive)
+     *
+     */
+    public List<AbstractAccount> findAllByEmailOrUsernameCaseSensitive(String name) {
+        TypedQuery<AbstractAccount> query = getEntityManager()
+            .createNamedQuery("AbstractAccount.findByEmailOrUserNameSensitive",
                 AbstractAccount.class);
         query.setParameter("name", name);
         return query.getResultList();
@@ -284,7 +314,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      */
     public JpaAccount findJpaByEmail(String email) throws WegasNoResultException {
         try {
-            final TypedQuery<JpaAccount> query = getEntityManager().createNamedQuery("JpaAccount.findByEmail", JpaAccount.class);
+            final TypedQuery<JpaAccount> query = getEntityManager()
+                .createNamedQuery("JpaAccount.findByEmail", JpaAccount.class);
             query.setParameter("email", email);
             return query.getSingleResult();
         } catch (NoResultException ex) {
@@ -302,7 +333,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      * @throws WegasNoResultException if no such a user exists
      */
     public AaiAccount findByPersistentId(String persistentId) throws WegasNoResultException {
-        final TypedQuery<AaiAccount> query = getEntityManager().createNamedQuery("AaiAccount.findByPersistentId", AaiAccount.class);
+        final TypedQuery<AaiAccount> query = getEntityManager()
+            .createNamedQuery("AaiAccount.findByPersistentId", AaiAccount.class);
         query.setParameter("persistentId", persistentId);
         try {
             return query.getSingleResult();
@@ -424,7 +456,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             );
         }
 
-        Predicate anyRolePredicate = cb.or(anyRoleFilter.toArray(new Predicate[anyRoleFilter.size()]));
+        Predicate anyRolePredicate = cb.or(anyRoleFilter
+            .toArray(new Predicate[anyRoleFilter.size()]));
 
         cq.where(cb.and(anyRolePredicate, tokenPredicate));
 
@@ -448,15 +481,11 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      */
     public List<AbstractAccount> getAutoCompleteByRoles(String value, List<String> rolesList) {
         return findByNameEmailDomainOrUsernameWithRoles(value, rolesList);
-        /*List<String> roles = rolesList.get("rolesList");
-
-        List<AbstractAccount> returnValue = new ArrayList<>();
-        for (AbstractAccount a : findByNameEmailDomainOrUsername(value)) {
-            if (userFacade.hasAnyRole(a.getUser(), roles)) {
-                returnValue.add(a);
-            }
-        }
-        return returnValue;*/
+        /* List<String> roles = rolesList.get("rolesList");
+         *
+         * List<AbstractAccount> returnValue = new ArrayList<>(); for (AbstractAccount a :
+         * findByNameEmailDomainOrUsername(value)) { if (userFacade.hasAnyRole(a.getUser(), roles))
+         * { returnValue.add(a); } } return returnValue; */
 
     }
 
@@ -596,7 +625,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             throw WegasErrorMessage.error("Please log in to consume token");
         }
 
-        try (Sudoer su = requestManager.sudoer()) {
+        try ( Sudoer su = requestManager.sudoer()) {
             Token token = this.findToken(tokenId);
             AbstractAccount account = token.getAccount();
 
@@ -770,7 +799,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      */
     public void requestPasswordReset(String email, HttpServletRequest request) {
         // as the subject who requires such a lin is unauthenticated, we have to promote it
-        try (Sudoer su = requestManager.sudoer()) {
+        try ( Sudoer su = requestManager.sudoer()) {
             JpaAccount account = this.findJpaByEmail(email);
             if (account != null) {
 
@@ -787,10 +816,17 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
                 token.setToken(Helper.genToken(128));
 
+                // print GMT date
+                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy hh:mm:ss a");
+                sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+                String expire = sdf.format(token.getExpiryDate()) + " GMT";
+
                 this.persistAndSendDisposableToken(token, request, account.getEmail(), null,
                     "[Albasim Wegas] Reset Password Request",
                     "Hi " + account.getName() + ", <br /><br />Click <a href='{{link}}'>here</a> to reset your password.<br /><br />"
-                    + "If you did't request this email, then simply ignore this message");
+                    + "If you did't request this email, then simply ignore this message<br /><br />"
+                    + " <hr />"
+                    + "<em>This link will be valid until " + expire + "</em>");
             }
             this.flush();
         } catch (WegasNoResultException ex) {
@@ -800,10 +836,10 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
     /**
      *
-     * Trainer send invitation to participate in a survey anonymously.
-     * This invitation will force to log into an anonymous guest account.
+     * Trainer send invitation to participate in a survey anonymously. This invitation will force to
+     * log into an anonymous guest account.
      *
-     * @param email structure with attributes recipients, from, subject and body.
+     * @param email   structure with attributes recipients, from, subject and body.
      * @param surveys survey list
      * @param request HTTP request is required to generate the link to send
      */
@@ -812,7 +848,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         List<SurveyDescriptor> surveys,
         HttpServletRequest request) {
 
-        for (String recipient: email.getRecipients()) {
+        for (String recipient : email.getRecipients()) {
             SurveyToken token = new SurveyToken();
             token.setToken(Helper.genToken(128));
 
@@ -825,7 +861,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             token.setExpiryDate(null);
             // can be used as many times as desired
             token.setRemainingUses(null);
-            
+
             String body = email.getBody();
             // insert the player email into the text
             if (body.contains("{{player}}")) {
@@ -834,7 +870,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
             this.persistAndSendDisposableToken(token, request,
                 recipient,
-                email.getSender(),  // requestManager.getCurrentUser().getMainAccount().getName();
+                email.getSender(), // requestManager.getCurrentUser().getMainAccount().getName();
                 email.getSubject(), // "[Albasim Wegas] Survey",
                 body);              // "Dear " + account.getName() + ", <br /><br />Click <a href='{{link}}'>here</a> to participate in a survey");
         }
@@ -844,11 +880,11 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      * Trainer send invitation to participate in a survey (non-anonymously)
      *
      * @param account recipient's account
-     * @param email structure with attributes to, from, subject and body.
+     * @param email   structure with attributes to, from, subject and body.
      * @param surveys survey list
      * @param request HTTP request is required to generate the link to send
      */
-    public void sendSurveyToken(AbstractAccount account, 
+    public void sendSurveyToken(AbstractAccount account,
         EmailAttributes email,
         List<SurveyDescriptor> surveys,
         HttpServletRequest request) {
@@ -865,7 +901,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         token.setExpiryDate(null);
         // can be used as many times as desired
         token.setRemainingUses(null);
-        
+
         String body = email.getBody();
         // insert the player name into the text
         if (body.contains("{{player}}")) {
@@ -874,7 +910,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
         this.persistAndSendDisposableToken(token, request,
             email.getRecipient(),
-            email.getSender(),  // requestManager.getCurrentUser().getMainAccount().getName();
+            email.getSender(), // requestManager.getCurrentUser().getMainAccount().getName();
             email.getSubject(), // "[Albasim Wegas] Survey",
             body);              // "Hi " + account.getName() + ", <br /><br />Click <a href='{{link}}'>here</a> to participate in a survey");
     }
@@ -900,6 +936,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             try {
                 //only root can create token
                 requestManager.su();
+                logger.trace("Send {} to {}", token.getClass().getSimpleName(),
+                    recipientAddress);
 
                 String plainToken = token.getToken();
 
@@ -908,6 +946,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                     account.addToken(token);
                     token.setToken(hashToken(token.getToken(), account));
                     if (!recipientAddress.equals(account.getEmail())) {
+                        logger.error("Given recipient address \"{}\" does not match account address \"{}\"",
+                            recipientAddress, account.getEmail());
                         throw WegasErrorMessage.error("Given recipient address does not match account address");
                     }
                 }
@@ -927,6 +967,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                     // no placeholder -> append
                     text = text + "<br /><a href='" + theLink + "'>" + theLink + "</a>";
                 }
+                logger.trace("Token message is ready to be sent : {}", text);
 
                 String from = "noreply@" + Helper.getWegasProperty("mail.default_domain");
                 if (!Helper.isNullOrEmpty(fromCommonName)) {
@@ -1000,7 +1041,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
             if (player == null) {
                 // no -> join the game/team
-                ArrayList<Locale> languages = request != null ? Collections.list(request.getLocales()) : null;
+                ArrayList<Locale> languages = request != null ? Collections.list(request
+                    .getLocales()) : null;
                 // join !
                 if (token.getTeam() != null) {
                     // join that team
@@ -1028,7 +1070,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                 Player player = playerFacade.findPlayerInGameModel(gameModel.getId(), userId);
                 if (player == null) {
                     // join as SurveyPlayer
-                    ArrayList<Locale> languages = request != null ? Collections.list(request.getLocales()) : null;
+                    ArrayList<Locale> languages = request != null ? Collections.list(request
+                        .getLocales()) : null;
                     gameFacade.joinForSurvey(gameModel.getGames().get(0), languages);
                 }
             } else {

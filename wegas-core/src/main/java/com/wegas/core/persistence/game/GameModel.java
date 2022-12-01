@@ -1,16 +1,14 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
 
 import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.INTERNAL;
 import ch.albasim.wegas.annotations.ProtectionLevel;
-import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
@@ -22,6 +20,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
+import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.jta.JCRClient;
@@ -29,11 +29,13 @@ import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -52,6 +54,7 @@ import com.wegas.editor.view.StringView;
 import com.wegas.editor.view.Textarea;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import javax.jcr.RepositoryException;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -69,7 +72,6 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
 import javax.persistence.PostPersist;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
@@ -105,7 +107,7 @@ import org.slf4j.LoggerFactory;
 )
 @NamedQuery(
     name = "GameModel.findDistinctLogIds",
-    query = "SELECT DISTINCT(gm.properties.logID) FROM GameModel gm"
+    query = "SELECT DISTINCT(gm.properties.logID) FROM GameModel gm WHERE gm.properties.logID IS NOT NULL AND gm.properties.logID != ''"
 )
 @NamedQuery(
     name = "GameModel.findDistinctChildrenLabels",
@@ -141,7 +143,7 @@ import org.slf4j.LoggerFactory;
         @Index(columnList = "basedon_id")
     }
 )
-public class GameModel extends AbstractEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable, NamedEntity, JCRClient {
+public class GameModel extends AbstractEntity implements DescriptorListI<VariableDescriptor>, AcceptInjection, InstanceOwner, Broadcastable, NamedEntity, JCRClient {
 
     private static final Logger logger = LoggerFactory.getLogger(GameModel.class);
 
@@ -149,6 +151,10 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     @Transient
     private Boolean onGoingPropagation = false;
+
+    @JsonIgnore
+    @Transient
+    protected Beanjection beans;
 
     @Transient
     @JsonIgnore
@@ -159,7 +165,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @JsonView(Views.IndexI.class)
+    @JsonView({Views.IndexI.class, Views.LobbyI.class})
     private Long id;
 
     /**
@@ -177,7 +183,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @WegasEntityProperty(initOnly = true,
         optional = false, nullable = false,
         view = @View(label = "UI Version", readOnly = true, value = NumberView.class))
-    private Integer UIVersion;
+    private Integer uiversion;
 
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @WegasEntityProperty(includeByDefault = false,
@@ -254,7 +260,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * VariableDescriptor can be placed inside of a ListDescriptor's items List).
      */
     @OneToMany(mappedBy = "root", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-    @OrderColumn(name = "gm_items_order")
+    //@OrderColumn(name = "gm_items_order")
     //@JsonManagedReference
     @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<VariableDescriptor> items = new ArrayList<>();
@@ -276,28 +282,12 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     private List<Game> games = new ArrayList<>();
 
     /**
-     * Holds all the scripts contained in current game model.
+     * Holds all the scripts and others libraries contained in current game model.
      */
-    @OneToMany(mappedBy = "scriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "gameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
     @WegasEntityProperty(includeByDefault = false, notSerialized = true)
-    private List<GameModelContent> scriptLibrary = new ArrayList<>();
-
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "csslibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonView({Views.ExportI.class})
-    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
-    private List<GameModelContent> cssLibrary = new ArrayList<>();
-
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "clientscriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonView({Views.ExportI.class})
-    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
-    private List<GameModelContent> clientScriptLibrary = new ArrayList<>();
+    private List<GameModelContent> libraries = new ArrayList<>();
 
     /**
      *
@@ -328,26 +318,25 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         this.name = name;
     }
 
-    /**
-     * @param pageMap
-     *
-     * @throws RepositoryException
-     */
-    @JsonCreator
-    public GameModel(@JsonProperty("pages") JsonNode pageMap) throws RepositoryException {
-        Map<String, JsonNode> map = new HashMap<>();
-        if (pageMap == null) {
-            return;
-        }
-        String curKey;
-        Iterator<String> iterator = pageMap.fieldNames();
-        while (iterator.hasNext()) {
-            curKey = iterator.next();
-            map.put(curKey, pageMap.get(curKey));
-        }
-        this.setPages(map);
-    }
-
+//    /**
+//     * @param pageMap
+//     *
+//     * @throws RepositoryException
+//     */
+//    @JsonCreator
+//    public GameModel(@JsonProperty("pages") JsonNode pageMap) throws RepositoryException {
+//        Map<String, JsonNode> map = new HashMap<>();
+//        if (pageMap == null) {
+//            return;
+//        }
+//        String curKey;
+//        Iterator<String> iterator = pageMap.fieldNames();
+//        while (iterator.hasNext()) {
+//            curKey = iterator.next();
+//            map.put(curKey, pageMap.get(curKey));
+//        }
+//        this.setPages(map);
+//    }
     /**
      * Set the gameModel this PLAY gameModel is based on
      *
@@ -382,6 +371,11 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     public void setBasedOnId(Long id) {
         // jsonIgnore
+    }
+
+    @Override
+    public void setBeanjection(Beanjection beanjection) {
+        this.beans = beanjection;
     }
 
     /**
@@ -435,8 +429,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @PrePersist
     public void prePersist() {
-        if (this.getUIVersion() == null) {
-            this.setUIVersion(1);
+        if (this.getUiversion() == null) {
+            this.setUiversion(1);
         }
         this.setCreatedTime(new Date());
     }
@@ -463,19 +457,19 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         this.name = name;
     }
 
-    public Integer getUIVersion() {
-        return UIVersion;
+    public Integer getUiversion() {
+        return uiversion;
     }
 
-    public void setUIVersion(Integer UIVersion) {
-        this.UIVersion = UIVersion;
+    public void setUiversion(Integer uiversion) {
+        this.uiversion = uiversion;
     }
 
     /**
      * @return Current GameModel's status
      */
     @WegasExtraProperty(
-        optional = true, nullable = false,
+        optional = false, nullable = false,
         view = @View(
             label = "Status",
             readOnly = true,
@@ -590,22 +584,6 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
-     * @return the scriptLibrary
-     */
-    @JsonIgnore
-    public List<GameModelContent> getScriptLibraryList() {
-        return scriptLibrary;
-    }
-
-    /**
-     * @param scriptLibrary the scriptLibrary to set
-     */
-    @JsonIgnore
-    public void setScriptLibraryList(List<GameModelContent> scriptLibrary) {
-        this.scriptLibrary = scriptLibrary;
-    }
-
-    /**
      * @return all players from all teams and all games
      */
     @JsonIgnore
@@ -667,6 +645,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * @return testPlayer
      */
     @JsonIgnore
+    @Override
     public Player getTestPlayer() {
         for (Game game : this.getGames()) {
             Player testPlayer = game.getTestPlayer();
@@ -680,6 +659,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     /**
      * @return the createdTime
      */
+    @WegasExtraProperty(nullable = false, optional = false)
     public Date getCreatedTime() {
         return (createdTime != null ? new Date(createdTime.getTime()) : null);
     }
@@ -705,187 +685,164 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         this.properties = properties;
     }
 
-    @JsonIgnore
-    public Map<String, Map<String, GameModelContent>> getLibraries() {
-        Map<String, Map<String, GameModelContent>> libraries = new HashMap<>();
-
-        libraries.put("Script", this.getScriptLibrary());
-        libraries.put("ClientScript", this.getClientScriptLibrary());
-        libraries.put("CSS", this.getCssLibrary());
-
+    /**
+     * get the list of all libraries. Unsorted. all library types
+     *
+     * @return the list of all libraries
+     */
+    public List<GameModelContent> getLibraries() {
         return libraries;
     }
 
-    public void setLibraries(Map<String, Map<String, GameModelContent>> libraries) {
-        this.setScriptLibrary(libraries.get("Script"));
-        this.setClientScriptLibrary(libraries.get("ClientScript"));
-        this.setCssLibrary(libraries.get("CSS"));
+    /**
+     * Set gameModel libraries
+     *
+     * @param libraries
+     */
+    public void setLibraries(List<GameModelContent> libraries) {
+        this.libraries = libraries;
+        if (libraries != null) {
+            libraries.forEach(g -> g.setGameModel(this));
+        }
     }
 
     /**
-     * @return the cssLibrary
+     * Get all libraries. Groupes by type and mapped by key
+     *
+     * @return
      */
     @JsonIgnore
-    public List<GameModelContent> getCssLibraryList() {
-        return cssLibrary;
+    public Map<String, Map<String, GameModelContent>> getLibrariesAsMap() {
+        Map<String, Map<String, GameModelContent>> libraries = new HashMap<>();
+        for (GameModelContent gmc : this.getLibraries()) {
+            if (!libraries.containsKey(gmc.getLibraryType())) {
+                libraries.put(gmc.getLibraryType(), new HashMap<>());
+            }
+            libraries.get(gmc.getLibraryType()).put(gmc.getContentKey(), gmc);
+        }
+        return libraries;
     }
 
     /**
-     * @param cssLibrary the cssLibrary to set
+     * Set library from map
+     *
+     * @param libraries
+     *
      */
     @JsonIgnore
-    public void setCssLibraryList(List<GameModelContent> cssLibrary) {
-        this.cssLibrary = cssLibrary;
-    }
-
-    private Map<String, GameModelContent> getLibraryAsMap(List<GameModelContent> library) {
-        Map<String, GameModelContent> map = new HashMap<>();
-        for (GameModelContent gmc : library) {
-            map.put(gmc.getContentKey(), gmc);
-        }
-        return map;
-    }
-
-    public Map<String, GameModelContent> getCssLibrary() {
-        return getLibraryAsMap(cssLibrary);
-    }
-
-    public void setCssLibrary(Map<String, GameModelContent> library) {
-        this.cssLibrary = new ArrayList<>();
-        for (Entry<String, GameModelContent> entry : library.entrySet()) {
-            String key = entry.getKey();
-            GameModelContent gmc = entry.getValue();
-            gmc.setCsslibrary_GameModel(this);
-            gmc.setContentKey(key);
-            cssLibrary.add(gmc);
-        }
+    public void setLibrariesFromMap(Map<String, Map<String, GameModelContent>> libraries) {
+        List<GameModelContent> newLibs = new ArrayList<>();
+        libraries
+            .forEach((kLib, vLib) -> {
+                vLib.forEach((kEntry, vEntry) -> {
+                    vEntry.setLibraryType(kLib);
+                    vEntry.setContentKey(kEntry);
+                    newLibs.add(vEntry);
+                });
+            });
+        this.setLibraries(newLibs);
     }
 
     /**
-     * @return the clientScriptLibrary
+     * Return libraries of the given type
+     *
+     * @param libraryType type of library to fetch
+     *
+     * @return list of all libraries of the given type
      */
     @JsonIgnore
-    public List<GameModelContent> getClientScriptLibraryList() {
-        return clientScriptLibrary;
-    }
-
-    public Map<String, GameModelContent> getScriptLibrary() {
-        return getLibraryAsMap(scriptLibrary);
-    }
-
-    public Map<String, GameModelContent> getClientScriptLibrary() {
-        return getLibraryAsMap(clientScriptLibrary);
-    }
-
-    public void setScriptLibrary(Map<String, GameModelContent> library) {
-        this.scriptLibrary = new ArrayList<>();
-        for (Entry<String, GameModelContent> entry : library.entrySet()) {
-            String key = entry.getKey();
-            GameModelContent gmc = entry.getValue();
-            gmc.setScriptlibrary_GameModel(this);
-            gmc.setContentKey(key);
-            scriptLibrary.add(gmc);
-        }
-    }
-
-    public void setClientScriptLibrary(Map<String, GameModelContent> library) {
-        this.clientScriptLibrary = new ArrayList<>();
-        for (Entry<String, GameModelContent> entry : library.entrySet()) {
-            String key = entry.getKey();
-            GameModelContent gmc = entry.getValue();
-            gmc.setClientscriptlibrary_GameModel(this);
-            gmc.setContentKey(key);
-            clientScriptLibrary.add(gmc);
-        }
+    public List<GameModelContent> getLibrariesAsList(String libraryType) {
+        return this.libraries.stream()
+            .filter(g -> g.getLibraryType().equals(libraryType))
+            .collect(Collectors.toList());
     }
 
     /**
-     * @param key
+     * Return libraries of the given type, mapped by there key name
      *
-     * @return the clientScript matching the key or null
+     * @param libraryType type of library to fetch
+     *
+     * @return map of all libraries of the given type
      */
-    public GameModelContent getClientScript(String key) {
-        return this.getGameModelContent(clientScriptLibrary, key);
+    @JsonIgnore
+    public Map<String, GameModelContent> getLibrariesAsMap(String libraryType) {
+        return this.libraries.stream()
+            .filter(g -> g.getLibraryType().equals(libraryType))
+            .collect(Collectors.toMap(g -> g.getContentKey(), g -> g));
     }
 
     /**
-     * Add or update a client script.
+     * Find the library of given type with given key.
      *
-     * @param clientScript
-     */
-    public void setClientScript(GameModelContent clientScript) {
-        GameModelContent cs = this.getClientScript(clientScript.getContentKey());
-        if (cs != null) {
-            cs.setContent(clientScript.getContent());
-        } else {
-            clientScript.setClientscriptlibrary_GameModel(this);
-            clientScriptLibrary.add(clientScript);
-        }
-    }
-
-    /**
-     * @param key
+     * @param libraryName type of library to look for
+     * @param key         library key name
      *
-     * @return the clientScript matching the key or null
+     * @return the found one or null
      */
-    public GameModelContent getScript(String key) {
-        return this.getGameModelContent(scriptLibrary, key);
-    }
-
-    /**
-     * Add or update a client script.
-     *
-     * @param script
-     */
-    public void setScript(GameModelContent script) {
-        GameModelContent s = this.getScript(script.getContentKey());
-        if (s != null) {
-            s.setContent(script.getContent());
-        } else {
-            script.setScriptlibrary_GameModel(this);
-            scriptLibrary.add(script);
-        }
-    }
-
-    /**
-     * @param key
-     *
-     * @return the clientScript matching the key or null
-     */
-    public GameModelContent getCss(String key) {
-        return this.getGameModelContent(cssLibrary, key);
-    }
-
-    /**
-     * Add or update a stylesheet.
-     *
-     * @param css
-     */
-    public void setCss(GameModelContent css) {
-        GameModelContent stylesheet = this.getCss(css.getContentKey());
-        if (stylesheet != null) {
-            stylesheet.setContent(css.getContent());
-        } else {
-            css.setCsslibrary_GameModel(this);
-            cssLibrary.add(css);
-        }
-    }
-
-    public GameModelContent getGameModelContent(List<GameModelContent> list, String key) {
-        for (GameModelContent gmc : list) {
-            if (gmc.getContentKey().equals(key)) {
-                return gmc;
+    public GameModelContent findLibrary(String libraryName, String key) {
+        for (GameModelContent item : this.libraries) {
+            if (item.getContentKey().equals(key)
+                && item.getLibraryType().equals(libraryName)) {
+                return item;
             }
         }
         return null;
     }
 
     /**
-     * @param clientScriptLibrary the clientScriptLibrary to set
+     * Add all provided gameModelContent libraries in the gameModel. Overides libraries' type with
+     * given one. Overrides libraries keys with keys from the map
+     *
+     * @param libraries content to add
+     * @param type      type of libraries
+     * @param mimetype  MIME type of libraries
      */
-    @JsonIgnore
-    public void setClientScriptLibraryList(List<GameModelContent> clientScriptLibrary) {
-        this.clientScriptLibrary = clientScriptLibrary;
+    private void addAllToLibraries(Map<String, GameModelContent> libraries, String type, String mimeType) {
+        libraries.forEach((key, gmc) -> {
+            gmc.setLibraryType(type);
+            gmc.setContentKey(key);
+            gmc.setContentType(mimeType);
+            this.addLibrary(gmc);
+        });
+    }
+
+    /**
+     * Backward compatibility for old exported JSON
+     *
+     * @param library
+     */
+    public void setCssLibrary(Map<String, GameModelContent> libraries) {
+        this.addAllToLibraries(libraries, GameModelContent.CSS, "test/css");
+    }
+
+    /**
+     * Backward compatibility for old exported JSON
+     *
+     * @param library
+     */
+    public void setScriptLibrary(Map<String, GameModelContent> libraries) {
+        this.addAllToLibraries(libraries, GameModelContent.SERVER_SCRIPT, "application/javascript");
+    }
+
+    /**
+     * Backward compatibility for old exported JSON
+     *
+     * @param libraries new client scripts
+     */
+    public void setClientScriptLibrary(Map<String, GameModelContent> libraries) {
+        this.addAllToLibraries(libraries, GameModelContent.CLIENT_SCRIPT, "application/javascript");
+    }
+
+    /**
+     * Add the given GameModelContent to libraries.
+     *
+     * @param gameModelContent
+     */
+    public void addLibrary(GameModelContent gameModelContent) {
+        if (!this.libraries.contains(gameModelContent)) {
+            this.libraries.add(gameModelContent);
+            gameModelContent.setGameModel(this);
+        }
     }
 
     /**
@@ -933,7 +890,23 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Override
     @JsonView(Views.ExportI.class)
     public List<VariableDescriptor> getItems() {
-        return this.items;
+        return Helper.copyAndSortModifiable(this.items, new EntityComparators.OrderComparator<>());
+    }
+
+    @JsonIgnore
+    @Override
+    public List<VariableDescriptor> getRawItems() {
+        return items;
+    }
+
+    @Override
+    @JsonIgnore
+    public List<VariableDescriptor> getReadableItems() {
+        if (this.beans.getRequestManager().isEditorView()) {
+            return this.getItems();
+        } else {
+            return this.beans.getVariableDescriptorFacade().getReadableChildren(this);
+        }
     }
 
     @Override
@@ -948,12 +921,10 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         this.variableDescriptors.clear();
         this.propagateGameModel();
 
-        /*
-        this.items = new ArrayList<>();
-        for (VariableDescriptor vd : items) {
-            this.addItem(vd);
-        }
-         */
+//        this.items = new ArrayList<>();
+//        for (VariableDescriptor vd : items) {
+//            this.addItem(vd);
+//        }
     }
 
     @Override
@@ -1032,6 +1003,19 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
+     * @return name of the user who created this or null if user no longer exists
+     */
+    @WegasExtraProperty
+    //@JsonView({Views.EditorI.class, Views.LobbyI.class})
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public Long getCreatedById() {
+        if (this.getCreatedBy() != null) {
+            return this.getCreatedBy().getId();
+        }
+        return null;
+    }
+
+    /**
      * @param createdByName
      */
     public void setCreatedByName(String createdByName) {
@@ -1039,7 +1023,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     @WegasExtraProperty(
-        optional = true, nullable = false,
+        optional = false, nullable = false,
         view = @View(label = "Type", value = StringView.class))
     public GmType getType() {
         return type;
@@ -1179,6 +1163,21 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
+     * Find any debug game in the gameModel
+     *
+     * @return the debugGame if found, null otherwise
+     */
+    @JsonIgnore
+    public DebugGame findDebugGame() {
+        for (Game g : getGames()) {
+            if (g instanceof DebugGame) {
+                return (DebugGame) g;
+            }
+        }
+        return null;
+    }
+
+    /**
      * TODO: select game.* FROM GAME where dtype like 'DEBUGGAME' and gamemodelid = this.getId()
      *
      * @return true if the gameModel has a DebugGame
@@ -1198,13 +1197,18 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         return Helper.GAMEMODEL_CHANNEL_PREFIX + getId();
     }
 
+    @JsonIgnore
+    public String getEditorChannel() {
+        return Helper.GAMEMODEL_EDITOR_CHANNEL_PREFIX + getId();
+    }
+
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         return WegasPermission.getAsCollection(this.getAssociatedWritePermission());
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         return WegasPermission.getAsCollection(this.getAssociatedReadPermission());
     }
 
@@ -1261,7 +1265,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     @JsonIgnore
     public boolean isScenarioBasedOnModel() {
-        return this.isScenario() && this.getBasedOn() != null;
+        return this.isScenario() && this.getBasedOnId() != null;
     }
 
     @Override
@@ -1270,7 +1274,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
         if (this.isPlay()) {
             return WegasMembership.TRAINER;
         } else {
@@ -1313,11 +1317,43 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
-        Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
+
+        // Fetch all user who with any access to the gameModel
+        Set<User> users = new HashSet<>();
+
+        // all scenarists
+        users.addAll(beans.getGameModelFacade().findScenarists(this.getId()));
+
+        // all trainers
+        games.forEach(game -> {
+            users.addAll(beans.getGameFacade().findTrainers(game.getId()));
+        });
+
+        // all players
+        this.getPlayers().stream().forEach(p -> {
+            if (p.getUser() != null) {
+                users.add(p.getUser());
+            }
+        });
+
+        // Send update through each user channel
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+        users.forEach(user -> {
+            map.put(user.getChannel(), entities);
+        });
+
+        // send it to admins too
+        map.put(WebsocketFacade.ADMIN_LOBBY_CHANNEL, entities);
+
+        // and eventually to the game model chanel
         map.put(this.getChannel(), entities);
         return map;
+    }
+
+    public void removeLib(GameModelContent gameModelContent) {
+        this.libraries.remove(gameModelContent);
     }
 
     public enum GmType {
@@ -1380,11 +1416,11 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         SUPPRESSED
     }
 
-    /* try transient anotation on field "pages". Problem with anotation mixin'
-     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-     in.defaultReadObject();
-     this.pages = new HashMap<>();
-     }*/
+//     /*try transient anotation on field "pages". Problem with anotation mixin'*/
+//     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+//       in.defaultReadObject();
+//       this.pages = new HashMap<>();
+//     }
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getType() + ", " + getName() + ")";

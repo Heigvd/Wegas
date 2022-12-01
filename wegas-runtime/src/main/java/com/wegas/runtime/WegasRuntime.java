@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.runtime;
@@ -116,6 +116,7 @@ public class WegasRuntime {
         this.baseUrl = baseUrl;
     }
 
+    @Override
     public String toString() {
         return "WegasRuntime UP: " + baseUrl;
     }

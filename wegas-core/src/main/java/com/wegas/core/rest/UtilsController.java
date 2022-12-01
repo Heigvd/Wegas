@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -10,14 +10,17 @@ package com.wegas.core.rest;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.hazelcast.cluster.Member;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.Member;
 import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.ConcurrentHelper;
 import com.wegas.core.ejb.JPACacheHelper;
+import com.wegas.core.ejb.nashorn.NasHornMonitor;
 import com.wegas.core.jcr.JackrabbitConnector;
+import com.wegas.core.rest.util.LevelDescriptor;
 import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
 import java.io.ByteArrayOutputStream;
@@ -30,8 +33,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.UUID;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -40,7 +42,7 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import javax.json.JsonValue;
+import javax.json.stream.JsonParsingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -69,7 +71,7 @@ public class UtilsController {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UtilsController.class);
 
-    private static final String TRAVIS_URL = "https://api.travis-ci.org";
+    private static final String GITHUB_URL = "https://api.github.com";
 
     @Inject
     private ApplicationLifecycle applicationLifecycle;
@@ -89,12 +91,16 @@ public class UtilsController {
     @Inject
     private JackrabbitConnector jcrConnector;
 
+    @Inject
+    private NasHornMonitor nhMonitor;
+
     private static final String SET_LEVEL_EVENT = "Wegas_setLoggerLevel";
 
     @Inject
     @Outbound(eventName = SET_LEVEL_EVENT, loopBack = false)
     private Event<LoggerLevel> events;
 
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
     public static class LoggerLevel implements Serializable {
 
         private final String loggerLevel;
@@ -119,6 +125,7 @@ public class UtilsController {
      */
     @DELETE
     @Path("EmCache")
+    @RequiresRoles("Administrator")
     public void wipeEmCache() {
         jpaCacheHelper.requestClearCache();
     }
@@ -128,12 +135,14 @@ public class UtilsController {
      */
     @DELETE
     @Path("LocalEmCache")
+    @RequiresRoles("Administrator")
     public void directWipeEmCache() {
         jpaCacheHelper.clearCacheLocal();
     }
 
     @GET
     @Path("ReviveCluster")
+    @RequiresRoles("Administrator")
     public void revive() {
         applicationLifecycle.requestClusterMemberNotification();
     }
@@ -166,28 +175,32 @@ public class UtilsController {
         StringBuilder sb = new StringBuilder(this.getFullVersion());
 
         String branch = Helper.getWegasProperty("wegas.build.branch", null);
-        Integer travisVersion = null;
+        Integer githubVersion = null;
 
         if (!Helper.isNullOrEmpty(branch)) {
             String prBranch = Helper.getWegasProperty("wegas.build.pr_branch", null);
-            String prNumber = Helper.getWegasProperty("wegas.build.pr_number", null);
+            String strPrNumber = Helper.getWegasProperty("wegas.build.pr_number", null);
             sb.append(", ");
-            if (!Helper.isNullOrEmpty(prNumber) && !"false".equals(prNumber)) {
-                sb.append("pull request ").append(prNumber).append('/').append(prBranch).append(" into ").append(branch);
 
-                int intPrNumber = Integer.parseInt(prNumber, 10);
-                travisVersion = findCurrentTravisVersionPr("master", intPrNumber);
+            if (!Helper.isNullOrEmpty(strPrNumber) && !"false".equals(strPrNumber)) {
+                sb.append("pull request ").append(strPrNumber).append('/').append(prBranch).append(" into ").append(branch);
+
+                githubVersion = findCurrentGithubRunNumber(prBranch, true);
             } else {
                 sb.append(branch).append(" branch");
-                travisVersion = findCurrentTravisVersion(branch);
+                githubVersion = findCurrentGithubRunNumber(branch, false);
             }
             sb.append(", build #").append(this.getBuildNumber());
         } else {
             sb.append(", NinjaBuild");
         }
 
-        if (travisVersion != null && travisVersion > 0) {
-            sb.append(", travis last build is #").append(travisVersion);
+        if (githubVersion != null) {
+            if (githubVersion > 0) {
+                sb.append(", github current build number is #").append(githubVersion);
+            } else if (githubVersion == -1) {
+                sb.append(", failed to fetch current github build number");
+            }
         }
 
         return sb.toString();
@@ -210,26 +223,48 @@ public class UtilsController {
     }
 
     @GET
+    @Path("pr_branch")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getPrBranch() {
+        String prBranch = Helper.getWegasProperty("wegas.build.pr_branch", "");
+        if (!Helper.isNullOrEmpty(prBranch)) {
+            return prBranch;
+        }
+        return "";
+    }
+
+    @GET
+    @Path("branch")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getBranch() {
+        String prBranch = Helper.getWegasProperty("wegas.build.branch", "");
+        if (!Helper.isNullOrEmpty(prBranch)) {
+            return prBranch;
+        }
+        return "";
+    }
+
+    @GET
     @Path("build_details_pr/{number: [1-9][0-9]*}/{branch: [a-zA-Z0-9]*}")
     @Produces(MediaType.TEXT_PLAIN)
     public Integer getBuildDetailsForPr(@PathParam("number") Integer number, @PathParam("branch") String branch) throws URISyntaxException {
-        return findCurrentTravisVersionPr(branch, number);
+        return findCurrentGithubRunNumber(branch, true);
     }
 
-    private static int findCurrentTravisVersionPr(String branch, Integer prNumber) {
+    private static int findCurrentGithubRunNumber(String branch, boolean pr) {
 
         try {
             HttpClient client = HttpClientBuilder.create().build();
 
-            URIBuilder builder = new URIBuilder(TRAVIS_URL + "/repo/Heigvd%2FWegas/builds");
-            builder.addParameter("branch.name", branch);
-            builder.addParameter("state", "passed");
-            builder.addParameter("event_type", "pull_request"); // only pull_requests
-            builder.addParameter("sort_by", "id:desc"); // id first
+            URIBuilder builder = new URIBuilder(GITHUB_URL + "/repos/heigvd/Wegas/actions/runs");
+            builder.addParameter("branch", branch);
+            builder.addParameter("status", "success");
+            builder.addParameter("event_type", pr ? "pull_request" : "push"); // only pull_requests
+            //builder.addParameter("sort_by", "id:desc"); // id first
             //builder.addParameter("limit", "1");// only the first result
 
             HttpGet get = new HttpGet(builder.build());
-            get.setHeader("Travis-API-Version", "3");
+            get.setHeader("Accept", "application/vnd.github.v3+json");
             get.setHeader("User-Agent", "Wegas");
 
             HttpResponse response = client.execute(get);
@@ -238,58 +273,27 @@ public class UtilsController {
             response.getEntity().writeTo(baos);
             String strResponse = baos.toString("UTF-8");
 
-            try (JsonReader reader = Json.createReader(new StringReader(strResponse))) {
-                JsonObject r = reader.readObject();
-                JsonArray builds = r.getJsonArray("builds");
+            if (!Helper.isNullOrEmpty(strResponse)) {
+                try ( JsonReader reader = Json.createReader(new StringReader(strResponse))) {
+                    JsonObject r = reader.readObject();
+                    JsonArray builds = r.getJsonArray("workflow_runs");
 
-                for (JsonValue b : builds) {
-                    JsonObject build = b.asJsonObject();
-                    int val = build.getInt("pull_request_number", 10);
-
-                    if (prNumber.equals(val)) {
-                        return Integer.parseInt(build.getString("number"), 10);
+                    if (builds != null && !builds.isEmpty()) {
+                        JsonObject build = builds.get(0).asJsonObject();
+                        return build.getInt("run_number", -1);
                     }
+                } catch (JsonParsingException ex) {
+                    logger.error("Invalid JSON: {}", strResponse);
                 }
+            } else {
+                logger.error("Did not receive any content from github!");
             }
         } catch (URISyntaxException ex) {
-            logger.error("Please review Travis URL: {}", TRAVIS_URL);
+            logger.error("Please review Github URL: {}", GITHUB_URL);
         } catch (IOException ex) {
             logger.error("Error while reading Travis response");
         }
         return -1;
-    }
-
-    private static Integer findCurrentTravisVersion(String branch) {
-        try {
-            HttpClient client = HttpClientBuilder.create().build();
-
-            URIBuilder builder = new URIBuilder(TRAVIS_URL + "/repo/Heigvd%2FWegas/builds");
-            builder.addParameter("branch.name", branch);
-            builder.addParameter("state", "passed");
-            builder.addParameter("event_type", "push"); // avoid pull_requests
-            builder.addParameter("sort_by", "id:desc"); // bid id first
-            builder.addParameter("limit", "1");// only the first result
-
-            HttpGet get = new HttpGet(builder.build());
-            get.setHeader("Travis-API-Version", "3");
-            get.setHeader("User-Agent", "Wegas");
-
-            HttpResponse response = client.execute(get);
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            response.getEntity().writeTo(baos);
-            String strResponse = baos.toString("UTF-8");
-
-            Pattern p = Pattern.compile(".*\"number\": \"(\\d+)\".*", Pattern.DOTALL);
-            Matcher matcher = p.matcher(strResponse);
-            if (matcher.matches() && matcher.groupCount() == 1) {
-                return Integer.parseInt(matcher.group(1), 10);
-            } else {
-                return -1;
-            }
-        } catch (URISyntaxException | IOException ex) {
-            return -1;
-        }
     }
 
     /**
@@ -316,13 +320,34 @@ public class UtilsController {
             .append("<h2>LocalList</h2>")
             .append("<ul>");
 
-        for (String m : applicationLifecycle.getMembers()) {
+        for (UUID m : applicationLifecycle.getMembers()) {
             sb.append("<li>").append(m).append("</li>");
         }
 
         sb.append("</ul>");
 
         return sb.toString();
+    }
+
+    /**
+     * Get the description of all known co.LAB logger by providing their current level.
+     *
+     * @return all known levelDescriptor mapped by the name of the logger
+     */
+    @GET
+    @Path("GetLoggerLevels")
+    public Map<String, LevelDescriptor> getLoggerLevels() {
+        Map<String, LevelDescriptor> loggers = new HashMap<>();
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+
+        loggerContext.getLoggerList().stream()
+            .filter(logger -> logger.getName().startsWith("com.wegas"))
+            .forEach(logger -> {
+                loggers.put(logger.getName(),
+                    LevelDescriptor.build(logger));
+            });
+
+        return loggers;
     }
 
     @GET
@@ -516,6 +541,15 @@ public class UtilsController {
     }
 
     @GET
+    @Path("LocksGc")
+    @RequiresRoles("Administrator")
+    @Produces(MediaType.TEXT_HTML)
+    public String gcLocks() {
+        concurrentHelper.gc();
+        return listLockedTokens();
+    }
+
+    @GET
     @Path("Locks")
     @RequiresRoles("Administrator")
     @Produces(MediaType.TEXT_HTML)
@@ -596,6 +630,7 @@ public class UtilsController {
      */
     @DELETE
     @Path("JCR_GC")
+    @RequiresRoles("Administrator")
     public void jcrGC() {
         jcrConnector.revisionGC();
     }
@@ -655,4 +690,35 @@ public class UtilsController {
         return sb.toString();
     }
 
+    @GET
+    @Path("NashornMonitor")
+    @RequiresRoles("Administrator")
+    @Produces(MediaType.TEXT_HTML)
+    public String getNasHornLoadedClasses() {
+        Enumeration<String> classes = nhMonitor.getClasses();
+        String result = "<h1>Java classes loaded by nashorn</h1><ul>";
+
+        while (classes.hasMoreElements()) {
+            result += "<li>" + classes.nextElement() + "</li>";
+        }
+        result += "</ul>";
+
+        result += "<h1>Java classes rejected by nashorn</h1>";
+        result += "<h2>Blacklisted</h2><ul>";
+
+        Enumeration<String> blacklistedClasses = nhMonitor.getBlacklistedClasses();
+        while (blacklistedClasses.hasMoreElements()) {
+            result += "<li>" + blacklistedClasses.nextElement() + "</li>";
+        }
+        result += "</ul>";
+
+        result += "<h2>Not whitelisted</h2><ul>";
+        Enumeration<String> notWL = nhMonitor.getNotWhitelusted();
+        while (notWL.hasMoreElements()) {
+            result += "<li>" + notWL.nextElement() + "</li>";
+        }
+        result += "</ul>";
+
+        return result;
+    }
 }

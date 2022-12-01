@@ -2,11 +2,13 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelCheck;
@@ -143,8 +145,9 @@ public class UpdateController {
         //    ret.append("<a href=\"Encode/").append(gm.getId()).append("\">Update variable names ").append(gm.getId()).append("</a> | ");
         //    ret.append("<a href=\"UpdateScript/").append(gm.getId()).append("\">Update script ").append(gm.getId()).append("</a><br />");
         //}
-        return "<a href=\"RtsUpdateScope/10901\">RTS Update Scopes</a> <br />"
-            + "<a href=\"RtsNewScope/10901\">RTS New Scopes</a> <br />";
+        return "";
+        //<a href=\"RtsUpdateScope/10901\">RTS Update Scopes</a> <br />"
+        //+ "<a href=\"RtsNewScope/10901\">RTS New Scopes</a> <br />";
     }
 
     /**
@@ -325,32 +328,19 @@ public class UpdateController {
         return updateListDescriptorScope(find);
     }
 
-    /*private String rtsUpdateScope(GameModel gameModel) {
-        Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-
-        for (VariableDescriptor vd : variableDescriptors) {
-
-            if ("question".equals(vd.getLabel().toLowerCase())) {
-                this.updateScope(vd);
-            } else if ("toolbar".equals(vd.getLabel().toLowerCase())
-                    || "moves".equals(vd.getLabel().toLowerCase())
-                    || "dialogues".equals(vd.getLabel().toLowerCase())) {
-                if (vd instanceof ListDescriptor) {
-                    ListDescriptor list = (ListDescriptor) vd;
-                    for (VariableDescriptor child : list.getItems()) {
-                        if (child instanceof StringDescriptor) {
-                            this.updateScope(child);
-                        }
-                    }
-                }
-            }
-        }
-        sb.append("]");
-
-        return sb.toString();
-    }*/
+    /* private String rtsUpdateScope(GameModel gameModel) { Set<VariableDescriptor>
+     * variableDescriptors = gameModel.getVariableDescriptors(); StringBuilder sb = new
+     * StringBuilder(); sb.append("[");
+     *
+     * for (VariableDescriptor vd : variableDescriptors) {
+     *
+     * if ("question".equals(vd.getLabel().toLowerCase())) { this.updateScope(vd); } else if
+     * ("toolbar".equals(vd.getLabel().toLowerCase()) || "moves".equals(vd.getLabel().toLowerCase())
+     * || "dialogues".equals(vd.getLabel().toLowerCase())) { if (vd instanceof ListDescriptor) {
+     * ListDescriptor list = (ListDescriptor) vd; for (VariableDescriptor child : list.getItems()) {
+     * if (child instanceof StringDescriptor) { this.updateScope(child); } } } } } sb.append("]");
+     *
+     * return sb.toString(); } */
     private String lawUpdateScope(GameModel gameModel) {
         this.updateListDescriptorScope(gameModel);
         StringBuilder sb = new StringBuilder();
@@ -378,12 +368,9 @@ public class UpdateController {
     }
 
     /*
-    @GET
-    @Path("RtsUpdateScope/{gameModelId : ([1-9][0-9]*)}")
-    public String rtsScopeUpdate(@PathParam("gameModelId") Long gameModelId) {
-        GameModel find = gameModelFacade.find(gameModelId);
-        return rtsUpdateScope(find);
-    }
+     * @GET @Path("RtsUpdateScope/{gameModelId : ([1-9][0-9]*)}") public String
+     * rtsScopeUpdate(@PathParam("gameModelId") Long gameModelId) { GameModel find =
+     * gameModelFacade.find(gameModelId); return rtsUpdateScope(find); }
      */
     @SuppressWarnings("PMD")
     private String newScope(GameModel gameModel, VariableDescriptor vd) {
@@ -413,43 +400,27 @@ public class UpdateController {
     }
 
     /*
-    private String rtsNewScope(GameModel gameModel) {
-        Collection<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-
-        for (Iterator<VariableDescriptor> it = variableDescriptors.iterator(); it.hasNext();) {
-            VariableDescriptor vd = it.next();
-            if ("question".equals(vd.getLabel().toLowerCase())) {
-                if (!(vd.getScope() instanceof GameModelScope)) {
-                    sb.append(this.newScope(gameModel, vd));
-                }
-            } else if ("toolbar".equals(vd.getLabel().toLowerCase())
-                    || "moves".equals(vd.getLabel().toLowerCase())
-                    || "dialogues".equals(vd.getLabel().toLowerCase())) {
-                if (vd instanceof ListDescriptor) {
-                    ListDescriptor list = (ListDescriptor) vd;
-                    for (VariableDescriptor child : list.getItems()) {
-                        if (child instanceof StringDescriptor) {
-                            sb.append(this.newScope(gameModel, child));
-                        }
-                    }
-                }
-            }
-        }
-        sb.append("]");
-
-        return sb.toString();
-    }
+     * private String rtsNewScope(GameModel gameModel) { Collection<VariableDescriptor>
+     * variableDescriptors = gameModel.getVariableDescriptors(); StringBuilder sb = new
+     * StringBuilder(); sb.append("[");
+     *
+     * for (Iterator<VariableDescriptor> it = variableDescriptors.iterator(); it.hasNext();) {
+     * VariableDescriptor vd = it.next(); if ("question".equals(vd.getLabel().toLowerCase())) { if
+     * (!(vd.getScope() instanceof GameModelScope)) { sb.append(this.newScope(gameModel, vd)); } }
+     * else if ("toolbar".equals(vd.getLabel().toLowerCase()) ||
+     * "moves".equals(vd.getLabel().toLowerCase()) ||
+     * "dialogues".equals(vd.getLabel().toLowerCase())) { if (vd instanceof ListDescriptor) {
+     * ListDescriptor list = (ListDescriptor) vd; for (VariableDescriptor child : list.getItems()) {
+     * if (child instanceof StringDescriptor) { sb.append(this.newScope(gameModel, child)); } } } }
+     * } sb.append("]");
+     *
+     * return sb.toString(); }
      */
 
  /*
-    @GET
-    @Path("RtsNewScope/{gameModelId : ([1-9][0-9]*)}")
-    public String rtsNewScope(@PathParam("gameModelId") Long gameModelId) {
-        GameModel find = gameModelFacade.find(gameModelId);
-        return rtsNewScope(find);
-    }
+     * @GET @Path("RtsNewScope/{gameModelId : ([1-9][0-9]*)}") public String
+     * rtsNewScope(@PathParam("gameModelId") Long gameModelId) { GameModel find =
+     * gameModelFacade.find(gameModelId); return rtsNewScope(find); }
      */
     private String addVariable(GameModel gm, String json, String varName, String parentName) {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
@@ -530,9 +501,9 @@ public class UpdateController {
         StringBuilder ret = new StringBuilder();
 
         ret.append("<ul>")
-        .append("<li>").append(pmg.getName()).append("</li>")
-        .append(this.normalisePmg(pmg))
-        .append("</ul>");
+            .append("<li>").append(pmg.getName()).append("</li>")
+            .append(this.normalisePmg(pmg))
+            .append("</ul>");
 
         return ret.toString();
     }
@@ -733,7 +704,7 @@ public class UpdateController {
                 ListDescriptor newChild = new ListDescriptor(childrenPrefix + i);
                 newChild.setDefaultInstance(new ListInstance());
                 newChild.setScope(new GameModelScope());
-                descriptorFacade.createChild(gameModel, parent, newChild, false);
+                descriptorFacade.createChild(gameModel, parent, newChild, false, false);
                 if (i < parent.size()) {
                     // move new folder at the right place
                     descriptorFacade.move(newChild.getId(), parent.getId(), i - 1);
@@ -779,14 +750,12 @@ public class UpdateController {
         }
 
         sb.append(this.processChildren(pmg, "questions", "questionsPhase", 4))
-        .append(this.processChildren(pmg, "questionsPhase1", "questionsPeriod1_", 1))
-        .append(this.processChildren(pmg, "questionsPhase2", "questionsPeriod2_", 1))
-        .append(this.processChildren(pmg, "questionsPhase3", "questionsPeriod3_", 1))
-        .append(this.processChildren(pmg, "questionsPhase4", "questionsPeriod4_", 1))
-
-        .append(this.processChildren(pmg, "actions", "actionsPhase", 4))
-
-        .append("</ul>");
+            .append(this.processChildren(pmg, "questionsPhase1", "questionsPeriod1_", 1))
+            .append(this.processChildren(pmg, "questionsPhase2", "questionsPeriod2_", 1))
+            .append(this.processChildren(pmg, "questionsPhase3", "questionsPeriod3_", 1))
+            .append(this.processChildren(pmg, "questionsPhase4", "questionsPeriod4_", 1))
+            .append(this.processChildren(pmg, "actions", "actionsPhase", 4))
+            .append("</ul>");
 
         return sb.toString();
     }
@@ -879,7 +848,7 @@ public class UpdateController {
             g.addTeam(dt);
             this.getEntityManager().persist(dt);
             gameModelFacade.propagateAndReviveDefaultInstances(g.getGameModel(), dt, true); // restart missing debugTeam
-            stateMachineFacade.runStateMachines(dt);
+            stateMachineFacade.runStateMachines(dt, true);
             this.getEntityManager().flush();
             counter++;
             if (counter == 25) {
@@ -998,7 +967,8 @@ public class UpdateController {
         ).setMaxResults(3000);
         return query.getResultList();
     }
-
+    
+    
     @POST
     @Path("CreateEmptyModel")
     public String createEmptyModel() {
@@ -1010,6 +980,20 @@ public class UpdateController {
 
         return "OK";
     }
+    
+    @POST
+    @Path("CreateEmptyReactModel")
+    public String createEmptyReactModel() {
+        GameModel emptyModel = new GameModel();
+        emptyModel.setName("_EmptyReactModel (en)");
+        emptyModel.setType(GameModel.GmType.MODEL);
+        emptyModel.setUiversion(2);
+
+        gameModelFacade.createWithDebugGame(emptyModel);
+
+        return "OK";
+    }
+
 
     @GET
     @Path("CheckAllLiveGameModel")
@@ -1257,4 +1241,85 @@ public class UpdateController {
             appendInTag(sb, "div", label, ": ", value);
         }
     }
+
+    private List<GameModel> findMbenefits(boolean scenarioOnly) {
+        EntityManager em = this.getEntityManager();
+        final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        final CriteriaQuery<GameModel> query = criteriaBuilder.createQuery(GameModel.class);
+
+        Root<GameModel> e = query.from(GameModel.class);
+        Predicate where;
+
+        String cssUri = "wegas-mbenefits/js/wegas-benefits-clientlib.js;wegas-mbenefits/js/wegas-benefits-loader.js;";
+
+        if (scenarioOnly) {
+            where = criteriaBuilder.and(
+                criteriaBuilder.equal(e.get("type"), GameModel.GmType.SCENARIO),
+                criteriaBuilder.like(e.get("properties").get("clientScriptUri"), cssUri)
+            );
+        } else {
+            where = criteriaBuilder.like(e.get("properties").get("clientScriptUri"), cssUri);
+        }
+
+        query.select(e)
+            .where(where);
+
+        return em.createQuery(query).getResultList();
+    }
+
+    private void patchPatch(Map<String, JsonNode> pages, String pageId, String replace, String with) {
+        JsonNode page = pages.get(pageId);
+        if (page != null) {
+            try {
+                String json = page.toString();
+                String patchedJson = json.replace(replace, with);
+                ObjectMapper mapper = JacksonMapperProvider.getMapper();
+                JsonNode patchedPage;
+                patchedPage = mapper.readTree(patchedJson);
+                pages.put(pageId, patchedPage);
+            } catch (JsonProcessingException ex) {
+                logger.error("Fail to patch page");
+            }
+        }
+    }
+
+    @GET
+    @Path("MBPatch")
+    public String patchMBenefits() {
+        List<GameModel> gms = findMbenefits(false);
+        for (GameModel gm : gms) {
+            Map<String, JsonNode> pages = gm.getPages();
+
+            String docAirId = "18";
+            String oldDocAir = "var docNode = Y.one(\\\".theDoc.pasteurisationProcess\\\");\\ndocNode.toggleClass(\\\"show-eem1-clues\\\");\\n\\ndocNode.all(\\\".wegas-line\\\").each(function(node){\\n    Y.Widget.getByNode(node).syncUI();\\n})\\n\\nreturn;";
+            String newDocAir = "Y.Wegas.MBenefitsHelper.toggleEEMInDiagram(\\\".theDoc.pasteurisationProcess\\\",  \\\"show-eem1-clues\\\");";
+            patchPatch(pages, docAirId, oldDocAir, newDocAir);
+
+            String docPastId = "13";
+            patchPatch(pages, docPastId,
+                "var docNode = Y.one(\\\".theDoc.pasteurisationProcess\\\");\\ndocNode.toggleClass(\\\"show-eem3-clues\\\");\\n\\ndocNode.all(\\\".wegas-line\\\").each(function(node){\\n    Y.Widget.getByNode(node).syncUI();\\n})\\n\\nreturn;",
+                "Y.Wegas.MBenefitsHelper.toggleEEMInDiagram(\\\".theDoc.pasteurisationProcess\\\",  \\\"show-eem3-clues\\\");");
+            patchPatch(pages, docPastId,
+                "var docNode = Y.one(\\\".theDoc.pasteurisationProcess\\\");\\ndocNode.toggleClass(\\\"show-eem4-clues\\\");\\n\\ndocNode.all(\\\".wegas-line\\\").each(function(node){\\n    Y.Widget.getByNode(node).syncUI();\\n})\\n\\nreturn;",
+                "Y.Wegas.MBenefitsHelper.toggleEEMInDiagram(\\\".theDoc.pasteurisationProcess\\\",  \\\"show-eem4-clues\\\");");
+            patchPatch(pages, docPastId,
+                "var docNode = Y.one(\\\".theDoc.pasteurisationProcess\\\");\\ndocNode.toggleClass(\\\"show-eem5-clues\\\");\\n\\ndocNode.all(\\\".wegas-line\\\").each(function(node){\\n    Y.Widget.getByNode(node).syncUI();\\n})\\n\\nreturn;",
+                "Y.Wegas.MBenefitsHelper.toggleEEMInDiagram(\\\".theDoc.pasteurisationProcess\\\",  \\\"show-eem5-clues\\\");");
+
+            String docSaucesId = "11";
+            patchPatch(pages, docSaucesId,
+                "var docNode = Y.one(\\\".theDoc.pasteurisationProcess\\\");\\ndocNode.toggleClass(\\\"show-eem2-clues\\\");\\n\\ndocNode.all(\\\".wegas-line\\\").each(function(node){\\n    Y.Widget.getByNode(node).syncUI();\\n})\\n\\nreturn;",
+                "Y.Wegas.MBenefitsHelper.toggleEEMInDiagram(\\\".theDoc.pasteurisationProcess\\\",  \\\"show-eem2-clues\\\");");
+
+            String docLightsId = "14";
+            patchPatch(pages, docLightsId, "var docNode = Y.one(\\\".theDoc.pasteurisationProcess\\\");\\ndocNode.toggleClass(\\\"show-eem6-clues\\\");\\n\\ndocNode.all(\\\".wegas-line\\\").each(function(node){\\n    Y.Widget.getByNode(node).syncUI();\\n})\\n\\nreturn;",
+                "Y.Wegas.MBenefitsHelper.toggleEEMInDiagram(\\\".theDoc.pasteurisationProcess\\\",  \\\"show-eem6-clues\\\");");
+
+
+            gm.setPages(pages);
+
+        }
+        return "DONE";
+    }
+
 }

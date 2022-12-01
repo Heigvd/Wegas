@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -84,14 +84,14 @@ public class JPACacheHelper {
      * Request all instances in the cluster to evict current requestManager updatedEntity from second level cache
      */
     public void evictUpdatedEntities() {
-        ArrayList<DestroyedEntity> entities = (ArrayList<DestroyedEntity>) requestManager.getUpdatedEntities().stream()
+        ArrayList<DestroyedEntity> entities = (ArrayList<DestroyedEntity>) requestManager.getAllUpdatedEntities().stream()
                 .map(DestroyedEntity::new).collect(Collectors.toList());
 
         evictEntities.fire(entities.toArray(new DestroyedEntity[entities.size()]));
     }
 
     public void evictUpdatedEntitiesLocalOnly() {
-        ArrayList<DestroyedEntity> entities = (ArrayList<DestroyedEntity>) requestManager.getUpdatedEntities().stream()
+        ArrayList<DestroyedEntity> entities = (ArrayList<DestroyedEntity>) requestManager.getAllUpdatedEntities().stream()
                 .map(DestroyedEntity::new).collect(Collectors.toList());
 
         this.evictEntities(entities.toArray(new DestroyedEntity[entities.size()]));

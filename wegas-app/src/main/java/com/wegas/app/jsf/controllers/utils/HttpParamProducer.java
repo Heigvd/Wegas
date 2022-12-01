@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.jsf.controllers.utils;
@@ -43,4 +43,10 @@ public class HttpParamProducer {
         return null;
     }
 
+	@Produces
+    @HttpParam
+    Boolean getHttpParamAsBoolean(InjectionPoint ip) {
+        String httpParam = this.getHttpParam(ip);
+		return "true".equals(httpParam);
+    }
 }

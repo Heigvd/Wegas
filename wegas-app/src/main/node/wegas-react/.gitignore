@@ -1,0 +1,8 @@
+# testing
+/coverage
+
+# production
+/dist
+
+# test data
+src/Testers/Components/Map

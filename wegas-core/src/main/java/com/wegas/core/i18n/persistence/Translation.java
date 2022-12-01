@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.i18n.persistence;
@@ -12,6 +12,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.GameModel;
@@ -74,7 +75,7 @@ public class Translation implements WithPermission {
 
     @WegasEntityProperty(view = @View(label = "Status"),
         proposal = EmptyString.class,
-        optional = false, nullable = false)
+        optional = false, nullable = true)
     private String status;
 
     public static class TranslationKey {
@@ -159,10 +160,19 @@ public class Translation implements WithPermission {
         return true;
     }
 
+    /**
+     *
+     * @return language code (always uppercase)
+     */
     public String getLang() {
         return lang != null ? lang.toUpperCase() : null;
     }
 
+    /**
+     * Set the language code. Will be uppercased
+     *
+     * @param lang
+     */
     public void setLang(String lang) {
         if (lang != null) {
             this.lang = lang.toUpperCase();
@@ -227,23 +237,23 @@ public class Translation implements WithPermission {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
-        return this.getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
+        return this.getRequieredUpdatePermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredDeletePermission() {
-        return getMergeableParent().getRequieredDeletePermission();
+    public Collection<WegasPermission> getRequieredDeletePermission(RequestContext context) {
+        return getMergeableParent().getRequieredDeletePermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return getMergeableParent().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return getMergeableParent().getRequieredReadPermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        Collection<WegasPermission> perms = this.getMergeableParent().getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        Collection<WegasPermission> perms = this.getMergeableParent().getRequieredUpdatePermission(context);
 
         GameModel gm = this.getParentGameModel();
 

@@ -2,13 +2,14 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.log.rest;
 
 import com.wegas.core.XlsxSpreadsheet;
 import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.rest.GameController.StreamingOutputImpl;
@@ -55,6 +56,9 @@ public class StatisticController {
     private GameFacade gameFacade;
 
     @Inject
+    private GameModelFacade gameModelFacade;
+
+    @Inject
     private Xapi xapi;
 
     private List<Long> readIds(String ids) {
@@ -78,7 +82,9 @@ public class StatisticController {
     @Path("LogId")
     @RequiresRoles("Administrator")
     public List<String> getLogIds() {
-        return xapi.getAllLogId();
+        // Do not fetch list of logIDs from XAPI db
+        //return xapi.getAllLogId();
+        return gameModelFacade.findDistinctLogIds();
     }
 
     /**
@@ -92,7 +98,9 @@ public class StatisticController {
     @Path("queryGames/{logid: .+}")
     @RequiresRoles("Administrator")
     public List<Long> neo4jDirectQuery(@PathParam("logid") final String logID) {
-        return xapi.getAllGameIdByLogId(logID);
+        // Do not fetch list of logIDs from XAPI db
+        //return xapi.getAllGameIdByLogId(logID);
+        return gameFacade.getAllGameIdByLogId(logID);
     }
 
     @GET

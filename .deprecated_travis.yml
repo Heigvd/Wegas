@@ -1,0 +1,38 @@
+language: java
+dist: bionic
+jdk:
+  - openjdk11
+addons:
+  postgresql: 10
+services: postgresql
+cache:
+  directories:
+  - $HOME/.m2
+  - $HOME/.cache/yarn
+git:
+  submodules: false
+branches:
+  only:
+  - master
+env:
+  global:
+  - NODE_VERSION=11.10.1 CC=clang CXX=clang++ YARN_VERSION=1.10.1
+before_install:
+  - echo "MAVEN_OPTS='-Xms800m -Xmx800m'" > ~/.mavenrc
+  - echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
+  - git submodule update --init --recursive
+  - nvm install $NODE_VERSION
+  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version $YARN_VERSION
+  - export PATH="$HOME/.yarn/bin:$PATH"
+  - perl -pi -e 's/(wegas.build.number)=/$1=$ENV{"TRAVIS_BUILD_NUMBER"}/;s/(wegas.build.branch)=/$1=$ENV{"TRAVIS_BRANCH"}/;s/(wegas.build.pr_branch)=/$1=$ENV{"TRAVIS_PULL_REQUEST_BRANCH"}/;s/(wegas.build.pr_number)=/$1=$ENV{"TRAVIS_PULL_REQUEST"}/;' wegas-core/src/main/resources/wegas.properties
+  - psql -c 'create database wegas_test;' -U postgres
+  - psql -c "create user \"user\" with superuser password '1234';" -U postgres
+install:
+  - mvn -B -P release-profile install
+script:
+  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo ${TRAVIS_PULL_REQUEST}_${TRAVIS_PULL_REQUEST_BRANCH}; fi)
+after_success:
+- export WAR=/tmp/Wegas_${BRANCH}_${TRAVIS_BUILD_NUMBER}.war;
+  cp wegas-app/target/Wegas.war ${WAR};
+  curl -s --insecure -F "war=@${WAR}" -H "Authorization:token ${WAR_MANAGER_ADMIN_TOKEN}" https://manager.albasim.ch/api/branch/upload > /dev/null;
+

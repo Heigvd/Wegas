@@ -1,9 +1,8 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -17,12 +16,16 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
+import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -31,14 +34,17 @@ import com.wegas.core.security.persistence.token.InviteToJoinToken;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators;
 import com.wegas.editor.ValueGenerators.Open;
 import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -59,6 +65,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -96,10 +103,18 @@ import javax.validation.constraints.Pattern;
     name = "Game.findByNameLike",
     query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name"
 )
+@NamedQuery(
+    name = "Game.findAllIdByLogId",
+    query = "SELECT g.id FROM Game g WHERE g.gameModel.type = com.wegas.core.persistence.game.GameModel.GmType.PLAY AND g.gameModel.properties.logID = :logId"
+)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Game extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, NamedEntity {
+public class Game extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, NamedEntity, AcceptInjection {
 
     private static final long serialVersionUID = 1L;
+
+    @JsonIgnore
+    @Transient
+    protected Beanjection beans;
 
     /**
      *
@@ -172,6 +187,16 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
         optional = false, nullable = false, proposal = Open.class,
         view = @View(label = "Access"))
     private GameAccess access = GameAccess.OPEN;
+
+    /**
+     * If set to true, player will not be able to create teams on their own.
+     * They may only join an existing one.
+     * The trainer is still able to create teams
+     */
+    @WegasEntityProperty(
+        optional = false, nullable = false, proposal = ValueGenerators.False.class,
+        view = @View(label = "Players may create teams"))
+    private Boolean preventPlayerCreatingTeams = false;
 
     /**
      *
@@ -268,7 +293,13 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
         this.getGameTeams().setTeams(teams);
     }
 
-    @WegasExtraProperty(optional = false, nullable = false, view = @View(label = "Status", value = Hidden.class))
+    @WegasExtraProperty(
+        optional = false, nullable = false,
+        view = @View(
+            label = "Status",
+            value = Hidden.class
+        )
+    )
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public Status getStatus() {
         return status;
@@ -359,6 +390,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     @JsonIgnore
+    @Override
     public Player getTestPlayer() {
         if (this instanceof DebugGame) {
             return this.getAnyLivePlayer();
@@ -445,6 +477,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      * @return the createdTime
      */
     @Override
+    @WegasExtraProperty(nullable = false, optional = false)
     public Date getCreatedTime() {
         return createdTime != null ? new Date(createdTime.getTime()) : null;
     }
@@ -497,6 +530,21 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     /**
+     * @return id of the user who created this or null if user no longer exists
+     */
+    @WegasExtraProperty
+    //@JsonView({Views.EditorI.class, Views.LobbyI.class})
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public Long getCreatedById() {
+        if (this.getCreatedBy() != null) {
+            return this.getCreatedBy().getId();
+        }
+        return null;
+    }
+
+
+
+    /**
      * @return the gameModelId
      */
     public Long getGameModelId() {
@@ -520,6 +568,24 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     public void setAccess(GameAccess access) {
         this.access = access;
+    }
+
+    /**
+     * Do player have the ability to create teams?
+     *
+     * @return player ability to create teams
+     */
+    public Boolean getPreventPlayerCreatingTeams() {
+        return preventPlayerCreatingTeams;
+    }
+
+    /**
+     * Give or remove the ability for players to create teams
+     *
+     * @param preventPlayerCreatingTeams new right
+     */
+    public void setPreventPlayerCreatingTeams(Boolean preventPlayerCreatingTeams) {
+        this.preventPlayerCreatingTeams = preventPlayerCreatingTeams;
     }
 
     /**
@@ -633,39 +699,70 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
         SUPPRESSED
     }
 
-
-    /*
-     * Broadcastable mechanism
+    /**
+     * {@inheritDoc}
      */
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
-        String audience = this.getChannel();
-
-        Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
-        map.put(audience, entities);
+
+        // Fetch all user who with any access to the game
+        Set<User> users = new HashSet<>();
+
+        if (this.gameModel != null) {
+            // all scenarists
+            users.addAll(beans.getGameModelFacade().findScenarists(gameModel.getId()));
+        }
+
+        // all trainers
+        users.addAll(beans.getGameFacade().findTrainers(this.getId()));
+
+        // all players
+        this.getPlayers().stream().forEach(p -> {
+            if (p.getUser() != null) {
+                users.add(p.getUser());
+            }
+        });
+
+        // Send update through each user channel
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+        users.forEach(user -> {
+            map.put(user.getChannel(), entities);
+        });
+
+        // send it to admins too
+        map.put(WebsocketFacade.ADMIN_LOBBY_CHANNEL, entities);
+
+        // and eventually to the game channel
+        map.put(this.getChannel(), entities);
+
         return map;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public void setBeanjection(Beanjection beanjection) {
+        this.beans = beanjection;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         return WegasPermission.getAsCollection(this.getAssociatedWritePermission());
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         return WegasPermission.getAsCollection(this.getAssociatedReadPermission());
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
         // Only trainer can create games
         return WegasMembership.TRAINER;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredDeletePermission() {
+    public Collection<WegasPermission> getRequieredDeletePermission(RequestContext context) {
         return WegasMembership.ADMIN;
     }
 

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
@@ -123,7 +123,8 @@ public class Views {
     /**
      * View relevant to Lobby without Editor nor Extended items
      */
-    public static class Lobby extends Public implements LobbyI {
+    //public static class Lobby extends Public implements LobbyI {
+    public static class Lobby extends Views implements PublicI, LobbyI, IndexI {
     }
 
     /**

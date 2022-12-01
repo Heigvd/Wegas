@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -113,7 +113,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                     },
                     on: Wegas.superbind({
                         success: function(data) {
-                            this.scripts = data.response.entity.get("val");
+                            this.scripts = data.response.entity;
                             this.syncWithLibrary();
                         },
                         failure: function() {
@@ -150,7 +150,6 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                     isEmpty = true,
                     cb = this.get(CONTENTBOX),
                     libraries = this.scripts || {};
-                delete libraries['@class'];
                 var keys = Object.keys(libraries).sort();
 
                 for (i in keys) {
@@ -246,7 +245,8 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                     method: 'POST',
                                     updateCache: false,
                                     data: {
-                                        '@class': 'GameModelContent'
+                                        '@class': 'GameModelContent',
+                                        contentType: this.get('library') === 'CSS' ? 'text/css' : 'application/javascript'
                                     }
                                 },
                                 on: Wegas.superbind({
@@ -360,7 +360,8 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                             '@class': 'GameModelContent',
                             content: this.aceField.getValue(),
                             visibility: this.visibilityField.getValue(),
-                            version: this.scripts[this.currentScriptName].version
+                            version: this.scripts[this.currentScriptName].get("version"),
+                            contentType: this.get('library') === 'CSS' ? 'text/css' : 'application/javascript'
                         }
                     },
                     on: Wegas.superbind({
@@ -375,10 +376,10 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                 this.updateStyleSheet(this.currentScriptName, this.aceField.getValue());
                             } else if (this.get('library') === 'ClientScript') {
                                 try {
-                                    eval(this.aceField.getValue());
+                                    W.Sandbox.eval(this.aceField.getValue(), undefined, true);
                                 } catch (e) {
-                                    this.showMessage('error',
-                                        'This script contains errors');
+                                    Y.log("Error in script: ", e.message);
+                                    this.showMessage('error', 'This script contains errors ', e.message);
                                 }
                             }
                             //this.syncUI();

@@ -2,13 +2,13 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.async;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
+import com.hazelcast.cp.lock.FencedLock;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
@@ -24,6 +24,9 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.security.util.ActAsPlayer;
+import com.wegas.core.security.util.ScriptExecutionContext;
+import com.wegas.core.security.util.Sudoer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +36,8 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,11 +101,13 @@ public class PopulatorFacade extends WegasAbstractFacade {
             utx.begin();
             team = teamFacade.find(teamId);
             requestManager.setCurrentTeam(team);
-            Game game = gameFacade.find(team.getGameId());
-            gameModelFacade.createAndRevivePrivateInstance(game.getGameModel(), team);
+            try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
+                Game game = gameFacade.find(team.getGameId());
+                gameModelFacade.createAndRevivePrivateInstance(game.getGameModel(), team);
 
-            team.setStatus(Status.LIVE);
+                team.setStatus(Status.LIVE);
 
+            }
             utx.commit();
         } catch (Exception ex) {
             logger.error("Populate Team: Failure", ex);
@@ -132,24 +139,30 @@ public class PopulatorFacade extends WegasAbstractFacade {
         try {
             utx.begin();
             player = playerFacade.find(playerId);
-            requestManager.setPlayer(player);
+            try (ActAsPlayer acting = requestManager.actAsPlayer(player)) {
+                acting.setFlushOnExit(false); // user managed TX
 
-            // Inform player's user its player is processing
-            websocketFacade.propagateNewPlayer(player);
-            Team team = teamFacade.find(player.getTeamId());
+                try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
+                    // Inform player's user its player is processing
+                    websocketFacade.propagateNewPlayer(player);
+                    Team team = teamFacade.find(player.getTeamId());
 
-            gameModelFacade.createAndRevivePrivateInstance(team.getGame().getGameModel(), player);
+                    gameModelFacade.createAndRevivePrivateInstance(team.getGame().getGameModel(), player);
 
-            player.setStatus(Status.INITIALIZING);
-            this.flush();
+                    player.setStatus(Status.INITIALIZING);
+                    this.flush();
 
-            stateMachineFacade.runStateMachines(player);
+                    // When joining a game, force all state machine
+                    // this is required because transitions which depend on default value
+                    // will not been triggered otherwise
+                    stateMachineFacade.runStateMachines(player, true);
 
-            player.setStatus(Status.LIVE);
-            this.flush();
+                    player.setStatus(Status.LIVE);
+                }
 
-            utx.commit();
-            websocketFacade.propagateNewPlayer(player);
+                utx.commit();
+                websocketFacade.propagateNewPlayer(player);
+            }
 
         } catch (Exception ex) {
             logger.error("Populate Player: Failure", ex);
@@ -176,8 +189,8 @@ public class PopulatorFacade extends WegasAbstractFacade {
         }
     }
 
-    public ILock getLock() {
-        return hzInstance.getLock("PopulatorSchedulerLock");
+    public FencedLock getLock() {
+        return hzInstance.getCPSubsystem().getLock("PopulatorSchedulerLock");
     }
 
     /**
@@ -209,6 +222,26 @@ public class PopulatorFacade extends WegasAbstractFacade {
         }
     }
 
+    /**
+     * Return the position of the player in the player-to-populate queue
+     *
+     * @param player
+     *
+     * @return the position of the player or -1 if the player is not queued
+     */
+    public int getPositionInQueue(Player player) {
+        try {
+            utx.begin();
+            try (Sudoer root = requestManager.sudoer()) {
+                return this.getQueue().indexOf(player);
+            } finally {
+                utx.rollback();
+            }
+        } catch (NotSupportedException | SystemException ex) {
+            return -1;
+        }
+    }
+
     public List<DatedEntity> getQueue() {
         List<DatedEntity> queue = new ArrayList<>();
         queue.addAll(teamFacade.findTeamsToPopulate());
@@ -229,7 +262,7 @@ public class PopulatorFacade extends WegasAbstractFacade {
         requestManager.su();
         Candidate candidate = null;
 
-        ILock lock = this.getLock();
+        FencedLock lock = this.getLock();
         lock.lock();
         try {
             try {

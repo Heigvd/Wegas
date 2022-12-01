@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -22,6 +22,7 @@ import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
+import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.resourceManagement.ejb.IterationFacade;
@@ -333,19 +334,22 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
         } else {
             if (requestFacade.getRequestManager().getPlayer() == null) {
                 /*
-                 * When there is no player in the current requestFacade context and
-                 * since requestFacade will blindly selects any player in such a
-                 * case.
-                 * A player who match the given variableInstance scope must be
-                 * manually selected !
+                 * When there is no player in the current requestFacade context and since
+                 * requestFacade will blindly selects any player in such a case. A player who match
+                 * the given variableInstance scope must be manually selected !
                  */
                 Player p = find.getOwner().getUserLiveOrSurveyOrDebugPlayer(requestManager.getCurrentUser());
-                requestFacade.getRequestManager().setPlayer(p);
-            }
+                try ( ActAsPlayer a = requestManager.actAsPlayer(p)) {
+                    VariableInstance ret = super.update(entityId, entity);
+                    requestFacade.commit();
+                    return ret;
+                }
 
-            VariableInstance ret = super.update(entityId, entity);
-            requestFacade.commit();
-            return ret;
+            } else {
+                VariableInstance ret = super.update(entityId, entity);
+                requestFacade.commit();
+                return ret;
+            }
         }
     }
 
@@ -369,7 +373,9 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
             p = aThis.getOwner().getUserLivePlayerOrDebugPlayer(requestManager.getCurrentUser());
         }
 
-        scriptEvent.fire(p, "numberUpdate", new NumberUpdate(aThis, previousValue));
+        if (p != null) {
+            scriptEvent.fire(p, "numberUpdate", new NumberUpdate(aThis, previousValue));
+        }
     }
 
     public static class NumberUpdate {

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, MEI
  * Licensed under the MIT License
  */
 package ch.albasim.wegas.annotations;
@@ -22,6 +22,8 @@ public @interface Scriptable {
 
     /**
      * empty string means generate the label from method name
+     *
+     * @return
      */
     String label() default "";
 
@@ -48,6 +50,14 @@ public @interface Scriptable {
      * @return true if the annotated method may return null values
      */
     boolean nullable() default false;
+
+    /**
+     * State Machine Transition watch scope. Indicates the strategy to apply to get the variables on
+     * which the return of the depicted getter depends on.
+     *
+     * @return
+     */
+    DependencyScope dependsOn();// default DependencyScope.SELF;
 
     enum ReturnType {
         /**

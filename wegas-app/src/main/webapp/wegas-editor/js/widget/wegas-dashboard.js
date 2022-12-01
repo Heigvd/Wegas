@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -11,6 +11,10 @@
  */
 YUI.add('wegas-dashboard', function(Y) {
     "use strict";
+
+    W.Sandbox.exposeInY("window", "open", function(url) {
+        window.open(url, "_blank");
+    });
 
     var TITLE_TEMPLATE = "<span class='team-name'></span>",
         LINK_TEMPLATE = "<span class='details__link details__link__closed'>Details</span>",
@@ -30,11 +34,11 @@ YUI.add('wegas-dashboard', function(Y) {
                             "itemType": "action",
                             "label": "Impact variables",
                             "hasGlobal": true,
-                            "do": function(team, payload) {
-                                new Y.Wegas.ImpactsTeamModal({
-                                    "team": team
-                                }).render();
-                            }
+                            "do": "function(team, payload) {" +
+                                "    new Y.Wegas.ImpactsTeamModal({" +
+                                "        team: team" +
+                                "    }).render();" +
+                                "}"
                         }
                     }
                 },
@@ -49,16 +53,16 @@ YUI.add('wegas-dashboard', function(Y) {
                             "itemType": "action",
                             "label": "Send real E-Mail",
                             "hasGlobal": true,
-                            "do": function(team, payload) {
-                                new Y.Wegas.EmailTeamModal({
-                                    "team": team,
-                                    "on": {
-                                        "email:sent": function() {
-                                            this.close();
-                                        }
-                                    }
-                                }).render();
-                            }
+                            "do": "function(team, payload) {" +
+                                "    new Y.Wegas.EmailTeamModal({" +
+                                "        team: team," +
+                                "        on: {" +
+                                "            'email:sent': function() {" +
+                                "                this.close();" +
+                                "            }" +
+                                "        }" +
+                                "    }).render();" +
+                                "}"
                         },
                         view: {
                             "id": "view",
@@ -67,14 +71,14 @@ YUI.add('wegas-dashboard', function(Y) {
                             "itemType": "action",
                             "label": "View playing session",
                             "hasGlobal": false,
-                            "do": function(team, payload) {
-                                var p = team.getLivePlayer();
-                                if (p) {
-                                    window.open("game-lock.html?id=" + p.get("id"), "_blank");
-                                } else {
-                                    Y.Wegas.Alerts.showMessage("error", "No valid player in team");
-                                }
-                            }
+                            "do": "function(team, payload) {" +
+                                "    var p = team.getLivePlayer();" +
+                                "    if (p) {" +
+                                "        Y.window.open('game-lock.html?id=' + p.get('id'));" +
+                                "    } else {" +
+                                "        Y.Wegas.Alerts.showMessage('error', 'No valid player in team');" +
+                                "    }" +
+                                "}"
                         }
                     }
                 }
@@ -144,8 +148,9 @@ YUI.add('wegas-dashboard', function(Y) {
             this.detailsTarget = null;
 
             // Use scenario name as name space for these preferences:
-            this.clientPrefs = "wegas-dashboard-" + gm.get("name").replace(/\s+/g, '');
-            var cfg = localStorage.getItem(this.clientPrefs) || {};
+            this.clientPrefsNs = "wegas-dashboard-" + gm.get("name").replace(/\s+/g, '');
+
+            var cfg = localStorage.getItem(this.clientPrefsNs) || {};
             if (typeof cfg === "string") {
                 try {
                     cfg = JSON.parse(cfg);
@@ -224,6 +229,11 @@ YUI.add('wegas-dashboard', function(Y) {
              }*/
 
             this.toolbar.add(new Y.Wegas.Text({
+                content: '<a title="Customize columns"><span class="fa fa-2x fa-cogs"></span></a>',
+                cssClass: 'customize-all global-button'
+            }));
+
+            this.toolbar.add(new Y.Wegas.Text({
                 content: '<a title="Download overview (Excel)" href="rest/GameModel/Game/'
                     + game.get('id')
                     + '/ExportMembers.xlsx" target="_blank"><span class="fa fa-2x fa-file-excel-o"></span></a>',
@@ -253,6 +263,7 @@ YUI.add('wegas-dashboard', function(Y) {
             this.get("contentBox").delegate("click", this.onBooleanClick, ".bloc__boolean.toggleable", this);
             this.get("contentBox").delegate("click", this.onTextClick, ".bloc__text.clickable", this);
 
+            this.get("contentBox").delegate("click", this.onCustomizeAllClick, ".customize-all", this);
             this.get("contentBox").delegate("click", this.onCustomizeGroupClick, ".customize-group", this);
 
             Y.Wegas.app.once('ready', Y.bind(this.syncUI, this));
@@ -408,31 +419,37 @@ YUI.add('wegas-dashboard', function(Y) {
                                             label = label.slice(0, 1).toUpperCase() + label.slice(1);
                                         }
                                         var currGroup = {
-                                            id: results.structure[i].title,
+                                            id: results.structure[i].id,
+                                            name: label,
                                             label: label,
                                             itemType: "group",
                                             items: {},
                                             customizable: false
-                                        },
-                                            prefs = this.preferences.main[results.structure[i].title] || {};
+                                        };
+                                        currGroup.customizable = true;
+                                        currGroup.label = '<span class="customize-group" data-group="' + currGroup.id + '" title="Customize columns">' + currGroup.label + '</span>';
+
+                                        var oldPrefs = this.preferences.main[results.structure[i].id] || {};
+                                        var newPrefs = {};
+
                                         for (j in results.structure[i].items) {
                                             item = results.structure[i].items[j];
                                             currGroup.items[item.id] = item;
-                                            var isActive = prefs[item.id] ? prefs[item.id].active : item.active;
-                                            prefs[item.id] = {
+                                            var isActive = oldPrefs[item.id] ? oldPrefs[item.id].active : item.active;
+                                            newPrefs[item.id] = {
                                                 id: item.id,
                                                 label: item.label || item.id,
                                                 active: isActive
                                             };
 
                                             // Until we make this option a standard, only show its icon when at least one column is inactive:
-                                            if ((item.active === false || isActive === false) && !currGroup.customizable) {
-                                                currGroup.customizable = true;
-                                                currGroup.label = '<span class="customize-group" data-group="' + currGroup.id + '" title="Customize columns">' + currGroup.label + '</span>';
-                                            }
+//                                            if ((item.active === false || isActive === false) && !currGroup.customizable) {
+//                                                currGroup.customizable = true;
+//                                                currGroup.label = '<span class="customize-group" data-group="' + currGroup.id + '" title="Customize columns">' + currGroup.label + '</span>';
+//                                            }
                                         }
-                                        this._monitoredData.structure.main.def[results.structure[i].title] = currGroup;
-                                        this.preferences.main[results.structure[i].title] = prefs;
+                                        this._monitoredData.structure.main.def[results.structure[i].id] = currGroup;
+                                        this.preferences.main[results.structure[i].id] = newPrefs;
                                     }
                                 }
 
@@ -464,9 +481,9 @@ YUI.add('wegas-dashboard', function(Y) {
             }
         },
         completePreferences: function() {
-            if (this.preferencesInitialized) {
-                return;
-            }
+//            if (this.preferencesInitialized) {
+//                return;
+//            }
             var prefs = this.preferences,
                 structure = this._monitoredData.structure;
             for (var tableName in structure) {
@@ -494,7 +511,7 @@ YUI.add('wegas-dashboard', function(Y) {
                     }
                 }
             }
-            this.preferencesInitialized = true;
+//            this.preferencesInitialized = true;
         },
 
         syncTable: function() {
@@ -503,34 +520,10 @@ YUI.add('wegas-dashboard', function(Y) {
                 tables = {}, data = {}, i, j, tableDef,
                 teamId, team, teamData, entry,
                 cell, cellDef,
-                tableName, tableColumns, formatter, transformer, sortFn,
-                key1, key2, firstCellFormatter,
+                tableName, tableColumns,
+                firstCellFormatter,
                 firstOfGroup,
                 getPlayerIcon,
-                // Parses the given JSON string and returns the possibly nested object :
-                parseJSON = function(strObj) {
-                    var props,
-                        res = {};
-                    try {
-                        props = JSON.parse(strObj.body);
-                    } catch (e) {
-                        alert("SyncTable: " + e);
-                        return null;
-                    }
-                    // Handle nested objects as well, i.e. when a value is a string representation of a JSON object.
-                    for (var key in props) {
-                        if (typeof props[key] === 'string') {
-                            try {
-                                res[key] = JSON.parse(props[key]);
-                            } catch (e) {
-                                res[key] = props[key];
-                            }
-                        } else {
-                            res[key] = props[key];
-                        }
-                    }
-                    return res;
-                },
                 parseItem = function(id, def, firstOfGroup) {
                     var item = {
                         key: id,
@@ -541,6 +534,8 @@ YUI.add('wegas-dashboard', function(Y) {
                         disabledTooltip: def.disabledTooltip || "This action is not yet active",
                         cssClass: (firstOfGroup ? "first-of-group" : "")
                     };
+                    var formatter;
+                    var sortFn;
 
                     if (def.itemType === "action") {
 
@@ -574,26 +569,28 @@ YUI.add('wegas-dashboard', function(Y) {
                             }
                         };
                         item.icon = def.icon;
-                        item.do = eval("(" + def.do + ")");
+
+                        item.do = W.Sandbox.eval("return (" + def.do + ")");
+
                         item.sortable = false;
                         item.globalOnly = def.globalOnly;
                     } else {
                         if (def.formatter) {
-                            formatter = eval("(" + def.formatter + ")");
+                            formatter = W.Sandbox.eval("return (" + def.formatter + ")");
                             if (formatter) {
-                                item.valueFormatter = formatter;
-                            }
-                        }
-                        if (def.transformer) {
-                            transformer = eval("(" + def.transformer + ")");
-                            if (transformer) {
-                                item.valueTransformer = transformer;
+                                item.valueFormatter = function(bloc, value) {
+                                    var node = W.Sandbox.proxyNode(bloc);
+                                    formatter(node, value);
+                                };
                             }
                         }
                         if (def.sortFn) {
-                            sortFn = eval("(" + def.sortFn + ")");
+                            sortFn = W.Sandbox.eval("return (" + def.sortFn + ")");
                             if (sortFn) {
-                                item.sortFn = sortFn;
+                                item.sortFn = function(a, b, desc) {
+                                    // intercept sort function and provide data
+                                    return sortFn(a.get(id), b.get(id), desc);
+                                };
                             }
                         }
 
@@ -605,10 +602,6 @@ YUI.add('wegas-dashboard', function(Y) {
                             var fallback = false;
                             if (def.kind) {
                                 if (def.kind === "boolean") {
-                                    if (o.column.valueTransformer) {
-                                        o.value = o.column.valueTransformer.call(this, o.value);
-                                    }
-
                                     if (def.preventClick) {
                                         o.cell.setHTML("<span class=\"bloc__value bloc__boolean\">" + (o.value ? "✔" : "✕") + "</span>");
                                     } else {
@@ -621,18 +614,10 @@ YUI.add('wegas-dashboard', function(Y) {
 
                                 } else if (def.kind === "inbox") {
                                     o.cell.setHTML('<i class="bloc__text clickable ' + (o.value.empty ? 'icon fa fa-comment-o"' : 'icon fa fa-commenting-o"') + ' title="Click to view"></i>');
-                                    if (o.column.valueTransformer) {
-                                        o.value = o.column.valueTransformer.call(this, o.value);
-                                    }
                                 } else if (def.kind === "text") {
                                     o.cell.setHTML('<i class="bloc__text clickable ' + (o.value.empty ? 'icon fa fa-file-o"' : 'icon fa fa-file-text-o"') + ' title="Click to view"></i>');
                                 } else {
                                     fallback = true;
-                                    if (def.kind === "object") {
-                                        o.value.object = parseJSON(o.value);
-                                        // Extra data required by PACT:
-                                        o.value.data = o.data;
-                                    }
                                 }
                             } else {
                                 fallback = true;
@@ -640,9 +625,6 @@ YUI.add('wegas-dashboard', function(Y) {
 
                             if (fallback) {
                                 if (o.value !== undefined && o.value !== null) {
-                                    if (o.column.valueTransformer) {
-                                        o.value = o.column.valueTransformer.call(this, o.value);
-                                    }
                                     o.cell.setHTML("<span class=\"bloc__value\">" + o.value + "</span>");
                                 } else {
                                     o.cell.setHTML("<span class=\"bloc__value no-value\"></span>");
@@ -738,28 +720,35 @@ YUI.add('wegas-dashboard', function(Y) {
                     var tabPrefs = this.preferences[tableName],
                         groupPrefs = tabPrefs && tabPrefs[i],
                         cellDef = tableDef[i];
+                    cell = undefined;
                     if (cellDef.itemType === "group") {
-                        cell = {
-                            label: cellDef.label,
-                            children: []
-                        };
-                        firstOfGroup = true;
-                        var children = Y.Object.values(cellDef.items).sort(function(a, b) {
-                            return a.order - b.order;
-                        });
-                        for (j in children) {
-                            var child = children[j];
-                            var id = child.id;
-                            var itemPrefs = groupPrefs && groupPrefs[id];
-                            if (itemPrefs && itemPrefs.active !== false) {
-                                cell.children.push(parseItem(id, child, firstOfGroup));
-                                firstOfGroup = false;
+                        if (Object.values(groupPrefs).find(function(item) {
+                            return item.active;
+                        }) != null) {
+                            cell = {
+                                label: cellDef.label,
+                                children: []
+                            };
+                            firstOfGroup = true;
+                            var children = Y.Object.values(cellDef.items).sort(function(a, b) {
+                                return a.order - b.order;
+                            });
+                            for (j in children) {
+                                var child = children[j];
+                                var id = child.id;
+                                var itemPrefs = groupPrefs && groupPrefs[id];
+                                if (itemPrefs && itemPrefs.active !== false) {
+                                    cell.children.push(parseItem(id, child, firstOfGroup));
+                                    firstOfGroup = false;
+                                }
                             }
                         }
                     } else {
                         cell = parseItem(i, cellDef);
                     }
-                    tableColumns.push(cell);
+                    if (cell) {
+                        tableColumns.push(cell);
+                    }
                 }
                 tables[tableName] = tableColumns;
             }
@@ -880,17 +869,56 @@ YUI.add('wegas-dashboard', function(Y) {
                     empty = false;
                 }
             }
-            if (empty) {
-                items[cbx].active = !(items[cbx].active);
-                alert("Sorry, at least one option has to be active.");
+//            if (empty) {
+//                items[cbx].active = !(items[cbx].active);
+//                alert("Sorry, at least one option has to be active.");
+//            } else {
+            if (items[cbx].active) {
+                target.addClass("selected");
             } else {
-                if (items[cbx].active) {
-                    target.addClass("selected");
-                } else {
-                    target.removeClass("selected");
+                target.removeClass("selected");
+            }
+            // Update localStorage:
+            localStorage.setItem(this.clientPrefsNs, JSON.stringify(storedPrefs));
+//            }
+            event.halt(true);
+        },
+        onCustomizeAllClick: function(event) {
+            var groups = this.preferences.main,
+                title = "Monitored variables/columns",
+                body = '';
+            if (this.detailsOverlay.get("visible")) {
+                this.detailsOverlay.hide();
+            }
+            if (event.currentTarget !== this.detailsTarget) {
+                body = '<div class="customize-group-window">';
+                for (var group in groups) {
+                    if (groups.hasOwnProperty(group)) {
+                        var items = groups[group];
+                        var itemBody = "";
+                        for (var j in items) {
+                            if (items[j].label) {
+                                itemBody += '<div class="checkbox' + (items[j].active ? ' selected' : '') + '" data-group="' + group + '" data-cbx="' + items[j].id + '">' + items[j].label + "</div>";
+                            }
+                        }
+                        if (itemBody) {
+                            body += '<div class="group-title">' + this._monitoredData.structure.main.def[group].name + "</div>";
+                            body += itemBody;
+                        }
+                    }
                 }
-                // Update localStorage:
-                localStorage.setItem(this.clientPrefs, JSON.stringify(storedPrefs));
+                body += '</div>';
+                body += '<div class="customize-footer">';
+                body += '<button class="customize-group-submit-button">OK</button></div>';
+                body += '</div>';
+                this._display(title, body, true, Y.bind(function() {
+                    this.syncUI();
+                }, this));
+                this.detailsTarget = event.currentTarget;
+                this.detailsOverlay.bodyNode.delegate("click", this.onCustomizationClick, ".checkbox", this);
+                this.detailsOverlay.bodyNode.delegate("click", this.closeDetails, ".customize-group-submit-button", this);
+            } else {
+                this.detailsTarget = null;
             }
             event.halt(true);
         },
@@ -909,7 +937,10 @@ YUI.add('wegas-dashboard', function(Y) {
                         body += '<div class="checkbox' + (items[j].active ? ' selected' : '') + '" data-group="' + group + '" data-cbx="' + items[j].id + '">' + items[j].label + "</div>";
                     }
                 }
-                body += '<button class="customize-group-submit-button">OK</button></div>';
+                body += '</div>';
+                body += '<div class="customize-footer">';
+                body += '<button class="customize-group-submit-button">OK</button>';
+                body += '</div>';
                 this._display(title, body, true, Y.bind(function() {
                     this.syncUI();
                 }, this));

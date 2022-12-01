@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.i18n.persistence;
@@ -15,6 +15,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
@@ -370,10 +371,10 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
      * SECURITY
      */
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         Broadcastable owner = getOwner();
         if (owner != null) {
-            Collection<WegasPermission> perms = owner.getRequieredUpdatePermission();
+            Collection<WegasPermission> perms = owner.getRequieredUpdatePermission(context);
             perms.add(this.getParentGameModel().getAssociatedTranslatePermission(""));
             return perms;
         }
@@ -381,10 +382,10 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         Broadcastable owner = getOwner();
         if (owner != null) {
-            return owner.getRequieredReadPermission();
+            return owner.getRequieredReadPermission(context);
         }
 
         return null;
@@ -400,7 +401,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         TranslatableContent trC = new TranslatableContent();
         for (Translation t : this.getRawTranslations()) {
             trC.getRawTranslations().add(
-                new Translation(t.getLang(), t.getTranslation(), 
+                new Translation(t.getLang(), t.getTranslation(),
                     t.getStatus(), trC));
         }
         return trC;
@@ -485,7 +486,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
 
     @Override
     public String toString() {
-        return this.translateOrEmpty((GameModel) null);
+        return "TrContent(" + this.translateOrEmpty((GameModel) null) +")";
     }
 
     public static class TranslatableCallback implements WegasCallback {

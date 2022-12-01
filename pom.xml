@@ -33,13 +33,19 @@
             <email>maxence.laurent@gmail.com</email>
         </developer>
         <developer>
-            <name>Jarle Hulaas</name>
+            <name>Xavier Good</name>
         </developer>
         <developer>
-            <name>Pierr-Benjamin Monaco</name>
+            <name>Sandra Monnier</name>
+        </developer>
+        <developer>
+            <name>Audrey Huguenin</name>
         </developer>
     </developers>
     <contributors>
+        <contributor>
+            <name>Pierre-Benjamin Monaco</name>
+        </contributor>
         <contributor>
             <name>Cyril Junod</name>
             <email>cyril.junod at gmail.com</email>
@@ -48,6 +54,9 @@
             <name>Francois-Xavier Aeberhard</name>
             <email>fx@red-agent.com</email>
             <url>http://www.red-agent.com</url>
+        </contributor>
+        <contributor>
+            <name>Jarle Hulaas</name>
         </contributor>
         <contributor>
             <name>Raphaël Schmutz</name>
@@ -81,8 +90,8 @@
     </scm>
 
     <ciManagement>
-        <system>Travis-ci</system>
-        <url>http://travis-ci.org/Heigvd/Wegas</url>
+        <system>GitHub Actions</system>
+        <url>https://github.com/Heigvd/Wegas/actions</url>
     </ciManagement>
 
     <issueManagement>
@@ -125,30 +134,25 @@
 
         <jakarta.version>8.0.0</jakarta.version>
 
-        <shiro.version>1.5.2</shiro.version>
-        <payara.version>5.201</payara.version>
-        <payara.micro.version>5.201.albasim-p1</payara.micro.version>
-        <payara-api.version>5.201</payara-api.version>
+        <shiro.version>1.10.0</shiro.version>
+        <payara.version>5.2021.4</payara.version>
+        <payara.micro.version>5.2021.4</payara.micro.version>
+        <!--<payara.micro.version>5.2020.5-albasim-p1</payara.micro.version>-->
+        <payara-api.version>5.2021.4</payara-api.version>
         <junit.version>4.13.1</junit.version>
-        <arquillian.version>1.4.1.Final</arquillian.version>
+        <arquillian.version>1.6.0.Final</arquillian.version>
         <exec.plugin.version>1.2</exec.plugin.version>
 
-        <jackson.version>2.10.2</jackson.version>
-        <jackson.scope>provided</jackson.scope>
-
-        <jersey.version>2.30.payara-p1</jersey.version>
-
-        <eclipselink.scope>provided</eclipselink.scope>
-        <eclipselink.version>2.7.4</eclipselink.version>
-        <eclipselink.pversion>2.7.4.payara-p2</eclipselink.pversion>
+        <eclipselink.version>2.7.7</eclipselink.version>
 
         <slf4j.version>1.7.28</slf4j.version>
         <logback.version>1.2.3</logback.version>
 
-        <httpcomponents.version>4.5.6</httpcomponents.version>
-        <liquibase.version>2.0.5</liquibase.version>
+        <httpcomponents.version>4.5.13</httpcomponents.version>
+        <!--<liquibase.version>2.0.5</liquibase.version>-->
+        <liquibase.version>4.4.0</liquibase.version>
         <jcr.version>2.0</jcr.version>
-        <oak.version>1.16.0</oak.version>
+        <oak.version>1.40.0</oak.version>
 
         <netbeans.hint.j2eeVersion>8</netbeans.hint.j2eeVersion>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
@@ -181,6 +185,23 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Import dep from payara -->
+            <dependency>
+                <groupId>fish.payara.api</groupId>
+                <artifactId>payara-bom</artifactId>
+                <version>${payara.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <type>pom</type>
+                <version>2.10.2</version>
+                <scope>import</scope>
+            </dependency>
+
             <!--<dependency>
                 <groupId>ch.albasim.wegas</groupId>
                 <artifactId>wegas-core</artifactId>
@@ -226,14 +247,14 @@
             <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi</artifactId>
-                <version>4.1.1</version>
+                <version>5.0.0</version>
                 <type>jar</type>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml</artifactId>
-                <version>4.1.1</version>
+                <version>5.0.0</version>
                 <type>jar</type>
             </dependency>
 
@@ -249,6 +270,14 @@
                 <artifactId>shiro-web</artifactId>
                 <version>${shiro.version}</version>
             </dependency>
+
+            <!-- does not work with our beloved RunAs
+            <dependency>
+                <groupId>org.apache.shiro</groupId>
+                <artifactId>shiro-hazelcast</artifactId>
+                <version>${shiro.version}</version>
+            </dependency>-->
+
 
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -281,6 +310,7 @@
                 <artifactId>metrics-core</artifactId>
                 <version>3.2.3</version>
             </dependency>
+
             <dependency>
                 <groupId>org.apache.jackrabbit</groupId>
                 <artifactId>oak-store-document</artifactId>
@@ -302,12 +332,12 @@
             <dependency>
                 <groupId>com.itextpdf</groupId>
                 <artifactId>itextpdf</artifactId>
-                <version>5.5.13</version>
+                <version>5.5.13.2</version>
             </dependency>
             <dependency>
                 <groupId>org.xhtmlrenderer</groupId>
                 <artifactId>flying-saucer-pdf</artifactId>
-                <version>9.1.18</version>
+                <version>9.1.22</version>
                 <type>jar</type>
             </dependency>
             <dependency>
@@ -320,14 +350,14 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
-                <version>1.6</version>
+                <version>1.10.0</version>
                 <type>jar</type>
             </dependency>
 
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.6</version>
+                <version>2.10.0</version>
                 <type>jar</type>
             </dependency>
 
@@ -343,6 +373,15 @@
                 <version>23.0</version>
             </dependency>-->
 
+            <!--
+                reflections 0.9.11 depends on guava20,
+                0.9.12 do not depends on guava any longer.
+                Oak depends on guava 15
+                and ingwar arquillian suite on v30.0-jre.
+                Te latter two are ignored.
+
+                Switching to reflections 12 breaks everything :-(
+            -->
             <dependency>
                 <groupId>org.reflections</groupId>
                 <artifactId>reflections</artifactId>
@@ -353,7 +392,7 @@
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>42.1.4</version>
+                <version>42.2.25</version>
                 <!--<scope>test</scope>-->
             </dependency>
 
@@ -361,131 +400,20 @@
             <dependency>
                 <groupId>com.pusher</groupId>
                 <artifactId>pusher-http-java</artifactId>
-                <version>1.0.0</version>
+                <version>1.2.0</version>
             </dependency>
 
-            <!-- Neo4j driver -->
-            <dependency>
-                <groupId>org.neo4j.driver</groupId>
-                <artifactId>neo4j-java-driver</artifactId>
-                <version>1.2.1</version>
-            </dependency>
-
-            <!--
-                Provided by payara micro
-            -->
-            <dependency>
-                <groupId>fish.payara.api</groupId>
-                <artifactId>payara-api</artifactId>
-                <version>${payara-api.version}</version>
-                <type>jar</type>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.microprofile</groupId>
-                <artifactId>microprofile</artifactId>
-                <version>2.2</version>
-                <type>pom</type>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.microprofile.metrics</groupId>
-                <artifactId>microprofile-metrics-api</artifactId>
-                <version>2.0.1</version>
-                <type>jar</type>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-                <type>jar</type>
-                <scope>${jackson.scope}</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
-                <type>jar</type>
-                <scope>${jackson.scope}</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.core</artifactId>
-                <version>${eclipselink.pversion}</version>
-                <scope>${eclipselink.scope}</scope>
-            </dependency>
-            <dependency>
-                <groupId>javax.cache</groupId>
-                <artifactId>cache-api</artifactId>
-                <version>1.1.1</version>
-                <type>jar</type>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.media</groupId>
-                <artifactId>jersey-media-multipart</artifactId>
-                <version>${jersey.version}</version>
-                <type>jar</type>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.media</groupId>
-                <artifactId>jersey-media-json-jackson</artifactId>
-                <version>${jersey.version}</version>
-                <type>jar</type>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.core</groupId>
-                <artifactId>jersey-server</artifactId>
-                <version>${jersey.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.core</groupId>
-                <artifactId>jersey-common</artifactId>
-                <version>2.30</version>
-                <scope>provided</scope>
-            </dependency>
+            <!-- Provided By Payara, but not exposed in payara-bom -->
             <dependency>
                 <groupId>org.glassfish.corba</groupId>
                 <artifactId>glassfish-corba-omgapi</artifactId>
                 <version>4.1.0</version>
                 <scope>provided</scope>
             </dependency>
-            <dependency>
-                <groupId>com.hazelcast</groupId>
-                <artifactId>hazelcast</artifactId>
-                <version>3.12.6</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.platform</groupId>
-                <artifactId>jakarta.jakartaee-api</artifactId>
-                <version>${jakarta.version}</version>
-                <scope>provided</scope>
-            </dependency>
 
             <!--
                 Test deps
             -->
-            <dependency>
-                <groupId>fish.payara.extras</groupId>
-                <artifactId>payara-embedded-all</artifactId>
-                <version>${payara.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>fish.payara.extras</groupId>
-                <artifactId>payara-micro</artifactId>
-                <version>${payara.micro.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
@@ -495,17 +423,17 @@
                 <scope>import</scope>
             </dependency>
 
-            <dependency>
+            <!--<dependency>
                 <groupId>org.jboss.arquillian.junit</groupId>
                 <artifactId>arquillian-junit-container</artifactId>
                 <version>${arquillian.version}</version>
                 <scope>test</scope>
-            </dependency>
+            </dependency>-->
 
             <dependency>
                 <groupId>fish.payara.arquillian</groupId>
                 <artifactId>arquillian-payara-server-embedded</artifactId>
-                <version>1.1</version>
+                <version>2.3.1</version>
                 <scope>test</scope>
             </dependency>
 
@@ -521,6 +449,15 @@
                 <groupId>org.eu.ingwar.tools</groupId>
                 <artifactId>arquillian-suite-extension</artifactId>
                 <version>1.2.0</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- required by arq-suite-ext -->
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.6</version>
+                <type>jar</type>
                 <scope>test</scope>
             </dependency>
 
@@ -546,12 +483,21 @@
         <pluginManagement>
             <plugins>
 
+                <!-- clean -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+
                 <!-- Compilation -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
                     <configuration>
+                        <!-- next line makes easier to detect strange compilation errors -->
+                        <!--<forceJavacCompilerUse>true</forceJavacCompilerUse>-->
                         <optimize>${build.optimize}</optimize>
                         <source>${jdk.version}</source>
                         <target>${jdk.version}</target>
@@ -696,7 +642,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M4</version>
+                    <version>3.0.0-M5</version>
                     <configuration>
                         <!-- Add options to start payara with java 11-->
                         <argLine>-Xms800m -Xmx800m @{jacoco.surefireArgLine} --add-modules java.se --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED --add-opens=java.naming/javax.naming.spi=ALL-UNNAMED --add-opens=java.logging/java.util.logging=ALL-UNNAMED --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED --add-opens=java.management/sun.management=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED</argLine>
@@ -710,6 +656,8 @@
                                 org.apache.felix:javax.servlet
                             </classpathDependencyExclude>
                         </classpathDependencyExcludes>
+
+                        <!--<forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>-->
                     </configuration>
                 </plugin>
 
@@ -921,8 +869,8 @@
                 <configuration>
                     <header>wegas/licenseheader.template</header>
                     <properties>
-                        <license.owner>School of Business and Engineering Vaud, Comem, MEI</license.owner>
-                        <license.years>2013-2020</license.years>
+                        <license.owner>School of Management and Engineering Vaud, Comem, MEI</license.owner>
+                        <license.years>2013-2021</license.years>
                     </properties>
                     <includes>
                         <include>**/*.java</include>

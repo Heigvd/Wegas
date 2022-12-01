@@ -1,0 +1,120 @@
+{
+  "name": "wegas-lobby",
+  "version": "1.0.0",
+  "description": "Wegas lobby",
+  "repository": "http://www.github.com/Heigvd/Wegas.git",
+  "author": "Albasim <albasim@heig-vd.ch>",
+  "license": "MIT",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "clean": "rimraf ../../../../target/Wegas/wegas-lobby && rimraf ./node_modules",
+    "test": "jest",
+    "lint": "eslint -c .eslintrc.js --ext .ts,.tsx ./src",
+    "build": "webpack --mode production",
+    "start": "webpack serve --hot --mode development",
+    "preprod": "cross-env PHASE=preprod webpack serve --hot --mode production",
+    "format": "prettier --write src"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!**/node_modules/**"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(tsx?)$",
+    "moduleFileExtensions": [
+      "js",
+      "ts",
+      "tsx",
+      "json",
+      "node"
+    ],
+    "moduleNameMapper": {
+      "lodash-es": "lodash"
+    },
+    "reporters": [
+      "default",
+      [
+        "jest-html-reporter",
+        {
+          "pageTitle": "Test Report",
+          "outputPath": "test-report/index.html"
+        }
+      ]
+    ],
+    "globals": {
+      "ts-jest": {
+        "babelConfig": false,
+        "diagnostics": {
+          "ignoreCodes": [
+            151001
+          ]
+        }
+      }
+    }
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.3",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
+    "@babel/preset-env": "^7.14.4",
+    "@babel/preset-react": "^7.13.13",
+    "@emotion/css": "^11.1.3",
+    "@emotion/react": "^11.4.1",
+    "@svgr/webpack": "^6.2.1",
+    "@types/jest": "^25.1.2",
+    "@types/lodash": "^4.14.170",
+    "@types/pako": "^1.0.1",
+    "@types/react": "^17.0.8",
+    "@types/react-color": "^3.0.4",
+    "@types/react-dom": "^17.0.5",
+    "@types/react-redux": "^7.1.9",
+    "@types/react-router-dom": "^5.1.7",
+    "@types/react-select": "^4.0.17",
+    "@types/tinycolor2": "^1.4.3",
+    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/parser": "^2.20.0",
+    "css-loader": "^6.5.1",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-react-hooks": "^2.4.0",
+    "jest": "^25.1.0",
+    "jest-html-reporter": "^3.4.1",
+    "prettier": "^2.3.2",
+    "prettier-plugin-organize-imports": "^2.2.0",
+    "redux-devtools": "^3.6.0",
+    "style-loader": "^3.3.1",
+    "ts-jest": "^25.2.0",
+    "ts-loader": "^9.2.6",
+    "typescript": "4.6.x",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.68.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.7.4",
+    "webpack-react-component-name": "^4.0.3"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-regular-svg-icons": "^5.15.3",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@fortawesome/react-fontawesome": "^0.1.11",
+    "@reduxjs/toolkit": "^1.5.1",
+    "emotion": "^11.0.0",
+    "lodash": "^4.17.21",
+    "pako": "^1.0.10",
+    "pusher-js": "^7.0.3",
+    "qrcode.react": "^3.1.0",
+    "react": "^17.0.2",
+    "react-color": "^2.19.3",
+    "react-dom": "^17.0.2",
+    "react-password-strength-bar": "^0.3.3",
+    "react-redux": "^7.2.4",
+    "react-router-dom": "^5.2.0",
+    "react-select": "^4.3.1",
+    "tinycolor2": "^1.4.2",
+    "wegas-ts-api": "link:../../../../../wegas-ts-api/target/wegas-ts-api"
+  }
+}

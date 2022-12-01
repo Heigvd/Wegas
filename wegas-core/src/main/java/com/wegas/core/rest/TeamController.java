@@ -3,7 +3,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -92,15 +92,20 @@ public class TeamController {
      */
     @POST
     public Response create(@PathParam("gameId") Long gameId, Team entity) {
-        Response r = Response.status(Response.Status.CONFLICT).build();
         Game g = gameFacade.find(gameId);
         if (g.getAccess() == Game.GameAccess.OPEN) {
+            Boolean prevents = g.getPreventPlayerCreatingTeams();
+            if (prevents != null && prevents) {
+                // Only trainers may create teams!
+                requestManager.assertGameTrainer(g);
+            }
+
             Team team = this.teamFacade.create(gameId, entity);
             teamFacade.detach(team);
             team = teamFacade.find(entity.getId());
-            r = Response.status(Response.Status.CREATED).entity(team).build();
+            return Response.status(Response.Status.CREATED).entity(team).build();
         }
-        return r;
+        return Response.status(Response.Status.CONFLICT).build();
     }
 
     /**

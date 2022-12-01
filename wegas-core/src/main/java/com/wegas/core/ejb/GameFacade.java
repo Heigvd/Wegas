@@ -1,9 +1,8 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -26,13 +25,13 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.persistence.token.SurveyToken;
+import com.wegas.core.security.util.ScriptExecutionContext;
 import com.wegas.survey.persistence.SurveyDescriptor;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -191,7 +190,7 @@ public class GameFacade extends BaseFacade<Game> {
 
         final User currentUser = userFacade.getCurrentUser();
 
-        if (game.getToken() == null) {
+        if (Helper.isNullOrEmpty(game.getToken())){
             game.setToken(this.createUniqueToken(game));
         } else if (this.findLiveOrBinByToken(game.getToken()) != null) {
             throw WegasErrorMessage.error("This access key is already in use",
@@ -212,7 +211,7 @@ public class GameFacade extends BaseFacade<Game> {
         gameModelFacade.propagateAndReviveDefaultInstances(gameModel, game, true); // at this step the game is empty (no teams; no players), hence, only Game[Model]Scoped are propagated
 
         this.addDebugTeam(game);
-        stateMachineFacade.runStateMachines(gameModel);
+        stateMachineFacade.runStateMachines(game, true);
 
         gameCreatedEvent.fire(new EntityCreated<>(game));
     }
@@ -402,6 +401,19 @@ public class GameFacade extends BaseFacade<Game> {
             .setParameter("statuses", statuses).getResultList();
     }
 
+
+    /**
+     * Find all id of games with given logId
+     *
+     * @return list of id
+     */
+    public List<Long> getAllGameIdByLogId(String logId) {
+        TypedQuery<Long> query = this.getEntityManager()
+            .createNamedQuery("Game.findAllIdByLogId", Long.class);
+        query.setParameter("logId", logId);
+        return query.getResultList();
+    }
+
     /**
      * Filter out the debug team
      *
@@ -519,7 +531,6 @@ public class GameFacade extends BaseFacade<Game> {
         player.setStatus(Status.SURVEY);
         player.setUser(currentUser);
 
-
         GameModelLanguage lang = playerFacade.findPreferredLanguages(game.getGameModel(), languages);
 
         player.setLang(lang.getCode());
@@ -580,8 +591,8 @@ public class GameFacade extends BaseFacade<Game> {
      *
      * @param surveys surveys
      * @param request need request to generate the link
-     * @param email structure with attributes recipients (ignored here), sender, subject and body.
-     * 
+     * @param email   structure with attributes recipients (ignored here), sender, subject and body.
+     *
      * @return list of emails to which an invitation has been sent
      *
      * @throws WegasErrorMessage if 1) surveys belong to different GameModels; 2) no game; 3) no
@@ -637,11 +648,11 @@ public class GameFacade extends BaseFacade<Game> {
      * gameModel. must belongs to the same game model.
      *
      * @param surveys surveys
-     * @param email structure with attributes recipients (ignored here), sender, subject and body.
+     * @param email   structure with attributes recipients (ignored here), sender, subject and body.
      * @param request need request to generate the link
      *
      * @return list of emails to which an invitation has been sent
-     * 
+     *
      * @throws WegasErrorMessage if 1) surveys belong to different GameModel; 2) no game; 3) no
      *                           account
      */
@@ -674,14 +685,13 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Send invitation to participate in a survey. 
-     * One invitation will be sent to each recipient address. 
-     * Such survey is made of several SurveyDescriptor. 
-     * Every SurveyDescriptor must belong to the same gameModel.
+     * Send invitation to participate in a survey. One invitation will be sent to each recipient
+     * address. Such survey is made of several SurveyDescriptor. Every SurveyDescriptor must belong
+     * to the same gameModel.
      *
-     * @param surveys   surveys
-     * @param email     structure with attributes recipients, sender, subject and body.
-     * @param request   need request to generate the link
+     * @param surveys surveys
+     * @param email   structure with attributes recipients, sender, subject and body.
+     * @param request need request to generate the link
      *
      * @throws WegasErrorMessage if 1) surveys belong to different GameModel; 2) no game; 3) no
      *                           account
@@ -718,7 +728,7 @@ public class GameFacade extends BaseFacade<Game> {
         teamFacade.detach(team);;
 
         player = playerFacade.find(player.getId());
-        int indexOf = populatorFacade.getQueue().indexOf(player);
+        int indexOf = populatorFacade.getPositionInQueue(player);
         player.setQueueSize(indexOf + 1);
         return player;
     }
@@ -771,7 +781,7 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public void reset(final Game game) {
         gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), game, false);
-        stateMachineFacade.runStateMachines(game);
+        stateMachineFacade.runStateMachines(game, true);
     }
 
     /**
@@ -784,14 +794,29 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
+     * Find all users with a trainer access to a game
+     *
+     * @param id id of the game
+     *
+     * @return
+     */
+    public List<User> findTrainers(Long id) {
+        TypedQuery<User> query = this.getEntityManager().createNamedQuery("User.findByTransitivePermission", User.class);
+        query.setParameter(1, "%:g" + id);
+        return query.getResultList();
+    }
+
+    /**
      * Allow to access this facade event when there is no active CDI context.
      * <b>Please avoid that</b>
      *
      * @return GameFacade instance
      */
-    public static GameFacade lookup() {
+    public static GameFacade
+        lookup() {
         try {
-            return Helper.lookupBy(GameFacade.class);
+            return Helper.lookupBy(GameFacade.class
+            );
         } catch (NamingException ex) {
             logger.error("Error retrieving game facade", ex);
             return null;
@@ -889,96 +914,98 @@ public class GameFacade extends BaseFacade<Game> {
 
         CellStyle subtitleStyle = xlsx.createSmallerHeaderStyle();
 
-        ScriptObjectMirror overviews = (ScriptObjectMirror) scriptFacade.eval(p, new Script(script), null);
+        try ( ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
+            ScriptObjectMirror overviews = (ScriptObjectMirror) scriptFacade.eval(p, new Script(script), null);
 
-        for (Object oSheet : overviews.values()) {
-            ScriptObjectMirror sheetData = (ScriptObjectMirror) oSheet;
+            for (Object oSheet : overviews.values()) {
+                ScriptObjectMirror sheetData = (ScriptObjectMirror) oSheet;
 
-            String name = (String) sheetData.get("name"); // aka sheetName
-            Sheet sheet = xlsx.addSheet(name);
+                String name = (String) sheetData.get("name"); // aka sheetName
+                Sheet sheet = xlsx.addSheet(name);
 
-            ScriptObjectMirror overview = (ScriptObjectMirror) sheetData.get("overview");
+                ScriptObjectMirror overview = (ScriptObjectMirror) sheetData.get("overview");
 
-            ScriptObjectMirror structure = (ScriptObjectMirror) overview.get("structure");
+                ScriptObjectMirror structure = (ScriptObjectMirror) overview.get("structure");
 
-            Collection<Object> groups = structure.values();
-            // create first row : groups'
+                Collection<Object> groups = structure.values();
+                // create first row : groups'
 
-            Map<String, Integer> index = new HashMap<>(); // item name to col number
-            Map<String, String> kinds = new HashMap<>(); // item name to item kind
+                Map<String, Integer> index = new HashMap<>(); // item name to col number
+                Map<String, String> kinds = new HashMap<>(); // item name to item kind
 
-            Row firstRow = xlsx.getCurrentRow();
-            Row secondRow = xlsx.newRow();
+                Row firstRow = xlsx.getCurrentRow();
+                Row secondRow = xlsx.newRow();
 
-            Cell teamName = secondRow.createCell(0);
-            teamName.setCellValue("Team Name");
-            teamName.setCellStyle(subtitleStyle);
+                Cell teamName = secondRow.createCell(0);
+                teamName.setCellValue("Team Name");
+                teamName.setCellStyle(subtitleStyle);
 
-            int currentCol = 1;
+                int currentCol = 1;
 
-            for (Object oGroup : groups) {
-                ScriptObjectMirror group = (ScriptObjectMirror) oGroup;
-                String title = (String) group.get("title");
+                // write headers
+                for (Object oGroup : groups) {
+                    ScriptObjectMirror group = (ScriptObjectMirror) oGroup;
+                    String title = (String) group.get("title");
 
-                int startGroupCol = currentCol;
+                    int startGroupCol = currentCol;
 
-                Collection<Object> items = (Collection<Object>) (((ScriptObjectMirror) group.get("items")).values());
-                for (Object oItem : items) {
-                    ScriptObjectMirror item = (ScriptObjectMirror) oItem;
-                    if (item.hasMember("kind")) {
-                        // skip action/method
-                        String itemLabel = (String) item.get("label");
-                        String itemId = (String) item.get("id");
+                    Collection<Object> items = (Collection<Object>) (((ScriptObjectMirror) group.get("items")).values());
+                    for (Object oItem : items) {
+                        ScriptObjectMirror item = (ScriptObjectMirror) oItem;
+                        if (item.hasMember("kind")) {
+                            // skip action/method
+                            String itemLabel = (String) item.get("label");
+                            String itemId = (String) item.get("id");
 
-                        Cell itemTitle = secondRow.createCell(currentCol);
-                        itemTitle.setCellStyle(subtitleStyle);
-                        itemTitle.setCellValue(itemLabel);
+                            Cell itemTitle = secondRow.createCell(currentCol);
+                            itemTitle.setCellStyle(subtitleStyle);
+                            itemTitle.setCellValue(itemLabel);
 
-                        index.put(itemId, currentCol);
-                        kinds.put(itemId, (String) item.get("kind"));
+                            index.put(itemId, currentCol);
+                            kinds.put(itemId, (String) item.get("kind"));
 
-                        currentCol++;
+                            currentCol++;
+                        }
+                    }
+                    if (currentCol - 1 > startGroupCol) {
+                        Cell groupName = firstRow.createCell(startGroupCol);
+                        groupName.setCellValue(title);
+                        groupName.setCellStyle(titleStyle);
+
+                        sheet.addMergedRegion(new CellRangeAddress(0, 0, startGroupCol, currentCol - 1));
                     }
                 }
-                if (currentCol > startGroupCol) {
-                    Cell groupName = firstRow.createCell(startGroupCol);
-                    groupName.setCellValue(title);
-                    groupName.setCellStyle(titleStyle);
+                xlsx.setCurrentRowNumber(1); // focus second row
 
-                    sheet.addMergedRegion(new CellRangeAddress(0, 0, startGroupCol, currentCol - 1));
-                }
-            }
-            xlsx.setCurrentRowNumber(1); // focus second row
+                // write data
+                ScriptObjectMirror data = (ScriptObjectMirror) overview.get("data");
+                for (String teamId : data.keySet()) {
+                    Team team = teamFacade.find(Long.parseLong(teamId));
+                    if (team instanceof DebugTeam == false || includeTestPlayer) {
+                        xlsx.newRow();
+                        String tName = team.getName();
+                        xlsx.addValue(tName);
 
-            ScriptObjectMirror data = (ScriptObjectMirror) overview.get("data");
-            for (String teamId : data.keySet()) {
-                Team team = teamFacade.find(Long.parseLong(teamId));
-                if (team instanceof DebugTeam == false || includeTestPlayer) {
-                    xlsx.newRow();
-                    String tName = team.getName();
-                    xlsx.addValue(tName);
+                        ScriptObjectMirror teamData = (ScriptObjectMirror) data.get(teamId);
+                        for (String itemId : teamData.keySet()) {
+                            Integer itemCol = index.get(itemId);
+                            if (itemCol != null) {
+                                String kind = kinds.get(itemId);
 
-                    ScriptObjectMirror teamData = (ScriptObjectMirror) data.get(teamId);
-                    for (String itemId : teamData.keySet()) {
-                        Integer itemCol = index.get(itemId);
-                        if (itemCol != null) {
-                            String kind = kinds.get(itemId);
+                                Object value = teamData.get(itemId);
 
-                            Object value = teamData.get(itemId);
+                                if (kind.equals("inbox") || kind.equals("text")) {
+                                    value = ((ScriptObjectMirror) value).getMember("body");
+                                }
 
-                            if (kind.equals("inbox") || kind.equals("text")) {
-                                value = ((ScriptObjectMirror) value).getMember("body");
+                                xlsx.setCurrentColumnNumber(itemCol);
+                                xlsx.addValue(value);
                             }
-
-                            xlsx.setCurrentColumnNumber(itemCol);
-                            xlsx.addValue(value);
                         }
                     }
                 }
+                xlsx.autoWidth();
             }
-
-            xlsx.autoWidth();
-
         }
     }
 }

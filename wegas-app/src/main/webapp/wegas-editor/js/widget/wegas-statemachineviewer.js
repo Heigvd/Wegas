@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global I18n, Promise */
@@ -626,7 +626,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                         cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                         on: {
                             click: Y.bind(function() {
-                                var editor = this.get(PARENT), state = this.get(ENTITY).toObject("id",
+                                var editor = this.get(PARENT), state = this.get(ENTITY).toObject("id", "refId",
                                     "transitions"), newNode;
                                 state.x += 10;
                                 state.y += 10;
@@ -887,7 +887,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                         cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                         on: {
                             click: Y.bind(function() {
-                                var entity = this.get(ENTITY).toObject("id"), tr;
+                                var entity = this.get(ENTITY).toObject("id", "refId"), tr;
                                 tr = this.get(PARENT).addTransition(this.getTargetState(),
                                     new Transition({entity: new Wegas.persistence[entity["@class"]](entity)})
                                     );

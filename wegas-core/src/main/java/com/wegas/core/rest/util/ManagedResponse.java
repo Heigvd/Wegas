@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
@@ -22,7 +22,7 @@ import java.util.List;
 public class ManagedResponse {
 
     private List<DestroyedEntity> deletedEntities;
-    private List<AbstractEntity> updatedEntities;
+    private List<Object> updatedEntities;
     private List<ClientEvent> events;
 
     public ManagedResponse() {
@@ -54,7 +54,7 @@ public class ManagedResponse {
      *
      * @return all entities that have been updated during the request
      */
-    public List<AbstractEntity> getUpdatedEntities() {
+    public List<Object> getUpdatedEntities() {
         return updatedEntities;
     }
 
@@ -62,7 +62,7 @@ public class ManagedResponse {
      *
      * @param updatedEntities
      */
-    public void setUpdatedEntities(List<AbstractEntity> updatedEntities) {
+    public void setUpdatedEntities(List<Object> updatedEntities) {
         this.updatedEntities = updatedEntities;
     }
 

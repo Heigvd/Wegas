@@ -2,12 +2,13 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.messaging.persistence;
 
 import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
@@ -16,6 +17,7 @@ import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.view.I18nHtmlView;
@@ -41,12 +43,12 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      */
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
-            proposal = False.class, optional = false, nullable = false,
-            view = @View(
-                    label = "Limit to one message",
-                    description = "Each new message ejects the previous one",
-                    featureLevel = ADVANCED
-            ))
+        proposal = False.class, optional = false, nullable = false,
+        view = @View(
+            label = "Limit to one message",
+            description = "Each new message ejects the previous one",
+            featureLevel = ADVANCED
+        ))
     private Boolean capped = FALSE;
 
     /**
@@ -94,8 +96,8 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param subject message subject
      * @param body    message body
      * @param token   internal message identifier (can be used within a
-     *                {@link #isTokenMarkedAsRead script condition} to check whether or not
-     *                message has been read)
+     *                {@link #isTokenMarkedAsRead script condition} to check whether or not message
+     *                has been read)
      *
      * @return The sent message
      *
@@ -113,8 +115,8 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param from    message sender
      * @param subject message subject
      * @param body    message body
-     * @param date    the date the message has been sent (free text, eg. 'Monday
-     *                Morning', 'may the 4th', 'thrid period', and so on)
+     * @param date    the date the message has been sent (free text, eg. 'Monday Morning', 'may the
+     *                4th', 'thrid period', and so on)
      *
      * @return The sent message
      *
@@ -148,8 +150,8 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param from        message sender
      * @param subject     message subject
      * @param body        message body
-     * @param date        the date the message has been sent (free text, eg. 'Monday
-     *                    Morning', 'may the 4th', 'thrid period', and so on)
+     * @param date        the date the message has been sent (free text, eg. 'Monday Morning', 'may
+     *                    the 4th', 'thrid period', and so on)
      * @param attachments
      *
      * @return {@link Message} the sent message
@@ -166,8 +168,8 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param from        message sender
      * @param subject     message subject
      * @param body        message body
-     * @param date        the date the message has been sent (free text, eg. 'Monday
-     *                    Morning', 'may the 4th', 'thrid period', and so on)
+     * @param date        the date the message has been sent (free text, eg. 'Monday Morning', 'may
+     *                    the 4th', 'thrid period', and so on)
      * @param token       internal message identifier (can be used within a
      *                    {@link #isTokenMarkedAsRead script condition} to check whether or not
      *                    message has been read)
@@ -187,8 +189,8 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param from        message sender
      * @param subject     message subject
      * @param body        message body
-     * @param date        the date the message has been sent (free text, eg. 'Monday
-     *                    Morning', 'may the 4th', 'thrid period', and so on)
+     * @param date        the date the message has been sent (free text, eg. 'Monday Morning', 'may
+     *                    the 4th', 'thrid period', and so on)
      * @param token       internal message identifier (can be used within a
      *                    {@link #isTokenMarkedAsRead script condition} to check whether or not
      *                    message has been read)
@@ -196,22 +198,29 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * @return
      */
-    @Scriptable(returnType = Scriptable.ReturnType.VOID)
+    @Scriptable(returnType = Scriptable.ReturnType.VOID, dependsOn = DependencyScope.NONE)
     public Message sendMessage(Player p,
-            @Param(view = @View(label = "from", value = I18nStringView.class), proposal = EmptyI18n.class) TranslatableContent from,
-            @Param(view = @View(label = "date", value = I18nStringView.class), proposal = EmptyI18n.class) TranslatableContent date,
-            @Param(view = @View(label = "subject", value = I18nStringView.class), proposal = EmptyI18n.class) TranslatableContent subject,
-            @Param(view = @View(label = "body", value = I18nHtmlView.class), proposal = EmptyI18n.class) TranslatableContent body,
-            @Param(view = @View(
-                    label = "token",
-                    description = "Message identifier used to reference the message within FSM/Trigger conditions"
-            )) String token,
-            @Param(view = @View(label = "attachements")) List<Attachment> attachments) {
+        @Param(view = @View(label = "from", value = I18nStringView.class),
+            proposal = EmptyI18n.class) TranslatableContent from,
+        @Param(view = @View(label = "date", value = I18nStringView.class),
+            proposal = EmptyI18n.class) TranslatableContent date,
+        @Param(view = @View(label = "subject", value = I18nStringView.class),
+            proposal = EmptyI18n.class) TranslatableContent subject,
+        @Param(view = @View(label = "body", value = I18nHtmlView.class),
+            proposal = EmptyI18n.class) TranslatableContent body,
+        @Param(view = @View(
+            label = "token",
+            description = "Message identifier used to reference the message within FSM/Trigger conditions"
+        )) String token,
+        @Param(
+            view = @View(label = "attachements"),
+            proposal = EmptyArray.class
+        ) List<Attachment> attachments) {
         return this.getInstance(p).sendMessage(from, subject, body, date, token, attachments);
     }
 
     public Message sendMessage(Player p, JSObject from, JSObject date, JSObject subject,
-            JSObject body, String token, List<JSObject> attachments) {
+        JSObject body, String token, List<JSObject> attachments) {
         return this.getInstance(p).sendMessage(from, subject, body, date, token, attachments);
     }
 
@@ -221,7 +230,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * @return check if the given player's inbox is empty
      */
-    @Scriptable
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public boolean isEmpty(Player p) {
         return this.getInstance(p).getMessages().isEmpty();
     }
@@ -242,11 +251,11 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param self
      * @param token
      *
-     * @return true is a message identified by the token exists and has been
-     *         read, false otherwise
+     * @return true is a message identified by the token exists and has been read, false otherwise
      */
-    @Scriptable
-    public boolean isTokenMarkedAsRead(Player self, @Param(view = @View(label = "token")) String token) {
+    @Scriptable(dependsOn = DependencyScope.SELF)
+    public boolean isTokenMarkedAsRead(Player self,
+        @Param(view = @View(label = "token")) String token) {
         return this.getInstance(self).isTokenMarkedAsRead(token);
     }
 

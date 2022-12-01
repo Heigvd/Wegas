@@ -1,9 +1,8 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -21,6 +20,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.security.util.Sudoer;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -262,12 +262,16 @@ public class JCRFacade {
             }
             return true;
         } else if (gameModel.isScenarioBasedOnModel()) {
-            // Path should not exists in the model
-            GameModel model = gameModel.getBasedOn();
-            ContentConnector contentConnector = jCRConnectorProvider.getContentConnector(model, wType);
-            AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(fullPath, contentConnector);
+            // should check if path is available in the model, but current user may have no access
+            // to the model. Let's su.
+            try (Sudoer su = requestManager.sudoer()) {
+                // Path should not exists in the model
+                GameModel model = gameModel.getBasedOn();
+                ContentConnector contentConnector = jCRConnectorProvider.getContentConnector(model, wType);
+                AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(fullPath, contentConnector);
 
-            return !descriptor.exist();
+                return !descriptor.exist();
+            }
         } else {
             return true;
         }

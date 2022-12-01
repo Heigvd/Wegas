@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.persistence;
@@ -10,6 +10,7 @@ package com.wegas.reviewing.persistence;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.DatedEntity;
@@ -184,6 +185,7 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
         return reviewState;
     }
 
+    @JsonIgnore
     public ReviewState getInitialReviewState() {
         return initialState != null ? initialState : getReviewState();
     }
@@ -282,21 +284,21 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         switch (getInitialReviewState()) {
             case DISPATCHED:
                 // Only reviewer has edit right
-                return this.getReviewer().getRequieredUpdatePermission();
+                return this.getReviewer().getRequieredUpdatePermission(context);
             case NOTIFIED:
                 // Only author has edit right
-                return this.getAuthor().getRequieredUpdatePermission();
+                return this.getAuthor().getRequieredUpdatePermission(context);
             case REVIEWED:
             case COMPLETED:
             case CLOSED:
             default:
                 // only trainer or scenarist with write right on ethe game model
                 // should be checked against the game, but it's quite equals
-                return this.getReviewer().findDescriptor().getGameModel().getRequieredUpdatePermission();
+                return this.getReviewer().findDescriptor().getGameModel().getRequieredUpdatePermission(context);
         }
     }
 
@@ -316,12 +318,12 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         if (this.beans != null) {
             return beans.getReviewingFacade().getReviewReadPermission(this);
         } else {
-            ArrayList<WegasPermission> p = new ArrayList<>(this.getAuthor().getRequieredReadPermission());
-            p.addAll(this.getReviewer().getRequieredReadPermission());
+            ArrayList<WegasPermission> p = new ArrayList<>(this.getAuthor().getRequieredReadPermission(context));
+            p.addAll(this.getReviewer().getRequieredReadPermission(context));
             return p;
         }
     }

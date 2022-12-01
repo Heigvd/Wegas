@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.ejb;
@@ -166,6 +166,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
         final Assignment assignment = this.findAssignment(assignmentId);
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(assignment.getResourceInstance().getId());
         resourceInstance.moveAssignment(assignment, index);
+        requestManager.addUpdatedEntity(resourceInstance);
         return resourceInstance;
     }
 
@@ -319,7 +320,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
         } catch (WegasScriptException ex) {
             logger.error("EventListener error (\"addTaskPlannification\")", ex);
         }
-        // requestManager.commit(player);
+        requestManager.commit(player);
         return ti;
     }
 
@@ -356,7 +357,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
         } catch (WegasScriptException ex) {
             logger.error("EventListener error (\"removePlannification\")", ex);
         }
-//        requestManager.commit(player);
+        requestManager.commit(player);
         return ti;
     }
 
@@ -441,7 +442,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
                         newTaskInstance.addAssignment(assignment);
 
                     } catch (WegasNoResultException ex) {
-                        throw WegasErrorMessage.error("Could not revive ResourceInstance's assignment on task {}, cause the task does not exists!", taskDescriptorName);
+                        throw WegasErrorMessage.error("Could not revive ResourceInstance's assignment on task " + taskDescriptorName + ", cause the task does not exists!");
                     }
                 }
             }
@@ -460,7 +461,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
                         activity.setTaskInstance(newTaskInstance);
                         newTaskInstance.addActivity(activity);
                     } catch (WegasNoResultException ex) {
-                        throw WegasErrorMessage.error("Could not revive ResourceInstance's actity on task {}, cause the task does not exists!", taskDescriptorName);
+                        throw WegasErrorMessage.error("Could not revive ResourceInstance's actity on task " + taskDescriptorName + ", cause the task does not exists!");
                     }
                 }
 

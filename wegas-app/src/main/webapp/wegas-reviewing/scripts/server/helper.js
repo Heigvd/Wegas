@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
@@ -19,10 +19,20 @@ var ReviewHelper = (function() {
     "use strict";
     var Long = Java.type("java.lang.Long");
 
+    /**
+     * hack; remove sanitizer marks
+     *
+     * @param {type} fn function to serialize
+     * @returns function source-code
+     */
+    function serializeFunction(fn) {
+        return (fn + "").replaceAll("RequestManager.isInterrupted\\(\\);", "");
+    }
+
     /*
-     * { 
+     * {
      *  "type" : "GradeSummary",
-     *  name: "name1", 
+     *  name: "name1",
      *  label: "Name 1",
      *  min: a
      *  max: b
@@ -52,7 +62,7 @@ var ReviewHelper = (function() {
     }
 
 
-    /* 
+    /*
      * {
      *  type" : "CategorizationSummary",
      *  name: "name2",
@@ -212,7 +222,7 @@ var ReviewHelper = (function() {
             evaluationsR, evaluationsC, evaluationsAll, evaluationsValues = {}, evDescriptor,
             evDescriptors = {}, tmp, key, expectedStatus = null, workDone,
             maxNumberOfValue = 0,
-            maxNumberOfReview = Math.min(prd.getMaxNumberOfReview(), teams.size() - 2), // Assume team scoped review. !~_~! 
+            maxNumberOfReview = Math.min(prd.getMaxNumberOfReview(), teams.size() - 2), // Assume team scoped review. !~_~!
             aPlayer,
             monitoring = {
                 structure: {
@@ -477,9 +487,9 @@ var ReviewHelper = (function() {
         for (key in monitoring.structure) {
             monitoring.structure[key].forEach(function(groupItems) {
                 groupItems.items.forEach(function(item) {
-                    item.formatter = item.formatter + "";
+                    item.formatter = serializeFunction(item.formatter);
                     if (item.nodeFormatter) {
-                        item.nodeFormatter = item.nodeFormatter + "";
+                        item.nodeFormatter = serializeFunction(item.nodeFormatter);
                     }
                 });
             });

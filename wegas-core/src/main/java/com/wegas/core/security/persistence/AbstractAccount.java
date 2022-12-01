@@ -3,12 +3,11 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.persistence;
 
-import com.wegas.core.security.persistence.token.Token;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
@@ -19,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -26,6 +26,7 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.persistence.token.Token;
 import com.wegas.core.security.util.AuthenticationMethod;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
@@ -70,6 +71,8 @@ import javax.persistence.Transient;
 @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND a.username = :username")
 @NamedQuery(name = "AbstractAccount.findByEmailOrUserName",
     query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.details.email) LIKE LOWER(:name) OR LOWER(a.username) LIKE LOWER(:name)")
+@NamedQuery(name = "AbstractAccount.findByEmailOrUserNameSensitive",
+    query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.details.email) LIKE LOWER(:name) OR a.username LIKE :name")
 @NamedQuery(name = "AbstractAccount.findByEmail", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.details.email) LIKE LOWER(:email)")
 @NamedQuery(name = "AbstractAccount.findByFullName", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.firstname) LIKE LOWER(:firstname) AND LOWER(a.lastname) LIKE LOWER(:lastname)")
 @NamedQuery(name = "AbstractAccount.findAllNonGuests", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount")
@@ -181,6 +184,7 @@ public abstract class AbstractAccount extends AbstractEntity {
      */
     @Override
     public Long getId() {
+        this.getMergeableParent();
         return id;
     }
 
@@ -408,6 +412,7 @@ public abstract class AbstractAccount extends AbstractEntity {
         this.emailDomain = emailDomain;
     }
 
+    @WegasExtraProperty
     public abstract Boolean isVerified();
 
     /**
@@ -473,12 +478,12 @@ public abstract class AbstractAccount extends AbstractEntity {
     public abstract AuthenticationMethod getAuthenticationMethod();
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
         return null;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         // nobody but the user itset can edit its account
         Collection<WegasPermission> p = WegasPermission.getAsCollection(
             this.getUser().getAssociatedWritePermission()
@@ -487,8 +492,8 @@ public abstract class AbstractAccount extends AbstractEntity {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        Collection<WegasPermission> p = this.getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        Collection<WegasPermission> p = this.getRequieredUpdatePermission(context);
 
         /**
          * In order to share gameModels and games with others trainer/scenarist a trainer/scenario
@@ -515,7 +520,7 @@ public abstract class AbstractAccount extends AbstractEntity {
 
     @Override
     public WithPermission getMergeableParent() {
-        return null;
+        return this.user;
     }
 
     @Override

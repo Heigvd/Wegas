@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -418,6 +418,39 @@ YUI.add("wegas-parent", function(Y) {
                                                                     fn: "AddChildWidgetAction",
                                                                     cfg: {
                                                                         childType: "Spreadsheet"
+                                                                    }
+                                                                }]
+                                                        },
+                                                        {
+                                                            type: BUTTON,
+                                                            label: "Quest Progress Bar",
+                                                            cssClass: "wegas-advanced-feature",
+                                                            plugins: [{
+                                                                    fn: "AddChildWidgetAction",
+                                                                    cfg: {
+                                                                        childType: "QuestProgressBar"
+                                                                    }
+                                                                }]
+                                                        },
+                                                        {
+                                                            type: BUTTON,
+                                                            label: "Achievement Notification",
+                                                            cssClass: "wegas-advanced-feature",
+                                                            plugins: [{
+                                                                    fn: "AddChildWidgetAction",
+                                                                    cfg: {
+                                                                        childType: "AchievementPopup"
+                                                                    }
+                                                                }]
+                                                        },
+                                                        {
+                                                            type: BUTTON,
+                                                            label: "Achievement Exhibition",
+                                                            cssClass: "wegas-advanced-feature",
+                                                            plugins: [{
+                                                                    fn: "AddChildWidgetAction",
+                                                                    cfg: {
+                                                                        childType: "AchievementExhibition"
                                                                     }
                                                                 }]
                                                         },

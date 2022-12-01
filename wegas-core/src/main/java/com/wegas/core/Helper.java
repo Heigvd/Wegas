@@ -1,17 +1,16 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core;
 
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.hazelcast.core.Cluster;
-import com.hazelcast.core.Member;
+import com.hazelcast.cluster.Cluster;
+import com.hazelcast.cluster.Member;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
@@ -38,6 +37,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.naming.Context;
@@ -73,6 +73,7 @@ public class Helper {
     public static final String TEAM_CHANNEL_PREFIX = "private-Team-";
     public static final String GAME_CHANNEL_PREFIX = "private-Game-";
     public static final String GAMEMODEL_CHANNEL_PREFIX = "private-GameModel-";
+    public static final String GAMEMODEL_EDITOR_CHANNEL_PREFIX = "private-GameModelEditor-";
 
     private Helper() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
@@ -1266,10 +1267,64 @@ public class Helper {
         Pattern p = Pattern.compile("ERROR: duplicate key value violates unique constraint \".*\"\\s+Detail: Key \\((.*)\\)=\\((.*)\\) already exists\\.");
         Matcher m = p.matcher(message);
 
-        if (m !=null && m.matches()){
+        if (m != null && m.matches()) {
             return m.group(1) + " " + m.group(2) + " already exists";
         } else {
             return message;
         }
+    }
+
+
+    /**
+     * Get all paths.
+     * <p>
+     * <ul>
+     * <li> /hello => [hello]
+     * <li> /hello/world => [hello, hello/world]
+     * <li> /hello/sad/world => [hello, hello/sad, hello/sad/world]
+     * </ul>
+     *
+     * @param path the path to clean
+     *
+     * @return clean path
+     */
+    public static List<String> getAllPaths(String path) {
+        List<String> paths = new ArrayList<>();
+
+        String[] split = path.split("/");
+        String current = null;
+        List<String> segments = Arrays.stream(split)
+            .filter(seg -> !Helper.isNullOrEmpty(seg))
+            .collect(Collectors.toList());
+
+        for (String seg: segments){
+            String p = (current != null ? current + "/" : "") + seg;
+            current = p;
+            paths.add(p);
+        }
+        return paths;
+    }
+
+    /**
+     * Sanitize a path.
+     * <p>
+     * A clean path do not start nor end with a slash and do not contains consecutive slashes
+     * <ul>
+     * <li> /hello => hello
+     * <li> /hello/world => hello/world
+     * <li> hello/world => hello/world
+     * <li> hello//world/ => hello/world
+     * </ul>
+     *
+     * @param path the path to clean
+     *
+     * @return clean path
+     */
+    public static String cleanFilename(String path) {
+        String[] split = path.split("/");
+
+        return Arrays.stream(split)
+            .filter(seg -> !Helper.isNullOrEmpty(seg))
+            .collect(Collectors.joining("/"));
     }
 }

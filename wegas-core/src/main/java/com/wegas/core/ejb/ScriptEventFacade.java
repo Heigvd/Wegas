@@ -1,8 +1,9 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -16,6 +17,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
+import com.wegas.core.security.util.ScriptExecutionContext;
 import java.util.Collection;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -147,19 +149,23 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
 
         if (this.registeredEvents.containsKey(eventName)) {
             Collection callbacks = this.registeredEvents.getCollection(eventName);
-            for (Object cb : callbacks) {
-                ScriptObjectMirror obj = (ScriptObjectMirror) ((Object[]) cb)[0];
 
-                Object scope = (((Object[]) cb).length == 2 ? ((Object[]) cb)[1] : new EmptyObject());
+            // event callback are always internal
+            try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
+                for (Object cb : callbacks) {
+                    ScriptObjectMirror obj = (ScriptObjectMirror) ((Object[]) cb)[0];
 
-                try {
-                    obj.call(scope, params);
-                } catch (WegasRuntimeException ex) { // throw our exception as-is
-                    logger.error("ScriptException: {}", ex);
-                    throw ex;
-                } catch (RuntimeException ex) { // Java exception (Java -> JS -> Java -> throw)
-                    logger.error("ScriptException: {}", ex);
-                    throw new WegasScriptException(obj.toString(), ex.getMessage(), ex);
+                    Object scope = (((Object[]) cb).length == 2 ? ((Object[]) cb)[1] : new EmptyObject());
+
+                    try {
+                        obj.call(scope, params);
+                    } catch (WegasRuntimeException ex) { // throw our exception as-is
+                        logger.error("ScriptException: {}", ex);
+                        throw ex;
+                    } catch (RuntimeException ex) { // Java exception (Java -> JS -> Java -> throw)
+                        logger.error("ScriptException: {}", ex);
+                        throw new WegasScriptException(obj.toString(), ex.getMessage(), ex);
+                    }
                 }
             }
         }
@@ -169,8 +175,8 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
     /**
      * @param eventName
      *
-     * @return Object[] array of corresponding parameters fired. Length
-     *         correspond to number of times eventName has been fired.
+     * @return Object[] array of corresponding parameters fired. Length correspond to number of
+     *         times eventName has been fired.
      */
     public Object[] getFiredParameters(String eventName) {
         if (this.eventsFired.containsKey(eventName)) {
@@ -190,7 +196,8 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
     }
 
     /**
-     * check if the event has been fired. If it's the case, count this event consumption within eventCounter
+     * check if the event has been fired. If it's the case, count this event consumption within
+     * eventCounter
      *
      * @param eventName
      *
@@ -232,6 +239,9 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
      */
     @Override
     public void on(String eventName, Object func, Object scope) {
+        if (requestManager.getCurrentContext() != RequestManager.RequestContext.INTERNAL_SCRIPT) {
+            throw WegasErrorMessage.error("The registration of callback is forbidden");
+        }
         this.registeredEvents.put(eventName, new Object[]{func, scope});
     }
 
@@ -241,6 +251,9 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
      */
     @Override
     public void on(String eventName, Object func) {
+        if (requestManager.getCurrentContext() != RequestManager.RequestContext.INTERNAL_SCRIPT) {
+            throw WegasErrorMessage.error("The registration of callback is forbidden");
+        }
         this.registeredEvents.put(eventName, new Object[]{func});
     }
 

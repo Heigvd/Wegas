@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.i18n.tools;
@@ -131,6 +131,7 @@ public class FoundTranslation extends FishedTranslation {
      * @return "Translation CODE (codeStart:end) status =%gt;THE_STATUS&lt;= translation
      *         =%gt;THE_TRANSLATION&lt;= location: start:end
      */
+    @Override
     public String toString() {
         return "Translation "
             + langCode + " (" + langCodeStartPosition + ":" + langCodeEndPosition + ")"

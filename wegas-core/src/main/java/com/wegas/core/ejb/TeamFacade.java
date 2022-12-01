@@ -1,12 +1,14 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.api.TeamFacadeI;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.game.Game;
@@ -16,6 +18,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.util.ActAsPlayer;
 import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -28,7 +31,7 @@ import javax.persistence.TypedQuery;
  */
 @Stateless
 @LocalBean
-public class TeamFacade extends BaseFacade<Team> {
+public class TeamFacade extends BaseFacade<Team> implements TeamFacadeI {
 
     @Inject
     private PopulatorScheduler populatorScheduler;
@@ -124,10 +127,9 @@ public class TeamFacade extends BaseFacade<Team> {
 
         getEntityManager().persist(entity);
         Player aLivePlayer = entity.getAnyLivePlayer();
-        if (aLivePlayer != null) {
-            requestManager.setPlayer(aLivePlayer);
+        try (ActAsPlayer a = requestManager.actAsPlayer(aLivePlayer)) {
+            gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
         }
-        gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
     }
 
     /**
@@ -144,15 +146,10 @@ public class TeamFacade extends BaseFacade<Team> {
         getEntityManager().persist(entity);
         Player player = entity.getAnySurveyPlayer();
 
-        if (player != null) {
-            requestManager.setPlayer(player);
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
         }
-
-        gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
     }
-
-
-
 
     public List<Team> findTeamsToPopulate() {
         TypedQuery<Team> query = this.getEntityManager().createNamedQuery("Team.findToPopulate", Team.class);
@@ -202,7 +199,7 @@ public class TeamFacade extends BaseFacade<Team> {
      */
     public void reset(final Team team) {
         gameModelFacade.propagateAndReviveDefaultInstances(team.getGame().getGameModel(), team, false); // reset the team and all its players
-        stateMachineFacade.runStateMachines(team);
+        stateMachineFacade.runStateMachines(team, true);
     }
 
     /**

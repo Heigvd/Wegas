@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.merge.patch;
@@ -14,6 +14,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
@@ -34,6 +35,7 @@ import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -149,7 +151,7 @@ public final class WegasEntityPatch extends WegasPatch {
 
                 // process @WegasEntityProperty fields
                 for (WegasFieldProperties fieldProperties : entityIterator.getFields()) {
-                    // Get field info 
+                    // Get field info
                     Field field = fieldProperties.getField();
                     WegasEntityProperty wegasProperty = fieldProperties.getAnnotation();
 
@@ -273,6 +275,64 @@ public final class WegasEntityPatch extends WegasPatch {
                                 ownVisibility = ((ModelScoped) toEntity).getVisibility();
                                 visibility = ownVisibility;
                             }
+
+                            if (toEntity instanceof Translation && Helper.isProtected(protectionLevel, inheritedVisibility)) {
+                                // hit a protected translation
+                                try {
+                                    TranslatableContent trc = null;
+                                    Translation tTranslation = null;
+                                    GameModel gameModel = null;
+
+                                    if (target == null && fromEntity == null) {
+                                        // creating a brand new translation
+                                        // only toEntity is set
+                                        tTranslation = (Translation) toEntity;
+                                        trc = (TranslatableContent) ancestors.peekFirst();
+                                        gameModel = trc.getParentGameModel();
+                                    } else if (target instanceof Translation && fromEntity instanceof Translation) {
+                                        // patching an existing translation
+                                        tTranslation = (Translation) target; // the target to update
+                                        trc = (TranslatableContent) ((Translation) fromEntity).getMergeableParent();
+                                        gameModel = target.getParentGameModel();
+                                    }
+
+                                    if (gameModel != null && trc != null && tTranslation != null) {
+                                        // Protected translation hack
+                                        // Translation is protected, but current language is privately owned
+                                        String code = tTranslation.getLang();
+
+                                        GameModelLanguage language = gameModel.getLanguageByCode(code);
+
+                                        if (language != null && language.getVisibility() == Visibility.PRIVATE) {
+                                            // current languages is private to this scenario
+                                            final GameModel gm = gameModel;
+
+                                            boolean anyNonEmptyTrFromSuperLanguage = trc.getRawTranslations()
+                                                .stream()
+                                                .filter(t -> !Helper.isNullOrEmpty(t.getTranslation()))
+                                                .anyMatch(t -> {
+                                                    GameModelLanguage l = gm.getLanguageByCode(t.getLang());
+                                                    return l != null && l.getVisibility() != Visibility.PRIVATE;
+                                                });
+
+                                            //String tr = ((Translation) toEntity).getTranslation();
+                                            if (anyNonEmptyTrFromSuperLanguage) {
+                                                // protected but model provides at least some content
+                                                // -> seems like mis configuration of visibility
+                                                // open edition to scenarist
+                                                inheritedVisibility = Visibility.PRIVATE;
+                                            } else {
+                                                // The model does not privide any content
+                                                // should erase user content
+                                                tTranslation.setTranslation("");
+                                            }
+                                        }
+                                    }
+                                } catch (WegasNotFoundException ex) {
+                                    // skip
+                                }
+                            }
+
                             PatchMode myMode = this.getPatchMode(target, fromEntity, toEntity, parentMode, inheritedVisibility, ownVisibility, bypassVisibility);
 
                             if (visibility == null) {
@@ -665,7 +725,18 @@ public final class WegasEntityPatch extends WegasPatch {
             title = ((NamedEntity) this.toEntity).getName();
         }
 
-        if (title == null) {
+        if (title == null && this.fromEntity instanceof LabelledEntity) {
+            TranslatableContent label = ((LabelledEntity) this.fromEntity).getLabel();
+            if(label != null){
+                title = label.toString();
+            }
+        }
+
+        if (title == null && this.fromEntity instanceof NamedEntity) {
+            title = ((NamedEntity) this.fromEntity).getName();
+        }
+
+        if (title == null && this.identifier !=null ) {
             title = this.identifier.toString();
         }
         return title;

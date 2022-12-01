@@ -1,8 +1,9 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.tools;
@@ -108,12 +109,12 @@ public class RegexExtractorVisitor implements MergeHelper.MergeableVisitor {
     }
 
     public void processStyles(GameModel gameModel) {
-        this.processLibrary(gameModel.getCssLibraryList());
+        this.processLibrary(gameModel.getLibrariesAsList(GameModelContent.CSS));
     }
 
     public void processScripts(GameModel gameModel) {
-        this.processLibrary(gameModel.getClientScriptLibraryList());
-        this.processLibrary(gameModel.getScriptLibraryList());
+        this.processLibrary(gameModel.getLibrariesAsList(GameModelContent.CLIENT_SCRIPT));
+        this.processLibrary(gameModel.getLibrariesAsList(GameModelContent.SERVER_SCRIPT));
     }
 
     private void processLibrary(List<GameModelContent> library) {

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
 */
 /**
@@ -131,11 +131,6 @@
     width: 100%;
     overflow: hidden;
     border-top: 4px solid #6AACF1 !important;
-}
-
-.yui3-skin-sam .wegas-layout-right .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel {
-    /* Because of the handle bar: */
-    padding-left: 4px !important;
 }
 
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel {
@@ -484,7 +479,7 @@
 .yui3-skin-sam .yui3-button.wegas-logo,
 .yui3-skin-sam .yui3-button.wegas-logo:hover {
     background: url(../../wegas-app/images/wegas-logoicon-35.png) 0 0 no-repeat;
-    filter: brightness(0.3); /* hack to make its color close to #4c4c4c */
+    background-size: contain;
     height: 35px;
     width: 35px;
     margin: 3px 5px;
@@ -643,32 +638,6 @@
 .wegas-uploadfile {
     display: inline-block;
     vertical-align: top;
-}
-
-.wegas-lobby-datatable.wegas-dragover > div {
-    background: #fbfbfb;
-}
-
-.wegas-lobby-datatable .wegas-dropdummy {
-    text-align: center;
-    vertical-align: top;
-    font-size: 1.2em;
-    padding: 0.5em;
-    z-index: 100;
-    text-shadow: 2px 2px 1px white, -2px 2px 1px white, 2px -2px 1px white, -2px -2px 1px white;
-    border: 1px solid lightgray;
-    border-radius: 10px;
-    background: white !important;
-    position: absolute;
-    display: none;
-    top: 50%;
-    left: 50%;
-    margin-left: -152px;
-    margin-top: -20px;
-}
-
-.wegas-lobby-datatable.wegas-dragover .wegas-dropdummy {
-    display: block;
 }
 
 .yui3-skin-sam .wegas-uploadfile .yui3-button {

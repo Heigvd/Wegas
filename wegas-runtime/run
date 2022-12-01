@@ -20,18 +20,23 @@ DEBUG_PORT=9009
 DEBUG="false"
 DEBUG_OPTS=
 
-JAVA_HOME=/usr/bin/
+JAVA_HOME=${JAVA_HOME}
+JAVA_EXECUTABLE=""
 
 WEGAS_PROPERTIES=./src/main/resources/wegas-override.properties
 DEFAULT_WEGAS_PROPERTIES=./src/main/resources/default_wegas.properties
 DEFAULT_WEGAS_PROPERTIES_ORI=./src/main/resources/default_wegas.properties.orig
 
+GC=${GC:-G1GC}
+
 function show_help {
     echo "Usage: ./run [OPTIONS]"
-    echo " -d NUM         number of populating daemon (default is ${NB_POPULATORS})"
-    echo " -g             debug mode"
-    echo " -j JAVA_PATH   java path (default is ${JAVA_HOME})"
+    echo " -d             debug mode"
+    echo " -g GC           garbage collector ZGC or G1GC (default is ${GC})"
+    echo " -s DB_HOST     postgresql host (default is ${DB_HOST})"
+    echo " -j JAVA_HOME   java path (default is ${JAVA_HOME})"
     echo " -m HEAP        heap size (default is ${HEAP})"
+    echo " -n NUM         number of populating daemon (default is ${NB_POPULATORS})"
     echo " -p PORT        debug port (default is ${DEBUG_PORT})"
     echo " -t NUM         number of http threads (default is ${NB_THREADS})"
     echo " -w WAR_PATH    war path (default is ${THE_WAR})"
@@ -40,15 +45,19 @@ function show_help {
 # A POSIX variable
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
-while getopts "h?gm:t:d:p:w:j:" opt; do
+while getopts "h?dm:t:n:p:w:j:s:g:" opt; do
     case "$opt" in
     h|\?)
         show_help
         exit 0
         ;;
-    d)  NB_POPULATORS=$OPTARG
+    n)  NB_POPULATORS=$OPTARG
         ;;
-    g)  DEBUG="true"
+    d)  DEBUG="true"
+        ;;
+    g)  GC=$OPTARG
+        ;;
+    s)  DB_HOST=$OPTARG
         ;;
     j)  JAVA_HOME=$OPTARG
         ;;
@@ -70,6 +79,7 @@ if [ ${DEBUG} == "true" ]; then
     echo DEBUG_PORT ${DEBUG_PORT}
 fi
 
+echo DB_HOST ${DB_HOST}
 echo HEAP ${HEAP}
 echo WAR ${THE_WAR}
 
@@ -89,35 +99,31 @@ trap 'echo "TERM";kill -TERM $PID;' TERM INT
 # to enable http2 support
 HTTP2_OPTS=-Xbootclasspath/a:grizzly-npn-bootstrap.jar
 
-# if java has the list-modules options, it's java 9+
-${JAVA_HOME}/java --list-modules > /dev/null 2> /dev/null
+#if java home is empty, use java, if not, use JAVA_HOME/bin/java
+if [ "${JAVA_HOME}xxx" = "xxx" ]; then JAVA_EXECUTABLE=java; else JAVA_EXECUTABLE="${JAVA_HOME}/bin/java"; fi
 
-if [ $? -eq 0 ]; then
-    echo JAVA 9+ detected: enable extra options
-    JDK_EXTRA_OPTS="--add-modules java.se
-        --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED 
-        --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED 
-        --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED 
-        --add-opens=java.base/java.lang=ALL-UNNAMED
-        --add-opens=java.base/java.net=ALL-UNNAMED
-        --add-opens=java.base/java.nio=ALL-UNNAMED
-        --add-opens=java.base/java.util=ALL-UNNAMED
-        --add-opens=java.base/sun.nio.ch=ALL-UNNAMED 
-        --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED
-        --add-opens=java.naming/javax.naming.spi=ALL-UNNAMED
-        --add-opens=java.logging/java.util.logging=ALL-UNNAMED
-        --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
-        --add-opens=java.management/sun.management=ALL-UNNAMED 
-        --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED"
-    GC="-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
-    GC="-XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1MaxNewSizePercent=75 -XX:G1NewSizePercent=40 -XX:MaxGCPauseMillis=2500"
-# -XX:ConcGCThreads=<number> – Basic logging: -Xlog:gc – Detailed logging useful when tuning: -Xlog:gc* 
+echo JAVA 9+ detected: enable extra options
+JDK_EXTRA_OPTS="--add-modules java.se
+    --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED 
+    --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED 
+    --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED 
+    --add-opens=java.base/java.lang=ALL-UNNAMED
+    --add-opens=java.base/java.net=ALL-UNNAMED
+    --add-opens=java.base/java.nio=ALL-UNNAMED
+    --add-opens=java.base/java.util=ALL-UNNAMED
+    --add-opens=java.base/sun.nio.ch=ALL-UNNAMED 
+    --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED
+    --add-opens=java.naming/javax.naming.spi=ALL-UNNAMED
+    --add-opens=java.logging/java.util.logging=ALL-UNNAMED
+    --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+    --add-opens=java.management/sun.management=ALL-UNNAMED 
+    --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED"
+
+if [ "${GC}" = "ZGC" ]; then
+    GC_OPT="-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
 else
-    echo JAVA 8 detected
-    JDK_EXTRA_OPTS=""
-    GC="-XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1MaxNewSizePercent=75 -XX:G1NewSizePercent=40 -XX:MaxGCPauseMillis=2500"
+    GC_OPT="-XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1MaxNewSizePercent=75 -XX:G1NewSizePercent=40 -XX:MaxGCPauseMillis=2500"
 fi
-
 
 ##
 # Wegas Properties Merge Process
@@ -137,13 +143,14 @@ fi
 
 cp ${DEFAULT_WEGAS_PROPERTIES} ${DEFAULT_WEGAS_PROPERTIES_ORI}
 
-
-${JAVA_HOME}/java ${DEBUG_OPTS} ${JDK_EXTRA_OPTS} ${SSL_OPTS} ${GC} ${HTTP2_OPTS} \
+${JAVA_EXECUTABLE} ${DEBUG_OPTS} ${JDK_EXTRA_OPTS} ${SSL_OPTS} ${GC_OPT} ${HTTP2_OPTS} \
     -XX:+UseStringDeduplication -XX:+UnlockDiagnosticVMOptions \
     -Dproduct.name= -XX:+ParallelRefProcEnabled -XX:+UseCompressedOops -XX:-UseLoopPredicate \
     -Xms${HEAP} -Xmx${HEAP} \
     -Djava.security.egd=file:/dev/urandom \
+    -Dhazelcast.shutdownhook.enabled=true \
     -Dwegas.db.host=${DB_HOST} -Dwegas.db.name=${DB_NAME} \
+    -Dhazelcast.startport=6900 \
     -Dwegas.nb_populators=${NB_POPULATORS} -Dwegas.http.threads=${NB_THREADS} \
     -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager \
     -Declipselink.cache.coordination.channel=${HZ_CLUSTER_NAME} \

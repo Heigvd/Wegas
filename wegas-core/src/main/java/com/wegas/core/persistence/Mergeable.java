@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
@@ -122,14 +122,37 @@ public interface Mergeable extends IMergeable {
         }
     }
 
+    /**
+     * Get the direct internal parent
+     *
+     * @param <T> mergeable subtype
+     *
+     * @return the parent
+     */
     @JsonIgnore
     <T extends Mergeable> T getMergeableParent();
 
+    /**
+     * The parent entity, as viewed by the client. This is almost always the same as {@link #getMergeableParent()
+     * } except in some case where the internal structure differs from the one the client see it.
+     * For instance, this is the case for the link between a variable instance and its descriptor:
+     * the scope is hidden to the client
+     *
+     * @param <T> a mergeable subtype
+     *
+     * @return the parent to serialized to the client with {@link #getParentId() } and {@link #getParentType()
+     *         }
+     */
     @JsonIgnore
     default <T extends Mergeable> T getSerialisedParent() {
         return this.getMergeableParent();
     }
 
+    /**
+     * Get the parent entity.
+     *
+     * @return parent entity or null
+     */
     @JsonIgnore
     default AbstractEntity getParentEntity() {
         Mergeable p = this.getSerialisedParent();
@@ -143,6 +166,11 @@ public interface Mergeable extends IMergeable {
         return null;
     }
 
+    /**
+     * Get {@link #getParentEntity() } json class discriminator (the so-called atClass).
+     *
+     * @return json type discriminator or null
+     */
     @JsonView(Views.IndexI.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @WegasExtraProperty(
@@ -162,6 +190,11 @@ public interface Mergeable extends IMergeable {
         return null;
     }
 
+    /**
+     * Get the id of the {@link #getParentEntity() }.
+     *
+     * @return id of the parent or null
+     */
     @JsonView(Views.IndexI.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @WegasExtraProperty(
@@ -181,6 +214,14 @@ public interface Mergeable extends IMergeable {
         return null;
     }
 
+    /**
+     * Find first partent which match the given filter. The "this" object is not taken into account.
+     *
+     * @param <T>    type of the parent
+     * @param filter a class the searched parent should be assignable to
+     *
+     * @return the parent of type T or null
+     */
     default <T extends Mergeable> T findNearestParent(Class<T> filter) {
         Mergeable parent = this.getSerialisedParent();
 
@@ -192,5 +233,21 @@ public interface Mergeable extends IMergeable {
             }
         }
         return null;
+    }
+
+    /**
+     * Same as {@link #findNearestParent(java.lang.Class) } but incluse "this" object in the search.
+     *
+     * @param <T>    type of the parent
+     * @param filter a class the searched parent should be assignable to
+     *
+     * @return the found object or null
+     */
+    default <T extends Mergeable> T findFirstOfType(Class<T> filter) {
+        if (filter.isAssignableFrom(this.getClass())) {
+            return (T) this;
+        } else {
+            return this.findNearestParent(filter);
+        }
     }
 }

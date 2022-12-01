@@ -2,12 +2,13 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.persistence;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -80,13 +81,13 @@ public class AccountDetails extends AbstractEntity {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
         // no permission required to create a new account
         return null;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         // Read/Write restricted to the user
         return WegasPermission.getAsCollection(
             account.getUser().getAssociatedWritePermission()
@@ -94,8 +95,8 @@ public class AccountDetails extends AbstractEntity {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        Collection<WegasPermission> p = getRequieredUpdatePermission(); // the user itself
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        Collection<WegasPermission> p = getRequieredUpdatePermission(context); // the user itself
 
         /*
          * Trainers of game in which the user plays can read details (email address)

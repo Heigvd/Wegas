@@ -1,9 +1,0 @@
-<div class="infos--single-column">
-    <label class="infos__label">{{'PRIVATE-SESSIONS-NAME-LABEL-INPUT' | translate}}</label>
-    <input ng-readonly="isReadonly" ng-model="activeInfos.name" class="input input--small" type="text" required placeholder="{{'PRIVATE-SESSIONS-NAME-PLACEHOLDER-INPUT' | translate}}" />
-    <label class="infos__label" style="margin-top: 10px">{{'PRIVATE-SESSIONS-ACCESS-KEY-LABEL-INPUT' | translate}}</label>
-    <input ng-readonly="isReadonly" ng-model="activeInfos.token" class="key input input--small token-input" type="text" required ng-trim="false" ng-pattern="/^([a-zA-Z0-9_-]|\.(?!\.))*$/" placeholder="{{'PRIVATE-SESSIONS-ACCESS-KEY-PLACEHOLDER-INPUT' | translate}}" />
-    <div class="token-error-msg">{{'PRIVATE-SESSIONS-ACCESS-KEY-ERROR-INPUT' | translate}}</div>
-    <label class="infos__label">{{'PRIVATE-SCENARIOS-COMMENTS-LABEL-INPUT' | translate}}</label>
-    <textarea ng-readonly="isReadonly" ng-model="activeInfos.comments" class="input input--small input--multi-lines" placeholder="{{'PRIVATE-SCENARIOS-COMMENTS-PLACEHOLDER-INPUT' | translate}}"></textarea>
-</div>

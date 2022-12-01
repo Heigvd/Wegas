@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.survey.persistence.input;
@@ -35,7 +35,6 @@ public class SurveySectionInstance extends VariableInstance {
         // ensure there is an empty constructor
     }
 
-    
     /**
      * @return the active
      */

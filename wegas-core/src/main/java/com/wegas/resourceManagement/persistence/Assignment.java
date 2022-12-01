@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.Orderable;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -39,7 +40,7 @@ import javax.persistence.Table;
     query = "SELECT a FROM Assignment a where a.resourceInstance.id = :resourceInstanceId AND a.taskInstance.id = :taskInstanceId"
 )
 @Entity
-public class Assignment extends AbstractAssignement implements NamedEntity {
+public class Assignment extends AbstractAssignement implements NamedEntity, Orderable {
 
     private static final long serialVersionUID = 1L;
 
@@ -50,6 +51,9 @@ public class Assignment extends AbstractAssignement implements NamedEntity {
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
+
+    @JsonIgnore
+    private Integer index;
 
     @ManyToOne(optional = false)
     private TaskInstance taskInstance;
@@ -85,6 +89,20 @@ public class Assignment extends AbstractAssignement implements NamedEntity {
     @JsonIgnore
     public void setName(String name) {
         this.setTaskDescriptorName(name);
+    }
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
+    }
+
+    @Override
+    @JsonIgnore
+    public Integer getOrder() {
+        return getIndex();
     }
 
     /**
@@ -136,7 +154,7 @@ public class Assignment extends AbstractAssignement implements NamedEntity {
         if (theResource != null) {
             VariableInstance find = beans.getVariableInstanceFacade().find(theResource.getId());
             if (find instanceof ResourceInstance) {
-                ((ResourceInstance) find).getAssignments().remove(this);
+                ((ResourceInstance) find).getRawAssignments().remove(this);
             }
         }
     }

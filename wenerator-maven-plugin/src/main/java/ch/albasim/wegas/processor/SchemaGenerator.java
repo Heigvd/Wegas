@@ -3,7 +3,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package ch.albasim.wegas.processor;
@@ -1029,7 +1029,8 @@ public class SchemaGenerator extends AbstractMojo {
         sb.append("\n/*\n"
             + " * IMergeable\n"
             + " */\n"
-            + "export interface IMergeable {\n"
+            + EXPORT_TOSTRIP
+            + " interface IMergeable {\n"
             + "  readonly \"@class\": keyof WegasClassNamesAndClasses;\n"
             + "  refId?: string;\n"
             + "  readonly parentType?: string;\n"
@@ -1075,7 +1076,7 @@ public class SchemaGenerator extends AbstractMojo {
             .append("// @ts-nocheck")
             .append(System.lineSeparator())
             .append(System.lineSeparator());
-        
+
 //        sb.append("/**\n" + " * Remove specified keys.\n" + " */\n" + "type WithoutAtClass<Type> = Pick<\n"
 //            + "    Type,\n" + "    Exclude<keyof Type, '@class'>\n" + ">;");
         writeMergeableInterface(sb);
@@ -1083,7 +1084,7 @@ public class SchemaGenerator extends AbstractMojo {
         /**
          * Creating ts interface linking real classes and stringified classes
          */
-        sb.append(System.lineSeparator()).append("export interface WegasClassNamesAndClasses {");
+        sb.append(System.lineSeparator()).append(EXPORT_TOSTRIP + " interface WegasClassNamesAndClasses {");
         intKeys.forEach(key -> {
             sb.append(System.lineSeparator())
                 .append("  " + key + " : I" + key + ";");
@@ -1096,9 +1097,22 @@ public class SchemaGenerator extends AbstractMojo {
         /**
          * Creating ts type allowing every generated WegasEntities as string
          */
-        sb.append("export type WegasClassNames = keyof WegasClassNamesAndClasses;")
+        sb.append(EXPORT_TOSTRIP + " type WegasClassNames = keyof WegasClassNamesAndClasses;")
             .append(System.lineSeparator())
             .append(System.lineSeparator());
+
+        /**
+         * TS interfaces with mandatory id
+         */
+        sb.append(System.lineSeparator()).append(EXPORT_TOSTRIP + " interface WithId {id: number};");
+        intKeys.forEach(key -> {
+            sb.append(System.lineSeparator())
+                .append(EXPORT_TOSTRIP).append(" type I")
+                .append(key)
+                .append("WithId  = I")
+                .append(key)
+                .append(" & WithId;");
+        });
 
         writeInterfaces(sb, tsInterfaces, this.otherObjectsInterfaceTypeD);
 
@@ -1198,20 +1212,23 @@ public class SchemaGenerator extends AbstractMojo {
             .append("}")
             .append(System.lineSeparator())
             .append(System.lineSeparator());
-        
-        //declBuilder.append(EXPORT_TOSTRIP).append("interface WegasEntitiesNamesAndClasses {");
-        //intKeys.forEach(key -> {
-        //    String sKey = "S" + key;
-        //    declBuilder.append(System.lineSeparator())
-        //        .append("  " + sKey + " : " + sKey + ";")
-        //        .append(System.lineSeparator())
-        //        .append("  '" + sKey + "[]' : " + sKey + "[];");
-        //});
 
-        //declBuilder.append(System.lineSeparator())
-        //    .append("}")
-        //    .append(System.lineSeparator())
-        //    .append(System.lineSeparator());
+        declBuilder.append(EXPORT_TOSTRIP).append("interface WegasEntitiesNamesAndClasses {");
+        intKeys.forEach(key -> {
+            String sKey = "S" + key;
+            declBuilder.append(System.lineSeparator())
+                .append("  " + sKey + " : " + sKey + ";")
+                .append(System.lineSeparator())
+                .append("  '" + sKey + "[]' : " + sKey + "[];")
+                .append("  'Readonly<" + sKey + ">' : Readonly<" + sKey + ">;")
+                .append(System.lineSeparator())
+                .append("  'Readonly<" + sKey + "[]>' : Readonly<" + sKey + "[]>;");
+        });
+
+        declBuilder.append(System.lineSeparator())
+            .append("}")
+            .append(System.lineSeparator())
+            .append(System.lineSeparator());
 
         writeInterfaces(declBuilder, tsScriptableDeclarations, this.otherObjectsScriptableTypeD);
         writeInterfaces(implBuilder, tsScriptableClasses, this.otherObjectsScriptableTypeD);
@@ -1233,7 +1250,7 @@ public class SchemaGenerator extends AbstractMojo {
                 + "AtClassToAbstractClasses & AtClassToConcrtetableClasses & AtClassToConcreteClasses;")
             .append(System.lineSeparator())
             .append(System.lineSeparator());
-        
+
         implBuilder.append(EXPORT_TOSTRIP)
             .append(" type WegasClassNameAndScriptableTypes = "
                 + "AtClassToAbstractTypes & AtClassToConcrtetableTypes & AtClassToConcreteTypes;")
@@ -1904,6 +1921,7 @@ public class SchemaGenerator extends AbstractMojo {
 
                     JSONExtendedSchema prop = javaToJSType(reified, param != null && param.nullable());
                     if (param != null) {
+                        prop.setRequired(!param.nullable());
                         injectView(prop, param.view(), null);
                         if (!Undefined.class.equals(param.proposal())) {
                             try {

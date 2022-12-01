@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
 */
 /**
@@ -115,15 +115,6 @@ body.wegas-ascii *:before {
     font-size: 56px;
     font-family: courier, monospace!important;
     line-height: 39px;
-}
-.wegas-ascii .wegas-lobby-datatable tr.wegas-datatable-selected,
-.wegas-ascii .wegas-lobby-datatable tr.wegas-datatable-selected .yui3-button {
-    background: rgb(123, 224, 14) !important;
-    color: black !important;
-    border: 1px solid black !important;
-}
-.wegas-ascii .wegas-lobby-datatable tr.wegas-datatable-selected * {
-    color: black !important;
 }
 .wegas-ascii .wegas-panel-content {
     border: 1px solid !important;

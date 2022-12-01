@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.runtime;
@@ -64,6 +64,12 @@ public class WegasTest {
     public TestName name = new TestName();
 
     private static final String WEGAS_ROOT_DIR = "../wegas-app/";
+    private static final String WEGAS_URL_1 = "http://localhost:28080/Wegas";
+    private static final String WEGAS_URL_2 = "http://localhost:28081/Wegas";
+    private static final String ADMIN_USERNAME = "root";
+    private static final String ADMIN_EMAIL = "root@root.com";
+    private static final String ADMIN_PASSWORD = "1234";
+
 
     private static final Logger logger = LoggerFactory.getLogger(WegasTest.class);
 
@@ -78,26 +84,26 @@ public class WegasTest {
 
     GameModel dummyGameModel;
 
-    @Deployment(name = "wegas1")
+    @Deployment(name = "wegas1.war")
     //@OverProtocol("Local")
     @TargetsContainer("payara1")
     public static WebArchive deployFirst() {
-        return createDeployment();
+        return createDeployment("Wegas1");
     }
 
-    @Deployment(name = "wegas2")
+    @Deployment(name = "wegas2.war")
     //@OverProtocol("Local")
     @TargetsContainer("payara2")
     public static WebArchive deploySecond() {
-        return createDeployment();
+        return createDeployment("Wegas2");
     }
 
-    public static WebArchive createDeployment() {
+    public static WebArchive createDeployment(String name) {
         WegasRuntime.resetDB("wegas_test");
         String warPath;
-        warPath = "../wegas-app/target/Wegas";
+        warPath = WEGAS_ROOT_DIR + "target/Wegas";
 
-        WebArchive war = ShrinkWrap.create(ExplodedImporter.class)
+        WebArchive war = ShrinkWrap.create(ExplodedImporter.class, name + ".war")
             .importDirectory(new File(warPath))
             .as(WebArchive.class);
 
@@ -106,14 +112,14 @@ public class WegasTest {
 
     @BeforeClass
     public static void setUpClass() throws IOException {
-        client = new WegasRESTClient("http://localhost:28080/Wegas");
-        client2 = new WegasRESTClient("http://localhost:28081/Wegas");
+        client = new WegasRESTClient(WEGAS_URL_1);
+        client2 = new WegasRESTClient(WEGAS_URL_2);
 
         scenarist = client.signup("scenarist@local", "1234");
         trainer = client.signup("trainer@local", "1234");
         user = client.signup("user@local", "1234");
 
-        root = client.getAuthInfo("root@root.com", "1234");
+        root = client.getAuthInfo(ADMIN_EMAIL, ADMIN_PASSWORD);
         root.setUserId(1l);
 
         client.login(root);
@@ -143,15 +149,14 @@ public class WegasTest {
         }
 
         User scenUser = client.get("/rest/User/" + scenarist.getUserId(), User.class);
-        scenUser.getRoles().add(roles.get("Scenarist"));
-        scenUser.getRoles().add(roles.get("Trainer"));
+        Role scenaristRole = roles.get("Scenarist");
+        Role trainerRole = roles.get("Trainer");
 
-        client.put("/rest/User/Account/" + scenUser.getMainAccount().getId(), scenUser.getMainAccount());
+        client.put("/rest/User/" + scenUser.getId() + "/Add/" + scenaristRole.getId());
+        client.put("/rest/User/" + scenUser.getId() + "/Add/" + trainerRole.getId());
 
         User trainerUser = client.get("/rest/User/" + trainer.getUserId(), User.class);
-        trainerUser.getRoles().add(roles.get("Trainer"));
-
-        client.put("/rest/User/Account/" + trainerUser.getMainAccount().getId(), trainerUser.getMainAccount());
+        client.put("/rest/User/" + trainerUser.getId() + "/Add/" + trainerRole.getId());
     }
 
     private void loadDummyGameModel() throws IOException {
@@ -168,7 +173,7 @@ public class WegasTest {
         final String DB_CON = "jdbc:postgresql://localhost:5432/wegas_test";
         final String USER = "user";
         final String PASSWORD = "1234";
-        try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD); Statement st = connection.createStatement()) {
+        try ( Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);  Statement st = connection.createStatement()) {
             Assert.assertEquals("Some indexes are missing. Please create liquibase changesets. See log for details",
                 0, TestHelper.getMissingIndexesCount(st));
         } catch (SQLException ex) {
@@ -206,7 +211,7 @@ public class WegasTest {
         final String DB_CON = "jdbc:postgresql://localhost:5432/wegas_test";
         final String USER = "user";
         final String PASSWORD = "1234";
-        try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD); Statement st = connection.createStatement()) {
+        try ( Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);  Statement st = connection.createStatement()) {
             st.executeUpdate("UPDATE numberdescriptor SET minvalue = -9999 WHERE id = " + var1.getId());
         } catch (SQLException ex) {
         }
@@ -241,11 +246,10 @@ public class WegasTest {
         client.login(root);
         client2.login(root);
 
-        /*
-         * DELETE	/Assign/{assignmentId}
-         * POST	/Assign/{resourceId}/{taskInstanceId}
-         * PUT * /MoveAssignment/{assignmentId}/{index}
-         */
+        // DELETE /Assign/{assignmentId}
+        // POST   /Assign/{resourceId}/{taskInstanceId}
+        // PUT    /MoveAssignment/{assignmentId}/{index}
+
         // Load resource and task from botch instance
         Script fetchTask1 = new Script("JavaScript", "Variable.find(gameModel, 'analyse').getInstance(self);");
         TaskInstance task1 = client.post(runURL, fetchTask1, TaskInstance.class);
@@ -278,6 +282,12 @@ public class WegasTest {
         john_b = client2.post(runURL, fetchResource, ResourceInstance.class);
 
         Assert.assertArrayEquals(john_a.getAssignments().toArray(), john_b.getAssignments().toArray());
+    }
+
+    private void deleteGame(Game game) throws IOException {
+        client.login(root);
+        client.put("/rest/GameModel/Game/" + game.getId() + "/status/DELETE");
+        client.delete("/rest/GameModel/Game/" + game.getId());
     }
 
     @Test
@@ -335,12 +345,99 @@ public class WegasTest {
         List<Team> userTeams = client.get("/rest/User/Current/Team", new TypeReference<List<Team>>() {
         });
 
+        Assert.assertEquals(1, userTeams.size());
+        Team team = userTeams.get(0);
+
+        // user leave
+        Player deleted = client.delete("/rest/GameModel/Game/Team/" + team.getId() + "/Player/" + team.getPlayers().get(0).getId(), new TypeReference<Player>() {
+        });
+
+        userTeams = client.get("/rest/User/Current/Team", new TypeReference<List<Team>>() {
+        });
+
+        Assert.assertNull(userTeams);
+
+        /** ************************************ CLEAN **************************************** */
+        deleteGame(myGame);
+    }
+
+    @Test
+    public void testTrainerDeletePlayer() throws IOException {
+        logger.info("root share to Scenarist");
+        client.login(root);
+        client.post("/rest/User/ShareGameModel/" + dummyGameModel.getId() + "/View,Edit,Delete,Instantiate,Duplicate/" + scenarist.getAccountId(), null);
+
+        logger.info("scenarist create a game");
+        client.login(scenarist);
+        List<GameModel> gameModels = client.get("/rest/GameModel/status/LIVE", new TypeReference<List<GameModel>>() {
+        });
+
+        Assert.assertTrue(gameModels.contains(dummyGameModel));
+        logger.info("# gamemodels scen:" + gameModels.size());
+
+        //create a game
+        Game myGame = client.postJSON_asString("/rest/GameModel/" + dummyGameModel.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + dummyGameModel.getId() + "\",\"access\":\"OPEN\",\"name\":\"ArtosGame\"}", Game.class);
+        String token = myGame.getToken();
+
+        List<Game> games = client.get("/rest/GameModel/Game/status/LIVE", new TypeReference<List<Game>>() {
+        });
+        Assert.assertEquals(1, games.size()); // dummyGameModel
+
+        // User join the game
+        client.login(user);
+
+        Game gameToJoin = client.get("/rest/GameModel/Game/FindByToken/" + token, Game.class);
+
+        gameToJoin.setGameModel(dummyGameModel); //Hack
+
+        Team teamToCreate = new Team();
+        teamToCreate.setDeclaredSize(1);
+        teamToCreate.setName("myTeam");
+        teamToCreate.setGame(gameToJoin);
+
+        Team newTeam = client.post("/rest/GameModel/Game/" + gameToJoin.getId() + "/Team", teamToCreate, Team.class);
+
+        Assert.assertEquals(Populatable.Status.LIVE, newTeam.getStatus());
+
+        Team joinedTeam = client.post("/rest/GameModel/Game/Team/" + newTeam.getId() + "/Player", null, Team.class);
+        Assert.assertEquals(1, joinedTeam.getPlayers().size());
+        Assert.assertEquals(Populatable.Status.LIVE, joinedTeam.getPlayers().get(0).getStatus());
+
+        client.login(user);
+
+        List<Team> userTeams = client.get("/rest/User/Current/Team", new TypeReference<List<Team>>() {
+        });
+
         Assert.assertEquals(1, userTeams.size()); // dummyGameModel +empty
+
+        // scenarist delete the player
+        client.login(scenarist);
+
+        games = client.get("/rest/Editor/GameModel/Game/status/LIVE", new TypeReference<List<Game>>() {
+        });
+        Assert.assertEquals(1, games.size()); // dummyGameModel
+        List<Team> teams = games.get(0).getTeams();
+        Assert.assertEquals(1, teams.size()); // myTeam
+        List<Player> players = teams.get(0).getPlayers();
+        Assert.assertEquals(1, players.size()); // user
+
+        Player deleted = client.delete("/rest/GameModel/Game/Team/"
+            + teams.get(0).getId() + "/Player/" + players.get(0).getId(), new TypeReference<Player>() {
+        });
+
+        games = client.get("/rest/GameModel/Game/status/LIVE", new TypeReference<List<Game>>() {
+        });
+        Assert.assertEquals(1, games.size()); // dummyGameModel
+        teams = games.get(0).getTeams();
+        Assert.assertEquals(0, teams.size()); // myTeam
+
+        /** ************************************ CLEAN **************************************** */
+        deleteGame(myGame);
     }
 
     @Test
     public void testUpdateAndCreateGame() throws IOException {
-        GameModel myGameModel = client.postJSONFromFile("/rest/GameModel", "../wegas-app/src/test/resources/gmScope.json", GameModel.class);
+        GameModel myGameModel = client.postJSONFromFile("/rest/GameModel", WEGAS_ROOT_DIR + "src/test/resources/gmScope.json", GameModel.class);
         Game myGame = client.postJSON_asString("/rest/GameModel/" + myGameModel.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + myGameModel.getId() + "\",\"access\":\"OPEN\",\"name\":\"My Test Game\"}", Game.class);
         myGame.getId();
     }
@@ -349,8 +446,8 @@ public class WegasTest {
     public void testModeliseStateMachine() throws IOException {
         client.get("/rest/Utils/SetLoggerLevel/com.wegas.core.ejb.ModelFacade/DEBUG");
 
-        GameModel gm1 = client.postJSONFromFile("/rest/GameModel", "../wegas-app/src/test/resources/fsm.json", GameModel.class);
-        GameModel gm2 = client.postJSONFromFile("/rest/GameModel", "../wegas-app/src/test/resources/fsm.json", GameModel.class);
+        GameModel gm1 = client.postJSONFromFile("/rest/GameModel", WEGAS_ROOT_DIR + "src/test/resources/fsm.json", GameModel.class);
+        GameModel gm2 = client.postJSONFromFile("/rest/GameModel", WEGAS_ROOT_DIR + "src/test/resources/fsm.json", GameModel.class);
 
         // create model
         GameModel model = client.postJSON_asString("/rest/GameModel/extractModel/" + gm1.getId() + "," + gm2.getId(),
@@ -421,6 +518,13 @@ public class WegasTest {
         String tContent = domTotal.getTextContent();
 
         logger.info("TESTS:  " + pContent + "/" + tContent);
+    }
+
+    @Test
+    public void testCypress() throws IOException {
+        CypressTest cyTest = new CypressTest(WEGAS_URL_1,  ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD, logger);
+        cyTest.verifyCypress();
+        cyTest.cypressSuiteTest();
     }
 
 }

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.survey.persistence.input;
@@ -10,6 +10,7 @@ package com.wegas.survey.persistence.input;
 import ch.albasim.wegas.annotations.CommonView;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.annotations.Errored;
@@ -22,7 +23,6 @@ import com.wegas.editor.view.NumberView;
 import static java.lang.Boolean.FALSE;
 import java.util.Collection;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.OneToOne;
@@ -61,7 +61,6 @@ public class SurveyNumberDescriptor extends SurveyInputDescriptor {
     /**
      * Tells if this input should be presented as a scale
      */
-    @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
         optional = false, nullable = false, proposal = ValueGenerators.False.class,
         view = @View(label = "Present as a scale", value = Hidden.class))
@@ -114,8 +113,8 @@ public class SurveyNumberDescriptor extends SurveyInputDescriptor {
 
     /*
      * Set the maximum allowed value (included)
-     * 
-     * @param minValue 
+     *
+     * @param minValue
      */
     public void setMaxValue(Long maxValue) {
         this.maxValue = maxValue;
@@ -123,8 +122,8 @@ public class SurveyNumberDescriptor extends SurveyInputDescriptor {
 
     /*
      * Get the isScale value
-     * 
-     * @param minValue 
+     *
+     * @param minValue
      */
     public Boolean getIsScale() {
         return isScale;
@@ -132,8 +131,8 @@ public class SurveyNumberDescriptor extends SurveyInputDescriptor {
 
     /*
      * Set the isScale parameter
-     * 
-     * @param minValue 
+     *
+     * @param minValue
      */
     public void setIsScale(Boolean isScale) {
         this.isScale = isScale;
@@ -146,7 +145,7 @@ public class SurveyNumberDescriptor extends SurveyInputDescriptor {
         return unit;
     }
 
-    /* 
+    /*
      * Set the measurement unit
      */
     public void setUnit(TranslatableContent unit) {
@@ -162,13 +161,13 @@ public class SurveyNumberDescriptor extends SurveyInputDescriptor {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getSection().getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        return this.getSection().getRequieredUpdatePermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getSection().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return this.getSection().getRequieredReadPermission(context);
     }
 
 }

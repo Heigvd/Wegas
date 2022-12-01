@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -109,6 +109,8 @@ YUI.add('wegas-dashboard-modals', function(Y) {
             }
         }
     });
+
+    W.Sandbox.exposeInY("Wegas", "ImpactsTeamModal", Y.Wegas.ImpactsTeamModal);
 
     Y.Wegas.EmailTeamModal = Y.Base.create("wegas-email-team-modal", Y.Wegas.Modal, [], {
         initializer: function() {
@@ -300,4 +302,6 @@ YUI.add('wegas-dashboard-modals', function(Y) {
             "team": {}
         }
     });
+
+    W.Sandbox.exposeInY("Wegas", "EmailTeamModal", Y.Wegas.EmailTeamModal);
 });

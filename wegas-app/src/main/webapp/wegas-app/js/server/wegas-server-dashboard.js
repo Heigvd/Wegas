@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global Variable, self, gameModel, Event, Java, com, QuestionFacade, I18n */
@@ -12,7 +12,7 @@
  * @author Maxence Laurent <maxence.laurent@gmail.com>
  */
 
-var WegasDashboard = (function() {
+var WegasDashboard = (function () {
     "use strict";
     var dashConfigs = {};
 
@@ -60,18 +60,68 @@ var WegasDashboard = (function() {
         section.items[id] = {
             order: order,
             varName: varName,
-            itemType: 'variable',
+            itemType: "variable",
             formatter: cfg.formatter,
-            transformer: cfg.transformer,
             label: cfg.label,
             index: cfg.index || Object.keys(section).length,
-            active: (cfg.active !== undefined) ? cfg.active : true,
+            active: cfg.active !== undefined ? cfg.active : true,
             sortable: cfg.sortable,
             preventClick: cfg.preventClick,
             sortFn: cfg.sortFn,
             mapFn: cfg.mapFn,
-            mapFnExtraArgs: cfg.mapFnExtraArgs
+            mapFnExtraArgs: cfg.mapFnExtraArgs,
+            kind: cfg.kind,
         };
+    }
+
+    /**
+     *
+     * @param {string} questName
+     * @param {object} cfg : {label?:string; react?:boolean; display: 'absolute' | 'percent'}
+     * @returns {undefined}
+     */
+    function registerQuest(questName, aCfg) {
+        var cfg = aCfg || {};
+
+        var reactFormatter = function (data) {
+            return data + "&nbsp;%";
+        };
+
+        var yuiFormatter = function (bloc, value) {
+            bloc.one('.bloc__value').append("&nbsp;%");
+        };
+
+        var formatter = cfg.display !== 'absolute' ? cfg.react ? reactFormatter : yuiFormatter : undefined;
+
+        registerVariable(null, {
+            id: 'QUEST_' + questName,
+            label: cfg.label || questName,
+            kind: 'number',
+            mapFn: function (teamId) {
+                var ads = Java.from(Variable.findByClass(gameModel,
+                    com.wegas.core.persistence.variable.primitive.AchievementDescriptor.class));
+
+                var stats = ads
+                    .filter(function (ad) {
+                        // only keep achievement which match the quest
+                        return ad.getQuest() === questName;
+                    })
+                    .reduce(function (acc, curr) {
+                        acc.total += curr.getWeight();
+                        var inst = Variable.getInstancesByKeyId(curr)[teamId];
+                        if (inst.isAchieved()) {
+                            acc.current += curr.getWeight();
+                        }
+                        return acc;
+                    }, {total: 0, current: 0});
+                if (cfg.display === 'absolute') {
+                    return stats.current + " / " +  stats.total;
+                } else {
+                    return ((stats.current / stats.total) * 100).toFixed();
+                }
+            },
+            formatter: "" + formatter
+        });
     }
 
     function registerAction(id, doFn, userConfig) {
@@ -95,12 +145,22 @@ var WegasDashboard = (function() {
             doFn: doFn,
             label: cfg.label,
             icon: cfg.icon || "fa fa-pencil",
-            hasGlobal: cfg.hasGlobal
+            hasGlobal: cfg.hasGlobal,
         };
     }
 
+    /**
+     * hack; remove sanitizer marks
+     *
+     * @param {type} fn function to serialize
+     * @returns function source-code
+     */
+    function serializeFunction(fn) {
+        return (fn + "").replaceAll("RequestManager.isInterrupted\\(\\);", "");
+    }
+
     function registerStatExporter(id, activityPattern, userConfig) {
-        var fn = function(owner, payload) {
+        var fn = function (owner, payload) {
             var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
             var path = owner.name === "Game" || owner.name === "DebugGame" ? "Games" : "Teams";
             window.open("rest/Statistics/ExportXLSX/" + logId
@@ -136,7 +196,7 @@ var WegasDashboard = (function() {
 
     function overview(name, doNotStringify) {
         name = name || "overview";
-        overview = {};
+        var overview = {};
 
         if (dashConfigs[name]) {
 
@@ -160,6 +220,7 @@ var WegasDashboard = (function() {
                 var sectionCfg = theCfg[sectionName];
 
                 var section = {
+                    id: sectionName,
                     title: sectionCfg.title || sectionName,
                     items: []
                 };
@@ -176,7 +237,29 @@ var WegasDashboard = (function() {
                             item.itemType = 'action';
                             item.label = itemCfg.label || id;
                             item.icon = itemCfg.icon;
-                            item.do = itemCfg.doFn + "";
+                            if (typeof itemCfg.doFn === "function") {
+                                item.do = itemCfg.doFn + "";
+                            } else if (typeof itemCfg.doFn === "object") {
+                                if ("type" in itemCfg.doFn) {
+                                    switch (itemCfg.doFn.type) {
+                                        case "ModalAction":
+                                        {
+                                            var actions = itemCfg.doFn.actions.map(function (f) {
+                                                return {
+                                                    doFn: f.doFn + "",
+                                                    schemaFn: f.schemaFn + ""
+                                                }
+                                            })
+                                            item.do = JSON.stringify({
+                                                type: itemCfg.doFn.type,
+                                                actions: actions,
+                                                showAdvancedImpact: itemCfg.doFn.showAdvancedImpact
+                                            })
+                                        }
+                                    }
+
+                                }
+                            }
                             item.hasGlobal = itemCfg.hasGlobal;
 
                             items[id] = {
@@ -189,11 +272,13 @@ var WegasDashboard = (function() {
                         case "variable":
                             var varName = itemCfg.varName;
 
-                            if (!variables[varName]) {
-                                variables[varName] = {
-                                    descriptor: Variable.find(gameModel, varName),
-                                    instances: getInstances(varName)
-                                };
+                            if (varName) {
+                                if (!variables[varName]) {
+                                    variables[varName] = {
+                                        descriptor: Variable.find(gameModel, varName),
+                                        instances: getInstances(varName)
+                                    }
+                                }
                             }
 
                             if (items[id]) {
@@ -211,13 +296,16 @@ var WegasDashboard = (function() {
                             item.label = itemCfg.label || variables[varName].descriptor.getLabel()
                                 .translateOrEmpty(self);
                             item.formatter = itemCfg.formatter;
-                            item.transformer = itemCfg.transformer;
                             item.active = itemCfg.active;
                             item.preventClick = itemCfg.preventClick;
                             item.sortable = itemCfg.sortable;
                             item.sortFn = itemCfg.sortFn;
-                            item.kind = variables[varName].descriptor.getJSONClassName()
-                                .replaceAll("Descriptor", "").toLowerCase();
+                            if (itemCfg.kind != null) {
+                                item.kind = itemCfg.kind;
+                            } else {
+                                item.kind = variables[varName].descriptor.getJSONClassName()
+                                    .replaceAll("Descriptor", "").toLowerCase();
+                            }
                             break;
                         default:
                     }
@@ -245,7 +333,7 @@ var WegasDashboard = (function() {
                             var variable = variables[item.varName];
 
                             if (item.mapFn) {
-                                var args = [teamId, variable.instances[teamId]];
+                                var args = [teamId, variable && variable.instances[teamId]];
                                 for (var i in item.mapFnExtraArgs) {
                                     var extraVarName = item.mapFnExtraArgs[i];
                                     if (!variables[extraVarName]) {
@@ -256,6 +344,11 @@ var WegasDashboard = (function() {
                                     }
                                     args.push(variables[extraVarName].instances[teamId]);
                                 }
+                                // last arguments contains some useful data
+                                args.push({
+                                    teamName: teamName,
+                                    label: item.item.label
+                                });
                                 teamData[id] = item.mapFn.apply(this, args);
                             } else {
                                 if (item.item.kind === "inbox") {
@@ -276,19 +369,16 @@ var WegasDashboard = (function() {
             }
 
             // Stringify formatter functions
-            overview.structure.forEach(function(groupItems) {
-                groupItems.items.forEach(function(item) {
+            overview.structure.forEach(function (groupItems) {
+                groupItems.items.forEach(function (item) {
                     if (item.formatter) {
-                        item.formatter = item.formatter + "";
-                    }
-                    if (item.transformer) {
-                        item.transformer = item.transformer + "";
+                        item.formatter = serializeFunction(item.formatter);
                     }
                     if (item.sortFn) {
-                        item.sortFn = item.sortFn + "";
+                        item.sortFn = serializeFunction(item.sortFn);
                     }
                     if (item.do) {
-                        item.do = item.do + "";
+                        item.do = serializeFunction(item.do);
                     }
                 });
             });
@@ -306,11 +396,25 @@ var WegasDashboard = (function() {
         /**
          *
          * @param {type} varName
-         * @param {type} cfg {section = 'monitoring', dashboard = 'overview', label =varLabel, formatter, transformer, index, preventClick, sortable, sortFn, active, mapFn = function(teamId, instance, ...extraInstances), mapFnExtraArgs = [vdNanem, vdName2, ...]}
+         * @param {type} cfg {
+         *  section = 'monitoring',
+         *  dashboard = 'overview',
+         *  label =varLabel,
+         *  formatter,
+         *  index,
+         *  preventClick,
+         *  sortable,
+         *  sortFn,
+         *  active,
+         *  mapFn = function(teamId, instance, ...extraInstances),
+         *  mapFnExtraArgs = [vdNanem, vdName2, ...]}
          * @returns {undefined}
          */
-        registerVariable: function(varName, cfg) {
+        registerVariable: function (varName, cfg) {
             return registerVariable(varName, cfg);
+        },
+        registerQuest: function (questName, cfg) {
+            return registerQuest(questName, cfg);
         },
         /**
          *
@@ -318,22 +422,22 @@ var WegasDashboard = (function() {
          * @param {type} cfg
          * @returns {undefined}
          */
-        registerAction: function(id, doFn, cfg) {
+        registerAction: function (id, doFn, cfg) {
             return registerAction(id, doFn, cfg);
         },
-        registerStatExporter: function(id, activityPattern, cfg) {
+        registerStatExporter: function (id, activityPattern, cfg) {
             return registerStatExporter(id, activityPattern, cfg);
         },
-        getOverview: function(name) {
+        getOverview: function (name) {
             return overview(name);
         },
-        getAllOverviews: function() {
+        getAllOverviews: function () {
             return getAllOverviews();
         },
-        setSectionLabel: function(label, sectionName, dashboardName) {
+        setSectionLabel: function (label, sectionName, dashboardName) {
             getOrCreateSection(dashboardName, sectionName).title = label;
         },
-        getNumberFormatter: function(/*color1, threshold1, color2, threshold2, ..., thresholdN, colorN*/) {
+        getNumberFormatter: function (/*color1, threshold1, color2, threshold2, ..., thresholdN, colorN*/) {
             var args = Array.prototype.slice.call(arguments);
 
             var color, threshold;

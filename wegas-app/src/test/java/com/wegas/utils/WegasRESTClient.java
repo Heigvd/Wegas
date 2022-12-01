@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.utils;
@@ -20,7 +20,6 @@ import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.core.security.util.AuthenticationMethod;
-import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.JpaAuthentication;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -149,7 +148,7 @@ public class WegasRESTClient {
     public void login(TestAuthenticationInformation authInfo) throws IOException {
         JpaAuthentication authMethod = this.getAuthenticationMethod(authInfo.getLogin());
         if (authMethod != null) {
-            if (cookie != null){
+            if (cookie != null) {
                 this.logout();
             }
 
@@ -173,8 +172,8 @@ public class WegasRESTClient {
     }
 
     public void logout() throws IOException {
-            this.get("/rest/User/Logout");
-            this.cookie = null;
+        this.get("/rest/User/Logout");
+        this.cookie = null;
     }
 
     private void setHeaders(HttpMessage msg) {
@@ -295,7 +294,24 @@ public class WegasRESTClient {
         }
 
         return getEntityAsString(response.getEntity());
+    }
 
+    public <T> T delete(String url, Class<T> valueType) throws IOException {
+        String result = this.delete(url);
+        if (!Helper.isNullOrEmpty(result)) {
+            return getObjectMapper().readValue(result, valueType);
+        } else {
+            return null;
+        }
+    }
+
+    public <T> T delete(String url, TypeReference<T> valueType) throws IOException {
+        String result = this.delete(url);
+        if (!Helper.isNullOrEmpty(result)) {
+            return getObjectMapper().readValue(result, valueType);
+        } else {
+            return null;
+        }
     }
 
     private HttpResponse sendRequest(String url, String method, String jsonContent) throws IOException {
@@ -362,6 +378,7 @@ public class WegasRESTClient {
         HttpResponse response = client.execute(post);
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+            EntityUtils.consume(response.getEntity());
             throw WegasErrorMessage.error("POST failed");
         }
 

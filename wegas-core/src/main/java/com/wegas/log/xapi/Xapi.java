@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.log.xapi;
@@ -342,6 +342,7 @@ public class Xapi implements XapiI {
         this.post(this.buildAuthorNumberInstance(n));
     }
 
+    @Deprecated
     public List<Long> getAllGameIdByLogId(String logId) {
         try {
             return getLearningLockerClient().getAllGamesByLogId(logId);
@@ -350,6 +351,12 @@ public class Xapi implements XapiI {
         }
     }
 
+    /**
+     * Find all logId from XAPI statements.
+     *
+     * @return list of all distinct logID
+     */
+    @Deprecated
     public List<String> getAllLogId() {
 
         try {

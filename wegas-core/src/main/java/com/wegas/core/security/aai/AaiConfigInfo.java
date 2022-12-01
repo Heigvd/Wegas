@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.aai;
@@ -22,14 +22,26 @@ public final class AaiConfigInfo {
     @JsonIgnore
     private String secret; // Do not export this one !
 
+    /**
+     * EDU-ID login url
+     */
+    private String eduIdUrl;
+
+    /**
+     * Should show button on login page or not
+     */
+    private boolean eduIdEnabled;
+
     private static volatile AaiConfigInfo instance = null;
 
-    private AaiConfigInfo(){
+    private AaiConfigInfo() {
         server = Helper.getWegasProperty("aai.server").trim();
         secret = Helper.getWegasProperty("aai.secret").trim();
         enabled = Helper.getWegasProperty("aai.enabled").trim().toLowerCase().equals("true");
         loginUrl = Helper.getWegasProperty("aai.loginurl").trim();
         showButton = Helper.getWegasProperty("aai.showbutton").trim().toLowerCase().equals("true");
+        eduIdEnabled = Helper.getWegasProperty("eduid.enabled", "false").trim().toLowerCase().equals("true");
+        eduIdUrl = Helper.getWegasProperty("eduid.url", "").trim();
     }
 
     private synchronized static void setInstance() {
@@ -104,4 +116,41 @@ public final class AaiConfigInfo {
     public static String getAaiLoginUrl() {
         return getInstance().loginUrl;
     }
+
+    /**
+     * Get the value of eduIdUrl
+     *
+     * @return the value of eduIdUrl
+     */
+    public String getEduIdUrl() {
+        return eduIdUrl;
+    }
+
+    /**
+     * Set the value of eduIdUrl
+     *
+     * @param eduIdUrl new value of eduIdUrl
+     */
+    public void setEduIdUrl(String eduIdUrl) {
+        this.eduIdUrl = eduIdUrl;
+    }
+
+    /**
+     * Get the value of eduIdEnabled
+     *
+     * @return the value of eduIdEnabled
+     */
+    public boolean isEduIdEnabled() {
+        return eduIdEnabled;
+    }
+
+    /**
+     * Set the value of eduIdEnabled
+     *
+     * @param eduIdEnabled new value of eduIdEnabled
+     */
+    public void setEduIdEnabled(boolean eduIdEnabled) {
+        this.eduIdEnabled = eduIdEnabled;
+    }
+
 }

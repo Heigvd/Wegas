@@ -2,13 +2,14 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
 package com.wegas.core.security.persistence.token;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.Beanjection;
@@ -83,36 +84,37 @@ public class SurveyToken extends Token {
         return "/survey.html?surveyIds=" + String.join(",", ids);
     }
 
+    @Override
     public void process(AccountFacade accountFacade, HttpServletRequest request) {
         accountFacade.processSurveyToken(this, request);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
         GameModel gm = SurveyToken.getUniqueGameModel(surveys);
 
         // can create only if the token is linked to one and only one gameModel
         if (gm != null) {
-            return gm.getRequieredUpdatePermission();
+            return gm.getRequieredUpdatePermission(context);
         } else {
             return WegasMembership.FORBIDDEN;
         }
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         Collection<WegasPermission> ps = new ArrayList<>();
 
         GameModel gm = SurveyToken.getUniqueGameModel(surveys);
 
         if (gm != null) {
-            ps.addAll(gm.getRequieredUpdatePermission());
+            ps.addAll(gm.getRequieredUpdatePermission(context));
         }
 
         AbstractAccount account = this.getAccount();
 
         if (account != null) {
-            ps.addAll(account.getRequieredUpdatePermission());
+            ps.addAll(account.getRequieredUpdatePermission(context));
         }
 
         if (ps.isEmpty()){

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -112,8 +112,7 @@ public class PlayerController {
         }
         //the team doesn't exists
 
-        return Response.status(Response.Status.BAD_REQUEST)
-            .build();
+        return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
     /**
@@ -176,5 +175,15 @@ public class PlayerController {
     @Path("{playerId : [1-9][0-9]*}/Locks")
     public Collection<String> getLocks(@PathParam("playerId") Long playerId) {
         return playerFacade.getLocks(playerId);
+    }
+
+    @GET
+    @Path("ByGameId/{gameId : [1-9][0-9]*}")
+    public Player getByGameId(@PathParam("gameId") Long gameId) {
+        User currentUser = requestManager.getCurrentUser();
+        if (currentUser != null) {
+            return playerFacade.findPlayer(gameId, currentUser.getId());
+        }
+        return null;
     }
 }

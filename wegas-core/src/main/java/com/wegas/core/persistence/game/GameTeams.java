@@ -2,11 +2,12 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
 
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.security.util.WegasPermission;
@@ -68,17 +69,17 @@ public class GameTeams extends AbstractEntity {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
-        return game.getRequieredCreatePermission();
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
+        return game.getRequieredCreatePermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return game.getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return game.getRequieredReadPermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         /* CASE one: a closed game prevent player to leave
         switch (game.getAccess()) {
             case OPEN:
@@ -92,8 +93,8 @@ public class GameTeams extends AbstractEntity {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredDeletePermission() {
-        return game.getRequieredDeletePermission();
+    public Collection<WegasPermission> getRequieredDeletePermission(RequestContext context) {
+        return game.getRequieredDeletePermission(context);
     }
 
     @Override

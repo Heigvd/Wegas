@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.util;
@@ -23,7 +23,7 @@ public class WegasIsTrainerForUser extends WegasPermission {
 
     @Override
     public String toString() {
-        return "TeamMateOfUser-" + getUserId();
+        return "TrainerForUser-" + getUserId();
     }
 
     public Long getUserId() {

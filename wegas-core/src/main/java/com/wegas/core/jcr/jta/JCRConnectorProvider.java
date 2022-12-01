@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.jta;
@@ -65,7 +65,7 @@ public class JCRConnectorProvider implements Serializable {
      * Get a connector to the gamemodel content repository
      * <p>
      * If a transaction is running in the caller context, the returned connector will be managed by JTA.
-     * If there is no transaction, returned connecter MUST be closed by the caller. In this case Pages#getManaged returns false.,
+     * If there is no transaction, returned connector MUST be closed by the caller. In this case Pages#getManaged returns false.,
      * <p>
      * Setting TransactionAttribute to SUPPORTS explicitly says this methods support both transactional and non-transactional contexts
      *

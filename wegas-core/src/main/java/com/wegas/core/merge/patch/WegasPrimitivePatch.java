@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.merge.patch;
@@ -21,8 +21,12 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
@@ -171,7 +175,11 @@ public final class WegasPrimitivePatch extends WegasPatch {
     }
 
     private String valuetoString(Object value) {
-        if (value != null) {
+        if (value instanceof Calendar) {
+            Instant instant = ((Calendar) value).toInstant();
+            LocalDateTime date = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+            return date.toString();
+        } else if (value != null) {
             return value.toString();
         } else {
             return "";
@@ -238,7 +246,7 @@ public final class WegasPrimitivePatch extends WegasPatch {
             return content;
         }
 
-        public String getTag(){
+        public String getTag() {
             return tag;
         }
     }

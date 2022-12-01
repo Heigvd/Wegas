@@ -1,0 +1,17 @@
+import * as React from 'react';
+import { WidgetProps } from 'jsoninput/typings/types';
+import { CommonView } from './commonView';
+import { LabeledView } from './labeled';
+import {
+  CommonFileSelectProps,
+  LabeledCustomFileSelector,
+} from './FileSelector';
+
+type PathSelectProps = WidgetProps.BaseProps<
+  CommonView & LabeledView & { pickType?: FilePickingType; filter?: FileFilter }
+> &
+  Omit<CommonFileSelectProps<'string'>, 'valueType'>;
+
+export default function PathSelector(props: PathSelectProps) {
+  return <LabeledCustomFileSelector {...props} valueType="string" />;
+}

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
@@ -19,7 +19,7 @@ public class EntityComparators {
      *
      * @param <T> extends AbstractEntity
      */
-    public static class EntityIdComparator<T extends AbstractEntity> implements Comparator<T>, Serializable {
+    public static class EntityIdComparator<T extends WithId> implements Comparator<T>, Serializable {
 
         @Override
         public int compare(T o1, T o2) {

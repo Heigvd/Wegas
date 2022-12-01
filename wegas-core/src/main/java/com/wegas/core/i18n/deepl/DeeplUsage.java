@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.i18n.deepl;
@@ -19,13 +19,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author maxence
  */
-    public class DeeplUsage {
+public class DeeplUsage {
 
     @JsonProperty("character_count")
     private Long characterCount;
 
     @JsonProperty("character_limit")
     private Long characterLimit;
+
+
+    @JsonProperty("@class")
+    public String getJSONClassName() {
+        return this.getClass().getSimpleName();
+    }
 
     public Long getCharacterCount() {
         return characterCount;

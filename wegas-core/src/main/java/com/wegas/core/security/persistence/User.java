@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.persistence;
@@ -11,7 +11,10 @@ import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Player;
@@ -21,7 +24,6 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasIsTeamMate;
 import com.wegas.core.security.util.WegasIsTrainerForUser;
-import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.view.StringView;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -51,6 +54,11 @@ import javax.persistence.TemporalType;
 @NamedQuery(name = "User.findUserPermissions", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :instance")
 @NamedQuery(name = "User.findUsersWithRole", query = "SELECT DISTINCT users FROM User users JOIN users.roles r WHERE r.id = :role_id")
 @NamedQuery(name = "User.findUserWithPermission", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :permission AND p.user.id =:userId")
+@NamedNativeQuery(
+    name = "User.findByTransitivePermission",
+    query = "SELECT DISTINCT u.* FROM permission p LEFT JOIN roles r on r.id = p.role_id  LEFT JOIN users_roles ur on ur.role_id = r.id JOIN users u on (p.user_id = u.id OR ur.user_id = u.id)  where p.permissions like ?",
+    resultClass = User.class
+)
 public class User extends AbstractEntity implements Comparable<User>, PermissionOwner {
 
     private static final long serialVersionUID = 1L;
@@ -67,7 +75,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Date lastSeenAt = null;
 
     /**
@@ -78,7 +86,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         CascadeType.MERGE,
         CascadeType.PERSIST,
         CascadeType.REFRESH
-    } /*, orphanRemoval = true */)
+    } /* , orphanRemoval = true */)
     //@JsonManagedReference(value = "player-user")
     @JsonIgnore
     private List<Player> players = new ArrayList<>();
@@ -89,7 +97,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         CascadeType.MERGE,
         CascadeType.PERSIST,
         CascadeType.REFRESH
-    } /*, orphanRemoval = true */)
+    } /* , orphanRemoval = true */)
     private List<Team> teams = new ArrayList<>();
 
     /**
@@ -100,7 +108,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     private List<AbstractAccount> accounts = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
-    @JsonIgnore
+    @JsonView(Views.EditorI.class)
     private List<Permission> permissions = new ArrayList<>();
 
     @ManyToMany
@@ -131,6 +139,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         return id;
     }
 
+    @WegasExtraProperty
     public Date getLastSeenAt() {
         return lastSeenAt != null ? new Date(lastSeenAt.getTime()) : null;
     }
@@ -264,21 +273,30 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
      * @return the roles
      */
     public Collection<Role> getRoles() {
-        return roles;
+        // never return managed list  !
+        return new ArrayList<>(roles);
     }
 
     /**
      * @param roles the roles to set
      */
     public void setRoles(Collection<Role> roles) {
-        this.roles = roles;
+        this.roles = new ArrayList<>();
+        if (roles != null) {
+            for (Role r : roles) {
+                this.addRole(r);
+            }
+        }
     }
 
     /**
      * @param role
      */
     public void addRole(Role role) {
-        this.roles.add(role);
+        if (!roles.contains(role)) {
+            this.roles.add(role);
+            role.addUser(this);
+        }
     }
 
     /**
@@ -287,7 +305,10 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
      * @param role
      */
     public void removeRole(Role role) {
-        this.roles.remove(role);
+        if (this.roles.contains(role)) {
+            this.roles.remove(role);
+            role.removeUser(this);
+        }
     }
 
     @Override
@@ -330,21 +351,20 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         Collection<WegasPermission> p = WegasPermission.getAsCollection(
             this.getAssociatedWritePermission()
         );
-        p.addAll(WegasMembership.TRAINER); // why ? maybe to share game/gameModel (ie add permission)
         return p;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         return null;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
         //Sign-Up
         return null;
     }
@@ -362,5 +382,15 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     @Override
     public Visibility getInheritedVisibility() {
         return Visibility.INHERITED;
+    }
+
+    /**
+     * Get private user channel
+     *
+     * @return "private-User-&lt;userId&gt;"
+     */
+    @JsonIgnore
+    public String getChannel() {
+        return Helper.USER_CHANNEL_PREFIX + this.getId();
     }
 }

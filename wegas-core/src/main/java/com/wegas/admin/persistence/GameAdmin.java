@@ -3,16 +3,18 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.admin.persistence;
 
-import com.wegas.admin.persistence.data.GameAdminTeam;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.wegas.admin.persistence.data.GameAdminTeam;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.DebugTeam;
@@ -59,7 +61,7 @@ import org.slf4j.LoggerFactory;
 @NamedQuery(name = "GameAdmin.findByStatus",
     query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime DESC")
 @NamedQuery(name = "GameAdmin.GamesToDelete",
-    query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = com.wegas.admin.persistence.GameAdmin.Status.PROCESSED AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
+    query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status <> com.wegas.admin.persistence.GameAdmin.Status.TODO AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
 @Table(
     indexes = {
         @Index(columnList = "game_id")
@@ -148,6 +150,7 @@ public class GameAdmin extends AbstractEntity {
         this.game = game;
     }
 
+    @WegasExtraProperty
     public Game.Status getGameStatus() {
         if (this.getGame() != null) {
             return this.getGame().getStatus();
@@ -161,6 +164,7 @@ public class GameAdmin extends AbstractEntity {
 //    public void setPrevTeamCount(Long prevTeamCount) {
 //        this.prevTeamCount = prevTeamCount;
 //    }
+    @WegasExtraProperty
     public Long getGameId() {
         if (this.getGame() != null) {
             return this.getGame().getId();
@@ -169,10 +173,12 @@ public class GameAdmin extends AbstractEntity {
         }
     }
 
+    @WegasExtraProperty
     public Date getCreatedTime() {
         return createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
+    @WegasExtraProperty
     public String getCreator() {
         return this.creator;
     }
@@ -191,6 +197,7 @@ public class GameAdmin extends AbstractEntity {
         }
     }
 
+    @WegasExtraProperty
     public String getGameModelName() {
         if (this.getGame() != null) {
             return this.getGame().getGameModelName();
@@ -204,6 +211,7 @@ public class GameAdmin extends AbstractEntity {
 //        this.prevName = prevName;
 //    }
 
+    @WegasExtraProperty
     public String getGameName() {
 
         if (this.getGame() != null) {
@@ -219,6 +227,7 @@ public class GameAdmin extends AbstractEntity {
 //        this.prevGameModel = prevGameModel;
 //    }
 //
+    @WegasExtraProperty
     public Integer getTeamCount() {
         if (this.getGame() != null) {
             int counter = 0;
@@ -281,12 +290,12 @@ public class GameAdmin extends AbstractEntity {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
         return WegasMembership.TRAINER;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         return WegasMembership.ADMIN;
     }
 

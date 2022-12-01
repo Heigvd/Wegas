@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -400,7 +400,9 @@ YUI.add('wegas-datasource', function(Y) {
          */
         onResponseRevived: function(e) {
             var i, entity, evtPayload, response = e.serverResponse,
-                toUpdate = !e.cfg || e.cfg.updateCache !== false, collector = {};
+                toUpdate = !e.cfg || e.cfg.updateCache !== false,
+                fireResponseEvent = !e.cfg || e.cfg.responseEvent !== false,
+                collector = {};
 
             if (Lang.isArray(response)) { // Non-managed response: we apply the operation for each object in the returned array
                 if (toUpdate) { // No Update ? No-update...
@@ -433,13 +435,23 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                 }
 
-                if (response.get("events")) {
-                    for (i = 0; i < response.get("events").length; i += 1) {
-                        evtPayload = Y.mix({
-                            serverEvent: response.get("events")[i]
-                        }, e);
-                        this.fire(evtPayload.serverEvent.get(CLASS), evtPayload);
-                        //this.fire("serverEvent", evtPayload);
+                if (response.get("events") && response.get("events").length) {
+                    if (fireResponseEvent) {
+                        for (i = 0; i < response.get("events").length; i += 1) {
+                            evtPayload = Y.mix({
+                                serverEvent: response.get("events")[i]
+                            }, e);
+                            this.fire(evtPayload.serverEvent.get(CLASS), evtPayload);
+                            //this.fire("serverEvent", evtPayload);
+                        }
+                    } else {
+                        Y.log("Silent some events:");
+                        for (i = 0; i < response.get("events").length; i += 1) {
+                            evtPayload = Y.mix({
+                                serverEvent: response.get("events")[i]
+                            }, e);
+                            Y.log(" - " + evtPayload.serverEvent.get(CLASS) + ": " + JSON.stringify(evtPayload));
+                        }
                     }
                 }
             }
@@ -918,29 +930,31 @@ YUI.add('wegas-datasource', function(Y) {
 
                 gm = Y.Wegas.Facade.GameModel.cache.find("id", entity.get("id"));
 
-                oldIds = gm.get("itemsIds");
-                newIds = entity.get("itemsIds");
+                if (gm != null) {
+                    oldIds = gm.get("itemsIds");
+                    newIds = entity.get("itemsIds");
 
-                if (oldIds.length === newIds.length) {
-                    for (i in oldIds) {
-                        if (oldIds[i] !== newIds[i]) {
-                            newRoot = true;
-                            break;
+                    if (oldIds.length === newIds.length) {
+                        for (i in oldIds) {
+                            if (oldIds[i] !== newIds[i]) {
+                                newRoot = true;
+                                break;
+                            }
                         }
+                    } else {
+                        newRoot = true;
                     }
-                } else {
-                    newRoot = true;
-                }
-                if (newRoot) {
-                    gm.set("itemsIds", entity.get("itemsIds"));
+                    if (newRoot) {
+                        gm.set("itemsIds", entity.get("itemsIds"));
 
-                    eventsCollector = eventsCollector || {};
-                    eventsCollector[dsid] = eventsCollector[dsid] || {ds: ds, events: {}};
+                        eventsCollector = eventsCollector || {};
+                        eventsCollector[dsid] = eventsCollector[dsid] || {ds: ds, events: {}};
 
-                    eventsCollector[dsid].events["rootUpdate"] = [{}];
-                    return Y.Wegas.Facade.Variable;
-                } else {
-                    return false;
+                        eventsCollector[dsid].events["rootUpdate"] = [{}];
+                        return Y.Wegas.Facade.Variable;
+                    } else {
+                        return false;
+                    }
                 }
             } else if (entity instanceof Wegas.persistence.VariableInstance) {
                 return Y.Wegas.Facade.Instance.cache.updateCache(method, entity, eventsCollector);
