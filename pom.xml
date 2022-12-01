@@ -33,16 +33,19 @@
             <email>maxence.laurent@gmail.com</email>
         </developer>
         <developer>
-            <name>Pierr-Benjamin Monaco</name>
+            <name>Xavier Good</name>
         </developer>
         <developer>
             <name>Sandra Monnier</name>
         </developer>
         <developer>
-            <name>Audrey Huguening</name>
+            <name>Audrey Huguenin</name>
         </developer>
     </developers>
     <contributors>
+        <developer>
+            <name>Pierre-Benjamin Monaco</name>
+        </developer>
         <contributor>
             <name>Cyril Junod</name>
             <email>cyril.junod at gmail.com</email>
@@ -87,8 +90,8 @@
     </scm>
 
     <ciManagement>
-        <system>Travis-ci</system>
-        <url>http://travis-ci.org/Heigvd/Wegas</url>
+        <system>GitHub Actions</system>
+        <url>https://github.com/Heigvd/Wegas/actions</url>
     </ciManagement>
 
     <issueManagement>
