@@ -43,9 +43,9 @@
         </developer>
     </developers>
     <contributors>
-        <developer>
+        <contributor>
             <name>Pierre-Benjamin Monaco</name>
-        </developer>
+        </contributor>
         <contributor>
             <name>Cyril Junod</name>
             <email>cyril.junod at gmail.com</email>
