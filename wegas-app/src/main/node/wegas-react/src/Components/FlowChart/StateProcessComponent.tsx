@@ -249,7 +249,7 @@ export function StateBox({
           <StateProcessHandle sourceProcess={state} />
         )}
       </div>
-      {isShown && state.state.onEnterEvent.content != '' && (
+      {isShown && state.state.onEnterEvent?.content && (
         <div className={stateMoreInfosStyle}>
           <strong>Impact</strong>
           <p>{state.state.onEnterEvent.content}</p>

@@ -725,9 +725,11 @@ public final class WegasEntityPatch extends WegasPatch {
             title = ((NamedEntity) this.toEntity).getName();
         }
 
-
         if (title == null && this.fromEntity instanceof LabelledEntity) {
-            title = ((LabelledEntity) this.fromEntity).getLabel().toString();
+            TranslatableContent label = ((LabelledEntity) this.fromEntity).getLabel();
+            if(label != null){
+                title = label.toString();
+            }
         }
 
         if (title == null && this.fromEntity instanceof NamedEntity) {

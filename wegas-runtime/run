@@ -150,6 +150,7 @@ ${JAVA_EXECUTABLE} ${DEBUG_OPTS} ${JDK_EXTRA_OPTS} ${SSL_OPTS} ${GC_OPT} ${HTTP2
     -Djava.security.egd=file:/dev/urandom \
     -Dhazelcast.shutdownhook.enabled=true \
     -Dwegas.db.host=${DB_HOST} -Dwegas.db.name=${DB_NAME} \
+    -Dhazelcast.startport=6900 \
     -Dwegas.nb_populators=${NB_POPULATORS} -Dwegas.http.threads=${NB_THREADS} \
     -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager \
     -Declipselink.cache.coordination.channel=${HZ_CLUSTER_NAME} \
