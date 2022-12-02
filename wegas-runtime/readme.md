@@ -69,10 +69,10 @@ mvn -f .. test
 ```
 
 ### Public access
-Since some tests require data from our private repository, please set `skipCategory` to `com.wegas.unit.PrivateRelatedTest` to skip them:
+Since some tests require data from our private repository, please run tests with `-DskipPrivateTests` to skip them:
 
 ```bash
-mvn -f .. -DskipCategory=com.wegas.unit.PrivateRelatedTest clean install
+mvn -f .. -DskipPrivateTests clean install
 ```
 
 ## Run

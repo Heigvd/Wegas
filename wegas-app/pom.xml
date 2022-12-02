@@ -17,11 +17,20 @@
     <properties>
         <skip.yarn>${skipYarn}</skip.yarn>
         <skip.surefire.tests>${skipTests}</skip.surefire.tests>
-        <skip.surefire.category>${skipCategory}</skip.surefire.category>
         <netbeans.hint.license>license</netbeans.hint.license>
     </properties>
 
     <profiles>
+        <profile>
+            <activation>
+                <property>
+                    <name>skipPrivateTests</name>
+                </property>
+            </activation>
+            <properties>
+                <skip.surefire.category>com.wegas.unit.PrivateRelatedTest</skip.surefire.category>
+            </properties>
+        </profile>
         <profile>
             <id>release-profile</id>
             <build>
