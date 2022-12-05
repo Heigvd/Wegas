@@ -58,8 +58,6 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <type>jar</type>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -193,14 +191,6 @@
                                     <outputDirectory>${project.basedir}/target/</outputDirectory>
                                     <destFileName>payara-micro.current.jar</destFileName>
                                 </artifactItem>
-
-                                <artifactItem>
-                                    <groupId>org.postgresql</groupId>
-                                    <artifactId>postgresql</artifactId>
-                                    <version>42.1.4</version>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.basedir}/target/extra-libs/</outputDirectory>
-                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
@@ -213,6 +203,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <skipTests>${skip.surefire.tests}</skipTests>
+                    <!-- db properties need to be injected as global system properties (next line) and as custom payara properties (payara.cmdOptions) -->
+                    <systemPropertiesFile>${project.basedir}/../wegas-core/src/test/resources/db.properties</systemPropertiesFile>
                     <systemProperties>
                         <arquillian.launch>payara-cluster</arquillian.launch>
                         <!-- used in domain.xml -->
@@ -223,8 +215,8 @@
                         <!-- want to debug ? add next line to cmdOptions and inpect the log to find
                         the HTTP port to connect to -->
                         <!-- -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n -->
-                        <payara.cmdOptions>-Dwegas.http.threads=9 -Dwegas.db.name=wegas_test -Djcr.repository.URI= -Dhazelcast.startport=16900 -Dwegas.db.host=localhost -Dwegas.nb_populators=3 -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager -Declipselink.cache.coordination.channel=WegasLocalTest </payara.cmdOptions>
-                        <payara.extraMicroOptions>--port 28080 --addlibs ${project.basedir}/target/extra-libs --domainconfig ${project.basedir}/src/main/resources/domain.xml --logproperties ${project.basedir}/../wegas-core/src/test/resources/logging.properties --interfaces 127.0.0.1 --clustermode tcpip:127.0.0.1:16900</payara.extraMicroOptions>
+                        <payara.cmdOptions>-Dwegas.http.threads=9 -Dwegas.db.name=wegas_test -Djcr.repository.URI= -Dhazelcast.startport=16900 -Dwegas.db.host=localhost -Dwegas.db.port=5432 -Dwegas.db.user=user -Dwegas.db.password=1234 -Dwegas.nb_populators=3 -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager -Declipselink.cache.coordination.channel=WegasLocalTest </payara.cmdOptions>
+                        <payara.extraMicroOptions>--port 28080 --domainconfig ${project.basedir}/src/main/resources/domain.xml --logproperties ${project.basedir}/../wegas-core/src/test/resources/logging.properties --interfaces 127.0.0.1 --clustermode tcpip:127.0.0.1:16900</payara.extraMicroOptions>
                     </systemProperties>
                 </configuration>
             </plugin>

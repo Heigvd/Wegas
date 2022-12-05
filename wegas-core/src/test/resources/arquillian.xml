@@ -9,7 +9,6 @@
             <property name="bindHttpPort">28080</property>
             <property name="bindHttpsPort">28181</property>
             <property name="configurationXml">src/test/resources/domain.xml</property>
-            <property name="resourcesXml">src/test/resources/glassfish-resources.xml</property>
         </configuration>
     </container>
 </arquillian>

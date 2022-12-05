@@ -428,6 +428,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
 
                 <configuration>
+                    <systemPropertiesFile>${project.basedir}/src/test/resources/db.properties</systemPropertiesFile>
                     <systemProperties>
                         <java.util.logging.config.file>${project.basedir}/src/test/resources/logging.properties</java.util.logging.config.file>
                         <arquillian.launch>payara-embedded</arquillian.launch>

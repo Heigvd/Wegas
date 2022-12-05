@@ -15,16 +15,6 @@
     <jdbc-connection-pool is-isolation-level-guaranteed="false" datasource-classname="org.h2.jdbcx.JdbcDataSource" name="H2Pool" res-type="javax.sql.DataSource">
       <property name="URL" value="jdbc:h2:${com.sun.aas.instanceRoot}/lib/databases/embedded_default;AUTO_SERVER=TRUE"/>
     </jdbc-connection-pool>
-    <!-- Wegas-->
-    <jdbc-connection-pool max-pool-size="300" datasource-classname="org.postgresql.xa.PGXADataSource" name="jdbc/wegas_dev_pool" res-type="javax.sql.XADataSource">
-      <property name="DatabaseName" value="${wegas.db.name}"/>
-      <property name="PortNumber" value="5432"/>
-      <property name="User" value="user"/>
-      <property name="Password" value="1234"/>
-      <property name="ServerName" value="${wegas.db.host}"/>
-    </jdbc-connection-pool>
-    <jdbc-resource pool-name="jdbc/wegas_dev_pool" jndi-name="jdbc/wegas_dev"/>
-    <!-- /Wegas-->
     <context-service object-type="system-all" description="context service" jndi-name="concurrent/__defaultContextService"/>
     <!-- Wegas-->
     <managed-executor-service keep-alive-seconds="300" object-type="system-all" core-pool-size="${wegas.nb_populators}" task-queue-capacity="20000" maximum-pool-size="200" hung-after-seconds="300" jndi-name="concurrent/__defaultManagedExecutorService" long-running-tasks="true"/>
@@ -39,9 +29,6 @@
       <resource-ref ref="concurrent/__defaultManagedExecutorService"/>
       <resource-ref ref="concurrent/__defaultManagedScheduledExecutorService"/>
       <resource-ref ref="concurrent/__defaultManagedThreadFactory"/>
-      <!-- Wegas-->
-      <resource-ref ref="jdbc/wegas_dev"/>
-      <!-- /Wegas-->
     </server>
   </servers>
   <configs>
