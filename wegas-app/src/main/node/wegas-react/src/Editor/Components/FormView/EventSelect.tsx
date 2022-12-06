@@ -22,29 +22,29 @@ function makeOptions(values: string[]): Options {
   return values.map(makeOption);
 }
 
-interface IQuestSelectProps extends WidgetProps.BaseProps {
+interface IEventSelectProps extends WidgetProps.BaseProps {
   view: CommonView & LabeledView;
   value?: string | null;
   onChange: (value: string) => void;
 }
 
-function QuestSelect({
+function EventSelect({
   onChange,
   value,
   errorMessage,
   view,
-}: IQuestSelectProps) {
+}: IEventSelectProps) {
   const [options, setOptions] = React.useState<Options | null>(null);
 
   const gameModel = selectCurrent();
 
-  // Hack: load all quests from server
   React.useEffect(() => {
     let alive = true;
+
     if (gameModel.id != null) {
-      GameModelApi.getAllQuests(gameModel.id).then(quests => {
+      GameModelApi.getAllFiredEvents(gameModel.id).then(events => {
         if (alive) {
-          setOptions(makeOptions(quests));
+          setOptions(makeOptions(events));
         }
       });
     }
@@ -99,4 +99,4 @@ function QuestSelect({
   }
 }
 
-export default QuestSelect;
+export default EventSelect;

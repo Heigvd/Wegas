@@ -9,6 +9,7 @@ import { CustomClientScript } from './CustomClientScript';
 import { CustomScript } from './CustomScript';
 import DictionaryView from './Dictionary';
 import EntityArrayFieldSelect from './EntityArrayFieldSelect';
+import EventSelect from './EventSelect';
 import FileSelector from './FileSelector';
 import FlatVariableSelect from './FlatVariableSelect';
 import HashListView from './HashList';
@@ -59,6 +60,7 @@ export const DEFINED_VIEWS = {
   customclientscript: CustomClientScript,
   dictionary: DictionaryView,
   entityarrayfieldselect: EntityArrayFieldSelect,
+  eventSelector: EventSelect,
   file: FileSelector,
   flatvariableselect: FlatVariableSelect,
   hashlist: HashListView,

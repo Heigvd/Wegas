@@ -12,7 +12,23 @@ type WegasTypeString = TYPESTRING | 'identifier';
 
 type WegasMethodReturnType = 'number' | 'string' | 'boolean';
 
-type ScriptMode = 'SET' | 'GET' | 'SET_CLIENT' | 'GET_CLIENT';
+type ScriptMode =
+/*
+Trigger impacts (server side)
+*/
+ | 'SET'
+/*
+Trigger conditions (server side)
+*/
+ | 'GET'
+/*
+Theoretical, never used
+*/
+ | 'SET_CLIENT'
+/*
+Local state condition, typically Hide/Disable conditions
+*/
+ | 'GET_CLIENT';
 
 type ScriptLanguage = 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS';
 
