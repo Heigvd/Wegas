@@ -9,9 +9,6 @@ NB_POPULATORS=1
 
 HZ_CLUSTER_NAME="wegasDev_$(hostname)"
 
-BASE_DOMAIN_XML=./src/main/resources/domain.xml
-DOMAIN_XML=`mktemp target/domain.xml_XXX`
-
 HEAP=2G
 
 THE_WAR=../wegas-app/target/Wegas
@@ -82,8 +79,6 @@ fi
 echo DB_HOST ${DB_HOST}
 echo HEAP ${HEAP}
 echo WAR ${THE_WAR}
-
-cp ${BASE_DOMAIN_XML} ${DOMAIN_XML}
 
 RAND_S=`printf "%d.%03d" $((($RANDOM % 3 )+ 1)) $(($RANDOM % 1000 ))`;
 
@@ -156,7 +151,10 @@ ${JAVA_EXECUTABLE} ${DEBUG_OPTS} ${JDK_EXTRA_OPTS} ${SSL_OPTS} ${GC_OPT} ${HTTP2
     -Dwegas.nb_populators=${NB_POPULATORS} -Dwegas.http.threads=${NB_THREADS} \
     -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager \
     -Declipselink.cache.coordination.channel=${HZ_CLUSTER_NAME} \
-    -jar ${PAYARA_MICRO} --deploy ${THE_WAR} --domainconfig ${DOMAIN_XML} --clusterName ${HZ_CLUSTER_NAME} \
+    -jar ${PAYARA_MICRO} --deploy ${THE_WAR} \
+    --prebootcommandfile as_prebootcmd \
+    --clusterName ${HZ_CLUSTER_NAME} \
+    --minhttpthreads ${NB_THREADS} --maxhttpthreads ${NB_THREADS} \
     --interfaces 127.0.0.1 \
     --systemproperties ${WEGAS_PROPERTIES} --autobindhttp --autobindssl &
 PID=$!
@@ -165,7 +163,5 @@ wait $PID
 trap - TERM INT
 wait $PID
 EXIT_STATUS=$?
-
-rm ${DOMAIN_XML}
 
 echo "Terminated"

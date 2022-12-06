@@ -85,7 +85,7 @@ public class DelayedScriptEventFacadeTest extends AbstractArquillianTest {
         Thread.sleep(4000);
 
         // after delay timeout
-        Assert.assertEquals("String 1 value is not the new one", str1NewValue, ((StringDescriptor) variableDescriptorFacade.find(scenario, str1Name)).getValue(player)); // not yet
+        Assert.assertEquals("String 1 value is not the new one", str1NewValue, ((StringDescriptor) variableDescriptorFacade.find(scenario, str1Name)).getValue(player)); // changed after the delay
         Assert.assertEquals("String 2 value is not the new one", str2NewValue, ((StringDescriptor) variableDescriptorFacade.find(scenario, str2Name)).getValue(player)); // changed by no-delay event
     }
 }

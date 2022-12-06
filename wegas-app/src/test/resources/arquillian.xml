@@ -8,7 +8,6 @@
         <configuration>
             <property name="bindHttpPort">28080</property>
             <property name="bindHttpsPort">28181</property>
-            <property name="configurationXml">../wegas-core/src/test/resources/domain.xml</property>
         </configuration>
     </container>
 </arquillian>

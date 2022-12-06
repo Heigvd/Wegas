@@ -207,7 +207,7 @@
                     <systemPropertiesFile>${project.basedir}/../wegas-core/src/test/resources/db.properties</systemPropertiesFile>
                     <systemProperties>
                         <arquillian.launch>payara-cluster</arquillian.launch>
-                        <!-- used in domain.xml -->
+                        <!-- payara micro customization -->
                         <payara.randomHttpPort>false</payara.randomHttpPort>
                         <payara.microJar>${project.basedir}/target/payara-micro.current.jar</payara.microJar>
                         <!-- <payara.bindHttpPort>28080</payara.bindHttpPort> -->
@@ -216,7 +216,7 @@
                         the HTTP port to connect to -->
                         <!-- -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n -->
                         <payara.cmdOptions>-Dwegas.http.threads=9 -Dwegas.db.name=wegas_test -Djcr.repository.URI= -Dhazelcast.startport=16900 -Dwegas.db.host=localhost -Dwegas.db.port=5432 -Dwegas.db.user=user -Dwegas.db.password=1234 -Dwegas.nb_populators=3 -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager -Declipselink.cache.coordination.channel=WegasLocalTest </payara.cmdOptions>
-                        <payara.extraMicroOptions>--port 28080 --domainconfig ${project.basedir}/src/main/resources/domain.xml --logproperties ${project.basedir}/../wegas-core/src/test/resources/logging.properties --interfaces 127.0.0.1 --clustermode tcpip:127.0.0.1:16900</payara.extraMicroOptions>
+                        <payara.extraMicroOptions>--prebootcommandfile ${project.basedir}/as_prebootcmd --port 28080 --logproperties ${project.basedir}/../wegas-core/src/test/resources/logging.properties --interfaces 127.0.0.1 --clustermode tcpip:127.0.0.1:16900</payara.extraMicroOptions>
                     </systemProperties>
                 </configuration>
             </plugin>

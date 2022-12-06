@@ -60,7 +60,6 @@ public class WegasRuntime {
     private PayaraMicroRuntime payara;
     private String appName;
     private String baseUrl;
-    private File domainConfig;
 
     private static boolean init = false;
 
@@ -105,14 +104,6 @@ public class WegasRuntime {
 
     public void setAppName(String appName) {
         this.appName = appName;
-    }
-
-    public File getDomainConfig() {
-        return domainConfig;
-    }
-
-    public void setDomainConfig(File domainConfig) {
-        this.domainConfig = domainConfig;
     }
 
     public String getBaseUrl() {
@@ -181,17 +172,17 @@ public class WegasRuntime {
 
         String root = "../wegas-app/";
 
-        File domainConfig = new File("./src/main/resources/domain.xml");
-        File tmpDomainConfig = File.createTempFile("domain", ".xml");
-
-        Files.copy(domainConfig.toPath(), tmpDomainConfig.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
         String warPath = root + "target/Wegas";
 
         File theWar = new File(warPath);
 
         PayaraMicroRuntime bootstrap = PayaraMicro.getInstance()
-            .setAlternateDomainXML(tmpDomainConfig)
+            .setMinHttpThreads(5)
+            .setMaxHttpThreads(5)
+//            .setPreBootHandler((cmdRunner) -> {
+//                //TODO : http2 & managed exec service
+//                cmdRunner.run("set", "...")
+//            })
             .addDeploymentFile(theWar)
             .setHttpAutoBind(true)
             .setSslAutoBind(true)
@@ -207,7 +198,6 @@ public class WegasRuntime {
 
         wr.setAppName(appName);
         wr.setBaseUrl("http://localhost:" + httpPort + "/" + appName);
-        wr.setDomainConfig(tmpDomainConfig);
         wr.setPayara(bootstrap);
         return wr;
     }
