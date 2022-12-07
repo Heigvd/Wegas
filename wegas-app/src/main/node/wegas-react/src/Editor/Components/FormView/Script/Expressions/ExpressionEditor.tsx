@@ -26,12 +26,12 @@ import {
   generateSchema,
   ImpactAttributes,
   isCodeEqual,
-  isExpressionReady,
+  isExpressionValid,
   LeftExpressionAttributes,
   makeItems,
-  testCode,
+  parseCode,
   typeCleaner,
-  WyiswygExpressionSchema,
+  WysiwygExpressionSchema,
 } from './expressionEditorHelpers';
 
 type FormOnChange = React.ComponentProps<typeof Form>['onChange'];
@@ -46,7 +46,7 @@ const expressionEditorStyle = css({
 
 interface ExpressionEditorState {
   attributes?: Attributes;
-  schema?: WyiswygExpressionSchema;
+  schema?: WysiwygExpressionSchema;
   error?: string | false;
   softError?: string[];
 }
@@ -193,7 +193,7 @@ export function ExpressionEditor({
       modeRef.current = mode;
       variablesItemsRef.current = variablesItems;
 
-      const parsedCode = testCode(code, mode);
+      const parsedCode = parseCode(code, mode);
       if (typeof parsedCode === 'string') {
         dispatchFormState({
           type: 'SET_ERROR',
@@ -265,12 +265,12 @@ export function ExpressionEditor({
   const onAttributesChange = React.useCallback(
     (
       attributes: NonNullable<Attributes>,
-      schema: WyiswygExpressionSchema | undefined,
+      schema: WysiwygExpressionSchema | undefined,
     ) => {
       const newCode = generateCode(attributes, schema);
       codeRef.current = newCode;
 
-      if (isExpressionReady(attributes, schema)) {
+      if (isExpressionValid(attributes, schema)) {
         onChange && onChange(newCode);
       }
 
@@ -333,7 +333,7 @@ export function ExpressionEditor({
       if (mountedRef.current == true) {
         try {
           parse(value).program.body[0];
-          const newAttributes = testCode(value, mode);
+          const newAttributes = parseCode(value, mode);
           if (typeof newAttributes === 'string') {
             dispatchFormState({
               type: 'SET_ERROR',
@@ -476,6 +476,7 @@ export interface StatementViewProps extends WidgetProps.BaseProps {
   view: CommonView & LabeledView & ScriptView;
 }
 
+// TODO adapt that as well
 export default function StatementView(props: StatementViewProps) {
   return (
     <CommonViewContainer errorMessage={props.errorMessage} view={props.view}>

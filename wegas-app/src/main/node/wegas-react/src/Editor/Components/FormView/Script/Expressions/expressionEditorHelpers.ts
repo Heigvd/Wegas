@@ -111,7 +111,7 @@ type ConditionSchema = {
 
 type SchemaProperties = ImpactSchema | ConditionSchema;
 
-export interface WyiswygExpressionSchema {
+export interface WysiwygExpressionSchema {
   description: string;
   properties: SchemaProperties;
 }
@@ -561,7 +561,7 @@ export async function generateSchema(
     | TreeSelectItem<string | LeftExpressionAttributes>[]
     | undefined,
   mode?: ScriptMode,
-): Promise<WyiswygExpressionSchema> {
+): Promise<WysiwygExpressionSchema> {
   let newSchemaProps = makeSchemaInitExpression(variablesItems, mode);
   const expression =
     attributes?.type === 'condition'
@@ -641,7 +641,7 @@ export function isCodeEqual(
   return removeFinalSemicolon(codeA) === removeFinalSemicolon(codeB);
 }
 
-export function testCode(
+export function parseCode(
   code: string,
   mode: ScriptMode | undefined,
 ): string | Attributes {
@@ -664,16 +664,16 @@ export function testCode(
         return String(e);
       }
     } else {
-      return 'While multiple statements are detected, source mode is forced';
+      return 'When multiple statements are detected, source mode is forced';
     }
   } catch (e) {
     return handleError(e);
   }
 }
 
-export function isExpressionReady(
+export function isExpressionValid(
   attributes: Attributes,
-  schema: WyiswygExpressionSchema | undefined,
+  schema: WysiwygExpressionSchema | undefined,
 ): boolean {
   if (attributes == null) {
     return false;

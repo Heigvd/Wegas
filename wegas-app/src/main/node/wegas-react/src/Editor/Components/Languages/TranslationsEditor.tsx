@@ -71,7 +71,7 @@ import { generateCode } from '../FormView/Script/Expressions/astManagement';
 import {
   Attributes,
   generateSchema,
-  testCode,
+  parseCode,
 } from '../FormView/Script/Expressions/expressionEditorHelpers';
 import { isClientMode } from '../FormView/Script/Script';
 import { IconComp, withDefault } from '../Views/FontAwesome';
@@ -547,7 +547,7 @@ async function AsyncScriptView({
 
   for (const expression of parsedExpressions) {
     const expressionCode = generate(program([expression])).code;
-    const attributes = testCode(expressionCode, mode) as
+    const attributes = parseCode(expressionCode, mode) as
       | ExtractedAttributes
       | string;
 
