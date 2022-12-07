@@ -45,7 +45,7 @@ import {
   LeftExpressionAttributes,
   VariableExpressionAttributes,
   WegasOperators,
-  WyiswygExpressionSchema,
+  WysiwygExpressionSchema,
 } from './expressionEditorHelpers';
 
 function pushExpressionToStatementArray(
@@ -134,7 +134,7 @@ const allowedArgumentTypes = {
     generator: numericLiteral,
     parser: (expression: NumericLiteral): number => expression.value,
   },
-  prefixedNumber: {
+  prefixedNumber: { // +2 or -3
     checker: (
       node: object | null | undefined,
       opts?: object | null | undefined,
@@ -355,7 +355,7 @@ export function parseStatement(
   mode?: ScriptMode,
 ): Attributes {
   let error: string | undefined = undefined;
-  // If statement is empty, set value as true
+  // If statement is empty, set value to true
   if (isEmptyStatement(statement)) {
     if (isScriptCondition(mode)) {
       return {
@@ -479,7 +479,7 @@ function leftExpressionToCode(expression: LeftExpressionAttributes): string {
 
 function methodAndArgsToCode(
   attributes: NonNullable<Attributes>,
-  schema: WyiswygExpressionSchema | undefined,
+  schema: WysiwygExpressionSchema | undefined,
 ): string {
   let newCode = '';
   const expression =
@@ -519,7 +519,7 @@ function methodAndArgsToCode(
 
 export function generateCode(
   attributes: NonNullable<Attributes>,
-  schema: WyiswygExpressionSchema | undefined,
+  schema: WysiwygExpressionSchema | undefined,
 ): string {
   let newCode = '';
   if (attributes.type === 'impact') {
@@ -529,7 +529,7 @@ export function generateCode(
         methodAndArgsToCode(attributes, schema);
     }
     return newCode;
-  } else {
+  } else { // condition
     if (attributes.leftExpression != null) {
       newCode +=
         leftExpressionToCode(attributes.leftExpression) +

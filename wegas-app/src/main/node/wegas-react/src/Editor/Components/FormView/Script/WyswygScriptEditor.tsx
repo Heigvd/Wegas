@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { DragDropArray } from '../Array';
 import { ExpressionEditor } from './Expressions/ExpressionEditor';
+import { ExpressionEditorMk2 } from './Expressions/ExpressionEditorMk2';
 import { isScriptCondition, ScriptView } from './Script';
 
 function createNewExpression(mode?: ScriptMode): string {
@@ -33,7 +34,8 @@ export function WyswygScriptEditor({
       onMove={(expressions: string[]) => onChange(expressions)}
     >
       {expressions?.map((expression, index) => (
-        <ExpressionEditor
+        <>
+        <ExpressionEditorMk2
           key={index}
           code={expression}
           mode={mode}
@@ -43,6 +45,18 @@ export function WyswygScriptEditor({
             onChange(expressions);
           }}
         />
+        <p>OLD VERSION</p>
+        <ExpressionEditor
+        key={index}
+        code={expression}
+        mode={mode}
+        setError={setError}
+        onChange={value => {
+          expressions[index] = value;
+          onChange(expressions);
+        }}
+      />
+      </>
       ))}
     </DragDropArray>
   );
