@@ -50,22 +50,16 @@ type FormStateActions =
       payload: { error: string };
     };
 
-//// Variable selection
-
-function variableIdsSelector(s: State) {
-  return Object.keys(s.variableDescriptors)
-    .map(Number)
-    .filter(k => !isNaN(k))
-    .filter(k => GameModel.selectCurrent().itemsIds.includes(k));
+function getRootLevelVariableIds(s: State) {
+  return s.gameModels[s.global.currentGameModelId].itemsIds;
 }
 
 /**
  * Should be done by looking at json files and prevent selection from variables without methods
  */
-function selectableFn(item: IVariableDescriptor, _mode?: ScriptMode) {
-  return item['@class'] !== 'ListDescriptor';
+function selectableFn() {
+  return true;
 }
-
 
 
 export function ExpressionEditorMk2({
@@ -77,16 +71,16 @@ export function ExpressionEditorMk2({
   setError,
 }: ExpressionEditorProps) {
 
-  wlog(mode);
-  wlog(code);
-  wlog(onChange);
-  wlog(setError);
+  // wlog(mode);
+  // wlog(code);
+  // wlog(onChange);
+  // wlog(setError);
 
 
   const [{ attributes, error, softError, schema }, dispatchFormState] = React.useReducer(setFormState, {});
 
   const variablesItems = useStore(s => {
-    return genVarItems(variableIdsSelector(s), selectableFn, undefined, value =>
+    return genVarItems(getRootLevelVariableIds(s), undefined, undefined, value =>
       makeItems(value, 'variable'),
     );
   }, deepDifferent);
@@ -121,8 +115,8 @@ export function ExpressionEditorMk2({
           break;
         }
       }
-      wlog('set form state', state);
-      wlog('set form action', action);
+      // wlog('set form state', state);
+      // wlog('set form action', action);
     })
   }
 
@@ -148,8 +142,8 @@ export function ExpressionEditorMk2({
 
   const onFormChange: FormOnChange = React.useCallback(
     (v: Attributes, e: ValidationError[]) => {
-      wlog(v);
-      wlog(e);
+      // wlog(v);
+      // wlog(e);
       
     }, []);
 

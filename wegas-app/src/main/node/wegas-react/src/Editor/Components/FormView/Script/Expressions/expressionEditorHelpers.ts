@@ -14,8 +14,10 @@ import {
   WegasMethodParameter,
 } from '../../../../editionConfig';
 import { StringOrT } from '../../TreeVariableSelect';
-import { handleError, isClientMode, isScriptCondition } from '../Script';
+import { handleError, isClientMode, isScriptCondition, isServerScript } from '../Script';
 import { LiteralExpressionValue, parseStatement } from './astManagement';
+import { VariableDescriptor as VDSelect } from '../../../../../data/selectors';
+
 
 const comparisonOperators = {
   isTrue: { label: 'is true' },
@@ -278,7 +280,7 @@ interface GlobalMethodSearcher extends MethodSearcher {
 }
 interface VariableMethodSearcher extends MethodSearcher {
   type: 'variable';
-  value?: SVariableDescriptor;
+  value?: IVariableDescriptor;
   mode?: ScriptMode;
 }
 interface BooleanMethodSearcher extends MethodSearcher {
@@ -343,7 +345,7 @@ export function makeItems(
 }
 
 function variableScriptFactory(
-  value: string | LeftExpressionAttributes,
+  value: LeftExpressionAttributes,
 ): string | undefined {
   if (typeof value === 'object' && value.type === 'variable') {
     return `Variable.find(gameModel,'${value.variableName}')`;
@@ -365,7 +367,7 @@ function makeSchemaInitExpression(
         value: 'Variables',
         selectable: false,
       },
-      ...(mode === 'GET' || mode === 'SET'
+      ...(isServerScript(mode)
         ? [
             {
               label: 'Global methods',
@@ -576,13 +578,7 @@ export async function generateSchema(
       case 'variable':
         configArg = {
           type: expression.type,
-          value: safeClientScriptEval<SVariableDescriptor>(
-            `Variable.find(gameModel,'${expression.variableName}')`,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-          ),
+          value: VDSelect.findByName(expression.variableName),
           mode,
         };
         break;

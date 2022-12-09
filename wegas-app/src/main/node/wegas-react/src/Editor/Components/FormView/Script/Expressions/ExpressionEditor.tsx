@@ -13,12 +13,13 @@ import { defaultMarginLeft } from '../../../../../css/classes';
 import { State } from '../../../../../data/Reducer/reducers';
 import { GameModel } from '../../../../../data/selectors';
 import { useStore } from '../../../../../data/Stores/store';
+import { wlog } from '../../../../../Helper/wegaslog';
 import { MessageString } from '../../../MessageString';
 import { TempScriptEditor } from '../../../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
 import { Labeled, LabeledView } from '../../labeled';
 import { genVarItems } from '../../TreeVariableSelect';
-import { returnTypes, scriptEditStyle, ScriptView } from '../Script';
+import { isServerScript, returnTypes, scriptEditStyle, ScriptView } from '../Script';
 import { generateCode, LiteralExpressionValue } from './astManagement';
 import {
   Attributes,
@@ -51,11 +52,15 @@ interface ExpressionEditorState {
   softError?: string[];
 }
 
-function variableIdsSelector(s: State) {
-  return Object.keys(s.variableDescriptors)
-    .map(Number)
-    .filter(k => !isNaN(k))
-    .filter(k => GameModel.selectCurrent().itemsIds.includes(k));
+// function variableIdsSelector(s: State) {
+//   return Object.keys(s.variableDescriptors)
+//     .map(Number)
+//     .filter(k => !isNaN(k))
+//     .filter(k => GameModel.selectCurrent().itemsIds.includes(k));
+// }
+
+function getRootLevelVariableIds(s: State) {
+  return s.gameModels[s.global.currentGameModelId].itemsIds;
 }
 
 /**
@@ -64,6 +69,11 @@ function variableIdsSelector(s: State) {
 function selectableFn(item: IVariableDescriptor, _mode?: ScriptMode) {
   return item['@class'] !== 'ListDescriptor';
 }
+
+// TODO does't prevent from selecting folders, should it be filtered elsewhere ?
+// function selectableFn() {
+//   return true;
+// }
 
 type FormStateActions =
   | {
@@ -159,7 +169,8 @@ export function ExpressionEditor({
   }, [error, softError, setError]);
 
   const variablesItems = useStore(s => {
-    return genVarItems(variableIdsSelector(s), selectableFn, undefined, value =>
+    //TODO undefined function on 2nd argument does not filter out folders
+    return genVarItems(getRootLevelVariableIds(s), selectableFn, undefined, value =>
       makeItems(value, 'variable'),
     );
   }, deepDifferent);
@@ -326,8 +337,6 @@ export function ExpressionEditor({
     [mode, onAttributesChange, variablesItems],
   );
 
-  const isServerScript = mode === 'SET' || mode === 'GET';
-
   const onScriptEditorChange = React.useCallback(
     (value: string) => {
       if (mountedRef.current == true) {
@@ -342,6 +351,7 @@ export function ExpressionEditor({
               },
             });
           } else {
+            wlog('onScriptEditorChange', newAttributes);
             dispatchFormState({
               type: 'SET_IF_DEF',
               payload: { attributes: newAttributes },
@@ -449,7 +459,7 @@ export function ExpressionEditor({
         <div className={scriptEditStyle}>
           <MessageString type="error" value={(softError || []).join('\n')} />
           <TempScriptEditor
-            language={isServerScript ? 'javascript' : 'typescript'}
+            language={isServerScript(mode) ? 'javascript' : 'typescript'}
             initialValue={code}
             onChange={onScriptEditorChange}
             noGutter
