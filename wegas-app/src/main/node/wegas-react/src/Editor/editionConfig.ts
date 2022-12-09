@@ -100,7 +100,7 @@ export async function methodConfigUpdater(
       config[method].parameters.map(
         async p => await schemaUpdater(p, ...updater),
       ),
-    )) as MethodConfig['1']['parameters'];
+    )) as WegasMethodParameter[];
     newConfig[method] = {
       ...config[method],
       parameters: newParameters,
@@ -116,6 +116,7 @@ export async function methodConfigUpdater(
 async function fetchConfig(
   file: string,
 ): Promise<{ schema: Schema; methods: MethodConfig }> {
+  // TODO convert to local import from a pregenerated map
   return import(
     /* webpackChunkName: "Config-[request]", webpackPrefetch: true */
     'wegas-ts-api/src/generated/schemas/' + file
@@ -218,10 +219,10 @@ export async function getEntityActions(
   return { edit: editVariable };
 }
 
-export async function getVariableMethodConfig<T extends SAbstractEntity>(
+export async function getVariableMethodConfig<T extends IAbstractEntity>(
   entity: T,
 ): Promise<MethodConfig> {
-  return fetchConfig(entity.getJSONClassName() + '.json').then(res => {
+  return fetchConfig(entity['@class'] + '.json').then(res => {
     return methodConfigUpdater(res.methods, injectRef);
   });
 }
