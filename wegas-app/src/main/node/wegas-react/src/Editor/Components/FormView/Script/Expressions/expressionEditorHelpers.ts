@@ -9,8 +9,8 @@ import { isServerMethod } from '../../../../../data/Reducer/globalState';
 import { store } from '../../../../../data/Stores/store';
 import {
   getVariableMethodConfig,
+  MethodsConfig,
   MethodConfig,
-  WegasMethod,
   WegasMethodParameter,
 } from '../../../../editionConfig';
 import { StringOrT } from '../../TreeVariableSelect';
@@ -119,9 +119,9 @@ export interface WysiwygExpressionSchema {
 }
 
 function filterVariableMethods(
-  methods: MethodConfig,
+  methods: MethodsConfig,
   mode?: ScriptMode,
-): MethodConfig {
+): MethodsConfig {
   return Object.keys(methods)
     .filter(k =>
       mode?.includes('GET')
@@ -133,7 +133,7 @@ function filterVariableMethods(
 
 function filterOperators(
   k: WegasOperators,
-  methodReturn: WegasMethod['returns'],
+  methodReturn: MethodConfig['returns'],
 ) {
   if (methodReturn === 'boolean') {
     return k === 'isTrue' || k === 'isFalse';
@@ -143,7 +143,7 @@ function filterOperators(
 }
 
 function generateOperators(
-  methodReturns: WegasMethod['returns'],
+  methodReturns: MethodConfig['returns'],
 ): SelectOperator[] {
   return Object.keys(comparisonOperators)
     .filter((k: WegasOperators) => filterOperators(k, methodReturns))
@@ -256,7 +256,7 @@ function genGlobalItems<T = string>(
     });
 }
 
-function getGlobalMethodConfig(globalMethod: string): MethodConfig {
+function getGlobalMethodConfig(globalMethod: string): MethodsConfig {
   const foundMethod = getServerMethods(
     store.getState().global.serverMethods,
   ).find(method => method.fullName === globalMethod);
@@ -291,16 +291,16 @@ type MethodSearchers =
   | VariableMethodSearcher
   | BooleanMethodSearcher;
 
-async function getMethodConfig(
+function getMethodConfig(
   methodSearcher: MethodSearchers,
-): Promise<MethodConfig> {
+): MethodsConfig {
   switch (methodSearcher.type) {
     case 'global':
       return getGlobalMethodConfig(methodSearcher.value);
     case 'variable':
       return methodSearcher.value
         ? filterVariableMethods(
-            await getVariableMethodConfig(methodSearcher.value),
+            getVariableMethodConfig(methodSearcher.value),
             methodSearcher.mode,
           )
         : {};
@@ -409,7 +409,7 @@ function makeSchemaInitExpression(
   }
 }
 
-function makeSchemaMethodSelector(methods?: MethodConfig) {
+function makeSchemaMethodSelector(methods?: MethodsConfig) {
   return {
     ...(methods && Object.keys(methods).length > 0
       ? {
@@ -458,7 +458,7 @@ function makeSchemaParameters(
   };
 }
 
-function defaultRightExpressionValue(method: WegasMethod) {
+function defaultRightExpressionValue(method: MethodConfig) {
   switch (method.returns) {
     case 'boolean':
       return true;
@@ -522,7 +522,7 @@ function isRightExpressionVisible(
 
 function makeSchemaConditionAttributes(
   currentSchema: SchemaProperties,
-  method?: WegasMethod,
+  method?: MethodConfig,
   mode?: ScriptMode,
 ): SchemaProperties {
   const conditionAttributesSchema:
@@ -557,13 +557,13 @@ function makeSchemaConditionAttributes(
   };
 }
 
-export async function generateSchema(
+export function generateSchema(
   attributes: Attributes,
   variablesItems:
     | TreeSelectItem<string | LeftExpressionAttributes>[]
     | undefined,
   mode?: ScriptMode,
-): Promise<WysiwygExpressionSchema> {
+): WysiwygExpressionSchema {
   let newSchemaProps = makeSchemaInitExpression(variablesItems, mode);
   const expression =
     attributes?.type === 'condition'
@@ -585,8 +585,8 @@ export async function generateSchema(
       default:
         configArg = { type: 'boolean' };
     }
-    const methods = await getMethodConfig(configArg);
-    let method: WegasMethod | undefined = undefined;
+    const methods = getMethodConfig(configArg);
+    let method: MethodConfig | undefined = undefined;
     switch (expression.type) {
       case 'global': {
         method = methods[expression.globalObject];
