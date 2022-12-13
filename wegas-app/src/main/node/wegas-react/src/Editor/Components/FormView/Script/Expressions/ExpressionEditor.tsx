@@ -11,7 +11,6 @@ import { CustomDotLoader } from '../../../../../Components/Loader';
 import { themeVar } from '../../../../../Components/Theme/ThemeVars';
 import { defaultMarginLeft } from '../../../../../css/classes';
 import { State } from '../../../../../data/Reducer/reducers';
-import { GameModel } from '../../../../../data/selectors';
 import { useStore } from '../../../../../data/Stores/store';
 import { wlog } from '../../../../../Helper/wegaslog';
 import { MessageString } from '../../../MessageString';
@@ -204,6 +203,7 @@ export function ExpressionEditor({
       modeRef.current = mode;
       variablesItemsRef.current = variablesItems;
 
+
       const parsedCode = parseCode(code, mode);
       if (typeof parsedCode === 'string') {
         dispatchFormState({
@@ -211,63 +211,64 @@ export function ExpressionEditor({
           payload: { error: parsedCode },
         });
       } else {
-        generateSchema(parsedCode, variablesItems, mode).then(schema => {
-          if (
-            schema.properties.methodId != null &&
-            parsedCode?.methodId != null
-          ) {
-            const method = schema.properties.methodId as
-              | { enum: string[] }
-              | undefined;
-            const choices = method?.enum;
-            // If the method is unknown
-            if (!choices || !choices.includes(parsedCode.methodId)) {
+        const schema = generateSchema(parsedCode, variablesItems, mode);
+        
+        if (
+          schema.properties.methodId != null &&
+          parsedCode?.methodId != null
+        ) {
+          const method = schema.properties.methodId as
+            | { enum: string[] }
+            | undefined;
+          const choices = method?.enum;
+          // If the method is unknown
+          if (!choices || !choices.includes(parsedCode.methodId)) {
+            dispatchFormState({
+              type: 'SET_ERROR',
+              payload: {
+                error: `Unknown WYSIWYG method : "${parsedCode.methodId}"`,
+              },
+            });
+            return;
+          }
+        } else if (
+          parsedCode != null &&
+          parsedCode.arguments != null &&
+          schema.properties.arguments != null
+        ) {
+          // Validating statement with schema
+          for (const index in parsedCode.arguments) {
+            const argument = parsedCode.arguments[index];
+            const argType = Array.isArray(argument)
+              ? 'array'
+              : typeof argument;
+            const schemaArgument = schema.properties.arguments.properties
+              ? schema.properties.arguments.properties[index]
+              : undefined;
+            if (!schemaArgument) {
+              dispatchFormState({
+                type: 'SET_ERROR',
+                payload: { error: 'Too much arguments' },
+              });
+              return;
+            } else if (
+              argType !== 'undefined' &&
+              argType !== schemaArgument.type
+            ) {
               dispatchFormState({
                 type: 'SET_ERROR',
                 payload: {
-                  error: `Unknown WYSIWYG method : "${parsedCode.methodId}"`,
+                  error: `Argument type mismatch.\nExpected type : ${schemaArgument.type}\nArgument type : ${argType}`,
                 },
               });
               return;
             }
-          } else if (
-            parsedCode != null &&
-            parsedCode.arguments != null &&
-            schema.properties.arguments != null
-          ) {
-            // Validating statement with schema
-            for (const index in parsedCode.arguments) {
-              const argument = parsedCode.arguments[index];
-              const argType = Array.isArray(argument)
-                ? 'array'
-                : typeof argument;
-              const schemaArgument = schema.properties.arguments.properties
-                ? schema.properties.arguments.properties[index]
-                : undefined;
-              if (!schemaArgument) {
-                dispatchFormState({
-                  type: 'SET_ERROR',
-                  payload: { error: 'Too much arguments' },
-                });
-                return;
-              } else if (
-                argType !== 'undefined' &&
-                argType !== schemaArgument.type
-              ) {
-                dispatchFormState({
-                  type: 'SET_ERROR',
-                  payload: {
-                    error: `Argument type mismatch.\nExpected type : ${schemaArgument.type}\nArgument type : ${argType}`,
-                  },
-                });
-                return;
-              }
-            }
           }
-          dispatchFormState({
-            type: 'SET_IF_DEF',
-            payload: { schema, attributes: parsedCode, error: false },
-          });
+        }
+        // success schema is validated
+        dispatchFormState({
+          type: 'SET_IF_DEF',
+          payload: { schema, attributes: parsedCode, error: false },
         });
       }
     }
@@ -295,44 +296,43 @@ export function ExpressionEditor({
 
   const computeState = React.useCallback(
     (attributes: NonNullable<Attributes>) => {
-      return generateSchema(attributes, variablesItems, mode).then(schema => {
-        const schemaProperties = schema.properties;
-        //Remove additional properties that doesn't fit schema
-        let newAttributes = pick(
-          attributes,
-          Object.keys(schemaProperties),
-        ) as NonNullable<Attributes>;
+      const schema = generateSchema(attributes, variablesItems, mode);
+      const schemaProperties = schema.properties;
+      //Remove additional properties that doesn't fit schema
+      let newAttributes = pick(
+        attributes,
+        Object.keys(schemaProperties),
+      ) as NonNullable<Attributes>;
 
-        if (schemaProperties.arguments) {
-          const extractedArguments: LiteralExpressionValue[] | undefined =
-            Object.values(schemaProperties.arguments.properties ?? []).map(
-              (arg, i) => {
-                const defaultItemsValue =
-                  arg.view != null &&
-                  'items' in arg.view &&
-                  isArray(arg.view.items) &&
-                  arg.view.items.length > 0
-                    ? arg.view.items[0]
-                    : undefined;
+      if (schemaProperties.arguments) {
+        const extractedArguments: LiteralExpressionValue[] | undefined =
+          Object.values(schemaProperties.arguments.properties ?? []).map(
+            (arg, i) => {
+              const defaultItemsValue =
+                arg.view != null &&
+                'items' in arg.view &&
+                isArray(arg.view.items) &&
+                arg.view.items.length > 0
+                  ? arg.view.items[0]
+                  : undefined;
 
-                // Trying to translate parameter from previous type to new type (undefined if fails)
-                return typeCleaner(
-                  newAttributes?.arguments
-                    ? newAttributes?.arguments[i]
-                    : undefined,
-                  arg.type as WegasTypeString,
-                  arg.value || defaultItemsValue,
-                ) as LiteralExpressionValue;
-              },
-            );
-          newAttributes = {
-            ...newAttributes,
-            ...(extractedArguments ? { arguments: extractedArguments } : {}),
-          };
-        }
+              // Trying to translate parameter from previous type to new type (undefined if fails)
+              return typeCleaner(
+                newAttributes?.arguments
+                  ? newAttributes?.arguments[i]
+                  : undefined,
+                arg.type as WegasTypeString,
+                arg.value || defaultItemsValue,
+              ) as LiteralExpressionValue;
+            },
+          );
+        newAttributes = {
+          ...newAttributes,
+          ...(extractedArguments ? { arguments: extractedArguments } : {}),
+        };
+      }
 
-        return onAttributesChange(newAttributes, schema);
-      });
+      return onAttributesChange(newAttributes, schema);
     },
     [mode, onAttributesChange, variablesItems],
   );
@@ -398,38 +398,36 @@ export function ExpressionEditor({
               newConfig.leftExpression,
             )
           ) {
-            computeState(
+            const { attributes, schema } = computeState(
               pick(newConfig, ['type', 'expression', 'leftExpression']),
-            ).then(({ attributes, schema }) =>
-              dispatchFormState({
-                type: 'SET_IF_DEF',
-                payload: {
-                  attributes,
-                  schema,
-                  softError: e.map(error => error.toString()),
-                },
-              }),
-            );
+            )
+            dispatchFormState({
+              type: 'SET_IF_DEF',
+              payload: {
+                attributes,
+                schema,
+                softError: e.map(error => error.toString()),
+              },
+            })
           }
           // If method has changed, keep only type, expression and method and regenerate schema and send changes
           else if (deepDifferent(currentConfig.methodId, newConfig.methodId)) {
-            computeState(
+            const { attributes, schema } = computeState(
               pick(newConfig, [
                 'type',
                 'expression',
                 'leftExpression',
                 'methodId',
               ]),
-            ).then(({ attributes, schema }) =>
-              dispatchFormState({
-                type: 'SET_IF_DEF',
-                payload: {
-                  attributes,
-                  schema,
-                  softError: e.map(e => e.toString()),
-                },
-              }),
-            );
+            )
+            dispatchFormState({
+              type: 'SET_IF_DEF',
+              payload: {
+                attributes,
+                schema,
+                softError: e.map(e => e.toString()),
+              },
+            })
           }
           // If arguments, operator or rightExpression has changed, keep current schema and send changes
           else {

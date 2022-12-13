@@ -12,7 +12,7 @@ import { CodeViewView } from '../../../Editor/Components/FormView/Code';
 import { NuppleView } from '../../../Editor/Components/FormView/Nupple';
 import { ScriptableViewView } from '../../../Editor/Components/FormView/Scriptable';
 import { LabeledTreeVSelectProps } from '../../../Editor/Components/FormView/TreeVariableSelect';
-import { WegasMethod } from '../../../Editor/editionConfig';
+import { MethodConfig } from '../../../Editor/editionConfig';
 import { createScript } from '../../../Helper/wegasEntites';
 import { Choices } from '../../Selector';
 
@@ -183,12 +183,12 @@ const simpleSchemaProps = {
     description,
     visible,
   }: {
-    type?: WegasMethod['returns'];
+    type?: MethodConfig['returns'];
     viewType?: T;
   } & CommonSchemaProps &
     ReadOnlySchemaProps &
     ValueSchemaProps<
-      WegasScriptEditorNameAndTypes[Exclude<WegasMethod['returns'], undefined>]
+      WegasScriptEditorNameAndTypes[Exclude<MethodConfig['returns'], undefined>]
     >) =>
     /* TODO : Improve  */
     /*: TypedProps<Parameters<typeof DEFINED_VIEWS[T]>[0]>*/
