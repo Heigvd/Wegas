@@ -466,6 +466,10 @@ public class ScriptFacade extends WegasAbstractFacade {
         return ((Compilable) engine).compile(sanitized);
     }
 
+    public int getCacheSize() {
+        return staticCache.size();
+    }
+
     public void clearCache() {
         staticCache.clear();
     }
