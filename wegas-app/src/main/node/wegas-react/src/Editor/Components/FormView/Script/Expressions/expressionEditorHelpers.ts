@@ -688,14 +688,14 @@ export function isExpressionValid(
       return false;
     }
   } else if (attributes.type === 'condition') {
+    if(attributes.leftExpression?.type === 'literal'){
+      return true;
+    }
     if (
       attributes.leftExpression == null ||
-      (attributes.leftExpression.type === 'variable' &&
-        attributes.methodId === null) ||
-      (isBooleanOperatorVisible(schema?.properties, attributes) &&
-        attributes.booleanOperator == null) ||
-      (isRightExpressionVisible(schema?.properties, attributes) &&
-        attributes.rightExpression == null)
+      (attributes.leftExpression.type === 'variable' && attributes.methodId === null) ||
+      (isBooleanOperatorVisible(schema?.properties, attributes) && attributes.booleanOperator == null) ||
+      (isRightExpressionVisible(schema?.properties, attributes) && attributes.rightExpression == null)
     ) {
       return false;
     }
