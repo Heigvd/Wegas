@@ -13,7 +13,10 @@ public class CommonView extends BaseView {
         none,
         inline,
         shortInline,
-        extraShortInline;
+        extraShortInline,
+        longInline,
+        flexInline,
+        fullWidth;
     }
 
     public enum FEATURE_LEVEL {

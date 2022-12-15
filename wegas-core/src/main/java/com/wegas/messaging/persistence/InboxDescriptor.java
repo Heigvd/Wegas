@@ -7,6 +7,7 @@
  */
 package com.wegas.messaging.persistence;
 
+import ch.albasim.wegas.annotations.CommonView;
 import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
 import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
@@ -204,16 +205,30 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
             proposal = EmptyI18n.class) TranslatableContent from,
         @Param(view = @View(label = "date", value = I18nStringView.class),
             proposal = EmptyI18n.class) TranslatableContent date,
-        @Param(view = @View(label = "subject", value = I18nStringView.class),
+        @Param(
+            view = @View(
+                label = "subject",
+                value = I18nStringView.class,
+                layout = CommonView.LAYOUT.fullWidth
+            ),
             proposal = EmptyI18n.class) TranslatableContent subject,
-        @Param(view = @View(label = "body", value = I18nHtmlView.class),
-            proposal = EmptyI18n.class) TranslatableContent body,
+        @Param(
+            view = @View(
+                label = "body",
+                value = I18nHtmlView.class,
+                layout = CommonView.LAYOUT.fullWidth
+            ),
+            proposal = EmptyI18n.class
+        ) TranslatableContent body,
         @Param(view = @View(
             label = "token",
             description = "Message identifier used to reference the message within FSM/Trigger conditions"
         )) String token,
         @Param(
-            view = @View(label = "attachements"),
+            view = @View(
+                label = "attachements",
+                layout = CommonView.LAYOUT.fullWidth
+            ),
             proposal = EmptyArray.class
         ) List<Attachment> attachments) {
         return this.getInstance(p).sendMessage(from, subject, body, date, token, attachments);
