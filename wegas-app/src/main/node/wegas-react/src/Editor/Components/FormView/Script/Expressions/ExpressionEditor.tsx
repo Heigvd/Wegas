@@ -12,13 +12,12 @@ import { themeVar } from '../../../../../Components/Theme/ThemeVars';
 import { defaultMarginLeft } from '../../../../../css/classes';
 import { State } from '../../../../../data/Reducer/reducers';
 import { useStore } from '../../../../../data/Stores/store';
-import { wlog } from '../../../../../Helper/wegaslog';
 import { MessageString } from '../../../MessageString';
 import { TempScriptEditor } from '../../../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
 import { Labeled, LabeledView } from '../../labeled';
 import { genVarItems } from '../../TreeVariableSelect';
-import { isServerScript, returnTypes, scriptEditStyle, ScriptView } from '../Script';
+import { isImpactCondition, isScriptCondition, isServerScript, returnTypes, scriptEditStyle, ScriptView } from '../Script';
 import { generateCode, LiteralExpressionValue } from './astManagement';
 import {
   Attributes,
@@ -127,7 +126,7 @@ export interface ExpressionEditorProps extends ScriptView {
   code: string;
   id?: string;
   onChange?: (code: string) => void;
-  mode?: ScriptMode;
+  mode: ScriptMode;
   setError?: (errors: string[] | undefined) => void;
 }
 
@@ -279,6 +278,7 @@ export function ExpressionEditor({
       attributes: NonNullable<Attributes>,
       schema: WysiwygExpressionSchema | undefined,
     ) => {
+
       const newCode = generateCode(attributes, schema);
       codeRef.current = newCode;
 
@@ -351,7 +351,6 @@ export function ExpressionEditor({
               },
             });
           } else {
-            wlog('onScriptEditorChange', newAttributes);
             dispatchFormState({
               type: 'SET_IF_DEF',
               payload: { attributes: newAttributes },
@@ -387,7 +386,7 @@ export function ExpressionEditor({
         } else {
           const currentConfig = attributes as ImpactAttributes &
             Pick<ConditionAttributes, 'leftExpression'>;
-          const newConfig = v as ImpactAttributes &
+            const newConfig = v as ImpactAttributes &
             Pick<ConditionAttributes, 'leftExpression'>;
           // If type or first expression has changed, keep only type and expression and regenerate schema and send changes
           if (
@@ -446,6 +445,18 @@ export function ExpressionEditor({
     [attributes, computeState, onAttributesChange, schema],
   );
 
+  const buildContextFromAttribute = React.useCallback((a: Attributes, mode: ScriptMode) => {
+    if(a){
+      if((isScriptCondition(mode))){
+        return (a as ConditionAttributes).leftExpression;
+      }else if(isImpactCondition(mode)) {
+        return (a as ImpactAttributes).expression;
+      }else{
+        return undefined;
+      }
+    }
+  }, []);
+
   return (
     <div id={id} className={expressionEditorStyle}>
       {loading ? (
@@ -472,12 +483,14 @@ export function ExpressionEditor({
           value={attributes}
           schema={schema}
           onChange={onFormChange}
-          context={attributes}
+          context={buildContextFromAttribute(attributes, mode)}
         />
       )}
     </div>
   );
 }
+
+
 
 export interface StatementViewProps extends WidgetProps.BaseProps {
   value: string;

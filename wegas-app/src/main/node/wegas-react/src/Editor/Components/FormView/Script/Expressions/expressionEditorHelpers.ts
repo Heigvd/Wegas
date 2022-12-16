@@ -1,9 +1,7 @@
 import { parse } from '@babel/parser';
 import { emptyStatement, Statement } from '@babel/types';
 import { Schema } from 'jsoninput/typings/types';
-import { SVariableDescriptor } from 'wegas-ts-api';
 import { AvailableSchemas, AvailableViews } from '../..';
-import { safeClientScriptEval } from '../../../../../Components/Hooks/useScript';
 import { schemaProps } from '../../../../../Components/PageComponents/tools/schemaProps';
 import { isServerMethod } from '../../../../../data/Reducer/globalState';
 import { store } from '../../../../../data/Stores/store';
@@ -17,6 +15,7 @@ import { StringOrT } from '../../TreeVariableSelect';
 import { handleError, isClientMode, isScriptCondition, isServerScript } from '../Script';
 import { LiteralExpressionValue, parseStatement } from './astManagement';
 import { VariableDescriptor as VDSelect } from '../../../../../data/selectors';
+import { wlog } from '../../../../../Helper/wegaslog';
 
 
 const comparisonOperators = {
@@ -607,6 +606,7 @@ export function generateSchema(
       };
     }
 
+    wlog('method params', method?.parameters);
     if (method?.parameters) {
       newSchemaProps.arguments = makeSchemaParameters(method.parameters);
     }
@@ -678,6 +678,7 @@ export function isExpressionValid(
     Object.keys(schema?.properties.arguments?.properties).length !==
       attributes.arguments?.length
   ) {
+    //arguments don't match
     return false;
   } else if (attributes.type === 'impact') {
     if (
@@ -688,7 +689,7 @@ export function isExpressionValid(
       return false;
     }
   } else if (attributes.type === 'condition') {
-    if(attributes.leftExpression?.type === 'literal'){
+    if(attributes.leftExpression?.type === 'literal' && attributes.leftExpression.literal != null){
       return true;
     }
     if (

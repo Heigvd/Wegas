@@ -129,3 +129,8 @@ export type AvailableSchemas = Schema<AvailableViews>;
  * Get schema from view typename
  */
 export type SchemaFromView<P extends ViewTypes> = Schema<View<P>>;
+
+
+export type VariableContext = {
+  variableName?: string,
+}

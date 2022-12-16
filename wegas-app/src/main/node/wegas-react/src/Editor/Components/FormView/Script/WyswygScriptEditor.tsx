@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { wlog } from '../../../../Helper/wegaslog';
 import { DragDropArray } from '../Array';
 import { ExpressionEditor } from './Expressions/ExpressionEditor';
-import { ExpressionEditorMk2 } from './Expressions/ExpressionEditorMk2';
 import { isScriptCondition, ScriptView } from './Script';
 
 function createNewExpression(mode?: ScriptMode): string {
+  //TODO ; for empty impact... why ?
   return isScriptCondition(mode) ? 'true' : ';';
 }
 
@@ -21,7 +20,6 @@ export function WyswygScriptEditor({
   mode,
   setError,
 }: WyswygScriptEditorProps) {
-  // wlog(expressions);
   return (
     <DragDropArray
       array={expressions}
