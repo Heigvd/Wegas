@@ -55,3 +55,4 @@ export function VariableInput({ onChange, view, value }: VariableInputProps) {
     </div>
   );
 }
+
