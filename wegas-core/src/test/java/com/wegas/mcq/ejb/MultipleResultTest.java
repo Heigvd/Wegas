@@ -35,6 +35,8 @@ public class MultipleResultTest extends AbstractArquillianTest {
     @Inject
     private Answerer answerer;
 
+    private int nbFail = 0;
+
     private static final Logger logger = LoggerFactory.getLogger(MultipleResultTest.class);
 
     private static final ch.qos.logback.classic.Logger rmLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(RequestManager.class);
@@ -71,14 +73,19 @@ public class MultipleResultTest extends AbstractArquillianTest {
 
         final Function<ChoiceDescriptor, Runnable> answer = (ChoiceDescriptor choice) -> () -> answerer.selectAndValidateChoice(choice.getId(), player.getId());
 
-        final Thread thread1 = TestHelper.start(answer.apply(choice1));
-        final Thread thread2 = TestHelper.start(answer.apply(choice2));
+        Thread.UncaughtExceptionHandler handler = (Thread t, Throwable e) -> {
+            logger.warn("Thread failed with error ", e);
+            nbFail++;
+        };
+
+        final Thread thread1 = TestHelper.start(answer.apply(choice1), handler);
+        final Thread thread2 = TestHelper.start(answer.apply(choice2), handler);
 
         try {
             thread1.join();
             thread2.join();
         } catch (InterruptedException ex) {
-            logger.error("Error {}", ex);
+            logger.error("Interrupted  {}", ex);
         }
 
         QuestionInstance qi = question.getInstance(player);
