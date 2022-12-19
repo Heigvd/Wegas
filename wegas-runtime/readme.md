@@ -37,6 +37,11 @@ brew install --cask docker
 docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=<YOUR_PASSWORD> --name wegas_postgres -d postgres:11-alpine 
 ```
 
+##### 2
+```shell
+docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=1234 -e POSTGRES_USER=user -e POSTGRES_DB=wegas_dev --name wegas_postgres -d postgres:11-alpine 
+```
+
 #### Configure
 ```shell
 echo "CREATE USER \"user\" WITH PASSWORD '1234' SUPERUSER;
@@ -60,6 +65,8 @@ If your default JVM is <> 11, you must provide the path to a JVM-11 to maven. E.
 ```shell
 JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/" mvn -DskipTests install
 ```
+If this fails, remove the HOME_PATH from .mavenrc (leave it blank) so it defaults to the JVM-11 path.
+
 
 
 

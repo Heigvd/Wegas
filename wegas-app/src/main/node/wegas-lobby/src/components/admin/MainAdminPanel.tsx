@@ -155,6 +155,10 @@ export default function MainAdminPanel(): JSX.Element {
     }
   }, [pr_branch.status]);
 
+  const clearServerScriptCacheCb = React.useCallback(async () => {
+    return getRestClient().AdminStuff.clearServerScriptCache();
+  }, []);
+
   const clearCacheCb = React.useCallback(async () => {
     return getRestClient().AdminStuff.clearEmCache();
   }, []);
@@ -210,6 +214,16 @@ export default function MainAdminPanel(): JSX.Element {
       )}
 
       <h4>{i18n.doAction}</h4>
+
+      <ActionIconButton
+        title={i18n.clearServerScriptCache}
+        icon={faEraser}
+        shouldConfirm="SOFT_RIGHT"
+        onClick={clearServerScriptCacheCb}
+      >
+        {i18n.clearServerScriptCache}
+      </ActionIconButton>
+
       <ActionIconButton
         title={i18n.clearCache}
         icon={faEraser}

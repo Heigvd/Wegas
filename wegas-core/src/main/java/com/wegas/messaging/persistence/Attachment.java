@@ -7,6 +7,7 @@
  */
 package com.wegas.messaging.persistence;
 
+import ch.albasim.wegas.annotations.CommonView;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -71,7 +72,11 @@ public class Attachment extends AbstractEntity implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
             optional =false, nullable =false,
-            view= @View(label = "File", value = I18nFileView.class))
+            view= @View(
+                label = "File",
+                value = I18nFileView.class,
+                layout = CommonView.LAYOUT.shortInline
+            ))
     private TranslatableContent file;
 
     @Override

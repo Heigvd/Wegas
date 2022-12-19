@@ -1437,7 +1437,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Assert.assertEquals("second", folder_gm1.getItems().get(1).getName());
         Assert.assertEquals("third", folder_gm1.getItems().get(2).getName());
 
-        jpaCacheHelper.clearCacheLocal();
+        jpaCacheHelper.clearCacheLocal("all");
 
         folder_gm1 = (ListDescriptor) variableDescriptorFacade.find(folder_gm1.getId());
         Assert.assertEquals(3, folder_gm1.getItems().size());

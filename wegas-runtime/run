@@ -125,7 +125,7 @@ fi
 ################################
 if [ -e ${WEGAS_PROPERTIES} ]; then
     # wegas-override.properties exists -> try to patch it
-    diff -u ${DEFAULT_WEGAS_PROPERTIES_ORI} ${DEFAULT_WEGAS_PROPERTIES} | patch --no-backup-if-mismatch --merge ${WEGAS_PROPERTIES}
+    diff -u ${DEFAULT_WEGAS_PROPERTIES_ORI} ${DEFAULT_WEGAS_PROPERTIES} | patch --no-backup-if-mismatch ${WEGAS_PROPERTIES}
     if [ $? -eq 1 ]; then
         echo "FAILS TO PATCH ${WEGAS_PROPERTIES}: please fix conflicts"
         cp ${DEFAULT_WEGAS_PROPERTIES} ${DEFAULT_WEGAS_PROPERTIES_ORI}

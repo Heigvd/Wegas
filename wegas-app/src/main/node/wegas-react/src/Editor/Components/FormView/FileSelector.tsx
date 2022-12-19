@@ -82,6 +82,7 @@ export function CustomFileSelector<T extends keyof AllowedTypes>({
           id={inputId}
           filter={filter}
           selectedGlobalPaths={currentPath ? [currentPath] : undefined}
+          pickOnly
           onFileClick={file => {
             setCurrentPath(generateAbsolutePath(file));
             setShowBrowser(false);
@@ -123,6 +124,20 @@ export function LabeledCustomFileSelector<T extends keyof AllowedTypes>(
         )}
       </Labeled>
     </CommonViewContainer>
+  );
+}
+
+type FilenameSelectProps = WidgetProps.BaseProps<
+  CommonView & LabeledView & { pickType: FilePickingType; filter?: FileFilter }
+> &
+  CommonFileSelectProps<'string'>;
+
+export function FilenameSelector(props: FilenameSelectProps) {
+  return (
+    <LabeledCustomFileSelector
+      {...props}
+      valueType="string"
+    />
   );
 }
 

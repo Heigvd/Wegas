@@ -13,7 +13,6 @@ import com.wegas.core.api.QuestionDescriptorFacadeI;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
-import static com.wegas.core.ejb.RequestManager.RequestContext.INTERNAL_SCRIPT;
 import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -418,7 +417,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
          */
         List<Reply> replies = questionInstance.getReplies(player);
         if (maxQ != null && replies.size() >= maxQ) {
-            throw WegasErrorMessage.error("You can select up to " + maxQ + " answers" + (maxQ > 1 ? "s" : ""));
+            throw WegasErrorMessage.error("You can select up to " + maxQ + " answer" + (maxQ > 1 ? "s" : ""));
         }
 
         /**
