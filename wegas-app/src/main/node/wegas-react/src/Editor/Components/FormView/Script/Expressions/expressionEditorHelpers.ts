@@ -15,7 +15,6 @@ import { StringOrT } from '../../TreeVariableSelect';
 import { handleError, isClientMode, isScriptCondition, isServerScript } from '../Script';
 import { LiteralExpressionValue, parseStatement } from './astManagement';
 import { VariableDescriptor as VDSelect } from '../../../../../data/selectors';
-import { wlog } from '../../../../../Helper/wegaslog';
 
 
 const comparisonOperators = {
@@ -25,9 +24,16 @@ const comparisonOperators = {
   '!==': { label: 'not equals' },
   '>': { label: 'greater than' },
   '>=': { label: 'greater or equals than' },
-  '<': { label: 'lesser than' },
-  '<=': { label: 'lesser or equals than' },
+  '<': { label: 'less than' },
+  '<=': { label: 'less or equals than' },
 } as const;
+
+const comparisonOperatorTypes : Record<WegasMethodReturnType, WegasOperators[]> = 
+{
+  string: ['===', '!=='],
+  number: ['===', '!==', '<', '<=', '>', '>='],
+  boolean: ['isTrue', 'isFalse'],
+}
 
 export type WegasOperators = keyof typeof comparisonOperators;
 
@@ -130,28 +136,22 @@ function filterVariableMethods(
     .reduce((o, k) => ({ ...o, [k]: methods[k] }), {});
 }
 
-function filterOperators(
-  k: WegasOperators,
-  methodReturn: MethodConfig['returns'],
-) {
-  if (methodReturn === 'boolean') {
-    return k === 'isTrue' || k === 'isFalse';
-  } else {
-    return k !== 'isTrue' && k !== 'isFalse';
-  }
-}
-
 function generateOperators(
   methodReturns: MethodConfig['returns'],
 ): SelectOperator[] {
-  return Object.keys(comparisonOperators)
-    .filter((k: WegasOperators) => filterOperators(k, methodReturns))
-    .map((k: WegasOperators) => {
+
+  if(methodReturns){
+    const operators = comparisonOperatorTypes[methodReturns];
+    return operators.map((k) => {
       return {
         label: comparisonOperators[k].label,
-        value: k,
-      };
-    });
+        value: k
+      }
+    }
+    );
+  }
+  return [];
+
 }
 
 export function typeCleaner(
@@ -522,12 +522,11 @@ function isRightExpressionVisible(
 function makeSchemaConditionAttributes(
   currentSchema: SchemaProperties,
   method?: MethodConfig,
-  mode?: ScriptMode,
 ): SchemaProperties {
   const conditionAttributesSchema:
     | Pick<ConditionSchema, 'booleanOperator' | 'rightExpression'>
     | EmptyObject = {};
-  if (method && isScriptCondition(mode)) {
+  if (method) {
     conditionAttributesSchema['booleanOperator'] = schemaProps.select({
       values: generateOperators(method.returns),
       returnType: 'string',
@@ -538,6 +537,7 @@ function makeSchemaConditionAttributes(
       visible: (_value: LiteralExpressionValue, formValue: Attributes) =>
         isBooleanOperatorVisible(currentSchema, formValue),
     });
+
     conditionAttributesSchema['rightExpression'] = schemaProps.custom({
       label: undefined,
       type: method.returns,
@@ -606,7 +606,6 @@ export function generateSchema(
       };
     }
 
-    wlog('method params', method?.parameters);
     if (method?.parameters) {
       newSchemaProps.arguments = makeSchemaParameters(method.parameters);
     }
@@ -615,7 +614,6 @@ export function generateSchema(
       newSchemaProps = makeSchemaConditionAttributes(
         newSchemaProps,
         method,
-        mode,
       );
     }
   }
@@ -678,7 +676,7 @@ export function isExpressionValid(
     Object.keys(schema?.properties.arguments?.properties).length !==
       attributes.arguments?.length
   ) {
-    //arguments don't match
+    //arguments don't match expected scheme
     return false;
   } else if (attributes.type === 'impact') {
     if (

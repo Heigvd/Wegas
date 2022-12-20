@@ -523,28 +523,33 @@ export function generateCode(
 ): string {
   let newCode = '';
   if (attributes.type === 'impact') {
-    if (attributes.expression != null) {
+    if (attributes.expression) {
       newCode +=
         leftExpressionToCode(attributes.expression) +
         methodAndArgsToCode(attributes, schema);
     }
     return newCode;
   } else { // condition
-    if (attributes.leftExpression != null) {
+    if (attributes.leftExpression) {
+
       newCode +=
         leftExpressionToCode(attributes.leftExpression) +
         methodAndArgsToCode(attributes, schema);
       if (
-        attributes.booleanOperator != null &&
+        attributes.booleanOperator &&
         attributes.booleanOperator != 'isTrue' &&
-        attributes.booleanOperator != 'isFalse' &&
-        attributes.rightExpression != null
+        attributes.booleanOperator != 'isFalse'
       ) {
-        newCode += ` ${attributes.booleanOperator} ${attributes.rightExpression}`;
+        let right = attributes.rightExpression;
+        if(typeof right === 'string'){
+          right = JSON.stringify(right);
+        }
+        newCode += ` ${attributes.booleanOperator} ${right}`;
       } else if (attributes.booleanOperator === 'isFalse') {
         newCode = '!' + newCode;
       }
     }
+
     return newCode;
   }
 }
