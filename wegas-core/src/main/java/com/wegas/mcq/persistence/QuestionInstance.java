@@ -21,8 +21,8 @@ import com.wegas.editor.view.Hidden;
 import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)

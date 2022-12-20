@@ -11,7 +11,7 @@ import com.wegas.core.async.PopulatorFacade.Candidate;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import java.util.concurrent.Callable;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  *

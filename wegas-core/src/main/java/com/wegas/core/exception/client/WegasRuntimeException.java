@@ -10,7 +10,7 @@ package com.wegas.core.exception.client;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import javax.ejb.ApplicationException;
+import jakarta.ejb.ApplicationException;
 
 
 /**

@@ -20,7 +20,7 @@ public class NHClassLoader extends ClassLoader {
     private static final Logger logger = LoggerFactory.getLogger(NHClassLoader.class);
 
     private static final String[] blacklist = {
-        "com.wegas.core.Helper", // "javax.naming.InitialContext",
+        "com.wegas.core.Helper", // "jakarta.naming.InitialContext",
     //"java.util.ResourceBundle",
     //"java.lang.System",
     //"java.lang.Thread",

@@ -16,10 +16,10 @@ import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.security.util.ScriptExecutionContext;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import javax.ejb.EJBException;
-import javax.inject.Inject;
-import javax.naming.NamingException;
-import javax.script.ScriptException;
+import jakarta.ejb.EJBException;
+import jakarta.inject.Inject;
+import jakarta.naming.NamingException;
+import jakarta.script.ScriptException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -110,7 +110,7 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
         long now, t;
         long start = now = System.currentTimeMillis();
         String script0 = "var x = 0;";
-        String script1 = "var ctx =  new javax.naming.InitialContext(); ctx.lookup('java:module/GameModelFacade').find(1);";
+        String script1 = "var ctx =  new jakarta.naming.InitialContext(); ctx.lookup('java:module/GameModelFacade').find(1);";
 
         String script2 = "GameModelFacade.find(1);";
 

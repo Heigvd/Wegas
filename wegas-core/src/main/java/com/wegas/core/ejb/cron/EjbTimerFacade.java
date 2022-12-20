@@ -23,12 +23,12 @@ import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.util.Sudoer;
 import java.util.Calendar;
 import java.util.List;
-import javax.ejb.Schedule;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.inject.Inject;
-import javax.persistence.TemporalType;
-import javax.persistence.TypedQuery;
+import jakarta.ejb.Schedule;
+import jakarta.ejb.Singleton;
+import jakarta.ejb.Startup;
+import jakarta.inject.Inject;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -9,7 +9,7 @@ package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  *

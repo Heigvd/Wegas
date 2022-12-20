@@ -19,7 +19,7 @@ import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.test.TestHelper;
 import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
 import java.io.IOException;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

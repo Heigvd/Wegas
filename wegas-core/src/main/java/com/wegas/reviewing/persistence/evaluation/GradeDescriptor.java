@@ -13,7 +13,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.editor.view.NumberView;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  * Define an grade-like evaluation by defined a scale (min and max)

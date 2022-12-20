@@ -19,7 +19,7 @@ import com.wegas.editor.view.Hidden;
 import com.wegas.editor.view.SelectView.FreeForAllSelector;
 import com.wegas.editor.view.StringView;
 import java.io.Serializable;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 /**
  *

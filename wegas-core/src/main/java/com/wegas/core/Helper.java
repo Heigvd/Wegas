@@ -38,12 +38,12 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
@@ -994,7 +994,7 @@ public class Helper {
      *
      * @param email
      *
-     * @throws javax.mail.internet.AddressException
+     * @throws jakarta.mail.internet.AddressException
      */
     public static void assertEmailPattern(String email) throws AddressException {
         InternetAddress emailAddr = new InternetAddress(email);

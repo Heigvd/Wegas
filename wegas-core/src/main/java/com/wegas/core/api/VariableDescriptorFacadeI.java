@@ -18,7 +18,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 
 /**
  *

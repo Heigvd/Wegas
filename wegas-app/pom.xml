@@ -198,7 +198,7 @@
 
         <!-- cdi
         <dependency>
-            <groupId>javax.enterprise</groupId>
+            <groupId>jakarta.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <scope>provided</scope>
         </dependency>-->
@@ -250,7 +250,7 @@
             <scope>test</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>javax.enterprise</groupId>
+                    <groupId>jakarta.enterprise</groupId>
                     <artifactId>cdi-api</artifactId>
                 </exclusion>
             </exclusions>

@@ -10,7 +10,7 @@ package com.wegas.core.ejb.nashorn;
 
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 /**
  * Used keep track of classes loaded by nashorn, including forbidden attempts

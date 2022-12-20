@@ -22,13 +22,13 @@ import com.wegas.editor.ValueGenerators.EmptyMap;
 import com.wegas.editor.view.Hidden;
 import java.util.*;
 import java.util.Map.Entry;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)

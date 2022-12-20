@@ -8,9 +8,9 @@
 package com.wegas.app.jsf.controllers.utils;
 
 import com.wegas.core.Helper;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.faces.context.FacesContext;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.faces.context.FacesContext;
 
 /**
  *

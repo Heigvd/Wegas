@@ -9,8 +9,8 @@ package com.wegas.messaging.ejb;
 
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.messaging.persistence.Message;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)

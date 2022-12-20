@@ -11,7 +11,7 @@ import com.wegas.core.persistence.game.*;
 import com.wegas.test.TestHelper;
 import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
 import java.util.function.Function;
-import javax.naming.NamingException;
+import jakarta.naming.NamingException;
 import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
 import org.junit.Assert;
 import org.junit.Test;

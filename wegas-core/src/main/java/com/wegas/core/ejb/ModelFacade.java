@@ -61,9 +61,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import javax.jcr.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -930,7 +930,7 @@ public class ModelFacade {
      * @param model     the model
      * @param scenarios scenario to attach to model
      *
-     * @throws javax.jcr.RepositoryException
+     * @throws jakarta.jcr.RepositoryException
      */
     public void integrateScenario(GameModel model, List<GameModel> scenarios) throws RepositoryException {
         if (model != null) {
@@ -1160,7 +1160,7 @@ public class ModelFacade {
      *
      * @return
      *
-     * @throws javax.jcr.RepositoryException
+     * @throws jakarta.jcr.RepositoryException
      *
      */
     public GameModel propagateModel(Long gameModelId) throws RepositoryException {

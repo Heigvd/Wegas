@@ -40,12 +40,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.logging.Level;
-import javax.inject.Inject;
-import javax.jcr.RepositoryException;
-import javax.mail.internet.AddressException;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
+import jakarta.inject.Inject;
+import jakarta.jcr.RepositoryException;
+import jakarta.mail.internet.AddressException;
+import jakarta.naming.InitialContext;
+import jakarta.naming.NamingException;
+import jakarta.sql.DataSource;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.config.Ini;
@@ -153,8 +153,8 @@ public abstract class AbstractArquillianTestMinimal {
         //logger.error("MyWegasArchive: {}", war.toString(true));
 
         /* Log Levels */
-        java.util.logging.Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.SEVERE);
-        java.util.logging.Logger.getLogger("javax.enterprise.system").setLevel(Level.SEVERE);
+        java.util.logging.Logger.getLogger("jakarta.enterprise.system.tools.deployment").setLevel(Level.SEVERE);
+        java.util.logging.Logger.getLogger("jakarta.enterprise.system").setLevel(Level.SEVERE);
         java.util.logging.Logger.getLogger("fish.payara.nucleus.healthcheck").setLevel(Level.SEVERE);
         org.glassfish.ejb.LogFacade.getLogger().setLevel(Level.SEVERE);
 

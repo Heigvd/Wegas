@@ -20,7 +20,7 @@ import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.List;
-import javax.naming.NamingException;
+import jakarta.naming.NamingException;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;

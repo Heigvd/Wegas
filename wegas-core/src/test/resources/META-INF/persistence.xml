@@ -9,7 +9,7 @@
             <property name="eclipselink.target-database" value="PostgreSQL"/>
             <property name="eclipselink.persistence-context.reference-mode" value="WEAK"/>
             <property name="eclipselink.persistence-context.flush-mode" value="COMMIT"/>
-            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
             <property name="eclipselink.jdbc.batch-writing" value="JDBC"/>
             <property name="eclipselink.jdbc.batch-writing.size" value="1000"/>
             <property name="eclipselink.weaving" value="true"/>

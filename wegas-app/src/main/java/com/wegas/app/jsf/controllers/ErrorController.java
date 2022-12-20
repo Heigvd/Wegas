@@ -11,9 +11,9 @@ package com.wegas.app.jsf.controllers;
 import com.wegas.core.ejb.RequestFacade;
 import java.io.IOException;
 import java.io.Serializable;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.inject.Named;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Named;
 import org.slf4j.LoggerFactory;
 
 /**

@@ -7,7 +7,7 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  * define an evaluation as free text

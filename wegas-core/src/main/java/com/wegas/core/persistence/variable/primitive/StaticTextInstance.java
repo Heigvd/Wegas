@@ -8,7 +8,7 @@
 package com.wegas.core.persistence.variable.primitive;
 
 import com.wegas.core.persistence.variable.VariableInstance;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  * @author maxence 

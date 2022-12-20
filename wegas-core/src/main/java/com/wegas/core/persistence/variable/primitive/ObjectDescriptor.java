@@ -23,9 +23,9 @@ import com.wegas.editor.view.HashListView;
 import com.wegas.editor.view.HtmlView;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.Lob;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Lob;
 
 /**
  *

@@ -24,7 +24,7 @@ import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.core.security.util.ScriptExecutionContext;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.IOException;
-import javax.naming.NamingException;
+import jakarta.naming.NamingException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;

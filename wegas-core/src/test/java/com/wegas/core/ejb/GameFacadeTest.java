@@ -14,7 +14,7 @@ import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.rest.GameController;
 import com.wegas.core.rest.TeamController;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Test;

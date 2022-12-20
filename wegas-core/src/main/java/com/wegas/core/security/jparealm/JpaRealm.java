@@ -16,7 +16,7 @@ import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Shadow;
 import com.wegas.core.security.util.JpaAuthenticationInfo;
-import javax.ejb.EJBException;
+import jakarta.ejb.EJBException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;

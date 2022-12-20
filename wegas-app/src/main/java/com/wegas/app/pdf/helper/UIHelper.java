@@ -15,9 +15,9 @@ import com.wegas.messaging.persistence.Attachment;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import javax.faces.component.html.HtmlOutputText;
-import javax.faces.context.FacesContext;
-import javax.faces.context.ResponseWriter;
+import jakarta.faces.component.html.HtmlOutputText;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.context.ResponseWriter;
 
 /**
  *

@@ -10,7 +10,7 @@ package com.wegas.core.security.guest;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.util.AuthenticationMethod;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  * Simple class that represents any User domain entity in any application.

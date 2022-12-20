@@ -85,7 +85,7 @@ RAND_S=`printf "%d.%03d" $((($RANDOM % 3 )+ 1)) $(($RANDOM % 1000 ))`;
 echo PRE SHUTDOWN SLEEP TIME: $RAND_S
 sleep $RAND_S
 
-#SSL_OPTS="-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStorePassword=changeit"
+#SSL_OPTS="-Djakarta.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djakarta.net.ssl.trustStorePassword=changeit"
 SSL_OPTS=""
 
 #trap 'echo "TERM";sleep $RAND_S;kill -TERM $PID;' TERM INT
@@ -108,7 +108,7 @@ JDK_EXTRA_OPTS="--add-modules java.se
     --add-opens=java.base/java.util=ALL-UNNAMED
     --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
     --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED
-    --add-opens=java.naming/javax.naming.spi=ALL-UNNAMED
+    --add-opens=java.naming/jakarta.naming.spi=ALL-UNNAMED
     --add-opens=java.logging/java.util.logging=ALL-UNNAMED
     --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
     --add-opens=java.management/sun.management=ALL-UNNAMED
