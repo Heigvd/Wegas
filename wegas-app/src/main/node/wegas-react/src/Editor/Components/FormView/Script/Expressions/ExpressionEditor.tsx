@@ -211,7 +211,7 @@ export function ExpressionEditor({
         });
       } else {
         const schema = generateSchema(parsedCode, variablesItems, mode);
-        
+
         if (
           schema.properties.methodId != null &&
           parsedCode?.methodId != null
@@ -296,6 +296,7 @@ export function ExpressionEditor({
 
   const computeState = React.useCallback(
     (attributes: NonNullable<Attributes>) => {
+
       const schema = generateSchema(attributes, variablesItems, mode);
       const schemaProperties = schema.properties;
       //Remove additional properties that doesn't fit schema
@@ -314,7 +315,7 @@ export function ExpressionEditor({
                 isArray(arg.view.items) &&
                 arg.view.items.length > 0
                   ? arg.view.items[0]
-                  : undefined;
+                  : (arg.const ? arg.const : undefined);
 
               // Trying to translate parameter from previous type to new type (undefined if fails)
               return typeCleaner(
