@@ -62,7 +62,7 @@
     </context-param>
     <context-param>
         <param-name>liquibase.datasource</param-name>
-        <param-value>jdbc/wegas_dev</param-value>
+        <param-value>java:global/WegasDS</param-value>
     </context-param>
 
     <!--Liquibase sevlet listener to check database on start up and apply new changes if needed-->

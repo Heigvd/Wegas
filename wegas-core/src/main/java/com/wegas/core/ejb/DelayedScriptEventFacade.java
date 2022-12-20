@@ -11,8 +11,6 @@ import com.wegas.core.api.DelayedScriptEventFacadeI;
 import com.wegas.core.event.internal.DelayedEventPayload;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.security.util.ActAsPlayer;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -39,37 +37,28 @@ public class DelayedScriptEventFacade implements DelayedScriptEventFacadeI {
     private TimerService timerService;
 
     @Inject
-    private ScriptEventFacade scriptEventFacade;
-
-    @Inject
-    private PlayerFacade playerFacade;
-
-    @Inject
     private RequestFacade requestFacade;
 
     @Inject
     private WebsocketFacade websocketFacade;
+
+    @Inject
+    private DelayedScriptEventFacadeTx tx;
 
     @Timeout
     public void timeout(Timer timer) {
         Serializable info = timer.getInfo();
         if (info instanceof DelayedEventPayload) {
             DelayedEventPayload payload = (DelayedEventPayload) info;
+            logger.trace("Fire Delayed Event: {}", payload);
             RequestManager rm = requestFacade.getRequestManager();
             rm.su(payload.getAccountId());
             try {
-
                 rm.setEnv(RequestManager.RequestEnvironment.INTERNAL);
                 rm.setMethod("DELAYED EVENT");
                 rm.setPath(payload.getEventName());
-                Player p = playerFacade.find(payload.getPlayerId());
 
-                try ( ActAsPlayer a = rm.actAsPlayer(p)) {
-                    // fire Script (ie base mechanism and static server script eval)
-                    scriptEventFacade.fire(p, payload.getEventName());
-                    // force FSM evaluation and make sur EntityManager has flush
-                    requestFacade.commit(p);
-                }
+                tx.fireEventTX(payload);
 
                 rm.markManagermentStartTime();
                 /*
@@ -105,6 +94,7 @@ public class DelayedScriptEventFacade implements DelayedScriptEventFacadeI {
             // Using second will prevent too short timer (not very usefull and may stress up the server...)
             long duration = (minutes * 60 + seconds) * 1000;
             try {
+                logger.warn("set timeout !");
                 timerService.createTimer(duration, new DelayedEventPayload(requestFacade.getPlayer().getId(),
                     requestManager.getCurrentUser().getMainAccount().getId(), eventName));
             } catch (IllegalArgumentException ex) {

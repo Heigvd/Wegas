@@ -136,9 +136,7 @@
 
         <shiro.version>1.10.0</shiro.version>
         <payara.version>5.2021.4</payara.version>
-        <payara.micro.version>5.2021.4</payara.micro.version>
         <!--<payara.micro.version>5.2020.5-albasim-p1</payara.micro.version>-->
-        <payara-api.version>5.2021.4</payara-api.version>
         <junit.version>4.13.1</junit.version>
         <arquillian.version>1.6.0.Final</arquillian.version>
         <exec.plugin.version>1.2</exec.plugin.version>
@@ -198,6 +196,7 @@
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
                 <type>pom</type>
+                <!-- version must match the payara-bom jackson.version property -->
                 <version>2.10.2</version>
                 <scope>import</scope>
             </dependency>
@@ -304,6 +303,7 @@
                 <artifactId>oak-segment-tar</artifactId>
                 <version>${oak.version}</version>
             </dependency>
+
             <!-- https://issues.apache.org/jira/browse/OAK-6542-->
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
@@ -326,6 +326,13 @@
                 <groupId>javax.jcr</groupId>
                 <artifactId>jcr</artifactId>
                 <version>${jcr.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2-mvstore</artifactId>
+                <!-- version must match the payara-bom h2db.version property -->
+                <version>1.4.196</version>
             </dependency>
 
             <!-- PDF Generation -->
@@ -1034,11 +1041,15 @@
             <url>https://repo.maven.apache.org/maven2</url>
         </repository>
 
+        <!--<repository>
+            <id>payara</id>
+            <url>https://nexus.payara.fish/repository/payara-artifacts</url>
+        </repository>-->
+
         <repository>
             <id>payara-patched-externals</id>
             <name>Payara Patched Externals</name>
             <url>https://raw.github.com/payara/Payara_PatchedProjects/master</url>
-            <!--<url>file:///opt/PayaraDev/Payara_PatchedProjects</url>-->
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -1047,18 +1058,17 @@
             </snapshots>
         </repository>
 
-        <repository>
+        <!--<repository>
             <id>albasim-patched-externals</id>
             <name>AlbaSim Patched Externals</name>
             <url>https://raw.github.com/Heigvd/Wegas_PatchedProjects/master/repository</url>
-            <!--<url>file:///home/maxence/AlbaSim/Wegas_PatchedProjects/repository</url>-->
             <releases>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-        </repository>
+        </repository>-->
     </repositories>
 
     <!--<pluginRepositories>
