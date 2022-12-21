@@ -125,7 +125,7 @@ export function CustomGauge({
     fillColor: s.backgroundColor,
     angleTo: valueToAngle(s.stopValue, min, maxValue, minAngle, maxAngle),
   }));
-
+  
   return (
     <div
       className={

@@ -305,7 +305,7 @@ function SvgBlurredPieceOfCake({
     maxAngle,
     explodeRatio,
   );
-  let middleAngle = (originalSection.angleTo + originalSection.minAngle) / 2;
+  let middleAngle = (originalSection?.angleTo + originalSection?.minAngle) / 2;
   const secondPart = maxAngle > middleAngle;
   middleAngle = secondPart ? middleAngle : maxAngle;
   return (
@@ -492,7 +492,7 @@ const filterSections = (
       // Keep section if last section as lower angle than needle
       s.minAngle <= needleCfg.needle,
   );
-
+  
   // Finally, set the last section's angle to the needle's angle if followNeedle is sat
   const lastSection = filteredSections[filteredSections.length - 1];
   if (needleCfg && needleCfg.followNeedle && lastSection) {
@@ -943,6 +943,7 @@ export function PieChart({
   }
 
   const circular = computedMaxAngle - computedMinAngle === 360;
+
   return (
     <div className={className} style={style}>
       <svg viewBox={`0 0 ${chartSizes.width} ${chartSizes.height}`}>

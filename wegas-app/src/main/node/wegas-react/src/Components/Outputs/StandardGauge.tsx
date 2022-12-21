@@ -2,7 +2,7 @@ import * as React from 'react';
 import { CustomGauge } from './CustomGauge';
 import { degreeToRadian, SVGNeedleStyle } from './PieChart';
 
-const sectionsColor = [
+const defaultSectionsColor = [
   { backgroundColor: 'red', stopValue: 20 },
   { backgroundColor: 'yellow', stopValue: 80 },
   { backgroundColor: 'green', stopValue: 100 },
@@ -60,6 +60,10 @@ export interface StandardGaugeProps extends ClassStyleId {
    */
   followNeedle?: boolean;
   /**
+   * colors - if given, will change the colors of the gauge
+   */
+  colors?: [{ backgroundColor: string; stopValue: number }];
+  /**
    * disabled - if true, the element will be disabled (styling mainly)
    */
   disabled?: boolean;
@@ -71,15 +75,21 @@ export function StandardGauge({
   max,
   label,
   followNeedle,
+  colors,
   className,
   style,
   id,
   disabled,
 }: StandardGaugeProps) {
   const deltaValue = max - min;
+
+  // Change to defaultColors if no colors are given
+  const sectionsColor = colors?.length ? colors : defaultSectionsColor;
+  const maxValue = Math.max(...sectionsColor.map(c => c.stopValue));
+
   const sections = sectionsColor.map(s => ({
     ...s,
-    stopValue: (s.stopValue / 100) * deltaValue + min,
+    stopValue: (s.stopValue / maxValue) * deltaValue + min,
   }));
 
   return (
