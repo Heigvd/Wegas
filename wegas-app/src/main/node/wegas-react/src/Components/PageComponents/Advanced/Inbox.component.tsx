@@ -69,6 +69,9 @@ registerComponent(
       style: {
         overflow: 'auto',
       },
+      layoutStyle: {
+        overflow: 'hidden',
+      }
     }),
   }),
 );

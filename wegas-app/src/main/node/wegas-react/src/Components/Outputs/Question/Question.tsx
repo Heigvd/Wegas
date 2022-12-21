@@ -28,7 +28,7 @@ export interface QuestionInfo {
 }
 
 export const questionStyle = css({
-  width: 'fit-content',
+  width: '100%',
 });
 
 /**

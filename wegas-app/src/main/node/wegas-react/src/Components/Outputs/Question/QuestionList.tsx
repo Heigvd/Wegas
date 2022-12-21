@@ -90,7 +90,7 @@ export const editButtonStyle = css({
   },
 });
 
-export const editButonBorder = css({
+export const editButtonBorder = css({
   border: 'solid 2px black',
   borderRadius: '50%',
 });
@@ -138,7 +138,7 @@ function AddQuestionButton({ questionList }: AddQuestionsMenuProps) {
   return (
     <div className={cx(flex, justifyCenter, itemCenter)}>
       <Plus
-        className={cx(editButtonStyle, editButonBorder)}
+        className={cx(editButtonStyle, editButtonBorder)}
         onClick={() => {
           editingStore.dispatch(
             Actions.VariableDescriptorActions.createDescriptor(

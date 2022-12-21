@@ -82,6 +82,9 @@ export const shrinkHeight = css({
 });
 
 // Flex
+export const initial = css({
+  flex: '0 1 auto',
+})
 export const grow = css({
   flex: '1 1 auto',
 });
