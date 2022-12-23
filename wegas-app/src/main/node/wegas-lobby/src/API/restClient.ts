@@ -448,6 +448,10 @@ export const WegasLobbyRestClient = function (
         const path = `${baseUrl}/GameModel/I18n/Usage`;
         return sendJsonRequest<DeeplUsage>('GET', path, undefined, errorHandler);
       },
+      clearServerScriptCache: () => {
+        const path = `${baseUrl}/Utils/ServerScriptCache`;
+        return sendJsonRequest<void>('DELETE', path, undefined, errorHandler);
+      },
       clearEmCache: () => {
         const path = `${baseUrl}/Utils/EmCache`;
         return sendJsonRequest<void>('DELETE', path, undefined, errorHandler);

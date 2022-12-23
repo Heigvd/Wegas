@@ -103,6 +103,7 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@reduxjs/toolkit": "^1.5.1",
     "emotion": "^11.0.0",
+    "inter-ui": "^3.19.3",
     "lodash": "^4.17.21",
     "pako": "^1.0.10",
     "pusher-js": "^7.0.3",

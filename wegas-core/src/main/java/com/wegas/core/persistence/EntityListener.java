@@ -12,7 +12,6 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.jcr.jta.JCRClient;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
-import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.ModelScoped;
 import javax.inject.Inject;
@@ -75,7 +74,7 @@ public class EntityListener {
             }
         }
         if (o instanceof AbstractEntity) {
-            logger.debug("PropagateNew: {} :: {}", o.getClass().getSimpleName(), ((AbstractEntity) o).getId());
+            logger.debug("PostPersist: {} :: {}", o.getClass().getSimpleName(), ((AbstractEntity) o).getId());
             requestManager.addUpdatedEntity((AbstractEntity) o);
         }
     }
@@ -93,7 +92,7 @@ public class EntityListener {
         }
 
         if (o instanceof AbstractEntity) {
-            logger.debug("PropagateUpdate: {} :: {}", o.getClass().getSimpleName(), ((AbstractEntity) o).getId());
+            logger.debug("PostUpdate: {} :: {}", o.getClass().getSimpleName(), ((AbstractEntity) o).getId());
             requestManager.addUpdatedEntity((AbstractEntity) o);
         }
     }

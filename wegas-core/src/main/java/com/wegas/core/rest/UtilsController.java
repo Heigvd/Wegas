@@ -131,13 +131,24 @@ public class UtilsController {
     }
 
     /**
+     * Request all cluster instances to clear serverScript Cache
+     */
+    @DELETE
+    @Path("ServerScriptCache")
+    @RequiresRoles("Administrator")
+    public void wipeServerScriptCache() {
+        jpaCacheHelper.requestClearServerScriptCache();
+    }
+
+
+    /**
      * Clear THIS instance only JPA l2 cache
      */
     @DELETE
     @Path("LocalEmCache")
     @RequiresRoles("Administrator")
     public void directWipeEmCache() {
-        jpaCacheHelper.clearCacheLocal();
+        jpaCacheHelper.clearCacheLocal("all");
     }
 
     @GET
