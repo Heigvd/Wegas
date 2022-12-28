@@ -1,6 +1,4 @@
-import generate from '@babel/generator';
 import { parse } from '@babel/parser';
-import { program } from '@babel/types';
 import { css, cx } from '@emotion/css';
 import u from 'immer';
 import { isArray } from 'lodash-es';
@@ -62,6 +60,7 @@ import {
   useEditingStore,
 } from '../../../data/Stores/editingStore';
 import { getDispatch, useStore } from '../../../data/Stores/store';
+import { wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { languagesTranslations } from '../../../i18n/languages/languages';
@@ -378,7 +377,7 @@ function TranslatableContentView({
         }
       };
     },
-    [getValue, script, trContent.id, translation, updateTranslations],
+    [getValue, script, trContent?.id, translation, updateTranslations],
   );
 
   const upToDate =
@@ -442,9 +441,7 @@ function TranslatableContentView({
   );
 }
 
-type ExtractedAttributes = {
-  [key: string]: ITranslatableContent;
-} & Attributes;
+type ExtractedAttributes = Partial<Record<string, ITranslatableContent>> & Attributes;
 
 type TranslatableEntry = [
   string,
@@ -487,15 +484,20 @@ function ExpressionView({
         layoutStyle,
       )}
     >
-      {expression.script}
       <div>
         {expression.translatableEntries.map(([k, v], i) => {
-          const translatable = expression.attributes[k];
+          let translatable : unknown = null;
+          if(expression.attributes.arguments){
+            translatable = expression.attributes.arguments[+k];
+          }
           const viewLabel =
             v?.view?.label || expression.attributes.methodId || k;
           const view = v?.view?.type || 'i18nstring';
           const index = i + expression.offsetIndex;
-
+          if(!entityIs(translatable, 'TranslatableContent')){
+            wwarn('Translatable content is undefined. Likely data created with YUI');
+            return<></>;
+          }
           return (
             <TranslatableContentView
               key={String(parentDescriptor.id!) + fieldName + index + k}
@@ -546,20 +548,30 @@ async function AsyncScriptView({
   let offsetIndex = 0;
 
   for (const expression of parsedExpressions) {
-    const expressionCode = generate(program([expression])).code;
-    const attributes = testCode(expressionCode, mode) as
+    
+    // incompatible with babel 7.20.x
+    //const expressionCode = generate(program([expression])as any).code;
+    //const attributes = testCode(expressionCode, mode) as | ExtractedAttributes | string;
+
+    let attributes = null;
+    if(expression.start != null && expression.end != null){
+      const expressionCode = value.content.substring(expression.start, expression.end);
+      attributes = testCode(expressionCode, mode) as
       | ExtractedAttributes
       | string;
+    }
 
-    if (typeof attributes !== 'string') {
+    if (attributes && typeof attributes !== 'string') {
+
       const schema = await generateSchema(attributes, [], mode);
+
       const script = generateCode(attributes, schema);
 
-      const translatableEntries = Object.entries(schema.properties).filter(
+      const translatableEntries = Object.entries(schema.properties?.arguments?.properties || {}).filter(
         ([k, v]) =>
           !isNaN(Number(k)) &&
           v &&
-          (v.view?.type === 'i18nstring' || v.view?.type === 'i18nhtml'),
+          (v.view?.type === 'i18nstring' || v.view?.type === 'i18nhtml' || v.view?.type === 'i18nfile'),
       ) as TranslatableEntry[];
 
       if (translatableEntries.length > 0) {
@@ -630,6 +642,10 @@ function TranslationsView({
   return (
     <>
       {Object.entries(translations).map(([k, v]) => {
+        if(!v.value){
+          wwarn('Translatable content is undefined. Likely data created with YUI');
+          return <></>;
+        }
         return (
           <React.Fragment key={k}>
             {selectedLanguages.map((language, index) =>
