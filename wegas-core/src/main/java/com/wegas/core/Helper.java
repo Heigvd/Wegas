@@ -1029,7 +1029,7 @@ public class Helper {
 
         @Override
         protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-            return this.size() >= this.cacheSize;
+            return this.size() > this.cacheSize;
         }
     }
 

@@ -20,12 +20,12 @@ module.exports = {
         rules: [
             {
                 test: /\.tsx?$/,
-                loaders: ['ts-loader'],
+                loader: 'ts-loader',
                 include: [path.join(__dirname, 'src')],
             },
             {
                 test: /\.jsx?$/,
-                loaders: ['babel-loader'],
+                loader: 'babel-loader',
                 include: [path.join(__dirname, 'src')],
             },
             {

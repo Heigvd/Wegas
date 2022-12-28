@@ -51,16 +51,24 @@ public class JPACacheHelper {
     private ScriptFacade scriptFacade;
 
     public void requestClearCache() {
-        messages.fire("clear");
+        messages.fire("all");
+    }
+
+    public void requestClearServerScriptCache() {
+        messages.fire("serverScript");
     }
 
     public void clearCache(@Observes @Inbound(eventName = CLEAR_CACHE_EVENT_NAME) String event) {
-        this.clearCacheLocal();
+        this.clearCacheLocal(event);
     }
 
-    public void clearCacheLocal() {
-        this.getCache().evictAll();
-        scriptFacade.clearCache();
+    public void clearCacheLocal(String event) {
+        if ("all".equals(event)){
+            this.getCache().evictAll();
+            scriptFacade.clearCache();
+        } else if ("serverScript".equals(event)){
+            scriptFacade.clearCache();
+        }
     }
 
     private Cache getCache() {

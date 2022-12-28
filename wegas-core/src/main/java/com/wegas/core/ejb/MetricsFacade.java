@@ -26,6 +26,9 @@ public class MetricsFacade {
     @Inject
     private WebsocketFacade websocketFacade;
 
+    @Inject
+    private ScriptFacade scriptFacade;
+
     @Gauge(name = "online_users", unit = MetricUnits.NONE, absolute = true)
     public int getOnlineUserCounter() {
         return websocketFacade.getOnlineUserCount();
@@ -39,5 +42,10 @@ public class MetricsFacade {
     @Gauge(name = "cluster_size", unit = MetricUnits.NONE, absolute = true)
     public int getHzSize() {
         return applicationLifecycle.getHzSize();
+    }
+
+    @Gauge(name = "serverscript_cache_size", unit = MetricUnits.NONE, absolute = true)
+    public int getServerScriptCacheSIze() {
+        return scriptFacade.getCacheSize();
     }
 }

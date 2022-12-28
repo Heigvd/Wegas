@@ -44,8 +44,12 @@ public class WegasRuntime {
 
     private static final Map<String, String> env;
 
-    public static final String WEGAS_DB_NAME_KEY = "wegas.db.name";
     public static final String WEGAS_DB_HOST_KEY = "wegas.db.host";
+    public static final String WEGAS_DB_PORT_KEY = "wegas.db.port";
+    public static final String WEGAS_DB_NAME_KEY = "wegas.db.name";
+    public static final String WEGAS_DB_USER_KEY = "wegas.db.user";
+    public static final String WEGAS_DB_PASSWORD_KEY = "wegas.db.password";
+
     public static final String WEGAS_HTTP_THREADS_KEY = "wegas.http.threads";
     public static final String WEGAS_HTTP_POPULATORS_KEY = "wegas.nb_populators";
     public static final String CACHE_COORDINATION_PROTOCOL = "eclipselink.cache.coordination.protocol";
@@ -56,15 +60,17 @@ public class WegasRuntime {
     private PayaraMicroRuntime payara;
     private String appName;
     private String baseUrl;
-    private File domainConfig;
 
     private static boolean init = false;
 
     static {
         env = new HashMap<>();
 
-        env.put(WEGAS_DB_NAME_KEY, "wegas_dev");
         env.put(WEGAS_DB_HOST_KEY, "localhost");
+        env.put(WEGAS_DB_PORT_KEY, "5432");
+        env.put(WEGAS_DB_NAME_KEY, "wegas_dev");
+        env.put(WEGAS_DB_USER_KEY, "user");
+        env.put(WEGAS_DB_PASSWORD_KEY, "1234");
         env.put(WEGAS_HTTP_THREADS_KEY, "5");
         env.put(WEGAS_HTTP_POPULATORS_KEY, "3");
         env.put(CACHE_COORDINATION_PROTOCOL, "fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager");
@@ -100,14 +106,6 @@ public class WegasRuntime {
         this.appName = appName;
     }
 
-    public File getDomainConfig() {
-        return domainConfig;
-    }
-
-    public void setDomainConfig(File domainConfig) {
-        this.domainConfig = domainConfig;
-    }
-
     public String getBaseUrl() {
         return baseUrl;
     }
@@ -122,9 +120,13 @@ public class WegasRuntime {
     }
 
     public static void resetDB(String dbName) {
-        final String dbConn = "jdbc:postgresql://localhost:5432/" + dbName;
-        final String user = "user";
-        final String password = "1234";
+        final String host = System.getProperty(WEGAS_DB_HOST_KEY);
+        final String port = System.getProperty(WEGAS_DB_PORT_KEY);
+
+        final String user = System.getProperty(WEGAS_DB_USER_KEY);
+        final String password = System.getProperty(WEGAS_DB_PASSWORD_KEY);
+
+        final String dbConn = "jdbc:postgresql://" + host + ":" + port + "/" + dbName;
         try (Connection connection = DriverManager.getConnection(dbConn, user, password);
             Statement st = connection.createStatement()) {
             st.execute("DROP SCHEMA public CASCADE;");
@@ -170,17 +172,17 @@ public class WegasRuntime {
 
         String root = "../wegas-app/";
 
-        File domainConfig = new File("./src/main/resources/domain.xml");
-        File tmpDomainConfig = File.createTempFile("domain", ".xml");
-
-        Files.copy(domainConfig.toPath(), tmpDomainConfig.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
         String warPath = root + "target/Wegas";
 
         File theWar = new File(warPath);
 
         PayaraMicroRuntime bootstrap = PayaraMicro.getInstance()
-            .setAlternateDomainXML(tmpDomainConfig)
+            .setMinHttpThreads(5)
+            .setMaxHttpThreads(5)
+//            .setPreBootHandler((cmdRunner) -> {
+//                //TODO : http2 & managed exec service
+//                cmdRunner.run("set", "...")
+//            })
             .addDeploymentFile(theWar)
             .setHttpAutoBind(true)
             .setSslAutoBind(true)
@@ -196,7 +198,6 @@ public class WegasRuntime {
 
         wr.setAppName(appName);
         wr.setBaseUrl("http://localhost:" + httpPort + "/" + appName);
-        wr.setDomainConfig(tmpDomainConfig);
         wr.setPayara(bootstrap);
         return wr;
     }

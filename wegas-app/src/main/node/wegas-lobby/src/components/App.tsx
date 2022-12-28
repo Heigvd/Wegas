@@ -21,6 +21,8 @@ import MainApp from './MainApp';
 import AutoPlay from './token/AutoPlay';
 import Token from './token/Token';
 
+import 'inter-ui/inter.css';
+
 /**
  * To read parameters from hash
  */

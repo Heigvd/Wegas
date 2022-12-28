@@ -98,13 +98,16 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         ChoiceDescriptor choice = createChoice(question, "choice", null, "result",r);
 
-        questionDescriptorFacade.selectAndValidateChoice(choice.getId(), player.getId());            // Do reply
+        // Do reply
+        questionDescriptorFacade.selectAndValidateChoice(choice.getId(), player.getId());
         assertEquals(10.0, ((NumberInstance) variableInstanceFacade.find(myNumber.getId(), player.getId())).getValue(), 0.1);
 
-        variableDescriptorFacade.duplicate(question.getId());                                        // Test duplication on question
+        // Test duplication on question
+        variableDescriptorFacade.duplicate(question.getId());
         variableDescriptorFacade.duplicate(choice.getId());
 
-        variableDescriptorFacade.remove(question.getId());                                           // Clean up
+        // Clean up
+        variableDescriptorFacade.remove(question.getId());
     }
 
     private void assertQuestion(Long questionId, Player p, boolean hasBeenReplied) {

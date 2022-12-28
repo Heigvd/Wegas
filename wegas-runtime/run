@@ -1,5 +1,22 @@
 #!/bin/bash
 
+
+echo
+echo " o              o                                                   "
+echo "<|>            <|>                                                  "
+echo "/ \            / \                                                  "
+echo "\o/            \o/    o__  __o     o__ __o/     o__ __o/      __o__ "
+echo " |              |    /v      |>   /v     |     /v     |      />  \  "
+echo "< >            < >  />      //   />     / \   />     / \     \o     "
+echo " \o    o/\o    o/   \o    o/     \      \o/   \      \o/      v\    "
+echo "  v\  /v  v\  /v     v\  /v __o   o      |     o      |        <\   "
+echo "   <\/>    <\/>       <\/> __/>   <\__  < >    <\__  / \  _\o__</   "
+echo "                                      ^   |                          "
+echo "                                  o__     o                          "
+echo "                                  <\__ __/>                          "
+echo
+
+
 DB_HOST=localhost
 DB_NAME=wegas_dev
 PAYARA_MICRO=target/payara-micro.current.jar
@@ -8,9 +25,6 @@ NB_THREADS=9
 NB_POPULATORS=1
 
 HZ_CLUSTER_NAME="wegasDev_$(hostname)"
-
-BASE_DOMAIN_XML=./src/main/resources/domain.xml
-DOMAIN_XML=`mktemp target/domain.xml_XXX`
 
 HEAP=2G
 
@@ -72,7 +86,6 @@ while getopts "h?dm:t:n:p:w:j:s:g:" opt; do
     esac
 done
 
-
 if [ ${DEBUG} == "true" ]; then
     DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=${DEBUG_PORT},server=y,suspend=n"
     echo DEBUG_OPTS ${DEBUG_OPTS}
@@ -82,8 +95,6 @@ fi
 echo DB_HOST ${DB_HOST}
 echo HEAP ${HEAP}
 echo WAR ${THE_WAR}
-
-cp ${BASE_DOMAIN_XML} ${DOMAIN_XML}
 
 RAND_S=`printf "%d.%03d" $((($RANDOM % 3 )+ 1)) $(($RANDOM % 1000 ))`;
 
@@ -104,19 +115,19 @@ if [ "${JAVA_HOME}xxx" = "xxx" ]; then JAVA_EXECUTABLE=java; else JAVA_EXECUTABL
 
 echo JAVA 9+ detected: enable extra options
 JDK_EXTRA_OPTS="--add-modules java.se
-    --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED 
-    --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED 
-    --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED 
+    --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED
+    --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED
+    --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED
     --add-opens=java.base/java.lang=ALL-UNNAMED
     --add-opens=java.base/java.net=ALL-UNNAMED
     --add-opens=java.base/java.nio=ALL-UNNAMED
     --add-opens=java.base/java.util=ALL-UNNAMED
-    --add-opens=java.base/sun.nio.ch=ALL-UNNAMED 
+    --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
     --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED
     --add-opens=java.naming/javax.naming.spi=ALL-UNNAMED
     --add-opens=java.logging/java.util.logging=ALL-UNNAMED
     --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
-    --add-opens=java.management/sun.management=ALL-UNNAMED 
+    --add-opens=java.management/sun.management=ALL-UNNAMED
     --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED"
 
 if [ "${GC}" = "ZGC" ]; then
@@ -149,12 +160,17 @@ ${JAVA_EXECUTABLE} ${DEBUG_OPTS} ${JDK_EXTRA_OPTS} ${SSL_OPTS} ${GC_OPT} ${HTTP2
     -Xms${HEAP} -Xmx${HEAP} \
     -Djava.security.egd=file:/dev/urandom \
     -Dhazelcast.shutdownhook.enabled=true \
-    -Dwegas.db.host=${DB_HOST} -Dwegas.db.name=${DB_NAME} \
+    -Dwegas.db.host=${DB_HOST} -Dwegas.db.port=5432 \
+    -Dwegas.db.name=${DB_NAME} \
+    -Dwegas.db.user=user -Dwegas.db.password=1234 \
     -Dhazelcast.startport=6900 \
     -Dwegas.nb_populators=${NB_POPULATORS} -Dwegas.http.threads=${NB_THREADS} \
     -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager \
     -Declipselink.cache.coordination.channel=${HZ_CLUSTER_NAME} \
-    -jar ${PAYARA_MICRO} --deploy ${THE_WAR} --domainconfig ${DOMAIN_XML} --addlibs target/extra-libs --clusterName ${HZ_CLUSTER_NAME} \
+    -jar ${PAYARA_MICRO} --deploy ${THE_WAR} \
+    --prebootcommandfile as_prebootcmd \
+    --clusterName ${HZ_CLUSTER_NAME} \
+    --minhttpthreads ${NB_THREADS} --maxhttpthreads ${NB_THREADS} \
     --interfaces 127.0.0.1 \
     --systemproperties ${WEGAS_PROPERTIES} --autobindhttp --autobindssl &
 PID=$!
@@ -164,6 +180,4 @@ trap - TERM INT
 wait $PID
 EXIT_STATUS=$?
 
-rm ${DOMAIN_XML}
- 
 echo "Terminated"

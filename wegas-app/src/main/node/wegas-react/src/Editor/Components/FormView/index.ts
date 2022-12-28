@@ -10,7 +10,7 @@ import { CustomScript } from './CustomScript';
 import DictionaryView from './Dictionary';
 import EntityArrayFieldSelect from './EntityArrayFieldSelect';
 import EventSelect from './EventSelect';
-import FileSelector from './FileSelector';
+import FileSelector, { FilenameSelector } from './FileSelector';
 import FlatVariableSelect from './FlatVariableSelect';
 import HashListView from './HashList';
 import hidden from './Hidden';
@@ -68,6 +68,7 @@ export const DEFINED_VIEWS = {
   html: LabeledHTMLEditor,
   i18nhtml: translatable(LabeledHTMLEditor),
   i18nstring: translatable(StringInput),
+  i18nfile: translatable(FilenameSelector),
   iconselect: IconSelect,
   listchildren: ListChildrenSelectView,
   listchildrennull: ListChildrenNullSelectView,

@@ -260,6 +260,7 @@ export const en = {
   createEmptyReactModel: 'Create an empty React Model',
   requestClientReload: 'Ask users to reload the page (e.g after a big update)',
   clearCache: 'Clear JPA cache',
+  clearServerScriptCache: "Clear ServerScript cache",
   deleteAllGameModels: 'Delete all scenarios and models scheduled for final deletion',
 
   userIsMemberOf: (user: string) => `"${user}" is member of these groups`,
