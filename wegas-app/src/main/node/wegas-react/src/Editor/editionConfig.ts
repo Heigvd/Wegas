@@ -195,8 +195,8 @@ function getConfigFromPath(path: string): Schema {
 
 export default function getEditionConfig<T extends IMergeable>(
   entity: T,
-): Schema {
-  return getConfigFromPath(entity['@class']);
+): Schema<AvailableViews> {
+  return getConfigFromPath(entity['@class']) as Schema<AvailableViews>;
 }
 
 export interface EActions {

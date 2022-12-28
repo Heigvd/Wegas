@@ -11,7 +11,6 @@ import {
   LanguagesAPI,
 } from '../../../API/languages.api';
 import { DropMenu } from '../../../Components/DropMenu';
-import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import {
@@ -524,7 +523,7 @@ interface ScriptViewProps extends Omit<TranslationViewItemProps, 'view'> {
   value: IScript;
 }
 
-async function AsyncScriptView({
+function ScriptView({
   value,
   fieldName,
   label,
@@ -532,9 +531,9 @@ async function AsyncScriptView({
   depth,
   selectedLanguages,
   showOptions,
-}: ScriptViewProps) {
+}: ScriptViewProps) : JSX.Element {
   const parentDescriptor = VariableDescriptor.select(value.parentId!)!;
-  const parentSchema = (await getEditionConfig(parentDescriptor)) as {
+  const parentSchema = (getEditionConfig(parentDescriptor)) as {
     properties: { [key: string]: { view: { mode: ScriptMode } } };
   };
   const mode = parentSchema.properties[fieldName].view.mode;
@@ -552,7 +551,7 @@ async function AsyncScriptView({
       | string;
 
     if (typeof attributes !== 'string') {
-      const schema = await generateSchema(attributes, [], mode);
+      const schema = generateSchema(attributes, [], mode);
       const script = generateCode(attributes, schema);
 
       const translatableEntries = Object.entries(schema.properties).filter(
@@ -606,10 +605,8 @@ async function AsyncScriptView({
         />
       ))}
     </div>
-  ) : null;
+  ) : <></>;
 }
-
-const ScriptView = asyncSFC<ScriptViewProps>(AsyncScriptView);
 
 interface SharedTranslationViewProps {
   selectedLanguages: IGameModelLanguage[];
@@ -723,13 +720,13 @@ function visitProperties<T extends IMergeable>(
     .filter(visitFilter);
 }
 
-async function getTranslatableProperties<T extends IMergeable>(
+function getTranslatableProperties<T extends IMergeable>(
   entity: T | undefined,
-): Promise<Translations> {
+): Translations {
   if (entity == null) {
     return {};
   } else {
-    const schema = (await getEditionConfig(entity)) as TranslationSchema;
+    const schema = getEditionConfig(entity) as TranslationSchema;
     return visitProperties(entity, schema).reduce((o, entry) => {
       const { key, value, type, label } = entry;
       return { ...o, [key]: { type, value, label } };
@@ -754,7 +751,7 @@ function TranslationView({
   );
 
   React.useEffect(() => {
-    getTranslatableProperties(variable).then(setTranslations);
+    setTranslations (getTranslatableProperties(variable));
   }, [variable]);
 
   return variable ? (

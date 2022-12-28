@@ -27,7 +27,6 @@ import {
 import { wwarn } from '../../Helper/wegaslog';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
-import './FormView';
 import { MessageString } from './MessageString';
 import { Icon, IconComp } from './Views/FontAwesome';
 
@@ -271,3 +270,5 @@ export function Form<T>({
     </Toolbar>
   );
 }
+
+export default Form;
