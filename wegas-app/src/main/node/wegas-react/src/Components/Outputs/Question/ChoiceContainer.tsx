@@ -15,9 +15,12 @@ import { createTranslatableContent } from '../../../data/i18n';
 import { IWhChoiceDescriptor } from '../../../data/scriptable/impl/QuestionDescriptor';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { componentsTranslations } from '../../../i18n/components/components';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { useTranslate } from '../../Hooks/useTranslate';
 import HTMLEditor from '../../HTML/HTMLEditor';
+import { Button } from '../../Inputs/Buttons/Button';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { TumbleLoader } from '../../Loader';
@@ -49,7 +52,7 @@ export const choiceContainerStyle = css({
     backgroundColor: themeVar.colors.BackgroundColor,
     opacity: '0.7',
     cursor: 'initial',
-    //pointerEvents: 'none',
+    // pointerEvents: 'none',
     '&:hover': {
       backgroundColor: themeVar.colors.BackgroundColor,
       color: themeVar.colors.DarkTextColor,
@@ -116,8 +119,8 @@ export function ChoiceContainer({
   hasBeenSelected,
   editMode,
 }: React.PropsWithChildren<ChoiceContainerProps>) {
+  const i18nComponentValues = useInternalTranslate(componentsTranslations);
   const { label } = descriptor;
-
   const description = entityIs(descriptor, 'ChoiceDescriptor', true)
     ? descriptor.description
     : undefined;
@@ -219,12 +222,6 @@ export function ChoiceContainer({
         (canReply && !clicked ? '' : ' disabled') +
         (isEditing ? ' editing' : '')
       }
-      onClick={() => {
-        if (canReply && onClick && !isEditing) {
-          setClicked(true);
-          onClick();
-        }
-      }}
       onMouseEnter={() => setShowHandle(true)}
       onMouseLeave={() => setShowHandle(false)}
     >
@@ -253,7 +250,7 @@ export function ChoiceContainer({
                   onChange={value =>
                     setValues(o => ({ ...o, description: value }))
                   }
-                  toolbarLayout='player'
+                  toolbarLayout="player"
                   // customToolbar="bold italic underline bullist"
                 />
               </div>
@@ -264,7 +261,7 @@ export function ChoiceContainer({
                   onChange={value =>
                     setValues(o => ({ ...o, feedback: value }))
                   }
-                  toolbarLayout='player'
+                  toolbarLayout="player"
                 />
               </div>
             </>
@@ -301,6 +298,18 @@ export function ChoiceContainer({
                 className={choiceDescriptionStyle}
                 text={descriptionText}
               />
+            )}
+            {canReply && (
+              <Button
+                onClick={() => {
+                  if (canReply && onClick && !isEditing) {
+                    setClicked(true);
+                    onClick();
+                  }
+                }}
+              >
+                {i18nComponentValues.question.validate}
+              </Button>
             )}
           </div>
           <div className={choiceInputStyle + classNameOrEmpty(inputClassName)}>

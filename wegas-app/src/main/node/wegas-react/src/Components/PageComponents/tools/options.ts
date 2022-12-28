@@ -5,6 +5,7 @@ import {
   SFSMInstance,
   SInboxDescriptor,
   SInboxInstance,
+  SListDescriptor,
   SPeerReviewDescriptor,
   SPeerReviewInstance,
   SQuestionDescriptor,
@@ -517,6 +518,7 @@ export const decorationsChoices: HashListChoices = [
           'SWhQuestionDescriptor',
           'SSurveyDescriptor',
           'SPeerReviewDescriptor',
+          'SListDescriptor',
         ],
       }),
     },
@@ -529,7 +531,8 @@ type UnreadCountDescriptorTypes =
   | SQuestionDescriptor
   | SWhQuestionDescriptor
   | SSurveyDescriptor
-  | SPeerReviewDescriptor;
+  | SPeerReviewDescriptor
+  | SListDescriptor;
 
 function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
   if (!descriptor) {

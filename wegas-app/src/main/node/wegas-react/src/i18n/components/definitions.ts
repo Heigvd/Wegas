@@ -5,5 +5,8 @@ export interface ComponentsTranslations {
     sender: string,
     date: string,
     noSelectionMessage: string,
+  },
+  question: {
+    validate: string,
   }
 }
