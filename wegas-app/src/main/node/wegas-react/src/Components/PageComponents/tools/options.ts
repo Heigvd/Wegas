@@ -590,6 +590,8 @@ function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
               .getReviewed()
               .filter(review => review.getReviewState() == 'NOTIFIED'),
           ).length;
+      } else if (descriptor instanceof SListDescriptor) {
+        return descriptor.getItems().reduce((total, item) => total + extractUnreadCount(item as UnreadCountDescriptorTypes), 0);
       } else {
         return 0;
       }
