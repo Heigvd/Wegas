@@ -3,13 +3,11 @@ import { css } from '@emotion/css';
 import u from 'immer';
 import Form from 'jsoninput';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { debounce, isArray, pick } from 'lodash-es';
+import { isArray, pick } from 'lodash-es';
 import { editor } from 'monaco-editor';
 import * as React from 'react';
 import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
-import { CustomDotLoader } from '../../../../../Components/Loader';
 import { themeVar } from '../../../../../Components/Theme/ThemeVars';
-import { defaultMarginLeft } from '../../../../../css/classes';
 import { State } from '../../../../../data/Reducer/reducers';
 import { useStore } from '../../../../../data/Stores/store';
 import { MessageString } from '../../../MessageString';
@@ -50,13 +48,6 @@ interface ExpressionEditorState {
   softError?: string[];
 }
 
-// function variableIdsSelector(s: State) {
-//   return Object.keys(s.variableDescriptors)
-//     .map(Number)
-//     .filter(k => !isNaN(k))
-//     .filter(k => GameModel.selectCurrent().itemsIds.includes(k));
-// }
-
 function getRootLevelVariableIds(s: State) {
   return s.gameModels[s.global.currentGameModelId].itemsIds;
 }
@@ -67,11 +58,6 @@ function getRootLevelVariableIds(s: State) {
 function selectableFn(item: IVariableDescriptor, _mode?: ScriptMode) {
   return item['@class'] !== 'ListDescriptor';
 }
-
-// TODO does't prevent from selecting folders, should it be filtered elsewhere ?
-// function selectableFn() {
-//   return true;
-// }
 
 type FormStateActions =
   | {
@@ -144,7 +130,6 @@ export function ExpressionEditor({
   const editorRef = React.useRef<editor.IStandaloneCodeEditor>();
   const mountedRef = React.useRef(true);
 
-  const [loading, setLoading] = React.useState(false);
   const [srcMode, setSrcMode] = React.useState(false);
   const [{ attributes, error, softError, schema }, dispatchFormState] =
     React.useReducer(setFormState, {});
@@ -167,30 +152,12 @@ export function ExpressionEditor({
   }, [error, softError, setError]);
 
   const variablesItems = useStore(s => {
-    //TODO undefined function on 2nd argument does not filter out folders
     return genVarItems(getRootLevelVariableIds(s), selectableFn, undefined, value =>
       makeItems(value, 'variable'),
     );
   }, deepDifferent);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedOnChange = React.useCallback(
-    debounce((code: string) => {
-      if (mountedRef.current && instantOnChange) {
-        setLoading(false);
-        instantOnChange(code);
-      }
-    }, 1000),
-    [instantOnChange],
-  );
-
-  const onChange = React.useCallback(
-    (code: string) => {
-      setLoading(true);
-      debouncedOnChange(code);
-    },
-    [debouncedOnChange],
-  );
+  const onChange = instantOnChange;
 
   React.useEffect(() => {
     if (
@@ -460,11 +427,6 @@ export function ExpressionEditor({
 
   return (
     <div id={id} className={expressionEditorStyle}>
-      {loading ? (
-        <div className={defaultMarginLeft}>
-          <CustomDotLoader size={21} color={themeVar.colors.PrimaryColor} />
-        </div>
-      ) : null}
       {typeof error === 'string' || srcMode ? (
         <div className={scriptEditStyle}>
           <MessageString type="error" value={(softError || []).join('\n')} />
@@ -498,7 +460,6 @@ export interface StatementViewProps extends WidgetProps.BaseProps {
   view: CommonView & LabeledView & ScriptView;
 }
 
-// TODO adapt that as well
 export default function StatementView(props: StatementViewProps) {
   return (
     <CommonViewContainer errorMessage={props.errorMessage} view={props.view}>
