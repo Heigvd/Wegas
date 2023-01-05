@@ -10,7 +10,7 @@ import {css} from '@emotion/css';
 import {faPlusCircle, faSignOutAlt} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import * as React from 'react';
-import {Redirect} from 'react-router-dom';
+import {Navigate} from 'react-router-dom';
 import {ITokenWithId} from 'wegas-ts-api';
 import {
   getRestClient,
@@ -232,7 +232,7 @@ export default function Token({accountId, hash}: TokenProps): JSX.Element {
       if (token.account != null) {
         if (entityIs(token.account, 'JpaAccount')) {
           return (
-            <Redirect
+            <Navigate
               to={buildLinkWithQueryParam('/SignIn', {
                 redirectTo: redirectBack,
                 username: token.account.email,

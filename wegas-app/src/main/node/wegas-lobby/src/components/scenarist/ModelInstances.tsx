@@ -131,7 +131,7 @@ function InstanceCard({ gameModel }: InstanceCardProps): JSX.Element {
         title={gameModelName}
         illustration={gameModel.properties.iconUri}
         showCloseButton={true}
-        route={`/${gameModel.id}/settings`}
+        route={`${gameModel.id}/settings`}
       >
         {collapse => <GameModelSettings gameModel={gameModel} onClose={collapse} />}
       </OpenCloseModal>
@@ -142,7 +142,7 @@ function InstanceCard({ gameModel }: InstanceCardProps): JSX.Element {
         title={gameModelName}
         illustration={gameModel.properties.iconUri}
         showCloseButton={true}
-        route={`/${gameModel.id}/users`}
+        route={`${gameModel.id}/users`}
       >
         {() => <ShareGameModel gameModel={gameModel} />}
       </OpenCloseModal>

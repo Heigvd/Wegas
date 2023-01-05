@@ -440,7 +440,7 @@ export function PermissionCard({ permission }: PermissionCardProps): JSX.Element
           title={i18n.editPermission}
           illustration="ICON_dark-blue_key_fa"
           showCloseButton={true}
-          route={`/${permission.id}/edit`}
+          route={`${permission.id}/edit`}
         >
           {close => (
             <PermissionEditor

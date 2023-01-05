@@ -7,7 +7,7 @@
  */
 
 import * as React from 'react';
-import { NavLink, Redirect } from 'react-router-dom';
+import { NavLink, Navigate } from 'react-router-dom';
 import { IGameWithId, IPlayerWithId } from 'wegas-ts-api';
 import {
   getGameModelById,
@@ -176,7 +176,7 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
     currentUser.status === 'AUTHENTICATED'
   ) {
     logger.info('No player, shall play in team => go to join team screen');
-    return <Redirect to={`/player/join/${token}`} />;
+    return <Navigate to={`/player/join/${token}`} />;
   } else if (guestAllowed === false && currentUser.status === 'NOT_AUTHENTICATED') {
     // User not authenticated, guest are allowed
     return (

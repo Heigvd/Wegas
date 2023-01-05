@@ -312,7 +312,7 @@ export default function UserCard({
         title={user.name || ''}
         illustration={'ICON_dark-blue_user_fa'}
         showCloseButton={true}
-        route={`/${user.id}/settings`}
+        route={`${user.id}/settings`}
       >
         {close => <UserSettings userId={user.id} close={close} />}
       </OpenCloseModal>
@@ -325,7 +325,7 @@ export default function UserCard({
         )}
         illustration={'ICON_dark-blue_user_fa'}
         showCloseButton={true}
-        route={`/${user.id}/roles`}
+        route={`${user.id}/roles`}
       >
         {() => <UserRoles userId={user.id} />}
       </OpenCloseModal>
@@ -336,7 +336,7 @@ export default function UserCard({
         title={user.name || ''}
         illustration={'ICON_dark-blue_users_fa'}
         showCloseButton={true}
-        route={`/${user.id}/permissions`}
+        route={`${user.id}/permissions`}
       >
         {() => <UserPermissions userId={user.id} />}
       </OpenCloseModal>

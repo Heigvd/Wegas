@@ -10,7 +10,6 @@ import { css } from '@emotion/css';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { uniq } from 'lodash';
 import * as React from 'react';
-import { useLocation, useRouteMatch } from 'react-router-dom';
 import { IAbstractAccount, IGameModelWithId, IGameWithId } from 'wegas-ts-api';
 import { getGames, getShadowUserByIds } from '../../API/api';
 import { getDisplayName, mapByKey, match } from '../../helper';
@@ -142,15 +141,15 @@ export default function TrainerTab(): JSX.Element {
   }, [isAdmin, accountsState, dispatch]);
 
   // Detect any gameModel id in URL
-  const location = useLocation();
-  const match = useRouteMatch();
+  // const location = useLocation();
+  // const match = useRouteMatch();
 
-  const selectedId = Number.parseInt(location.pathname.replace(match.path + '/', ''));
+  // const selectedId = Number.parseInt(location.pathname.replace(match.path + '/', ''));
 
   if (games.status[statusFilter] === 'NOT_INITIALIZED') {
     return <InlineLoading />;
   } else {
-    const selected = games.gamesAndGameModels.find(ggm => ggm.gameModel.id === selectedId);
+    // const selected = games.gamesAndGameModels.find(ggm => ggm.gameModel.id === selectedId);
 
     const filtered = filter
       ? games.gamesAndGameModels.filter(matchSearch(accounts, filter))
@@ -268,7 +267,7 @@ export default function TrainerTab(): JSX.Element {
             <>
               <WindowedContainer
                 items={sorted}
-                scrollTo={selected}
+                // scrollTo={selected}
                 emptyMessage={<i>{filter ? i18n.noGamesFound : i18n.noGames}</i>}
               >
                 {buildCardCb}

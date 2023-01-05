@@ -10,7 +10,7 @@ import { css } from '@emotion/css';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getAaiConfig, signInWithJpaAccount } from '../../API/api';
 import { buildLinkWithQueryParam } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
@@ -59,7 +59,7 @@ export default function SignInForm({ username, redirectTo }: Props): JSX.Element
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const signWithUsernameOnly = username != null && username.length > 0;
 
   const aaiConfig = useAppSelector(state => state.auth.aaiConfig);
@@ -109,11 +109,11 @@ export default function SignInForm({ username, redirectTo }: Props): JSX.Element
       dispatch(signInWithJpaAccount(credentials)).then(action => {
         // is that a hack or not ???
         if (redirectTo && action.meta.requestStatus === 'fulfilled') {
-          history.push(redirectTo);
+          navigate(redirectTo);
         }
       });
     },
-    [dispatch, redirectTo, history],
+    [dispatch, redirectTo, navigate],
   );
 
   return (

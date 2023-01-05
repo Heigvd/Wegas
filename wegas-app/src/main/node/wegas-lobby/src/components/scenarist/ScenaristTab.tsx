@@ -10,7 +10,7 @@ import { css } from '@emotion/css';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { uniq } from 'lodash';
 import * as React from 'react';
-import { useLocation, useRouteMatch } from 'react-router-dom';
+// import { useLocation } from 'react-router-dom';
 import { IAbstractAccount, IGameModelWithId } from 'wegas-ts-api';
 import { getGameModels, getShadowUserByIds } from '../../API/api';
 import { getDisplayName, mapByKey, match } from '../../helper';
@@ -148,15 +148,15 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
   }, [isAdmin, accountsState, dispatch]);
 
   // Detect any gameModel id in URL
-  const location = useLocation();
-  const match = useRouteMatch();
+  // const location = useLocation();
+  // const match = useRouteMatch();
 
-  const selectedId = Number.parseInt(location.pathname.replace(match.path + '/', ''));
+  // const selectedId = Number.parseInt(location.pathname.replace(match.path + '/', ''));
 
   if (gamemodels.status[gameModelType][statusFilter] === 'NOT_INITIALIZED') {
     return <InlineLoading />;
   } else {
-    const selected = gamemodels.gamemodels.find(gm => gm.id === selectedId);
+    // const selected = gamemodels.gamemodels.find(gm => gm.id === selectedId);
     const filtered = filter
       ? gamemodels.gamemodels.filter(matchSearch(accounts, filter))
       : gamemodels.gamemodels;
@@ -313,7 +313,7 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
             <>
               <WindowedContainer
                 items={sorted}
-                scrollTo={selected}
+                // scrollTo={selected}
                 emptyMessage={
                   <i>
                     {filter
