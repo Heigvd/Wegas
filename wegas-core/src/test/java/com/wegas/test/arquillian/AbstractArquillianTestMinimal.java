@@ -175,6 +175,8 @@ public abstract class AbstractArquillianTestMinimal {
         }
     }
 
+    //TODO: asadmin command min/max http thread, executor service
+
     /**
      * Initial db content as defined by Liquibase Changelogs
      */
@@ -208,9 +210,9 @@ public abstract class AbstractArquillianTestMinimal {
         userFacade.logout();
         DataSource ds;
         try {
-            ds = (DataSource) new InitialContext().lookup("jdbc/wegas_dev");
+            ds = (DataSource) new InitialContext().lookup("java:global/WegasDS");
         } catch (NamingException ex) {
-            throw WegasErrorMessage.error("No jdbc/wegas_dev !!!");
+            throw WegasErrorMessage.error("No java:global/WegasDS datasource!!!");
         }
 
         try (Connection connection = ds.getConnection("user", "1234");

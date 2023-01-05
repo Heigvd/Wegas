@@ -126,9 +126,9 @@ public class TestHelper {
     public static int getMissingIndexesCount() {
         DataSource ds;
         try {
-            ds = (DataSource) new InitialContext().lookup("jdbc/wegas_dev");
+            ds = (DataSource) new InitialContext().lookup("java:global/WegasDS");
         } catch (NamingException ex) {
-            throw WegasErrorMessage.error("No jdbc/wegas_dev !!!");
+            throw WegasErrorMessage.error("No java:global/WegasDS datasource !!!");
         }
 
         try (Connection connection = ds.getConnection("user", "1234");

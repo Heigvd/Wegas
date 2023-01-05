@@ -1,0 +1,287 @@
+{
+    "@class": "GameModel",
+    "pages": {
+        "index": {
+            "root": {
+                "@class": "Folder",
+                "name": null,
+                "items": []
+            },
+            "defaultPageId": null
+        }
+    },
+    "refId": "gamemodel:1svr9s5",
+    "name": "dummy",
+    "languages": [{
+            "@class": "GameModelLanguage",
+            "refId": "gamemodellanguage:102S9xIqM",
+            "code": "EN",
+            "lang": "English",
+            "visibility": "PRIVATE",
+            "indexOrder": 0,
+            "active": true,
+            "@class": "GameModelLanguage"
+        }],
+    "description": null,
+    "status": "LIVE",
+    "type": "SCENARIO",
+    "comments": null,
+    "createdTime": 1603703394121,
+    "basedOnId": null,
+    "items": [{
+            "@class": "NumberDescriptor",
+            "refId": "NumberDescriptor:861:u2O1Y3",
+            "comments": null,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "refId": "NumberInstance:862:y5rffz",
+                "value": 0.0,
+                "history": [],
+                "@class": "NumberInstance"
+            },
+            "visibility": "PRIVATE",
+            "editorTag": "",
+            "label": {
+                "@class": "TranslatableContent",
+                "refId": "TranslatableContent:863:52Li2B",
+                "translations": {
+                    "EN": {
+                        "lang": "EN",
+                        "translation": "a number",
+                        "status": "",
+                        "refId": "TranslatableContent:863:52Li2B::EN",
+                        "@class": "Translation"
+                    }
+                },
+                "@class": "TranslatableContent"
+            },
+            "name": "aNumber",
+            "scopeType": "TeamScope",
+            "broadcastScope": "TeamScope",
+            "version": 2,
+            "minValue": null,
+            "maxValue": null,
+            "historySize": 20,
+            "defaultValue": 0.0,
+            "@class": "NumberDescriptor"
+        }, {
+            "@class": "NumberDescriptor",
+            "refId": "NumberDescriptor:866:FXXEie",
+            "comments": null,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "refId": "NumberInstance:867:pHmD8I",
+                "value": 0.0,
+                "history": [],
+                "@class": "NumberInstance"
+            },
+            "visibility": "PRIVATE",
+            "editorTag": "",
+            "label": {
+                "@class": "TranslatableContent",
+                "refId": "TranslatableContent:868:CXBoh2",
+                "translations": {
+                    "EN": {
+                        "lang": "EN",
+                        "translation": "a bounded number",
+                        "status": "",
+                        "refId": "TranslatableContent:868:CXBoh2::EN",
+                        "@class": "Translation"
+                    }
+                },
+                "@class": "TranslatableContent"
+            },
+            "name": "aBoundedNumber",
+            "scopeType": "TeamScope",
+            "broadcastScope": "TeamScope",
+            "version": 2,
+            "minValue": 0.0,
+            "maxValue": 200.0,
+            "historySize": 20,
+            "defaultValue": 0.0,
+            "@class": "NumberDescriptor"
+        }, {
+            "@class": "ListDescriptor",
+            "refId": "ListDescriptor:871:kDNPvK",
+            "comments": null,
+            "defaultInstance": {
+                "@class": "ListInstance",
+                "refId": "ListInstance:872:gJXSn6",
+                "@class": "ListInstance"
+            },
+            "visibility": "PRIVATE",
+            "editorTag": "",
+            "label": {
+                "@class": "TranslatableContent",
+                "refId": "TranslatableContent:873:pLp77G",
+                "translations": {
+                    "EN": {
+                        "lang": "EN",
+                        "translation": "resources and tasks",
+                        "status": "",
+                        "refId": "TranslatableContent:873:pLp77G::EN",
+                        "@class": "Translation"
+                    }
+                },
+                "@class": "TranslatableContent"
+            },
+            "name": "resources",
+            "scopeType": "TeamScope",
+            "broadcastScope": "TeamScope",
+            "version": 9,
+            "items": [{
+                    "@class": "ResourceDescriptor",
+                    "refId": "ResourceDescriptor:881:vEqbiM",
+                    "comments": null,
+                    "defaultInstance": {
+                        "@class": "ResourceInstance",
+                        "refId": "ResourceInstance:882:ei5xNy",
+                        "assignments": [],
+                        "occupations": [],
+                        "activities": [],
+                        "active": true,
+                        "properties": {},
+                        "confidence": 0,
+                        "@class": "ResourceInstance"
+                    },
+                    "visibility": "PRIVATE",
+                    "editorTag": "",
+                    "label": {
+                        "@class": "TranslatableContent",
+                        "refId": "TranslatableContent:884:4Ibp3z",
+                        "translations": {
+                            "EN": {
+                                "lang": "EN",
+                                "translation": "John",
+                                "status": "",
+                                "refId": "TranslatableContent:884:4Ibp3z::EN",
+                                "@class": "Translation"
+                            }
+                        },
+                        "@class": "TranslatableContent"
+                    },
+                    "name": "john",
+                    "scopeType": "TeamScope",
+                    "broadcastScope": "TeamScope",
+                    "version": 2,
+                    "description": {
+                        "@class": "TranslatableContent",
+                        "refId": "TranslatableContent:883:sPtpG1",
+                        "translations": {},
+                        "@class": "TranslatableContent"
+                    },
+                    "properties": {},
+                    "@class": "ResourceDescriptor"
+                }, {
+                    "@class": "TaskDescriptor",
+                    "refId": "TaskDescriptor:887:vQJczl",
+                    "comments": null,
+                    "defaultInstance": {
+                        "@class": "TaskInstance",
+                        "refId": "TaskInstance:888:VzK22A",
+                        "active": true,
+                        "plannification": [],
+                        "properties": {},
+                        "requirements": [],
+                        "@class": "TaskInstance"
+                    },
+                    "visibility": "PRIVATE",
+                    "editorTag": "",
+                    "label": {
+                        "@class": "TranslatableContent",
+                        "refId": "TranslatableContent:890:B7Wzxm",
+                        "translations": {
+                            "EN": {
+                                "lang": "EN",
+                                "translation": "Analyse",
+                                "status": "",
+                                "refId": "TranslatableContent:890:B7Wzxm::EN",
+                                "@class": "Translation"
+                            }
+                        },
+                        "@class": "TranslatableContent"
+                    },
+                    "name": "analyse",
+                    "scopeType": "TeamScope",
+                    "broadcastScope": "TeamScope",
+                    "version": 2,
+                    "description": {
+                        "@class": "TranslatableContent",
+                        "refId": "TranslatableContent:889:BzEjhw",
+                        "translations": {},
+                        "@class": "TranslatableContent"
+                    },
+                    "index": "1",
+                    "properties": {},
+                    "predecessorNames": [],
+                    "@class": "TaskDescriptor"
+                }, {
+                    "@class": "TaskDescriptor",
+                    "refId": "TaskDescriptor:893:0HI6ia",
+                    "comments": null,
+                    "defaultInstance": {
+                        "@class": "TaskInstance",
+                        "refId": "TaskInstance:894:qiSANn",
+                        "active": true,
+                        "plannification": [],
+                        "properties": {},
+                        "requirements": [],
+                        "@class": "TaskInstance"
+                    },
+                    "visibility": "PRIVATE",
+                    "editorTag": "",
+                    "label": {
+                        "@class": "TranslatableContent",
+                        "refId": "TranslatableContent:896:o7nml4",
+                        "translations": {
+                            "EN": {
+                                "lang": "EN",
+                                "translation": "Implementation",
+                                "status": "",
+                                "refId": "TranslatableContent:896:o7nml4::EN",
+                                "@class": "Translation"
+                            }
+                        },
+                        "@class": "TranslatableContent"
+                    },
+                    "name": "implementation",
+                    "scopeType": "TeamScope",
+                    "broadcastScope": "TeamScope",
+                    "version": 2,
+                    "description": {
+                        "@class": "TranslatableContent",
+                        "refId": "TranslatableContent:895:hxyZGo",
+                        "translations": {},
+                        "@class": "TranslatableContent"
+                    },
+                    "index": "2",
+                    "properties": {},
+                    "predecessorNames": [],
+                    "@class": "TaskDescriptor"
+                }],
+            "allowedTypes": [],
+            "addShortcut": "",
+            "@class": "ListDescriptor"
+        }],
+    "scriptLibrary": {},
+    "cssLibrary": {},
+    "clientScriptLibrary": {},
+    "properties": {
+        "freeForAll": false,
+        "guestAllowed": false,
+        "pagesUri": "",
+        "cssUri": "",
+        "websocket": "",
+        "logID": null,
+        "scriptUri": "",
+        "clientScriptUri": "",
+        "iconUri": "",
+        "refId": "GameModelProperties",
+        "@class": "GameModelProperties"
+    },
+    "template": true,
+    "createdByName": "Admin Root",
+    "uiversion": 1,
+    "protected": false,
+    "@class": "GameModel"
+}
