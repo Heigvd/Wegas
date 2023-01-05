@@ -357,7 +357,7 @@ export const unreadSignalStyle = css({
   '::before': {
     content: '"New"',
     transform: 'rotate(-90deg)',
-    position: 'absolute',
+    position: 'sticky',
     fontSize: '10pt',
     fontWeight: 'bold',
     color: 'orange',
