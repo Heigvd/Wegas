@@ -12,7 +12,7 @@ import * as React from 'react';
 import { changeLoggerLevel, getLoggerLevels } from '../../API/api';
 import { ILevelDescriptor } from '../../API/restClient';
 import useTranslations from '../../i18n/I18nContext';
-import getLogger, { LoggerLevel, loggers as clientLoggers } from '../../logger';
+import { getLogger, LoggerLevel, loggers as clientLoggers } from '../../logger';
 import { shallowEqual, useAppDispatch, useAppSelector } from '../../store/hooks';
 import ActionIconButton from '../common/ActionIconButton';
 import FitSpace from '../common/FitSpace';

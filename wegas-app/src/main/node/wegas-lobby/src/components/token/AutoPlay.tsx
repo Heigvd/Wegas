@@ -19,14 +19,13 @@ import {
 import { entityIs } from '../../API/entityHelper';
 import { buildLinkWithQueryParam } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
-import getLogger, { INFO } from '../../logger';
+import { getLogger } from '../../logger';
 import { useCurrentUser } from '../../selectors/userSelector';
 import { useGameModel } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
 import Loading from '../common/Loading';
 
 const logger = getLogger('AutoPlay');
-logger.setLevel(INFO);
 
 interface AutoPlayProps {
   token: string;
@@ -61,7 +60,7 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
   // Refresh current user
   React.useEffect(() => {
     if (currentUser.status === 'UNKNOWN') {
-      logger.info('load current user');
+      logger.log('load current user');
       dispatch(reloadCurrentUser());
     }
   }, [currentUser.status, dispatch]);
@@ -69,7 +68,7 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
   // fetch gameModel
   React.useEffect(() => {
     if (gameModelId != null && gameModel == null) {
-      logger.info('load gameModel ', gameModelId);
+      logger.log('load gameModel ', gameModelId);
       dispatch(getGameModelById({ id: gameModelId, view: 'Extended' }));
     }
   }, [gameModelId, gameModel, dispatch]);
@@ -78,16 +77,16 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
   React.useEffect(() => {
     let aborted = false;
     const loadGame = async () => {
-      logger.info('Load game');
+      logger.log('Load game');
       try {
         const game = await getRestClient().GameController.findByToken(token);
-        logger.info('Game found', game);
+        logger.log('Game found', game);
         if (!aborted) {
-          logger.info('Set game');
+          logger.log('Set game');
           setGame(game || 'NOT_FOUND');
         }
       } catch {
-        logger.info('Game not found');
+        logger.log('Game not found');
         setGame('NOT_FOUND');
       }
     };
@@ -103,17 +102,17 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
   React.useEffect(() => {
     let aborted = false;
     const findPlayer = async () => {
-      logger.info('Find player');
+      logger.log('Find player');
       if (entityIs(game, 'Game')) {
         try {
           const player = await getRestClient().PlayerController.getByGameId(game.id);
-          logger.info('Player found', player);
+          logger.log('Player found', player);
           if (!aborted) {
-            logger.info('Set player');
+            logger.log('Set player');
             setPlayer(player || 'NOT_FOUND');
           }
         } catch {
-          logger.info('No player');
+          logger.log('No player');
           setPlayer('NOT_FOUND');
         }
       }
@@ -123,7 +122,7 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
       player === 'NOT_INITIALIZED' &&
       currentUser.status === 'AUTHENTICATED'
     ) {
-      logger.info('Try to find player');
+      logger.log('Try to find player');
       findPlayer();
     }
     return () => {
@@ -134,7 +133,7 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
   // GameModel Is known, Guest are allowed and user is not authenticated => loginAsGuest
   React.useEffect(() => {
     if (guestAllowed === true && currentUser.status === 'NOT_AUTHENTICATED') {
-      logger.info('Sign up as guest');
+      logger.log('Sign up as guest');
       //      setPlayer('JOINING');
       setLoadingMessage(i18n.autoplay.loginAsGuest);
       dispatch(signInAsGuest());
@@ -149,7 +148,7 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
       player === 'NOT_FOUND' &&
       currentUser.status === 'AUTHENTICATED'
     ) {
-      logger.info('Join individually');
+      logger.log('Join individually');
       setPlayer('JOINING');
       dispatch(joinIndividually(game)).then(a => {
         if (a.meta.requestStatus === 'fulfilled') {
@@ -162,7 +161,7 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
 
   if (entityIs(player, 'Player') && entityIs(gameModel, 'GameModel')) {
     //Player found => let's play
-    logger.info("Player found => let's play");
+    logger.log("Player found => let's play");
     if (gameModel.uiversion === 2) {
       window.location.href = `${APP_ENDPOINT}/2/player.html?id=${player.id}`;
     } else {
@@ -175,7 +174,7 @@ export default function AutoPlay({ token }: AutoPlayProps): JSX.Element {
     playIndividually === false &&
     currentUser.status === 'AUTHENTICATED'
   ) {
-    logger.info('No player, shall play in team => go to join team screen');
+    logger.log('No player, shall play in team => go to join team screen');
     return <Navigate to={`/player/join/${token}`} />;
   } else if (guestAllowed === false && currentUser.status === 'NOT_AUTHENTICATED') {
     // User not authenticated, guest are allowed

@@ -22,7 +22,7 @@ import {
 import {entityIs} from '../../API/entityHelper';
 import {buildLinkWithQueryParam, getDisplayName} from '../../helper';
 import useTranslations, {WegasTranslations} from '../../i18n/I18nContext';
-import getLogger, {INFO} from '../../logger';
+import { getLogger } from '../../logger';
 import {useCurrentUser} from '../../selectors/userSelector';
 import {useAppDispatch, useAppSelector} from '../../store/hooks';
 import Button from '../common/Button';
@@ -31,7 +31,6 @@ import {InlineLink} from '../common/Link';
 import Loading from '../common/Loading';
 
 const logger = getLogger('Token');
-logger.setLevel(INFO);
 
 interface TokenProps {
   accountId: number | undefined;
@@ -68,7 +67,7 @@ export default function Token({accountId, hash}: TokenProps): JSX.Element {
   // Fetch AAI config
   React.useEffect(() => {
     if (aaiConfig === 'UNKNOWN') {
-      logger.info('load aai config');
+      logger.log('load aai config');
       dispatch(reloadCurrentUser());
     }
   }, [aaiConfig, dispatch]);
@@ -76,7 +75,7 @@ export default function Token({accountId, hash}: TokenProps): JSX.Element {
   // Refresh current user
   React.useEffect(() => {
     if (userStatus === 'UNKNOWN') {
-      logger.info('load current user');
+      logger.log('load current user');
       dispatch(reloadCurrentUser());
     }
   }, [userStatus, dispatch]);
@@ -85,16 +84,16 @@ export default function Token({accountId, hash}: TokenProps): JSX.Element {
   React.useEffect(() => {
     let aborted = false;
     const loadToken = async () => {
-      logger.info('Load token');
+      logger.log('Load token');
       try {
         const t = await getRestClient().Token.getToken(accountId, hash);
-        logger.info('Token found', t);
+        logger.log('Token found', t);
         if (!aborted) {
-          logger.info('Set token');
+          logger.log('Set token');
           setToken(t || 'NOT_FOUND');
         }
       } catch {
-        logger.info('Token not found');
+        logger.log('Token not found');
         setToken('NOT_FOUND');
       }
     };
