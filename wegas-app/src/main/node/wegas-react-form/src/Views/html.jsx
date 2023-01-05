@@ -1,5 +1,5 @@
 import { Editor } from '@tinymce/tinymce-react';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 // import { debounce } from 'lodash-es';
 import PropTypes from 'prop-types';
 import React from 'react';

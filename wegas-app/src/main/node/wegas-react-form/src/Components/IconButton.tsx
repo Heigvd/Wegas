@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 
 interface Props {
     icon: IconValue;

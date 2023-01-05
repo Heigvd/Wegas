@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 import FormStyles from './form-styles';
 import commonView from '../HOC/commonView';
 import IconButton from '../Components/IconButton';

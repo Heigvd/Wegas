@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { types } from 'recast';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 import { RemoveStatementButton, AddStatementButton } from './Views/Button';
 import Statement from './Views/Statement';
 

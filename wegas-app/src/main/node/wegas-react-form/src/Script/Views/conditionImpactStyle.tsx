@@ -1,4 +1,4 @@
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 
 export const containerStyle = css({
     label: 'conditionImpactStyle',

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { LangConsumer } from '../LangContext';
 import { Schema } from 'jsoninput';
 import { infoStyle } from './commonView';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 import IconButton from '../Components/IconButton';
 
 interface Translation {

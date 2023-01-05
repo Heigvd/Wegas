@@ -1,6 +1,6 @@
 import React from 'react';
 import cx from 'classnames';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 
 const pointerStyle = css({
     cursor: 'pointer',

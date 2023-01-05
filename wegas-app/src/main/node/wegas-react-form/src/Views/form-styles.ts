@@ -1,4 +1,4 @@
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 
 // tslint:disable-next-line:no-namespace
 export namespace FormStyles {

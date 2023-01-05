@@ -1,6 +1,6 @@
 import React from 'react';
 import ChromePicker from 'react-color/lib/components/chrome/Chrome';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
 import { Cover } from '../Components/Cover';

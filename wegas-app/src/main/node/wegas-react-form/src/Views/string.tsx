@@ -2,7 +2,7 @@ import * as React from 'react';
 import deb from 'lodash-es/debounce';
 import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 
 export const inputStyle = css({
     boxSizing: 'border-box',

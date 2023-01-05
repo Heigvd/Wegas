@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, keyframes } from 'glamor';
+import { css, keyframes } from '@emotion/css';
 
 const scale = keyframes({
     '0%': {

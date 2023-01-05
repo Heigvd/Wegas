@@ -3,7 +3,7 @@ import debounced from '../../HOC/callbackDebounce';
 import JSEditor from './asyncJSEditor';
 import IconButton from '../../Components/IconButton';
 import { getY } from '../../index';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 
 interface IViewSrcProps {
     value: string;

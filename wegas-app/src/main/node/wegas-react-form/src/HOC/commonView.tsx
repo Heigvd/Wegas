@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 import classNames from 'classnames';
 import FormStyles from '../Views/form-styles';
 

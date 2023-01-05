@@ -1,7 +1,7 @@
 import Form, { Schema } from 'jsoninput';
 import React, { Suspense } from 'react';
 import { render, unmountComponentAtNode, createPortal } from 'react-dom';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 import { debounce, cloneDeep } from 'lodash-es';
 import './index';
 import { LangHandler, LangToggler } from './LangContext';

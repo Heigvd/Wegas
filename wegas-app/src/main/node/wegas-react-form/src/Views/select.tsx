@@ -2,7 +2,7 @@ import React from 'react';
 import labeled from '../HOC/labeled';
 import {useAsync} from '../Hooks/async';
 import commonView from '../HOC/commonView';
-import {css} from 'glamor';
+import {css} from '@emotion/css';
 
 interface Choice {
     value: {};
