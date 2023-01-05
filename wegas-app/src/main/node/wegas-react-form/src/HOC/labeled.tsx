@@ -25,7 +25,7 @@ interface ILabelProps {
 let id = 0;
 function idGenerator() {
     const gid = ++id;
-    return 'generated-label-id--' + gid;
+    return `generated-label-id--${  gid}`;
 }
 export default function labeled<P extends { id: string }>(
     Comp: React.ComponentClass<P> | React.SFC<P>,

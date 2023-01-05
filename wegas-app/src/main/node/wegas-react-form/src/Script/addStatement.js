@@ -43,7 +43,7 @@ export default function addStatement(Comp) {
             if (this.props.view.readOnly){
                 return (
                     <Comp {...this.props} code={this.state.code} />
-                    );
+                );
             } else {
             return (
                 <span>

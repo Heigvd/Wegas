@@ -70,7 +70,7 @@ class TreeSelect extends React.Component<TreeSelectProps, { items: Item[]; selec
         return (
             <HandleUpDown
                 ref={n => (this.keyHandler = n)}
-                selector={'.' + treeHeadStyle.toString()}
+                selector={`.${  treeHeadStyle.toString()}`}
             >
                 {[
                     this.state.items.map((item, index) => (

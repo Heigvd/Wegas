@@ -86,7 +86,7 @@ const dragHandleStyle = css({
         opacity: 1,
     },
 });
-interface IArrayProps extends WidgetProps.ArrayProps<IArrayView> {}
+type IArrayProps = WidgetProps.ArrayProps<IArrayView>
 
 class Adder extends React.Component<IArrayProps, { open: boolean }> {
     constructor(props: IArrayProps) {

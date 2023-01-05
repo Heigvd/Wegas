@@ -63,8 +63,8 @@ tinymce.PluginManager.add('dynamic_toolbar', function (editor) {
                 editor.theme.panel.resizeBy(0, resizeY);
                 editor.theme.panel.moveBy(0, -resizeY);
             } else {
-                editor.theme.panel.getEl().style.height = fullHeight + 'px';
-                editor.theme.panel.getEl().firstChild.style.height = fullHeight + 'px';
+                editor.theme.panel.getEl().style.height = `${fullHeight  }px`;
+                editor.theme.panel.getEl().firstChild.style.height = `${fullHeight  }px`;
             }
         }
     }
@@ -306,7 +306,7 @@ function toInjectorStyle(content) {
 let id = 0;
 function toolbarIdGenerator() {
     const gid = ++id;
-    return 'generated-tinymce-toolbar-id--' + gid;
+    return `generated-tinymce-toolbar-id--${  gid}`;
 }
 
 function tinySanitze(value) {
@@ -393,7 +393,7 @@ class HTMLView extends React.Component {
                     <div id={this.id} className="tinymce-toolbar"></div>
                     <Editor
                         value={this.state.content}
-                        init={getTinyConfig('#' + this.id)}
+                        init={getTinyConfig(`#${  this.id}`)}
                         onEditorChange={this.onChangeHandler}
                     />
                 </div>

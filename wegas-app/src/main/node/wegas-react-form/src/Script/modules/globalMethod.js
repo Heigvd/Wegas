@@ -206,4 +206,4 @@ export function register(type, methodsObject) {
 export function getGlobals(type) {
     return IMPACT[type];
 }
-;
+

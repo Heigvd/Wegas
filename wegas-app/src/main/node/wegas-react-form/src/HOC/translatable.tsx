@@ -67,7 +67,7 @@ export default function translatable<P extends EndProps>(
             for (const lang of allLanguages) {
                 newValue[lang.code] = {
                     translation: props.value[lang.code] ? props.value[lang.code].translation : '',
-                    status: 'outdated:' + code,
+                    status: `outdated:${  code}`,
                 };
             }
 
@@ -102,7 +102,7 @@ export default function translatable<P extends EndProps>(
                             <span>
                                 {(props.view || { label: '' }).label}{' '}
                                 <span className={String(infoStyle)}>
-                                    [{curCode.toLowerCase()}] {status ? '(' + status + ')' : ''}
+                                    [{curCode.toLowerCase()}] {status ? `(${  status  })` : ''}
                                 </span>
                             </span>
                         ),

@@ -1,7 +1,12 @@
 {
   "root": true,
-  "extends": "airbnb",
-  "parser": "babel-eslint",
+  "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:react-hooks/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -11,13 +16,6 @@
     "import/resolver": "webpack"
   },
   "rules": {
-    "indent": [
-      2,
-      4,
-      {
-        "SwitchCase": 1
-      }
-    ],
     "import/extensions": [
       2,
       "always",
@@ -42,11 +40,14 @@
     "react/jsx-props-no-spreading": [0],
     "react/destructuring-assignment": [0],
     "no-else-return": 0,
-    "prefer-template": 1,
+    "prefer-template": 1
   },
   "env": {
     "es6": true,
     "browser": true
   },
-  "plugins": ["react"]
+  "plugins": [
+     "react",
+     "@typescript-eslint"
+  ]
 }
