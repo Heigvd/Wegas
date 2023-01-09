@@ -25,31 +25,31 @@ function triangleDropStyle(
         position === 'FIRST'
           ? 0
           : position === 'LAST'
-          ? ((DROP_SPACE_WIDTH / 2) - 4) + 'px'
+          ? DROP_SPACE_WIDTH / 2 - 4 + 'px'
           : 'calc(50% - 4px)',
       border: isOverCurrent
         ? '4px solid ' + themeVar.colors.HighlightColor
         : canDrop
         ? '4px solid ' + themeVar.colors.DisabledColor
         : 'transparent',
-      borderRadius: "4px",
+      borderRadius: '4px',
     },
-   '&:after': {
+    '&:after': {
       content: '""',
       display: 'block',
-      width: "2px",
+      width: '2px',
       top: 0,
       bottom: 0,
       position: 'absolute',
       zIndex: 10,
       left:
         position === 'FIRST'
-          ? "3px"
+          ? '3px'
           : position === 'LAST'
-          ? ((DROP_SPACE_WIDTH / 2 ) - 1) + 'px'
+          ? DROP_SPACE_WIDTH / 2 - 1 + 'px'
           : 'calc(50% - 1px)',
       backgroundColor: isOverCurrent
-        ?  themeVar.colors.HighlightColor
+        ? themeVar.colors.HighlightColor
         : canDrop
         ? themeVar.colors.DisabledColor
         : 'transparent',
@@ -139,10 +139,10 @@ export function DropTab({ dndAcceptType, onDrop, position }: DropTabProps) {
     accept: dndAcceptType,
     canDrop: () => true,
     drop: onDrop,
-    collect: (mon: DropTargetMonitor) => ({
-      isOverCurrent: mon.isOver({ shallow: false }),
-      canDrop: mon.canDrop(),
-      item: mon.getItem() as DnDItem | null,
+    collect: (monitor: DropTargetMonitor) => ({
+      isOverCurrent: monitor.isOver({ shallow: false }),
+      canDrop: monitor.canDrop(),
+      item: monitor.getItem() as DnDItem | null,
     }),
   });
 

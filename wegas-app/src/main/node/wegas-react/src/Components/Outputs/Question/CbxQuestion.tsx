@@ -92,6 +92,7 @@ function CbxChoiceDisplay({
         }
       }}
       editMode={editMode}
+      validateButton={false}
     >
       {
         <CheckBox
@@ -126,12 +127,13 @@ export function CbxQuestionDisplay({
   editMode,
   ...options
 }: CbxQuestionDisplayProps) {
-  const { maxReplies, minReplies } = questionD || {};
+  const { maxReplies } = questionD || {};
+  const minReplies = questionD?.minReplies ?? 1;
 
   const canReply =
     questionI != null && !questionI.validated && isActionAllowed(options);
   const maxReplyReached = maxReplies != null && replies.length >= maxReplies;
-  const remainingChoices = minReplies == null ? 0 : minReplies - replies.length;
+  const remainingChoices = minReplies - replies.length;
   const radio = maxReplies === 1 && minReplies === 1;
 
   const onChoiceValidate = React.useCallback(

@@ -106,6 +106,7 @@ interface ChoiceContainerProps {
   onClick?: () => void;
   hasBeenSelected: boolean;
   editMode?: boolean;
+  validateButton?: boolean;
 }
 
 export function ChoiceContainer({
@@ -118,6 +119,7 @@ export function ChoiceContainer({
   onClick,
   hasBeenSelected,
   editMode,
+  validateButton = true,
 }: React.PropsWithChildren<ChoiceContainerProps>) {
   const i18nComponentValues = useInternalTranslate(componentsTranslations);
   const { label } = descriptor;
@@ -299,7 +301,7 @@ export function ChoiceContainer({
                 text={descriptionText}
               />
             )}
-            {canReply && (
+            {canReply && validateButton && (
               <Button
                 onClick={() => {
                   if (canReply && onClick && !isEditing) {

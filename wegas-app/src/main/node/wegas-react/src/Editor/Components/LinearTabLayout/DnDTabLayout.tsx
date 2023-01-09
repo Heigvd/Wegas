@@ -80,7 +80,7 @@ const toolsStyle = css({
 
 const fadeStyle = css({
   position: 'absolute',
-  display: "none", // TODO: do something with tabLayoutChildrenClassNames
+  display: 'none', // TODO: do something with tabLayoutChildrenClassNames
   height: '100%',
   width: '24px',
   right: '100%',
@@ -95,7 +95,7 @@ const noPadding = css({
 
 const spacerStyle = css({
   flexShrink: 100, // big shrink value so spacer is the first to be shorten
-  maxWidth: "5px",
+  maxWidth: '5px',
 });
 
 export type DropAction = (item: { label: string; type: string }) => void;
@@ -124,29 +124,31 @@ function translateTabs(
   dndTabs: DnDTabs,
   i18nTabsNames: EditorTabsTranslations,
 ): DnDTabs {
-  return dndTabs.map(dndTab => {
-    const translatedLabel =
-      i18nTabsNames.tabsNames[
-        dndTab.label as keyof EditorTabsTranslations['tabsNames']
-      ] || dndTab.label;
-    const translatedItems = dndTab.items
-      ? translateTabs(dndTab.items, i18nTabsNames)
-      : undefined;
-    return { ...dndTab, label: translatedLabel, items: translatedItems };
-  }).sort((a,b) => {
-    if (typeof a.label === "string" && typeof b.label === "string") {
-      // both label are strings
-      return a.label.localeCompare(b.label);
-    } else if (typeof a.label === "string") {
-      // b is a ReactNode, sort a first
-      return -1;
-    } else if (typeof b.label === "string") {
-      // a is a ReactNode, sort b first
-      return 1;
-    } else {
-      return 0;
-    }
-  })
+  return dndTabs
+    .map(dndTab => {
+      const translatedLabel =
+        i18nTabsNames.tabsNames[
+          dndTab.label as keyof EditorTabsTranslations['tabsNames']
+        ] || dndTab.label;
+      const translatedItems = dndTab.items
+        ? translateTabs(dndTab.items, i18nTabsNames)
+        : undefined;
+      return { ...dndTab, label: translatedLabel, items: translatedItems };
+    })
+    .sort((a, b) => {
+      if (typeof a.label === 'string' && typeof b.label === 'string') {
+        // both label are strings
+        return a.label.localeCompare(b.label);
+      } else if (typeof a.label === 'string') {
+        // b is a ReactNode, sort a first
+        return -1;
+      } else if (typeof b.label === 'string') {
+        // a is a ReactNode, sort b first
+        return 1;
+      } else {
+        return 0;
+      }
+    });
 }
 
 function flatFindUsableTabs(tabs: DnDTabs): DnDTabs {
@@ -203,15 +205,16 @@ function DnDTabLayoutHeader({
     otherTabs != null && flatFindUsableTabs(otherTabs).length > 0;
 
   const allTabs: DnDTabs = components.map(c => {
-      return {
-        value: c.tabId,
-        label: c.tabId,
-      }
+    return {
+      value: c.tabId,
+      label: c.tabId,
+    };
   });
 
-
   // since componenets may have empty slot
-  const indexedComponents = [...components.map((component, index) => ({ component, index}))].filter(x => x);
+  const indexedComponents = [
+    ...components.map((component, index) => ({ component, index })),
+  ].filter(x => x);
 
   return (
     <div className={cx(flex, headerTabStyle, expandWidth)}>
@@ -221,7 +224,7 @@ function DnDTabLayoutHeader({
           position={'FIRST'}
           onDrop={onDropTab(0)}
         />
-        { indexedComponents.map((indexedComp, i, array) => {
+        {indexedComponents.map((indexedComp, i, array) => {
           const label = indexedComp.component.tabId;
           const compIndex = indexedComp.index;
           const translatedOrUndefLabel =
@@ -233,12 +236,12 @@ function DnDTabLayoutHeader({
             : label;
 
           return (
-            <React.Fragment key={ `DnDTab-${ label }#${ compIndex}`}>
+            <React.Fragment key={`DnDTab-${label}#${compIndex}`}>
               {i > 0 && (
                 <DropTab
                   dndAcceptType={dndAcceptType}
                   position={'MIDDLE'}
-                  onDrop={ onDropTab(compIndex)}
+                  onDrop={onDropTab(compIndex)}
                 />
               )}{' '}
               <DragTab
@@ -265,7 +268,7 @@ function DnDTabLayoutHeader({
                 <DropTab
                   dndAcceptType={dndAcceptType}
                   position={'LAST'}
-                  onDrop={ onDropTab(compIndex + 1)}
+                  onDrop={onDropTab(compIndex + 1)}
                 />
               )}
             </React.Fragment>
@@ -371,14 +374,17 @@ export function DnDTabLayout({
 
   //HACK: due to bad design, there is two fullScreen state...
   const [localFullScreen, setLocalFullScreen] = React.useState(false);
-  const { fullscreen : globalFullScreen, setFullscreen : setGlobalFullScreen } = React.useContext(fullscreenCTX);
+  const { fullscreen: globalFullScreen, setFullscreen: setGlobalFullScreen } =
+    React.useContext(fullscreenCTX);
 
-  const setFullScreen = React.useCallback((v : boolean) => {
-    setLocalFullScreen(v);
-    setGlobalFullScreen(v);
-  }, [setGlobalFullScreen]);
+  const setFullScreen = React.useCallback(
+    (v: boolean) => {
+      setLocalFullScreen(v);
+      setGlobalFullScreen(v);
+    },
+    [setGlobalFullScreen],
+  );
   const fullScreen = globalFullScreen && localFullScreen;
-
 
   React.useEffect(() => {
     if (
