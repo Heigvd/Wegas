@@ -1,10 +1,8 @@
 [submodule "inputex"]
-	path = wegas-resources/src/main/webapp/lib/inputex
-	url = https://github.com/Heigvd/inputex.git
-	branch = master
+    path = wegas-resources/src/main/webapp/lib/inputex
+    url = git@github.com:Heigvd/inputex.git
+    branch = master
 [submodule "wegas-app/src/main/webapp/wegas-private"]
-	path = wegas-app/src/main/webapp/wegas-private
-	url = git@github.com:Heigvd/WegasPrivate.git
-	branch = master
-[submodule "wegas-resources/src/main/webapp/lib/inputex"]
-	url = git@github.com:Heigvd/inputex.git
+    path = wegas-app/src/main/webapp/wegas-private
+    url = git@github.com:Heigvd/WegasPrivate.git
+    branch = master
