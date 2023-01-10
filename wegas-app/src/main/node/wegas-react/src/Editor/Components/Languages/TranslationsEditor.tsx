@@ -24,6 +24,7 @@ import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
+import { TumbleLoader } from '../../../Components/Loader';
 import { useOkCancelModal } from '../../../Components/Modal';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
@@ -974,6 +975,10 @@ function TranslationHeader({
   );
 
   const enabled = isLanguageEditable(language.code, editableLanguages);
+
+  if (editableLanguages === 'loading'){
+    return <TumbleLoader />;
+  }
 
   return (
     <div className={cx(flex, flexRow, itemCenter)}>

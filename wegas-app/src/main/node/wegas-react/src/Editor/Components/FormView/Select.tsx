@@ -1,7 +1,6 @@
 import { cx } from '@emotion/css';
 import { WidgetProps } from 'jsoninput/typings/types';
 import * as React from 'react';
-import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { Choice, Choices, Selector } from '../../../Components/Selector';
 import { flex, flexColumn } from '../../../css/classes';
 import { ListDescriptorChild } from '../../editionConfig';
@@ -13,16 +12,6 @@ export interface ISelectProps extends WidgetProps.BaseProps {
     choices: Choices;
     allowUndefined?: boolean;
     clearable?: boolean;
-    allowAnyValue?: boolean;
-  } & CommonView &
-    LabeledView;
-}
-export interface IAsyncSelectProps extends WidgetProps.BaseProps {
-  view: {
-    choices: (() => Promise<Choices>) | Choices;
-    openChoices?: boolean;
-    clearable?: boolean;
-    allowUndefined?: boolean;
     allowAnyValue?: boolean;
   } & CommonView &
     LabeledView;
@@ -123,11 +112,4 @@ export function ListChildrenNullSelectView(props: ListChildrenSelectViewProps) {
   );
 }
 
-function Sel(props: IAsyncSelectProps) {
-  const { view } = props;
-  const { choices } = view;
-  return Promise.resolve(
-    typeof choices === 'function' ? choices() : choices,
-  ).then(ch => <SelectView {...props} view={{ ...view, choices: ch }} />);
-}
-export default asyncSFC(Sel);
+export default SelectView;
