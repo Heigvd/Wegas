@@ -36,7 +36,7 @@ jobs:
       run: |
         echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
         git submodule set-url wegas-app/src/main/webapp/wegas-private https://github.com/Heigvd/WegasPrivate.git
-        git submodule set-url wegas-resources/src/main/webapp/lib/inputex https://github.com/Heigvd/inputex.git
+        git submodule set-url inputex https://github.com/Heigvd/inputex.git
         git submodule init
         git submodule update --init --recursive
     - name: Setup Node
