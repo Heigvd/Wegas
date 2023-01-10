@@ -291,6 +291,8 @@ function buildTree(
   if (eLib === undefined) {
     if (currentPath.startsWith('clientInternal')) {
       eLib = null;
+    } else if (currentPath.startsWith('serverInternal')) {
+      eLib = null;
     } else if (currentPath.startsWith('client')) {
       eLib = 'client';
     } else if (currentPath.startsWith('server')) {
@@ -462,12 +464,12 @@ export function CustomLibraryEditorView({
             />
           </>
         )}
-          <MessageString
-            type={ message?.type || 'normal'}
-            value={message?.message || ''}
-            duration={5000}
-            onLabelVanish={() => setMessage(undefined)}
-          />
+        <MessageString
+          type={message?.type || 'normal'}
+          value={message?.message || ''}
+          duration={5000}
+          onLabelVanish={() => setMessage(undefined)}
+        />
         <TreeView rootId={String(GameModel.selectCurrent().id)}>
           {nodes}
         </TreeView>

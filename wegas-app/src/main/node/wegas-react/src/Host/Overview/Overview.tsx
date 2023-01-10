@@ -163,7 +163,11 @@ const defaultLayoutState: LayoutState = {
   item: undefined,
 };
 
-export default function Overview() {
+export interface OverviewProps{
+  dashboardName?: string;
+}
+
+export default function Overview({ dashboardName = 'overview' }: OverviewProps) {
   const [filterState, setFilterState] = React.useState<FilterState>();
   const [layoutState, setLayoutState] =
     React.useState<LayoutState>(defaultLayoutState);
@@ -201,7 +205,7 @@ export default function Overview() {
     VariableDescriptorAPI.runScript(
       GameModel.selectCurrent().id!,
       Player.selectCurrent().id!,
-      createScript('WegasDashboard.getOverview();', 'JavaScript'),
+      createScript(`WegasDashboard.getOverview(${JSON.stringify(dashboardName)});`, 'JavaScript'),
       undefined,
       true,
     ).then((res: OverviewData) => {
@@ -233,7 +237,7 @@ export default function Overview() {
         );
       }
     });
-  }, []);
+  }, [dashboardName]);
 
   React.useEffect(() => {
     mounted.current = true;

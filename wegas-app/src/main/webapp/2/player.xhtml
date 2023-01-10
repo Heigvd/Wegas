@@ -48,7 +48,8 @@
     <div id="root" />
     <script type="application/javascript">
       var WEGAS_SAFE_MODE = #{requestController.safeMode};
-      var API_ENDPOINT = "#{request.contextPath}" + "/rest/";
+      var APP_BASE = "#{request.contextPath}";
+      var API_ENDPOINT = APP_BASE + "/rest/";
       var API_VIEW = "Public";
       var APP_CONTEXT = "Player";
       var CurrentUser = #{requestController.currentUser.toJsonWithView("Index")};
