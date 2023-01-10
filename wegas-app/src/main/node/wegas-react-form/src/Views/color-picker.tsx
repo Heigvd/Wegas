@@ -34,12 +34,12 @@ class ColorPicker extends React.Component<IColorProps, { pick: boolean }> {
             display: 'inline-block',
             width: '12px',
             height: '12px',
-            backgroundColor: this.props.value,
+            backgroundColor: this.props.value || undefined,
             border: 'solid 1px black',
         });
         return (
             <div id={this.props.id} onClick={() => this.setState({ pick: true })}>
-                <span {...style} /> {this.props.value}
+                <span className={style} /> {this.props.value}
             </div>
         );
     }

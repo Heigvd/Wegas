@@ -130,6 +130,8 @@ export interface GridItemProps
    * onMouseEnter - triggers when the mouse enters the component
    */
   onMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+
+  children: React.ReactNode;
 }
 
 export const GridItem = React.forwardRef<HTMLDivElement, GridItemProps>(

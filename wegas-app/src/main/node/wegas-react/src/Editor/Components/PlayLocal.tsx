@@ -24,12 +24,13 @@ const editor = css({
 });
 const togglerStyle = css({ padding: '0 15px 0 15px' });
 
-class ErrorBoundary extends React.Component<Record<string, unknown>> {
+
+class ErrorBoundary extends React.Component<{ children?: React.ReactNode , script: string}> {
   readonly state: { error?: Error } = { error: undefined };
   componentDidCatch(error: Error) {
     this.setState({ error });
   }
-  componentDidUpdate(prevProps: Record<string, unknown>) {
+  componentDidUpdate(prevProps: unknown) {
     if (!shallowIs(prevProps, this.props)) {
       this.setState({ error: undefined });
     }

@@ -22,7 +22,7 @@ const hideSourceTooltip = 'Hide source code';
  * Toggle view between parsed and code
  */
 class ViewSrc extends React.Component<
-    IViewSrcProps,
+    React.PropsWithChildren<IViewSrcProps>,
     { src: boolean; error?: string; evaluating: boolean }
 > {
     constructor(props: IViewSrcProps) {

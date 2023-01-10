@@ -10,7 +10,7 @@ interface TextPromptProps extends ClassStyleId {
   /**
    * label - The label to display net to the input
    */
-  label?: string | React.Component;
+  label?: React.ReactNode;
   /**
    * placeholder - The example text to put in the input
    */

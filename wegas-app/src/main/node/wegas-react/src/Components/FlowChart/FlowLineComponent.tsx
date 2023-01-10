@@ -34,6 +34,7 @@ export function ArrowDefs() {
         refX="6"
         refY="5"
         orient="auto"
+        // eslint-disable-next-line react/no-unknown-property
         fill="transparent"
         stroke="rgb(128, 127, 127)"
         className={hoverLineStyle}
@@ -47,6 +48,7 @@ export function ArrowDefs() {
         refX="6"
         refY="5"
         orient="auto"
+        // eslint-disable-next-line react/no-unknown-property
         fill={themeVar.colors.HighlightColor}
         stroke="transparent"
       >
@@ -59,6 +61,7 @@ export function ArrowDefs() {
         refX="5"
         refY="10"
         orient="auto"
+        // eslint-disable-next-line react/no-unknown-property
         fill={themeVar.colors.HighlightColor}
         stroke="transparent"
       >

@@ -6,8 +6,13 @@ function Loading() {
   return <FontAwesome icon="cog" /*size="5x"*/ spin />;
 }
 
-function Error(err: unknown) {
-  return <div>Error : {err}</div>;
+function ErrorDisplay(err: unknown) {
+  if(err instanceof Error){
+    return <div>Error : {err.message}</div>;
+  }else{
+    const s = String(err);
+    return <div>Error : unknown error : {s}</div>;
+  }
 }
 
 /**
@@ -19,17 +24,17 @@ function Error(err: unknown) {
 export function asyncSFC<T>(
   PComp: (props: T) => Promise<React.ReactElement | null>,
   Loader: React.FunctionComponent<UnknownValuesObject> = Loading,
-  Err: React.FunctionComponent<{ err: unknown }> = Error,
+  Err: React.FunctionComponent<{ err: unknown }> = ErrorDisplay,
 ) {
   function AsyncDeps(props: T): React.ReactElement {
-    const { status, data } = useAsync(
+    const { status, data, error } = useAsync(
       React.useMemo(() => PComp(props), [props]),
     );
     switch (status) {
       case 'pending':
         return <Loader />;
       case 'rejected':
-        return <Err err={data} />;
+        return <Err err={error} />;
       case 'resolved':
         return data!;
     }

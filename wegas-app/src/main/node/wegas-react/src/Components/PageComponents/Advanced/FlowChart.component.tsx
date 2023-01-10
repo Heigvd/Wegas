@@ -30,7 +30,7 @@ interface PlayerFlowChartProps<
   F extends LabeledFlowLine,
   P extends LabeledProcess<F>,
 > extends WegasComponentProps,
-    Omit<FlowChartProps<F, P>, 'processes' | 'onMove' | 'onNew' | 'onConnect'> {
+    Omit<FlowChartProps<F, P>, 'processes' | 'onMove' | 'onNew' | 'onConnect' | 'title'> {
   title?: IScript;
   processes?: IScript;
   onMove: OnVariableChange;

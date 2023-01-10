@@ -39,7 +39,7 @@ export class ErrorCatch extends React.Component {
                         height="200px"
                         onBlur={this.onErrorBlur}
                     />
-                    <div {...errorStyle}>{this.state.error.message}</div>
+                    <div className={errorStyle}>{this.state.error.message}</div>
                 </>
             );
         }

@@ -62,8 +62,7 @@ function scriptObject(Comp) {
                     {renderLabel(view.label)}
                     {warn.length ? (
                         <span
-                            {...warnStyle}
-                            className="fa fa-warning"
+                            className={`fa fa-warning ${warnStyle}`}
                             title={warn}
                         />
                     ) : null}

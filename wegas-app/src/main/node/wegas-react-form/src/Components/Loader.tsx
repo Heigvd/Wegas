@@ -19,4 +19,4 @@ const loaderStyle = css({
     margin: 'auto',
     animation: `${scale} 1s infinite ease-in-out`,
 });
-export const SimpleLoader = () => <div {...loaderStyle} />;
+export const SimpleLoader = () => <div className={loaderStyle} />;

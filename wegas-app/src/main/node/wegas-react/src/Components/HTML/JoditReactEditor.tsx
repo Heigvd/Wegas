@@ -202,7 +202,7 @@ export default function JoditReactEditor({
   }, [classes, placeholder, showFilePickerFunc, toolbarLayout]);
 
   const onChangeCallback = React.useCallback(
-    (value, oldValue) => {
+    (value: string | undefined, oldValue: string | undefined) => {
       const prev = cleanValue(oldValue);
       const v = cleanValue(value);
       if (onChange && v !== prev) {

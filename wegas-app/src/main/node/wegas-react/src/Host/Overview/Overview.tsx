@@ -1,5 +1,6 @@
 import { css, CSSInterpolation, cx } from '@emotion/css';
 import * as React from 'react';
+import { ITeam } from 'wegas-ts-api';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { useWebsocketEvent } from '../../API/websocket';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
@@ -270,7 +271,7 @@ export default function Overview() {
   );
 
   const sortFn = React.useCallback(
-    (a, b) => {
+    (a: [string, Readonly<ITeam>], b: [string, Readonly<ITeam>]) => {
       const valueA = (overviewState?.data[a[0]] || {})[
         sortState?.sortedValue as keyof OverviewState['data'][string]
       ];

@@ -5,7 +5,7 @@ import commonView from '../HOC/commonView';
 import {css} from '@emotion/css';
 
 interface Choice {
-    value: {};
+    value: unknown;
     label?: string;
     disabled?: boolean;
     selected?: boolean;
@@ -39,7 +39,7 @@ function genItems(o: string | Choice, i: number) {
             </option>
         );
     }
-    const {label = o.value, value, disabled} = o;
+    const {label = String(o.value), value, disabled} = o;
     return (
         <option key={`k-${value}`} value={JSON.stringify(value)} disabled={disabled}>
             {label}

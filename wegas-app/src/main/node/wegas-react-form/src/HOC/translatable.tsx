@@ -31,8 +31,8 @@ interface EndProps {
  * @param Comp
  */
 export default function translatable<P extends EndProps>(
-    Comp: React.ComponentType<P>,
-): React.SFC<TranslatableProps & P> {
+{ Comp }: { Comp: React.ComponentType<P>; },
+): React.FunctionComponent<TranslatableProps & P> {
     function Translated(props: TranslatableProps) {
         if (!props.value) {
             return null;

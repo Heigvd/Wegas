@@ -389,7 +389,7 @@ class HTMLView extends React.Component {
             );
         } else {
             return (
-                <div {...tinymceStyle}>
+                <div className={tinymceStyle}>
                     <div id={this.id} className="tinymce-toolbar"></div>
                     <Editor
                         value={this.state.content}
