@@ -1,7 +1,6 @@
 import { BaseView, Schema } from 'jsoninput/typings/types';
 import { omit, pick } from 'lodash-es';
 import * as React from 'react';
-import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import {
   AbsoluteItemLayoutProps,
@@ -25,9 +24,11 @@ import {
   WegasComponentOptionsActions,
 } from '../../../Components/PageComponents/tools/options';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
-import { defaultPadding } from '../../../css/classes';
+import { defaultPadding, mediumPadding } from '../../../css/classes';
 import { store, StoreDispatch } from '../../../data/Stores/store';
 import { findComponent } from '../../../Helper/pages';
+import { commonTranslations } from '../../../i18n/common/common';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { FormAction } from '../Form';
 import { AvailableSchemas } from '../FormView';
 import { pageCTX } from './PageEditor';
@@ -56,7 +57,15 @@ interface EditorProps<T = WegasComponentForm> {
   localDispatch: StoreDispatch | undefined;
 }
 
-async function WindowedEditor({
+// Importing Form as a Lazy componenet prevents circular import statements
+const Form = React.lazy(() => import('../Form'));
+
+function Fallback() {
+  const i18nValues = useInternalTranslate(commonTranslations);
+  return <div className={mediumPadding}>{i18nValues.loading + '...'}</div>;
+}
+
+function WindowedEditor({
   label,
   entity,
   schema,
@@ -65,28 +74,20 @@ async function WindowedEditor({
   error,
   localDispatch,
 }: EditorProps) {
-  const [Form] = await Promise.all<typeof import('../Form')['Form']>([
-    import('../Form').then(m => m.Form),
-  ]);
   return (
-    <Form
-      error={error}
-      label={label}
-      entity={entity}
-      update={value => update && update(value)}
-      actions={actions}
-      config={schema}
-      localDispatch={localDispatch}
-    />
+    <React.Suspense fallback={<Fallback />}>
+      <Form
+        error={error}
+        label={label}
+        entity={entity}
+        update={value => update && update(value as WegasComponentForm)}
+        actions={actions}
+        config={schema}
+        localDispatch={localDispatch}
+      />
+    </React.Suspense>
   );
 }
-const AsyncComponentForm = asyncSFC<EditorProps>(
-  WindowedEditor,
-  () => <div>load...</div>,
-  ({ err }: { err: Error }) => (
-    <span>{err && err.message ? err.message : 'Something went wrong...'}</span>
-  ),
-);
 
 export interface WegasComponentCommonProperties {
   name?: string;
@@ -292,7 +293,7 @@ export function ComponentProperties({
   }
 
   return (
-    <AsyncComponentForm
+    <WindowedEditor
       label={label}
       entity={wegasComponentToForm(entity.props)}
       schema={customSchema ? customSchema : schema}

@@ -18,8 +18,8 @@ import {
   editorTabsTranslations,
 } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
-import { Loader } from '../HOC/Loader';
 import { IconButton } from '../Inputs/Buttons/IconButton';
+import { TumbleLoader } from '../Loader';
 import { modalContentStyle, modalTitleDivStyle } from '../Modal';
 import { themeVar } from '../Theme/ThemeVars';
 import { Toolbar } from '../Toolbar';
@@ -121,7 +121,7 @@ export function TabLayoutContent({
         innerClassName={cx(flex, expandBoth)}
         outerClassName={expandBoth}
       >
-        <React.Suspense fallback={<Loader />}>{component}</React.Suspense>
+        <React.Suspense fallback={<TumbleLoader />}>{component}</React.Suspense>
       </Reparentable>
     </div>
   );

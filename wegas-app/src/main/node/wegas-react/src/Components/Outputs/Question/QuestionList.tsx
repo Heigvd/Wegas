@@ -42,7 +42,6 @@ import {
   EntityChooserLabelProps,
   entityChooserLabelStyle,
 } from '../../EntityChooser';
-import { asyncSFC } from '../../HOC/asyncSFC';
 import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import { useTranslate } from '../../Hooks/useTranslate';
 import { SimpleInput } from '../../Inputs/SimpleInput';
@@ -106,19 +105,17 @@ export const singleEditButtonStyle = css({
 });
 
 export function makeMenuFromClass(className: string) {
-  const Label = asyncSFC(async () => {
-    const entity = {
-      '@class': className + 'Descriptor',
-    } as IAbstractEntity;
-    return (
+  const entity = {
+    '@class': className + 'Descriptor',
+  } as IAbstractEntity;
+
+  return {
+    label: (
       <>
         <IconComp icon={withDefault(getIcon(entity), 'question')} />
         {getClassLabel(entity)}
       </>
-    );
-  });
-  return {
-    label: <Label />,
+    ),
     value: {
       descriptor: className + 'Descriptor',
       instance: className + 'Instance',
@@ -246,9 +243,7 @@ export function QuestionLabel({
           )}
         </Validate>
       ) : (
-        <div className={flex}>
-            { questionDLabel }
-        </div>
+        <div className={flex}>{questionDLabel}</div>
       )}
     </div>
   );

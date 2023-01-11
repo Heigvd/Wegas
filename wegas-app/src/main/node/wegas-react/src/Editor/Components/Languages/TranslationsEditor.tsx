@@ -11,7 +11,6 @@ import {
   LanguagesAPI,
 } from '../../../API/languages.api';
 import { DropMenu } from '../../../Components/DropMenu';
-import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import {
@@ -25,6 +24,7 @@ import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
+import { TumbleLoader } from '../../../Components/Loader';
 import { useOkCancelModal } from '../../../Components/Modal';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../../Components/Toolbar';
@@ -71,7 +71,7 @@ import { generateCode } from '../FormView/Script/Expressions/astManagement';
 import {
   Attributes,
   generateSchema,
-  testCode,
+  parseCode,
 } from '../FormView/Script/Expressions/expressionEditorHelpers';
 import { isClientMode } from '../FormView/Script/Script';
 import { IconComp, withDefault } from '../Views/FontAwesome';
@@ -524,7 +524,7 @@ interface ScriptViewProps extends Omit<TranslationViewItemProps, 'view'> {
   value: IScript;
 }
 
-async function AsyncScriptView({
+function ScriptView({
   value,
   fieldName,
   label,
@@ -532,9 +532,9 @@ async function AsyncScriptView({
   depth,
   selectedLanguages,
   showOptions,
-}: ScriptViewProps) {
+}: ScriptViewProps) : JSX.Element {
   const parentDescriptor = VariableDescriptor.select(value.parentId!)!;
-  const parentSchema = (await getEditionConfig(parentDescriptor)) as {
+  const parentSchema = (getEditionConfig(parentDescriptor)) as {
     properties: { [key: string]: { view: { mode: ScriptMode } } };
   };
   const mode = parentSchema.properties[fieldName].view.mode;
@@ -547,12 +547,12 @@ async function AsyncScriptView({
 
   for (const expression of parsedExpressions) {
     const expressionCode = generate(program([expression])).code;
-    const attributes = testCode(expressionCode, mode) as
+    const attributes = parseCode(expressionCode, mode) as
       | ExtractedAttributes
       | string;
 
     if (typeof attributes !== 'string') {
-      const schema = await generateSchema(attributes, [], mode);
+      const schema = generateSchema(attributes, [], mode);
       const script = generateCode(attributes, schema);
 
       const translatableEntries = Object.entries(schema.properties).filter(
@@ -606,10 +606,8 @@ async function AsyncScriptView({
         />
       ))}
     </div>
-  ) : null;
+  ) : <></>;
 }
-
-const ScriptView = asyncSFC<ScriptViewProps>(AsyncScriptView);
 
 interface SharedTranslationViewProps {
   selectedLanguages: IGameModelLanguage[];
@@ -723,13 +721,13 @@ function visitProperties<T extends IMergeable>(
     .filter(visitFilter);
 }
 
-async function getTranslatableProperties<T extends IMergeable>(
+function getTranslatableProperties<T extends IMergeable>(
   entity: T | undefined,
-): Promise<Translations> {
+): Translations {
   if (entity == null) {
     return {};
   } else {
-    const schema = (await getEditionConfig(entity)) as TranslationSchema;
+    const schema = getEditionConfig(entity) as TranslationSchema;
     return visitProperties(entity, schema).reduce((o, entry) => {
       const { key, value, type, label } = entry;
       return { ...o, [key]: { type, value, label } };
@@ -754,7 +752,7 @@ function TranslationView({
   );
 
   React.useEffect(() => {
-    getTranslatableProperties(variable).then(setTranslations);
+    setTranslations (getTranslatableProperties(variable));
   }, [variable]);
 
   return variable ? (
@@ -977,6 +975,10 @@ function TranslationHeader({
   );
 
   const enabled = isLanguageEditable(language.code, editableLanguages);
+
+  if (editableLanguages === 'loading'){
+    return <TumbleLoader />;
+  }
 
   return (
     <div className={cx(flex, flexRow, itemCenter)}>

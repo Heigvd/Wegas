@@ -12,7 +12,6 @@ import {
   IResult,
   IVariableDescriptor,
 } from 'wegas-ts-api';
-import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { mediumPadding } from '../../css/classes';
 import { Actions } from '../../data';
 import { entityIs, entityIsPersisted } from '../../data/entities';
@@ -49,7 +48,7 @@ export interface EditorProps<T> extends DisabledReadonly {
   update?: (variable: T) => void;
   actions?: FormAction<T>[];
   path?: (string | number)[];
-  getConfig(entity: T): Promise<Schema<AvailableViews>>;
+  getConfig(entity: T): Schema<AvailableViews>;
   error?: {
     message: string;
     onRead: () => void;
@@ -176,7 +175,16 @@ export function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
   return schema;
 }
 
-async function WindowedEditor<T extends IMergeable>({
+
+// Importing Form as a Lazy componenet prevents circular import statements
+const Form = React.lazy(() => import('./Form'));
+
+function Fallback() {
+  const i18nValues = useInternalTranslate(commonTranslations);
+  return <div className={ mediumPadding }>{ i18nValues.loading + '...' }</div>
+}
+
+export function WindowedEditor<T extends IMergeable>({
   entity,
   update,
   actions = [],
@@ -187,7 +195,7 @@ async function WindowedEditor<T extends IMergeable>({
   highlight,
   localDispatch,
   ...options
-}: EditorProps<T>) {
+}: EditorProps<T>) : JSX.Element {
   let pathEntity = entity as T & { id?: number };
 
   if (Array.isArray(path) && path.length > 0) {
@@ -195,13 +203,10 @@ async function WindowedEditor<T extends IMergeable>({
   }
 
   if (pathEntity === undefined) {
-    return null;
+    return <></>;
   }
 
-  const [Form, schema] = await Promise.all([
-    import('./Form').then(m => m.Form),
-    getConfig(pathEntity),
-  ]);
+  const schema = getConfig(pathEntity);
 
   // First try to get schema from simple filters
   const customSchemas = store.getState().global.schemas;
@@ -226,6 +231,7 @@ async function WindowedEditor<T extends IMergeable>({
   }
 
   return (
+    <React.Suspense fallback={<Fallback /> }>
     <Form
       entity={pathEntity}
       label={
@@ -268,23 +274,9 @@ async function WindowedEditor<T extends IMergeable>({
       localDispatch={localDispatch}
       {...options}
     />
+    </React.Suspense>
   );
 }
-export const AsyncVariableForm = asyncSFC<EditorProps<IMergeable>>(
-  WindowedEditor,
-  () => {
-    const i18nValues = useInternalTranslate(commonTranslations);
-    return <div className={mediumPadding}>{i18nValues.loading + '...'}</div>;
-  },
-  ({ err }: { err: Error }) => {
-    const i18nValues = useInternalTranslate(commonTranslations);
-    return (
-      <span>
-        {err && err.message ? err.message : i18nValues.someWentWrong + '...'}
-      </span>
-    );
-  },
-);
 
 /**
  * Retrieve message event and make it readable
@@ -376,16 +368,16 @@ export function parseEventFromIndex(
   }
 }
 
-export function getStateConfig(
+function getStateConfig(
   state: Readonly<Edition>,
   entity: IVariableDescriptor,
 ) {
   return 'config' in state && state.config != null
-    ? Promise.resolve(state.config)
-    : (getEditionConfig(entity) as Promise<Schema<AvailableViews>>);
+    ? state.config
+    : getEditionConfig(entity);
 }
 
-export function getConfig(state: Readonly<Edition>) {
+function getConfig(state: Readonly<Edition>) {
   return (entity: IVariableDescriptor) => getStateConfig(state, entity);
 }
 export function getEntity(editionState?: Readonly<Edition>) {
@@ -580,7 +572,7 @@ export function VariableForm({
     <ReflexContainer orientation="vertical">
       <ReflexElement flex={1000}>
         <ErrorBoundary>
-          <AsyncVariableForm
+          <WindowedEditor
             path={path}
             getConfig={config}
             update={update}

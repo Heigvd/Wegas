@@ -45,7 +45,7 @@ import {
   LeftExpressionAttributes,
   VariableExpressionAttributes,
   WegasOperators,
-  WyiswygExpressionSchema,
+  WysiwygExpressionSchema,
 } from './expressionEditorHelpers';
 
 function pushExpressionToStatementArray(
@@ -134,7 +134,7 @@ const allowedArgumentTypes = {
     generator: numericLiteral,
     parser: (expression: NumericLiteral): number => expression.value,
   },
-  prefixedNumber: {
+  prefixedNumber: { // +2 or -3
     checker: (
       node: object | null | undefined,
       opts?: object | null | undefined,
@@ -355,7 +355,7 @@ export function parseStatement(
   mode?: ScriptMode,
 ): Attributes {
   let error: string | undefined = undefined;
-  // If statement is empty, set value as true
+  // If statement is empty, set value to true
   if (isEmptyStatement(statement)) {
     if (isScriptCondition(mode)) {
       return {
@@ -479,7 +479,7 @@ function leftExpressionToCode(expression: LeftExpressionAttributes): string {
 
 function methodAndArgsToCode(
   attributes: NonNullable<Attributes>,
-  schema: WyiswygExpressionSchema | undefined,
+  schema: WysiwygExpressionSchema | undefined,
 ): string {
   let newCode = '';
   const expression =
@@ -519,32 +519,37 @@ function methodAndArgsToCode(
 
 export function generateCode(
   attributes: NonNullable<Attributes>,
-  schema: WyiswygExpressionSchema | undefined,
+  schema: WysiwygExpressionSchema | undefined,
 ): string {
   let newCode = '';
   if (attributes.type === 'impact') {
-    if (attributes.expression != null) {
+    if (attributes.expression) {
       newCode +=
         leftExpressionToCode(attributes.expression) +
         methodAndArgsToCode(attributes, schema);
     }
     return newCode;
-  } else {
-    if (attributes.leftExpression != null) {
+  } else { // condition
+    if (attributes.leftExpression) {
+
       newCode +=
         leftExpressionToCode(attributes.leftExpression) +
         methodAndArgsToCode(attributes, schema);
       if (
-        attributes.booleanOperator != null &&
+        attributes.booleanOperator &&
         attributes.booleanOperator != 'isTrue' &&
-        attributes.booleanOperator != 'isFalse' &&
-        attributes.rightExpression != null
+        attributes.booleanOperator != 'isFalse'
       ) {
-        newCode += ` ${attributes.booleanOperator} ${attributes.rightExpression}`;
+        let right = attributes.rightExpression;
+        if(typeof right === 'string'){
+          right = JSON.stringify(right);
+        }
+        newCode += ` ${attributes.booleanOperator} ${right}`;
       } else if (attributes.booleanOperator === 'isFalse') {
         newCode = '!' + newCode;
       }
     }
+
     return newCode;
   }
 }
