@@ -1,6 +1,6 @@
 /* global module*/
 import * as React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { AuthorizationProvider } from './Components/Contexts/AuthorizationsProvider';
 import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
@@ -17,7 +17,8 @@ import { Player } from './Editor/Components/Player';
 importPageComponents();
 
 function mount() {
-  render(
+  const root = createRoot(document.getElementById('root')!);
+  root.render(
     <AuthorizationProvider>
       <FeaturesProvider>
         <FullscreenProvider>
@@ -35,7 +36,6 @@ function mount() {
         </FullscreenProvider>
       </FeaturesProvider>
     </AuthorizationProvider>,
-    document.getElementById('root'),
   );
 }
 
