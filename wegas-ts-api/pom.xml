@@ -104,7 +104,6 @@
                                 <argument>install</argument>
                                 <argument>--frozen-lockfile</argument>
                             </arguments>
-                            <workingDirectory>${project.basedir}/target/</workingDirectory>
                         </configuration>
                     </execution>
                     <execution>

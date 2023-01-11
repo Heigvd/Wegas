@@ -3,7 +3,7 @@ import { Schema } from 'jsoninput';
 import {
   IAbstractEntity,
   IMergeable,
-  SAbstractEntity,
+  JSONLoader,
   WegasClassNames,
 } from 'wegas-ts-api';
 import { entityIs } from '../data/entities';
@@ -20,7 +20,7 @@ export type WegasMethodParameter = {
 
 export const wegasMethodReturnValues = ['number', 'string', 'boolean'] as const;
 
-export interface WegasMethod {
+export interface MethodConfig {
   label: string;
   parameters: WegasMethodParameter[];
   returns?: WegasMethodReturnType;
@@ -32,9 +32,7 @@ export function isWegasMethodReturnType(
   return (wegasMethodReturnValues as readonly string[]).includes(value);
 }
 
-export interface MethodConfig {
-  [method: string]: WegasMethod;
-}
+export type MethodsConfig = Record<string, MethodConfig>;
 
 /**
  * Traverse the schema, update each Schema in this schema with updater functions
@@ -42,7 +40,7 @@ export interface MethodConfig {
  * @param updater functions called on each schema, return values are piped into next
  * function and finally replace processed schema.
  */
-export async function schemaUpdater(
+function schemaUpdater(
   schema: SimpleSchema,
   ...updater: (<
     Ext extends {
@@ -50,60 +48,55 @@ export async function schemaUpdater(
     } & Schema,
   >(
     schema: Ext,
-  ) => Schema | Promise<Schema>)[]
+  ) => Schema)[]
 ) {
-  const update: SimpleSchema = await updater.reduce(
-    async (p, f) => f(await p),
-    Promise.resolve({ ...schema }),
+  const update: SimpleSchema = updater.reduce(
+    (p, f) => f(p),
+    { ...schema },
   );
   if ('properties' in update && update.properties != null) {
     const newProperties: { [props: string]: SimpleSchema } = {};
-    await Promise.all(
-      Object.entries(update.properties).map(async e => {
-        const u = await schemaUpdater(e[1] as SimpleSchema, ...updater);
-        newProperties[e[0]] = u;
+      Object.entries(update.properties).map( ([k,v]) => {
+        const u = schemaUpdater(v as SimpleSchema, ...updater);
+        newProperties[k] = u;
       }),
-    );
     update.properties = newProperties;
   }
   if ('additionalProperties' in update && update.additionalProperties != null) {
-    update.additionalProperties = await schemaUpdater(
+    update.additionalProperties = schemaUpdater(
       update.additionalProperties,
       ...updater,
     );
   }
   if ('items' in update && update.items != null) {
     if (Array.isArray(update.items)) {
-      update.items = await Promise.all(
-        update.items.map(i => schemaUpdater(i, ...updater)),
-      );
+      update.items = update.items.map(i => schemaUpdater(i, ...updater));
     } else {
-      update.items = await schemaUpdater(update.items, ...updater);
+      update.items = schemaUpdater(update.items, ...updater);
     }
   }
   return update;
 }
 
-export async function methodConfigUpdater(
-  config: MethodConfig,
+function methodConfigUpdater(
+  config: MethodsConfig,
   ...updater: (<
     Ext extends {
       $wref?: string | undefined;
     } & Schema,
   >(
     schema: Ext,
-  ) => Schema | Promise<Schema>)[]
+  ) => Schema )[]
 ) {
-  const newConfig: MethodConfig = {};
+  const newConfig: MethodsConfig = {};
   for (const method in config) {
-    const newParameters = (await Promise.all(
+    const newParameters =
       config[method].parameters.map(
-        async p => await schemaUpdater(p, ...updater),
-      ),
-    )) as MethodConfig['1']['parameters'];
+        p => schemaUpdater(p, ...updater),
+      )
     newConfig[method] = {
       ...config[method],
-      parameters: newParameters,
+      parameters: newParameters as WegasMethodParameter[],
     };
   }
   return newConfig;
@@ -113,13 +106,16 @@ export async function methodConfigUpdater(
  * Download configuration schema
  * @param file filename
  */
-async function fetchConfig(
-  file: string,
-): Promise<{ schema: Schema; methods: MethodConfig }> {
-  return import(
-    /* webpackChunkName: "Config-[request]", webpackPrefetch: true */
+function fetchConfig(
+  atClass: string,
+): { schema: Schema; methods: MethodsConfig } {
+  
+  return JSONLoader[atClass as keyof typeof JSONLoader] as { schema: Schema; methods: MethodsConfig };
+
+  /*return import(
+     webpackChunkName: "Config-[request]", webpackPrefetch: true 
     'wegas-ts-api/src/generated/schemas/' + file
-  );
+  );*/
 }
 type formValidationSchema = Parameters<typeof formValidation>[0];
 /**
@@ -160,42 +156,47 @@ function updatedErrored(
  * @param schema schema to update
  */
 
-async function injectRef(schema: { $wref?: string }): Promise<Schema> {
+function injectRef(schema: { $wref?: string }): Schema {
   const { $wref, ...restSchema } = schema;
   if (typeof $wref === 'string') {
-    const refSchema = await import(
+    try {
+      const refSchema = fetchConfig($wref.replace(/\.json$/, ''));
+    /*const refSchema = await import(
       'wegas-ts-api/src/generated/schemas/' + $wref
-    )
-      .then(res => res.schema)
-      .catch(e => {
-        wwarn(e);
-        return {};
-      });
-    return { ...refSchema, ...restSchema };
+    )*/
+   
+      return { ...refSchema.schema, ...restSchema };
+    
+    }catch (e) {
+      wwarn(e);
+      return restSchema;
+    }
   }
+
   return restSchema;
 }
 
-export async function getConfigFromPath(path: string): Promise<Schema> {
-  return fetchConfig(path)
-    .then(res => {
-      return schemaUpdater(
+function getConfigFromPath(path: string): Schema {
+  try {
+    const res = fetchConfig(path);
+    
+    return schemaUpdater(
         res.schema,
         injectRef,
         updateVisibility,
         updatedErrored,
-      );
-    })
-    .catch(e => {
+    );
+    
+  }catch (e) {
       wwarn(e);
       return {};
-    });
+  }
 }
 
-export default async function getEditionConfig<T extends IMergeable>(
+export default function getEditionConfig<T extends IMergeable>(
   entity: T,
-): Promise<Schema> {
-  return getConfigFromPath(entity['@class'] + '.json');
+): Schema<AvailableViews> {
+  return getConfigFromPath(entity['@class']) as Schema<AvailableViews>;
 }
 
 export interface EActions {
@@ -206,9 +207,9 @@ export interface EActions {
   ) => EditingThunkResult;
 }
 
-export async function getEntityActions(
+export function getEntityActions(
   entity: IAbstractEntity,
-): Promise<EActions> {
+): EActions {
   if (
     entityIs(entity, 'FSMDescriptor') ||
     entityIs(entity, 'DialogueDescriptor')
@@ -218,12 +219,12 @@ export async function getEntityActions(
   return { edit: editVariable };
 }
 
-export async function getVariableMethodConfig<T extends SAbstractEntity>(
+export function getVariableMethodConfig<T extends IAbstractEntity>(
   entity: T,
-): Promise<MethodConfig> {
-  return fetchConfig(entity.getJSONClassName() + '.json').then(res => {
-    return methodConfigUpdater(res.methods, injectRef);
-  });
+): MethodsConfig {
+  const res = fetchConfig(entity['@class']);
+  return methodConfigUpdater(res.methods, injectRef);
+  
 }
 
 export function getIcon<T extends IMergeable>(

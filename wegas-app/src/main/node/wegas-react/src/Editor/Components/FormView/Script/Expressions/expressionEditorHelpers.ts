@@ -1,21 +1,21 @@
 import { parse } from '@babel/parser';
 import { emptyStatement, Statement } from '@babel/types';
 import { Schema } from 'jsoninput/typings/types';
-import { SVariableDescriptor } from 'wegas-ts-api';
 import { AvailableSchemas, AvailableViews } from '../..';
-import { safeClientScriptEval } from '../../../../../Components/Hooks/useScript';
 import { schemaProps } from '../../../../../Components/PageComponents/tools/schemaProps';
 import { isServerMethod } from '../../../../../data/Reducer/globalState';
 import { store } from '../../../../../data/Stores/store';
 import {
   getVariableMethodConfig,
+  MethodsConfig,
   MethodConfig,
-  WegasMethod,
   WegasMethodParameter,
 } from '../../../../editionConfig';
 import { StringOrT } from '../../TreeVariableSelect';
-import { handleError, isClientMode, isScriptCondition } from '../Script';
+import { handleError, isClientMode, isScriptCondition, isServerScript } from '../Script';
 import { LiteralExpressionValue, parseStatement } from './astManagement';
+import { VariableDescriptor as VDSelect } from '../../../../../data/selectors';
+
 
 const comparisonOperators = {
   isTrue: { label: 'is true' },
@@ -24,9 +24,16 @@ const comparisonOperators = {
   '!==': { label: 'not equals' },
   '>': { label: 'greater than' },
   '>=': { label: 'greater or equals than' },
-  '<': { label: 'lesser than' },
-  '<=': { label: 'lesser or equals than' },
+  '<': { label: 'less than' },
+  '<=': { label: 'less or equals than' },
 } as const;
+
+const comparisonOperatorTypes : Record<WegasMethodReturnType, WegasOperators[]> = 
+{
+  string: ['===', '!=='],
+  number: ['===', '!==', '<', '<=', '>', '>='],
+  boolean: ['isTrue', 'isFalse'],
+}
 
 export type WegasOperators = keyof typeof comparisonOperators;
 
@@ -111,15 +118,15 @@ type ConditionSchema = {
 
 type SchemaProperties = ImpactSchema | ConditionSchema;
 
-export interface WyiswygExpressionSchema {
+export interface WysiwygExpressionSchema {
   description: string;
   properties: SchemaProperties;
 }
 
 function filterVariableMethods(
-  methods: MethodConfig,
+  methods: MethodsConfig,
   mode?: ScriptMode,
-): MethodConfig {
+): MethodsConfig {
   return Object.keys(methods)
     .filter(k =>
       mode?.includes('GET')
@@ -129,28 +136,22 @@ function filterVariableMethods(
     .reduce((o, k) => ({ ...o, [k]: methods[k] }), {});
 }
 
-function filterOperators(
-  k: WegasOperators,
-  methodReturn: WegasMethod['returns'],
-) {
-  if (methodReturn === 'boolean') {
-    return k === 'isTrue' || k === 'isFalse';
-  } else {
-    return k !== 'isTrue' && k !== 'isFalse';
-  }
-}
-
 function generateOperators(
-  methodReturns: WegasMethod['returns'],
+  methodReturns: MethodConfig['returns'],
 ): SelectOperator[] {
-  return Object.keys(comparisonOperators)
-    .filter((k: WegasOperators) => filterOperators(k, methodReturns))
-    .map((k: WegasOperators) => {
+
+  if(methodReturns){
+    const operators = comparisonOperatorTypes[methodReturns];
+    return operators.map((k) => {
       return {
         label: comparisonOperators[k].label,
-        value: k,
-      };
-    });
+        value: k
+      }
+    }
+    );
+  }
+  return [];
+
 }
 
 export function typeCleaner(
@@ -254,7 +255,7 @@ function genGlobalItems<T = string>(
     });
 }
 
-function getGlobalMethodConfig(globalMethod: string): MethodConfig {
+function getGlobalMethodConfig(globalMethod: string): MethodsConfig {
   const foundMethod = getServerMethods(
     store.getState().global.serverMethods,
   ).find(method => method.fullName === globalMethod);
@@ -278,7 +279,7 @@ interface GlobalMethodSearcher extends MethodSearcher {
 }
 interface VariableMethodSearcher extends MethodSearcher {
   type: 'variable';
-  value?: SVariableDescriptor;
+  value?: IVariableDescriptor;
   mode?: ScriptMode;
 }
 interface BooleanMethodSearcher extends MethodSearcher {
@@ -289,16 +290,16 @@ type MethodSearchers =
   | VariableMethodSearcher
   | BooleanMethodSearcher;
 
-async function getMethodConfig(
+function getMethodConfig(
   methodSearcher: MethodSearchers,
-): Promise<MethodConfig> {
+): MethodsConfig {
   switch (methodSearcher.type) {
     case 'global':
       return getGlobalMethodConfig(methodSearcher.value);
     case 'variable':
       return methodSearcher.value
         ? filterVariableMethods(
-            await getVariableMethodConfig(methodSearcher.value),
+            getVariableMethodConfig(methodSearcher.value),
             methodSearcher.mode,
           )
         : {};
@@ -343,7 +344,7 @@ export function makeItems(
 }
 
 function variableScriptFactory(
-  value: string | LeftExpressionAttributes,
+  value: LeftExpressionAttributes,
 ): string | undefined {
   if (typeof value === 'object' && value.type === 'variable') {
     return `Variable.find(gameModel,'${value.variableName}')`;
@@ -365,7 +366,7 @@ function makeSchemaInitExpression(
         value: 'Variables',
         selectable: false,
       },
-      ...(mode === 'GET' || mode === 'SET'
+      ...(isServerScript(mode)
         ? [
             {
               label: 'Global methods',
@@ -407,7 +408,7 @@ function makeSchemaInitExpression(
   }
 }
 
-function makeSchemaMethodSelector(methods?: MethodConfig) {
+function makeSchemaMethodSelector(methods?: MethodsConfig) {
   return {
     ...(methods && Object.keys(methods).length > 0
       ? {
@@ -456,7 +457,7 @@ function makeSchemaParameters(
   };
 }
 
-function defaultRightExpressionValue(method: WegasMethod) {
+function defaultRightExpressionValue(method: MethodConfig) {
   switch (method.returns) {
     case 'boolean':
       return true;
@@ -520,13 +521,12 @@ function isRightExpressionVisible(
 
 function makeSchemaConditionAttributes(
   currentSchema: SchemaProperties,
-  method?: WegasMethod,
-  mode?: ScriptMode,
+  method?: MethodConfig,
 ): SchemaProperties {
   const conditionAttributesSchema:
     | Pick<ConditionSchema, 'booleanOperator' | 'rightExpression'>
     | EmptyObject = {};
-  if (method && isScriptCondition(mode)) {
+  if (method) {
     conditionAttributesSchema['booleanOperator'] = schemaProps.select({
       values: generateOperators(method.returns),
       returnType: 'string',
@@ -537,6 +537,7 @@ function makeSchemaConditionAttributes(
       visible: (_value: LiteralExpressionValue, formValue: Attributes) =>
         isBooleanOperatorVisible(currentSchema, formValue),
     });
+
     conditionAttributesSchema['rightExpression'] = schemaProps.custom({
       label: undefined,
       type: method.returns,
@@ -555,13 +556,13 @@ function makeSchemaConditionAttributes(
   };
 }
 
-export async function generateSchema(
+export function generateSchema(
   attributes: Attributes,
   variablesItems:
     | TreeSelectItem<string | LeftExpressionAttributes>[]
     | undefined,
   mode?: ScriptMode,
-): Promise<WyiswygExpressionSchema> {
+): WysiwygExpressionSchema {
   let newSchemaProps = makeSchemaInitExpression(variablesItems, mode);
   const expression =
     attributes?.type === 'condition'
@@ -576,21 +577,15 @@ export async function generateSchema(
       case 'variable':
         configArg = {
           type: expression.type,
-          value: safeClientScriptEval<SVariableDescriptor>(
-            `Variable.find(gameModel,'${expression.variableName}')`,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-          ),
+          value: VDSelect.findByName(expression.variableName),
           mode,
         };
         break;
       default:
         configArg = { type: 'boolean' };
     }
-    const methods = await getMethodConfig(configArg);
-    let method: WegasMethod | undefined = undefined;
+    const methods = getMethodConfig(configArg);
+    let method: MethodConfig | undefined = undefined;
     switch (expression.type) {
       case 'global': {
         method = methods[expression.globalObject];
@@ -619,7 +614,6 @@ export async function generateSchema(
       newSchemaProps = makeSchemaConditionAttributes(
         newSchemaProps,
         method,
-        mode,
       );
     }
   }
@@ -641,7 +635,7 @@ export function isCodeEqual(
   return removeFinalSemicolon(codeA) === removeFinalSemicolon(codeB);
 }
 
-export function testCode(
+export function parseCode(
   code: string,
   mode: ScriptMode | undefined,
 ): string | Attributes {
@@ -664,16 +658,16 @@ export function testCode(
         return String(e);
       }
     } else {
-      return 'While multiple statements are detected, source mode is forced';
+      return 'When multiple statements are detected, source mode is forced';
     }
   } catch (e) {
     return handleError(e);
   }
 }
 
-export function isExpressionReady(
+export function isExpressionValid(
   attributes: Attributes,
-  schema: WyiswygExpressionSchema | undefined,
+  schema: WysiwygExpressionSchema | undefined,
 ): boolean {
   if (attributes == null) {
     return false;
@@ -682,6 +676,7 @@ export function isExpressionReady(
     Object.keys(schema?.properties.arguments?.properties).length !==
       attributes.arguments?.length
   ) {
+    //arguments don't match expected scheme
     return false;
   } else if (attributes.type === 'impact') {
     if (
@@ -692,14 +687,14 @@ export function isExpressionReady(
       return false;
     }
   } else if (attributes.type === 'condition') {
+    if(attributes.leftExpression?.type === 'literal' && attributes.leftExpression.literal != null){
+      return true;
+    }
     if (
       attributes.leftExpression == null ||
-      (attributes.leftExpression.type === 'variable' &&
-        attributes.methodId === null) ||
-      (isBooleanOperatorVisible(schema?.properties, attributes) &&
-        attributes.booleanOperator == null) ||
-      (isRightExpressionVisible(schema?.properties, attributes) &&
-        attributes.rightExpression == null)
+      (attributes.leftExpression.type === 'variable' && attributes.methodId === null) ||
+      (isBooleanOperatorVisible(schema?.properties, attributes) && attributes.booleanOperator == null) ||
+      (isRightExpressionVisible(schema?.properties, attributes) && attributes.rightExpression == null)
     ) {
       return false;
     }

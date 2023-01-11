@@ -20,6 +20,8 @@ import {
   AtClassToConcrtetableTypes,
 } from "./generated/WegasScriptableEntities";
 
+export { JSONLoader } from './generated/JSONLoader';
+
 export type ScriptableEntity<T extends IMergeable> =
   WegasClassNameAndScriptableTypes[T["@class"]];
 

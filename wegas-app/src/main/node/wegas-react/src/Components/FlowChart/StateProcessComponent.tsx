@@ -136,7 +136,6 @@ export const stateMoreInfosStyle = css({
   wordWrap: 'break-word',
   top: '100%',
   width: '200px',
-  ZIndex: 9999,
   '&::before': {
     content: "''",
     borderLeft: '15px solid transparent',

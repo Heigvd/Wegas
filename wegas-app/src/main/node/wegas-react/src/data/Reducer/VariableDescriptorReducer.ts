@@ -20,9 +20,11 @@ import { store, ThunkResult } from '../Stores/store';
 import { deepRemove } from '../updateUtils';
 import { deleteState, editVariable } from './editingState';
 
-export interface VariableDescriptorState {
-  [id: string]: Readonly<IVariableDescriptor> | undefined;
-}
+export type VariableDescriptorState = Record<string, Readonly<IVariableDescriptor> | undefined>
+
+// export interface VariableDescriptorState {
+//   [id: string]: Readonly<IVariableDescriptor> | undefined;
+// }
 
 const variableDescriptors: Reducer<Readonly<VariableDescriptorState>> = u(
   (state: VariableDescriptorState, action: StateActions) => {
