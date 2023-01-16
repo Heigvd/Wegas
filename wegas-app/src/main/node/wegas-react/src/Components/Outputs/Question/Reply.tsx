@@ -18,6 +18,9 @@ const repliesContainer = css({
   fontWeight: 'bold',
   fontSize: themeVar.others.TextFont2,
 });
+const defaultPadding = css({
+  padding: '15px',
+});
 
 interface ReplyDisplayProps {
   reply: IReply;
@@ -28,7 +31,13 @@ function ReplyDisplay({ reply }: ReplyDisplayProps) {
   const answer = reply.answer;
 
   return (
-    <div className={cx(choiceContainerStyle, css({ padding: '15px', flexDirection: 'column', alignItems: 'left' }))}>
+    <div
+      className={cx(
+        choiceContainerStyle,
+        'wip-reply-container',
+        css({ flexDirection: 'column', alignItems: 'left' }),
+      )}
+    >
       <StoreConsumer
         selector={() =>
           VariableDescriptor.firstMatch<IChoiceDescriptor>({
@@ -39,7 +48,11 @@ function ReplyDisplay({ reply }: ReplyDisplayProps) {
         {({ state }) =>
           state != null ? (
             <TranslatableText
-              className={choiceLabelStyle}
+              className={cx(
+                choiceLabelStyle,
+                defaultPadding,
+                'wip-reply-title',
+              )}
               content={state.label}
             />
           ) : (
@@ -49,7 +62,7 @@ function ReplyDisplay({ reply }: ReplyDisplayProps) {
       </StoreConsumer>
 
       <TranslatableText
-        className={choiceDescriptionStyle}
+        className={cx(choiceDescriptionStyle, 'wip-reply-body')}
         content={reply.ignored ? ignorationAnswer : answer}
       />
     </div>

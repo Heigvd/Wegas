@@ -17,7 +17,7 @@ import { themeVar } from './Theme/ThemeVars';
 
 const entityChooser = css({
   width: '100%',
-  overflow: 'hidden'
+  overflow: 'hidden',
 });
 
 const entityContainer = css({
@@ -36,22 +36,21 @@ const labelList = css({
 const labelListMobile = css({
   padding: '10px',
   maxWidth: '100%',
-  overflow: 'auto'
+  overflow: 'auto',
 });
 
 export const entityChooserLabelStyle = (disabled?: boolean) =>
   cx(
     css({
-      backgroundColor: themeVar.colors.PrimaryColor,
-      padding: '10px',
-      boxShadow: `2px 2px 6px rgba(0, 0, 0, 0.2)`,
-      color: themeVar.colors.LightTextColor,
-      borderRadius: themeVar.dimensions.BorderRadius,
-      border: '2px solid transparent',
+      fontWeight: 'bold',
+      backgroundColor: themeVar.colors.BackgroundColor,
+      padding: '15px',
+      color: themeVar.colors.DarkTextColor,
+      borderBottom: '1px solid black',
       ...(!disabled
         ? {
             '&:hover': {
-              backgroundColor: themeVar.colors.ActiveColor,
+              backgroundColor: themeVar.colors.SecondaryBackgroundColor,
               cursor: 'pointer',
             },
           }
@@ -74,10 +73,8 @@ export const entityChooserLabelContainer = css({
 
 export const activeEntityChooserLabel = css(
   {
-    backgroundColor: themeVar.colors.ActiveColor,
-    color: themeVar.colors.LightTextColor,
+    backgroundColor: themeVar.colors.SecondaryBackgroundColor,
     boxShadow: 'none',
-    border: '2px solid ' + themeVar.colors.ActiveColor,
   },
   /*
     borderLeft: `20px solid ${themeVar.colors.PrimaryColor}`,
@@ -183,8 +180,8 @@ export function EntityChooser<E extends IAbstractEntity>({
       } else {
         return undefined;
       }
-    })
-  }, [entities])
+    });
+  }, [entities]);
 
   if (mobile) {
     return (
@@ -216,6 +213,7 @@ export function EntityChooser<E extends IAbstractEntity>({
                 setEntity={setEntity}
                 EntityLabel={EntityLabel}
               />
+              <p>hello</p>
               {addComponent}
             </div>
             <div className={cx(flex, entityContainer, grow, justifyStart)}>
@@ -286,7 +284,7 @@ export function DefaultEntityChooserLabel<T extends IAbstractEntity>({
   return (
     <div
       key={entity.id}
-      className={cx(flex, flexRow, entityChooserLabelContainer)}
+      className={cx(flex, flexRow, 'wip-label-parent')}
       onClick={() => {
         if (!disabled) {
           onClick();
@@ -297,6 +295,7 @@ export function DefaultEntityChooserLabel<T extends IAbstractEntity>({
         className={cx(
           entityChooserLabelStyle(disabled),
           customLabelStyle && customLabelStyle(entity),
+          'wip-label-child',
           {
             [activeEntityChooserLabel]: selected,
           },

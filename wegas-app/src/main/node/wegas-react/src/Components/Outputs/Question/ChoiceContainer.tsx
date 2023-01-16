@@ -4,6 +4,7 @@ import * as React from 'react';
 import { IChoiceDescriptor, ISingleResultChoiceDescriptor } from 'wegas-ts-api';
 import {
   defaultMarginBottom,
+  expandWidth,
   flex,
   flexColumn,
   flexDistribute,
@@ -15,6 +16,7 @@ import { createTranslatableContent } from '../../../data/i18n';
 import { IWhChoiceDescriptor } from '../../../data/scriptable/impl/QuestionDescriptor';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { wlog } from '../../../Helper/wegaslog';
 import { componentsTranslations } from '../../../i18n/components/components';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
@@ -35,11 +37,8 @@ export const choiceContainerStyle = css({
   flexDirection: 'row',
   alignItems: 'center',
   boxShadow: '2px 2px 6px rgba(0, 0, 0, 0.2)',
-  borderRadius: themeVar.dimensions.BorderRadius,
-  backgroundColor: themeVar.colors.HeaderColor,
+  backgroundColor: themeVar.colors.BackgroundColor,
   '&.selected': {
-    backgroundColor: themeVar.colors.PrimaryColor,
-    color: themeVar.colors.LightTextColor,
     cursor: 'default',
   },
   '&.editing': {
@@ -50,27 +49,30 @@ export const choiceContainerStyle = css({
   },
   '&.disabled': {
     backgroundColor: themeVar.colors.BackgroundColor,
-    opacity: '0.7',
+    opacity: '0.5',
     cursor: 'initial',
-    // pointerEvents: 'none',
+    pointerEvents: 'none',
     '&:hover': {
       backgroundColor: themeVar.colors.BackgroundColor,
       color: themeVar.colors.DarkTextColor,
     },
     '&.selected': {
-      backgroundColor: themeVar.colors.PrimaryColor,
-      color: themeVar.colors.LightTextColor,
-      '&:hover': {
-        backgroundColor: themeVar.colors.PrimaryColor,
-      },
+      opacity: '1',
     },
   },
 });
 const choiceContentStyle = css({
-  padding: '15px',
+  borderTopLeftRadius: themeVar.dimensions.BorderRadius,
+  borderTopRightRadius: themeVar.dimensions.BorderRadius,
 });
 export const choiceLabelStyle = css({
+  width: '100%',
+  backgroundColor: themeVar.colors.SecondaryBackgroundColor,
   fontWeight: 'bold',
+  '&.selected': {
+    backgroundColor: themeVar.colors.PrimaryColor,
+    color: themeVar.colors.LightTextColor,
+  },
 });
 export const choiceDescriptionStyle = css({
   paddingTop: '5px',
@@ -92,6 +94,9 @@ const clickedOverlay = css({
   borderRadius: themeVar.dimensions.BorderRadius,
   display: 'flex',
   alignItems: 'center',
+});
+const defaultPadding = css({
+  padding: '15px',
 });
 
 interface ChoiceContainerProps {
@@ -216,10 +221,12 @@ export function ChoiceContainer({
     return null;
   }
 
+  wlog(themeVar.colors);
+
   return (
     <div
       className={
-        cx(choiceContainerStyle, classNameOrEmpty(className)) +
+        cx('wip-root', choiceContainerStyle, classNameOrEmpty(className)) +
         (hasBeenSelected ? ' selected' : '') +
         (canReply && !clicked ? '' : ' disabled') +
         (isEditing ? ' editing' : '')
@@ -290,28 +297,37 @@ export function ChoiceContainer({
           </div>
         </div>
       ) : (
-        <div className={cx(flex, flexColumn)}>
-          <div className={choiceContentStyle}>
+        <div className={cx('wip-parent', flex, flexColumn, expandWidth)}>
+          <div className={cx('wip-cont', choiceContentStyle)}>
             {label && labelText !== '' && (
-              <HTMLText className={choiceLabelStyle} text={labelText} />
+              <HTMLText
+                className={cx('wip-label', choiceLabelStyle, defaultPadding)}
+                text={labelText}
+              />
             )}
             {description && descriptionText !== '' && (
               <HTMLText
-                className={choiceDescriptionStyle}
+                className={cx(
+                  'wip-desc',
+                  choiceDescriptionStyle,
+                  defaultPadding,
+                )}
                 text={descriptionText}
               />
             )}
             {canReply && validateButton && (
-              <Button
-                onClick={() => {
-                  if (canReply && onClick && !isEditing) {
-                    setClicked(true);
-                    onClick();
-                  }
-                }}
-              >
-                {i18nComponentValues.question.validate}
-              </Button>
+              <div className={cx('wip-button', defaultPadding)}>
+                <Button
+                  onClick={() => {
+                    if (canReply && onClick && !isEditing) {
+                      setClicked(true);
+                      onClick();
+                    }
+                  }}
+                >
+                  {i18nComponentValues.question.validate}
+                </Button>
+              </div>
             )}
           </div>
           <div className={choiceInputStyle + classNameOrEmpty(inputClassName)}>

@@ -44,14 +44,12 @@ const messageLabel = css({
 const readLabelStyle = css({
   fontWeight: 'normal',
   backgroundColor: themeVar.colors.LightTextColor,
-  color: themeVar.colors.PrimaryColor,
-  border: '2px solid ' + themeVar.colors.PrimaryColor,
+  color: themeVar.colors.DarkTextColor,
   boxShadow: 'none',
-  '&:hover': {
-    backgroundColor: themeVar.colors.LightTextColor,
-    color: themeVar.colors.ActiveColor,
-    border: '2px solid ' + themeVar.colors.ActiveColor,
-  },
+  // '&:hover': {
+  //   backgroundColor: themeVar.colors.LightTextColor,
+  //   color: themeVar.colors.ActiveColor,
+  // },
 });
 
 const unreadLabelStyle = css({
@@ -78,7 +76,7 @@ function MessageLabel({ message, disabled }: MessageLabelProps) {
       <div className={cx(flex, flexColumn, expandWidth)}>
         <div className={cx(flex, flexRow, flexBetween)}>
           <div className={cx(labelTitleStyle)}>{translatedLabel}</div>
-          <div className={css({flexShrink: 0})}>{translatedDate}</div>
+          <div className={css({ flexShrink: 0 })}>{translatedDate}</div>
         </div>
         <div className={cx(flex, defaultMarginTop)}>{translatedFrom}</div>
       </div>
@@ -97,11 +95,10 @@ function customLabelStyle(m: IMessage): string | undefined {
 }
 
 function MessageChooser(props: EntityChooserLabelProps<IMessage>) {
-
   return (
-      <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
-        <MessageLabel message={props.entity}/>
-      </DefaultEntityChooserLabel>
+    <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
+      <MessageLabel message={props.entity} />
+    </DefaultEntityChooserLabel>
   );
 }
 
@@ -117,9 +114,7 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
   const from = useTranslate(entity.from);
 
   return (
-    <div
-      style={{width: '100%', height: '100%'}}
-    >
+    <div style={{ width: '100%', height: '100%' }}>
       <div className={cx(toolboxHeaderStyle)}>
         {subject && <div className={cx(bolder)}>{subject}</div>}
         {date && (

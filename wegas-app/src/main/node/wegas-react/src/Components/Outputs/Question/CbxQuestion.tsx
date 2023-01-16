@@ -26,26 +26,26 @@ const cbxChoiceContainerStyle = css({
 const cbxContainerStyle = css({
   padding: 0,
   width: '3rem',
-  backgroundColor: themeVar.colors.PrimaryColor,
-  color: themeVar.colors.LightTextColor,
+  // backgroundColor: themeVar.colors.PrimaryColor,
+  color: 'tomato',
   justifyContent: 'center',
-  borderRadius:
-    '0px ' +
-    themeVar.dimensions.BorderRadius +
-    ' ' +
-    themeVar.dimensions.BorderRadius +
-    ' 0px',
-  borderLeft: '1px solid ' + themeVar.colors.HeaderColor,
-  '&:hover': {
-    backgroundColor: themeVar.colors.ActiveColor,
-    borderLeft: '1px solid ' + themeVar.colors.ActiveColor,
-  },
+  // borderRadius:
+  //   '0px ' +
+  //   themeVar.dimensions.BorderRadius +
+  //   ' ' +
+  //   themeVar.dimensions.BorderRadius +
+  //   ' 0px',
+  // borderLeft: '1px solid ' + themeVar.colors.HeaderColor,
+  // '&:hover': {
+  //   backgroundColor: themeVar.colors.ActiveColor,
+  //   borderLeft: '1px solid ' + themeVar.colors.ActiveColor,
+  // },
 });
 const cbxStyle = css({
   '&.wegas.wegas-btn': {
-    color: themeVar.colors.LightTextColor,
+    color: themeVar.colors.PrimaryColor,
     '&:hover': {
-      color: themeVar.colors.LightTextColor,
+      boxShadow: '0px 0px 20px 5px grey;',
     },
   },
 });

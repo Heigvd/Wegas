@@ -55,14 +55,10 @@ import {
 } from './Question';
 
 const repliedLabelStyle = css({
-  backgroundColor: themeVar.colors.LightTextColor,
-  color: themeVar.colors.PrimaryColor,
-  border: '2px solid ' + themeVar.colors.PrimaryColor,
+  fontWeight: 'normal',
   boxShadow: 'none',
   '&:hover': {
-    backgroundColor: themeVar.colors.LightTextColor,
-    color: themeVar.colors.ActiveColor,
-    border: '2px solid ' + themeVar.colors.ActiveColor,
+    backgroundColor: themeVar.colors.SecondaryBackgroundColor,
   },
 });
 
@@ -246,9 +242,7 @@ export function QuestionLabel({
           )}
         </Validate>
       ) : (
-        <div className={flex}>
-            { questionDLabel }
-        </div>
+        <div className={flex}>{questionDLabel}</div>
       )}
     </div>
   );
