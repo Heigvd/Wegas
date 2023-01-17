@@ -24,10 +24,9 @@ const cbxChoiceContainerStyle = css({
   display: 'flex',
 });
 const cbxContainerStyle = css({
-  padding: 0,
-  width: '3rem',
+  padding: '10px',
+  // width: '3rem',
   // backgroundColor: themeVar.colors.PrimaryColor,
-  color: 'tomato',
   justifyContent: 'center',
   // borderRadius:
   //   '0px ' +
@@ -44,8 +43,20 @@ const cbxContainerStyle = css({
 const cbxStyle = css({
   '&.wegas.wegas-btn': {
     color: themeVar.colors.PrimaryColor,
+    padding: '5px',
+    borderRadius: '0%',
     '&:hover': {
-      boxShadow: '0px 0px 20px 5px grey;',
+      borderRadius: '50%',
+      backgroundColor: themeVar.colors.SecondaryBackgroundColor,
+    },
+    '&.selected': {
+      margin: '0',
+      color: themeVar.colors.LightTextColor,
+      backgroundColor: themeVar.colors.PrimaryColor,
+    },
+    '&.selected:hover': {
+      opacity: '70%',
+      borderRadius: '0',
     },
   },
 });

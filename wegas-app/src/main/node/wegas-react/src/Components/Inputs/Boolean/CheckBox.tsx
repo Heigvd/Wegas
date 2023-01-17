@@ -1,16 +1,16 @@
-import * as React from 'react';
 import { cx } from '@emotion/css';
-import { InputProps } from '../SimpleInput';
-import { Value } from '../../Outputs/Value';
+import * as React from 'react';
 import {
-  shrinkWidth,
-  flexColumn,
-  itemCenter,
   flex,
+  flexColumn,
   flexRow,
+  itemCenter,
+  shrinkWidth,
 } from '../../../css/classes';
+import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
+import { Value } from '../../Outputs/Value';
 import { Button } from '../Buttons/Button';
-import { classOrNothing, classNameOrEmpty } from '../../../Helper/className';
+import { InputProps } from '../SimpleInput';
 
 export interface CheckBoxProps extends InputProps<boolean> {
   /**
@@ -108,6 +108,7 @@ export function CheckBox({
           'wegas wegas-cbx' +
           classOrNothing('disabled', disabled) +
           classOrNothing('readOnly', readOnly) +
+          classOrNothing('selected', value) +
           classNameOrEmpty(checkBoxClassName)
         }
         disabled={disabled}
