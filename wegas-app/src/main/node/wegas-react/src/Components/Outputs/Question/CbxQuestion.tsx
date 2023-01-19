@@ -19,6 +19,10 @@ import { QuestionDescription } from './QuestionDescription';
 import { RepliesDisplay } from './Reply';
 import { AddChoiceMenu } from './SimpleQuestionDisplay';
 
+const tabularLayoutStyle = css({
+  display: 'flex',
+  flexDirection: 'row',
+});
 const cbxChoiceContainerStyle = css({
   cursor: 'pointer',
   display: 'flex',
@@ -146,6 +150,7 @@ export function CbxQuestionDisplay({
   const maxReplyReached = maxReplies != null && replies.length >= maxReplies;
   const remainingChoices = minReplies - replies.length;
   const radio = maxReplies === 1 && minReplies === 1;
+  const tabularLayout = questionD?.tabular;
 
   const onChoiceValidate = React.useCallback(
     (choice: IChoiceDescriptor) => {
@@ -169,25 +174,27 @@ export function CbxQuestionDisplay({
       })}
     >
       <QuestionDescription questionD={questionD} editMode={editMode} />
-      {choicesD.map((choiceD, i) => {
-        const choiceI = choicesI[i];
-        if (choiceI == null) {
-          return <span key={choiceD.id} />;
-        }
-        return (
-          <CbxChoiceDisplay
-            key={choiceD.id}
-            onValidate={onChoiceValidate}
-            choiceD={choiceD}
-            choiceI={choiceI}
-            replyAllowed={canReply}
-            maxReplyReached={maxReplyReached}
-            radioButton={radio}
-            editMode={editMode}
-          />
-        );
-      })}
-      {editMode && <AddChoiceMenu questionD={questionD} />}
+      <div className={cx({ [tabularLayoutStyle]: tabularLayout })}>
+        {choicesD.map((choiceD, i) => {
+          const choiceI = choicesI[i];
+          if (choiceI == null) {
+            return <span key={choiceD.id} />;
+          }
+          return (
+            <CbxChoiceDisplay
+              key={choiceD.id}
+              onValidate={onChoiceValidate}
+              choiceD={choiceD}
+              choiceI={choiceI}
+              replyAllowed={canReply}
+              maxReplyReached={maxReplyReached}
+              radioButton={radio}
+              editMode={editMode}
+            />
+          );
+        })}
+        {editMode && <AddChoiceMenu questionD={questionD} />}
+      </div>
       {!questionI.validated && (
         <div className={cx(choiceInputStyle)}>
           {remainingChoices > 0 && (

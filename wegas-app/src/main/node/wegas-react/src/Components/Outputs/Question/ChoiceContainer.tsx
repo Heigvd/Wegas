@@ -9,6 +9,7 @@ import {
   flexColumn,
   flexDistribute,
   flexRow,
+  shrinkHeight,
 } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
@@ -31,8 +32,9 @@ import { HTMLText } from '../HTMLText';
 import { buttonFactory, handleStyle } from './QuestionList';
 
 export const choiceContainerStyle = css({
+  width: '100%',
   position: 'relative',
-  margin: '1em 0',
+  margin: '1em',
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
@@ -226,7 +228,12 @@ export function ChoiceContainer({
   return (
     <div
       className={
-        cx('wip-root', choiceContainerStyle, classNameOrEmpty(className)) +
+        cx(
+          'wip-root',
+          choiceContainerStyle,
+          shrinkHeight,
+          classNameOrEmpty(className),
+        ) +
         (hasBeenSelected ? ' selected' : '') +
         (canReply && !clicked ? '' : ' disabled') +
         (isEditing ? ' editing' : '')
