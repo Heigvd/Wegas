@@ -178,13 +178,14 @@ export default function TreeNode<T>(props: TreeNodeProps<T>): JSX.Element {
       }
     >
       <div className={cx(flex, flexRow)}>
-        {items ? (
-          <Button
-            icon={expanded ? 'caret-down' : 'caret-right'}
-            tabIndex={-1}
-            onClick={toggle}
-          />
-        ) : null}
+        <Button
+          icon={expanded ? 'caret-down' : 'caret-right'}
+          tabIndex={-1}
+          onClick={toggle}
+          className={(items?.length ?? 0) > 0 ? css({
+            visibility: 'hidden',
+          }) : ''}
+        />
         <a
           tabIndex={match ? 0 : -1}
           onClick={handleSelect}
