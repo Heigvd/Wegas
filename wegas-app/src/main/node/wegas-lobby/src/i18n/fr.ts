@@ -129,6 +129,9 @@ export const fr: WegasTranslations = {
   playersCanCreateTeams: 'Les joueurs peuvent créer des équipes',
   playersCantCreateTeams: "Les joueurs ne peuvent pas créer d'équipe",
 
+  playersCanLeaveTeams: 'Les joueurs peuvent quitter leur équipe',
+  playersCantLeaveTeams: "Les joueurs ne peuvent pas quitter leur équipe",
+
   //
   kickPlayer: 'supprimer le joueur',
   kickTeam: "supprimer l'équipe",

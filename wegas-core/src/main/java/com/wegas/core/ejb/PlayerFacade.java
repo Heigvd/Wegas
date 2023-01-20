@@ -432,6 +432,8 @@ public class PlayerFacade extends BaseFacade<Player> {
         Team team = teamFacade.find(player.getTeam().getId());
         User playerUser = player.getUser();
 
+        teamFacade.assertCanLeaveTeam(team);
+
         // remove a playes is permitted if either:
         //   1) the player belongs to the current user (user edit permission)
         //   2) the current user is an admin (user edit permission)

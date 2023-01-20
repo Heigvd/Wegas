@@ -156,6 +156,13 @@ public class TeamFacade extends BaseFacade<Team> implements TeamFacadeI {
         return query.getResultList();
     }
 
+    public void assertCanLeaveTeam(Team team) {
+        Boolean preventPlayerLeavingTeam = team.getGame().getPreventPlayerLeavingTeam();
+        if (preventPlayerLeavingTeam != null && preventPlayerLeavingTeam){
+            requestManager.assertGameTrainer(team.getGame());
+        }
+    }
+
     /**
      * @param entity
      */
@@ -167,6 +174,7 @@ public class TeamFacade extends BaseFacade<Team> implements TeamFacadeI {
         //for (VariableInstance i : this.getAssociatedInstances(entity)) {
         //    this.getEntityManager().remove(i);
         //}
+        assertCanLeaveTeam(entity);
         entity.getGame().getTeams().remove(entity);
         this.getEntityManager().remove(entity);
     }
