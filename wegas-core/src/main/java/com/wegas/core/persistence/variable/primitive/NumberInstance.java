@@ -118,7 +118,7 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
 
         double pVal = this.value;
 
-        if (Math.abs(value - this.value) > 0.0001) {
+        if (Double.compare(value, this.value) != 0) {
             // change detected
             this.value = value;
 
