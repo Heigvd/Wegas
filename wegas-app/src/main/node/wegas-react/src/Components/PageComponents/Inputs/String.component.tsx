@@ -79,14 +79,14 @@ function PlayerStringInput({
   const { disabled, readOnly, locked } = options;
 
   const onChange = React.useCallback(
-    (v: React.ReactText) => {
+    (newValue: React.ReactText) => {
       if (handleOnChange) {
-        handleOnChange(v);
+        handleOnChange(newValue);
       } else if (typeof text === 'object') {
         editingStore.dispatch(
           runScript(
             `Variable.find(gameModel,"${text.getName()}").setValue(self, ${JSON.stringify(
-              v,
+              newValue,
             )});`,
           ),
         );
@@ -157,9 +157,9 @@ registerComponent(
         type: ['number', 'null'],
         view: {
           label: 'multiline',
-          type:'number',
+          type: 'number',
           placeholder: '1',
-        }
+        },
       },
       ...validatorSchema,
       ...classStyleIdShema,
