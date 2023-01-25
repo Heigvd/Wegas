@@ -223,6 +223,7 @@ export default function Overview({ dashboardName = 'overview' }: OverviewProps) 
         setOverviewState({ header: structure, row, data });
         setFilterState(o =>
           o == null
+          // builds a filter with all values set to true (visible)
             ? structure.reduce(
                 (o, r) => ({
                   ...o,
@@ -328,6 +329,14 @@ export default function Overview({ dashboardName = 'overview' }: OverviewProps) 
               team: undefined,
               item: undefined,
             })
+          }
+        />
+        {/* TODO improve */}
+        <Button
+          icon="trash"
+          tooltip={i18nValuesTrainer.manageColumns}
+          onClick={() =>
+            setFilterState(undefined)
           }
         />
         <Button
