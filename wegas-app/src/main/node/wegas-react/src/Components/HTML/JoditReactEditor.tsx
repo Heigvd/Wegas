@@ -174,6 +174,10 @@ export default function JoditReactEditor({
       config.buttonsSM = buttonsConfig;
       config.buttonsXS = buttonsConfig;
 
+      config.defaultActionOnPaste = 'insert_only_text';
+      config.askBeforePasteHTML = false;
+      config.askBeforePasteFromWord = false;
+
       config.disablePlugins = disabledPlugins;
 
       if (Object.keys(classes).length) {
