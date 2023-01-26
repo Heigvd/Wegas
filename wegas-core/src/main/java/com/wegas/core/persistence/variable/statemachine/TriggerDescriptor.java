@@ -223,9 +223,9 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
 
     private Transition getTransition() {
         if (this.getStates() != null && this.getStates().size() > 0
-            && this.getStates().get(1L).getTransitions() != null
-            && this.getStates().get(1L).getTransitions().size() > 0) {
-            return this.getStates().get(1L).getTransitions().get(0);
+            && this.getStates().get(1L).getInternalTransitions() != null
+            && this.getStates().get(1L).getInternalTransitions().size() > 0) {
+            return this.getStates().get(1L).getInternalTransitions().get(0);
         } else {
             return null;
         }
@@ -294,7 +294,7 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
      */
     @PrePersist // to be called by forthcoming revive method (replace PrePersist and merge usage)
     public void buildStateMachine() {
-        if (this.getStates().size() < 2 || this.getStates().get(2L).getTransitions().isEmpty()) {
+        if (this.getStates().size() < 2 || this.getStates().get(2L).getInternalTransitions().isEmpty()) {
             // make sure both initial and final states exists
             TriggerState initial;
             TriggerState finalState;
@@ -321,17 +321,17 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
 
             // Make sure transition exists
             Transition transition;
-            if (initial.getTransitions().isEmpty()) {
+            if (initial.getInternalTransitions().isEmpty()) {
                 transition = new Transition();
                 initial.addTransition(transition);
             } else {
-                transition = initial.getTransitions().get(0);
+                transition = initial.getInternalTransitions().get(0);
             }
             // Make sure transition go to state 2
             transition.setNextStateId(2L);
 
             // Make sure reset transition exists
-            if (finalState.getTransitions().isEmpty()) {
+            if (finalState.getInternalTransitions().isEmpty()) {
                 Transition reset = new Transition();
                 reset.setNextStateId(1L);
                 List<Transition> transitions = new ArrayList<>(1);
@@ -342,11 +342,11 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
 
         // Condition
         if (this.triggerEvent != null) {
-            this.getStates().get(1L).getTransitions().get(0).setTriggerCondition(this.triggerEvent);
+            this.getStates().get(1L).getInternalTransitions().get(0).setTriggerCondition(this.triggerEvent);
             this.triggerEvent = null;
         }
 
-        Transition transition = this.getStates().get(1L).getTransitions().get(0);
+        Transition transition = this.getStates().get(1L).getInternalTransitions().get(0);
         transition.setDependsOnStrategy(this.dependsOnStrategy == null ? DependsOnStrategy.AUTO : this.dependsOnStrategy);
         transition.setDependencies(this.dependencies == null ? new HashSet() : this.dependencies);
         this.dependsOnStrategy = null;
@@ -360,7 +360,7 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
 
         // Reset transition
         if (this.oneShot != null) {
-            this.getStates().get(2L).getTransitions().get(0).setTriggerCondition(new Script("javascript", (this.oneShot ? "false" : "true")));
+            this.getStates().get(2L).getInternalTransitions().get(0).setTriggerCondition(new Script("javascript", (this.oneShot ? "false" : "true")));
         }
 
         this.getDefaultInstance().setCurrentStateId(1l);

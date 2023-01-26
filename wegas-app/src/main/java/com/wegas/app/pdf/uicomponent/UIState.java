@@ -118,13 +118,13 @@ public class UIState extends UIComponentBase {
 
         UIHelper.startDiv(writer, UIHelper.CSS_CLASS_FOLDER);
 
-        if (state.getTransitions().isEmpty()) {
+        if (state.getInternalTransitions().isEmpty()) {
             if (mode == Mode.EDITOR) {
                 UIHelper.printText(context, writer,
                     "THERE IS NO TRANSITIONS", UIHelper.CSS_CLASS_ERROR);
             }
         } else {
-            for (AbstractTransition t : (List<AbstractTransition>) state.getTransitions()) {
+            for (AbstractTransition t : (List<AbstractTransition>) state.getInternalTransitions()) {
                 encode(context, writer, t);
             }
         }

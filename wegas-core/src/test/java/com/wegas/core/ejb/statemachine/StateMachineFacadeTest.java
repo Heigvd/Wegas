@@ -792,7 +792,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
             "Variable.find(gameModel, \"x\").getValue(self) > 5");
 
         // transition has a dependency
-        AbstractTransition transition = (AbstractTransition) myFsm.getState(1l).getTransitions().get(0);
+        AbstractTransition transition = (AbstractTransition) myFsm.getState(1l).getInternalTransitions().get(0);
         Set<TransitionDependency> dependencies = transition.getDependencies();
         assertEquals(1l, dependencies.size());
         TransitionDependency tDep = dependencies.iterator().next();
@@ -809,7 +809,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         // reload fsm
         myFsm = (StateMachineDescriptor) variableDescriptorFacade.find(myFsm.getId());
-        transition = (AbstractTransition) myFsm.getState(1l).getTransitions().get(0);
+        transition = (AbstractTransition) myFsm.getState(1l).getInternalTransitions().get(0);
         assertTrue(transition.getDependencies().isEmpty());
     }
 
@@ -822,7 +822,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
             "Variable.find(gameModel, \"x\").getValue(self)>5");
 
         // transition has a dependency
-        AbstractTransition transition = (AbstractTransition) myFsm.getState(1l).getTransitions().get(0);
+        AbstractTransition transition = (AbstractTransition) myFsm.getState(1l).getInternalTransitions().get(0);
         Set<TransitionDependency> dependencies = transition.getDependencies();
         assertEquals(1l, dependencies.size());
         TransitionDependency tDep = dependencies.iterator().next();
@@ -840,7 +840,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         // reload fsm
         myFsm = (StateMachineDescriptor) variableDescriptorFacade.find(myFsm.getId());
-        transition = (AbstractTransition) myFsm.getState(1l).getTransitions().get(0);
+        transition = (AbstractTransition) myFsm.getState(1l).getInternalTransitions().get(0);
         assertTrue(transition.getDependencies().isEmpty());
         // reload x
         x = (NumberDescriptor) variableDescriptorFacade.find(x.getId());

@@ -15,6 +15,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
@@ -87,9 +88,32 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     }
 
     @JsonView(Views.ExtendedI.class)
-    public Map<Long, T> getStates() {
+    public Map<Long, T> getOldStates() {
         Map<Long, T> map = new HashMap<>();
         for (T state : (Set<T>) this.states) {
+            map.put(state.getIndex(), state);
+        }
+        return map;
+    }
+
+
+    @JsonView(Views.ExtendedI.class)
+    public Map<Long, T> getStates() {
+        List<AbstractState<U>> sortedList = Helper.copyAndSortModifiable(this.states, (a, b) -> {
+            long ai = a.getIndex();
+            long bi = b.getIndex();
+
+            if (ai < bi){
+                return -1;
+            }
+
+            if (ai > bi){
+                return 1;
+            }
+            return 0;
+        });
+        Map<Long, T> map = new LinkedHashMap<>();
+        for (T state : (List<T>) sortedList) {
             map.put(state.getIndex(), state);
         }
         return map;
@@ -170,7 +194,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
 
     private U getTransitionById(Long id) {
         for (T state : this.getInternalStates()) {
-            for (U transition : state.getTransitions()) {
+            for (U transition : state.getInternalTransitions()) {
                 if (transition != null && transition.getId().equals(id)) {
                     return transition;
                 }

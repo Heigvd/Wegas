@@ -206,7 +206,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                 // it may have changed its currentState
                 boolean forceEval = forceEvalAll || desc.contains(sm);
 
-                for (AbstractTransition transition : (List<AbstractTransition>) currentState.getSortedTransitions()) {
+                for (AbstractTransition transition : (List<AbstractTransition>) currentState.getTransitions()) {
                     logger.trace("Process FSM Transition {}", transition);
 
                     Set<TransitionDependency> deps = transition.getDependencies();
@@ -445,7 +445,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
         long count = 0;
         try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
             DialogueState currentState = (DialogueState) dialogueDescriptor.getInstance(currentPlayer).getCurrentState();
-            for (DialogueTransition transition : currentState.getTransitions()) {
+            for (DialogueTransition transition : currentState.getInternalTransitions()) {
                 if (isTransitionValid(transition, currentPlayer.getId(), dialogueDescriptor)) {
                     count++;
                 }
@@ -587,7 +587,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
     public void reviveStateMachine(GameModel gameModel, AbstractStateMachineDescriptor vd) {
         Collection<AbstractState> values = vd.getStates().values();
         values.forEach(state -> {
-            List<AbstractTransition> transitions = state.getTransitions();
+            List<AbstractTransition> transitions = state.getInternalTransitions();
             transitions.forEach(transition -> {
                 // In all case, revive exising dependencies
                 transition.getDependencies().forEach(tDep -> {
@@ -623,7 +623,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                 s.getText().setParentDescriptor(dialogueDescriptor);
             }
 
-            for (DialogueTransition t : s.getTransitions()) {
+            for (DialogueTransition t : s.getInternalTransitions()) {
                 if (t.getActionText() != null) {
                     t.getActionText().setParentDescriptor(dialogueDescriptor);
                 }

@@ -258,7 +258,7 @@ public class WegasFactory {
         for (Entry<Long, State> entry : fsmD.getStates().entrySet()) {
             State state = entry.getValue();
 
-            for (Iterator<Transition> it = state.getTransitions().iterator(); it.hasNext();) {
+            for (Iterator<Transition> it = state.getInternalTransitions().iterator(); it.hasNext();) {
                 Transition t = it.next();
                 if (t.getNextStateId() == index) {
                     it.remove();

@@ -140,7 +140,7 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     @WegasEntityProperty(
         optional = false, nullable = false, proposal = EmptyArray.class,
         view = @View(label = "Transitions", value = Hidden.class))
-    //private List<T> transitions = new ArrayList<>(); // templated mapping <T> faisl with eclipselink 2.6.4
+    //private List<T> transitions = new ArrayList<>(); // templated mapping <T> fails with eclipselink 2.6.4
     private List<AbstractTransition> transitions = new ArrayList<>();
 
     /**
@@ -237,8 +237,7 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     /**
      * @return unmodifiable list of transitions, sorted by index
      */
-    @JsonIgnore
-    public List<T> getSortedTransitions() {
+    public List<T> getTransitions() {
         Collections.sort(this.transitions, new ComparatorImpl());
         return (List<T>) this.transitions;
     }
@@ -246,12 +245,13 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     /**
      * @return list of transition going out of the state
      */
-    public List<T> getTransitions() {
+    @JsonIgnore
+    public List<T> getInternalTransitions() {
         return (List<T>) transitions;
     }
 
     public T addTransition(T t) {
-        List<T> ts = this.getTransitions();
+        List<T> ts = this.getInternalTransitions();
         if (!ts.contains(t)) {
             ts.add(t);
         }

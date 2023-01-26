@@ -39,7 +39,7 @@ public class DialogueState extends AbstractState<DialogueTransition> {
         super.setStateMachine(stateMachine);
         if (this.getStateMachine() != null) {
             this.setText(this.text);
-            for (DialogueTransition t : this.getTransitions()) {
+            for (DialogueTransition t : this.getInternalTransitions()) {
                 t.setActionText(t.getActionText());
             }
         }
