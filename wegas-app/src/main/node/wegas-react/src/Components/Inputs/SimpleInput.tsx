@@ -158,8 +158,8 @@ export function SimpleInput({
         onChange={onInputChange}
         placeholder={placeholder}
         onBlur={() => {
-          flush();
           onBlur && onBlur();
+          flush();
         }}
         disabled={disabled}
         readOnly={readOnly}
@@ -179,8 +179,8 @@ export function SimpleInput({
       onChange={onInputChange}
       placeholder={placeholder}
       onBlur={() => {
-        flush();
         onBlur && onBlur();
+        flush();
       }}
       disabled={disabled}
       readOnly={readOnly}

@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { INumberDescriptor, IScript } from 'wegas-ts-api';
+import { IScript, SNumberDescriptor } from 'wegas-ts-api';
 import { halfOpacity } from '../../../css/classes';
 import { classOrNothing } from '../../../Helper/className';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { useComponentScript } from '../../Hooks/useComponentScript';
+import { useScript } from '../../Hooks/useScript';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
@@ -13,6 +13,7 @@ import {
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { classStyleIdShema } from '../tools/options';
+import PlayerComponentDisplay from '../tools/PlayerComponentDisplay';
 import { schemaProps } from '../tools/schemaProps';
 
 export interface PlayerNumberProps extends WegasComponentProps {
@@ -30,11 +31,10 @@ function PlayerNumber({
   path,
 }: PlayerNumberProps) {
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
-  const { instance, notFound } = useComponentScript<INumberDescriptor>(
-    script,
-    context,
-  );
-  return notFound ? (
+
+  const number = useScript<SNumberDescriptor | number>(script, context);
+
+  return number == null ? (
     <UncompleteCompMessage
       message={somethingIsUndefined('Number')}
       pageId={pageId}
@@ -49,7 +49,11 @@ function PlayerNumber({
       }
       style={style}
     >
-      {instance?.getValue()}
+      {typeof number === 'number' ? (
+        number
+      ) : (
+        <PlayerComponentDisplay script={script} context={context} />
+      )}
     </div>
   );
 }
@@ -66,7 +70,7 @@ registerComponent(
       script: schemaProps.scriptVariable({
         label: 'Variable',
         required: true,
-        returnType: ['SNumberDescriptor'],
+        returnType: ['SNumberDescriptor', 'number'],
       }),
       ...classStyleIdShema,
     },
