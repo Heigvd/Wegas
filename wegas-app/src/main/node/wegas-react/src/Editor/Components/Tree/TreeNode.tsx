@@ -182,7 +182,7 @@ export default function TreeNode<T>(props: TreeNodeProps<T>): JSX.Element {
           icon={expanded ? 'caret-down' : 'caret-right'}
           tabIndex={-1}
           onClick={toggle}
-          className={(items?.length ?? 0) > 0 ? css({
+          className={(items?.length ?? 0) == 0 ? css({
             visibility: 'hidden',
           }) : ''}
         />
