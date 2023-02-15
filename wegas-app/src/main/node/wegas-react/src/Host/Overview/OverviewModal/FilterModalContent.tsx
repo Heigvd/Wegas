@@ -1,10 +1,10 @@
 import { cx } from '@emotion/css';
+import JSONForm from 'jsoninput';
 import * as React from 'react';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { flex, flexColumn } from '../../../css/classes';
-import JSONForm from 'jsoninput';
-import { OverviewItem, OverviewState } from '../Overview';
 import { AvailableSchemas } from '../../../Editor/Components/FormView';
+import { OverviewItem, OverviewState } from '../Overview';
 
 export interface FilterState {
   [subColumnId: string]: { [columnId: string]: boolean };
@@ -14,6 +14,7 @@ export interface FilterModalContentProps {
   overviewState: OverviewState | undefined;
   filterState: FilterState | undefined;
   onNewFilterState: (newFilterState: FilterState) => void;
+  filterButtons?: () => JSX.Element;
 }
 
 type Schema = Record<string, AvailableSchemas>;
@@ -22,6 +23,7 @@ export function FilterModalContent({
   overviewState,
   filterState,
   onNewFilterState,
+  filterButtons,
 }: FilterModalContentProps) {
   const filterSchema = {
     description: 'Filter',
@@ -51,6 +53,7 @@ export function FilterModalContent({
   return (
     <div className={cx(flex, flexColumn)}>
       <h2>Filter columns</h2>
+      {filterButtons && filterButtons()}
       <JSONForm
         value={
           filterState ||

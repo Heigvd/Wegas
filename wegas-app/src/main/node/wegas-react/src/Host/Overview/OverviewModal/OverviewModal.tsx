@@ -1,16 +1,16 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { Modal } from '../../../Components/Modal';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import '../../../Editor/Components/FormView';
-import {
-  ImpactModalContent,
-  ImpactModalContentProps,
-} from './ImpactModalContent';
 import {
   FilterModalContent,
   FilterModalContentProps,
 } from './FilterModalContent';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
+import {
+  ImpactModalContent,
+  ImpactModalContentProps,
+} from './ImpactModalContent';
 import { MailModalContent } from './MailModalContent';
 
 const modalStyle = css({
@@ -22,6 +22,7 @@ const modalStyle = css({
 
 const modalContentStyle = css({
   position: 'relative',
+  overflow: 'auto',
   padding: '40px',
   minWidth: '400px',
   maxWidth: '700px',
@@ -58,9 +59,11 @@ interface OverviewModalProps
   extends ImpactModalContentProps,
     FilterModalContentProps {
   modalState: ModalState;
+  filterButtons?: () => JSX.Element;
 }
 
 export function OverviewModal({
+  filterButtons,
   modalState,
   team,
   item,
@@ -90,6 +93,7 @@ export function OverviewModal({
           overviewState={overviewState}
           filterState={filterState}
           onNewFilterState={onNewFilterState}
+          filterButtons={filterButtons}
         />
       ) : null}
     </Modal>

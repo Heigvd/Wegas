@@ -6,7 +6,7 @@ import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
-import { expandWidth } from '../../css/classes';
+import { expandWidth, flex, flexRow } from '../../css/classes';
 import { TeamState } from '../../data/Reducer/teams';
 import { instantiate } from '../../data/scriptable';
 import { Game, GameModel, Player } from '../../data/selectors';
@@ -303,6 +303,25 @@ export default function Overview({
     [overviewState, sortState],
   );
 
+  const removeFiltersButton = () => {
+    return (
+      <div className={cx(flex, flexRow)}>
+        <Button
+          icon="check"
+          tooltip={i18nValuesTrainer.manageColumns}
+          onClick={() => setFilterState(undefined)}
+        />
+        <Button
+          icon="trash"
+          tooltip={i18nValuesTrainer.manageColumns}
+          onClick={() =>
+            setFilterState(buildFilter(overviewState!.header, false))
+          }
+        />
+      </div>
+    );
+  };
+
   return (
     <Toolbar className={expandWidth}>
       <Toolbar.Header className={css({ justifyContent: 'flex-end' })}>
@@ -331,19 +350,6 @@ export default function Overview({
               team: undefined,
               item: undefined,
             })
-          }
-        />
-        {/* TODO improve */}
-        <Button
-          icon="check"
-          tooltip={i18nValuesTrainer.manageColumns}
-          onClick={() => setFilterState(undefined)}
-        />
-        <Button
-          icon="trash"
-          tooltip={i18nValuesTrainer.manageColumns}
-          onClick={() =>
-            setFilterState(buildFilter(overviewState!.header, false))
           }
         />
         <Button
@@ -414,6 +420,7 @@ export default function Overview({
             filterState={filterState}
             onNewFilterState={setFilterState}
             overviewState={overviewState}
+            filterButtons={removeFiltersButton}
           />
         )}
       </Toolbar.Content>
