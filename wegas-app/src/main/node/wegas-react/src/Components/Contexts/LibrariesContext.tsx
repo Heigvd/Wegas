@@ -62,6 +62,7 @@ function libraryTypeToLanguage(libraryType: LibraryType): SrcEditorLanguages {
     case 'clientInternal':
       return 'typescript';
     case 'server':
+    case 'serverInternal':
       return 'javascript';
     case 'style':
       return 'css';
@@ -109,6 +110,7 @@ function libraryTypeToMimeType(libraryType: LibraryType): string {
     case 'clientInternal':
       return 'application/typescript';
     case 'server':
+    case 'serverInternal':
       return 'application/javascript';
     case 'style':
       return 'text/css';
@@ -130,7 +132,9 @@ function computeUniquePath(
 }
 
 export function computeLibraryPath(libName: string, libType: LibraryType) {
-  return `file:///${libType}/${libName}.${libraryTypeToFormat(libType)}`;
+  const expectedExtension = '.' + libraryTypeToFormat(libType);
+  const suffix = libName.endsWith(expectedExtension) ? '' : expectedExtension;
+  return `file:///${libType}/${libName}${suffix}`;
 }
 
 export function getModel(reactMonaco: MonacoEditor | null, modelPath: string) {
@@ -192,6 +196,37 @@ export function useTempModel(
   return model;
 }
 
+/**
+ * Download global static server script
+ */
+async function loadGlobalServerLibs(): Promise<ILibraries> {
+  const urls = [
+    APP_BASE + '/wegas-app/js/server/wegas-server-dashboard.js',
+    APP_BASE + '/wegas-app/js/server/wegas-server-helper.js',
+    APP_BASE + '/wegas-app/js/server/wegas-survey-helper.js',
+    APP_BASE + '/wegas-app/js/server/wegas-survey-xapi.js',
+  ];
+
+  const libs = await urls.reduce<Promise<ILibraries>>(async (asyncAcc, url) => {
+    const acc = await asyncAcc;
+    const response = await fetch(url);
+    const content = await response.text();
+    const name = url.startsWith('/') ? url.substring(1) : url;
+
+    acc[name] = {
+      '@class': 'GameModelContent',
+      contentKey: name,
+      content: content,
+      visibility: 'INTERNAL',
+      version: 0,
+      contentType: 'application/javascript',
+    };
+    return acc;
+  }, Promise.resolve({}));
+
+  return libs;
+}
+
 export interface LibraryWithStatus {
   /**
    * persisted - the current state of the library in the server
@@ -211,7 +246,13 @@ interface LibrariesWithStatus {
   [path: string]: LibraryWithStatus;
 }
 
-const libraryTypes = ['client', 'server', 'style', 'clientInternal'] as const;
+const libraryTypes = [
+  'client',
+  'server',
+  'serverInternal',
+  'style',
+  'clientInternal',
+] as const;
 export type LibraryType = ValueOf<typeof libraryTypes>;
 
 /**
@@ -357,7 +398,9 @@ const setLibrariesState = (
             modified: false,
             conflict: false,
             execError: '',
-            readOnly: librariesType === 'clientInternal',
+            readOnly:
+              librariesType === 'clientInternal' ||
+              librariesType === 'serverInternal',
             visibility: gameModelContent.visibility,
           };
         });
@@ -376,7 +419,9 @@ const setLibrariesState = (
             modified: false,
             conflict: false,
             execError: '',
-            readOnly: libraryType === 'clientInternal',
+            readOnly:
+              libraryType === 'clientInternal' ||
+              libraryType === 'serverInternal',
             visibility: library.visibility,
           };
         }
@@ -795,7 +840,7 @@ export function LibrariesLoader(
     }
   }, [librariesState, reactMonaco]);
 
-  // Insert global libs in models
+  // Insert global client libs models
   React.useEffect(() => {
     if (reactMonaco != null) {
       const libs = globalLibs.reduce<ILibraries>((acc, current) => {
@@ -817,6 +862,28 @@ export function LibrariesLoader(
       });
     }
   }, [globalLibs, reactMonaco]);
+
+  // Fetch global server libs and register them as monaco models
+  React.useEffect(() => {
+    let dead = false;
+    if (reactMonaco != null) {
+      const load = async () => {
+        const libs = await loadGlobalServerLibs();
+
+        if (!dead) {
+          dispatchLibrariesState({
+            actionType: 'SetUpLibrariesState',
+            librariesType: 'serverInternal',
+            libraries: libs,
+          });
+        }
+      };
+      load();
+    }
+    return () => {
+      dead = true;
+    };
+  }, [reactMonaco]);
 
   // Configure editor
   React.useEffect(() => {

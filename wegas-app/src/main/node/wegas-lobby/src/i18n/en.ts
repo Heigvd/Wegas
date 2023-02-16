@@ -128,6 +128,9 @@ export const en = {
   playersCanCreateTeams: 'Players can create teams',
   playersCantCreateTeams: "Players can't create teams",
 
+  playersCanLeaveTeams: 'Players can leave teams',
+  playersCantLeaveTeams: "Players can't leave teams",
+
   //
   kickPlayer: 'remove player',
   kickTeam: 'remove team',

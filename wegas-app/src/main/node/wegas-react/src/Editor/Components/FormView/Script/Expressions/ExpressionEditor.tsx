@@ -3,22 +3,19 @@ import { css } from '@emotion/css';
 import u from 'immer';
 import Form from 'jsoninput';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { debounce, isArray, pick } from 'lodash-es';
+import { isArray, pick } from 'lodash-es';
 import { editor } from 'monaco-editor';
 import * as React from 'react';
 import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
-import { CustomDotLoader } from '../../../../../Components/Loader';
 import { themeVar } from '../../../../../Components/Theme/ThemeVars';
-import { defaultMarginLeft } from '../../../../../css/classes';
 import { State } from '../../../../../data/Reducer/reducers';
-import { GameModel } from '../../../../../data/selectors';
 import { useStore } from '../../../../../data/Stores/store';
 import { MessageString } from '../../../MessageString';
 import { TempScriptEditor } from '../../../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
 import { Labeled, LabeledView } from '../../labeled';
 import { genVarItems } from '../../TreeVariableSelect';
-import { returnTypes, scriptEditStyle, ScriptView } from '../Script';
+import { isImpactCondition, isScriptCondition, isServerScript, returnTypes, scriptEditStyle, ScriptView } from '../Script';
 import { generateCode, LiteralExpressionValue } from './astManagement';
 import {
   Attributes,
@@ -26,12 +23,12 @@ import {
   generateSchema,
   ImpactAttributes,
   isCodeEqual,
-  isExpressionReady,
+  isExpressionValid,
   LeftExpressionAttributes,
   makeItems,
-  testCode,
+  parseCode,
   typeCleaner,
-  WyiswygExpressionSchema,
+  WysiwygExpressionSchema,
 } from './expressionEditorHelpers';
 
 type FormOnChange = React.ComponentProps<typeof Form>['onChange'];
@@ -46,16 +43,13 @@ const expressionEditorStyle = css({
 
 interface ExpressionEditorState {
   attributes?: Attributes;
-  schema?: WyiswygExpressionSchema;
+  schema?: WysiwygExpressionSchema;
   error?: string | false;
   softError?: string[];
 }
 
-function variableIdsSelector(s: State) {
-  return Object.keys(s.variableDescriptors)
-    .map(Number)
-    .filter(k => !isNaN(k))
-    .filter(k => GameModel.selectCurrent().itemsIds.includes(k));
+function getRootLevelVariableIds(s: State) {
+  return s.gameModels[s.global.currentGameModelId].itemsIds;
 }
 
 /**
@@ -118,7 +112,7 @@ export interface ExpressionEditorProps extends ScriptView {
   code: string;
   id?: string;
   onChange?: (code: string) => void;
-  mode?: ScriptMode;
+  mode: ScriptMode;
   setError?: (errors: string[] | undefined) => void;
 }
 
@@ -136,7 +130,6 @@ export function ExpressionEditor({
   const editorRef = React.useRef<editor.IStandaloneCodeEditor>();
   const mountedRef = React.useRef(true);
 
-  const [loading, setLoading] = React.useState(false);
   const [srcMode, setSrcMode] = React.useState(false);
   const [{ attributes, error, softError, schema }, dispatchFormState] =
     React.useReducer(setFormState, {});
@@ -159,29 +152,12 @@ export function ExpressionEditor({
   }, [error, softError, setError]);
 
   const variablesItems = useStore(s => {
-    return genVarItems(variableIdsSelector(s), selectableFn, undefined, value =>
+    return genVarItems(getRootLevelVariableIds(s), selectableFn, undefined, value =>
       makeItems(value, 'variable'),
     );
   }, deepDifferent);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedOnChange = React.useCallback(
-    debounce((code: string) => {
-      if (mountedRef.current && instantOnChange) {
-        setLoading(false);
-        instantOnChange(code);
-      }
-    }, 1000),
-    [instantOnChange],
-  );
-
-  const onChange = React.useCallback(
-    (code: string) => {
-      setLoading(true);
-      debouncedOnChange(code);
-    },
-    [debouncedOnChange],
-  );
+  const onChange = instantOnChange;
 
   React.useEffect(() => {
     if (
@@ -193,70 +169,72 @@ export function ExpressionEditor({
       modeRef.current = mode;
       variablesItemsRef.current = variablesItems;
 
-      const parsedCode = testCode(code, mode);
+
+      const parsedCode = parseCode(code, mode);
       if (typeof parsedCode === 'string') {
         dispatchFormState({
           type: 'SET_ERROR',
           payload: { error: parsedCode },
         });
       } else {
-        generateSchema(parsedCode, variablesItems, mode).then(schema => {
-          if (
-            schema.properties.methodId != null &&
-            parsedCode?.methodId != null
-          ) {
-            const method = schema.properties.methodId as
-              | { enum: string[] }
-              | undefined;
-            const choices = method?.enum;
-            // If the method is unknown
-            if (!choices || !choices.includes(parsedCode.methodId)) {
+        const schema = generateSchema(parsedCode, variablesItems, mode);
+
+        if (
+          schema.properties.methodId != null &&
+          parsedCode?.methodId != null
+        ) {
+          const method = schema.properties.methodId as
+            | { enum: string[] }
+            | undefined;
+          const choices = method?.enum;
+          // If the method is unknown
+          if (!choices || !choices.includes(parsedCode.methodId)) {
+            dispatchFormState({
+              type: 'SET_ERROR',
+              payload: {
+                error: `Unknown WYSIWYG method : "${parsedCode.methodId}"`,
+              },
+            });
+            return;
+          }
+        } else if (
+          parsedCode != null &&
+          parsedCode.arguments != null &&
+          schema.properties.arguments != null
+        ) {
+          // Validating statement with schema
+          for (const index in parsedCode.arguments) {
+            const argument = parsedCode.arguments[index];
+            const argType = Array.isArray(argument)
+              ? 'array'
+              : typeof argument;
+            const schemaArgument = schema.properties.arguments.properties
+              ? schema.properties.arguments.properties[index]
+              : undefined;
+            if (!schemaArgument) {
+              dispatchFormState({
+                type: 'SET_ERROR',
+                payload: { error: 'Too much arguments' },
+              });
+              return;
+            } else if (
+              argType !== 'undefined' &&
+              argType !== schemaArgument.type
+            ) {
               dispatchFormState({
                 type: 'SET_ERROR',
                 payload: {
-                  error: `Unknown WYSIWYG method : "${parsedCode.methodId}"`,
+                  error: `Argument type mismatch.\nExpected type : ${schemaArgument.type}\nArgument type : ${argType}`,
                 },
               });
               return;
             }
-          } else if (
-            parsedCode != null &&
-            parsedCode.arguments != null &&
-            schema.properties.arguments != null
-          ) {
-            // Validating statement with schema
-            for (const index in parsedCode.arguments) {
-              const argument = parsedCode.arguments[index];
-              const argType = Array.isArray(argument)
-                ? 'array'
-                : typeof argument;
-              const schemaArgument = schema.properties.arguments.properties
-                ? schema.properties.arguments.properties[index]
-                : undefined;
-              if (!schemaArgument) {
-                dispatchFormState({
-                  type: 'SET_ERROR',
-                  payload: { error: 'Too much arguments' },
-                });
-                return;
-              } else if (
-                argType !== 'undefined' &&
-                argType !== schemaArgument.type
-              ) {
-                dispatchFormState({
-                  type: 'SET_ERROR',
-                  payload: {
-                    error: `Argument type mismatch.\nExpected type : ${schemaArgument.type}\nArgument type : ${argType}`,
-                  },
-                });
-                return;
-              }
-            }
           }
-          dispatchFormState({
-            type: 'SET_IF_DEF',
-            payload: { schema, attributes: parsedCode, error: false },
-          });
+        }
+        // success schema is validated
+        dispatchFormState({
+          type: 'SET_IF_DEF',
+          payload: { schema, attributes: parsedCode, error: false },
         });
       }
     }
@@ -265,12 +243,13 @@ export function ExpressionEditor({
   const onAttributesChange = React.useCallback(
     (
       attributes: NonNullable<Attributes>,
-      schema: WyiswygExpressionSchema | undefined,
+      schema: WysiwygExpressionSchema | undefined,
     ) => {
+
       const newCode = generateCode(attributes, schema);
       codeRef.current = newCode;
 
-      if (isExpressionReady(attributes, schema)) {
+      if (isExpressionValid(attributes, schema)) {
         onChange && onChange(newCode);
       }
 
@@ -284,56 +263,54 @@ export function ExpressionEditor({
 
   const computeState = React.useCallback(
     (attributes: NonNullable<Attributes>) => {
-      return generateSchema(attributes, variablesItems, mode).then(schema => {
-        const schemaProperties = schema.properties;
-        //Remove additional properties that doesn't fit schema
-        let newAttributes = pick(
-          attributes,
-          Object.keys(schemaProperties),
-        ) as NonNullable<Attributes>;
 
-        if (schemaProperties.arguments) {
-          const extractedArguments: LiteralExpressionValue[] | undefined =
-            Object.values(schemaProperties.arguments.properties ?? []).map(
-              (arg, i) => {
-                const defaultItemsValue =
-                  arg.view != null &&
-                  'items' in arg.view &&
-                  isArray(arg.view.items) &&
-                  arg.view.items.length > 0
-                    ? arg.view.items[0]
-                    : undefined;
+      const schema = generateSchema(attributes, variablesItems, mode);
+      const schemaProperties = schema.properties;
+      //Remove additional properties that doesn't fit schema
+      let newAttributes = pick(
+        attributes,
+        Object.keys(schemaProperties),
+      ) as NonNullable<Attributes>;
 
-                // Trying to translate parameter from previous type to new type (undefined if fails)
-                return typeCleaner(
-                  newAttributes?.arguments
-                    ? newAttributes?.arguments[i]
-                    : undefined,
-                  arg.type as WegasTypeString,
-                  arg.value || defaultItemsValue,
-                ) as LiteralExpressionValue;
-              },
-            );
-          newAttributes = {
-            ...newAttributes,
-            ...(extractedArguments ? { arguments: extractedArguments } : {}),
-          };
-        }
+      if (schemaProperties.arguments) {
+        const extractedArguments: LiteralExpressionValue[] | undefined =
+          Object.values(schemaProperties.arguments.properties ?? []).map(
+            (arg, i) => {
+              const defaultItemsValue =
+                arg.view != null &&
+                'items' in arg.view &&
+                isArray(arg.view.items) &&
+                arg.view.items.length > 0
+                  ? arg.view.items[0]
+                  : (arg.const ? arg.const : undefined);
 
-        return onAttributesChange(newAttributes, schema);
-      });
+              // Trying to translate parameter from previous type to new type (undefined if fails)
+              return typeCleaner(
+                newAttributes?.arguments
+                  ? newAttributes?.arguments[i]
+                  : undefined,
+                arg.type as WegasTypeString,
+                arg.value || defaultItemsValue,
+              ) as LiteralExpressionValue;
+            },
+          );
+        newAttributes = {
+          ...newAttributes,
+          ...(extractedArguments ? { arguments: extractedArguments } : {}),
+        };
+      }
+
+      return onAttributesChange(newAttributes, schema);
     },
     [mode, onAttributesChange, variablesItems],
   );
-
-  const isServerScript = mode === 'SET' || mode === 'GET';
 
   const onScriptEditorChange = React.useCallback(
     (value: string) => {
       if (mountedRef.current == true) {
         try {
           parse(value).program.body[0];
-          const newAttributes = testCode(value, mode);
+          const newAttributes = parseCode(value, mode);
           if (typeof newAttributes === 'string') {
             dispatchFormState({
               type: 'SET_ERROR',
@@ -377,7 +354,7 @@ export function ExpressionEditor({
         } else {
           const currentConfig = attributes as ImpactAttributes &
             Pick<ConditionAttributes, 'leftExpression'>;
-          const newConfig = v as ImpactAttributes &
+            const newConfig = v as ImpactAttributes &
             Pick<ConditionAttributes, 'leftExpression'>;
           // If type or first expression has changed, keep only type and expression and regenerate schema and send changes
           if (
@@ -388,38 +365,36 @@ export function ExpressionEditor({
               newConfig.leftExpression,
             )
           ) {
-            computeState(
+            const { attributes, schema } = computeState(
               pick(newConfig, ['type', 'expression', 'leftExpression']),
-            ).then(({ attributes, schema }) =>
-              dispatchFormState({
-                type: 'SET_IF_DEF',
-                payload: {
-                  attributes,
-                  schema,
-                  softError: e.map(error => error.toString()),
-                },
-              }),
-            );
+            )
+            dispatchFormState({
+              type: 'SET_IF_DEF',
+              payload: {
+                attributes,
+                schema,
+                softError: e.map(error => error.toString()),
+              },
+            })
           }
           // If method has changed, keep only type, expression and method and regenerate schema and send changes
           else if (deepDifferent(currentConfig.methodId, newConfig.methodId)) {
-            computeState(
+            const { attributes, schema } = computeState(
               pick(newConfig, [
                 'type',
                 'expression',
                 'leftExpression',
                 'methodId',
               ]),
-            ).then(({ attributes, schema }) =>
-              dispatchFormState({
-                type: 'SET_IF_DEF',
-                payload: {
-                  attributes,
-                  schema,
-                  softError: e.map(e => e.toString()),
-                },
-              }),
-            );
+            )
+            dispatchFormState({
+              type: 'SET_IF_DEF',
+              payload: {
+                attributes,
+                schema,
+                softError: e.map(e => e.toString()),
+              },
+            })
           }
           // If arguments, operator or rightExpression has changed, keep current schema and send changes
           else {
@@ -438,18 +413,25 @@ export function ExpressionEditor({
     [attributes, computeState, onAttributesChange, schema],
   );
 
+  const buildContextFromAttribute = React.useCallback((a: Attributes, mode: ScriptMode) => {
+    if(a){
+      if((isScriptCondition(mode))){
+        return (a as ConditionAttributes).leftExpression;
+      }else if(isImpactCondition(mode)) {
+        return (a as ImpactAttributes).expression;
+      }else{
+        return undefined;
+      }
+    }
+  }, []);
+
   return (
     <div id={id} className={expressionEditorStyle}>
-      {loading ? (
-        <div className={defaultMarginLeft}>
-          <CustomDotLoader size={21} color={themeVar.colors.PrimaryColor} />
-        </div>
-      ) : null}
       {typeof error === 'string' || srcMode ? (
         <div className={scriptEditStyle}>
           <MessageString type="error" value={(softError || []).join('\n')} />
           <TempScriptEditor
-            language={isServerScript ? 'javascript' : 'typescript'}
+            language={isServerScript(mode) ? 'javascript' : 'typescript'}
             initialValue={code}
             onChange={onScriptEditorChange}
             noGutter
@@ -464,12 +446,14 @@ export function ExpressionEditor({
           value={attributes}
           schema={schema}
           onChange={onFormChange}
-          context={attributes}
+          context={buildContextFromAttribute(attributes, mode)}
         />
       )}
     </div>
   );
 }
+
+
 
 export interface StatementViewProps extends WidgetProps.BaseProps {
   value: string;

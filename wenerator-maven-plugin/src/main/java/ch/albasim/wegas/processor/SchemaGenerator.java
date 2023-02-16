@@ -1290,6 +1290,76 @@ public class SchemaGenerator extends AbstractMojo {
         writeInterfacesToFile(srcDirectory, implBuilder, "WegasScriptableEntities.ts");
     }
 
+    private void writeJsonLoaderToFile(Map<String, Class> fileNameMap) {
+
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("import { AtClassToConcreteClasses, AtClassToConcrtetableClasses } from './WegasScriptableEntities';");
+        builder.append(System.lineSeparator());
+        builder.append("import { Schema } from 'jsoninput';");
+        builder.append(System.lineSeparator());
+
+        //imports
+        fileNameMap.forEach((fileName, klass) -> {
+
+            String cls = Mergeable.getJSONClassName(klass);
+
+            builder.append("import ")
+                .append(cls)
+                .append(" from './schemas/")
+                .append(fileName)
+                .append("';");
+            builder.append(System.lineSeparator());
+        });
+
+        builder.append(System.lineSeparator());
+
+        builder.append("interface MethodConfig {")
+            .append(System.lineSeparator())
+            .append("    label:string;")
+            .append(System.lineSeparator())
+            .append("    nullable?: boolean;")
+            .append(System.lineSeparator())
+            .append("    returns?: 'string' | 'number' | 'boolean',")
+            .append(System.lineSeparator())
+            .append("    parameters: ({type: Schema['type'] | 'identifier'} & Schema)[]")
+            .append(System.lineSeparator())
+            .append("}")
+            .append(System.lineSeparator())
+            .append("interface JsonSchemaWithMethods {")
+            .append(System.lineSeparator())
+            .append("    schema: Schema;")
+            .append(System.lineSeparator())
+            .append("    methods: Record<string, MethodConfig>;")
+            .append(System.lineSeparator())
+            .append("}")
+            .append(System.lineSeparator());
+
+        builder.append(System.lineSeparator());
+        builder.append("export const JSONLoader: Record<keyof AtClassToConcreteClasses | keyof AtClassToConcrtetableClasses, JsonSchemaWithMethods> = {");
+        builder.append(System.lineSeparator());
+
+        fileNameMap.forEach((String fileName, Class klass) -> {
+            String cls = Mergeable.getJSONClassName(klass);
+            builder.append("    ")
+                .append(cls)
+                .append(": ")
+                .append(cls)
+                .append(" as JsonSchemaWithMethods,")
+            .append(System.lineSeparator());
+        });
+
+        builder.append("}").append(System.lineSeparator());
+
+        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(srcDirectory.getAbsolutePath(), "JSONLoader.ts"))) {
+            writer.write(builder.toString());
+
+        } catch (IOException ex) {
+            getLog().error("Failed to write " + " in source directory", ex);
+        }
+
+    }
+
     private void generateMethods(StringBuilder builder,
         Map<String, ScriptableMethod> methods, Class<? extends Mergeable> klass) {
         methods.forEach((k, v) -> {
@@ -1369,7 +1439,7 @@ public class SchemaGenerator extends AbstractMojo {
         /*
          * Hold a reference to generated file names
          */
-        Map<String, String> jsonBuiltFileNames = new HashMap<>();
+        Map<String, Class> jsonBuiltFileNames = new HashMap<>();
 
         classes.stream()
             .filter(c -> !c.isAnonymousClass()).forEach(c -> {
@@ -1500,7 +1570,7 @@ public class SchemaGenerator extends AbstractMojo {
                             + jsonBuiltFileNames.get(jsonFileName) + " <> " + c.getName());
                         return;
                     }
-                    jsonBuiltFileNames.put(jsonFileName, wEF.getTheClass().getName());
+                    jsonBuiltFileNames.put(jsonFileName, wEF.getTheClass());
 
                     if (!dryRun) {
                         try (BufferedWriter writer = Files.newBufferedWriter(Path.of(schemasDirectory.getAbsolutePath(), jsonFileName))) {
@@ -1526,8 +1596,11 @@ public class SchemaGenerator extends AbstractMojo {
             writeTsInterfacesToFile();
             writeTsScriptableClassesToFile();
             writeInheritanceToFile();
+            writeJsonLoaderToFile(jsonBuiltFileNames);
         }
+
     }
+
 
     private void addSchemaProperty(JSONObject jsonSchema,
         Class<? extends Mergeable> c,
@@ -1959,7 +2032,7 @@ public class SchemaGenerator extends AbstractMojo {
     }
 
     /**
-     * JSONShemas for attributes and schemaMethods
+     * JSONSchemas for attributes and schemaMethods
      */
     private static class Config {
 

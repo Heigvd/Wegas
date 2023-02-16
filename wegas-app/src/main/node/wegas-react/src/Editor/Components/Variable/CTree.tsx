@@ -229,9 +229,9 @@ export function CTree({
         focusTab(mainLayoutId, 'Variable Properties');
       }
 
-      getEntityActions(variable!).then(({ edit }) =>
-        dispatch(edit(VariableDescriptor.select(variableId)!, subPath)),
-      );
+      const { edit } = getEntityActions(variable!)
+      dispatch(edit(VariableDescriptor.select(variableId)!, subPath));
+      
     },
     [forceLocalDispatch, localDispatch, subPath, variableId, variable],
   );

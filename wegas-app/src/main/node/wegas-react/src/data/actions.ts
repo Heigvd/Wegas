@@ -190,14 +190,13 @@ export function manageResponseHandler(
         updatedEntity &&
         shallowDifferent(updatedEntity, currentEditingEntity)
       ) {
-        getEntityActions(updatedEntity).then(({ edit }) => {
-          const newPath = selectPath
-            ? selectPath
-            : editState && 'path' in editState
-            ? editState.path
-            : undefined;
-          localDispatch(edit(updatedEntity, newPath));
-        });
+        const { edit } = getEntityActions(updatedEntity)
+        const newPath = selectPath
+          ? selectPath
+          : editState && 'path' in editState
+          ? editState.path
+          : undefined;
+        localDispatch(edit(updatedEntity, newPath));
       }
     }
   }

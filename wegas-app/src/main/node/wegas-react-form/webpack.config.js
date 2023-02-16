@@ -13,6 +13,10 @@ const path = require('path');
 // 'react-tinymce',
 // 'recast'
 // ];
+
+
+const NodePolyfillWebpackPlugin = require('node-polyfill-webpack-plugin');
+
 const PROD = process.env.NODE_ENV === 'production';
 
 module.exports = {
@@ -30,6 +34,9 @@ module.exports = {
         extensions: ['.ts', '.tsx', '.js', '.jsx'],
         mainFields: ['module', 'jsnext:main', 'browser', 'main'],
     },
+    plugins: [
+        new NodePolyfillWebpackPlugin(),
+    ],
     module: {
         rules: [
             {
@@ -47,7 +54,7 @@ module.exports = {
             },
             {
                 test: /\.jsx?$/,
-                loaders: ['babel-loader'],
+                loader: 'babel-loader',
                 include: [path.join(__dirname, 'src')],
             },
             {
@@ -92,18 +99,21 @@ module.exports = {
             },
         ],
     },
-    devServer: {
-        port: 3003,
-        overlay: true,
-        publicPath: '/Wegas/wegas-react-form/dist/',
-        proxy: {
-            '/Wegas': {
-                target: 'http://localhost:8080',
-            },
+    devServer: {  
+      host: 'localhost',
+      port: 3003,
+      proxy: {
+        '/Wegas': 'http://localhost:8080',
+      },
+      client: {
+        overlay: {
+          errors: true,
+          warnings: false,
         },
-    },
-    // devServer: {
-    //     reload: false,
-    //     inline: true,
-    // },
+      },
+      devMiddleware: {
+        stats: 'errors-warnings',
+        publicPath: '/Wegas/wegas-react-form/dist',
+      },
+  },
 };

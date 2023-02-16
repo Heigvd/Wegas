@@ -26,6 +26,7 @@ export const usableComponentType = [
   'Advanced',
   'Programmatic',
   'Maps',
+  'GameDesign',
 ] as const;
 
 export const componentTypes = [

@@ -183,6 +183,7 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
       Maps: 'Maps',
       Programmatic: 'Programmatisch',
       Utility: 'Hilfsmittel',
+      GameDesign: 'GameDesign',
     },
   },
   languageEditor: {

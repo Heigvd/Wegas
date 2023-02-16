@@ -1,5 +1,22 @@
 #!/bin/bash
 
+
+echo
+echo " o              o                                                   "
+echo "<|>            <|>                                                  "
+echo "/ \            / \                                                  "
+echo "\o/            \o/    o__  __o     o__ __o/     o__ __o/      __o__ "
+echo " |              |    /v      |>   /v     |     /v     |      />  \  "
+echo "< >            < >  />      //   />     / \   />     / \     \o     "
+echo " \o    o/\o    o/   \o    o/     \      \o/   \      \o/      v\    "
+echo "  v\  /v  v\  /v     v\  /v __o   o      |     o      |        <\   "
+echo "   <\/>    <\/>       <\/> __/>   <\__  < >    <\__  / \  _\o__</   "
+echo "                                      ^   |                          "
+echo "                                  o__     o                          "
+echo "                                  <\__ __/>                          "
+echo
+
+
 DB_HOST=localhost
 DB_NAME=wegas_dev
 PAYARA_MICRO=target/payara-micro.current.jar
@@ -68,7 +85,6 @@ while getopts "h?dm:t:n:p:w:j:s:g:" opt; do
         ;;
     esac
 done
-
 
 if [ ${DEBUG} == "true" ]; then
     DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=${DEBUG_PORT},server=y,suspend=n"

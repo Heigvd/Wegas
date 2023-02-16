@@ -198,6 +198,16 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
         view = @View(label = "Players may create teams"))
     private Boolean preventPlayerCreatingTeams = false;
 
+
+    /**
+     * If set to true, player will not be able to leave team once joined.
+     * The trainer is still able to kick players
+     */
+    @WegasEntityProperty(
+        optional = false, nullable = false, proposal = ValueGenerators.False.class,
+        view = @View(label = "Players may leave teams"))
+    private Boolean preventPlayerLeavingTeam = false;
+
     /**
      *
      */
@@ -586,6 +596,23 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     public void setPreventPlayerCreatingTeams(Boolean preventPlayerCreatingTeams) {
         this.preventPlayerCreatingTeams = preventPlayerCreatingTeams;
+    }
+
+    /**
+     * Can player leave teams ?
+     * @return player ability to leave teams
+     */
+    public Boolean getPreventPlayerLeavingTeam() {
+        return preventPlayerLeavingTeam;
+    }
+
+    /**
+     * Give or remove the ability for players to leave teams
+     *
+     * @param preventPlayerLeavingTeam new right
+     */
+    public void setPreventPlayerLeavingTeam(Boolean preventPlayerLeavingTeam) {
+        this.preventPlayerLeavingTeam = preventPlayerLeavingTeam;
     }
 
     /**

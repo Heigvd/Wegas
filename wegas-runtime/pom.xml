@@ -191,6 +191,13 @@
                                     <outputDirectory>${project.basedir}/target/</outputDirectory>
                                     <destFileName>payara-micro.current.jar</destFileName>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>fish.payara.extras</groupId>
+                                    <artifactId>payara-micro</artifactId>
+                                    <version>${payara.micro.version}</version>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.basedir}/target/</outputDirectory>
+                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>

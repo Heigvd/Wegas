@@ -180,6 +180,7 @@ export const editorTabsTranslationsFR: EditorTabsTranslations = {
       Maps: 'Maps',
       Programmatic: 'Programmatique',
       Utility: 'Utilitaire',
+      GameDesign: 'GameDesign',
     },
   },
   languageEditor: {

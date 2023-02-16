@@ -8,6 +8,7 @@ import {
 import { translate } from '../../i18n';
 
 export class SStringDescriptorImpl extends SStringDescriptor {
+
   public getValue(p: Readonly<SPlayer>): string {
     return translate(this.getInstance(p).getTrValue(), p.getLang());
   }
@@ -84,6 +85,11 @@ export class SStringDescriptorImpl extends SStringDescriptor {
     _p: Readonly<SPlayer>,
     _value: Readonly<STranslatableContent>,
   ): void {
-    throw new Error('This is readonlyx');
+    throw new Error('This is readonly');
   }
+
+  setAllowedValue(_p: Readonly<SPlayer>, _value: string): void | null {
+    throw new Error('This is readonly');
+  }
+
 }

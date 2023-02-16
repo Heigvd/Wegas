@@ -597,6 +597,18 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
+     * @return all teams from all games
+     */
+    @JsonIgnore
+    public List<Team> getTeams() {
+        List<Team> teams = new ArrayList<>();
+        for (Game g : this.getGames()) {
+            teams.addAll(g.getTeams());
+        }
+        return teams;
+    }
+
+    /**
      * {@inheritDoc }
      */
     @JsonIgnore
