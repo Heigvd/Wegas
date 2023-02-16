@@ -357,7 +357,7 @@ export default function Overview({
           tooltip={i18nValuesTrainer.exportTeamsData}
           onClick={() => {
             window.open(
-              `${API_ENDPOINT}/GameModel/Game/${Game.selectCurrent()
+              `${API_ENDPOINT}GameModel/Game/${Game.selectCurrent()
                 .id!}/ExportMembers.xlsx`,
               '_blank',
             );
