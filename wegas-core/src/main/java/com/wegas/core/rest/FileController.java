@@ -249,8 +249,9 @@ public class FileController {
                         response.header("Description", fileDescriptor.getDescription());
                     }
 
-                    // set a default cacheControl prevent out CacheResponseFilter to set "no-cache, no-store"
-                    response.cacheControl(new CacheControl()).lastModified(fileD.getDataLastModified().getTime());
+                    var cacheControl = new CacheControl();
+                    cacheControl.setNoCache(true);
+                    response.cacheControl(cacheControl).lastModified(fileD.getDataLastModified().getTime());
                 }
             }
         } catch (PathNotFoundException e) {
