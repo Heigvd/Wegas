@@ -16,7 +16,7 @@ import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.Map;
 import jakarta.inject.Inject;
-import jakarta.naming.NamingException;
+import javax.naming.NamingException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,7 +32,7 @@ public class ScriptControllerTest extends AbstractArquillianTest {
     /**
      * Test of testGameModel method, of class ScriptController.
      *
-     * @throws jakarta.naming.NamingException
+     * @throws javax.naming.NamingException
      */
     @Test
     public void testTestGameModel() throws NamingException {

@@ -23,7 +23,7 @@ import com.wegas.mcq.persistence.Result;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.Arrays;
 import jakarta.inject.Inject;
-import jakarta.naming.NamingException;
+import javax.naming.NamingException;
 import org.junit.Assert;
 import org.junit.Test;
 

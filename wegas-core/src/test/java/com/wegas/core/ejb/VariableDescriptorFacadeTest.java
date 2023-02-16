@@ -20,7 +20,7 @@ import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.Collection;
 import java.util.List;
-import jakarta.naming.NamingException;
+import javax.naming.NamingException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;

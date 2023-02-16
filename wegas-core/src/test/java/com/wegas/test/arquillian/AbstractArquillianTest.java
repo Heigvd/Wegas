@@ -15,7 +15,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.rest.UserController;
 import java.sql.SQLException;
 import jakarta.inject.Inject;
-import jakarta.naming.NamingException;
+import javax.naming.NamingException;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

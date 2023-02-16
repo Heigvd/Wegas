@@ -23,7 +23,7 @@ import com.wegas.messaging.persistence.Message;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.List;
 import jakarta.inject.Inject;
-import jakarta.naming.NamingException;
+import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;

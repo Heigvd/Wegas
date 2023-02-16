@@ -20,7 +20,7 @@ import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.StringReader;
 import jakarta.inject.Inject;
-import jakarta.jcr.RepositoryException;
+import javax.jcr.RepositoryException;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonPatch;

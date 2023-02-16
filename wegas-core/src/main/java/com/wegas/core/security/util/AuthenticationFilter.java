@@ -7,10 +7,15 @@
  */
 package com.wegas.core.security.util;
 
-import com.flowlogix.shiro.ee.filters.PassThruAuthenticationFilter;
+import com.wegas.core.Helper;
 import java.io.IOException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import java.net.URLEncoder;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.filter.authc.PassThruAuthenticationFilter;
+import org.apache.shiro.web.util.WebUtils;
 
 /**
  *

@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import jakarta.inject.Inject;
-import jakarta.naming.NamingException;
+import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
     /**
      * Test of entityUpdateListener method, of class StateMachineFacade.
      *
-     * @throws jakarta.naming.NamingException
+     * @throws javax.naming.NamingException
      */
     @Test
     public void testTrigger() throws NamingException {

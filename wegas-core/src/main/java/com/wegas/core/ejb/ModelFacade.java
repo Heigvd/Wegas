@@ -930,7 +930,7 @@ public class ModelFacade {
      * @param model     the model
      * @param scenarios scenario to attach to model
      *
-     * @throws jakarta.jcr.RepositoryException
+     * @throws javax.jcr.RepositoryException
      */
     public void integrateScenario(GameModel model, List<GameModel> scenarios) throws RepositoryException {
         if (model != null) {
@@ -1160,7 +1160,7 @@ public class ModelFacade {
      *
      * @return
      *
-     * @throws jakarta.jcr.RepositoryException
+     * @throws javax.jcr.RepositoryException
      *
      */
     public GameModel propagateModel(Long gameModelId) throws RepositoryException {

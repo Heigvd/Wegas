@@ -108,7 +108,7 @@ JDK_EXTRA_OPTS="--add-modules java.se
     --add-opens=java.base/java.util=ALL-UNNAMED
     --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
     --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED
-    --add-opens=java.naming/jakarta.naming.spi=ALL-UNNAMED
+    --add-opens=java.naming/javax.naming.spi=ALL-UNNAMED
     --add-opens=java.logging/java.util.logging=ALL-UNNAMED
     --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
     --add-opens=java.management/sun.management=ALL-UNNAMED

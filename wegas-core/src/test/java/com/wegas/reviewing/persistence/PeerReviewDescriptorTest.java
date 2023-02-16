@@ -24,7 +24,7 @@ import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.naming.NamingException;
+import javax.naming.NamingException;
 import org.junit.After;
 import org.junit.Assert;
 import static org.junit.Assert.*;

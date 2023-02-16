@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import jakarta.inject.Inject;
-import jakarta.jcr.RepositoryException;
+import javax.jcr.RepositoryException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
