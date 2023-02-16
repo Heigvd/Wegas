@@ -14,22 +14,32 @@ Cypress.Commands.add("createEmptyModel", () => {
     props: {
       title: "Create an empty Model",
     },
-  }).click();
+  })
+    .should("have.length", 1)
+    .click();
+
   cy.react("Clickable", {
     props: {
       title: "confirm Create an empty Model",
     },
-  }).click();
+  })
+    .should("have.length", 1)
+    .click();
+
   cy.react("ConfirmIconButton", {
     props: {
       title: "Create an empty React Model",
     },
-  }).click();
+  })
+    .should("have.length", 1)
+    .click();
   cy.react("Clickable", {
     props: {
       title: "confirm Create an empty React Model",
     },
-  }).click();
+  })
+    .should("have.length", 1)
+    .click();
   cy.simulatePusher();
 });
 

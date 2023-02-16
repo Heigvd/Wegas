@@ -73,9 +73,8 @@ Cypress.Commands.add("logout", () => {
   }).click({
     force: true,
   });
-  cy.react("FontAwesomeIcon", {
-    props: {},
-  });
+  cy.react("SignInForm")
+    .should("have.length", 1);
   cy.log("Logout working!");
 });
 
