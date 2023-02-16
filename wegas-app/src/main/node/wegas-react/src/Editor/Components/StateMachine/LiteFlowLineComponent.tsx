@@ -74,7 +74,7 @@ export function LiteFlowLineComponentFactory<
     const { lang } = React.useContext(languagesCTX);
 
     const textValue = entityIs(flowline.transition, 'Transition')
-      ? flowline.transition.label
+      ? flowline.transition.label || flowline.transition.triggerCondition?.content
       : translate(flowline.transition.actionText, lang);
 
     const onValidate = React.useCallback(

@@ -10,6 +10,7 @@ const compTypes: Record<ComponentType, string> = {
   Maps: 'Maps',
   Programmatic: 'Programmatic',
   Utility: 'Utility',
+  GameDesign: 'GameDesign',
 };
 
 export const editorTabsTranslationsEN = {

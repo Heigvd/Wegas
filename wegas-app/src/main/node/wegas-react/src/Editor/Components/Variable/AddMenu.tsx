@@ -8,7 +8,6 @@ import {
   IWhQuestionDescriptor,
 } from 'wegas-ts-api';
 import { DropMenu, DropMenuProps } from '../../../Components/DropMenu';
-import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { entityIs } from '../../../data/entities';
 import { getChildren, getClassLabel, getIcon } from '../../editionConfig';
 import { IconComp, withDefault } from '../Views/FontAwesome';
@@ -55,55 +54,50 @@ export interface AddMenuProps {
 /**
  * handle Add button for List / Question
  */
-export const AddMenuParent = asyncSFC(
-  async ({
-    variable,
-    label,
-    prefixedLabel,
-    onSelect,
-    style,
-  }: {
-    variable: IListDescriptor | IQuestionDescriptor | IWhQuestionDescriptor;
-  } & AddMenuProps) => {
-    const items = buildMenuItems(variable);
-    return (
-      <DropMenu
-        style={style}
-        label={label}
-        prefixedLabel={prefixedLabel}
-        items={items}
-        icon="plus"
-        onSelect={onSelect}
-      />
-    );
-  },
-);
+export const AddMenuParent = ({
+  variable,
+  label,
+  prefixedLabel,
+  onSelect,
+  style,
+}: {
+  variable: IListDescriptor | IQuestionDescriptor | IWhQuestionDescriptor;
+} & AddMenuProps) => {
+  const items = buildMenuItems(variable);
+  return (
+    <DropMenu
+      style={style}
+      label={label}
+      prefixedLabel={prefixedLabel}
+      items={items}
+      icon="plus"
+      onSelect={onSelect}
+    />
+  );
+};
 
 /**
  * Handle Add button for Choice
  */
-export const AddMenuChoice = asyncSFC(
-  async ({
-    variable,
-    onSelect,
-  }: {
-    variable: IChoiceDescriptor;
-  } & AddMenuProps) => {
-    const items = buildMenuItems(variable);
-    return <DropMenu items={items} icon="plus" onSelect={onSelect} />;
-  },
-);
+export const AddMenuChoice = ({
+  variable,
+  onSelect,
+}: {
+  variable: IChoiceDescriptor;
+} & AddMenuProps) => {
+  const items = buildMenuItems(variable);
+  return <DropMenu items={items} icon="plus" onSelect={onSelect} />;
+};
+
 /**
  * Handle Add button for Choice
  */
-export const AddMenuFeedback = asyncSFC(
-  async ({
-    variable,
-    onSelect,
-  }: {
-    variable: IEvaluationDescriptorContainer;
-  } & AddMenuProps) => {
-    const items = buildMenuItems(variable);
-    return <DropMenu items={items} icon="plus" onSelect={onSelect} />;
-  },
-);
+export const AddMenuFeedback = ({
+  variable,
+  onSelect,
+}: {
+  variable: IEvaluationDescriptorContainer;
+} & AddMenuProps) => {
+  const items = buildMenuItems(variable);
+  return <DropMenu items={items} icon="plus" onSelect={onSelect} />;
+};

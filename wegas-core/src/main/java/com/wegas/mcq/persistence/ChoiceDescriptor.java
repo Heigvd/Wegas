@@ -29,6 +29,7 @@ import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
 import com.wegas.core.persistence.annotations.WegasConditions.IsTrue;
 import com.wegas.core.persistence.annotations.WegasConditions.Not;
 import com.wegas.core.persistence.annotations.WegasConditions.Or;
+import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.annotations.WegasEntity;
 import com.wegas.core.persistence.annotations.WegasRefs.Const;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
@@ -43,6 +44,7 @@ import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.One;
 import com.wegas.editor.ValueGenerators.Zero;
 import com.wegas.editor.Visible;
+import com.wegas.editor.view.EntityArrayFiledSelect;
 import com.wegas.editor.view.Hidden;
 import com.wegas.editor.view.I18nHtmlView;
 import com.wegas.editor.view.NumberView;
@@ -157,7 +159,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     @Scriptable(dependsOn = DependencyScope.NONE)
-    public void setCurrentResult(Player player, String resultName) throws WegasNoResultException {
+    public void setCurrentResult(Player player, @Param(view = @View(label="", value = EntityArrayFiledSelect.ResultsSelect.class))String resultName) throws WegasNoResultException {
         ChoiceInstance instance = this.getInstance(player);
         Result resultByName = getResultByName(resultName);
         this.changeCurrentResult(instance, resultByName);

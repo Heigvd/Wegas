@@ -10,6 +10,7 @@ import AchievementExhibition from '../../../pictures/componentsIcons/achievement
 import BooleanIcon from '../../../pictures/componentsIcons/boolean.svg';
 import BoxesIcon from '../../../pictures/componentsIcons/boxes.svg';
 import ButtonIcon from '../../../pictures/componentsIcons/button.svg';
+import DashboardIcon from '../../../pictures/componentsIcons/dashboard.svg';
 import DialogueIcon from '../../../pictures/componentsIcons/dialogue.svg';
 import FileBrowserIcon from '../../../pictures/componentsIcons/fileBrowser.svg';
 import FileInputIcon from '../../../pictures/componentsIcons/fileInput.svg';
@@ -65,6 +66,7 @@ const iconComponents = {
   boolean: BooleanIcon,
   boxes: BoxesIcon,
   button: ButtonIcon,
+  dashboard: DashboardIcon,
   dialogue: DialogueIcon,
   fileBrowser: FileBrowserIcon,
   fileInput: FileInputIcon,
@@ -136,6 +138,8 @@ export function ComponentTypeIcon({ componentType }: ComponentTypeIconProps) {
         return 'code';
       case 'Maps':
         return 'map';
+      case 'GameDesign':
+        return 'user-astronaut';
     }
   }
   return (

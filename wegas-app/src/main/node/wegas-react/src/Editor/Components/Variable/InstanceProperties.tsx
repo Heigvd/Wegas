@@ -1,5 +1,4 @@
 import { css, cx } from '@emotion/css';
-import { Schema } from 'jsoninput';
 import * as React from 'react';
 import { IVariableInstance } from 'wegas-ts-api';
 import { VariableInstanceAPI } from '../../../API/variableInstance.api';
@@ -34,11 +33,10 @@ import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import getEditionConfig from '../../editionConfig';
 import {
-  AsyncVariableForm,
   EditorProps,
   parseEventFromIndex,
+  WindowedEditor,
 } from '../EntityEditor';
-import { AvailableViews } from '../FormView';
 import { VariableTreeTitle } from './VariableTreeTitle';
 
 const listBox = css({
@@ -193,9 +191,9 @@ export function InstanceProperties({
       </Toolbar.Header>
       <Toolbar.Content>
         {instance != null && (
-          <AsyncVariableForm
+          <WindowedEditor
             getConfig={si =>
-              getEditionConfig(si) as Promise<Schema<AvailableViews>>
+              getEditionConfig(si)
             }
             update={(entity: IVariableInstance) =>
               (dispatch || editingStore.dispatch)(updateInstance(entity)).then(

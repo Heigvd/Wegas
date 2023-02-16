@@ -18,12 +18,44 @@ var WegasDashboard = (function () {
 
     var Long = Java.type("java.lang.Long");
 
+    var defaultDashboardName = 'overview';
+
+    // Record<OverviewName, function[]>
+    var initCallbacks = {};
+
+    function runInitCallbacks(dashboardName) {
+        var cbs = initCallbacks[dashboardName] || [];
+
+        var originalDefaultDashboardName = defaultDashboardName;
+        defaultDashboardName = dashboardName;
+        for (var i in cbs) {
+            var cb = cbs[i];
+            if (cb instanceof Function){
+                cb();
+            }
+        }
+        defaultDashboardName = originalDefaultDashboardName;
+    }
+
+    function registerInitCallback(initCb, dashboardName) {
+        if (!dashboardName) {
+           dashboardName = defaultDashboardName;
+        }
+        if (initCb instanceof Function === false) {
+            throw "Callback is not a function";
+        }
+
+        initCallbacks[dashboardName] = initCallbacks[dashboardName] || [];
+
+        initCallbacks[dashboardName].push(initCb);
+    }
+
     function getInstances(name) {
         return Variable.getInstancesByKeyId(Variable.find(gameModel, name));
     }
 
     function getOrCreateDashboard(dashboardName) {
-        var dName = dashboardName || "overview";
+        var dName = dashboardName || defaultDashboardName;
         if (!dashConfigs[dName]) {
             dashConfigs[dName] = {};
         }
@@ -32,7 +64,7 @@ var WegasDashboard = (function () {
 
     function getOrCreateSection(dashboardName, sectionName) {
         var sName = sectionName || "monitoring";
-        var dashboard = getOrCreateDashboard(dashboardName || "overview");
+        var dashboard = getOrCreateDashboard(dashboardName || defaultDashboardName);
         var section = (dashboard[sName] = dashboard[sName] || {
             title: sName,
             items: {}
@@ -195,8 +227,9 @@ var WegasDashboard = (function () {
     }
 
     function overview(name, doNotStringify) {
-        name = name || "overview";
+        name = name || defaultDashboardName;
         var overview = {};
+        runInitCallbacks(name);
 
         if (dashConfigs[name]) {
 
@@ -392,11 +425,13 @@ var WegasDashboard = (function () {
         }
     }
 
+
     return {
+        createDashboard: registerInitCallback,
         /**
          *
-         * @param {type} varName
-         * @param {type} cfg {
+         * @param {string} varName
+         * @param {object} cfg {
          *  section = 'monitoring',
          *  dashboard = 'overview',
          *  label =varLabel,

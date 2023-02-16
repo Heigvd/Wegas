@@ -212,7 +212,9 @@ export default function PlayerCard({ player, team }: PlayerCardProps): JSX.Eleme
           </OpenCloseModal>
         )}
 
-        {player.status === 'FAILED' || player.status === 'LIVE' ? (
+        {!game.preventPlayerLeavingTeam &&
+        (player.status === 'FAILED' || player.status === 'LIVE') ? (
+          /*TODO: chec right game.prevetn....*/
           <ActionIconButton
             shouldConfirm
             className={cardSecButtonStyle}

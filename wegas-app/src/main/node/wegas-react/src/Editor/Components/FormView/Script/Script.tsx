@@ -53,6 +53,10 @@ export function isScriptCondition(mode?: ScriptMode) {
   return mode === 'GET' || mode === 'GET_CLIENT';
 }
 
+export function isImpactCondition(mode?: ScriptMode){
+  return mode === 'SET' || mode === 'SET_CLIENT';
+}
+
 export function isClientMode(mode?: ScriptMode) {
   return mode === 'GET_CLIENT' || mode === 'SET_CLIENT';
 }
@@ -62,7 +66,7 @@ export function returnTypes(mode?: ScriptMode): string[] | undefined {
 }
 
 export interface ScriptView {
-  mode?: ScriptMode;
+  mode: ScriptMode;
 }
 
 export interface ScriptProps

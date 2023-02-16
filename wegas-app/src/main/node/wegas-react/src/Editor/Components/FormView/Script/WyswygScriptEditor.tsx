@@ -4,6 +4,7 @@ import { ExpressionEditor } from './Expressions/ExpressionEditor';
 import { isScriptCondition, ScriptView } from './Script';
 
 function createNewExpression(mode?: ScriptMode): string {
+  //TODO ; for empty impact... why ?
   return isScriptCondition(mode) ? 'true' : ';';
 }
 

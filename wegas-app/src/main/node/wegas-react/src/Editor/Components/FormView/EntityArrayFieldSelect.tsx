@@ -1,9 +1,8 @@
 import { WidgetProps } from 'jsoninput/typings/types';
 import * as React from 'react';
-import { IVariableDescriptor } from 'wegas-ts-api';
+import { VariableContext } from '.';
 import {
   editorLabel,
-  getInstance,
 } from '../../../data/methods/VariableDescriptorMethods';
 import * as VariableDescriptor from '../../../data/selectors/VariableDescriptorSelector';
 import { CommonView } from './commonView';
@@ -16,12 +15,10 @@ interface IName {
 }
 
 interface IEntityArrayFieldSelectProps extends WidgetProps.BaseProps {
-  context?: {
-    variableName?: string;
-  };
+  context?: VariableContext,
   view: {
     returnAttr: string;
-    scope: 'instance' | string;
+    //scope: 'instance' | string;
     field: string;
     context?: {
       entity: string;
@@ -46,16 +43,17 @@ function optionNameToString(result: any, name: IName) {
 
 function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
   const context = props.context || {};
-  const { field, returnAttr, scope, name, ...restView } = props.view;
+  const { field, returnAttr, name, ...restView } = props.view;
   const computedEntity = context.variableName
-    ? VariableDescriptor.first('name', context.variableName)
+    ? VariableDescriptor.findByName(context.variableName)
     : props.formValue;
   if (!computedEntity) {
-    return <pre>No computedEntity found</pre>;
+    return <pre>No computed entity found</pre>;
   }
 
-  const options =
-    scope !== 'instance'
+  const options = (computedEntity as Record<string, unknown>)[field];
+    /* XGO: scope is never defined
+      scope !== 'instance'
       ? (computedEntity as Record<string, unknown>)[field]
       : (
           getInstance(computedEntity as IVariableDescriptor) as Record<
@@ -63,6 +61,7 @@ function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
             unknown
           >
         )[field];
+    */
 
   if (options == null) {
     return <pre>No attribute {field} found</pre>;

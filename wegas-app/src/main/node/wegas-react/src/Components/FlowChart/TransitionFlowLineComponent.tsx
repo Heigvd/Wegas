@@ -50,6 +50,12 @@ export const transitionBoxStyle = css({
     textOverflow: 'ellipsis',
     alignItems: 'center',
   },
+  // does not work because of transform rules in parent elements
+  // see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
+  // '&:hover': {
+  //   zIndex: 9999,
+  //   color: '#FF0000'
+  // }
 });
 
 export const transitionBoxActionStyle = css({
@@ -70,7 +76,8 @@ const selectedTransitionBoxStyle = css({
 });
 
 export const transitionMoreInfosStyle = css({
-  position: 'relative',
+  position: 'absolute',
+  top: '110%',
   backgroundColor: themeVar.colors.BackgroundColor,
   color: '#807F7F',
   padding: '10px',

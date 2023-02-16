@@ -236,6 +236,12 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
         this.getInstance(p).setValue(value);
     }
 
+    @Scriptable(label = "set value from a predefined list", nullable = true, dependsOn = DependencyScope.NONE)
+    public void setAllowedValue(Player p,
+        @Param(view = @View(label = "", value = EntityArrayFiledSelect.StringAllowedValuesSelect.class)) String value) {
+            setValue(p, value);
+    }
+
     /**
      * Count the number of selected values
      *
