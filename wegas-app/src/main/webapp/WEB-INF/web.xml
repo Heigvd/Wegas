@@ -67,7 +67,7 @@
 
     <!--Liquibase sevlet listener to check database on start up and apply new changes if needed-->
     <listener>
-        <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
+        <listener-class>liquibase.integration.servlet.LiquibaseJakartaServletListener</listener-class>
     </listener>
 
     <!-- Faces taglib -->

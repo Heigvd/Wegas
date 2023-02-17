@@ -10,6 +10,7 @@ package com.wegas.core.async;
 import com.wegas.core.async.PopulatorFacade.Candidate;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import jakarta.enterprise.context.Dependent;
 import java.util.concurrent.Callable;
 import jakarta.inject.Inject;
 
@@ -17,6 +18,7 @@ import jakarta.inject.Inject;
  *
  * @author maxence
  */
+@Dependent
 public class Populator implements Callable<Integer> {
 
     @Inject

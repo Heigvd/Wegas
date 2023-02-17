@@ -8,6 +8,7 @@
 package com.wegas.app.jsf.controllers.utils;
 
 import com.wegas.core.Helper;
+import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Produces;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.faces.context.FacesContext;
@@ -16,6 +17,7 @@ import jakarta.faces.context.FacesContext;
  *
  * @author maxence
  */
+@Dependent
 public class HttpParamProducer {
 
     /*@Inject
@@ -23,7 +25,7 @@ public class HttpParamProducer {
      */
     @Produces
     @HttpParam
-    String getHttpParam(InjectionPoint ip) {
+    public String getHttpParam(InjectionPoint ip) {
         String name = ip.getAnnotated().getAnnotation(HttpParam.class).value();
 
         if (Helper.isNullOrEmpty(name)) {
@@ -35,18 +37,18 @@ public class HttpParamProducer {
 
     @Produces
     @HttpParam
-    Long getHttpParamAsLong(InjectionPoint ip) {
+    public Long getHttpParamAsLong(InjectionPoint ip) {
         String httpParam = this.getHttpParam(ip);
         if (!Helper.isNullOrEmpty(httpParam)) {
-            return Long.parseLong(httpParam, 10);
+            return Long.valueOf(httpParam, 10);
         }
         return null;
     }
 
-	@Produces
+    @Produces
     @HttpParam
-    Boolean getHttpParamAsBoolean(InjectionPoint ip) {
+    public Boolean getHttpParamAsBoolean(InjectionPoint ip) {
         String httpParam = this.getHttpParam(ip);
-		return "true".equals(httpParam);
+        return "true".equals(httpParam);
     }
 }

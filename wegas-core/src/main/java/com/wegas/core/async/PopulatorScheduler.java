@@ -14,24 +14,22 @@ import fish.payara.micro.cdi.Outbound;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
-import jakarta.annotation.ManagedBean;
 import jakarta.annotation.Resource;
 import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
 import jakarta.enterprise.concurrent.ManagedExecutorService;
 import jakarta.enterprise.event.Event;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
-import jakarta.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
-@Named
+@Stateless
 @LocalBean
-@ManagedBean(value = "PopulatorScheduler")
 public class PopulatorScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(PopulatorScheduler.class);

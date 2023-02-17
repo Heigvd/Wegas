@@ -9,6 +9,7 @@
 package com.wegas.app.jsf.controllers;
 
 import com.wegas.core.ejb.RequestFacade;
+import jakarta.enterprise.context.RequestScoped;
 import java.io.IOException;
 import java.io.Serializable;
 import jakarta.faces.context.ExternalContext;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
+@RequestScoped
 @Named("error")
 public class ErrorController implements Serializable {
 
