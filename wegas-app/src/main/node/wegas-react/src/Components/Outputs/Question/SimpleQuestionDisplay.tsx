@@ -29,7 +29,7 @@ import { QuestionInfo, questionStyle } from './Question';
 import { QuestionDescription } from './QuestionDescription';
 import {
   buttonFactory,
-  editButonBorder,
+  editButtonBorder,
   editButtonStyle,
   makeMenuFromClass,
 } from './QuestionList';
@@ -88,7 +88,7 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
   return (
     <div className={cx(flex, justifyCenter, itemCenter)}>
       <Plus
-        className={cx(editButtonStyle, editButonBorder)}
+        className={cx(editButtonStyle, editButtonBorder)}
         onClick={() => {
           editingStore.dispatch(
             Actions.VariableDescriptorActions.createDescriptor(
