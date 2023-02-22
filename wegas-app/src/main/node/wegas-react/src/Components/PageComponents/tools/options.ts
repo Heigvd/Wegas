@@ -5,6 +5,7 @@ import {
   SFSMInstance,
   SInboxDescriptor,
   SInboxInstance,
+  SListDescriptor,
   SPeerReviewDescriptor,
   SPeerReviewInstance,
   SQuestionDescriptor,
@@ -23,7 +24,12 @@ import { editingStore } from '../../../data/Stores/editingStore';
 import { store } from '../../../data/Stores/store';
 import { createScript } from '../../../Helper/wegasEntites';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
-import { clientScriptEval, customClientScriptEval, IClientScript, useScript } from '../../Hooks/useScript';
+import {
+  clientScriptEval,
+  customClientScriptEval,
+  IClientScript,
+  useScript,
+} from '../../Hooks/useScript';
 import { PlayerInfoBulletProps } from './InfoBullet';
 import { schemaProps } from './schemaProps';
 
@@ -252,7 +258,7 @@ export const actionsChoices: HashListChoices = [
               type: 'customclientscript',
               label: 'Local script',
               returnType: ['Promise<unknown>', 'void', 'undefined'],
-            }
+            },
           },
           priority: schemaProps.number({ label: 'Priority' }),
         },
@@ -517,6 +523,7 @@ export const decorationsChoices: HashListChoices = [
           'SWhQuestionDescriptor',
           'SSurveyDescriptor',
           'SPeerReviewDescriptor',
+          'SListDescriptor',
         ],
       }),
     },
@@ -529,7 +536,8 @@ type UnreadCountDescriptorTypes =
   | SQuestionDescriptor
   | SWhQuestionDescriptor
   | SSurveyDescriptor
-  | SPeerReviewDescriptor;
+  | SPeerReviewDescriptor
+  | SListDescriptor;
 
 function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
   if (!descriptor) {
@@ -587,6 +595,14 @@ function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
               .getReviewed()
               .filter(review => review.getReviewState() == 'NOTIFIED'),
           ).length;
+      } else if (descriptor instanceof SListDescriptor) {
+        return descriptor
+          .getItems()
+          .reduce(
+            (total, item) =>
+              total + extractUnreadCount(item as UnreadCountDescriptorTypes),
+            0,
+          );
       } else {
         return 0;
       }
