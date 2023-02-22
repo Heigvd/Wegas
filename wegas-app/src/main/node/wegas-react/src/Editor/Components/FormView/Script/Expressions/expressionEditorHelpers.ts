@@ -15,7 +15,6 @@ import { StringOrT } from '../../TreeVariableSelect';
 import { handleError, isClientMode, isScriptCondition, isServerScript } from '../Script';
 import { LiteralExpressionValue, parseStatement } from './astManagement';
 import { VariableDescriptor as VDSelect } from '../../../../../data/selectors';
-import { wlog } from '../../../../../Helper/wegaslog';
 
 
 const comparisonOperators = {
@@ -565,7 +564,6 @@ export function generateSchema(
   mode?: ScriptMode,
 ): WysiwygExpressionSchema {
   let newSchemaProps = makeSchemaInitExpression(variablesItems, mode);
-  wlog('1', newSchemaProps.methodId);
 
   const expression =
     attributes?.type === 'condition'
@@ -588,7 +586,6 @@ export function generateSchema(
         configArg = { type: 'boolean' };
     }
     const methods = getMethodConfig(configArg);
-    wlog('method configs', methods);
     let method: MethodConfig | undefined = undefined;
     switch (expression.type) {
       case 'global': {
