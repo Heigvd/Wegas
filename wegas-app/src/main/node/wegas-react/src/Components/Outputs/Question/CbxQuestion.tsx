@@ -92,6 +92,7 @@ function CbxChoiceDisplay({
         }
       }}
       editMode={editMode}
+      validateButton={false}
     >
       {
         <CheckBox

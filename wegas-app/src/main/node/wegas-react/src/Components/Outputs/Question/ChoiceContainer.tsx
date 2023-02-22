@@ -4,6 +4,7 @@ import * as React from 'react';
 import { IChoiceDescriptor, ISingleResultChoiceDescriptor } from 'wegas-ts-api';
 import {
   defaultMarginBottom,
+  expandWidth,
   flex,
   flexColumn,
   flexDistribute,
@@ -15,9 +16,12 @@ import { createTranslatableContent } from '../../../data/i18n';
 import { IWhChoiceDescriptor } from '../../../data/scriptable/impl/QuestionDescriptor';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { componentsTranslations } from '../../../i18n/components/components';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { useTranslate } from '../../Hooks/useTranslate';
 import HTMLEditor from '../../HTML/HTMLEditor';
+import { Button } from '../../Inputs/Buttons/Button';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { TumbleLoader } from '../../Loader';
@@ -103,6 +107,7 @@ interface ChoiceContainerProps {
   onClick?: () => void;
   hasBeenSelected: boolean;
   editMode?: boolean;
+  validateButton?: boolean;
 }
 
 export function ChoiceContainer({
@@ -115,7 +120,9 @@ export function ChoiceContainer({
   onClick,
   hasBeenSelected,
   editMode,
+  validateButton = true,
 }: React.PropsWithChildren<ChoiceContainerProps>) {
+  const i18nValues = useInternalTranslate(componentsTranslations);
   const { label } = descriptor;
 
   const description = entityIs(descriptor, 'ChoiceDescriptor', true)
@@ -219,12 +226,6 @@ export function ChoiceContainer({
         (canReply && !clicked ? '' : ' disabled') +
         (isEditing ? ' editing' : '')
       }
-      onClick={() => {
-        if (canReply && onClick && !isEditing) {
-          setClicked(true);
-          onClick();
-        }
-      }}
       onMouseEnter={() => setShowHandle(true)}
       onMouseLeave={() => setShowHandle(false)}
     >
@@ -253,7 +254,7 @@ export function ChoiceContainer({
                   onChange={value =>
                     setValues(o => ({ ...o, description: value }))
                   }
-                  toolbarLayout='player'
+                  toolbarLayout="player"
                   // customToolbar="bold italic underline bullist"
                 />
               </div>
@@ -264,7 +265,7 @@ export function ChoiceContainer({
                   onChange={value =>
                     setValues(o => ({ ...o, feedback: value }))
                   }
-                  toolbarLayout='player'
+                  toolbarLayout="player"
                 />
               </div>
             </>
@@ -291,7 +292,7 @@ export function ChoiceContainer({
           </div>
         </div>
       ) : (
-        <div className={cx(flex, flexColumn)}>
+        <div className={cx(flex, flexColumn, expandWidth)}>
           <div className={choiceContentStyle}>
             {label && labelText !== '' && (
               <HTMLText className={choiceLabelStyle} text={labelText} />
@@ -301,6 +302,20 @@ export function ChoiceContainer({
                 className={choiceDescriptionStyle}
                 text={descriptionText}
               />
+            )}
+            {canReply && validateButton && (
+              <div style={{ float: 'right' }}>
+                <Button
+                  onClick={() => {
+                    if (canReply && onClick && !isEditing) {
+                      setClicked(true);
+                      onClick();
+                    }
+                  }}
+                >
+                  {i18nValues.question.validate}
+                </Button>
+              </div>
             )}
           </div>
           <div className={choiceInputStyle + classNameOrEmpty(inputClassName)}>

@@ -5,4 +5,7 @@ export interface ComponentsTranslations {
     date: string;
     noSelectionMessage: string;
   };
+  question: {
+    validate: string;
+  };
 }

@@ -7,4 +7,7 @@ export const DE: ComponentsTranslations = {
     date: 'Datum',
     noSelectionMessage: 'Wählen Sie eine anzuzeigende Nachricht aus',
   },
+  question: {
+    validate: 'Bestätigen',
+  },
 };
