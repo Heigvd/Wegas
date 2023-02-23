@@ -1,8 +1,11 @@
+
 interface SearchableTreeSelectProps<T> {
   items: TreeSelectItem<T>[];
   search: string;
+  selected : T,
   match?: (item: TreeSelectItem<T>, search: string) => boolean;
-  render: (props: { items: any[] }) => JSX.Element;
+  autoExpand: (items: TreeSelectItem<T>[], selected: T) => void;
+  render: (props: { items: TreeSelectItem<T>[] }) => JSX.Element;
 }
 function defaultSearchFn<T>(item: TreeSelectItem<T>, search: string) {
   return (
@@ -44,9 +47,35 @@ function filterChildren<T>(
     // keep element if it matches or if it has children
     .filter(i => i.match || (i.items && i.items.length));
 }
-export function SearchableItems<T>(props: SearchableTreeSelectProps<T>) {
-  const { items, search, match = defaultSearchFn, render } = props;
+
+function deepCopy<T>(items: TreeSelectItem<T>[]) : TreeSelectItem<T>[] {
+
+  return items.map((it: TreeSelectItem<T>) => {
+    const newItem = {...it};
+
+    if(it.items){
+      newItem.items = deepCopy(it.items);
+    }
+    return newItem;
+  });
+}
+
+export function SearchableItems<T>(props: SearchableTreeSelectProps<T>): JSX.Element {
+  const { items, search, match = defaultSearchFn, render, autoExpand, selected } = props;
+
+  let newItems: TreeSelectItem<T>[] = [];
+
+  if(search.trim()){
+    newItems = filterChildren(items, search.trim(), match);
+  }else if(selected){
+    newItems = deepCopy(items);// items is immutable
+    autoExpand(newItems, selected);
+  }else {
+    //expand first level
+    newItems = items.map((it) => ({...it, expanded : true}));
+  }
+
   return render({
-    items: search.trim() ? filterChildren(items, search.trim(), match) : items,
+    items: newItems
   });
 }
