@@ -87,7 +87,7 @@ export function InboxDisplay({ inbox, disabled, readOnly }: InboxDisplayProps) {
       disabled={disabled}
       readOnly={readOnly}
     >
-      {MessageDisplay}
+      {(props) => <MessageDisplay {...props}/>}
     </EntityChooser>
   );
 }
