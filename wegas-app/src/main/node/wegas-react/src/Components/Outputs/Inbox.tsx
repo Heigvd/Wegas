@@ -154,7 +154,7 @@ export function InboxDisplay({ inbox, disabled, readOnly }: InboxDisplayProps) {
       readOnly={readOnly}
       noSelectionMessage={i18nComponentValues.inbox.noSelectionMessage}
     >
-      {MessageDisplay}
+      {(props) => <MessageDisplay {...props}/>}
     </EntityChooser>
   );
 }

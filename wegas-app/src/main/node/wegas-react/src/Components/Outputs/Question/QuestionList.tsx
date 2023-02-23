@@ -47,10 +47,8 @@ import { useTranslate } from '../../Hooks/useTranslate';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { Validate } from '../../Inputs/Validate';
 import { themeVar } from '../../Theme/ThemeVars';
-// import { AddMenu } from './AddMenu';
 import {
   ConnectedQuestionDisplay,
-  ConnectedQuestionDisplayProps,
 } from './Question';
 
 const labelStyle = css({
@@ -406,20 +404,13 @@ export default function QuestionList({
       entities={entities.questions}
       EntityLabel={editMode ? QuestionChooserEdition : QuestionChooser}
       autoOpenFirst={autoOpenFirst}
-      // customLabelStyle={customLabelStyle}
       disabled={disabled}
       readOnly={readOnly}
       addComponent={
         editMode ? <AddQuestionButton questionList={questionList} /> : undefined
       }
     >
-      {connectedQuestionDisplayFactory(editMode)}
+      {(props) => <ConnectedQuestionDisplay {...props} editMode={editMode}/>}
     </EntityChooser>
   );
-}
-
-function connectedQuestionDisplayFactory(editMode?: boolean) {
-  return function (props: ConnectedQuestionDisplayProps) {
-    return <ConnectedQuestionDisplay {...props} editMode={editMode} />;
-  };
 }

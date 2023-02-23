@@ -114,10 +114,12 @@ function LabelGenerator<E extends IAbstractEntity>(
   );
 }
 
+type childrenType<E> = { entity: E } & DisabledReadonly;
+
 interface EntityChooserProps<E extends IAbstractEntity>
   extends DisabledReadonly {
   entities: E[];
-  children: React.FunctionComponent<{ entity: E } & DisabledReadonly>;
+  children: (props: childrenType<E>) => React.ReactNode; //React.FunctionComponent<{ entity: E } & DisabledReadonly> ;
   // entityLabel: (entity: E) => React.ReactNode;
   EntityLabel: React.FunctionComponent<EntityChooserLabelProps<E>>;
   // customLabelStyle?: (entity: E) => string | undefined;
@@ -128,7 +130,7 @@ interface EntityChooserProps<E extends IAbstractEntity>
 
 export function EntityChooser<E extends IAbstractEntity>({
   entities,
-  children: Children,
+  children,
   EntityLabel,
   // customLabelStyle,
   autoOpenFirst,
@@ -219,11 +221,7 @@ export function EntityChooser<E extends IAbstractEntity>({
               {addComponent}
             </div>
             <div className={cx(flex, entityContainer, grow, justifyStart)}>
-              <Children
-                entity={entity}
-                disabled={disabled}
-                readOnly={readOnly}
-              />
+              {children({ entity, disabled, readOnly })}
             </div>
           </div>
         )}
@@ -251,7 +249,7 @@ export function EntityChooser<E extends IAbstractEntity>({
         </div>
         {entity != null ? (
           <div className={cx(flex, entityContainer, justifyStart)}>
-            <Children entity={entity} disabled={disabled} readOnly={readOnly} />
+            {children({ entity, disabled, readOnly })}
           </div>
         ) : (
           <div className={cx(flex, entityContainer, justifyCenter)}>
