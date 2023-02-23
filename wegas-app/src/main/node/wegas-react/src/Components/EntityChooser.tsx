@@ -45,13 +45,15 @@ export const entityChooserLabelStyle = (disabled?: boolean) =>
       position: 'relative',
       padding: '10px',
       color: themeVar.colors.DarkTextColor,
-      borderBottom: '1px solid ' + themeVar.colors.SecondaryBackgroundColor,
+      borderRadius: themeVar.dimensions.BorderRadius,
+      marginTop: '5px',
+      marginBottom: '5px',
+      boxShadow: `2px 2px 6px rgba(0, 0, 0, 0.2)`,
       ...(!disabled
         ? {
             '&:hover': {
               cursor: 'pointer',
               boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.2)`,
-              borderBottomColor: 'transparent',
               zIndex: 1,
             },
           }
@@ -75,9 +77,10 @@ export const entityChooserLabelContainer = css({
 export const activeEntityChooserLabel = css(
   {
     backgroundColor: themeVar.colors.PrimaryColor,
-    borderBottom: 'none',
     color: themeVar.colors.LightTextColor,
-    // border: '2px solid ' + themeVar.colors.ActiveColor,
+    boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.2)`,
+    zIndex: 1,
+    borderBottomColor: themeVar.colors.PrimaryColor,
   },
   /*
     borderLeft: `20px solid ${themeVar.colors.PrimaryColor}`,

@@ -58,6 +58,11 @@ export const choiceContainerStyle = css({
     '&.no-label': {
       boxShadow: 'none',
       borderRadius: '0',
+      paddingTop: '15px',
+      borderTop: `1px solid ${themeVar.colors.DisabledColor}`,
+      '&.disabled': {
+        display: 'none',
+      },
     },
   },
 });
