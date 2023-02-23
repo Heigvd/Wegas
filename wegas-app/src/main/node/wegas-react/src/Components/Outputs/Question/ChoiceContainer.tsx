@@ -54,11 +54,10 @@ export const choiceContainerStyle = css({
     cursor: 'cursor',
     pointerEvents: 'none',
   },
-  '&.no-label': {
-    '&.no-desc': {
+  '&.no-desc': {
+    '&.no-label': {
       boxShadow: 'none',
       borderRadius: '0',
-      padding: '15px',
     },
   },
 });
