@@ -219,7 +219,7 @@ export function ChoiceContainer({
     <div
       className={
         cx(choiceContainerStyle, classNameOrEmpty(className)) +
-        (hasBeenSelected ? ' selected' : '') +
+        (hasBeenSelected && !canReply ? ' selected' : '') +
         (canReply && !clicked ? '' : ' disabled') +
         (isEditing ? ' editing' : '')
       }
@@ -289,29 +289,26 @@ export function ChoiceContainer({
           </div>
         </div>
       ) : (
-        <div
-          className={cx('grandparent-container', flex, flexColumn, expandWidth)}
-        >
-          <div className={cx('parent-container', flex, flexColumn)}>
+        <div className={cx(flex, flexColumn, expandWidth)}>
+          <div className={cx(flex, flexColumn)}>
             {label && labelText !== '' && (
               <HTMLText
                 className={cx(
-                  'label-container',
                   choiceLabelStyle,
                   stretch,
-                  hasBeenSelected ? ' selected' : '',
+                  hasBeenSelected && !canReply ? ' selected' : '',
                 )}
                 text={labelText}
               />
             )}
             {description && descriptionText !== '' && (
               <HTMLText
-                className={cx('description-container', choiceDescriptionStyle)}
+                className={choiceDescriptionStyle}
                 text={descriptionText}
               />
             )}
             {canReply && validateButton && (
-              <div className={cx('button-container', choiceButtonStyle)}>
+              <div className={choiceButtonStyle}>
                 <Button
                   style={{ float: 'right' }}
                   onClick={() => {
