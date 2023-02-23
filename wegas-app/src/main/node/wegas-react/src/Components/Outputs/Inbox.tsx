@@ -43,14 +43,10 @@ const messageLabel = css({
 
 const readLabelStyle = css({
   fontWeight: 'normal',
-  backgroundColor: themeVar.colors.LightTextColor,
-  color: themeVar.colors.PrimaryColor,
-  border: '2px solid ' + themeVar.colors.PrimaryColor,
-  boxShadow: 'none',
+  backgroundColor: themeVar.colors.HeaderColor,
+  color: themeVar.colors.DarkTextColor,
   '&:hover': {
-    backgroundColor: themeVar.colors.LightTextColor,
-    color: themeVar.colors.ActiveColor,
-    border: '2px solid ' + themeVar.colors.ActiveColor,
+    boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.2)`,
   },
 });
 

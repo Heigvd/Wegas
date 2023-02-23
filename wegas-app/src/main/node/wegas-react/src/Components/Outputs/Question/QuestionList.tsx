@@ -53,16 +53,12 @@ import {
   ConnectedQuestionDisplayProps,
 } from './Question';
 
+const labelStyle = css({
+  fontWeight: 'bold',
+});
 const repliedLabelStyle = css({
-  backgroundColor: themeVar.colors.LightTextColor,
-  color: themeVar.colors.PrimaryColor,
-  border: '2px solid ' + themeVar.colors.PrimaryColor,
-  boxShadow: 'none',
-  '&:hover': {
-    backgroundColor: themeVar.colors.LightTextColor,
-    color: themeVar.colors.ActiveColor,
-    border: '2px solid ' + themeVar.colors.ActiveColor,
-  },
+  backgroundColor: themeVar.colors.HeaderColor,
+  color: themeVar.colors.DarkTextColor,
 });
 
 export const handleStyle = css({
@@ -266,7 +262,7 @@ function customLabelStyle(
     const isReplied = instantiate(e).isReplied(
       instantiate(Player.selectCurrent()),
     );
-    return isReplied ? repliedLabelStyle : undefined;
+    return isReplied ? repliedLabelStyle : labelStyle;
   } catch (e) {
     wwarn(e);
     return undefined;

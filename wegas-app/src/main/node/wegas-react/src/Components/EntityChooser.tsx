@@ -42,17 +42,17 @@ const labelListMobile = css({
 export const entityChooserLabelStyle = (disabled?: boolean) =>
   cx(
     css({
-      backgroundColor: themeVar.colors.PrimaryColor,
+      position: 'relative',
       padding: '10px',
-      boxShadow: `2px 2px 6px rgba(0, 0, 0, 0.2)`,
-      color: themeVar.colors.LightTextColor,
-      borderRadius: themeVar.dimensions.BorderRadius,
-      border: '2px solid transparent',
+      color: themeVar.colors.DarkTextColor,
+      borderBottom: '1px solid ' + themeVar.colors.SecondaryBackgroundColor,
       ...(!disabled
         ? {
             '&:hover': {
-              backgroundColor: themeVar.colors.ActiveColor,
               cursor: 'pointer',
+              boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.2)`,
+              borderBottomColor: 'transparent',
+              zIndex: 1,
             },
           }
         : {}),
@@ -66,7 +66,7 @@ export const entityChooserLabelStyle = (disabled?: boolean) =>
 }); */
 
 export const entityChooserLabelContainer = css({
-  marginBottom: '10px',
+  // marginBottom: '10px',
   /* [`&>.${labelArrow}`]: {
       borderLeft: `20px solid ${themeVar.colors.DisabledColor}`,
     }, */
@@ -74,10 +74,10 @@ export const entityChooserLabelContainer = css({
 
 export const activeEntityChooserLabel = css(
   {
-    backgroundColor: themeVar.colors.ActiveColor,
+    backgroundColor: themeVar.colors.PrimaryColor,
+    borderBottom: 'none',
     color: themeVar.colors.LightTextColor,
-    boxShadow: 'none',
-    border: '2px solid ' + themeVar.colors.ActiveColor,
+    // border: '2px solid ' + themeVar.colors.ActiveColor,
   },
   /*
     borderLeft: `20px solid ${themeVar.colors.PrimaryColor}`,
@@ -286,7 +286,7 @@ export function DefaultEntityChooserLabel<T extends IAbstractEntity>({
   return (
     <div
       key={entity.id}
-      className={cx(flex, flexRow, entityChooserLabelContainer)}
+      className={cx(flex, flexRow)}
       onClick={() => {
         if (!disabled) {
           onClick();
