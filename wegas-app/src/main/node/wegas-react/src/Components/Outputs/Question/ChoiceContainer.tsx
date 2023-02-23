@@ -54,6 +54,13 @@ export const choiceContainerStyle = css({
     cursor: 'cursor',
     pointerEvents: 'none',
   },
+  '&.no-label': {
+    '&.no-desc': {
+      boxShadow: 'none',
+      borderRadius: '0',
+      padding: '15px',
+    },
+  },
 });
 export const choiceLabelStyle = css({
   fontWeight: 'bold',
@@ -221,7 +228,9 @@ export function ChoiceContainer({
         cx(choiceContainerStyle, classNameOrEmpty(className)) +
         (hasBeenSelected && !canReply ? ' selected' : '') +
         (canReply && !clicked ? '' : ' disabled') +
-        (isEditing ? ' editing' : '')
+        (isEditing ? ' editing' : '') +
+        (label && labelText !== '' ? '' : ' no-label') +
+        (description && descriptionText !== '' ? '' : ' no-desc')
       }
       onMouseEnter={() => setShowHandle(true)}
       onMouseLeave={() => setShowHandle(false)}
