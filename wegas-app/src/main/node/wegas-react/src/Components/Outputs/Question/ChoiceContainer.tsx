@@ -9,6 +9,7 @@ import {
   flexColumn,
   flexDistribute,
   flexRow,
+  stretch,
 } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
@@ -37,10 +38,8 @@ export const choiceContainerStyle = css({
   alignItems: 'center',
   boxShadow: '2px 2px 6px rgba(0, 0, 0, 0.2)',
   borderRadius: themeVar.dimensions.BorderRadius,
-  backgroundColor: themeVar.colors.HeaderColor,
+  backgroundColor: themeVar.colors.BackgroundColor,
   '&.selected': {
-    backgroundColor: themeVar.colors.PrimaryColor,
-    color: themeVar.colors.LightTextColor,
     cursor: 'default',
   },
   '&.editing': {
@@ -52,29 +51,27 @@ export const choiceContainerStyle = css({
   '&.disabled': {
     backgroundColor: themeVar.colors.BackgroundColor,
     opacity: '0.7',
-    cursor: 'initial',
-    //pointerEvents: 'none',
-    '&:hover': {
-      backgroundColor: themeVar.colors.BackgroundColor,
-      color: themeVar.colors.DarkTextColor,
-    },
-    '&.selected': {
-      backgroundColor: themeVar.colors.PrimaryColor,
-      color: themeVar.colors.LightTextColor,
-      '&:hover': {
-        backgroundColor: themeVar.colors.PrimaryColor,
-      },
-    },
+    cursor: 'cursor',
+    pointerEvents: 'none',
   },
-});
-const choiceContentStyle = css({
-  padding: '15px',
 });
 export const choiceLabelStyle = css({
   fontWeight: 'bold',
+  padding: '15px',
+  backgroundColor: themeVar.colors.HoverColor,
+  borderTopRightRadius: themeVar.dimensions.BorderRadius,
+  borderTopLeftRadius: themeVar.dimensions.BorderRadius,
+  '&.selected': {
+    color: themeVar.colors.LightTextColor,
+    backgroundColor: themeVar.colors.PrimaryColor,
+  },
 });
 export const choiceDescriptionStyle = css({
-  paddingTop: '5px',
+  padding: '10px 15px 10px 15px',
+});
+export const choiceButtonStyle = css({
+  padding: '0px 15px 15px 15px',
+  float: 'right',
 });
 export const choiceInputStyle = css({
   display: 'flex',
@@ -292,20 +289,31 @@ export function ChoiceContainer({
           </div>
         </div>
       ) : (
-        <div className={cx(flex, flexColumn, expandWidth)}>
-          <div className={choiceContentStyle}>
+        <div
+          className={cx('grandparent-container', flex, flexColumn, expandWidth)}
+        >
+          <div className={cx('parent-container', flex, flexColumn)}>
             {label && labelText !== '' && (
-              <HTMLText className={choiceLabelStyle} text={labelText} />
+              <HTMLText
+                className={cx(
+                  'label-container',
+                  choiceLabelStyle,
+                  stretch,
+                  hasBeenSelected ? ' selected' : '',
+                )}
+                text={labelText}
+              />
             )}
             {description && descriptionText !== '' && (
               <HTMLText
-                className={choiceDescriptionStyle}
+                className={cx('description-container', choiceDescriptionStyle)}
                 text={descriptionText}
               />
             )}
             {canReply && validateButton && (
-              <div style={{ float: 'right' }}>
+              <div className={cx('button-container', choiceButtonStyle)}>
                 <Button
+                  style={{ float: 'right' }}
                   onClick={() => {
                     if (canReply && onClick && !isEditing) {
                       setClicked(true);
@@ -318,9 +326,13 @@ export function ChoiceContainer({
               </div>
             )}
           </div>
-          <div className={choiceInputStyle + classNameOrEmpty(inputClassName)}>
-            {children}
-          </div>
+          {children && (
+            <div
+              className={choiceInputStyle + classNameOrEmpty(inputClassName)}
+            >
+              {children}
+            </div>
+          )}
         </div>
       )}
       {editMode && showHandle && (

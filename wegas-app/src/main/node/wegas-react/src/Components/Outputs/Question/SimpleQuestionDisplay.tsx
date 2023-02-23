@@ -1,4 +1,4 @@
-import { css, cx } from '@emotion/css';
+import { cx } from '@emotion/css';
 import * as React from 'react';
 import {
   IChoiceDescriptor,
@@ -22,7 +22,6 @@ import {
 } from '../../../data/Stores/editingStore';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { isActionAllowed } from '../../PageComponents/tools/options';
-import { themeVar } from '../../Theme/ThemeVars';
 import { AddMenu } from './AddMenu';
 import { ChoiceContainer } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
@@ -34,17 +33,6 @@ import {
   makeMenuFromClass,
 } from './QuestionList';
 import { RepliesDisplay } from './Reply';
-
-const simpleChoiceHoverStyle = css({
-  '&:hover': {
-    backgroundColor: themeVar.colors.ActiveColor,
-    color: themeVar.colors.LightTextColor,
-    cursor: 'pointer',
-  },
-  '&.disabled:hover': {
-    cursor: 'default',
-  },
-});
 
 interface AddChoiceMenuProps {
   questionD: IQuestionDescriptor;
@@ -141,7 +129,6 @@ function SimpleChoiceDisplay({
       descriptor={choiceD}
       canReply={canReply}
       onClick={() => onValidate(choiceD)}
-      className={simpleChoiceHoverStyle}
       hasBeenSelected={hasBeenValidated}
       editMode={editMode}
     />
