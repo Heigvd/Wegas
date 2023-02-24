@@ -53,8 +53,8 @@ Thumbs.db
 .vscode
 /wegas-ts-api/target/
 
-/wegas-ts-api/src/main/webapp/src/generated/
-/wegas-ts-api/src/main/webapp/typings/
+/wegas-ts-api/src/main/node/src/generated/
+/wegas-ts-api/src/main/node/typings/
 
 node_modules/
 *.swp
