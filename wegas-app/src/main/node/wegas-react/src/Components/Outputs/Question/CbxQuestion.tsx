@@ -86,9 +86,9 @@ function CbxChoiceDisplay({
       hasBeenSelected={questionChoosed}
       className={cbxChoiceContainerStyle}
       inputClassName={cbxContainerStyle}
-      onClick={() => {
+      onClick={async () => {
         if (enableValidate) {
-          onValidate(choiceD);
+          return onValidate(choiceD);
         }
       }}
       editMode={editMode}

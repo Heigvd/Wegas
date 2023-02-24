@@ -112,7 +112,7 @@ interface ChoiceContainerProps {
   canReply: boolean;
   className?: string;
   inputClassName?: string;
-  onClick?: () => void;
+  onClick?: () => Promise<unknown>;
   hasBeenSelected: boolean;
   editMode?: boolean;
   validateButton?: boolean;
@@ -236,6 +236,13 @@ export function ChoiceContainer({
         (label && labelText !== '' ? '' : ' no-label') +
         (description && descriptionText !== '' ? '' : ' no-desc')
       }
+      onClick={async () => {
+        if (canReply && onClick && !isEditing) {
+          setClicked(true);
+          await onClick();
+          setClicked(false);
+        }
+      }}
       onMouseEnter={() => setShowHandle(true)}
       onMouseLeave={() => setShowHandle(false)}
     >

@@ -29,7 +29,7 @@ import { ActionCreator, manageResponseHandler, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import { getInstance } from '../methods/VariableDescriptorMethods';
 import { Player } from '../selectors';
-import { editingStore, EditingThunkResult } from '../Stores/editingStore';
+import { createEditingAction, editingStore, EditingThunkResult } from '../Stores/editingStore';
 import { store, ThunkResult } from '../Stores/store';
 
 export interface VariableInstanceState {
@@ -182,23 +182,21 @@ export function read(
   };
 }
 
-export function selectAndValidate(
-  choice: IChoiceDescriptor,
-  player?: IPlayer,
-): EditingThunkResult {
-  return function (dispatch, getState) {
+export const selectAndValidate = createEditingAction(async ({player, choice} : {choice: IChoiceDescriptor,
+  player?: IPlayer,}, dispatch, getState) => {
+
     const gameModelId = store.getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
       throw Error('Missing persisted player');
     }
-    return QuestionDescriptorAPI.selectAndValidate(
+    const res = await QuestionDescriptorAPI.selectAndValidate(
       gameModelId,
       p.id,
       choice,
-    ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
-  };
-}
+    )
+    return dispatch(manageResponseHandler(res, dispatch, getState()));
+})
 
 export function selectChoice(
   choice: IChoiceDescriptor,

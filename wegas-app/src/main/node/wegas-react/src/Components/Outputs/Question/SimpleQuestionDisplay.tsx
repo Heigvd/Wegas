@@ -100,7 +100,7 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
 interface SimpleChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
   choiceI: IChoiceInstance;
-  onValidate: (choice: IChoiceDescriptor) => void;
+  onValidate: (choice: IChoiceDescriptor) => Promise<unknown>;
   replyAllowed: boolean;
   editMode?: boolean;
 }
@@ -154,7 +154,7 @@ export function SimpleQuestionDisplay({
 
   const onChoiceValidate = React.useCallback(
     (choice: IChoiceDescriptor) => {
-      dispatch(selectAndValidate(choice));
+      return dispatch(selectAndValidate({ choice }));
     },
     [dispatch],
   );
