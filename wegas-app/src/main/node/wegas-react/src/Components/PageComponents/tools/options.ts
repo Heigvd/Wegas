@@ -21,7 +21,7 @@ import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { editingStore } from '../../../data/Stores/editingStore';
-import { store } from '../../../data/Stores/store';
+import { store, useStore } from '../../../data/Stores/store';
 import { createScript } from '../../../Helper/wegasEntites';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
 import {
@@ -618,19 +618,22 @@ export function useComputeUnreadCount(
     string | number | object[] | UnreadCountDescriptorTypes
   >(unreadCountVariableScript, context);
 
-  let infoBeamMessage: string | number;
-  if (typeof scriptReturn === 'number') {
-    infoBeamMessage = scriptReturn;
-  } else if (typeof scriptReturn === 'string') {
-    infoBeamMessage = scriptReturn;
-  } else if (Array.isArray(scriptReturn)) {
-    infoBeamMessage = scriptReturn.reduce(
-      (o, v) => o + extractUnreadCount(v as UnreadCountDescriptorTypes),
-      0,
-    );
-  } else {
-    infoBeamMessage = extractUnreadCount(scriptReturn);
-  }
+  const infoBeamMessage = useStore(() => {
+    let infoBeamMessage: string | number;
+    if (typeof scriptReturn === 'number') {
+      infoBeamMessage = scriptReturn;
+    } else if (typeof scriptReturn === 'string') {
+      infoBeamMessage = scriptReturn;
+    } else if (Array.isArray(scriptReturn)) {
+      infoBeamMessage = scriptReturn.reduce(
+        (o, v) => o + extractUnreadCount(v as UnreadCountDescriptorTypes),
+        0,
+      );
+    } else {
+      infoBeamMessage = extractUnreadCount(scriptReturn);
+    }
+    return infoBeamMessage === 0 ? undefined : infoBeamMessage;
+  });
 
   return infoBeamMessage
     ? {
