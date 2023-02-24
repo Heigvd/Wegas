@@ -100,7 +100,7 @@ interface ChoiceContainerProps {
   canReply: boolean;
   className?: string;
   inputClassName?: string;
-  onClick?: () => void;
+  onClick?: () => Promise<unknown>;
   hasBeenSelected: boolean;
   editMode?: boolean;
 }
@@ -219,10 +219,11 @@ export function ChoiceContainer({
         (canReply && !clicked ? '' : ' disabled') +
         (isEditing ? ' editing' : '')
       }
-      onClick={() => {
+      onClick={async () => {
         if (canReply && onClick && !isEditing) {
           setClicked(true);
-          onClick();
+          await onClick();
+          setClicked(false);
         }
       }}
       onMouseEnter={() => setShowHandle(true)}
