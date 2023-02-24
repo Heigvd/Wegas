@@ -249,11 +249,11 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.jboss.arquillian.extension</groupId>
             <artifactId>arquillian-persistence-dbunit</artifactId>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.eu.ingwar.tools</groupId>
@@ -534,7 +534,7 @@
                     <systemPropertiesFile>${project.basedir}/../wegas-core/src/test/resources/db.properties</systemPropertiesFile>
                     <systemProperties>
                         <java.util.logging.config.file>${project.basedir}/../wegas-core/src/test/resources/logging.properties</java.util.logging.config.file>
-                        <arquillian.launch>glassfish-embedded</arquillian.launch>
+                        <arquillian.launch>payara-embedded</arquillian.launch>
                     </systemProperties>
                     <!--<excludedGroups>com.wegas.unit.PrivateRelatedTest</excludedGroups>-->
                     <excludedGroups>${skip.surefire.category}</excludedGroups>

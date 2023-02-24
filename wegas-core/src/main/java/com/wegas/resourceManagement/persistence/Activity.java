@@ -18,7 +18,6 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.view.NumberView;
 import com.wegas.editor.view.StringView;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -101,7 +100,7 @@ public class Activity extends AbstractAssignement {
     /**
      *
      */
-    @ManyToOne(optional = true, cascade = CascadeType.ALL)
+    @ManyToOne(optional = true)
     @JsonIgnore
     private WRequirement requirement;
 

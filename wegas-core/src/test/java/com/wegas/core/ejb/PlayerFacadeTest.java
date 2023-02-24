@@ -14,8 +14,12 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.primitive.TextDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
+import com.wegas.core.rest.PlayerController;
 import com.wegas.core.security.persistence.User;
 import com.wegas.test.arquillian.AbstractArquillianTest;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -30,6 +34,9 @@ import org.slf4j.LoggerFactory;
 public class PlayerFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(PlayerFacadeTest.class);
+
+    @Inject
+    private PlayerController playerController;
 
     /**
      * Test registeredGames
@@ -51,7 +58,7 @@ public class PlayerFacadeTest extends AbstractArquillianTest {
          */
         login(user);
         Assert.assertEquals(1, userFacade.getCurrentUser().getPlayers().size()); // user plays to game as player !
-        Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().size()); // debugTeam 
+        Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().size()); // debugTeam
 
         Team t = new Team("team");
         t.setGame(g);
@@ -182,4 +189,11 @@ public class PlayerFacadeTest extends AbstractArquillianTest {
 
     }
 
+    @Test
+    public void testControllerMethod() throws Exception {
+        login(user21);
+        Response create = playerController.create(null, this.team.getId());
+        Team team = (Team) create.getEntity();
+        Assert.assertEquals(2, team.getPlayers().size());
+    }
 }

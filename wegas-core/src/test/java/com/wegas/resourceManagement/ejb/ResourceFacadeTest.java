@@ -735,6 +735,10 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         Assert.assertEquals(0, taskD.getDefaultInstance().getActivities().size());
         Assert.assertEquals(0, resD.getDefaultInstance().getActivities().size());
 
+        // reload requirement
+        req = resourceFacade.findRequirement(req.getId());
+        Assert.assertNotNull(req);
+
         /**
          * Reset and propagate to players
          */

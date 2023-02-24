@@ -470,6 +470,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
+     * Use with caution!
+     *
      * @param toUpdate GameModel to update
      * @param source   GameModel to fetch instance from
      * @param player   instances owner

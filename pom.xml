@@ -138,13 +138,14 @@
         <payara.version>6.2023.1</payara.version>
 
         <junit.version>4.13.1</junit.version>
-        <arquillian.version>1.6.0.Final</arquillian.version>
+        <arquillian.version>1.7.0.Alpha14</arquillian.version>
         <exec.plugin.version>1.2</exec.plugin.version>
 
         <eclipselink.version>4.0.0-M3</eclipselink.version>
 
-        <slf4j.version>1.7.28</slf4j.version>
-        <logback.version>1.2.3</logback.version>
+        <!-- logback 1.4.x slf4j 2.x + jakarta ns -->
+        <slf4j.version>2.0.6</slf4j.version>
+        <logback.version>1.4.5</logback.version>
 
         <httpcomponents.version>4.5.13</httpcomponents.version>
         <!--<liquibase.version>2.0.5</liquibase.version>-->
@@ -338,7 +339,7 @@
                 <groupId>com.h2database</groupId>
                 <artifactId>h2-mvstore</artifactId>
                 <!-- version must match the payara-bom h2db.version property -->
-                <version>1.4.200</version>
+                <version>2.1.212</version>
             </dependency>
 
             <!-- PDF Generation -->
@@ -378,6 +379,22 @@
                 <groupId>io.github.java-diff-utils</groupId>
                 <artifactId>java-diff-utils</artifactId>
                 <version>4.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>gov.adlnet</groupId>
+                <artifactId>jxapi</artifactId>
+                <version>2.0.1</version>
+                <exclusions>
+                    <!--
+                        HACK: exclude old javax.mail namespace
+                        TODO: use up-to-date XAPI client
+                    -->
+                    <exclusion>
+                        <groupId>javax.mail</groupId>
+                        <artifactId>mail</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!--<dependency>
@@ -446,17 +463,10 @@
             <dependency>
                 <groupId>fish.payara.arquillian</groupId>
                 <artifactId>arquillian-payara-server-embedded</artifactId>
-                <version>2.3.1</version>
+                <version>3.0.alpha6</version>
                 <scope>test</scope>
             </dependency>
 
-
-            <dependency>
-                <groupId>org.jboss.arquillian.extension</groupId>
-                <artifactId>arquillian-persistence-dbunit</artifactId>
-                <version>1.0.0.Alpha7</version>
-                <scope>test</scope>
-            </dependency>
 
             <dependency>
                 <groupId>org.eu.ingwar.tools</groupId>

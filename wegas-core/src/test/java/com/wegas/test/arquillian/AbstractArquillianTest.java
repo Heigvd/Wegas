@@ -70,6 +70,8 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestMinim
         scenarist = this.signup("scenarist@local");
         trainer = this.signup("trainer@local");
         user = this.signup("user@local");
+        user21 = this.signup("user21@local");
+        user22 = this.signup("user22@local");
 
         login(admin);
         scenarist = addRoles(scenarist, scenarists);
@@ -116,8 +118,6 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestMinim
      * The team2 twice : player21, player22
      */
     protected void createSecondTeam() {
-        user21 = this.signup("user21@local");
-        user22 = this.signup("user22@local");
         login(user21);
         team2 = new Team();
         team2.setName("test-team2");

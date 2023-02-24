@@ -1274,7 +1274,6 @@ public class Helper {
         }
     }
 
-
     /**
      * Get all paths.
      * <p>
@@ -1297,7 +1296,7 @@ public class Helper {
             .filter(seg -> !Helper.isNullOrEmpty(seg))
             .collect(Collectors.toList());
 
-        for (String seg: segments){
+        for (String seg : segments) {
             String p = (current != null ? current + "/" : "") + seg;
             current = p;
             paths.add(p);

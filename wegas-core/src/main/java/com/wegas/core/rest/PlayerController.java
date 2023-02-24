@@ -99,10 +99,10 @@ public class PlayerController {
                 && !teamToJoin.getGame().getProperties().getFreeForAll()) {
                 if (requestManager.tryLock("join-" + teamToJoin.getGameId() + "-" + currentUser.getId())
                     && !playerFacade.isInGame(teamToJoin.getGameId(), currentUser.getId())) {
-                    gameFacade.joinTeam(teamToJoin.getId(), currentUser.getId(), Collections.list(request.getLocales()));
+                    gameFacade.joinTeam(teamToJoin.getId(), currentUser.getId(), request != null ? Collections.list(request.getLocales()) : null);
                     // reload up to date team
-                    teamFacade.detach(teamToJoin);
                     teamToJoin = teamFacade.find(teamToJoin.getId());
+                    //teamFacade.refresh(teamToJoin);
                     return Response.status(Response.Status.CREATED).entity(teamToJoin).build();
                 }
                 return Response.status(Response.Status.CONFLICT).build();
