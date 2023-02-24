@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -11,6 +10,7 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.AccountFacade;
@@ -91,7 +91,7 @@ public class TeamController {
      * @return HTTP created containing the new team or HTTP Conflict (?)
      */
     @POST
-    public Response create(@PathParam("gameId") Long gameId, Team entity) {
+    public Team create(@PathParam("gameId") Long gameId, Team entity) {
         Game g = gameFacade.find(gameId);
         if (g.getAccess() == Game.GameAccess.OPEN) {
             Boolean prevents = g.getPreventPlayerCreatingTeams();
@@ -100,12 +100,10 @@ public class TeamController {
                 requestManager.assertGameTrainer(g);
             }
 
-            Team team = this.teamFacade.create(gameId, entity);
-            teamFacade.detach(team);
-            team = teamFacade.find(entity.getId());
-            return Response.status(Response.Status.CREATED).entity(team).build();
+            this.teamFacade.create(gameId, entity);
+            return entity;
         }
-        return Response.status(Response.Status.CONFLICT).build();
+        throw new WegasConflictException();
     }
 
     /**

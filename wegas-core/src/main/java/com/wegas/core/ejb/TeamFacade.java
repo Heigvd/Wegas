@@ -102,14 +102,12 @@ public class TeamFacade extends BaseFacade<Team> implements TeamFacadeI {
          * Be sure the new team exists in database before populate it
          */
         Long teamId = gameFacade.createAndCommit(gameId, t);
-        this.find(teamId);
         /**
          * the new thread must be able to retrieve the team to populate from database
          */
         populatorScheduler.scheduleCreation();
-        this.detach(t);
-        t = this.find(t.getId());
-        requestManager.setCurrentTeam(t);
+        Team team = this.find(teamId);
+        requestManager.setCurrentTeam(team);
         return t;
     }
 

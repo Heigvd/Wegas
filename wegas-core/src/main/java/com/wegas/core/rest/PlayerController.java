@@ -100,7 +100,7 @@ public class PlayerController {
                 if (requestManager.tryLock("join-" + teamToJoin.getGameId() + "-" + currentUser.getId())
                     && !playerFacade.isInGame(teamToJoin.getGameId(), currentUser.getId())) {
                     gameFacade.joinTeam(teamToJoin.getId(), currentUser.getId(), request != null ? Collections.list(request.getLocales()) : null);
-                    // reload up to date team
+                    // reload up to date team (joinTeam creates the new player within a separate transation)
                     teamToJoin = teamFacade.find(teamToJoin.getId());
                     //teamFacade.refresh(teamToJoin);
                     return Response.status(Response.Status.CREATED).entity(teamToJoin).build();

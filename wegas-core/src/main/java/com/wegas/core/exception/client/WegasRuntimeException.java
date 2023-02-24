@@ -11,15 +11,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.ejb.ApplicationException;
-
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 /**
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-@JsonSubTypes(value = { 
+@JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "WegasErrorMessage", value = WegasErrorMessage.class),
     @JsonSubTypes.Type(name = "WegasOutOfBoundException", value = WegasOutOfBoundException.class),
     @JsonSubTypes.Type(name = "WegasScriptException", value = WegasScriptException.class),
@@ -31,31 +31,86 @@ public abstract class WegasRuntimeException extends RuntimeException {
 
     private static final long serialVersionUID = 1484932586696706035L;
 
+    private final Status httpStatus;
+
     /**
      *
      */
     public WegasRuntimeException() {
-        super();
+        this(Status.BAD_REQUEST);
     }
 
-    public WegasRuntimeException (final Throwable t){
-        super(t);
+    /**
+     *
+     * @param t          the cause
+     */
+    public WegasRuntimeException(final Throwable t) {
+        this(t, Status.BAD_REQUEST);
     }
-    
+
     /**
      *
      * @param message
      */
     public WegasRuntimeException(String message) {
-        super(message);
+        this(message, Status.BAD_REQUEST);
+    }
+
+    /**
+     *
+     * @param message    custom message
+     * @param cause      the cause
+     */
+    public WegasRuntimeException(String message, Throwable cause) {
+        this(message, cause, Status.BAD_REQUEST);
+    }
+
+    /**
+     *
+     * @param httpStatus 4xx http status
+     */
+    public WegasRuntimeException(Status httpStatus) {
+        super();
+        this.httpStatus = httpStatus;
+    }
+
+    /**
+     *
+     * @param t          the cause
+     * @param httpStatus 4xx http status
+     */
+    public WegasRuntimeException(final Throwable t, Status httpStatus) {
+        super(t);
+        this.httpStatus = httpStatus;
     }
 
     /**
      *
      * @param message
-     * @param cause
+     * @param httpStatus 4xx http status
      */
-    public WegasRuntimeException(String message, Throwable cause) {
+    public WegasRuntimeException(String message, Status httpStatus) {
+        super(message);
+        this.httpStatus = httpStatus;
+    }
+
+    /**
+     *
+     * @param message    custom message
+     * @param cause      the cause
+     * @param httpStatus 4xx http status
+     */
+    public WegasRuntimeException(String message, Throwable cause, Status httpStatus) {
         super(message, cause);
+        this.httpStatus = httpStatus;
+    }
+
+    /**
+     * Get corresponding http status
+     *
+     * @return
+     */
+    public Response.Status getHttpStatus() {
+        return httpStatus;
     }
 }

@@ -415,27 +415,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Filter out the debug team
-     *
-     * @param game
-     *
-     * @return the game without the debug team
-     */
-    public Game getGameWithoutDebugTeam(Game game) {
-        if (game != null) {
-            this.detach(game);
-            List<Team> withoutDebugTeam = new ArrayList<>();
-            for (Team teamToCheck : game.getTeams()) {
-                if (!(teamToCheck instanceof DebugTeam)) {
-                    withoutDebugTeam.add(teamToCheck);
-                }
-            }
-            game.setTeams(withoutDebugTeam);
-        }
-        return game;
-    }
-
-    /**
      * Get all games with the given status which are accessible to the current user
      *
      * @param status {@link Game.Status#LIVE} {@link Game.Status#BIN} {@link Game.Status#DELETE}
@@ -456,8 +435,7 @@ public class GameFacade extends BaseFacade<Game> {
             if (g != null && g.getStatus() == status) {
                 List<String> perm = entry.getValue();
                 if (perm.contains("Edit") || perm.contains("*")) {
-                    Game dg = this.getGameWithoutDebugTeam(g);
-                    games.add(dg);
+                    games.add(g);
                 }
             }
         }
@@ -718,16 +696,13 @@ public class GameFacade extends BaseFacade<Game> {
      * @return a new player, linked to a user, who just joined the team
      */
     public Player joinTeam(Long teamId, Long userId, List<Locale> languages) {
+        // create player skeleton synchronously
         Long playerId = playerFacade.joinTeamAndCommit(teamId, userId, languages);
-        Player player = playerFacade.find(playerId);
+
+        // start async instances creation process
         populatorScheduler.scheduleCreation();
 
-        Team team = player.getTeam();
-
-        playerFacade.detach(player);
-        teamFacade.detach(team);;
-
-        player = playerFacade.find(player.getId());
+        Player player = playerFacade.find(playerId);
         int indexOf = populatorFacade.getPositionInQueue(player);
         player.setQueueSize(indexOf + 1);
         return player;

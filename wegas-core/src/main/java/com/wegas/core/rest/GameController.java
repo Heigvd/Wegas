@@ -124,15 +124,9 @@ public class GameController {
      *
      */
     @POST
-    public Game create(@PathParam("gameModelId") Long gameModelId, Game entity) throws CloneNotSupportedException {
-        gameFacade.publishAndCreate(gameModelId, entity);
-        //@Dirty: those lines exist to get a new game pointer. Cache is messing with it
-        // removing debug team will stay in cache as this game pointer is new. work around
-        gameFacade.flush();
-        gameFacade.detach(entity);
-        Game game = gameFacade.find(entity.getId());
-        //gameFacade.create(gameModelId, game);
-        return gameFacade.getGameWithoutDebugTeam(game);
+    public Game create(@PathParam("gameModelId") Long gameModelId, Game game) throws CloneNotSupportedException {
+        gameFacade.publishAndCreate(gameModelId, game);
+        return game;
     }
 
     /**
@@ -150,7 +144,7 @@ public class GameController {
     @Deprecated
     public Game shadowCreate(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
         gameFacade.create(gameModelId, entity);
-        return gameFacade.getGameWithoutDebugTeam(entity);
+        return entity;
     }
 
     /**
@@ -388,7 +382,7 @@ public class GameController {
     @GET
     @Path("/FindByToken/{token : ([a-zA-Z0-9_-]|\\.(?!\\.))*}")
     public Game findByToken(@PathParam("token") String token) {
-        return gameFacade.getGameWithoutDebugTeam(gameFacade.findByToken(token));
+        return gameFacade.findByToken(token);
 
     }
 

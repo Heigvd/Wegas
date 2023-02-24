@@ -247,7 +247,7 @@ public class GameFacadeTest extends AbstractArquillianTest {
         // Game is open and player may create teams, joining is fine
         Team team1 = new Team();
         team1.setName("test-team-1");
-        Team created = (Team) teamController.create(g.getId(), team1).getEntity();
+        Team created = (Team) teamController.create(g.getId(), team1);
 
         Assert.assertEquals(0, created.getPlayers().size());
 
