@@ -165,7 +165,7 @@ export function EntityChooser<E extends IAbstractEntity>({
           if (element != null) {
             const rect = element.getBoundingClientRect();
 
-            if (mobileDisplay) setMobile(rect.width < 768);
+            mobileDisplay ? setMobile(rect.width < 768) : setMobile(false);
           }
         });
 
