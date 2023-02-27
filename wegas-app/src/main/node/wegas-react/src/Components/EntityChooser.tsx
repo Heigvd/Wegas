@@ -129,6 +129,7 @@ interface EntityChooserProps<E extends IAbstractEntity>
   EntityLabel: React.FunctionComponent<EntityChooserLabelProps<E>>;
   // customLabelStyle?: (entity: E) => string | undefined;
   autoOpenFirst?: boolean;
+  mobileDisplay?: boolean;
   addComponent?: React.ReactNode;
   noSelectionMessage?: string;
 }
@@ -139,6 +140,7 @@ export function EntityChooser<E extends IAbstractEntity>({
   EntityLabel,
   // customLabelStyle,
   autoOpenFirst,
+  mobileDisplay,
   disabled,
   readOnly,
   addComponent,
@@ -149,27 +151,30 @@ export function EntityChooser<E extends IAbstractEntity>({
 
   const resizeObserver = React.useRef<ResizeObserver | undefined>();
 
-  const setRef = React.useCallback((element: HTMLDivElement | null) => {
-    if (resizeObserver.current != null) {
-      resizeObserver.current.disconnect();
-      resizeObserver.current = undefined;
-    }
+  const setRef = React.useCallback(
+    (element: HTMLDivElement | null) => {
+      if (resizeObserver.current != null) {
+        resizeObserver.current.disconnect();
+        resizeObserver.current = undefined;
+      }
 
-    if (element != null) {
-      //n.current = element;
+      if (element != null) {
+        //n.current = element;
 
-      const ro = new ResizeObserver(() => {
-        if (element != null) {
-          const rect = element.getBoundingClientRect();
+        const ro = new ResizeObserver(() => {
+          if (element != null) {
+            const rect = element.getBoundingClientRect();
 
-          setMobile(rect.width < 768);
-        }
-      });
+            if (mobileDisplay) setMobile(rect.width < 768);
+          }
+        });
 
-      ro.observe(element);
-      resizeObserver.current = ro;
-    }
-  }, []);
+        ro.observe(element);
+        resizeObserver.current = ro;
+      }
+    },
+    [mobileDisplay],
+  );
 
   React.useEffect(() => {
     setEntity(oldEntity => {

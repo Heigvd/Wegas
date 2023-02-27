@@ -144,9 +144,15 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
 
 interface InboxDisplayProps extends DisabledReadonly {
   inbox: IInboxDescriptor;
+  mobileDisplay?: boolean;
 }
 
-export function InboxDisplay({ inbox, disabled, readOnly }: InboxDisplayProps) {
+export function InboxDisplay({
+  inbox,
+  disabled,
+  readOnly,
+  mobileDisplay,
+}: InboxDisplayProps) {
   const messagesSelector = React.useCallback(() => {
     const messages = getInstance(inbox, Player.selectCurrent())!.messages;
     return [...messages].sort((a, b) => {
@@ -164,6 +170,7 @@ export function InboxDisplay({ inbox, disabled, readOnly }: InboxDisplayProps) {
       disabled={disabled}
       readOnly={readOnly}
       noSelectionMessage={i18nComponentValues.inbox.noSelectionMessage}
+      mobileDisplay={mobileDisplay}
     >
       {props => <MessageDisplay {...props} />}
     </EntityChooser>

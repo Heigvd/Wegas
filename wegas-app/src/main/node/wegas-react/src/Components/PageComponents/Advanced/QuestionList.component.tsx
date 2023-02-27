@@ -15,11 +15,13 @@ interface QuestionListDisplayProps extends WegasComponentProps {
   questionList?: IScript;
   autoOpenFirst: boolean;
   edit?: IScript;
+  mobileDisplay?: boolean;
 }
 
 export default function QuestionListDisplay({
   questionList,
   autoOpenFirst,
+  mobileDisplay,
   edit,
   context,
   options,
@@ -37,6 +39,7 @@ export default function QuestionListDisplay({
     <QuestionList
       questionList={descriptor}
       autoOpenFirst={autoOpenFirst}
+      mobileDisplay={mobileDisplay}
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
       editMode={editing}
@@ -66,6 +69,10 @@ registerComponent(
       autoOpenFirst: schemaProps.boolean({
         label: 'Automatically open first item',
         value: true,
+      }),
+      mobileDisplay: schemaProps.boolean({
+        label: 'Allow display to switch to mobile when needed',
+        value: false,
       }),
       edit: schemaProps.scriptVariable({
         label: 'Edition mode',

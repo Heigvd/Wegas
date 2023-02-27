@@ -373,12 +373,14 @@ function QuestionChooserEdition({
 interface QuestionListProps extends DisabledReadonly {
   questionList: SListDescriptor;
   autoOpenFirst?: boolean;
+  mobileDisplay?: boolean;
   editMode?: boolean;
 }
 
 export default function QuestionList({
   questionList,
   autoOpenFirst,
+  mobileDisplay,
   disabled,
   readOnly,
   editMode,
@@ -413,6 +415,7 @@ export default function QuestionList({
       entities={entities.questions}
       EntityLabel={editMode ? QuestionChooserEdition : QuestionChooser}
       autoOpenFirst={autoOpenFirst}
+      mobileDisplay={mobileDisplay}
       disabled={disabled}
       readOnly={readOnly}
       addComponent={
