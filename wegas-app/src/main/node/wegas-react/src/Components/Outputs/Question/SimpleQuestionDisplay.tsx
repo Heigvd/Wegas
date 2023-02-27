@@ -112,7 +112,7 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
 interface SimpleChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
   choiceI: IChoiceInstance;
-  onValidate: (choice: IChoiceDescriptor) => void;
+  onValidate: (choice: IChoiceDescriptor) => Promise<unknown>;
   replyAllowed: boolean;
   editMode?: boolean;
 }
@@ -140,7 +140,7 @@ function SimpleChoiceDisplay({
       active={active}
       descriptor={choiceD}
       canReply={canReply}
-      onClick={() => onValidate(choiceD)}
+      onClick={async () => onValidate(choiceD)}
       className={simpleChoiceHoverStyle}
       hasBeenSelected={hasBeenValidated}
       editMode={editMode}
@@ -167,7 +167,7 @@ export function SimpleQuestionDisplay({
 
   const onChoiceValidate = React.useCallback(
     (choice: IChoiceDescriptor) => {
-      dispatch(selectAndValidate(choice));
+      return dispatch(selectAndValidate({choice}));
     },
     [dispatch],
   );
