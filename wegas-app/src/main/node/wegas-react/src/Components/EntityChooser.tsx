@@ -95,6 +95,7 @@ interface LabelGeneratorProps<E extends IAbstractEntity> {
   selected: boolean;
   EntityLabel: React.FunctionComponent<EntityChooserLabelProps<E>>;
   setEntity: React.Dispatch<React.SetStateAction<E | null | undefined>>;
+  mobile?: boolean;
 }
 
 function LabelGenerator<E extends IAbstractEntity>(
@@ -104,6 +105,7 @@ function LabelGenerator<E extends IAbstractEntity>(
     <props.EntityLabel
       entity={props.entity}
       selected={props.selected}
+      mobile={props.mobile}
       onClick={() =>
         props.setEntity((oldEntity: E) => {
           if (deepDifferent(props.entity, oldEntity)) {
@@ -220,6 +222,7 @@ export function EntityChooser<E extends IAbstractEntity>({
                 selected={true}
                 setEntity={setEntity}
                 EntityLabel={EntityLabel}
+                mobile={true}
               />
               {addComponent}
             </div>
@@ -269,6 +272,7 @@ export interface EntityChooserLabelProps<T extends IAbstractEntity> {
   selected: boolean;
   disabled?: boolean;
   onClick: () => void;
+  mobile?: boolean;
 }
 
 export interface CustomEntityChooserLabel<T extends IAbstractEntity>

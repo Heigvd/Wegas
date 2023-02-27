@@ -236,13 +236,6 @@ export function ChoiceContainer({
         (label && labelText !== '' ? '' : ' no-label') +
         (description && descriptionText !== '' ? '' : ' no-desc')
       }
-      onClick={async () => {
-        if (canReply && onClick && !isEditing) {
-          setClicked(true);
-          await onClick();
-          setClicked(false);
-        }
-      }}
       onMouseEnter={() => setShowHandle(true)}
       onMouseLeave={() => setShowHandle(false)}
     >
@@ -331,10 +324,11 @@ export function ChoiceContainer({
               <div className={choiceButtonStyle}>
                 <Button
                   style={{ float: 'right' }}
-                  onClick={() => {
+                  onClick={async () => {
                     if (canReply && onClick && !isEditing) {
                       setClicked(true);
-                      onClick();
+                      await onClick();
+                      setClicked(false);
                     }
                   }}
                 >

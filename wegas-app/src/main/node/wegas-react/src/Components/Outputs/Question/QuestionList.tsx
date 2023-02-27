@@ -1,4 +1,6 @@
 import { css, cx } from '@emotion/css';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import produce from 'immer';
 import * as React from 'react';
 import {
@@ -47,9 +49,7 @@ import { useTranslate } from '../../Hooks/useTranslate';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { Validate } from '../../Inputs/Validate';
 import { themeVar } from '../../Theme/ThemeVars';
-import {
-  ConnectedQuestionDisplay,
-} from './Question';
+import { ConnectedQuestionDisplay } from './Question';
 
 const labelStyle = css({
   fontWeight: 'bold',
@@ -248,7 +248,16 @@ function QuestionChooser(
 ) {
   return (
     <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
-      <QuestionLabel questionD={props.entity} disabled={props.disabled} />
+      <div className={cx(flex, flexRow, itemCenter)}>
+        {props.mobile && (
+          <FontAwesomeIcon
+            className={css({ marginRight: '5px' })}
+            icon={faArrowLeft}
+            size="1x"
+          />
+        )}
+        <QuestionLabel questionD={props.entity} disabled={props.disabled} />
+      </div>
     </DefaultEntityChooserLabel>
   );
 }
@@ -410,7 +419,7 @@ export default function QuestionList({
         editMode ? <AddQuestionButton questionList={questionList} /> : undefined
       }
     >
-      {(props) => <ConnectedQuestionDisplay {...props} editMode={editMode}/>}
+      {props => <ConnectedQuestionDisplay {...props} editMode={editMode} />}
     </EntityChooser>
   );
 }

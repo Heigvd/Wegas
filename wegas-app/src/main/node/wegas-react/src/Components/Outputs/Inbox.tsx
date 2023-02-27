@@ -1,4 +1,6 @@
 import { css, cx } from '@emotion/css';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
 import { IInboxDescriptor, IMessage } from 'wegas-ts-api';
 import {
@@ -95,7 +97,16 @@ function customLabelStyle(m: IMessage): string | undefined {
 function MessageChooser(props: EntityChooserLabelProps<IMessage>) {
   return (
     <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
-      <MessageLabel message={props.entity} />
+      <div className={cx(flex, flexRow, itemCenter)}>
+        {props.mobile && (
+          <FontAwesomeIcon
+            className={css({ marginRight: '5px' })}
+            icon={faArrowLeft}
+            size="1x"
+          />
+        )}
+        <MessageLabel message={props.entity} />
+      </div>
     </DefaultEntityChooserLabel>
   );
 }
