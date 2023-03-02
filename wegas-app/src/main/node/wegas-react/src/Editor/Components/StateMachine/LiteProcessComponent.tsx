@@ -64,9 +64,13 @@ export function LiteStateProcessComponentFactory<
   }: ProcessComponentProps<TransitionFlowLine, StateProcess>) {
     const { disabled, readOnly, process } = processProps;
     const { lang } = React.useContext(languagesCTX);
-    const textValue = entityIs(process.state, 'State')
-      ? process.state.label
-      : translate(process.state.text, lang);
+
+    let textValue = '';
+    if(entityIs(process.state, 'State')){
+      textValue = process.state.label || process.state.onEnterEvent?.content || '';
+    }else {
+      textValue = translate(process.state.text, lang);
+    }
 
     const [isEditing, setEditing] = React.useState(false);
     const [isShown, setIsShown] = React.useState(false);
