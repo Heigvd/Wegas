@@ -1,4 +1,4 @@
-import { css, cx } from '@emotion/css';
+import { cx } from '@emotion/css';
 import * as React from 'react';
 import {
   IChoiceDescriptor,
@@ -22,29 +22,17 @@ import {
 } from '../../../data/Stores/editingStore';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { isActionAllowed } from '../../PageComponents/tools/options';
-import { themeVar } from '../../Theme/ThemeVars';
 import { AddMenu } from './AddMenu';
 import { ChoiceContainer } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
 import { QuestionDescription } from './QuestionDescription';
 import {
   buttonFactory,
-  editButonBorder,
+  editButtonBorder,
   editButtonStyle,
   makeMenuFromClass,
 } from './QuestionList';
 import { RepliesDisplay } from './Reply';
-
-const simpleChoiceHoverStyle = css({
-  '&:hover': {
-    backgroundColor: themeVar.colors.ActiveColor,
-    color: themeVar.colors.LightTextColor,
-    cursor: 'pointer',
-  },
-  '&.disabled:hover': {
-    cursor: 'default',
-  },
-});
 
 interface AddChoiceMenuProps {
   questionD: IQuestionDescriptor;
@@ -88,7 +76,7 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
   return (
     <div className={cx(flex, justifyCenter, itemCenter)}>
       <Plus
-        className={cx(editButtonStyle, editButonBorder)}
+        className={cx(editButtonStyle, editButtonBorder)}
         onClick={() => {
           editingStore.dispatch(
             Actions.VariableDescriptorActions.createDescriptor(
@@ -112,7 +100,7 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
 interface SimpleChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
   choiceI: IChoiceInstance;
-  onValidate: (choice: IChoiceDescriptor) => void;
+  onValidate: (choice: IChoiceDescriptor) => Promise<unknown>;
   replyAllowed: boolean;
   editMode?: boolean;
 }
@@ -141,7 +129,6 @@ function SimpleChoiceDisplay({
       descriptor={choiceD}
       canReply={canReply}
       onClick={() => onValidate(choiceD)}
-      className={simpleChoiceHoverStyle}
       hasBeenSelected={hasBeenValidated}
       editMode={editMode}
     />
@@ -167,7 +154,7 @@ export function SimpleQuestionDisplay({
 
   const onChoiceValidate = React.useCallback(
     (choice: IChoiceDescriptor) => {
-      dispatch(selectAndValidate(choice));
+      return dispatch(selectAndValidate({ choice }));
     },
     [dispatch],
   );

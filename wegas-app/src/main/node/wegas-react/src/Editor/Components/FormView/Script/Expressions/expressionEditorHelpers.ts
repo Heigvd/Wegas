@@ -563,6 +563,7 @@ export function generateSchema(
   mode?: ScriptMode,
 ): WysiwygExpressionSchema {
   let newSchemaProps = makeSchemaInitExpression(variablesItems, mode);
+
   const expression =
     attributes?.type === 'condition'
       ? attributes?.leftExpression

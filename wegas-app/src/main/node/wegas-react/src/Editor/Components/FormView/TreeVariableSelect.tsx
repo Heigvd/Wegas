@@ -203,6 +203,8 @@ export function Searcher<T>({
             }}
             search={search}
             items={allItems}
+            autoExpand={autoExpand}
+            selected={value}
             render={({ items }) => (
               <ChildrenComp
                 selected={value}
@@ -285,19 +287,17 @@ export type TreeVariableSelectProps = TreeVSelectProps<string> & {
   noLabel?: boolean;
 };
 
-function autoExpand(items: TreeSelectItem<string>[], needle: string) {
-  const ancestor: TreeSelectItem<string>[] = [];
+function autoExpand<T>(items: TreeSelectItem<T>[], needle: T) {
+  const ancestor: TreeSelectItem<T>[] = [];
 
-  function process(list: TreeSelectItem<string>[]) {
+  function process(list: TreeSelectItem<T>[]) {
     for (const item of list) {
-      if (item.value === needle) {
+      if (isEqual(item.value, needle)) {
         return true;
       } else if (item.items) {
-        ancestor.push(item);
         if (process(item.items)) {
+          ancestor.push(item);
           return true;
-        } else {
-          ancestor.pop();
         }
       }
     }
