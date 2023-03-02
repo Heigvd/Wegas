@@ -135,7 +135,7 @@
         <jakarta.version>10.0.0</jakarta.version>
 
         <shiro.version>1.11.0</shiro.version>
-        <payara.version>6.2023.1</payara.version>
+        <payara.version>6.2023.2</payara.version>
 
         <junit.version>4.13.1</junit.version>
         <arquillian.version>1.7.0.Alpha14</arquillian.version>
