@@ -100,8 +100,7 @@ public class TeamController {
                 requestManager.assertGameTrainer(g);
             }
 
-            this.teamFacade.create(gameId, entity);
-            return entity;
+            return this.teamFacade.create(gameId, entity);
         }
         throw new WegasConflictException();
     }

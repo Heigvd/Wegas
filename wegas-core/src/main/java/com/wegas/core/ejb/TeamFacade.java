@@ -108,7 +108,7 @@ public class TeamFacade extends BaseFacade<Team> implements TeamFacadeI {
         populatorScheduler.scheduleCreation();
         Team team = this.find(teamId);
         requestManager.setCurrentTeam(team);
-        return t;
+        return team;
     }
 
     /**

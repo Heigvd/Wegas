@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -417,8 +418,9 @@ public class WegasTest {
         });
         Assert.assertEquals(1, games.size()); // dummyGameModel
         List<Team> teams = games.get(0).getTeams();
-        Assert.assertEquals(1, teams.size()); // myTeam
-        List<Player> players = teams.get(0).getPlayers();
+        Assert.assertEquals(2, teams.size()); // debugTeam + myTeam
+        Team team = teams.stream().filter(t -> t instanceof DebugTeam == false).findFirst().get();
+        List<Player> players = team.getPlayers();
         Assert.assertEquals(1, players.size()); // user
 
         Player deleted = client.delete("/rest/GameModel/Game/Team/"
