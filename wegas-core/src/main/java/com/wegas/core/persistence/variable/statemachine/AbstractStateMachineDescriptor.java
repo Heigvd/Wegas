@@ -15,7 +15,6 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
@@ -62,7 +61,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     @WegasEntityProperty(ignoreNull = true, protectionLevel = ProtectionLevel.INHERITED,
         optional = false, nullable = false, proposal = EmptyMap.class,
         view = @View(label = "", value = Hidden.class))
-    private Set<AbstractState<U>> states = new HashSet<>();
+    private Set<T> states = new HashSet<>();
 
     /**
      *
@@ -81,42 +80,21 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
 
     @JsonIgnore
     public void setInternalStates(Set<T> states) {
-        this.states = (Set<AbstractState<U>>) states;
+        this.states = (Set<T>) states;
         for (T state : states) {
             state.setStateMachine(this);
         }
     }
 
     @JsonView(Views.ExtendedI.class)
-    public Map<Long, T> getOldStates() {
-        Map<Long, T> map = new HashMap<>();
-        for (T state : (Set<T>) this.states) {
-            map.put(state.getIndex(), state);
-        }
-        return map;
-    }
-
-
-    @JsonView(Views.ExtendedI.class)
     public Map<Long, T> getStates() {
-        List<AbstractState<U>> sortedList = Helper.copyAndSortModifiable(this.states, (a, b) -> {
-            long ai = a.getIndex();
-            long bi = b.getIndex();
+        Map<Long, T> tMap = new TreeMap<>();
 
-            if (ai < bi){
-                return -1;
-            }
-
-            if (ai > bi){
-                return 1;
-            }
-            return 0;
+        this.states.forEach(state -> {
+            tMap.put(state.getIndex(), state);
         });
-        Map<Long, T> map = new LinkedHashMap<>();
-        for (T state : (List<T>) sortedList) {
-            map.put(state.getIndex(), state);
-        }
-        return map;
+
+        return tMap;
     }
 
     public T addState(Long index, T state) {
@@ -138,8 +116,8 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     }
 
     @JsonIgnore
-    public AbstractState getState(Long currentStateId) {
-        for (AbstractState<U> state : this.states) {
+    public T getState(Long currentStateId) {
+        for (T state : this.states) {
             if (state.getIndex().equals(currentStateId)) {
                 return state;
             }

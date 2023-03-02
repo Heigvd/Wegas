@@ -30,7 +30,7 @@ public class StateMachineDescriptor extends AbstractStateMachineDescriptor<State
     public static class StateProp extends JSONObject {
 
         public StateProp() {
-            Map<Long, AbstractState> states = new HashMap<>();
+            Map<Long, State> states = new HashMap<>();
             State state = new State();
             state.setLabel("");
             state.setVersion(0l);

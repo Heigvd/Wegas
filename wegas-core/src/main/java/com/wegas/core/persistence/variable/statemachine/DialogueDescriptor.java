@@ -40,7 +40,7 @@ public class DialogueDescriptor extends AbstractStateMachineDescriptor<DialogueS
     public static class StateProp extends JSONObject {
 
         public StateProp() {
-            Map<Long, AbstractState> states = new HashMap<>();
+            Map<Long, DialogueState> states = new HashMap<>();
             DialogueState state = new DialogueState();
             state.setVersion(0l);
 

@@ -47,6 +47,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
+import org.apache.xmlbeans.impl.common.EncodingMap;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -318,7 +319,18 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
 
         @Override
         public int compare(AbstractTransition t1, AbstractTransition t2) {
-            return t1.getIndex() - t2.getIndex();
+            if (t1.getIndex().equals(t2.getIndex())){
+                // same indexes: sort by id
+                if (t1.getId() == null ^ t2.getId() == null) {
+                    return t1.getId() == null ? -1 : 1;
+                }
+                if (t1.getId() == null && t2.getId() == null) {
+                    return 0;
+                }
+                return t1.getId().compareTo(t2.getId());
+            } else {
+                return t1.getIndex().compareTo(t2.getIndex());
+            }
         }
     }
 }
