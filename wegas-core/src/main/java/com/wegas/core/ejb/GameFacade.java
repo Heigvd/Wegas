@@ -484,7 +484,9 @@ public class GameFacade extends BaseFacade<Game> {
         Team team = new Team(teamFacade.findUniqueNameForTeam(game, currentUser.getName()), 1);
         teamFacade.create(game.getId(), team); // return managed team
         team = teamFacade.find(team.getId());
-        return this.joinTeam(team.getId(), currentUser.getId(), languages);
+        Player p = this.joinTeam(team.getId(), currentUser.getId(), languages);
+        this.getEntityManager().refresh(team);
+        return p;
     }
 
     /**
