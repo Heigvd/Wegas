@@ -58,71 +58,27 @@ export default function Admin(): JSX.Element {
         </Flex>
         <FitSpace direction="column" overflow="auto">
           <Routes>
-            <Route
-              path={`who/*`}
-              element={
-                <>
-                  {' '}
-                  <Who />{' '}
-                </>
-              }
-            />
-            <Route
-              path={`users/*`}
-              element={
-                <>
-                  {' '}
-                  <Users />{' '}
-                </>
-              }
-            />
-            <Route
-              path={`roles/*`}
-              element={
-                <>
-                  {' '}
-                  <Roles />{' '}
-                </>
-              }
-            />
-            <Route
-              path={`loggers/*`}
-              element={
-                <>
-                  {' '}
-                  <LoggersConfig />{' '}
-                </>
-              }
-            />
+            <Route path={`who/*`} element={<Who />} />
+            <Route path={`users/*`} element={<Users />} />
+            <Route path={`roles/*`} element={<Roles />} />
+            <Route path={`loggers/*`} element={<LoggersConfig />} />
             <Route
               path={`locks/*`}
               element={
-                <>
-                  <FitSpace direction="column" overflow="auto" className={panelPadding}>
-                    <Locks />
-                  </FitSpace>
-                </>
+                <FitSpace direction="column" overflow="auto" className={panelPadding}>
+                  <Locks />
+                </FitSpace>
               }
             />
             <Route
               path={`invoices/*`}
               element={
-                <>
-                  <FitSpace direction="column" overflow="auto" className={panelPadding}>
-                    <Invoicing />
-                  </FitSpace>
-                </>
+                <FitSpace direction="column" overflow="auto" className={panelPadding}>
+                  <Invoicing />
+                </FitSpace>
               }
             />
-            <Route
-              path='*'
-              element={
-                <>
-                  {' '}
-                  <MainAdminPanel />{' '}
-                </>
-              }
-            />
+            <Route path="*" element={<MainAdminPanel />} />
           </Routes>
         </FitSpace>
       </FitSpace>
