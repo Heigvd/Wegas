@@ -50,15 +50,25 @@ Cypress.Commands.add("login", (identifier, password) => {
   cy.log("Testing login...");
   cy.react("Input", {
     props: { type: "text", placeholder: "e-mail or username" },
-  }).type(identifier);
+  })
+  .should("have.length", 1)
+  .type(identifier);
 
   cy.react("Input", {
     props: { type: "password", placeholder: "password" },
-  }).type(password);
+  })
+  .should("have.length", 1)
+  .type(password);
 
-  cy.react("Button", { props: { key: "submit", label: "login" } }).click({
+  cy.react("Button", { props: { key: "submit", label: "login" } })
+  .should("have.length", 1)
+  .click({
     force: true,
   });
+
+  cy.react("IconButton", {props: {icon: {iconName: 'sign-out-alt'}}})
+  .should("have.length", 1);
+
   cy.log("Login working!");
 });
 
@@ -70,7 +80,9 @@ Cypress.Commands.add("logout", () => {
         iconName: "sign-out-alt",
       },
     },
-  }).click({
+  })
+  .should("have.length", 1)
+  .click({
     force: true,
   });
   cy.react("SignInForm")
@@ -82,4 +94,6 @@ Cypress.Commands.add("simulatePusher", () => {
   // Forced to reload without pusher
   cy.reload();
   cy.waitForReact();
+  cy.react("MainMenu")
+  .should("have.length", 1);
 });
