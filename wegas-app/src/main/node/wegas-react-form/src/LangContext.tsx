@@ -5,17 +5,21 @@ interface Context {
     toggleLang: (lang: string) => void;
     availableLang: { code: string; label: string; visibility: string }[];
 }
+
 const LangContext = React.createContext<Context>({
     lang: (window as any).I18n.getCode(),
     toggleLang: () => undefined,
     availableLang: [],
 });
+
 export const LangConsumer = LangContext.Consumer;
 
 interface LangProviderProps {
     lang: string;
     availableLang: { code: string; label: string; visibility: string }[];
+    children : React.ReactNode
 }
+
 export class LangHandler extends React.Component<LangProviderProps, Context> {
     static getDerivedStateFromProps(props: LangProviderProps, state: Context) {
         return { availableLang: props.availableLang };

@@ -11,7 +11,7 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faCog, faCubes, faGamepad, faGavel, faMagic } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
-import { NavLink, NavLinkProps, useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import tinycolor from 'tinycolor2';
 import useTranslations from '../../i18n/I18nContext';
 import { useCurrentUser } from '../../selectors/userSelector';
@@ -114,25 +114,23 @@ const discreetInlineLink = cx(
 interface LinkProps {
   className?: string;
   to: string;
-  exact?: boolean;
+  end?: boolean;
   children: React.ReactNode;
-  isActive?: NavLinkProps['isActive'];
+  isActive?: boolean;
 }
 
 export function MainMenuLink({
   to,
-  exact = false,
+  end = false,
   children,
   isActive,
   className,
 }: LinkProps): JSX.Element {
   return (
     <NavLink
-      isActive={isActive}
-      exact={exact}
+      end={end}
       to={to}
-      activeClassName={cx(mainLinkActiveClass, className)}
-      className={cx(inlineMainMenuLink, className)}
+      className={cx(isActive ? mainLinkActiveClass : inlineMainMenuLink , className)}
     >
       {children}
     </NavLink>
@@ -141,27 +139,25 @@ export function MainMenuLink({
 
 export function SecondLevelLink({
   to,
-  exact = false,
+  end: end = false,
   children,
   isActive,
   className,
 }: LinkProps): JSX.Element {
   return (
     <NavLink
-      isActive={isActive}
-      exact={exact}
+      end={end}
       to={to}
-      activeClassName={cx(secondLevelLinkActiveClass, className)}
-      className={cx(secondLevelLink, className)}
+      className={cx(isActive ? secondLevelLinkActiveClass : secondLevelLink, className)}
     >
       {children}
     </NavLink>
   );
 }
 
-export function InlineLink({ to, exact = false, children, className }: LinkProps): JSX.Element {
+export function InlineLink({ to, end = false, children, className }: LinkProps): JSX.Element {
   return (
-    <NavLink exact={exact} to={to} className={cx(className, inlineLink)}>
+    <NavLink end={end} to={to} className={cx(className, inlineLink)}>
       {children}
     </NavLink>
   );
@@ -169,12 +165,12 @@ export function InlineLink({ to, exact = false, children, className }: LinkProps
 
 export function DiscreetInlineLink({
   to,
-  exact = false,
+  end = false,
   children,
   className,
 }: LinkProps): JSX.Element {
   return (
-    <NavLink exact={exact} to={to} className={cx(className, discreetInlineLink)}>
+    <NavLink end={end} to={to} className={cx(className, discreetInlineLink)}>
       {children}
     </NavLink>
   );
@@ -290,7 +286,7 @@ export function MainMenu() {
   const opts = options.map(opt => ({
     value: opt.link,
     label: (
-      <MainMenuLink className={flex} key={opt.link} exact to={opt.link}>
+      <MainMenuLink className={flex} key={opt.link} end to={opt.link}>
         {opt.faIcon != null ? (
           <FontAwesomeIcon className={iconStyle} icon={opt.faIcon} color={opt.color} size="2x" />
         ) : opt.wifIcon != null ? (

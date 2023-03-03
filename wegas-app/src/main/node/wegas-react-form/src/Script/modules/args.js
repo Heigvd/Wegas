@@ -136,9 +136,9 @@ export function getReadOnlySchema(args) {
     let clone = cloneDeep(args);
     _turnSchemaReadOnly(clone);
     return clone;
-};
+}
     
-const _turnSchemaReadOnly = (args) =>{
+const _turnSchemaReadOnly = args =>{
     if (Array.isArray(args)){
         args.forEach(arg => {
             _turnSchemaReadOnly(arg);
@@ -205,7 +205,7 @@ export function renderForm(astValue, descriptor, onChange, entity, key) {
             onChange={onChange}
             key={key}
             />
-        );
+    );
 }
 /**
  * Generate an array of forms for each function's arguments

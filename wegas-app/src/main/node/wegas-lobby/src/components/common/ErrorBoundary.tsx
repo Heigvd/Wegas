@@ -8,7 +8,7 @@
 
 import * as React from 'react';
 import { Component, ErrorInfo, ReactNode } from 'react';
-import { logger } from '../../logger';
+import logger from '../../logger';
 
 interface Props {
   children: ReactNode;

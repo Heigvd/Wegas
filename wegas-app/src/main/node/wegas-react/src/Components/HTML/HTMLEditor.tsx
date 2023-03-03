@@ -88,6 +88,7 @@ export default function HTMLEditor({
       {showFileBrowsing && (
         <Modal onExit={() => setShowFileBrowsing(false)}>
           <FileBrowser
+            pickOnly={true}
             onFileClick={file => {
               setShowFileBrowsing(false);
               file &&

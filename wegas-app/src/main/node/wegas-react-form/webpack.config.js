@@ -1,4 +1,5 @@
 const path = require('path');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 // const pkg = require('./package.json');
 
 // const packages = Object.keys(pkg.dependencies);
@@ -36,6 +37,7 @@ module.exports = {
     },
     plugins: [
         new NodePolyfillWebpackPlugin(),
+        new ForkTsCheckerWebpackPlugin(),
     ],
     module: {
         rules: [

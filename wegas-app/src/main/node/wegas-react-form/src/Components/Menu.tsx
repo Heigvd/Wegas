@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 
 const container = css({
     display: 'block',

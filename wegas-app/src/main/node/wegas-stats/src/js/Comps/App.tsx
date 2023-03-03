@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useHistory} from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 import {reset} from '../Actions/global';
 import {useAppDispatch} from '../Store/hooks';
 import Login from './LoginForm';
@@ -11,13 +11,13 @@ const style: React.CSSProperties = {
 };
 
 export default function App(props: {children?: React.ReactNode}): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const resetCb = React.useCallback(() => {
     dispatch(reset());
-    history.push("/");
-  }, [history, dispatch]);
+    navigate("/");
+  }, [navigate, dispatch]);
 
   return (
     <div>

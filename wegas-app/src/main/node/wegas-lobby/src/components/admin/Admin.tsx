@@ -9,7 +9,7 @@
 import { css, cx } from '@emotion/css';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import useTranslations from '../../i18n/I18nContext';
 import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
@@ -27,7 +27,7 @@ import Who from './Who';
 
 export default function Admin(): JSX.Element {
   const i18n = useTranslations();
-  const { path, url } = useRouteMatch();
+  // const { path, url } = useRouteMatch();
   return (
     <FitSpace direction="column" overflow="auto">
       <FitSpace direction="column" overflow="auto">
@@ -36,15 +36,15 @@ export default function Admin(): JSX.Element {
           justify="center"
           className={css({ borderBottom: `2px solid ${adminColor.toString()}` })}
         >
-          <SecondLevelLink exact to={`${path}/`}>
+          <SecondLevelLink end to={`./`}>
             {i18n.adminPanel}
           </SecondLevelLink>
-          <SecondLevelLink to={`${path}/who`}>{i18n.who}</SecondLevelLink>
-          <SecondLevelLink to={`${path}/users`}>{i18n.users}</SecondLevelLink>
-          <SecondLevelLink to={`${path}/roles`}>{i18n.roles}</SecondLevelLink>
-          <SecondLevelLink to={`${path}/invoices`}>{i18n.gameAdmins}</SecondLevelLink>
-          <SecondLevelLink to={`${path}/loggers`}>{i18n.loggers}</SecondLevelLink>
-          <SecondLevelLink to={`${path}/locks`}>{i18n.locks}</SecondLevelLink>
+          <SecondLevelLink to={`who`}>{i18n.who}</SecondLevelLink>
+          <SecondLevelLink to={`users`}>{i18n.users}</SecondLevelLink>
+          <SecondLevelLink to={`roles`}>{i18n.roles}</SecondLevelLink>
+          <SecondLevelLink to={`invoices`}>{i18n.gameAdmins}</SecondLevelLink>
+          <SecondLevelLink to={`loggers`}>{i18n.loggers}</SecondLevelLink>
+          <SecondLevelLink to={`locks`}>{i18n.locks}</SecondLevelLink>
           <IconButton
             title={i18n.stats}
             className={cx(adminButtonStyle, css({ display: 'flex' }))}
@@ -57,41 +57,29 @@ export default function Admin(): JSX.Element {
           </IconButton>
         </Flex>
         <FitSpace direction="column" overflow="auto">
-          <Switch>
-            <Route exact path={`${path}/`}>
-              {' '}
-              <MainAdminPanel />{' '}
-            </Route>
-            <Route path={`${path}/who`}>
-              {' '}
-              <Who />{' '}
-            </Route>
-            <Route path={`${path}/users`}>
-              {' '}
-              <Users />{' '}
-            </Route>
-            <Route path={`${path}/roles`}>
-              {' '}
-              <Roles />{' '}
-            </Route>
-            <Route path={`${path}/loggers`}>
-              {' '}
-              <LoggersConfig />{' '}
-            </Route>
-            <Route path={`${path}/locks`}>
-              <FitSpace direction="column" overflow="auto" className={panelPadding}>
-                <Locks />
-              </FitSpace>
-            </Route>
-            <Route path={`${path}/invoices`}>
-              <FitSpace direction="column" overflow="auto" className={panelPadding}>
-                <Invoicing />
-              </FitSpace>
-            </Route>
-            <Route>
-              <Redirect to={url} />
-            </Route>
-          </Switch>
+          <Routes>
+            <Route path={`who/*`} element={<Who />} />
+            <Route path={`users/*`} element={<Users />} />
+            <Route path={`roles/*`} element={<Roles />} />
+            <Route path={`loggers/*`} element={<LoggersConfig />} />
+            <Route
+              path={`locks/*`}
+              element={
+                <FitSpace direction="column" overflow="auto" className={panelPadding}>
+                  <Locks />
+                </FitSpace>
+              }
+            />
+            <Route
+              path={`invoices/*`}
+              element={
+                <FitSpace direction="column" overflow="auto" className={panelPadding}>
+                  <Invoicing />
+                </FitSpace>
+              }
+            />
+            <Route path="*" element={<MainAdminPanel />} />
+          </Routes>
         </FitSpace>
       </FitSpace>
     </FitSpace>

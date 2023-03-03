@@ -3,8 +3,8 @@ import {
   ScriptableEntity,
   WegasClassNames,
   WegasClassNamesAndClasses,
+  InheritanceTable
 } from 'wegas-ts-api';
-import InheritanceTable from 'wegas-ts-api/typings/Inheritance.json';
 
 type Mergeable = keyof typeof InheritanceTable;
 

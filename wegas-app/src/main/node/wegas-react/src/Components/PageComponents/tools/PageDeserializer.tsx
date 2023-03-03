@@ -73,7 +73,7 @@ function DefaultChildren(_: ChildrenDeserializerProps) {
 
 export const DummyContainer: ItemContainer = React.forwardRef<
   HTMLDivElement,
-  WegasComponentItemProps
+  React.PropsWithChildren<WegasComponentItemProps>
 >(
   (
     {

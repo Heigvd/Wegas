@@ -15,8 +15,16 @@ import {
 const repliesContainer = css({
   marginTop: '5px',
   borderTop: '1px solid ' + themeVar.colors.DisabledColor,
-  fontWeight: 'bold',
   fontSize: themeVar.others.TextFont2,
+});
+const replyStyle = css({
+  fontWeight: 'bold',
+  choiceLabelStyle,
+  width: '100%',
+  padding: '15px',
+});
+const replyContainerStyle = css({
+  backgroundColor: themeVar.colors.HoverColor,
 });
 
 interface ReplyDisplayProps {
@@ -28,7 +36,13 @@ function ReplyDisplay({ reply }: ReplyDisplayProps) {
   const answer = reply.answer;
 
   return (
-    <div className={cx(choiceContainerStyle, css({ padding: '15px', flexDirection: 'column', alignItems: 'left' }))}>
+    <div
+      className={cx(
+        choiceContainerStyle,
+        replyContainerStyle,
+        css({ flexDirection: 'column', alignItems: 'left' }),
+      )}
+    >
       <StoreConsumer
         selector={() =>
           VariableDescriptor.firstMatch<IChoiceDescriptor>({
@@ -38,10 +52,7 @@ function ReplyDisplay({ reply }: ReplyDisplayProps) {
       >
         {({ state }) =>
           state != null ? (
-            <TranslatableText
-              className={choiceLabelStyle}
-              content={state.label}
-            />
+            <TranslatableText className={replyStyle} content={state.label} />
           ) : (
             <div className={choiceLabelStyle}>'Unkown choice'</div>
           )

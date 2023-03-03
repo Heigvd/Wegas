@@ -7,7 +7,7 @@
  */
 import { css } from '@emotion/css';
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { signUp } from '../../API/api';
 import { buildLinkWithQueryParam } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
@@ -46,7 +46,7 @@ const defData: Data = {
 export default function SignUp(props: Props): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const fields: Field<Data>[] = [
     {
@@ -136,15 +136,15 @@ export default function SignUp(props: Props): JSX.Element {
   ];
 
   const createCb = React.useCallback(
-    credentials => {
+    (credentials: Data) => {
       dispatch(signUp(credentials)).then(action => {
         // is that a hack or not ???
         if (props.redirectTo && action.meta.requestStatus === 'fulfilled') {
-          history.push(props.redirectTo);
+          navigate(props.redirectTo);
         }
       });
     },
-    [dispatch, history, props.redirectTo],
+    [dispatch, navigate, props.redirectTo],
   );
 
   return (

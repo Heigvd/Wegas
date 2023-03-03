@@ -517,7 +517,7 @@ export function PageContextProvider({
     );
 
   const onDuplicateLayoutComponent = React.useCallback(
-    (pageId, page, path) => {
+    (pageId: string | undefined, page: WegasComponent, path: number[]) => {
       const { component } = findComponent(page, path);
       if (component) {
         const newComponent = createComponent(
@@ -527,7 +527,7 @@ export function PageContextProvider({
           component.props,
           path.slice(-1)[0] + 1,
         );
-        if (newComponent) {
+        if (newComponent && pageId) {
           patchPage(pageId, newComponent.newPage);
           onEdit(pageId, newComponent.newPath);
         }

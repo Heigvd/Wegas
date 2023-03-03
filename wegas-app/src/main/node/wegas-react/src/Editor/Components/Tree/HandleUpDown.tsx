@@ -12,6 +12,7 @@ function visibleSelector(
 }
 interface HandleUpDownProps {
   selector: string;
+  children: React.ReactNode;
 }
 /**
  * @class HandleUpDown

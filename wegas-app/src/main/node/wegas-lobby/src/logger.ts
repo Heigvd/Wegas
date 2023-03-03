@@ -12,7 +12,7 @@ export type LoggerLevel = 0 | 1 | 2 | 3 | 4 | 5;
 export const OFF: LoggerLevel = 0;
 export const ERROR: LoggerLevel = 1;
 export const WARN: LoggerLevel = 2;
-export const INFO: LoggerLevel = 3;
+export const LOG: LoggerLevel = 3;
 export const DEBUG: LoggerLevel = 4;
 export const TRACE: LoggerLevel = 5;
 
@@ -21,7 +21,7 @@ interface Logger {
   setLevel: (level: LoggerLevel) => void;
   trace: LogFn;
   debug: LogFn;
-  info: LogFn;
+  log: LogFn;
   warn: LogFn;
   error: LogFn;
 }
@@ -35,41 +35,42 @@ function mapArgs(...args: unknown[]): unknown[] {
   });
 }
 
-export default function getLogger(name: string): Logger {
+export function getLogger(name: string): Logger {
   const logger = loggers[name];
   if (logger == null) {
-    let currentLevel: LoggerLevel = WARN;
+    let currentLevel: LoggerLevel = LOG;
+    const prefix = `[${name}]`;
     const logger: Logger = {
       getLevel: () => currentLevel,
       setLevel: (level: LoggerLevel) => (currentLevel = level),
       trace: (...params: unknown[]): void => {
-        if (currentLevel >= INFO) {
+        if (currentLevel >= TRACE) {
           // eslint-disable-next-line no-console
-          console.info(...mapArgs(...params));
+          console.log(prefix, ...mapArgs(...params));
         }
       },
       debug: (...params: unknown[]): void => {
         if (currentLevel >= DEBUG) {
           // eslint-disable-next-line no-console
-          console.info(...mapArgs(...params));
+          console.log(prefix, ...mapArgs(...params));
         }
       },
-      info: (...params: unknown[]): void => {
-        if (currentLevel >= INFO) {
+      log: (...params: unknown[]): void => {
+        if (currentLevel >= LOG) {
           // eslint-disable-next-line no-console
-          console.info(...mapArgs(...params));
+          console.log(prefix, ...mapArgs(...params));
         }
       },
       warn: (...params: unknown[]): void => {
         if (currentLevel >= WARN) {
           // eslint-disable-next-line no-console
-          console.warn(...mapArgs(...params));
+          console.warn(prefix, ...mapArgs(...params));
         }
       },
       error: (...params: unknown[]): void => {
         if (currentLevel >= ERROR) {
           // eslint-disable-next-line no-console
-          console.error(...mapArgs(...params));
+          console.error(prefix, ...mapArgs(...params));
         }
       },
     };
@@ -80,4 +81,6 @@ export default function getLogger(name: string): Logger {
   }
 }
 
-export const logger = getLogger('default');
+const logger = getLogger('default');
+
+export default logger;

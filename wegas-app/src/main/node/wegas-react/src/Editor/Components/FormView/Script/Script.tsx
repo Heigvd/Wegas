@@ -94,7 +94,7 @@ export function Script({
   const splitter = isScriptCondition(mode) ? operator : ';';
 
   const testScript = React.useCallback(
-    value => {
+    (value: string | IScript) => {
       try {
         editingStore.dispatch(
           runScript(value, Player.selectCurrent(), context),

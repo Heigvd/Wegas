@@ -113,7 +113,7 @@ function PluginElement({
                             w.plug(targetPlg);
                             (w as any)[targetPlg.NS].getFormCfg();
                         } catch (e) {
-                            console.log('Error: ' + Y.Plugin[value.fn]);
+                            console.log(`Error: ${  Y.Plugin[value.fn]}`);
                         }
                     }
 

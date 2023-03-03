@@ -293,6 +293,8 @@ export function FileBrowserNode({
 
   const [displayPreview, setDisplayPreview] = React.useState<boolean>(false);
 
+  const [urlTimestamp, setUrlTimestamp] = React.useState<number>(0);
+
   const [children, setChildren] =
     React.useState<IAbstractContentDescriptor[]>();
 
@@ -520,6 +522,7 @@ export function FileBrowserNode({
   React.useEffect(() => {
     let previewTimeout: number | undefined;
     if (!disabled && hoveringImageFile) {
+      setUrlTimestamp(Date.now());
       previewTimeout = setTimeout(
         () => setDisplayPreview(true),
         timeoutBeforePreview,
@@ -838,7 +841,7 @@ export function FileBrowserNode({
             <div className={cx(inPreviewStyle)}>
               <img
                 className={cx(imagePreviewStyle)}
-                src={fileURL(generateAbsolutePath(currentFile))}
+                src={fileURL(generateAbsolutePath(currentFile) + '?t=' + urlTimestamp)}
               />
               <br />
               {currentFile.mimeType}

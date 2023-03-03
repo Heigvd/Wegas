@@ -8,7 +8,7 @@
 import { escapeRegExp } from 'lodash';
 import { IAbstractAccount, IAbstractEntity } from 'wegas-ts-api';
 import { entityIs } from './API/entityHelper';
-import { logger } from './logger';
+import logger from './logger';
 
 export const getDisplayName = (account: IAbstractAccount | null | undefined): string => {
   if (account != null) {

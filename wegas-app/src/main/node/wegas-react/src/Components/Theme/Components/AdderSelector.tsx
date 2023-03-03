@@ -54,7 +54,7 @@ export function AdderSelector({
     <div className={cx(flex, flexRow)}>
       {editing ? (
         <div className={cx(flex, justifyCenter, itemCenter)}>
-          {error && <MessageString type="warning" value={error} />}
+          {error ? <MessageString type="warning" value={error} /> : null}
           <SimpleInput
             autoFocus
             placeholder={placeholder}
