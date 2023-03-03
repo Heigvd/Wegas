@@ -163,6 +163,25 @@ const availableLayoutTabs: LinearLayoutComponents = [
   },
 ];
 
+/**
+ * only keep allowed tabs and subtabs
+ */
+function filterAllowedInitTabs(initTabs: (string | string[])[], allowedTabs: true | string[]) : ((string | string[])[]){
+  if (allowedTabs === true){
+    // all tabs allowed
+    return initTabs;
+  }
+
+  return initTabs.flatMap(tab => {
+    if (Array.isArray(tab)) {
+      return filterAllowedInitTabs(tab, allowedTabs);
+    } else {
+      return allowedTabs.includes(tab) ? [tab] : [];
+    }
+  });
+}
+
+
 function scenaristPagesSelector(s: State) {
   return s.pages.index
     ? visitIndex(s.pages.index.root, item => item).filter(
@@ -218,14 +237,10 @@ export default function Layout() {
 
   const initTabs =
     currentRole === DEFAULT_ROLES.SCENARIO_EDITOR.id
-      ? ['Variables', 'Files']
+      ? [['Variables', 'Pages Layout'], 'Variable Properties', 'Page Display']
       : layoutPages.map(page => page.tabId);
-  const allowedInitTabs = initTabs.filter(
-    t => allowedPages === true || allowedPages.includes(t),
-  );
 
-  const initialLayout =
-    allowedInitTabs.length > 0 ? allowedInitTabs : allowedInitTabs.slice(0);
+  const initialLayout = filterAllowedInitTabs(initTabs, allowedPages);
 
   React.useEffect(() => {
     if (timer.current != null) {
