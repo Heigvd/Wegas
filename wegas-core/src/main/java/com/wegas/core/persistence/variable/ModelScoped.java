@@ -67,7 +67,7 @@ public interface ModelScoped {
         public BelongsToModel() {
             super(
                 new Equals(
-                    new WegasRefs.Field(GameModel.class, "status"),
+                    new WegasRefs.Field(GameModel.class, "type"),
                     new WegasRefs.Const(GameModel.GmType.MODEL)
                 ),
                 new And(
@@ -75,7 +75,7 @@ public interface ModelScoped {
                         new WegasRefs.Field(GameModel.class, "basedOnId")
                     ),
                     new Equals(
-                        new WegasRefs.Field(GameModel.class, "status"),
+                        new WegasRefs.Field(GameModel.class, "type"),
                         new WegasRefs.Const(GameModel.GmType.SCENARIO)
                     )
                 )
