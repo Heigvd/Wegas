@@ -128,7 +128,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>wegas-ts-api</artifactId>
             <version>${project.version}</version>
-            <type>war</type>
             <scope>provided</scope>
         </dependency>
 
