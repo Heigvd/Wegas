@@ -51,6 +51,7 @@ export interface StandardGaugeProps extends ClassStyleId {
    * max - the maximum value to slide
    */
   max: number;
+  colors?: [{ backgroundColor: string; stopValue: number }];
   /**
    * label - The label to display with the gauge
    */
@@ -71,15 +72,17 @@ export function StandardGauge({
   max,
   label,
   followNeedle,
+  colors,
   className,
   style,
   id,
   disabled,
 }: StandardGaugeProps) {
   const deltaValue = max - min;
-  const sections = sectionsColor.map(s => ({
+  const maxValue = colors ? Math.max(...colors.map(c => c.stopValue)) : 100;
+  const sections = colors!.map(s => ({
     ...s,
-    stopValue: (s.stopValue / 100) * deltaValue + min,
+    stopValue: (s.stopValue / maxValue) * deltaValue + min,
   }));
 
   return (

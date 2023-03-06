@@ -27,12 +27,27 @@ interface PlayerGaugeProps extends WegasComponentProps {
    * followNeedle - if true, only the sections behind the needle will be displayed
    */
   followNeedle?: boolean;
+  /**
+   * minValue - the minimum value displayable
+   */
+  minValue?: number;
+  /**
+   * maxValue - the maximum value displayable
+   */
+  maxValue?: number;
+  /**
+   * colors -
+   */
+  colors?: [{ backgroundColor: string; stopValue: number }];
 }
 
 function PlayerGauge({
   script,
   label,
   followNeedle,
+  minValue,
+  maxValue,
+  colors,
   className,
   style,
   id,
@@ -58,8 +73,9 @@ function PlayerGauge({
       id={id}
       label={label}
       followNeedle={followNeedle}
-      min={descriptor!.getMinValue() ?? 0}
-      max={descriptor!.getMaxValue() ?? 1}
+      min={minValue ?? descriptor!.getMinValue() ?? 0}
+      max={maxValue ?? descriptor!.getMaxValue() ?? 1}
+      colors={colors}
       value={instance!.getValue()}
       disabled={options.disabled || options.locked}
     />
@@ -77,11 +93,39 @@ registerComponent(
     schema: {
       script: schemaProps.scriptVariable({
         label: 'Variable',
-        required: false,
+        required: true,
         returnType: ['SNumberDescriptor'],
       }),
       label: schemaProps.string({ label: 'Label' }),
       followNeedle: schemaProps.boolean({ label: 'Follow needle' }),
+      minValue: schemaProps.number({
+        label: 'Min value',
+        required: true,
+        value: 0,
+      }),
+      maxValue: schemaProps.number({
+        label: 'Max value',
+        required: true,
+        value: 100,
+      }),
+      colors: {
+        view: { label: 'Color(s)', type: 'array' },
+        items: schemaProps.object({
+          properties: {
+            backgroundColor: { view: { label: 'Color', type: 'colorpicker' } },
+            stopValue: schemaProps.number({
+              label: 'Stop value',
+              required: true,
+            }),
+          },
+        }),
+        value: [
+          { backgroundColor: 'red', stopValue: 20 },
+          { backgroundColor: 'yellow', stopValue: 80 },
+          { backgroundColor: 'green', stopValue: 100 },
+        ],
+        minItems: 1,
+      },
       ...classStyleIdShema,
     },
     allowedVariables: ['NumberDescriptor'],
