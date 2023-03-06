@@ -2,7 +2,7 @@ import * as React from 'react';
 import { CustomGauge } from './CustomGauge';
 import { degreeToRadian, SVGNeedleStyle } from './PieChart';
 
-const sectionsColor = [
+const defaultSectionsColor = [
   { backgroundColor: 'red', stopValue: 20 },
   { backgroundColor: 'yellow', stopValue: 80 },
   { backgroundColor: 'green', stopValue: 100 },
@@ -51,6 +51,9 @@ export interface StandardGaugeProps extends ClassStyleId {
    * max - the maximum value to slide
    */
   max: number;
+  /**
+   * colors - user defined color sections
+   */
   colors?: [{ backgroundColor: string; stopValue: number }];
   /**
    * label - The label to display with the gauge
@@ -79,8 +82,9 @@ export function StandardGauge({
   disabled,
 }: StandardGaugeProps) {
   const deltaValue = max - min;
-  const maxValue = colors ? Math.max(...colors.map(c => c.stopValue)) : 100;
-  const sections = colors!.map(s => ({
+  const sectionColors = colors?.length ? colors : defaultSectionsColor;
+  const maxValue = Math.max(...sectionColors.map(c => c.stopValue));
+  const sections = sectionColors!.map(s => ({
     ...s,
     stopValue: (s.stopValue / maxValue) * deltaValue + min,
   }));

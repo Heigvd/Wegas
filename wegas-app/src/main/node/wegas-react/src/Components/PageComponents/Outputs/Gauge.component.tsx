@@ -36,7 +36,7 @@ interface PlayerGaugeProps extends WegasComponentProps {
    */
   maxValue?: number;
   /**
-   * colors -
+   * colors - user defined color sections
    */
   colors?: [{ backgroundColor: string; stopValue: number }];
 }
@@ -73,8 +73,8 @@ function PlayerGauge({
       id={id}
       label={label}
       followNeedle={followNeedle}
-      min={minValue ?? descriptor!.getMinValue() ?? 0}
-      max={maxValue ?? descriptor!.getMaxValue() ?? 1}
+      min={descriptor!.getMinValue() ?? minValue ?? 0}
+      max={descriptor!.getMaxValue() ?? maxValue ?? 1}
       colors={colors}
       value={instance!.getValue()}
       disabled={options.disabled || options.locked}
@@ -124,7 +124,6 @@ registerComponent(
           { backgroundColor: 'yellow', stopValue: 80 },
           { backgroundColor: 'green', stopValue: 100 },
         ],
-        minItems: 1,
       },
       ...classStyleIdShema,
     },
