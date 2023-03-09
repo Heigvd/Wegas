@@ -1,7 +1,6 @@
 describe("ch.wegas.client.tests.e2e.Login", () => {
   beforeEach(() => {
     cy.visitWegas();
-    cy.waitForReact();
   });
 
   it("LoginAsAdminAndLogout", () => {

@@ -44,6 +44,8 @@ Cypress.Commands.add("visitWegas", (path) => {
   const url = Cypress.env("WEGAS_URL");
   cy.checkEnv();
   cy.visit(url + (path ? path : ""));
+  cy.waitForReact();
+
 });
 
 Cypress.Commands.add("login", (identifier, password) => {
@@ -63,6 +65,15 @@ Cypress.Commands.add("login", (identifier, password) => {
   cy.react("Button", { props: { key: "submit", label: "login" } })
   .should("have.length", 1)
   .click();
+
+  cy.intercept('GET', '/Wegas/rest/User/Account/Current').as('load-account');
+  cy.intercept('GET', ' /Wegas/rest/Editor/User/Current').as('load-user');
+  cy.wait('@load-user').then((interception) => {
+    cy.log('loaded user');
+  });
+  cy.wait('@load-account').then((interception) => {
+    cy.log('loaded account');
+  });
 
   cy.react("IconButton", {props: {icon: {iconName: 'sign-out-alt'}}})
   .should("have.length", 1);
