@@ -40,6 +40,7 @@ Cypress.Commands.add('createEmptyModel', () => {
   cy.log('Create a model: wait');
   cy.get('div[title="Create an empty React Model"]').should('have.length', 1);
 
+  //TODO wait
   cy.simulatePusher();
 });
 
@@ -50,21 +51,27 @@ Cypress.Commands.add('deleteEmptyModel', () => {
 });
 
 Cypress.Commands.add('createScenario', (scenarioName, basedOn, model) => {
+  cy.log('Create scenario....')
   cy.react('IconButton', {
     props: {
       title: model ? 'Create a model' : 'Create scenario',
     },
-  }).click();
+  }).should('have.length', 1).click();
   cy.react('Input', {
     props: { placeholder: 'Scenario name' },
   }).type(scenarioName);
 
   cy.react('SelectContainer', {}).type(basedOn);
 
+  cy.intercept('/Wegas/rest/Lobby/GameModel/*').as('create-scenario');
   cy.react('Clickable', {
     props: { title: 'create' },
-  }).click();
+  }).should('have.length', 1).click();
 
+  cy.wait('@create-scenario').then((interception) => {
+    cy.log('intercepted create');
+  });
+  
   cy.simulatePusher();
 });
 
@@ -81,6 +88,8 @@ Cypress.Commands.add('createTestScenario', () => {
 });
 
 Cypress.Commands.add('removeScenario', scenarioName => {
+  cy.intercept('/Wegas/rest/Lobby/GameModel/*').as('remove-scenario');
+
   cy.react('GameModelCard', {
     props: {
       gameModel: {
@@ -88,12 +97,16 @@ Cypress.Commands.add('removeScenario', scenarioName => {
         name: scenarioName,
       },
     },
-  })
-    .nthNode(0)
+  }).nthNode(0)
     .find("div[title='move to archives']")
+    .should('have.length', 1)
     .click();
 
-  cy.get('span[title="confirm move to archives"]').click();
+  cy.wait('@remove-scenario').then((interception) => {
+    cy.log('intercepted remove');
+  });
+
+  cy.get('span[title="confirm move to archives"]').should('have.length', 1).click();
 });
 
 Cypress.Commands.add('removeTestModel', () => {
@@ -124,6 +137,7 @@ Cypress.Commands.add('editScenario', gameName => {
     .nthNode(0)
     .find("a[title='Edit scenario']")
     .invoke('removeAttr', 'target')
+    .should('have.length', 1)
     .click();
   cy.waitForReact();
 });

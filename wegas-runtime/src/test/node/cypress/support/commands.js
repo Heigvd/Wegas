@@ -62,9 +62,7 @@ Cypress.Commands.add("login", (identifier, password) => {
 
   cy.react("Button", { props: { key: "submit", label: "login" } })
   .should("have.length", 1)
-  .click({
-    force: true,
-  });
+  .click();
 
   cy.react("IconButton", {props: {icon: {iconName: 'sign-out-alt'}}})
   .should("have.length", 1);
@@ -82,9 +80,7 @@ Cypress.Commands.add("logout", () => {
     },
   })
   .should("have.length", 1)
-  .click({
-    force: true,
-  });
+  .click();
   cy.react("SignInForm")
     .should("have.length", 1);
   cy.log("Logout working!");
