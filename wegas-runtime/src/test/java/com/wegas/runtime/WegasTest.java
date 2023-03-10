@@ -522,7 +522,7 @@ public class WegasTest {
         logger.info("TESTS:  " + pContent + "/" + tContent);
     }
 
-    // @Test
+    @Test
     public void testCypress() throws IOException {
         CypressTest cyTest = new CypressTest(WEGAS_URL_1,  ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD, logger);
         cyTest.verifyCypress();
