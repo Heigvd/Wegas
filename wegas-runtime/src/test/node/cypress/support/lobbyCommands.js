@@ -17,6 +17,8 @@ Cypress.Commands.add('createEmptyModel', () => {
   cy.get('div[title="Create an empty Model"]').should('have.length', 1).click();
 
   cy.log('Create a model: confirm!');
+  cy.intercept('POST', '/Wegas/rest/Lobby/Update/CreateEmpty*Model').as('create-empty');
+  
   cy.get('div[title="Create an empty Model"]')
     .should('have.length', 1)
     .get('span[title="confirm Create an empty Model"]')
@@ -24,6 +26,10 @@ Cypress.Commands.add('createEmptyModel', () => {
     .click();
 
   cy.log('Create a model: wait');
+  cy.wait('@create-empty').then((interception) => {
+    cy.log('intercepted create-empty');
+  });
+
   cy.get('div[title="Create an empty Model"]').should('have.length', 1);
 
   // Create a react model
@@ -37,7 +43,10 @@ Cypress.Commands.add('createEmptyModel', () => {
     .should('have.length', 1)
     .click();
 
-  cy.log('Create a model: wait');
+  cy.log('Create react a model: wait');
+  cy.wait('@create-empty').then((interception) => {
+    cy.log('intercepted create-empty (react)');
+  });
   cy.get('div[title="Create an empty React Model"]').should('have.length', 1);
 
   cy.simulatePusher();

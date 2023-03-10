@@ -67,12 +67,9 @@ Cypress.Commands.add("login", (identifier, password) => {
   .click();
 
   cy.intercept('GET', '/Wegas/rest/User/Account/Current').as('load-account');
-  cy.intercept('GET', ' /Wegas/rest/Editor/User/Current').as('load-user');
-  cy.wait('@load-user').then((interception) => {
-    cy.log('loaded user');
-  });
-  cy.wait('@load-account').then((interception) => {
-    cy.log('loaded account');
+  cy.intercept('GET', '/Wegas/rest/Editor/User/Current').as('load-user');
+  cy.wait(['@load-user', '@load-account']).then((interception) => {
+    cy.log('loaded user & account');
   });
 
   cy.react("IconButton", {props: {icon: {iconName: 'sign-out-alt'}}})
@@ -83,6 +80,8 @@ Cypress.Commands.add("login", (identifier, password) => {
 
 Cypress.Commands.add("logout", () => {
   cy.log("Testing logout...");
+  cy.intercept('GET', '/Wegas/rest/User/Logout').as('logout');
+
   cy.react("IconButton", {
     props: {
       icon: {
@@ -92,6 +91,10 @@ Cypress.Commands.add("logout", () => {
   })
   .should("have.length", 1)
   .click();
+  cy.wait('@logout').then((it) => {
+    cy.log('Logout api call returned');
+  })
+  
   cy.react("SignInForm")
     .should("have.length", 1);
   cy.log("Logout working!");
@@ -99,6 +102,7 @@ Cypress.Commands.add("logout", () => {
 
 Cypress.Commands.add("simulatePusher", () => {
   // Forced to reload without pusher
+  cy.log('Simulate pusher (reload) ...')
   cy.reload();
   cy.waitForReact();
   cy.react("MainMenu")
