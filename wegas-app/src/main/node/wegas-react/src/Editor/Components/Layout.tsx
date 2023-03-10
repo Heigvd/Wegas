@@ -237,7 +237,7 @@ export default function Layout() {
 
   const initTabs =
     currentRole === DEFAULT_ROLES.SCENARIO_EDITOR.id
-      ? [['Variables', 'Pages Layout'], 'Variable Properties', 'Page Display']
+      ? [['Variables', 'Pages Layout'], ['Variable Properties'], ['Page Display']]
       : layoutPages.map(page => page.tabId);
 
   const initialLayout = filterAllowedInitTabs(initTabs, allowedPages);
