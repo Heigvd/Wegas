@@ -50,12 +50,14 @@ Cypress.Commands.add('deleteEmptyModel', () => {
 });
 
 Cypress.Commands.add('createScenario', (scenarioName, basedOn, model) => {
-  cy.log('Create scenario....')
+  cy.log('Create scenario....');
   cy.react('IconButton', {
     props: {
       title: model ? 'Create a model' : 'Create scenario',
     },
-  }).should('have.length', 1).click();
+  })
+    .should('have.length', 1)
+    .click();
   cy.react('Input', {
     props: { placeholder: 'Scenario name' },
   }).type(scenarioName);
@@ -65,12 +67,14 @@ Cypress.Commands.add('createScenario', (scenarioName, basedOn, model) => {
   cy.intercept('POST', '/Wegas/rest/Lobby/GameModel/**').as('create-scenario');
   cy.react('Clickable', {
     props: { title: 'create' },
-  }).should('have.length', 1).click();
+  })
+    .should('have.length', 1)
+    .click();
 
-  cy.wait('@create-scenario').then((interception) => {
+  cy.wait('@create-scenario').then(interception => {
     cy.log('intercepted create');
   });
-  
+
   cy.simulatePusher();
 });
 
@@ -87,6 +91,14 @@ Cypress.Commands.add('createTestScenario', () => {
 });
 
 Cypress.Commands.add('removeScenario', scenarioName => {
+  cy.react('DebouncedInput', {
+    props: {
+      placeholder: 'search...',
+    },
+  })
+    .get('input')
+    .clear()
+    .type(scenarioName);
 
   cy.react('GameModelCard', {
     props: {
@@ -95,7 +107,8 @@ Cypress.Commands.add('removeScenario', scenarioName => {
         name: scenarioName,
       },
     },
-  }).nthNode(0)
+  })
+    .nthNode(0)
     .find("div[title='move to archives']")
     .should('have.length', 1)
     .click();
@@ -107,7 +120,7 @@ Cypress.Commands.add('removeScenario', scenarioName => {
   cy.get('span[title="confirm move to archives"]').should('have.length', 1).click();
   cy.log('click on confirmation');
 
-  cy.wait('@remove-scenario').then((interception) => {
+  cy.wait('@remove-scenario').then(interception => {
     cy.log('intercepted remove');
   });
 });
