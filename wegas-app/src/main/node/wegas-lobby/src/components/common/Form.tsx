@@ -9,6 +9,7 @@
 import { css } from '@emotion/css';
 import * as React from 'react';
 import useTranslations from '../../i18n/I18nContext';
+import { logger } from '../../logger';
 import { useAppDispatch } from '../../store/hooks';
 import { addNotification } from '../../store/slices/notification';
 import Button from './Button';
@@ -154,8 +155,9 @@ export default function Form<T>({
                 <PasswordStrengthBar
                   barColors={['#ddd', '#ef4836', 'rgb(118, 176, 232)', '#2b90ef', '#01f590']}
                   scoreWordStyle={{ color: 'var(--fgColor)' }}
-                  onChangeScore={value => {
+                  onChangeScore={(value, feedback) => {
                     if (field.strengthProp != null) {
+                      logger.warn("Password strength feedback", {strength: value, feedback});
                       setFormValue(field.strengthProp, value);
                     }
                   }}
