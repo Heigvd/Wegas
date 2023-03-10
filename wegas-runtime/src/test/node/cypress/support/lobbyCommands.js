@@ -105,20 +105,17 @@ Cypress.Commands.add('removeScenario', scenarioName => {
       placeholder: 'search...',
     },
   })
-    .get('input')
+    .find('input')
     .clear()
     .type(scenarioName);
 
   cy.wait(650); // wait input to be debounced
-  cy.react('GameModelCard', {
-    props: {
-      gameModel: {
-        '@class': 'GameModel',
-        name: scenarioName,
-      },
-    },
-  })
+
+  cy.get('div')
+    .contains(scenarioName)
     .nthNode(0)
+    .parent()
+    .parent()
     .find("div[title='move to archives']")
     .should('have.length', 1)
     .click();
