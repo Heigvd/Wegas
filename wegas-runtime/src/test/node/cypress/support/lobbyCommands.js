@@ -109,7 +109,7 @@ Cypress.Commands.add('removeScenario', scenarioName => {
     .clear()
     .type(scenarioName);
 
-  cy.wait(550); // wait input to be debounced
+  cy.wait(650); // wait input to be debounced
   cy.react('GameModelCard', {
     props: {
       gameModel: {
