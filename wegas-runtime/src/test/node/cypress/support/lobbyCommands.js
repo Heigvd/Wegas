@@ -18,7 +18,7 @@ Cypress.Commands.add('createEmptyModel', () => {
 
   cy.log('Create a model: confirm!');
   cy.intercept('POST', '/Wegas/rest/Lobby/Update/CreateEmpty*Model').as('create-empty');
-  
+
   cy.get('div[title="Create an empty Model"]')
     .should('have.length', 1)
     .get('span[title="confirm Create an empty Model"]')
@@ -26,7 +26,7 @@ Cypress.Commands.add('createEmptyModel', () => {
     .click();
 
   cy.log('Create a model: wait');
-  cy.wait('@create-empty').then((interception) => {
+  cy.wait('@create-empty').then(interception => {
     cy.log('intercepted create-empty');
   });
 
@@ -44,7 +44,7 @@ Cypress.Commands.add('createEmptyModel', () => {
     .click();
 
   cy.log('Create react a model: wait');
-  cy.wait('@create-empty').then((interception) => {
+  cy.wait('@create-empty').then(interception => {
     cy.log('intercepted create-empty (react)');
   });
   cy.get('div[title="Create an empty React Model"]').should('have.length', 1);
@@ -109,6 +109,7 @@ Cypress.Commands.add('removeScenario', scenarioName => {
     .clear()
     .type(scenarioName);
 
+  cy.wait(550); // wait input to be debounced
   cy.react('GameModelCard', {
     props: {
       gameModel: {
