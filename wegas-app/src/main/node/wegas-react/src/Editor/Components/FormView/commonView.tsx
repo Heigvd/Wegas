@@ -33,6 +33,13 @@ export const borderBottom = css({
   marginBottom: '5px',
 });
 
+const inline = css({
+  display: 'inline-block',
+  verticalAlign: 'bottom',
+  width: 'unset',
+  marginRight: '1em',
+});
+
 const shortInline = css({
   display: 'inline-block',
   marginRight: '1em',
@@ -55,10 +62,7 @@ const fullWidth = css({
 
 export const LAYOUTS: { [key in SchemaLayout]: string } = {
   shortInline: shortInline,
-  inline: css({
-    display: 'inline-block',
-    verticalAlign: 'bottom',
-  }),
+  inline: inline,
   extraShortInline: css(shortInline, {
     maxWidth: '5em',
   }),

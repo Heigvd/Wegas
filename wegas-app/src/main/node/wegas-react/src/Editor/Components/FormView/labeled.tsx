@@ -1,9 +1,10 @@
-import * as React from 'react';
 import { css } from '@emotion/css';
+import * as React from 'react';
 import {
   featuresCTX,
   isFeatureEnabled,
 } from '../../../Components/Contexts/FeaturesProvider';
+import { hidden } from '../../../css/classes';
 
 export const titleStyle = css({
   margin: '5px 0px',
@@ -47,13 +48,15 @@ export const Labeled: React.FunctionComponent<LabeledProps> = ({
     inputId: internalId.current,
     labelNode: (
       <label
-        className={titleStyle}
+        className={label ? titleStyle : hidden}
         htmlFor={internalId.current}
         title={description}
       >
         <span style={{ display: 'inline-flex' }}>
           {label}
-          {currentLanguage && <span style={{ marginLeft: '5px' }}>[{currentLanguage}]</span> }
+          {currentLanguage && (
+            <span style={{ marginLeft: '5px' }}>[{currentLanguage}]</span>
+          )}
           {isFeatureEnabled(currentFeatures, 'INTERNAL') && index != null && (
             <span style={{ marginLeft: '1em' }}>{index}</span>
           )}

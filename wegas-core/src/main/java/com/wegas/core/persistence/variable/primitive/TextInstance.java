@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import ch.albasim.wegas.annotations.CommonView.LAYOUT;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -44,7 +45,7 @@ public class TextInstance extends VariableInstance {
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view = @View(label = "Value", value = I18nHtmlView.class))
+    @WegasEntityProperty(view = @View(label = "Value", value = I18nHtmlView.class, layout=LAYOUT.fullWidth))
     private TranslatableContent trValue;
 
     /**

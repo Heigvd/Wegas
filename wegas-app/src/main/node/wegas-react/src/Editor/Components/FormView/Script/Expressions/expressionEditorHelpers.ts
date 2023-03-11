@@ -4,18 +4,22 @@ import { Schema } from 'jsoninput/typings/types';
 import { AvailableSchemas, AvailableViews } from '../..';
 import { schemaProps } from '../../../../../Components/PageComponents/tools/schemaProps';
 import { isServerMethod } from '../../../../../data/Reducer/globalState';
+import { VariableDescriptor as VDSelect } from '../../../../../data/selectors';
 import { store } from '../../../../../data/Stores/store';
 import {
   getVariableMethodConfig,
-  MethodsConfig,
   MethodConfig,
+  MethodsConfig,
   WegasMethodParameter,
 } from '../../../../editionConfig';
 import { StringOrT } from '../../TreeVariableSelect';
-import { handleError, isClientMode, isScriptCondition, isServerScript } from '../Script';
+import {
+  handleError,
+  isClientMode,
+  isScriptCondition,
+  isServerScript,
+} from '../Script';
 import { LiteralExpressionValue, parseStatement } from './astManagement';
-import { VariableDescriptor as VDSelect } from '../../../../../data/selectors';
-
 
 const comparisonOperators = {
   isTrue: { label: 'is true' },
@@ -28,12 +32,12 @@ const comparisonOperators = {
   '<=': { label: 'less or equals than' },
 } as const;
 
-const comparisonOperatorTypes : Record<WegasMethodReturnType, WegasOperators[]> = 
-{
-  string: ['===', '!=='],
-  number: ['===', '!==', '<', '<=', '>', '>='],
-  boolean: ['isTrue', 'isFalse'],
-}
+const comparisonOperatorTypes: Record<WegasMethodReturnType, WegasOperators[]> =
+  {
+    string: ['===', '!=='],
+    number: ['===', '!==', '<', '<=', '>', '>='],
+    boolean: ['isTrue', 'isFalse'],
+  };
 
 export type WegasOperators = keyof typeof comparisonOperators;
 
@@ -139,19 +143,16 @@ function filterVariableMethods(
 function generateOperators(
   methodReturns: MethodConfig['returns'],
 ): SelectOperator[] {
-
-  if(methodReturns){
+  if (methodReturns) {
     const operators = comparisonOperatorTypes[methodReturns];
-    return operators.map((k) => {
+    return operators.map(k => {
       return {
         label: comparisonOperators[k].label,
-        value: k
-      }
-    }
-    );
+        value: k,
+      };
+    });
   }
   return [];
-
 }
 
 export function typeCleaner(
@@ -290,9 +291,7 @@ type MethodSearchers =
   | VariableMethodSearcher
   | BooleanMethodSearcher;
 
-function getMethodConfig(
-  methodSearcher: MethodSearchers,
-): MethodsConfig {
+function getMethodConfig(methodSearcher: MethodSearchers): MethodsConfig {
   switch (methodSearcher.type) {
     case 'global':
       return getGlobalMethodConfig(methodSearcher.value);
@@ -392,7 +391,6 @@ function makeSchemaInitExpression(
     ],
     type: 'object',
     layout: 'inline',
-    borderBottom: true,
   });
 
   if (isScriptCondition(mode)) {
@@ -435,6 +433,7 @@ function makeSchemaParameters(
     view: {
       type: 'object',
       oldType: 'object',
+      layout: 'inline',
     },
     properties: parameters.reduce<
       Record<
@@ -612,10 +611,7 @@ export function generateSchema(
     }
 
     if (isScriptCondition(mode)) {
-      newSchemaProps = makeSchemaConditionAttributes(
-        newSchemaProps,
-        method,
-      );
+      newSchemaProps = makeSchemaConditionAttributes(newSchemaProps, method);
     }
   }
 
@@ -688,14 +684,20 @@ export function isExpressionValid(
       return false;
     }
   } else if (attributes.type === 'condition') {
-    if(attributes.leftExpression?.type === 'literal' && attributes.leftExpression.literal != null){
+    if (
+      attributes.leftExpression?.type === 'literal' &&
+      attributes.leftExpression.literal != null
+    ) {
       return true;
     }
     if (
       attributes.leftExpression == null ||
-      (attributes.leftExpression.type === 'variable' && attributes.methodId === null) ||
-      (isBooleanOperatorVisible(schema?.properties, attributes) && attributes.booleanOperator == null) ||
-      (isRightExpressionVisible(schema?.properties, attributes) && attributes.rightExpression == null)
+      (attributes.leftExpression.type === 'variable' &&
+        attributes.methodId === null) ||
+      (isBooleanOperatorVisible(schema?.properties, attributes) &&
+        attributes.booleanOperator == null) ||
+      (isRightExpressionVisible(schema?.properties, attributes) &&
+        attributes.rightExpression == null)
     ) {
       return false;
     }
