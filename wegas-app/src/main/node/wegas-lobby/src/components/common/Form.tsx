@@ -9,7 +9,7 @@
 import { css } from '@emotion/css';
 import * as React from 'react';
 import useTranslations from '../../i18n/I18nContext';
-import { logger } from '../../logger';
+import logger from '../../logger';
 import { useAppDispatch } from '../../store/hooks';
 import { addNotification } from '../../store/slices/notification';
 import Button from './Button';
