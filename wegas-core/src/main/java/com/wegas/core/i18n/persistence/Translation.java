@@ -49,11 +49,11 @@ import jakarta.persistence.Table;
 @IdClass(Translation.TranslationKey.class)
 public class Translation implements WithPermission {
 
-    @JsonIgnore
+    //@JsonIgnore
     @Id
     @WegasEntityProperty(initOnly = true, optional = false, nullable = false,
         view = @View(label = "Language", readOnly = true, value = StringView.class))
-    @JsonView(Views.IndexI.class)
+    //@JsonView(Views.IndexI.class)
     private String lang;
 
     @ManyToOne
