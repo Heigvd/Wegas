@@ -16,7 +16,7 @@ import {
   PageComponentProps,
   WegasComponentProps,
 } from './EditableComponent';
-import { classStyleIdShema } from './options';
+import { classStyleIdSchema } from './options';
 import { ChildrenDeserializerProps } from './PageDeserializer';
 
 export const usableComponentType = [
@@ -305,7 +305,7 @@ export function pageComponentFactory<
     componentName: param.name,
     schema: {
       description: param.name,
-      properties: { ...classStyleIdShema, ...param.schema },
+      properties: { ...classStyleIdSchema, ...param.schema },
     },
     getComputedPropsFromVariable: param.getComputedPropsFromVariable,
   };

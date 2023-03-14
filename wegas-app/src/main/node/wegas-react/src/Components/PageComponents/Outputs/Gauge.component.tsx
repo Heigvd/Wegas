@@ -11,7 +11,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerGaugeProps extends WegasComponentProps {
@@ -82,7 +82,7 @@ registerComponent(
       }),
       label: schemaProps.string({ label: 'Label' }),
       followNeedle: schemaProps.boolean({ label: 'Follow needle' }),
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({

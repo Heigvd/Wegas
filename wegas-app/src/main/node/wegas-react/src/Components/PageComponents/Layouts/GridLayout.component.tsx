@@ -12,7 +12,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { childrenDeserializerFactory } from './FlexList.component';
 
 interface PlayerGridLayoutProps extends GridProps, WegasComponentProps {
@@ -40,7 +40,7 @@ registerComponent(
     name: 'Grid layout',
     icon: 'table',
     illustration: 'grid',
-    schema: { ...gridSchema, ...classStyleIdShema },
+    schema: { ...gridSchema, ...classStyleIdSchema },
     getComputedPropsFromVariable: () => ({ children: [] }),
   }),
 );

@@ -9,7 +9,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 interface QuestionListDisplayProps extends WegasComponentProps {
@@ -84,7 +84,7 @@ registerComponent(
         required: false,
         returnType: ['boolean'],
       }),
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: ['ListDescriptor', 'QuestionDescriptor'],
     getComputedPropsFromVariable: v => ({

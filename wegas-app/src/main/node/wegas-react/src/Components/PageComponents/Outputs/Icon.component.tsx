@@ -10,7 +10,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerIconProps extends WegasComponentProps {
@@ -38,7 +38,7 @@ registerComponent(
     illustration: 'icon',
     schema: {
       icon: schemaProps.select({ label: 'Icon', values: Object.keys(icons) }),
-      ...omit(classStyleIdShema, ['id']),
+      ...omit(classStyleIdSchema, ['id']),
     },
   }),
 );
