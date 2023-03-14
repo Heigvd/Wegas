@@ -24,7 +24,7 @@ import {
   WegasComponentProps,
 } from '../tools/EditableComponent';
 import {
-  classStyleIdShema,
+  classStyleIdSchema,
   clientAndServerScriptChoices,
 } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
@@ -153,7 +153,7 @@ registerComponent(
         label: 'Attach to most distant matching element',
       }),
       ...flexListSchema,
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     getComputedPropsFromVariable: () => ({
       children: [],

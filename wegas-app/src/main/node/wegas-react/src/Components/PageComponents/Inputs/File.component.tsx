@@ -9,7 +9,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 import {
   OnVariableChange,
@@ -89,7 +89,7 @@ registerComponent(
         label: 'Pick only',
         value: true,
       }),
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     obsoleteComponent: {
       keepDisplayingToPlayer: true,

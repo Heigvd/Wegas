@@ -20,7 +20,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerPageLoaderProps
@@ -148,13 +148,13 @@ registerComponent(
       },
       exposePageSizeAs: {
         value: '',
-        view:{
+        view: {
           type: 'string',
           label: 'expose page size in Context as',
-        }
+        },
       },
       loadTimer: schemaProps.number({ label: 'Loading timer (ms)' }),
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     getComputedPropsFromVariable: () => ({
       initialSelectedPageId: defaultPageAsScript(),

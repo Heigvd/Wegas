@@ -142,7 +142,7 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
   );
 }
 
-interface InboxDisplayProps extends DisabledReadonly {
+interface InboxDisplayProps extends DisabledReadonly, ClassStyleId {
   inbox: IInboxDescriptor;
   mobileDisplay?: boolean;
 }
@@ -152,6 +152,8 @@ export function InboxDisplay({
   disabled,
   readOnly,
   mobileDisplay,
+  className,
+  style,
 }: InboxDisplayProps) {
   const messagesSelector = React.useCallback(() => {
     const messages = getInstance(inbox, Player.selectCurrent())!.messages;
@@ -171,6 +173,8 @@ export function InboxDisplay({
       readOnly={readOnly}
       noSelectionMessage={i18nComponentValues.inbox.noSelectionMessage}
       mobileDisplay={mobileDisplay}
+      className={className}
+      style={style}
     >
       {props => <MessageDisplay {...props} />}
     </EntityChooser>
