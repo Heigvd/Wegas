@@ -58,7 +58,7 @@ function LoggerGrid({ title, levels, changeLevel, className }: LoggerGridProps) 
       <div>
         <label>
           <IconButton icon={faSearch} />
-          <input type="text" onChange={e => setSearch(e.target.value)} />
+          <input type="text" onChange={e => setSearch(e.target.value)} autoComplete="off"/>
         </label>
       </div>
       <div

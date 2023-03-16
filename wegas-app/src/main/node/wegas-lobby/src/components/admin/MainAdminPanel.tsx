@@ -58,7 +58,7 @@ function GameModelUploader(): JSX.Element {
       <h4>{i18n.uploadGameModel}</h4>
       <div>
         {state === 'IDLE' ? (
-          <input type="file" onChange={onChangeCb} accept=".json, .wgz" />
+          <input type="file" onChange={onChangeCb} accept=".json, .wgz" autoComplete="off"/>
         ) : state === 'LOADING' ? (
           <InlineLoading text="loading..." />
         ) : (

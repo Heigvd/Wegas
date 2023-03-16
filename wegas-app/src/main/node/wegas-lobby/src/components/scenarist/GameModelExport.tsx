@@ -188,7 +188,7 @@ function FilePicker({
     return (
       <label>
         <div className={cx(style, className)}>{dTitle}</div>
-        <input className={hide} type="file" onChange={onChangeCb} accept={accept} />
+        <input className={hide} type="file" onChange={onChangeCb} accept={accept} autoComplete='false'/>
       </label>
     );
   } else if (state === 'LOADING') {
