@@ -9,13 +9,7 @@ import {
   inputStyle,
   SimpleInput,
 } from '../../../Components/Inputs/SimpleInput';
-import {
-  flex,
-  flexColumn,
-  flexRow,
-  grow,
-  itemCenter,
-} from '../../../css/classes';
+import { flex, flexRow, grow, itemCenter } from '../../../css/classes';
 import { varIsList } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { GameModel, VariableDescriptor } from '../../../data/selectors';
@@ -259,10 +253,10 @@ export function TreeVSelect<T>(
   }
 
   return (
-    <div className={cx(flex, flexColumn)}>
+    <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       {script != null && <VariableScriptPath script={script} />}
       <Searcher {...props} ChildrenComp={TreeSelect} />
-    </div>
+    </CommonViewContainer>
   );
 }
 
@@ -319,7 +313,6 @@ function autoExpand<T>(items: TreeSelectItem<T>[], needle: T) {
 export function TreeVariableSelect(
   props: TreeVariableSelectProps,
 ): JSX.Element {
-
   const genCb = React.useCallback(() => {
     const list = genVarItems(
       GameModel.selectCurrent().itemsIds,
@@ -345,7 +338,6 @@ export function TreeVariableSelect(
         ...props.view.items,
       ]
     : varItems;
-
 
   return props.noLabel ? (
     <TreeVSelect

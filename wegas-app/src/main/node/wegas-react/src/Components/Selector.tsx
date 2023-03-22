@@ -29,6 +29,7 @@ const selectStyle = css({
     border: 'none',
   },
   minWidth: '100px',
+  background: 'none',
 });
 
 export const selectArrowStyle = css({
@@ -206,7 +207,7 @@ export function Selector<T extends true | false>({
       value={currentOption}
       onChange={onChangeCb}
       styles={selectStyles}
-      menuPosition='fixed'
+      menuPosition="fixed"
     />
   );
 }

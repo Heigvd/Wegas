@@ -20,7 +20,7 @@ import {
   ItemContainer,
   WegasComponentProps,
 } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import {
   ChildrenDeserializerProps,
   DummyContainer,
@@ -156,7 +156,7 @@ registerComponent(
     name: 'Flexlist',
     icon: 'bars',
     illustration: 'flexList',
-    schema: { ...flexListSchema, ...classStyleIdShema },
+    schema: { ...flexListSchema, ...classStyleIdSchema },
     getComputedPropsFromVariable: () => ({ children: [] }),
   }),
 );

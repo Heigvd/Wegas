@@ -9,7 +9,7 @@ import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { childrenDeserializerFactory } from './FlexList.component';
 
 function isVertical() {
@@ -38,7 +38,7 @@ registerComponent(
       center: true,
     },
     schema: {
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
       onAbsoluteClick: onVariableChangeSchema('On absolute click'),
     },
     // {

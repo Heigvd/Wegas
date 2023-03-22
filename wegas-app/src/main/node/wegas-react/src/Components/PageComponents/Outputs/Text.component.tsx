@@ -13,7 +13,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 export interface PlayerTextProps extends WegasComponentProps {
@@ -74,7 +74,7 @@ registerComponent(
           },
         },
       },
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: ['TextDescriptor'],
     getComputedPropsFromVariable: v => ({

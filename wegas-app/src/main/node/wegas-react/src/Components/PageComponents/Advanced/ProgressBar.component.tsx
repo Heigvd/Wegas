@@ -5,7 +5,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerProgressBarProps extends WegasComponentProps {
@@ -51,7 +51,7 @@ registerComponent(
         values: ['hidden', 'percent', 'absolute'],
         value: 'percent',
       }),
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: ['AchievementDescriptor'],
     getComputedPropsFromVariable: v => {

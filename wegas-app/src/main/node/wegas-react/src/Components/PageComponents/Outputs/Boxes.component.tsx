@@ -11,7 +11,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerBoxesProps extends WegasComponentProps {
@@ -104,7 +104,7 @@ registerComponent(
       hideBoxValue: schemaProps.boolean({ label: 'Hide value in boxes' }),
       showLabelValue: schemaProps.boolean({ label: 'Show value in label' }),
       showQuantity: schemaProps.boolean({ label: 'Start from 1' }),
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: ['NumberDescriptor', 'TextDescriptor'],
     getComputedPropsFromVariable: v => ({

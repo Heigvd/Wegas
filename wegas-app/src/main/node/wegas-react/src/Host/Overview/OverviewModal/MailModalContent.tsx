@@ -13,9 +13,9 @@ import {
 import { Game } from '../../../data/selectors';
 import JSONForm from 'jsoninput';
 import { modalButtonsContainer } from './OverviewModal';
+import { AvailableSchemas } from '../../../Editor/Components/FormView';
 
-const mailFormSchema = {
-  description: 'Mail',
+const mailFormSchema : AvailableSchemas = {
   properties: {
     from: schemaProps.string({
       label: 'From',
@@ -31,10 +31,10 @@ const mailFormSchema = {
       label: 'Subject',
       fullWidth: true,
     }),
-    body: schemaProps.html({
-      label: 'Body',
-      noResize: true,
-    }),
+    body: {
+      type : "string",
+      view: {label: "Body", type:"html"},
+    },
   },
 };
 

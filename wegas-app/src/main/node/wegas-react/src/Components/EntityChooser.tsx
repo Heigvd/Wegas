@@ -12,6 +12,7 @@ import {
   justifyCenter,
   justifyStart,
 } from '../css/classes';
+import { classNameOrEmpty } from '../Helper/className';
 import { deepDifferent } from './Hooks/storeHookFactory';
 import { themeVar } from './Theme/ThemeVars';
 
@@ -122,7 +123,8 @@ function LabelGenerator<E extends IAbstractEntity>(
 type childrenType<E> = { entity: E } & DisabledReadonly;
 
 interface EntityChooserProps<E extends IAbstractEntity>
-  extends DisabledReadonly {
+  extends DisabledReadonly,
+    ClassStyleId {
   entities: E[];
   children: (props: childrenType<E>) => React.ReactNode; //React.FunctionComponent<{ entity: E } & DisabledReadonly> ;
   // entityLabel: (entity: E) => React.ReactNode;
@@ -145,6 +147,8 @@ export function EntityChooser<E extends IAbstractEntity>({
   readOnly,
   addComponent,
   noSelectionMessage,
+  className,
+  style,
 }: EntityChooserProps<E>) {
   const [entity, setEntity] = React.useState<E | null>();
   const [mobile, setMobile] = React.useState<boolean>();
@@ -201,9 +205,12 @@ export function EntityChooser<E extends IAbstractEntity>({
   if (mobile) {
     return (
       <div
-        className={cx(flex, flexColumn, entityChooser, autoScroll, {
-          [halfOpacity]: disabled,
-        })}
+        className={
+          cx(flex, flexColumn, entityChooser, autoScroll, {
+            [halfOpacity]: disabled,
+          }) + classNameOrEmpty(className)
+        }
+        style={style}
         ref={setRef}
       >
         {entity == undefined ? (
@@ -241,9 +248,12 @@ export function EntityChooser<E extends IAbstractEntity>({
   } else {
     return (
       <div
-        className={cx(flex, flexRow, entityChooser, {
-          [halfOpacity]: disabled,
-        })}
+        className={
+          cx(flex, flexRow, entityChooser, {
+            [halfOpacity]: disabled,
+          }) + classNameOrEmpty(className)
+        }
+        style={style}
         ref={setRef}
       >
         <div className={cx(flex, flexColumn, labelList)}>

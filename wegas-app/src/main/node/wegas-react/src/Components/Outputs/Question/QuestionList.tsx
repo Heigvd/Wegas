@@ -370,7 +370,7 @@ function QuestionChooserEdition({
   );
 }
 
-interface QuestionListProps extends DisabledReadonly {
+interface QuestionListProps extends DisabledReadonly, ClassStyleId {
   questionList: SListDescriptor;
   autoOpenFirst?: boolean;
   mobileDisplay?: boolean;
@@ -384,6 +384,8 @@ export default function QuestionList({
   disabled,
   readOnly,
   editMode,
+  className,
+  style,
 }: QuestionListProps) {
   const entitiesSelector = React.useCallback(() => {
     return {
@@ -421,6 +423,8 @@ export default function QuestionList({
       addComponent={
         editMode ? <AddQuestionButton questionList={questionList} /> : undefined
       }
+      className={className}
+      style={style}
     >
       {props => <ConnectedQuestionDisplay {...props} editMode={editMode} />}
     </EntityChooser>

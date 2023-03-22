@@ -1,14 +1,14 @@
+import { QRCodeCanvas } from 'qrcode.react';
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
-import { QRCodeCanvas } from 'qrcode.react';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 export interface PlayerQRCodeProps extends WegasComponentProps {
@@ -61,7 +61,7 @@ registerComponent(
           return '';
         },
       },
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: ['TextDescriptor'],
     getComputedPropsFromVariable: v => ({
