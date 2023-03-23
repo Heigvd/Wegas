@@ -529,6 +529,12 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         return newEntity;
     }
 
+    @Override
+    public VariableDescriptor copy(final Long descriptorId, final Long targetListDescriptorId) throws CloneNotSupportedException{
+        return copy(descriptorId, targetListDescriptorId, null);
+    }
+
+
 
     public VariableDescriptor resetVisibility(VariableDescriptor vd, Visibility visibility) {
         vd.setVisibility(visibility);

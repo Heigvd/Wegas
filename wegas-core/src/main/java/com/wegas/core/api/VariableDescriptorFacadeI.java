@@ -199,6 +199,14 @@ public interface VariableDescriptorFacadeI {
     VariableDescriptor copy(final Long descriptorId, final Long targetListDescriptorId, final Integer index) throws CloneNotSupportedException;
 
     /**
+     * @param descriptorId the variable descriptor to copy
+     * @param targetListDescriptorId the destination list. null means copy in current location
+     * @return the newly created descriptor
+     * @throws java.lang.CloneNotSupportedException
+     */
+    VariableDescriptor copy(final Long descriptorId, final Long targetListDescriptorId) throws CloneNotSupportedException;
+
+    /**
      *
      * @param vd The variable descriptor to convert
      * @return the new descriptor
