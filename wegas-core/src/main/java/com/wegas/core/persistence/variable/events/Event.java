@@ -19,7 +19,7 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.view.I18nHtmlView;
+import com.wegas.editor.view.Textarea;
 import java.util.Collection;
 import java.util.Date;
 import jakarta.persistence.Column;
@@ -28,6 +28,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -55,9 +56,10 @@ public class Event extends AbstractEntity implements DatedEntity {
     /**
      * Event body
      */
+    @Lob
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyString.class,
-            view = @View(label = "Payload", value = I18nHtmlView.class))
+        optional = false, nullable = false, proposal = EmptyString.class,
+        view = @View(label = "Payload", value = Textarea.class))
     private String payload;
 
     /**
@@ -66,15 +68,15 @@ public class Event extends AbstractEntity implements DatedEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "creation_time", columnDefinition = "timestamp with time zone")
     @WegasEntityProperty(nullable = false, view = @View(label = "Timestamp"))
-    private Date timeStamp = new Date();
+    private final Date timeStamp = new Date();
 
     /**
-     * Simulation timestamp, for display purpose
+     * Simulation time, meaning when the event has to occur in the simulation
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "simulation_time", columnDefinition = "timestamp with time zone")
-    @WegasEntityProperty(optional = false, nullable = false, view = @View(label = "Timestamp"))
-    private Date simulationTime;
+    @Column(name = "simulation_time", columnDefinition = "simulation time")
+    @WegasEntityProperty(optional = false, nullable = false, view = @View(label = "Simulation time"))
+    private Date simulationTime; // OR Long ?
 
     /**
      *
