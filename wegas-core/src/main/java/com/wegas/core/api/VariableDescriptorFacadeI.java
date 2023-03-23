@@ -171,22 +171,35 @@ public interface VariableDescriptorFacadeI {
      *
      * @return the new descriptor
      */
-    VariableDescriptor createChild(final GameModel gameModel,
-        final DescriptorListI<VariableDescriptor> list,
-        final VariableDescriptor entity,
-        boolean resetNames,
-        boolean resetRefIds
-    );
-    
+    VariableDescriptor createChild(final GameModel gameModel, final DescriptorListI<VariableDescriptor> list, final VariableDescriptor entity, boolean resetNames, boolean resetRefIds, Integer index);
+
     /**
      * Remove variable
-     * 
+     *
      * @param entity    the variableDescriptor to delete
      */
     void remove(VariableDescriptor entity);
-    
+
     /**
-     * 
+     * Move a variable to a list
+     * @param descriptorId the variable descriptor to move
+     * @param targetListDescriptorId the destination list.
+     * @param index the insert index in destination. passing null means append
+     */
+    void move(final Long descriptorId, final Long targetListDescriptorId, final Integer index);
+
+
+    /**
+     * @param descriptorId the variable descriptor to copy
+     * @param targetListDescriptorId the destination list. null means copy in current location
+     * @param index the insert index in destination. passing null means append
+     * @return the newly created descriptor
+     * @throws java.lang.CloneNotSupportedException
+     */
+    VariableDescriptor copy(final Long descriptorId, final Long targetListDescriptorId, final Integer index) throws CloneNotSupportedException;
+
+    /**
+     *
      * @param vd The variable descriptor to convert
      * @return the new descriptor
      */
