@@ -7,28 +7,11 @@
  */
 package com.wegas.core.persistence.variable.events;
 
-import com.wegas.messaging.persistence.*;
-import ch.albasim.wegas.annotations.CommonView;
-import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
 import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
-import ch.albasim.wegas.annotations.View;
-import ch.albasim.wegas.annotations.WegasEntityProperty;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.editor.ValueGenerators.EmptyArray;
-import com.wegas.editor.ValueGenerators.EmptyI18n;
-import com.wegas.editor.ValueGenerators.False;
-import com.wegas.editor.view.I18nHtmlView;
-import com.wegas.editor.view.I18nStringView;
-import static java.lang.Boolean.FALSE;
-import java.util.List;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jdk.nashorn.api.scripting.JSObject;
 
 /**
  *
@@ -43,8 +26,6 @@ public class EventInboxDescriptor extends VariableDescriptor<EventInboxInstance>
         this.getInstance(p).sendEvent(event);
         return event;
     }
-
-    // TODO custom methods for events
 
     /**
      *
@@ -99,7 +80,7 @@ public class EventInboxDescriptor extends VariableDescriptor<EventInboxInstance>
         ) List<Attachment> attachments) {
         return this.getInstance(p).sendEvent(from, subject, body, date, token, attachments);
     }*/
-
+/*
     @Scriptable(returnType = Scriptable.ReturnType.VOID, dependsOn = DependencyScope.NONE)
     public Event sendEvent(Player p,
         @Param(view = @View(labal = "payload"), value = C)
@@ -135,9 +116,10 @@ public class EventInboxDescriptor extends VariableDescriptor<EventInboxInstance>
         ) List<Attachment> attachments) {
         return this.getInstance(p).sendEvent(from, subject, body, date, token, attachments);
     }
+    */
 
-    public Event sendEvent(Player p, JSObject payload, JSObject time, JSObject simulationTime) {
-        return this.getInstance(p).sendEvent(payload, time, simulationTime);
+    public Event sendEvent(Player p, String payload) {
+        return this.getInstance(p).sendEvent(payload);
     }
 
     /**

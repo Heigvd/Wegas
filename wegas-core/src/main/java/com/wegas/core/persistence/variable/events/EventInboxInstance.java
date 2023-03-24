@@ -7,19 +7,13 @@
  */
 package com.wegas.core.persistence.variable.events;
 
-import com.wegas.messaging.persistence.*;
 import ch.albasim.wegas.annotations.CommonView;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
-import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.Helper;
-import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.persistence.EntityComparators;
-import com.wegas.core.persistence.game.GameModelLanguage;
-import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import java.util.ArrayList;
@@ -27,7 +21,6 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
-import jdk.nashorn.api.scripting.JSObject;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -71,6 +64,8 @@ public class EventInboxInstance extends VariableInstance {
         ))
     private List<Event> events = new ArrayList<>();
 
+    private Event lastEvent;
+
     /**
      * @return the events
      */
@@ -102,6 +97,7 @@ public class EventInboxInstance extends VariableInstance {
     public void addEvent(Event event) {
         // link the event to its inbox instance
         event.setEventInboxInstance(this);
+        this.lastEvent = event;
         this.events.add(0, event);
     }
 
@@ -115,25 +111,8 @@ public class EventInboxInstance extends VariableInstance {
         return event;
     }
 
-
-    //TODO
-    public Event sendEvent(final JSObject payload, final JSObject simulationTime) {
-
-        // TODO figure out
-        return this.sendEvent(new Event(payload, simulationTime));
-        /*List<Attachment> atts = new ArrayList<>();
-        if (attachments != null && !attachments.isEmpty()) {
-            for (JSObject a : attachments) {
-                atts.add(Attachment.readFromNashorn(a));
-            }
-        }
-
-        return this.sendEvent(
-            TranslatableContent.readFromNashorn(from),
-            TranslatableContent.readFromNashorn(subject),
-            TranslatableContent.readFromNashorn(body),
-            TranslatableContent.readFromNashorn(date),
-            token, atts);*/
+    public Event sendEvent(final String payload) {
+        return this.sendEvent(new Event(payload, this.lastEvent));
     }
 
     @Override

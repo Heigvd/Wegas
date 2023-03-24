@@ -30,6 +30,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -49,7 +50,7 @@ public class Event extends AbstractEntity implements DatedEntity {
      *
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mcqvarinstrep_seq")
+    @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
 
@@ -70,19 +71,14 @@ public class Event extends AbstractEntity implements DatedEntity {
     @WegasEntityProperty(nullable = false, view = @View(label = "Timestamp"))
     private final Date timeStamp = new Date();
 
-    /**
-     * Simulation time, meaning when the event has to occur in the simulation
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "simulation_time", columnDefinition = "simulation time")
-    @WegasEntityProperty(optional = false, nullable = false, view = @View(label = "Simulation time"))
-    private Date simulationTime; // OR Long ?
+
+    @OneToOne()
+    private Event previousEvent;
 
     /**
      *
      */
     @ManyToOne(optional = false)
-    @JsonBackReference("inbox-message")
     private EventInboxInstance eventInboxInstance;
 
     /**
@@ -94,17 +90,11 @@ public class Event extends AbstractEntity implements DatedEntity {
 
     /**
      * @param payload
-     * @param simulationTime
+     * @param previousEvent
      */
-    public Event(String payload, Date simulationTime) {
-        this.simulationTime = simulationTime;
+    public Event(String payload, Event previousEvent) {
         this.payload = payload;
-    }
-
-    @Override
-    @JsonIgnore
-    public Date getCreatedTime() {
-        return this.getTime();
+        this.previousEvent = previousEvent;
     }
 
     /**
@@ -129,7 +119,7 @@ public class Event extends AbstractEntity implements DatedEntity {
     }
 
     /**
-     * @return the MCQDescriptor
+     * @return the referenced inbox instance
      */
     @JsonIgnore
     public EventInboxInstance getEventInboxInstance() {
@@ -144,34 +134,16 @@ public class Event extends AbstractEntity implements DatedEntity {
     }
 
     /**
-     * return the timestamp
-     *
-     * @return message sent timeStamp
-     */
-    public Date getDate() {
-        return simulationTime;
-    }
-
-    /**
-     * set the timestamp
-     *
-     * @param simulationTime
-     */
-    public void setDate(Date simulationTime) {
-        this.simulationTime = simulationTime;
-    }
-
-    /**
      * @return the startTime
      */
-    public Date getTime() {
+    public Date getTimeStamp() {
         return (Date) timeStamp.clone();
     }
 
     /**
      * @param time
      */
-    public void setTime(Date time) {
+    public void setTimeStamp(Date time) {
         this.timeStamp.setTime(time.getTime());
     }
 
@@ -189,5 +161,10 @@ public class Event extends AbstractEntity implements DatedEntity {
     @Override
     public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         return this.getEventInboxInstance().getRequieredReadPermission(context);
+    }
+
+    @Override
+    public Date getCreatedTime() {
+        return this.getTimeStamp();
     }
 }
