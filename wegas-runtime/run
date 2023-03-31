@@ -172,6 +172,7 @@ cp ${DEFAULT_WEGAS_PROPERTIES} ${DEFAULT_WEGAS_PROPERTIES_ORI}
     --clusterName ${HZ_CLUSTER_NAME} \
     --minhttpthreads ${NB_THREADS} --maxhttpthreads ${NB_THREADS} \
     --interfaces 127.0.0.1 \
+    --clustermode tcpip:127.0.0.1:6900 \
     --systemproperties ${WEGAS_PROPERTIES} --autobindhttp --autobindssl &
 PID=$!
 
