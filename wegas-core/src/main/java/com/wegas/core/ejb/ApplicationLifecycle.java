@@ -11,6 +11,10 @@ import com.hazelcast.cluster.Member;
 import com.hazelcast.cluster.MembershipEvent;
 import com.hazelcast.cluster.MembershipListener;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.cp.event.CPGroupAvailabilityEvent;
+import com.hazelcast.cp.event.CPGroupAvailabilityListener;
+import com.hazelcast.cp.event.CPMembershipEvent;
+import com.hazelcast.cp.event.CPMembershipListener;
 import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
 import java.util.HashSet;
@@ -21,6 +25,7 @@ import jakarta.ejb.Singleton;
 import jakarta.enterprise.event.Event;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
+import org.apache.commons.collections4.IterableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 @LocalBean
-public class ApplicationLifecycle implements MembershipListener/*, LifecycleListener*/ {
+public class ApplicationLifecycle implements MembershipListener, CPMembershipListener, CPGroupAvailabilityListener/*, LifecycleListener*/ {
 
     private static final String LIFECYCLE_UP = "InstanceUp";
     private static final String LIFECYCLE_DOWN = "InstanceDown";
@@ -255,4 +260,40 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
 
         logger.info(sb.toString());
     }
+
+
+    // CPMembershipListener methods
+
+    @Override
+    public void memberAdded(CPMembershipEvent event) {
+        logger.info("[CPGroup Listener] member added : {}", event.getMember().getUuid());
+    }
+
+    @Override
+    public void memberRemoved(CPMembershipEvent event) {
+        logger.info("[CPGroup Listener] member removed : {}", event.getMember().getUuid());
+    }
+
+    /// CPGroupAvailabilityListener
+    @Override
+    public void availabilityDecreased(CPGroupAvailabilityEvent event) {
+        logger.info("[CPGroupAvailability Listener] availability decreased: {}", event.getGroupId().getId());
+    }
+
+    @Override
+    public void majorityLost(CPGroupAvailabilityEvent event) {
+        logger.info("[CPGroupAvailability Listener] majority lost: {}", event.getGroupId().getId());
+        logger.info("[CPGroupAvailability Listener] majority : {}", event.getMajority());
+
+        String members = "";
+
+        for(int i = 0; i < event.getGroupMembers().size(); i++){
+            var m = event.getGroupMembers().toArray()[0];
+            members += m.toString() + ", ";
+        }
+
+        logger.info("[CPGroupAvailability Listener] members : {}", members);
+    }
+
+
 }

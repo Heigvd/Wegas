@@ -118,7 +118,7 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
      * @return the variableDescriptors
      */
     @Override
-    @JsonView(Views.ExportI.class)
+    @JsonView(Views.ExportI.class) // TODO add that to the event list in inbox instance
     @Scriptable(label = "getItems", wysiwyg = false, dependsOn = DependencyScope.CHILDREN)
     public List<VariableDescriptor> getItems() {
         return Helper.copyAndSortModifiable(this.items, new EntityComparators.OrderComparator<>());

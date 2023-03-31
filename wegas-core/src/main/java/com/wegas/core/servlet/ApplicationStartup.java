@@ -18,6 +18,7 @@ import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +50,9 @@ public class ApplicationStartup extends HttpServlet {
     @Inject
     private MetricsFacade metricsFacade;
 
+    // TODO ?
+    private UUID registrationId;
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -60,6 +64,7 @@ public class ApplicationStartup extends HttpServlet {
         metricsFacade.getHzSize();
 
         websocketFacade.getOnlineUsers();
+
 
         /*
          * init member list
@@ -75,9 +80,24 @@ public class ApplicationStartup extends HttpServlet {
         /*
          * set the membership listener up
          */
-        hzInstance.getCluster().addMembershipListener(applicationLifecycle);
+        this.registrationId = hzInstance.getCluster().addMembershipListener(applicationLifecycle);
+        hzInstance.getCPSubsystem().addMembershipListener(applicationLifecycle);
+        hzInstance.getCPSubsystem().addGroupAvailabilityListener(applicationLifecycle);
+
+        //hzInstance.getCPSubsystem().getCPSessionManagementService().getAllSessions(LEGACY_DO_HEAD);
         //hzInstance.getLifecycleService().addLifecycleListener(applicationLifecycle);
 
+        var cpcount = hzInstance.getConfig().getCPSubsystemConfig().getCPMemberCount();
+        //var c = hzInstance.getCPSubsystem().getCPSubsystemManagementService().getCPMembers();
+        var cpgroupsize = hzInstance.getConfig().getCPSubsystemConfig().getGroupSize();
+
+        //var crdt = hzInstance.getConfig().getCRDTReplicationConfig();
+
+
+        //logger.info("*********** CP Member COUNT " + c);
+        logger.info("*********** CP groupe size " + cpgroupsize);
+
+        //hzInstance.getCPSubsystem().getCPSubsystemManagementService().
         /*
          * Inform client webapp is running
          */
@@ -91,6 +111,10 @@ public class ApplicationStartup extends HttpServlet {
         logger.error("DESTROY APPLICATION SERVLET");
 
         populatorScheduler.cancelLocalPopulating();
+
+        logger.info("Registration id : {}", registrationId);
+
+        hzInstance.getCluster().removeMembershipListener(registrationId);
 
         applicationLifecycle.hZshutdown();
 
