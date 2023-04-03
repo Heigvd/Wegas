@@ -13,6 +13,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.Helper;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
@@ -21,6 +22,7 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import java.util.Map;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -28,6 +30,20 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 public class EventInboxInstance extends VariableInstance {
+
+
+    public EventInboxInstance(){
+        super();
+    }
+
+    /**
+     * Clone without event list
+     * @param orig
+     */
+    private EventInboxInstance(EventInboxInstance orig){
+        super();
+        this.lastEvent = orig.lastEvent;
+    }
 
     /**
      *
@@ -86,9 +102,9 @@ public class EventInboxInstance extends VariableInstance {
      */
     public void setEvents(List<Event> events) {
         this.events = events;
-        for (Event m : this.events) {
+        this.events.forEach(m -> {
             m.setEventInboxInstance(this);
-        }
+        });
     }
 
     /**
@@ -104,7 +120,7 @@ public class EventInboxInstance extends VariableInstance {
     /**
      * @param event
      *
-     * @return
+     * @return the event itself
      */
     public Event sendEvent(Event event) {
         this.addEvent(event);
@@ -113,6 +129,15 @@ public class EventInboxInstance extends VariableInstance {
 
     public Event sendEvent(final String payload) {
         return this.sendEvent(new Event(payload, this.lastEvent));
+    }
+
+    /**
+     * @return a copy of this event inbox without events
+     */
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities(){
+        var emptyCopy = new EventInboxInstance(this);
+        return internalGetEntities(emptyCopy);
     }
 
     @Override

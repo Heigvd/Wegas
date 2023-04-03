@@ -9,8 +9,13 @@ package com.wegas.core.persistence.variable.events;
 
 import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
+import ch.albasim.wegas.annotations.View;
+import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.view.I18nStringView;
+import com.wegas.editor.view.StringView;
 import jakarta.persistence.Entity;
 
 /**
@@ -27,98 +32,10 @@ public class EventInboxDescriptor extends VariableDescriptor<EventInboxInstance>
         return event;
     }
 
-    /**
-     *
-     * I18n Sugar to be used from scripts.
-     *
-     * @param p           message recipient
-     * @param payload
-     * @param from        message sender
-     * @param subject     message subject
-     * @param body        message body
-     * @param date        the date the message has been sent (free text, eg. 'Monday Morning', 'may
-     *                    the 4th', 'thrid period', and so on)
-     * @param token       internal message identifier (can be used within a
-     *                    {@link #isTokenMarkedAsRead script condition} to check whether or not
-     *                    message has been read)
-     * @param attachments
-     *
-     * @return
-     */
-    /*
-    @Scriptable(returnType = Scriptable.ReturnType.VOID, dependsOn = DependencyScope.NONE)
+    @Scriptable(dependsOn = DependencyScope.SELF)
     public Event sendEvent(Player p,
-        @Param(view = @View(label = "from", value = I18nStringView.class),
-            proposal = EmptyI18n.class) TranslatableContent from,
-        @Param(view = @View(label = "date", value = I18nStringView.class),
-            proposal = EmptyI18n.class) TranslatableContent date,
-        @Param(
-            view = @View(
-                label = "subject",
-                value = I18nStringView.class,
-                layout = CommonView.LAYOUT.fullWidth
-            ),
-            proposal = EmptyI18n.class) TranslatableContent subject,
-        @Param(
-            view = @View(
-                label = "body",
-                value = I18nHtmlView.class,
-                layout = CommonView.LAYOUT.fullWidth
-            ),
-            proposal = EmptyI18n.class
-        ) TranslatableContent body,
-        @Param(view = @View(
-            label = "token",
-            description = "Message identifier used to reference the message within FSM/Trigger conditions"
-        )) String token,
-        @Param(
-            view = @View(
-                label = "attachements",
-                layout = CommonView.LAYOUT.fullWidth
-            ),
-            proposal = EmptyArray.class
-        ) List<Attachment> attachments) {
-        return this.getInstance(p).sendEvent(from, subject, body, date, token, attachments);
-    }*/
-/*
-    @Scriptable(returnType = Scriptable.ReturnType.VOID, dependsOn = DependencyScope.NONE)
-    public Event sendEvent(Player p,
-        @Param(view = @View(labal = "payload"), value = C)
-        @Param(view = @View(label = "from", value = I18nStringView.class),
-            proposal = EmptyI18n.class) TranslatableContent from,
-        @Param(view = @View(label = "date", value = I18nStringView.class),
-            proposal = EmptyI18n.class) TranslatableContent date,
-        @Param(
-            view = @View(
-                label = "subject",
-                value = I18nStringView.class,
-                layout = CommonView.LAYOUT.fullWidth
-            ),
-            proposal = EmptyI18n.class) TranslatableContent subject,
-        @Param(
-            view = @View(
-                label = "body",
-                value = I18nHtmlView.class,
-                layout = CommonView.LAYOUT.fullWidth
-            ),
-            proposal = EmptyI18n.class
-        ) TranslatableContent body,
-        @Param(view = @View(
-            label = "token",
-            description = "Message identifier used to reference the message within FSM/Trigger conditions"
-        )) String token,
-        @Param(
-            view = @View(
-                label = "attachements",
-                layout = CommonView.LAYOUT.fullWidth
-            ),
-            proposal = EmptyArray.class
-        ) List<Attachment> attachments) {
-        return this.getInstance(p).sendEvent(from, subject, body, date, token, attachments);
-    }
-    */
-
-    public Event sendEvent(Player p, String payload) {
+        @Param(view = @View(label = "payload", value = StringView.class),
+            proposal = EmptyString.class) String payload) {
         return this.getInstance(p).sendEvent(payload);
     }
 

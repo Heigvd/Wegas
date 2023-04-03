@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
@@ -32,6 +33,10 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Entity
@@ -41,7 +46,7 @@ import jakarta.persistence.TemporalType;
     @Index(columnList = "time_id"),
     @Index(columnList = "sim_time_id")
 })
-public class Event extends AbstractEntity implements DatedEntity {
+public class Event extends AbstractEntity implements DatedEntity, Broadcastable {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -164,5 +169,17 @@ public class Event extends AbstractEntity implements DatedEntity {
     @Override
     public Date getCreatedTime() {
         return this.getTimeStamp();
+    }
+
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        String audience = this.eventInboxInstance.getAudience();
+        if (audience != null) {
+            Map<String, List<AbstractEntity>> map = new HashMap<>();
+            List<AbstractEntity> entities = Arrays.asList(this);
+            map.put(audience, entities);
+            return map;
+        }
+        return null;
     }
 }
