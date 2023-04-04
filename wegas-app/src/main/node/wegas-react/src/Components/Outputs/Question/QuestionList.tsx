@@ -237,7 +237,7 @@ export function QuestionLabel({
           )}
         </Validate>
       ) : (
-        <div className={flex}>{questionDLabel}</div>
+        <div className={cx('label__title', flex)}>{questionDLabel}</div>
       )}
     </div>
   );
@@ -250,7 +250,7 @@ function QuestionChooser(
     <DefaultEntityChooserLabel
       {...props}
       customLabelStyle={customLabelStyle}
-      className={'question__label'}
+      className={'questionList__label'}
     >
       <div className={cx(flex, flexRow, itemCenter)}>
         {props.mobile && (
