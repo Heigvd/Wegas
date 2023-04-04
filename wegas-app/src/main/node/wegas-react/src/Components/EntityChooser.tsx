@@ -288,6 +288,7 @@ export interface EntityChooserLabelProps<T extends IAbstractEntity> {
   disabled?: boolean;
   onClick: () => void;
   mobile?: boolean;
+  className?: string;
 }
 
 export interface CustomEntityChooserLabel<T extends IAbstractEntity>
@@ -302,6 +303,7 @@ export function DefaultEntityChooserLabel<T extends IAbstractEntity>({
   onClick,
   children,
   customLabelStyle,
+  className,
 }: React.PropsWithChildren<CustomEntityChooserLabel<T>>) {
   return (
     <div
@@ -315,6 +317,7 @@ export function DefaultEntityChooserLabel<T extends IAbstractEntity>({
     >
       <div
         className={cx(
+          className,
           entityChooserLabelStyle(disabled),
           customLabelStyle && customLabelStyle(entity),
           {

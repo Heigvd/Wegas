@@ -247,7 +247,11 @@ function QuestionChooser(
   props: EntityChooserLabelProps<IQuestionDescriptor | IWhQuestionDescriptor>,
 ) {
   return (
-    <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
+    <DefaultEntityChooserLabel
+      {...props}
+      customLabelStyle={customLabelStyle}
+      className={'question__label'}
+    >
       <div className={cx(flex, flexRow, itemCenter)}>
         {props.mobile && (
           <FontAwesomeIcon

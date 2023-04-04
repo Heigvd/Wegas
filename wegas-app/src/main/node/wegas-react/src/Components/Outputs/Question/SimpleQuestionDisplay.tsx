@@ -171,7 +171,7 @@ export function SimpleQuestionDisplay({
 
   return (
     <div
-      className={cx(questionStyle, {
+      className={cx('QuestionDisplay', questionStyle, {
         [halfOpacity]: options.disabled,
       })}
     >

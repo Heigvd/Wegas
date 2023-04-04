@@ -70,33 +70,47 @@ function MessageLabel({ message, disabled }: MessageLabelProps) {
 
   return (
     <div
-      className={cx(flex, itemCenter, messageLabel)}
+      className={cx(flex, itemCenter, messageLabel, expandWidth)}
       onClick={() => !disabled && editingStore.dispatch(readMessage(message))}
     >
       <div className={cx(flex, flexColumn, expandWidth)}>
         <div className={cx(flex, flexRow, flexBetween)}>
-          <div className={cx(labelTitleStyle)}>{translatedLabel}</div>
-          <div className={css({ flexShrink: 0 })}>{translatedDate}</div>
+          <div className={cx('label__title', labelTitleStyle)}>
+            {translatedLabel}
+          </div>
+          <div className={cx('label__date', css({ flexShrink: 0 }))}>
+            {translatedDate}
+          </div>
         </div>
-        <div className={cx(flex, defaultMarginTop)}>{translatedFrom}</div>
+        <div className={cx('label_sender', flex, defaultMarginTop)}>
+          {translatedFrom}
+        </div>
       </div>
     </div>
   );
 }
 
-function customLabelStyle(m: IMessage): string | undefined {
+function getIsUnread(m: IMessage): boolean | undefined {
   try {
     const isUnread = instantiate(m).getUnread();
-    return isUnread ? unreadLabelStyle : readLabelStyle;
+    return isUnread;
   } catch (m) {
     wwarn(m);
     return undefined;
   }
 }
 
+function customLabelStyle(m: IMessage): string | undefined {
+  return getIsUnread(m) ? unreadLabelStyle : readLabelStyle;
+}
+
 function MessageChooser(props: EntityChooserLabelProps<IMessage>) {
   return (
-    <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
+    <DefaultEntityChooserLabel
+      {...props}
+      customLabelStyle={customLabelStyle}
+      className={`inbox__label${getIsUnread(props.entity) ? '--unread' : ''}`}
+    >
       <div className={cx(flex, flexRow, itemCenter)}>
         {props.mobile && (
           <FontAwesomeIcon
@@ -124,20 +138,20 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
 
   return (
     <div style={{ width: '100%', height: '100%' }}>
-      <div className={cx(toolboxHeaderStyle)}>
-        {subject && <div className={cx(bolder)}>{subject}</div>}
+      <div className={cx('mail__header', toolboxHeaderStyle)}>
+        {subject && <div className={cx('mail__title', bolder)}>{subject}</div>}
         {date && (
-          <div>
+          <div className={'mail__date'}>
             {i18nComponentValues.inbox.date}: {date}
           </div>
         )}
         {from && (
-          <div>
+          <div className={'mail__sender'}>
             {i18nComponentValues.inbox.sender}: {from}
           </div>
         )}
       </div>
-      <TranslatableText content={entity.body} />
+      <TranslatableText className={'mail__body'} content={entity.body} />
     </div>
   );
 }
