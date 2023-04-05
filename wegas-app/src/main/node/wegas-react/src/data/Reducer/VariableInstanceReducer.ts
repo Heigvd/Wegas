@@ -5,6 +5,7 @@ import {
   IChoiceInstance,
   IDialogueDescriptor,
   IDialogueTransition,
+  IEventInboxInstance,
   IFSMDescriptor,
   IInboxDescriptor,
   IMessage,
@@ -33,28 +34,41 @@ import { createEditingAction, editingStore, EditingThunkResult } from '../Stores
 import { store, ThunkResult } from '../Stores/store';
 
 export interface VariableInstanceState {
-  [id: string]: Readonly<IVariableInstance> | undefined;
+  instances: {
+    [id: string]: Readonly<IVariableInstance> | undefined;
+  },
+  events: {
+    [id: string]: Event [];
+  }
 }
 
 const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
   (state: VariableInstanceState, action: StateActions) => {
     switch (action.type) {
       case ActionType.MANAGED_RESPONSE_ACTION: {
+        // Update instances
         const updateList = action.payload.updatedEntities.variableInstances;
         const deletedIds = Object.keys(
           action.payload.deletedEntities.variableInstances,
         );
         Object.keys(updateList).forEach(id => {
           const newElement = updateList[id];
-          const oldElement = state[id];
+          const oldElement = state.instances[id];
           // merge in update prev var which have a higher version
           if (oldElement == null || newElement.version >= oldElement.version) {
-            state[id] = newElement;
+            state.instances[id] = newElement;
           }
         });
         deletedIds.forEach(id => {
-          delete state[id];
+          delete state.instances[id];
         });
+
+        // Update events
+        const updateEvents = action.payload.updatedEntities.events;
+        const deletedEvents = Object.keys(
+          action.payload.deletedEntities.variableEvents,
+        );
+
         return;
       }
     }
@@ -64,6 +78,22 @@ const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
 export default variableInstances;
 
 //ACTIONS
+
+export function getEvents(
+  eventInboxInstance: IEventInboxInstance,
+): EditingThunkResult<Promise<StateActions | void>> {
+  return function (dispatch, getState) {
+    return VariableInstanceAPI.getEvents(eventInboxInstance).then(res =>
+      // Dispatching changes to global store and passing local store that manages editor state
+
+      //TODO:  handle Events in manageResponseHandler
+      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
+    );
+  };
+}
+
+// call with     store.dispatch(Actions.VariableInstanceActions.getEvents());
+
 
 export function updateInstance(
   variableInstance: IVariableInstance,

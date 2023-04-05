@@ -38,11 +38,12 @@ public class EventInboxInstance extends VariableInstance {
 
     /**
      * Clone without event list
-     * @param orig
+     * @param that
      */
-    private EventInboxInstance(EventInboxInstance orig){
+    private EventInboxInstance(EventInboxInstance that){
         super();
-        this.lastEvent = orig.lastEvent;
+        this.setDefaultDescriptor(that.getDefaultDescriptor());
+        this.lastEvent = that.lastEvent;
     }
 
     /**

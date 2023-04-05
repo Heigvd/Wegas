@@ -182,4 +182,13 @@ public class Event extends AbstractEntity implements DatedEntity, Broadcastable 
         }
         return null;
     }
+
+    public Event getPreviousEvent(){
+        return previousEvent;
+    }
+
+    public void setPreviousEvent(Event previous){
+        previousEvent = previous;
+    }
+
 }

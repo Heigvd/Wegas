@@ -14,9 +14,9 @@ import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.view.I18nStringView;
 import com.wegas.editor.view.StringView;
 import jakarta.persistence.Entity;
+import jdk.nashorn.api.scripting.JSObject;
 
 /**
  *
@@ -31,6 +31,7 @@ public class EventInboxDescriptor extends VariableDescriptor<EventInboxInstance>
         this.getInstance(p).sendEvent(event);
         return event;
     }
+
 
     @Scriptable(dependsOn = DependencyScope.SELF)
     public Event sendEvent(Player p,

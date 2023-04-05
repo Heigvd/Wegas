@@ -12,6 +12,8 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.events.Event;
+import com.wegas.core.persistence.variable.events.EventInboxInstance;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -87,6 +89,24 @@ public class VariableInstanceController {
             instances.add(variableInstanceFacade.find(id));
         }
         return instances;
+    }
+
+    /**
+     *
+     * @param gameModelId TODO may be unnecessary
+     * @param variableInstanceId the event inbox instance id
+     * @return all the events contained in this inbox instance
+     */
+    @GET
+    @Path("GetEvents")
+    public Collection<Event> getEvents(@PathParam("gameModelId") Long gameModelId, @PathParam("variableInstanceId") Long variableInstanceId){
+        var varInstance = variableInstanceFacade.find(variableInstanceId);
+        if(varInstance instanceof EventInboxInstance /* evtInbox */){ // TODO pattern matching when supported
+            var evtInbox = (EventInboxInstance)varInstance;
+            return evtInbox.getEvents();
+        }
+        // TODO any logging or error handling ?
+        return new ArrayList<>();
     }
 
     /**
