@@ -15,12 +15,18 @@ import java.util.Map;
 import java.util.Set;
 import javax.naming.NamingException;
 import org.apache.shiro.cache.CacheException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
+ * @deprecated
  * @author maxence
  */
+@Deprecated(forRemoval = true)
 public class ShiroCacheImplementation implements org.apache.shiro.cache.Cache {
+
+    private static final Logger logger = LoggerFactory.getLogger(ShiroCacheImplementation.class);
 
     private static final String MAP_NAME = "hz_shiro_sessions";
 
@@ -55,7 +61,10 @@ public class ShiroCacheImplementation implements org.apache.shiro.cache.Cache {
     @Override
     public Object get(Object key) throws CacheException {
         try {
-            return this.getCache().get(key);
+            logger.warn("GetHttpSessionCache: ask key {}", key);
+            var x = this.getCache().get(key);
+            logger.warn("GetHttpSessionCache: got key {}", key);
+            return x;
         } catch (NamingException ex) {
             throw new CacheException(ex);
         }

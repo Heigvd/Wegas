@@ -84,11 +84,12 @@ public class ApplicationStartup extends HttpServlet {
         applicationLifecycle.sendWegasReadyEvent();
 
         populatorScheduler.startAllLocalPopulators();
+        logger.info("Servlet started");
     }
 
     @Override
     public void destroy() {
-        logger.error("DESTROY APPLICATION SERVLET");
+        logger.info("Destroy application servlet");
 
         populatorScheduler.cancelLocalPopulating();
 
