@@ -207,7 +207,9 @@ export default function Form<T>({
       })}
       onKeyDown={onEnterCb}
     >
-      {fieldComps}
+      <form>
+        {fieldComps}
+      </form>
       {autoSubmit ? null : (
         <Button
           key="submit"
