@@ -12,7 +12,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 export interface PlayerNumberProps extends WegasComponentProps {
@@ -68,7 +68,7 @@ registerComponent(
         required: true,
         returnType: ['SNumberDescriptor'],
       }),
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({

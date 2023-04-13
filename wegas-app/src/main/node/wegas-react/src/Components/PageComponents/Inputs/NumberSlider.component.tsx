@@ -21,7 +21,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 import {
   OnVariableChange,
@@ -160,7 +160,7 @@ registerComponent(
         values: displayModes,
       }),
       onVariableChange: onVariableChangeSchema('On number change action'),
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({

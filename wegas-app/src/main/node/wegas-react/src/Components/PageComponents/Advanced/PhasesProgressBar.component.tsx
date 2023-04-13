@@ -12,6 +12,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 interface PhasesProgressBarProps extends WegasComponentProps {
@@ -34,6 +35,8 @@ export default function PlayerPhasesProgressBar({
   context,
   phaseMin,
   phaseMax,
+  className,
+  style,
   options,
   pageId,
   path,
@@ -90,6 +93,8 @@ export default function PlayerPhasesProgressBar({
         value={phaseInstance!.getValue()}
         phaseMin={phaseMinInstance!.getValue()}
         phaseMax={phaseMaxInstance!.getValue()}
+        className={className}
+        style={style}
         disabled={options.disabled || options.locked}
       />
     );
@@ -120,6 +125,7 @@ registerComponent(
         required: true,
         returnType: ['SNumberDescriptor'],
       }),
+      ...classStyleIdSchema,
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({

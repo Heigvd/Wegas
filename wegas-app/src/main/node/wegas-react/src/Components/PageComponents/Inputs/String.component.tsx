@@ -21,7 +21,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 import {
   OnVariableChange,
@@ -157,12 +157,12 @@ registerComponent(
         type: ['number', 'null'],
         view: {
           label: 'multiline',
-          type:'number',
+          type: 'number',
           placeholder: '1',
-        }
+        },
       },
       ...validatorSchema,
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: ['StringDescriptor'],
     getComputedPropsFromVariable: v => ({
