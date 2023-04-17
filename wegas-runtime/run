@@ -160,6 +160,7 @@ cp ${DEFAULT_WEGAS_PROPERTIES} ${DEFAULT_WEGAS_PROPERTIES_ORI}
     -Xms${HEAP} -Xmx${HEAP} \
     -Djava.security.egd=file:/dev/urandom \
     -Dhazelcast.shutdownhook.enabled=true \
+    -Dfish.payara.tenantcontrol.blocking.disable=true \
     -Dwegas.db.host=${DB_HOST} -Dwegas.db.port=5432 \
     -Dwegas.db.name=${DB_NAME} \
     -Dwegas.db.user=user -Dwegas.db.password=1234 \
