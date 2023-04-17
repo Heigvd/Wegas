@@ -9,6 +9,7 @@ package com.wegas.core.persistence.variable.events;
 
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.RequestManager.RequestContext;
@@ -19,6 +20,7 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.view.Hidden;
 import com.wegas.editor.view.Textarea;
 import java.util.Collection;
 import java.util.Date;
@@ -33,6 +35,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -42,9 +45,7 @@ import java.util.Map;
 @Entity
 @Table(indexes = {
     @Index(columnList = "eventinboxinstance_id"),
-    @Index(columnList = "payload_id"),
-    @Index(columnList = "time_id"),
-    @Index(columnList = "sim_time_id")
+    @Index(columnList = "previousevent_id")
 })
 public class Event extends AbstractEntity implements DatedEntity, Broadcastable {
 
@@ -76,7 +77,13 @@ public class Event extends AbstractEntity implements DatedEntity, Broadcastable 
 
 
     @OneToOne()
+    @JsonIgnore
     private Event previousEvent;
+
+    @Transient
+    @JsonView(Views.ExportI.class)
+    @WegasEntityProperty(view = @View(value = Hidden.class, label= ""))
+    private String previousEventRefId;
 
     /**
      *
@@ -98,6 +105,35 @@ public class Event extends AbstractEntity implements DatedEntity, Broadcastable 
     public Event(String payload, Event previousEvent) {
         this.payload = payload;
         this.previousEvent = previousEvent;
+    }
+
+    @JsonView(Views.IndexI.class)
+    @WegasExtraProperty(view = @View(label = "Previous Event Id"))
+    public Long getPreviousEventId(){
+        if(this.previousEvent != null){
+            return this.previousEvent.getId();
+        }
+        return null;
+    }
+
+    public void setPreviousEventId(Long id){
+        // ignored, but needed for jackson
+    }
+
+    public String getDeserializedPreviousEventRefId(){
+        return previousEventRefId;
+    }
+
+    public String getPreviousEventRefId() {
+        if(previousEvent != null){
+            return previousEvent.getRefId();
+        }else {
+            return previousEventRefId;
+        }
+    }
+
+    public void setPreviousEventRefId(String previousEventRefId) {
+        this.previousEventRefId = previousEventRefId;
     }
 
     /**
@@ -173,6 +209,7 @@ public class Event extends AbstractEntity implements DatedEntity, Broadcastable 
 
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
+
         String audience = this.eventInboxInstance.getAudience();
         if (audience != null) {
             Map<String, List<AbstractEntity>> map = new HashMap<>();

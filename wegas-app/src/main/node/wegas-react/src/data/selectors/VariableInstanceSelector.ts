@@ -30,9 +30,9 @@ export function select<T extends IVariableInstance = IVariableInstance>(
   }
   const state = store.getState();
   if (Array.isArray(id)) {
-    return id.map(i => state.variableInstances[i] as T);
+    return id.map(i => state.variableInstances.instances[i] as T);
   }
-  return state.variableInstances[id] as T;
+  return state.variableInstances.instances[id] as T;
 }
 
 /**
@@ -46,7 +46,7 @@ export function first<T extends IVariableInstance>(
 ) {
   const state = store.getState();
   for (const vi in state.variableInstances) {
-    const s = state.variableInstances[vi] as T;
+    const s = state.variableInstances.instances[vi] as T;
     if (s && s[key] === value) {
       return s;
     }
@@ -59,7 +59,7 @@ export function first<T extends IVariableInstance>(
 export function firstMatch<T extends IVariableInstance>(o: Partial<T>) {
   const state = store.getState();
   for (const vi in state.variableInstances) {
-    const s = state.variableInstances[vi] as T;
+    const s = state.variableInstances.instances[vi] as T;
     if (isMatch(s, o)) {
       return s;
     }
@@ -77,7 +77,7 @@ export function all<T extends IVariableInstance>(
   const ret = [];
   const state = store.getState();
   for (const vi in state.variableInstances) {
-    const s = state.variableInstances[vi] as T;
+    const s = state.variableInstances.instances[vi] as T;
     if (s && s[key] === value) {
       ret.push(s);
     }

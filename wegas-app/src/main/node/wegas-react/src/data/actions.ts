@@ -13,7 +13,7 @@ import { Popup } from '../Components/PopupManager';
 import { getEntityActions } from '../Editor/editionConfig';
 import { ActionType, ActionTypeValues } from './actionTypes';
 import { EditorLanguagesCode } from './i18n';
-import { discriminant, normalizeDatas, NormalizedData } from './normalize';
+import { discriminant, normalizeData, NormalizedData } from './normalize';
 import { closeEditor, EditingState, Edition } from './Reducer/editingState';
 import { GlobalState, LoggerLevel, WegasStatus } from './Reducer/globalState';
 import { InitStateKey } from './Reducer/initState';
@@ -163,7 +163,7 @@ export function manageResponseHandler(
   selectUpdatedEntity: boolean = true,
   selectPath?: (string | number)[],
 ) {
-  const deletedEntities = normalizeDatas(payload.deletedEntities);
+  const deletedEntities = normalizeData(payload.deletedEntities);
   if (localDispatch && localState) {
     closeEditorWhenDeletedVariable(
       deletedEntities.variableDescriptors,
@@ -172,7 +172,7 @@ export function manageResponseHandler(
     );
   }
 
-  const updatedEntities = normalizeDatas(payload.updatedEntities);
+  const updatedEntities = normalizeData(payload.updatedEntities);
   if (localState && localDispatch) {
     const editState = localState.editing;
     const currentEditingEntity =

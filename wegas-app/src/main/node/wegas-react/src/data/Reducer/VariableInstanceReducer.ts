@@ -33,12 +33,19 @@ import { Player } from '../selectors';
 import { createEditingAction, editingStore, EditingThunkResult } from '../Stores/editingStore';
 import { store, ThunkResult } from '../Stores/store';
 
+type VariableInstanceId = string;
+type EventInboxStatus = 'LOADING' | 'NOTINITIALIZED' | 'UPTODATE';
+
 export interface VariableInstanceState {
   instances: {
     [id: string]: Readonly<IVariableInstance> | undefined;
   },
   events: {
-    [id: string]: Event [];
+    [id: VariableInstanceId]: //eventInboxId
+    {
+      events : IEvent [],
+      status : EventInboxStatus
+    };
   }
 }
 
@@ -63,10 +70,10 @@ const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
           delete state.instances[id];
         });
 
-        // Update events
+        // Update events TODO
         const updateEvents = action.payload.updatedEntities.events;
         const deletedEvents = Object.keys(
-          action.payload.deletedEntities.variableEvents,
+          action.payload.deletedEntities.events,
         );
 
         return;
