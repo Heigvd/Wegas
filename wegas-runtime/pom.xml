@@ -150,6 +150,46 @@
 
     <build>
         <plugins>
+            <!-- Due to docker build context design (no way to copy files from parent directories),
+                 we have to copy required files to the docker directory ...-->
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-resources-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>copy files to docker build context</id>
+                  <phase>package</phase>
+                  <goals>
+                    <goal>copy-resources</goal>
+                  </goals>
+                  <configuration>
+                    <outputDirectory>${basedir}/src/main/docker/wegas</outputDirectory>
+                    <resources>
+                      <resource>
+                        <directory>${basedir}</directory>
+                        <includes>
+                          <include>run</include>
+                          <include>as_prebootcmd</include>
+                        </includes>
+                    </resource>
+                      <resource>
+                          <directory>${basedir}/target</directory>
+                        <includes>
+                          <include>payara-micro.current.jar</include>
+                        </includes>
+                      </resource>
+                      <resource>
+                          <directory>${basedir}/../wegas-app/target</directory>
+                        <includes>
+                          <include>Wegas.war</include>
+                        </includes>
+                      </resource>
+                    </resources>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
