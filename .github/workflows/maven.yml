@@ -79,8 +79,6 @@ jobs:
       shell: bash
       run: wegas-runtime/src/test/node/upload_result.sh
 
-    - name: Build docker image
-
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
 
