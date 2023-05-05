@@ -24,23 +24,17 @@ const itemStyle = css({
   height: 2,
 });
 
-const Item: React.FunctionComponent<PasswordStrengthBarItemProps> = ({
-  score,
-  itemNum,
-  barColors,
-}) => {
-  let bgColor = barColors[0];
-  if (score >= itemNum) {
-    bgColor = barColors[score];
+const Item = (props: PasswordStrengthBarItemProps) => {
+  let bgColor = props.barColors[0];
+  if (props.score >= props.itemNum) {
+    bgColor = props.barColors[props.score];
   }
 
   return (
-    <div
-      className={cx(itemStyle, css({
+    <div className={cx(itemStyle, css({
         backgroundColor: bgColor,
       }))}
     />
   );
 };
-
 export default Item;
