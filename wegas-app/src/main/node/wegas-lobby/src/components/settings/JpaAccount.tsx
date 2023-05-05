@@ -21,10 +21,11 @@ import Button from '../common/Button';
 import CardContainer from '../common/CardContainer';
 import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
-import Form, { Field } from '../common/Form';
+import Form, { Field, PasswordFeedback } from '../common/Form';
 import InlineLoading from '../common/InlineLoading';
 import Tabs, { Tab } from '../common/Tabs';
 import { mainButtonStyle } from '../styling/style';
+import PasswordErrorTooltip from '../common/password/PasswordErrorTooltip';
 
 interface JpaAccountProps {
   account: IJpaAccountWithId;
@@ -35,6 +36,7 @@ interface PasswordData {
   password: string;
   strength: number;
   confirm: string;
+  feedback?: PasswordFeedback;
 }
 
 const defData: PasswordData = {
@@ -54,10 +56,16 @@ export function ChangePasswordJpaAccount({ account, close }: JpaAccountProps): J
       placeholder: i18n.password,
       type: 'password',
       isMandatory: true,
-      isErroneous: data => data.strength < 1,
+      isErroneous: data => data.strength < 2,
       errorMessage: i18n.weakPassword,
       showStrenghBar: true,
       strengthProp: 'strength',
+      feedbackProp: 'feedback',
+      dynamicErrorMessage: (feedback?: PasswordFeedback) => (
+        <PasswordErrorTooltip
+        warning={feedback?.warning}
+        suggestions={feedback?.suggestions}
+        ></PasswordErrorTooltip>)
     },
     {
       key: 'confirm',
@@ -68,6 +76,7 @@ export function ChangePasswordJpaAccount({ account, close }: JpaAccountProps): J
       isErroneous: data => data.password !== data.confirm,
       errorMessage: i18n.passwordsMismatch,
       showStrenghBar: false,
+      dynamicErrorMessage: () => i18n.passwordsMismatch
     },
   ];
 
