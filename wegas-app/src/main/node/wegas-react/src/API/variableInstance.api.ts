@@ -10,7 +10,7 @@ POST	/Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescrip
 PUT	/Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescriptor/{variableDescriptorId : ([1-9][0-9]*)?}{sep2: /?}VariableInstance/{entityId: [1-9][0-9]*}
 GET	/Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescriptor/{variableDescriptorId : ([1-9][0-9]*)?}{sep2: /?}VariableInstance/{variableInstanceId: [1-9][0-9]*}
 // TODO is that right ?
-GET	/Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescriptor/{variableDescriptorId : ([1-9][0-9]*)?}{sep2: /?}VariableInstance/{variableInstanceId: [1-9][0-9]*}/GetEvents
+GET	/Wegas/rest/GameModel/VariableDescriptor/{variableDescriptorId : ([1-9][0-9]*)?}{sep2: /?}VariableInstance/{variableInstanceId: [1-9][0-9]*}/GetEvents
 */
 
 const VI_BASE = ({
@@ -72,8 +72,8 @@ export const VariableInstanceAPI = {
       body: JSON.stringify(ids),
     });
   },
-  getEvents(variableInstance: IVariableInstance, gameModelId?: number){
-    return managedModeRequest(`${VI_BASE({v: variableInstance, gameModelId})}/GetEvents`,
+  getEvents(variableInstance: IVariableInstance){
+    return managedModeRequest(`${VI_BASE({v: variableInstance})}/GetEvents`,
       {method: 'GET'}
     )
   }

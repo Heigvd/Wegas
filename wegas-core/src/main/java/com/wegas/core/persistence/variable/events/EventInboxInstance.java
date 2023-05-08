@@ -162,7 +162,7 @@ public class EventInboxInstance extends VariableInstance {
     /**
      * Chains the event list
      * Used only when a scenario gets deserialized,
-     * uses the refIds references to link the newly created events
+     * uses the refIds to link the newly created events
      */
     public void rebuildEventChaining(){
 

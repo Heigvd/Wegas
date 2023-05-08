@@ -1,4 +1,5 @@
 import {
+  IEvent,
   IGame,
   IGameModel,
   IPlayer,

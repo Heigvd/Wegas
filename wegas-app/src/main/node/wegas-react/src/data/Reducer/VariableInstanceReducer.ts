@@ -5,6 +5,7 @@ import {
   IChoiceInstance,
   IDialogueDescriptor,
   IDialogueTransition,
+  IEvent,
   IEventInboxInstance,
   IFSMDescriptor,
   IInboxDescriptor,
