@@ -60,6 +60,9 @@ function FeaturesContext({
       if (event.ctrlKey && event.code === 'Backquote') {
         toggleFeature(event.altKey ? 'INTERNAL' : 'ADVANCED');
       }
+      if (event.ctrlKey && event.code === 'KeyS') {
+        event.preventDefault();
+      }
     },
     [toggleFeature],
   );
