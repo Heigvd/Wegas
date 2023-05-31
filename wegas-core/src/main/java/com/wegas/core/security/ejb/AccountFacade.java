@@ -109,14 +109,25 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      */
     @Override
     public AbstractAccount update(final Long entityId, final AbstractAccount account) {
-        if (!(account instanceof AaiAccount) && !Helper.isNullOrEmpty(account.getUsername())) {
-            try {
-                AbstractAccount a = this.findByUsername(account.getUsername());
-                if (!a.getId().equals(account.getId())) {                       // and we can find an account with the username which is not the one we are editing,
-                    throw WegasErrorMessage.error("This username is already in use");// throw an exception
+        try ( Sudoer su = requestManager.sudoer()) {
+            if (!(account instanceof AaiAccount) && !Helper.isNullOrEmpty(account.getUsername())) {
+                try {
+                    AbstractAccount a = this.findByUsername(account.getUsername());
+                    if (!a.getId().equals(account.getId())) {                       // and we can find an account with the username which is not the one we are editing,
+                        throw WegasErrorMessage.error("This username is already in use", "ACCOUNT-UPDATE-USERNAME-DUPLICATE");// throw an exception
+                    }
+                } catch (WegasNoResultException e) { //NOPMD
+                    // GOTCHA no username could be found, do not use
                 }
-            } catch (WegasNoResultException e) { //NOPMD
-                // GOTCHA no username could be found, do not use
+
+                // Validate email address uniqueness case-insensitive
+                // using list to avoid NonUniqueResultException from singleResult()
+                this.findAllByEmailOrUsername(account.getEmail()).stream()
+                        .filter(foundAccount -> !foundAccount.getId().equals(account.getId()))
+                        .findAny()
+                        .ifPresent(present -> {
+                            throw WegasErrorMessage.error("This email address is already in use", "ACCOUNT-UPDATE-EMAIL-ADDRESS-DUPLICATE");
+                        });
             }
         }
 

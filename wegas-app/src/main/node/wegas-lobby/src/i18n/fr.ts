@@ -335,6 +335,8 @@ export const fr: WegasTranslations = {
     'CREATE-ACCOUNT-INVALID-EMAIL': 'Adresse e-mail invalide',
     'CREATE-ACCOUNT-TAKEN-EMAIL': 'Adresse e-mail déjà utilisée',
     'CREATE-ACCOUNT-TAKEN-USERNAME': "Nom d'utilisateur déjà utilisé",
+    'ACCOUNT-UPDATE-USERNAME-DUPLICATE': "Nom d'utilisateur déjà utilisé",
+    'ACCOUNT-UPDATE-EMAIL-ADDRESS-DUPLICATE': 'Adresse e-mail déjà utilisée'
   },
   outadateMessagePart1: 'Vos données ne sont plus à jour. Merci de ',
   outadateMessagePart2: 'recharger',
