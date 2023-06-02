@@ -214,7 +214,11 @@ export default function Form<T>({
       })}
       onKeyDown={onEnterCb}
     >
-      {fieldComps}
+      <div className={css({
+        overflow: "auto"
+      })}>
+        {fieldComps}
+      </div>
       {autoSubmit ? null : (
         <Button
           key="submit"
