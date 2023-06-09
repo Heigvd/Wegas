@@ -45,7 +45,7 @@ export function first<T extends IVariableInstance>(
   value: ValueOf<T>,
 ) {
   const state = store.getState();
-  for (const vi in state.variableInstances) {
+  for (const vi in state.variableInstances.instances) {
     const s = state.variableInstances.instances[vi] as T;
     if (s && s[key] === value) {
       return s;
@@ -58,7 +58,7 @@ export function first<T extends IVariableInstance>(
  */
 export function firstMatch<T extends IVariableInstance>(o: Partial<T>) {
   const state = store.getState();
-  for (const vi in state.variableInstances) {
+  for (const vi in state.variableInstances.instances) {
     const s = state.variableInstances.instances[vi] as T;
     if (isMatch(s, o)) {
       return s;
@@ -76,7 +76,7 @@ export function all<T extends IVariableInstance>(
 ) {
   const ret = [];
   const state = store.getState();
-  for (const vi in state.variableInstances) {
+  for (const vi in state.variableInstances.instances) {
     const s = state.variableInstances.instances[vi] as T;
     if (s && s[key] === value) {
       ret.push(s);

@@ -59,6 +59,10 @@ const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
         const deletedIds = Object.keys(
           action.payload.deletedEntities.variableInstances,
         );
+        if(!state.instances){
+          // console.log('init state.instances');
+          state.instances = {}
+        }
         Object.keys(updateList).forEach(id => {
           const newElement = updateList[id];
           const oldElement = state.instances[id];
@@ -66,16 +70,18 @@ const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
           if (oldElement == null || newElement.version >= oldElement.version) {
             state.instances[id] = newElement;
           }
+          // console.log(newElement['@class']);
         });
         deletedIds.forEach(id => {
           delete state.instances[id];
         });
 
         // Update events TODO
-        const updateEvents = action.payload.updatedEntities.events;
-        const deletedEvents = Object.keys(
-          action.payload.deletedEntities.events,
-        );
+        // check consistency of present events for each inbox
+        // const updatedEvents = action.payload.updatedEntities.events;
+        // const deletedEvents = Object.keys(
+        //   action.payload.deletedEntities.events,
+        // );
 
         return;
       }

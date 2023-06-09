@@ -10,6 +10,7 @@ package com.wegas.core.persistence.variable.events;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.RequestManager.RequestContext;
@@ -68,7 +69,7 @@ public class Event extends AbstractEntity implements DatedEntity, Broadcastable 
     private String payload;
 
     /**
-     * real world timeStamp for sorting purpose
+     * real world timeStamp for sorting purposes
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "creation_time", columnDefinition = "timestamp with time zone")
@@ -89,6 +90,8 @@ public class Event extends AbstractEntity implements DatedEntity, Broadcastable 
      *
      */
     @ManyToOne(optional = false)
+    @JsonBackReference("event-inbox-message")
+    // or even JsonIgnore ?
     private EventInboxInstance eventInboxInstance;
 
     /**

@@ -60,10 +60,10 @@ public class EventInboxInstance extends VariableInstance {
      *  <property name="eclipselink.cache.shared.default" value="false"/>
 
      */
-    @JsonManagedReference("event-inbox-message")
     /**
-     * Export only when exporting scenario (wgz or zip)
+     * Serialize only when exporting scenario (wgz or zip)
      */
+    @JsonManagedReference("event-inbox-message")
     @JsonView(Views.ExportI.class)
     @WegasEntityProperty(
         optional = false, nullable = false, proposal = EmptyArray.class,
@@ -76,6 +76,9 @@ public class EventInboxInstance extends VariableInstance {
     @JsonIgnore
     private Event lastEvent;
 
+    /**
+     * Used during deserialization (e.g. of wgz scenario)
+     */
     @Transient
     @JsonView(Views.ExportI.class)
     @WegasEntityProperty(view = @View(value = Hidden.class, label= ""))
@@ -83,7 +86,7 @@ public class EventInboxInstance extends VariableInstance {
 
 
     @JsonView(Views.IndexI.class)
-    @WegasExtraProperty(view = @View(label = "Previous Event Id"))
+    @WegasExtraProperty(view = @View(label = "Last Event Id", featureLevel = CommonView.FEATURE_LEVEL.ADVANCED, readOnly = true))
     public Long getLastEventId(){
         if(this.lastEvent != null){
             return this.lastEvent.getId();
@@ -92,17 +95,20 @@ public class EventInboxInstance extends VariableInstance {
     }
 
     public void setLastEventId(Long id){
-        // ignored, but for jackson
+        // ignored, but required by jackson
     }
 
+    @JsonIgnore
     public String getDeserializedLastEventRefId(){
         return lastEventRefId;
     }
 
     public String getLastEventRefId() {
         if(lastEvent != null){
+            // during serialization
             return lastEvent.getRefId();
         }else {
+            // during deserialization
             return lastEventRefId;
         }
     }
@@ -110,6 +116,7 @@ public class EventInboxInstance extends VariableInstance {
     public void setLastEventRefId(String lastEventRefId) {
         this.lastEventRefId = lastEventRefId;
     }
+
     /**
      * @return the events
      */
@@ -141,6 +148,7 @@ public class EventInboxInstance extends VariableInstance {
     public void addEvent(Event event) {
         // link the event to its inbox instance
         event.setEventInboxInstance(this);
+        event.setPreviousEvent(this.lastEvent);
         this.lastEvent = event;
         this.events.add(0, event);
     }
@@ -162,7 +170,7 @@ public class EventInboxInstance extends VariableInstance {
     /**
      * Chains the event list
      * Used only when a scenario gets deserialized,
-     * uses the refIds to link the newly created events
+     * uses the refIds to link the newly created events with their real db id
      */
     public void rebuildEventChaining(){
 
@@ -173,6 +181,8 @@ public class EventInboxInstance extends VariableInstance {
                 e.setPreviousEvent(previous);
             }
         }
+
+       this.lastEvent = findByRefId(getDeserializedLastEventRefId());
     }
 
 
