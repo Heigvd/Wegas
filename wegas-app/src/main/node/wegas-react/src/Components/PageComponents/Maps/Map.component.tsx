@@ -88,6 +88,7 @@ interface PlayerMapProps extends WegasComponentProps {
     [P in keyof ViewOptions]: ViewOptions[P] | IScript;
   };
   debug?: boolean;
+  scenarist?: boolean;
   OSMLayer?: boolean;
 }
 
@@ -99,6 +100,7 @@ export default function PlayerMap({
   mapOptions: mapProps,
   viewOptions: viewProps,
   debug,
+  scenarist,
   OSMLayer,
   context,
 }: PlayerMapProps) {
@@ -123,6 +125,7 @@ export default function PlayerMap({
       mapOptions={computedMapOptions}
       viewOptions={currentViewOptions}
       debug={debug}
+      scenarist={scenarist}
       OSMLayer={OSMLayer}
     >
       {children}
@@ -145,6 +148,7 @@ registerComponent(
       mapOptions: mapOptionsSchema,
       viewOptions: viewOptionsSchema,
       debug: schemaProps.boolean({ label: 'Debug mode' }),
+      scenarist: schemaProps.boolean({ label: 'Scenarist mode' }),
       OSMLayer: schemaProps.boolean({ label: 'Insert OSM layer' }),
     },
     allowedVariables: [],

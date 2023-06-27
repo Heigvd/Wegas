@@ -48,6 +48,7 @@ interface WegasMapProps {
   mapOptions?: WegasMapOptions;
   viewOptions?: ViewOptions;
   debug?: boolean;
+  scenarist?: boolean;
   OSMLayer?: boolean;
 }
 
@@ -55,6 +56,7 @@ export function WegasMap({
   mapOptions,
   viewOptions,
   debug,
+  scenarist,
   OSMLayer,
   children,
 }: React.PropsWithChildren<WegasMapProps>) {
@@ -64,6 +66,7 @@ export function WegasMap({
     center: [0, 0],
     extent: createEmpty(),
     resolution: 0,
+    mouseCoords: [0, 0],
   });
   const mapElementRef = React.useRef<HTMLDivElement>(null);
 
@@ -80,8 +83,8 @@ export function WegasMap({
   useResizeObserver(mapElementRef, debouncedMapResize);
 
   const displayMap =
-    React.useContext(authorizationsCTX).authorizations.allowExternalUrl
-    || !OSMLayer;
+    React.useContext(authorizationsCTX).authorizations.allowExternalUrl ||
+    !OSMLayer;
 
   React.useEffect(() => {
     if (typeof viewOptions?.projection === 'string') {
@@ -101,13 +104,31 @@ export function WegasMap({
       });
 
       if (debug) {
+        initialMap.on('pointermove', event => {
+          setDebugValues(ov => ({
+            zoom: ov.zoom,
+            center: ov.center,
+            extent: initialMap.getView().calculateExtent(initialMap.getSize()),
+            resolution: initialMap.getView().getResolution() || -1,
+            mouseCoords: event.coordinate || ov.mouseCoords,
+          }));
+        });
+
         initialMap.on('moveend', () => {
           setDebugValues(ov => ({
             zoom: initialMap.getView().getZoom() || ov.zoom,
             center: initialMap.getView().getCenter() || ov.center,
             extent: initialMap.getView().calculateExtent(initialMap.getSize()),
             resolution: initialMap.getView().getResolution() || -1,
+            mouseCoords: ov.mouseCoords,
           }));
+        });
+      }
+
+      if (scenarist) {
+        initialMap.on('click', event => {
+          const coord = event.coordinate;
+          navigator.clipboard.writeText(String(coord));
         });
       }
 
@@ -173,7 +194,7 @@ export function WegasMap({
         initialMap.dispose();
       };
     }
-  }, [OSMLayer, debug, displayMap, mapOptions, viewOptions]);
+  }, [OSMLayer, debug, displayMap, mapOptions, scenarist, viewOptions]);
 
   const zoomToLayersExentCb = React.useCallback(() => {
     if (map) {
@@ -211,6 +232,7 @@ export function WegasMap({
               <li>{`center: [${debugValues.center.join(';')}]`}</li>
               <li>{`extent: [${debugValues.extent.join(';')}]`}</li>
               <li>{`resolution: [${debugValues.resolution}]`}</li>
+              <li>{`mouse coords: [${debugValues.mouseCoords}]`}</li>
             </ul>
             <div className={cx(pointer)} onClick={zoomToLayersExentCb}>
               Zoom to layers
