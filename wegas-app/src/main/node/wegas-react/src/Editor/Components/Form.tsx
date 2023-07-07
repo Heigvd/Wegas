@@ -140,8 +140,36 @@ export function Form<T>({
     setMessage(undefined);
   }
 
+  const saveForm = () => {
+    if(deepDifferent(val, entity)){
+      if (form.current != null) {
+        const validation = form.current.validate();
+        if (validation.length) {
+          wwarn(val, JSON.stringify(validation, null, 2));
+          setMessage({
+            type: 'error',
+            message: i18nValues.changesNotSaved,
+          });
+        } else if (val != null) {
+          if (update)
+            update(val!);
+          setMessage({
+            type: 'succes',
+            message: i18nValues.changesSaved,
+          });
+        }
+      }
+    }
+  }
+
+  const listener = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.ctrlKey && event.code === 'KeyS') {
+      saveForm();
+    }
+  }
+
   return (
-    <Toolbar className={expandHeight}>
+    <Toolbar className={expandHeight} onKeyDown={listener}>
       <Toolbar.Header className={defaultToolboxHeaderStyle}>
         <div className={defaultTooboxLabelContainerStyle}>
           <h3 className={defaultToolboxLabelStyle}>{label}</h3>
@@ -164,24 +192,7 @@ export function Form<T>({
                   chipStyle
                   tooltip={i18nValues.save}
                   disabled={!deepDifferent(val, entity)}
-                  onClick={() => {
-                    if (form.current != null) {
-                      const validation = form.current.validate();
-                      if (validation.length) {
-                        wwarn(val, JSON.stringify(validation, null, 2));
-                        setMessage({
-                          type: 'error',
-                          message: i18nValues.changesNotSaved,
-                        });
-                      } else if (val != null) {
-                        update(val);
-                        setMessage({
-                          type: 'succes',
-                          message: i18nValues.changesSaved,
-                        });
-                      }
-                    }
-                  }}
+                  onClick={() => {saveForm();}}
                   className={expandHeight}
                 />
               )}

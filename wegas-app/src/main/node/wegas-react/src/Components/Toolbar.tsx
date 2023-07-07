@@ -33,6 +33,7 @@ export const Toolbar = Object.assign(
       vertical?: boolean;
       children: React.ReactElement<UnknownValuesObject>[];
       onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+      onKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>) => void;
     } & ClassStyleId,
   ) {
     return (
@@ -45,6 +46,7 @@ export const Toolbar = Object.assign(
         }
         style={props.style}
         onClick={props.onClick}
+        onKeyDown={props.onKeyDown}
       >
         {props.children}
       </div>
