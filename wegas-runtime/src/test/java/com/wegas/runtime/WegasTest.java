@@ -8,9 +8,6 @@
 package com.wegas.runtime;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.DomElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -486,40 +483,6 @@ public class WegasTest {
         List<GameModel> get = (List<GameModel>) client.get("/rest/GameModel", new TypeReference<List<GameModel>>() {
         });
         get.size();
-    }
-
-    @Test
-    public void hello() throws IOException {
-        WebClient webClient = new WebClient();
-        final HtmlPage page = webClient.getPage(client.getBaseURL() + "/login.html?debug=true");
-
-        Assert.assertEquals(200, page.getWebResponse().getStatusCode());
-
-        Assert.assertEquals("Web Game Authoring System - Wegas", page.getTitleText());
-
-        //tester.setTextField("username", "root@root.com");
-        //tester.setTextField("password", "1234");
-        //tester.clickLink("login");
-        //tester.submit();
-    }
-
-    //@Test
-    public void testJavascript() throws IOException {
-        WebClient webClient = new WebClient();
-        webClient.getOptions().setJavaScriptEnabled(true);
-
-        //webClient.setAjaxController(new NicelyResynchronizingAjaxController());
-        HtmlPage page = webClient.getPage(client.getBaseURL() + "/wegas-app/tests/wegas-alltests.htm");
-        //webClient.waitForBackgroundJavaScriptStartingBefore(30000);
-
-        Assert.assertEquals("Wegas Test Suite", page.getTitleText());
-        DomElement domPassed = page.getElementById("passed");
-        DomElement domTotal = page.getElementById("total");
-
-        String pContent = domPassed.getTextContent();
-        String tContent = domTotal.getTextContent();
-
-        logger.info("TESTS:  " + pContent + "/" + tContent);
     }
 
     @Test
