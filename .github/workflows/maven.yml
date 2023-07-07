@@ -5,13 +5,15 @@ name: CI
 
 on:
   push:
-    branches: [ docker-ci ]
+    branches:
+      - master
+      - docker-ci
   pull_request:
     branches: [ master ]
 
 env:
   DOCKER_REGISTRY: ghcr.io
-  DOCKER_IMAGE_NAME: ${{ github.repository }}-next
+  DOCKER_IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build:
@@ -99,8 +101,9 @@ jobs:
         images: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME }}
         tags: |
           type=ref,event=branch
-          type=ref,event=pr
-          type=raw,value=${{github.run_number}}
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
        
     - name: Build and push docker image
       uses: docker/build-push-action@v3
