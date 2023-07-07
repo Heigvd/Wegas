@@ -30,7 +30,6 @@ export interface NormalizedData {
     [id: string]: ITeam;
   };
   events: Record<string, IEvent>
-// figure out IEvent wenerator
 }
 
 type RootType = NormalizedData[keyof NormalizedData][0];

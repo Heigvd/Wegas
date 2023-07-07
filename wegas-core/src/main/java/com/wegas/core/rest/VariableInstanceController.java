@@ -97,7 +97,7 @@ public class VariableInstanceController {
      * @return all the events contained in this inbox instance
      */
     @GET
-    @Path("GetEvents")
+    @Path("{variableInstanceId: [1-9][0-9]*}/GetEvents")
     public Collection<Event> getEvents(@PathParam("variableInstanceId") Long variableInstanceId){
         var varInstance = variableInstanceFacade.find(variableInstanceId);
         if(varInstance instanceof EventInboxInstance){

@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.events;
 
+import ch.albasim.wegas.annotations.CommonView;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
@@ -23,6 +24,7 @@ import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.view.Hidden;
 import com.wegas.editor.view.Textarea;
+import jakarta.persistence.CascadeType;
 import java.util.Collection;
 import java.util.Date;
 import jakarta.persistence.Column;
@@ -74,10 +76,10 @@ public class Event extends AbstractEntity implements DatedEntity, Broadcastable 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "creation_time", columnDefinition = "timestamp with time zone")
     @WegasEntityProperty(nullable = false, view = @View(label = "Timestamp"))
-    private final Date timeStamp = new Date();
+    private Date timeStamp = new Date();
 
 
-    @OneToOne()
+    @OneToOne(cascade = CascadeType.ALL)
     @JsonIgnore
     private Event previousEvent;
 
@@ -123,6 +125,17 @@ public class Event extends AbstractEntity implements DatedEntity, Broadcastable 
         // ignored, but needed for jackson
     }
 
+    /*
+    @WegasExtraProperty(view = @View(label = "Event Box Id", featureLevel = CommonView.FEATURE_LEVEL.ADVANCED))
+    public Long getEventInboxInstanceId() {
+        return eventInboxInstance.getId();
+    }
+
+    public void setEventInboxInstanceId(Long id) {
+        // ignored, but needed for jackson
+    }
+    */
+
     public String getDeserializedPreviousEventRefId(){
         return previousEventRefId;
     }
@@ -161,7 +174,7 @@ public class Event extends AbstractEntity implements DatedEntity, Broadcastable 
     }
 
     /**
-     * @return the referenced inbox instance
+     * @return the referenced inbox instance TODO remove
      */
     @JsonIgnore
     public EventInboxInstance getEventInboxInstance() {

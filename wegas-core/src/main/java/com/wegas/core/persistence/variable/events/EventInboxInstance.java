@@ -23,8 +23,12 @@ import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 import org.slf4j.LoggerFactory;
 
@@ -74,10 +78,15 @@ public class EventInboxInstance extends VariableInstance {
     private List<Event> events = new ArrayList<>();
 
     @JsonIgnore
+    @JoinColumn(name = "lastevent_id",
+        foreignKey = @ForeignKey(name = "fk_eventinboxinstance_lastevent_id", foreignKeyDefinition =
+        "FOREIGN KEY (lastevent_id) REFERENCES event(id) ON DELETE SET NULL")
+        )
+    
     private Event lastEvent;
 
     /**
-     * Used during deserialization (e.g. of wgz scenario)
+     * Used during deserialization (wgz or zip)
      */
     @Transient
     @JsonView(Views.ExportI.class)
@@ -125,7 +134,7 @@ public class EventInboxInstance extends VariableInstance {
     }
 
     /**
-     * @return unmodifiable events list, sorted by date (newer first)
+     * @return copy events list, sorted by date (newer first)
      */
     @JsonIgnore
     public List<Event> getSortedEvents() {

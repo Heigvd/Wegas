@@ -18,7 +18,8 @@ import { closeEditor, EditingState, Edition } from './Reducer/editingState';
 import { GlobalState, LoggerLevel, WegasStatus } from './Reducer/globalState';
 import { InitStateKey } from './Reducer/initState';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
-import { EditingStoreDispatch } from './Stores/editingStore';
+import { checkAndUpdateEvents } from './Reducer/VariableInstanceReducer';
+import { editingStore, EditingStoreDispatch } from './Stores/editingStore';
 import { store } from './Stores/store';
 
 function createAction<T extends ActionTypeValues, P>(type: T, payload: P) {
@@ -74,6 +75,9 @@ export const ActionCreator = {
     updatedEntities: NormalizedData;
     events: WegasEvent[];
   }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
+
+  EVENT_SET_LOADING: (data: {eventBoxIds: string[]}) => 
+    createAction(ActionType.EVENT_SET_LOADING, data),
 
   PAGE_INDEX: (data: { index: PageIndex }) =>
     createAction(ActionType.PAGE_INDEX, data),
@@ -162,6 +166,7 @@ export function manageResponseHandler(
   localState?: EditingState,
   selectUpdatedEntity: boolean = true,
   selectPath?: (string | number)[],
+  dispatchEventCheck: boolean = true
 ) {
   const deletedEntities = normalizeData(payload.deletedEntities);
   if (localDispatch && localState) {
@@ -171,7 +176,6 @@ export function manageResponseHandler(
       localState.editing,
     );
   }
-
   const updatedEntities = normalizeData(payload.updatedEntities);
   if (localState && localDispatch) {
     const editState = localState.editing;
@@ -222,10 +226,17 @@ export function manageResponseHandler(
       }) || [],
   };
 
+  // update event boxes that require a refresh on their events
+  if(dispatchEventCheck){
+    editingStore.dispatch(checkAndUpdateEvents())
+  }
+
   store.dispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
 
   localDispatch &&
     localDispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
+
+
 
   return ActionCreator.MANAGED_RESPONSE_ACTION(
     localDispatch ? managedValuesOnly : managedValues,
