@@ -8,8 +8,7 @@
 
 import { css } from '@emotion/css';
 import * as React from 'react';
-import useTranslations from '../../i18n/I18nContext';
-import logger from '../../logger';
+import useTranslations, { I18nCtx } from '../../i18n/I18nContext';
 import { useAppDispatch } from '../../store/hooks';
 import { addNotification } from '../../store/slices/notification';
 import Button from './Button';
@@ -18,7 +17,7 @@ import InlineLoading from './InlineLoading';
 import Input from './Input';
 import Toggler from './Toggler';
 
-const PasswordStrengthBar = React.lazy(() => import('react-password-strength-bar'));
+const PasswordStrengthBar = React.lazy(() => import('./password/PasswordStrengthBar'));
 
 const hideBar = css({
   display: 'none',
@@ -40,10 +39,16 @@ export interface TextualField<T> extends BaseField<T> {
   type: 'text' | 'textarea';
 }
 
+export interface PasswordFeedback {
+  warning?: string;
+  suggestions?: string[];
+}
 export interface PasswordField<T> extends BaseField<T> {
   type: 'password';
   showStrenghBar: boolean;
   strengthProp?: keyof T;
+  feedbackProp?: keyof T;
+  dynamicErrorMessage: (feedback: PasswordFeedback | undefined) => React.ReactNode;
 }
 
 export interface BooleanField<T> extends BaseField<T> {
@@ -56,7 +61,7 @@ export interface BooleanField<T> extends BaseField<T> {
 export type Field<T> = TextualField<T> | PasswordField<T> | BooleanField<T>;
 
 export interface FormProps<T> {
-  fields: Field<T>[];
+  fields: Readonly<Field<Readonly<T>>>[];
   value: T;
   autoSubmit?: boolean;
   submitLabel?: string;
@@ -73,6 +78,7 @@ export default function Form<T>({
   autoSubmit = false,
 }: FormProps<T>): JSX.Element {
   const i18n = useTranslations();
+  const { lang } = React.useContext(I18nCtx);
   const dispatch = useAppDispatch();
 
   const [state, setState] = React.useState<T>(value);
@@ -142,7 +148,7 @@ export default function Form<T>({
             value={String(state[field.key] || '')}
             label={field.label}
             placeholder={field.placeholder}
-            warning={erroneous && isErroneous ? field.errorMessage : undefined}
+            warning={isErroneous && (String(state[field.key]) !== '' || erroneous) ? (field.key !== 'confirm' && field.feedbackProp)?field.dynamicErrorMessage(state[field.feedbackProp] as PasswordFeedback): field.errorMessage : undefined}
             mandatory={field.isMandatory}
             onChange={value => setFormValue(field.key, value)}
             readonly={field.readonly}
@@ -153,12 +159,13 @@ export default function Form<T>({
             <div className={field.showStrenghBar ? '' : hideBar}>
               <React.Suspense fallback={<InlineLoading />}>
                 <PasswordStrengthBar
+                  uiLanguage={lang}
                   barColors={['#ddd', '#ef4836', 'rgb(118, 176, 232)', '#2b90ef', '#01f590']}
-                  scoreWordStyle={{ color: 'var(--fgColor)' }}
+                  scoreWordClassName={hideBar}
                   onChangeScore={(value, feedback) => {
-                    if (field.strengthProp != null) {
-                      logger.warn("Password strength feedback", {strength: value, feedback});
+                    if (field.strengthProp != null && field.feedbackProp != null) {
                       setFormValue(field.strengthProp, value);
+                      setFormValue(field.feedbackProp, feedback);
                     }
                   }}
                   password={String(state[field.key] || '')}
@@ -207,9 +214,13 @@ export default function Form<T>({
       })}
       onKeyDown={onEnterCb}
     >
-      <form>
-        {fieldComps}
-      </form>
+      <div className={css({
+        overflow: "auto"
+      })}>
+        <form>
+          {fieldComps}
+        </form>
+      </div>
       {autoSubmit ? null : (
         <Button
           key="submit"
