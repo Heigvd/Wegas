@@ -296,12 +296,6 @@
             <artifactId>jtidy</artifactId>
             <type>jar</type>
         </dependency>
-        <!--<dependency>
-            <groupId>net.sourceforge.htmlunit</groupId>
-            <artifactId>htmlunit</artifactId>
-            <scope>test</scope>
-            <type>jar</type>
-        </dependency>-->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
