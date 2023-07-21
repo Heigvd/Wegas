@@ -10,12 +10,10 @@ on:
       - docker-ci
     tags:
       - "v*"
-  pull_request:
-    branches: [ master ]
 
 env:
   DOCKER_REGISTRY: ghcr.io
-  DOCKER_IMAGE_NAME: ${{ github.repository }}-next
+  DOCKER_IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build:
