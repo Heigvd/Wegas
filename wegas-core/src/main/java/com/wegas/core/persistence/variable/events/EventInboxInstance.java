@@ -78,11 +78,6 @@ public class EventInboxInstance extends VariableInstance {
     private List<Event> events = new ArrayList<>();
 
     @JsonIgnore
-    @JoinColumn(name = "lastevent_id",
-        foreignKey = @ForeignKey(name = "fk_eventinboxinstance_lastevent_id", foreignKeyDefinition =
-        "FOREIGN KEY (lastevent_id) REFERENCES event(id) ON DELETE SET NULL")
-        )
-    
     private Event lastEvent;
 
     /**
