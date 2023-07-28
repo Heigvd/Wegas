@@ -45,12 +45,12 @@ export default function Checkbox({
         {warning ? <div className={cx(errorStyle, smallTextStyle)}>{warning}</div> : null}
         {error ? <div className={cx(errorStyle, smallTextStyle)}>{error}</div> : null}
       </Flex>
-      <Flex
-        className={disabled ? disabledStyle : enabledStyle}
-        justify="flex-start"
-        onClick={disabled ? undefined : () => onChange(!value)}
-      >
-        <IconButton title={title} icon={value ? faCheckSquare : faSquare}>
+      <Flex className={disabled ? disabledStyle : enabledStyle} justify="flex-start">
+        <IconButton
+          onClick={disabled ? undefined : () => onChange(!value)}
+          title={title}
+          icon={value ? faCheckSquare : faSquare}
+        >
           {label}
         </IconButton>
       </Flex>
