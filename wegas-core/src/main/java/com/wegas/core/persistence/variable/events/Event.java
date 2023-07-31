@@ -125,17 +125,7 @@ public class Event extends AbstractEntity implements DatedEntity, Broadcastable 
         // ignored, but needed for jackson
     }
 
-    /*
-    @WegasExtraProperty(view = @View(label = "Event Box Id", featureLevel = CommonView.FEATURE_LEVEL.ADVANCED))
-    public Long getEventInboxInstanceId() {
-        return eventInboxInstance.getId();
-    }
-
-    public void setEventInboxInstanceId(Long id) {
-        // ignored, but needed for jackson
-    }
-    */
-
+    @JsonIgnore
     public String getDeserializedPreviousEventRefId(){
         return previousEventRefId;
     }

@@ -18,8 +18,7 @@ import { closeEditor, EditingState, Edition } from './Reducer/editingState';
 import { GlobalState, LoggerLevel, WegasStatus } from './Reducer/globalState';
 import { InitStateKey } from './Reducer/initState';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
-import { checkAndUpdateEvents } from './Reducer/VariableInstanceReducer';
-import { editingStore, EditingStoreDispatch } from './Stores/editingStore';
+import { EditingStoreDispatch } from './Stores/editingStore';
 import { store } from './Stores/store';
 
 function createAction<T extends ActionTypeValues, P>(type: T, payload: P) {
@@ -76,7 +75,7 @@ export const ActionCreator = {
     events: WegasEvent[];
   }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
 
-  EVENT_SET_LOADING: (data: {eventBoxIds: string[]}) => 
+  EVENT_SET_LOADING: (data: number) => 
     createAction(ActionType.EVENT_SET_LOADING, data),
 
   PAGE_INDEX: (data: { index: PageIndex }) =>
@@ -166,7 +165,6 @@ export function manageResponseHandler(
   localState?: EditingState,
   selectUpdatedEntity: boolean = true,
   selectPath?: (string | number)[],
-  dispatchEventCheck: boolean = true
 ) {
   const deletedEntities = normalizeData(payload.deletedEntities);
   if (localDispatch && localState) {
@@ -225,11 +223,6 @@ export function manageResponseHandler(
         return timedEvent;
       }) || [],
   };
-
-  // update event boxes that require a refresh on their events
-  if(dispatchEventCheck){
-    editingStore.dispatch(checkAndUpdateEvents())
-  }
 
   store.dispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
 

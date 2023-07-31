@@ -13,6 +13,7 @@ import { ThemeProvider } from './Components/Theme/Theme';
 import './css/global.css';
 import './data/Stores/store';
 import { Player } from './Editor/Components/Player';
+import EventInstanceManager from './Components/Contexts/EventInstanceManager';
 
 importPageComponents();
 
@@ -27,7 +28,9 @@ function mount() {
               <ClassesProvider>
                 <PlayerLibrariesLoader>
                   <ThemeProvider contextName="player">
-                    <Player />
+                    <EventInstanceManager>
+                      <Player />
+                    </EventInstanceManager>
                   </ThemeProvider>
                 </PlayerLibrariesLoader>
               </ClassesProvider>
