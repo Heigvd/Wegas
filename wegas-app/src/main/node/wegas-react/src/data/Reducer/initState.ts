@@ -7,6 +7,7 @@ export type InitStateKey =
   | 'variables'
   | 'instances'
   | 'pages'
+  | 'components'
   | 'game'
   | 'gameModel'
   | 'teams'
@@ -36,6 +37,7 @@ const initStatuses: Reducer<Readonly<InitState>> = u(
     instances: false,
     variables: false,
     pages: false,
+    components: false,
     game: false,
     gameModel: false,
     teams: false,

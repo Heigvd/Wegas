@@ -1066,6 +1066,8 @@ export function LibrariesLoader(
                 acc[gmc.persisted.contentKey] = gmc.persisted.content;
                 return acc;
               }, {});
+              // Since dispatchLibrariesState is asnyc (presumably since React 18) let's override edited library with new version
+              clientScripts[library.contentKey] = library.content;
 
               execAllScripts(Object.entries(clientScripts), setErrorCb);
             }
