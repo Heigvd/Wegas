@@ -24,7 +24,7 @@ import {
 } from '../../Editor/Components/ScriptEditors/editorHelpers';
 import { useJSONSchema } from '../../Editor/Components/ScriptEditors/useJSONSchema';
 import { clearEffects, runEffects } from '../../Helper/pageEffectsManager';
-import { getLogger, wlog, wwarn } from '../../Helper/wegaslog';
+import { getLogger, wwarn } from '../../Helper/wegaslog';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { clearModule } from '../Hooks/sandbox';
@@ -568,9 +568,7 @@ export function LibrariesLoader(
   // enhanced reducer keeps stateRef up-to-date
   const enhancedReducer = React.useCallback(
     (state: LibrariesState, action: LibraryStateAction) => {
-      wlog("EnhancedReducer");
       stateRef.current = setLibrariesState(state, action);
-      wlog("EnhancedReducer -> update stateRef");
       return stateRef.current;
     },
     [],
