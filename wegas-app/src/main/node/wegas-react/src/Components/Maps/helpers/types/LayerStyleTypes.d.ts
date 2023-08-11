@@ -62,7 +62,7 @@ type CrossOriginStyleObject = 'anonymous' | 'use-credentials';
 
 interface IconStyleObject extends SharedImageStyleProperties {
   type: 'IconStyle';
-  achor?: PointLikeObject;
+  anchor?: PointLikeObject;
   anchorOrigin?: AnchorPositionStyleObject;
   anchorXUnits?: AnchorUnitsStyleObject;
   anchorYUnits?: AnchorUnitsStyleObject;
