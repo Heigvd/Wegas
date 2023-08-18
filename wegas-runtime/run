@@ -159,6 +159,7 @@ cp ${DEFAULT_WEGAS_PROPERTIES} ${DEFAULT_WEGAS_PROPERTIES_ORI}
     -Dproduct.name= -XX:+ParallelRefProcEnabled -XX:+UseCompressedOops -XX:-UseLoopPredicate \
     -Xms${HEAP} -Xmx${HEAP} \
     -Djava.security.egd=file:/dev/urandom \
+    -Djdk.util.zip.disableZip64ExtraFieldValidation=true \
     -Dhazelcast.shutdownhook.enabled=true \
     -Dfish.payara.tenantcontrol.blocking.disable=true \
     -Dwegas.db.host=${DB_HOST} -Dwegas.db.port=5432 \
