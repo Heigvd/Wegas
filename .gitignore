@@ -13,6 +13,12 @@ doc/Wegas.uml~
 #!target/site*
 #!target/Wegas.war
 
+# Docker tmp files
+wegas-runtime/src/main/docker/wegas/Wegas.war
+wegas-runtime/src/main/docker/wegas/run
+wegas-runtime/src/main/docker/wegas/as_prebootcmd
+wegas-runtime/src/main/docker/wegas/payara-micro.current.jar
+
 # Compiled source #
 ###################
 *.com
