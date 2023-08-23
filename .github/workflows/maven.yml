@@ -116,7 +116,7 @@ jobs:
     - name: Upload
       shell: bash
       run: |
-        cp wegas-app/target/Wegas.war /tmp/${{steps.war-name.outputs.WAR_NAME}}
+        cp -R wegas-app/target/Wegas.war /tmp/${{steps.war-name.outputs.WAR_NAME}}
         curl -s -F "war=@/tmp/${{steps.war-name.outputs.WAR_NAME}}" -H "Authorization:token ${{ secrets.WAR_MANAGER_ADMIN_TOKEN }}" https://manager.albasim.ch/api/branch/upload
 #   - name: clean maven cache
 #     shell: bash
