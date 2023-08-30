@@ -1,5 +1,7 @@
+# set the maximum number of concurrent asynchorous tasks
 set resources.managed-executor-service.concurrent/__defaultManagedExecutorService.core-pool-size=${wegas.nb_populators}
 
+# disable http2 (for some reason, reverse proxy has a very strange behaviour when enabled...)
 set configs.config.server-config.network-config.protocols.protocol.http-listener.http.http2-enabled=false
 set configs.config.server-config.network-config.protocols.protocol.https-listener.http.http2-enabled=false
 

@@ -5,9 +5,14 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches:
+      - master
+    tags:
+      - "v*"
+
+env:
+  DOCKER_REGISTRY: ghcr.io
+  DOCKER_IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build:
@@ -56,7 +61,7 @@ jobs:
       shell: bash
       run: |
         echo "MAVEN_OPTS='-Xms800m -Xmx800m'" > ~/.mavenrc
-        echo "BRANCH=$(if [ ${{ github.event_name }}  == pull_request ]; then echo ${{ github.base_ref }}; else echo ${{ github.ref}} | sed -e 's/refs\/heads\///'  ; fi)" >> $GITHUB_OUTPUT
+        echo "BRANCH=$(if [ ${{ github.event_name }}  == pull_request ]; then echo ${{ github.base_ref }}; else echo ${{ github.ref_name}}; fi)" >> $GITHUB_OUTPUT
     - name: Set war name
       id: war-name
       shell: bash
@@ -66,7 +71,7 @@ jobs:
       env:
         PR_NAME: ${{ github.head_ref }}
         PR_NUMBER: ${{ github.event.number}}
-      run: perl -pi -e 's/(wegas.build.number)=/$1=$ENV{GITHUB_RUN_NUMBER}/;s/(wegas.build.branch)=/$1=${{steps.branch-name.outputs.BRANCH}}/;s/(wegas.build.pr_branch)=/$1=$ENV{PR_NAME}/;s/(wegas.build.pr_number)=/$1=$ENV{PR_NUMBER}/;' wegas-core/src/main/resources/wegas.properties
+      run: perl -pi -e 's/(wegas.build.number)=/$1=$ENV{GITHUB_RUN_NUMBER}/;s~(wegas.build.branch)=~$1=${{steps.branch-name.outputs.BRANCH}}~;s/(wegas.build.pr_branch)=/$1=$ENV{PR_NAME}/;s/(wegas.build.pr_number)=/$1=$ENV{PR_NUMBER}/;' wegas-core/src/main/resources/wegas.properties
     - name: Build with Maven
       run: mvn -B -P release-profile package --file pom.xml
 
@@ -74,6 +79,39 @@ jobs:
       if: ${{ failure() }}
       shell: bash
       run: wegas-runtime/src/test/node/upload_result.sh
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ env.DOCKER_REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract Docker metadata
+      id: docker-meta
+      uses: docker/metadata-action@v4
+      with:
+        images: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+       
+    - name: Build and push docker image
+      uses: docker/build-push-action@v3
+      with:
+        context: wegas-runtime/src/main/docker/wegas
+        platforms: linux/amd64,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x
+        push: true
+        tags: ${{ steps.docker-meta.outputs.tags }}
+        labels: ${{ steps.docker-meta.outputs.labels }}
 
     - name: Upload
       shell: bash

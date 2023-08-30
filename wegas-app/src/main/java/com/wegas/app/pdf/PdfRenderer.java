@@ -176,17 +176,8 @@ public class PdfRenderer implements Filter {
                 tidy.parse(iStream, os);
 
                 if (renderType != null && renderType.equals("pdf")) {
-                    /**
-                     * Since injecting correct url within print.xhtml.h:doctype.system leads to
-                     * nothing good, let's hack
-                     */
-                    String urlDTD = req.getRequestURL().toString().replace(req.getServletPath(), "/wegas-app/DTD/xhtml1-transitional.dtd");
-                    String toString = os.toString().replaceFirst("__DTD_URL__", urlDTD);
 
-                    StringReader contentReader = new StringReader(toString);
-
-                    InputSource source = new InputSource(contentReader);
-
+                    InputSource source = new InputSource(new StringReader(os.toString()));
                     Document xhtmlDocument = documentBuilder.parse(source);
 
                     if (debug) {
@@ -263,7 +254,7 @@ public class PdfRenderer implements Filter {
      */
     private String createHtmlDoc(String title, String body) {
         return "" //"<?xml version=\"1.0\" encoding=\"UTF-8\" ?> "
-            + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"__DTD_URL__\"> "
+            // + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"__DTD_URL__\"> "
             + "<html><head><meta charset=\"UTF-8\" /><meta http-equiv=\"Content-Type\" content=\"text/html\" /><title>"
             + title
             + "</title>"

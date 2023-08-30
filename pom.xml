@@ -141,7 +141,7 @@
         <arquillian.version>1.7.0.Alpha14</arquillian.version>
         <exec.plugin.version>1.2</exec.plugin.version>
 
-        <eclipselink.version>4.0.0-M3</eclipselink.version>
+        <eclipselink.version>4.0.0-M3.payara-p1</eclipselink.version>
 
         <!-- logback 1.4.x slf4j 2.x + jakarta ns -->
         <slf4j.version>2.0.6</slf4j.version>
@@ -346,7 +346,7 @@
             <dependency>
                 <groupId>com.itextpdf</groupId>
                 <artifactId>itextpdf</artifactId>
-                <version>5.5.13.2</version>
+                <version>5.5.13.3</version>
             </dependency>
             <dependency>
                 <groupId>org.xhtmlrenderer</groupId>
@@ -491,13 +491,6 @@
                 <scope>test</scope>
             </dependency>
 
-            <dependency>
-                <groupId>net.sourceforge.htmlunit</groupId>
-                <artifactId>htmlunit</artifactId>
-                <version>2.39.1</version>
-                <scope>test</scope>
-                <type>jar</type>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -587,6 +580,7 @@
                             </configuration>
                         </execution>
                     </executions>
+
                     <dependencies>
                         <dependency>
                             <groupId>org.eclipse.persistence</groupId>
@@ -1063,10 +1057,11 @@
         </repository>
     </repositories>
 
-    <!--<pluginRepositories>
+    <pluginRepositories>
+        <!-- for static weave plugin -->
         <pluginRepository>
-            <id>jsdoctk2</id>
-            <url>http://jsdoctk-plugin.googlecode.com/svn/repo</url>
+            <id>payara</id>
+            <url>https://nexus.payara.fish/repository/payara-artifacts</url>
         </pluginRepository>
-    </pluginRepositories>-->
+    </pluginRepositories>
 </project>

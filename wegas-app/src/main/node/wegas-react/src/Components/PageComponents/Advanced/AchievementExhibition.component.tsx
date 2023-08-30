@@ -5,7 +5,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 
 interface PlayerAchievementExhibitionProps extends WegasComponentProps {
   quest: string;
@@ -34,7 +34,7 @@ registerComponent(
           label: 'Quest',
         },
       },
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: ['AchievementDescriptor'],
     getComputedPropsFromVariable: v => {

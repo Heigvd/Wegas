@@ -205,9 +205,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * @return the new descriptor
      */
     @Override
-    public VariableDescriptor createChild(final GameModel gameModel,
-        final DescriptorListI<VariableDescriptor> list,
-        final VariableDescriptor entity, boolean resetNames, boolean resetRefIds) {
+    public VariableDescriptor createChild(final GameModel gameModel, final DescriptorListI<VariableDescriptor> list, final VariableDescriptor entity, boolean resetNames, boolean resetRefIds, Integer index) {
 
         if (resetRefIds) {
             MergeHelper.resetRefIds(entity, null, true);
@@ -255,7 +253,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
         Helper.setUniqueLabel(entity, usedLabels, gameModel);
 
-        list.addItem(entity);
+        list.addItem(index, entity);
 
         /*
          * This flush is required by several EntityRevivedEvent listener, which opperate some SQL
@@ -467,7 +465,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      */
     public VariableDescriptor createChild(final Long parentDescriptorId, final VariableDescriptor entity) {
         VariableDescriptor parent = this.find(parentDescriptorId);
-        return this.createChild(parent.getGameModel(), (DescriptorListI) parent, entity, false, false);
+        return this.createChild(parent.getGameModel(), (DescriptorListI) parent, entity, false, false, null);
     }
 
     /**
@@ -487,7 +485,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 //                }
 //            }
 //        }
-        this.createChild(find, find, variableDescriptor, false, false);
+        this.createChild(find, find, variableDescriptor, false, false, null);
     }
 
     /**
@@ -500,17 +498,43 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      */
     @Override
     public VariableDescriptor duplicate(final Long entityId) throws CloneNotSupportedException {
-        final VariableDescriptor oldEntity = this.find(entityId); // Retrieve the entity to duplicate
+        return copy(entityId, null, null);
+    }
+
+    @Override
+    public VariableDescriptor copy(final Long descriptorId, final Long targetListDescriptorId, final Integer index)
+        throws CloneNotSupportedException
+    {
+        final VariableDescriptor oldEntity = this.find(descriptorId); // Retrieve the entity to duplicate
         final VariableDescriptor newEntity = (VariableDescriptor) oldEntity.duplicate();
 
         if (oldEntity.belongsToProtectedGameModel()) {
             MergeHelper.resetVisibility(newEntity, Visibility.PRIVATE);
         }
 
-        final DescriptorListI list = oldEntity.getParent();
-        this.createChild(oldEntity.getGameModel(), list, newEntity, true, true);
+        DescriptorListI list;
+        if(targetListDescriptorId == null){
+            // create copy in the same list
+            list = oldEntity.getParent();
+        }else{
+            var newParent = this.find(targetListDescriptorId);
+            if(newParent instanceof DescriptorListI){
+                list = (DescriptorListI)newParent;
+            }else{
+                throw WegasErrorMessage.error(
+                    "Provided targetListDescriptorId (" + targetListDescriptorId + ") does not correspond to a DescriptorListI object");
+            }
+        }
+        this.createChild(oldEntity.getGameModel(), list, newEntity, true, true, index);
         return newEntity;
     }
+
+    @Override
+    public VariableDescriptor copy(final Long descriptorId, final Long targetListDescriptorId) throws CloneNotSupportedException{
+        return copy(descriptorId, targetListDescriptorId, null);
+    }
+
+
 
     public VariableDescriptor resetVisibility(VariableDescriptor vd, Visibility visibility) {
         vd.setVisibility(visibility);
@@ -595,7 +619,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                 staticText.setText(value);
                 staticText.setVisibility(vdVisib);
 
-                this.createChild(gameModel, parent, staticText, false, false);
+                this.createChild(gameModel, parent, staticText, false, false, null);
 
                 staticText.setName(vdName);
             }
@@ -636,7 +660,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                     text.setLabel(label);
                     text.setVisibility(vdVisibility);
 
-                    this.createChild(gameModel, parent, text, false, false);
+                    this.createChild(gameModel, parent, text, false, false, null);
                 }
             }
         }
@@ -1132,7 +1156,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                         });
                     }
 
-                    theVar = this.createChild(target, target, theVar, false, false);
+                    theVar = this.createChild(target, target, theVar, false, false, null);
 
                     ContentConnector srcRepo = jcrConnectorProvider.getContentConnector(source,
                         WorkspaceType.FILES);

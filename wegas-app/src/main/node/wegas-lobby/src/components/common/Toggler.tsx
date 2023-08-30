@@ -10,6 +10,7 @@ import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { successColor } from '../styling/color';
 import { errorStyle, warningStyle } from '../styling/style';
+import Clickable from './Clickable';
 import Flex from './Flex';
 
 export interface Props {
@@ -72,16 +73,14 @@ export default function Toggler({
         {warning ? <div className={warningStyle}>{warning}</div> : null}
         {error ? <div className={errorStyle}>{error}</div> : null}
       </Flex>
-      <Flex justify="space-between">
-        <div
-          title={title}
-          onClick={disabled ? undefined : () => onChange(!value)}
-          className={cx(containerStyle, className)}
-        >
-          <div className={value ? onStyle : offStyle}></div>
-        </div>
-        <div>&nbsp;{label}</div>
-      </Flex>
+      <Clickable onClick={disabled ? undefined : () => onChange(!value)}>
+        <Flex justify="space-between">
+          <div title={title} className={cx(containerStyle, className)}>
+            <div className={value ? onStyle : offStyle}></div>
+          </div>
+          <div>&nbsp;{label}</div>
+        </Flex>
+      </Clickable>
     </Flex>
   );
 }

@@ -68,9 +68,13 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                 }));
             } else if (!Y.Lang.isUndefined(this.get("initialFullRequest"))) {
+                var url = Y.Wegas.app.get("base") + this.get("initialFullRequest");
+                if (url.startsWith('/')) {
+                    url = window.location.origin + url;
+                }
                 return this.sendRequest(Y.mix(cfg || {}, {
                     cfg: {
-                        fullUri: Y.Wegas.app.get("base") + this.get("initialFullRequest"),
+                        fullUri: url,
                         initialRequest: true
                     }
                 }));

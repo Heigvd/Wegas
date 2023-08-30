@@ -101,6 +101,7 @@ export default function SignInForm({ username, redirectTo }: Props): JSX.Element
           {i18n.forgottenPassword}
         </InlineLink>
       ),
+      dynamicErrorMessage: () => i18n.forgottenPassword
     },
   ];
 

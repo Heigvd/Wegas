@@ -166,8 +166,9 @@ public interface VariableDescriptorFacadeI {
      * @param gameModel   the gameModel
      * @param list        new descriptor parent
      * @param entity      new descriptor to create
-     * @param resetNames  should completely reset names or try to keep provideds ?
-     * @param resetRefIds should generate brand new refIds ?
+     * @param resetNames  should completely reset names or try to keep provided
+     * @param resetRefIds should generate brand new refIds
+     * @param index       position of the new child in the parent
      *
      * @return the new descriptor
      */
@@ -175,18 +176,45 @@ public interface VariableDescriptorFacadeI {
         final DescriptorListI<VariableDescriptor> list,
         final VariableDescriptor entity,
         boolean resetNames,
-        boolean resetRefIds
+        boolean resetRefIds,
+        Integer index
     );
-    
+
     /**
      * Remove variable
-     * 
+     *
      * @param entity    the variableDescriptor to delete
      */
     void remove(VariableDescriptor entity);
-    
+
     /**
-     * 
+     * Move a variable to a list
+     * @param descriptorId the variable descriptor to move
+     * @param targetListDescriptorId the destination list.
+     * @param index the insert index in destination. passing null means append
+     */
+    void move(final Long descriptorId, final Long targetListDescriptorId, final Integer index);
+
+
+    /**
+     * @param descriptorId the variable descriptor to copy
+     * @param targetListDescriptorId the destination list. null means copy in current location
+     * @param index the insert index in destination. passing null means append
+     * @return the newly created descriptor
+     * @throws java.lang.CloneNotSupportedException
+     */
+    VariableDescriptor copy(final Long descriptorId, final Long targetListDescriptorId, final Integer index) throws CloneNotSupportedException;
+
+    /**
+     * @param descriptorId the variable descriptor to copy
+     * @param targetListDescriptorId the destination list. null means copy in current location
+     * @return the newly created descriptor
+     * @throws java.lang.CloneNotSupportedException
+     */
+    VariableDescriptor copy(final Long descriptorId, final Long targetListDescriptorId) throws CloneNotSupportedException;
+
+    /**
+     *
      * @param vd The variable descriptor to convert
      * @return the new descriptor
      */

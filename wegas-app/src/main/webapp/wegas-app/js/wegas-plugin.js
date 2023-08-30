@@ -159,7 +159,8 @@ YUI.add('wegas-plugin', function(Y) {
                 "Content-Type": "application/json"
             });
 
-            Y.io(Y.Wegas.app.get('base') + this.get('url'), {
+            var url = this.get("url");
+            Y.io(Wegas.app.get('base') + url.startsWith("/") ? url.substring(1) : url, {
                 method: this.get('method'),
                 data: this.get('data'),
                 headers: headers
@@ -217,8 +218,8 @@ YUI.add('wegas-plugin', function(Y) {
                 url.indexOf('http://') !== 0 &&
                 url.indexOf('https://') !== 0 &&
                 url.indexOf('//') !== 0
-                ) {
-                url = Wegas.app.get('base') + url;
+            ) {
+                url = Wegas.app.get('base') + url.startsWith("/") ? url.substring(1) : url;
             }
             if (this.get('target') === 'blank') {
                 window.open(url);
@@ -277,7 +278,7 @@ YUI.add('wegas-plugin', function(Y) {
                 url.indexOf('https://') !== 0 &&
                 url.indexOf('//') !== 0
                 ) {
-                url = Wegas.app.get('base') + url;
+                url = Wegas.app.get('base') + url.startsWith("/") ? url.substring(1) : url;
             }
             if (this.get('target') === 'blank') {
                 window.open(url);

@@ -9,6 +9,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 interface QuestionListDisplayProps extends WegasComponentProps {
@@ -23,6 +24,8 @@ export default function QuestionListDisplay({
   autoOpenFirst,
   mobileDisplay,
   edit,
+  className,
+  style,
   context,
   options,
 }: QuestionListDisplayProps) {
@@ -43,6 +46,8 @@ export default function QuestionListDisplay({
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
       editMode={editing}
+      className={className}
+      style={style}
     />
   );
 }
@@ -79,6 +84,7 @@ registerComponent(
         required: false,
         returnType: ['boolean'],
       }),
+      ...classStyleIdSchema,
     },
     allowedVariables: ['ListDescriptor', 'QuestionDescriptor'],
     getComputedPropsFromVariable: v => ({

@@ -12,10 +12,12 @@ import { signUp } from '../../API/api';
 import { buildLinkWithQueryParam } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
 import { useAppDispatch } from '../../store/hooks';
-import Form, { Field } from '../common/Form';
+import Form, { Field, PasswordFeedback } from '../common/Form';
 import { InlineLink } from '../common/Link';
 import MelonContainer from '../common/MelonContainer';
 import PolicyDisclaimer from './PolicyDisclaimer';
+
+import PasswordErrorTooltip from '../common/password/PasswordErrorTooltip';
 
 interface Props {
   redirectTo: string | null;
@@ -26,6 +28,7 @@ interface Data {
   email: string;
   password: string;
   strength: number;
+  feedback?: PasswordFeedback;
   confirm: string;
   firstname: string;
   lastname: string;
@@ -67,16 +70,17 @@ export default function SignUp(props: Props): JSX.Element {
       isErroneous: data => data.strength < 2,
       errorMessage: (
         <div>
-          {i18n.weakPassword} {i18n.passwordConditions.mustContain}
-          <ul className={css({ margin: '3px 0' })}>
-            <li>{i18n.passwordConditions.minChars}</li>
-            <li>{i18n.passwordConditions.minCaps}</li>
-            <li>{i18n.passwordConditions.minNums}</li>
-          </ul>
+          {i18n.weakPassword}
         </div>
       ),
-      showStrenghBar: false,
+      showStrenghBar: true,
       strengthProp: 'strength',
+      feedbackProp: 'feedback',
+      dynamicErrorMessage: (feedback?: PasswordFeedback) => (
+        <PasswordErrorTooltip
+        warning={feedback?.warning}
+        suggestions={feedback?.suggestions}
+        ></PasswordErrorTooltip>)
     },
     {
       key: 'confirm',
@@ -87,6 +91,7 @@ export default function SignUp(props: Props): JSX.Element {
       isErroneous: data => data.password !== data.confirm,
       errorMessage: i18n.passwordsMismatch,
       showStrenghBar: false,
+      dynamicErrorMessage: () => i18n.passwordsMismatch
     },
     {
       key: 'username',
