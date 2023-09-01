@@ -388,6 +388,10 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
 
   globals.APIMethods = APIScriptMethods;
 
+  const scrollIntoView = (selector: string, options: ScrollIntoViewOptions): void => {
+    document.querySelector(selector)?.scrollIntoView(options);
+  }
+
   globals.Helpers = {
     cloneDeep: cloneDeep,
     uniq: uniq,
@@ -400,6 +404,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     downloadFile: downloadFile,
     downloadDataAsFile,
     getWegasUrl: getWegasUrl,
+    scrollIntoView: scrollIntoView,
   };
 
   globals.Roles = {
