@@ -96,6 +96,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Extract Docker metadata
+      if: github.event_name != 'pull_request'
       id: docker-meta
       uses: docker/metadata-action@v4
       with:
@@ -105,8 +106,8 @@ jobs:
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
           type=semver,pattern={{major}}
-       
     - name: Build and push docker image
+      if: github.event_name != 'pull_request'
       uses: docker/build-push-action@v3
       with:
         context: wegas-runtime/src/main/docker/wegas
@@ -114,12 +115,13 @@ jobs:
         push: true
         tags: ${{ steps.docker-meta.outputs.tags }}
         labels: ${{ steps.docker-meta.outputs.labels }}
-
     - name: Upload
+      if: github.event_name != 'pull_request'
       shell: bash
       run: |
         cp wegas-app/target/Wegas.war /tmp/${{steps.war-name.outputs.WAR_NAME}}
         curl -s -F "war=@/tmp/${{steps.war-name.outputs.WAR_NAME}}" -H "Authorization:token ${{ secrets.WAR_MANAGER_ADMIN_TOKEN }}" https://manager.albasim.ch/api/branch/upload
+      
 #   - name: clean maven cache
 #     shell: bash
 #     run: ./clean_repository.sh
