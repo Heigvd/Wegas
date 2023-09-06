@@ -71,10 +71,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
-import javax.script.ScriptContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.Response;
-import jdk.nashorn.api.scripting.ScriptUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -83,6 +81,7 @@ import org.apache.shiro.realm.Realm;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ThreadContext;
+import org.graalvm.polyglot.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
@@ -273,11 +272,6 @@ public class RequestManager implements RequestManagerI {
     private Long startTimestamp;
 
     /**
-     * time-out timestamp
-     */
-    private Long deadline;
-
-    /**
      * time entering ManagedMode filter
      */
     private Long managementStartTime;
@@ -356,9 +350,9 @@ public class RequestManager implements RequestManagerI {
     private Locale locale;
 
     /**
-     * the Nashorn script context to use during the request
+     * the GraalVM script context to use during the request
      */
-    private ScriptContext currentScriptContext = null;
+    private Context currentScriptContext = null;
 
     private boolean clearCacheOnDestroy = false;
 
@@ -642,6 +636,9 @@ public class RequestManager implements RequestManagerI {
      */
     public void setPlayer(Player currentPlayer) {
         if (this.currentPlayer == null || !this.currentPlayer.equals(currentPlayer)) {
+            if (currentScriptContext != null) {
+                currentScriptContext.close();
+            }
             this.setCurrentScriptContext(null);
         }
         this.currentPlayer = currentPlayer != null ? (currentPlayer.getId() != null ? playerFacade.find(currentPlayer.getId()) : currentPlayer) : null;
@@ -772,14 +769,14 @@ public class RequestManager implements RequestManagerI {
     /**
      * @return the currentScriptContext
      */
-    public ScriptContext getCurrentScriptContext() {
+    public Context getCurrentScriptContext() {
         return currentScriptContext;
     }
 
     /**
      * @param currentScriptContext the currentScriptContext to set
      */
-    public void setCurrentScriptContext(ScriptContext currentScriptContext) {
+    public void setCurrentScriptContext(Context currentScriptContext) {
         this.currentScriptContext = currentScriptContext;
     }
 
@@ -980,11 +977,11 @@ public class RequestManager implements RequestManagerI {
     @Override
     public void sendCustomEvent(String type, Object payload) {
         // @hack check payload type against "jdk.nashorn.internal"
-        if (payload.getClass().getName().startsWith("jdk.nashorn.internal")) {
-            this.addEvent(new CustomEvent(type, ScriptUtils.wrap(payload)));
-        } else {
-            this.addEvent(new CustomEvent(type, payload));
-        }
+        //if (payload.getClass().getName().startsWith("jdk.nashorn.internal")) {
+        //    this.addEvent(new CustomEvent(type, ScriptUtils.wrap(payload)));
+        //} else {
+        this.addEvent(new CustomEvent(type, payload));
+        //}
     }
 
     @Override
@@ -1209,21 +1206,6 @@ public class RequestManager implements RequestManagerI {
         this.status = statusInfo;
     }
 
-    /**
-     * Set a deadline.
-     *
-     * @see #isInterrupted()
-     *
-     * @param duration
-     */
-    public void setDeadline(Long duration) {
-        if (duration != null && duration > 0) {
-            this.deadline = System.currentTimeMillis() + duration;
-        } else {
-            this.deadline = null;
-        }
-    }
-
     /*
      * Set {@link #startTimestamp} to now
      */
@@ -1417,7 +1399,7 @@ public class RequestManager implements RequestManagerI {
         }
 
         if (this.currentScriptContext != null) {
-            this.currentScriptContext.getBindings(ScriptContext.ENGINE_SCOPE).clear();
+            this.currentScriptContext.close();
             this.currentScriptContext = null;
         }
 
@@ -2407,17 +2389,6 @@ public class RequestManager implements RequestManagerI {
             return Helper.lookupBy(RequestManager.class);
         } catch (NamingException ex) {
             return null;
-        }
-    }
-
-    @Override
-    public void isInterrupted() throws InterruptedException {
-        if (Thread.currentThread().isInterrupted()) {
-            logger.error("Request has been interrupted");
-            throw new InterruptedException();
-        } else if (this.deadline != null && System.currentTimeMillis() > this.deadline) {
-            logger.error("Request aborted: deadline reached");
-            throw new InterruptedException();
         }
     }
 }

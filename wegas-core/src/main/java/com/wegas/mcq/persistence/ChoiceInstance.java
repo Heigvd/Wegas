@@ -175,6 +175,7 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
      * @return the currentResult index
      */
     @JsonIgnore
+    @Deprecated
     public Integer getCurrentResultIndex() {
         return currentResultIndex;
     }
@@ -183,6 +184,7 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
      * @deprecated
      */
     @JsonProperty
+    @Deprecated
     public void setCurrentResultIndex(Integer index) {
         this.currentResultIndex = index;
     }

@@ -304,6 +304,7 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
      *
      * @return just not a clue...
      */
+    @Deprecated
     public double getVariableValue(String variable) {
         switch (variable) {
             case "quality":

@@ -125,6 +125,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      *
      * @deprecated
      */
+    @Deprecated
     public Integer getMoral(Player p) {
         return Integer.parseInt(this.getInstance(p).getProperty("motivation"), 10);
     }
@@ -136,6 +137,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      *
      * @deprecated
      */
+    @Deprecated
     public void setMoral(Player p, Integer value) {
         this.getInstance(p).setProperty("motivation", value.toString());
     }
@@ -147,6 +149,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      *
      * @deprecated
      */
+    @Deprecated
     public void addAtMoral(Player p, Integer value) {
         this.addNumberAtInstanceProperty(p, "motivation", value.toString());
     }

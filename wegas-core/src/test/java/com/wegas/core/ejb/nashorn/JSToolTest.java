@@ -7,12 +7,13 @@
  */
 package com.wegas.core.ejb.nashorn;
 
+import com.wegas.core.Helper;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import jdk.nashorn.api.tree.CompilationUnitTree;
-import jdk.nashorn.api.tree.Tree;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Value;
 import org.junit.Assert;
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
@@ -24,159 +25,6 @@ public class JSToolTest {
     private int counter = 0;
 
     public JSToolTest() {
-    }
-
-    private void run(String script, Integer nbIter) {
-        long starttime = System.currentTimeMillis();
-        for (int i = 0; i < nbIter; i++) {
-            String makeScriptInterruptible = JSTool.makeScriptInterruptible(script);
-        }
-        counter += nbIter;
-        long endttime = System.currentTimeMillis();
-
-        long duration = endttime - starttime;
-        double perScript = duration / nbIter.doubleValue();
-        System.out.println(String.format("%d, %d, %d, %6.3f", counter, nbIter, duration, perScript));
-    }
-
-    public void benchmarkInjection(String script) {
-        System.out.println(String.format("counter, run, duration, perScript"));
-        run(script, 1);
-        run(script, 1);
-        run(script, 1);
-        run(script, 1);
-        run(script, 1);
-        run(script, 1);
-        run(script, 1);
-        run(script, 1);
-        run(script, 1);
-        run(script, 1);
-        run(script, 10);
-        run(script, 10);
-        run(script, 10);
-        run(script, 10);
-        run(script, 10);
-        run(script, 10);
-        run(script, 10);
-        run(script, 10);
-        run(script, 10);
-        run(script, 100);
-        run(script, 100);
-        run(script, 100);
-        run(script, 100);
-        run(script, 100);
-        run(script, 100);
-        run(script, 100);
-        run(script, 100);
-        run(script, 100);
-        run(script, 100);
-        run(script, 100);
-        run(script, 100);
-        run(script, 100);
-        run(script, 100);
-        run(script, 100);
-        run(script, 100);
-        run(script, 100);
-    }
-
-    @Test
-    public void benchmarkSimpleScript() {
-        this.benchmarkInjection("Variable.find(gameModel, \"x\").add(self, 1);");
-    }
-
-    @Test
-    public void benchmarkSimpleScript2Stmts() {
-        this.benchmarkInjection(
-            "Variable.find(gameModel, \"x\").add(self, 1);\n"
-            + "Variable.find(gameModel, \"y\").add(self, 2);"
-        );
-    }
-
-    @Test
-    public void benchmarkSimpleScript10Stmts() {
-        this.benchmarkInjection(
-            "Variable.find(gameModel, \"x1\").add(self, 1);\n"
-            + "Variable.find(gameModel, \"x2\").add(self, 1);\n"
-            + "Variable.find(gameModel, \"x3\").add(self, 1);\n"
-            + "Variable.find(gameModel, \"x4\").add(self, 1);\n"
-            + "Variable.find(gameModel, \"x5\").add(self, 1);\n"
-            + "Variable.find(gameModel, \"x6\").add(self, 1);\n"
-            + "Variable.find(gameModel, \"x7\").add(self, 1);\n"
-            + "Variable.find(gameModel, \"x8\").add(self, 1);\n"
-            + "Variable.find(gameModel, \"x9\").add(self, 1);\n"
-            + "Variable.find(gameModel, \"x10\").add(self, 1);\n"
-        );
-    }
-
-    @Test
-    public void benchmarkIf() {
-        this.benchmarkInjection(
-            "if (Variable.find(gameModel, \"x\").getValue(self, 1)){\n"
-            + "  Variable.find(gameModel, \"y\").add(self, 2);"
-            + "}"
-        );
-    }
-
-    @Test
-    public void testInjection() {
-        String code = "for(var i=0; i< 10; i++) {}";
-        String expected = "nop();for(var i=0; i< 10; i++) {nop();{}}";
-
-        String sanitize = JSTool.sanitize(code, "nop();");
-
-        System.out.println(sanitize);
-        assertEquals(expected, sanitize);
-    }
-
-    @Test
-    public void testInjection2() {
-        String code = "(function(){for(;;){}})()";
-        String expected = "nop();(function(){nop();for(;;){nop();{}}})()";
-
-        String sanitize = JSTool.sanitize(code, "nop();");
-
-        System.out.println(sanitize);
-        assertEquals(expected, sanitize);
-    }
-
-    //@Test
-    public void testLambda() {
-        String code = "var fn = (x) => (function(){while(1){}})();";
-        String expected = ";";
-
-        String sanitize = JSTool.sanitize(code, "nop();");
-
-        System.out.println(sanitize);
-        assertEquals(expected, sanitize);
-    }
-
-    @Test
-    public void testInjection3() {
-        String code = "for (var i=0;i< (function(){while(true){};return 10;})(); i++){console.log(i);}";
-        String expected = "nop();for (var i=0;i< (function(){nop();while(true){nop();{}};return 10;})(); i++){nop();{console.log(i);}}";
-
-        String sanitize = JSTool.sanitize(code, "nop();");
-
-        System.out.println(sanitize);
-        assertEquals(expected, sanitize);
-    }
-
-    @Test
-    public void testRecursion() {
-        String code = "var fn = function(){fn();};fn();";
-        String expected = "nop();var fn = function(){nop();fn();};fn();";
-
-        String sanitize = JSTool.sanitize(code, "nop();");
-
-        System.out.println(sanitize);
-        assertEquals(expected, sanitize);
-    }
-
-    @Test
-    public void testSimpleCondition() {
-        String script = "Variable.find(gameModel, \"x\").getValue(self, 12) > 10";
-        CompilationUnitTree parse = JSTool.parse(script);
-        List<? extends Tree> sourceElements = parse.getSourceElements();
     }
 
     private ConditionAnalyser.VariableCall findDepAndAssert(List<ConditionAnalyser.VariableCall> list, String name) {
@@ -225,6 +73,16 @@ public class JSToolTest {
         findDepAndAssert(list, "x", "getValue");
         findDepAndAssert(list, "y", "getValue");
         findDepAndAssert(list, "z", "getValue");
+    }
+
+    @Test
+    public void testAndCondition3() {
+        String script = "Variable.find(gameModel, \"x\").getValue(self, 12) > 10"
+            + "&& Variable.find(gameModel, 12).getValue(self, 12) > 10"
+            + "&& Variable.find(gameModel, \"z\").getValue(self, 12) > 10";
+
+        List<ConditionAnalyser.VariableCall> list = ConditionAnalyser.analyseCondition(script);
+        Assert.assertEquals(0, list.size());
     }
 
     @Test
@@ -281,5 +139,93 @@ public class JSToolTest {
 
         findDepAndAssert(list, "x", "getValue");
         findDepAndAssert(list, "y", "getValue");
+    }
+
+
+    @Test
+    public void testEval() {
+        Context context = Context.create("js");
+        context.eval("js", "console.log('hello');");
+    }
+
+    @Test
+    public void testGetJSArray() {
+        Context context = Context.create("js");
+        Value eval = context.eval("js", "const a =['apple', 'banana']; a;");
+        System.out.println("Eval: " + eval);
+    }
+
+    @Test
+    public void testArrowFunction() {
+        Context context = Context.create("js");
+        Value eval = context.eval("js", "const square = (x) =>x**2; square(5)");
+        Assert.assertEquals(25, eval.asInt());
+    }
+
+    @Test
+    public void testSpread() {
+        Context context = Context.create("js");
+        Value eval = context.eval("js", "    const a = {one: 1, two: 2, three: 3};\n"
+            + "    const b = {...a, four: 4};\n"
+            + "    const {one} = a;one;");
+        Assert.assertEquals(1, eval.asInt());
+    }
+
+    @Test
+    public void testBigInt() {
+        Context context = Context.create("js");
+        Value eval = context.eval("js", "let x = 10n;x;\n");
+        Assert.assertEquals(10, eval.asInt());
+    }
+
+    public void testSyntaxError() throws IOException {
+        String source = Helper.readFile("./src/test/js/syntaxError.js");
+        JSTool.parse(source);
+    }
+
+    @Test
+    public void testParseES5() throws IOException {
+        System.out.println("Start test");
+
+        String source = Helper.readFile("./src/test/js/es5.js");
+        System.out.println("parse " + source);
+        Object parse = JSTool.parse(source);
+        System.out.println("Parse " + parse);
+    }
+
+    @Test
+    public void testParseES6() throws IOException {
+        String source = Helper.readFile("./src/test/js/es6.js");
+        JSTool.parse(source);
+    }
+
+    @Test
+    public void testParseES2016() throws IOException {
+        String source = Helper.readFile("./src/test/js/es2016.js");
+        JSTool.parse(source);
+    }
+
+    @Test
+    public void testParseES2017() throws IOException {
+        String source = Helper.readFile("./src/test/js/es2017.js");
+        JSTool.parse(source);
+    }
+
+    @Test
+    public void testParseES2018() throws IOException {
+        String source = Helper.readFile("./src/test/js/es2018.js");
+        JSTool.parse(source);
+    }
+
+    @Test
+    public void testParseES2019() throws IOException {
+        String source = Helper.readFile("./src/test/js/es2019.js");
+        JSTool.parse(source);
+    }
+
+    @Test
+    public void testParseES2020() throws IOException {
+        String source = Helper.readFile("./src/test/js/es2020.js");
+        JSTool.parse(source);
     }
 }

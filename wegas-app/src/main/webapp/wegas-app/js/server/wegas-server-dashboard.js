@@ -51,7 +51,7 @@ var WegasDashboard = (function () {
     }
 
     function getInstances(name) {
-        return Variable.getInstancesByKeyId(Variable.find(gameModel, name));
+        return Variable.getInstancesByKeyStringId(Variable.find(gameModel, name));
     }
 
     function getOrCreateDashboard(dashboardName) {
@@ -188,6 +188,7 @@ var WegasDashboard = (function () {
      * @returns function source-code
      */
     function serializeFunction(fn) {
+        // TODO: not injected any lpnger
         return (fn + "").replaceAll("RequestManager.isInterrupted\\(\\);", "");
     }
 
@@ -337,7 +338,7 @@ var WegasDashboard = (function () {
                                 item.kind = itemCfg.kind;
                             } else {
                                 item.kind = variables[varName].descriptor.getJSONClassName()
-                                    .replaceAll("Descriptor", "").toLowerCase();
+                                    .replace("Descriptor", "").toLowerCase();
                             }
                             break;
                         default:
@@ -366,16 +367,15 @@ var WegasDashboard = (function () {
                             var variable = variables[item.varName];
 
                             if (item.mapFn) {
-                                var args = [teamId, variable && variable.instances[teamId]];
-                                for (var i in item.mapFnExtraArgs) {
-                                    var extraVarName = item.mapFnExtraArgs[i];
+                                var args = [teamId, variable && variable.instances.get("" + teamId)];
+                                for (const extraVarName of item.mapFnExtraArgs) {
                                     if (!variables[extraVarName]) {
                                         variables[extraVarName] = {
                                             descriptor: Variable.find(gameModel, extraVarName),
                                             instances: getInstances(extraVarName)
                                         };
                                     }
-                                    args.push(variables[extraVarName].instances[teamId]);
+                                    args.push(variables[extraVarName].instances.get("" + teamId));
                                 }
                                 // last arguments contains some useful data
                                 args.push({
@@ -385,13 +385,13 @@ var WegasDashboard = (function () {
                                 teamData[id] = item.mapFn.apply(this, args);
                             } else {
                                 if (item.item.kind === "inbox") {
-                                    teamData[id] = WegasHelper.getInboxInstanceContent(variable.instances[teamId], item.item.label, teamName);
+                                    teamData[id] = WegasHelper.getInboxInstanceContent(variable.instances.get("" +teamId), item.item.label, teamName);
                                 } else if (item.item.kind === "text") {
-                                    teamData[id] = WegasHelper.getTextInstanceContent(variable.instances[teamId], item.item.label, teamName);
+                                    teamData[id] = WegasHelper.getTextInstanceContent(variable.instances.get("" + teamId), item.item.label, teamName);
                                 } else if (item.item.kind === "object") {
-                                    teamData[id] = WegasHelper.getObjectInstanceContent(variable.instances[teamId], item.item.label, teamName);
+                                    teamData[id] = WegasHelper.getObjectInstanceContent(variable.instances.get("" + teamId), item.item.label, teamName);
                                 } else {
-                                    teamData[id] = variable.instances[teamId].getValue();
+                                    teamData[id] = variable.instances.get("" + teamId).getValue();
                                 }
                             }
                         }

@@ -39,7 +39,7 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jdk.nashorn.api.scripting.JSObject;
+import org.graalvm.polyglot.Value;
 
 /**
  *
@@ -222,21 +222,21 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
     }
 
     /**
-     * Set feedback from nashorn
+     * Set feedback from graalVm
      *
      * @param p
      * @param value
      */
-    public void setFeedback(Player p, JSObject value) {
-        TranslatableContent readFromNashorn = TranslatableContent.readFromNashorn(value);
+    public void setFeedback(Player p, Value value) {
+        TranslatableContent read = TranslatableContent.readFromNashorn(value);
 
         TranslatableContent feedback = this.getInstance(p).getFeedback();
 
-        if (readFromNashorn != null) {
+        if (read != null) {
             if (feedback != null) {
-                feedback.merge(readFromNashorn);
+                feedback.merge(read);
             } else {
-                this.getInstance(p).setFeedback(readFromNashorn);
+                this.getInstance(p).setFeedback(read);
             }
         } else {
             this.getInstance(p).setFeedback(null);

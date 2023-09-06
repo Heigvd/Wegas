@@ -167,6 +167,7 @@ public abstract class BaseFacade<T extends AbstractEntity> extends WegasAbstract
      *
      * @deprecated
      */
+    @Deprecated
     @Override
     public List<T> findRange(int[] range) {
         final CriteriaQuery<T> query = getEntityManager().getCriteriaBuilder().createQuery(entityClass);

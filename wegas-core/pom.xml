@@ -331,6 +331,15 @@
             <artifactId>jakarta.jakartaee-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.graalvm.sdk</groupId>
+            <artifactId>graal-sdk</artifactId>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <finalName>wegas-core_${project.version}</finalName>
@@ -433,8 +442,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>${jdk.version}</source>
-                    <target>${jdk.version}</target>
+                    <source>17</source>
+                    <target>17</target>
                     <!-- Using nashorn internal -->
                     <parameters>true</parameters>
                     <compilerArgument>-XDignore.symbol.file</compilerArgument>

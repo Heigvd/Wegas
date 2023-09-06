@@ -333,6 +333,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
      *
      * @deprecated
      */
+    @Deprecated
     public List<Assignment> moveAssignemnt(Integer currentPosition, Integer nextPosition) {
         Assignment assignment = this.assignments.remove(currentPosition.intValue());
         this.assignments.add(nextPosition, assignment);

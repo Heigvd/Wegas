@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -8,6 +7,7 @@
  */
 package com.wegas.core.ejb.nashorn;
 
+import java.util.function.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author maxence
  */
-public class NHClassLoader extends ClassLoader {
+public class GraalVMClassFilter implements Predicate<String> {
 
-    private static final Logger logger = LoggerFactory.getLogger(NHClassLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(GraalVMClassFilter.class);
 
     private static final String[] blacklist = {
         "com.wegas.core.Helper", // "javax.naming.InitialContext",
@@ -67,28 +67,22 @@ public class NHClassLoader extends ClassLoader {
     }
 
     @Override
-    public Class<?> loadClass(String name) throws ClassNotFoundException {
+    public boolean test(String name) {
         logger.trace("Try to load {}", name);
         if (containsStartsWith(blacklist, name)) {
             logger.error("{} is blacklisted !", name);
-            NasHornMonitor.registerBlacklistedClass(name);
-            return null;
+            GraalVMMonitor.registerBlacklistedClass(name);
+            return false;
         }
 
-        try {
-            Class<?> loadClass = Thread.currentThread().getContextClassLoader().loadClass(name);
-            if (containsStartsWith(whitelist, name)) {
-                logger.trace("LOAD {}", loadClass);
-                NasHornMonitor.registerClass(name);
-                return loadClass;
-            } else {
-                logger.error("{} is not whitelisted !", name);
-                NasHornMonitor.registerNotWhitelistedClass(name);
-                return null;
-            }
-        } catch (ClassNotFoundException ex) {
-            logger.trace("LOAD ERROR {}", name);
-            throw ex;
+        if (containsStartsWith(whitelist, name)) {
+            logger.trace("LOAD {}", name);
+            GraalVMMonitor.registerClass(name);
+            return true;
+        } else {
+            logger.error("{} is not whitelisted !", name);
+            GraalVMMonitor.registerNotWhitelistedClass(name);
+            return false;
         }
     }
 }

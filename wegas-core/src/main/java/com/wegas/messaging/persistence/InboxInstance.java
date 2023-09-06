@@ -26,7 +26,7 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
-import jdk.nashorn.api.scripting.JSObject;
+import org.graalvm.polyglot.Value;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -240,13 +240,13 @@ public class InboxInstance extends VariableInstance {
         return msg;
     }
 
-    public Message sendMessage(final JSObject from, final JSObject subject,
-        final JSObject body, final JSObject date,
-        String token, final List<JSObject> attachments) {
+    public Message sendMessage(final Value from, final Value subject,
+        final Value body, final Value date,
+        String token, final List<Value> attachments) {
 
         List<Attachment> atts = new ArrayList<>();
         if (attachments != null && !attachments.isEmpty()) {
-            for (JSObject a : attachments) {
+            for (Value a : attachments) {
                 atts.add(Attachment.readFromNashorn(a));
             }
         }

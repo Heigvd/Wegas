@@ -9,7 +9,7 @@ package com.wegas.core.i18n.tools;
 
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.internal.WegasNashornException;
+import com.wegas.core.exception.internal.WegasGraalException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.merge.utils.MergeHelper;
@@ -116,7 +116,7 @@ public class TranslationsPrinter implements MergeHelper.MergeableVisitor {
                 for (TranslatableContent trc : inscript) {
                     process(trc, level);
                 }
-            } catch (WegasNashornException ex) {
+            } catch (WegasGraalException ex) {
                 print("Unparsable script !", level);
                 logger.error("FAILS {}", ex);
             }

@@ -16,7 +16,7 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.WegasAbstractFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
-import com.wegas.core.exception.internal.WegasNashornException;
+import com.wegas.core.exception.internal.WegasGraalException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.deepl.Deepl;
 import com.wegas.core.i18n.deepl.DeeplTranslations;
@@ -417,9 +417,9 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
      *
      * @return list of updated entities
      *
-     * @throws WegasNashornException if parsing some scripts it not possible
+     * @throws WegasGraalException if parsing some scripts it not possible
      */
-    public List<AbstractEntity> batchUpdate(List<I18nUpdate> i18nUpdates, UpdateType updateType) throws WegasNashornException {
+    public List<AbstractEntity> batchUpdate(List<I18nUpdate> i18nUpdates, UpdateType updateType) throws WegasGraalException {
         List<AbstractEntity> updatedEntities = new ArrayList<>();
 
         for (I18nUpdate update : i18nUpdates) {
@@ -508,7 +508,7 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
      *         ({@link #getParent(com.wegas.core.i18n.rest.ScriptUpdate)})
      *
      */
-    private AbstractEntity inScriptUpdate(InScriptUpdate scriptUpdate, UpdateType mode) throws WegasNashornException {
+    private AbstractEntity inScriptUpdate(InScriptUpdate scriptUpdate, UpdateType mode) throws WegasGraalException {
         AbstractEntity theParent = this.getParent(scriptUpdate);
         if (theParent != null) {
             VariableDescriptor toReturn = this.getParentVariableDescriptor(theParent);
@@ -613,9 +613,9 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
      *
      * @return updated entity
      *
-     * @throws WegasNashornException if underlying update try to parse an erroneous script
+     * @throws WegasGraalException if underlying update try to parse an erroneous script
      */
-    public AbstractEntity update(I18nUpdate update, UpdateType type) throws WegasNashornException {
+    public AbstractEntity update(I18nUpdate update, UpdateType type) throws WegasGraalException {
         UpdateType eType = type;
         if (eType == null) {
             eType = UpdateType.MINOR;
@@ -700,7 +700,7 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
      *
      * @return update gameModel
      */
-    public GameModel initLanguage(Long gameModelId, String sourceLangCode, String targetLangCode) throws WegasNashornException {
+    public GameModel initLanguage(Long gameModelId, String sourceLangCode, String targetLangCode) throws WegasGraalException {
         GameModel gameModel = gameModelFacade.find(gameModelId);
 
         Deepl.Language sourceLang = Deepl.Language.valueOf(sourceLangCode.toUpperCase());
@@ -743,9 +743,9 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
      *
      * @return updated gameModel
      *
-     * @throws WegasNashornException one script in the gameModel is erroneous
+     * @throws WegasGraalException one script in the gameModel is erroneous
      */
-    public GameModel copyLanguage(Long gameModelId, String sourceLangCode, String targetLangCode) throws WegasNashornException {
+    public GameModel copyLanguage(Long gameModelId, String sourceLangCode, String targetLangCode) throws WegasGraalException {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         if (gameModel.getLanguageByCode(sourceLangCode) != null) {
             if (gameModel.getLanguageByCode(targetLangCode) != null) {
@@ -777,9 +777,9 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
      *
      * @return updated gameModel
      *
-     * @throws WegasNashornException A script in the gameModel couldn't be parsed.
+     * @throws WegasGraalException A script in the gameModel couldn't be parsed.
      */
-    public GameModel clearLanguage(Long gameModelId, String langCode, String mode) throws WegasNashornException {
+    public GameModel clearLanguage(Long gameModelId, String langCode, String mode) throws WegasGraalException {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         if (gameModel.getLanguageByCode(langCode) != null) {
 
@@ -854,7 +854,7 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
      *
      * @return updated entity
      *
-     * @throws WegasNashornException A script in the target couldn't be parsed.
+     * @throws WegasGraalException A script in the target couldn't be parsed.
      */
     private void clearGameModelLanguage(Mergeable target, String langCode, String mode) throws UnsupportedEncodingException {
 
@@ -873,7 +873,7 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
      * @param targetLangCode target languages
      * @param initOnly       do not override existing texts
      */
-    private void copyGameModelLanguage(Mergeable target, String sourceLangCode, String targetLangCode, boolean initOnly) throws WegasNashornException, UnsupportedEncodingException {
+    private void copyGameModelLanguage(Mergeable target, String sourceLangCode, String targetLangCode, boolean initOnly) throws WegasGraalException, UnsupportedEncodingException {
         TranslationExtractor extractor = new TranslationExtractor(sourceLangCode, initOnly ? targetLangCode : null);
         MergeHelper.visitMergeable(target, Boolean.TRUE, extractor);
         List<I18nUpdate> patches = extractor.getPatches();
@@ -894,7 +894,7 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
      * @param initOnly       do not override existing texts
      *
      */
-    private void translateGameModel(Mergeable target, String sourceLangCode, String targetLangCode, boolean initOnly) throws WegasNashornException, UnsupportedEncodingException {
+    private void translateGameModel(Mergeable target, String sourceLangCode, String targetLangCode, boolean initOnly) throws WegasGraalException, UnsupportedEncodingException {
         TranslationExtractor extractor = new TranslationExtractor(sourceLangCode, initOnly ? targetLangCode : null);
         MergeHelper.visitMergeable(target, Boolean.TRUE, extractor);
         List<I18nUpdate> patches = extractor.getPatches();
@@ -986,7 +986,7 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
                     Script script = (Script) target;
                     String newScript = I18nHelper.updateCodeInScript(script.getContent(), oldCode, newCode);
                     script.setContent(newScript);
-                } catch (WegasNashornException ex) {
+                } catch (WegasGraalException ex) {
                     logger.error("Fails to parse script: {}", ex);
                 }
                 return false;
@@ -1099,7 +1099,7 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
                     logger.error("Structure does not match; {} VS {}", target, source);
                 }
             }
-        } catch (WegasNashornException ex) {
+        } catch (WegasGraalException ex) {
             logger.error("Fails to parse script: {}", ex);
         }
     }

@@ -7,19 +7,17 @@
  */
 package com.wegas.core.exception.internal;
 
-import jdk.nashorn.api.scripting.NashornException;
-
 /**
- * Wrap runtime NashornException within a Wegas internal exception
+ * Wrap runtime graal exception within a Wegas internal exception
  *
  * @author maxence
  */
-public class WegasNashornException extends WegasInternalException {
+public class WegasGraalException extends WegasInternalException {
 
     /**
      *
      */
-    public WegasNashornException(NashornException ex) {
+    public WegasGraalException(Exception ex) {
         super(ex);
     }
 }

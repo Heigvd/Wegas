@@ -110,6 +110,7 @@ public interface VariableDescriptorFacadeI {
      *
      * @deprecated use {@link VariableDescriptor#getParent()}
      */
+    @Deprecated
     DescriptorListI findParentList(VariableDescriptor vd) throws NoResultException;
 
     /**
@@ -120,6 +121,7 @@ public interface VariableDescriptorFacadeI {
      * @throws WegasNoResultException if the descriptor is at root-level
      * @deprecated use {@link VariableDescriptor#getParentList()}
      */
+    @Deprecated
     ListDescriptor findParentListDescriptor(final VariableDescriptor item) throws WegasNoResultException;
 
     /**
@@ -149,6 +151,8 @@ public interface VariableDescriptorFacadeI {
      * @return all vd instances, mapped by their owner id
      */
     Map<Long, VariableInstance> getInstancesByKeyId(VariableDescriptor vd);
+
+    Map<String, VariableInstance> getInstancesByKeyStringId(VariableDescriptor vd);
 
     /**
      * is the given name in use within the gameModel ?

@@ -44,6 +44,10 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import jakarta.servlet.http.HttpServletRequest;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
@@ -181,6 +185,19 @@ public class Helper {
      */
     public static boolean isNullOrEmpty(final String t) {
         return t == null || t.isEmpty();
+    }
+
+    /**
+     * Read file from path
+     *
+     * @param path file location
+     * @return the file content
+     * @throws IOException if something went wrong
+     */
+    public static String readFile(String path) throws IOException {
+        byte[] buffer;
+        buffer = Files.readAllBytes(Paths.get(path));
+        return Charset.defaultCharset().decode(ByteBuffer.wrap(buffer)).toString();
     }
 
     /**

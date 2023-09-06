@@ -167,11 +167,4 @@ public interface RequestManagerI {
      * @return app base url
      */
     String getBaseUrl();
-
-    /**
-     * Check if current thread has been interrupted or if it should be aborted due to a timeout.
-     *
-     * @throws InterruptedException if thread has been interrupted or request time expired
-     */
-    void isInterrupted() throws InterruptedException;
 }

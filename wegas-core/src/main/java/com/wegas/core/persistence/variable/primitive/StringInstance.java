@@ -28,8 +28,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jdk.nashorn.api.scripting.JSObject;
 import org.eclipse.persistence.annotations.Customizer;
+import org.graalvm.polyglot.Value;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -79,14 +79,14 @@ public class StringInstance extends VariableInstance {
     }
 
     /**
-     * Setter used by nashorn
+     * Setter used by graalVm
      *
      * @param value
      */
-    public void setValue(JSObject value) {
-        TranslatableContent readFromNashorn = TranslatableContent.readFromNashorn(value);
-        if (readFromNashorn != null && this.getTrValue() != null) {
-            this.getTrValue().merge(readFromNashorn);
+    public void setValue(Value value) {
+        TranslatableContent read = TranslatableContent.readFromNashorn(value);
+        if (read != null && this.getTrValue() != null) {
+            this.getTrValue().merge(read);
         }
     }
 

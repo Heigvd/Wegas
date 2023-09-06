@@ -17,7 +17,7 @@ import jakarta.enterprise.context.ApplicationScoped;
  * @author maxence
  */
 @ApplicationScoped
-public class NasHornMonitor {
+public class GraalVMMonitor {
 
     private static final ConcurrentHashMap<String, Integer> loadedClasses = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, Integer> notWhitelisted = new ConcurrentHashMap<>();

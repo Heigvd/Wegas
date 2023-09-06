@@ -184,6 +184,7 @@ public class TeamFacade extends BaseFacade<Team> implements TeamFacadeI {
      *
      * @deprecated use JPA team.privateInstances
      */
+    @Deprecated
     public List<VariableInstance> getAssociatedInstances(Team team) {
         return team.getPrivateInstances();
         //Query findInstances = getEntityManager().createNamedQuery("findTeamInstances");

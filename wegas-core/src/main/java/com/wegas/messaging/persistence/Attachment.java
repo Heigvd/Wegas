@@ -39,8 +39,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jdk.nashorn.api.scripting.JSObject;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.graalvm.polyglot.Value;
 
 /**
  *
@@ -189,13 +188,13 @@ public class Attachment extends AbstractEntity implements Serializable {
 
     }
 
-    public static Attachment readFromNashorn(JSObject att) {
+    public static Attachment readFromNashorn(Value att) {
         if (att != null) {
             Object theClass = att.getMember("@class");
             Attachment attachment = new Attachment();
 
             if (theClass != null && theClass.equals("Attachment")) {
-                ScriptObjectMirror trs = (ScriptObjectMirror) att.getMember("file");
+                Value trs = att.getMember("file");
                 TranslatableContent file = TranslatableContent.readFromNashorn(trs);
                 attachment.setFile(file);
             }

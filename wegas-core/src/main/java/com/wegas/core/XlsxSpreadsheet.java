@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.poi.ss.usermodel.BuiltinFormats;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -25,7 +24,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.omg.CORBA.CharSeqHelper;
+import org.graalvm.polyglot.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -238,13 +237,12 @@ public class XlsxSpreadsheet {
         } else if (value instanceof RichTextString) {
             cell.setCellValue((RichTextString) value);
             setDateStyle(cell, style);
-        } else if (value instanceof ScriptObjectMirror) {
+        } else if (value instanceof Value jsObject) {
             // first attemps: pretty print simple object
-            ScriptObjectMirror jsObject = (ScriptObjectMirror) value;
             StringBuilder content = new StringBuilder();
             boolean failed = false;
 
-            for (String key : jsObject.getOwnKeys(true)) {
+            for (String key : jsObject.getMemberKeys()) {
                 Object member = jsObject.getMember(key);
                 if (member != null) {
                     if (member instanceof Number) {

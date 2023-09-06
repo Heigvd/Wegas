@@ -688,6 +688,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * @deprecated use {@link VariableDescriptor#getParent()}
      */
     @Override
+    @Deprecated
     public DescriptorListI findParentList(VariableDescriptor vd) throws NoResultException {
         return vd.getParent();
     }
@@ -701,6 +702,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * @deprecated use {@link VariableDescriptor#getParentList()}
      */
     @Override
+    @Deprecated
     public ListDescriptor findParentListDescriptor(final VariableDescriptor item) throws WegasNoResultException {
         if (item.getParentList() != null) {
             return item.getParentList();
@@ -1024,6 +1026,11 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     @Override
     public Map<Long, VariableInstance> getInstancesByKeyId(VariableDescriptor vd) {
         return variableInstanceFacade.getAllInstancesById(vd);
+    }
+
+    @Override
+    public Map<String, VariableInstance> getInstancesByKeyStringId(VariableDescriptor vd) {
+        return variableInstanceFacade.getAllInstancesByStringId(vd);
     }
 
     /**

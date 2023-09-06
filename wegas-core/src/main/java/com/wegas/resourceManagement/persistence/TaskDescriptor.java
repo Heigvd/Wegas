@@ -302,6 +302,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      * @return player instance task duration
      */
+    @Deprecated
     public double getDuration(Player p) {
         return this.getInstance(p).getPropertyD("duration");
     }
@@ -312,6 +313,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @param p
      * @param value
      */
+    @Deprecated
     public void setDuration(Player p, double value) {
         this.getInstance(p).setProperty("duration", Double.toString(value));
     }
@@ -322,6 +324,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @param p
      * @param value
      */
+    @Deprecated
     public void addAtDuration(Player p, double value) {
         TaskInstance instance = this.getInstance(p);
         double v = instance.getPropertyD("duration") + value;

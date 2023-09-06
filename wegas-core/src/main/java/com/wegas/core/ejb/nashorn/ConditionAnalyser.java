@@ -7,35 +7,59 @@
  */
 package com.wegas.core.ejb.nashorn;
 
+import com.oracle.js.parser.TokenType;
+import com.oracle.js.parser.ir.AccessNode;
+import com.oracle.js.parser.ir.BinaryNode;
+import com.oracle.js.parser.ir.Block;
+import com.oracle.js.parser.ir.BlockExpression;
+import com.oracle.js.parser.ir.BlockStatement;
+import com.oracle.js.parser.ir.BreakNode;
+import com.oracle.js.parser.ir.CallNode;
+import com.oracle.js.parser.ir.CaseNode;
+import com.oracle.js.parser.ir.CatchNode;
+import com.oracle.js.parser.ir.ClassElement;
+import com.oracle.js.parser.ir.ClassNode;
+import com.oracle.js.parser.ir.ContinueNode;
+import com.oracle.js.parser.ir.DebuggerNode;
+import com.oracle.js.parser.ir.EmptyNode;
+import com.oracle.js.parser.ir.ErrorNode;
+import com.oracle.js.parser.ir.ExportNode;
+import com.oracle.js.parser.ir.ExportSpecifierNode;
+import com.oracle.js.parser.ir.Expression;
+import com.oracle.js.parser.ir.ExpressionStatement;
+import com.oracle.js.parser.ir.ForNode;
+import com.oracle.js.parser.ir.FromNode;
+import com.oracle.js.parser.ir.FunctionNode;
+import com.oracle.js.parser.ir.IdentNode;
+import com.oracle.js.parser.ir.IfNode;
+import com.oracle.js.parser.ir.ImportClauseNode;
+import com.oracle.js.parser.ir.ImportNode;
+import com.oracle.js.parser.ir.ImportSpecifierNode;
+import com.oracle.js.parser.ir.IndexNode;
+import com.oracle.js.parser.ir.JoinPredecessorExpression;
+import com.oracle.js.parser.ir.LabelNode;
+import com.oracle.js.parser.ir.LexicalContext;
+import com.oracle.js.parser.ir.LiteralNode;
+import com.oracle.js.parser.ir.NameSpaceImportNode;
+import com.oracle.js.parser.ir.NamedExportsNode;
+import com.oracle.js.parser.ir.NamedImportsNode;
+import com.oracle.js.parser.ir.ObjectNode;
+import com.oracle.js.parser.ir.ParameterNode;
+import com.oracle.js.parser.ir.PropertyNode;
+import com.oracle.js.parser.ir.ReturnNode;
+import com.oracle.js.parser.ir.SwitchNode;
+import com.oracle.js.parser.ir.TemplateLiteralNode;
+import com.oracle.js.parser.ir.TernaryNode;
+import com.oracle.js.parser.ir.ThrowNode;
+import com.oracle.js.parser.ir.TryNode;
+import com.oracle.js.parser.ir.UnaryNode;
+import com.oracle.js.parser.ir.VarNode;
+import com.oracle.js.parser.ir.WhileNode;
+import com.oracle.js.parser.ir.WithNode;
+import com.oracle.js.parser.ir.visitor.NodeVisitor;
 import com.wegas.core.exception.client.WegasScriptException;
 import java.util.ArrayList;
 import java.util.List;
-import jdk.nashorn.api.scripting.NashornException;
-import jdk.nashorn.api.tree.ArrayAccessTree;
-import jdk.nashorn.api.tree.AssignmentTree;
-import jdk.nashorn.api.tree.BinaryTree;
-import jdk.nashorn.api.tree.ClassDeclarationTree;
-import jdk.nashorn.api.tree.ClassExpressionTree;
-import jdk.nashorn.api.tree.CompilationUnitTree;
-import jdk.nashorn.api.tree.CompoundAssignmentTree;
-import jdk.nashorn.api.tree.ErroneousTree;
-import jdk.nashorn.api.tree.ExportEntryTree;
-import jdk.nashorn.api.tree.ExpressionTree;
-import jdk.nashorn.api.tree.FunctionCallTree;
-import jdk.nashorn.api.tree.FunctionDeclarationTree;
-import jdk.nashorn.api.tree.FunctionExpressionTree;
-import jdk.nashorn.api.tree.IdentifierTree;
-import jdk.nashorn.api.tree.ImportEntryTree;
-import jdk.nashorn.api.tree.LiteralTree;
-import jdk.nashorn.api.tree.MemberSelectTree;
-import jdk.nashorn.api.tree.ModuleTree;
-import jdk.nashorn.api.tree.NewTree;
-import jdk.nashorn.api.tree.PropertyTree;
-import jdk.nashorn.api.tree.SimpleTreeVisitorES5_1;
-import jdk.nashorn.api.tree.SpreadTree;
-import jdk.nashorn.api.tree.Tree;
-import jdk.nashorn.api.tree.WithTree;
-import jdk.nashorn.api.tree.YieldTree;
 
 /**
  * Parse
@@ -86,120 +110,103 @@ public class ConditionAnalyser {
      */
     public static List<VariableCall> analyseCondition(String condition) {
         try {
-            CompilationUnitTree parse = JSTool.parse(condition);
-            Visitor visitor = new Visitor();
-            parse.accept(visitor, null);
+            Block parse = JSTool.parse(condition);
+            Visitor visitor = new Visitor(new LexicalContext());
+            parse.accept(visitor);
             return visitor.getCalls();
-        } catch (WegasScriptException | NashornException ex) {
+        } catch (WegasScriptException ex) {
             return new ArrayList<>();
         }
     }
 
-    private static class Visitor extends SimpleTreeVisitorES5_1<Void, Void> {
+    private static class Visitor<T extends LexicalContext> extends NodeVisitor<T> {
 
         private final List<VariableCall> calls = new ArrayList<>();
+
+        public Visitor(T lc) {
+            super(lc);
+        }
 
         private List<VariableCall> getCalls() {
             return calls;
         }
 
         @Override
-        public Void visitUnknown(Tree node, Void p) {
-            throw new WegasScriptException("visit unknown");
+        public boolean enterReturnNode(ReturnNode returnNode) {
+            throw new WegasScriptException("visit return node");
         }
 
         @Override
-        public Void visitYield(YieldTree node, Void p) {
-            throw new WegasScriptException("visit yield");
-        }
-
-        @Override
-        public Void visitWith(WithTree node, Void r) {
+        public boolean enterWithNode(WithNode withNode) {
             throw new WegasScriptException("visit with");
         }
 
         @Override
-        public Void visitSpread(SpreadTree node, Void p) {
-            throw new WegasScriptException("visit spread");
-        }
-
-        @Override
-        public Void visitProperty(PropertyTree node, Void r) {
+        public boolean enterPropertyNode(PropertyNode propertyNode) {
             throw new WegasScriptException("todo visitProperty");
         }
 
         @Override
-        public Void visitNew(NewTree node, Void r) {
-            throw new WegasScriptException("visit new");
-        }
-
-        @Override
-        public Void visitMemberSelect(MemberSelectTree node, Void r) {
+        public boolean enterAccessNode(AccessNode accessNode) {
             throw new WegasScriptException("visit member select");
         }
 
         @Override
-        public Void visitArrayAccess(ArrayAccessTree node, Void r) {
+        public boolean enterIndexNode(IndexNode indexNode) {
             throw new WegasScriptException("visit array access");
         }
 
         @Override
-        public Void visitFunctionExpression(FunctionExpressionTree node, Void r) {
-            throw new WegasScriptException("visit arrow function decl");
-        }
-
-        @Override
-        public Void visitFunctionDeclaration(FunctionDeclarationTree node, Void r) {
+        public boolean enterFunctionNode(FunctionNode node) {
             throw new WegasScriptException("visit function decl");
         }
 
         @Override
-        public Void visitFunctionCall(FunctionCallTree node, Void r) {
-            ExpressionTree fn = node.getFunctionSelect();
-            List<? extends ExpressionTree> arguments = node.getArguments();
-            if (fn instanceof MemberSelectTree) {
+        public boolean enterCallNode(CallNode node) {
+            Expression fn = node.getFunction();
+            List<Expression> arguments = node.getArgs();
+
+            if (fn instanceof AccessNode member) {
+                Expression expression = member.getBase();
+                String methodName = member.getProperty();
                 // expect:
                 // Variable.find(gameModel, "scriptAlias").methodName(...)
                 // Expre                                   identifier vdFindArgs
-                MemberSelectTree member = (MemberSelectTree) fn;
-                String methodName = member.getIdentifier();
-                ExpressionTree expression = member.getExpression();
-                if (expression instanceof FunctionCallTree) {
+                if (expression instanceof CallNode expr) {
                     // expect:
                     //Variable.find(...)
-                    FunctionCallTree expr = (FunctionCallTree) expression;
-                    ExpressionTree fnSelect = expr.getFunctionSelect();
-                    if (fnSelect instanceof MemberSelectTree) {
-                        ExpressionTree expression1 = ((MemberSelectTree) fnSelect).getExpression();
-                        String identifier = ((MemberSelectTree) fnSelect).getIdentifier();
-                        if (expression1 instanceof IdentifierTree) {
-                            String name = ((IdentifierTree) expression1).getName();
+                    Expression fnSelect = expr.getFunction();
+                    if (fnSelect instanceof AccessNode fnSelectAccess) {
+                        Expression expression1 = fnSelectAccess.getBase();
+                        String identifier = fnSelectAccess.getProperty();
+                        if (expression1 instanceof IdentNode ident) {
+                            String name = ident.getName();
                             if ("Variable".equals(name) && "find".equals(identifier)) {
-                                List<? extends ExpressionTree> vdFindArgs = expr.getArguments();
+                                List<Expression> vdFindArgs = expr.getArgs();
                                 if (vdFindArgs.size() == 2) {
-                                    ExpressionTree gmArg = vdFindArgs.get(0);
-                                    if (gmArg instanceof IdentifierTree) {
-                                        if ("gameModel".equals(((IdentifierTree) gmArg).getName())) {
-                                            ExpressionTree vdName = vdFindArgs.get(1);
-                                            if (vdName instanceof LiteralTree) {
-                                                Object value = ((LiteralTree) vdName).getValue();
-                                                if (value instanceof String) {
+                                    Expression gmArg = vdFindArgs.get(0);
+                                    if (gmArg instanceof IdentNode gmIdent) {
+                                        if ("gameModel".equals(gmIdent.getName())) {
+                                            Expression vdName = vdFindArgs.get(1);
+                                            if (vdName instanceof LiteralNode vdNameLiteral) {
+                                                if (vdNameLiteral.isString()) {
+                                                    String value = vdNameLiteral.getString();
                                                     VariableCall call = new VariableCall();
                                                     call.setVariableName((String) value);
                                                     call.setMethodName(methodName);
                                                     call.setArgsCount(arguments.size());
-                                                    for (ExpressionTree arg : arguments) {
-                                                        if (arg instanceof IdentifierTree) {
-                                                            if (!"self".equals(((IdentifierTree) arg).getName())) {
+                                                    for (Expression arg : arguments) {
+                                                        if (arg instanceof IdentNode argIdent) {
+                                                            if (!"self".equals(argIdent.getName())) {
                                                                 throw new WegasScriptException("unexpected identifier");
                                                             }
                                                         } else {
                                                             // let visit arguments too
-                                                            arg.accept(this, null);
+                                                            arg.accept(this);
                                                         }
                                                     }
                                                     calls.add(call);
-                                                    return null;
+                                                    return false;
                                                 }
                                             }
                                         }
@@ -214,61 +221,69 @@ public class ConditionAnalyser {
         }
 
         @Override
-        public Void visitErroneous(ErroneousTree node, Void r) {
+        public boolean enterErrorNode(ErrorNode errorNode) {
             throw new WegasScriptException("visit erroneous");
         }
 
         @Override
-        public Void visitClassExpression(ClassExpressionTree node, Void p) {
-            throw new WegasScriptException("visit class expr");
+        public boolean enterClassElement(ClassElement element) {
+            throw new WegasScriptException("visit class element");
         }
 
         @Override
-        public Void visitClassDeclaration(ClassDeclarationTree node, Void p) {
+        public boolean enterClassNode(ClassNode classNode) {
             throw new WegasScriptException("visit class decl");
         }
 
         @Override
-        public Void visitBinary(BinaryTree node, Void r) {
-            switch (node.getKind()) {
-                case CONDITIONAL_AND:
-                case CONDITIONAL_OR:
-                case EQUAL_TO:
-                case STRICT_EQUAL_TO:
-                case NOT_EQUAL_TO:
-                case STRICT_NOT_EQUAL_TO:
-                case LESS_THAN:
-                case LESS_THAN_EQUAL:
-                case GREATER_THAN:
-                case GREATER_THAN_EQUAL:
-                    return super.visitBinary(node, r);
-                default:
-                    throw new WegasScriptException("visit binary " + node.getKind());
+        public boolean enterBinaryNode(BinaryNode node) {
+            if (node.isAssignment()) {
+                throw new WegasScriptException("todo");
+            } else if (node.isComparison()) {
+                return super.enterBinaryNode(node);
+            } else if (node.isLogical()) {
+                return super.enterBinaryNode(node);
             }
+            throw new WegasScriptException("visit binary " + node.getToken());
         }
 
         @Override
-        public Void visitImportEntry(ImportEntryTree node, Void p) {
+        public boolean enterNamedImportsNode(NamedImportsNode namedImportsNode) {
             throw new WegasScriptException("todo");
         }
 
         @Override
-        public Void visitExportEntry(ExportEntryTree node, Void p) {
+        public boolean enterNameSpaceImportNode(NameSpaceImportNode nameSpaceImportNode) {
             throw new WegasScriptException("todo");
         }
 
         @Override
-        public Void visitModule(ModuleTree node, Void p) {
+        public boolean enterImportSpecifierNode(ImportSpecifierNode importSpecifierNode) {
             throw new WegasScriptException("todo");
         }
 
         @Override
-        public Void visitCompoundAssignment(CompoundAssignmentTree node, Void r) {
+        public boolean enterImportNode(ImportNode importNode) {
             throw new WegasScriptException("todo");
         }
 
         @Override
-        public Void visitAssignment(AssignmentTree node, Void r) {
+        public boolean enterImportClauseNode(ImportClauseNode importClauseNode) {
+            throw new WegasScriptException("todo");
+        }
+
+        @Override
+        public boolean enterExportSpecifierNode(ExportSpecifierNode exportSpecifierNode) {
+            throw new WegasScriptException("todo");
+        }
+
+        @Override
+        public boolean enterExportNode(ExportNode exportNode) {
+            throw new WegasScriptException("todo");
+        }
+
+        @Override
+        public boolean enterNamedExportsNode(NamedExportsNode exportClauseNode) {
             throw new WegasScriptException("todo");
         }
     }

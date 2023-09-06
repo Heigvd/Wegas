@@ -103,6 +103,7 @@ public class EMailFacade {
      * @param subject
      * @param body
      */
+    @Deprecated
     public void send(Player p, String from, String subject, String body) throws MessagingException {
         this.send(p.getUser().getName(), from, null, subject, body, RecipientType.TO, "text/plain; charset=utf-8", false);
     }
@@ -111,6 +112,7 @@ public class EMailFacade {
      * @deprecated @param p
      * @param msg
      */
+    @Deprecated
     public void send(Player p, Message msg) throws MessagingException {
 
         this.send(p, "noreply@" + Helper.getWegasProperty("mail.default_domain"), msg.getSubject().translateOrEmpty(p), msg.getBody().translateOrEmpty(p));

@@ -382,6 +382,7 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
      * @deprecated @param evalInstance
      * @param other
      */
+    @Deprecated
     public void mergeEval(EvaluationInstance evalInstance, EvaluationInstance other) {
         evalInstance.merge(other);
     }

@@ -8,7 +8,7 @@
 package com.wegas.app.pdf.helper;
 
 import com.wegas.app.pdf.uicomponent.UIGameModel.Mode;
-import com.wegas.core.exception.internal.WegasNashornException;
+import com.wegas.core.exception.internal.WegasGraalException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.i18n.tools.I18nHelper;
@@ -126,7 +126,7 @@ public class ImpactPrinter {
             if (!list.isEmpty()) {
                 return list;
             }
-        } catch (WegasNashornException ex) {
+        } catch (WegasGraalException ex) {
         }
         return List.of();
     }
@@ -280,7 +280,7 @@ public class ImpactPrinter {
                                 + " " + UIHelper.CSS_CLASS_SOURCE_CODE, true);
                         }
                         fallback = false;
-                    } catch (WegasNashornException ex) {
+                    } catch (WegasGraalException ex) {
                     }
                 }
                 if (fallback) {

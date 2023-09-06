@@ -10,6 +10,7 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
@@ -69,6 +70,26 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
             scriptFacade.eval(player.getId(), testEvent, null);
         }
         Assert.assertEquals(VALUE, ((StringInstance) variableInstanceFacade.find(stringDescriptor.getId(), player.getId())).getValue());
+    }
+
+    @Test
+    public void testScriptEventWithParameters() {
+        NumberDescriptor myX = wegasFactory.createNumberDescriptor(scenario, null, "x", "X", ModelScoped.Visibility.PRIVATE, null, null, 0.0);
+        NumberDescriptor myY = wegasFactory.createNumberDescriptor(scenario, null, "y", "Y", ModelScoped.Visibility.PRIVATE, null, null, 0.0);
+        NumberDescriptor myZ = wegasFactory.createNumberDescriptor(scenario, null, "z", "Z", ModelScoped.Visibility.PRIVATE, null, null, 0.0);
+
+        String script = "Event.on('myEvent', function(a, b, payload){ "
+            + "Variable.find(gameModel, 'x').setValue(self, a);"
+            + "Variable.find(gameModel, 'y').setValue(self, b);"
+            + "Variable.find(gameModel, 'z').setValue(self, payload);"
+            + "}, 10, 20); Event.fire('myEvent', 1000);";
+
+        scriptFacade.eval(player.getId(), new Script(script), null);
+
+        Assert.assertEquals(((NumberInstance) variableInstanceFacade.find(myX.getId(), player.getId())).getValue(), 10, 0.0001);
+        Assert.assertEquals(((NumberInstance) variableInstanceFacade.find(myY.getId(), player.getId())).getValue(), 20, 0.0001);
+        Assert.assertEquals(((NumberInstance) variableInstanceFacade.find(myZ.getId(), player.getId())).getValue(), 1000, 0.0001);
+
     }
 
     @Test
@@ -142,15 +163,6 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
     public void testTimeoutEvalInterrupts2() throws Throwable {
         try {
             scriptFacade.timeoutEval(player.getId(), new Script("JavaScript", "(function(){for(;;){}})()"));
-        } catch (EJBException e) {
-            throw e.getCause();
-        }
-    }
-
-    @Test(expected = WegasScriptException.class)
-    public void testTimeoutEvalInterrupts3() throws Throwable {
-        try {
-            scriptFacade.eval(player.getId(), new Script("JavaScript", "while(1){}"), null);
         } catch (EJBException e) {
             throw e.getCause();
         }
