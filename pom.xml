@@ -135,7 +135,7 @@
         <jakarta.version>10.0.0</jakarta.version>
 
         <shiro.version>1.11.0</shiro.version>
-        <payara.version>6.2023.2</payara.version>
+        <payara.version>6.2023.8</payara.version>
 
         <junit.version>4.13.1</junit.version>
         <arquillian.version>1.7.0.Alpha14</arquillian.version>
@@ -661,8 +661,9 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.0.0-M5</version>
                     <configuration>
-                        <!-- Add options to start payara with java 11-->
-                        <argLine>-Xms800m -Xmx800m @{jacoco.surefireArgLine} --add-modules java.se --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED --add-opens=java.naming/javax.naming.spi=ALL-UNNAMED --add-opens=java.logging/java.util.logging=ALL-UNNAMED --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED --add-opens=java.management/sun.management=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED</argLine>
+                        <!-- Add options to start payara with java 17-->
+                        <!-- Adding  add-opens=java.base/java.io=ALL-UNNAMED as described in this bug: https://github.com/payara/Payara/issues/6337 -->
+                        <argLine>-Xms800m -Xmx800m @{jacoco.surefireArgLine} --add-modules java.se --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED --add-opens=java.naming/javax.naming.spi=ALL-UNNAMED --add-opens=java.logging/java.util.logging=ALL-UNNAMED --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED --add-opens=java.management/sun.management=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED</argLine>
                         <forkCount>1</forkCount>
                         <reuseForks>true</reuseForks>
                         <classpathDependencyExcludes>

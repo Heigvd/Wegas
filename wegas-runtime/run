@@ -162,6 +162,7 @@ JAVA_EXTRA_OPTS="--add-modules java.se
    --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED
    --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED
    --add-opens=java.base/java.lang=ALL-UNNAMED
+   --add-opens=java.base/java.io=ALL-UNNAMED
    --add-opens=java.base/java.net=ALL-UNNAMED
    --add-opens=java.base/java.nio=ALL-UNNAMED
    --add-opens=java.base/java.util=ALL-UNNAMED
@@ -229,7 +230,6 @@ fi
     -Dproduct.name= -XX:+ParallelRefProcEnabled -XX:+UseCompressedOops -XX:-UseLoopPredicate \
     -Xms${HEAP} -Xmx${HEAP} \
     -Djava.security.egd=file:/dev/urandom \
-    -Djdk.util.zip.disableZip64ExtraFieldValidation=true \
     ${HAZELCAST_SHUTDOWN_HOOK_OPTION} \
     -Dhazelcast.startport=6900 \
     -Dfish.payara.tenantcontrol.blocking.disable=true \
