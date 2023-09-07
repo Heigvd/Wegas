@@ -9,8 +9,8 @@ package com.wegas.core.ejb.nashorn;
 
 import java.util.List;
 import java.util.Optional;
-import jdk.nashorn.api.tree.CompilationUnitTree;
-import jdk.nashorn.api.tree.Tree;
+import org.openjdk.nashorn.api.tree.CompilationUnitTree;
+import org.openjdk.nashorn.api.tree.Tree;
 import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Test;

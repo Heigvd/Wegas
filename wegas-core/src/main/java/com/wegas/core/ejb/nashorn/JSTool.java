@@ -10,23 +10,23 @@ package com.wegas.core.ejb.nashorn;
 // !!! This is what jdk9+ version could be
 import com.wegas.core.exception.client.WegasRuntimeException;
 import java.util.Set;
-import jdk.nashorn.api.scripting.NashornException;
-import jdk.nashorn.api.tree.CompilationUnitTree;
-import jdk.nashorn.api.tree.DoWhileLoopTree;
-import jdk.nashorn.api.tree.ExpressionTree;
-import jdk.nashorn.api.tree.ForInLoopTree;
-import jdk.nashorn.api.tree.ForLoopTree;
-import jdk.nashorn.api.tree.FunctionCallTree;
-import jdk.nashorn.api.tree.FunctionDeclarationTree;
-import jdk.nashorn.api.tree.FunctionExpressionTree;
-import jdk.nashorn.api.tree.IdentifierTree;
-import jdk.nashorn.api.tree.LiteralTree;
-import jdk.nashorn.api.tree.ObjectLiteralTree;
-import jdk.nashorn.api.tree.Parser;
-import jdk.nashorn.api.tree.PropertyTree;
-import jdk.nashorn.api.tree.SimpleTreeVisitorES5_1;
-import jdk.nashorn.api.tree.StatementTree;
-import jdk.nashorn.api.tree.WhileLoopTree;
+import org.openjdk.nashorn.api.scripting.NashornException;
+import org.openjdk.nashorn.api.tree.CompilationUnitTree;
+import org.openjdk.nashorn.api.tree.DoWhileLoopTree;
+import org.openjdk.nashorn.api.tree.ExpressionTree;
+import org.openjdk.nashorn.api.tree.ForInLoopTree;
+import org.openjdk.nashorn.api.tree.ForLoopTree;
+import org.openjdk.nashorn.api.tree.FunctionCallTree;
+import org.openjdk.nashorn.api.tree.FunctionDeclarationTree;
+import org.openjdk.nashorn.api.tree.FunctionExpressionTree;
+import org.openjdk.nashorn.api.tree.IdentifierTree;
+import org.openjdk.nashorn.api.tree.LiteralTree;
+import org.openjdk.nashorn.api.tree.ObjectLiteralTree;
+import org.openjdk.nashorn.api.tree.Parser;
+import org.openjdk.nashorn.api.tree.PropertyTree;
+import org.openjdk.nashorn.api.tree.SimpleTreeVisitorES5_1;
+import org.openjdk.nashorn.api.tree.StatementTree;
+import org.openjdk.nashorn.api.tree.WhileLoopTree;
 
 public class JSTool {
 

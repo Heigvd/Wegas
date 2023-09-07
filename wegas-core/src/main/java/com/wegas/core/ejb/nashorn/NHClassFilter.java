@@ -7,7 +7,7 @@
  */
 package com.wegas.core.ejb.nashorn;
 
-import jdk.nashorn.api.scripting.ClassFilter;
+import org.openjdk.nashorn.api.scripting.ClassFilter;
 
 /**
  * Well, this class filter does not filter anything but setting one prevent reflection from nashorn

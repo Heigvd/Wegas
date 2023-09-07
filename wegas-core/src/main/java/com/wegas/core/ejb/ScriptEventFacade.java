@@ -22,7 +22,7 @@ import java.util.Collection;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import javax.script.ScriptContext;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;

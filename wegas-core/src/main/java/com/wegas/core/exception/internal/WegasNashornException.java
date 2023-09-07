@@ -7,7 +7,7 @@
  */
 package com.wegas.core.exception.internal;
 
-import jdk.nashorn.api.scripting.NashornException;
+import org.openjdk.nashorn.api.scripting.NashornException;
 
 /**
  * Wrap runtime NashornException within a Wegas internal exception

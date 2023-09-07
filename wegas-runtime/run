@@ -180,8 +180,6 @@ else
 fi
 
 
-env | sort
-
 echo "Starting Wegas (${INTERFACES})"
 echo
 echo " * Deploy:     ${THE_WAR}"
@@ -193,6 +191,7 @@ echo " * GC:         ${GC}"
 echo " * DB_HOST:    ${DB_HOST}"
 echo " * DB_PORT:    ${DB_PORT}"
 echo " * MONGO_HOST: ${MONGO_HOST}"
+echo " * JAVA:       $($JAVA_EXECUTABLE --version)"
 [ -n "${DEBUG_OPTS}" ] && echo " * Debug:      ${DEBUG_OPTS}"
 echo ----------
 
@@ -243,6 +242,7 @@ fi
     -Dwegas.nb_populators=${NB_POPULATORS} -Dwegas.http.threads=${NB_THREADS} \
     -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager \
     -Declipselink.cache.coordination.channel=${HZ_CLUSTER_NAME} \
+    -Dnashorn.args=--language=es6 \
     -jar ${PAYARA_MICRO} \
     --deploy ${THE_WAR} \
     --prebootcommandfile as_prebootcmd \
