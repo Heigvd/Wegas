@@ -17,8 +17,10 @@ services:
       - DB_PORT=5432
       - MONGO_HOST=mongo
       - DB_NAME=wegas_dev
-      - NB_POPULATORS=-1
+      - NB_POPULATORS=3
       - NB_THREADS=9
+    volumes:
+      - ../../resources/wegas-override.properties:/var/lib/wegas/wegas.properties
     depends_on:
       - postgres
       - mongo
