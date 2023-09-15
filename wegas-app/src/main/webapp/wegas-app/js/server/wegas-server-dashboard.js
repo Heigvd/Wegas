@@ -327,8 +327,8 @@ var WegasDashboard = (function () {
                                 item: item
                             };
 
-                            item.label = itemCfg.label || variables[varName].descriptor.getLabel()
-                                .translateOrEmpty(self);
+                            item.label = itemCfg.label || variables[varName]?.descriptor.getLabel()
+                                .translateOrEmpty(self)  || 'unnamed';
                             item.formatter = itemCfg.formatter;
                             item.active = itemCfg.active;
                             item.preventClick = itemCfg.preventClick;
@@ -337,7 +337,7 @@ var WegasDashboard = (function () {
                             if (itemCfg.kind != null) {
                                 item.kind = itemCfg.kind;
                             } else {
-                                item.kind = variables[varName].descriptor.getJSONClassName()
+                                item.kind = variables[varName]?.descriptor.getJSONClassName()
                                     .replace("Descriptor", "").toLowerCase();
                             }
                             break;
@@ -368,7 +368,7 @@ var WegasDashboard = (function () {
 
                             if (item.mapFn) {
                                 var args = [teamId, variable && variable.instances.get("" + teamId)];
-                                for (const extraVarName of item.mapFnExtraArgs) {
+                                for (const extraVarName of (item.mapFnExtraArgs || [])) {
                                     if (!variables[extraVarName]) {
                                         variables[extraVarName] = {
                                             descriptor: Variable.find(gameModel, extraVarName),
