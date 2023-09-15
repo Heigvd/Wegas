@@ -47,7 +47,7 @@ public abstract class AbstractExceptionMapper {
         if (exception instanceof OptimisticLockException) {
             OptimisticLockException ex = (OptimisticLockException) exception;
 
-            logger.error("Try to update outdated: {}", ex.getEntity());
+            logger.warn("Try to update outdated: {}", ex.getEntity());
             if (ex.getCause() instanceof org.eclipse.persistence.exceptions.OptimisticLockException) {
                 return processException(ex.getCause());
             }
@@ -92,9 +92,7 @@ public abstract class AbstractExceptionMapper {
         } else if (exception instanceof SQLException && ((SQLException) exception).getNextException() != null) {
             return processException(((SQLException) exception).getNextException());
         } else {
-            if (exception != null) {
-                logger.error(exception.getLocalizedMessage());
-            } else {
+            if (exception == null) {
                 logger.error("Exception is NULL !!!");
             }
             return Response.status(Response.Status.BAD_REQUEST).entity(exception).build();

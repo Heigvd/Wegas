@@ -27,6 +27,7 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.SimpleByteSource;
 import org.slf4j.LoggerFactory;
+import static org.slf4j.event.Level.ERROR;
 
 /**
  *
@@ -99,7 +100,7 @@ public class JpaRealm extends AuthorizingRealm {
 
             return info;
         } catch (EJBException e) {
-            Helper.printWegasStackTrace(e);
+            Helper.printWegasStackTrace(logger, ERROR, "JPARealm exception", e);
             return null;
         }
     }

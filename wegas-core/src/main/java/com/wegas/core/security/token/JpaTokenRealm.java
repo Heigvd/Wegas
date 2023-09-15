@@ -30,6 +30,8 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.apache.shiro.util.SimpleByteSource;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 /**
  *
@@ -40,6 +42,7 @@ import org.apache.shiro.util.SimpleByteSource;
 public class JpaTokenRealm extends AuthorizingRealm {
 
     public static final String REALM_NAME = "JpaTokenRealm";
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(JpaTokenRealm.class);
 
     /**
      *
@@ -135,7 +138,7 @@ public class JpaTokenRealm extends AuthorizingRealm {
 
             return info;
         } catch (EJBException e) {
-            Helper.printWegasStackTrace(e);
+            Helper.printWegasStackTrace(logger, Level.ERROR, "Error In JPATokenRealm", e);
             return null;
         }
     }

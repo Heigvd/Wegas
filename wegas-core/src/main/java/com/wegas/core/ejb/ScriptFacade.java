@@ -71,6 +71,7 @@ import org.graalvm.polyglot.SourceSection;
 import org.graalvm.polyglot.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static org.slf4j.event.Level.WARN;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -396,7 +397,7 @@ public class ScriptFacade extends WegasAbstractFacade {
                 }
             }
         } catch (IOException | URISyntaxException ex) {
-            logger.warn("Unable to read hard coded server scripts");
+            logger.error("Unable to read hard coded server scripts");
         }
     }
 
@@ -430,17 +431,16 @@ public class ScriptFacade extends WegasAbstractFacade {
             Value result = ctx.eval("js", script.getContent());
             return JSTool.unwrap(result);
         } catch (PolyglotException ex) {
-            logger.error("ScriptException", ex);
             processPolyglotException(ex, script.getContent(), null);
             return null;// actually, processPolyglotException just throw something
         } catch (WegasRuntimeException ex) { // throw our exception as-is
-            logger.error("ScriptException:", ex);
+            Helper.printWegasStackTrace(logger, WARN, "ScriptException", ex);
             throw ex;
         } catch (UndeclaredThrowableException ex) { // Java exception (Java -> JS -> Java -> throw)
             processUndeclared(ex, script.getContent(), null);
             return null;// actually, processPolyglotException just throw something
         } catch (RuntimeException ex) { // Java exception (Java -> JS -> Java -> throw)
-            logger.error("ScriptException:", ex);
+            Helper.printWegasStackTrace(logger, WARN, "RuntimeScriptException", ex);
             throw new WegasScriptException(script.getContent(), ex.getMessage(), ex);
         } finally {
             if (timer != null) {
@@ -641,7 +641,7 @@ public class ScriptFacade extends WegasAbstractFacade {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    logger.error("KILL ME");
+                    logger.warn("Abort script execution: timeout ({} ms)", timeout);
                     context.close(true);
                 }
             }, timeout);
@@ -651,6 +651,7 @@ public class ScriptFacade extends WegasAbstractFacade {
     }
 
     private void processUndeclared(UndeclaredThrowableException ex, String content, String name) throws WegasScriptException {
+        Helper.printWegasStackTrace(logger, WARN, "UndeclaredScriptException", ex);
         String msg = content != null ? content : name;
         Throwable cause = ex.getCause();
         if (cause instanceof InvocationTargetException) {
@@ -669,24 +670,45 @@ public class ScriptFacade extends WegasAbstractFacade {
         }
     }
 
+    /**
+     * Extract JS stack trace from obscure GraalVMPolyglot Exception
+     */
+    private static String extractJsStackTrace(PolyglotException ex) {
+        return Arrays.stream(ex.getStackTrace())
+            .filter(stackTraceElement
+                -> "<js>".equals(stackTraceElement.getClassName())
+            )
+            .map(jsStackTraceElement -> {
+                return "\tat " + jsStackTraceElement.getFileName()
+                    + ':' + jsStackTraceElement.getLineNumber()
+                    + " " + jsStackTraceElement.getMethodName();
+            })
+            .collect(Collectors.joining("\n"));
+    }
+
     private void processPolyglotException(PolyglotException ex, String content, String name) throws WegasScriptException {
         String msg = content != null ? content : name;
+        String jsStackTrace = "\n" + ScriptFacade.extractJsStackTrace(ex);
+        logger.warn("ScriptException: {}",  jsStackTrace);
         if (ex.isHostException()) {
             Throwable theEx = ex.asHostException();
             if (theEx instanceof WegasRuntimeException) {
-                // throw our exception as-is
+                // throw our own runtime exception as-is
                 throw (WegasRuntimeException) theEx;
             } else if (theEx instanceof UndeclaredThrowableException) {
-                Throwable cause = ex.getCause();
+                Throwable cause = theEx.getCause();
                 if (cause instanceof InvocationTargetException) {
                     Throwable subCause = cause.getCause();
                     if (subCause instanceof WegasRuntimeException) {
+                        // throw our own runtime exception as-is
                         throw (WegasRuntimeException) subCause;
+                    } else if (subCause != null) {
+                        throw new WegasScriptException(msg, subCause.getMessage() + jsStackTrace, ex);
                     } else {
-                        throw new WegasScriptException(msg, cause.getMessage(), ex);
+                        throw new WegasScriptException(msg, cause.getMessage() + jsStackTrace, ex);
                     }
                 } else {
-                    throw new WegasScriptException(msg, ex.getMessage(), ex);
+                    throw new WegasScriptException(msg, ex.getMessage() + jsStackTrace, ex);
                 }
             }
         }
@@ -701,7 +723,7 @@ public class ScriptFacade extends WegasAbstractFacade {
             lineStart = sourceLocation.getStartLine();
         }
 
-        throw new WegasScriptException(msg, lineStart, ex.getMessage(), ex);
+        throw new WegasScriptException(msg, lineStart, ex.getMessage() + jsStackTrace, ex);
 
     }
 }

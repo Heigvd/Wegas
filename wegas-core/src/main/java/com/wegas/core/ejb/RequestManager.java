@@ -1312,9 +1312,12 @@ public class RequestManager implements RequestManagerI {
             + (currentTeam != null ? currentTeam.getId() : "n/a") + "]";
 
         Level level = Level.INFO;
-        if (this.status != null && this.status.getStatusCode() >= 400) {
+        if (this.status != null && this.status.getStatusCode() >= 500) {
             level = Level.ERROR;
+        } else if (this.status != null && this.status.getStatusCode() >= 400) {
+            level = Level.WARN;
         }
+
         if (requestId == null) {
             Helper.log(logger, level, "Internal Request for {} processed in {} ms ", info, totalDuration);
         } else {
@@ -2309,7 +2312,9 @@ public class RequestManager implements RequestManagerI {
         } catch (UnavailableSecurityManagerException | IllegalStateException | NullPointerException ex) { // NOPMD We don't know where NPE came from.
             // No security manager yet (startup actions)
             // craft one
-            Helper.printWegasStackTrace(ex);
+            Helper.printWegasStackTrace(
+                logger, Level.WARN,
+                "SecurityManager Is not available yet, let's craft a temporary one", ex);
 
             // The subject does not exists -> create from strach and bind
             Collection<Realm> realms = new ArrayList<>();

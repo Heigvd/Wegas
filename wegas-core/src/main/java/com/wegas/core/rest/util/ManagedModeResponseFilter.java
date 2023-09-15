@@ -35,6 +35,7 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -86,8 +87,14 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             if (response.getEntity() == null && !exceptions.isEmpty()) {
                 response.setEntity(exceptions.remove(0));
             }
+            Exception exAsEntity = null;
             if (response.getEntity() != null) {
-                logger.warn("Problem : {}", response.getEntity());
+                if (response.getEntity() instanceof Exception ex) {
+                    exAsEntity = ex;
+                    Helper.printWegasStackTrace(logger, Level.WARN, "", ex, 5);
+                } else {
+                    logger.warn("Problem : {}", response.getEntity());
+                }
 
                 if (response.getEntity() instanceof WegasRuntimeException) {
                     WegasRuntimeException wre = (WegasRuntimeException) response.getEntity();
@@ -95,9 +102,12 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 }
             }
 
-            exceptions.forEach(ex
-                -> logger.warn("Problem :", ex)
-            );
+            for (Exception ex: exceptions){
+                // make sure not to print an exception twice
+                if (ex != exAsEntity) {
+                    Helper.printWegasStackTrace(logger, Level.WARN, "", ex, 5);
+                }
+            }
         }
 
         boolean rollbacked = false;
@@ -253,13 +263,13 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             requestManager.getAllUpdatedEntities().stream()
                 .filter(entity -> entity instanceof GameModelContent)
                 .forEach(gameModelContent
-                    -> websocketFacade.gameModelContentUpdate((GameModelContent)gameModelContent, eSocketId)
+                    -> websocketFacade.gameModelContentUpdate((GameModelContent) gameModelContent, eSocketId)
                 );
 
             requestManager.getDestroyedEntities().stream()
                 .filter(entity -> entity instanceof GameModelContent)
                 .forEach(gameModelContent
-                    -> websocketFacade.gameModelContentDestroy((GameModelContent)gameModelContent, eSocketId)
+                    -> websocketFacade.gameModelContentDestroy((GameModelContent) gameModelContent, eSocketId)
                 );
         }
 

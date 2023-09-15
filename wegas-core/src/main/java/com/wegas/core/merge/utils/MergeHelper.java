@@ -26,6 +26,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 /**
  *
@@ -423,8 +424,7 @@ public class MergeHelper {
                             }
                         }
                     } catch (Exception ex) {
-                        logger.error(ex.toString());
-                        Helper.printWegasStackTrace(ex);
+                        Helper.printWegasStackTrace(logger, Level.ERROR, ex.toString(), ex);
                         throw new WegasErrorMessage("error", "Invocation Failure: should never happen: " + ex);
                     }
                 }

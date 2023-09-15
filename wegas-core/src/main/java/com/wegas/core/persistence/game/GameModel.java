@@ -80,6 +80,7 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static org.slf4j.event.Level.ERROR;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -486,8 +487,10 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     public void setStatus(Status status) {
         if (status == Status.DELETE) {
-            logger.error("SET GM {} STATUS TO DELETE", this);
-            Helper.printWegasStackTrace(WegasErrorMessage.error("Setting gm status to DELETE"));
+            Helper.printWegasStackTrace(
+                logger, ERROR,
+                "SET GM " + games.toString() + " STATUS TO DELETE",
+                 WegasErrorMessage.error("Setting gm status to DELETE"));
         }
         this.status = status;
     }

@@ -191,7 +191,9 @@ public class Helper {
      * Read file from path
      *
      * @param path file location
+     *
      * @return the file content
+     *
      * @throws IOException if something went wrong
      */
     public static String readFile(String path) throws IOException {
@@ -988,24 +990,39 @@ public class Helper {
         return sb.toString();
     }
 
-    public static void printWegasStackTrace(Throwable t) {
+    public static void printWegasStackTrace(Logger l, Level level, String title, Throwable t, int firstN) {
         StringBuilder sb = new StringBuilder(t.getClass().getName());
         sb.append(" - ").append(t.getMessage());
+
+        int counter = 0;
+        int lastMatch = 0;
         for (StackTraceElement elem : t.getStackTrace()) {
-            if (elem.getClassName().startsWith("com.wegas")
-                || elem.getClassName().startsWith("jdk.nashorn")) {
+            if (counter < firstN
+                || elem.getClassName().startsWith("com.wegas")
+                || elem.getClassName().startsWith("org.graalvm")) {
                 sb.append("\n\tat ");
                 sb.append(elem);
+                lastMatch = counter;
+            } else if (lastMatch == counter -1) {
+                // print a break furst time a stack element is skipped
+                sb.append("\n\t... ");
             }
+            counter++;
         }
         String toString = sb.toString();
-        if (toString.contains("jparealm") || toString.contains("GuestRealm")) {
-            return;
-        } else {
-            logger.error(toString);
-        }
+//        if (!toString.contains("jparealm") && !toString.contains("GuestRealm")) {
+//            log(l, level, title +"\n" + toString);
+//        }
+        log(l, level, title + "\n" + toString);
     }
 
+    public static void printWegasStackTrace(Logger l, Level level, String title, Throwable t) {
+        printWegasStackTrace(l, level, title, t, 1);
+    }
+
+    //public static void printWegasStackTrace(String title, Throwable t) {
+    //    printWegasStackTrace(logger, title, t);
+    //}
     /**
      * Check if email is valid. (Only a string test)
      *

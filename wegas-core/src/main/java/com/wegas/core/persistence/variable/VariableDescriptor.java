@@ -127,6 +127,7 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 /**
  * @param <T>
@@ -1033,8 +1034,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         if (this.beans != null && this.beans.getVariableDescriptorFacade() != null) {
             return this.beans.getVariableDescriptorFacade();
         } else if (this.variableDescriptorFacade == null) {
-            logger.error("LOOKUP OCCURS : " + this);
-            Helper.printWegasStackTrace(new Exception());
+            Helper.printWegasStackTrace(logger, Level.ERROR, "VariableDescriptorFacade lookup occurs", new Exception());
             this.variableDescriptorFacade = VariableDescriptorFacade.lookup();
         }
 

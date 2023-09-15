@@ -39,6 +39,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 /**
  * @param <T> scope context
@@ -170,7 +171,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     public VariableInstance getVariableInstance(Team team) {
         for (Player p : team.getPlayers()) {
             VariableInstance variableInstance = this.getVariableInstance(p);
-            if (variableInstance !=null){
+            if (variableInstance != null) {
                 return variableInstance;
             }
         }
@@ -190,7 +191,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     public VariableInstance getVariableInstance(Game game) {
         for (Team t : game.getTeams()) {
             VariableInstance vi = this.getVariableInstance(t);
-            if (vi != null){
+            if (vi != null) {
                 return vi;
             }
         }
@@ -210,7 +211,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     public VariableInstance getVariableInstance(GameModel gm) {
         for (Game g : gm.getGames()) {
             VariableInstance vi = this.getVariableInstance(g);
-            if (vi != null){
+            if (vi != null) {
                 return vi;
             }
         }
@@ -235,7 +236,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      * @param p      instance owner
      * @param create create new instance or update existing one ?
      */
-    protected void propagate(Player p, boolean create){
+    protected void propagate(Player p, boolean create) {
         // default behaviour is to do nothng, maybe a bad design...
     }
 
@@ -349,8 +350,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
             return this.beans.getVariableInstanceFacade();
         } else if (this.variableInstanceFacade == null) {
             // but it may not... so here is a lookup fallback
-            logger.error("LOOKUP OCCURS : " + this);
-            Helper.printWegasStackTrace(new Exception());
+            Helper.printWegasStackTrace(logger, Level.ERROR, "VariableInstanceFacade lookup occurs", new Exception());
             this.variableInstanceFacade = VariableInstanceFacade.lookup();
         }
 
@@ -378,8 +378,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      * @return the current player
      */
     protected Player lookupPlayer() {
-        logger.error("LOOKUP OCCURS: {}", this);
-        Helper.printWegasStackTrace(new Exception());
+        Helper.printWegasStackTrace(logger, Level.ERROR, "Player lookup occurs: ", new Exception());
         return RequestFacade.lookup().getPlayer();
     }
 }
