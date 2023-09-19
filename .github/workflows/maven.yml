@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - master
+      - jdk_17
     tags:
       - "v*"
 
