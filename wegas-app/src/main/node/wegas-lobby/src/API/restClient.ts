@@ -57,6 +57,13 @@ export type IRoleWithPermissions = IRoleWithId & {
   permissions?: IPermissionWithId[];
 };
 
+export type IUserPage = {
+  total: number;
+  page: number;
+  pageSize: number;
+  pageContent:IUserWithAccounts[];
+};
+
 export type IUserWithAccounts = IUserWithId & {
   accounts?: IAccountWithPerm[];
   permissions?: IPermissionWithId[];
@@ -548,6 +555,10 @@ export const WegasLobbyRestClient = function (
       getAllUsers: () => {
         const path = `${baseUrl}/Shadow/User`;
         return sendJsonRequest<IUserWithAccounts[]>('GET', path, undefined, errorHandler);
+      },
+      getPaginatedUsers: (page: number, size: number, query: string) => {
+        const path = `${baseUrl}/Shadow/User/Paginated?page=${page}&size=${size}&query=${query}`;
+        return sendJsonRequest<IUserPage>('GET', path, undefined, errorHandler);
       },
       getUser: (userId: number) => {
         const path = `${baseUrl}/User/${userId}`;

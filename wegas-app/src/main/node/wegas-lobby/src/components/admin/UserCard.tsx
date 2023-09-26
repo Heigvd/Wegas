@@ -84,7 +84,7 @@ export function UserPermissions({ userId }: { userId: number }): JSX.Element {
       // Hack: force full user reload
       dispatch(getFullUser(userId));
     }
-  }, [fullStatus, dispatch, userId]);
+  }, [dispatch, userId]);
 
   const unknownGamesAndModels = useAppSelector(state => {
     const gameModels: number[] = [];
