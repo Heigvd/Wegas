@@ -100,6 +100,7 @@ export default function Users(): JSX.Element {
             {users.totalResults} {i18n.users}
           </h3>
           <DebouncedInput
+            autofocus = {true}
             size="SMALL"
             value={filter}
             placeholder={i18n.search}
