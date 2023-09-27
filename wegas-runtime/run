@@ -177,7 +177,7 @@ JAVA_EXTRA_OPTS="--add-modules java.se
 if [ "${GC}" = "ZGC" ]; then
     GC_OPT="-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
 else
-    GC_OPT="-XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1MaxNewSizePercent=75 -XX:G1NewSizePercent=40 -XX:MaxGCPauseMillis=2500"
+    GC_OPT="-XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1MaxNewSizePercent=75 -XX:G1NewSizePercent=40 -XX:MaxGCPauseMillis=2500 -XX:+UseStringDeduplication"
 fi
 
 
