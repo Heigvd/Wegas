@@ -456,7 +456,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         return target;
     }
 
-    public static TranslatableContent readFromNashorn(Value jsTr) {
+    public static TranslatableContent readFromPolyglot(Value jsTr) {
         if (jsTr != null) {
             Value theClass = jsTr.getMember("@class");
             TranslatableContent trContent = new TranslatableContent();

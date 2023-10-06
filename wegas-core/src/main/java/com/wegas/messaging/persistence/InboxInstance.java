@@ -252,10 +252,10 @@ public class InboxInstance extends VariableInstance {
         }
 
         return this.sendMessage(
-            TranslatableContent.readFromNashorn(from),
-            TranslatableContent.readFromNashorn(subject),
-            TranslatableContent.readFromNashorn(body),
-            TranslatableContent.readFromNashorn(date),
+            TranslatableContent.readFromPolyglot(from),
+            TranslatableContent.readFromPolyglot(subject),
+            TranslatableContent.readFromPolyglot(body),
+            TranslatableContent.readFromPolyglot(date),
             token, atts);
     }
 

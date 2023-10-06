@@ -87,7 +87,7 @@ public class TextInstance extends VariableInstance {
      * @param value
      */
     public void setValue(Value value) {
-        TranslatableContent read = TranslatableContent.readFromNashorn(value);
+        TranslatableContent read = TranslatableContent.readFromPolyglot(value);
         if (read != null && this.getTrValue() != null) {
             this.getTrValue().merge(read);
         }

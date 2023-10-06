@@ -195,7 +195,7 @@ public class Attachment extends AbstractEntity implements Serializable {
 
             if (theClass != null && theClass.equals("Attachment")) {
                 Value trs = att.getMember("file");
-                TranslatableContent file = TranslatableContent.readFromNashorn(trs);
+                TranslatableContent file = TranslatableContent.readFromPolyglot(trs);
                 attachment.setFile(file);
             }
             return attachment;

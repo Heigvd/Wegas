@@ -93,7 +93,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                     exAsEntity = ex;
                     Helper.printWegasStackTrace(logger, Level.WARN, "", ex, 5);
                 } else {
-                    logger.warn("Problem : {}", response.getEntity());
+                    logger.warn("Problem : ({}) {}", response.getEntity().getClass(), response.getEntity());
                 }
 
                 if (response.getEntity() instanceof WegasRuntimeException) {

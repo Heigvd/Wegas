@@ -171,7 +171,8 @@ JAVA_EXTRA_OPTS="--add-modules java.se
    --add-opens=java.logging/java.util.logging=ALL-UNNAMED
    --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
    --add-opens=java.management/sun.management=ALL-UNNAMED
-   --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED"
+   --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED
+   --add-opens=org.graalvm.sdk/org.graalvm.polyglot=ALL-UNNAMED"
 
 if [ "${GC}" = "ZGC" ]; then
     GC_OPT="-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"

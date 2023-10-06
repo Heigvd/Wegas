@@ -228,7 +228,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      * @param value
      */
     public void setFeedback(Player p, Value value) {
-        TranslatableContent read = TranslatableContent.readFromNashorn(value);
+        TranslatableContent read = TranslatableContent.readFromPolyglot(value);
 
         TranslatableContent feedback = this.getInstance(p).getFeedback();
 

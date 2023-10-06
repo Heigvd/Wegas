@@ -98,7 +98,7 @@ public class TextDescriptor extends VariableDescriptor<TextInstance>
      * @param value
      */
     public void setValueIfChanged(Player p, Value value) {
-        TranslatableContent newValue = TranslatableContent.readFromNashorn(value);
+        TranslatableContent newValue = TranslatableContent.readFromPolyglot(value);
         this.setValueIfChanged(p, newValue);
     }
 

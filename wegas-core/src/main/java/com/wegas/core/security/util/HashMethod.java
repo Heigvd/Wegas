@@ -26,8 +26,8 @@ public enum HashMethod {
         @Override
         public String hash(Object oValue, Object salt) {
             Object value = oValue;
-            if (value instanceof char[]){
-                value = new String((char[]) value);
+            if (value instanceof char[] cs){
+                value = new String(cs);
             }
             if (salt == null) {
                 return value.toString();
