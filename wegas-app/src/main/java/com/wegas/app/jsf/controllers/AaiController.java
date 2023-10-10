@@ -87,6 +87,8 @@ public class AaiController {
             cookieP.put("maxAge", sessionMaxAge);
             cookieP.put("path", path);
             cookieP.put("httpOnly", Boolean.TRUE);
+            cookieP.put("SameSite", "Lax");
+
             externalContext.addResponseCookie(cookieName, this.cookieValue, cookieP);
             externalContext.addResponseCookie(jsessionName, jsessionValue, cookieP);
 
