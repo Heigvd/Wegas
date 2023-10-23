@@ -46,6 +46,7 @@ export interface GlobalClasses {
   schemaProps: SchemaPropsType;
   CurrentGame: IGame;
   API_VIEW: View;
+  APP_CONTEXT: AppContext;
   Variable: GlobalVariableClass;
   Editor: GlobalEditorClass;
   ClientMethods: GlobalClientMethodClass;
