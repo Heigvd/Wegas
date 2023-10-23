@@ -144,6 +144,8 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.self = instantiate(player);
   globals.schemaProps = schemaProps;
   globals.API_VIEW = API_VIEW;
+  globals.APP_CONTEXT = APP_CONTEXT;
+
   globals.CurrentGame = CurrentGame;
   // Variable class
   globals.Variable = {
