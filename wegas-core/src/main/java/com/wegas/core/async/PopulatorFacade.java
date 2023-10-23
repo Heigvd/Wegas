@@ -30,15 +30,15 @@ import com.wegas.core.security.util.Sudoer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Resource;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.inject.Inject;
-import javax.transaction.NotSupportedException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
+import jakarta.annotation.Resource;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionManagement;
+import jakarta.ejb.TransactionManagementType;
+import jakarta.inject.Inject;
+import jakarta.transaction.NotSupportedException;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.UserTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,11 +95,10 @@ public class PopulatorFacade extends WegasAbstractFacade {
      */
     public void populateTeam(Long teamId, Long accountId) {
         requestManager.su(accountId);
-        Team team = teamFacade.find(teamId);
-        teamFacade.detach(team);
         try {
             utx.begin();
-            team = teamFacade.find(teamId);
+            // make sure to find entities from within the transaction!
+            Team team = teamFacade.find(teamId);
             requestManager.setCurrentTeam(team);
             try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
                 Game game = gameFacade.find(team.getGameId());
@@ -119,7 +118,8 @@ public class PopulatorFacade extends WegasAbstractFacade {
                 }
                 try {
                     utx.begin();
-                    team = teamFacade.find(teamId);
+                    // make sure to find entities from within the transaction!
+                    Team team = teamFacade.find(teamId);
                     this.postpone(team);
                     utx.commit();
                 } catch (Exception ex1) {
@@ -133,12 +133,10 @@ public class PopulatorFacade extends WegasAbstractFacade {
 
     public void populatePlayer(Long playerId, Long accountId) {
         requestManager.su(accountId);
-        Player player = playerFacade.find(playerId);
-        playerFacade.detach(player);
-
         try {
             utx.begin();
-            player = playerFacade.find(playerId);
+            // make sure to find entities from within the transaction!
+            Player player = playerFacade.find(playerId);
             try (ActAsPlayer acting = requestManager.actAsPlayer(player)) {
                 acting.setFlushOnExit(false); // user managed TX
 
@@ -175,7 +173,8 @@ public class PopulatorFacade extends WegasAbstractFacade {
 
                 try {
                     utx.begin();
-                    player = playerFacade.find(playerId);
+                    // make sure to find entities from within the transaction!
+                    Player player = playerFacade.find(playerId);
                     this.postpone(player);
                     utx.commit();
                     // Inform Lobby about failure
@@ -231,6 +230,7 @@ public class PopulatorFacade extends WegasAbstractFacade {
      */
     public int getPositionInQueue(Player player) {
         try {
+            // nest call within brand new transation to bypass the lv1 eclipselink cache
             utx.begin();
             try (Sudoer root = requestManager.sudoer()) {
                 return this.getQueue().indexOf(player);

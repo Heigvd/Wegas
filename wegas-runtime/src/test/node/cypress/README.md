@@ -8,7 +8,6 @@ describe("ch.wegas.client.tests.e2e.<SuiteName>", () => {
 
   beforeEach(() => {
     cy.visitWegas();
-    cy.waitForReact();
   });
 
   it("TestName", () => {

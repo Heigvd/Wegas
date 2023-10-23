@@ -7,7 +7,7 @@
  */
 package com.wegas.core.persistence.variable;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  *

@@ -7,6 +7,8 @@ import {
   IVariableDescriptor,
   WegasClassNameAndScriptableTypes,
 } from 'wegas-ts-api';
+import { ActionCreator } from '../../../data/actions';
+import { store } from '../../../data/Stores/store';
 import { AvailableSchemas } from '../../../Editor/Components/FormView';
 import { IconComponentType } from '../../../Editor/Components/Page/ComponentIcon';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
@@ -16,8 +18,9 @@ import {
   PageComponentProps,
   WegasComponentProps,
 } from './EditableComponent';
-import { classStyleIdShema } from './options';
+import { classStyleIdSchema } from './options';
 import { ChildrenDeserializerProps } from './PageDeserializer';
+import { wlog } from '../../../Helper/wegaslog';
 
 export const usableComponentType = [
   'Layout',
@@ -242,7 +245,15 @@ export const importPageComponents = () => {
     /\.component\./,
     'lazy-once',
   );
-  componentModules.keys().map(k => componentModules(k));
+
+  const allPromises = componentModules
+    .keys()
+    .map(k => componentModules<Promise<unknown>>(k));
+
+  Promise.all(allPromises).then(() => {
+    wlog('One is glad to be of service 🤖');
+    store.dispatch(ActionCreator.INIT_STATE_SET('components', true));
+  });
 };
 
 const composeEnhancers: typeof compose =
@@ -305,7 +316,7 @@ export function pageComponentFactory<
     componentName: param.name,
     schema: {
       description: param.name,
-      properties: { ...classStyleIdShema, ...param.schema },
+      properties: { ...classStyleIdSchema, ...param.schema },
     },
     getComputedPropsFromVariable: param.getComputedPropsFromVariable,
   };
@@ -321,26 +332,10 @@ export type PageComponentFactorySchemas = ReturnType<
  * @param componentName
  * @param component
  */
-export const registerComponent: (component: PageComponent) => void =
-  component => {
-    componentsStore.dispatch(
-      PageComponentActionCreator.ADD_COMPONENT(
-        component.componentId,
-        component,
-      ),
-    );
-  };
-
-/**
- * Importing all the files containing ".component.".
- * Allows component registration without explicit import within the hole project path
- */
-export const importComponents = () => {
-  const componentModules = require.context(
-    '../../../',
-    true,
-    /\.component\./,
-    'lazy-once',
+export const registerComponent: (
+  component: PageComponent,
+) => void = component => {
+  componentsStore.dispatch(
+    PageComponentActionCreator.ADD_COMPONENT(component.componentId, component),
   );
-  componentModules.keys().map(k => componentModules(k));
 };

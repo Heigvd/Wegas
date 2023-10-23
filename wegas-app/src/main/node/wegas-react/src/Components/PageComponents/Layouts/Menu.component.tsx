@@ -14,7 +14,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import {
   ChildrenDeserializerProps,
   PageDeserializer,
@@ -253,7 +253,7 @@ registerComponent(
     name: 'Menu',
     icon: 'bars',
     illustration: 'menu',
-    schema: { ...menuSchema, ...classStyleIdShema },
+    schema: { ...menuSchema, ...classStyleIdSchema },
     getComputedPropsFromVariable: () => ({
       children: [
         { type: PlayerMenuLabelName, props: { children: [] } },

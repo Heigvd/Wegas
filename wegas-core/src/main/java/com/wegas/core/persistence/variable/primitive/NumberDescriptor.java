@@ -29,8 +29,8 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.ValueGenerators.Twenty;
 import com.wegas.editor.view.Hidden;
 import com.wegas.editor.view.NumberView;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 
 /**
  *

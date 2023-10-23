@@ -77,6 +77,7 @@ export default function Input({
           value={state || ''}
           onChange={onInternalChangeCb}
           readOnly={readonly}
+          autoComplete='off'
         />
       ) : (
         <textarea
@@ -85,6 +86,7 @@ export default function Input({
           value={state || ''}
           onChange={onInternalChangeCb}
           readOnly={readonly}
+          autoComplete='off'
         />
       )}
     </Flex>

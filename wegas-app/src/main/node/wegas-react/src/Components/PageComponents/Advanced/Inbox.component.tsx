@@ -12,15 +12,20 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerInboxProps extends WegasComponentProps {
   inbox?: IScript;
+  mobileDisplay?: boolean;
 }
 
 export default function PlayerInbox({
   inbox,
+  mobileDisplay,
   context,
+  className,
+  style,
   name,
   options,
   pageId,
@@ -42,8 +47,11 @@ export default function PlayerInbox({
   return (
     <InboxDisplay
       inbox={descriptor.getEntity()}
+      mobileDisplay={mobileDisplay}
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
+      className={className}
+      style={style}
     />
   );
 }
@@ -62,6 +70,11 @@ registerComponent(
         required: true,
         returnType: ['SInboxDescriptor'],
       }),
+      mobileDisplay: schemaProps.boolean({
+        label: 'Allow display to switch to mobile when needed',
+        value: false,
+      }),
+      ...classStyleIdSchema,
     },
     allowedVariables: ['InboxDescriptor'],
     getComputedPropsFromVariable: v => ({

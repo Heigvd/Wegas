@@ -10,7 +10,7 @@
 
     <groupId>ch.albasim.wegas</groupId>
     <artifactId>wegas-ts-api</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>wegas-ts-api</name>
 
     <properties>
@@ -50,7 +50,7 @@
                                     <excludeDefaultDirectoriest>true</excludeDefaultDirectoriest>
                                     <filesets>
                                         <fileset>
-                                            <directory>node_modules</directory>
+                                            <directory>src/main/node/node_modules</directory>
                                         </fileset>
                                     </filesets>
                                 </configuration>
@@ -78,10 +78,10 @@
                             <excludeDefaultDirectoriest>true</excludeDefaultDirectoriest>
                             <filesets>
                                 <fileset>
-                                    <directory>src/main/webapp/src/generated</directory>
+                                    <directory>src/main/node/src/generated</directory>
                                 </fileset>
                                 <fileset>
-                                    <directory>src/main/webapp/typings</directory>
+                                    <directory>src/main/node/typings</directory>
                                 </fileset>
                             </filesets>
                         </configuration>
@@ -104,6 +104,7 @@
                                 <argument>install</argument>
                                 <argument>--frozen-lockfile</argument>
                             </arguments>
+                            <workingDirectory>${project.basedir}/src/main/node</workingDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -118,7 +119,7 @@
                                 <argument>run</argument>
                                 <argument>build</argument>
                             </arguments>
-                            <workingDirectory>${project.basedir}/target/wegas-ts-api/</workingDirectory>
+                            <workingDirectory>${project.basedir}/src/main/node</workingDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -135,7 +136,7 @@
                             <goal>wenerator</goal>
                         </goals>
                         <configuration>
-                            <moduleDirectory>${project.basedir}/src/main/webapp</moduleDirectory>
+                            <moduleDirectory>${project.basedir}/src/main/node</moduleDirectory>
                             <pkg>
                                 <param>com.wegas</param>
                             </pkg>

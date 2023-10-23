@@ -11,12 +11,12 @@ package com.wegas.app.jsf.controllers;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.enterprise.context.RequestScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 /*
  * Copyright (c) AlbaSim, School of Management and Engineering Vaud of Western Switzerland

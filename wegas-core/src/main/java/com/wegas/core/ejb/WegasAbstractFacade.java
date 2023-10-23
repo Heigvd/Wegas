@@ -7,8 +7,8 @@
  */
 package com.wegas.core.ejb;
 
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 
 /**
  *

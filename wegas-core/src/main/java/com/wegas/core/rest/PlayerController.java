@@ -20,20 +20,20 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import java.util.Collection;
 import java.util.Collections;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -99,10 +99,10 @@ public class PlayerController {
                 && !teamToJoin.getGame().getProperties().getFreeForAll()) {
                 if (requestManager.tryLock("join-" + teamToJoin.getGameId() + "-" + currentUser.getId())
                     && !playerFacade.isInGame(teamToJoin.getGameId(), currentUser.getId())) {
-                    gameFacade.joinTeam(teamToJoin.getId(), currentUser.getId(), Collections.list(request.getLocales()));
-                    // reload up to date team
-                    teamFacade.detach(teamToJoin);
-                    teamToJoin = teamFacade.find(teamToJoin.getId());
+                    gameFacade.joinTeam(teamToJoin.getId(), currentUser.getId(), request != null ? Collections.list(request.getLocales()) : null);
+                    // reload up to date team (joinTeam creates the new player within a separate transation)
+                    teamFacade.refresh(teamToJoin);
+                    //teamFacade.refresh(teamToJoin);
                     return Response.status(Response.Status.CREATED).entity(teamToJoin).build();
                 }
                 return Response.status(Response.Status.CONFLICT).build();

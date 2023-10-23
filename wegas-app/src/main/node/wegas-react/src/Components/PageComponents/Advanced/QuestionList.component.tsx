@@ -9,18 +9,23 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 interface QuestionListDisplayProps extends WegasComponentProps {
   questionList?: IScript;
   autoOpenFirst: boolean;
   edit?: IScript;
+  mobileDisplay?: boolean;
 }
 
 export default function QuestionListDisplay({
   questionList,
   autoOpenFirst,
+  mobileDisplay,
   edit,
+  className,
+  style,
   context,
   options,
 }: QuestionListDisplayProps) {
@@ -37,9 +42,12 @@ export default function QuestionListDisplay({
     <QuestionList
       questionList={descriptor}
       autoOpenFirst={autoOpenFirst}
+      mobileDisplay={mobileDisplay}
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
       editMode={editing}
+      className={className}
+      style={style}
     />
   );
 }
@@ -67,11 +75,16 @@ registerComponent(
         label: 'Automatically open first item',
         value: true,
       }),
+      mobileDisplay: schemaProps.boolean({
+        label: 'Allow display to switch to mobile when needed',
+        value: false,
+      }),
       edit: schemaProps.scriptVariable({
         label: 'Edition mode',
         required: false,
         returnType: ['boolean'],
       }),
+      ...classStyleIdSchema,
     },
     allowedVariables: ['ListDescriptor', 'QuestionDescriptor'],
     getComputedPropsFromVariable: v => ({

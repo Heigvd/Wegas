@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -11,24 +10,25 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.AccountFacade;
 import java.util.Collection;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  *
@@ -91,7 +91,7 @@ public class TeamController {
      * @return HTTP created containing the new team or HTTP Conflict (?)
      */
     @POST
-    public Response create(@PathParam("gameId") Long gameId, Team entity) {
+    public Team create(@PathParam("gameId") Long gameId, Team entity) {
         Game g = gameFacade.find(gameId);
         if (g.getAccess() == Game.GameAccess.OPEN) {
             Boolean prevents = g.getPreventPlayerCreatingTeams();
@@ -100,12 +100,9 @@ public class TeamController {
                 requestManager.assertGameTrainer(g);
             }
 
-            Team team = this.teamFacade.create(gameId, entity);
-            teamFacade.detach(team);
-            team = teamFacade.find(entity.getId());
-            return Response.status(Response.Status.CREATED).entity(team).build();
+            return this.teamFacade.create(gameId, entity);
         }
-        return Response.status(Response.Status.CONFLICT).build();
+        throw new WegasConflictException();
     }
 
     /**

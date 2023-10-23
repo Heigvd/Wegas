@@ -128,6 +128,9 @@ export const en = {
   playersCanCreateTeams: 'Players can create teams',
   playersCantCreateTeams: "Players can't create teams",
 
+  playersCanLeaveTeams: 'Players can leave teams',
+  playersCantLeaveTeams: "Players can't leave teams",
+
   //
   kickPlayer: 'remove player',
   kickTeam: 'remove team',
@@ -326,6 +329,8 @@ export const en = {
     'CREATE-ACCOUNT-INVALID-EMAIL': 'This e-mail address is not valid',
     'CREATE-ACCOUNT-TAKEN-EMAIL': 'This email address is already taken',
     'CREATE-ACCOUNT-TAKEN-USERNAME': 'This username is already taken',
+    'ACCOUNT-UPDATE-USERNAME-DUPLICATE': 'This username is already taken',
+    'ACCOUNT-UPDATE-EMAIL-ADDRESS-DUPLICATE': 'This email address is already taken'
   },
   outadateMessagePart1: 'Some of your data are outdated, please ',
   outadateMessagePart2: 'reload',

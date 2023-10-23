@@ -20,7 +20,7 @@ import com.wegas.core.security.persistence.token.Token;
 import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.JpaAuthenticationInfo;
 import java.util.Date;
-import javax.ejb.EJBException;
+import jakarta.ejb.EJBException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;

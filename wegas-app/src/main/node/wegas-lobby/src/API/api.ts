@@ -20,7 +20,7 @@ import {
   ITeam,
   IUserWithId,
 } from 'wegas-ts-api';
-import getLogger from '../logger';
+import { getLogger } from '../logger';
 import { hashPassword } from '../SecurityHelper';
 import { addNotification } from '../store/slices/notification';
 import { getStore, WegasLobbyState } from '../store/store';
@@ -204,7 +204,7 @@ export const signInWithJpaAccount = createAsyncThunk(
 export const signOut = createAsyncThunk('auth/signout', async () => {
   const client = getPusherClient();
   if (client != null) {
-    logger.info('API Sign out');
+    logger.log('API Sign out');
     client.unbindAllChannels();
   }
   return await restClient.Authentication.logout();
@@ -270,7 +270,7 @@ export const reloadCurrentUser = createAsyncThunk(
 
     const pusherClient = getPusherClient();
     const state = thunkApi.getState() as WegasLobbyState;
-    logger.info(
+    logger.log(
       'API reload current user',
       pusherClient != null ? 'client ok' : 'client n/a',
       'user: ',
@@ -477,7 +477,7 @@ export const initPusher = createAsyncThunk(
     if (appId != null && cluster != null) {
       const socketId = initPusherSocket(appId, `${API_ENDPOINT}/Pusher/auth`, cluster).socketId;
       const pusherClient = getPusherClient();
-      logger.info(
+      logger.log(
         'API init pusher',
         pusherClient != null ? 'ok' : 'n/a',
         ' user id: ',

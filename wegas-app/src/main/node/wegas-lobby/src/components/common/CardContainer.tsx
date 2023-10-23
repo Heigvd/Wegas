@@ -9,9 +9,12 @@
 import { css, cx } from '@emotion/css';
 import { debounce } from 'lodash';
 import * as React from 'react';
+import { getLogger } from '../../logger';
 import { cardContainerStyle } from '../styling/style';
 import FitSpace from './FitSpace';
 import Flex from './Flex';
+
+const logger = getLogger('WindowedContainer');
 
 export interface CardContainerProps {
   className?: string;
@@ -52,6 +55,11 @@ const windowedContainerStyle = cx(
   }),
 );
 
+const itemsStyle = css({
+  display: 'flex',
+  flexDirection: 'column',
+});
+
 const containerStyle = css({
   position: 'relative',
 });
@@ -83,7 +91,13 @@ export function WindowedContainer<T>({
 }: WCardContainerProps<T>): JSX.Element {
   const divRef = React.useRef<HTMLDivElement>(null);
 
-  const data = React.useRef({ numberOfItem: 5, sizePerItem: 0, paddingTop: 0, paddingBottom: 0 });
+  const data = React.useRef({
+    numberOfRenderedItem: 5,
+    numberOfVisibleItem: 5,
+    sizePerItem: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+  });
   const [padding, setPadding] = React.useState({ top: 0, bottom: 0, offset: 0 });
 
   const [showGradient, setShowGradient] = React.useState(true);
@@ -98,13 +112,6 @@ export function WindowedContainer<T>({
   React.useEffect(() => {
     checkGradient();
   }, [padding, checkGradient]);
-
-  React.useEffect(() => {
-    window.addEventListener('resize', checkGradient);
-    () => {
-      window.removeEventListener('resize', checkGradient);
-    };
-  }, [checkGradient]);
 
   //  // reset everything whene items change
   //  React.useEffect((
@@ -123,17 +130,26 @@ export function WindowedContainer<T>({
         let nbAbove = nbAboveParam;
         const total = items.length;
         const perItem = data.current.sizePerItem;
-        let nbBelow = total - nbAbove - data.current.numberOfItem;
+        let nbBelow = total - nbAbove - data.current.numberOfRenderedItem;
 
-        if (nbAbove > total - data.current.numberOfItem) {
-          nbAbove = Math.max(0, total - data.current.numberOfItem);
+        logger.debug('Build Div', { nbAbove, nbItem: total, perItem, nbBelow });
+
+        if (nbAbove + data.current.numberOfVisibleItem > total) {
+          nbAbove = Math.max(0, total - data.current.numberOfVisibleItem);
           nbBelow = 0;
         }
 
         if (nbBelow > total) {
-          nbAbove = Math.max(0, total - data.current.numberOfItem);
+          nbAbove = Math.max(0, total - data.current.numberOfRenderedItem);
         }
-
+        logger.debug('Set Padding: ', {
+          nbAbove,
+          nbBelow,
+          perItem,
+          nbRenderedItems: data.current.numberOfRenderedItem,
+          nbVisibleItems: data.current.numberOfVisibleItem,
+          totalNbItem: total,
+        });
         data.current.paddingTop = nbAbove * perItem;
         data.current.paddingBottom = nbBelow * perItem;
         setPadding({
@@ -152,7 +168,11 @@ export function WindowedContainer<T>({
     if (scrollTo != null) {
       const i = items.indexOf(scrollTo);
       if (i != null) {
+        logger.debug('Scroll To: ', i, scrollTo);
         build(i);
+        if (divRef.current) {
+          divRef.current.scrollTop = data.current.paddingTop;
+        }
       }
     }
   }, [scrollTo, items, build, itemSize]);
@@ -160,7 +180,7 @@ export function WindowedContainer<T>({
   const rebuildPaddings = React.useCallback(
     (items: T[]) => {
       const total = items.length;
-      if (data.current.numberOfItem >= total) {
+      if (data.current.numberOfRenderedItem >= total) {
         // numberofitem to display not reache: do not window ever
         data.current.paddingTop = 0;
         data.current.paddingBottom = 0;
@@ -173,6 +193,11 @@ export function WindowedContainer<T>({
         if (divRef.current) {
           const perItem = data.current.sizePerItem;
           const nbAbove = Math.floor(divRef.current.scrollTop / perItem);
+          logger.debug('Rebuild Paddings ', {
+            nbAbove,
+            perItem,
+            scrollTop: divRef.current.scrollTop,
+          });
           build(nbAbove);
         }
       }
@@ -180,23 +205,53 @@ export function WindowedContainer<T>({
     [build],
   );
 
-  React.useEffect(() => {
+  const recomputeCb = React.useCallback(() => {
     if (divRef.current != null) {
-      const spaceUsed =
-        divRef.current.scrollHeight - data.current.paddingTop - data.current.paddingBottom;
-      const parent = divRef.current.offsetParent;
-      const availableSpace = parent != null ? parent.getBoundingClientRect().width : 0;
+      const itemsDiv = divRef.current.querySelector('.items');
+      if (itemsDiv) {
+        const spaceUsed = itemsDiv.scrollHeight;
+        //divRef.current.scrollHeight - data.current.paddingTop - data.current.paddingBottom;
+        const parent = divRef.current.offsetParent;
+        const availableSpace = parent != null ? parent.getBoundingClientRect().height : 0;
 
-      const nbDisplayed = Math.min(data.current.numberOfItem, items.length);
-
-      data.current.sizePerItem = spaceUsed / nbDisplayed;
-
-      if (nbDisplayed < items.length) {
-        data.current.numberOfItem = Math.ceil(availableSpace / data.current.sizePerItem) * 2;
-        rebuildPaddings(items);
+        const nbDisplayed = itemsDiv.children.length;
+        logger.debug('Recompute ', spaceUsed, nbDisplayed, {
+          total: divRef.current.scrollHeight,
+          top: data.current.paddingTop,
+          bottom: data.current.paddingBottom,
+          spaceUsed,
+          nbRendered: nbDisplayed,
+          nbVisible: data.current.numberOfVisibleItem,
+          availableSpace,
+        });
+        data.current.sizePerItem = spaceUsed / nbDisplayed;
+        if (nbDisplayed < items.length) {
+          data.current.numberOfVisibleItem = Math.min(
+            Math.floor(availableSpace / data.current.sizePerItem),
+            items.length,
+          );
+          data.current.numberOfRenderedItem = Math.min(data.current.numberOfVisibleItem * 2, items.length);
+          rebuildPaddings(items);
+        }
       }
     }
   }, [items, rebuildPaddings]);
+
+  React.useEffect(() => {
+    recomputeCb();
+  }, [recomputeCb]);
+
+  const onResizeCb = React.useCallback(() => {
+    recomputeCb();
+    checkGradient();
+  }, [checkGradient, recomputeCb]);
+
+  React.useEffect(() => {
+    window.addEventListener('resize', onResizeCb);
+    return () => {
+      window.removeEventListener('resize', onResizeCb);
+    };
+  }, [onResizeCb]);
 
   const debScrollCb = React.useCallback(
     debounce(() => {
@@ -211,14 +266,14 @@ export function WindowedContainer<T>({
   }, [debScrollCb, checkGradient]);
 
   const cards = items
-    .slice(padding.offset, padding.offset + data.current.numberOfItem)
+    .slice(padding.offset, padding.offset + data.current.numberOfRenderedItem)
     .map(item => children(item));
   return (
     <Flex className={containerStyle} shrink={1} grow={grow} direction="column" overflow="auto">
       {items.length === 0 ? emptyMessage : null}
       <div ref={divRef} className={windowedContainerStyle} onScroll={scrollCb}>
         <div style={{ height: `${padding.top}px`, flexShrink: 0 }}></div>
-        {cards}
+        <div className={`items ${itemsStyle}`}>{cards}</div>
         <div style={{ height: `${padding.bottom}px`, flexShrink: 0 }}></div>
       </div>
       <div

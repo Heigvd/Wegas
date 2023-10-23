@@ -176,7 +176,7 @@ export default function GameCard({ game, gameModel }: GameCardProps): JSX.Elemen
         title={gameName}
         illustration={gameModel.properties.iconUri}
         showCloseButton={true}
-        route={`/${gameModel.id}/settings`}
+        route={`${gameModel.id}/settings`}
       >
         {collapse => <GameSettings game={game} onClose={collapse} />}
       </OpenCloseModal>
@@ -187,7 +187,7 @@ export default function GameCard({ game, gameModel }: GameCardProps): JSX.Elemen
         title={gameName}
         illustration={gameModel.properties.iconUri}
         showCloseButton={true}
-        route={`/${gameModel.id}/users`}
+        route={`${gameModel.id}/users`}
       >
         {() => <GameUsers game={game} />}
       </OpenCloseModal>

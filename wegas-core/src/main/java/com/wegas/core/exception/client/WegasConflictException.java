@@ -7,6 +7,8 @@
  */
 package com.wegas.core.exception.client;
 
+import jakarta.ws.rs.core.Response.Status;
+
 /**
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -16,14 +18,14 @@ public class WegasConflictException extends WegasRuntimeException {
     private static final long serialVersionUID = -1552844893055754079L;
 
     public WegasConflictException(String message) {
-        super(message);
+        super(message, Status.CONFLICT);
     }
 
     public WegasConflictException() {
-        super();
+        super(Status.CONFLICT);
     }
 
     public WegasConflictException(Throwable t) {
-        super(t);
+        super(t, Status.CONFLICT);
     }
 }

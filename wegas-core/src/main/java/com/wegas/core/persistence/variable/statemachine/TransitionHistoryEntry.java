@@ -9,8 +9,8 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.Orderable;
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 /**
  *

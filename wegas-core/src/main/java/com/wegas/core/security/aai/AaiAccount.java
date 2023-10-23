@@ -14,11 +14,11 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.util.AaiAuthentication;
 import com.wegas.core.security.util.AuthenticationMethod;
 import com.wegas.editor.view.StringView;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.NamedQuery;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.NamedQuery;
 
 /**
  * @author Created by jarle.hulaas@heig-vd.ch on 07.03.2017.

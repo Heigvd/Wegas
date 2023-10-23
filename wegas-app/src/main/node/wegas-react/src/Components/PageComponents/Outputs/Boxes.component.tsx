@@ -11,7 +11,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerBoxesProps extends WegasComponentProps {
@@ -31,6 +31,10 @@ interface PlayerBoxesProps extends WegasComponentProps {
    * showLabelValue - show the value of the number in the label
    */
   showLabelValue?: boolean;
+  /**
+   * showQuantity - the box count starts from 1 even with min value lower or higher
+   */
+  showQuantity?: boolean;
 }
 
 function PlayerBoxes({
@@ -39,6 +43,7 @@ function PlayerBoxes({
   label,
   hideBoxValue,
   showLabelValue,
+  showQuantity,
   className,
   style,
   id,
@@ -75,6 +80,7 @@ function PlayerBoxes({
       label={label}
       hideBoxValue={hideBoxValue}
       showLabelValue={showLabelValue}
+      showQuantity={showQuantity}
       disabled={options.disabled || options.locked}
     />
   );
@@ -97,7 +103,8 @@ registerComponent(
       label: schemaProps.string({ label: 'Label' }),
       hideBoxValue: schemaProps.boolean({ label: 'Hide value in boxes' }),
       showLabelValue: schemaProps.boolean({ label: 'Show value in label' }),
-      ...classStyleIdShema,
+      showQuantity: schemaProps.boolean({ label: 'Start from 1' }),
+      ...classStyleIdSchema,
     },
     allowedVariables: ['NumberDescriptor', 'TextDescriptor'],
     getComputedPropsFromVariable: v => ({

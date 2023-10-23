@@ -169,7 +169,6 @@ export function ExpressionEditor({
       modeRef.current = mode;
       variablesItemsRef.current = variablesItems;
 
-
       const parsedCode = parseCode(code, mode);
       if (typeof parsedCode === 'string') {
         dispatchFormState({
@@ -178,7 +177,6 @@ export function ExpressionEditor({
         });
       } else {
         const schema = generateSchema(parsedCode, variablesItems, mode);
-
         if (
           schema.properties.methodId != null &&
           parsedCode?.methodId != null
@@ -354,7 +352,7 @@ export function ExpressionEditor({
         } else {
           const currentConfig = attributes as ImpactAttributes &
             Pick<ConditionAttributes, 'leftExpression'>;
-            const newConfig = v as ImpactAttributes &
+          const newConfig = v as ImpactAttributes &
             Pick<ConditionAttributes, 'leftExpression'>;
           // If type or first expression has changed, keep only type and expression and regenerate schema and send changes
           if (
@@ -365,9 +363,31 @@ export function ExpressionEditor({
               newConfig.leftExpression,
             )
           ) {
-            const { attributes, schema } = computeState(
+            let { attributes, schema } = computeState(
               pick(newConfig, ['type', 'expression', 'leftExpression']),
             )
+
+            // preselect the first available method if any
+            if(!attributes.methodId){
+              const meth = schema?.properties.methodId as {enum: string[]} | undefined;
+              if(meth?.enum.length && meth.enum[0]){
+                attributes.methodId = meth.enum[0];
+
+                // update config with methodId
+                const newUpdatedConfig = attributes as ImpactAttributes &
+                  Pick<ConditionAttributes, 'leftExpression' | 'methodId'>;
+
+                 ({ attributes, schema } = computeState(
+                  pick(newUpdatedConfig, [
+                    'type',
+                    'expression',
+                    'leftExpression',
+                    'methodId',
+                  ]),
+                ))
+              }
+            }
+
             dispatchFormState({
               type: 'SET_IF_DEF',
               payload: {
@@ -387,6 +407,7 @@ export function ExpressionEditor({
                 'methodId',
               ]),
             )
+
             dispatchFormState({
               type: 'SET_IF_DEF',
               payload: {

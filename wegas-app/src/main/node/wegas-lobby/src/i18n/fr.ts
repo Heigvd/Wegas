@@ -129,6 +129,9 @@ export const fr: WegasTranslations = {
   playersCanCreateTeams: 'Les joueurs peuvent créer des équipes',
   playersCantCreateTeams: "Les joueurs ne peuvent pas créer d'équipe",
 
+  playersCanLeaveTeams: 'Les joueurs peuvent quitter leur équipe',
+  playersCantLeaveTeams: "Les joueurs ne peuvent pas quitter leur équipe",
+
   //
   kickPlayer: 'supprimer le joueur',
   kickTeam: "supprimer l'équipe",
@@ -332,6 +335,8 @@ export const fr: WegasTranslations = {
     'CREATE-ACCOUNT-INVALID-EMAIL': 'Adresse e-mail invalide',
     'CREATE-ACCOUNT-TAKEN-EMAIL': 'Adresse e-mail déjà utilisée',
     'CREATE-ACCOUNT-TAKEN-USERNAME': "Nom d'utilisateur déjà utilisé",
+    'ACCOUNT-UPDATE-USERNAME-DUPLICATE': "Nom d'utilisateur déjà utilisé",
+    'ACCOUNT-UPDATE-EMAIL-ADDRESS-DUPLICATE': 'Adresse e-mail déjà utilisée'
   },
   outadateMessagePart1: 'Vos données ne sont plus à jour. Merci de ',
   outadateMessagePart2: 'recharger',

@@ -1,7 +1,7 @@
 import Form, { Schema } from 'jsoninput';
 import React, { Suspense } from 'react';
 import { render, unmountComponentAtNode, createPortal } from 'react-dom';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 import { debounce, cloneDeep } from 'lodash-es';
 import './index';
 import { LangHandler, LangToggler } from './LangContext';
@@ -218,7 +218,7 @@ YUI.add('wegas-react-form', Y => {
                 btn.setAttribute('title', 'Nothing to save');
             },
             // Set visual feedback for when the "save" button is clicked and switches between saving and not saving
-            animateSaveBtn(setSaving: boolean = true, milliSeconds: number = 2000) {
+            animateSaveBtn(setSaving = true, milliSeconds = 2000) {
                 const btn = this.get('contentBox').get('parentNode').one('.wegas-save-form-button');
                 if (setSaving) {
                     btn.removeClass(inactiveSaveBtnStyle.toString())
@@ -341,9 +341,9 @@ YUI.add('wegas-react-form', Y => {
                             action: 'submit',
                             cssClass: wegasSimpleButtonStyle.toString(),
                             label:
-                                '<span class="wegas-save-form-button fa fa-floppy-o ' +
-                                inactiveSaveBtnStyle.toString() +
-                                '" title="No changes to save"></span>',
+                                `<span class="wegas-save-form-button fa fa-floppy-o ${ 
+                                inactiveSaveBtnStyle.toString() 
+                                }" title="No changes to save"></span>`,
                         },
                     ],
                     view: { type: 'hidden' },

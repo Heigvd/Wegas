@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 import FormStyles from './form-styles';
 import commonView from '../HOC/commonView';
 import IconButton from '../Components/IconButton';
@@ -10,15 +10,6 @@ import { Cover } from '../Components/Cover';
 import { SortableContainer, SortableElement, SortableHandle, arrayMove } from 'react-sortable-hoc';
 const arrayStyle = css({
     display: 'inline',
-});
-
-const binStyle = css({
-    // alignSelf: 'center'
-    // opacity: 0,
-    // transition: 'opacity .3s 100ms',
-    // 'div:hover > &': {
-    //     opacity: 1,
-    // },
 });
 
 const listElementContainerStyle = css({
@@ -86,7 +77,7 @@ const dragHandleStyle = css({
         opacity: 1,
     },
 });
-interface IArrayProps extends WidgetProps.ArrayProps<IArrayView> {}
+type IArrayProps = WidgetProps.ArrayProps<IArrayView>
 
 class Adder extends React.Component<IArrayProps, { open: boolean }> {
     constructor(props: IArrayProps) {
@@ -135,9 +126,11 @@ class Adder extends React.Component<IArrayProps, { open: boolean }> {
         );
     }
 }
+
+type SortableItemProps = IArrayProps & { child: React.ReactNode; updateIndex: number };
 const DragHandle = SortableHandle(() => <span className={`fa fa-bars ${dragHandleStyle}`} />);
-const ChildItem = SortableElement(
-    (props: IArrayProps & { child: React.ReactNode; updateIndex: number }) => {
+const ChildItem = SortableElement<SortableItemProps>(
+    (props: SortableItemProps ) => {
         const valueLength = Array.isArray(props.value) ? props.value.length : 0;
         const { minItems = 0 } = props.schema;
         const disabled = props.view.disabled || props.view.readOnly;
@@ -147,7 +140,7 @@ const ChildItem = SortableElement(
             >
                 {!disabled && props.view.sortable && <DragHandle />}
                 <span className={listElementStyle.toString()}>{props.child}</span>
-                <span className={binStyle.toString()}>
+                <span>
                     {minItems < valueLength && !disabled ? (
                         <IconButton
                             icon="fa fa-trash"
@@ -162,9 +155,11 @@ const ChildItem = SortableElement(
     },
 );
 
-const SortContainer = SortableContainer(({ children }: { children: React.ReactNode }) => (
+type SortContainerProps = { children: React.ReactNode };
+const SortContainer = SortableContainer<SortContainerProps>(({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
 ));
+
 function ArrayWidget(props: IArrayProps) {
     const valueLength = Array.isArray(props.value) ? props.value.length : 0;
     const { maxItems = Infinity } = props.schema;

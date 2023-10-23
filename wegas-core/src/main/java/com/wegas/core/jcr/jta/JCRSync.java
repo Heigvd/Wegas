@@ -7,8 +7,8 @@
  */
 package com.wegas.core.jcr.jta;
 
-import javax.transaction.Status;
-import javax.transaction.Synchronization;
+import jakarta.transaction.Status;
+import jakarta.transaction.Synchronization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

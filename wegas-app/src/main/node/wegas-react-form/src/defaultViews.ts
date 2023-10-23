@@ -37,7 +37,7 @@ setDefaultWidgets({
     hashlist: HashlistView,
     hidden: HiddenView,
     html,
-    I18nhtml: translatable(html),
+    I18nhtml: translatable({ Comp: html }),
     jseditor,
     keychoice: KeyChoice,
     matrix,
@@ -52,14 +52,14 @@ setDefaultWidgets({
     scriptcondition: MultiVariableCondition,
     select: SelectView,
     string: StringView,
-    I18nstring: translatable(StringView),
+    I18nstring: translatable({ Comp: StringView }),
     textarea: TextareaView,
     treevariableselect: TreeVariableSelect,
     uneditable: UneditableView,
     variableselect: VariableStatement,
     wegasimageurl: WegasImageUrl,
     wegasurl: WegasUrl,
-    I18nwegasurl: translatable(WegasUrl),
+    I18nwegasurl: translatable({ Comp: WegasUrl }),
 });
 // Make TS happy ...
 export default undefined;

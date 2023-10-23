@@ -1,23 +1,23 @@
 import * as React from 'react';
 import ReactSelect from 'react-select';
 import {shallowEqual, useAppSelector} from '../Store/hooks';
-import {useHistory} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
 export default function LogIdSelector(): JSX.Element {
 
   const status = useAppSelector(state => state.logIds.status)
   const logIds = useAppSelector(state => state.logIds.value, shallowEqual)
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const onChangeCb = React.useCallback((selected: {value: string} | null) => {
     if (selected) {
       setTimeout(
-        () => history.push(`/${selected.value}`),
+        () => navigate(`/${selected.value}`),
         200
       ); // @hack already...
     }
-  }, [history]);
+  }, [navigate]);
 
   const options = logIds.map(logId => ({
     value: logId,

@@ -5,7 +5,7 @@ import ObjectView from './object';
 import IconButton from '../Components/IconButton';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { AddStatementButton } from '../Script/Views/Button';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 
 const KEY_DEFAULT_VALUE = '';
 const halfWidth: CSSProperties = {

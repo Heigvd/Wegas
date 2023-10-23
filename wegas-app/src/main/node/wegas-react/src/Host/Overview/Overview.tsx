@@ -1,12 +1,13 @@
 import { css, CSSInterpolation, cx } from '@emotion/css';
 import * as React from 'react';
+import { ITeam } from 'wegas-ts-api';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { useWebsocketEvent } from '../../API/websocket';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
-import { expandWidth } from '../../css/classes';
+import { expandWidth, flex, flexRow } from '../../css/classes';
 import { TeamState } from '../../data/Reducer/teams';
 import { instantiate } from '../../data/scriptable';
 import { Game, GameModel, Player } from '../../data/selectors';
@@ -163,11 +164,13 @@ const defaultLayoutState: LayoutState = {
   item: undefined,
 };
 
-export interface OverviewProps{
+export interface OverviewProps {
   dashboardName?: string;
 }
 
-export default function Overview({ dashboardName = 'overview' }: OverviewProps) {
+export default function Overview({
+  dashboardName = 'overview',
+}: OverviewProps) {
   const [filterState, setFilterState] = React.useState<FilterState>();
   const [layoutState, setLayoutState] =
     React.useState<LayoutState>(defaultLayoutState);
@@ -200,12 +203,26 @@ export default function Overview({ dashboardName = 'overview' }: OverviewProps) 
       }, {});
   }, deepDifferent);
 
+  const buildFilter = (structure: OverviewDataStructure[], value: boolean) => {
+    const filtered: FilterState = {};
+    for (const row of structure) {
+      filtered[row.id] = {};
+      for (const item of row.items) {
+        filtered[row.id][item.id] = value;
+      }
+    }
+    return filtered;
+  };
+
   const refreshOverview = React.useCallback(() => {
     setNewData(false);
     VariableDescriptorAPI.runScript(
       GameModel.selectCurrent().id!,
       Player.selectCurrent().id!,
-      createScript(`WegasDashboard.getOverview(${JSON.stringify(dashboardName)});`, 'JavaScript'),
+      createScript(
+        `WegasDashboard.getOverview(${JSON.stringify(dashboardName)});`,
+        'JavaScript',
+      ),
       undefined,
       true,
     ).then((res: OverviewData) => {
@@ -221,20 +238,7 @@ export default function Overview({ dashboardName = 'overview' }: OverviewProps) 
           [],
         );
         setOverviewState({ header: structure, row, data });
-        setFilterState(o =>
-          o == null
-            ? structure.reduce(
-                (o, r) => ({
-                  ...o,
-                  [r.id]: (r.items as OverviewItem[]).reduce(
-                    (o, i) => ({ ...o, [i.id]: true }),
-                    {},
-                  ),
-                }),
-                {},
-              )
-            : o,
-        );
+        setFilterState(o => (o == null ? buildFilter(structure, true) : o));
       }
     });
   }, [dashboardName]);
@@ -274,7 +278,7 @@ export default function Overview({ dashboardName = 'overview' }: OverviewProps) 
   );
 
   const sortFn = React.useCallback(
-    (a, b) => {
+    (a: [string, Readonly<ITeam>], b: [string, Readonly<ITeam>]) => {
       const valueA = (overviewState?.data[a[0]] || {})[
         sortState?.sortedValue as keyof OverviewState['data'][string]
       ];
@@ -299,6 +303,25 @@ export default function Overview({ dashboardName = 'overview' }: OverviewProps) 
     },
     [overviewState, sortState],
   );
+
+  const removeFiltersButton = () => {
+    return (
+      <div className={cx(flex, flexRow)}>
+        <Button
+          icon="check"
+          tooltip={i18nValuesTrainer.manageColumns}
+          onClick={() => setFilterState(undefined)}
+        />
+        <Button
+          icon="trash"
+          tooltip={i18nValuesTrainer.manageColumns}
+          onClick={() =>
+            setFilterState(buildFilter(overviewState!.header, false))
+          }
+        />
+      </div>
+    );
+  };
 
   return (
     <Toolbar className={expandWidth}>
@@ -335,7 +358,7 @@ export default function Overview({ dashboardName = 'overview' }: OverviewProps) 
           tooltip={i18nValuesTrainer.exportTeamsData}
           onClick={() => {
             window.open(
-              `${API_ENDPOINT}/GameModel/Game/${Game.selectCurrent()
+              `${API_ENDPOINT}GameModel/Game/${Game.selectCurrent()
                 .id!}/ExportMembers.xlsx`,
               '_blank',
             );
@@ -398,6 +421,7 @@ export default function Overview({ dashboardName = 'overview' }: OverviewProps) 
             filterState={filterState}
             onNewFilterState={setFilterState}
             overviewState={overviewState}
+            filterButtons={removeFiltersButton}
           />
         )}
       </Toolbar.Content>

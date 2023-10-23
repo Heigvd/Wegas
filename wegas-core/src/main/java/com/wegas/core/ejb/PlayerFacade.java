@@ -36,14 +36,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.inject.Inject;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -431,6 +431,8 @@ public class PlayerFacade extends BaseFacade<Player> {
         //List<VariableInstance> instances = this.getAssociatedInstances(player);
         Team team = teamFacade.find(player.getTeam().getId());
         User playerUser = player.getUser();
+
+        teamFacade.assertCanLeaveTeam(team);
 
         // remove a playes is permitted if either:
         //   1) the player belongs to the current user (user edit permission)

@@ -1,7 +1,11 @@
 import * as React from 'react';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
-import { createScriptCallback, ScriptCallback, useScriptCallback } from '../../Hooks/useScript';
+import {
+  createScriptCallback,
+  ScriptCallback,
+  useScriptCallback,
+} from '../../Hooks/useScript';
 import QRCodeScanner from '../../Inputs/QRCode/QRCodeScanner';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
@@ -9,11 +13,10 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
-interface PlayerQrCodeScannerProps
-  extends WegasComponentProps {
+interface PlayerQrCodeScannerProps extends WegasComponentProps {
   /**
    * onScan
    */
@@ -34,18 +37,24 @@ function PlayerQrCodeScanner({
   const contextRef = React.useRef(context);
   contextRef.current = context;
 
-  const callback = useScriptCallback<(data: string) => void>(onScan, contextRef);
-  if (callback == null){
-    return (<UncompleteCompMessage
-      message={somethingIsUndefined('String')}
-      pageId={pageId}
-      path={path}
-    />);
+  const callback = useScriptCallback<(data: string) => void>(
+    onScan,
+    contextRef,
+  );
+  if (callback == null) {
+    return (
+      <UncompleteCompMessage
+        message={somethingIsUndefined('String')}
+        pageId={pageId}
+        path={path}
+      />
+    );
   }
-  return (<div
-    className={ className } style={ style } id={ id }>
-    <QRCodeScanner onScan={ callback } />
-  </div>);
+  return (
+    <div className={className} style={style} id={id}>
+      <QRCodeScanner onScan={callback} />
+    </div>
+  );
 }
 
 registerComponent(
@@ -60,17 +69,15 @@ registerComponent(
       onScan: schemaProps.callback({
         label: 'on scan',
         callbackProps: {
-          args: [
-            ["data", ['string']],
-          ],
+          args: [['data', ['string']]],
           returnType: ['void'],
-        }
+        },
       }),
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: [],
     getComputedPropsFromVariable: () => ({
-      onScan: createScriptCallback("", ["data"]),
+      onScan: createScriptCallback('', ['data']),
     }),
   }),
 );

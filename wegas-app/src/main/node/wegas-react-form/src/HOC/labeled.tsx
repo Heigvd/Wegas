@@ -1,5 +1,5 @@
 import React from 'react';
-import { css } from 'glamor';
+import { css, cx } from '@emotion/css';
 import FormStyles from '../Views/form-styles';
 
 const prefixedLabelStyle = css(FormStyles.biggerLabelStyle, {
@@ -25,10 +25,10 @@ interface ILabelProps {
 let id = 0;
 function idGenerator() {
     const gid = ++id;
-    return 'generated-label-id--' + gid;
+    return `generated-label-id--${  gid}`;
 }
 export default function labeled<P extends { id: string }>(
-    Comp: React.ComponentClass<P> | React.SFC<P>,
+    Comp: React.ComponentClass<P> | React.FunctionComponent<P>,
     cssContainer = '',
     suffixed = false,
 ): React.ComponentClass<P & ILabelProps> {
@@ -45,7 +45,7 @@ export default function labeled<P extends { id: string }>(
                 return (
                     <div className={cssContainer}>
                         <Comp {...props} id={this.id} />
-                        <label htmlFor={this.id} {...FormStyles.biggerLabelStyle}>
+                        <label htmlFor={this.id} className={FormStyles.biggerLabelStyle}>
                             {label}
                         </label>
                     </div>
@@ -55,8 +55,10 @@ export default function labeled<P extends { id: string }>(
                 <div className={cssContainer}>
                     <label
                         htmlFor={this.id}
-                        {...prefixedLabelStyle}
-                        className={label ? `${labelTextStyle}` : ''}
+                        className={cx({
+                            [prefixedLabelStyle] : true,
+                            [labelTextStyle]: !!label
+                        })}
                     >
                         {label}
                     </label>

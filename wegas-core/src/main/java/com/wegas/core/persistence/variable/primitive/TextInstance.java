@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import ch.albasim.wegas.annotations.CommonView.LAYOUT;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -18,11 +19,11 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.utils.StringInstanceCustomizer;
 import com.wegas.editor.view.I18nHtmlView;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import jdk.nashorn.api.scripting.JSObject;
 import org.eclipse.persistence.annotations.Customizer;
 
@@ -44,7 +45,7 @@ public class TextInstance extends VariableInstance {
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view = @View(label = "Value", value = I18nHtmlView.class))
+    @WegasEntityProperty(view = @View(label = "Value", value = I18nHtmlView.class, layout=LAYOUT.fullWidth))
     private TranslatableContent trValue;
 
     /**

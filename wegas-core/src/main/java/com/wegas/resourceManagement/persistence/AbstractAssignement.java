@@ -16,7 +16,7 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.view.FlatVariableSelectView.TaskFlatSelector;
 import java.util.Collection;
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 
 /**
  *

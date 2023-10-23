@@ -272,7 +272,7 @@ function GameAdminCard({ gameAdmin, sortKey, touch }: GameAdminCardProps): JSX.E
         title={gameAdmin.gameName || ''}
         illustration="ICON_grey_receipt_fa"
         showCloseButton={true}
-        route={`/${gameAdmin.id}/users`}
+        route={`${gameAdmin.id}/users`}
       >
         {close => <GameAdminUsers gameAdmin={gameAdmin} close={close} />}
       </OpenCloseModal>
@@ -283,7 +283,7 @@ function GameAdminCard({ gameAdmin, sortKey, touch }: GameAdminCardProps): JSX.E
         title={gameAdmin.gameName || ''}
         illustration="ICON_grey_receipt_fa"
         showCloseButton={true}
-        route={`/${gameAdmin.id}/settings`}
+        route={`${gameAdmin.id}/settings`}
       >
         {close => <GameAdminDetails gameAdmin={gameAdmin} close={close} />}
       </OpenCloseModal>

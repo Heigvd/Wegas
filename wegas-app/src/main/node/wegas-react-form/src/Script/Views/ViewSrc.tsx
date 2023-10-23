@@ -3,7 +3,7 @@ import debounced from '../../HOC/callbackDebounce';
 import JSEditor from './asyncJSEditor';
 import IconButton from '../../Components/IconButton';
 import { getY } from '../../index';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 
 interface IViewSrcProps {
     value: string;
@@ -22,7 +22,7 @@ const hideSourceTooltip = 'Hide source code';
  * Toggle view between parsed and code
  */
 class ViewSrc extends React.Component<
-    IViewSrcProps,
+    React.PropsWithChildren<IViewSrcProps>,
     { src: boolean; error?: string; evaluating: boolean }
 > {
     constructor(props: IViewSrcProps) {

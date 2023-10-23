@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 import classNames from 'classnames';
 import FormStyles from '../Views/form-styles';
 
@@ -77,15 +77,15 @@ interface ICommonViewProps {
 const nullRx = /null,|,null/;
 export default function commonView<E>(
     Comp: React.ComponentType<E & ICommonViewProps>,
-): React.SFC<E & ICommonViewProps> {
+): React.FunctionComponent<E & ICommonViewProps> {
     function CommonView(props: E & ICommonViewProps) {
         const { errorMessage = [], view = {} } = props;
         const errors = errorMessage.map(v => {
             const cleanError = v.replace(nullRx, '');
             return <span key={v}>{cleanError}</span>;
         });
-        const layout = view.layout;
-        const schema = props.schema;
+        const { layout } = view;
+        const { schema } = props;
         const isLiteralNumberInput = layout === undefined && schema && schema.type === 'number';
         return (
             <div

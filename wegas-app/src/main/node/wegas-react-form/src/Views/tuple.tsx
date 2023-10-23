@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 import commonView from '../HOC/commonView';
 import formStyles from './form-styles';
 

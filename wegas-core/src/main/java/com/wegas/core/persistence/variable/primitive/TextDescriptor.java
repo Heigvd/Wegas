@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import ch.albasim.wegas.annotations.CommonView.LAYOUT;
 import ch.albasim.wegas.annotations.DependencyScope;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
@@ -17,7 +18,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.view.I18nHtmlView;
 import java.util.Objects;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import jdk.nashorn.api.scripting.JSObject;
 
 /**
@@ -48,7 +49,7 @@ public class TextDescriptor extends VariableDescriptor<TextInstance>
     @Scriptable(dependsOn = DependencyScope.NONE)
     public void setValue(
         Player p,
-        @Param(view = @View(label = "", value = I18nHtmlView.class)) TranslatableContent value) {
+        @Param(view = @View(label = "", value = I18nHtmlView.class, layout = LAYOUT.fullWidth)) TranslatableContent value) {
         this.getInstance(p).setValue(value);
     }
 
@@ -64,7 +65,7 @@ public class TextDescriptor extends VariableDescriptor<TextInstance>
     @Scriptable(dependsOn = DependencyScope.NONE)
     public void setValueIfChanged(
         Player p,
-        @Param(view = @View(label = "", value = I18nHtmlView.class)) TranslatableContent newValue) {
+        @Param(view = @View(label = "", value = I18nHtmlView.class, layout = LAYOUT.fullWidth)) TranslatableContent newValue) {
 
         TranslatableContent defaultValue = this.getDefaultInstance().getTrValue();
         TranslatableContent currentValue = this.getInstance(p).getTrValue();

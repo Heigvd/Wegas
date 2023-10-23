@@ -4,7 +4,7 @@ import {
   registerComponent,
 } from '../../Components/PageComponents/tools/componentFactory';
 import { WegasComponentProps } from '../../Components/PageComponents/tools/EditableComponent';
-import { classStyleIdShema } from '../../Components/PageComponents/tools/options';
+import { classStyleIdSchema } from '../../Components/PageComponents/tools/options';
 import { schemaProps } from '../../Components/PageComponents/tools/schemaProps';
 import Overview from './Overview';
 
@@ -34,7 +34,7 @@ registerComponent(
     illustration: 'dashboard',
     schema: {
       dashboardName: schemaProps.string({ label: 'Dashboard name' }),
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: () => ({

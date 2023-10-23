@@ -5,6 +5,7 @@ import {
   SFSMInstance,
   SInboxDescriptor,
   SInboxInstance,
+  SListDescriptor,
   SPeerReviewDescriptor,
   SPeerReviewInstance,
   SQuestionDescriptor,
@@ -20,10 +21,15 @@ import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { editingStore } from '../../../data/Stores/editingStore';
-import { store } from '../../../data/Stores/store';
+import { store, useStore } from '../../../data/Stores/store';
 import { createScript } from '../../../Helper/wegasEntites';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
-import { clientScriptEval, customClientScriptEval, IClientScript, useScript } from '../../Hooks/useScript';
+import {
+  clientScriptEval,
+  customClientScriptEval,
+  IClientScript,
+  useScript,
+} from '../../Hooks/useScript';
 import { PlayerInfoBulletProps } from './InfoBullet';
 import { schemaProps } from './schemaProps';
 
@@ -252,7 +258,7 @@ export const actionsChoices: HashListChoices = [
               type: 'customclientscript',
               label: 'Local script',
               returnType: ['Promise<unknown>', 'void', 'undefined'],
-            }
+            },
           },
           priority: schemaProps.number({ label: 'Priority' }),
         },
@@ -517,6 +523,7 @@ export const decorationsChoices: HashListChoices = [
           'SWhQuestionDescriptor',
           'SSurveyDescriptor',
           'SPeerReviewDescriptor',
+          'SListDescriptor',
         ],
       }),
     },
@@ -529,7 +536,8 @@ type UnreadCountDescriptorTypes =
   | SQuestionDescriptor
   | SWhQuestionDescriptor
   | SSurveyDescriptor
-  | SPeerReviewDescriptor;
+  | SPeerReviewDescriptor
+  | SListDescriptor;
 
 function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
   if (!descriptor) {
@@ -587,6 +595,14 @@ function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
               .getReviewed()
               .filter(review => review.getReviewState() == 'NOTIFIED'),
           ).length;
+      } else if (descriptor instanceof SListDescriptor) {
+        return descriptor
+          .getItems()
+          .reduce(
+            (total, item) =>
+              total + extractUnreadCount(item as UnreadCountDescriptorTypes),
+            0,
+          );
       } else {
         return 0;
       }
@@ -602,19 +618,22 @@ export function useComputeUnreadCount(
     string | number | object[] | UnreadCountDescriptorTypes
   >(unreadCountVariableScript, context);
 
-  let infoBeamMessage: string | number;
-  if (typeof scriptReturn === 'number') {
-    infoBeamMessage = scriptReturn;
-  } else if (typeof scriptReturn === 'string') {
-    infoBeamMessage = scriptReturn;
-  } else if (Array.isArray(scriptReturn)) {
-    infoBeamMessage = scriptReturn.reduce(
-      (o, v) => o + extractUnreadCount(v as UnreadCountDescriptorTypes),
-      0,
-    );
-  } else {
-    infoBeamMessage = extractUnreadCount(scriptReturn);
-  }
+  const infoBeamMessage = useStore(() => {
+    let infoBeamMessage: string | number;
+    if (typeof scriptReturn === 'number') {
+      infoBeamMessage = scriptReturn;
+    } else if (typeof scriptReturn === 'string') {
+      infoBeamMessage = scriptReturn;
+    } else if (Array.isArray(scriptReturn)) {
+      infoBeamMessage = scriptReturn.reduce(
+        (o, v) => o + extractUnreadCount(v as UnreadCountDescriptorTypes),
+        0,
+      );
+    } else {
+      infoBeamMessage = extractUnreadCount(scriptReturn);
+    }
+    return infoBeamMessage === 0 ? undefined : infoBeamMessage;
+  });
 
   return infoBeamMessage
     ? {
@@ -666,7 +685,7 @@ export const wegasComponentExtraSchema = (
 /**
  * classAndStyleShema - defines the schema to be used to edit classes and style of a component
  */
-export const classStyleIdShema = {
+export const classStyleIdSchema = {
   className: schemaProps.string({ label: 'Classes', index: 1000 }),
   style: schemaProps.hashlist({ label: 'Style', index: 1001 }),
   id: schemaProps.string({ label: 'Id', index: 1003 }),

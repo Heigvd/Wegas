@@ -206,13 +206,15 @@ export default function PlayerCard({ player, team }: PlayerCardProps): JSX.Eleme
             title={teamName}
             illustration={gameModel.properties.iconUri}
             showCloseButton={true}
-            route={`/${player.id}/team`}
+            route={`${player.id}/team`}
           >
             {() => <TeamDetails team={team} />}
           </OpenCloseModal>
         )}
 
-        {player.status === 'FAILED' || player.status === 'LIVE' ? (
+        {!game.preventPlayerLeavingTeam &&
+        (player.status === 'FAILED' || player.status === 'LIVE') ? (
+          /*TODO: chec right game.prevetn....*/
           <ActionIconButton
             shouldConfirm
             className={cardSecButtonStyle}

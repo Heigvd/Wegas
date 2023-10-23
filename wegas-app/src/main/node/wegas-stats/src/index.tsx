@@ -1,10 +1,9 @@
 import * as React from 'react';
-import {render} from 'react-dom';
+import {createRoot} from 'react-dom/client';
 import AppRoute from './AppRoute';
 
 function mount() {
-  render(
-    <AppRoute />, document.querySelector('body>.app')
-  );
+    const root = createRoot(document.querySelector('body>.app')!);
+    root.render(<AppRoute />);
 }
 mount();

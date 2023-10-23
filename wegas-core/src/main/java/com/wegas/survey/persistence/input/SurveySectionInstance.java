@@ -11,7 +11,7 @@ import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  * Dummy instance for SurveySectionDescriptor.

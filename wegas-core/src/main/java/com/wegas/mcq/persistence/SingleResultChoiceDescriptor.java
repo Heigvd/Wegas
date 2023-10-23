@@ -15,9 +15,9 @@ import com.wegas.editor.jsonschema.JSONArray;
 import com.wegas.editor.view.ArrayView;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 
 /**
  *

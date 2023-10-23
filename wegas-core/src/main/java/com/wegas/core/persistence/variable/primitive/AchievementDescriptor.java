@@ -23,12 +23,12 @@ import com.wegas.editor.view.I18nHtmlView;
 import com.wegas.editor.view.IconSelect;
 import com.wegas.editor.view.QuestSelect;
 import com.wegas.mcq.persistence.QuestionDescriptor;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 /**
  *

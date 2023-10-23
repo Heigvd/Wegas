@@ -1,4 +1,6 @@
 import { css, cx } from '@emotion/css';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import produce from 'immer';
 import * as React from 'react';
 import {
@@ -47,22 +49,14 @@ import { useTranslate } from '../../Hooks/useTranslate';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { Validate } from '../../Inputs/Validate';
 import { themeVar } from '../../Theme/ThemeVars';
-// import { AddMenu } from './AddMenu';
-import {
-  ConnectedQuestionDisplay,
-  ConnectedQuestionDisplayProps,
-} from './Question';
+import { ConnectedQuestionDisplay } from './Question';
 
+const labelStyle = css({
+  fontWeight: 'bold',
+});
 const repliedLabelStyle = css({
-  backgroundColor: themeVar.colors.LightTextColor,
-  color: themeVar.colors.PrimaryColor,
-  border: '2px solid ' + themeVar.colors.PrimaryColor,
-  boxShadow: 'none',
-  '&:hover': {
-    backgroundColor: themeVar.colors.LightTextColor,
-    color: themeVar.colors.ActiveColor,
-    border: '2px solid ' + themeVar.colors.ActiveColor,
-  },
+  backgroundColor: themeVar.colors.HeaderColor,
+  color: themeVar.colors.DarkTextColor,
 });
 
 export const handleStyle = css({
@@ -89,7 +83,7 @@ export const editButtonStyle = css({
   },
 });
 
-export const editButonBorder = css({
+export const editButtonBorder = css({
   border: 'solid 2px black',
   borderRadius: '50%',
 });
@@ -135,7 +129,7 @@ function AddQuestionButton({ questionList }: AddQuestionsMenuProps) {
   return (
     <div className={cx(flex, justifyCenter, itemCenter)}>
       <Plus
-        className={cx(editButtonStyle, editButonBorder)}
+        className={cx(editButtonStyle, editButtonBorder)}
         onClick={() => {
           editingStore.dispatch(
             Actions.VariableDescriptorActions.createDescriptor(
@@ -254,7 +248,16 @@ function QuestionChooser(
 ) {
   return (
     <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
-      <QuestionLabel questionD={props.entity} disabled={props.disabled} />
+      <div className={cx(flex, flexRow, itemCenter)}>
+        {props.mobile && (
+          <FontAwesomeIcon
+            className={css({ marginRight: '5px' })}
+            icon={faArrowLeft}
+            size="1x"
+          />
+        )}
+        <QuestionLabel questionD={props.entity} disabled={props.disabled} />
+      </div>
     </DefaultEntityChooserLabel>
   );
 }
@@ -266,7 +269,7 @@ function customLabelStyle(
     const isReplied = instantiate(e).isReplied(
       instantiate(Player.selectCurrent()),
     );
-    return isReplied ? repliedLabelStyle : undefined;
+    return isReplied ? repliedLabelStyle : labelStyle;
   } catch (e) {
     wwarn(e);
     return undefined;
@@ -367,18 +370,22 @@ function QuestionChooserEdition({
   );
 }
 
-interface QuestionListProps extends DisabledReadonly {
+interface QuestionListProps extends DisabledReadonly, ClassStyleId {
   questionList: SListDescriptor;
   autoOpenFirst?: boolean;
+  mobileDisplay?: boolean;
   editMode?: boolean;
 }
 
 export default function QuestionList({
   questionList,
   autoOpenFirst,
+  mobileDisplay,
   disabled,
   readOnly,
   editMode,
+  className,
+  style,
 }: QuestionListProps) {
   const entitiesSelector = React.useCallback(() => {
     return {
@@ -410,20 +417,16 @@ export default function QuestionList({
       entities={entities.questions}
       EntityLabel={editMode ? QuestionChooserEdition : QuestionChooser}
       autoOpenFirst={autoOpenFirst}
-      // customLabelStyle={customLabelStyle}
+      mobileDisplay={mobileDisplay}
       disabled={disabled}
       readOnly={readOnly}
       addComponent={
         editMode ? <AddQuestionButton questionList={questionList} /> : undefined
       }
+      className={className}
+      style={style}
     >
-      {connectedQuestionDisplayFactory(editMode)}
+      {props => <ConnectedQuestionDisplay {...props} editMode={editMode} />}
     </EntityChooser>
   );
-}
-
-function connectedQuestionDisplayFactory(editMode?: boolean) {
-  return function (props: ConnectedQuestionDisplayProps) {
-    return <ConnectedQuestionDisplay {...props} editMode={editMode} />;
-  };
 }

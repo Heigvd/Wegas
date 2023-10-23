@@ -20,11 +20,11 @@ import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.util.ActAsPlayer;
 import java.util.List;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -102,15 +102,13 @@ public class TeamFacade extends BaseFacade<Team> implements TeamFacadeI {
          * Be sure the new team exists in database before populate it
          */
         Long teamId = gameFacade.createAndCommit(gameId, t);
-        this.find(teamId);
         /**
          * the new thread must be able to retrieve the team to populate from database
          */
         populatorScheduler.scheduleCreation();
-        this.detach(t);
-        t = this.find(t.getId());
-        requestManager.setCurrentTeam(t);
-        return t;
+        Team team = this.find(teamId);
+        requestManager.setCurrentTeam(team);
+        return team;
     }
 
     /**
@@ -156,6 +154,13 @@ public class TeamFacade extends BaseFacade<Team> implements TeamFacadeI {
         return query.getResultList();
     }
 
+    public void assertCanLeaveTeam(Team team) {
+        Boolean preventPlayerLeavingTeam = team.getGame().getPreventPlayerLeavingTeam();
+        if (preventPlayerLeavingTeam != null && preventPlayerLeavingTeam){
+            requestManager.assertGameTrainer(team.getGame());
+        }
+    }
+
     /**
      * @param entity
      */
@@ -167,6 +172,7 @@ public class TeamFacade extends BaseFacade<Team> implements TeamFacadeI {
         //for (VariableInstance i : this.getAssociatedInstances(entity)) {
         //    this.getEntityManager().remove(i);
         //}
+        assertCanLeaveTeam(entity);
         entity.getGame().getTeams().remove(entity);
         this.getEntityManager().remove(entity);
     }

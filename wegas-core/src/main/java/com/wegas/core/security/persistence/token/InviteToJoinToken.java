@@ -17,9 +17,9 @@ import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  *

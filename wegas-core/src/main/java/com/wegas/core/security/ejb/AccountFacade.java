@@ -39,21 +39,20 @@ import com.wegas.survey.persistence.SurveyDescriptor;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.ejb.EJBException;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.mail.Message;
-import javax.mail.MessagingException;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
 import javax.naming.NamingException;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
@@ -109,14 +108,44 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      */
     @Override
     public AbstractAccount update(final Long entityId, final AbstractAccount account) {
-        if (!(account instanceof AaiAccount) && !Helper.isNullOrEmpty(account.getUsername())) {
-            try {
-                AbstractAccount a = this.findByUsername(account.getUsername());
-                if (!a.getId().equals(account.getId())) {                       // and we can find an account with the username which is not the one we are editing,
-                    throw WegasErrorMessage.error("This username is already in use");// throw an exception
+        try (Sudoer su = requestManager.sudoer()) {
+            if (account != null && !(account instanceof AaiAccount)) {
+                // find current account from database
+                var targetedAccount = this.find(entityId);
+
+                var newUsername = account.getUsername();
+                if (!Helper.isNullOrEmpty(newUsername)) {
+                    // check if user want to change its username
+                    if (!newUsername.equals(targetedAccount.getUsername())) {
+                        // and make sure this new username is not already in use
+                        try {
+                            // DISCLAIMER: reverse-exception-cheesy-pattern
+                            // attempt to find an account which already use newUsername
+                            this.findByUsername(newUsername);
+                            // No exception thrown means such an account has been found
+                            throw WegasErrorMessage.error("This username is already in use", "ACCOUNT-UPDATE-USERNAME-DUPLICATE");
+                        } catch (WegasNoResultException e) { //NOPMD
+                            // no-result exception means there is no account with such newUsername
+                        }
+                    }
                 }
-            } catch (WegasNoResultException e) { //NOPMD
-                // GOTCHA no username could be found, do not use
+
+                // newEmail from posted account
+                var newEmail = account.getEmail();
+                if (!Helper.isNullOrEmpty(newEmail)) {
+                    // check if user want to change its email address
+                    if (!newEmail.equals(targetedAccount.getEmail())) {
+                        // Validate email address uniqueness case-insensitive
+                        // using list to avoid NonUniqueResultException from singleResult()
+                        this.findAllByEmailOrUsername(newEmail).stream()
+                            // ignore other-type account (eg. LocalAccount & AaiAccount with very same newEmail address)
+                            .filter(foundAccount -> foundAccount.getClass().equals(targetedAccount.getClass()))
+                            .findAny()
+                            .ifPresent(present -> {
+                                throw WegasErrorMessage.error("This email address is already in use", "ACCOUNT-UPDATE-EMAIL-ADDRESS-DUPLICATE");
+                            });
+                    }
+                }
             }
         }
 
@@ -625,7 +654,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             throw WegasErrorMessage.error("Please log in to consume token");
         }
 
-        try ( Sudoer su = requestManager.sudoer()) {
+        try (Sudoer su = requestManager.sudoer()) {
             Token token = this.findToken(tokenId);
             AbstractAccount account = token.getAccount();
 
@@ -799,7 +828,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      */
     public void requestPasswordReset(String email, HttpServletRequest request) {
         // as the subject who requires such a lin is unauthenticated, we have to promote it
-        try ( Sudoer su = requestManager.sudoer()) {
+        try (Sudoer su = requestManager.sudoer()) {
             JpaAccount account = this.findJpaByEmail(email);
             if (account != null) {
 

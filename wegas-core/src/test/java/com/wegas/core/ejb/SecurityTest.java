@@ -16,7 +16,7 @@ import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.Collection;
-import javax.ejb.EJBException;
+import jakarta.ejb.EJBException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.jboss.arquillian.test.spi.ArquillianProxyException;
 import org.junit.Assert;

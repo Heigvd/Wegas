@@ -17,12 +17,12 @@ import com.wegas.editor.view.Hidden;
 import com.wegas.editor.view.I18nHtmlView;
 import com.wegas.mcq.persistence.ReadableInstance;
 import static java.lang.Boolean.FALSE;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 /**
  * @author Maxence

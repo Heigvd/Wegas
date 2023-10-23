@@ -17,9 +17,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import javax.cache.Cache;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -264,7 +264,7 @@ public class ConcurrentHelper {
      *
      * @param token lock identifier
      */
-    //@javax.ejb.Lock(LockType.READ)
+    //@jakarta.ejb.Lock(LockType.READ)
     public void unlock(String token, String audience, boolean force) {
         String effectiveToken = getEffectiveToken(token, audience);
         this.mainLock();
@@ -288,7 +288,7 @@ public class ConcurrentHelper {
      * @param token    lock identifier
      * @param audience
      */
-    //@javax.ejb.Lock(LockType.READ)
+    //@jakarta.ejb.Lock(LockType.READ)
     public void unlockFull(String token, String audience, boolean force) {
         String effectiveToken = getEffectiveToken(token, audience);
         logger.info("UNLOCK FULL: \"{}\" for \"{}\"", token, audience);
@@ -315,7 +315,7 @@ public class ConcurrentHelper {
      *
      * @return list of locked tokens
      */
-    //@javax.ejb.Lock(LockType.READ)
+    //@jakarta.ejb.Lock(LockType.READ)
     public Collection<String> getTokensByAudiences(List<String> audiences) {
         Collection<String> tokens = new ArrayList<>();
         Iterator<Cache.Entry<String, RefCounterLock>> iterator = this.locks.iterator();

@@ -145,6 +145,7 @@ function GameComposition({ game }: GameProps): JSX.Element {
   const i18n = useTranslations();
 
   const playersCanCreate = !game.preventPlayerCreatingTeams;
+  const playersCanLeave = !game.preventPlayerLeavingTeam;
 
   React.useEffect(() => {
     if (teams === 'UNSET') {
@@ -169,13 +170,21 @@ function GameComposition({ game }: GameProps): JSX.Element {
             <TeamDetails key={team.id} team={team} />
           ))}
         </CardContainer>
-        <Flex className={css({ padding: '10px 10px 0px 10px' })}>
+        <Flex className={css({ padding: '10px 10px 0px 10px', gap: "15px" })}>
           <Toggler
             title={playersCanCreate ? i18n.playersCanCreateTeams : i18n.playersCantCreateTeams}
             label={playersCanCreate ? i18n.playersCanCreateTeams : i18n.playersCantCreateTeams}
             value={playersCanCreate}
             onChange={() => {
               dispatch(updateGame({ ...game, preventPlayerCreatingTeams: playersCanCreate }));
+            }}
+          />
+          <Toggler
+            title={playersCanLeave ? i18n.playersCanLeaveTeams : i18n.playersCantLeaveTeams}
+            label={playersCanLeave ? i18n.playersCanLeaveTeams : i18n.playersCantLeaveTeams}
+            value={playersCanLeave}
+            onChange={() => {
+              dispatch(updateGame({...game, preventPlayerLeavingTeam: playersCanLeave }));
             }}
           />
         </Flex>

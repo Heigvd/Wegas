@@ -20,7 +20,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.survey.persistence.SurveyDescriptor;
 import com.wegas.survey.persistence.input.SurveyInputDescriptor;
 import com.wegas.survey.persistence.input.SurveySectionDescriptor;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  *

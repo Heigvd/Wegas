@@ -9,7 +9,7 @@
 import { css, cx } from '@emotion/css';
 import { faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
-import { Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import * as API from '../API/api';
 import { entityIs } from '../API/entityHelper';
 import { getDisplayName } from '../helper';
@@ -53,7 +53,7 @@ export default function MainApp(): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const {
     currentUser,
@@ -115,20 +115,40 @@ export default function MainApp(): JSX.Element {
   } else if (currentUserStatus == 'NOT_AUTHENTICATED') {
     return (
       <>
-        <Switch>
-          <Route exact path="/SignUp">
-            <SignUpForm redirectTo={query.get('redirectTo')} />
-          </Route>
-          <Route exact path="/ForgotPassword">
-            <ForgotPassword redirectTo={query.get('redirectTo')} />
-          </Route>
-          <Route exact path="/SignIn">
-            <SignInForm redirectTo={query.get('redirectTo')} username={query.get('username')} />
-          </Route>
-          <Route>
-            <SignInForm redirectTo={query.get('redirectTo')} username={query.get('username')} />
-          </Route>
-        </Switch>
+        <Routes>
+          <Route
+            path="/SignUp"
+            element={
+              <>
+                <SignUpForm redirectTo={query.get('redirectTo')} />
+              </>
+            }
+          />
+          <Route
+            path="/ForgotPassword"
+            element={
+              <>
+                <ForgotPassword redirectTo={query.get('redirectTo')} />
+              </>
+            }
+          />
+          <Route
+            path="/SignIn"
+            element={
+              <>
+                <SignInForm redirectTo={query.get('redirectTo')} username={query.get('username')} />
+              </>
+            }
+          />
+          <Route
+            path='*'
+            element={
+              <>
+                <SignInForm redirectTo={query.get('redirectTo')} username={query.get('username')} />
+              </>
+            }
+          />
+        </Routes>
         {reconnecting}
       </>
     );
@@ -238,39 +258,72 @@ export default function MainApp(): JSX.Element {
               },
             })}
           >
-            <Switch>
-              <Route path="/player">
-                <PlayerTab />
-              </Route>
-              <Route path="/trainer">
-                {isTrainer ? <TrainerTab /> : <Redirect to="/player" />}
-              </Route>
-              <Route path="/scenarist">
-                {isScenarist ? (
-                  <ScenaristTab gameModelType="SCENARIO" />
-                ) : (
-                  <Redirect to="/trainer" />
-                )}
-              </Route>
-              <Route path="/modeler">
-                {isModeler ? <ScenaristTab gameModelType="MODEL" /> : <Redirect to="/scenarist" />}
-              </Route>
-              <Route path="/user-profile">
-                <Modal
-                  title={i18n.settings}
-                  onClose={() => {
-                    history.push('/');
-                  }}
-                >
-                  {close => <UserSettings userId={currentUser.id} close={close} />}
-                </Modal>
-              </Route>
-              <Route path="/admin">{isAdmin ? <Admin /> : <Redirect to="/scenarist" />}</Route>
-              <Route>
-                {/* no matching route, redirect to projects */}
-                <Redirect to="/player" />
-              </Route>
-            </Switch>
+            <Routes>
+              <Route
+                path="/player/*"
+                element={
+                  <>
+                    <PlayerTab />
+                  </>
+                }
+              />
+              <Route
+                path="/trainer/*"
+                element={<>{isTrainer ? <TrainerTab /> : <Navigate to="/player" />}</>}
+              />
+              <Route
+                path="/scenarist/*"
+                element={
+                  <>
+                    {isScenarist ? (
+                      <ScenaristTab gameModelType="SCENARIO" />
+                    ) : (
+                      <Navigate to="/trainer" />
+                    )}
+                  </>
+                }
+              />
+              <Route
+                path="/modeler/*"
+                element={
+                  <>
+                    {isModeler ? (
+                      <ScenaristTab gameModelType="MODEL" />
+                    ) : (
+                      <Navigate to="/scenarist" />
+                    )}
+                  </>
+                }
+              />
+              <Route
+                path="/user-profile/*"
+                element={
+                  <>
+                    <Modal
+                      title={i18n.settings}
+                      onClose={() => {
+                        navigate('/');
+                      }}
+                    >
+                      {close => <UserSettings userId={currentUser.id} close={close} />}
+                    </Modal>
+                  </>
+                }
+              />
+              <Route
+                path="/admin/*"
+                element={<> {isAdmin ? <Admin /> : <Navigate to="/scenarist" />}</>}
+              />
+              <Route
+                path="*"
+                element={
+                  <>
+                    {/* no matching route, redirect to projects */}
+                    <Navigate to="/player" />
+                  </>
+                }
+              />
+            </Routes>
           </div>
         </FitSpace>
         {reconnecting}

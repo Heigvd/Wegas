@@ -4,10 +4,12 @@ import * as React from 'react';
 import { IChoiceDescriptor, ISingleResultChoiceDescriptor } from 'wegas-ts-api';
 import {
   defaultMarginBottom,
+  expandWidth,
   flex,
   flexColumn,
   flexDistribute,
   flexRow,
+  stretch,
 } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
@@ -15,9 +17,12 @@ import { createTranslatableContent } from '../../../data/i18n';
 import { IWhChoiceDescriptor } from '../../../data/scriptable/impl/QuestionDescriptor';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { componentsTranslations } from '../../../i18n/components/components';
+import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { useTranslate } from '../../Hooks/useTranslate';
 import HTMLEditor from '../../HTML/HTMLEditor';
+import { Button } from '../../Inputs/Buttons/Button';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { TumbleLoader } from '../../Loader';
@@ -33,10 +38,8 @@ export const choiceContainerStyle = css({
   alignItems: 'center',
   boxShadow: '2px 2px 6px rgba(0, 0, 0, 0.2)',
   borderRadius: themeVar.dimensions.BorderRadius,
-  backgroundColor: themeVar.colors.HeaderColor,
+  backgroundColor: themeVar.colors.BackgroundColor,
   '&.selected': {
-    backgroundColor: themeVar.colors.PrimaryColor,
-    color: themeVar.colors.LightTextColor,
     cursor: 'default',
   },
   '&.editing': {
@@ -48,29 +51,38 @@ export const choiceContainerStyle = css({
   '&.disabled': {
     backgroundColor: themeVar.colors.BackgroundColor,
     opacity: '0.7',
-    cursor: 'initial',
-    //pointerEvents: 'none',
-    '&:hover': {
-      backgroundColor: themeVar.colors.BackgroundColor,
-      color: themeVar.colors.DarkTextColor,
-    },
-    '&.selected': {
-      backgroundColor: themeVar.colors.PrimaryColor,
-      color: themeVar.colors.LightTextColor,
-      '&:hover': {
-        backgroundColor: themeVar.colors.PrimaryColor,
+    cursor: 'cursor',
+    pointerEvents: 'none',
+  },
+  '&.no-desc': {
+    '&.no-label': {
+      boxShadow: 'none',
+      borderRadius: '0',
+      paddingTop: '15px',
+      borderTop: `1px solid ${themeVar.colors.DisabledColor}`,
+      '&.disabled': {
+        display: 'none',
       },
     },
   },
 });
-const choiceContentStyle = css({
-  padding: '15px',
-});
 export const choiceLabelStyle = css({
   fontWeight: 'bold',
+  padding: '15px',
+  backgroundColor: themeVar.colors.HoverColor,
+  borderTopRightRadius: themeVar.dimensions.BorderRadius,
+  borderTopLeftRadius: themeVar.dimensions.BorderRadius,
+  '&.selected': {
+    color: themeVar.colors.LightTextColor,
+    backgroundColor: themeVar.colors.PrimaryColor,
+  },
 });
 export const choiceDescriptionStyle = css({
-  paddingTop: '5px',
+  padding: '10px 15px 10px 15px',
+});
+export const choiceButtonStyle = css({
+  padding: '0px 15px 15px 15px',
+  float: 'right',
 });
 export const choiceInputStyle = css({
   display: 'flex',
@@ -100,9 +112,10 @@ interface ChoiceContainerProps {
   canReply: boolean;
   className?: string;
   inputClassName?: string;
-  onClick?: () => void;
+  onClick?: () => Promise<unknown>;
   hasBeenSelected: boolean;
   editMode?: boolean;
+  validateButton?: boolean;
 }
 
 export function ChoiceContainer({
@@ -115,7 +128,9 @@ export function ChoiceContainer({
   onClick,
   hasBeenSelected,
   editMode,
+  validateButton = true,
 }: React.PropsWithChildren<ChoiceContainerProps>) {
+  const i18nValues = useInternalTranslate(componentsTranslations);
   const { label } = descriptor;
 
   const description = entityIs(descriptor, 'ChoiceDescriptor', true)
@@ -215,16 +230,12 @@ export function ChoiceContainer({
     <div
       className={
         cx(choiceContainerStyle, classNameOrEmpty(className)) +
-        (hasBeenSelected ? ' selected' : '') +
+        (hasBeenSelected && !canReply ? ' selected' : '') +
         (canReply && !clicked ? '' : ' disabled') +
-        (isEditing ? ' editing' : '')
+        (isEditing ? ' editing' : '') +
+        (label && labelText !== '' ? '' : ' no-label') +
+        (description && descriptionText !== '' ? '' : ' no-desc')
       }
-      onClick={() => {
-        if (canReply && onClick && !isEditing) {
-          setClicked(true);
-          onClick();
-        }
-      }}
       onMouseEnter={() => setShowHandle(true)}
       onMouseLeave={() => setShowHandle(false)}
     >
@@ -253,7 +264,7 @@ export function ChoiceContainer({
                   onChange={value =>
                     setValues(o => ({ ...o, description: value }))
                   }
-                  toolbarLayout='player'
+                  toolbarLayout="player"
                   // customToolbar="bold italic underline bullist"
                 />
               </div>
@@ -264,7 +275,7 @@ export function ChoiceContainer({
                   onChange={value =>
                     setValues(o => ({ ...o, feedback: value }))
                   }
-                  toolbarLayout='player'
+                  toolbarLayout="player"
                 />
               </div>
             </>
@@ -291,10 +302,17 @@ export function ChoiceContainer({
           </div>
         </div>
       ) : (
-        <div className={cx(flex, flexColumn)}>
-          <div className={choiceContentStyle}>
+        <div className={cx(flex, flexColumn, expandWidth)}>
+          <div className={cx(flex, flexColumn)}>
             {label && labelText !== '' && (
-              <HTMLText className={choiceLabelStyle} text={labelText} />
+              <HTMLText
+                className={cx(
+                  choiceLabelStyle,
+                  stretch,
+                  hasBeenSelected && !canReply ? ' selected' : '',
+                )}
+                text={labelText}
+              />
             )}
             {description && descriptionText !== '' && (
               <HTMLText
@@ -302,10 +320,30 @@ export function ChoiceContainer({
                 text={descriptionText}
               />
             )}
+            {canReply && validateButton && (
+              <div className={choiceButtonStyle}>
+                <Button
+                  style={{ float: 'right' }}
+                  onClick={async () => {
+                    if (canReply && onClick && !isEditing) {
+                      setClicked(true);
+                      await onClick();
+                      setClicked(false);
+                    }
+                  }}
+                >
+                  {i18nValues.question.validate}
+                </Button>
+              </div>
+            )}
           </div>
-          <div className={choiceInputStyle + classNameOrEmpty(inputClassName)}>
-            {children}
-          </div>
+          {children && (
+            <div
+              className={choiceInputStyle + classNameOrEmpty(inputClassName)}
+            >
+              {children}
+            </div>
+          )}
         </div>
       )}
       {editMode && showHandle && (

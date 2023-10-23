@@ -40,9 +40,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.logging.Level;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.jcr.RepositoryException;
-import javax.mail.internet.AddressException;
+import jakarta.mail.internet.AddressException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -153,8 +153,8 @@ public abstract class AbstractArquillianTestMinimal {
         //logger.error("MyWegasArchive: {}", war.toString(true));
 
         /* Log Levels */
-        java.util.logging.Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.SEVERE);
-        java.util.logging.Logger.getLogger("javax.enterprise.system").setLevel(Level.SEVERE);
+        java.util.logging.Logger.getLogger("jakarta.enterprise.system.tools.deployment").setLevel(Level.SEVERE);
+        java.util.logging.Logger.getLogger("jakarta.enterprise.system").setLevel(Level.SEVERE);
         java.util.logging.Logger.getLogger("fish.payara.nucleus.healthcheck").setLevel(Level.SEVERE);
         org.glassfish.ejb.LogFacade.getLogger().setLevel(Level.SEVERE);
 
