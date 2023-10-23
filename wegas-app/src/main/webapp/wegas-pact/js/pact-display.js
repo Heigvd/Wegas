@@ -47,7 +47,7 @@ YUI.add('pact-display', function(Y) {
                 };
                 assets.sprites[
                     Wegas.app.get('base') +
-                        '/wegas-pact/images/proggame-sprite-anim.png'
+                        'wegas-pact/images/proggame-sprite-anim.png'
                 ] = {
                     tile: TILESIZE,
                     tileh: TILESIZE,
@@ -65,7 +65,7 @@ YUI.add('pact-display', function(Y) {
                 };
                 assets.sprites[
                     Wegas.app.get('base') +
-                        '/wegas-pact/images/proggame-sprite-tiles_iso_v4.png'
+                        'wegas-pact/images/proggame-sprite-tiles_iso_v4.png'
                 ] = {
                     tile: 41,
                     tileh: TILESIZE,
@@ -77,7 +77,7 @@ YUI.add('pact-display', function(Y) {
                 };
                 assets.sprites[
                     Wegas.app.get('base') +
-                        '/wegas-pact/images/sprite_sheet_girl.png'
+                        'wegas-pact/images/sprite_sheet_girl.png'
                 ] = {
                     tile: TILESIZE,
                     tileh: TILESIZE,
@@ -87,7 +87,7 @@ YUI.add('pact-display', function(Y) {
                 };
                 assets.sprites[
                     Wegas.app.get('base') +
-                        '/wegas-pact/images/sprite_sheet_girl_blond.png'
+                        'wegas-pact/images/sprite_sheet_girl_blond.png'
                 ] = {
                     tile: TILESIZE,
                     tileh: TILESIZE,
@@ -97,7 +97,7 @@ YUI.add('pact-display', function(Y) {
                 };
                 assets.sprites[
                     Wegas.app.get('base') +
-                        '/wegas-pact/images/sprite_sheet_monstre.png'
+                        'wegas-pact/images/sprite_sheet_monstre.png'
                 ] = {
                     tile: TILESIZE,
                     tileh: TILESIZE,
@@ -488,7 +488,7 @@ YUI.add('pact-display', function(Y) {
                         'border-image':
                             'url(' +
                             Wegas.app.get('base') +
-                            '/wegas-pact/images/blackboard_LEFT_cadre.png) 4 stretch',
+                            'wegas-pact/images/blackboard_LEFT_cadre.png) 4 stretch',
                         'border-image-width': '2px',
                         'font-size': '1em',
                         width: 'auto',

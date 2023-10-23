@@ -20,10 +20,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @deprecated
  * @author maxence
  */
-@Deprecated(forRemoval = true)
 public class ShiroCacheImplementation implements org.apache.shiro.cache.Cache {
 
     private static final Logger logger = LoggerFactory.getLogger(ShiroCacheImplementation.class);
@@ -61,10 +59,8 @@ public class ShiroCacheImplementation implements org.apache.shiro.cache.Cache {
     @Override
     public Object get(Object key) throws CacheException {
         try {
-            logger.warn("GetHttpSessionCache: ask key {}", key);
-            var x = this.getCache().get(key);
-            logger.warn("GetHttpSessionCache: got key {}", key);
-            return x;
+            logger.trace("GetHttpSessionCache: ask key {}", key);
+            return this.getCache().get(key);
         } catch (NamingException ex) {
             throw new CacheException(ex);
         }

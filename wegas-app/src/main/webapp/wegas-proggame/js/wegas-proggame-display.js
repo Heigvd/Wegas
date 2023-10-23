@@ -36,7 +36,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 };
                 assets.sprites[
                     Wegas.app.get('base') +
-                        '/wegas-proggame/images/proggame-sprite-anim.png'
+                        'wegas-proggame/images/proggame-sprite-anim.png'
                 ] = {
                     tile: TILESIZE,
                     tileh: TILESIZE,
@@ -54,7 +54,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 };
                 assets.sprites[
                     Wegas.app.get('base') +
-                        '/wegas-proggame/images/proggame-sprite-tiles_iso.png'
+                        'wegas-proggame/images/proggame-sprite-tiles_iso.png'
                 ] = {
                     tile: 41,
                     tileh: TILESIZE,
@@ -349,10 +349,10 @@ YUI.add('wegas-proggame-display', function(Y) {
                 .css({
                     "background-color": "rgb(50, 50, 40)",
                     border: "7px solid #FFFFFF",
-                    "-moz-border-image": "url(" + Wegas.app.get("base") + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                    "-webkit-border-image": "url(" + Wegas.app.get("base") + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                    "-o-border-image": "url(" + Wegas.app.get("base") + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                    "border-image": "url(" + Wegas.app.get("base") + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "-moz-border-image": "url(" + Wegas.app.get("base") + 'wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "-webkit-border-image": "url(" + Wegas.app.get("base") + 'wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "-o-border-image": "url(" + Wegas.app.get("base") + 'wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "border-image": "url(" + Wegas.app.get("base") + 'wegas-proggame/images/dialog.png' + ") 7 stretch",
                     // "font-family": "KG Ways to Say Goodbye",
                     "line-height": "1.1em",
                     // "font-size": "1.6em",
@@ -361,7 +361,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                     padding: "4px 4px 2px"
                 }),
                 connector = Crafty.e("2D, DOM").css({
-                background: "url(" + Wegas.app.get("base") + "/wegas-proggame/images/dialogConnector.png) 0 " + (think ? 0 : (-32 + "px"))
+                background: "url(" + Wegas.app.get("base") + "wegas-proggame/images/dialogConnector.png) 0 " + (think ? 0 : (-32 + "px"))
             }).attr({
                 z: 402,
                 visible: false
