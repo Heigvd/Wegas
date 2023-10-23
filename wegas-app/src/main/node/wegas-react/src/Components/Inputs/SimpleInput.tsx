@@ -55,6 +55,10 @@ export interface InputProps<T> extends ClassStyleId, DisabledReadonly {
    */
   onChange?: (value: T) => void;
   /**
+   * onChange - return the value set by the component
+   */
+  onBlur?: () => void;
+  /**
    * label - the current label of the input
    */
   label?: React.ReactNode;
@@ -83,7 +87,7 @@ export interface SimpleInputProps extends InputProps<string | number> {
   autoFocus?: boolean;
 
   /**
-   * onFocus - event that fires when te input is focused
+   * onFocus - event that fires when the input is focused
    */
   onFocus?: (
     event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -105,6 +109,7 @@ export interface SimpleInputProps extends InputProps<string | number> {
 export function SimpleInput({
   value,
   onChange,
+  onBlur,
   rows,
   disabled,
   readOnly,
@@ -152,7 +157,10 @@ export function SimpleInput({
         rows={rows}
         onChange={onInputChange}
         placeholder={placeholder}
-        onBlur={flush}
+        onBlur={() => {
+          onBlur && onBlur();
+          flush();
+        }}
         disabled={disabled}
         readOnly={readOnly}
         autoComplete={autoComplete ? 'on' : 'off'}
@@ -170,7 +178,10 @@ export function SimpleInput({
       value={undefToEmpty(currentValue)}
       onChange={onInputChange}
       placeholder={placeholder}
-      onBlur={flush}
+      onBlur={() => {
+        onBlur && onBlur();
+        flush();
+      }}
       disabled={disabled}
       readOnly={readOnly}
       autoComplete={autoComplete ? 'on' : 'off'}
