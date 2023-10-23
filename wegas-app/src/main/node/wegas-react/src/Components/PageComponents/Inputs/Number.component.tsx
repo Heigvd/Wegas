@@ -18,7 +18,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 import {
   OnVariableChange,
@@ -115,7 +115,7 @@ registerComponent(
       label: schemaProps.scriptString({ label: 'Label' }),
       onVariableChange: onVariableChangeSchema('On change action'),
       ...validatorSchema,
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({
