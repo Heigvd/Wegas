@@ -174,6 +174,7 @@ JAVA_EXTRA_OPTS="--add-modules java.se
    --add-opens=java.management/sun.management=ALL-UNNAMED
    --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED"
 
+# remark : ZGC will support StringDeduplication from Java 18
 if [ "${GC}" = "ZGC" ]; then
     GC_OPT="-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
 else
@@ -226,7 +227,7 @@ if [ ! -z "${WEGAS_PROPERTIES}" ] && [ ! -f "${WEGAS_PROPERTIES}" ]; then
 fi
 
 "${JAVA_EXECUTABLE}" ${DEBUG_OPTS} ${JAVA_EXTRA_OPTS} ${GC_OPT} ${HTTP2_OPTS} \
-    -XX:+UseStringDeduplication -XX:+UnlockDiagnosticVMOptions \
+    -XX:+UnlockDiagnosticVMOptions \
     -Dproduct.name= -XX:+ParallelRefProcEnabled -XX:+UseCompressedOops -XX:-UseLoopPredicate \
     -Xms${HEAP} -Xmx${HEAP} \
     -Djava.security.egd=file:/dev/urandom \
