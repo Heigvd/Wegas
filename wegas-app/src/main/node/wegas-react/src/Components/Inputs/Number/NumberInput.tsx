@@ -36,6 +36,7 @@ export function NumberInput(props: NumberInputProps) {
           props.onChange && props.onChange(vN);
         }
       }}
+      inputType='number'
       onBlur={onBlur}
     />
   );
