@@ -44,6 +44,7 @@ const modalStyle = (fixed: boolean) =>
     left: 0,
     overflow: 'auto',
     minWidth: '100%',
+    width: '100%',
     height: '100%',
     padding: '1.5em',
     backgroundColor: 'rgba(0,0,0,0.2)',
@@ -388,8 +389,8 @@ interface ModalContext {
 }
 
 export const modalCTX = React.createContext<ModalContext>({
-  showModal: () => {},
-  closeModal: () => {},
+  showModal: () => { },
+  closeModal: () => { },
 });
 
 export function ModalProvider({
