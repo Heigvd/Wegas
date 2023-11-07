@@ -7,10 +7,12 @@ const numberInputStyle = css({
   textAlign: 'center',
 });
 
-export type NumberInputProps = InputProps<number>;
+interface NumberInputProps extends InputProps<number> {
+  placeholder?: string,
+}
 
 export function NumberInput(props: NumberInputProps) {
-  const { value } = props;
+  const { value, placeholder } = props;
   const valueRef = React.useRef(String(value));
   const [inputValue, setInputValue] = React.useState<string>('');
 
@@ -37,6 +39,7 @@ export function NumberInput(props: NumberInputProps) {
         }
       }}
       inputType='number'
+      placeholder={placeholder}
       onBlur={onBlur}
     />
   );
