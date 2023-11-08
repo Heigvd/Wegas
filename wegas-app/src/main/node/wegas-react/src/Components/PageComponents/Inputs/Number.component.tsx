@@ -119,7 +119,6 @@ registerComponent(
         required: true,
         returnType: ['SNumberDescriptor', 'number'],
       }),
-      label: schemaProps.scriptString({ label: 'Label' }),
       placeholder: schemaProps.scriptString({
         label: 'Placeholder',
         richText: false,
