@@ -31,7 +31,7 @@ import {
 
 interface PlayerStringInput
   extends WegasComponentProps,
-    ValidatorComponentProps {
+  ValidatorComponentProps {
   onVariableChange?: OnVariableChange;
   /**
    * script - the script that returns the variable to display and modify
@@ -150,7 +150,7 @@ registerComponent(
       }),
       placeholder: schemaProps.scriptString({
         label: 'Placeholder',
-        richText: true,
+        richText: false,
       }),
       onVariableChange: onVariableChangeSchema('On text change action'),
       rows: {
