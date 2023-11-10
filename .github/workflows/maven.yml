@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - master
+      - dev
     tags:
       - "v*"
 
@@ -115,12 +116,6 @@ jobs:
         push: true
         tags: ${{ steps.docker-meta.outputs.tags }}
         labels: ${{ steps.docker-meta.outputs.labels }}
-    - name: Upload
-      if: github.event_name != 'pull_request'
-      shell: bash
-      run: |
-        cp wegas-app/target/Wegas.war /tmp/${{steps.war-name.outputs.WAR_NAME}}
-        curl -s -F "war=@/tmp/${{steps.war-name.outputs.WAR_NAME}}" -H "Authorization:token ${{ secrets.WAR_MANAGER_ADMIN_TOKEN }}" https://manager.albasim.ch/api/branch/upload
       
 #   - name: clean maven cache
 #     shell: bash
