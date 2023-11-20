@@ -23,4 +23,5 @@ interface GlobalHelpersClass {
   };
   downloadDataAsFile: (filename: string, data: string) => void;
   getWegasUrl: () => string;
+  scrollIntoView: (selector: string, options: ScrollIntoViewOptions) => void;
 }

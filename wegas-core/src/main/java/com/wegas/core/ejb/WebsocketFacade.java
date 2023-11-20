@@ -128,6 +128,7 @@ public class WebsocketFacade {
         if (!Helper.isNullOrEmpty(appId) && !Helper.isNullOrEmpty(key) && !Helper.isNullOrEmpty(secret)) {
             tmp = new Pusher(appId, key, secret);
             tmp.setCluster(getProperty("pusher.cluster"));
+            tmp.setEncrypted(true);
             pusher = tmp;
         } else {
             pusher = null;

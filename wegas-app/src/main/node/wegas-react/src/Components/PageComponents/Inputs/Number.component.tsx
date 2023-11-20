@@ -1,6 +1,6 @@
 import { debounce } from 'lodash-es';
-import * as React from 'react';
-import { IScript, SNumberDescriptor } from 'wegas-ts-api';
+import React from 'react';
+import { SNumberDescriptor } from 'wegas-ts-api';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
 import { Player } from '../../../data/selectors';
@@ -10,11 +10,8 @@ import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { useScript } from '../../Hooks/useScript';
-import {
-  DisplayMode,
-  displayModes,
-  NumberSlider,
-} from '../../Inputs/Number/NumberSlider';
+import { NumberInput } from '../../Inputs/Number/NumberInput';
+import { validatorSchema } from '../../Inputs/Validate';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
@@ -29,20 +26,11 @@ import {
   useOnVariableChange,
 } from './tools';
 
-interface PlayerNumberSliderProps extends WegasComponentProps {
+interface PlayerNumberInputProps extends WegasComponentProps {
   /**
    * script - the script that returns the variable to display and modify
    */
   script?: IScript;
-  /**
-   * steps - the number of steps between min and max value. 100 by default.
-   */
-  steps?: number;
-  /**
-   * displayValue - displays the value modified if set
-   * Can be a boolean or a formatting function that takes the value and return a string
-   */
-  displayValues?: DisplayMode;
   /**
   * placeholder - the grey text inside the box when nothing is written
   */
@@ -50,13 +38,7 @@ interface PlayerNumberSliderProps extends WegasComponentProps {
   onVariableChange?: OnVariableChange;
 }
 
-interface NumberSliderNumber {
-  value: number;
-  min: number;
-  max: number;
-}
-
-function PlayerNumberSlider({
+function PlayerNumberInput({
   script,
   context,
   className,
@@ -65,27 +47,22 @@ function PlayerNumberSlider({
   placeholder,
   onVariableChange,
   options,
-  ...restProps
-}: PlayerNumberSliderProps) {
+  pageId,
+  path,
+}: PlayerNumberInputProps) {
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
-  const { pageId, path } = restProps;
+  const { readOnly, disabled, locked } = options;
 
-  const number = useScript<SNumberDescriptor | NumberSliderNumber>(
-    script,
-    context,
-  );
+  const number = useScript<SNumberDescriptor | number>(script, context);
   const placeholderText = useScript<string>(placeholder, context);
 
-
   const value = useStore(() =>
-    entityIs(number, 'NumberDescriptor')
-      ? (number as SNumberDescriptor).getValue(Player.self())
-      : (number as NumberSliderNumber).value,
+    typeof number === 'object' ? number.getValue(Player.self()) : number,
   );
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
-  const doUpdate = React.useCallback(
+  const onChange = React.useCallback(
     (newValue: number) => {
       if (handleOnChange) {
         handleOnChange(newValue);
@@ -102,11 +79,11 @@ function PlayerNumberSlider({
     [handleOnChange, number],
   );
 
-  const debouncedOnChange = React.useMemo(() => {
+  const debounceOnChange = React.useMemo(() => {
     return debounce((value: number) => {
-      doUpdate(value);
+      onChange(value);
     }, 300);
-  }, [doUpdate]);
+  }, [onChange]);
 
   return number == null ? (
     <UncompleteCompMessage
@@ -115,31 +92,14 @@ function PlayerNumberSlider({
       path={path}
     />
   ) : (
-    <NumberSlider
-      {...restProps}
+    <NumberInput
+      value={value}
       className={className}
       style={style}
       id={id}
-      value={value}
-      onChange={(v, i) => {
-        if (i === 'DragEnd') {
-          doUpdate(v);
-        } else if (i === 'NumberInput') {
-          debouncedOnChange(v);
-        }
-      }}
-      min={
-        entityIs(number, 'NumberDescriptor')
-          ? (number as SNumberDescriptor).getMinValue() ?? -100
-          : (number as NumberSliderNumber).min
-      }
-      max={
-        entityIs(number, 'NumberDescriptor')
-          ? (number as SNumberDescriptor).getMaxValue() ?? 100
-          : (number as NumberSliderNumber).max
-      }
-      disabled={options.disabled || options.locked}
-      readOnly={options.readOnly}
+      readOnly={readOnly}
+      disabled={disabled || locked}
+      onChange={debounceOnChange}
       placeholder={placeholderText}
     />
   );
@@ -147,31 +107,24 @@ function PlayerNumberSlider({
 
 registerComponent(
   pageComponentFactory({
-    component: PlayerNumberSlider,
+    component: PlayerNumberInput,
     componentType: 'Input',
-    id: 'NumberSlider',
-    name: 'Number slider',
-    icon: 'sliders-h',
-    illustration: 'numberSlider',
+    id: 'Number input',
+    name: 'Number',
+    icon: 'sort-numeric-down',
+    illustration: 'number',
     schema: {
       script: schemaProps.scriptVariable({
         label: 'Variable',
         required: true,
-        returnType: [
-          'SNumberDescriptor',
-          '{value:number; min:number; max:number}',
-        ],
-      }),
-      steps: schemaProps.number({ label: 'Steps' }),
-      displayValues: schemaProps.select({
-        label: 'Display value',
-        values: displayModes,
+        returnType: ['SNumberDescriptor', 'number'],
       }),
       placeholder: schemaProps.scriptString({
         label: 'Placeholder',
         richText: false,
       }),
-      onVariableChange: onVariableChangeSchema('On number change action'),
+      onVariableChange: onVariableChangeSchema('On change action'),
+      ...validatorSchema,
       ...classStyleIdSchema,
     },
     allowedVariables: ['NumberDescriptor'],
