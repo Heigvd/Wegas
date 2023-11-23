@@ -44,7 +44,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * @author Xavier Good
+ */
 @Entity
 @Table(indexes = {
     @Index(columnList = "eventinboxinstance_id"),

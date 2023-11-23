@@ -23,17 +23,13 @@ import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Francois-Xavier Aeberhard (fx at red-agent.com)
+ * @author Xavier Good
  */
 @Entity
 public class EventInboxInstance extends VariableInstance {

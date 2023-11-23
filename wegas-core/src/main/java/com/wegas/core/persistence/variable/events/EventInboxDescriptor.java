@@ -16,11 +16,10 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.view.StringView;
 import jakarta.persistence.Entity;
-import jdk.nashorn.api.scripting.JSObject;
 
 /**
  *
- * @author Francois-Xavier Aeberhard (fx at red-agent.com)
+ * @author Xavier Good
  */
 @Entity
 public class EventInboxDescriptor extends VariableDescriptor<EventInboxInstance> {

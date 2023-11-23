@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <changeSet author="xaviergood (generated)" id="1686301910498-9">
+    <changeSet author="xaviergood (generated)" id="1700563099000-9">
         <createTable tableName="event">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="event_pkey"/>
@@ -12,19 +12,19 @@
             <column name="previousevent_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="xaviergood (generated)" id="1686301910498-10">
+    <changeSet author="xaviergood (generated)" id="1700563099000-10">
         <createIndex indexName="index_event_eventinboxinstance_id" tableName="event">
             <column name="eventinboxinstance_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="xaviergood (generated)" id="1686301910498-11">
+    <changeSet author="xaviergood (generated)" id="1700563099000-11">
         <createTable tableName="eventinboxdescriptor">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="eventinboxdescriptor_pkey"/>
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="xaviergood (generated)" id="1686301910498-12">
+    <changeSet author="xaviergood (generated)" id="1700563099000-12">
         <createTable tableName="eventinboxinstance">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="eventinboxinstance_pkey"/>
@@ -32,19 +32,24 @@
             <column name="lastevent_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="xaviergood (generated)" id="1686301910498-13">
+    <changeSet author="xaviergood (generated)" id="1700563099000-13">
         <addForeignKeyConstraint baseColumnNames="eventinboxinstance_id" baseTableName="event" constraintName="fk_event_eventinboxinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
     </changeSet>
-    <changeSet author="xaviergood (generated)" id="1686301910498-14">
+    <changeSet author="xaviergood (generated)" id="1700563099000-14">
         <addForeignKeyConstraint baseColumnNames="previousevent_id" baseTableName="event" constraintName="fk_event_previousevent_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="event" validate="true"/>
     </changeSet>
-    <changeSet author="xaviergood (generated)" id="1686301910498-15">
+    <changeSet author="xaviergood (generated)" id="1700563099000-15">
         <addForeignKeyConstraint baseColumnNames="id" baseTableName="eventinboxdescriptor" constraintName="fk_eventinboxdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" validate="true"/>
     </changeSet>
-    <changeSet author="xaviergood (generated)" id="1686301910498-16">
+    <changeSet author="xaviergood (generated)" id="1700563099000-16">
         <addForeignKeyConstraint baseColumnNames="id" baseTableName="eventinboxinstance" constraintName="fk_eventinboxinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" validate="true"/>
     </changeSet>
-    <changeSet author="xaviergood (generated)" id="1686301910498-17">
-        <addForeignKeyConstraint baseColumnNames="lastevent_id" baseTableName="eventinboxinstance" constraintName="fk_eventinboxinstance_lastevent_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="event" validate="true"/>
+    <changeSet author="xaviergood (generated)" id="1700563099000-17">
+        <createIndex indexName="index_event_previousevent_id" tableName="event">
+            <column name="previousevent_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="xaviergood (generated)" id="1700563099000-18">
+        <addForeignKeyConstraint baseColumnNames="lastevent_id" baseTableName="eventinboxinstance" constraintName="fk_eventinboxinstance_lastevent_id" onDelete="SET NULL" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="event"/>
     </changeSet>
 </databaseChangeLog>

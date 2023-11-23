@@ -51,7 +51,7 @@ export interface VariableInstanceState {
   }
 }
 
-function updateEventChain(events: IEvent[], lastEventId: number | undefined | null, receivedEvents: IEvent[]): 
+function updateEventChain(events: IEvent[], lastEventId: number | undefined | null, receivedEvents: IEvent[]):
   { sortedEvents :IEvent[], success: boolean} {
 
   if(!lastEventId){ // no events at all
@@ -68,7 +68,7 @@ function updateEventChain(events: IEvent[], lastEventId: number | undefined | nu
     return acc;
   }, {});
 
-  const all = Object.assign({}, existing, received);
+  const all = {...existing, ...received};
 
   const sorted : IEvent[] = [];
   let curr : IEvent | undefined = all[lastEventId];
@@ -76,7 +76,7 @@ function updateEventChain(events: IEvent[], lastEventId: number | undefined | nu
     sorted.push(curr);
     curr = curr.previousEventId ? all[curr.previousEventId] : undefined;
   }
-  
+
   sorted.reverse();
   //success criterion : all events are present and the first one has no previous element
   const success = sorted.length === Object.keys(all).length && !sorted[0].previousEventId
@@ -118,7 +118,7 @@ const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
           delete state.instances[id];
 
           // delete event boxes stored events
-          if(state.events[id]){ 
+          if(state.events[id]){
             delete state.events[id];
           }
         });
@@ -192,7 +192,7 @@ export function getEvents(
   eventInboxInstance: IEventInboxInstance
   ): EditingThunkResult<Promise<StateActions | void>> {
     return function (dispatch, getState) {
-  
+
       store.dispatch(ActionCreator.EVENT_SET_LOADING(eventInboxInstance.id!))
       return VariableInstanceAPI.getEvents(eventInboxInstance).then(res =>
         // Dispatching changes to global store and passing local store that manages editor state
