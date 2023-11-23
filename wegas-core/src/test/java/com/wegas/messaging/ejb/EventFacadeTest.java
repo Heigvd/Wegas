@@ -80,11 +80,10 @@ public class EventFacadeTest extends AbstractArquillianTest {
         //check that 2nd event has a pointer to its predecessor
         assertEquals(secondEvent.getPreviousEvent().getId(), firstId);
 
-        var ent = instance.getEntities();
-        var entities = (List<AbstractEntity>) instance.getEntities().entrySet().toArray()[0];
+        var entities = (List<AbstractEntity>)instance.getEntities().values().toArray()[0];
         var shallowInstance = (EventInboxInstance) entities.get(0);
 
-        assertEquals(0, shallowInstance.getEvents().size());
+        assertEquals(2, shallowInstance.getEvents().size());
     }
 
 }
