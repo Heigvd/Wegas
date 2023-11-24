@@ -32,22 +32,22 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.StreamingOutput;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.authz.AuthorizationException;
@@ -124,15 +124,9 @@ public class GameController {
      *
      */
     @POST
-    public Game create(@PathParam("gameModelId") Long gameModelId, Game entity) throws CloneNotSupportedException {
-        gameFacade.publishAndCreate(gameModelId, entity);
-        //@Dirty: those lines exist to get a new game pointer. Cache is messing with it
-        // removing debug team will stay in cache as this game pointer is new. work around
-        gameFacade.flush();
-        gameFacade.detach(entity);
-        Game game = gameFacade.find(entity.getId());
-        //gameFacade.create(gameModelId, game);
-        return gameFacade.getGameWithoutDebugTeam(game);
+    public Game create(@PathParam("gameModelId") Long gameModelId, Game game) throws CloneNotSupportedException {
+        gameFacade.publishAndCreate(gameModelId, game);
+        return game;
     }
 
     /**
@@ -150,7 +144,7 @@ public class GameController {
     @Deprecated
     public Game shadowCreate(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
         gameFacade.create(gameModelId, entity);
-        return gameFacade.getGameWithoutDebugTeam(entity);
+        return entity;
     }
 
     /**
@@ -388,7 +382,7 @@ public class GameController {
     @GET
     @Path("/FindByToken/{token : ([a-zA-Z0-9_-]|\\.(?!\\.))*}")
     public Game findByToken(@PathParam("token") String token) {
-        return gameFacade.getGameWithoutDebugTeam(gameFacade.findByToken(token));
+        return gameFacade.findByToken(token);
 
     }
 

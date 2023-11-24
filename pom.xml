@@ -132,28 +132,26 @@
 
         <jdk.version>11</jdk.version>
 
-        <jakarta.version>8.0.0</jakarta.version>
+        <jakarta.version>10.0.0</jakarta.version>
 
-        <shiro.version>1.10.0</shiro.version>
-        <payara.version>5.2022.5</payara.version>
+        <shiro.version>1.11.0</shiro.version>
+        <payara.version>6.2023.2</payara.version>
+
         <junit.version>4.13.1</junit.version>
-        <arquillian.version>1.6.0.Final</arquillian.version>
+        <arquillian.version>1.7.0.Alpha14</arquillian.version>
         <exec.plugin.version>1.2</exec.plugin.version>
 
-        <eclipselink.version>2.7.11</eclipselink.version>
+        <eclipselink.version>4.0.0-M3.payara-p1</eclipselink.version>
 
-        <slf4j.version>1.7.28</slf4j.version>
-        <logback.version>1.2.3</logback.version>
+        <!-- logback 1.4.x slf4j 2.x + jakarta ns -->
+        <slf4j.version>2.0.6</slf4j.version>
+        <logback.version>1.4.5</logback.version>
 
         <httpcomponents.version>4.5.13</httpcomponents.version>
         <!--<liquibase.version>2.0.5</liquibase.version>-->
-        <liquibase.version>4.4.0</liquibase.version>
+        <liquibase.version>4.19.0</liquibase.version>
         <jcr.version>2.0</jcr.version>
         <oak.version>1.40.0</oak.version>
-
-        <netbeans.hint.j2eeVersion>8</netbeans.hint.j2eeVersion>
-        <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
-        <netbeans.hint.license>wegas</netbeans.hint.license>
 
         <github.global.server>github</github.global.server>
 
@@ -189,6 +187,13 @@
                 <version>${payara.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-api</artifactId>
+                <version>${jakarta.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <!--<dependency>
@@ -257,9 +262,11 @@
             </dependency>
 
             <!-- Apache Shiro Dependencies -->
+            <!-- https://issues.apache.org/jira/projects/SHIRO/issues/SHIRO-898?filter=allopenissues -->
             <dependency>
                 <groupId>org.apache.shiro</groupId>
                 <artifactId>shiro-core</artifactId>
+                <classifier>jakarta</classifier>
                 <version>${shiro.version}</version>
             </dependency>
 
@@ -267,6 +274,7 @@
                 <groupId>org.apache.shiro</groupId>
                 <artifactId>shiro-web</artifactId>
                 <version>${shiro.version}</version>
+                <classifier>jakarta</classifier>
             </dependency>
 
             <!-- does not work with our beloved RunAs
@@ -331,14 +339,14 @@
                 <groupId>com.h2database</groupId>
                 <artifactId>h2-mvstore</artifactId>
                 <!-- version must match the payara-bom h2db.version property -->
-                <version>1.4.200</version>
+                <version>2.1.212</version>
             </dependency>
 
             <!-- PDF Generation -->
             <dependency>
                 <groupId>com.itextpdf</groupId>
                 <artifactId>itextpdf</artifactId>
-                <version>5.5.13.2</version>
+                <version>5.5.13.3</version>
             </dependency>
             <dependency>
                 <groupId>org.xhtmlrenderer</groupId>
@@ -371,6 +379,22 @@
                 <groupId>io.github.java-diff-utils</groupId>
                 <artifactId>java-diff-utils</artifactId>
                 <version>4.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>gov.adlnet</groupId>
+                <artifactId>jxapi</artifactId>
+                <version>2.0.1</version>
+                <exclusions>
+                    <!--
+                        HACK: exclude old javax.mail namespace
+                        TODO: use up-to-date XAPI client
+                    -->
+                    <exclusion>
+                        <groupId>javax.mail</groupId>
+                        <artifactId>mail</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!--<dependency>
@@ -439,17 +463,10 @@
             <dependency>
                 <groupId>fish.payara.arquillian</groupId>
                 <artifactId>arquillian-payara-server-embedded</artifactId>
-                <version>2.3.1</version>
+                <version>3.0.alpha6</version>
                 <scope>test</scope>
             </dependency>
 
-
-            <dependency>
-                <groupId>org.jboss.arquillian.extension</groupId>
-                <artifactId>arquillian-persistence-dbunit</artifactId>
-                <version>1.0.0.Alpha7</version>
-                <scope>test</scope>
-            </dependency>
 
             <dependency>
                 <groupId>org.eu.ingwar.tools</groupId>
@@ -474,13 +491,6 @@
                 <scope>test</scope>
             </dependency>
 
-            <dependency>
-                <groupId>net.sourceforge.htmlunit</groupId>
-                <artifactId>htmlunit</artifactId>
-                <version>2.39.1</version>
-                <scope>test</scope>
-                <type>jar</type>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -570,6 +580,7 @@
                             </configuration>
                         </execution>
                     </executions>
+
                     <dependencies>
                         <dependency>
                             <groupId>org.eclipse.persistence</groupId>
@@ -656,10 +667,10 @@
                         <reuseForks>true</reuseForks>
                         <classpathDependencyExcludes>
                             <classpathDependencyExcludes>
-                                javax.servlet:servlet-api
+                                jakarta.servlet:servlet-api
                             </classpathDependencyExcludes>
                             <classpathDependencyExclude>
-                                org.apache.felix:javax.servlet
+                                org.apache.felix:jakarta.servlet
                             </classpathDependencyExclude>
                         </classpathDependencyExcludes>
 
@@ -1046,10 +1057,11 @@
         </repository>
     </repositories>
 
-    <!--<pluginRepositories>
+    <pluginRepositories>
+        <!-- for static weave plugin -->
         <pluginRepository>
-            <id>jsdoctk2</id>
-            <url>http://jsdoctk-plugin.googlecode.com/svn/repo</url>
+            <id>payara</id>
+            <url>https://nexus.payara.fish/repository/payara-artifacts</url>
         </pluginRepository>
-    </pluginRepositories>-->
+    </pluginRepositories>
 </project>

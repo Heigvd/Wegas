@@ -9,8 +9,8 @@
 package com.wegas.core.security.persistence.token;
 
 import com.wegas.core.security.ejb.AccountFacade;
-import javax.persistence.Entity;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.persistence.Entity;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  *

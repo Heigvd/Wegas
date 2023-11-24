@@ -1,26 +1,29 @@
 {
-  "name": "wegas-e2e-tests",
-  "version": "1.0.0",
-  "license": "MIT",
-  "private": true,
-  "scripts": {
-    "clean": "rimraf ./node_modules",
-    "format": "prettier --write cypress",
-    "start": "cross-env DEFAULT_URL='http://localhost:8080/Wegas' node promptAndStart.js",
-    "dev": "cross-env DEFAULT_URL='http://localhost:3003/Wegas' node promptAndStart.js"
-  },
-  "devDependencies": {
-    "cross-env": "^7.0.3",
-    "cypress": "^9.2.0",
-    "cypress-react-selector": "^2.3.13",
-    "eslint": "^8.2.0",
-    "eslint-config-prettier": "^8.3.0",
-    "prettier": "^2.4.1",
-    "prettier-plugin-organize-imports": "^2.3.4",
-    "prompt": "^1.2.2",
-    "rimraf": "^3.0.2"
-  },
-  "dependencies": {
-    "typescript": "^4.5.4"
-  }
+    "name": "wegas-e2e-tests",
+    "version": "1.0.0",
+    "license": "MIT",
+    "private": true,
+    "scripts": {
+        "clean": "rimraf ./node_modules",
+        "format": "prettier --write cypress",
+        "start": "cross-env DEFAULT_URL='http://localhost:8080/Wegas' node promptAndStart.js",
+        "dev": "cross-env DEFAULT_URL='http://localhost:3003/Wegas' node promptAndStart.js"
+    },
+    "devDependencies": {
+        "cross-env": "^7.0.3",
+        "cypress": "^12.5.1",
+        "cypress-react-selector": "^3.0.0",
+        "eslint": "^8.34.0",
+        "eslint-config-prettier": "^8.6.0",
+        "prettier": "^2.8.4",
+        "prettier-plugin-organize-imports": "^3.2.2",
+        "prompt": "^1.2.2",
+        "rimraf": "^4.1.2"
+    },
+    "dependencies": {
+        "typescript": "^4.9.5"
+    },
+    "resolutions": {
+        "resq": "^1.11.0"
+    }
 }

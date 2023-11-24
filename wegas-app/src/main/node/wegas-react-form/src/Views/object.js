@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 import FormStyles from './form-styles';
 
 const rootStyle = css({

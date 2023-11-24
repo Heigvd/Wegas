@@ -16,6 +16,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.events.EventInboxInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
@@ -36,12 +37,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import javax.naming.NamingException;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -317,6 +318,8 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
             questionDescriptorFacade.reviveChoiceInstance((ChoiceInstance) vi);
         } else if (vi instanceof BurndownInstance) {
             iterationFacade.reviveBurndownInstance((BurndownInstance) vi);
+        } else if( vi instanceof EventInboxInstance){
+            ((EventInboxInstance)vi).rebuildEventChaining();
         }
     }
 

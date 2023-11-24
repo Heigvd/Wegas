@@ -20,7 +20,7 @@ import com.wegas.test.TestHelper;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import com.wegas.test.mcq.Answerer;
 import java.util.function.Function;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;

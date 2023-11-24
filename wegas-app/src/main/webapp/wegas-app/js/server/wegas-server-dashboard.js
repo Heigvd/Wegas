@@ -12,6 +12,48 @@
  * @author Maxence Laurent <maxence.laurent@gmail.com>
  */
 
+
+/**
+ * @callback MapFn
+ * @param {number} teamId - id of team to map value for
+ * @param {VariableInstance<unknown>} instance - instance of the variable which belongs to the current team
+ * @param {...VariableInstance<unknown>} extraArgs - extra instances based on mapFnExtraArgs
+ * @returns {unknown} the value you want to send to client. Keep in mide to set cfg.kind according to this value
+ *
+ * Example with extra arguments:
+ *
+ * registerVariable("x", {
+ *    mapFnExtraArgs: ["y", z"],
+ *    mapFn: (teamId, x, y, z) => {
+ *      // mapFn receives:
+ *      //  1) teamId: id of the team to map the value for
+ *      //  2) x: instance of the registered variable (aka Variable.find(gameModel, registeredVariableName).getInstance(theTeam))
+ *      //  3) all variable instance for the extra args
+ *      return x.getValue() * y.getValue() * z.getValue()
+ *    }
+ * });
+ */
+
+/**
+ * @typedef VariableConfig
+ * @type {object}
+ * @property {string} id - override default id (ie the variable name). Useful if serveral item are based on the same variable
+ * @property {string} dashboard - dashboard name to ad the variable in
+ * @property {string} section - section, within the dashboard, to add the variable in.
+ * @property {string} label - optional label to override variable one
+ * @property {string} kind - type of the value (default to variable type), mostly used when a mapFN is used to reflect mapFn return type
+ * @property {function | object} formatter - formatter is sent to client to format the cell content
+ * @property {number} index - unused?
+ * @property {number} order - to define position of the item within its section
+ * @property {number} active - is the item visible by default (seems ignored by client-side dashboard)
+ * @property {boolean} sortable - can the dashboard be sorted according to this value
+ * @property {function} sortFn - send function to client to sort complex values wisely
+ * @property {boolean} preventClick - prevent some client-side interaction (eg. allow or prevent to toggle boolean)
+ * @property {MapFn} mapFn - used server-side to transform values before sending them to client.
+ * @property {string[]} mapFnExtraArgs - allow to call the mapFn with some extra variable instances.
+ */
+
+
 var WegasDashboard = (function () {
     "use strict";
     var dashConfigs = {};
@@ -90,11 +132,12 @@ var WegasDashboard = (function () {
         var order = Object.keys(section.items).length;
 
         section.items[id] = {
+            // item discriminant
+            itemType: "variable",
             order: order,
             varName: varName,
-            itemType: "variable",
-            formatter: cfg.formatter,
             label: cfg.label,
+            formatter: cfg.formatter,
             index: cfg.index || Object.keys(section).length,
             active: cfg.active !== undefined ? cfg.active : true,
             sortable: cfg.sortable,
@@ -204,7 +247,6 @@ var WegasDashboard = (function () {
         fn = fn.replace("QUERYSTRING", activityPattern ? "?activityPattern=" + activityPattern : "");
 
         var cfg = userConfig || {};
-
 
         registerAction(id, fn, {
             section: cfg.section || 'actions',
@@ -326,8 +368,10 @@ var WegasDashboard = (function () {
                                 item: item
                             };
 
-                            item.label = itemCfg.label || variables[varName].descriptor.getLabel()
-                                .translateOrEmpty(self);
+                            item.label = itemCfg.label
+                                || (
+                                variables[varName] && variables[varName].descriptor.getLabel().translateOrEmpty(self))
+                            || "unnamed"
                             item.formatter = itemCfg.formatter;
                             item.active = itemCfg.active;
                             item.preventClick = itemCfg.preventClick;
@@ -335,9 +379,11 @@ var WegasDashboard = (function () {
                             item.sortFn = itemCfg.sortFn;
                             if (itemCfg.kind != null) {
                                 item.kind = itemCfg.kind;
-                            } else {
+                            } else if ( variables[varName]) {
                                 item.kind = variables[varName].descriptor.getJSONClassName()
                                     .replaceAll("Descriptor", "").toLowerCase();
+                            } else {
+                                item.kind = "string"
                             }
                             break;
                         default:
@@ -348,12 +394,12 @@ var WegasDashboard = (function () {
                 overview.structure.push(section);
             }
 
-            var currTeam, players, aPlayer, teamName, teamId;
+            var currTeam, aPlayer, teamName, teamId;
 
             // Find data by team
             for (var t = 0; t < teams.size(); t++) {
                 currTeam = teams.get(t);
-                players = currTeam.getPlayers();
+                // players = currTeam.getPlayers();
                 aPlayer = currTeam.getAnyLivePlayer();
                 if (aPlayer !== null) {
                     teamName = isIndividual ? "Player " + aPlayer.getName() : "Team " + currTeam.getName();
@@ -429,21 +475,10 @@ var WegasDashboard = (function () {
     return {
         createDashboard: registerInitCallback,
         /**
+         * Register a variable in the dashboard.
          *
-         * @param {string} varName
-         * @param {object} cfg {
-         *  section = 'monitoring',
-         *  dashboard = 'overview',
-         *  label =varLabel,
-         *  formatter,
-         *  index,
-         *  preventClick,
-         *  sortable,
-         *  sortFn,
-         *  active,
-         *  mapFn = function(teamId, instance, ...extraInstances),
-         *  mapFnExtraArgs = [vdNanem, vdName2, ...]}
-         * @returns {undefined}
+         * @param {string} varName name of the variable to display in the dashboard
+         * @param {VariableConfig} cfg item customization
          */
         registerVariable: function (varName, cfg) {
             return registerVariable(varName, cfg);

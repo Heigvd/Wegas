@@ -22,7 +22,7 @@ export function useIsReadyForClientScript(): boolean {
 
 export function selectIsReadyForPageDisplay(): boolean {
   const { initStatuses } = store.getState();
-  return initStatuses.pages && initStatuses.clientScriptsEvaluationDone;
+  return initStatuses.pages && initStatuses.clientScriptsEvaluationDone && initStatuses.components;
 }
 
 /**

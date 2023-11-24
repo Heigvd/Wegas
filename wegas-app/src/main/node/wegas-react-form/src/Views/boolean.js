@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
 import FormStyles from './form-styles';

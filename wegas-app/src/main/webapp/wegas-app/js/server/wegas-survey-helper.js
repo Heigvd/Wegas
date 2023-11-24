@@ -14,7 +14,7 @@
  *
  * @author Jarle Hulaas
  */
-/*global self, Variable, gameModel, Java, javax, com, Infinity, StatisticHelper*/
+/*global self, Variable, gameModel, Java, com, Infinity, StatisticHelper*/
 var SurveyHelper = (function() {
     "use strict";
     var Long = Java.type("java.lang.Long");

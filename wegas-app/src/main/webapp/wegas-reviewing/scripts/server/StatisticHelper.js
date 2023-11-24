@@ -14,7 +14,7 @@
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
-/*global Variable, gameModel, print, Java, javax, com, Infinity, NaN*/
+/*global Variable, gameModel, print, Java, com, Infinity, NaN*/
 var StatisticHelper = (function() {
     "use strict";
 

@@ -22,7 +22,7 @@ import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.List;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;

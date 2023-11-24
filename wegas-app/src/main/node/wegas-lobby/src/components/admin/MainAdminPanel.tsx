@@ -58,7 +58,9 @@ function GameModelUploader(): JSX.Element {
       <h4>{i18n.uploadGameModel}</h4>
       <div>
         {state === 'IDLE' ? (
-          <input type="file" onChange={onChangeCb} accept=".json, .wgz" />
+          <form>
+            <input type="file" onChange={onChangeCb} accept=".json, .wgz" autoComplete="off"/>
+          </form>
         ) : state === 'LOADING' ? (
           <InlineLoading text="loading..." />
         ) : (
@@ -189,12 +191,12 @@ export default function MainAdminPanel(): JSX.Element {
           pr_branch.data > 0 ? (
             <img
               alt="github status"
-              src={`https://github.com/Heigvd/Wegas/workflows/CI/badge.svg?event=pull_request&branch=${pr_branch.data}`}
+              src={`https://github.com/Heigvd/Wegas/actions/workflows/maven.yml/badge.svg?event=pull_request&branch=${pr_branch.data}`}
             />
           ) : (
             <img
               alt="github status"
-              src={`https://github.com/Heigvd/Wegas/workflows/CI/badge.svg?event=push&branch=${branch.data}`}
+              src={`https://github.com/Heigvd/Wegas/actions/workflows/maven.yml/badge.svg?event=push&branch=${branch.data}`}
             />
           )
         ) : (

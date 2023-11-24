@@ -10,9 +10,9 @@ package com.wegas.core.persistence;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.log.xapi.Xapi;
-import javax.inject.Inject;
-import javax.persistence.PostPersist;
-import javax.persistence.PostUpdate;
+import jakarta.inject.Inject;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PostUpdate;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)

@@ -10,7 +10,7 @@ package com.wegas.core.persistence.variable.statemachine;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)

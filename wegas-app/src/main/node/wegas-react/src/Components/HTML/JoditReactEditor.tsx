@@ -176,6 +176,10 @@ export default function JoditReactEditor({
 
       config.disablePlugins = disabledPlugins;
 
+      config.defaultActionOnPaste = 'insert_only_text';
+      config.askBeforePasteHTML = false;
+      config.askBeforePasteFromWord = false;
+
       if (Object.keys(classes).length) {
         config.controls.classSpan.list = classes;
       } else {
@@ -202,7 +206,7 @@ export default function JoditReactEditor({
   }, [classes, placeholder, showFilePickerFunc, toolbarLayout]);
 
   const onChangeCallback = React.useCallback(
-    (value, oldValue) => {
+    (value: string | undefined, oldValue: string | undefined) => {
       const prev = cleanValue(oldValue);
       const v = cleanValue(value);
       if (onChange && v !== prev) {

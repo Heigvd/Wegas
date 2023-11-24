@@ -7,7 +7,7 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 
 /**

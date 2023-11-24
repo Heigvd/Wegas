@@ -25,8 +25,8 @@ import com.wegas.editor.view.I18nHtmlView;
 import com.wegas.editor.view.I18nStringView;
 import static java.lang.Boolean.FALSE;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jdk.nashorn.api.scripting.JSObject;
 
 /**

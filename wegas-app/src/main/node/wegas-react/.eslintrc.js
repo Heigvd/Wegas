@@ -18,7 +18,7 @@ module.exports = {
   },
   settings: {
     react: {
-      version: '16.12',
+      version: 'detect',
     },
   },
   env: { browser: true, es6: true },

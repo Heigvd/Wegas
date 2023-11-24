@@ -3,7 +3,7 @@
         "target": "es2018",
         "allowJs": false,
         "module": "esnext",
-        "outDir": "dist",
+        "outDir": "../../../target/wegas-ts-api",
         "sourceMap":true,
         "strict": true,
         "moduleResolution": "node",

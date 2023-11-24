@@ -10,7 +10,7 @@ package com.wegas.core.i18n;
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 

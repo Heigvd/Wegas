@@ -22,9 +22,9 @@ import com.wegas.survey.persistence.SurveyDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  *

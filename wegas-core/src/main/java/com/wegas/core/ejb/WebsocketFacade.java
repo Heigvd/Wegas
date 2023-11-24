@@ -53,11 +53,11 @@ import javax.cache.processor.EntryProcessorException;
 import javax.cache.processor.MutableEntry;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.ejb.Asynchronous;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.ejb.Asynchronous;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,6 +128,7 @@ public class WebsocketFacade {
         if (!Helper.isNullOrEmpty(appId) && !Helper.isNullOrEmpty(key) && !Helper.isNullOrEmpty(secret)) {
             tmp = new Pusher(appId, key, secret);
             tmp.setCluster(getProperty("pusher.cluster"));
+            tmp.setEncrypted(true);
             pusher = tmp;
         } else {
             pusher = null;

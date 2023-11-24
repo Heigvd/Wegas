@@ -15,7 +15,7 @@ import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.rest.GameController;
 import com.wegas.core.rest.TeamController;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -247,7 +247,7 @@ public class GameFacadeTest extends AbstractArquillianTest {
         // Game is open and player may create teams, joining is fine
         Team team1 = new Team();
         team1.setName("test-team-1");
-        Team created = (Team) teamController.create(g.getId(), team1).getEntity();
+        Team created = (Team) teamController.create(g.getId(), team1);
 
         Assert.assertEquals(0, created.getPlayers().size());
 

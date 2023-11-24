@@ -8,7 +8,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { IPlayerWithId } from 'wegas-ts-api';
 import * as API from '../../API/api';
-import { mapById, merge } from '../../helper';
+import { mapById, mergeVersionised } from '../../helper';
 import {
   decQueue,
   processDeletedEntities,
@@ -36,13 +36,15 @@ const playerSlice = createSlice({
   extraReducers: builder =>
     builder
       .addCase(processUpdatedEntities.fulfilled, (state, action) => {
-        state.players = merge(state.players, action.payload.players);
+        state.players = mergeVersionised(state.players, action.payload.players);
       })
       .addCase(processDeletedEntities.fulfilled, (state, action) => {
         action.payload.players.forEach(id => delete state.players[id]);
       })
       .addCase(API.getPlayerById.fulfilled, (state, action) => {
-        state.players[action.payload.id] = action.payload;
+        const existing = state.players[action.payload.id];
+        if (existing == null || action.payload.version >= existing.version)
+          state.players[action.payload.id] = action.payload;
       })
       .addCase(API.reloadCurrentUser.fulfilled, (state, action) => {
         // hack: to build state.mine projects, currentUserId must be known

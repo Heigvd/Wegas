@@ -14,7 +14,7 @@
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
-/*global self, Variable, gameModel, Java, javax, com, Infinity, StatisticHelper*/
+/*global self, Variable, gameModel, Java, com, Infinity, StatisticHelper*/
 var ReviewHelper = (function() {
     "use strict";
     var Long = Java.type("java.lang.Long");

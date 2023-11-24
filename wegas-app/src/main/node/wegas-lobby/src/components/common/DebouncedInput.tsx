@@ -62,6 +62,7 @@ export default function DebouncedInput({
         placeholder={placeholder}
         value={state}
         onChange={onInternalChangeCb}
+        autoComplete='off'
       />
     </Flex>
   );

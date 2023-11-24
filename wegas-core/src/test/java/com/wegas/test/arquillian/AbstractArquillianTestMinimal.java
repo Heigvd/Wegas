@@ -40,9 +40,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.logging.Level;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.jcr.RepositoryException;
-import javax.mail.internet.AddressException;
+import jakarta.mail.internet.AddressException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -153,8 +153,8 @@ public abstract class AbstractArquillianTestMinimal {
         //logger.error("MyWegasArchive: {}", war.toString(true));
 
         /* Log Levels */
-        java.util.logging.Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.SEVERE);
-        java.util.logging.Logger.getLogger("javax.enterprise.system").setLevel(Level.SEVERE);
+        java.util.logging.Logger.getLogger("jakarta.enterprise.system.tools.deployment").setLevel(Level.SEVERE);
+        java.util.logging.Logger.getLogger("jakarta.enterprise.system").setLevel(Level.SEVERE);
         java.util.logging.Logger.getLogger("fish.payara.nucleus.healthcheck").setLevel(Level.SEVERE);
         org.glassfish.ejb.LogFacade.getLogger().setLevel(Level.SEVERE);
 
@@ -256,7 +256,9 @@ public abstract class AbstractArquillianTestMinimal {
                 + "CREATE INDEX IF NOT EXISTS index_users_roles_roles_id_user_id on users_roles (role_id,user_id);"
                 + "CREATE UNIQUE INDEX IF NOT EXISTS index_game_token ON game (token) WHERE (status = 'LIVE' OR status = 'BIN');"
                 + "CREATE INDEX IF NOT EXISTS index_surveydescriptor_token_surveys_id on surveydescriptor_token (surveys_id);"
-                + "CREATE INDEX IF NOT EXISTS index_surveydescriptor_token_tokens_id on surveydescriptor_token (tokens_id);";
+                + "CREATE INDEX IF NOT EXISTS index_surveydescriptor_token_tokens_id on surveydescriptor_token (tokens_id);"
+                + "ALTER TABLE eventinboxinstance DROP CONSTRAINT fk_eventinboxinstance_lastevent_id;"
+                + "ALTER TABLE eventinboxinstance ADD CONSTRAINT fk_eventinboxinstance_lastevent_id FOREIGN KEY (lastevent_id) REFERENCES event(id) ON DELETE SET NULL;";
 
             statement.execute(setupQuery);
         } catch (SQLException ex) {

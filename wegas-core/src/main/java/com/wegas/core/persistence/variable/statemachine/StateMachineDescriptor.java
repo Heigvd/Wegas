@@ -15,8 +15,8 @@ import com.wegas.editor.jsonschema.JSONObject;
 import com.wegas.editor.view.Hidden;
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)

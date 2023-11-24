@@ -2,18 +2,12 @@ import * as React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
 type DOMRectReadOnly = ResizeObserverEntry['contentRect'];
-interface Child {
-  /**
-   * @param size DOMReact undefined on first mount.
-   */
-  (size?: DOMRectReadOnly): React.ReactNode;
-}
 /**
  * A div element. Render child with it's size (DOMRect) as first parameter
  */
 export class SizedDiv extends React.Component<
-  React.HTMLAttributes<HTMLDivElement> & {
-    children: Child;
+  Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> & {
+    children: (size?: DOMRectReadOnly) => JSX.Element;
   },
   { readonly size?: DOMRectReadOnly }
 > {

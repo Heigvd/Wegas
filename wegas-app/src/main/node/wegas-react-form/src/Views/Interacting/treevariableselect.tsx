@@ -4,7 +4,7 @@ import TreeSelect from '../../Components/tree/TreeSelect';
 import Searchable from '../../Components/tree/searchable';
 import { getY } from '../../index';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 import { inputStyle } from '../string';
 
 const separatorCss = css({ borderTop: 'solid 1px' });
@@ -242,12 +242,12 @@ class TreeVariableSelect extends React.Component<
                             style={{
                                 // Make input long enought.
                                 minWidth:
-                                    (
+                                    `${(
                                         labelForVariable(this.props.value) ||
                                         this.labelForAdditional(this.props.value)
                                     ).length /
-                                        2 +
-                                    'rem',
+                                        2 
+                                    }rem`,
                             }}
                             value={
                                 this.state.searching
@@ -286,12 +286,12 @@ class TreeVariableSelect extends React.Component<
                             style={{
                                 // Make input long enought.
                                 minWidth:
-                                    (
+                                    `${(
                                         labelForVariable(this.props.value) ||
                                         this.labelForAdditional(this.props.value)
                                     ).length /
-                                        2 +
-                                    'rem',
+                                        2 
+                                    }rem`,
                             }}
                             value={
                                 this.state.searching

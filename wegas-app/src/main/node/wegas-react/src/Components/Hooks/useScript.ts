@@ -144,6 +144,8 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.self = instantiate(player);
   globals.schemaProps = schemaProps;
   globals.API_VIEW = API_VIEW;
+  globals.APP_CONTEXT = APP_CONTEXT;
+
   globals.CurrentGame = CurrentGame;
   // Variable class
   globals.Variable = {
@@ -388,6 +390,10 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
 
   globals.APIMethods = APIScriptMethods;
 
+  const scrollIntoView = (selector: string, options: ScrollIntoViewOptions): void => {
+    document.querySelector(selector)?.scrollIntoView(options);
+  }
+
   globals.Helpers = {
     cloneDeep: cloneDeep,
     uniq: uniq,
@@ -400,6 +406,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     downloadFile: downloadFile,
     downloadDataAsFile,
     getWegasUrl: getWegasUrl,
+    scrollIntoView: scrollIntoView,
   };
 
   globals.Roles = {

@@ -8,9 +8,8 @@
 
 import * as React from 'react';
 import { Suspense } from 'react';
-import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import { HashRouter, Route, Switch, useParams } from 'react-router-dom';
+import { HashRouter, Route, Routes, useParams } from 'react-router-dom';
 import { I18nCtx, Language } from '../i18n/I18nContext';
 import { useLocalStorageState } from '../preferences';
 import { getStore } from '../store/store';
@@ -21,24 +20,26 @@ import MainApp from './MainApp';
 import AutoPlay from './token/AutoPlay';
 import Token from './token/Token';
 
+import { createRoot } from 'react-dom/client';
+
 import 'inter-ui/inter.css';
 
 /**
  * To read parameters from hash
  */
 function TokenWrapper() {
-  const { id, token } = useParams<{ id: string; token: string }>();
+  const { id, token } = useParams<'id' | 'token'>();
 
   // transform "0" to undefined
-  const nId = +id || undefined;
+  const nId = id ? +id : undefined;
 
-  return <Token accountId={nId} hash={token} />;
+  return <Token accountId={nId} hash={token || ''} />;
 }
 
 function PlayWrapper() {
   const { token } = useParams<{ token: string }>();
 
-  return <AutoPlay token={token} />;
+  return <AutoPlay token={token || ''} />;
 }
 
 function App() {
@@ -52,17 +53,11 @@ function App() {
           <I18nCtx.Provider value={{ lang: lang, setLang: setLangCb }}>
             <Notifier />
             <HashRouter>
-              <Switch>
-                <Route path="/token/:id/:token">
-                  <TokenWrapper />
-                </Route>
-                <Route path="/play/:token">
-                  <PlayWrapper />
-                </Route>
-                <Route>
-                  <MainApp />
-                </Route>
-              </Switch>
+              <Routes>
+                <Route path="/token/:id/:token" element={<TokenWrapper/>}/>
+                <Route path="/play/:token" element={<PlayWrapper/>}/>
+                <Route path="*" element={<MainApp/>}/>
+              </Routes>
             </HashRouter>
           </I18nCtx.Provider>
         </Provider>
@@ -72,6 +67,7 @@ function App() {
 }
 
 function mount() {
-  return render(<App />, document.getElementById('root'));
+  const root = createRoot(document.getElementById('root')!); // createRoot(container!) if you use TypeScript
+  root.render(<App/>);
 }
 mount();

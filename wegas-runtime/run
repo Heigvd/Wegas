@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 echo
 echo " o              o                                                   "
 echo "<|>            <|>                                                  "
@@ -16,28 +15,45 @@ echo "                                  o__ �
 echo "                                  <\__ __/>                          "
 echo
 
+INTERFACES="${INTERFACES:-127.0.0.1}"
+CLUSTER_MODE="${CLUSTER_MODE:-DEFAULT}"
 
-DB_HOST=localhost
-DB_NAME=wegas_dev
-PAYARA_MICRO=target/payara-micro.current.jar
+HAZELCAST_SHUTDOWN_HOOK="${HAZELCAST_SHUTDOWN_HOOK:-true}"
 
-NB_THREADS=9
-NB_POPULATORS=1
+if [ "${HAZELCAST_SHUTDOWN_HOOK}" = "true" ]; then
+  HAZELCAST_SHUTDOWN_HOOK_OPTION="-Dhazelcast.shutdownhook.enabled=true"
+else
+  HAZELCAST_SHUTDOWN_HOOK_OPTION="-Dhazelcast.shutdownhook.enabled=false"
+fi
 
-HZ_CLUSTER_NAME="wegasDev_$(hostname)"
+DB_HOST="${DB_HOST:-localhost}"
+DB_PORT="${DB_PORT:-5432}"
+DB_NAME="${DB_NAME:-wegas_dev}"
+DB_USER="${DB_USER:-user}"
+DB_PASSWORD="${DB_PASSWORD:-1234}"
 
-HEAP=2G
+MONGO_HOST="${MONGO_HOST:-localhost}"
 
-THE_WAR=../wegas-app/target/Wegas
+SSL_PORT="${SSL_PORT:-auto}"
+HTTP_PORT="${HTTP_PORT:-auto}"
+
+PAYARA_MICRO="${PAYARA_MICRO:-target/payara-micro.current.jar}"
+
+NB_THREADS="${NB_THREADS:-9}"
+NB_POPULATORS="${NB_POPULATORS:-1}"
+
+HZ_CLUSTER_NAME="${HZ_CLUSTER_NAME:-wegasDev_$(hostname)}"
+
+HEAP="${HEAP:-2G}"
+
+THE_WAR="${THE_WAR:-../wegas-app/target/Wegas}"
 
 DEBUG_PORT=9009
-DEBUG="false"
-DEBUG_OPTS=
+DEBUG="${DEBUG:-false}"
 
-JAVA_HOME=${JAVA_HOME}
-JAVA_EXECUTABLE=""
+WEGAS_PROPERTIES="${WEGAS_PROPERTIES:-./src/main/resources/wegas-override.properties}"
 
-WEGAS_PROPERTIES=./src/main/resources/wegas-override.properties
+PATCH_WEGAS_PROPERTIES=${PATCH_WEGAS_PROPERTIES:-true}
 DEFAULT_WEGAS_PROPERTIES=./src/main/resources/default_wegas.properties
 DEFAULT_WEGAS_PROPERTIES_ORI=./src/main/resources/default_wegas.properties.orig
 
@@ -45,9 +61,11 @@ GC=${GC:-G1GC}
 
 function show_help {
     echo "Usage: ./run [OPTIONS]"
+    echo " -c CLUSTER_MODE datagrid discovery mode (default is ${CLUSTER_MODE})"
     echo " -d             debug mode"
-    echo " -g GC           garbage collector ZGC or G1GC (default is ${GC})"
+    echo " -g GC          garbage collector ZGC or G1GC (default is ${GC})"
     echo " -s DB_HOST     postgresql host (default is ${DB_HOST})"
+    echo " -i INTERFACES  datagrid discovery interface (default is ${INTERFACES})"
     echo " -j JAVA_HOME   java path (default is ${JAVA_HOME})"
     echo " -m HEAP        heap size (default is ${HEAP})"
     echo " -n NUM         number of populating daemon (default is ${NB_POPULATORS})"
@@ -59,7 +77,7 @@ function show_help {
 # A POSIX variable
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
-while getopts "h?dm:t:n:p:w:j:s:g:" opt; do
+while getopts "h?c:dm:t:n:p:w:i:j:s:g:" opt; do
     case "$opt" in
     h|\?)
         show_help
@@ -67,11 +85,15 @@ while getopts "h?dm:t:n:p:w:j:s:g:" opt; do
         ;;
     n)  NB_POPULATORS=$OPTARG
         ;;
+    c)  CLUSTER_MODE=$OPTARG
+        ;;
     d)  DEBUG="true"
         ;;
     g)  GC=$OPTARG
         ;;
     s)  DB_HOST=$OPTARG
+        ;;
+    i)  INTERFACES=$OPTARG
         ;;
     j)  JAVA_HOME=$OPTARG
         ;;
@@ -86,49 +108,70 @@ while getopts "h?dm:t:n:p:w:j:s:g:" opt; do
     esac
 done
 
-if [ ${DEBUG} == "true" ]; then
+if [ "${CLUSTER_MODE}" = "DEFAULT" ]; then
+    CLUSTERMODE_OPT=""; # no option means multicast
+    if [[ $OSTYPE == 'darwin'* ]]; then
+      # macOs: multicast does not work...
+      CLUSTERMODE_OPT="--clustermode tcpip:127.0.0.1:6900";
+    fi
+else                        
+    CLUSTERMODE_OPT="--clustermode ${CLUSTER_MODE}";
+fi  
+
+DEBUG_OPTS=
+if [ "${DEBUG}" == "true" ]; then
     DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=${DEBUG_PORT},server=y,suspend=n"
-    echo DEBUG_OPTS ${DEBUG_OPTS}
-    echo DEBUG_PORT ${DEBUG_PORT}
 fi
 
-echo DB_HOST ${DB_HOST}
-echo HEAP ${HEAP}
-echo WAR ${THE_WAR}
+
+if [ "$HTTP_PORT" = "auto" ]; then
+    HTTP_PORT_OPTION="--autobindhttp"
+else
+    HTTP_PORT_OPTION="--port ${HTTP_PORT}"
+fi
+
+
+if [ "$SSL_PORT" = "auto" ]; then
+    SSL_PORT_OPTION="--autobindssl"
+else
+    SSL_PORT_OPTION="--sslPort ${SSL_PORT}"
+fi
 
 RAND_S=`printf "%d.%03d" $((($RANDOM % 3 )+ 1)) $(($RANDOM % 1000 ))`;
 
-echo PRE SHUTDOWN SLEEP TIME: $RAND_S
-sleep $RAND_S
-
-#SSL_OPTS="-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStorePassword=changeit"
-SSL_OPTS=""
+echo Pre boot sleep: $RAND_S
+# sleep $RAND_S
 
 #trap 'echo "TERM";sleep $RAND_S;kill -TERM $PID;' TERM INT
 trap 'echo "TERM";kill -TERM $PID;' TERM INT
 
 # to enable http2 support
 HTTP2_OPTS=-Xbootclasspath/a:grizzly-npn-bootstrap.jar
+HTTP2_OPTS=
 
 #if java home is empty, use java, if not, use JAVA_HOME/bin/java
-if [ "${JAVA_HOME}xxx" = "xxx" ]; then JAVA_EXECUTABLE=java; else JAVA_EXECUTABLE="${JAVA_HOME}/bin/java"; fi
+if [ "${JAVA_HOME}xxx" = "xxx" ]; then
+    JAVA_EXECUTABLE=java
+else
+    JAVA_EXECUTABLE="${JAVA_HOME}/bin/java"
+fi
 
-echo JAVA 9+ detected: enable extra options
-JDK_EXTRA_OPTS="--add-modules java.se
-    --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED
-    --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED
-    --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED
-    --add-opens=java.base/java.lang=ALL-UNNAMED
-    --add-opens=java.base/java.net=ALL-UNNAMED
-    --add-opens=java.base/java.nio=ALL-UNNAMED
-    --add-opens=java.base/java.util=ALL-UNNAMED
-    --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
-    --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED
-    --add-opens=java.naming/javax.naming.spi=ALL-UNNAMED
-    --add-opens=java.logging/java.util.logging=ALL-UNNAMED
-    --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
-    --add-opens=java.management/sun.management=ALL-UNNAMED
-    --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED"
+# JAVA 11+: enable extra options
+JAVA_EXTRA_OPTS="--add-modules java.se
+   --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED
+   --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED
+   --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED
+   --add-opens=java.base/java.lang=ALL-UNNAMED
+   --add-opens=java.base/java.net=ALL-UNNAMED
+   --add-opens=java.base/java.nio=ALL-UNNAMED
+   --add-opens=java.base/java.util=ALL-UNNAMED
+   --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+   --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED
+   --add-opens=java.naming/javax.naming.spi=ALL-UNNAMED
+   --add-opens=java.logging/java.util.logging=ALL-UNNAMED
+   --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+   --add-opens=java.management/sun.management=ALL-UNNAMED
+   --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED"
 
 if [ "${GC}" = "ZGC" ]; then
     GC_OPT="-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
@@ -136,43 +179,80 @@ else
     GC_OPT="-XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1MaxNewSizePercent=75 -XX:G1NewSizePercent=40 -XX:MaxGCPauseMillis=2500"
 fi
 
-##
-# Wegas Properties Merge Process
-################################
-if [ -e ${WEGAS_PROPERTIES} ]; then
-    # wegas-override.properties exists -> try to patch it
-    diff -u ${DEFAULT_WEGAS_PROPERTIES_ORI} ${DEFAULT_WEGAS_PROPERTIES} | patch --no-backup-if-mismatch ${WEGAS_PROPERTIES}
-    if [ $? -eq 1 ]; then
-        echo "FAILS TO PATCH ${WEGAS_PROPERTIES}: please fix conflicts"
-        cp ${DEFAULT_WEGAS_PROPERTIES} ${DEFAULT_WEGAS_PROPERTIES_ORI}
-        exit;
-    fi
-else
-    # No wegas-override -> create it
-    cp ${DEFAULT_WEGAS_PROPERTIES} ${WEGAS_PROPERTIES}
+
+env | sort
+
+echo "Starting Wegas (${INTERFACES})"
+echo
+echo " * Deploy:     ${THE_WAR}"
+echo " * Heap:       ${HEAP}"
+echo " * Thread:     ${NB_THREADS}"
+echo " * Populators: ${NB_POPULATORS}"
+echo " * Cluster:    ${HZ_CLUSTER_NAME}"
+echo " * GC:         ${GC}"
+echo " * DB_HOST:    ${DB_HOST}"
+echo " * DB_PORT:    ${DB_PORT}"
+echo " * MONGO_HOST: ${MONGO_HOST}"
+[ -n "${DEBUG_OPTS}" ] && echo " * Debug:      ${DEBUG_OPTS}"
+echo ----------
+
+if [ "${PATCH_WEGAS_PROPERTIES}" = "true" ]; then
+  ##
+  # Wegas Properties Merge Process
+  ################################
+  echo Wegas properties merge process
+  if [ -e ${WEGAS_PROPERTIES} ]; then
+      # wegas-override.properties exists -> try to patch it
+      diff -u ${DEFAULT_WEGAS_PROPERTIES_ORI} ${DEFAULT_WEGAS_PROPERTIES} | patch --no-backup-if-mismatch ${WEGAS_PROPERTIES}
+      if [ $? -eq 1 ]; then
+          echo "FAILS TO PATCH ${WEGAS_PROPERTIES}: please fix conflicts"
+          cp ${DEFAULT_WEGAS_PROPERTIES} ${DEFAULT_WEGAS_PROPERTIES_ORI}
+          exit;
+      fi
+  else
+      # No wegas-override -> create it
+      cp ${DEFAULT_WEGAS_PROPERTIES} ${WEGAS_PROPERTIES}
+  fi
+
+  cp ${DEFAULT_WEGAS_PROPERTIES} ${DEFAULT_WEGAS_PROPERTIES_ORI}
 fi
 
-cp ${DEFAULT_WEGAS_PROPERTIES} ${DEFAULT_WEGAS_PROPERTIES_ORI}
 
-"${JAVA_EXECUTABLE}" ${DEBUG_OPTS} ${JDK_EXTRA_OPTS} ${SSL_OPTS} ${GC_OPT} ${HTTP2_OPTS} \
+WEGAS_PROPERTIES_OPTION="--systemproperties ${WEGAS_PROPERTIES}"
+
+if [ ! -z "${WEGAS_PROPERTIES}" ] && [ ! -f "${WEGAS_PROPERTIES}" ]; then
+    echo "${WEGAS_PROPERTIES} file does not exist: skip it"
+    WEGAS_PROPERTIES_OPTION=
+fi
+
+"${JAVA_EXECUTABLE}" ${DEBUG_OPTS} ${JAVA_EXTRA_OPTS} ${GC_OPT} ${HTTP2_OPTS} \
     -XX:+UseStringDeduplication -XX:+UnlockDiagnosticVMOptions \
     -Dproduct.name= -XX:+ParallelRefProcEnabled -XX:+UseCompressedOops -XX:-UseLoopPredicate \
     -Xms${HEAP} -Xmx${HEAP} \
     -Djava.security.egd=file:/dev/urandom \
-    -Dhazelcast.shutdownhook.enabled=true \
-    -Dwegas.db.host=${DB_HOST} -Dwegas.db.port=5432 \
-    -Dwegas.db.name=${DB_NAME} \
-    -Dwegas.db.user=user -Dwegas.db.password=1234 \
+    -Djdk.util.zip.disableZip64ExtraFieldValidation=true \
+    ${HAZELCAST_SHUTDOWN_HOOK_OPTION} \
     -Dhazelcast.startport=6900 \
+    -Dfish.payara.tenantcontrol.blocking.disable=true \
+    -Djcr.repository.URI=mongodb://${MONGO_HOST}/oak \
+    -Dwegas.db.host=${DB_HOST} \
+    -Dwegas.db.port=${DB_PORT} \
+    -Dwegas.db.name=${DB_NAME} \
+    -Dwegas.db.user=${DB_USER} \
+    -Dwegas.db.password=${DB_PASSWORD} \
     -Dwegas.nb_populators=${NB_POPULATORS} -Dwegas.http.threads=${NB_THREADS} \
     -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager \
     -Declipselink.cache.coordination.channel=${HZ_CLUSTER_NAME} \
-    -jar ${PAYARA_MICRO} --deploy ${THE_WAR} \
+    -jar ${PAYARA_MICRO} \
+    --deploy ${THE_WAR} \
     --prebootcommandfile as_prebootcmd \
+    ${CLUSTERMODE_OPT} \
     --clusterName ${HZ_CLUSTER_NAME} \
     --minhttpthreads ${NB_THREADS} --maxhttpthreads ${NB_THREADS} \
-    --interfaces 127.0.0.1 \
-    --systemproperties ${WEGAS_PROPERTIES} --autobindhttp --autobindssl &
+    ${HTTP_PORT_OPTION} \
+    ${SSL_PORT_OPTION} \
+    --interfaces ${INTERFACES} \
+    ${WEGAS_PROPERTIES_OPTION} &
 PID=$!
 
 wait $PID
@@ -180,4 +260,5 @@ trap - TERM INT
 wait $PID
 EXIT_STATUS=$?
 
-echo "Terminated"
+# sleep $SLEEP_TIME;
+echo "STOP SUCCESSFULLY"

@@ -58,7 +58,7 @@ import olTypes from '!!raw-loader!../Maps/helpers/types/OLObjectsTypes.d.ts';
 import overlayTypes from '!!raw-loader!../Maps/helpers/types/OverlayTypes.d.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasEntities.ts';
+import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasEntities.d.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import scriptableEntitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasScriptableEntities.d.ts.mlib';
@@ -234,6 +234,7 @@ export function useGlobalLibs() {
           scriptContext === 'Client'
             ? `type CurrentLanguages = ${currentLanguages};
         type View = 'Editor' | 'Instance' | 'Export' | 'Public';
+        declare const APP_CONTEXT : 'Editor' | 'Trainer' | 'Player';
         declare const API_VIEW : View;
         declare const CurrentGame : IGame;
         interface EditorClass extends GlobalEditorClass {

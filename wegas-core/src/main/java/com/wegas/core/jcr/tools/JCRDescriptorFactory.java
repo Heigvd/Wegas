@@ -23,7 +23,7 @@ import javax.jcr.RepositoryException;
 public class JCRDescriptorFactory implements WegasFactory {
 
     /**
-     * 
+     *
      * @param <T>
      * @param gameModel
      * @param originalObject
@@ -33,7 +33,7 @@ public class JCRDescriptorFactory implements WegasFactory {
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
      * @throws NoSuchMethodException
-     * @throws SecurityException 
+     * @throws SecurityException
      */
     @Override
     public <T> T newInstance(GameModel gameModel, T originalObject) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {

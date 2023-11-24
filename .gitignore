@@ -13,6 +13,12 @@ doc/Wegas.uml~
 #!target/site*
 #!target/Wegas.war
 
+# Docker tmp files
+wegas-runtime/src/main/docker/wegas/Wegas.war
+wegas-runtime/src/main/docker/wegas/run
+wegas-runtime/src/main/docker/wegas/as_prebootcmd
+wegas-runtime/src/main/docker/wegas/payara-micro.current.jar
+
 # Compiled source #
 ###################
 *.com
@@ -53,8 +59,8 @@ Thumbs.db
 .vscode
 /wegas-ts-api/target/
 
-/wegas-ts-api/src/main/webapp/src/generated/
-/wegas-ts-api/src/main/webapp/typings/
+/wegas-ts-api/src/main/node/src/generated/
+/wegas-ts-api/src/main/node/typings/
 
 node_modules/
 *.swp

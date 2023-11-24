@@ -27,7 +27,7 @@ import com.wegas.mcq.persistence.Reply;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.List;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.naming.NamingException;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;

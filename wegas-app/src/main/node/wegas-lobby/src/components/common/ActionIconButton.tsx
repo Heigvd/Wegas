@@ -12,7 +12,7 @@ import * as React from 'react';
 import { ConfirmIconButton } from '../common/ConfirmIconButton';
 import IconButton from '../common/IconButton';
 
-export interface ActionIconButton {
+export interface ActionIconButtonProps {
   onClick: () => Promise<unknown>;
   title: string;
   className?: string;
@@ -24,7 +24,7 @@ export interface ActionIconButton {
   confirmMessage?: React.ReactNode;
 }
 
-export default function ActionIconButton({
+function ActionIconButton({
   shouldConfirm = false,
   className,
   icon = faPlay,
@@ -34,7 +34,7 @@ export default function ActionIconButton({
   delay = 1500,
   title,
   confirmMessage,
-}: ActionIconButton): JSX.Element {
+}: ActionIconButtonProps): JSX.Element {
   const [state, setState] = React.useState<'IDLE' | 'PENDING' | 'DONE'>('IDLE');
 
   const onClickCb = React.useCallback(() => {
@@ -133,3 +133,6 @@ export default function ActionIconButton({
     );
   }
 }
+
+ActionIconButton.displayName = "ActionIconButton"
+export default ActionIconButton;

@@ -10,10 +10,10 @@ package com.wegas.core.ejb;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.List;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 /**
  *

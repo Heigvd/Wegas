@@ -19,8 +19,8 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.security.util.ScriptExecutionContext;
 import java.util.Collection;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import javax.script.ScriptContext;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.commons.collections.map.MultiValueMap;
@@ -141,7 +141,7 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
             scriptFacace.eval(player, new Script(""), null);
         }
         /*
-         * Make sure to set eventFired after context initiation because events 
+         * Make sure to set eventFired after context initiation because events
          * are detached by instantiation process
          */
         this.eventFired = true;

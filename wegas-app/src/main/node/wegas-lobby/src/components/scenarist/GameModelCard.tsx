@@ -131,7 +131,7 @@ export default function GameModelCard({ gameModel }: GameModelCardProps): JSX.El
             title={gameModelName}
             illustration={gameModel.properties.iconUri}
             showCloseButton={true}
-            route={`/${gameModel.id}/settings`}
+            route={`${gameModel.id}/settings`}
           >
             {collapse => <GameModelSettings gameModel={gameModel} onClose={collapse} />}
           </OpenCloseModal>
@@ -142,7 +142,7 @@ export default function GameModelCard({ gameModel }: GameModelCardProps): JSX.El
             title={gameModelName}
             illustration={gameModel.properties.iconUri}
             showCloseButton={true}
-            route={`/${gameModel.id}/users`}
+            route={`${gameModel.id}/users`}
           >
             {() => <ShareGameModel gameModel={gameModel} />}
           </OpenCloseModal>
@@ -160,7 +160,7 @@ export default function GameModelCard({ gameModel }: GameModelCardProps): JSX.El
             title={gameModelName}
             illustration={gameModel.properties.iconUri}
             showCloseButton={true}
-            route={`/${gameModel.id}/versions`}
+            route={`${gameModel.id}/versions`}
           >
             {close => <GameModelVersioning gameModel={gameModel} closePanel={close} />}
           </OpenCloseModal>
@@ -172,7 +172,7 @@ export default function GameModelCard({ gameModel }: GameModelCardProps): JSX.El
               title={gameModelName}
               illustration={gameModel.properties.iconUri}
               showCloseButton={true}
-              route={`/${gameModel.id}/instances`}
+              route={`${gameModel.id}/instances`}
             >
               {close => <ModelInstances gameModel={gameModel} closePanel={close} />}
             </OpenCloseModal>

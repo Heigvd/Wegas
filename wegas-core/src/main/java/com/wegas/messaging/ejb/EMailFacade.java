@@ -12,16 +12,16 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.messaging.persistence.Message;
 import java.util.Date;
 import java.util.Properties;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.mail.Authenticator;
-import javax.mail.Message.RecipientType;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.mail.Authenticator;
+import jakarta.mail.Message.RecipientType;
+import jakarta.mail.MessagingException;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 
 /*
  * @todo @important The mail should be sent in an async queue, so they don't
@@ -47,7 +47,7 @@ public class EMailFacade {
      * @param mimetype
      * @param replyToOrCC false -> add ReplyTo: replyTo true : acc CC: replyTo
      *
-     * @throws javax.mail.MessagingException when something went wrong
+     * @throws jakarta.mail.MessagingException when something went wrong
      */
     public void send(String to, String from, String replyTo,
             String subject, String body, RecipientType toType, String mimetype, Boolean replyToOrCC) throws MessagingException {
@@ -64,7 +64,7 @@ public class EMailFacade {
             props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.ssl.trust", Helper.getWegasProperty("mail.smtp.host"));
         } else {
-            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            props.put("mail.smtp.socketFactory.class", "jakarta.net.ssl.SSLSocketFactory");
             props.put("mail.smtp.socketFactory.port", Helper.getWegasProperty("mail.smtp.port"));
             props.put("mail.smtp.ssl.trust", Helper.getWegasProperty("mail.smtp.host"));
         }

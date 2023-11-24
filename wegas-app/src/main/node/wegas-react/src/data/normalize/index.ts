@@ -1,4 +1,5 @@
 import {
+  IEvent,
   IGame,
   IGameModel,
   IPlayer,
@@ -28,6 +29,7 @@ export interface NormalizedData {
   teams: {
     [id: string]: ITeam;
   };
+  events: Record<string, IEvent>
 }
 
 type RootType = NormalizedData[keyof NormalizedData][0];
@@ -58,11 +60,15 @@ export const discriminant = (input: {
     // LibrariesContext handles such entites on its own
     return undefined;
   }
+  if(cls === 'Event'){
+    return 'events';
+  }
+  // TODO if is event return
   wwarn(`${cls} not handled`);
   return undefined;
 };
 
-export function normalizeDatas(data: unknown[] = []): NormalizedData {
+export function normalizeData(data: unknown[] = []): NormalizedData {
   return data.reduce<NormalizedData>(
     (prev, variable) => {
       if (entityIs(variable, 'AbstractEntity', true)) {
@@ -80,6 +86,7 @@ export function normalizeDatas(data: unknown[] = []): NormalizedData {
       games: {},
       players: {},
       teams: {},
+      events: {}
     },
   );
 }

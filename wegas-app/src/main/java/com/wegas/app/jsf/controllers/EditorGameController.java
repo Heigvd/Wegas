@@ -16,10 +16,10 @@ import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.client.WegasAccessDenied;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.security.persistence.User;
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
+import jakarta.inject.Inject;
 
 /**
  *

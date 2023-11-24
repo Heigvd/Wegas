@@ -3,7 +3,7 @@ import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
 import commonView from '../HOC/commonView';
 import labeled from '../HOC/labeled';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 
 interface IMatrixView {
     valueToBool: (value: unknown) => boolean;

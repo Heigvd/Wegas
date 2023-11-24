@@ -7,8 +7,8 @@
  */
 package com.wegas.core.rest.util;
 
-import javax.ejb.Singleton;
-import javax.inject.Inject;
+import jakarta.ejb.Singleton;
+import jakarta.inject.Inject;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 

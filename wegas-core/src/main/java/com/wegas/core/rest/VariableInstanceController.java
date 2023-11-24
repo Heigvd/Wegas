@@ -10,21 +10,24 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.events.Event;
+import com.wegas.core.persistence.variable.events.EventInboxInstance;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  *
@@ -87,6 +90,20 @@ public class VariableInstanceController {
             instances.add(variableInstanceFacade.find(id));
         }
         return instances;
+    }
+
+    /**
+     * @param variableInstanceId the event inbox instance id
+     * @return all the events contained in this inbox instance
+     */
+    @GET
+    @Path("{variableInstanceId: [1-9][0-9]*}/GetEvents")
+    public Collection<Event> getEvents(@PathParam("variableInstanceId") Long variableInstanceId){
+        var varInstance = variableInstanceFacade.find(variableInstanceId);
+        if(varInstance instanceof EventInboxInstance){
+            return ((EventInboxInstance)varInstance).getEvents();
+        }
+        throw WegasErrorMessage.error(variableInstanceId + " was expected to be of type EventInboxInstance");
     }
 
     /**

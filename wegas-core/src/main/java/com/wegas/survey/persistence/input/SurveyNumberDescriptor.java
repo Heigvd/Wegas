@@ -22,11 +22,11 @@ import com.wegas.editor.view.I18nStringView;
 import com.wegas.editor.view.NumberView;
 import static java.lang.Boolean.FALSE;
 import java.util.Collection;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 /**
  * Define an grade-like evaluation by defined a scale (min and max)

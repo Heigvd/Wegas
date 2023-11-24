@@ -11,8 +11,8 @@ import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.primitive.EnumItem;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 
 /**
  * Evaluation instance corresponding to CategorizedEvaluationDescriptor

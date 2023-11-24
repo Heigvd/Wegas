@@ -24,16 +24,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Provider;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.ext.Provider;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,6 +89,11 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             }
             if (response.getEntity() != null) {
                 logger.warn("Problem : {}", response.getEntity());
+
+                if (response.getEntity() instanceof WegasRuntimeException) {
+                    WegasRuntimeException wre = (WegasRuntimeException) response.getEntity();
+                    response.setStatus(wre.getHttpStatus().getStatusCode());
+                }
             }
 
             exceptions.forEach(ex
@@ -139,7 +144,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
                 // Set response http status code to 400
                 if (response.getStatusInfo().getStatusCode() < 400) {
-                    response.setStatus(HttpStatus.SC_BAD_REQUEST);
+                    response.setStatus(Status.BAD_REQUEST.getStatusCode());
                     requestManager.setStatus(response.getStatusInfo());
                 }
                 rollbacked = true;
@@ -169,7 +174,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
                 updatedEntities = entities;
 
-                response.setStatus(HttpStatus.SC_OK);
+                response.setStatus(Status.OK.getStatusCode());
             }
 
             if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
