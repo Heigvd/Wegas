@@ -8,7 +8,8 @@ import {
 export class SEventInboxDescriptorImpl extends SEventInboxDescriptor {
 
   public isEmpty(p: Readonly<SPlayer>): boolean {
-    return this.getInstance(p).getEvents().length === 0;
+    const events = this.getInstance(p).getEvents();
+    return !events || events.length === 0;
   }
 
   public sendEvent(

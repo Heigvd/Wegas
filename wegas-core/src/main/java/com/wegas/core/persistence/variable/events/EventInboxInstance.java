@@ -18,7 +18,6 @@ import com.wegas.core.Helper;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
-import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +70,7 @@ public class EventInboxInstance extends VariableInstance {
     @JsonManagedReference("event-inbox-message")
     @JsonView(Views.ExportI.class)
     @WegasEntityProperty(
-        optional = false, nullable = false, proposal = EmptyArray.class,
+        optional = true, nullable = false,
         view = @View(
             label = "Events",
             featureLevel = CommonView.FEATURE_LEVEL.ADVANCED
