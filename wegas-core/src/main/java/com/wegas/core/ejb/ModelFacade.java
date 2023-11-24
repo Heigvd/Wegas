@@ -230,7 +230,7 @@ public class ModelFacade {
 
                         if (mState.getIndex().equals(state.getIndex())) {
                             // the state exists in the model and in the scenario
-                            for (Iterator<Transition> itTransition = state.getTransitions().iterator(); itTransition.hasNext();) {
+                            for (Iterator<Transition> itTransition = state.getInternalTransitions().iterator(); itTransition.hasNext();) {
                                 AbstractTransition t = itTransition.next();
                                 t.getDependencies().clear();
                                 itTransition.remove();

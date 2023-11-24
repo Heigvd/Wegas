@@ -140,7 +140,7 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     @WegasEntityProperty(
         optional = false, nullable = false, proposal = EmptyArray.class,
         view = @View(label = "Transitions", value = Hidden.class))
-    //private List<T> transitions = new ArrayList<>(); // templated mapping <T> faisl with eclipselink 2.6.4
+    //private List<T> transitions = new ArrayList<>(); // templated mapping <T> fails with eclipselink 2.6.4
     private List<AbstractTransition> transitions = new ArrayList<>();
 
     /**
@@ -237,8 +237,7 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     /**
      * @return unmodifiable list of transitions, sorted by index
      */
-    @JsonIgnore
-    public List<T> getSortedTransitions() {
+    public List<T> getTransitions() {
         Collections.sort(this.transitions, new ComparatorImpl());
         return (List<T>) this.transitions;
     }
@@ -246,12 +245,13 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     /**
      * @return list of transition going out of the state
      */
-    public List<T> getTransitions() {
+    @JsonIgnore
+    public List<T> getInternalTransitions() {
         return (List<T>) transitions;
     }
 
     public T addTransition(T t) {
-        List<T> ts = this.getTransitions();
+        List<T> ts = this.getInternalTransitions();
         if (!ts.contains(t)) {
             ts.add(t);
         }
@@ -318,7 +318,18 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
 
         @Override
         public int compare(AbstractTransition t1, AbstractTransition t2) {
-            return t1.getIndex() - t2.getIndex();
+            if (t1.getIndex().equals(t2.getIndex())){
+                // same indexes: sort by id
+                if (t1.getId() == null ^ t2.getId() == null) {
+                    return t1.getId() == null ? -1 : 1;
+                }
+                if (t1.getId() == null && t2.getId() == null) {
+                    return 0;
+                }
+                return t1.getId().compareTo(t2.getId());
+            } else {
+                return t1.getIndex().compareTo(t2.getIndex());
+            }
         }
     }
 }

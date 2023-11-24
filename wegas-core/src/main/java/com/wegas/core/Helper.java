@@ -153,7 +153,7 @@ public class Helper {
      *
      * @return a unmodifiable copy of the list, sorted according to the comparator
      */
-    public static <T extends Object> List<T> copyAndSortModifiable(List<T> list, Comparator<? super T> c) {
+    public static <T extends Object> List<T> copyAndSortModifiable(Collection<T> list, Comparator<? super T> c) {
         List<T> copy = new ArrayList<>(list);
         Collections.sort(copy, c);
         return copy;
@@ -168,7 +168,7 @@ public class Helper {
      *
      * @return a unmodifiable copy of the list, sorted according to the comparator
      */
-    public static <T extends Object> List<T> copyAndSort(List<T> list, Comparator<? super T> c) {
+    public static <T extends Object> List<T> copyAndSort(Collection<T> list, Comparator<? super T> c) {
         return Collections.unmodifiableList(Helper.copyAndSortModifiable(list, c));
     }
 
