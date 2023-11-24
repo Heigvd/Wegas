@@ -29,6 +29,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor.Isolation;
+import com.wegas.core.persistence.variable.events.EventInboxInstance;
 import com.wegas.core.persistence.variable.primitive.AchievementInstance;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
@@ -148,6 +149,7 @@ import org.eclipse.persistence.config.QueryType;
     @JsonSubTypes.Type(name = "ListInstance", value = ListInstance.class),
     @JsonSubTypes.Type(name = "NumberInstance", value = NumberInstance.class),
     @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstance.class),
+    @JsonSubTypes.Type(name = "EventInboxInstance", value = EventInboxInstance.class),
     @JsonSubTypes.Type(name = "FSMInstance", value = StateMachineInstance.class),
     @JsonSubTypes.Type(name = "QuestionInstance", value = QuestionInstance.class),
     @JsonSubTypes.Type(name = "WhQuestionInstance", value = WhQuestionInstance.class),
@@ -333,12 +335,13 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
+
         String audience = this.getAudience();
         if (audience != null) {
             Map<String, List<AbstractEntity>> map = new HashMap<>();
             ArrayList<AbstractEntity> entities = new ArrayList<>();
             entities.add(this);
-            map.put(this.getAudience(), entities);
+            map.put(audience, entities);
             return map;
         } else if (this.getDefaultDescriptor() != null) {
             // Default instance -> Propagate descriptor

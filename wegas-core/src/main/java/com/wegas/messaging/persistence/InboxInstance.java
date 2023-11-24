@@ -240,6 +240,16 @@ public class InboxInstance extends VariableInstance {
         return msg;
     }
 
+    /**
+     * Needed to convert objects from nashorn back to java instances
+     * @param from
+     * @param subject
+     * @param body
+     * @param date
+     * @param token
+     * @param attachments
+     * @return
+     */
     public Message sendMessage(final JSObject from, final JSObject subject,
         final JSObject body, final JSObject date,
         String token, final List<JSObject> attachments) {

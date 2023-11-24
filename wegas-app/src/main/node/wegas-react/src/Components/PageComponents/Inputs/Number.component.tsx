@@ -31,6 +31,10 @@ interface PlayerNumberInputProps extends WegasComponentProps {
    * script - the script that returns the variable to display and modify
    */
   script?: IScript;
+  /**
+  * placeholder - the grey text inside the box when nothing is written
+  */
+  placeholder?: IScript;
   onVariableChange?: OnVariableChange;
 }
 
@@ -40,6 +44,7 @@ function PlayerNumberInput({
   className,
   style,
   id,
+  placeholder,
   onVariableChange,
   options,
   pageId,
@@ -49,6 +54,7 @@ function PlayerNumberInput({
   const { readOnly, disabled, locked } = options;
 
   const number = useScript<SNumberDescriptor | number>(script, context);
+  const placeholderText = useScript<string>(placeholder, context);
 
   const value = useStore(() =>
     typeof number === 'object' ? number.getValue(Player.self()) : number,
@@ -94,6 +100,7 @@ function PlayerNumberInput({
       readOnly={readOnly}
       disabled={disabled || locked}
       onChange={debounceOnChange}
+      placeholder={placeholderText}
     />
   );
 }
@@ -112,7 +119,10 @@ registerComponent(
         required: true,
         returnType: ['SNumberDescriptor', 'number'],
       }),
-      label: schemaProps.scriptString({ label: 'Label' }),
+      placeholder: schemaProps.scriptString({
+        label: 'Placeholder',
+        richText: false,
+      }),
       onVariableChange: onVariableChangeSchema('On change action'),
       ...validatorSchema,
       ...classStyleIdSchema,

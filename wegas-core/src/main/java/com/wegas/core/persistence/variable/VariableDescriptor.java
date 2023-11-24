@@ -43,6 +43,7 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.events.EventInboxDescriptor;
 import com.wegas.core.persistence.variable.primitive.AchievementDescriptor;
 import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
@@ -220,6 +221,7 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class),
     @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
     @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
+    @JsonSubTypes.Type(name = "EventInboxDescriptor", value = EventInboxDescriptor.class),
     @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class),
     @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptor.class),
     @JsonSubTypes.Type(name = "DialogueDescriptor", value = DialogueDescriptor.class),

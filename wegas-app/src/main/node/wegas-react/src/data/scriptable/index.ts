@@ -32,6 +32,7 @@ import {
   SSurveyTextDescriptorImpl,
   SSurveyNumberDescriptorImpl,
 } from './impl/SurveyInputDescriptor';
+import { SEventInboxDescriptorImpl } from './impl/EventInboxDescriptor';
 
 const factory: WegasApiConnector.ConcretableFactory = {
   AchievementDescriptor: (c, e) => new SAchievementDescriptorImpl(c, e),
@@ -46,8 +47,7 @@ const factory: WegasApiConnector.ConcretableFactory = {
   ObjectDescriptor: (c, e) => new SObjectDescriptorImpl(c, e),
   PeerReviewDescriptor: (c, e) => new SPeerReviewDescriptorImpl(c, e),
   ResourceDescriptor: (c, e) => new SResourceDescriptorImpl(c, e),
-  SingleResultChoiceDescriptor: (c, e) =>
-    new SSingleResultChoiceDescriptorImpl(c, e),
+  SingleResultChoiceDescriptor: (c, e) => new SSingleResultChoiceDescriptorImpl(c, e),
   StaticTextDescriptor: (c, e) => new SStaticTextDescriptorImpl(c, e),
   StringDescriptor: (c, e) => new SStringDescriptorImpl(c, e),
   SurveyDescriptor: (c, e) => new SSurveyDescriptorImpl(c, e),
@@ -60,6 +60,8 @@ const factory: WegasApiConnector.ConcretableFactory = {
   SurveyChoicesDescriptor: (c, e) => new SSurveyChoicesDescriptorImpl(c, e),
   SurveyTextDescriptor: (c, e) => new SSurveyTextDescriptorImpl(c, e),
   SurveyNumberDescriptor: (c, e) => new SSurveyNumberDescriptorImpl(c, e),
+  EventInboxDescriptor: (client, entity) =>
+    new SEventInboxDescriptorImpl(client, entity)
 };
 
 const apiConnector = new WegasApiConnector.WegasClient(factory);

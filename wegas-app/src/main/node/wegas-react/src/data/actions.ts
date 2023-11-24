@@ -13,7 +13,7 @@ import { Popup } from '../Components/PopupManager';
 import { getEntityActions } from '../Editor/editionConfig';
 import { ActionType, ActionTypeValues } from './actionTypes';
 import { EditorLanguagesCode } from './i18n';
-import { discriminant, normalizeDatas, NormalizedData } from './normalize';
+import { discriminant, normalizeData, NormalizedData } from './normalize';
 import { closeEditor, EditingState, Edition } from './Reducer/editingState';
 import { GlobalState, LoggerLevel, WegasStatus } from './Reducer/globalState';
 import { InitStateKey } from './Reducer/initState';
@@ -74,6 +74,9 @@ export const ActionCreator = {
     updatedEntities: NormalizedData;
     events: WegasEvent[];
   }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
+
+  EVENT_SET_LOADING: (data: number) => 
+    createAction(ActionType.EVENT_SET_LOADING, data),
 
   PAGE_INDEX: (data: { index: PageIndex }) =>
     createAction(ActionType.PAGE_INDEX, data),
@@ -163,7 +166,7 @@ export function manageResponseHandler(
   selectUpdatedEntity: boolean = true,
   selectPath?: (string | number)[],
 ) {
-  const deletedEntities = normalizeDatas(payload.deletedEntities);
+  const deletedEntities = normalizeData(payload.deletedEntities);
   if (localDispatch && localState) {
     closeEditorWhenDeletedVariable(
       deletedEntities.variableDescriptors,
@@ -171,8 +174,7 @@ export function manageResponseHandler(
       localState.editing,
     );
   }
-
-  const updatedEntities = normalizeDatas(payload.updatedEntities);
+  const updatedEntities = normalizeData(payload.updatedEntities);
   if (localState && localDispatch) {
     const editState = localState.editing;
     const currentEditingEntity =
@@ -226,6 +228,8 @@ export function manageResponseHandler(
 
   localDispatch &&
     localDispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
+
+
 
   return ActionCreator.MANAGED_RESPONSE_ACTION(
     localDispatch ? managedValuesOnly : managedValues,
