@@ -24,7 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +34,9 @@ import org.slf4j.LoggerFactory;
  * @author Xavier Good
  */
 @Entity
+@Table(indexes = {
+    @Index(columnList = "lastevent_id"),
+})
 public class EventInboxInstance extends VariableInstance {
 
     /**

@@ -52,4 +52,9 @@
     <changeSet author="xaviergood (generated)" id="1700563099000-18">
         <addForeignKeyConstraint baseColumnNames="lastevent_id" baseTableName="eventinboxinstance" constraintName="fk_eventinboxinstance_lastevent_id" onDelete="SET NULL" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="event"/>
     </changeSet>
+    <changeSet author="xaviergood (generated)" id="1700563099000-19">
+        <createIndex indexName="index_eventinboxinstance_lastevent_id" tableName="eventinboxinstance">
+            <column name="lastevent_id"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
