@@ -234,6 +234,7 @@ export function useGlobalLibs() {
           scriptContext === 'Client'
             ? `type CurrentLanguages = ${currentLanguages};
         type View = 'Editor' | 'Instance' | 'Export' | 'Public';
+        declare const APP_CONTEXT : 'Editor' | 'Trainer' | 'Player';
         declare const API_VIEW : View;
         declare const CurrentGame : IGame;
         interface EditorClass extends GlobalEditorClass {
