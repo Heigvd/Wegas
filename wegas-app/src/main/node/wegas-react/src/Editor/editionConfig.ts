@@ -264,6 +264,8 @@ export function getIcon<T extends IMergeable>(
       return ['square-full', { icon: 'question', color: 'white', size: 'xs' }];
     case 'InboxDescriptor':
       return 'envelope';
+    case 'EventInboxDescriptor':
+      return 'envelope';
     case 'DialogueDescriptor':
       return 'comments';
     case 'ResourceDescriptor':
@@ -319,6 +321,8 @@ export function getClassLabel<T extends IMergeable>(
       return 'Open question';
     case 'InboxDescriptor':
       return 'Inbox';
+    case 'EventInboxDescriptor':
+        return 'Event inbox';
     case 'DialogueDescriptor':
       return 'Dialogue';
     case 'ResourceDescriptor':
@@ -348,6 +352,7 @@ export const ListDescriptorChild = [
   'TriggerDescriptor',
   'FSMDescriptor',
   'InboxDescriptor',
+  'EventInboxDescriptor',
   'DialogueDescriptor',
   'ObjectDescriptor',
   'ResourceDescriptor',

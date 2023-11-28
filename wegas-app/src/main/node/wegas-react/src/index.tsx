@@ -18,6 +18,7 @@ import './data/Stores/store';
 import { ErrorBoundary } from './Editor/Components/ErrorBoundary';
 import './Editor/Components/FormView/index';
 import Layout from './Editor/Components/Layout';
+import EventInstanceManager from './Components/Contexts/EventInstanceManager';
 // import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
 
 importPageComponents();
@@ -37,7 +38,9 @@ function mount() {
                     <ThemeProvider contextName="editor">
                       <PopupManager>
                         <ModalProvider>
-                          <Layout />
+                          <EventInstanceManager>
+                            <Layout />
+                          </EventInstanceManager>
                         </ModalProvider>
                       </PopupManager>
                     </ThemeProvider>

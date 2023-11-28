@@ -61,7 +61,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     @WegasEntityProperty(ignoreNull = true, protectionLevel = ProtectionLevel.INHERITED,
         optional = false, nullable = false, proposal = EmptyMap.class,
         view = @View(label = "", value = Hidden.class))
-    private Set<AbstractState<U>> states = new HashSet<>();
+    private Set<T> states = new HashSet<>();
 
     /**
      *
@@ -80,7 +80,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
 
     @JsonIgnore
     public void setInternalStates(Set<T> states) {
-        this.states = (Set<AbstractState<U>>) states;
+        this.states = (Set<T>) states;
         for (T state : states) {
             state.setStateMachine(this);
         }
@@ -88,11 +88,13 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
 
     @JsonView(Views.ExtendedI.class)
     public Map<Long, T> getStates() {
-        Map<Long, T> map = new HashMap<>();
-        for (T state : (Set<T>) this.states) {
-            map.put(state.getIndex(), state);
-        }
-        return map;
+        Map<Long, T> tMap = new TreeMap<>();
+
+        this.states.forEach(state -> {
+            tMap.put(state.getIndex(), state);
+        });
+
+        return tMap;
     }
 
     public T addState(Long index, T state) {
@@ -114,8 +116,8 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     }
 
     @JsonIgnore
-    public AbstractState getState(Long currentStateId) {
-        for (AbstractState<U> state : this.states) {
+    public T getState(Long currentStateId) {
+        for (T state : this.states) {
             if (state.getIndex().equals(currentStateId)) {
                 return state;
             }
@@ -170,7 +172,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
 
     private U getTransitionById(Long id) {
         for (T state : this.getInternalStates()) {
-            for (U transition : state.getTransitions()) {
+            for (U transition : state.getInternalTransitions()) {
                 if (transition != null && transition.getId().equals(id)) {
                     return transition;
                 }

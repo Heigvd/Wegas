@@ -256,7 +256,9 @@ public abstract class AbstractArquillianTestMinimal {
                 + "CREATE INDEX IF NOT EXISTS index_users_roles_roles_id_user_id on users_roles (role_id,user_id);"
                 + "CREATE UNIQUE INDEX IF NOT EXISTS index_game_token ON game (token) WHERE (status = 'LIVE' OR status = 'BIN');"
                 + "CREATE INDEX IF NOT EXISTS index_surveydescriptor_token_surveys_id on surveydescriptor_token (surveys_id);"
-                + "CREATE INDEX IF NOT EXISTS index_surveydescriptor_token_tokens_id on surveydescriptor_token (tokens_id);";
+                + "CREATE INDEX IF NOT EXISTS index_surveydescriptor_token_tokens_id on surveydescriptor_token (tokens_id);"
+                + "ALTER TABLE eventinboxinstance DROP CONSTRAINT fk_eventinboxinstance_lastevent_id;"
+                + "ALTER TABLE eventinboxinstance ADD CONSTRAINT fk_eventinboxinstance_lastevent_id FOREIGN KEY (lastevent_id) REFERENCES event(id) ON DELETE SET NULL;";
 
             statement.execute(setupQuery);
         } catch (SQLException ex) {

@@ -16,6 +16,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.events.EventInboxInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
@@ -317,6 +318,8 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
             questionDescriptorFacade.reviveChoiceInstance((ChoiceInstance) vi);
         } else if (vi instanceof BurndownInstance) {
             iterationFacade.reviveBurndownInstance((BurndownInstance) vi);
+        } else if( vi instanceof EventInboxInstance){
+            ((EventInboxInstance)vi).rebuildEventChaining();
         }
     }
 

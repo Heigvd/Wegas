@@ -10,8 +10,11 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.events.Event;
+import com.wegas.core.persistence.variable.events.EventInboxInstance;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -87,6 +90,20 @@ public class VariableInstanceController {
             instances.add(variableInstanceFacade.find(id));
         }
         return instances;
+    }
+
+    /**
+     * @param variableInstanceId the event inbox instance id
+     * @return all the events contained in this inbox instance
+     */
+    @GET
+    @Path("{variableInstanceId: [1-9][0-9]*}/GetEvents")
+    public Collection<Event> getEvents(@PathParam("variableInstanceId") Long variableInstanceId){
+        var varInstance = variableInstanceFacade.find(variableInstanceId);
+        if(varInstance instanceof EventInboxInstance){
+            return ((EventInboxInstance)varInstance).getEvents();
+        }
+        throw WegasErrorMessage.error(variableInstanceId + " was expected to be of type EventInboxInstance");
     }
 
     /**
