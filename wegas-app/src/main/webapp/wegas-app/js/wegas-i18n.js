@@ -700,7 +700,7 @@ YUI.add("wegas-i18n", function(Y) {
             tVar: function(variable, fallback) {
                 var theVar = variable;
                 if (typeof variable === "string") {
-                    theVar = Y.Wegas.Facade.cahe.find("name", variable);
+                    theVar = Y.Wegas.Facade.Variable.cache.find("name", variable);
                 }
                 if (theVar) {
                     if (theVar instanceof Y.Wegas.persistence.StaticTextDescriptor) {
