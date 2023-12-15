@@ -91,6 +91,38 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
     }
 
     /**
+     * Test that persisting the trigger preserves data integrity
+     * Especially trigger conditions and effects
+     */
+    @Test
+    public void testTriggerPersistence() {
+
+         // Create a trigger
+        TriggerDescriptor trigger = new TriggerDescriptor();
+        trigger.setDefaultInstance(new StateMachineInstance());
+        trigger.setTriggerEvent(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value >= 0.9"));
+        trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value = 2;"));
+        variableDescriptorFacade.create(scenario.getId(), trigger);
+
+        assertTrue("Trigger event should not be null after DB persistence", trigger.getTriggerEvent().getContent() != null);
+        assertTrue("Trigger post event should not be null after DB persistence", trigger.getPostTriggerEvent().getContent() != null);
+
+        // empty caches to enforce fetching of the trigger in database
+        jpaCacheHelper.clearCacheLocal("all");
+
+        // Fetch a fresh copy from DB
+        TriggerDescriptor found = (TriggerDescriptor)variableDescriptorFacade.find(trigger.getId());
+
+        assertTrue("Trigger event should not be null", found.getTriggerEvent() != null);
+        assertTrue("Trigger post event should not be null", found.getPostTriggerEvent() != null);
+
+        assertTrue(trigger.getTriggerEvent().getContent().equals(found.getTriggerEvent().getContent()));
+        assertTrue(trigger.getPostTriggerEvent().getContent().equals(found.getPostTriggerEvent().getContent()));
+
+    }
+
+
+    /**
      * Same as above, but with a different script
      *
      * @throws NamingException
