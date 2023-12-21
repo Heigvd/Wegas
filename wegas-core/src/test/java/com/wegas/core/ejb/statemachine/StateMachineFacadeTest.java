@@ -91,8 +91,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
     }
 
     /**
-     * Test that persisting the trigger preserves data integrity
-     * Especially trigger conditions and effects
+     * Test that writing to DB and deserialization from DB works properly
      */
     @Test
     public void testTriggerPersistence() {
@@ -253,7 +252,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
 
     /**
-     * Test that writing from DB and reading back works properly
+     * Test that writing to DB and deserialization from DB works properly
      */
     @Test
     public void testDialogueTransitionsPersistence() {
@@ -286,10 +285,12 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         DialogueState ds1r = (DialogueState) reloaded.getState(1L);
 
+        assertTrue("Reloaded state should not be null", ds1r != null);
+
         ds1r.getTransitions().forEach((t) -> {
             assertTrue("Should not be null", t != null);
-            String initialTranslation = t.getActionText().getTranslation("en").getTranslation();
-            assertTrue("Action texts do not match", initialTranslation.equals(actionText));
+            String loadedTranslation = t.getActionText().getTranslation("en").getTranslation();
+            assertTrue("Action texts do not match", loadedTranslation.equals(actionText));
             assertTrue("Trigger conditions do not match", t.getTriggerCondition().getContent().equals(triggerCond));
         });
     }
