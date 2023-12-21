@@ -100,24 +100,24 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
          // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new StateMachineInstance());
-        trigger.setTriggerEvent(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value >= 0.9"));
-        trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value = 2;"));
+        trigger.setTriggerEvent(new Script("Hello"));
+        trigger.setPostTriggerEvent(new Script("World"));
         variableDescriptorFacade.create(scenario.getId(), trigger);
 
         assertTrue("Trigger event should not be null after DB persistence", trigger.getTriggerEvent().getContent() != null);
         assertTrue("Trigger post event should not be null after DB persistence", trigger.getPostTriggerEvent().getContent() != null);
 
-        // empty caches to enforce fetching of the trigger in database
+        // empty caches to enforce loading from the database
         jpaCacheHelper.clearCacheLocal("all");
 
         // Fetch a fresh copy from DB
-        TriggerDescriptor found = (TriggerDescriptor)variableDescriptorFacade.find(trigger.getId());
+        TriggerDescriptor reloaded = (TriggerDescriptor)variableDescriptorFacade.find(trigger.getId());
 
-        assertTrue("Trigger event should not be null", found.getTriggerEvent() != null);
-        assertTrue("Trigger post event should not be null", found.getPostTriggerEvent() != null);
+        assertTrue("Trigger event should not be null", reloaded.getTriggerEvent() != null);
+        assertTrue("Trigger post event should not be null", reloaded.getPostTriggerEvent() != null);
 
-        assertTrue(trigger.getTriggerEvent().getContent().equals(found.getTriggerEvent().getContent()));
-        assertTrue(trigger.getPostTriggerEvent().getContent().equals(found.getPostTriggerEvent().getContent()));
+        assertTrue("Loaded trigger event doesn't match the created model", trigger.getTriggerEvent().getContent().equals(reloaded.getTriggerEvent().getContent()));
+        assertTrue("Loaded trigger post event doesn't match created model", trigger.getPostTriggerEvent().getContent().equals(reloaded.getPostTriggerEvent().getContent()));
 
     }
 
@@ -250,6 +250,50 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         stateMachineFacade.doTransition(scenario.getId(), player.getId(), dial.getId(), s1ToS2.getId());
         assertEquals("World", (((DialogueState) ((StateMachineInstance) variableInstanceFacade.find(dial.getId(), player.getId())).getCurrentState()).getText().translateOrEmpty(player)));
     }
+
+
+    /**
+     * Test that writing from DB and reading back works properly
+     */
+    @Test
+    public void testDialogueTransitionsPersistence() {
+        DialogueDescriptor dial = new DialogueDescriptor();
+        dial.setName("dial");
+        StateMachineInstance dialI = new StateMachineInstance();
+        dialI.setCurrentStateId(1L);
+        dial.setDefaultInstance(dialI);
+        dial.setScope(new PlayerScope());
+
+        DialogueState ds1 = new DialogueState();
+        DialogueState ds2 = new DialogueState();
+        ds1.setText(TranslatableContent.build("en", "Hello"));
+        ds2.setText(TranslatableContent.build("en", "World"));
+        dial.setStates(toMap(toList(1L, 2L), toList(ds1, ds2)));
+
+        String actionText = "action-text";
+        String triggerCond = "trigger-condition";
+        DialogueTransition s1ToS2 = new DialogueTransition();
+        s1ToS2.setTriggerCondition(new Script(triggerCond));
+        s1ToS2.setNextStateId(2L);
+        s1ToS2.setActionText(TranslatableContent.build("en", actionText));
+        ds1.setTransitions(toList(s1ToS2));
+        variableDescriptorFacade.create(scenario.getId(), dial);
+
+        // empty caches to enforce loading from the database
+        jpaCacheHelper.clearCacheLocal("all");
+
+        DialogueDescriptor reloaded = (DialogueDescriptor) variableDescriptorFacade.find(dial.getId());
+
+        DialogueState ds1r = (DialogueState) reloaded.getState(1L);
+
+        ds1r.getTransitions().forEach((t) -> {
+            assertTrue("Should not be null", t != null);
+            String initialTranslation = t.getActionText().getTranslation("en").getTranslation();
+            assertTrue("Action texts do not match", initialTranslation.equals(actionText));
+            assertTrue("Trigger conditions do not match", t.getTriggerCondition().getContent().equals(triggerCond));
+        });
+    }
+
 
     @Test
     public void testEventTransition() throws NamingException, WegasScriptException {
