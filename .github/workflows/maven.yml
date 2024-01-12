@@ -41,7 +41,7 @@ jobs:
     - name: init submodules
       uses: webfactory/ssh-agent@0.8.0
       with:
-	ssh-private-key: ${{secrets.SSH_WEGAS_PRIVATE_KEY}}
+        ssh-private-key: ${{secrets.SSH_WEGAS_PRIVATE_KEY}}
     - run: git submodule update --init --recursive
 #      shell: bash
 #      env:
