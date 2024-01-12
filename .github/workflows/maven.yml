@@ -10,6 +10,7 @@ on:
     branches:
       - master
       - dev
+      - xgo-dkeys
     tags:
       - "v*"
 
@@ -35,15 +36,20 @@ jobs:
         ports:
           - 5432:5432
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
     - name: init submodules
-      shell: bash
-      env:
-        GIT_USER: ${{ secrets.GIT_USER }}
-        GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
-      run: |
-        echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
-        git submodule update --init --recursive
+      uses: webfactory/ssh-agent@0.8.0
+      with:
+	ssh-private-key: ${{secrets.SSH_WEGAS_PRIVATE_KEY}}
+    - run: git submodule update --init --recursive
+#      shell: bash
+#      env:
+#        GIT_USER: ${{ secrets.GIT_USER }}
+#        GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+#      run: |
+#        echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
+#        git submodule update --init --recursive
     - name: Setup Node
       uses: actions/setup-node@v3
       with:
