@@ -36,13 +36,26 @@ jobs:
         ports:
           - 5432:5432
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: init submodules
+    - name: Init submodules ssh keys
       uses: webfactory/ssh-agent@v0.8.0
       with:
         ssh-private-key: ${{secrets.WEGAS_CI_BUILD_KEY}}
-    - run: git submodule update --init --recursive
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+# ATTEMPT 1
+#    steps:
+#    - name: Checkout
+#      uses: actions/checkout@v3
+#    - name: init submodules
+#      uses: webfactory/ssh-agent@v0.8.0
+#      with:
+#        ssh-private-key: ${{secrets.WEGAS_CI_BUILD_KEY}}
+#    - run: |
+#      git submodule sync --recursive
+#      git submodule update --init --recursive
+# OLD CODE
 #      shell: bash
 #      env:
 #        GIT_USER: ${{ secrets.GIT_USER }}
