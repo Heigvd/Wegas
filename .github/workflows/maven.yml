@@ -35,15 +35,20 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-    steps:
-    - name: Init submodules ssh keys
-      uses: webfactory/ssh-agent@v0.8.0
-      with:
-        ssh-private-key: ${{secrets.WEGAS_CI_BUILD_KEY}}
     - name: Checkout
       uses: actions/checkout@v3
       with:
+        ssh-key: ${{secrets.WEGAS_CI_BUILD_KEY}}
         submodules: recursive
+#    steps:
+#    - name: Init submodules ssh keys
+#      uses: webfactory/ssh-agent@v0.8.0
+#      with:
+#        ssh-private-key: ${{secrets.WEGAS_CI_BUILD_KEY}}
+#    - name: Checkout
+#      uses: actions/checkout@v3
+#      with:
+#        submodules: recursive
 # ATTEMPT 1
 #    steps:
 #    - name: Checkout
