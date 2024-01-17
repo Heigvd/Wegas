@@ -34,12 +34,12 @@ brew install --cask docker
 
 #### Install
 ```shell
-docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=<YOUR_PASSWORD> --name wegas_postgres -d postgres:11-alpine 
+docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=<YOUR_PASSWORD> --name wegas_postgres -d postgres:14-alpine 
 ```
 
 ##### 2
 ```shell
-docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=1234 -e POSTGRES_USER=user -e POSTGRES_DB=wegas_dev --name wegas_postgres -d postgres:11-alpine 
+docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=1234 -e POSTGRES_USER=user -e POSTGRES_DB=wegas_dev --name wegas_postgres -d postgres:14-alpine 
 ```
 
 #### Configure
