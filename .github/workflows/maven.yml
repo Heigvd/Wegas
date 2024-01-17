@@ -10,7 +10,6 @@ on:
     branches:
       - master
       - dev
-      - xgo-dkeys
     tags:
       - "v*"
 
@@ -41,34 +40,6 @@ jobs:
       with:
         ssh-key: ${{secrets.WEGAS_CI_BUILD_KEY}}
         submodules: recursive
-#    steps:
-#    - name: Init submodules ssh keys
-#      uses: webfactory/ssh-agent@v0.8.0
-#      with:
-#        ssh-private-key: ${{secrets.WEGAS_CI_BUILD_KEY}}
-#    - name: Checkout
-#      uses: actions/checkout@v3
-#      with:
-#        submodules: recursive
-# ATTEMPT 1
-#    steps:
-#    - name: Checkout
-#      uses: actions/checkout@v3
-#    - name: init submodules
-#      uses: webfactory/ssh-agent@v0.8.0
-#      with:
-#        ssh-private-key: ${{secrets.WEGAS_CI_BUILD_KEY}}
-#    - run: |
-#      git submodule sync --recursive
-#      git submodule update --init --recursive
-# OLD CODE
-#      shell: bash
-#      env:
-#        GIT_USER: ${{ secrets.GIT_USER }}
-#        GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
-#      run: |
-#        echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
-#        git submodule update --init --recursive
     - name: Setup Node
       uses: actions/setup-node@v3
       with:
