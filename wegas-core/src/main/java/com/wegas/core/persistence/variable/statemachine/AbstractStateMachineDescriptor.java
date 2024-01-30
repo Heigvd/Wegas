@@ -61,7 +61,21 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     @WegasEntityProperty(ignoreNull = true, protectionLevel = ProtectionLevel.INHERITED,
         optional = false, nullable = false, proposal = EmptyMap.class,
         view = @View(label = "", value = Hidden.class))
-    private Set<T> states = new HashSet<>();
+    /*
+     * // DON'T DO THAT:
+     * private Set<T> states = new HashSet<>();
+     *
+     * `this#states` should be of type `Set<T>`, nonetheless, such a typing leads to very
+     * unexpected behaviour.
+     *
+     * For instance, regarding `TriggerDescriptor`, the `states` field would always be null.
+     * It seems JPA is unable to load data from database (despite data exists in DB) if the relation
+     * is defined with `T`.
+     *
+     * Workaround:
+     * Defining `states` as a set of `AbstractState` is working well:
+     */
+    private Set<AbstractState<U>> states = new HashSet<>();
 
     /**
      *
@@ -80,7 +94,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
 
     @JsonIgnore
     public void setInternalStates(Set<T> states) {
-        this.states = (Set<T>) states;
+        this.states = (Set<AbstractState<U>>) states;
         for (T state : states) {
             state.setStateMachine(this);
         }
@@ -90,7 +104,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     public Map<Long, T> getStates() {
         Map<Long, T> tMap = new TreeMap<>();
 
-        this.states.forEach(state -> {
+        ((Set<T>) this.states).forEach(state -> {
             tMap.put(state.getIndex(), state);
         });
 
@@ -116,8 +130,8 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     }
 
     @JsonIgnore
-    public T getState(Long currentStateId) {
-        for (T state : this.states) {
+    public AbstractState<U> getState(Long currentStateId) {
+        for (AbstractState<U> state : this.states) {
             if (state.getIndex().equals(currentStateId)) {
                 return state;
             }
