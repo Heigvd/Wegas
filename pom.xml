@@ -158,6 +158,8 @@
         <jacoco.skip>false</jacoco.skip>
         <jacoco.surefireArgLine></jacoco.surefireArgLine>
         <!--<jacoco.failsafeArgLine></jacoco.failsafeArgLine>-->
+
+        <nashorn.version>15.4</nashorn.version>
     </properties>
 
     <profiles>
