@@ -83,7 +83,7 @@ type ImageStyleObject =
 
 interface TextStyleObject extends Partial<SharedImageStyleProperties> {
   type: 'TextStyle';
-  font?: 'string';
+  font?: string;
   maxAngle?: number;
   offsetX?: number;
   offsetY?: number;
