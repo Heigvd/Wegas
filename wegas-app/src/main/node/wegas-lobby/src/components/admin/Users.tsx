@@ -141,7 +141,7 @@ export default function Users(): JSX.Element {
       } else {
         return [];
       }
-    })}>
+    }).sort((a,b) => (a.lastSeenAt && b.lastSeenAt && a.lastSeenAt > b.lastSeenAt) ? -1 : 1)}>
           {createCardCb}
         </WindowedContainer>
       </FitSpace>
