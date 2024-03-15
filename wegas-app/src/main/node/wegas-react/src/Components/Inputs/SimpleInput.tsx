@@ -121,12 +121,12 @@ export function SimpleInput({
   debouncingTime = 400,
 }: SimpleInputProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const textAeraRef = React.useRef<HTMLTextAreaElement>(null);
+  const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
 
   React.useEffect(() => {
     if (autoFocus) {
       inputRef.current?.focus();
-      textAeraRef.current?.focus();
+      textAreaRef.current?.focus();
     }
   }, [autoFocus]);
 
@@ -147,7 +147,7 @@ export function SimpleInput({
   if (typeof rows === 'number') {
     return (
       <textarea
-        ref={textAeraRef}
+        ref={textAreaRef}
         className={inputStyle + classNameOrEmpty(className)}
         style={{ ...(fullWidth ? { width: '100%' } : {}), ...style }}
         id={id}
@@ -172,10 +172,6 @@ export function SimpleInput({
       value={undefToEmpty(currentValue)}
       onChange={onInputChange}
       placeholder={placeholder}
-      // onBlur={() => {
-      //   onBlur && onBlur();
-      //   flush();
-      // }}
       disabled={disabled}
       readOnly={readOnly}
       autoComplete={autoComplete ? 'on' : 'off'}

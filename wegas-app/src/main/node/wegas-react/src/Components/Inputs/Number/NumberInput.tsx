@@ -21,7 +21,6 @@ export function NumberInput(props: NumberInputProps) {
       className={numberInputStyle}
       onChange={v => {
         const vN = Number(v);
-        // valueRef.current = String(v);
         if (!isNaN(vN)) {
           props.onChange && props.onChange(vN);
         }
