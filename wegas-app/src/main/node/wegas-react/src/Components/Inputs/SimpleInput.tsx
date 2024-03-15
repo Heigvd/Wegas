@@ -55,10 +55,6 @@ export interface InputProps<T> extends ClassStyleId, DisabledReadonly {
    */
   onChange?: (value: T) => void;
   /**
-   * onChange - return the value set by the component
-   */
-  onBlur?: () => void;
-  /**
    * label - the current label of the input
    */
   label?: React.ReactNode;
@@ -109,7 +105,7 @@ export interface SimpleInputProps extends InputProps<string | number> {
 export function SimpleInput({
   value,
   onChange,
-  onBlur,
+
   rows,
   disabled,
   readOnly,
@@ -134,15 +130,17 @@ export function SimpleInput({
     }
   }, [autoFocus]);
 
-  const { currentValue, debouncedOnChange, flush } = useDebouncedOnChange(
+  const { currentValue, debouncedOnChange, } = useDebouncedOnChange(
     value,
     onChange,
     debouncingTime,
   );
 
   const onInputChange = React.useCallback(
-    (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-      debouncedOnChange(ev.currentTarget.value),
+    (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      debouncedOnChange(ev.currentTarget.value);
+    }
+      ,
     [debouncedOnChange],
   );
 
@@ -157,10 +155,6 @@ export function SimpleInput({
         rows={rows}
         onChange={onInputChange}
         placeholder={placeholder}
-        onBlur={() => {
-          onBlur && onBlur();
-          flush();
-        }}
         disabled={disabled}
         readOnly={readOnly}
         autoComplete={autoComplete ? 'on' : 'off'}
@@ -178,10 +172,10 @@ export function SimpleInput({
       value={undefToEmpty(currentValue)}
       onChange={onInputChange}
       placeholder={placeholder}
-      onBlur={() => {
-        onBlur && onBlur();
-        flush();
-      }}
+      // onBlur={() => {
+      //   onBlur && onBlur();
+      //   flush();
+      // }}
       disabled={disabled}
       readOnly={readOnly}
       autoComplete={autoComplete ? 'on' : 'off'}
