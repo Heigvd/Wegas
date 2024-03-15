@@ -105,7 +105,6 @@ export interface SimpleInputProps extends InputProps<string | number> {
 export function SimpleInput({
   value,
   onChange,
-
   rows,
   disabled,
   readOnly,
