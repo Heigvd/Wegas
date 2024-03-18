@@ -162,6 +162,7 @@ JAVA_EXTRA_OPTS="--add-modules java.se
    --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED
    --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED
    --add-opens=java.base/java.lang=ALL-UNNAMED
+   --add-opens=java.base/java.io=ALL-UNNAMED
    --add-opens=java.base/java.net=ALL-UNNAMED
    --add-opens=java.base/java.nio=ALL-UNNAMED
    --add-opens=java.base/java.util=ALL-UNNAMED
@@ -173,14 +174,13 @@ JAVA_EXTRA_OPTS="--add-modules java.se
    --add-opens=java.management/sun.management=ALL-UNNAMED
    --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED"
 
+# remark : ZGC will support StringDeduplication from Java 18
 if [ "${GC}" = "ZGC" ]; then
     GC_OPT="-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
 else
-    GC_OPT="-XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1MaxNewSizePercent=75 -XX:G1NewSizePercent=40 -XX:MaxGCPauseMillis=2500"
+    GC_OPT="-XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1MaxNewSizePercent=75 -XX:G1NewSizePercent=40 -XX:MaxGCPauseMillis=2500 -XX:+UseStringDeduplication"
 fi
 
-
-env | sort
 
 echo "Starting Wegas (${INTERFACES})"
 echo
@@ -193,6 +193,7 @@ echo " * GC:         ${GC}"
 echo " * DB_HOST:    ${DB_HOST}"
 echo " * DB_PORT:    ${DB_PORT}"
 echo " * MONGO_HOST: ${MONGO_HOST}"
+echo " * JAVA:       $($JAVA_EXECUTABLE --version)"
 [ -n "${DEBUG_OPTS}" ] && echo " * Debug:      ${DEBUG_OPTS}"
 echo ----------
 
@@ -226,11 +227,10 @@ if [ ! -z "${WEGAS_PROPERTIES}" ] && [ ! -f "${WEGAS_PROPERTIES}" ]; then
 fi
 
 "${JAVA_EXECUTABLE}" ${DEBUG_OPTS} ${JAVA_EXTRA_OPTS} ${GC_OPT} ${HTTP2_OPTS} \
-    -XX:+UseStringDeduplication -XX:+UnlockDiagnosticVMOptions \
+    -XX:+UnlockDiagnosticVMOptions \
     -Dproduct.name= -XX:+ParallelRefProcEnabled -XX:+UseCompressedOops -XX:-UseLoopPredicate \
     -Xms${HEAP} -Xmx${HEAP} \
     -Djava.security.egd=file:/dev/urandom \
-    -Djdk.util.zip.disableZip64ExtraFieldValidation=true \
     ${HAZELCAST_SHUTDOWN_HOOK_OPTION} \
     -Dhazelcast.startport=6900 \
     -Dfish.payara.tenantcontrol.blocking.disable=true \
@@ -243,6 +243,7 @@ fi
     -Dwegas.nb_populators=${NB_POPULATORS} -Dwegas.http.threads=${NB_THREADS} \
     -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager \
     -Declipselink.cache.coordination.channel=${HZ_CLUSTER_NAME} \
+    -Dnashorn.args=--language=es6 \
     -jar ${PAYARA_MICRO} \
     --deploy ${THE_WAR} \
     --prebootcommandfile as_prebootcmd \

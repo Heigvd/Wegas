@@ -8,9 +8,9 @@
 package com.wegas.core.i18n.tools;
 
 import com.wegas.core.ejb.nashorn.JSTool;
-import jdk.nashorn.api.tree.ExpressionTree;
-import jdk.nashorn.api.tree.ObjectLiteralTree;
-import jdk.nashorn.api.tree.PropertyTree;
+import org.openjdk.nashorn.api.tree.ExpressionTree;
+import org.openjdk.nashorn.api.tree.ObjectLiteralTree;
+import org.openjdk.nashorn.api.tree.PropertyTree;
 
 /**
  * The location of a translation in a script.

@@ -1,5 +1,5 @@
 #FROM adoptopenjdk/openjdk11:alpine-jre
-FROM eclipse-temurin:11-jre-jammy
+FROM eclipse-temurin:17-jre-jammy
 LABEL org.opencontainers.image.source https://github.com/heigvd/wegas
 
 ENV HEAP=1100m
