@@ -17,13 +17,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jdk.nashorn.api.scripting.NashornException;
-import jdk.nashorn.api.tree.CompilationUnitTree;
-import jdk.nashorn.api.tree.ExpressionTree;
-import jdk.nashorn.api.tree.LiteralTree;
-import jdk.nashorn.api.tree.ObjectLiteralTree;
-import jdk.nashorn.api.tree.PropertyTree;
-import jdk.nashorn.api.tree.SimpleTreeVisitorES5_1;
+import org.openjdk.nashorn.api.scripting.NashornException;
+import org.openjdk.nashorn.api.tree.CompilationUnitTree;
+import org.openjdk.nashorn.api.tree.ExpressionTree;
+import org.openjdk.nashorn.api.tree.LiteralTree;
+import org.openjdk.nashorn.api.tree.ObjectLiteralTree;
+import org.openjdk.nashorn.api.tree.PropertyTree;
+import org.openjdk.nashorn.api.tree.SimpleTreeVisitorES5_1;
 import org.apache.commons.text.StringEscapeUtils;
 
 /**

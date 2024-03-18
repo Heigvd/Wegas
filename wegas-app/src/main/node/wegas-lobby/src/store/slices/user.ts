@@ -18,6 +18,7 @@ export interface UserDetail {
   fullStatus: LoadingStatus;
   mainAccount: number | undefined;
   accounts: number[];
+  visible: boolean;
 }
 
 export interface UserState {
@@ -29,6 +30,7 @@ export interface UserState {
   /** roleId to list of user id*/
   roleUsers: Record<number, number[] | 'LOADING'>;
   permissions: Record<number, IPermissionWithId>;
+  totalResults: number;
 }
 
 const initialState: UserState = {
@@ -38,6 +40,7 @@ const initialState: UserState = {
   userRoles: {},
   roleUsers: {},
   permissions: {},
+  totalResults: 0
 };
 
 //const updateUser = (state: UserState, user: IUser) => {
@@ -103,6 +106,7 @@ function updateUser(state: UserState, user: IUserWithAccounts) {
       mainAccount: firstAccount ? firstAccount.id : undefined,
       fullStatus: user.permissions != null ? 'READY' : 'NOT_INITIALIZED',
       accounts: allAccounts != null ? allAccounts.map(a => a.id!) : [],
+      visible: true
     };
 
     if (user.permissions != null) {
@@ -163,12 +167,6 @@ const userSlice = createSlice({
       .addCase(API.getUser.fulfilled, (state, action) => {
         updateUser(state, action.payload);
       })
-      .addCase(API.getFullUser.pending, (state, action) => {
-        const userId = action.meta.arg;
-        if (userId != null) {
-          state.users[userId] = 'LOADING';
-        }
-      })
       .addCase(API.getFullUser.fulfilled, (state, action) => {
         updateUser(state, action.payload);
       })
@@ -184,6 +182,17 @@ const userSlice = createSlice({
       })
       .addCase(API.getAllUsers.fulfilled, (state, action) => {
         action.payload.forEach(user => updateUser(state, user));
+      })
+      .addCase(API.getPaginatedUsers.pending, (state) => {
+        Object.values(state.users).forEach(user => {
+          if (user !== 'LOADING'){
+            (user as UserDetail).visible = false;
+          }
+        })
+      })
+      .addCase(API.getPaginatedUsers.fulfilled, (state, action) => {
+        state.totalResults = action.payload.total;
+        action.payload.pageContent.forEach(user => updateUser(state, user));
       })
       .addCase(API.getAllRoles.fulfilled, (state, action) => {
         state.roles = {};

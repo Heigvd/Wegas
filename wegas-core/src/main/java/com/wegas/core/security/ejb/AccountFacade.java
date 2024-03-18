@@ -18,6 +18,8 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.rest.util.pagination.Page;
+import com.wegas.core.rest.util.pagination.Pageable;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.aai.AaiUserDetails;
 import com.wegas.core.security.guest.GuestJpaAccount;
@@ -46,12 +48,9 @@ import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import javax.naming.NamingException;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -246,6 +245,69 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         final TypedQuery<AbstractAccount> query = getEntityManager()
             .createNamedQuery("AbstractAccount.findAllNonGuests", AbstractAccount.class);
         return query.getResultList();
+    }
+
+    /**
+     * Get all registered accounts (excluding Guest accounts) with pagination
+     *
+     * @return all registered accounts
+     */
+    public Page<User> findAllRegisteredUsersPaginated(Pageable pageable) {
+        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+
+        //execute query for total count (can be more than 1 page)
+        final CriteriaQuery<Long> cquery = criteriaBuilder.createQuery(Long.class);
+        Root<AbstractAccount> abstractAccountRoot = cquery.from(AbstractAccount.class);
+        abstractAccountRoot.fetch("user", JoinType.INNER);
+        cquery.select(criteriaBuilder.count(abstractAccountRoot.get("id")));
+
+        Expression<String> exp1 = criteriaBuilder.concat(criteriaBuilder.lower(criteriaBuilder.coalesce(abstractAccountRoot.<String>get("firstname"), "")), " ");
+        exp1 = criteriaBuilder.concat(exp1, criteriaBuilder.lower(criteriaBuilder.coalesce(abstractAccountRoot.<String>get("lastname"), "")));
+
+        ListIterator<String> queryParamsIterator = pageable.getSplitQuery().listIterator();
+        Predicate whereClause = criteriaBuilder.notEqual(abstractAccountRoot.type(), GuestJpaAccount.class);
+        Map<ParameterExpression<String>, String> parameterMap = new HashMap<>();
+
+        while(queryParamsIterator.hasNext()) {
+            String param = queryParamsIterator.next();
+            ParameterExpression<String> queryParameter = criteriaBuilder.parameter( String.class );
+            if (!param.isEmpty()) {
+                whereClause = criteriaBuilder.and(whereClause, criteriaBuilder.like(exp1, queryParameter));
+                parameterMap.put(queryParameter, "%" + param.toLowerCase() + "%");
+            }
+        }
+        cquery.where(whereClause);
+        TypedQuery<Long> countQuery = getEntityManager().createQuery(cquery);
+        for(Map.Entry<ParameterExpression<String>,String> entry : parameterMap.entrySet())
+            countQuery.setParameter(entry.getKey(), entry.getValue());
+        Long totalCount = countQuery.getSingleResult();
+
+        //execute query for page results
+        final CriteriaQuery<User> lquery = criteriaBuilder.createQuery(User.class);
+        Root<AbstractAccount> abstractAccountlistRoot = lquery.from(AbstractAccount.class);
+        abstractAccountlistRoot.fetch("user", JoinType.INNER);
+        lquery.select(abstractAccountlistRoot.get("user"));
+
+        Expression<String> exp2 = criteriaBuilder.concat(criteriaBuilder.lower(criteriaBuilder.coalesce(abstractAccountlistRoot.<String>get("firstname"), "")), " ");
+        exp2 = criteriaBuilder.concat(exp2, criteriaBuilder.lower(criteriaBuilder.coalesce(abstractAccountlistRoot.<String>get("lastname"), "")));
+
+        queryParamsIterator = pageable.getSplitQuery().listIterator();
+        whereClause = criteriaBuilder.notEqual(abstractAccountlistRoot.type(), GuestJpaAccount.class);
+        parameterMap = new HashMap<ParameterExpression<String>, String>();
+        while(queryParamsIterator.hasNext()) {
+            String param = queryParamsIterator.next();
+            ParameterExpression<String> queryParameter = criteriaBuilder.parameter( String.class );
+            if (!param.isEmpty()) {
+                whereClause = criteriaBuilder.and(whereClause, criteriaBuilder.like(exp2, queryParameter));
+                parameterMap.put(queryParameter, "%" + param.toLowerCase() + "%");
+            }
+        }
+        lquery.where(whereClause);
+        lquery.orderBy(criteriaBuilder.desc(abstractAccountlistRoot.get("user").get("lastSeenAt")));
+        TypedQuery<User> listQuery = pageable.paginateQuery(getEntityManager().createQuery(lquery));
+        for(Map.Entry<ParameterExpression<String>,String> entry : parameterMap.entrySet())
+            listQuery.setParameter(entry.getKey(), entry.getValue());
+        return new Page<User>(totalCount, pageable.getPage(), pageable.getSize(), listQuery.getResultList());
     }
 
     /**

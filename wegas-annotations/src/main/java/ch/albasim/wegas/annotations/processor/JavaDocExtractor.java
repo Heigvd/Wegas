@@ -33,7 +33,7 @@ import javax.tools.StandardLocation;
     "ch.albasim.wegas.annotations.WegasExtraProperty",
     "ch.albasim.wegas.annotations.Scriptable"
 })*/
-@SupportedSourceVersion(SourceVersion.RELEASE_11)
+@SupportedSourceVersion(SourceVersion.RELEASE_17)
 public class JavaDocExtractor extends AbstractProcessor {
 
     private Map<String, ClassDoc> data = new HashMap<>();

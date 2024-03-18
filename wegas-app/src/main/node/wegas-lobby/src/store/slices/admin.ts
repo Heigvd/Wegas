@@ -43,6 +43,12 @@ const adminSlice = createSlice({
       .addCase(API.getAllUsers.fulfilled, state => {
         state.userStatus = 'READY';
       })
+      .addCase(API.getPaginatedUsers.pending, state => {
+        state.userStatus = 'LOADING';
+      })
+      .addCase(API.getPaginatedUsers.fulfilled, state => {
+        state.userStatus = 'READY';
+      })
       .addCase(API.getAllRoles.pending, state => {
         state.rolesStatus = 'LOADING';
       })

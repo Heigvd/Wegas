@@ -1,0 +1,40 @@
+services:
+  wegas:
+    build: .
+    ports:
+      - 8080:8080
+      - 8443:8443
+    environment:
+      - INTERFACES=127.0.0.1
+      - CLUSTER_MODE=DEFAULT
+      - SSL_PORT=8443
+      - HTTP_PORT=8080
+      - HZ_CLUSTER_NAME=wegas-cluster
+      - HEAP=500M
+      - DB_USER=user
+      - DB_PASSWORD="1234"
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - MONGO_HOST=mongo
+      - DB_NAME=wegas_dev
+      - NB_POPULATORS=3
+      - NB_THREADS=9
+    volumes:
+      - ../../resources/wegas-override.properties:/var/lib/wegas/wegas.properties
+    depends_on:
+      - postgres
+      - mongo
+
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - 5432:15432
+    environment:
+      - POSTGRES_DB=wegas_dev
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD="1234"
+
+  mongo:
+    image: mongo:4.4
+    ports:
+      - 27017:37017

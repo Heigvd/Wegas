@@ -7,7 +7,7 @@
  */
 package com.wegas.core.i18n.tools;
 
-import jdk.nashorn.api.tree.ObjectLiteralTree;
+import org.openjdk.nashorn.api.tree.ObjectLiteralTree;
 
 /**
  * Indicated the requested translatableContent exists but there is no translation for the requested

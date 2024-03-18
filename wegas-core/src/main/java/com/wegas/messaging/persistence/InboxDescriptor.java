@@ -27,7 +27,7 @@ import static java.lang.Boolean.FALSE;
 import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jdk.nashorn.api.scripting.JSObject;
+import org.openjdk.nashorn.api.scripting.JSObject;
 
 /**
  *

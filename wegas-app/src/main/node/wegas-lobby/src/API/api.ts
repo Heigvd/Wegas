@@ -32,6 +32,7 @@ import {
   IGameAdminWithTeams,
   IJpaAuthentication,
   IRoleWithPermissions,
+  IUserPage,
   IUserWithAccounts,
   PlayerToGameModel,
   WegasLobbyRestClient,
@@ -357,6 +358,13 @@ export const getAllUsers = createAsyncThunk(
   'user/getAll',
   async (): Promise<IUserWithAccounts[]> => {
     return await restClient.UserController.getAllUsers();
+  },
+);
+
+export const getPaginatedUsers = createAsyncThunk(
+  'user/getPaginated',
+  async (payload: {page: number, size: number, query: string}): Promise<IUserPage> => {
+    return await restClient.UserController.getPaginatedUsers(payload.page, payload.size, payload.query);
   },
 );
 

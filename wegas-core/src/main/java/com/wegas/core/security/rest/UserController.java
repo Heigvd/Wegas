@@ -23,6 +23,8 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Email;
+import com.wegas.core.rest.util.pagination.Page;
+import com.wegas.core.rest.util.pagination.Pageable;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.aai.AaiConfigInfo;
 import com.wegas.core.security.aai.AaiLoginResponse;
@@ -49,14 +51,7 @@ import jakarta.mail.internet.AddressException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -134,6 +129,13 @@ public class UserController {
 
         Collections.sort(findAll);                                              // @fixme Manually sort not to use a query
         return findAll;
+    }
+
+    @GET
+    @Path("Paginated")
+    public Page<User> paginatedUsers(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("query") String query) {
+        SecurityUtils.getSubject().checkPermission("User:Edit");
+        return accountFacade.findAllRegisteredUsersPaginated(new Pageable(page, size, query));
     }
 
     /**

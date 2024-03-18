@@ -87,6 +87,9 @@ public class AaiController {
             cookieP.put("maxAge", sessionMaxAge);
             cookieP.put("path", path);
             cookieP.put("httpOnly", Boolean.TRUE);
+            //Samesite is not supported yet, we have to wait for mojarra 4.0.4
+            //cookieP.put("SameSite", "Lax");
+
             externalContext.addResponseCookie(cookieName, this.cookieValue, cookieP);
             externalContext.addResponseCookie(jsessionName, jsessionValue, cookieP);
 

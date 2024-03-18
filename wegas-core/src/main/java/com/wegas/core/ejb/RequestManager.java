@@ -74,7 +74,7 @@ import jakarta.persistence.TypedQuery;
 import javax.script.ScriptContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.Response;
-import jdk.nashorn.api.scripting.ScriptUtils;
+import org.openjdk.nashorn.api.scripting.ScriptUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
 import org.apache.shiro.authc.AuthenticationToken;
