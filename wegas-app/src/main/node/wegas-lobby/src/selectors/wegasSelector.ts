@@ -116,14 +116,14 @@ export const useTeams = (gameId?: number) => {
   }, customStateEquals);
 };
 
-export const useGame = (gameId?: number) => {
+export const useGame = (gameId?: number, compareFunc=customStateEquals) => {
   return useAppSelector(state => {
     if (gameId != null) {
       return state.games.games[gameId];
     } else {
       return undefined;
     }
-  }, customStateEquals);
+  }, compareFunc);
 };
 
 export const useUserPlayerInGame = (gameId: number | undefined, userId: number | undefined) => {

@@ -584,7 +584,7 @@ export const createGame = createAsyncThunk(
 
 export const getGameById = createAsyncThunk(
   'game/byId',
-  async ({ id, view }: { id: number; view: 'Lobby' | 'Extended' }) => {
+  async ({ id, view }: { id: number; view: 'Lobby' | 'Extended' | 'Editor'}) => {
     return await restClient.GameController.getById(id, view);
   },
 );

@@ -28,7 +28,7 @@ export const customStateEquals = (a: unknown, b: unknown): boolean => {
   if (typeof a === 'object' && a != null && typeof b === 'object' && b != null) {
     const aKeys = Object.keys(a).sort();
     const bKeys = Object.keys(b).sort();
-
+    // TODO shouldn't sort occur after comparing keyset sizes ?
     if (aKeys.length !== bKeys.length) {
       // keysets mismatch
       return false;
@@ -36,7 +36,7 @@ export const customStateEquals = (a: unknown, b: unknown): boolean => {
 
     for (const key in a) {
       if (hasOwn.call(b, key)) {
-        if (key in a) {
+        if (key in a) { // TODO : by for loop construct, this is always true
           const aValue = (a as { [key: string]: unknown })[key];
           const bValue = (b as { [key: string]: unknown })[key];
 
