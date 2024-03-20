@@ -119,8 +119,7 @@ export function SimpleInput({
   inputType = 'text',
   debouncingTime = 400,
 }: SimpleInputProps) {
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
+  const elementRef = React.useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
   React.useEffect(() => {
     if (autoFocus) {
@@ -146,7 +145,7 @@ export function SimpleInput({
   if (typeof rows === 'number') {
     return (
       <textarea
-        ref={textAreaRef}
+        ref={e => elementRef.current = e}
         className={inputStyle + classNameOrEmpty(className)}
         style={{ ...(fullWidth ? { width: '100%' } : {}), ...style }}
         id={id}
@@ -163,7 +162,7 @@ export function SimpleInput({
   }
   return (
     <input
-      ref={inputRef}
+      ref={e => elementRef.current = e}
       type={inputType}
       className={inputStyle + classNameOrEmpty(className)}
       style={{ ...(fullWidth ? { width: '100%' } : {}), ...style }}
