@@ -116,8 +116,12 @@ export const useTeams = (gameId?: number) => {
   }, customStateEquals);
 };
 
-export const useGame = (gameId?: number, compareFunc=customStateEquals) => {
-  return useAppSelector(state => {
+export type IGameStoreInfo = IGameWithId | 'LOADING' | undefined;
+
+const gameStateEquals = (a: IGameStoreInfo,b : IGameStoreInfo) => customStateEquals<IGameStoreInfo>(a,b);
+
+export const useGame = (gameId?: number, compareFunc = gameStateEquals) => {
+  return useAppSelector<IGameStoreInfo>(state => {
     if (gameId != null) {
       return state.games.games[gameId];
     } else {

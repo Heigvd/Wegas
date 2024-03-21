@@ -27,7 +27,7 @@ import {
 } from '../../API/api';
 import { entityIs } from '../../API/entityHelper';
 import useTranslations from '../../i18n/I18nContext';
-import { useGame } from '../../selectors/wegasSelector';
+import { IGameStoreInfo, useGame } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
 import ActionIconButton from '../common/ActionIconButton';
 import Card from '../common/Card';
@@ -85,8 +85,7 @@ function TeamDetails(team : ITeam): JSX.Element {
     return dispatch(kickTeam(team.id!));
   }, [dispatch, team.id]);
 
-  const theTeam = team;
-  const teamName = team.name ? `${i18n.Team} "${team.name}"` : i18n.Team;
+  const teamName = i18n.Team + (team.name ? ` "${team.name}"` : '');
 
   return (
     <div className={css({ padding: '10px' })}>
@@ -99,10 +98,10 @@ function TeamDetails(team : ITeam): JSX.Element {
           onClick={deleteTeam}
         />
       </Flex>
-      {theTeam.players.map(p => (
+      {team.players.map(p => (
         <PlayerDetails key={p.id} {...p}/>
       ))}
-      {theTeam.players.length === 0 ? (
+      {team.players.length === 0 ? (
         <i className={css({ marginLeft: '10px' })}>{i18n.teamIsEmpty}</i>
       ) : null}
     </div>
@@ -113,17 +112,21 @@ interface GameProps {
   game: IGameWithId;
 }
 
-function fullGameLoadRequired(gameData: IGameWithId | 'LOADING' | undefined): boolean {
+function fullGameLoadRequired(gameData: IGameStoreInfo): boolean {
   if(!gameData)
     return true;
   if(gameData === 'LOADING')
     return false;
   if(!gameData.teams)
     return true;
-  // a test player is always present
+  // given that a test player is always present
   // test that we have a full data object
   const testTeam = gameData.teams[0];
-  return (!testTeam || ! testTeam.players[0]?.name) ? true : false;
+  return (!testTeam || !testTeam.players[0]?.name);
+}
+
+function reRenderNeeded(existing: IGameStoreInfo, newdata: IGameStoreInfo): boolean {
+  return fullGameLoadRequired(existing) !== fullGameLoadRequired(newdata);
 }
 
 function GameComposition({ game }: GameProps): JSX.Element {
@@ -133,7 +136,7 @@ function GameComposition({ game }: GameProps): JSX.Element {
   const playersCanCreate = !game.preventPlayerCreatingTeams;
   const playersCanLeave = !game.preventPlayerLeavingTeam;
 
-  const fullGameData = useGame(game.id);
+  const fullGameData = useGame(game.id, reRenderNeeded);
 
   React.useEffect(() => {
     if (fullGameLoadRequired(fullGameData)) {
@@ -144,7 +147,7 @@ function GameComposition({ game }: GameProps): JSX.Element {
     }
   }, [fullGameData, dispatch, game.id]);
 
-  if (fullGameData === undefined || fullGameData === 'LOADING' || fullGameLoadRequired(fullGameData)){
+  if (!fullGameData || fullGameData === 'LOADING' || fullGameLoadRequired(fullGameData)){
     return (
       <CardContainer>
         <InlineLoading />
