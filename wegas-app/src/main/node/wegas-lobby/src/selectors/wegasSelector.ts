@@ -118,6 +118,8 @@ export const useTeams = (gameId?: number) => {
 
 export type IGameStoreInfo = IGameWithId | 'LOADING' | undefined;
 
+// TODO 5.x syntax 
+//export const useGame = (gameId?: number, compareFunc = customStateEquals<IGameStoreInfo>) => {
 const gameStateEquals = (a: IGameStoreInfo,b : IGameStoreInfo) => customStateEquals<IGameStoreInfo>(a,b);
 
 export const useGame = (gameId?: number, compareFunc = gameStateEquals) => {
