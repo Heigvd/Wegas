@@ -123,8 +123,7 @@ export function SimpleInput({
 
   React.useEffect(() => {
     if (autoFocus) {
-      inputRef.current?.focus();
-      textAreaRef.current?.focus();
+      elementRef.current?.focus();
     }
   }, [autoFocus]);
 
