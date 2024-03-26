@@ -693,7 +693,7 @@ export const WegasLobbyRestClient = function (
         const path = `${baseUrl}/Lobby/GameModel/Game/${gameModelId}`;
         return sendJsonRequest<IGameWithId>('POST', path, game, errorHandler);
       },
-      getById: (id: number, view: 'Lobby' | 'Extended') => {
+      getById: (id: number, view: 'Lobby' | 'Extended' | 'Editor') => {
         const path = `${baseUrl}/${view}/GameModel/Game/${id}`;
         return sendJsonRequest<IGameWithId>('GET', path, undefined, errorHandler);
       },

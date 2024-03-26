@@ -14,21 +14,20 @@ import {
   IAbstractAccountWithId,
   IGameWithId,
   IPlayer,
-  IPlayerWithId,
-  ITeamWithId,
+  ITeam,
 } from 'wegas-ts-api';
 import {
-  getAllTeams,
   getRestClient,
   kickTeam,
   leaveGame,
   updateGame,
   shareGame,
   unshareGame,
+  getGameById,
 } from '../../API/api';
 import { entityIs } from '../../API/entityHelper';
 import useTranslations from '../../i18n/I18nContext';
-import { useTeams } from '../../selectors/wegasSelector';
+import { IGameStoreInfo, useGame } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
 import ActionIconButton from '../common/ActionIconButton';
 import Card from '../common/Card';
@@ -48,34 +47,15 @@ import {
   defaultSelectStyles,
 } from '../styling/style';
 
-interface PlayerDetailsProps {
-  player: IPlayer;
-}
 
-function PlayerDetails({ player }: PlayerDetailsProps) {
+function PlayerDetails(player : IPlayer) {
   const i18n = useTranslations();
   const dispatch = useAppDispatch();
 
-  const [extPlayer, setExtPlayer] = React.useState<'UNSET' | IPlayerWithId>('UNSET');
+  const verified = entityIs(player, 'Player') ? player.verifiedId : false;
+  const org = entityIs(player, 'Player') ? player.homeOrg : false;
 
-  const verified = entityIs(extPlayer, 'Player') ? extPlayer.verifiedId : false;
-  const org = entityIs(extPlayer, 'Player') ? extPlayer.homeOrg : false;
-
-  React.useEffect(() => {
-    //let abort = false;
-    const load = async () => {
-      const extendedPlayer = await getRestClient().PlayerController.getEditorPlayerById(player.id!);
-      //if (!abort) {
-      setExtPlayer(extendedPlayer);
-      //}
-    };
-    if (extPlayer === 'UNSET') {
-      load();
-    }
-    //return () => {abort = true}
-  }, [extPlayer, player.id]);
-
-  const playerName = entityIs(extPlayer, 'Player') ? extPlayer.name : <InlineLoading />;
+  const playerName = entityIs(player, 'Player') ? player.name : <InlineLoading />;
 
   return (
     <Card
@@ -94,25 +74,18 @@ function PlayerDetails({ player }: PlayerDetailsProps) {
   );
 }
 
-interface TeamDetailsProps {
-  team: ITeamWithId;
-}
-
 /**
  * Display team & players
  */
-function TeamDetails({ team }: TeamDetailsProps): JSX.Element {
+function TeamDetails(team : ITeam): JSX.Element {
   const i18n = useTranslations();
   const dispatch = useAppDispatch();
 
   const deleteTeam = React.useCallback(async () => {
-    return dispatch(kickTeam(team.id));
+    return dispatch(kickTeam(team.id!));
   }, [dispatch, team.id]);
 
-  //  const theTeam = typeof extTeam !== 'string' ? extTeam : team;
-  const theTeam = team;
-
-  const teamName = team.name ? `${i18n.Team} "${team.name}"` : i18n.Team;
+  const teamName = i18n.Team + (team.name ? ` "${team.name}"` : '');
 
   return (
     <div className={css({ padding: '10px' })}>
@@ -125,10 +98,10 @@ function TeamDetails({ team }: TeamDetailsProps): JSX.Element {
           onClick={deleteTeam}
         />
       </Flex>
-      {theTeam.players.map(p => (
-        <PlayerDetails key={p.id} player={p} />
+      {team.players.map(p => (
+        <PlayerDetails key={p.id} {...p}/>
       ))}
-      {theTeam.players.length === 0 ? (
+      {team.players.length === 0 ? (
         <i className={css({ marginLeft: '10px' })}>{i18n.teamIsEmpty}</i>
       ) : null}
     </div>
@@ -139,35 +112,54 @@ interface GameProps {
   game: IGameWithId;
 }
 
+function fullGameLoadRequired(gameData: IGameStoreInfo): boolean {
+  if(!gameData)
+    return true;
+  if(gameData === 'LOADING')
+    return false;
+  if(!gameData.teams)
+    return true;
+  // given that a test player is always present
+  // test that we have a full data object
+  const testTeam = gameData.teams[0];
+  return (!testTeam || !testTeam.players[0]?.name);
+}
+
+function reRenderNeeded(existing: IGameStoreInfo, newdata: IGameStoreInfo): boolean {
+  return fullGameLoadRequired(existing) !== fullGameLoadRequired(newdata);
+}
+
 function GameComposition({ game }: GameProps): JSX.Element {
-  const teams = useTeams(game.id);
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
 
   const playersCanCreate = !game.preventPlayerCreatingTeams;
   const playersCanLeave = !game.preventPlayerLeavingTeam;
 
+  const fullGameData = useGame(game.id, reRenderNeeded);
+
   React.useEffect(() => {
-    if (teams === 'UNSET') {
+    if (fullGameLoadRequired(fullGameData)) {
       if (game.id != null) {
-        dispatch(getAllTeams(game.id));
+        // Editor view fetches the full data including teams and player names
+        dispatch(getGameById({id: game.id, view: 'Editor'}));
       }
     }
-  }, [teams, dispatch, game.id]);
+  }, [fullGameData, dispatch, game.id]);
 
-  if (typeof teams === 'string') {
+  if (!fullGameData || fullGameData === 'LOADING' || fullGameLoadRequired(fullGameData)){
     return (
       <CardContainer>
         <InlineLoading />
       </CardContainer>
     );
   } else {
-    const realTeams = teams.filter(team => team != null && !entityIs(team, 'DebugTeam'));
+    const realTeams = fullGameData.teams.filter(team => team != null && !entityIs(team, 'DebugTeam'));
     return (
       <FitSpace direction="column" overflow="auto">
         <CardContainer>
           {realTeams.map(team => (
-            <TeamDetails key={team.id} team={team} />
+            <TeamDetails key={team.id} {...team} />
           ))}
         </CardContainer>
         <Flex className={css({ padding: '10px 10px 0px 10px', gap: "15px" })}>
@@ -323,3 +315,4 @@ export function GameUsers({ game }: GameProps): JSX.Element {
     </Tabs>
   );
 }
+
