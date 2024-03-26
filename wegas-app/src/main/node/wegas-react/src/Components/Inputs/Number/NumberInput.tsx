@@ -13,34 +13,20 @@ interface NumberInputProps extends InputProps<number> {
 
 export function NumberInput(props: NumberInputProps) {
   const { value, placeholder } = props;
-  const valueRef = React.useRef(String(value));
-  const [inputValue, setInputValue] = React.useState<string>('');
-
-  const onBlur = () => {
-    setInputValue(String(value));
-  };
-
-  React.useEffect(() => {
-    Number(valueRef.current) === value
-      ? setInputValue(valueRef.current)
-      : setInputValue(String(value));
-  }, [value]);
 
   return (
     <SimpleInput
       {...omit(props, 'onChange')}
-      value={inputValue}
+      value={value}
       className={numberInputStyle}
       onChange={v => {
         const vN = Number(v);
-        valueRef.current = String(v);
         if (!isNaN(vN)) {
           props.onChange && props.onChange(vN);
         }
       }}
       inputType='number'
       placeholder={placeholder}
-      onBlur={onBlur}
     />
   );
 }

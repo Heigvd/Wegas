@@ -1,4 +1,3 @@
-import { debounce } from 'lodash-es';
 import React from 'react';
 import { SNumberDescriptor } from 'wegas-ts-api';
 import { Actions } from '../../../data';
@@ -79,12 +78,6 @@ function PlayerNumberInput({
     [handleOnChange, number],
   );
 
-  const debounceOnChange = React.useMemo(() => {
-    return debounce((value: number) => {
-      onChange(value);
-    }, 300);
-  }, [onChange]);
-
   return number == null ? (
     <UncompleteCompMessage
       message={somethingIsUndefined('Number')}
@@ -99,7 +92,7 @@ function PlayerNumberInput({
       id={id}
       readOnly={readOnly}
       disabled={disabled || locked}
-      onChange={debounceOnChange}
+      onChange={onChange}
       placeholder={placeholderText}
     />
   );
