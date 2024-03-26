@@ -134,7 +134,7 @@
 
         <jakarta.version>10.0.0</jakarta.version>
 
-        <shiro.version>1.12.0</shiro.version>
+        <shiro.version>1.13.0</shiro.version>
         <payara.version>6.2023.9</payara.version>
 
         <junit.version>4.13.1</junit.version>
@@ -145,7 +145,7 @@
 
         <!-- logback 1.4.x slf4j 2.x + jakarta ns -->
         <slf4j.version>2.0.9</slf4j.version>
-        <logback.version>1.4.11</logback.version>
+        <logback.version>1.4.14</logback.version>
 
         <httpcomponents.version>4.5.14</httpcomponents.version>
         <!--<liquibase.version>2.0.5</liquibase.version>-->
