@@ -149,6 +149,8 @@ function WegasDiffEditor({
           keepCurrentOriginalModel
           options={{
             readOnly,
+            tabSize: 2,
+            insertSpaces: true,
             minimap: { enabled: minimap },
             ...gutter(noGutter),
             ...defaultProperties,
