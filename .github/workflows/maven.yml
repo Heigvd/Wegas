@@ -12,6 +12,7 @@ on:
     branches:
       - master
       - dev
+      - xgo-WEG-32-payara
     tags:
       - "v*"
 
