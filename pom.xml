@@ -326,6 +326,11 @@
                 <version>${oak.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.jackrabbit</groupId>
+                <artifactId>oak-blob-cloud</artifactId>
+                <version>${oak.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.mongodb</groupId>
                 <artifactId>mongodb-driver-legacy</artifactId>
                 <version>3.10.1</version>

@@ -30,6 +30,7 @@ import org.apache.jackrabbit.oak.segment.file.FileStore;
 import org.apache.jackrabbit.oak.segment.file.FileStoreBuilder;
 import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
 import org.slf4j.LoggerFactory;
+import org.apache.jackrabbit.oak.blob.cloud.s3.S3DataStore;
 
 /**
  * Jackrabbit repository init
@@ -49,6 +50,8 @@ public class JackrabbitConnector implements Serializable {
     private static FileStore fileStore;
 
     private synchronized static void init() {
+        S3DataStore s3ds = new S3DataStore(); // just to check that it is possible
+
         if (JackrabbitConnector.repo == null) {
             if (Helper.isNullOrEmpty(URI)) {
                 // In memory
