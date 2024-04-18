@@ -34,7 +34,6 @@ import { TranslatableText } from './HTMLText';
 
 interface MessageLabelProps {
   message: IMessage;
-  disabled?: boolean;
 }
 
 const messageLabel = css({
@@ -63,7 +62,7 @@ const labelTitleStyle = css({
   whiteSpace: 'nowrap',
 });
 
-function MessageLabel({ message, disabled }: MessageLabelProps) {
+function MessageLabel({ message }: MessageLabelProps) {
   const translatedLabel = useTranslate(message.subject);
   const translatedFrom = useTranslate(message.from);
   const translatedDate = useTranslate(message.date);
@@ -71,7 +70,6 @@ function MessageLabel({ message, disabled }: MessageLabelProps) {
   return (
     <div
       className={cx(flex, itemCenter, messageLabel)}
-      onClick={() => !disabled && editingStore.dispatch(readMessage(message))}
     >
       <div className={cx(flex, flexColumn, expandWidth)}>
         <div className={cx(flex, flexRow, flexBetween)}>
@@ -95,9 +93,11 @@ function customLabelStyle(m: IMessage): string | undefined {
 }
 
 function MessageChooser(props: EntityChooserLabelProps<IMessage>) {
+  const message = props.entity;
+
   return (
     <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
-      <div className={cx(flex, flexRow, itemCenter)}>
+      <div className={cx(flex, flexRow, itemCenter)} onClick={() => editingStore.dispatch(readMessage(message))}>
         {props.mobile && (
           <FontAwesomeIcon
             className={css({ marginRight: '5px' })}
