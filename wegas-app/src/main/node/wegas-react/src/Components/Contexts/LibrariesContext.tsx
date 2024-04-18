@@ -892,9 +892,11 @@ export function LibrariesLoader(
         strict: true,
         allowNonTsExtensions: true,
         checkJs: true,
-        // allowJs: forceJS,
-        lib: ['es2019'],
+        lib: ['esnext'],
         target: reactMonaco.languages.typescript.ScriptTarget.ESNext,
+        forceConsistentCasingInFileNames: true,
+        noUnusedLocals: true,
+        noUnusedParameters: true,
       });
       reactMonaco.languages.typescript.javascriptDefaults.setCompilerOptions({
         strict: true,
