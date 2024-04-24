@@ -6,13 +6,13 @@
 #Install brew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
-#Install OpenJDK 11
+#Install OpenJDK 17
 brew tap AdoptOpenJDK/openjdk
-brew cask install adoptopenjdk11
+brew cask install adoptopenjdk17
 or
-brew install --cask adoptopenjdk11
+brew install --cask adoptopenjdk17
 
-#Install node and change version to 11.10.1
+#Install node
 brew install node
 
 #Install yarn
@@ -60,14 +60,24 @@ docker run -p 27017:27017 --name wegas_mongo -d mongo:4.2
 mvn -f .. -DskipTests install
 ```
 
-### Java 11
-If your default JVM is <> 11, you must provide the path to a JVM-11 to maven. E.G:
+### Java 17
+If your default JVM is <> 17, you must provide the path to a JVM-17 to maven. E.G:
 ```shell
-JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/" mvn -DskipTests install
+JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64/" mvn -DskipTests install
 ```
-If this fails, remove the HOME_PATH from .mavenrc (leave it blank) so it defaults to the JVM-11 path.
+If this fails, remove the HOME_PATH from .mavenrc (leave it blank) so it defaults to the JVM-17 path.
+
+#### Mac setup
+If the above doesn't work, try the following to add java to your `$PATH`
 
 
+Either set your `$PATH` by editing your `.zshrc` (or `.bashrc` depending on the shell you are using). Add the following line
+
+```
+export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
+```
+Or alternatively, add a file (file name is irrelevant) in `/etc/paths.d` containing the path to java e.g. `/opt/homebrew/opt/openjdk@17/bin`  
+All the files in this directory are automatically added to the `$PATH`.
 ## Test
 
 ### Private access
@@ -87,8 +97,8 @@ mvn -f .. -DskipPrivateTests clean install
 ### Start
 Run `./run` to start wegas.
 
-#### Java 11
-Wegas is designed to run on Java 11. If your default JVM is lower or higher than 11, you must provide the path to a JVM 11 using the -j option.
+#### Java 17
+Wegas is designed to run on Java 17. If your default JVM is lower or higher than 17, you must provide the path to a JVM 17 using the -j option.
 
 #### Options
 Option | Default Value | Description 
