@@ -118,10 +118,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>oak-blob-cloud</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2-mvstore</artifactId>
         </dependency>

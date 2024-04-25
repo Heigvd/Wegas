@@ -312,17 +312,6 @@
                 <artifactId>oak-segment-tar</artifactId>
                 <version>${oak.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.apache.jackrabbit</groupId>
-                <artifactId>oak-blob-cloud</artifactId>
-                <version>${oak.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.jackrabbit</groupId>
-                <artifactId>oak-blob</artifactId>
-                <version>${oak.version}</version>
-            </dependency>
-
             <!-- https://issues.apache.org/jira/browse/OAK-6542-->
 <!--            <dependency>-->
 <!--                <groupId>io.dropwizard.metrics</groupId>-->
