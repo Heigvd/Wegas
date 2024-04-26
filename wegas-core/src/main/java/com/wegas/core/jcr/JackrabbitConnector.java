@@ -18,12 +18,17 @@ import jakarta.annotation.PreDestroy;
 import jakarta.ejb.Singleton;
 import jakarta.ejb.Startup;
 import javax.jcr.Repository;
+import javax.sql.DataSource;
+
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.plugins.document.DocumentNodeStore;
 import org.apache.jackrabbit.oak.plugins.document.LeaseCheckMode;
 import org.apache.jackrabbit.oak.plugins.document.VersionGarbageCollector;
 import static org.apache.jackrabbit.oak.plugins.document.mongo.MongoDocumentNodeStoreBuilder.newMongoDocumentNodeStoreBuilder;
+import static org.apache.jackrabbit.oak.plugins.document.rdb.RDBDocumentNodeStoreBuilder.newRDBDocumentNodeStoreBuilder;
+
+import org.apache.jackrabbit.oak.plugins.document.rdb.RDBDataSourceFactory;
 import org.apache.jackrabbit.oak.segment.SegmentNodeStore;
 import org.apache.jackrabbit.oak.segment.SegmentNodeStoreBuilders;
 import org.apache.jackrabbit.oak.segment.file.FileStore;
@@ -68,6 +73,17 @@ public class JackrabbitConnector implements Serializable {
                     nodeStore = newMongoDocumentNodeStoreBuilder()
                             .setLeaseCheckMode(LeaseCheckMode.DISABLED)
                             .setMongoDB("mongodb://" + hostPort + "/?readConcernLevel=majority", dbName, 0)
+                            .build();
+                    JackrabbitConnector.repo = new Jcr(new Oak(nodeStore)).createRepository();
+
+                }else if (URI.startsWith("jdbc:postgresql")) { // TODO better ?
+
+                    //jdbc:postgresql://host:port/database?properties
+                    // TODO user and pwd in values
+                    final DataSource dataSource = RDBDataSourceFactory.forJdbcUrl(URI, "user", "1234");
+                    nodeStore = newRDBDocumentNodeStoreBuilder()
+                            .setLeaseCheckMode(LeaseCheckMode.DISABLED)
+                            .setRDBConnection(dataSource)
                             .build();
                     JackrabbitConnector.repo = new Jcr(new Oak(nodeStore)).createRepository();
 

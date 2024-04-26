@@ -442,6 +442,12 @@
                 <scope>provided</scope>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-jdbc</artifactId>
+                <version>11.0.0-M19</version>
+            </dependency>
+
             <!--
                 Test deps
             -->
