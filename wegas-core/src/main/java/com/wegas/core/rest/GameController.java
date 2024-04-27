@@ -19,6 +19,8 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Game.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.rest.util.pagination.Page;
+import com.wegas.core.rest.util.pagination.Pageable;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
@@ -35,15 +37,7 @@ import java.util.stream.Collectors;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -217,6 +211,31 @@ public class GameController {
     @Path("status/{status: [A-Z]*}")
     public Collection<Game> findByStatus(@PathParam("status") final Game.Status status) {
         return gameFacade.findByStatusAndUser(status);
+    }
+
+    /**
+     * Get all games with given status paginated
+     *
+     */
+    @GET
+    @Path("status/{status: [A-Z]*}/Paginated")
+    public Page<Game> paginatedGames(@PathParam("status") final Game.Status status,
+                                     @QueryParam("page") int page,
+                                     @QueryParam("size") int size,
+                                     @QueryParam("query") String query) {
+        return gameFacade.findByStatusAndUserPaginated(status, new Pageable(page, size, query));
+    }
+    /**
+     * Get all games with given status paginated
+     *
+     */
+    @GET
+    @Path("status/{status: [A-Z]*}/Paginated2")
+    public Page<Game> paginatedGames2(@PathParam("status") final Game.Status status,
+                                     @QueryParam("page") int page,
+                                     @QueryParam("size") int size,
+                                     @QueryParam("query") String query) {
+        return gameFacade.findByStatusAndUserPaginated2(status, new Pageable(page, size, query));
     }
 
     /**
