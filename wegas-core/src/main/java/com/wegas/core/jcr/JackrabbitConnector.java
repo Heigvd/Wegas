@@ -86,7 +86,7 @@ public class JackrabbitConnector implements Serializable {
                             .setRDBConnection(dataSource)
                             .build();
                     JackrabbitConnector.repo = new Jcr(new Oak(nodeStore)).createRepository();
-
+                    org.postgresql.Driver
                 } else if (uri.getScheme().equals("file")) {
                     // Local
                     try {

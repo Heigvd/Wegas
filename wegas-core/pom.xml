@@ -111,6 +111,10 @@
             <artifactId>tomcat-jdbc</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>oak-upgrade</artifactId>
+        </dependency>
         <!-- Java Content Repository -->
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
