@@ -225,18 +225,6 @@ public class GameController {
                                      @QueryParam("query") String query) {
         return gameFacade.findByStatusAndUserPaginated(status, new Pageable(page, size, query));
     }
-    /**
-     * Get all games with given status paginated
-     *
-     */
-    @GET
-    @Path("status/{status: [A-Z]*}/Paginated2")
-    public Page<Game> paginatedGames2(@PathParam("status") final Game.Status status,
-                                     @QueryParam("page") int page,
-                                     @QueryParam("size") int size,
-                                     @QueryParam("query") String query) {
-        return gameFacade.findByStatusAndUserPaginated2(status, new Pageable(page, size, query));
-    }
 
     /**
      * Count games by status

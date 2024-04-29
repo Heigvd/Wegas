@@ -434,15 +434,20 @@ public class GameFacade extends BaseFacade<Game> {
                 gameRoot.get("id").in(new ArrayList<>(filteredGMatrix.keySet()))
         );
 
+        ListIterator<String> queryParamsIterator = pageable.getSplitQuery().listIterator();
 
-        if (pageable.getQuery() != null) {
-            String lowerCaseQuery = pageable.getQuery().toLowerCase();
-            Join<Game, GameModel> gameModelJoin = gameRoot.join("gameModel");
-            whereClause = criteriaBuilder.and(whereClause, criteriaBuilder.or(
-                    criteriaBuilder.like(criteriaBuilder.lower(gameRoot.get("name")), "%" + lowerCaseQuery + "%"),
-                    criteriaBuilder.like(criteriaBuilder.lower(gameModelJoin.get("name")), "%" + lowerCaseQuery + "%")
-            ));
+        while (queryParamsIterator.hasNext()) {
+            String param = queryParamsIterator.next();
+            ParameterExpression<String> queryParameter = criteriaBuilder.parameter(String.class);
+            if (!param.isEmpty()) {
+                Join<Game, GameModel> gameModelJoin = gameRoot.join("gameModel");
+                whereClause = criteriaBuilder.and(whereClause, criteriaBuilder.or(
+                        criteriaBuilder.like(criteriaBuilder.lower(gameRoot.get("name")), "%" + param.toLowerCase() + "%"),
+                        criteriaBuilder.like(criteriaBuilder.lower(gameModelJoin.get("name")), "%" + param.toLowerCase() + "%")
+                ));
+            }
         }
+
         query.where(whereClause);
 
         int total = getEntityManager().createQuery(query).getResultList().size();
@@ -484,6 +489,8 @@ public class GameFacade extends BaseFacade<Game> {
     public Collection<Game> findByStatusAndUser(Game.Status status) {
         List<Game.Status> gStatuses = new ArrayList<>();
         gStatuses.add(status);
+
+        Map<Long, List<String>> gMatrix = this.getPermissionMatrix(gStatuses);
 
         ArrayList<Game> games = new ArrayList<>();
 
