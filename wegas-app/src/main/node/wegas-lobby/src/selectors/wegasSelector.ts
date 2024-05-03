@@ -439,11 +439,13 @@ export const useGames = (
         return {
           gamesAndGameModels: gamesAndGameModels,
           status: gStatus,
+          totalResults: state.games.totalResults,
         };
       } else {
         return {
           gamesAndGameModels: [],
           status: gStatus,
+          totalResults: state.games.totalResults,
         };
       }
     },

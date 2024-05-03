@@ -428,19 +428,15 @@ public class GameFacade extends BaseFacade<Game> {
         Root<Game> gameRoot = query.from(Game.class);
         query.select(gameRoot);
 
-
         Predicate whereClause = criteriaBuilder.and(
                 criteriaBuilder.equal(gameRoot.get("status"), status),
                 gameRoot.get("id").in(new ArrayList<>(filteredGMatrix.keySet()))
         );
 
-        ListIterator<String> queryParamsIterator = pageable.getSplitQuery().listIterator();
-
-        while (queryParamsIterator.hasNext()) {
-            String param = queryParamsIterator.next();
+        for (String param : pageable.getSplitQuery()) {
             ParameterExpression<String> queryParameter = criteriaBuilder.parameter(String.class);
             if (!param.isEmpty()) {
-                Join<Game, GameModel> gameModelJoin = gameRoot.join("gameModel");
+               Join<Game, GameModel> gameModelJoin = gameRoot.join("gameModel", JoinType.INNER);
                 whereClause = criteriaBuilder.and(whereClause, criteriaBuilder.or(
                         criteriaBuilder.like(criteriaBuilder.lower(gameRoot.get("name")), "%" + param.toLowerCase() + "%"),
                         criteriaBuilder.like(criteriaBuilder.lower(gameModelJoin.get("name")), "%" + param.toLowerCase() + "%")

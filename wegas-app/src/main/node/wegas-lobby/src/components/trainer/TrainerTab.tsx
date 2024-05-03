@@ -10,15 +10,15 @@ import { css } from '@emotion/css';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { uniq } from 'lodash';
 import * as React from 'react';
-import {useMatch, useResolvedPath} from 'react-router-dom';
+import { useMatch, useResolvedPath } from 'react-router-dom';
 import { IAbstractAccount, IGameModelWithId, IGameWithId } from 'wegas-ts-api';
-import { getGames, getShadowUserByIds } from '../../API/api';
+import { getGamesPaginated, getShadowUserByIds } from '../../API/api';
 import { getDisplayName, mapByKey, match } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
 import { useLocalStorageState } from '../../preferences';
 import { useAccountsByUserIds, useCurrentUser } from '../../selectors/userSelector';
 import { MINE_OR_ALL, useGames } from '../../selectors/wegasSelector';
-import { useAppDispatch } from '../../store/hooks';
+import {useAppDispatch} from '../../store/hooks';
 import { WindowedContainer } from '../common/CardContainer';
 import DebouncedInput from '../common/DebouncedInput';
 import DropDownMenu, { itemStyle } from '../common/DropDownMenu';
@@ -32,6 +32,7 @@ import { successColor } from '../styling/color';
 import { panelPadding } from '../styling/style';
 import CreateGame from './CreateGame';
 import GameCard from './GameCard';
+import Checkbox from "../common/Checkbox";
 
 interface SortBy {
   createdByName: string;
@@ -94,6 +95,11 @@ export default function TrainerTab(): JSX.Element {
   //  }, []);
 
   const [filter, setFilter] = React.useState('');
+  const [page, setPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(20);
+
+  const onNextPage = () => setPage(page<games.totalResults/pageSize?page + 1: page);
+  const onPreviousPage = () => setPage(page>1?page - 1:1);
 
   const onFilterChange = React.useCallback((filter: string) => {
     setFilter(filter);
@@ -111,9 +117,35 @@ export default function TrainerTab(): JSX.Element {
 
   React.useEffect(() => {
     if (status === 'NOT_INITIALIZED') {
-      dispatch(getGames(statusFilter));
+      dispatch(
+        getGamesPaginated({ status: statusFilter, page: page, size: pageSize, query: filter }),
+      );
+      console.log(games.totalResults)
     }
   }, [status, dispatch, statusFilter]);
+
+  React.useEffect(() => {
+    if (page !== 1) {
+      setPage(1);
+    } else {
+      dispatch(
+        getGamesPaginated({ status: statusFilter, page: page, size: pageSize, query: filter }),
+      );
+      console.log(games.totalResults)
+    }
+  }, [filter, pageSize]);
+
+  React.useEffect(() => {
+    dispatch(
+        getGamesPaginated({ status: statusFilter, page: page, size: pageSize, query: filter }),
+    );
+  }, [page]);
+
+  // React.useEffect(() => {
+  //   if (status === 'NOT_INITIALIZED') {
+  //     dispatch(getGames(statusFilter));
+  //   }
+  // }, [status, dispatch, statusFilter]);
 
   const userIds = uniq(
     games.gamesAndGameModels.flatMap(data =>
@@ -142,7 +174,7 @@ export default function TrainerTab(): JSX.Element {
   }, [isAdmin, accountsState, dispatch]);
 
   // Detect any gameModel id in URL
-  const resolvedPath = useResolvedPath("./");
+  const resolvedPath = useResolvedPath('./');
 
   const match = useMatch<'id', string>(`${resolvedPath.pathname}:id/*`);
   const selectedId = Number(match?.params.id) || undefined;
@@ -262,6 +294,35 @@ export default function TrainerTab(): JSX.Element {
               placeholder={i18n.search}
               onChange={onFilterChange}
             />
+          </Flex>
+
+          <Flex
+              justify="space-between"
+              align="center"
+              className={css({
+                flexShrink: 0,
+                height: '20px',
+              })}
+          >
+            <div className={css({
+              display: "flex",
+              alignContent: "flex-start"
+            })}>
+              <h3>
+                <IconButton onClick={onPreviousPage} icon={'caret-left'}></IconButton>
+                {page}/{games.totalResults > 0 ? Math.ceil(games.totalResults/pageSize) : 1}
+                <IconButton onClick={onNextPage} icon={'caret-right'}></IconButton>
+              </h3>
+            </div>
+            <div className={css({
+              display: "flex",
+              alignContent: "flex-end",
+              flexDirection: "row"
+            })}>
+              <Checkbox label="20" value={pageSize === 20} onChange={(newValue: boolean) => setPageSize(newValue?20:pageSize)} />
+              <Checkbox label="50" value={pageSize === 50} onChange={(newValue: boolean) => setPageSize(newValue?50:pageSize)} />
+              <Checkbox label="100" value={pageSize === 100} onChange={(newValue: boolean) => setPageSize(newValue?100:pageSize)} />
+            </div>
           </Flex>
 
           {status === 'READY' ? (
