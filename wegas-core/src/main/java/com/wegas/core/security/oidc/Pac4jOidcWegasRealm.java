@@ -1,5 +1,6 @@
 package com.wegas.core.security.oidc;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.internal.WegasNoResultException;
@@ -41,6 +42,11 @@ public class Pac4jOidcWegasRealm extends Pac4jRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(final AuthenticationToken authenticationToken) {
 
         //TODO check already loggedin?
+
+        if (!Boolean.parseBoolean(Helper.getWegasProperty("oidc.enabled"))) {
+            logger.warn("EduID OIDC is disabled");
+            return null;
+        }
 
         final Pac4jToken token = (Pac4jToken) authenticationToken;
         final List<UserProfile> profiles = token.getProfiles();
