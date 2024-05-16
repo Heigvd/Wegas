@@ -9,8 +9,11 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.cron.EjbTimerFacade;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.rest.util.pagination.Page;
 import com.wegas.core.rest.util.pagination.Pageable;
+import com.wegas.core.security.aai.AaiAccount;
+import com.wegas.core.security.aai.AaiUserDetails;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
@@ -22,7 +25,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 public class AccountFacadeTest extends AbstractArquillianTestMinimal {
 
@@ -41,6 +43,16 @@ public class AccountFacadeTest extends AbstractArquillianTestMinimal {
     private static final String ROLE_2 = "Role_2";
 
     private static final String EMAIL = "accountfacadetest@local";
+
+    private static final String EDUID = "123456789A";
+
+    private static final String FIRSTNAME = "Firstname";
+
+    private static final String LASTNAME = "Lastname";
+
+    private static final String HOMEORG = "EduId";
+
+    private AaiUserDetails userDetails;
 
     @Inject
     private EjbTimerFacade ejbTimerFacade;
@@ -63,13 +75,27 @@ public class AccountFacadeTest extends AbstractArquillianTestMinimal {
 
         login(admin);
         addRoles(u, role1, role2);
+
+        // Creating an AAI Account
+        userDetails = new AaiUserDetails();
+        userDetails.setPersistentId(null); //OLD AAI
+        userDetails.setEduIdPairwiseId(EDUID);
+        userDetails.setEmail(EMAIL);
+        userDetails.setFirstname(FIRSTNAME);
+        userDetails.setLastname(LASTNAME);
+        userDetails.setRememberMe(false);
+        userDetails.setHomeOrg(HOMEORG);
+        AaiAccount account = AaiAccount.buildForEduIdPairwiseId(userDetails);
+        User user = new User(account);
+        userFacade.create(user);
+
         requestManager.clearEntities();
     }
 
     @Test
     public void testFindAllRegisteredUsersPaginated() {
         Page<User> paginatedUsers = accountFacade.findAllRegisteredUsersPaginated(new Pageable(1, 10, ""));
-        Assert.assertEquals(paginatedUsers.getTotal(), 2L);
+        Assert.assertEquals(paginatedUsers.getTotal(), 3L);
         Assert.assertTrue(paginatedUsers.getPageContent().contains(u.getUser()));
         Assert.assertTrue(paginatedUsers.getPageContent().contains(admin.getUser()));
     }
@@ -96,5 +122,49 @@ public class AccountFacadeTest extends AbstractArquillianTestMinimal {
         Assert.assertEquals(paginatedUsers.getTotal(), 0L);
         Assert.assertFalse(paginatedUsers.getPageContent().contains(u.getUser()));
         Assert.assertFalse(paginatedUsers.getPageContent().contains(admin.getUser()));
+    }
+
+    @Test
+    public void testFindByEduIdPairwiseId() throws WegasNoResultException {
+
+        AaiAccount createdAccount = accountFacade.findByEduIdPairwiseId(EDUID);
+
+        Assert.assertEquals(createdAccount.getEduIdPairwiseId(), EDUID);
+        Assert.assertEquals(createdAccount.getEmail(), EMAIL);
+        Assert.assertEquals(createdAccount.getFirstname(), FIRSTNAME);
+        Assert.assertEquals(createdAccount.getLastname(), LASTNAME);
+        Assert.assertEquals(createdAccount.getHomeOrg(), HOMEORG);
+    }
+
+    @Test
+    public void testFindByEduIdPairwiseIdThrows() {
+        try{
+            accountFacade.findByEduIdPairwiseId("123");
+            Assert.fail("WegasNoResultException not thrown");
+        }
+        catch (WegasNoResultException e){}
+
+    }
+
+    @Test
+    public void testRefreshEduIDAccount() throws WegasNoResultException {
+        final String MODIFIED = "MODIFIED";
+        userDetails.setFirstname(MODIFIED);
+        accountFacade.refreshEduIDAccount(userDetails);
+
+        AaiAccount aaiAccount = accountFacade.findByEduIdPairwiseId(EDUID);
+
+        Assert.assertEquals(aaiAccount.getEduIdPairwiseId(), EDUID);
+        Assert.assertEquals(aaiAccount.getEmail(), EMAIL);
+        Assert.assertEquals(aaiAccount.getFirstname(), MODIFIED);
+        Assert.assertEquals(aaiAccount.getLastname(), LASTNAME);
+        Assert.assertEquals(aaiAccount.getHomeOrg(), HOMEORG);
+    }
+
+    @Test
+    public void testRefreshEduIDAccountNotFound() throws WegasNoResultException {
+        final String MODIFIED = "MODIFIED";
+        userDetails.setEduIdPairwiseId(MODIFIED);
+        accountFacade.refreshEduIDAccount(userDetails);
     }
 }
