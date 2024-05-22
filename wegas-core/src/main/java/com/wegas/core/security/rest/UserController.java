@@ -854,7 +854,7 @@ public class UserController {
      * @param accountId   user accountId
      */
     @POST
-    @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{permission: (View|Edit|Delete|Duplicate|Instantiate|Translate-[A-Z]*|,)*}/{accountId : [1-9][0-9]*}")
+    @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{permission: (?:View|Edit|Delete|Duplicate|Instantiate|Translate-[A-Z]*|,)*}/{accountId : [1-9][0-9]*}")
     public void shareGameModel(@PathParam("gameModelId") Long gameModelId,
         @PathParam("permission") String permission,
         @PathParam("accountId") Long accountId) {

@@ -139,7 +139,7 @@
         <bujiVersion>9.0.1</bujiVersion>
         <jakartaPac4jVersion>8.0.0</jakartaPac4jVersion>
 
-        <payara.version>6.2023.9</payara.version>
+        <payara.version>6.2024.5</payara.version>
 
         <junit.version>4.13.1</junit.version>
         <arquillian.version>1.7.1.Final</arquillian.version>
@@ -149,13 +149,55 @@
 
         <!-- logback 1.4.x slf4j 2.x + jakarta ns -->
         <slf4j.version>2.0.9</slf4j.version>
-        <logback.version>1.4.11</logback.version>
+        <logback.version>1.4.14</logback.version>
 
         <httpcomponents.version>4.5.14</httpcomponents.version>
         <!--<liquibase.version>2.0.5</liquibase.version>-->
         <liquibase.version>4.19.0</liquibase.version>
         <jcr.version>2.0</jcr.version>
-        <oak.version>1.56.0</oak.version>
+        <oak.version>1.62.0</oak.version>
+        <apache.poi.version>5.2.5</apache.poi.version>
+        <h2.version>2.2.224</h2.version>
+        <mongodb-driver-legacy.version>3.10.1</mongodb-driver-legacy.version>
+        <itextpdf.version>5.5.13.3</itextpdf.version>
+        <flying-saucer-pdf.version>9.2.2</flying-saucer-pdf.version> <!-- cannot be updated -->
+        <jtidy.version>r938</jtidy.version>
+        <commons-text.version>1.12.0</commons-text.version>
+        <commons-collections.version>3.2.2</commons-collections.version>
+        <commons-io.version>2.16.1</commons-io.version>
+        <commons-lang3.version>3.14.0</commons-lang3.version>
+        <java-diff-utils.version>4.0</java-diff-utils.version> <!-- cannot be updated -->
+        <jxapi.version>2.0.1</jxapi.version>
+        <reflections.version>0.9.11</reflections.version> <!-- cannot be updated -->
+        <postgresql.version>42.7.3</postgresql.version>
+        <pusher-http-java.version>1.3.3</pusher-http-java.version>
+        <glassfish-corba-omgapi.version>4.2.5</glassfish-corba-omgapi.version>
+        <arquillian-payara-server-embedded.version>3.0</arquillian-payara-server-embedded.version>
+        <arquillian-suite-extension.version>1.2.2</arquillian-suite-extension.version>
+
+
+        <maven-clean-plugin.version>3.3.2</maven-clean-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <spotbugs-maven-plugin.version>4.8.5.0</spotbugs-maven-plugin.version>
+        <findsecbugs-plugin.version>1.13.0</findsecbugs-plugin.version>
+        <maven-jar-plugin.version>3.4.1</maven-jar-plugin.version>
+        <maven-war-plugin.version>3.4.0</maven-war-plugin.version>
+        <maven-dependency-plugin.version>3.6.1</maven-dependency-plugin.version>
+        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
+        <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
+        <maven-project-info-reports-plugin.version>3.5.0</maven-project-info-reports-plugin.version>
+        <maven-site-plugin.version>3.12.1</maven-site-plugin.version>
+        <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+        <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
+        <maven-pmd-plugin.version>3.21.0</maven-pmd-plugin.version>
+        <maven-scm-publish-plugin.version>3.2.1</maven-scm-publish-plugin.version>
+        <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
+        <maven-jxr-plugin.version>3.3.2</maven-jxr-plugin.version>
+        <license-maven-plugin.version>4.5</license-maven-plugin.version>
+        <exec-maven-plugin.version>3.2.0</exec-maven-plugin.version>
+        <maven-project-info-reports-plugin.version>3.5.0</maven-project-info-reports-plugin.version>
 
         <github.global.server>github</github.global.server>
 
@@ -241,7 +283,7 @@
             <dependency>
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
-                <version>3.2.2</version>
+                <version>${commons-collections.version}</version>
             </dependency>
             <!-- slf4j -->
             <dependency>
@@ -278,14 +320,14 @@
             <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi</artifactId>
-                <version>5.2.3</version>
+                <version>${apache.poi.version}</version>
                 <type>jar</type>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml</artifactId>
-                <version>5.2.3</version>
+                <version>${apache.poi.version}</version>
                 <type>jar</type>
             </dependency>
 
@@ -354,7 +396,7 @@
             <dependency>
                 <groupId>org.mongodb</groupId>
                 <artifactId>mongodb-driver-legacy</artifactId>
-                <version>3.10.1</version>
+                <version>${mongodb-driver-legacy.version}</version>
             </dependency>
 
             <dependency>
@@ -367,52 +409,59 @@
                 <groupId>com.h2database</groupId>
                 <artifactId>h2-mvstore</artifactId>
                 <!-- version must match the payara-bom h2db.version property -->
-                <version>2.2.220</version>
+                <version>${h2.version}</version>
             </dependency>
 
             <!-- PDF Generation -->
             <dependency>
                 <groupId>com.itextpdf</groupId>
                 <artifactId>itextpdf</artifactId>
-                <version>5.5.13.3</version>
+                <version>${itextpdf.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xhtmlrenderer</groupId>
                 <artifactId>flying-saucer-pdf</artifactId>
-                <version>9.2.2</version>
+                <version>${flying-saucer-pdf.version}</version>
                 <type>jar</type>
             </dependency>
             <dependency>
                 <groupId>net.sf.jtidy</groupId>
                 <artifactId>jtidy</artifactId>
-                <version>r938</version>
+                <version>${jtidy.version}</version>
             </dependency>
 
             <!-- For string escape utils -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
-                <version>1.10.0</version>
+                <version>${commons-text.version}</version>
+                <type>jar</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
                 <type>jar</type>
             </dependency>
 
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.13.0</version>
+                <version>${commons-io.version}</version>
                 <type>jar</type>
             </dependency>
 
             <dependency>
                 <groupId>io.github.java-diff-utils</groupId>
                 <artifactId>java-diff-utils</artifactId>
-                <version>4.0</version>
+                <version>${java-diff-utils.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>gov.adlnet</groupId>
                 <artifactId>jxapi</artifactId>
-                <version>2.0.1</version>
+                <version>${jxapi.version}</version>
                 <exclusions>
                     <!--
                         HACK: exclude old javax.mail namespace
@@ -443,14 +492,14 @@
             <dependency>
                 <groupId>org.reflections</groupId>
                 <artifactId>reflections</artifactId>
-                <version>0.9.11</version>
+                <version>${reflections.version}</version>
             </dependency>
 
             <!-- Postgresql Driver -->
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>42.6.0</version>
+                <version>${postgresql.version}</version>
                 <!--<scope>test</scope>-->
             </dependency>
 
@@ -458,14 +507,14 @@
             <dependency>
                 <groupId>com.pusher</groupId>
                 <artifactId>pusher-http-java</artifactId>
-                <version>1.3.1</version>
+                <version>${pusher-http-java.version}</version>
             </dependency>
 
             <!-- Provided By Payara, but not exposed in payara-bom -->
             <dependency>
                 <groupId>org.glassfish.corba</groupId>
                 <artifactId>glassfish-corba-omgapi</artifactId>
-                <version>4.1.0</version>
+                <version>${glassfish-corba-omgapi.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -491,7 +540,7 @@
             <dependency>
                 <groupId>fish.payara.arquillian</groupId>
                 <artifactId>arquillian-payara-server-embedded</artifactId>
-                <version>3.0.alpha8</version>
+                <version>${arquillian-payara-server-embedded.version}</version>
                 <scope>test</scope>
             </dependency>
 
@@ -499,16 +548,7 @@
             <dependency>
                 <groupId>org.eu.ingwar.tools</groupId>
                 <artifactId>arquillian-suite-extension</artifactId>
-                <version>1.2.2</version>
-                <scope>test</scope>
-            </dependency>
-
-            <!-- required by arq-suite-ext -->
-            <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>2.6</version>
-                <type>jar</type>
+                <version>${arquillian-suite-extension.version}</version>
                 <scope>test</scope>
             </dependency>
 
@@ -531,14 +571,14 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>${maven-clean-plugin.version}</version>
                 </plugin>
 
                 <!-- Compilation -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <version>${maven-compiler-plugin.version}</version>
                     <configuration>
                         <!-- next line makes easier to detect strange compilation errors -->
                         <!--<forceJavacCompilerUse>true</forceJavacCompilerUse>-->
@@ -557,7 +597,7 @@
                 <plugin>
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
-                    <version>4.0.0</version>
+                    <version>${spotbugs-maven-plugin.version}</version>
                     <configuration>
                         <effort>Max</effort>
                         <threshold>Low</threshold>
@@ -569,7 +609,7 @@
                             <plugin>
                                 <groupId>com.h3xstream.findsecbugs</groupId>
                                 <artifactId>findsecbugs-plugin</artifactId>
-                                <version>1.9.0</version>
+                                <version>${findsecbugs-plugin.version}</version>
                             </plugin>
                         </plugins>
                     </configuration>
@@ -621,7 +661,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>${maven-jar-plugin.version}</version>
                     <configuration>
                         <archive>
                             <manifest>
@@ -636,7 +676,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
-                    <version>3.3.2</version>
+                    <version>${maven-war-plugin.version}</version>
                     <configuration>
                         <failOnMissingWebXml>false</failOnMissingWebXml>
                     </configuration>
@@ -646,13 +686,13 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>${maven-dependency-plugin.version}</version>
                 </plugin>
 
                 <!-- Reource attachment -->
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>${maven-resources-plugin.version}</version>
                     <configuration>
                     </configuration>
                 </plugin>
@@ -660,13 +700,13 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.2.1</version>
+                    <version>${maven-source-plugin.version}</version>
                 </plugin>
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>${maven-javadoc-plugin.version}</version>
                 </plugin>
 
                 <!-- YUI JS Compression Plugin -->
@@ -687,7 +727,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M5</version>
+                    <version>${maven-surefire-plugin.version}</version>
                     <configuration>
                         <!-- Add options to start payara with java 17-->
                         <!-- Adding  add-opens=java.base/java.io=ALL-UNNAMED as described in this bug: https://github.com/payara/Payara/issues/6337 -->
@@ -710,25 +750,25 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-report-plugin</artifactId>
-                    <version>3.0.0-M4</version>
+                    <version>${maven-surefire-plugin.version}</version>
                 </plugin>
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-project-info-reports-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>${maven-project-info-reports-plugin.version}</version>
                 </plugin>
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.9.0</version>
+                    <version>${maven-site-plugin.version}</version>
                 </plugin>
 
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.10</version>
+                    <version>${jacoco-maven-plugin.version}</version>
                     <!--
                         Prepares the property pointing to the JaCoCo runtime agent which
                         is passed as VM argument when Maven the Surefire plugin is executed.
@@ -765,13 +805,13 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>jdepend-maven-plugin</artifactId>
-                    <version>2.0</version>
+                    <version>${jdepend-maven-plugin.version}</version>
                 </plugin>
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-pmd-plugin</artifactId>
-                    <version>3.21.0</version>
+                    <version>${maven-pmd-plugin.version}</version>
                     <configuration>
                         <printFailingErrors>true</printFailingErrors>
                         <failurePriority>2</failurePriority>
@@ -794,13 +834,13 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-scm-publish-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>${maven-scm-publish-plugin.version}</version>
                 </plugin>
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>${maven-checkstyle-plugin.version}</version>
                     <configuration>
                         <configLocation>wegas/checkstyle/wegas_checks.xml</configLocation>
                     </configuration>
@@ -816,13 +856,13 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jxr-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>${maven-jxr-plugin.version}</version>
                 </plugin>
 
                 <plugin>
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
-                    <version>3.0</version>
+                    <version>${license-maven-plugin.version}</version>
                     <dependencies>
                         <dependency>
                             <groupId>ch.albasim.wegas</groupId>
@@ -835,7 +875,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>${exec-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -945,7 +985,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>${maven-project-info-reports-plugin.version}</version>
                 <configuration>
                     <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
                     <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
@@ -970,7 +1010,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.9.0</version>
+                <version>${maven-site-plugin.version}</version>
             </plugin>
 
             <plugin>
