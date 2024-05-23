@@ -155,7 +155,7 @@
         <!--<liquibase.version>2.0.5</liquibase.version>-->
         <liquibase.version>4.19.0</liquibase.version>
         <jcr.version>2.0</jcr.version>
-        <oak.version>1.62.0</oak.version>
+        <oak.version>1.60.0</oak.version> <!-- from 1.62.0 mongo 5 required -->
         <apache.poi.version>5.2.5</apache.poi.version>
         <h2.version>2.2.224</h2.version>
         <mongodb-driver-legacy.version>3.10.1</mongodb-driver-legacy.version>
