@@ -382,30 +382,6 @@ public class GameFacade extends BaseFacade<Game> {
                 .setParameter("status", status).getResultList();
     }
 
-//    /**
-//     * Find all games with given ids and status (was used for faster findByStatusAndUser fetch)
-//     *
-//     * @param ids    ids of games to fetch
-//     * @param status status of games to fetch
-//     * @return all games which match given ids and status
-//     */
-//    public List<Game> findByIdsAndStatus(final List<Long> ids, final Game.Status status) {
-//        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-//        final CriteriaQuery<Game> query = criteriaBuilder.createQuery(Game.class);
-//        Root<Game> gameRoot = query.from(Game.class);
-//
-//        query.where(
-//                criteriaBuilder.and(
-//                        gameRoot.get("id").in(ids),
-//                        criteriaBuilder.equal(gameRoot.get("status"), status)
-//                )
-//        );
-//
-//        TypedQuery<Game> typedQuery = getEntityManager().createQuery(query);
-//
-//        return typedQuery.getResultList();
-//    }
-
     /**
      * Get all paginated games with the given status which are accessible to the current user
      *
@@ -430,21 +406,29 @@ public class GameFacade extends BaseFacade<Game> {
 
         Predicate whereClause = criteriaBuilder.and(
                 criteriaBuilder.equal(gameRoot.get("status"), status),
+                // Maximum in values for psql: 32767
                 gameRoot.get("id").in(new ArrayList<>(filteredGMatrix.keySet()))
         );
 
         for (String param : pageable.getSplitQuery()) {
             ParameterExpression<String> queryParameter = criteriaBuilder.parameter(String.class);
             if (!param.isEmpty()) {
-               Join<Game, GameModel> gameModelJoin = gameRoot.join("gameModel", JoinType.INNER);
+                Join<Game, GameModel> gameModelJoin = gameRoot.join("gameModel", JoinType.INNER);
+
+                // Only if admin
+                Join<Game, User> userJoin = gameRoot.join("createdBy", JoinType.INNER);
+                Join<User, AbstractAccount> abstractAccountJoin = userJoin.join("accounts", JoinType.INNER);
+                Expression<String> exp = criteriaBuilder.concat(criteriaBuilder.lower(criteriaBuilder.coalesce(abstractAccountJoin.get("firstname"), "")), " ");
+                exp = criteriaBuilder.concat(exp, criteriaBuilder.lower(criteriaBuilder.coalesce(abstractAccountJoin.get("lastname"), "")));
+
                 whereClause = criteriaBuilder.and(whereClause, criteriaBuilder.or(
-                        criteriaBuilder.like(criteriaBuilder.lower(gameRoot.get("name")), "%" + param.toLowerCase() + "%"),
-                        criteriaBuilder.like(criteriaBuilder.lower(gameModelJoin.get("name")), "%" + param.toLowerCase() + "%")
-                ));
+                                criteriaBuilder.like(criteriaBuilder.lower(gameRoot.get("name")), "%" + param.toLowerCase() + "%"),
+                                criteriaBuilder.like(criteriaBuilder.lower(gameModelJoin.get("name")), "%" + param.toLowerCase() + "%"),
+                        criteriaBuilder.like(criteriaBuilder.lower(exp), "%" + param.toLowerCase() + "%")));
             }
         }
-
         query.where(whereClause);
+        query.orderBy(criteriaBuilder.desc(gameRoot.get("createdTime")));
 
         int total = getEntityManager().createQuery(query).getResultList().size();
         TypedQuery<Game> listQuery = pageable.paginateQuery(getEntityManager().createQuery(query));

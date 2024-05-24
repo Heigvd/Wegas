@@ -739,7 +739,7 @@ export const WegasLobbyRestClient = function (
         status: IGameWithId['status'],
         page: number,
         size: number,
-        query: string,
+        query: string
       ) => {
         const path = `${baseUrl}/Lobby/GameModel/Game/status/${status}/Paginated?page=${page}&size=${size}&query=${query}`;
         return sendJsonRequest<IPage<(IGameWithId & { gameModel?: IGameModelWithId })>>(

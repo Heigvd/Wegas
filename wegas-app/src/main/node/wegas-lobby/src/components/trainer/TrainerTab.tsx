@@ -11,14 +11,13 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { uniq } from 'lodash';
 import * as React from 'react';
 import { useMatch, useResolvedPath } from 'react-router-dom';
-import { IAbstractAccount, IGameModelWithId, IGameWithId } from 'wegas-ts-api';
+import { IGameModelWithId, IGameWithId } from 'wegas-ts-api';
 import { getGamesPaginated, getShadowUserByIds } from '../../API/api';
-import { getDisplayName, mapByKey, match } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
 import { useLocalStorageState } from '../../preferences';
 import { useAccountsByUserIds, useCurrentUser } from '../../selectors/userSelector';
 import { MINE_OR_ALL, useGames } from '../../selectors/wegasSelector';
-import {useAppDispatch} from '../../store/hooks';
+import { useAppDispatch } from '../../store/hooks';
 import { WindowedContainer } from '../common/CardContainer';
 import DebouncedInput from '../common/DebouncedInput';
 import DropDownMenu, { itemStyle } from '../common/DropDownMenu';
@@ -27,32 +26,11 @@ import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import IconButton from '../common/IconButton';
 import InlineLoading from '../common/InlineLoading';
-import SortBy, { SortByOption } from '../common/SortBy';
 import { successColor } from '../styling/color';
 import { panelPadding } from '../styling/style';
 import CreateGame from './CreateGame';
 import GameCard from './GameCard';
-import Checkbox from "../common/Checkbox";
-
-interface SortBy {
-  createdByName: string;
-  name: string;
-  createdTime: number;
-}
-
-const matchSearch =
-  (accountMap: Record<number, IAbstractAccount>, search: string) =>
-  ({ game, gameModel }: { game: IGameWithId; gameModel: IGameModelWithId }) => {
-    return match(search, regex => {
-      const username = game.createdById != null ? getDisplayName(accountMap[game.createdById]) : '';
-      return (
-        (gameModel.name && gameModel.name.match(regex) != null) ||
-        (game.name && game.name.match(regex) != null) ||
-        (game.token && game.token.match(regex) != null) ||
-        username.match(regex) != null
-      );
-    });
-  };
+import Checkbox from '../common/Checkbox';
 
 export default function TrainerTab(): JSX.Element {
   const i18n = useTranslations();
@@ -82,14 +60,6 @@ export default function TrainerTab(): JSX.Element {
 
   const [viewMode, setViewMode] = React.useState<'EXPANDED' | 'COLLAPSED'>('COLLAPSED');
 
-  const [sortBy, setSortBy] = useLocalStorageState<{ key: keyof SortBy; asc: boolean }>(
-    'trainer-sortby',
-    {
-      key: 'createdTime',
-      asc: false,
-    },
-  );
-
   //  const onSortChange = React.useCallback(({ key, asc }: { key: keyof SortBy; asc: boolean }) => {
   //    setSortBy({ key, asc });
   //  }, []);
@@ -98,20 +68,12 @@ export default function TrainerTab(): JSX.Element {
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(20);
 
-  const onNextPage = () => setPage(page<games.totalResults/pageSize?page + 1: page);
-  const onPreviousPage = () => setPage(page>1?page - 1:1);
+  const onNextPage = () => setPage(page < games.totalResults / pageSize ? page + 1 : page);
+  const onPreviousPage = () => setPage(page > 1 ? page - 1 : 1);
 
   const onFilterChange = React.useCallback((filter: string) => {
     setFilter(filter);
   }, []);
-
-  const sortOptions: SortByOption<SortBy>[] = [
-    { key: 'createdTime', label: i18n.date },
-    { key: 'name', label: i18n.name },
-  ];
-  if (isAdmin) {
-    sortOptions.push({ key: 'createdByName', label: i18n.createdBy });
-  }
 
   const status = games.status[statusFilter];
 
@@ -120,7 +82,6 @@ export default function TrainerTab(): JSX.Element {
       dispatch(
         getGamesPaginated({ status: statusFilter, page: page, size: pageSize, query: filter }),
       );
-      console.log(games.totalResults)
     }
   }, [status, dispatch, statusFilter]);
 
@@ -131,13 +92,12 @@ export default function TrainerTab(): JSX.Element {
       dispatch(
         getGamesPaginated({ status: statusFilter, page: page, size: pageSize, query: filter }),
       );
-      console.log(games.totalResults)
     }
   }, [filter, pageSize]);
 
   React.useEffect(() => {
     dispatch(
-        getGamesPaginated({ status: statusFilter, page: page, size: pageSize, query: filter }),
+      getGamesPaginated({ status: statusFilter, page: page, size: pageSize, query: filter }),
     );
   }, [page]);
 
@@ -165,7 +125,6 @@ export default function TrainerTab(): JSX.Element {
   );
 
   const accountsState = useAccountsByUserIds(userIds);
-  const accounts = mapByKey(accountsState.accounts, 'parentId');
 
   React.useEffect(() => {
     if (isAdmin && accountsState.unknownUsers.length > 0) {
@@ -183,24 +142,6 @@ export default function TrainerTab(): JSX.Element {
     return <InlineLoading />;
   } else {
     const selected = games.gamesAndGameModels.find(ggm => ggm.gameModel.id === selectedId);
-
-    const filtered = filter
-      ? games.gamesAndGameModels.filter(matchSearch(accounts, filter))
-      : games.gamesAndGameModels;
-    const sorted = filtered.sort((a, b) => {
-      const reverse = sortBy.asc ? 1 : -1;
-      if (sortBy.key === 'createdTime') {
-        return reverse * (a.game.createdTime! - b.game.createdTime!);
-      } else if (sortBy.key === 'name') {
-        const aName =
-          a.game.createdById != null ? getDisplayName(accounts[a.game.createdById]) : '';
-        const bName =
-          b.game.createdById != null ? getDisplayName(accounts[b.game.createdById]) : '';
-
-        return reverse * aName.localeCompare(bName);
-      }
-      return 0;
-    });
 
     const statusFilterEntries: { value: IGameWithId['status']; label: React.ReactNode }[] = [
       {
@@ -283,7 +224,6 @@ export default function TrainerTab(): JSX.Element {
             >
               {i18n.createGame}
             </IconButton>
-            <SortBy options={sortOptions} current={sortBy} onChange={setSortBy} />
 
             {dropDownStatus}
             {dropDownMine}
@@ -297,38 +237,61 @@ export default function TrainerTab(): JSX.Element {
           </Flex>
 
           <Flex
-              justify="space-between"
-              align="center"
-              className={css({
-                flexShrink: 0,
-                height: '20px',
-              })}
+            justify="space-between"
+            align="center"
+            className={css({
+              flexShrink: 0,
+              height: '20px',
+            })}
           >
-            <div className={css({
-              display: "flex",
-              alignContent: "flex-start"
-            })}>
-              <h3>
+            <div
+              className={css({
+                display: 'flex',
+                alignContent: 'flex-start',
+              })}
+            >
+              <h3>{`${games.totalResults} ${i18n.games}`}</h3>
+            </div>
+            <div>
+              <h3
+                className={css({
+                  lineHeight: '1.5',
+                })}
+              >
                 <IconButton onClick={onPreviousPage} icon={'caret-left'}></IconButton>
-                {page}/{games.totalResults > 0 ? Math.ceil(games.totalResults/pageSize) : 1}
+                {page}/{games.totalResults > 0 ? Math.ceil(games.totalResults / pageSize) : 1}
                 <IconButton onClick={onNextPage} icon={'caret-right'}></IconButton>
               </h3>
             </div>
-            <div className={css({
-              display: "flex",
-              alignContent: "flex-end",
-              flexDirection: "row"
-            })}>
-              <Checkbox label="20" value={pageSize === 20} onChange={(newValue: boolean) => setPageSize(newValue?20:pageSize)} />
-              <Checkbox label="50" value={pageSize === 50} onChange={(newValue: boolean) => setPageSize(newValue?50:pageSize)} />
-              <Checkbox label="100" value={pageSize === 100} onChange={(newValue: boolean) => setPageSize(newValue?100:pageSize)} />
+            <div
+              className={css({
+                display: 'flex',
+                alignContent: 'flex-end',
+                flexDirection: 'row',
+              })}
+            >
+              <Checkbox
+                label="20"
+                value={pageSize === 20}
+                onChange={(newValue: boolean) => setPageSize(newValue ? 20 : pageSize)}
+              />
+              <Checkbox
+                label="50"
+                value={pageSize === 50}
+                onChange={(newValue: boolean) => setPageSize(newValue ? 50 : pageSize)}
+              />
+              <Checkbox
+                label="100"
+                value={pageSize === 100}
+                onChange={(newValue: boolean) => setPageSize(newValue ? 100 : pageSize)}
+              />
             </div>
           </Flex>
 
           {status === 'READY' ? (
             <>
               <WindowedContainer
-                items={sorted}
+                items={games.gamesAndGameModels}
                 scrollTo={selected}
                 emptyMessage={<i>{filter ? i18n.noGamesFound : i18n.noGames}</i>}
               >
