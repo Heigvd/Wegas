@@ -93,7 +93,7 @@ export default function TrainerTab(): JSX.Element {
         getGamesPaginated({ status: statusFilter, page: page, size: pageSize, query: filter }),
       );
     }
-  }, [filter, pageSize]);
+  }, [filter, pageSize, statusFilter]);
 
   React.useEffect(() => {
     dispatch(
@@ -101,11 +101,6 @@ export default function TrainerTab(): JSX.Element {
     );
   }, [page]);
 
-  // React.useEffect(() => {
-  //   if (status === 'NOT_INITIALIZED') {
-  //     dispatch(getGames(statusFilter));
-  //   }
-  // }, [status, dispatch, statusFilter]);
 
   const userIds = uniq(
     games.gamesAndGameModels.flatMap(data =>
@@ -253,11 +248,7 @@ export default function TrainerTab(): JSX.Element {
               <h3>{`${games.totalResults} ${i18n.games}`}</h3>
             </div>
             <div>
-              <h3
-                className={css({
-                  lineHeight: '1.5',
-                })}
-              >
+              <h3>
                 <IconButton onClick={onPreviousPage} icon={'caret-left'}></IconButton>
                 {page}/{games.totalResults > 0 ? Math.ceil(games.totalResults / pageSize) : 1}
                 <IconButton onClick={onNextPage} icon={'caret-right'}></IconButton>
