@@ -396,6 +396,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
 
   globals.Helpers = {
     cloneDeep: cloneDeep,
+    isEqual: isEqual,
     uniq: uniq,
     escapeRegExp: escapeRegExp,
     useRef,
