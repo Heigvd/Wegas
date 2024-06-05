@@ -439,7 +439,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      *
      * @param eduIdPairwiseId
      *
-     * @return the user who owns an with the given username
+     * @return the user who owns an account with the given username
      *
      * @throws WegasNoResultException if no such a user exists
      * NamedQuery(name = "AaiAccount.findByPersistentId", query = "SELECT a FROM AaiAccount a WHERE TYPE(a) = AaiAccount AND a.persistentId = :persistentId")
