@@ -11,7 +11,6 @@ import com.wegas.core.rest.AbstractRestController;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
-import java.util.List;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -25,6 +24,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+
+import java.util.List;
 
 /**
  *
@@ -132,7 +133,7 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
      * @param accountId   user accountId
      */
     @POST
-    @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{permission: (View|Edit|Delete|Duplicate|Instantiate|Translate-[A-Z]*|,)*}/{roleId : [1-9][0-9]*}")
+    @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{permission: (?:View|Edit|Delete|Duplicate|Instantiate|Translate-[A-Z]*|,)*}/{roleId : [1-9][0-9]*}")
     public Permission shareGameModel(@PathParam("gameModelId") Long gameModelId,
         @PathParam("permission") String permission,
         @PathParam("roleId") Long roleId) {
