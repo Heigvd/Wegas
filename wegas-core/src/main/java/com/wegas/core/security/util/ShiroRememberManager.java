@@ -24,6 +24,7 @@ public final class ShiroRememberManager extends CookieRememberMeManager {
         boolean secureFlag = "true".equals(Helper.getWegasProperty("shiro.secureFlag", "false"));
         this.getCookie().setSecure(secureFlag);
         this.getCookie().setSameSite(Cookie.SameSiteOptions.LAX);
+        this.getCookie().setMaxAge(Integer.parseInt(Helper.getWegasProperty("shiro.rememberMeDuration", "3600")));
 
         setCipherKey(Hex.decode(Helper.getWegasProperty("shiro.cipherKey", "09876543212345678965423456787654")));
     }

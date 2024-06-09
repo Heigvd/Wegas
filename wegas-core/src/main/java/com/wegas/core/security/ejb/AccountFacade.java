@@ -435,6 +435,30 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
+     * Return a user based on his persistentID.
+     *
+     * @param eduIdPairwiseId
+     *
+     * @return the user who owns an account with the given username
+     *
+     * @throws WegasNoResultException if no such a user exists
+     * NamedQuery(name = "AaiAccount.findByPersistentId", query = "SELECT a FROM AaiAccount a WHERE TYPE(a) = AaiAccount AND a.persistentId = :persistentId")
+     */
+    public AaiAccount findByEduIdPairwiseId(String eduIdPairwiseId) throws WegasNoResultException {
+        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<AaiAccount> criteriaQuery = criteriaBuilder.createQuery(AaiAccount.class);
+        Root<AaiAccount> root = criteriaQuery.from(AaiAccount.class);
+        criteriaQuery.select(root);
+        criteriaQuery.where(criteriaBuilder.equal(root.get("eduIdPairwiseId"), eduIdPairwiseId));
+        TypedQuery<AaiAccount> query = getEntityManager().createQuery(criteriaQuery);
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException ex) {
+            throw new WegasNoResultException(ex);
+        }
+    }
+
+    /**
      * Updates local AAI account with any modified data received at login.
      *
      * @param userDetails the freshest version of user details
@@ -449,6 +473,29 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                 || !a.getDetails().getEmail().equals(userDetails.getEmail())) {
 
                 a.merge(AaiAccount.build(userDetails)); //HAZARDOUS!!!!
+                update(a.getId(), a);
+            }
+        } catch (WegasNoResultException ex) {
+            // Ignore
+            logger.error("AAIAccount does not exist");
+        }
+    }
+
+    /**
+     * Updates local EduID account with any modified data received at login.
+     *
+     * @param userDetails the freshest version of user details
+     */
+    public void refreshEduIDAccount(AaiUserDetails userDetails) {
+        try {
+            AaiAccount a = findByEduIdPairwiseId(userDetails.getEduIdPairwiseId());
+
+            if (!a.getFirstname().equals(userDetails.getFirstname())
+                    || !a.getLastname().equals(userDetails.getLastname())
+                    || !a.getHomeOrg().equals(userDetails.getHomeOrg())
+                    || !a.getDetails().getEmail().equals(userDetails.getEmail())) {
+
+                a.merge(AaiAccount.buildForEduIdPairwiseId(userDetails)); //HAZARDOUS!!!!
                 update(a.getId(), a);
             }
         } catch (WegasNoResultException ex) {
