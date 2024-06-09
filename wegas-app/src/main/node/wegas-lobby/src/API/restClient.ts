@@ -64,13 +64,6 @@ export type IRoleWithPermissions = IRoleWithId & {
   permissions?: IPermissionWithId[];
 };
 
-// export type IUserPage = {
-//   total: number;
-//   page: number;
-//   pageSize: number;
-//   pageContent: IUserWithAccounts[];
-// };
-
 export type IUserWithAccounts = IUserWithId & {
   accounts?: IAccountWithPerm[];
   permissions?: IPermissionWithId[];
