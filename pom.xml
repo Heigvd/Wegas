@@ -134,12 +134,8 @@
 
         <jakarta.version>10.0.0</jakarta.version>
 
-        <shiro.version>1.13.0</shiro.version>
-        <pac4jVersion>6.0.2</pac4jVersion>
-        <bujiVersion>9.0.1</bujiVersion>
-        <jakartaPac4jVersion>8.0.1</jakartaPac4jVersion>
-
-        <payara.version>6.2024.5</payara.version>
+        <shiro.version>1.12.0</shiro.version>
+        <payara.version>6.2023.9</payara.version>
 
         <junit.version>4.13.1</junit.version>
         <arquillian.version>1.7.1.Final</arquillian.version>
@@ -177,28 +173,28 @@
         <arquillian-suite-extension.version>1.2.2</arquillian-suite-extension.version>
 
 
-        <maven-clean-plugin.version>3.3.2</maven-clean-plugin.version>
-        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-        <spotbugs-maven-plugin.version>4.8.5.0</spotbugs-maven-plugin.version>
-        <findsecbugs-plugin.version>1.13.0</findsecbugs-plugin.version>
-        <maven-jar-plugin.version>3.4.1</maven-jar-plugin.version>
-        <maven-war-plugin.version>3.4.0</maven-war-plugin.version>
-        <maven-dependency-plugin.version>3.6.1</maven-dependency-plugin.version>
-        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
-        <maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
-        <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
-        <maven-project-info-reports-plugin.version>3.5.0</maven-project-info-reports-plugin.version>
-        <maven-site-plugin.version>3.12.1</maven-site-plugin.version>
-        <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+        <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <spotbugs-maven-plugin.version>4.0.0</spotbugs-maven-plugin.version>
+        <findsecbugs-plugin.version>1.9.0</findsecbugs-plugin.version>
+        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+        <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
+        <maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
+        <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+        <maven-project-info-reports-plugin.version>3.0.0</maven-project-info-reports-plugin.version>
+        <maven-site-plugin.version>3.9.0</maven-site-plugin.version>
+        <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <maven-pmd-plugin.version>3.21.0</maven-pmd-plugin.version>
-        <maven-scm-publish-plugin.version>3.2.1</maven-scm-publish-plugin.version>
-        <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
-        <maven-jxr-plugin.version>3.3.2</maven-jxr-plugin.version>
-        <license-maven-plugin.version>4.5</license-maven-plugin.version>
-        <exec-maven-plugin.version>3.2.0</exec-maven-plugin.version>
-        <maven-project-info-reports-plugin.version>3.5.0</maven-project-info-reports-plugin.version>
+        <maven-scm-publish-plugin.version>3.0.0</maven-scm-publish-plugin.version>
+        <maven-checkstyle-plugin.version>3.1.1</maven-checkstyle-plugin.version>
+        <maven-jxr-plugin.version>3.0.0</maven-jxr-plugin.version>
+        <license-maven-plugin.version>3.0</license-maven-plugin.version>
+        <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
+        <maven-project-info-reports-plugin.version>3.0.0</maven-project-info-reports-plugin.version>
 
         <github.global.server>github</github.global.server>
 
@@ -229,28 +225,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>io.buji</groupId>
-                <artifactId>buji-pac4j</artifactId>
-                <version>${bujiVersion}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>jakartaee-pac4j</artifactId>
-                <version>${jakartaPac4jVersion}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>pac4j-jakartaee</artifactId>
-                <version>${pac4jVersion}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>pac4j-oidc</artifactId>
-                <version>${pac4jVersion}</version>
-            </dependency>
-
             <!-- Import dep from payara -->
             <dependency>
                 <groupId>fish.payara.api</groupId>
@@ -440,13 +414,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons-lang3.version}</version>
-                <type>jar</type>
-            </dependency>
-
-            <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
@@ -550,6 +517,15 @@
                 <groupId>org.eu.ingwar.tools</groupId>
                 <artifactId>arquillian-suite-extension</artifactId>
                 <version>${arquillian-suite-extension.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- required by arq-suite-ext -->
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.6</version>
+                <type>jar</type>
                 <scope>test</scope>
             </dependency>
 
