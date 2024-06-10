@@ -290,7 +290,6 @@
         <dependency>
             <groupId>fish.payara.api</groupId>
             <artifactId>payara-api</artifactId>
-            <version>${payara.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
