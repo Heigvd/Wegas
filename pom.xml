@@ -134,7 +134,7 @@
 
         <jakarta.version>10.0.0</jakarta.version>
 
-        <shiro.version>1.12.0</shiro.version>
+        <shiro.version>1.13.0</shiro.version>
         <pac4jVersion>6.0.2</pac4jVersion>
         <bujiVersion>9.0.1</bujiVersion>
         <jakartaPac4jVersion>8.0.1</jakartaPac4jVersion>
