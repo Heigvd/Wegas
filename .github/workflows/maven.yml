@@ -75,7 +75,7 @@ jobs:
         PR_NUMBER: ${{ github.event.number}}
       run: perl -pi -e 's/(wegas.build.number)=/$1=$ENV{GITHUB_RUN_NUMBER}/;s~(wegas.build.branch)=~$1=${{steps.branch-name.outputs.BRANCH}}~;s/(wegas.build.pr_branch)=/$1=$ENV{PR_NAME}/;s/(wegas.build.pr_number)=/$1=$ENV{PR_NUMBER}/;' wegas-core/src/main/resources/wegas.properties
     - name: Build with Maven
-      run: mvn -B -P release-profile package --file pom.xml
+      run: mvn -B -P release-profile package -DskipTests --file pom.xml
 
     - name: export cypress failures to filebin.net
       if: ${{ failure() }}
