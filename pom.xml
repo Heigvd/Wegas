@@ -139,7 +139,7 @@
         <bujiVersion>9.0.1</bujiVersion>
         <jakartaPac4jVersion>8.0.1</jakartaPac4jVersion>
 
-        <payara.version>6.2024.4</payara.version>
+        <payara.version>6.2024.3</payara.version>
 
         <junit.version>4.13.1</junit.version>
         <arquillian.version>1.7.1.Final</arquillian.version>
