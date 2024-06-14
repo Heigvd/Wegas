@@ -265,6 +265,7 @@
         <dependency>
             <groupId>fish.payara.api</groupId>
             <artifactId>payara-api</artifactId>
+            <version>6.2023.9</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
