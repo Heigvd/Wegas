@@ -136,7 +136,7 @@
 
         <shiro.version>1.13.0</shiro.version>
 
-        <payara.version>6.2023.11</payara.version>
+        <payara.version>6.2023.10</payara.version>
 
         <junit.version>4.13.1</junit.version>
         <arquillian.version>1.7.1.Final</arquillian.version>
