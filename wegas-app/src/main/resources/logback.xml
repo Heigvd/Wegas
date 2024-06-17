@@ -29,6 +29,7 @@
     <logger name="com.wegas.core.security.ejb.UserFacade" level="INFO"/>
     <logger name="com.wegas.core.rest.util.GuestTracker" level="INFO"/>
     <logger name="com.wegas.core.security.util.ShiroCacheManager" level="INFO"/>
+    <logger name="com.wegas.core.security.oidc" level="INFO"/>
     <logger name="com.wegas.log.xapi.Xapi" level="INFO"/>
     <!--<logger name="com.wegas.core.persistence.EntityListener" level="DEBUG"/>-->
 

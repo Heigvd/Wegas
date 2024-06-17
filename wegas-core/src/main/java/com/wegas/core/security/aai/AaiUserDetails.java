@@ -19,6 +19,7 @@ public class AaiUserDetails {
     private String email;
     private String secret;
     private boolean rememberMe;
+    private String eduIdPairwiseId;
 
     public AaiUserDetails() {
         // ensure there is a default constructor
@@ -79,4 +80,8 @@ public class AaiUserDetails {
     public void setRememberMe(boolean rememberMe) {
         this.rememberMe = rememberMe;
     }
+
+    public String getEduIdPairwiseId() { return this.eduIdPairwiseId; }
+
+    public void setEduIdPairwiseId(String eduIdPairwiseId) { this.eduIdPairwiseId = eduIdPairwiseId; }
 }
