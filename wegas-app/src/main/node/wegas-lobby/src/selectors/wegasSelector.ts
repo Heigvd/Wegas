@@ -434,7 +434,7 @@ export const useGames = (
             }
           }
           return [];
-        });
+        }).sort((a, b) => b.game.createdTime - a.game.createdTime);
 
         return {
           gamesAndGameModels: gamesAndGameModels,

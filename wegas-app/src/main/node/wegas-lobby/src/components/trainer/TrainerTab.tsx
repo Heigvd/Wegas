@@ -53,7 +53,7 @@ export default function TrainerTab(): JSX.Element {
   }, [isAdmin, statusFilter, setStatusFilter]);
 
   const games = useGames(
-    !isAdmin && statusFilter === 'DELETE' ? 'BIN' : statusFilter, //non-admin should never sees deleteds
+    !isAdmin && statusFilter === 'DELETE' ? 'BIN' : statusFilter, //non-admin should never see deleted
     currentUser != null ? currentUser.id : undefined,
     isAdmin ? mineFilter : 'MINE', // non-admin only see theirs
   );
@@ -199,6 +199,16 @@ export default function TrainerTab(): JSX.Element {
               close={() => {
                 setViewMode('COLLAPSED');
               }}
+              callback={() =>
+                dispatch(
+                  getGamesPaginated({
+                    status: statusFilter,
+                    page: page,
+                    size: pageSize,
+                    query: filter,
+                  }),
+                )
+              }
             />
           ) : null}
         </DropDownPanel>
