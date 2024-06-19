@@ -54,7 +54,7 @@ export const entityChooserLabelStyle = (disabled?: boolean) =>
         ? {
             '&:hover': {
               cursor: 'pointer',
-              boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.2)`,
+              boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.4)`,
               zIndex: 1,
             },
           }
@@ -71,8 +71,8 @@ export const entityChooserLabelStyle = (disabled?: boolean) =>
 export const entityChooserLabelContainer = css({
   // marginBottom: '10px',
   /* [`&>.${labelArrow}`]: {
-      borderLeft: `20px solid ${themeVar.colors.DisabledColor}`,
-    }, */
+        borderLeft: `20px solid ${themeVar.colors.DisabledColor}`,
+      }, */
 });
 
 export const activeEntityChooserLabel = css(
@@ -84,11 +84,11 @@ export const activeEntityChooserLabel = css(
     borderBottomColor: themeVar.colors.PrimaryColor,
   },
   /*
-    borderLeft: `20px solid ${themeVar.colors.PrimaryColor}`,
- */
+      borderLeft: `20px solid ${themeVar.colors.PrimaryColor}`,
+   */
   /*
-      borderLeft: `20px solid ${themeVar.colors.ActiveColor}`,
-  */
+        borderLeft: `20px solid ${themeVar.colors.ActiveColor}`,
+    */
 );
 
 interface LabelGeneratorProps<E extends IAbstractEntity> {
