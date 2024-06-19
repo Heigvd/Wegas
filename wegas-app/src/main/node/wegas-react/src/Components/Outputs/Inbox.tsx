@@ -74,8 +74,9 @@ function MessageLabel({ message }: MessageLabelProps) {
       <div className={cx(flex, flexColumn, expandWidth)}>
         <div className={cx(flex, flexRow, flexBetween)}>
           <div className={cx(labelTitleStyle)}>{translatedLabel}</div>
-          &nbsp;
-          <div className={css({ flexShrink: 0 })}>{translatedDate}</div>
+          {translatedDate && (
+          <div className={css({ flexShrink: 0 })}>&nbsp;{translatedDate}</div>
+          )}
         </div>
         <div className={cx(flex, defaultMarginTop)}>{translatedFrom}</div>
       </div>
