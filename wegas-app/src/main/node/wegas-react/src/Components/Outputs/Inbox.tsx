@@ -68,17 +68,17 @@ function MessageLabel({ message }: MessageLabelProps) {
   const translatedDate = useTranslate(message.date);
 
   return (
-    <div
-      className={cx(flex, itemCenter, messageLabel)}
-    >
+    <div className={cx(flex, itemCenter, messageLabel)}>
       <div className={cx(flex, flexColumn, expandWidth)}>
         <div className={cx(flex, flexRow, flexBetween)}>
           <div className={cx(labelTitleStyle)}>{translatedLabel}</div>
           {translatedDate && (
-          <div className={css({ flexShrink: 0 })}>&nbsp;{translatedDate}</div>
+            <div className={css({ flexShrink: 0 })}>&nbsp;{translatedDate}</div>
           )}
         </div>
-        <div className={cx(flex, defaultMarginTop)}>{translatedFrom}</div>
+        {translatedFrom && (
+          <div className={cx(flex, defaultMarginTop)}>{translatedFrom}</div>
+        )}
       </div>
     </div>
   );
@@ -99,7 +99,10 @@ function MessageChooser(props: EntityChooserLabelProps<IMessage>) {
 
   return (
     <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
-      <div className={cx(flex, flexRow, itemCenter)} onClick={() => editingStore.dispatch(readMessage(message))}>
+      <div
+        className={cx(flex, flexRow, itemCenter)}
+        onClick={() => editingStore.dispatch(readMessage(message))}
+      >
         {props.mobile && (
           <FontAwesomeIcon
             className={css({ marginRight: '5px' })}
