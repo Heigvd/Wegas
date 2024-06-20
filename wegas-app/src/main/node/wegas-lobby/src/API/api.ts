@@ -607,8 +607,8 @@ export const getGames = createAsyncThunk('game/getGames', async (status: IGameWi
   return await restClient.GameController.getGames(status);
 });
 
-export const getGamesPaginated = createAsyncThunk('game/getGamesPaginated', async (payload: {status: IGameWithId['status'], page: number, size: number, query: string}) => {
-    return await restClient.GameController.getGamesPaginated(payload.status, payload.page, payload.size, payload.query);
+export const getGamesPaginated = createAsyncThunk('game/getGamesPaginated', async (payload: {status: IGameWithId['status'], page: number, size: number, query: string, mine: boolean}) => {
+    return await restClient.GameController.getGamesPaginated(payload.status, payload.page, payload.size, payload.query, payload.mine);
 });
 
 export const changeGameStatus = createAsyncThunk(

@@ -300,7 +300,7 @@ public class GameFacade extends BaseFacade<Game> {
 
         // This is for retrocompatibility w/ game models that do not habe DebugGame
         if (entity.getGameModel().getGames().size() <= 1
-                && !(entity.getGameModel().getGames().get(0) instanceof DebugGame)) {// This is for retrocompatibility w/ game models that do not habe DebugGame
+                && !(entity.getGameModel().getGames().get(0) instanceof DebugGame)) {
             gameModelFacade.remove(entity.getGameModel());
         } else {
             getEntityManager().remove(entity);
@@ -386,10 +386,11 @@ public class GameFacade extends BaseFacade<Game> {
      * Get all paginated games with the given status which are accessible to the current user
      *
      * @param status   status {@link Game.Status#LIVE} {@link Game.Status#BIN} {@link Game.Status#DELETE}
+     * @param mine      boolean return currentUser's or all games (admin only)
      * @param pageable
      * @return all games paginated
      */
-    public Page<Game> findByStatusAndUserPaginated(Game.Status status, Pageable pageable) {
+    public Page<Game> findByStatusAndUserPaginated(Game.Status status, boolean mine, Pageable pageable) {
 
         List<Game.Status> gStatuses = new ArrayList<>();
         gStatuses.add(status);
@@ -410,23 +411,32 @@ public class GameFacade extends BaseFacade<Game> {
                 gameRoot.get("id").in(new ArrayList<>(filteredGMatrix.keySet()))
         );
 
+
         for (String param : pageable.getSplitQuery()) {
             ParameterExpression<String> queryParameter = criteriaBuilder.parameter(String.class);
             if (!param.isEmpty()) {
                 Join<Game, GameModel> gameModelJoin = gameRoot.join("gameModel", JoinType.INNER);
 
-                // Only if admin
                 Join<Game, User> userJoin = gameRoot.join("createdBy", JoinType.INNER);
                 Join<User, AbstractAccount> abstractAccountJoin = userJoin.join("accounts", JoinType.INNER);
                 Expression<String> exp = criteriaBuilder.concat(criteriaBuilder.lower(criteriaBuilder.coalesce(abstractAccountJoin.get("firstname"), "")), " ");
                 exp = criteriaBuilder.concat(exp, criteriaBuilder.lower(criteriaBuilder.coalesce(abstractAccountJoin.get("lastname"), "")));
 
                 whereClause = criteriaBuilder.and(whereClause, criteriaBuilder.or(
-                                criteriaBuilder.like(criteriaBuilder.lower(gameRoot.get("name")), "%" + param.toLowerCase() + "%"),
-                                criteriaBuilder.like(criteriaBuilder.lower(gameModelJoin.get("name")), "%" + param.toLowerCase() + "%"),
+                        criteriaBuilder.like(criteriaBuilder.lower(gameRoot.get("name")), "%" + param.toLowerCase() + "%"),
+                        criteriaBuilder.like(criteriaBuilder.lower(gameModelJoin.get("name")), "%" + param.toLowerCase() + "%"),
                         criteriaBuilder.like(criteriaBuilder.lower(exp), "%" + param.toLowerCase() + "%")));
             }
         }
+
+        // By default admins retrieve all, mine filter is reserved for them
+        if (mine && requestManager.isAdmin()) {
+            User user = userFacade.getCurrentUser();
+            whereClause = criteriaBuilder.and(whereClause, criteriaBuilder.and(
+                    criteriaBuilder.equal(gameRoot.get("createdBy"), user)
+            ));
+        }
+
         query.where(whereClause);
         query.orderBy(criteriaBuilder.desc(gameRoot.get("createdTime")));
 

@@ -332,7 +332,7 @@ public class GameFacadeTest extends AbstractArquillianTest {
 
     @Test
     public void testFindAllGamesPaginated() {
-        Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE ,new Pageable(1, 10, ""));
+        Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE, false ,new Pageable(1, 10, ""));
         // We expect 3 as the superclass creates one too
         Assert.assertEquals(3L, paginatedGames.getTotal());
         Assert.assertTrue(paginatedGames.getPageContent().contains(game1));
@@ -340,15 +340,24 @@ public class GameFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
+    public void testFindAllGamesPaginatedMine() {
+        Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE, true ,new Pageable(1, 10, ""));
+        // We expect 2 as the superclass provided game isn't ours
+        Assert.assertEquals(2L, paginatedGames.getTotal());
+        Assert.assertTrue(paginatedGames.getPageContent().contains(game1));
+        Assert.assertTrue(paginatedGames.getPageContent().contains(game2));
+    }
+
+    @Test
     public void testFindAllGamesPaginatedFiltered() {
-        Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE, new Pageable(1, 10, GAME_1));
+        Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE, false, new Pageable(1, 10, GAME_1));
         Assert.assertEquals(1L, paginatedGames.getTotal());
         Assert.assertTrue(paginatedGames.getPageContent().contains(game1));
     }
 
     @Test
     public void testFindAllGamesPaginatedNone() {
-        Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE, new Pageable(1, 10, "æøå"));
+        Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE, false, new Pageable(1, 10, "æøå"));
 
         Assert.assertEquals(0L, paginatedGames.getTotal());
     }

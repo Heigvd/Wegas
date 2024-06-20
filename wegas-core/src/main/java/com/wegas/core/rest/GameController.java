@@ -222,8 +222,9 @@ public class GameController {
     public Page<Game> paginatedGames(@PathParam("status") final Game.Status status,
                                         @QueryParam("page") int page,
                                         @QueryParam("size") int size,
-                                        @QueryParam("query") String query) {
-        return gameFacade.findByStatusAndUserPaginated(status, new Pageable(page, size, query));
+                                        @QueryParam("query") String query,
+                                        @QueryParam("mine") boolean mine) {
+        return gameFacade.findByStatusAndUserPaginated(status, mine, new Pageable(page, size, query));
     }
 
     /**

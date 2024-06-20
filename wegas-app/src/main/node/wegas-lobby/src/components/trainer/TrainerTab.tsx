@@ -60,16 +60,11 @@ export default function TrainerTab(): JSX.Element {
 
   const [viewMode, setViewMode] = React.useState<'EXPANDED' | 'COLLAPSED'>('COLLAPSED');
 
-  //  const onSortChange = React.useCallback(({ key, asc }: { key: keyof SortBy; asc: boolean }) => {
-  //    setSortBy({ key, asc });
-  //  }, []);
-
   const [filter, setFilter] = React.useState('');
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(20);
-  const [totalResults, settotalResults] = React.useState(0);
 
-  const onNextPage = () => setPage(page < totalResults / pageSize ? page + 1 : page);
+  const onNextPage = () => setPage(page < games.totalResults / pageSize ? page + 1 : page);
   const onPreviousPage = () => setPage(page > 1 ? page - 1 : 1);
 
   const onFilterChange = React.useCallback((filter: string) => {
@@ -81,10 +76,9 @@ export default function TrainerTab(): JSX.Element {
   React.useEffect(() => {
     if (status === 'NOT_INITIALIZED') {
       dispatch(
-        getGamesPaginated({ status: statusFilter, page: page, size: pageSize, query: filter }),
+        getGamesPaginated({ status: statusFilter, page: page, size: pageSize, query: filter, mine: mineFilter === 'MINE' }),
       );
     }
-    settotalResults(mineFilter === 'MINE' ? games.gamesAndGameModels.length : games.totalResults);
   }, [status, dispatch, statusFilter]);
 
   React.useEffect(() => {
@@ -92,15 +86,14 @@ export default function TrainerTab(): JSX.Element {
       setPage(1);
     } else {
       dispatch(
-        getGamesPaginated({ status: statusFilter, page: page, size: pageSize, query: filter }),
+        getGamesPaginated({ status: statusFilter, page: page, size: pageSize, query: filter, mine: mineFilter === 'MINE'  }),
       );
     }
-    settotalResults(mineFilter === 'MINE' ? games.gamesAndGameModels.length : games.totalResults);
   }, [filter, pageSize, statusFilter, mineFilter]);
 
   React.useEffect(() => {
     dispatch(
-      getGamesPaginated({ status: statusFilter, page: page, size: pageSize, query: filter }),
+      getGamesPaginated({ status: statusFilter, page: page, size: pageSize, query: filter, mine: mineFilter === 'MINE'  }),
     );
   }, [page]);
 
@@ -206,6 +199,7 @@ export default function TrainerTab(): JSX.Element {
                     page: page,
                     size: pageSize,
                     query: filter,
+                    mine: mineFilter === 'MINE',
                   }),
                 )
               }
@@ -257,12 +251,12 @@ export default function TrainerTab(): JSX.Element {
                 alignContent: 'flex-start',
               })}
             >
-              <h3>{`${totalResults} ${i18n.games}`}</h3>
+              <h3>{`${games.totalResults} ${i18n.games}`}</h3>
             </div>
             <div>
               <h3>
                 <IconButton onClick={onPreviousPage} icon={'caret-left'}></IconButton>
-                {page}/{games.totalResults > 0 ? Math.ceil(totalResults / pageSize) : 1}
+                {page}/{games.totalResults > 0 ? Math.ceil(games.totalResults / pageSize) : 1}
                 <IconButton onClick={onNextPage} icon={'caret-right'}></IconButton>
               </h3>
             </div>
