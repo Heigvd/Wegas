@@ -95,7 +95,7 @@ export const fr: WegasTranslations = {
   gameNotFound: "clé d'accès invalide",
   //
   Game: 'Partie',
-  games: 'parites',
+  games: 'parties',
   allGames: 'Toutes les parties',
   archive: 'achiver',
   restore: 'restaurer',

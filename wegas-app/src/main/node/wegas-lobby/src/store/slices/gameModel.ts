@@ -112,6 +112,16 @@ const slice = createSlice({
           }
         });
       })
+      .addCase(API.getGamesPaginated.fulfilled, (state, action) => {
+        state.games = [];
+        state.gameModels = [];
+        action.payload.pageContent.forEach(game => {
+          if (game.gameModel != null) {
+            state.gameModels[game.gameModel.id] = game.gameModel;
+            updateParent(state, game.gameModel.id, game.id);
+          }
+        });
+      })
       .addCase(API.getPlayers.fulfilled, (state, action) => {
         action.payload.forEach(data => {
           if (data.gameModel != null) {

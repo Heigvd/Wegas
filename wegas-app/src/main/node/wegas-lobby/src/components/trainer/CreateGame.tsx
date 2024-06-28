@@ -25,9 +25,10 @@ import { defaultSelectStyles, mainButtonStyle } from '../styling/style';
 
 interface CreateGameProps {
   close: () => void;
+  callback: () => void;
 }
 
-export default function CreateGame({ close }: CreateGameProps): JSX.Element {
+export default function CreateGame({ close, callback }: CreateGameProps): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
   const { currentUser } = useCurrentUser();
@@ -48,6 +49,7 @@ export default function CreateGame({ close }: CreateGameProps): JSX.Element {
         if (a.meta.requestStatus === 'fulfilled') {
           close();
         }
+        callback();
       });
     }
   }, [dispatch, gameModelId, name, close]);

@@ -18,6 +18,7 @@ export interface GameState {
   games: Record<number, IGameWithId | 'LOADING'>;
   teams: Record<number, 'LOADING' | number[]>;
   joinStatus: Record<number, 'JOINING' | 'JOINED'>;
+  totalResults: number;
 }
 
 const initialState: GameState = {
@@ -31,6 +32,7 @@ const initialState: GameState = {
   games: {},
   teams: {},
   joinStatus: {},
+  totalResults: 0,
 };
 
 const slice = createSlice({
@@ -99,6 +101,26 @@ const slice = createSlice({
           ...state.games,
           ...mapById(
             action.payload.map(game => {
+              const g = { ...game };
+              delete g.gameModel;
+              return g;
+            }),
+          ),
+        };
+      })
+      .addCase(API.getGamesPaginated.pending, (state, action) => {
+        const status = action.meta.arg.status;
+        state.status[status] = 'LOADING';
+      })
+      .addCase(API.getGamesPaginated.fulfilled, (state, action) => {
+        const status = action.meta.arg.status;
+        state.status[status] = 'READY';
+
+        state.totalResults = action.payload.total;
+
+        state.games = {
+          ...mapById(
+            action.payload.pageContent.map(game => {
               const g = { ...game };
               delete g.gameModel;
               return g;
