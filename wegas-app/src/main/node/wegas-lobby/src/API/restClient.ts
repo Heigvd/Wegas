@@ -35,6 +35,13 @@ export interface WegasErrorMessage {
 
 export type WegasRuntimeException = WegasErrorMessage;
 
+export type IPage<T> = {
+  total: number;
+  page: number;
+  pageSize: number;
+  pageContent: T[];
+}
+
 export interface OnlineUser {
   fullname: string;
   email: string;
@@ -57,18 +64,12 @@ export type IRoleWithPermissions = IRoleWithId & {
   permissions?: IPermissionWithId[];
 };
 
-export type IUserPage = {
-  total: number;
-  page: number;
-  pageSize: number;
-  pageContent:IUserWithAccounts[];
-};
-
 export type IUserWithAccounts = IUserWithId & {
   accounts?: IAccountWithPerm[];
   permissions?: IPermissionWithId[];
   roles?: IRoleWithPermissions[];
 };
+
 export interface IJpaAuthentication {
   '@class': 'JpaAuthentication';
   mandatoryMethod: HashMethod;
@@ -182,6 +183,7 @@ export interface IGameAdminTeam {
   declaredSize: number;
   players?: IGameAdminPlayer[];
 }
+
 export interface IGameAdminWithTeams extends IGameAdminWithId {
   teams?: IGameAdminTeam[];
   effectiveCount: number;
@@ -558,7 +560,7 @@ export const WegasLobbyRestClient = function (
       },
       getPaginatedUsers: (page: number, size: number, query: string) => {
         const path = `${baseUrl}/Shadow/User/Paginated?page=${page}&size=${size}&query=${query}`;
-        return sendJsonRequest<IUserPage>('GET', path, undefined, errorHandler);
+        return sendJsonRequest<IPage<IUserWithAccounts>>('GET', path, undefined, errorHandler);
       },
       getUser: (userId: number) => {
         const path = `${baseUrl}/User/${userId}`;
@@ -725,6 +727,21 @@ export const WegasLobbyRestClient = function (
           undefined,
           errorHandler,
         );
+      },
+      getGamesPaginated: (
+        status: IGameWithId['status'],
+        page: number,
+        size: number,
+        query: string,
+        mine: boolean,
+      ) => {
+        const path = `${baseUrl}/Lobby/GameModel/Game/status/${status}/Paginated?page=${page}&size=${size}&query=${query}&mine=${mine}`;
+        return sendJsonRequest<IPage<(IGameWithId & { gameModel?: IGameModelWithId })>>(
+            'GET',
+            path,
+            undefined,
+            errorHandler
+        )
       },
       changeStatus: (gameId: number, status: IGameWithId['status']) => {
         const path = `${baseUrl}/Lobby/GameModel/Game/${gameId}/status/${status}`;

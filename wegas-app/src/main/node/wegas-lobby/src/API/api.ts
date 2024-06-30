@@ -27,15 +27,14 @@ import { getStore, WegasLobbyState } from '../store/store';
 import { CHANNEL_PREFIX, getPusherClient, initPusherSocket } from '../websocket/websocket';
 import { entityIs, entityIsException } from './entityHelper';
 import {
-  IAccountWithPerm,
-  IAuthenticationInformation,
-  IGameAdminWithTeams,
-  IJpaAuthentication,
-  IRoleWithPermissions,
-  IUserPage,
-  IUserWithAccounts,
-  PlayerToGameModel,
-  WegasLobbyRestClient,
+    IAccountWithPerm,
+    IAuthenticationInformation,
+    IGameAdminWithTeams,
+    IJpaAuthentication, IPage,
+    IRoleWithPermissions,
+    IUserWithAccounts,
+    PlayerToGameModel,
+    WegasLobbyRestClient,
 } from './restClient';
 
 const logger = getLogger('api');
@@ -363,7 +362,7 @@ export const getAllUsers = createAsyncThunk(
 
 export const getPaginatedUsers = createAsyncThunk(
   'user/getPaginated',
-  async (payload: {page: number, size: number, query: string}): Promise<IUserPage> => {
+  async (payload: {page: number, size: number, query: string}): Promise<IPage<IUserWithAccounts>> => {
     return await restClient.UserController.getPaginatedUsers(payload.page, payload.size, payload.query);
   },
 );
@@ -606,6 +605,10 @@ export const getGameModelByIds = createAsyncThunk('gameModel/byIds', async (ids:
 
 export const getGames = createAsyncThunk('game/getGames', async (status: IGameWithId['status']) => {
   return await restClient.GameController.getGames(status);
+});
+
+export const getGamesPaginated = createAsyncThunk('game/getGamesPaginated', async (payload: {status: IGameWithId['status'], page: number, size: number, query: string, mine: boolean}) => {
+    return await restClient.GameController.getGamesPaginated(payload.status, payload.page, payload.size, payload.query, payload.mine);
 });
 
 export const changeGameStatus = createAsyncThunk(

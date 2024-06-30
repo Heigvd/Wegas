@@ -434,16 +434,18 @@ export const useGames = (
             }
           }
           return [];
-        });
+        }).sort((a, b) => b.game.createdTime - a.game.createdTime);
 
         return {
           gamesAndGameModels: gamesAndGameModels,
           status: gStatus,
+          totalResults: state.games.totalResults,
         };
       } else {
         return {
           gamesAndGameModels: [],
           status: gStatus,
+          totalResults: state.games.totalResults,
         };
       }
     },
