@@ -12,6 +12,12 @@ import { themeVar } from '../../Theme/ThemeVars';
 import { HTMLText } from '../HTMLText';
 import { buttonFactory } from './QuestionList';
 import { useTranslate } from '../../Hooks/useTranslate';
+import {
+  bolder, expandWidth,
+  flex,
+  flexColumn,
+  toolboxHeaderStyle,
+} from '../../../css/classes';
 
 const descriptionStyle = css({
   position: 'relative',
@@ -47,7 +53,8 @@ export function QuestionDescription({
   const { lang } = React.useContext(languagesCTX);
   const [isEditing, setEditing] = React.useState(false);
 
-  const textValue = useTranslate(questionD.description);
+  const labelValue = useTranslate(questionD.label);
+  const descriptionValue = useTranslate(questionD.description);
 
   const onValidate = React.useCallback(
     (value: string) => {
@@ -73,7 +80,7 @@ export function QuestionDescription({
 
   return isEditing && editMode ? (
     <Validate
-      value={textValue}
+      value={descriptionValue}
       onValidate={onValidate}
       onCancel={() => setEditing(false)}
       vertical
@@ -83,7 +90,7 @@ export function QuestionDescription({
         <HTMLEditor
           value={value}
           onChange={onChange}
-          toolbarLayout='player'
+          toolbarLayout="player"
           // customToolbar="bold italic underline"
         />
       )}
@@ -95,7 +102,13 @@ export function QuestionDescription({
       })}
       onClick={() => setEditing(true)}
     >
-      <HTMLText text={textValue} />
+      <div className={cx(toolboxHeaderStyle, expandWidth)}>
+        <div className={cx(flex, flexColumn)}>
+          {labelValue && <div className={cx(bolder)}>{labelValue}</div>}
+          <HTMLText text={descriptionValue} />
+        </div>
+      </div>
+
       {editMode && (
         <Edit className={editButtonStyle} onClick={() => setEditing(true)} />
       )}
