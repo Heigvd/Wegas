@@ -112,7 +112,7 @@ function LabelGenerator<E extends IAbstractEntity>(
           if (deepDifferent(props.entity, oldEntity)) {
             return props.entity;
           } else {
-            return null;
+            return props.mobile ? null : oldEntity;
           }
         })
       }
