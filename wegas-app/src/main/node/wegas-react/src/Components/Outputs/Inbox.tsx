@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
 import { IInboxDescriptor, IMessage } from 'wegas-ts-api';
 import {
-  bolder,
+  bolder, defaultMarginBottom,
   defaultMarginTop,
   expandWidth,
   flex,
@@ -130,7 +130,7 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
   return (
     <div style={{ width: '100%', height: '100%' }}>
       <div className={cx(toolboxHeaderStyle)}>
-        {subject && <div className={cx(bolder)}>{subject}</div>}
+        {subject && <div className={cx(bolder, defaultMarginBottom)}>{subject}</div>}
         {date && (
           <div>
             {i18nComponentValues.inbox.date}: {date}
