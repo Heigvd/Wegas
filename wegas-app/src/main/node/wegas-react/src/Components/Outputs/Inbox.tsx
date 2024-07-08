@@ -24,7 +24,7 @@ import { wwarn } from '../../Helper/wegaslog';
 import { componentsTranslations } from '../../i18n/components/components';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import {
-  DefaultEntityChooserLabel,
+  DefaultEntityChooserLabel, defaultEntityDisplay,
   EntityChooser,
   EntityChooserLabelProps,
 } from '../EntityChooser';
@@ -128,7 +128,7 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
   const from = useTranslate(entity.from);
 
   return (
-    <div style={{ width: '100%', height: '100%' }}>
+    <div className={defaultEntityDisplay}>
       <div className={cx(toolboxHeaderStyle)}>
         {subject && <div className={cx(bolder, defaultMarginBottom)}>{subject}</div>}
         {date && (
@@ -142,7 +142,7 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
           </div>
         )}
       </div>
-      <TranslatableText content={entity.body} />
+      <TranslatableText content={entity.body}/>
     </div>
   );
 }

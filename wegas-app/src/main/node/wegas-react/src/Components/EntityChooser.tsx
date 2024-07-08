@@ -2,15 +2,15 @@ import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import {
-  autoScroll,
-  expandWidth,
-  flex,
-  flexColumn,
-  flexRow,
-  grow,
-  halfOpacity,
-  justifyCenter,
-  justifyStart,
+    autoScroll,
+    expandWidth,
+    flex,
+    flexColumn,
+    flexRow,
+    grow,
+    halfOpacity,
+    justifyCenter,
+    justifyStart, textJustify,
 } from '../css/classes';
 import { classNameOrEmpty } from '../Helper/className';
 import { deepDifferent } from './Hooks/storeHookFactory';
@@ -19,16 +19,17 @@ import { themeVar } from './Theme/ThemeVars';
 const entityChooser = css({
   width: '100%',
   overflow: 'hidden',
+  gap: '10px',
 });
 
 const entityContainer = css({
-  flex: '50%',
+  flex: '70%',
   padding: '10px',
   overflow: 'auto',
 });
 
 const labelList = css({
-  flex: '50%',
+  flex: '30%',
   padding: '10px',
   minWidth: '90px',
   overflow: 'auto',
@@ -39,6 +40,22 @@ const labelListMobile = css({
   maxWidth: '100%',
   overflow: 'auto',
 });
+
+export const defaultEntityDisplay = cx(
+    textJustify,
+    css(
+        {
+            flexGrow: 1,
+            width: 'auto',
+            marginRight: 'auto',
+            marginLeft: 'auto',
+            minWidth: '50ch',
+            maxWidth: '75ch',
+            overflowWrap: 'break-word', // Prevents <75ch text from overflowing
+            hyphens: 'auto',
+        }
+    )
+);
 
 export const entityChooserLabelStyle = (disabled?: boolean) =>
   cx(
