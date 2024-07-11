@@ -16,8 +16,7 @@ export interface GameModelState {
   currentUserId: number | undefined;
   status: Record<IGameModelWithId['type'], Record<IGameModelWithId['status'], LoadingStatus>>;
   gameModels: Record<number, IGameModelWithId | 'LOADING'>;
-  games: Record<number, 'LOADING' | number[]>;
-  totalResults: number,
+  totalResults: number;
 }
 
 const initialState: GameModelState = {
@@ -49,13 +48,8 @@ const initialState: GameModelState = {
     },
   },
   gameModels: {},
-  games: {},
   totalResults: 0,
 };
-
-function updateParent(state: GameModelState, gameModelId: number, gameId: number) {
-  state.games[gameModelId] = [gameId];
-}
 
 const slice = createSlice({
   name: 'gameModels',
@@ -65,23 +59,9 @@ const slice = createSlice({
     builder
       .addCase(processUpdatedEntities.fulfilled, (state, action) => {
         state.gameModels = { ...state.gameModels, ...mapById(action.payload.gameModels) };
-        action.payload.games.forEach(g => {
-          const parentId = g.parentId;
-          if (parentId != null) {
-            updateParent(state, parentId, g.id);
-          }
-        });
       })
       .addCase(processDeletedEntities.fulfilled, (state, action) => {
         action.payload.gameModels.forEach(id => delete state.gameModels[id]);
-        action.payload.games.forEach(id => delete state.games[id]);
-        if (action.payload.games.length > 0) {
-          Object.entries(state.games).forEach(([key, list]) => {
-            if (typeof list != 'string') {
-              state.games[+key] = list.filter(item => action.payload.games.indexOf(item) < 0);
-            }
-          });
-        }
       })
       .addCase(API.reloadCurrentUser.fulfilled, (state, action) => {
         // hack: to build state.mine projects, currentUserId must be known
@@ -110,17 +90,14 @@ const slice = createSlice({
         action.payload.forEach(game => {
           if (game.gameModel != null) {
             state.gameModels[game.gameModel.id] = game.gameModel;
-            updateParent(state, game.gameModel.id, game.id);
           }
         });
       })
       .addCase(API.getGamesPaginated.fulfilled, (state, action) => {
-        state.games = [];
-        state.gameModels = [];
+        state.gameModels = {};
         action.payload.pageContent.forEach(game => {
           if (game.gameModel != null) {
             state.gameModels[game.gameModel.id] = game.gameModel;
-            updateParent(state, game.gameModel.id, game.id);
           }
         });
       })
@@ -128,9 +105,6 @@ const slice = createSlice({
         action.payload.forEach(data => {
           if (data.gameModel != null) {
             state.gameModels[data.gameModel.id] = data.gameModel;
-            if (data.game != null) {
-              updateParent(state, data.gameModel.id, data.game.id);
-            }
           }
         });
 
