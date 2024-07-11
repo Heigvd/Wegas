@@ -340,14 +340,16 @@ export const useEditableGameModels = (
             ['Edit', 'Translate'],
             [gameModelType],
             [gameModelStatus],
-          ),
+          ).sort((a, b) => b.createdTime - a.createdTime),
           status: state.gameModels.status,
+          totalResults: state.gameModels.totalResults,
         };
       }
 
       return {
         gamemodels: [],
         status: state.gameModels.status,
+        totalResults: 0,
       };
     },
     (a, b) => {

@@ -25,6 +25,8 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.pagination.Page;
+import com.wegas.core.rest.util.pagination.Pageable;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.tools.FindAndReplacePayload;
 import java.io.IOException;
@@ -42,14 +44,8 @@ import java.util.zip.ZipInputStream;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import javax.jcr.RepositoryException;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
@@ -641,6 +637,30 @@ public class GameModelController {
         @PathParam("type") final GameModel.GmType type,
         @PathParam("status") final GameModel.Status status) {
         return gameModelFacade.findByTypeStatusAndUser(type, status);
+    }
+
+    /**
+     *
+     * Get all gameModel of given type with given status paginated
+     *
+     * @param type
+     * @param status
+     * @param mine
+     * @param page
+     * @param size
+     * @param query
+     * @return given size of gameModel having type, status and matching query
+     */
+    @GET
+    @Path("type/{type: [A-Z]*}/status/{status: [A-Z]*}/Paginated")
+    public Page<GameModel> paginatedGameModels(
+            @PathParam("type") final GameModel.GmType type,
+            @PathParam("status") final GameModel.Status status,
+            @QueryParam("mine") boolean mine,
+            @QueryParam("page") int page,
+            @QueryParam("size") int size,
+            @QueryParam("query") String query) {
+        return gameModelFacade.findByTypeStatusAndUserPaginated(type, status, mine, new Pageable(page, size, query));
     }
 
     /**

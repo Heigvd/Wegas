@@ -11,9 +11,8 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { uniq } from 'lodash';
 import * as React from 'react';
 import { useMatch, useResolvedPath } from 'react-router-dom';
-import { IAbstractAccount, IGameModelWithId } from 'wegas-ts-api';
-import { getGameModels, getShadowUserByIds } from '../../API/api';
-import { getDisplayName, mapByKey, match } from '../../helper';
+import { IGameModelWithId } from 'wegas-ts-api';
+import {getGameModelsPaginated, getShadowUserByIds} from '../../API/api';
 import useTranslations from '../../i18n/I18nContext';
 import { useLocalStorageState } from '../../preferences';
 import { useAccountsByUserIds, useCurrentUser } from '../../selectors/userSelector';
@@ -27,35 +26,13 @@ import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
 import IconButton from '../common/IconButton';
 import InlineLoading from '../common/InlineLoading';
-import SortBy, { SortByOption } from '../common/SortBy';
 import { successColor } from '../styling/color';
 import { panelPadding } from '../styling/style';
 import CreateModel from './CreateModel';
 import CreateScenario from './CreateScenario';
 import GameModelCard from './GameModelCard';
 import InferModel from './InferModel';
-
-interface SortBy {
-  createdByName: string;
-  name: string;
-  createdTime: number;
-}
-
-const matchSearch =
-  (accountMap: Record<number, IAbstractAccount>, search: string) =>
-  (gameModel: IGameModelWithId | 'LOADING') => {
-    return match(search, regex => {
-      if (gameModel != 'LOADING') {
-        const username =
-          gameModel.createdById != null ? getDisplayName(accountMap[gameModel.createdById]) : '';
-        return (
-          (gameModel.name && gameModel.name.match(regex) != null) || username.match(regex) != null
-        );
-      } else {
-        return false;
-      }
-    });
-  };
+import Checkbox from "../common/Checkbox";
 
 export interface ScenaristTabProps {
   gameModelType: IGameModelWithId['type'];
@@ -96,45 +73,43 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
     'COLLAPSED',
   );
 
-  const [sortBy, setSortBy] = useLocalStorageState<{ key: keyof SortBy; asc: boolean }>(
-    'scenarist-sortby',
-    {
-      key: 'createdTime',
-      asc: false,
-    },
-  );
-
-  //  const onSortChange = React.useCallback(({ key, asc }: { key: keyof SortBy; asc: boolean }) => {
-  //    setSortBy({ key, asc });
-  //  }, []);
-
   const [filter, setFilter] = React.useState('');
+  const [page, setPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(20);
+
+  const onNextPage = () => setPage(page < gamemodels.totalResults / pageSize ? page + 1 : page);
+  const onPreviousPage = () => setPage(page > 1 ? page - 1 : 1);
 
   const onFilterChange = React.useCallback((filter: string) => {
     setFilter(filter);
   }, []);
 
-  const sortOptions: SortByOption<SortBy>[] = [
-    { key: 'createdTime', label: i18n.date },
-    { key: 'name', label: i18n.name },
-  ];
-  if (isAdmin) {
-    sortOptions.push({ key: 'createdByName', label: i18n.createdBy });
-  }
-
   const status = gamemodels.status[gameModelType][statusFilter];
+
+  const getGameModels = () => dispatch(getGameModelsPaginated({ status: statusFilter, type: gameModelType,  page: page, size: pageSize, query: filter, mine: mineFilter === 'MINE'}));
 
   React.useEffect(() => {
     if (status === 'NOT_INITIALIZED') {
-      dispatch(getGameModels({ status: statusFilter, type: gameModelType }));
+      getGameModels();
     }
   }, [statusFilter, gameModelType, status, dispatch]);
+
+  React.useEffect(() => {
+    if (page !== 1) {
+      setPage(1)
+    } else {
+      getGameModels()
+    }
+  }, [filter, pageSize, statusFilter, mineFilter]);
+
+  React.useEffect(() => {
+    getGameModels();
+  }, [page]);
 
   const userIds = uniq(
     gamemodels.gamemodels.flatMap(gm => (gm.createdById != null ? [gm.createdById] : [])),
   );
   const accountsState = useAccountsByUserIds(userIds);
-  const accounts = mapByKey(accountsState.accounts, 'parentId');
 
   const buildCardCb = React.useCallback(
     (gameModel: IGameModelWithId) => <GameModelCard key={gameModel.id} gameModel={gameModel} />,
@@ -157,24 +132,6 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
     return <InlineLoading />;
   } else {
     const selected = gamemodels.gamemodels.find(gm => gm.id === selectedId);
-    const filtered = filter
-      ? gamemodels.gamemodels.filter(matchSearch(accounts, filter))
-      : gamemodels.gamemodels;
-
-    const sorted = filtered.sort((a, b) => {
-      const reverse = sortBy.asc ? 1 : -1;
-      if (sortBy.key === 'createdTime') {
-        return reverse * (a.createdTime! - b.createdTime!);
-      } else if (sortBy.key === 'name') {
-        return reverse * (a.name || '').localeCompare(b.name || '');
-      } else if (sortBy.key === 'createdByName') {
-        const aName = a.createdById != null ? getDisplayName(accounts[a.createdById]) : '';
-        const bName = b.createdById != null ? getDisplayName(accounts[b.createdById]) : '';
-
-        return reverse * aName.localeCompare(bName);
-      }
-      return 0;
-    });
 
     const statusFilterEntries: { value: IGameModelWithId['status']; label: React.ReactNode }[] = [
       {
@@ -297,8 +254,6 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
               </IconButton>
             ) : null}
 
-            <SortBy options={sortOptions} current={sortBy} onChange={setSortBy} />
-
             {dropDownStatus}
             {dropDownMine}
 
@@ -309,10 +264,57 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
               onChange={onFilterChange}
             />
           </Flex>
+          <Flex
+            justify="space-between"
+            align="center"
+            className={css({
+              flexShrink: 0,
+              height: '20px',
+            })}
+          >
+            <div
+              className={css({
+                display: 'flex',
+                alignContent: 'flex-start'
+              })}
+            >
+              <h3>{`${gamemodels.totalResults} ${i18n.gameModels}`}</h3>
+            </div>
+            <div>
+              <h3>
+                <IconButton onClick={onPreviousPage} icon={'caret-left'}></IconButton>
+                {page}/{gamemodels.totalResults > 0 ? Math.ceil(gamemodels.totalResults / pageSize) : 1}
+                <IconButton onClick={onNextPage} icon={'caret-right'}></IconButton>
+              </h3>
+            </div>
+            <div
+                className={css({
+                  display: 'flex',
+                  alignContent: 'flex-end',
+                  flexDirection: 'row',
+                })}
+            >
+              <Checkbox
+                  label="20"
+                  value={pageSize === 20}
+                  onChange={(newValue: boolean) => setPageSize(newValue ? 20 : pageSize)}
+              />
+              <Checkbox
+                  label="50"
+                  value={pageSize === 50}
+                  onChange={(newValue: boolean) => setPageSize(newValue ? 50 : pageSize)}
+              />
+              <Checkbox
+                  label="100"
+                  value={pageSize === 100}
+                  onChange={(newValue: boolean) => setPageSize(newValue ? 100 : pageSize)}
+              />
+            </div>
+          </Flex>
           {status === 'READY' ? (
             <>
               <WindowedContainer
-                items={sorted}
+                items={gamemodels.gamemodels}
                 scrollTo={selected}
                 emptyMessage={
                   <i>
@@ -337,10 +339,3 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
     );
   }
 }
-
-//
-//<CardContainer>
-//          {sorted.map(gameModel => (
-//            <GameModelCard key={gameModel.id} gameModel={gameModel} />
-//          ))}
-//</CardContainer>
