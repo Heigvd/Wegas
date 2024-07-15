@@ -469,6 +469,17 @@ export const useGames = (
   );
 };
 
+export const useGamesByIds = (
+  status: IGame['status'],
+  userId: number | undefined,
+  mine: MINE_OR_ALL,
+  gamesIds: number[],
+) => {
+  const games = useGames(status, userId, mine);
+
+  return {gamesAndGameModels: games.gamesAndGameModels.filter(ggm => gamesIds.includes(ggm.game.id))};
+};
+
 export const useModelInstances = (userId: number | undefined, modelId: number) => {
   return useAppSelector(
     state => {

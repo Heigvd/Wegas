@@ -109,6 +109,7 @@ const slice = createSlice({
       })
       .addCase(API.getGamesPaginated.fulfilled, (state, action) => {
         state.games = {
+          ...state.games,
           ...mapById(
             action.payload.pageContent.map(game => {
               const g = { ...game };

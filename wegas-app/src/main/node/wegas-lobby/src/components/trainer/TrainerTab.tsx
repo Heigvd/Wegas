@@ -16,7 +16,7 @@ import { getGamesPaginated, getShadowUserByIds } from '../../API/api';
 import useTranslations from '../../i18n/I18nContext';
 import { useLocalStorageState } from '../../preferences';
 import { useAccountsByUserIds, useCurrentUser } from '../../selectors/userSelector';
-import { MINE_OR_ALL, useGames } from '../../selectors/wegasSelector';
+import { MINE_OR_ALL, useGamesByIds } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
 import { WindowedContainer } from '../common/CardContainer';
 import DebouncedInput from '../common/DebouncedInput';
@@ -53,12 +53,6 @@ export default function TrainerTab(): JSX.Element {
     }
   }, [isAdmin, statusFilter, setStatusFilter]);
 
-  const games = useGames(
-    !isAdmin && statusFilter === 'DELETE' ? 'BIN' : statusFilter, //non-admin should never see deleted
-    currentUser != null ? currentUser.id : undefined,
-    isAdmin ? mineFilter : 'MINE', // non-admin only see theirs
-  );
-
   const [isDataReady, setIsDataReady] = React.useState<boolean>(false);
 
   const [viewMode, setViewMode] = React.useState<'EXPANDED' | 'COLLAPSED'>('COLLAPSED');
@@ -66,8 +60,16 @@ export default function TrainerTab(): JSX.Element {
   const [filter, setFilter] = React.useState('');
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(20);
+
+  const [renderedGamesIds, setRenderedGamesIds] = React.useState<number[]>([]);
   const [totalResults, setTotalResults] = React.useState<number>(0);
 
+  const games = useGamesByIds(
+    statusFilter,
+    currentUser != null ? currentUser.id : undefined,
+    mineFilter,
+    renderedGamesIds
+  );
 
   const onNextPage = () => setPage(page < totalResults / pageSize ? page + 1 : page);
   const onPreviousPage = () => setPage(page > 1 ? page - 1 : 1);
@@ -95,7 +97,9 @@ export default function TrainerTab(): JSX.Element {
         mine: mineFilter === 'MINE'
       }),
     ).then((action) => {
-        setTotalResults((action.payload as IPage<IGameWithId>).total);
+        const payload = action.payload as IPage<IGameWithId>;
+        setRenderedGamesIds(payload.pageContent.map((game : IGameWithId) => game.id));
+        setTotalResults(payload.total);
         setIsDataReady(true);
       }
     );
