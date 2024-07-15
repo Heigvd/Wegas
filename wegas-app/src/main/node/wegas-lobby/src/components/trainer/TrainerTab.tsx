@@ -38,7 +38,9 @@ export default function TrainerTab(): JSX.Element {
   const dispatch = useAppDispatch();
   const { currentUser, isAdmin } = useCurrentUser();
 
-  const [statusFilter, setStatusFilter] = useLocalStorageState<IGameWithId['status']>(
+  const [gameCreationPanelMode, setGameCreationPanelMode] = React.useState<'EXPANDED' | 'COLLAPSED'>('COLLAPSED');
+
+  const [gameStatusFilter, setGameStatusFilter] = useLocalStorageState<IGameWithId['status']>(
     'trainer.status',
     'LIVE',
   );
@@ -47,63 +49,68 @@ export default function TrainerTab(): JSX.Element {
     'MINE',
   );
 
-  React.useEffect(() => {
-    if (!isAdmin && statusFilter === 'DELETE') {
-      setStatusFilter('BIN');
-    }
-  }, [isAdmin, statusFilter, setStatusFilter]);
-
-  const [isDataReady, setIsDataReady] = React.useState<boolean>(false);
-
-  const [viewMode, setViewMode] = React.useState<'EXPANDED' | 'COLLAPSED'>('COLLAPSED');
-
   const [filter, setFilter] = React.useState('');
+
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(20);
 
+  const [isDataReady, setIsDataReady] = React.useState<boolean>(false);
   const [renderedGamesIds, setRenderedGamesIds] = React.useState<number[]>([]);
   const [totalResults, setTotalResults] = React.useState<number>(0);
 
   const games = useGamesByIds(
-    statusFilter,
+    gameStatusFilter,
     currentUser != null ? currentUser.id : undefined,
     mineFilter,
     renderedGamesIds
   );
 
-  const onNextPage = () => setPage(page < totalResults / pageSize ? page + 1 : page);
-  const onPreviousPage = () => setPage(page > 1 ? page - 1 : 1);
+  //non-admin should never see deleted
+  React.useEffect(() => {
+    if (!isAdmin && gameStatusFilter === 'DELETE') {
+      setGameStatusFilter('BIN');
+    }
+  }, [isAdmin, gameStatusFilter, setGameStatusFilter]);
+
+  // non-admin can only see theirs
+  React.useEffect(() => {
+    if (!isAdmin && mineFilter === 'ALL') {
+      setMineFilter('MINE');
+    }
+  }, [isAdmin, mineFilter, setMineFilter]);
 
   const onFilterChange = React.useCallback((filter: string) => {
     setFilter(filter);
   }, []);
+
+  const onNextPage = () => setPage(page < totalResults / pageSize ? page + 1 : page);
+  const onPreviousPage = () => setPage(page > 1 ? page - 1 : 1);
 
   // if we change any filter or display choice, come back to first page
   React.useEffect(() => {
     if (page !== 1) {
       setPage(1);
     }
-  }, [statusFilter, pageSize, filter, mineFilter]);
+  }, [gameStatusFilter, pageSize, filter, mineFilter]);
 
   // launch the games fetch on change on any filter or display choice
   React.useEffect(() => {
     setIsDataReady(false);
     dispatch(
       getGamesPaginated({
-        status: statusFilter,
+        status: gameStatusFilter,
         page: page,
         size: pageSize,
         query: filter,
-        mine: mineFilter === 'MINE'
+        mine: mineFilter === 'MINE',
       }),
     ).then((action) => {
-        const payload = action.payload as IPage<IGameWithId>;
-        setRenderedGamesIds(payload.pageContent.map((game : IGameWithId) => game.id));
-        setTotalResults(payload.total);
-        setIsDataReady(true);
-      }
-    );
-  }, [dispatch, statusFilter, page, pageSize, filter, mineFilter]);
+      const payload = action.payload as IPage<IGameWithId>;
+      setRenderedGamesIds(payload.pageContent.map((game : IGameWithId) => game.id));
+      setTotalResults(payload.total);
+      setIsDataReady(true);
+    });
+  }, [dispatch, gameStatusFilter, page, pageSize, filter, mineFilter]);
 
   const buildCardCb = React.useCallback(
     (gameAndGameModel: { game: IGameWithId; gameModel: IGameModelWithId }) => (
@@ -149,19 +156,18 @@ export default function TrainerTab(): JSX.Element {
       label: <div className={itemStyle}>{i18n.archivedGames}</div>,
     },
   ];
-
   if (isAdmin) {
     statusFilterEntries.push({
       value: 'DELETE',
       label: <div className={itemStyle}>{i18n.deletedGames}</div>,
     });
   }
-  const dropDownStatus = (
+  const dropDownGameStatus = (
     <DropDownMenu
       menuIcon="CARET"
       entries={statusFilterEntries}
-      value={statusFilter}
-      onSelect={setStatusFilter}
+      value={gameStatusFilter}
+      onSelect={setGameStatusFilter}
     />
   );
 
@@ -175,8 +181,7 @@ export default function TrainerTab(): JSX.Element {
       label: <div className={itemStyle}>{i18n.all}</div>,
     },
   ];
-
-  const dropDownMine = isAdmin ? (
+  const dropDownMineOrAll = isAdmin ? (
     <DropDownMenu
       menuIcon="CARET"
       entries={mineFilterEntries}
@@ -188,20 +193,20 @@ export default function TrainerTab(): JSX.Element {
   return (
     <FitSpace direction="column" overflow="auto" className={css({ position: 'relative' })}>
       <DropDownPanel
-        state={viewMode}
+        state={gameCreationPanelMode}
         onClose={() => {
-          setViewMode('COLLAPSED');
+          setGameCreationPanelMode('COLLAPSED');
         }}
       >
-        {viewMode === 'EXPANDED' ? (
+        {gameCreationPanelMode === 'EXPANDED' && (
           <CreateGame
             close={() => {
-              setViewMode('COLLAPSED');
+              setGameCreationPanelMode('COLLAPSED');
             }}
             callback={() =>
               dispatch(
                 getGamesPaginated({
-                  status: statusFilter,
+                  status: gameStatusFilter,
                   page: page,
                   size: pageSize,
                   query: filter,
@@ -210,7 +215,7 @@ export default function TrainerTab(): JSX.Element {
               )
             }
           />
-        ) : null}
+        )}
       </DropDownPanel>
 
       <FitSpace direction="column" overflow="auto" className={panelPadding}>
@@ -226,14 +231,14 @@ export default function TrainerTab(): JSX.Element {
             icon={faPlusCircle}
             iconColor={successColor.toString()}
             onClick={() => {
-              setViewMode('EXPANDED');
+              setGameCreationPanelMode('EXPANDED');
             }}
           >
             {i18n.createGame}
           </IconButton>
 
-          {dropDownStatus}
-          {dropDownMine}
+          {dropDownGameStatus}
+          {dropDownMineOrAll}
 
           <DebouncedInput
             size="SMALL"
@@ -251,44 +256,41 @@ export default function TrainerTab(): JSX.Element {
             height: '20px',
           })}
         >
-          <div
-            className={css({
-              display: 'flex',
-              alignContent: 'flex-start',
-            })}
+          <Flex
+            align="flex-start"
           >
             <h3>{`${totalResults} ${i18n.games}`}</h3>
-          </div>
-          <div>
-            <h3>
-              <IconButton onClick={onPreviousPage} icon={'caret-left'}></IconButton>
-              {page}/{totalResults > 0 ? Math.ceil(totalResults / pageSize) : 1}
-              <IconButton onClick={onNextPage} icon={'caret-right'}></IconButton>
-            </h3>
-          </div>
-          <div
-            className={css({
-              display: 'flex',
-              alignContent: 'flex-end',
-              flexDirection: 'row',
-            })}
-          >
-            <Checkbox
-              label="20"
-              value={pageSize === 20}
-              onChange={(newValue: boolean) => setPageSize(newValue ? 20 : pageSize)}
-            />
-            <Checkbox
-              label="50"
-              value={pageSize === 50}
-              onChange={(newValue: boolean) => setPageSize(newValue ? 50 : pageSize)}
-            />
-            <Checkbox
-              label="100"
-              value={pageSize === 100}
-              onChange={(newValue: boolean) => setPageSize(newValue ? 100 : pageSize)}
-            />
-          </div>
+          </Flex>
+          {totalResults > pageSize /* show pagination tools only if needed */ &&
+            (<>
+            <Flex>
+              <h3>
+                <IconButton onClick={onPreviousPage} icon={'caret-left'}></IconButton>
+                {page}/{totalResults > 0 ? Math.ceil(totalResults / pageSize) : 1}
+                <IconButton onClick={onNextPage} icon={'caret-right'}></IconButton>
+              </h3>
+            </Flex>
+            <Flex
+              align="flex-end"
+            >
+              <Checkbox
+                label="20"
+                value={pageSize === 20}
+                onChange={(newValue: boolean) => setPageSize(newValue ? 20 : pageSize)}
+              />
+              <Checkbox
+                label="50"
+                value={pageSize === 50}
+                onChange={(newValue: boolean) => setPageSize(newValue ? 50 : pageSize)}
+              />
+              <Checkbox
+                label="100"
+                value={pageSize === 100}
+                onChange={(newValue: boolean) => setPageSize(newValue ? 100 : pageSize)}
+              />
+            </Flex>
+          </>)
+        }
         </Flex>
 
         {isDataReady ?
