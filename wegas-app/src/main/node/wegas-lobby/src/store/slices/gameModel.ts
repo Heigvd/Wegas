@@ -10,17 +10,15 @@ import { IGameModelWithId } from 'wegas-ts-api';
 import * as API from '../../API/api';
 import { mapById } from '../../helper';
 import { processDeletedEntities, processUpdatedEntities } from '../../websocket/websocket';
-import { LoadingStatus } from './../store';
+import { LoadingStatus } from '../store';
 
 export interface GameModelState {
-  currentUserId: number | undefined;
   status: Record<IGameModelWithId['type'], Record<IGameModelWithId['status'], LoadingStatus>>;
   gameModels: Record<number, IGameModelWithId | 'LOADING'>;
   totalResults: number;
 }
 
 const initialState: GameModelState = {
-  currentUserId: undefined,
   status: {
     MODEL: {
       LIVE: 'NOT_INITIALIZED',
@@ -62,12 +60,6 @@ const slice = createSlice({
       })
       .addCase(processDeletedEntities.fulfilled, (state, action) => {
         action.payload.gameModels.forEach(id => delete state.gameModels[id]);
-      })
-      .addCase(API.reloadCurrentUser.fulfilled, (state, action) => {
-        // hack: to build state.mine projects, currentUserId must be known
-        state.currentUserId = action.payload.currentUser
-          ? action.payload.currentUser.id || undefined
-          : undefined;
       })
       .addCase(API.getGameModelById.pending, (state, action) => {
         state.gameModels[action.meta.arg.id] = 'LOADING';

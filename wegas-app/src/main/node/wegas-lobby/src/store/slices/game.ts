@@ -13,7 +13,6 @@ import { processDeletedEntities, processUpdatedEntities } from '../../websocket/
 import { LoadingStatus } from '../store';
 
 export interface GameState {
-  currentUserId: number | undefined;
   status: Record<IGameWithId['status'], LoadingStatus>;
   games: Record<number, IGameWithId | 'LOADING'>;
   teams: Record<number, 'LOADING' | number[]>;
@@ -21,7 +20,6 @@ export interface GameState {
 }
 
 const initialState: GameState = {
-  currentUserId: undefined,
   status: {
     LIVE: 'NOT_INITIALIZED',
     BIN: 'NOT_INITIALIZED',
@@ -63,12 +61,6 @@ const slice = createSlice({
             }
           });
         }
-      })
-      .addCase(API.reloadCurrentUser.fulfilled, (state, action) => {
-        // hack: to build state.mine projects, currentUserId must be known
-        state.currentUserId = action.payload.currentUser
-          ? action.payload.currentUser.id || undefined
-          : undefined;
       })
       .addCase(API.findGameByToken.fulfilled, (state, action) => {
         const id = action.payload.game.id;
