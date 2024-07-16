@@ -84,7 +84,6 @@ const slice = createSlice({
         });
       })
       .addCase(API.getGamesPaginated.fulfilled, (state, action) => {
-        state.gameModels = {};
         action.payload.pageContent.forEach(game => {
           if (game.gameModel != null) {
             state.gameModels[game.gameModel.id] = game.gameModel;
@@ -139,6 +138,7 @@ const slice = createSlice({
       })
       .addCase(API.getGameModelsPaginated.fulfilled, (state, action) => {
         state.gameModels = {
+          ...state.gameModels,
           ...mapById(
               action.payload.pageContent.map(gameModel => {
                 return { ...gameModel };

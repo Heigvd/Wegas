@@ -9,7 +9,6 @@
 import { isEqual, uniq } from 'lodash';
 import {
   IGame,
-  IGameModel,
   IGameModelWithId,
   IGameWithId,
   IPermission,
@@ -250,7 +249,7 @@ function getGameModels(
   permissionTypes: PermissionType[],
   gmType: IGameModelWithId['type'][],
   gmStatus: IGameModelWithId['status'][],
-) {
+): IGameModelWithId[] {
   let gameModels: IGameModelWithId[] = [];
   const regex = new RegExp(`GameModel:(.*(${permissionTypes.join('|')}).*|\\*):(gm\\d+|\\*)`);
 
@@ -293,6 +292,12 @@ function getGameModels(
   );
 }
 
+function getGameModelsById(state: WegasLobbyState, gameModelsIds: number[]): IGameModelWithId[] {
+  return Object.values(state.gameModels.gameModels)
+    .flatMap(gm => entityIs(gm, 'GameModel') ? [gm] : [])
+    .filter(gm => gameModelsIds.includes(gm.id));
+}
+
 export const useInstantiableGameModels = (userId: number | undefined) => {
   return useAppSelector(
     state => {
@@ -323,35 +328,20 @@ export const useInstantiableGameModels = (userId: number | undefined) => {
   );
 };
 
-export const useEditableGameModels = (
-  userId: number | undefined,
-  gameModelType: IGameModel['type'],
-  gameModelStatus: IGameModel['status'],
-  mine: MINE_OR_ALL,
-) => {
+export const useGameModelsById = (gameModelsIds: number[]): {
+  gamemodels: IGameModelWithId[]
+} => {
   return useAppSelector(
     state => {
-      if (userId != null) {
-        return {
-          gamemodels: getGameModels(
-            state,
-            userId,
-            mine,
-            ['Edit', 'Translate'],
-            [gameModelType],
-            [gameModelStatus],
-          ).sort((a, b) => b.createdTime - a.createdTime),
-          status: state.gameModels.status,
-        };
-      }
-
       return {
-        gamemodels: [],
-        status: state.gameModels.status,
+        gamemodels: getGameModelsById(
+          state,
+          gameModelsIds,
+        ).sort((a: IGameModelWithId, b: IGameModelWithId) => b.createdTime - a.createdTime),
       };
     },
     (a, b) => {
-      return shallowEqual(a.gamemodels, b.gamemodels) && isEqual(a.status, b.status);
+      return shallowEqual(a.gamemodels, b.gamemodels);
     },
   );
 };

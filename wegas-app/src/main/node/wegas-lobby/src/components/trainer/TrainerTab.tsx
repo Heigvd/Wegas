@@ -125,7 +125,7 @@ export default function TrainerTab(): JSX.Element {
     [],
   );
 
-  const userIds = uniq(
+  const userIds: number[] = uniq(
     games.gamesAndGameModels.flatMap(data =>
       data.game.createdById != null ? [data.game.createdById] : [],
     ),

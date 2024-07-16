@@ -16,7 +16,7 @@ import {getGameModelsPaginated, getShadowUserByIds} from '../../API/api';
 import useTranslations from '../../i18n/I18nContext';
 import { useLocalStorageState } from '../../preferences';
 import { useAccountsByUserIds, useCurrentUser } from '../../selectors/userSelector';
-import { MINE_OR_ALL, useEditableGameModels } from '../../selectors/wegasSelector';
+import { MINE_OR_ALL, useGameModelsById } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
 import { WindowedContainer } from '../common/CardContainer';
 import DebouncedInput from '../common/DebouncedInput';
@@ -42,8 +42,7 @@ export interface ScenaristTabProps {
 export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.Element {
   const i18n = useTranslations();
   const dispatch = useAppDispatch();
-  const { currentUser, isAdmin } = useCurrentUser();
-  const currentUserId = currentUser != null ? currentUser.id : undefined;
+  const { isAdmin } = useCurrentUser();
 
   const [statusFilter, setStatusFilter] = useLocalStorageState<IGameModelWithId['status']>(
     'scenarist-status',
@@ -52,13 +51,6 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
   const [mineFilter, setMineFilter] = useLocalStorageState<MINE_OR_ALL>(
     'scenarist-mineOrAll',
     isAdmin ? 'MINE' : 'ALL',
-  );
-
-  const gamemodels = useEditableGameModels(
-    currentUserId,
-    gameModelType,
-    !isAdmin && statusFilter === 'DELETE' ? 'BIN' : statusFilter,
-    isAdmin ? mineFilter : 'MINE',
   );
 
   React.useEffect(() => {
@@ -80,7 +72,11 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
 
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(20);
+
+  const [renderedGameModelsIds, setRenderedGameModelsIds] = React.useState<number[]>([]);
   const [totalResults, setTotalResults] = React.useState<number>(0);
+
+  const gamemodels = useGameModelsById(renderedGameModelsIds);
 
   const onNextPage = () => setPage(page < totalResults / pageSize ? page + 1 : page);
   const onPreviousPage = () => setPage(page > 1 ? page - 1 : 1);
@@ -100,14 +96,16 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
 
   React.useEffect(() => {
     setIsDataReady(false);
-    dispatch(getGameModelsPaginated({ status: statusFilter, type: gameModelType,  page: page, size: pageSize, query: filter, mine: mineFilter === 'MINE'}))
-        .then(action => {
-          setTotalResults((action.payload as IPage<IGameModelWithId>).total);
-          setIsDataReady(true);
-        });
+    dispatch(getGameModelsPaginated({ type: gameModelType, status: statusFilter, mine: mineFilter === 'MINE', permissions: ['Edit', 'Translate'], page: page, size: pageSize, query: filter }))
+      .then(action => {
+        const payload = (action.payload as IPage<IGameModelWithId>);
+        setRenderedGameModelsIds(payload.pageContent.map((gameModel: IGameModelWithId) => gameModel.id));
+        setTotalResults(payload.total);
+        setIsDataReady(true);
+      });
   }, [dispatch, statusFilter, gameModelType, page, pageSize, filter, mineFilter]);
 
-  const userIds = uniq(
+  const userIds: number[] = uniq(
     gamemodels.gamemodels.flatMap(gm => (gm.createdById != null ? [gm.createdById] : [])),
   );
 

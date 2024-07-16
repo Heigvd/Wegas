@@ -1621,15 +1621,32 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @param type type {@link GameModel.GmType#MODEL} {@link GameModel.GmType#REFERENCE} {@link GameModel.GmType#SCENARIO} {@link GameModel.GmType#PLAY}
      * @param status status {@link Game.Status#LIVE} {@link Game.Status#BIN} {@link Game.Status#DELETE}
      * @param mine boolean return currentUser's or all games (admin only)
+     * @param permissions The requested permissions to filter out others game models
      * @param pageable
      * @return
      */
-    public Page<GameModel> findByTypeStatusAndUserPaginated(GmType type, GameModel.Status status, boolean mine, Pageable pageable) {
+    public Page<GameModel> findByTypeStatusPermissionAndUserPaginated(GmType type, GameModel.Status status, boolean mine, List<String> permissions, Pageable pageable) {
         ArrayList<GameModel> gameModels = new ArrayList<>();
 
         Map<Long, List<String>> pMatrix = this.getPermissionMatrix(type, status);
-        Map<Long, List<String>> filteredPMatrix = pMatrix.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<Long, List<String>> filteredPMatrix = new HashMap<>();
+        for (Map.Entry<Long, List<String>> entry : pMatrix.entrySet()) {
+            boolean hasAccess = false;
+            if (entry.getValue().contains("*")) {
+                hasAccess = true;
+            } else {
+                for (String perm : entry.getValue()) {
+                    if (permissions.contains(perm)) {
+                        // at least one match between wanted permissions and user's effective permissions
+                        hasAccess = true;
+                        break;
+                    }
+                }
+            }
+            if (hasAccess) {
+                filteredPMatrix.put(entry.getKey(), entry.getValue());
+            }
+        }
 
         final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         final CriteriaQuery<GameModel> query = criteriaBuilder.createQuery(GameModel.class);

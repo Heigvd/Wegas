@@ -811,12 +811,13 @@ export const WegasLobbyRestClient = function (
       getGameModelsPaginated: (
         gmType: IGameModelWithId['type'],
         status: IGameModelWithId['status'],
+        mine: boolean,
+        permissions: string[],
         page: number,
         size: number,
         query: string,
-        mine: boolean,
       ) => {
-        const path = `${baseUrl}/Lobby/GameModel/type/${gmType}/status/${status}/Paginated?page=${page}&size=${size}&query=${query}&mine=${mine}`;
+        const path = `${baseUrl}/Lobby/GameModel/type/${gmType}/status/${status}/Paginated?page=${page}&size=${size}&query=${query}&mine=${mine}&perm=${permissions.join(',')}`;
         return sendJsonRequest<IPage<IGameModelWithId>>('GET', path, undefined, errorHandler);
       },
       changeStatus: (gmid: number, status: IGameModelWithId['status']) => {

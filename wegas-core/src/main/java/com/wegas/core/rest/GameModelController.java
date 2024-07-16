@@ -34,11 +34,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 import jakarta.ejb.Stateless;
@@ -640,12 +636,12 @@ public class GameModelController {
     }
 
     /**
-     *
      * Get all gameModel of given type with given status paginated
      *
      * @param type
      * @param status
      * @param mine
+     * @param permissions The requested permissions
      * @param page
      * @param size
      * @param query
@@ -657,10 +653,12 @@ public class GameModelController {
             @PathParam("type") final GameModel.GmType type,
             @PathParam("status") final GameModel.Status status,
             @QueryParam("mine") boolean mine,
+            @QueryParam("perm") String permissions,
             @QueryParam("page") int page,
             @QueryParam("size") int size,
-            @QueryParam("query") String query) {
-        return gameModelFacade.findByTypeStatusAndUserPaginated(type, status, mine, new Pageable(page, size, query));
+            @QueryParam("query") String query
+    ) {
+        return gameModelFacade.findByTypeStatusPermissionAndUserPaginated(type, status, mine, Arrays.asList(permissions.split(",")), new Pageable(page, size, query));
     }
 
     /**

@@ -688,8 +688,8 @@ export const getGameModels = createAsyncThunk(
 
 export const getGameModelsPaginated = createAsyncThunk(
     'gameModel/getGameModelsPaginated',
-    async (payload: { type: IGameModelWithId['type'], status: IGameModelWithId['status'], mine: boolean, page: number, size: number, query: string }) => {
-        return await restClient.GameModelController.getGameModelsPaginated(payload.type, payload.status, payload.page, payload.size, payload.query, payload.mine);
+    async (payload: { type: IGameModelWithId['type']; status: IGameModelWithId['status']; mine: boolean; permissions: string[]; page: number; size: number; query: string }) => {
+        return await restClient.GameModelController.getGameModelsPaginated(payload.type, payload.status, payload.mine, payload.permissions, payload.page, payload.size, payload.query);
     }
 )
 
