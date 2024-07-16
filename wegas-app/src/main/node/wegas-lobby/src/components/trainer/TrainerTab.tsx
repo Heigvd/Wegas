@@ -91,6 +91,8 @@ export default function TrainerTab(): JSX.Element {
     if (page !== 1) {
       setPage(1);
     }
+    // page must not be set as dependency
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameStatusFilter, pageSize, filter, mineFilter]);
 
   // launch the games fetch on change on any filter or display choice
@@ -106,7 +108,7 @@ export default function TrainerTab(): JSX.Element {
       }),
     ).then((action) => {
       const payload = action.payload as IPage<IGameWithId>;
-      setRenderedGamesIds(payload.pageContent.map((game : IGameWithId) => game.id));
+      setRenderedGamesIds(payload.pageContent.map((game: IGameWithId) => game.id));
       setTotalResults(payload.total);
       setIsDataReady(true);
     });

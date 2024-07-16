@@ -15,7 +15,6 @@ import { LoadingStatus } from '../store';
 export interface GameModelState {
   status: Record<IGameModelWithId['type'], Record<IGameModelWithId['status'], LoadingStatus>>;
   gameModels: Record<number, IGameModelWithId | 'LOADING'>;
-  totalResults: number;
 }
 
 const initialState: GameModelState = {
@@ -46,7 +45,6 @@ const initialState: GameModelState = {
     },
   },
   gameModels: {},
-  totalResults: 0,
 };
 
 const slice = createSlice({
@@ -139,20 +137,7 @@ const slice = createSlice({
           ),
         };
       })
-      .addCase(API.getGameModelsPaginated.pending, (state, action) => {
-        const gmType = action.meta.arg.type;
-        const status = action.meta.arg.status;
-
-        state.status[gmType][status] = 'LOADING';
-      })
       .addCase(API.getGameModelsPaginated.fulfilled, (state, action) => {
-        const gmType = action.meta.arg.type;
-        const status = action.meta.arg.status;
-
-        state.status[gmType][status] = 'READY';
-
-        state.totalResults = action.payload.total;
-
         state.gameModels = {
           ...mapById(
               action.payload.pageContent.map(gameModel => {

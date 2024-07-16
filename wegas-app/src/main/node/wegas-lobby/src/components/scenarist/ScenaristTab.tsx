@@ -33,6 +33,7 @@ import CreateScenario from './CreateScenario';
 import GameModelCard from './GameModelCard';
 import InferModel from './InferModel';
 import Checkbox from "../common/Checkbox";
+import {IPage} from "../../API/restClient";
 
 export interface ScenaristTabProps {
   gameModelType: IGameModelWithId['type'];
@@ -73,54 +74,56 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
     'COLLAPSED',
   );
 
+  const [isDataReady, setIsDataReady] = React.useState<boolean>(false);
+
   const [filter, setFilter] = React.useState('');
+
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(20);
+  const [totalResults, setTotalResults] = React.useState<number>(0);
 
-  const onNextPage = () => setPage(page < gamemodels.totalResults / pageSize ? page + 1 : page);
+  const onNextPage = () => setPage(page < totalResults / pageSize ? page + 1 : page);
   const onPreviousPage = () => setPage(page > 1 ? page - 1 : 1);
 
   const onFilterChange = React.useCallback((filter: string) => {
     setFilter(filter);
   }, []);
 
-  const status = gamemodels.status[gameModelType][statusFilter];
-
-  const getGameModels = () => dispatch(getGameModelsPaginated({ status: statusFilter, type: gameModelType,  page: page, size: pageSize, query: filter, mine: mineFilter === 'MINE'}));
-
-  React.useEffect(() => {
-    if (status === 'NOT_INITIALIZED') {
-      getGameModels();
-    }
-  }, [statusFilter, gameModelType, status, dispatch]);
-
+  // if we change any filter or display choice, come back to first page
   React.useEffect(() => {
     if (page !== 1) {
       setPage(1)
-    } else {
-      getGameModels()
     }
-  }, [filter, pageSize, statusFilter, mineFilter]);
+    // page must not be set as dependency
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusFilter, gameModelType, pageSize, filter, mineFilter]);
 
   React.useEffect(() => {
-    getGameModels();
-  }, [page]);
+    setIsDataReady(false);
+    dispatch(getGameModelsPaginated({ status: statusFilter, type: gameModelType,  page: page, size: pageSize, query: filter, mine: mineFilter === 'MINE'}))
+        .then(action => {
+          setTotalResults((action.payload as IPage<IGameModelWithId>).total);
+          setIsDataReady(true);
+        });
+  }, [dispatch, statusFilter, gameModelType, page, pageSize, filter, mineFilter]);
 
   const userIds = uniq(
     gamemodels.gamemodels.flatMap(gm => (gm.createdById != null ? [gm.createdById] : [])),
   );
+
   const accountsState = useAccountsByUserIds(userIds);
 
-  const buildCardCb = React.useCallback(
-    (gameModel: IGameModelWithId) => <GameModelCard key={gameModel.id} gameModel={gameModel} />,
-    [],
-  );
-
+  // This is done to fetch the name of the creators of the games
   React.useEffect(() => {
     if (isAdmin && accountsState.unknownUsers.length > 0) {
       dispatch(getShadowUserByIds(accountsState.unknownUsers));
     }
   }, [isAdmin, accountsState, dispatch]);
+
+  const buildCardCb = React.useCallback(
+      (gameModel: IGameModelWithId) => <GameModelCard key={gameModel.id} gameModel={gameModel} />,
+      [],
+  );
 
   // Detect any gameModel id in URL
   const resolvedPath = useResolvedPath("./");
@@ -128,214 +131,208 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
   const match = useMatch<'id', string>(`${resolvedPath.pathname}:id/*`);
   const selectedId = Number(match?.params.id) || undefined;
 
-  if (gamemodels.status[gameModelType][statusFilter] === 'NOT_INITIALIZED') {
-    return <InlineLoading />;
-  } else {
-    const selected = gamemodels.gamemodels.find(gm => gm.id === selectedId);
+  const selected = gamemodels.gamemodels.find(gm => gm.id === selectedId);
 
-    const statusFilterEntries: { value: IGameModelWithId['status']; label: React.ReactNode }[] = [
-      {
-        value: 'LIVE',
-        label: <div className={itemStyle}>{i18n.liveGameModels}</div>,
-      },
-      {
-        value: 'BIN',
-        label: <div className={itemStyle}>{i18n.archivedGameModels}</div>,
-      },
-    ];
+  const statusFilterEntries: { value: IGameModelWithId['status']; label: React.ReactNode }[] = [
+    {
+      value: 'LIVE',
+      label: <div className={itemStyle}>{i18n.liveGameModels}</div>,
+    },
+    {
+      value: 'BIN',
+      label: <div className={itemStyle}>{i18n.archivedGameModels}</div>,
+    },
+  ];
 
-    if (isAdmin) {
-      statusFilterEntries.push({
-        value: 'DELETE',
-        label: <div className={itemStyle}>{i18n.deletedGameModels}</div>,
-      });
-    }
-    const dropDownStatus = (
-      <DropDownMenu
-        menuIcon="CARET"
-        entries={statusFilterEntries}
-        value={statusFilter}
-        onSelect={setStatusFilter}
-      />
-    );
+  if (isAdmin) {
+    statusFilterEntries.push({
+      value: 'DELETE',
+      label: <div className={itemStyle}>{i18n.deletedGameModels}</div>,
+    });
+  }
+  const dropDownStatus = (
+    <DropDownMenu
+      menuIcon="CARET"
+      entries={statusFilterEntries}
+      value={statusFilter}
+      onSelect={setStatusFilter}
+    />
+  );
 
-    const mineFilterEntries: { value: MINE_OR_ALL; label: React.ReactNode }[] = [
-      {
-        value: 'MINE',
-        label: <div className={itemStyle}>{i18n.mine}</div>,
-      },
-      {
-        value: 'ALL',
-        label: <div className={itemStyle}>{i18n.all}</div>,
-      },
-    ];
+  const mineFilterEntries: { value: MINE_OR_ALL; label: React.ReactNode }[] = [
+    {
+      value: 'MINE',
+      label: <div className={itemStyle}>{i18n.mine}</div>,
+    },
+    {
+      value: 'ALL',
+      label: <div className={itemStyle}>{i18n.all}</div>,
+    },
+  ];
 
-    const dropDownMine = isAdmin ? (
-      <DropDownMenu
-        menuIcon="CARET"
-        entries={mineFilterEntries}
-        value={mineFilter}
-        onSelect={setMineFilter}
-      />
-    ) : null;
+  const dropDownMine = isAdmin ? (
+    <DropDownMenu
+      menuIcon="CARET"
+      entries={mineFilterEntries}
+      value={mineFilter}
+      onSelect={setMineFilter}
+    />
+  ) : null;
 
-    return (
-      <FitSpace direction="column" overflow="auto" className={css({ position: 'relative' })}>
+  return (
+    <FitSpace direction="column" overflow="auto" className={css({ position: 'relative' })}>
+      <DropDownPanel
+        state={createPanelViewMode}
+        onClose={() => {
+          setCreatePanelViewMode('COLLAPSED');
+        }}
+      >
+        {createPanelViewMode === 'EXPANDED' ? (
+          gameModelType === 'SCENARIO' ? (
+            <CreateScenario
+              close={() => {
+                setCreatePanelViewMode('COLLAPSED');
+              }}
+            />
+          ) : (
+            <CreateModel
+              close={() => {
+                setCreatePanelViewMode('COLLAPSED');
+              }}
+            />
+          )
+        ) : null}
+      </DropDownPanel>
+
+      {gameModelType === 'MODEL' ? (
         <DropDownPanel
-          state={createPanelViewMode}
+          state={inferModelViewMode}
           onClose={() => {
-            setCreatePanelViewMode('COLLAPSED');
+            setInferModelViewMode('COLLAPSED');
           }}
         >
-          {createPanelViewMode === 'EXPANDED' ? (
-            gameModelType === 'SCENARIO' ? (
-              <CreateScenario
-                close={() => {
-                  setCreatePanelViewMode('COLLAPSED');
-                }}
-              />
-            ) : (
-              <CreateModel
-                close={() => {
-                  setCreatePanelViewMode('COLLAPSED');
-                }}
-              />
-            )
+          {inferModelViewMode === 'EXPANDED' ? (
+            <InferModel
+              close={() => {
+                setInferModelViewMode('COLLAPSED');
+              }}
+            />
           ) : null}
         </DropDownPanel>
+      ) : null}
 
-        {gameModelType === 'MODEL' ? (
-          <DropDownPanel
-            state={inferModelViewMode}
-            onClose={() => {
-              setInferModelViewMode('COLLAPSED');
+      <FitSpace direction="column" overflow="auto" className={panelPadding}>
+        <Flex
+          justify="space-between"
+          align="center"
+          className={css({
+            flexShrink: 0,
+            height: '80px',
+          })}
+        >
+          <IconButton
+            icon={faPlusCircle}
+            iconColor={successColor.toString()}
+            onClick={() => {
+              setCreatePanelViewMode('EXPANDED');
             }}
+            title={gameModelType === 'SCENARIO' ? i18n.createGameModel : i18n.createModel}
           >
-            {inferModelViewMode === 'EXPANDED' ? (
-              <InferModel
-                close={() => {
-                  setInferModelViewMode('COLLAPSED');
-                }}
-              />
-            ) : null}
-          </DropDownPanel>
-        ) : null}
+            {gameModelType === 'SCENARIO' ? i18n.createGameModel : i18n.createModel}
+          </IconButton>
 
-        <FitSpace direction="column" overflow="auto" className={panelPadding}>
-          <Flex
-            justify="space-between"
-            align="center"
-            className={css({
-              flexShrink: 0,
-              height: '80px',
-            })}
-          >
+          {gameModelType === 'MODEL' ? (
             <IconButton
               icon={faPlusCircle}
               iconColor={successColor.toString()}
               onClick={() => {
-                setCreatePanelViewMode('EXPANDED');
+                setInferModelViewMode('EXPANDED');
               }}
-              title={gameModelType === 'SCENARIO' ? i18n.createGameModel : i18n.createModel}
+              title={i18n.inferModel}
             >
-              {gameModelType === 'SCENARIO' ? i18n.createGameModel : i18n.createModel}
+              {i18n.inferModel}
             </IconButton>
+          ) : null}
 
-            {gameModelType === 'MODEL' ? (
-              <IconButton
-                icon={faPlusCircle}
-                iconColor={successColor.toString()}
-                onClick={() => {
-                  setInferModelViewMode('EXPANDED');
-                }}
-                title={i18n.inferModel}
-              >
-                {i18n.inferModel}
-              </IconButton>
-            ) : null}
+          {dropDownStatus}
+          {dropDownMine}
 
-            {dropDownStatus}
-            {dropDownMine}
-
-            <DebouncedInput
-              size="SMALL"
-              value={filter}
-              placeholder={i18n.search}
-              onChange={onFilterChange}
-            />
-          </Flex>
-          <Flex
-            justify="space-between"
-            align="center"
+          <DebouncedInput
+            size="SMALL"
+            value={filter}
+            placeholder={i18n.search}
+            onChange={onFilterChange}
+          />
+        </Flex>
+        <Flex
+          justify="space-between"
+          align="center"
+          className={css({
+            flexShrink: 0,
+            height: '20px',
+          })}
+        >
+          <div
             className={css({
-              flexShrink: 0,
-              height: '20px',
+              display: 'flex',
+              alignContent: 'flex-start'
             })}
           >
-            <div
+            <h3>{`${totalResults} ${i18n.gameModels}`}</h3>
+          </div>
+          <div>
+            <h3>
+              <IconButton onClick={onPreviousPage} icon={'caret-left'}></IconButton>
+              {page}/{totalResults > 0 ? Math.ceil(totalResults / pageSize) : 1}
+              <IconButton onClick={onNextPage} icon={'caret-right'}></IconButton>
+            </h3>
+          </div>
+          <div
               className={css({
                 display: 'flex',
-                alignContent: 'flex-start'
+                alignContent: 'flex-end',
+                flexDirection: 'row',
               })}
-            >
-              <h3>{`${gamemodels.totalResults} ${i18n.gameModels}`}</h3>
-            </div>
-            <div>
-              <h3>
-                <IconButton onClick={onPreviousPage} icon={'caret-left'}></IconButton>
-                {page}/{gamemodels.totalResults > 0 ? Math.ceil(gamemodels.totalResults / pageSize) : 1}
-                <IconButton onClick={onNextPage} icon={'caret-right'}></IconButton>
-              </h3>
-            </div>
-            <div
-                className={css({
-                  display: 'flex',
-                  alignContent: 'flex-end',
-                  flexDirection: 'row',
-                })}
-            >
-              <Checkbox
-                  label="20"
-                  value={pageSize === 20}
-                  onChange={(newValue: boolean) => setPageSize(newValue ? 20 : pageSize)}
-              />
-              <Checkbox
-                  label="50"
-                  value={pageSize === 50}
-                  onChange={(newValue: boolean) => setPageSize(newValue ? 50 : pageSize)}
-              />
-              <Checkbox
-                  label="100"
-                  value={pageSize === 100}
-                  onChange={(newValue: boolean) => setPageSize(newValue ? 100 : pageSize)}
-              />
-            </div>
-          </Flex>
-          {status === 'READY' ? (
-            <>
-              <WindowedContainer
-                items={gamemodels.gamemodels}
-                scrollTo={selected}
-                emptyMessage={
-                  <i>
-                    {filter
-                      ? gameModelType === 'SCENARIO'
-                        ? i18n.noScenariosFound
-                        : i18n.noModelsFound
-                      : gameModelType === 'SCENARIO'
-                      ? i18n.noScenarios
-                      : i18n.noModels}
-                  </i>
-                }
-              >
-                {buildCardCb}
-              </WindowedContainer>
-            </>
-          ) : (
-            <InlineLoading />
-          )}
-        </FitSpace>
+          >
+            <Checkbox
+                label="20"
+                value={pageSize === 20}
+                onChange={(newValue: boolean) => setPageSize(newValue ? 20 : pageSize)}
+            />
+            <Checkbox
+                label="50"
+                value={pageSize === 50}
+                onChange={(newValue: boolean) => setPageSize(newValue ? 50 : pageSize)}
+            />
+            <Checkbox
+                label="100"
+                value={pageSize === 100}
+                onChange={(newValue: boolean) => setPageSize(newValue ? 100 : pageSize)}
+            />
+          </div>
+        </Flex>
+        {isDataReady ? (
+          <WindowedContainer
+            items={gamemodels.gamemodels}
+            scrollTo={selected}
+            emptyMessage={
+              <i>
+                {filter
+                  ? gameModelType === 'SCENARIO'
+                    ? i18n.noScenariosFound
+                    : i18n.noModelsFound
+                  : gameModelType === 'SCENARIO'
+                  ? i18n.noScenarios
+                  : i18n.noModels}
+              </i>
+            }
+          >
+            {buildCardCb}
+          </WindowedContainer>
+        ) : (
+          <InlineLoading />
+        )}
       </FitSpace>
-    );
-  }
+    </FitSpace>
+  );
 }

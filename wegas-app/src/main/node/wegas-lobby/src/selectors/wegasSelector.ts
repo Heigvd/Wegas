@@ -120,7 +120,7 @@ export type IGameStoreInfo = IGameWithId | 'LOADING' | undefined;
 
 // TODO 5.x syntax 
 //export const useGame = (gameId?: number, compareFunc = customStateEquals<IGameStoreInfo>) => {
-const gameStateEquals = (a: IGameStoreInfo,b : IGameStoreInfo) => customStateEquals<IGameStoreInfo>(a,b);
+const gameStateEquals = (a: IGameStoreInfo, b: IGameStoreInfo) => customStateEquals<IGameStoreInfo>(a,b);
 
 export const useGame = (gameId?: number, compareFunc = gameStateEquals) => {
   return useAppSelector<IGameStoreInfo>(state => {
@@ -342,14 +342,12 @@ export const useEditableGameModels = (
             [gameModelStatus],
           ).sort((a, b) => b.createdTime - a.createdTime),
           status: state.gameModels.status,
-          totalResults: state.gameModels.totalResults,
         };
       }
 
       return {
         gamemodels: [],
         status: state.gameModels.status,
-        totalResults: 0,
       };
     },
     (a, b) => {
