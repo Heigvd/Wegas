@@ -44,7 +44,14 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
   const dispatch = useAppDispatch();
   const { isAdmin } = useCurrentUser();
 
-  const [statusFilter, setStatusFilter] = useLocalStorageState<IGameModelWithId['status']>(
+  const [createPanelViewMode, setCreatePanelViewMode] = React.useState<'EXPANDED' | 'COLLAPSED'>(
+      'COLLAPSED',
+  );
+  const [inferModelViewMode, setInferModelViewMode] = React.useState<'EXPANDED' | 'COLLAPSED'>(
+      'COLLAPSED',
+  );
+
+  const [gameStatusFilter, setGameStatusFilter] = useLocalStorageState<IGameModelWithId['status']>(
     'scenarist-status',
     'LIVE',
   );
@@ -53,37 +60,37 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
     isAdmin ? 'MINE' : 'ALL',
   );
 
-  React.useEffect(() => {
-    if (!isAdmin && statusFilter === 'DELETE') {
-      setStatusFilter('BIN');
-    }
-  }, [isAdmin, statusFilter, setStatusFilter]);
-
-  const [createPanelViewMode, setCreatePanelViewMode] = React.useState<'EXPANDED' | 'COLLAPSED'>(
-    'COLLAPSED',
-  );
-  const [inferModelViewMode, setInferModelViewMode] = React.useState<'EXPANDED' | 'COLLAPSED'>(
-    'COLLAPSED',
-  );
-
-  const [isDataReady, setIsDataReady] = React.useState<boolean>(false);
-
   const [filter, setFilter] = React.useState('');
 
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(20);
 
+  const [isDataReady, setIsDataReady] = React.useState<boolean>(false);
   const [renderedGameModelsIds, setRenderedGameModelsIds] = React.useState<number[]>([]);
   const [totalResults, setTotalResults] = React.useState<number>(0);
 
   const gamemodels = useGameModelsById(renderedGameModelsIds);
 
-  const onNextPage = () => setPage(page < totalResults / pageSize ? page + 1 : page);
-  const onPreviousPage = () => setPage(page > 1 ? page - 1 : 1);
+  //non-admin should never see deleted
+  React.useEffect(() => {
+    if (!isAdmin && gameStatusFilter === 'DELETE') {
+      setGameStatusFilter('BIN');
+    }
+  }, [isAdmin, gameStatusFilter, setGameStatusFilter]);
+
+  // non-admin can only see theirs
+  React.useEffect(() => {
+    if (!isAdmin && mineFilter === 'ALL') {
+      setMineFilter('MINE');
+    }
+  }, [isAdmin, mineFilter, setMineFilter]);
 
   const onFilterChange = React.useCallback((filter: string) => {
     setFilter(filter);
   }, []);
+
+  const onNextPage = () => setPage(page < totalResults / pageSize ? page + 1 : page);
+  const onPreviousPage = () => setPage(page > 1 ? page - 1 : 1);
 
   // if we change any filter or display choice, come back to first page
   React.useEffect(() => {
@@ -92,18 +99,31 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
     }
     // page must not be set as dependency
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusFilter, gameModelType, pageSize, filter, mineFilter]);
+  }, [gameStatusFilter, gameModelType, pageSize, filter, mineFilter]);
 
   React.useEffect(() => {
     setIsDataReady(false);
-    dispatch(getGameModelsPaginated({ type: gameModelType, status: statusFilter, mine: mineFilter === 'MINE', permissions: ['Edit', 'Translate'], page: page, size: pageSize, query: filter }))
-      .then(action => {
-        const payload = (action.payload as IPage<IGameModelWithId>);
-        setRenderedGameModelsIds(payload.pageContent.map((gameModel: IGameModelWithId) => gameModel.id));
-        setTotalResults(payload.total);
-        setIsDataReady(true);
-      });
-  }, [dispatch, statusFilter, gameModelType, page, pageSize, filter, mineFilter]);
+    dispatch(getGameModelsPaginated({
+      type: gameModelType,
+      status: gameStatusFilter,
+      mine: mineFilter === 'MINE',
+      permissions: ['Edit', 'Translate'],
+      page: page,
+      size: pageSize,
+      query: filter,
+    }))
+        .then(action => {
+          const payload = (action.payload as IPage<IGameModelWithId>);
+          setRenderedGameModelsIds(payload.pageContent.map((gameModel: IGameModelWithId) => gameModel.id));
+          setTotalResults(payload.total);
+          setIsDataReady(true);
+        });
+  }, [dispatch, gameStatusFilter, gameModelType, page, pageSize, filter, mineFilter]);
+
+  const buildCardCb = React.useCallback(
+      (gameModel: IGameModelWithId) => <GameModelCard key={gameModel.id} gameModel={gameModel} />,
+      [],
+  );
 
   const userIds: number[] = uniq(
     gamemodels.gamemodels.flatMap(gm => (gm.createdById != null ? [gm.createdById] : [])),
@@ -117,11 +137,6 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
       dispatch(getShadowUserByIds(accountsState.unknownUsers));
     }
   }, [isAdmin, accountsState, dispatch]);
-
-  const buildCardCb = React.useCallback(
-      (gameModel: IGameModelWithId) => <GameModelCard key={gameModel.id} gameModel={gameModel} />,
-      [],
-  );
 
   // Detect any gameModel id in URL
   const resolvedPath = useResolvedPath("./");
@@ -152,8 +167,8 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
     <DropDownMenu
       menuIcon="CARET"
       entries={statusFilterEntries}
-      value={statusFilter}
-      onSelect={setStatusFilter}
+      value={gameStatusFilter}
+      onSelect={setGameStatusFilter}
     />
   );
 
@@ -270,44 +285,37 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
             height: '20px',
           })}
         >
-          <div
-            className={css({
-              display: 'flex',
-              alignContent: 'flex-start'
-            })}
-          >
+          <Flex align="flex-start">
             <h3>{`${totalResults} ${i18n.gameModels}`}</h3>
-          </div>
-          <div>
-            <h3>
-              <IconButton onClick={onPreviousPage} icon={'caret-left'}></IconButton>
-              {page}/{totalResults > 0 ? Math.ceil(totalResults / pageSize) : 1}
-              <IconButton onClick={onNextPage} icon={'caret-right'}></IconButton>
-            </h3>
-          </div>
-          <div
-              className={css({
-                display: 'flex',
-                alignContent: 'flex-end',
-                flexDirection: 'row',
-              })}
-          >
-            <Checkbox
-                label="20"
-                value={pageSize === 20}
-                onChange={(newValue: boolean) => setPageSize(newValue ? 20 : pageSize)}
-            />
-            <Checkbox
-                label="50"
-                value={pageSize === 50}
-                onChange={(newValue: boolean) => setPageSize(newValue ? 50 : pageSize)}
-            />
-            <Checkbox
-                label="100"
-                value={pageSize === 100}
-                onChange={(newValue: boolean) => setPageSize(newValue ? 100 : pageSize)}
-            />
-          </div>
+          </Flex>
+          {totalResults > pageSize /* show pagination tools only if needed */ && (
+            <>
+              <Flex>
+                <h3>
+                  <IconButton onClick={onPreviousPage} icon={'caret-left'}></IconButton>
+                  {page}/{totalResults > 0 ? Math.ceil(totalResults / pageSize) : 1}
+                  <IconButton onClick={onNextPage} icon={'caret-right'}></IconButton>
+                </h3>
+              </Flex>
+              <Flex align="flex-end">
+                <Checkbox
+                  label="20"
+                  value={pageSize === 20}
+                  onChange={(newValue: boolean) => setPageSize(newValue ? 20 : pageSize)}
+                />
+                <Checkbox
+                  label="50"
+                  value={pageSize === 50}
+                  onChange={(newValue: boolean) => setPageSize(newValue ? 50 : pageSize)}
+                />
+                <Checkbox
+                  label="100"
+                  value={pageSize === 100}
+                  onChange={(newValue: boolean) => setPageSize(newValue ? 100 : pageSize)}
+                />
+              </Flex>
+            </>
+          )}
         </Flex>
         {isDataReady ? (
           <WindowedContainer
