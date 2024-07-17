@@ -205,17 +205,6 @@ export default function TrainerTab(): JSX.Element {
             close={() => {
               setGameCreationPanelMode('COLLAPSED');
             }}
-            callback={() =>
-              dispatch(
-                getGamesPaginated({
-                  status: gameStatusFilter,
-                  page: page,
-                  size: pageSize,
-                  query: filter,
-                  mine: mineFilter === 'MINE',
-                }),
-              )
-            }
           />
         )}
       </DropDownPanel>
