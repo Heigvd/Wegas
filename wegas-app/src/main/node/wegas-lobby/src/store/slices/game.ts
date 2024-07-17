@@ -105,6 +105,7 @@ const slice = createSlice({
           ...mapById(
             action.payload.pageContent.map(game => {
               const g = { ...game };
+              // we remove the gameModel because it would not be updated. If the gameModel is needed, fetch it from gameModel slice
               delete g.gameModel;
               return g;
             }),
