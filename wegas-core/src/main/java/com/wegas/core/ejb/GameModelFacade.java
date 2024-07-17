@@ -1626,27 +1626,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @return
      */
     public Page<GameModel> findByTypeStatusPermissionAndUserPaginated(GmType type, GameModel.Status status, boolean mine, List<String> permissions, Pageable pageable) {
-        ArrayList<GameModel> gameModels = new ArrayList<>();
-
-        Map<Long, List<String>> pMatrix = this.getPermissionMatrix(type, status);
-        Map<Long, List<String>> filteredPMatrix = new HashMap<>();
-        for (Map.Entry<Long, List<String>> entry : pMatrix.entrySet()) {
-            boolean hasAccess = false;
-            if (entry.getValue().contains("*")) {
-                hasAccess = true;
-            } else {
-                for (String perm : entry.getValue()) {
-                    if (permissions.contains(perm)) {
-                        // at least one match between wanted permissions and user's effective permissions
-                        hasAccess = true;
-                        break;
-                    }
-                }
-            }
-            if (hasAccess) {
-                filteredPMatrix.put(entry.getKey(), entry.getValue());
-            }
-        }
+        List<Long> gameModelIdsPartiallyMatching = getGameModelIdsByUserPermissionsTypeAndStatus(type, status, permissions);
 
         final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         final CriteriaQuery<GameModel> query = criteriaBuilder.createQuery(GameModel.class);
@@ -1657,7 +1637,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 criteriaBuilder.equal(gameModelRoot.get("status"), status),
                 criteriaBuilder.equal(gameModelRoot.get("type"), type),
                 // Maximum in values for psql: 32767
-                gameModelRoot.get("id").in(new ArrayList<>(filteredPMatrix.keySet()))
+                gameModelRoot.get("id").in(gameModelIdsPartiallyMatching)
         );
 
         for (String param: pageable.getSplitQuery()) {
@@ -1689,6 +1669,31 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         return new Page<GameModel>(total, pageable.getPage(), pageable.getSize(), listQuery.getResultList());
 
+    }
+
+    private List<Long> getGameModelIdsByUserPermissionsTypeAndStatus(GmType type, GameModel.Status status, List<String> permissions) {
+        List<Long> gameModelIdsMatchingPermissions = new ArrayList<>();
+
+        Map<Long, List<String>> permissionMatrix = this.getPermissionMatrix(type, status);
+        for (Map.Entry<Long, List<String>> entry : permissionMatrix.entrySet()) {
+            boolean hasAccess = false;
+            if (entry.getValue().contains("*")) {
+                hasAccess = true;
+            } else {
+                for (String perm : entry.getValue()) {
+                    if (permissions.contains(perm)) {
+                        // at least one match between wanted permissions and user's effective permissions
+                        hasAccess = true;
+                        break;
+                    }
+                }
+            }
+            if (hasAccess) {
+                gameModelIdsMatchingPermissions.add(entry.getKey());
+            }
+        }
+
+        return gameModelIdsMatchingPermissions;
     }
 
     /**
