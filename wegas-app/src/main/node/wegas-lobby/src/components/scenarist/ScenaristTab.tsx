@@ -16,7 +16,7 @@ import {getGameModelsPaginated, getShadowUserByIds} from '../../API/api';
 import useTranslations from '../../i18n/I18nContext';
 import { useLocalStorageState } from '../../preferences';
 import { useAccountsByUserIds, useCurrentUser } from '../../selectors/userSelector';
-import { MINE_OR_ALL, useGameModelsById } from '../../selectors/wegasSelector';
+import { MINE_OR_ALL, useGameModelsById, useGameModelStoreChangesProcessedCount } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
 import { WindowedContainer } from '../common/CardContainer';
 import DebouncedInput from '../common/DebouncedInput';
@@ -69,6 +69,8 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
   const [renderedGameModelsIds, setRenderedGameModelsIds] = React.useState<number[]>([]);
   const [totalResults, setTotalResults] = React.useState<number>(0);
 
+  const nbGameModelStoreChanges = useGameModelStoreChangesProcessedCount();
+
   const gamemodels = useGameModelsById(renderedGameModelsIds);
 
   //non-admin should never see deleted
@@ -94,6 +96,9 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameStatusFilter, gameModelType, pageSize, filter, mineFilter]);
 
+  // launch the game models fetch
+  // when there is any change on any filter or display choice
+  // OR if game models were added or changed status or deleted in the store (nbGameModelStoreChanges)
   React.useEffect(() => {
     setIsDataReady(false);
     dispatch(getGameModelsPaginated({
@@ -105,13 +110,13 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
       size: pageSize,
       query: filter,
     }))
-        .then(action => {
-          const payload = (action.payload as IPage<IGameModelWithId>);
-          setRenderedGameModelsIds(payload.pageContent.map((gameModel: IGameModelWithId) => gameModel.id));
-          setTotalResults(payload.total);
-          setIsDataReady(true);
-        });
-  }, [dispatch, gameStatusFilter, gameModelType, page, pageSize, filter, mineFilter]);
+      .then(action => {
+        const payload = (action.payload as IPage<IGameModelWithId>);
+        setRenderedGameModelsIds(payload.pageContent.map((gameModel: IGameModelWithId) => gameModel.id));
+        setTotalResults(payload.total);
+        setIsDataReady(true);
+      });
+  }, [dispatch, isAdmin, gameStatusFilter, gameModelType, page, pageSize, filter, mineFilter, nbGameModelStoreChanges]);
 
   const buildCardCb = React.useCallback(
       (gameModel: IGameModelWithId) => <GameModelCard key={gameModel.id} gameModel={gameModel} />,

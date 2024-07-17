@@ -346,6 +346,15 @@ export const useGameModelsById = (gameModelsIds: number[]): {
   );
 };
 
+export const useGameModelStoreChangesProcessedCount = (): number => {
+  return useAppSelector(
+    state => {
+      return state.gameModels.nbCreatedGameModelsProcessed
+        + state.gameModels.nbStatusUpdatedGameModelsProcessed
+        + state.gameModels.nbDeletedGameModelsProcessed;
+    });
+};
+
 export const useDuplicatableGameModels = (userId: number | undefined) => {
   return useAppSelector(
     state => {
@@ -467,6 +476,15 @@ export const useGamesByIds = (
 
   return {gamesAndGameModels: games.gamesAndGameModels.filter(ggm => gamesIds.includes(ggm.game.id))};
 };
+
+export const useGameStoreChangesProcessedCount = (): number => {
+  return useAppSelector(
+    state => {
+      return state.games.nbCreatedGamesProcessed
+        + state.games.nbStatusUpdatedGamesProcessed
+        + state.games.nbDeletedGamesProcessed;
+    });
+}
 
 export const useModelInstances = (userId: number | undefined, modelId: number) => {
   return useAppSelector(

@@ -16,7 +16,7 @@ import { getGamesPaginated, getShadowUserByIds } from '../../API/api';
 import useTranslations from '../../i18n/I18nContext';
 import { useLocalStorageState } from '../../preferences';
 import { useAccountsByUserIds, useCurrentUser } from '../../selectors/userSelector';
-import { MINE_OR_ALL, useGamesByIds } from '../../selectors/wegasSelector';
+import { MINE_OR_ALL, useGamesByIds, useGameStoreChangesProcessedCount } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
 import { WindowedContainer } from '../common/CardContainer';
 import DebouncedInput from '../common/DebouncedInput';
@@ -58,6 +58,8 @@ export default function TrainerTab(): JSX.Element {
   const [renderedGamesIds, setRenderedGamesIds] = React.useState<number[]>([]);
   const [totalResults, setTotalResults] = React.useState<number>(0);
 
+  const nbGameStoreChanges = useGameStoreChangesProcessedCount();
+
   const games = useGamesByIds(
     gameStatusFilter,
     currentUser != null ? currentUser.id : undefined,
@@ -88,7 +90,9 @@ export default function TrainerTab(): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameStatusFilter, pageSize, filter, mineFilter]);
 
-  // launch the games fetch on change on any filter or display choice
+  // launch the games fetch
+  // when there is any change on any filter or display choice
+  // OR if games were added or changed status or deleted in the store (nbGameStoreChanges)
   React.useEffect(() => {
     setIsDataReady(false);
     dispatch(
@@ -105,7 +109,7 @@ export default function TrainerTab(): JSX.Element {
       setTotalResults(payload.total);
       setIsDataReady(true);
     });
-  }, [dispatch, gameStatusFilter, page, pageSize, filter, mineFilter]);
+  }, [dispatch, isAdmin, gameStatusFilter, page, pageSize, filter, mineFilter, nbGameStoreChanges]);
 
   const buildCardCb = React.useCallback(
     (gameAndGameModel: { game: IGameWithId; gameModel: IGameModelWithId }) => (

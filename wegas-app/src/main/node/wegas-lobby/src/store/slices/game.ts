@@ -11,12 +11,19 @@ import * as API from '../../API/api';
 import { mapById } from '../../helper';
 import { processDeletedEntities, processUpdatedEntities } from '../../websocket/websocket';
 import { LoadingStatus } from '../store';
+import { entityIs } from '../../API/entityHelper';
 
 export interface GameState {
   status: Record<IGameWithId['status'], LoadingStatus>;
   games: Record<number, IGameWithId | 'LOADING'>;
   teams: Record<number, 'LOADING' | number[]>;
   joinStatus: Record<number, 'JOINING' | 'JOINED'>;
+  /** Just a stupid data that changes when a game is added. Its aim is to trigger data reloading */
+  nbCreatedGamesProcessed: number;
+  /** Just a stupid data that changes when a game status is updated. Its aim is to trigger data reloading */
+  nbStatusUpdatedGamesProcessed: number;
+  /** Just a stupid data that changes when a game is deleted. Its aim is to trigger data reloading */
+  nbDeletedGamesProcessed: number;
 }
 
 const initialState: GameState = {
@@ -29,6 +36,9 @@ const initialState: GameState = {
   games: {},
   teams: {},
   joinStatus: {},
+  nbCreatedGamesProcessed: 0,
+  nbStatusUpdatedGamesProcessed: 0,
+  nbDeletedGamesProcessed: 0,
 };
 
 const slice = createSlice({
@@ -38,7 +48,22 @@ const slice = createSlice({
   extraReducers: builder =>
     builder
       .addCase(processUpdatedEntities.fulfilled, (state, action) => {
+        action.payload.games.forEach((g: IGameWithId) => {
+          if (state.games[g.id] == undefined) {
+            // count the number of created games
+            state.nbCreatedGamesProcessed++;
+          } else {
+            const game = state.games[g.id];
+            // trigger change only when status changes. If no condition on what changed, it would be updated a lot, really
+            if (entityIs(game, 'Game') && game.status != g.status) {
+              // count the number of games that had a status change
+              state.nbStatusUpdatedGamesProcessed++;
+            }
+          }
+        })
+
         state.games = { ...state.games, ...mapById(action.payload.games) };
+
         action.payload.teams.forEach(t => {
           const parentId = t.parentId;
           if (parentId != null) {
@@ -52,7 +77,12 @@ const slice = createSlice({
         });
       })
       .addCase(processDeletedEntities.fulfilled, (state, action) => {
-        action.payload.games.forEach(id => delete state.games[id]);
+        action.payload.games.forEach(id => {
+          delete state.games[id];
+          // count the number of deleted games
+          state.nbDeletedGamesProcessed++;
+        });
+
         action.payload.teams.forEach(id => delete state.teams[id]);
         if (action.payload.teams.length > 0) {
           Object.entries(state.teams).forEach(([key, list]) => {
