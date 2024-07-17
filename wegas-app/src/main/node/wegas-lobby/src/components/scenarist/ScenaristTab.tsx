@@ -78,13 +78,6 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
     }
   }, [isAdmin, gameStatusFilter, setGameStatusFilter]);
 
-  // non-admin can only see theirs
-  React.useEffect(() => {
-    if (!isAdmin && mineFilter === 'ALL') {
-      setMineFilter('MINE');
-    }
-  }, [isAdmin, mineFilter, setMineFilter]);
-
   const onFilterChange = React.useCallback((filter: string) => {
     setFilter(filter);
   }, []);
@@ -106,7 +99,7 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
     dispatch(getGameModelsPaginated({
       type: gameModelType,
       status: gameStatusFilter,
-      mine: mineFilter === 'MINE',
+      mine: isAdmin ? mineFilter === 'MINE' : true,
       permissions: ['Edit', 'Translate'],
       page: page,
       size: pageSize,

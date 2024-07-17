@@ -61,7 +61,7 @@ export default function TrainerTab(): JSX.Element {
   const games = useGamesByIds(
     gameStatusFilter,
     currentUser != null ? currentUser.id : undefined,
-    mineFilter,
+    isAdmin ? mineFilter : 'MINE',
     renderedGamesIds
   );
 
@@ -71,13 +71,6 @@ export default function TrainerTab(): JSX.Element {
       setGameStatusFilter('BIN');
     }
   }, [isAdmin, gameStatusFilter, setGameStatusFilter]);
-
-  // non-admin can only see theirs
-  React.useEffect(() => {
-    if (!isAdmin && mineFilter === 'ALL') {
-      setMineFilter('MINE');
-    }
-  }, [isAdmin, mineFilter, setMineFilter]);
 
   const onFilterChange = React.useCallback((filter: string) => {
     setFilter(filter);
@@ -104,7 +97,7 @@ export default function TrainerTab(): JSX.Element {
         page: page,
         size: pageSize,
         query: filter,
-        mine: mineFilter === 'MINE',
+        mine: isAdmin ? mineFilter === 'MINE' : true,
       }),
     ).then((action) => {
       const payload = action.payload as IPage<IGameWithId>;
