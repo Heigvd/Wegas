@@ -44,7 +44,7 @@ const slice = createSlice({
     builder
       .addCase(processUpdatedEntities.fulfilled, (state, action) => {
         action.payload.games.forEach((g: IGameWithId) => {
-          if (state.games[g.id] == undefined) {
+          if (state.games[g.id]) {
             // add to noticeable changes the number of created games
             state.nbGameChanges++;
           } else {
