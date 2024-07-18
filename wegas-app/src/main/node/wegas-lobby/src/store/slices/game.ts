@@ -50,7 +50,7 @@ const slice = createSlice({
           } else {
             const game = state.games[g.id];
             // trigger change only when status changes. If no condition on what changed, it would be updated a lot, really
-            if (entityIs(game, 'Game') && game.status != g.status) {
+            if (entityIs(game, 'Game') && game.status !== g.status) {
               // add to noticeable changes the number of games that had a status change
               state.nbGameChanges++;
             }
