@@ -16,12 +16,9 @@ import { entityIs } from '../../API/entityHelper';
 export interface GameModelState {
   status: Record<IGameModelWithId['type'], Record<IGameModelWithId['status'], LoadingStatus>>;
   gameModels: Record<number, IGameModelWithId | 'LOADING'>;
-  /** Just a stupid data that changes when a game model is added. Its aim is to trigger data reloading */
-  nbCreatedGameModelsProcessed: number;
-  /** Just a stupid data that changes when a game model status is updated. Its aim is to trigger data reloading */
-  nbStatusUpdatedGameModelsProcessed: number;
-  /** Just a stupid data that changes when a game model is deleted. Its aim is to trigger data reloading */
-  nbDeletedGameModelsProcessed: number;
+  /** Just a stupid data that changes when a game model is added, its status is changed or is deleted.
+   * Its aim is to trigger data reloading (only needed for pagination purposes) */
+  nbGameModelsChanges: number;
 }
 
 const initialState: GameModelState = {
@@ -52,9 +49,7 @@ const initialState: GameModelState = {
     },
   },
   gameModels: {},
-  nbCreatedGameModelsProcessed: 0,
-  nbStatusUpdatedGameModelsProcessed: 0,
-  nbDeletedGameModelsProcessed: 0,
+  nbGameModelsChanges: 0,
 };
 
 const slice = createSlice({
@@ -66,14 +61,14 @@ const slice = createSlice({
       .addCase(processUpdatedEntities.fulfilled, (state, action) => {
         action.payload.gameModels.forEach((g: IGameModelWithId) => {
           if (state.gameModels[g.id] == undefined) {
-            // count the number of created game models
-            state.nbCreatedGameModelsProcessed++;
+            // add to noticeable changes the number of created game models
+            state.nbGameModelsChanges++;
           } else {
             const gameModel = state.gameModels[g.id];
             // trigger change only when status changes. If no condition on what changed, it would be updated a lot, really
             if (entityIs(gameModel, 'GameModel') && gameModel.status != g.status) {
-              // count the number of game models that had a status change
-              state.nbStatusUpdatedGameModelsProcessed++;
+              // add to noticeable changes the number of game models that had a status change
+              state.nbGameModelsChanges++;
             }
           }
         })
@@ -83,8 +78,8 @@ const slice = createSlice({
       .addCase(processDeletedEntities.fulfilled, (state, action) => {
         action.payload.gameModels.forEach(id => {
           delete state.gameModels[id];
-          // count the number of deleted game models
-          state.nbDeletedGameModelsProcessed++;
+          // add to noticeable changes the number of deleted game models
+          state.nbGameModelsChanges++;
         });
       })
       .addCase(API.getGameModelById.pending, (state, action) => {

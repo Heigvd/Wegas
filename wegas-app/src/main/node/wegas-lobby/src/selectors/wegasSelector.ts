@@ -346,12 +346,15 @@ export const useGameModelsById = (gameModelsIds: number[]): {
   );
 };
 
-export const useGameModelStoreChangesProcessedCount = (): number => {
+/**
+ * To detect changes that automatically occurred on the game models in the store.
+ * It can be used to force to refresh a list of paginated game models
+ * otherwise the list would not change if game models are added or removed
+ */
+export const useGameModelStoreNoticeableChangesCount = (): number => {
   return useAppSelector(
     state => {
-      return state.gameModels.nbCreatedGameModelsProcessed
-        + state.gameModels.nbStatusUpdatedGameModelsProcessed
-        + state.gameModels.nbDeletedGameModelsProcessed;
+      return state.gameModels.nbGameModelsChanges;
     });
 };
 
@@ -477,12 +480,15 @@ export const useGamesByIds = (
   return {gamesAndGameModels: games.gamesAndGameModels.filter(ggm => gamesIds.includes(ggm.game.id))};
 };
 
-export const useGameStoreChangesProcessedCount = (): number => {
+/**
+ * To detect changes that automatically occurred on the games in the store.
+ * It can be used to force to refresh a list of paginated games
+ * otherwise the list would not change if games are added or removed
+ */
+export const useGameStoreNoticeableChangesCount = (): number => {
   return useAppSelector(
     state => {
-      return state.games.nbCreatedGamesProcessed
-        + state.games.nbStatusUpdatedGamesProcessed
-        + state.games.nbDeletedGamesProcessed;
+      return state.games.nbGameChanges;
     });
 }
 

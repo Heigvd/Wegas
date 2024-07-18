@@ -16,7 +16,7 @@ import { getGamesPaginated, getShadowUserByIds } from '../../API/api';
 import useTranslations from '../../i18n/I18nContext';
 import { useLocalStorageState } from '../../preferences';
 import { useAccountsByUserIds, useCurrentUser } from '../../selectors/userSelector';
-import { MINE_OR_ALL, useGamesByIds, useGameStoreChangesProcessedCount } from '../../selectors/wegasSelector';
+import { MINE_OR_ALL, useGamesByIds, useGameStoreNoticeableChangesCount } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
 import { WindowedContainer } from '../common/CardContainer';
 import DebouncedInput from '../common/DebouncedInput';
@@ -58,7 +58,11 @@ export default function TrainerTab(): JSX.Element {
   const [renderedGamesIds, setRenderedGamesIds] = React.useState<number[]>([]);
   const [totalResults, setTotalResults] = React.useState<number>(0);
 
-  const nbGameStoreChanges = useGameStoreChangesProcessedCount();
+  /**
+   * used as a trigger to refresh the list of paginated games
+   * otherwise the list would not change if games are added or removed
+   */
+  const nbGameStoreChanges = useGameStoreNoticeableChangesCount();
 
   const games = useGamesByIds(
     gameStatusFilter,

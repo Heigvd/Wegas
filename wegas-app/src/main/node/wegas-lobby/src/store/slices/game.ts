@@ -18,12 +18,9 @@ export interface GameState {
   games: Record<number, IGameWithId | 'LOADING'>;
   teams: Record<number, 'LOADING' | number[]>;
   joinStatus: Record<number, 'JOINING' | 'JOINED'>;
-  /** Just a stupid data that changes when a game is added. Its aim is to trigger data reloading */
-  nbCreatedGamesProcessed: number;
-  /** Just a stupid data that changes when a game status is updated. Its aim is to trigger data reloading */
-  nbStatusUpdatedGamesProcessed: number;
-  /** Just a stupid data that changes when a game is deleted. Its aim is to trigger data reloading */
-  nbDeletedGamesProcessed: number;
+  /** Just a stupid data that changes when a game model is added, its status is changed or is deleted.
+   * Its aim is to trigger data reloading (only needed for pagination purposes) */
+  nbGameChanges: number;
 }
 
 const initialState: GameState = {
@@ -36,9 +33,7 @@ const initialState: GameState = {
   games: {},
   teams: {},
   joinStatus: {},
-  nbCreatedGamesProcessed: 0,
-  nbStatusUpdatedGamesProcessed: 0,
-  nbDeletedGamesProcessed: 0,
+  nbGameChanges: 0,
 };
 
 const slice = createSlice({
@@ -50,14 +45,14 @@ const slice = createSlice({
       .addCase(processUpdatedEntities.fulfilled, (state, action) => {
         action.payload.games.forEach((g: IGameWithId) => {
           if (state.games[g.id] == undefined) {
-            // count the number of created games
-            state.nbCreatedGamesProcessed++;
+            // add to noticeable changes the number of created games
+            state.nbGameChanges++;
           } else {
             const game = state.games[g.id];
             // trigger change only when status changes. If no condition on what changed, it would be updated a lot, really
             if (entityIs(game, 'Game') && game.status != g.status) {
-              // count the number of games that had a status change
-              state.nbStatusUpdatedGamesProcessed++;
+              // add to noticeable changes the number of games that had a status change
+              state.nbGameChanges++;
             }
           }
         })
@@ -79,8 +74,8 @@ const slice = createSlice({
       .addCase(processDeletedEntities.fulfilled, (state, action) => {
         action.payload.games.forEach(id => {
           delete state.games[id];
-          // count the number of deleted games
-          state.nbDeletedGamesProcessed++;
+          // add to noticeable changes the number of deleted games
+          state.nbGameChanges++;
         });
 
         action.payload.teams.forEach(id => delete state.teams[id]);

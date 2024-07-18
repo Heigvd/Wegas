@@ -16,7 +16,7 @@ import {getGameModelsPaginated, getShadowUserByIds} from '../../API/api';
 import useTranslations from '../../i18n/I18nContext';
 import { useLocalStorageState } from '../../preferences';
 import { useAccountsByUserIds, useCurrentUser } from '../../selectors/userSelector';
-import { MINE_OR_ALL, useGameModelsById, useGameModelStoreChangesProcessedCount } from '../../selectors/wegasSelector';
+import { MINE_OR_ALL, useGameModelsById, useGameModelStoreNoticeableChangesCount } from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
 import { WindowedContainer } from '../common/CardContainer';
 import DebouncedInput from '../common/DebouncedInput';
@@ -69,7 +69,11 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
   const [renderedGameModelsIds, setRenderedGameModelsIds] = React.useState<number[]>([]);
   const [totalResults, setTotalResults] = React.useState<number>(0);
 
-  const nbGameModelStoreChanges = useGameModelStoreChangesProcessedCount();
+  /**
+   * used as a trigger to refresh the list of paginated game models
+   * otherwise the list would not change if game models are added or removed
+   */
+  const nbGameModelStoreChanges = useGameModelStoreNoticeableChangesCount();
 
   const gamemodels = useGameModelsById(renderedGameModelsIds);
 
