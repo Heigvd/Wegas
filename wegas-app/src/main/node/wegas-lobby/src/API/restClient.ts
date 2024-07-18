@@ -736,12 +736,12 @@ export const WegasLobbyRestClient = function (
         mine: boolean,
       ) => {
         const path = `${baseUrl}/Lobby/GameModel/Game/status/${status}/Paginated?page=${page}&size=${size}&query=${query}&mine=${mine}`;
-        return sendJsonRequest<IPage<(IGameWithId & { gameModel?: IGameModelWithId })>>(
-            'GET',
-            path,
-            undefined,
-            errorHandler
-        )
+        return sendJsonRequest<IPage<IGameWithId & { gameModel?: IGameModelWithId }>>(
+          'GET',
+          path,
+          undefined,
+          errorHandler,
+        );
       },
       changeStatus: (gameId: number, status: IGameWithId['status']) => {
         const path = `${baseUrl}/Lobby/GameModel/Game/${gameId}/status/${status}`;
@@ -807,6 +807,18 @@ export const WegasLobbyRestClient = function (
       getGameModels: (gmType: IGameModelWithId['type'], status: IGameModelWithId['status']) => {
         const path = `${baseUrl}/Lobby/GameModel/type/${gmType}/status/${status}`;
         return sendJsonRequest<IGameModelWithId[]>('GET', path, undefined, errorHandler);
+      },
+      getGameModelsPaginated: (
+        gmType: IGameModelWithId['type'],
+        status: IGameModelWithId['status'],
+        mine: boolean,
+        permissions: string[],
+        page: number,
+        size: number,
+        query: string,
+      ) => {
+        const path = `${baseUrl}/Lobby/GameModel/type/${gmType}/status/${status}/Paginated?page=${page}&size=${size}&query=${query}&mine=${mine}&perm=${permissions.join(',')}`;
+        return sendJsonRequest<IPage<IGameModelWithId>>('GET', path, undefined, errorHandler);
       },
       changeStatus: (gmid: number, status: IGameModelWithId['status']) => {
         const path = `${baseUrl}/Lobby/GameModel/${gmid}/status/${status}`;

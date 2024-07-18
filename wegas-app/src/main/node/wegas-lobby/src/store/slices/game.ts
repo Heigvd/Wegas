@@ -10,19 +10,20 @@ import { IGameWithId } from 'wegas-ts-api';
 import * as API from '../../API/api';
 import { mapById } from '../../helper';
 import { processDeletedEntities, processUpdatedEntities } from '../../websocket/websocket';
-import { LoadingStatus } from './../store';
+import { LoadingStatus } from '../store';
+import { entityIs } from '../../API/entityHelper';
 
 export interface GameState {
-  currentUserId: number | undefined;
   status: Record<IGameWithId['status'], LoadingStatus>;
   games: Record<number, IGameWithId | 'LOADING'>;
   teams: Record<number, 'LOADING' | number[]>;
   joinStatus: Record<number, 'JOINING' | 'JOINED'>;
-  totalResults: number;
+  /** Just a stupid data that changes when a game model is added, its status is changed or is deleted.
+   * Its aim is to trigger data reloading (only needed for pagination purposes) */
+  nbGameChanges: number;
 }
 
 const initialState: GameState = {
-  currentUserId: undefined,
   status: {
     LIVE: 'NOT_INITIALIZED',
     BIN: 'NOT_INITIALIZED',
@@ -32,7 +33,7 @@ const initialState: GameState = {
   games: {},
   teams: {},
   joinStatus: {},
-  totalResults: 0,
+  nbGameChanges: 0,
 };
 
 const slice = createSlice({
@@ -42,7 +43,22 @@ const slice = createSlice({
   extraReducers: builder =>
     builder
       .addCase(processUpdatedEntities.fulfilled, (state, action) => {
+        action.payload.games.forEach((g: IGameWithId) => {
+          if (state.games[g.id]) {
+            // add to noticeable changes the number of created games
+            state.nbGameChanges++;
+          } else {
+            const game = state.games[g.id];
+            // trigger change only when status changes. If no condition on what changed, it would be updated a lot, really
+            if (entityIs(game, 'Game') && game.status !== g.status) {
+              // add to noticeable changes the number of games that had a status change
+              state.nbGameChanges++;
+            }
+          }
+        })
+
         state.games = { ...state.games, ...mapById(action.payload.games) };
+
         action.payload.teams.forEach(t => {
           const parentId = t.parentId;
           if (parentId != null) {
@@ -56,7 +72,12 @@ const slice = createSlice({
         });
       })
       .addCase(processDeletedEntities.fulfilled, (state, action) => {
-        action.payload.games.forEach(id => delete state.games[id]);
+        action.payload.games.forEach(id => {
+          delete state.games[id];
+          // add to noticeable changes the number of deleted games
+          state.nbGameChanges++;
+        });
+
         action.payload.teams.forEach(id => delete state.teams[id]);
         if (action.payload.teams.length > 0) {
           Object.entries(state.teams).forEach(([key, list]) => {
@@ -65,12 +86,6 @@ const slice = createSlice({
             }
           });
         }
-      })
-      .addCase(API.reloadCurrentUser.fulfilled, (state, action) => {
-        // hack: to build state.mine projects, currentUserId must be known
-        state.currentUserId = action.payload.currentUser
-          ? action.payload.currentUser.id || undefined
-          : undefined;
       })
       .addCase(API.findGameByToken.fulfilled, (state, action) => {
         const id = action.payload.game.id;
@@ -102,26 +117,20 @@ const slice = createSlice({
           ...mapById(
             action.payload.map(game => {
               const g = { ...game };
+              // we remove the gameModel because it would not be updated. If the gameModel is needed, fetch it from gameModel slice
               delete g.gameModel;
               return g;
             }),
           ),
         };
       })
-      .addCase(API.getGamesPaginated.pending, (state, action) => {
-        const status = action.meta.arg.status;
-        state.status[status] = 'LOADING';
-      })
       .addCase(API.getGamesPaginated.fulfilled, (state, action) => {
-        const status = action.meta.arg.status;
-        state.status[status] = 'READY';
-
-        state.totalResults = action.payload.total;
-
         state.games = {
+          ...state.games,
           ...mapById(
             action.payload.pageContent.map(game => {
               const g = { ...game };
+              // we remove the gameModel because it would not be updated. If the gameModel is needed, fetch it from gameModel slice
               delete g.gameModel;
               return g;
             }),

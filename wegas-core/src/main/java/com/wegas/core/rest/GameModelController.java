@@ -25,6 +25,8 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.pagination.Page;
+import com.wegas.core.rest.util.pagination.Pageable;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.tools.FindAndReplacePayload;
 import java.io.IOException;
@@ -32,24 +34,14 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import javax.jcr.RepositoryException;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
@@ -641,6 +633,32 @@ public class GameModelController {
         @PathParam("type") final GameModel.GmType type,
         @PathParam("status") final GameModel.Status status) {
         return gameModelFacade.findByTypeStatusAndUser(type, status);
+    }
+
+    /**
+     * Get all gameModel of given type with given status paginated
+     *
+     * @param type
+     * @param status
+     * @param mine
+     * @param permissions The requested permissions
+     * @param page
+     * @param size
+     * @param query
+     * @return given size of gameModel having type, status and matching query
+     */
+    @GET
+    @Path("type/{type: [A-Z]*}/status/{status: [A-Z]*}/Paginated")
+    public Page<GameModel> paginatedGameModels(
+            @PathParam("type") final GameModel.GmType type,
+            @PathParam("status") final GameModel.Status status,
+            @QueryParam("mine") boolean mine,
+            @QueryParam("perm") String permissions,
+            @QueryParam("page") int page,
+            @QueryParam("size") int size,
+            @QueryParam("query") String query
+    ) {
+        return gameModelFacade.findByTypeStatusPermissionAndUserPaginated(type, status, mine, Arrays.asList(permissions.split(",")), new Pageable(page, size, query));
     }
 
     /**

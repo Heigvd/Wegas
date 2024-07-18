@@ -413,7 +413,6 @@ public class GameFacade extends BaseFacade<Game> {
 
 
         for (String param : pageable.getSplitQuery()) {
-            ParameterExpression<String> queryParameter = criteriaBuilder.parameter(String.class);
             if (!param.isEmpty()) {
                 Join<Game, GameModel> gameModelJoin = gameRoot.join("gameModel", JoinType.INNER);
 

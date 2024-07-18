@@ -14,17 +14,15 @@ import {
   processDeletedEntities,
   processUpdatedEntities,
 } from '../../websocket/websocket';
-import { LoadingStatus } from './../store';
+import { LoadingStatus } from '../store';
 
 export interface PlayerState {
-  currentUserId: number | undefined;
   status: LoadingStatus;
   // players owned by the current user
   players: Record<number, IPlayerWithId>;
 }
 
 const initialState: PlayerState = {
-  currentUserId: undefined,
   status: 'NOT_INITIALIZED',
   players: {},
 };
@@ -45,12 +43,6 @@ const playerSlice = createSlice({
         const existing = state.players[action.payload.id];
         if (existing == null || action.payload.version >= existing.version)
           state.players[action.payload.id] = action.payload;
-      })
-      .addCase(API.reloadCurrentUser.fulfilled, (state, action) => {
-        // hack: to build state.mine projects, currentUserId must be known
-        state.currentUserId = action.payload.currentUser
-          ? action.payload.currentUser.id || undefined
-          : undefined;
       })
       .addCase(API.getPlayers.pending, state => {
         state.status = 'LOADING';

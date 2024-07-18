@@ -1,7 +1,7 @@
 /**
  * Wegas
  * http://wegas.albasim.ch
- *
+ * <p>
  * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
@@ -45,9 +45,11 @@ import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.GmType;
+
 import static com.wegas.core.persistence.game.GameModel.GmType.MODEL;
 import static com.wegas.core.persistence.game.GameModel.GmType.PLAY;
 import static com.wegas.core.persistence.game.GameModel.GmType.SCENARIO;
+
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.GameModelLanguage;
@@ -59,14 +61,18 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.rest.util.pagination.Page;
+import com.wegas.core.rest.util.pagination.Pageable;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.core.tools.FindAndReplacePayload;
 import com.wegas.core.tools.FindAndReplaceVisitor;
 import com.wegas.core.tools.RegexExtractorVisitor;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -77,9 +83,11 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
 import jakarta.ejb.Asynchronous;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -87,10 +95,13 @@ import jakarta.ejb.TransactionAttribute;
 import jakarta.ejb.TransactionAttributeType;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
+
 import javax.jcr.RepositoryException;
 import javax.naming.NamingException;
+
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.StreamingOutput;
 import org.apache.commons.io.IOUtils;
@@ -383,7 +394,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         /* Make sure the game model is a scenario or a model */
         if (gameModel.getType() != GmType.SCENARIO
-            && gameModel.getType() != GmType.SCENARIO) {
+                && gameModel.getType() != GmType.SCENARIO) {
             throw WegasErrorMessage.error("GameModel is null");
         }
 
@@ -420,7 +431,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         this.getEntityManager().persist(player);
 
         // make sure to create all missing variable isntances
-        try ( ActAsPlayer a = requestManager.actAsPlayer(player)) {
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             this.propagateAndReviveDefaultInstances(gameModel, player, true); // One-step team create (internal use)
         }
 
@@ -594,7 +605,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      */
     public List<String> findDistinctLogIds() {
         TypedQuery<String> query = this.getEntityManager()
-            .createNamedQuery("GameModel.findDistinctLogIds", String.class);
+                .createNamedQuery("GameModel.findDistinctLogIds", String.class);
         return query.getResultList();
     }
 
@@ -710,7 +721,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-                try ( ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
+                try (ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
 
                     // serialise the json
                     ZipEntry gameModelEntry = new ZipEntry("gamemodel.json");
@@ -786,13 +797,13 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     private static final String GM_DOT_JSON_NAME = GM_PREFIX + "gamemodel.json";
 
     private static final Pattern LIB_PATTERN = Pattern.compile(LIBS_PREFIX
-        + NO_SLASH_GROUP// libType
-        + "/" + ANY_LAZY_GROUP // libName  / libPath
-        + "\\." + NO_SLASH_GROUP); //libExtension
+            + NO_SLASH_GROUP// libType
+            + "/" + ANY_LAZY_GROUP // libName  / libPath
+            + "\\." + NO_SLASH_GROUP); //libExtension
 
     private static final Pattern PAGE_PATTERN = Pattern.compile(PAGES_PREFIX
-        + NO_SLASH_GROUP// pageId
-        + "\\.json"); //libExtension
+            + NO_SLASH_GROUP// pageId
+            + "\\.json"); //libExtension
 
     private static final Pattern FILE_PATTERN = Pattern.compile(FILES_PREFIX + "(.*)"); //libExtension
 
@@ -829,7 +840,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-                try ( ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
+                try (ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
                     ObjectMapper mapper = JacksonMapperProvider.getMapper();
                     mapper.enable(SerializationFeature.INDENT_OUTPUT);
                     mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
@@ -1109,11 +1120,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             List<GameModelContent> gmLibs = gameModel.getLibraries();
             libs.forEach(lib -> {
                 Optional<GameModelContent> find = gmLibs.stream()
-                    .filter(l -> {
-                        return l.getLibraryType().equals(lib.getLibraryType())
-                            && l.getContentKey().equals(lib.getContentKey());
-                    })
-                    .findFirst();
+                        .filter(l -> {
+                            return l.getLibraryType().equals(lib.getLibraryType())
+                                    && l.getContentKey().equals(lib.getContentKey());
+                        })
+                        .findFirst();
                 if (find.isPresent()) {
                     // restore content
                     find.get().setContent(lib.getContent());
@@ -1489,7 +1500,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @return all gameModel matching the given status
      */
     public List<GameModel> findByTypesAndStatuses(List<GmType> gmTypes,
-        final List<GameModel.Status> statuses) {
+                                                  final List<GameModel.Status> statuses) {
 
         final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByTypesAndStatuses", GameModel.class);
         query.setParameter("types", gmTypes);
@@ -1589,7 +1600,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @return
      */
     public Collection<GameModel> findByTypeStatusAndUser(GmType type,
-        GameModel.Status status) {
+                                                         GameModel.Status status) {
         ArrayList<GameModel> gameModels = new ArrayList<>();
 
         Map<Long, List<String>> pMatrix = this.getPermissionMatrix(type, status);
@@ -1606,6 +1617,86 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
+     *
+     * @param type type {@link GameModel.GmType#MODEL} {@link GameModel.GmType#REFERENCE} {@link GameModel.GmType#SCENARIO} {@link GameModel.GmType#PLAY}
+     * @param status status {@link Game.Status#LIVE} {@link Game.Status#BIN} {@link Game.Status#DELETE}
+     * @param mine boolean return currentUser's or all games (admin only)
+     * @param permissions The requested permissions to filter out others game models
+     * @param pageable
+     * @return
+     */
+    public Page<GameModel> findByTypeStatusPermissionAndUserPaginated(GmType type, GameModel.Status status, boolean mine, List<String> permissions, Pageable pageable) {
+        List<Long> gameModelIdsPartiallyMatching = getGameModelIdsByUserPermissionsTypeAndStatus(type, status, permissions);
+
+        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        final CriteriaQuery<GameModel> query = criteriaBuilder.createQuery(GameModel.class);
+        Root<GameModel> gameModelRoot = query.from(GameModel.class);
+        query.select(gameModelRoot);
+
+        Predicate whereClause = criteriaBuilder.and(
+                criteriaBuilder.equal(gameModelRoot.get("status"), status),
+                criteriaBuilder.equal(gameModelRoot.get("type"), type),
+                // Maximum in values for psql: 32767
+                gameModelRoot.get("id").in(gameModelIdsPartiallyMatching)
+        );
+
+        for (String param: pageable.getSplitQuery()) {
+            if (!param.isEmpty()) {
+                Join<GameModel, User> userJoin = gameModelRoot.join("createdBy", JoinType.INNER);
+                Join<User, AbstractAccount> abstractAccountJoin = userJoin.join("accounts", JoinType.INNER);
+                Expression<String> exp = criteriaBuilder.concat(criteriaBuilder.lower(criteriaBuilder.coalesce(abstractAccountJoin.get("firstname"), "")), " ");
+                exp = criteriaBuilder.concat(exp, criteriaBuilder.lower(criteriaBuilder.coalesce(abstractAccountJoin.get("lastname"), "")));
+
+                whereClause = criteriaBuilder.and(whereClause, criteriaBuilder.or(
+                        criteriaBuilder.like(criteriaBuilder.lower(gameModelRoot.get("name")), "%" + param.toLowerCase() + "%"),
+                        criteriaBuilder.like(criteriaBuilder.lower(exp), "%" + param.toLowerCase() + "%")
+                ));
+            }
+        }
+
+        if (mine && requestManager.isAdmin()) {
+            User user = userFacade.getCurrentUser();
+            whereClause = criteriaBuilder.and(whereClause, criteriaBuilder.and(
+                    criteriaBuilder.equal(gameModelRoot.get("createdBy"), user)
+            ));
+        }
+
+        query.where(whereClause);
+        query.orderBy(criteriaBuilder.desc(gameModelRoot.get("createdTime")));
+
+        int total = getEntityManager().createQuery(query).getResultList().size();
+        TypedQuery<GameModel> listQuery = pageable.paginateQuery(getEntityManager().createQuery(query));
+
+        return new Page<GameModel>(total, pageable.getPage(), pageable.getSize(), listQuery.getResultList());
+
+    }
+
+    private List<Long> getGameModelIdsByUserPermissionsTypeAndStatus(GmType type, GameModel.Status status, List<String> permissions) {
+        List<Long> gameModelIdsMatchingPermissions = new ArrayList<>();
+
+        Map<Long, List<String>> permissionMatrix = this.getPermissionMatrix(type, status);
+        for (Map.Entry<Long, List<String>> entry : permissionMatrix.entrySet()) {
+            boolean hasAccess = false;
+            if (entry.getValue().contains("*")) {
+                hasAccess = true;
+            } else {
+                for (String perm : entry.getValue()) {
+                    if (permissions.contains(perm)) {
+                        // at least one match between wanted permissions and user's effective permissions
+                        hasAccess = true;
+                        break;
+                    }
+                }
+            }
+            if (hasAccess) {
+                gameModelIdsMatchingPermissions.add(entry.getKey());
+            }
+        }
+
+        return gameModelIdsMatchingPermissions;
+    }
+
+    /**
      * Get the list of gameModels id the current user has access to.
      *
      * @param type   restrict to this kind of gameModel
@@ -1614,7 +1705,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @return list of gameModel id mapped with the permission the user has
      */
     public Map<Long, List<String>> getPermissionMatrix(GmType type,
-        GameModel.Status status) {
+                                                       GameModel.Status status) {
 
         List<GmType> gmTypes = new ArrayList<>();
         List<GameModel.Status> gmStatuses = new ArrayList<>();
@@ -1634,13 +1725,13 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @return list of gameModel id mapped with the permission the user has
      */
     public Map<Long, List<String>> getPermissionMatrix(List<GmType> types,
-        List<GameModel.Status> statuses) {
+                                                       List<GameModel.Status> statuses) {
         Map<Long, List<String>> pMatrix = new HashMap<>();
 
         String roleQuery = "SELECT p FROM Permission p WHERE "
-            + "(p.role.id in "
-            + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
-            + ")";
+                + "(p.role.id in "
+                + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
+                + ")";
 
         String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId ";
 
@@ -1662,9 +1753,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     private void processPermission(String permission, Map<Long, List<String>> gmMatrix,
-        Map<Long, List<String>> gMatrix,
-        List<GmType> gmTypes, List<GameModel.Status> gmStatuses,
-        List<Game.Status> gStatuses) {
+                                   Map<Long, List<String>> gMatrix,
+                                   List<GmType> gmTypes, List<GameModel.Status> gmStatuses,
+                                   List<Game.Status> gStatuses) {
         if (permission != null && !permission.isEmpty()) {
             String[] split = permission.split(":");
             if (split.length == 3) {
@@ -1687,6 +1778,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 String pId = split[2].replaceAll(idPrefix, "");
                 ArrayList<Long> ids = new ArrayList<>();
                 if (!pId.isEmpty()) {
+                    // Wildcard, has access to all
                     if (pId.equals("*")) {
                         if (type.equals("GameModel")) {
                             for (GameModel gm : this.findByTypesAndStatuses(gmTypes, gmStatuses)) {
@@ -1703,8 +1795,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                         if (type.equals("GameModel")) {
                             GameModel gm = this.find(id);
                             if (gm == null
-                                || !gmTypes.contains(gm.getType())
-                                || !gmStatuses.contains(gm.getStatus())) {
+                                    || !gmTypes.contains(gm.getType())
+                                    || !gmStatuses.contains(gm.getStatus())) {
                                 return;
                             }
                         } else {
@@ -1909,7 +2001,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @return
      */
     public Set<String> findAllRefToFiles(GameModel gameModel,
-        VariableDescriptor root) {
+                                         VariableDescriptor root) {
         FindAndReplacePayload payload = new FindAndReplacePayload();
 
         payload.setLangsFromGameModel(gameModel);
