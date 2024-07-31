@@ -5,6 +5,7 @@ public class PaginationRequest {
     private int page;
     private int size;
     private String query;
+    private Boolean mine;
 
     public int getPage() {
         return page;
@@ -28,5 +29,13 @@ public class PaginationRequest {
 
     public void setQuery(String query) {
         this.query = query;
+    }
+
+    public Boolean getMine() {
+        return mine;
+    }
+
+    public void setMine(Boolean mine) {
+        this.mine = mine;
     }
 }
