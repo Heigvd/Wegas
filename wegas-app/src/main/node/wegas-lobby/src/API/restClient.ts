@@ -559,8 +559,8 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<IUserWithAccounts[]>('GET', path, undefined, errorHandler);
       },
       getPaginatedUsers: (page: number, size: number, query: string) => {
-        const path = `${baseUrl}/Shadow/User/Paginated?page=${page}&size=${size}&query=${query}`;
-        return sendJsonRequest<IPage<IUserWithAccounts>>('GET', path, undefined, errorHandler);
+        const path = `${baseUrl}/Shadow/User/Paginated`;
+        return sendJsonRequest<IPage<IUserWithAccounts>>('POST', path, {page: page, size: size, query: query}, errorHandler);
       },
       getUser: (userId: number) => {
         const path = `${baseUrl}/User/${userId}`;
