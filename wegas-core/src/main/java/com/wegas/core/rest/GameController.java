@@ -217,6 +217,9 @@ public class GameController {
     /**
      * Get all games with given status paginated
      *
+     * @param status
+     * @param paginationRequest pagination parameters
+     * @return
      */
     @POST
     @Path("status/{status: [A-Z]*}/Paginated")
