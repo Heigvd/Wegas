@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -222,7 +223,7 @@ public class GameController {
      */
     @POST
     @Path("status/{status: [A-Z]*}/Paginated")
-    public Page<Game> paginatedGames(@PathParam("status") final Game.Status status, GamePageable gamePageable) {
+    public Page<Game> paginatedGames(@PathParam("status") final Game.Status status, @Valid GamePageable gamePageable) {
         return gameFacade.findByStatusAndUserPaginated(
                 status,
                 gamePageable);

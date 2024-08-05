@@ -53,6 +53,7 @@ import jakarta.mail.internet.AddressException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -142,7 +143,7 @@ public class UserController {
     @POST
     @Path("Paginated")
     @RequiresPermissions("User:Edit")
-    public Page<User> paginatedUsers(Pageable pageable) {
+    public Page<User> paginatedUsers(@Valid Pageable pageable) {
         return accountFacade.findAllRegisteredUsersPaginated(new Pageable(pageable.getPage(), pageable.getSize(), pageable.getQuery()));
     }
 

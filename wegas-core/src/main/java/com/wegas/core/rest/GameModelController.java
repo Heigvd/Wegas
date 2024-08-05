@@ -41,6 +41,7 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import javax.jcr.RepositoryException;
 
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -648,7 +649,7 @@ public class GameModelController {
     public Page<GameModel> paginatedGameModels(
             @PathParam("type") final GameModel.GmType type,
             @PathParam("status") final GameModel.Status status,
-            GameModelPageable gameModelPageable
+            @Valid GameModelPageable gameModelPageable
     ) {
         return gameModelFacade.findByTypeStatusPermissionAndUserPaginated(
                 type,
