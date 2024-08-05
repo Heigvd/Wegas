@@ -61,8 +61,8 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.rest.util.pagination.GameModelPageable;
 import com.wegas.core.rest.util.pagination.Page;
-import com.wegas.core.rest.util.pagination.Pageable;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
@@ -83,7 +83,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -1620,13 +1619,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      *
      * @param type type {@link GameModel.GmType#MODEL} {@link GameModel.GmType#REFERENCE} {@link GameModel.GmType#SCENARIO} {@link GameModel.GmType#PLAY}
      * @param status status {@link Game.Status#LIVE} {@link Game.Status#BIN} {@link Game.Status#DELETE}
-     * @param mine boolean return currentUser's or all games (admin only)
-     * @param permissions The requested permissions to filter out others game models
-     * @param pageable
+     * @param gameModelPageable
      * @return
      */
-    public Page<GameModel> findByTypeStatusPermissionAndUserPaginated(GmType type, GameModel.Status status, boolean mine, List<String> permissions, Pageable pageable) {
-        List<Long> gameModelIdsPartiallyMatching = getGameModelIdsByUserPermissionsTypeAndStatus(type, status, permissions);
+    public Page<GameModel> findByTypeStatusPermissionAndUserPaginated(GmType type, GameModel.Status status, GameModelPageable gameModelPageable) {
+        List<Long> gameModelIdsPartiallyMatching = getGameModelIdsByUserPermissionsTypeAndStatus(type, status, gameModelPageable.getPermissions());
 
         final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         final CriteriaQuery<GameModel> query = criteriaBuilder.createQuery(GameModel.class);
@@ -1640,7 +1637,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 gameModelRoot.get("id").in(gameModelIdsPartiallyMatching)
         );
 
-        for (String param: pageable.getSplitQuery()) {
+        for (String param: gameModelPageable.getSplitQuery()) {
             if (!param.isEmpty()) {
                 Join<GameModel, User> userJoin = gameModelRoot.join("createdBy", JoinType.INNER);
                 Join<User, AbstractAccount> abstractAccountJoin = userJoin.join("accounts", JoinType.INNER);
@@ -1654,7 +1651,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             }
         }
 
-        if (mine && requestManager.isAdmin()) {
+        if (gameModelPageable.getMine() && requestManager.isAdmin()) {
             User user = userFacade.getCurrentUser();
             whereClause = criteriaBuilder.and(whereClause, criteriaBuilder.and(
                     criteriaBuilder.equal(gameModelRoot.get("createdBy"), user)
@@ -1665,9 +1662,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         query.orderBy(criteriaBuilder.desc(gameModelRoot.get("createdTime")));
 
         int total = getEntityManager().createQuery(query).getResultList().size();
-        TypedQuery<GameModel> listQuery = pageable.paginateQuery(getEntityManager().createQuery(query));
+        TypedQuery<GameModel> listQuery = gameModelPageable.paginateQuery(getEntityManager().createQuery(query));
 
-        return new Page<GameModel>(total, pageable.getPage(), pageable.getSize(), listQuery.getResultList());
+        return new Page<GameModel>(total, gameModelPageable.getPage(), gameModelPageable.getSize(), listQuery.getResultList());
 
     }
 

@@ -14,8 +14,8 @@ import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.rest.GameController;
 import com.wegas.core.rest.TeamController;
+import com.wegas.core.rest.util.pagination.GamePageable;
 import com.wegas.core.rest.util.pagination.Page;
-import com.wegas.core.rest.util.pagination.Pageable;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import jakarta.inject.Inject;
 import org.junit.Assert;
@@ -332,7 +332,7 @@ public class GameFacadeTest extends AbstractArquillianTest {
 
     @Test
     public void testFindAllGamesPaginated() {
-        Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE, false ,new Pageable(1, 10, ""));
+        Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE, new GamePageable(1, 10, "", false));
         // We expect 3 as the superclass creates one too
         Assert.assertEquals(3L, paginatedGames.getTotal());
         Assert.assertTrue(paginatedGames.getPageContent().contains(game1));
@@ -341,7 +341,7 @@ public class GameFacadeTest extends AbstractArquillianTest {
 
     @Test
     public void testFindAllGamesPaginatedMine() {
-        Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE, true ,new Pageable(1, 10, ""));
+        Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE, new GamePageable(1, 10, "", true));
         // We expect 2 as the superclass provided game isn't ours
         Assert.assertEquals(2L, paginatedGames.getTotal());
         Assert.assertTrue(paginatedGames.getPageContent().contains(game1));
@@ -350,14 +350,14 @@ public class GameFacadeTest extends AbstractArquillianTest {
 
     @Test
     public void testFindAllGamesPaginatedFiltered() {
-        Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE, false, new Pageable(1, 10, GAME_1));
+        Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE, new GamePageable(1, 10, GAME_1, false));
         Assert.assertEquals(1L, paginatedGames.getTotal());
         Assert.assertTrue(paginatedGames.getPageContent().contains(game1));
     }
 
     @Test
     public void testFindAllGamesPaginatedNone() {
-        Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE, false, new Pageable(1, 10, "æøå"));
+        Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE, new GamePageable(1, 10, "æøå", false));
 
         Assert.assertEquals(0L, paginatedGames.getTotal());
     }

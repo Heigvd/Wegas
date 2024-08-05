@@ -27,7 +27,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.pagination.GameModelPageable;
 import com.wegas.core.rest.util.pagination.Page;
-import com.wegas.core.rest.util.pagination.Pageable;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.tools.FindAndReplacePayload;
 import java.io.IOException;
@@ -654,9 +653,7 @@ public class GameModelController {
         return gameModelFacade.findByTypeStatusPermissionAndUserPaginated(
                 type,
                 status,
-                gameModelPageable.getMine(),
-                gameModelPageable.getPermissions(),
-                new Pageable(gameModelPageable.getPage(), gameModelPageable.getSize(), gameModelPageable.getQuery()));
+                gameModelPageable);
     }
 
     /**
