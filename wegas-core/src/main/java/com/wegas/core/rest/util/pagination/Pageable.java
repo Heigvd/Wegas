@@ -11,6 +11,10 @@ public class Pageable {
 
     private String query;
 
+    public Pageable() {
+        // ensure default constructor
+    }
+
     public Pageable (int page, int size, String query){
         this.page = page;
         this.size = size;

@@ -25,7 +25,6 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Email;
 import com.wegas.core.rest.util.pagination.Page;
 import com.wegas.core.rest.util.pagination.Pageable;
-import com.wegas.core.rest.util.pagination.PaginationRequest;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.aai.AaiConfigInfo;
 import com.wegas.core.security.aai.AaiLoginResponse;
@@ -137,14 +136,14 @@ public class UserController {
     /**
      * Get paginated users
      *
-     * @param paginationRequest requested pagination
+     * @param pageable requested pagination
      * @return
      */
     @POST
     @Path("Paginated")
     @RequiresPermissions("User:Edit")
-    public Page<User> paginatedUsers(PaginationRequest paginationRequest) {
-        return accountFacade.findAllRegisteredUsersPaginated(new Pageable(paginationRequest.getPage(), paginationRequest.getSize(), paginationRequest.getQuery()));
+    public Page<User> paginatedUsers(Pageable pageable) {
+        return accountFacade.findAllRegisteredUsersPaginated(new Pageable(pageable.getPage(), pageable.getSize(), pageable.getQuery()));
     }
 
     /**

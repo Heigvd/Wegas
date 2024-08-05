@@ -25,9 +25,9 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.pagination.GameModelPageable;
 import com.wegas.core.rest.util.pagination.Page;
 import com.wegas.core.rest.util.pagination.Pageable;
-import com.wegas.core.rest.util.pagination.PaginationRequest;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.tools.FindAndReplacePayload;
 import java.io.IOException;
@@ -641,7 +641,7 @@ public class GameModelController {
      *
      * @param type
      * @param status
-     * @param paginationRequest pagination parameters
+     * @param gameModelPageable pagination parameters
      * @return given size of gameModel having type, status and matching query
      */
     @POST
@@ -649,14 +649,14 @@ public class GameModelController {
     public Page<GameModel> paginatedGameModels(
             @PathParam("type") final GameModel.GmType type,
             @PathParam("status") final GameModel.Status status,
-            PaginationRequest paginationRequest
+            GameModelPageable gameModelPageable
     ) {
         return gameModelFacade.findByTypeStatusPermissionAndUserPaginated(
                 type,
                 status,
-                paginationRequest.getMine(),
-                paginationRequest.getPermissions(),
-                new Pageable(paginationRequest.getPage(), paginationRequest.getSize(), paginationRequest.getQuery()));
+                gameModelPageable.getMine(),
+                gameModelPageable.getPermissions(),
+                new Pageable(gameModelPageable.getPage(), gameModelPageable.getSize(), gameModelPageable.getQuery()));
     }
 
     /**
