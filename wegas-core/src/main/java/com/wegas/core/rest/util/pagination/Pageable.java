@@ -10,7 +10,7 @@ public class Pageable {
     private int page;
     private int size;
 
-    @Pattern(regexp = "^[\\p{L} .'-[0-9]]*$", message = "Invalid search query")
+    @Pattern(regexp = "^[\\p{L} .'-_()&[0-9]]*$", message = "Invalid search query")
     private String query;
 
     public Pageable() {
