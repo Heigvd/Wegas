@@ -223,7 +223,7 @@ public class GameController {
      */
     @POST
     @Path("status/{status: [A-Z]*}/Paginated")
-    public Page<Game> paginatedGames(@PathParam("status") final Game.Status status, @Valid GamePageable gamePageable) {
+    public Page<Game> paginatedGames(@PathParam("status") final Game.Status status, GamePageable gamePageable) {
         return gameFacade.findByStatusAndUserPaginated(
                 status,
                 gamePageable);

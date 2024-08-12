@@ -649,7 +649,7 @@ public class GameModelController {
     public Page<GameModel> paginatedGameModels(
             @PathParam("type") final GameModel.GmType type,
             @PathParam("status") final GameModel.Status status,
-            @Valid GameModelPageable gameModelPageable
+            GameModelPageable gameModelPageable
     ) {
         return gameModelFacade.findByTypeStatusPermissionAndUserPaginated(
                 type,

@@ -143,7 +143,7 @@ public class UserController {
     @POST
     @Path("Paginated")
     @RequiresPermissions("User:Edit")
-    public Page<User> paginatedUsers(@Valid Pageable pageable) {
+    public Page<User> paginatedUsers(Pageable pageable) {
         return accountFacade.findAllRegisteredUsersPaginated(new Pageable(pageable.getPage(), pageable.getSize(), pageable.getQuery()));
     }
 
