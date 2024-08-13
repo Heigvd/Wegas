@@ -340,6 +340,13 @@ public class GameFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
+    public void testFindAllGamesPaginatedSeveralPages() {
+        Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE, new GamePageable(2, 2, "", false));
+        Assert.assertEquals(3L, paginatedGames.getTotal());
+        Assert.assertEquals(1, paginatedGames.getPageContent().size());
+    }
+
+    @Test
     public void testFindAllGamesPaginatedMine() {
         Page<Game> paginatedGames = gameFacade.findByStatusAndUserPaginated(Game.Status.LIVE, new GamePageable(1, 10, "", true));
         // We expect 2 as the superclass provided game isn't ours
