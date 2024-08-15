@@ -25,8 +25,8 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.pagination.GameModelPageable;
 import com.wegas.core.rest.util.pagination.Page;
-import com.wegas.core.rest.util.pagination.Pageable;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.tools.FindAndReplacePayload;
 import java.io.IOException;
@@ -41,6 +41,7 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import javax.jcr.RepositoryException;
 
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -640,25 +641,20 @@ public class GameModelController {
      *
      * @param type
      * @param status
-     * @param mine
-     * @param permissions The requested permissions
-     * @param page
-     * @param size
-     * @param query
+     * @param gameModelPageable pagination parameters
      * @return given size of gameModel having type, status and matching query
      */
-    @GET
+    @POST
     @Path("type/{type: [A-Z]*}/status/{status: [A-Z]*}/Paginated")
     public Page<GameModel> paginatedGameModels(
             @PathParam("type") final GameModel.GmType type,
             @PathParam("status") final GameModel.Status status,
-            @QueryParam("mine") boolean mine,
-            @QueryParam("perm") String permissions,
-            @QueryParam("page") int page,
-            @QueryParam("size") int size,
-            @QueryParam("query") String query
+            GameModelPageable gameModelPageable
     ) {
-        return gameModelFacade.findByTypeStatusPermissionAndUserPaginated(type, status, mine, Arrays.asList(permissions.split(",")), new Pageable(page, size, query));
+        return gameModelFacade.findByTypeStatusPermissionAndUserPaginated(
+                type,
+                status,
+                gameModelPageable);
     }
 
     /**

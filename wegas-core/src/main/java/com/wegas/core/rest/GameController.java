@@ -19,8 +19,8 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Game.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.rest.util.pagination.GamePageable;
 import com.wegas.core.rest.util.pagination.Page;
-import com.wegas.core.rest.util.pagination.Pageable;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -216,15 +217,16 @@ public class GameController {
     /**
      * Get all games with given status paginated
      *
+     * @param status
+     * @param gamePageable pagination parameters
+     * @return
      */
-    @GET
+    @POST
     @Path("status/{status: [A-Z]*}/Paginated")
-    public Page<Game> paginatedGames(@PathParam("status") final Game.Status status,
-                                        @QueryParam("page") int page,
-                                        @QueryParam("size") int size,
-                                        @QueryParam("query") String query,
-                                        @QueryParam("mine") boolean mine) {
-        return gameFacade.findByStatusAndUserPaginated(status, mine, new Pageable(page, size, query));
+    public Page<Game> paginatedGames(@PathParam("status") final Game.Status status, GamePageable gamePageable) {
+        return gameFacade.findByStatusAndUserPaginated(
+                status,
+                gamePageable);
     }
 
     /**

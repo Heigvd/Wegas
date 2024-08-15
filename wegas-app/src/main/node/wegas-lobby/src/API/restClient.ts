@@ -40,7 +40,7 @@ export type IPage<T> = {
   page: number;
   pageSize: number;
   pageContent: T[];
-}
+};
 
 export interface OnlineUser {
   fullname: string;
@@ -559,8 +559,13 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<IUserWithAccounts[]>('GET', path, undefined, errorHandler);
       },
       getPaginatedUsers: (page: number, size: number, query: string) => {
-        const path = `${baseUrl}/Shadow/User/Paginated?page=${page}&size=${size}&query=${query}`;
-        return sendJsonRequest<IPage<IUserWithAccounts>>('GET', path, undefined, errorHandler);
+        const path = `${baseUrl}/Shadow/User/Paginated`;
+        return sendJsonRequest<IPage<IUserWithAccounts>>(
+          'POST',
+          path,
+          { page, size, query },
+          errorHandler,
+        );
       },
       getUser: (userId: number) => {
         const path = `${baseUrl}/User/${userId}`;
@@ -735,11 +740,11 @@ export const WegasLobbyRestClient = function (
         query: string,
         mine: boolean,
       ) => {
-        const path = `${baseUrl}/Lobby/GameModel/Game/status/${status}/Paginated?page=${page}&size=${size}&query=${query}&mine=${mine}`;
+        const path = `${baseUrl}/Lobby/GameModel/Game/status/${status}/Paginated`;
         return sendJsonRequest<IPage<IGameWithId & { gameModel?: IGameModelWithId }>>(
-          'GET',
+          'POST',
           path,
-          undefined,
+          { page, size, query, mine },
           errorHandler,
         );
       },
@@ -817,8 +822,8 @@ export const WegasLobbyRestClient = function (
         size: number,
         query: string,
       ) => {
-        const path = `${baseUrl}/Lobby/GameModel/type/${gmType}/status/${status}/Paginated?page=${page}&size=${size}&query=${query}&mine=${mine}&perm=${permissions.join(',')}`;
-        return sendJsonRequest<IPage<IGameModelWithId>>('GET', path, undefined, errorHandler);
+        const path = `${baseUrl}/Lobby/GameModel/type/${gmType}/status/${status}/Paginated`;
+        return sendJsonRequest<IPage<IGameModelWithId>>('POST', path, {page, size, query, mine, permissions}, errorHandler);
       },
       changeStatus: (gmid: number, status: IGameModelWithId['status']) => {
         const path = `${baseUrl}/Lobby/GameModel/${gmid}/status/${status}`;

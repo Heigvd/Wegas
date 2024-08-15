@@ -25,8 +25,8 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.rest.util.pagination.GamePageable;
 import com.wegas.core.rest.util.pagination.Page;
-import com.wegas.core.rest.util.pagination.Pageable;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
@@ -385,12 +385,11 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      * Get all paginated games with the given status which are accessible to the current user
      *
-     * @param status   status {@link Game.Status#LIVE} {@link Game.Status#BIN} {@link Game.Status#DELETE}
-     * @param mine      boolean return currentUser's or all games (admin only)
-     * @param pageable
+     * @param status status {@link Game.Status#LIVE} {@link Game.Status#BIN} {@link Game.Status#DELETE}
+     * @param gamePageable
      * @return all games paginated
      */
-    public Page<Game> findByStatusAndUserPaginated(Game.Status status, boolean mine, Pageable pageable) {
+    public Page<Game> findByStatusAndUserPaginated(Game.Status status, GamePageable gamePageable) {
 
         List<Game.Status> gStatuses = new ArrayList<>();
         gStatuses.add(status);
@@ -412,7 +411,7 @@ public class GameFacade extends BaseFacade<Game> {
         );
 
 
-        for (String param : pageable.getSplitQuery()) {
+        for (String param : gamePageable.getSplitQuery()) {
             if (!param.isEmpty()) {
                 Join<Game, GameModel> gameModelJoin = gameRoot.join("gameModel", JoinType.INNER);
 
@@ -429,7 +428,7 @@ public class GameFacade extends BaseFacade<Game> {
         }
 
         // By default admins retrieve all, mine filter is reserved for them
-        if (mine && requestManager.isAdmin()) {
+        if (gamePageable.getMine() && requestManager.isAdmin()) {
             User user = userFacade.getCurrentUser();
             whereClause = criteriaBuilder.and(whereClause, criteriaBuilder.and(
                     criteriaBuilder.equal(gameRoot.get("createdBy"), user)
@@ -440,9 +439,9 @@ public class GameFacade extends BaseFacade<Game> {
         query.orderBy(criteriaBuilder.desc(gameRoot.get("createdTime")));
 
         int total = getEntityManager().createQuery(query).getResultList().size();
-        TypedQuery<Game> listQuery = pageable.paginateQuery(getEntityManager().createQuery(query));
+        TypedQuery<Game> listQuery = gamePageable.paginateQuery(getEntityManager().createQuery(query));
 
-        return new Page<Game>(total, pageable.getPage(), pageable.getSize(), listQuery.getResultList());
+        return new Page<Game>(total, gamePageable.getPage(), gamePageable.getSize(), listQuery.getResultList());
     }
 
     /**
