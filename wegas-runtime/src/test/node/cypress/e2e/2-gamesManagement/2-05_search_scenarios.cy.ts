@@ -11,7 +11,7 @@ describe('ch.wegas.client.tests.e2e.SearchScenarios', () => {
     cy.login(Cypress.env("ADMIN_USERNAME"), Cypress.env("ADMIN_PASSWORD"));
   });
   afterEach(() => {
-    //cy.logout();
+    cy.logout();
   });
 
   it('TrainerPaginatedResults', () => {
