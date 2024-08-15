@@ -1,18 +1,20 @@
-export class TrainerPageObject {
+import {TabPageObject} from "./TabPageObject";
+import {CreateGamePageObject} from "./CreateGamePageObject";
 
-  search: string = "input[placeholder='search...']";
-  //search: string ="DebouncedInput";
+export class TrainerPageObject extends TabPageObject {
 
-  open() : TrainerPageObject {
-    cy.gotoPage('trainer');
-    return this;
+  name = 'trainer';
+  getAddGameButton(){
+    return cy.react('IconButton', {props: {icon:{iconName: "plus-circle"}}});
   }
 
-  setSearchTerm(searchTerm) : TrainerPageObject{
-    cy.get (this.search).type(searchTerm);
-    //cy.react(this.search).type(searchTerm);
+  createGamePO = new CreateGamePageObject();
 
-    return this;
+  createGame(gameName: string, basedOn: string) {
+    this.getAddGameButton().should('have.length', 1).click();
+    this.createGamePO.createGameWindow(gameName, basedOn);
+
+    cy.simulatePusher();
   }
 
 }
