@@ -12,6 +12,7 @@ on:
     branches:
       - master
       - dev
+      - WEG-50
     tags:
       - "v*"
 

@@ -139,13 +139,13 @@
         <bujiVersion>9.0.1</bujiVersion>
         <jakartaPac4jVersion>8.0.1</jakartaPac4jVersion>
 
-        <payara.version>6.2023.9</payara.version>
+        <payara.version>6.2024.8</payara.version>
 
         <junit.version>4.13.1</junit.version>
         <arquillian.version>1.7.1.Final</arquillian.version>
         <exec.plugin.version>1.2</exec.plugin.version>
 
-        <eclipselink.version>4.0.1.payara-p1</eclipselink.version>
+        <eclipselink.version>4.0.1.payara-p2</eclipselink.version>
 
         <!-- logback 1.4.x slf4j 2.x + jakarta ns -->
         <slf4j.version>2.0.9</slf4j.version>
