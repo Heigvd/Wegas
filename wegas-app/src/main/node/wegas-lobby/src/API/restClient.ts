@@ -35,6 +35,13 @@ export interface WegasErrorMessage {
 
 export type WegasRuntimeException = WegasErrorMessage;
 
+export type IPage<T> = {
+  total: number;
+  page: number;
+  pageSize: number;
+  pageContent: T[];
+};
+
 export interface OnlineUser {
   fullname: string;
   email: string;
@@ -57,18 +64,12 @@ export type IRoleWithPermissions = IRoleWithId & {
   permissions?: IPermissionWithId[];
 };
 
-export type IUserPage = {
-  total: number;
-  page: number;
-  pageSize: number;
-  pageContent:IUserWithAccounts[];
-};
-
 export type IUserWithAccounts = IUserWithId & {
   accounts?: IAccountWithPerm[];
   permissions?: IPermissionWithId[];
   roles?: IRoleWithPermissions[];
 };
+
 export interface IJpaAuthentication {
   '@class': 'JpaAuthentication';
   mandatoryMethod: HashMethod;
@@ -182,6 +183,7 @@ export interface IGameAdminTeam {
   declaredSize: number;
   players?: IGameAdminPlayer[];
 }
+
 export interface IGameAdminWithTeams extends IGameAdminWithId {
   teams?: IGameAdminTeam[];
   effectiveCount: number;
@@ -557,8 +559,13 @@ export const WegasLobbyRestClient = function (
         return sendJsonRequest<IUserWithAccounts[]>('GET', path, undefined, errorHandler);
       },
       getPaginatedUsers: (page: number, size: number, query: string) => {
-        const path = `${baseUrl}/Shadow/User/Paginated?page=${page}&size=${size}&query=${query}`;
-        return sendJsonRequest<IUserPage>('GET', path, undefined, errorHandler);
+        const path = `${baseUrl}/Shadow/User/Paginated`;
+        return sendJsonRequest<IPage<IUserWithAccounts>>(
+          'POST',
+          path,
+          { page, size, query },
+          errorHandler,
+        );
       },
       getUser: (userId: number) => {
         const path = `${baseUrl}/User/${userId}`;
@@ -726,6 +733,21 @@ export const WegasLobbyRestClient = function (
           errorHandler,
         );
       },
+      getGamesPaginated: (
+        status: IGameWithId['status'],
+        page: number,
+        size: number,
+        query: string,
+        mine: boolean,
+      ) => {
+        const path = `${baseUrl}/Lobby/GameModel/Game/status/${status}/Paginated`;
+        return sendJsonRequest<IPage<IGameWithId & { gameModel?: IGameModelWithId }>>(
+          'POST',
+          path,
+          { page, size, query, mine },
+          errorHandler,
+        );
+      },
       changeStatus: (gameId: number, status: IGameWithId['status']) => {
         const path = `${baseUrl}/Lobby/GameModel/Game/${gameId}/status/${status}`;
         return sendJsonRequest<IGameWithId>('PUT', path, undefined, errorHandler);
@@ -790,6 +812,18 @@ export const WegasLobbyRestClient = function (
       getGameModels: (gmType: IGameModelWithId['type'], status: IGameModelWithId['status']) => {
         const path = `${baseUrl}/Lobby/GameModel/type/${gmType}/status/${status}`;
         return sendJsonRequest<IGameModelWithId[]>('GET', path, undefined, errorHandler);
+      },
+      getGameModelsPaginated: (
+        gmType: IGameModelWithId['type'],
+        status: IGameModelWithId['status'],
+        mine: boolean,
+        permissions: string[],
+        page: number,
+        size: number,
+        query: string,
+      ) => {
+        const path = `${baseUrl}/Lobby/GameModel/type/${gmType}/status/${status}/Paginated`;
+        return sendJsonRequest<IPage<IGameModelWithId>>('POST', path, {page, size, query, mine, permissions}, errorHandler);
       },
       changeStatus: (gmid: number, status: IGameModelWithId['status']) => {
         const path = `${baseUrl}/Lobby/GameModel/${gmid}/status/${status}`;

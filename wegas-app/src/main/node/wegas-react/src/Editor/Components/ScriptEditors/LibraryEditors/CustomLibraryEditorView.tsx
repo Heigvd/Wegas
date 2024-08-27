@@ -475,7 +475,8 @@ export function CustomLibraryEditorView({
         </TreeView>
       </ReflexElement>
       <ReflexSplitter />
-      <ReflexElement flex={currentLibrary == null ? 1 : 5}>
+      {/* The overflow: hidden is set to avoid epileptic size changes */}
+      <ReflexElement flex={currentLibrary == null ? 1 : 5} style={{overflow: "hidden"}}>
         {currentLibrary == null ? (
           'No library selected yet'
         ) : (

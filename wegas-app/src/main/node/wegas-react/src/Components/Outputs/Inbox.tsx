@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
 import { IInboxDescriptor, IMessage } from 'wegas-ts-api';
 import {
-  bolder,
+  bolder, defaultMarginBottom,
   defaultMarginTop,
   expandWidth,
   flex,
@@ -24,7 +24,7 @@ import { wwarn } from '../../Helper/wegaslog';
 import { componentsTranslations } from '../../i18n/components/components';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import {
-  DefaultEntityChooserLabel,
+  DefaultEntityChooserLabel, defaultEntityDisplay,
   EntityChooser,
   EntityChooserLabelProps,
 } from '../EntityChooser';
@@ -47,7 +47,7 @@ const readLabelStyle = css({
   backgroundColor: themeVar.colors.HeaderColor,
   color: themeVar.colors.DarkTextColor,
   '&:hover': {
-    boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.2)`,
+    boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.4)`,
   },
 });
 
@@ -68,15 +68,17 @@ function MessageLabel({ message }: MessageLabelProps) {
   const translatedDate = useTranslate(message.date);
 
   return (
-    <div
-      className={cx(flex, itemCenter, messageLabel)}
-    >
+    <div className={cx(flex, itemCenter, messageLabel)}>
       <div className={cx(flex, flexColumn, expandWidth)}>
         <div className={cx(flex, flexRow, flexBetween)}>
           <div className={cx(labelTitleStyle)}>{translatedLabel}</div>
-          <div className={css({ flexShrink: 0 })}>{translatedDate}</div>
+          {translatedDate && (
+            <div className={css({ flexShrink: 0 })}>&nbsp;{translatedDate}</div>
+          )}
         </div>
-        <div className={cx(flex, defaultMarginTop)}>{translatedFrom}</div>
+        {translatedFrom && (
+          <div className={cx(flex, defaultMarginTop)}>{translatedFrom}</div>
+        )}
       </div>
     </div>
   );
@@ -97,7 +99,10 @@ function MessageChooser(props: EntityChooserLabelProps<IMessage>) {
 
   return (
     <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
-      <div className={cx(flex, flexRow, itemCenter)} onClick={() => editingStore.dispatch(readMessage(message))}>
+      <div
+        className={cx(flex, flexRow, itemCenter)}
+        onClick={() => editingStore.dispatch(readMessage(message))}
+      >
         {props.mobile && (
           <FontAwesomeIcon
             className={css({ marginRight: '5px' })}
@@ -123,9 +128,9 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
   const from = useTranslate(entity.from);
 
   return (
-    <div style={{ width: '100%', height: '100%' }}>
+    <div className={defaultEntityDisplay}>
       <div className={cx(toolboxHeaderStyle)}>
-        {subject && <div className={cx(bolder)}>{subject}</div>}
+        {subject && <div className={cx(bolder, defaultMarginBottom)}>{subject}</div>}
         {date && (
           <div>
             {i18nComponentValues.inbox.date}: {date}
@@ -137,7 +142,7 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
           </div>
         )}
       </div>
-      <TranslatableText content={entity.body} />
+      <TranslatableText content={entity.body}/>
     </div>
   );
 }

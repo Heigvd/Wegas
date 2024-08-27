@@ -2,7 +2,6 @@ package com.wegas.core.rest.util.pagination;
 
 import jakarta.persistence.Query;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,6 +10,10 @@ public class Pageable {
     private int size;
 
     private String query;
+
+    public Pageable() {
+        // ensure default constructor
+    }
 
     public Pageable (int page, int size, String query){
         this.page = page;

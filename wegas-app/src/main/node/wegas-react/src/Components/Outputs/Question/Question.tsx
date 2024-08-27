@@ -1,4 +1,4 @@
-import { css } from '@emotion/css';
+import {css, cx} from '@emotion/css';
 import * as React from 'react';
 import {
   IChoiceDescriptor,
@@ -18,6 +18,7 @@ import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { CbxQuestionDisplay } from './CbxQuestion';
 import { SimpleQuestionDisplay } from './SimpleQuestionDisplay';
 import { WhQuestionDisplay, whQuestionInfo } from './WhQuestionDisplay';
+import {defaultEntityDisplay} from "../../EntityChooser";
 
 export interface QuestionInfo {
   questionD?: Readonly<IQuestionDescriptor>;
@@ -28,7 +29,8 @@ export interface QuestionInfo {
 }
 
 export const questionStyle = css({
-  width: '100%',
+  marginRight: 'auto',
+  marginLeft: 'auto',
 });
 
 /**
@@ -126,19 +128,23 @@ export function ConnectedQuestionDisplay({
   readOnly,
   editMode,
 }: ConnectedQuestionDisplayProps) {
-  return entityIs(entity, 'QuestionDescriptor') ? (
-    <ConnectedSimpleQuestionDisplay
-      entity={entity}
-      disabled={disabled}
-      readOnly={readOnly}
-      editMode={editMode}
-    />
-  ) : (
-    <ConnectedWhQuestionDisplay
-      entity={entity}
-      disabled={disabled}
-      readOnly={readOnly}
-      editMode={editMode}
-    />
-  );
+  return (
+      <div className={cx(defaultEntityDisplay)}>
+        {entityIs(entity, 'QuestionDescriptor') ? (
+            <ConnectedSimpleQuestionDisplay
+                entity={entity}
+                disabled={disabled}
+                readOnly={readOnly}
+                editMode={editMode}
+            />
+        ) : (
+            <ConnectedWhQuestionDisplay
+                entity={entity}
+                disabled={disabled}
+                readOnly={readOnly}
+                editMode={editMode}
+            />
+        )}
+      </div>
+  )
 }
