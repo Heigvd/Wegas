@@ -14,11 +14,21 @@ export const TEAM_BASE = (gameId: number) => `GameModel/Game/${gameId}/Team`;
 
 export const TeamAPI = {
   /**
-   * Get all team of a game
+   * Get all teams of a game
    * @param gameId the id of the game
    */
   getAll(gameId: number): Promise<ITeam[]> {
     return rest(TEAM_BASE(gameId)).then((res: Response) => {
+      return res.json();
+    });
+  },
+  /**
+   * Get one team
+   * @param gameId the id of the game
+   * @param teamId the id of the team
+   */
+  getTeam(gameId: number, teamId: number): Promise<ITeam> {
+    return rest(TEAM_BASE(gameId) + '/' + teamId).then((res: Response) => {
       return res.json();
     });
   },
