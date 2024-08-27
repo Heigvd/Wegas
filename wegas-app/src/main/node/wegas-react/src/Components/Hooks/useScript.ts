@@ -142,6 +142,8 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
 
 
   globals.self = instantiate(player);
+  globals.currentUserName = store.global.currentUser.name ?? 'someone';
+
   globals.schemaProps = schemaProps;
   globals.API_VIEW = API_VIEW;
   globals.APP_CONTEXT = APP_CONTEXT;
