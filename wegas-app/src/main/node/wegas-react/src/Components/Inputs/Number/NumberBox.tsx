@@ -97,7 +97,7 @@ export interface NumberBoxProps extends InputProps<number> {
    */
   maxValue?: number;
   /**
-   * hideBoxValue - hide the value in the box
+   * numberedBoxes - number each individual box
    */
   numberedBoxes?: boolean;
   /**

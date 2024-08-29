@@ -20,7 +20,7 @@ interface PlayerBoxesProps extends WegasComponentProps {
    */
   script?: IScript;
   /**
-   * hideBoxValue - number each individual box
+   * numberedBoxes - number each individual box
    */
   numberedBoxes?: boolean;
 }
