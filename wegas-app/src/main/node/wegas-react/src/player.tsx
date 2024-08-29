@@ -14,6 +14,7 @@ import './css/global.css';
 import './data/Stores/store';
 import { Player } from './Editor/Components/Player';
 import EventInstanceManager from './Components/Contexts/EventInstanceManager';
+import { PopupManager } from './Components/PopupManager';
 
 importPageComponents();
 
@@ -28,9 +29,11 @@ function mount() {
               <ClassesProvider>
                 <PlayerLibrariesLoader>
                   <ThemeProvider contextName="player">
-                    <EventInstanceManager>
-                      <Player />
-                    </EventInstanceManager>
+                    <PopupManager>
+                      <EventInstanceManager>
+                        <Player />
+                      </EventInstanceManager>
+                    </PopupManager>
                   </ThemeProvider>
                 </PlayerLibrariesLoader>
               </ClassesProvider>
