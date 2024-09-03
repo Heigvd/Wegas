@@ -317,9 +317,9 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   };
 
   globals.Popups = {
-    addPopup: (id, message, duration) => {
+    addPopup: (id, message, duration, className) => {
       if (id != null && message != null) {
-        globalDispatch(addPopup(id, message, duration));
+        globalDispatch(addPopup(id, message, duration, className));
       }
     },
     removePopup: id => globalDispatch(ActionCreator.REMOVE_POPUP({ id })),
