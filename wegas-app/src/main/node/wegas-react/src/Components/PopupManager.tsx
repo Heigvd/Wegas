@@ -8,6 +8,7 @@ import { store, useStore } from '../data/Stores/store';
 import { languagesCTX } from './Contexts/LanguagesProvider';
 import { Button } from './Inputs/Buttons/Button';
 import { themeVar } from './Theme/ThemeVars';
+import {classNameOrEmpty} from "../Helper/className";
 
 const popupBackgroundStyle = css({
   zIndex: 100000,
@@ -36,13 +37,17 @@ export interface Popup {
    */
   message: ITranslatableContent;
   /**
+   * timestamp - the timestamp when the popup was registered
+   */
+  timestamp: number;
+  /**
    * duration - the duration of the popup in milliseconds
    */
   duration?: number;
   /**
-   * timestamp - the timestamp when the popup was registered
+   * className - class to apply to the popup
    */
-  timestamp: number;
+  className?: string;
 }
 
 export interface PopupState {
@@ -58,8 +63,8 @@ export function PopupManager({
     <>
       <div className={cx(flex, flexColumn, itemCenter, popupBackgroundStyle)}>
         <div className={cx(flex, flexColumn, itemCenter)}>
-          {Object.entries(popups).map(([id, { message, timestamp }]) => (
-            <div key={id} className={cx(flex, flexRow, itemCenter, popupStyle)}>
+          {Object.entries(popups).map(([id, { message, timestamp, className }]) => (
+            <div key={id} className={cx(flex, flexRow, itemCenter, popupStyle) + classNameOrEmpty(className)}>
               <div>
                 {`${new Date(timestamp).toLocaleTimeString(undefined, {
                   hour: 'numeric',
@@ -86,6 +91,7 @@ export function addPopup(
   id: string,
   message: ITranslatableContent,
   duration?: number,
+  className?: string,
 ) {
   const timestamp = new Date().getTime();
   if (duration != null) {
@@ -93,5 +99,5 @@ export function addPopup(
       store.dispatch(ActionCreator.REMOVE_POPUP({ id }));
     }, duration);
   }
-  return ActionCreator.ADD_POPUP({ id, message, duration, timestamp });
+  return ActionCreator.ADD_POPUP({ id, message, duration, timestamp, className });
 }
