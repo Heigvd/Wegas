@@ -154,7 +154,6 @@ export default function Preview() {
                     onChange={v =>
                       setPreviewState(o => ({ ...o, numericVar: v }))
                     }
-                    showLabelValue
                     disabled={disabled}
                   />
                 </ReflexElement>

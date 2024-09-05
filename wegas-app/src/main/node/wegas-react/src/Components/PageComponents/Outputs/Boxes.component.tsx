@@ -20,30 +20,15 @@ interface PlayerBoxesProps extends WegasComponentProps {
    */
   script?: IScript;
   /**
-   * label - The label to display with the gauge
+   * numberedBoxes - number each individual box
    */
-  label?: string;
-  /**
-   * hideBoxValue - hide the value in the box
-   */
-  hideBoxValue?: boolean;
-  /**
-   * showLabelValue - show the value of the number in the label
-   */
-  showLabelValue?: boolean;
-  /**
-   * showQuantity - the box count starts from 1 even with min value lower or higher
-   */
-  showQuantity?: boolean;
+  numberedBoxes?: boolean;
 }
 
 function PlayerBoxes({
   script,
   context,
-  label,
-  hideBoxValue,
-  showLabelValue,
-  showQuantity,
+  numberedBoxes,
   className,
   style,
   id,
@@ -77,10 +62,7 @@ function PlayerBoxes({
           ? (descriptor.getMaxValue() as number)
           : undefined
       }
-      label={label}
-      hideBoxValue={hideBoxValue}
-      showLabelValue={showLabelValue}
-      showQuantity={showQuantity}
+      numberedBoxes={numberedBoxes}
       disabled={options.disabled || options.locked}
     />
   );
@@ -100,10 +82,7 @@ registerComponent(
         required: false,
         returnType: ['SNumberDescriptor'],
       }),
-      label: schemaProps.string({ label: 'Label' }),
-      hideBoxValue: schemaProps.boolean({ label: 'Hide value in boxes' }),
-      showLabelValue: schemaProps.boolean({ label: 'Show value in label' }),
-      showQuantity: schemaProps.boolean({ label: 'Start from 1' }),
+        numberedBoxes: schemaProps.boolean({ label: 'Number boxes' }),
       ...classStyleIdSchema,
     },
     allowedVariables: ['NumberDescriptor', 'TextDescriptor'],

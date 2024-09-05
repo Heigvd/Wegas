@@ -142,6 +142,8 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
 
 
   globals.self = instantiate(player);
+  globals.currentUserName = store.global.currentUser.name ?? 'someone';
+
   globals.schemaProps = schemaProps;
   globals.API_VIEW = API_VIEW;
   globals.APP_CONTEXT = APP_CONTEXT;
@@ -315,9 +317,9 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   };
 
   globals.Popups = {
-    addPopup: (id, message, duration) => {
+    addPopup: (id, message, duration, className) => {
       if (id != null && message != null) {
-        globalDispatch(addPopup(id, message, duration));
+        globalDispatch(addPopup(id, message, duration, className));
       }
     },
     removePopup: id => globalDispatch(ActionCreator.REMOVE_POPUP({ id })),
