@@ -25,12 +25,16 @@ const replyStyle = css({
 const replyContainerStyle = css({
   backgroundColor: themeVar.colors.HoverColor,
 });
+const earlierReplyContainerStyle = css({
+  color: themeVar.colors.DisabledColor,
+})
 
 interface ReplyDisplayProps {
   reply: IReply;
+  isEarlierReply?: boolean;
 }
 
-function ReplyDisplay({ reply }: ReplyDisplayProps) {
+function ReplyDisplay({ reply, isEarlierReply }: ReplyDisplayProps) {
   const ignorationAnswer = reply.ignorationAnswer;
   const answer = reply.answer;
 
@@ -39,6 +43,7 @@ function ReplyDisplay({ reply }: ReplyDisplayProps) {
       className={cx(
         choiceContainerStyle,
         replyContainerStyle,
+        isEarlierReply ? earlierReplyContainerStyle : '',
         css({ flexDirection: 'column', alignItems: 'left' }),
       )}
     >
@@ -53,7 +58,7 @@ function ReplyDisplay({ reply }: ReplyDisplayProps) {
           state != null ? (
             <TranslatableText className={replyStyle} content={state.label} />
           ) : (
-            <div className={choiceLabelStyle}>'Unkown choice'</div>
+            <div className={choiceLabelStyle}>'Unknown choice'</div>
           )
         }
       </StoreConsumer>
@@ -81,8 +86,8 @@ export function RepliesDisplay({ replies }: RepliesDisplayProps) {
   }
   return (
     <div className={repliesContainer}>
-      {nonIgnoredValidatedReplies.map(r => (
-        <ReplyDisplay key={r.id} reply={r} />
+      {nonIgnoredValidatedReplies.map((r,i) => (
+        <ReplyDisplay key={r.id} reply={r} isEarlierReply={i !== 0}/>
       ))}
     </div>
   );
