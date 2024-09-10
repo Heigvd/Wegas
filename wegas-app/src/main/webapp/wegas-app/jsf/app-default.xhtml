@@ -44,6 +44,8 @@
                 </ui:fragment>
 
 
+                <!-- force mutation events polyfill usage -->
+                <script type="text/javascript">window.mutationEventsUsePolyfillAlways = true</script>
                 <!-- Self hosted mutation events polyfill -->
                 <script type="text/javascript" src="#{request.contextPath}/lib/mutation-events-polyfill/mutation_events.min.js"></script>
 
