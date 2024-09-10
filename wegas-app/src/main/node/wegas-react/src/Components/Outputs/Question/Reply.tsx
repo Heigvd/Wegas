@@ -3,7 +3,6 @@ import * as React from 'react';
 import { IChoiceDescriptor, IReply } from 'wegas-ts-api';
 import { VariableDescriptor } from '../../../data/selectors';
 import { StoreConsumer } from '../../../data/Stores/store';
-import { Button } from '../../Inputs/Buttons/Button';
 import { themeVar } from '../../Theme/ThemeVars';
 import { TranslatableText } from '../HTMLText';
 import {
@@ -26,12 +25,16 @@ const replyStyle = css({
 const replyContainerStyle = css({
   backgroundColor: themeVar.colors.HoverColor,
 });
+const earlierReplyContainerStyle = css({
+  color: themeVar.colors.DisabledColor,
+})
 
 interface ReplyDisplayProps {
   reply: IReply;
+  isEarlierReply?: boolean;
 }
 
-function ReplyDisplay({ reply }: ReplyDisplayProps) {
+function ReplyDisplay({ reply, isEarlierReply }: ReplyDisplayProps) {
   const ignorationAnswer = reply.ignorationAnswer;
   const answer = reply.answer;
 
@@ -40,6 +43,7 @@ function ReplyDisplay({ reply }: ReplyDisplayProps) {
       className={cx(
         choiceContainerStyle,
         replyContainerStyle,
+        isEarlierReply ? earlierReplyContainerStyle : '',
         css({ flexDirection: 'column', alignItems: 'left' }),
       )}
     >
@@ -54,7 +58,7 @@ function ReplyDisplay({ reply }: ReplyDisplayProps) {
           state != null ? (
             <TranslatableText className={replyStyle} content={state.label} />
           ) : (
-            <div className={choiceLabelStyle}>'Unkown choice'</div>
+            <div className={choiceLabelStyle}>'Unknown choice'</div>
           )
         }
       </StoreConsumer>
@@ -69,37 +73,22 @@ function ReplyDisplay({ reply }: ReplyDisplayProps) {
 
 interface RepliesDisplayProps {
   replies: Readonly<IReply[]>;
-  showAll?: boolean;
 }
-export function RepliesDisplay({ replies, showAll }: RepliesDisplayProps) {
-  const [expanded, setExpanded] = React.useState(showAll || false);
 
+export function RepliesDisplay({ replies }: RepliesDisplayProps) {
   const nonIgnoredValidatedReplies = replies
     .filter(r => !r.ignored)
-    .filter(r => r.validated);
+    .filter(r => r.validated)
+    .sort((a, b) => b.createdTime - a.createdTime);
 
   if (nonIgnoredValidatedReplies.length === 0) {
     return null;
   }
   return (
     <div className={repliesContainer}>
-      {!showAll && nonIgnoredValidatedReplies.length > 1 && (
-        <Button
-          icon={expanded ? 'caret-square-up' : 'caret-square-down'}
-          onClick={() => setExpanded(expanded => !expanded)}
-        />
-      )}
-      {expanded ? (
-        nonIgnoredValidatedReplies.map(r => (
-          <ReplyDisplay key={r.id} reply={r} />
-        ))
-      ) : (
-        <ReplyDisplay
-          reply={
-            nonIgnoredValidatedReplies[nonIgnoredValidatedReplies.length - 1]
-          }
-        />
-      )}
+      {nonIgnoredValidatedReplies.map((r,i) => (
+        <ReplyDisplay key={r.id} reply={r} isEarlierReply={i !== 0}/>
+      ))}
     </div>
   );
 }

@@ -195,7 +195,7 @@ export function CbxQuestionDisplay({
           />
         </div>
       )}
-      <RepliesDisplay replies={replies} showAll />
+      <RepliesDisplay replies={replies} />
     </div>
   );
 }
