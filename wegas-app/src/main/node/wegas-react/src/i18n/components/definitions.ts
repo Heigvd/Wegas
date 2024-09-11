@@ -3,6 +3,7 @@ export interface ComponentsTranslations {
     subject: string;
     sender: string;
     date: string;
+    attachments: string;
     noSelectionMessage: string;
   };
   question: {

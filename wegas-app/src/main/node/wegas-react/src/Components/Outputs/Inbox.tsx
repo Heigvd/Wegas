@@ -2,15 +2,17 @@ import { css, cx } from '@emotion/css';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
-import { IInboxDescriptor, IMessage } from 'wegas-ts-api';
+import { IAttachment, IInboxDescriptor, IMessage } from 'wegas-ts-api';
 import {
-  bolder, defaultMarginBottom,
+  bolder,
+  defaultMarginBottom,
   defaultMarginTop,
   expandWidth,
   flex,
   flexBetween,
   flexColumn,
   flexRow,
+  flexWrap,
   itemCenter,
   toolboxHeaderStyle,
 } from '../../css/classes';
@@ -24,13 +26,15 @@ import { wwarn } from '../../Helper/wegaslog';
 import { componentsTranslations } from '../../i18n/components/components';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import {
-  DefaultEntityChooserLabel, defaultEntityDisplay,
+  DefaultEntityChooserLabel,
+  defaultEntityDisplay,
   EntityChooser,
   EntityChooserLabelProps,
 } from '../EntityChooser';
 import { useTranslate } from '../Hooks/useTranslate';
 import { themeVar } from '../Theme/ThemeVars';
 import { TranslatableText } from './HTMLText';
+import { fileURL } from '../../API/files.api';
 
 interface MessageLabelProps {
   message: IMessage;
@@ -61,6 +65,13 @@ const labelTitleStyle = css({
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
 });
+
+const attachmentDisplay = cx(
+  flex,
+  flexRow,
+  flexWrap,
+  css({ flexShrink: 0, marginLeft: '5px', width: '100%' }),
+);
 
 function MessageLabel({ message }: MessageLabelProps) {
   const translatedLabel = useTranslate(message.subject);
@@ -120,17 +131,37 @@ interface MessageDisplayProps {
   entity: IMessage;
 }
 
+function AttachmentsDisplay(attachments: IAttachment[]) {
+  const files = attachments.map(attachment => useTranslate(attachment.file));
+
+  return (
+    <div className={attachmentDisplay}>
+      {files.map((file, index) => (
+        <span className={css({marginLeft: '5px'})}>
+          <a href={fileURL(file)} target="_blank">
+            {file.slice(1)}
+          </a>
+          {index < files.length - 1 && ","}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function MessageDisplay({ entity }: MessageDisplayProps) {
   const i18nComponentValues = useInternalTranslate(componentsTranslations);
 
   const subject = useTranslate(entity.subject);
   const date = useTranslate(entity.date);
   const from = useTranslate(entity.from);
+  const attachments = entity.attachments;
 
   return (
     <div className={defaultEntityDisplay}>
       <div className={cx(toolboxHeaderStyle)}>
-        {subject && <div className={cx(bolder, defaultMarginBottom)}>{subject}</div>}
+        {subject && (
+          <div className={cx(bolder, defaultMarginBottom)}>{subject}</div>
+        )}
         {date && (
           <div>
             {i18nComponentValues.inbox.date}: {date}
@@ -141,8 +172,14 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
             {i18nComponentValues.inbox.sender}: {from}
           </div>
         )}
+        {attachments.length > 0 && (
+          <div className={cx(flex, flexRow, css({whiteSpace: 'nowrap'}))}>
+            {i18nComponentValues.inbox.attachments}:
+            {AttachmentsDisplay(attachments)}
+          </div>
+        )}
       </div>
-      <TranslatableText content={entity.body}/>
+      <TranslatableText content={entity.body} />
     </div>
   );
 }
