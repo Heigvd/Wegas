@@ -104,6 +104,7 @@ import jakarta.persistence.criteria.*;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.StreamingOutput;
 import org.apache.commons.io.IOUtils;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -184,9 +185,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * Duplicate game model. Handle MODEL and SCENARIO.
      *
      * @param entityId id of the gamemodel to duplicate
-     *
      * @return a new model or a new scenario
-     *
      * @throws CloneNotSupportedException
      */
     public GameModel duplicateGameModel(Long entityId) throws CloneNotSupportedException {
@@ -259,7 +258,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      *
      * @param gameModel  the gameModel to patch
      * @param newVersion the new version
-     *
      * @return
      */
     public GameModel patch(GameModel gameModel, GameModel newVersion) throws RepositoryException {
@@ -295,7 +293,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     *
      * @param gameModel
      * @param context
      */
@@ -383,7 +380,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * must exist. A debugTesm must exist
      *
      * @param gameModel the gameModel to add a testPlayer within
-     *
      * @return the brand new test player
      */
     public Player addTestPlayer(GameModel gameModel) {
@@ -442,7 +438,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * must exist. A debugTesm must exist
      *
      * @param gameModelId id of the gameModelId to add a testPlayer within
-     *
      * @return the brand new test player
      */
     public Player addTestPlayer(Long gameModelId) {
@@ -453,7 +448,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * Add a DebugGame (and debug team) within the given game model unless it already exists
      *
      * @param gameModel
-     *
      * @return true if a new debugGame has been added, false if the gameModel already has one
      */
     public boolean addDebugGame(GameModel gameModel) {
@@ -485,7 +479,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @param toUpdate GameModel to update
      * @param source   GameModel to fetch instance from
      * @param player   instances owner
-     *
      * @return the gameModel with default instance merged with player's ones
      */
     public GameModel setDefaultInstancesFromPlayer(GameModel toUpdate, GameModel source, Player player) {
@@ -517,7 +510,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     /**
      * @param gameModelId
      * @param playerId
-     *
      * @return the gameModel with default instance merged with player's ones
      */
     public GameModel setDefaultInstancesFromPlayer(Long gameModelId, Long playerId) {
@@ -527,7 +519,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     /**
      * @param gameModelId
      * @param playerId
-     *
      * @return a new gameModel with default instance merged with player's ones
      */
     public GameModel createFromPlayer(Long gameModelId, Long playerId) {
@@ -570,7 +561,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * Find a unique name for this new game (e.g. Oldname (2))
      *
      * @param oName
-     *
      * @return new unique name
      */
     public String findUniqueName(String oName, GmType type) {
@@ -612,7 +602,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * Find a unique logId
      *
      * @param oName
-     *
      * @return new unique name
      */
     public String findUniqueLogId(String oName) {
@@ -628,7 +617,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * If one of the repository does not yet exists, it will be create and saved at JTA commit
      *
      * @param gameModel open repository which belong to this gameModel
-     *
      * @throws RepositoryException unable to open repository
      */
     private void openRepositories(GameModel gameModel) throws RepositoryException {
@@ -641,9 +629,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * Extract gameModel from a WGZ export.
      *
      * @param zip a WGZ archive
-     *
      * @return the (unpersisted) gameModel
-     *
      * @throws IOException
      * @throws RepositoryException
      */
@@ -707,9 +693,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * <li>files.xml
      *
      * @param gameModelId id of the gameModel to export
-     *
      * @return the wgz-achived outputstreamed
-     *
      * @throws RepositoryException in case the JCR files repository is not available
      */
     public StreamingOutput archiveAsWGZ(Long gameModelId) throws RepositoryException {
@@ -825,9 +809,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * </ul>
      *
      * @param gameModelId id of the gameModel to export
-     *
      * @return the wgz-achived outputstreamed
-     *
      */
     public StreamingOutput archiveAsExplodedZip(Long gameModelId) throws CloneNotSupportedException {
 
@@ -1035,11 +1017,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     *
      * @param zip zip stream to read
-     *
      * @return recombined gameModel
-     *
      * @throws IOException
      */
     public RecombinedGameModel extractFromExplodedZip(ZipInputStream zip) throws IOException {
@@ -1184,11 +1163,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     *
      * @param entityId
-     *
      * @return
-     *
      * @throws CloneNotSupportedException
      */
     @Override
@@ -1212,9 +1188,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * Duplicate a model to create a brand new one. The srcGameModel must be a model.
      *
      * @param entityId id of the model to duplicate must be a MODEL gameModel.
-     *
      * @return
-     *
      * @throws CloneNotSupportedException
      */
     public GameModel createModel(final Long entityId) throws CloneNotSupportedException {
@@ -1263,9 +1237,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * </ul>
      *
      * @param sourceId id of the gameModel to based the new one on
-     *
      * @return a new SCENARIO gameModel
-     *
      * @throws CloneNotSupportedException
      */
     public GameModel createScenario(final Long sourceId) throws CloneNotSupportedException {
@@ -1335,9 +1307,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * Create a new model based on the given one.
      *
      * @param gameModelId id of the model to duplicate
-     *
      * @return a new model
-     *
      * @throws CloneNotSupportedException
      */
     public GameModel createModelWithDebugGame(final Long gameModelId) throws CloneNotSupportedException {
@@ -1349,11 +1319,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     /**
      * @param gameModelId
-     *
      * @return gameModel copy
-     *
      * @throws java.lang.CloneNotSupportedException
-     *
      */
     public GameModel createScenarioWithDebugGame(final Long gameModelId) throws CloneNotSupportedException {
         GameModel gm = this.createScenario(gameModelId);
@@ -1372,7 +1339,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * Do a JPA query to fetch the reference of the given model.
      *
      * @param gm the model
-     *
      * @return the reference of the model or null
      */
     public GameModel findReference(GameModel gm) {
@@ -1480,7 +1446,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     /**
      * @param gmType
      * @param status
-     *
      * @return all gameModel matching the given status
      */
     public List<GameModel> findByTypeAndStatus(final GmType gmType, final GameModel.Status status) {
@@ -1495,7 +1460,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      *
      * @param gmTypes  gameModels must match one of the given types
      * @param statuses gameModels must match one of the given statuses
-     *
      * @return all gameModel matching the given status
      */
     public List<GameModel> findByTypesAndStatuses(List<GmType> gmTypes,
@@ -1510,7 +1474,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     /**
      * @param name
      * @param type
-     *
      * @return the number of gamemodel having the given name
      */
     public long countByName(final String name, GmType type) {
@@ -1595,7 +1558,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      *
      * @param type
      * @param status
-     *
      * @return
      */
     public Collection<GameModel> findByTypeStatusAndUser(GmType type,
@@ -1616,14 +1578,15 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     *
-     * @param type type {@link GameModel.GmType#MODEL} {@link GameModel.GmType#REFERENCE} {@link GameModel.GmType#SCENARIO} {@link GameModel.GmType#PLAY}
-     * @param status status {@link Game.Status#LIVE} {@link Game.Status#BIN} {@link Game.Status#DELETE}
+     * @param type              type {@link GameModel.GmType#MODEL} {@link GameModel.GmType#REFERENCE} {@link GameModel.GmType#SCENARIO} {@link GameModel.GmType#PLAY}
+     * @param status            status {@link Game.Status#LIVE} {@link Game.Status#BIN} {@link Game.Status#DELETE}
      * @param gameModelPageable
      * @return
      */
     public Page<GameModel> findByTypeStatusPermissionAndUserPaginated(GmType type, GameModel.Status status, GameModelPageable gameModelPageable) {
-        List<Long> gameModelIdsPartiallyMatching = getGameModelIdsByUserPermissionsTypeAndStatus(type, status, gameModelPageable.getPermissions());
+
+        boolean isAdmin = SecurityUtils.getSubject().hasRole("Administrator");
+        boolean hasWildcardPermission = SecurityUtils.getSubject().isPermitted("GameModel:*:*");
 
         final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         final CriteriaQuery<GameModel> query = criteriaBuilder.createQuery(GameModel.class);
@@ -1632,12 +1595,19 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         Predicate whereClause = criteriaBuilder.and(
                 criteriaBuilder.equal(gameModelRoot.get("status"), status),
-                criteriaBuilder.equal(gameModelRoot.get("type"), type),
-                // Maximum in values for psql: 32767
-                gameModelRoot.get("id").in(gameModelIdsPartiallyMatching)
+                criteriaBuilder.equal(gameModelRoot.get("type"), type)
         );
 
-        for (String param: gameModelPageable.getSplitQuery()) {
+        // If user isn't admin, we fetch gameModels according to their permissions
+        if (!isAdmin) {
+            List<Long> gameModelIdsPartiallyMatching = getGameModelIdsByUserPermissionsTypeAndStatus(type, status, gameModelPageable.getPermissions());
+            whereClause = criteriaBuilder.and(
+                    // Maximum in values for psql: 32767
+                    gameModelRoot.get("id").in(gameModelIdsPartiallyMatching)
+            );
+        }
+
+        for (String param : gameModelPageable.getSplitQuery()) {
             if (!param.isEmpty()) {
                 Join<GameModel, User> userJoin = gameModelRoot.join("createdBy", JoinType.INNER);
                 Join<User, AbstractAccount> abstractAccountJoin = userJoin.join("accounts", JoinType.INNER);
@@ -1698,7 +1668,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      *
      * @param type   restrict to this kind of gameModel
      * @param status restrict to gameModel with such a status
-     *
      * @return list of gameModel id mapped with the permission the user has
      */
     public Map<Long, List<String>> getPermissionMatrix(GmType type,
@@ -1718,7 +1687,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      *
      * @param types    restrict to those kind of gameModel
      * @param statuses restrict to gameModel having one of these status
-     *
      * @return list of gameModel id mapped with the permission the user has
      */
     public Map<Long, List<String>> getPermissionMatrix(List<GmType> types,
@@ -1938,7 +1906,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * Find all quest defined in achievements of the given project
      *
      * @param gameModelId if of the gameModel
-     *
      * @return set of quest name
      */
     public Set<String> findAllQuests(Long gameModelId) {
@@ -1994,7 +1961,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      *
      * @param gameModel the gamemodel to search for reference in
      * @param root      Optional variable to search in, if null, search the whole gameModel
-     *
      * @return
      */
     public Set<String> findAllRefToFiles(GameModel gameModel,
@@ -2033,7 +1999,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * Find all users with a scenarist access
      *
      * @param gameModel
-     *
      * @return
      */
     public List<User> findScenarists(Long id) {
@@ -2046,7 +2011,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * Get all permissions related to a gameModel
      *
      * @param gmId
-     *
      * @return
      */
     public List<Permission> getPermissions(Long gmId) {
