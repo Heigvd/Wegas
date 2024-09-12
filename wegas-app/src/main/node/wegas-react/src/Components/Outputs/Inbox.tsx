@@ -35,6 +35,8 @@ import { useTranslate } from '../Hooks/useTranslate';
 import { themeVar } from '../Theme/ThemeVars';
 import { TranslatableText } from './HTMLText';
 import { fileURL } from '../../API/files.api';
+import {languagesCTX} from "../Contexts/LanguagesProvider";
+import {translate} from "../../data/i18n";
 
 interface MessageLabelProps {
   message: IMessage;
@@ -127,25 +129,30 @@ function MessageChooser(props: EntityChooserLabelProps<IMessage>) {
   );
 }
 
-interface MessageDisplayProps {
-  entity: IMessage;
+interface AttachmentsDisplayProps {
+  attachments: IAttachment[];
 }
 
-function AttachmentsDisplay(attachments: IAttachment[]) {
-  const files = attachments.map(attachment => useTranslate(attachment.file));
+function AttachmentsDisplay({ attachments }: AttachmentsDisplayProps) {
+  const { lang, availableLang } = React.useContext(languagesCTX);
+  const files = attachments.map(attachment => translate(attachment.file, lang, availableLang));
 
   return (
     <div className={attachmentDisplay}>
       {files.map((file, index) => (
-        <span className={css({marginLeft: '5px'})}>
-          <a href={fileURL(file)} target="_blank">
+        <span className={css({ marginLeft: '5px' })} key={index}>
+          <a href={fileURL(file)} target="_blank" rel="noreferrer">
             {file.slice(1)}
           </a>
-          {index < files.length - 1 && ","}
+          {index < files.length - 1 && ','}
         </span>
       ))}
     </div>
   );
+}
+
+interface MessageDisplayProps {
+  entity: IMessage;
 }
 
 function MessageDisplay({ entity }: MessageDisplayProps) {
@@ -175,7 +182,7 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
         {attachments.length > 0 && (
           <div className={cx(flex, flexRow, css({whiteSpace: 'nowrap'}))}>
             {i18nComponentValues.inbox.attachments}:
-            {AttachmentsDisplay(attachments)}
+            <AttachmentsDisplay attachments={attachments}/>
           </div>
         )}
       </div>
