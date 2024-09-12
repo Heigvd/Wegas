@@ -63,6 +63,7 @@
                         <exclude>lib/jsPlumb/**</exclude>
                         <exclude>lib/tiny_mce/**</exclude>
                         <exclude>lib/yui3/**</exclude>
+                        <exclude>lib/mutation-events-polyfill/**</exclude>
                     </excludes>
                     <statistics>false</statistics>
                     <jswarn>false</jswarn>
