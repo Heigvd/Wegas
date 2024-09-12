@@ -405,7 +405,6 @@ public class GameFacade extends BaseFacade<Game> {
         Predicate whereClause = criteriaBuilder.equal(gameRoot.get("status"), status);
 
         // If user isn't admin, we fetch games according to their permissions
-
         if (!isAdmin) {
             Map<Long, List<String>> gMatrix = this.getPermissionMatrix(gStatuses);
             Map<Long, List<String>> filteredGMatrix = gMatrix.entrySet().stream()
