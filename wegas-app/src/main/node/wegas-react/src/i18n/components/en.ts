@@ -5,6 +5,7 @@ export const EN: ComponentsTranslations = {
     subject: 'Subject',
     sender: 'From',
     date: 'Date',
+    attachments: 'Attachment(s)',
     noSelectionMessage: 'Choose a message to display',
   },
   question: {
