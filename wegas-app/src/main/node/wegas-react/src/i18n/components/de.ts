@@ -5,6 +5,7 @@ export const DE: ComponentsTranslations = {
     subject: 'Betreff',
     sender: 'Von',
     date: 'Datum',
+    attachments: 'Anhäge',
     noSelectionMessage: 'Wählen Sie eine anzuzeigende Nachricht aus',
   },
   question: {

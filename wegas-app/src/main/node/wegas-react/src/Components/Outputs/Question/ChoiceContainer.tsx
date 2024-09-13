@@ -78,6 +78,7 @@ export const choiceLabelStyle = css({
   },
 });
 export const choiceDescriptionStyle = css({
+  width: '100%',
   padding: '10px 15px 10px 15px',
 });
 export const choiceButtonStyle = css({

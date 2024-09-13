@@ -399,7 +399,7 @@ export function TempScriptEditor(props: TempScriptEditorProps) {
       {error && <MessageString value={error} type="error" />}
       {resizable ? (
         <ResizeHandle
-          minSize={100}
+          minSize={125}
           textContent={value + '\n\n' || '\n\n\n\n\n'}
         >
           <SrcEditor

@@ -27,8 +27,6 @@ import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
-import java.util.Collection;
-import java.util.Set;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
@@ -36,6 +34,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.Set;
 
 /**
  *
@@ -398,6 +399,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
              * New predecessor's names : be sure they're registered
              */
             task.getPredecessors().clear();
+            this.getEntityManager().flush();
 
             for (String predecessorName : predecessorNames) {
                 try {
