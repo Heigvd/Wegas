@@ -42,15 +42,31 @@ export default teams;
  * Get all teams
  */
 export function getTeams(): ThunkResult {
-  return function () {
+  return function() {
     const gameId = store.getState().global.currentGameId;
-    return TeamAPI.getAll(gameId).then(res => {
-      const result = store.dispatch(
-        ActionCreator.TEAM_FETCH_ALL({ teams: res }),
-      );
-      store.dispatch(ActionCreator.INIT_STATE_SET('teams', true));
-      return result;
-    });
+
+    if (APP_CONTEXT === 'Player') {
+      // for a player, we fetch only the player's team
+      const teamId = store.getState().global.currentTeamId;
+
+      return TeamAPI.getTeam(gameId, teamId).then(res => {
+        const result = store.dispatch(
+          ActionCreator.TEAM_FETCH_ALL({ teams: [res] }),
+        );
+        store.dispatch(ActionCreator.INIT_STATE_SET('teams', true));
+        return result;
+      });
+
+    } else {
+      // we fetch all the teams in the game
+      return TeamAPI.getAll(gameId).then(res => {
+        const result = store.dispatch(
+          ActionCreator.TEAM_FETCH_ALL({ teams: res }),
+        );
+        store.dispatch(ActionCreator.INIT_STATE_SET('teams', true));
+        return result;
+      });
+    }
   };
 }
 
