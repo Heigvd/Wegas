@@ -1586,7 +1586,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     public Page<GameModel> findByTypeStatusPermissionAndUserPaginated(GmType type, GameModel.Status status, GameModelPageable gameModelPageable) {
 
         boolean isAdmin = SecurityUtils.getSubject().hasRole("Administrator");
-        boolean hasWildcardPermission = SecurityUtils.getSubject().isPermitted("GameModel:*:*");
 
         final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         final CriteriaQuery<GameModel> query = criteriaBuilder.createQuery(GameModel.class);
