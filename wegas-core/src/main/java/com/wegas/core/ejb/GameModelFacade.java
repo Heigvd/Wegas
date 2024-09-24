@@ -45,20 +45,19 @@ import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.GmType;
-
-import static com.wegas.core.persistence.game.GameModel.GmType.MODEL;
-import static com.wegas.core.persistence.game.GameModel.GmType.PLAY;
-import static com.wegas.core.persistence.game.GameModel.GmType.SCENARIO;
-
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
+import com.wegas.core.persistence.variable.statemachine.TransitionDependency;
+import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.rest.util.pagination.GameModelPageable;
@@ -72,21 +71,6 @@ import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.core.tools.FindAndReplacePayload;
 import com.wegas.core.tools.FindAndReplaceVisitor;
 import com.wegas.core.tools.RegexExtractorVisitor;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.attribute.FileTime;
-import java.text.Collator;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
-
 import jakarta.ejb.Asynchronous;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -94,19 +78,52 @@ import jakarta.ejb.TransactionAttribute;
 import jakarta.ejb.TransactionAttributeType;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
-
-import javax.jcr.RepositoryException;
-import javax.naming.NamingException;
-
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.StreamingOutput;
 import org.apache.commons.io.IOUtils;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.RepositoryException;
+import javax.naming.NamingException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.attribute.FileTime;
+import java.text.Collator;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+
+import static com.wegas.core.persistence.game.GameModel.GmType.MODEL;
+import static com.wegas.core.persistence.game.GameModel.GmType.PLAY;
+import static com.wegas.core.persistence.game.GameModel.GmType.SCENARIO;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -900,6 +917,10 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     // At the end, serialize the GameModel to JSON
                     // clear pages so they won't be serialized again
                     gameModel.setPages(new HashMap());
+
+                    // Sort all transitiondependencies to avoid diffs in github updateFromZip.sh
+                    sortTransitionDependenciesUsingTree(gameModel.getItems());
+
                     ZipEntry gameModelEntry = new ZipEntry(GM_DOT_JSON_NAME);
                     zipOutputStream.putNextEntry(gameModelEntry);
                     byte[] json = mapper.writerWithView(Views.Export.class).writeValueAsBytes(gameModel);
@@ -925,6 +946,30 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         };
 
         return out;
+    }
+
+    private void sortTransitionDependenciesUsingTree(List<VariableDescriptor> items){
+        Comparator<TransitionDependency> transitionDepsComparator = Comparator.comparing(TransitionDependency::getVariableName);
+
+        items.forEach(item -> {
+            if (item instanceof ListDescriptor){
+                sortTransitionDependenciesUsingTree(((ListDescriptor) item).getItems());
+            }
+            else if (item instanceof TriggerDescriptor){
+                TreeSet<TransitionDependency> treeset = new TreeSet<>(transitionDepsComparator);
+                treeset.addAll(((TriggerDescriptor) item).getDependencies());
+                ((TriggerDescriptor) item).setDependencies(treeset);
+            }
+            else if (item instanceof StateMachineDescriptor){
+                ((StateMachineDescriptor) item).getStates().forEach((id, state) -> {
+                    state.getTransitions().forEach(transition -> {
+                        TreeSet<TransitionDependency> treeset = new TreeSet<>(transitionDepsComparator);
+                        treeset.addAll(transition.getDependencies());
+                        transition.setDependencies(treeset);
+                    });
+                });
+            }
+        });
     }
 
     private void writeRepositoryEntry(ZipOutputStream zipOutputStream, AbstractContentDescriptor descriptor, Map<String, FileMeta> meta) throws IOException, RepositoryException {
