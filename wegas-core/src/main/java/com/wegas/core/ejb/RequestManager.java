@@ -2006,7 +2006,7 @@ public class RequestManager implements RequestManagerI {
     /**
      * Is the current user an administrator ?
      *
-     * @return whether or not the currentUser is an administrator
+     * @return whether the currentUser is an administrator
      */
     public boolean isAdmin() {
         return this.hasRole("Administrator");
@@ -2017,7 +2017,7 @@ public class RequestManager implements RequestManagerI {
      *
      * @param game the game the currentUser want to read
      *
-     * @return whether or not the currentUser can read the game
+     * @return whether the currentUser can read the game
      */
     public boolean hasGameReadRight(final Game game) {
         return this.hasPermission(game.getAssociatedReadPermission());

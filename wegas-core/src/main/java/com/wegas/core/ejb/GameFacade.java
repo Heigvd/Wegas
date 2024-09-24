@@ -52,6 +52,7 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.shiro.SecurityUtils;
 import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -385,19 +386,16 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      * Get all paginated games with the given status which are accessible to the current user
      *
-     * @param status status {@link Game.Status#LIVE} {@link Game.Status#BIN} {@link Game.Status#DELETE}
+     * @param status       status {@link Game.Status#LIVE} {@link Game.Status#BIN} {@link Game.Status#DELETE}
      * @param gamePageable
      * @return all games paginated
      */
     public Page<Game> findByStatusAndUserPaginated(Game.Status status, GamePageable gamePageable) {
 
+        boolean isAdmin = SecurityUtils.getSubject().hasRole("Administrator");
+
         List<Game.Status> gStatuses = new ArrayList<>();
         gStatuses.add(status);
-
-        Map<Long, List<String>> gMatrix = this.getPermissionMatrix(gStatuses);
-        Map<Long, List<String>> filteredGMatrix = gMatrix.entrySet().stream()
-                .filter(l -> l.getValue().contains("Edit") || l.getValue().contains("*"))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         final CriteriaQuery<Game> query = criteriaBuilder.createQuery(Game.class);
@@ -406,10 +404,22 @@ public class GameFacade extends BaseFacade<Game> {
 
         Predicate whereClause = criteriaBuilder.and(
                 criteriaBuilder.equal(gameRoot.get("status"), status),
-                // Maximum in values for psql: 32767
-                gameRoot.get("id").in(new ArrayList<>(filteredGMatrix.keySet()))
+                // Prevent DebugGames from being fetched
+                criteriaBuilder.notEqual(gameRoot.type(), DebugGame.class)
         );
 
+        // If user isn't admin, we fetch games according to their permissions
+        if (!isAdmin) {
+            Map<Long, List<String>> gMatrix = this.getPermissionMatrix(gStatuses);
+            Map<Long, List<String>> filteredGMatrix = gMatrix.entrySet().stream()
+                    .filter(l -> l.getValue().contains("Edit") || l.getValue().contains("*"))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+            whereClause = criteriaBuilder.and(
+                    // Maximum in values for psql: 32767
+                    gameRoot.get("id").in(new ArrayList<>(filteredGMatrix.keySet()))
+            );
+        }
 
         for (String param : gamePageable.getSplitQuery()) {
             if (!param.isEmpty()) {
