@@ -402,7 +402,11 @@ public class GameFacade extends BaseFacade<Game> {
         Root<Game> gameRoot = query.from(Game.class);
         query.select(gameRoot);
 
-        Predicate whereClause = criteriaBuilder.equal(gameRoot.get("status"), status);
+        Predicate whereClause = criteriaBuilder.and(
+                criteriaBuilder.equal(gameRoot.get("status"), status),
+                // Prevent DebugGames from being fetched
+                criteriaBuilder.notEqual(gameRoot.type(), DebugGame.class)
+        );
 
         // If user isn't admin, we fetch games according to their permissions
         if (!isAdmin) {
