@@ -117,17 +117,17 @@ function wegasEventSelector(s: EditingState) {
 function NotificationMenu({ className, style }: ClassStyleId) {
   const i18nValues = useInternalTranslate(commonTranslations);
   const wegasEvents = useEditingStore(wegasEventSelector);
-  const [recievedEvents, setRecievedEvents] = React.useState<number[]>([]);
+  const [receivedEvents, setReceivedEvents] = React.useState<number[]>([]);
 
   const unreadEvents = wegasEvents.filter(event => event.unread);
   const show = unreadEvents.length > 0;
   const blink =
-    wegasEvents.filter(event => !recievedEvents.includes(event.timestamp))
+    wegasEvents.filter(event => !receivedEvents.includes(event.timestamp))
       .length > 0;
 
   return (
     <DropMenu
-      onOpen={() => setRecievedEvents(wegasEvents.map(e => e.timestamp))}
+      onOpen={() => setReceivedEvents(wegasEvents.map(e => e.timestamp))}
       label={
         <div>
           {i18nValues.header.notifications}
