@@ -2,6 +2,7 @@ import * as React from 'react';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { CheckBox } from '../Inputs/Boolean/CheckBox';
+import {GameModel} from "../../data/selectors";
 
 const availableFeatures: FeatureLevel[] = ['ADVANCED', 'INTERNAL'];
 
@@ -9,6 +10,7 @@ export const defaultFeatures: FeaturesSelecta = {
   DEFAULT: true,
   ADVANCED: false,
   INTERNAL: false,
+  MODELER: false,
 };
 
 export interface FeatureContext {
@@ -74,6 +76,12 @@ function FeaturesContext({
       window.removeEventListener('keydown', listener);
     };
   }, [listener]);
+
+  React.useEffect(() => {
+    if (GameModel.selectCurrent().type === 'MODEL') {
+      toggleFeature('MODELER');
+    }
+  }, []);
 
   return (
     <featuresCTX.Provider
