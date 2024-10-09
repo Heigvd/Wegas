@@ -15,7 +15,6 @@ import { DropMenu } from '../../Components/DropMenu';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { CheckBox } from '../../Components/Inputs/Boolean/CheckBox';
 import { Button } from '../../Components/Inputs/Buttons/Button';
-import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import {
@@ -51,13 +50,13 @@ import { parseEvent } from './EntityEditor';
 import { removeLayoutInLocal } from './LinearTabLayout/LinearLayout';
 import { FontAwesome, IconComp } from './Views/FontAwesome';
 
-const transparentDropDownButton = css({
+/*const transparentDropDownButton = css({
   backgroundColor: 'transparent',
   color: 'inherit',
   '&:hover': {
     backgroundColor: 'transparent',
   },
-});
+});*/
 
 const reduceButtonStyle = css({
   '&.iconOnly': {
@@ -112,6 +111,7 @@ const headerElementsStyle = css({
 function wegasEventSelector(s: EditingState) {
   return s.events;
 }
+
 // May be moved in a proper file to allow wider usage
 // interface NotificationMenuProps {}
 function NotificationMenu({ className, style }: ClassStyleId) {
@@ -430,6 +430,17 @@ export default function Header() {
         </div>
         <div className={headerElementsStyle}>
           <span>
+            <Button
+              label={i18nValues.restart}
+              icon={'redo'}
+              onClick={() => {
+                editingStore.dispatch(
+                  Actions.VariableDescriptorActions.reset(),
+                );
+                dispatch(Actions.EditorActions.resetPageLoader());
+              }}
+              className={componentMarginRight}
+            />
             {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
               <NotificationMenu className={componentMarginRight} />
             )}
@@ -440,30 +451,6 @@ export default function Header() {
                 ...(isFeatureEnabled(currentFeatures, 'ADVANCED')
                   ? [teamsMenuItem, createExtraTestPlayerItem]
                   : []),
-                {
-                  label: (
-                    <ConfirmButton
-                      label={i18nValues.restart}
-                      icon="fast-backward"
-                      onAction={success => {
-                        if (success) {
-                          editingStore.dispatch(
-                            Actions.VariableDescriptorActions.reset(),
-                          );
-                          dispatch(Actions.EditorActions.resetPageLoader());
-                        }
-                      }}
-                      buttonClassName={transparentDropDownButton}
-                      modalDisplay
-                      modalMessage={
-                        gameModel.type === 'PLAY'
-                          ? 'BE AWARE!'
-                          : i18nValues.header.restartGame + '?'
-                      }
-                    />
-                  ),
-                  value: 'restartGame',
-                },
               ]}
               itemDirection="left"
             />
