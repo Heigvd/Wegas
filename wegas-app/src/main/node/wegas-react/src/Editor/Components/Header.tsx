@@ -49,6 +49,7 @@ import { mainLayoutId } from '../layouts';
 import { parseEvent } from './EntityEditor';
 import { removeLayoutInLocal } from './LinearTabLayout/LinearLayout';
 import { FontAwesome, IconComp } from './Views/FontAwesome';
+import ModelPropagator from './Modeler/ModelPropagation';
 
 /*const transparentDropDownButton = css({
   backgroundColor: 'transparent',
@@ -441,6 +442,9 @@ export default function Header() {
               }}
               className={componentMarginRight}
             />
+            {isFeatureEnabled(currentFeatures, 'MODELER') && (
+              <ModelPropagator gameModel={gameModel} />
+            )}
             {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
               <NotificationMenu className={componentMarginRight} />
             )}
