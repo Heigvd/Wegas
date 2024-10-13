@@ -152,10 +152,18 @@ export default function ModelPropagator({ gameModel }: ModelPropagatorProps) {
   const gameModelId =
     gameModel.id === undefined ? GameModel.selectCurrent().id! : gameModel.id;
 
-  const onClick = React.useCallback(() => {
+  const onOpen = React.useCallback(() => {
+    showModal();
     GameModelApi.getModelDiff(gameModelId).then(diff => {
       setDiff(diff || null);
-      showModal();
+    });
+  }, []);
+
+  const onSubmit = React.useCallback(() => {
+    setLoading(true);
+    GameModelApi.propagateModel(gameModelId).then(() => {
+      setDiff(null);
+      setLoading(false);
     });
   }, []);
 
@@ -164,7 +172,7 @@ export default function ModelPropagator({ gameModel }: ModelPropagatorProps) {
       <Button
         label={i18nValuesModeler.propagate}
         icon={'rocket'}
-        onClick={onClick}
+        onClick={onOpen}
         className={componentMarginRight}
       />
       {show && (
@@ -179,7 +187,9 @@ export default function ModelPropagator({ gameModel }: ModelPropagatorProps) {
               {i18nValuesModeler.reviewDiff}
             </h2>
             <div className={diffContainerStyle}>
-              {diff === null ? (
+              {loading ? (
+                i18nValuesModeler.propagating
+              ) : diff === null ? (
                 <span>{i18nValuesModeler.upToDate}</span>
               ) : diff === undefined ? (
                 <span>{i18nValues.loading}</span>
@@ -208,13 +218,7 @@ export default function ModelPropagator({ gameModel }: ModelPropagatorProps) {
                 label={i18nValuesModeler.propagate}
                 tooltip={i18nValuesModeler.propagateToModel}
                 icon={'rocket'}
-                onClick={() => {
-                  setLoading(true);
-                  GameModelApi.propagateModel(gameModelId).then(() => {
-                    setDiff(null);
-                    setLoading(false);
-                  });
-                }}
+                onClick={onSubmit}
                 loading={loading}
               />
             </FlexList>
