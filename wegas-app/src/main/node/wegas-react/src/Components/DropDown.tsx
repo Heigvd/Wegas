@@ -97,7 +97,7 @@ function ajustVertically(values: ContainerValues) {
   return newValues;
 }
 
-function ajustVerticalOverlap(values: ContainerValues, parent: HTMLElement) {
+function adjustVerticalOverlap(values: ContainerValues, parent: HTMLElement) {
   let newTopUp = parent.getBoundingClientRect().top - values.height;
   const newTopDown =
     parent.getBoundingClientRect().top + parent.getBoundingClientRect().height;
@@ -127,7 +127,7 @@ function ajustVerticalOverlap(values: ContainerValues, parent: HTMLElement) {
   }
 }
 
-function ajustHorizontalOverlap(values: ContainerValues, parent: HTMLElement) {
+function adjustHorizontalOverlap(values: ContainerValues, parent: HTMLElement) {
   let newLeftUp = parent.getBoundingClientRect().left - values.width;
   const newLeftDown =
     parent.getBoundingClientRect().left + parent.getBoundingClientRect().width;
@@ -250,9 +250,9 @@ export function justifyDropMenu(
     values = ajustVertically(values);
 
     if (vertical && isOverlappingVertically(values, selector)) {
-      values = ajustVerticalOverlap(values, selector);
+      values = adjustVerticalOverlap(values, selector);
     } else if (!vertical && isOverlappingHorizontally(values, selector)) {
-      values = ajustHorizontalOverlap(values, selector);
+      values = adjustHorizontalOverlap(values, selector);
     }
 
     menu.style.setProperty('left', values.left + 'px');

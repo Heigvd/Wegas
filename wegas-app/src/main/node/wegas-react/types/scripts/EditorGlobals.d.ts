@@ -2,6 +2,7 @@ interface FeaturesSelecta {
   ADVANCED?: boolean;
   INTERNAL?: boolean;
   DEFAULT?: boolean;
+  MODELER?: boolean;
 }
 
 type FeatureLevel = keyof FeaturesSelecta;

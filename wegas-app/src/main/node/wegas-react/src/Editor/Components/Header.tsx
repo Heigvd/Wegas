@@ -15,7 +15,6 @@ import { DropMenu } from '../../Components/DropMenu';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { CheckBox } from '../../Components/Inputs/Boolean/CheckBox';
 import { Button } from '../../Components/Inputs/Buttons/Button';
-import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import {
@@ -50,14 +49,15 @@ import { mainLayoutId } from '../layouts';
 import { parseEvent } from './EntityEditor';
 import { removeLayoutInLocal } from './LinearTabLayout/LinearLayout';
 import { FontAwesome, IconComp } from './Views/FontAwesome';
+import ModelPropagator from './Modeler/ModelPropagation';
 
-const transparentDropDownButton = css({
+/*const transparentDropDownButton = css({
   backgroundColor: 'transparent',
   color: 'inherit',
   '&:hover': {
     backgroundColor: 'transparent',
   },
-});
+});*/
 
 const reduceButtonStyle = css({
   '&.iconOnly': {
@@ -112,22 +112,23 @@ const headerElementsStyle = css({
 function wegasEventSelector(s: EditingState) {
   return s.events;
 }
+
 // May be moved in a proper file to allow wider usage
 // interface NotificationMenuProps {}
 function NotificationMenu({ className, style }: ClassStyleId) {
   const i18nValues = useInternalTranslate(commonTranslations);
   const wegasEvents = useEditingStore(wegasEventSelector);
-  const [recievedEvents, setRecievedEvents] = React.useState<number[]>([]);
+  const [receivedEvents, setReceivedEvents] = React.useState<number[]>([]);
 
   const unreadEvents = wegasEvents.filter(event => event.unread);
   const show = unreadEvents.length > 0;
   const blink =
-    wegasEvents.filter(event => !recievedEvents.includes(event.timestamp))
+    wegasEvents.filter(event => !receivedEvents.includes(event.timestamp))
       .length > 0;
 
   return (
     <DropMenu
-      onOpen={() => setRecievedEvents(wegasEvents.map(e => e.timestamp))}
+      onOpen={() => setReceivedEvents(wegasEvents.map(e => e.timestamp))}
       label={
         <div>
           {i18nValues.header.notifications}
@@ -430,6 +431,20 @@ export default function Header() {
         </div>
         <div className={headerElementsStyle}>
           <span>
+            <Button
+              label={i18nValues.restart}
+              icon={'redo'}
+              onClick={() => {
+                editingStore.dispatch(
+                  Actions.VariableDescriptorActions.reset(),
+                );
+                dispatch(Actions.EditorActions.resetPageLoader());
+              }}
+              className={componentMarginRight}
+            />
+            {isFeatureEnabled(currentFeatures, 'MODELER') && (
+              <ModelPropagator gameModel={gameModel} />
+            )}
             {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
               <NotificationMenu className={componentMarginRight} />
             )}
@@ -440,30 +455,6 @@ export default function Header() {
                 ...(isFeatureEnabled(currentFeatures, 'ADVANCED')
                   ? [teamsMenuItem, createExtraTestPlayerItem]
                   : []),
-                {
-                  label: (
-                    <ConfirmButton
-                      label={i18nValues.restart}
-                      icon="fast-backward"
-                      onAction={success => {
-                        if (success) {
-                          editingStore.dispatch(
-                            Actions.VariableDescriptorActions.reset(),
-                          );
-                          dispatch(Actions.EditorActions.resetPageLoader());
-                        }
-                      }}
-                      buttonClassName={transparentDropDownButton}
-                      modalDisplay
-                      modalMessage={
-                        gameModel.type === 'PLAY'
-                          ? 'BE AWARE!'
-                          : i18nValues.header.restartGame + '?'
-                      }
-                    />
-                  ),
-                  value: 'restartGame',
-                },
               ]}
               itemDirection="left"
             />
