@@ -145,6 +145,7 @@ interface ModelPropagatorProps {
 export default function ModelPropagator({ gameModel }: ModelPropagatorProps) {
   const i18nValues = useInternalTranslate(commonTranslations);
   const i18nValuesModeler = useInternalTranslate(modelerTranslations);
+
   const { showModal, closeModal, show, Modal } = useModal();
   const [diff, setDiff] = React.useState<PatchDiff | undefined | null>();
   const [loading, setLoading] = React.useState<boolean>(false);
@@ -164,6 +165,7 @@ export default function ModelPropagator({ gameModel }: ModelPropagatorProps) {
     GameModelApi.propagateModel(gameModelId).then(() => {
       setDiff(null);
       setLoading(false);
+      closeModal();
     });
   }, []);
 
@@ -210,6 +212,7 @@ export default function ModelPropagator({ gameModel }: ModelPropagatorProps) {
                 label={i18nValues.cancel}
                 onClick={closeModal}
                 noBackground
+                disabled={loading}
                 className={css({
                   border: '1px solid ' + themeVar.colors.PrimaryColor,
                 })}
