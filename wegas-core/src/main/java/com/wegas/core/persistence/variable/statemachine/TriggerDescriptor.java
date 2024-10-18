@@ -26,14 +26,15 @@ import com.wegas.editor.Visible;
 import com.wegas.editor.view.ArrayView;
 import com.wegas.editor.view.ManualOrAutoSelectView;
 import com.wegas.editor.view.ScriptView;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Transient;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -348,7 +349,8 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
 
         Transition transition = this.getStates().get(1L).getInternalTransitions().get(0);
         transition.setDependsOnStrategy(this.dependsOnStrategy == null ? DependsOnStrategy.AUTO : this.dependsOnStrategy);
-        transition.setDependencies(this.dependencies == null ? new HashSet() : this.dependencies);
+        //transition.setDependencies(this.dependencies == null ? new HashSet() : this.dependencies);
+        transition.setDependencies(this.getDependencies());
         this.dependsOnStrategy = null;
         this.dependencies = null;
 

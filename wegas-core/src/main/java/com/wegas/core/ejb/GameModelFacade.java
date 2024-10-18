@@ -291,6 +291,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         gameModel.deepMergeForce(newVersion);
 
         // revive descriptor & propagate default instances
+        this.getEntityManager().flush();
         variableDescriptorFacade.reviveItems(gameModel, gameModel, false);
 
         this.getEntityManager().flush();
