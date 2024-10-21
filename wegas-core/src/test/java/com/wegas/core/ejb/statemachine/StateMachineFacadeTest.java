@@ -19,22 +19,37 @@ import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
-import com.wegas.core.persistence.variable.statemachine.*;
+import com.wegas.core.persistence.variable.statemachine.AbstractTransition;
+import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
+import com.wegas.core.persistence.variable.statemachine.DialogueState;
+import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
+import com.wegas.core.persistence.variable.statemachine.State;
+import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
+import com.wegas.core.persistence.variable.statemachine.Transition;
+import com.wegas.core.persistence.variable.statemachine.TransitionDependency;
+import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
+import com.wegas.core.persistence.variable.statemachine.TriggerState;
 import com.wegas.core.security.util.ActAsPlayer;
-import static com.wegas.test.TestHelper.toList;
-import static com.wegas.test.TestHelper.toMap;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import jakarta.inject.Inject;
-import javax.naming.NamingException;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.naming.NamingException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static com.wegas.test.TestHelper.toList;
+import static com.wegas.test.TestHelper.toMap;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -118,6 +133,70 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         assertTrue("Loaded trigger event doesn't match the created model", trigger.getTriggerEvent().getContent().equals(reloaded.getTriggerEvent().getContent()));
         assertTrue("Loaded trigger post event doesn't match created model", trigger.getPostTriggerEvent().getContent().equals(reloaded.getPostTriggerEvent().getContent()));
 
+    }
+
+    @Test
+    public void testTriggerPersistenceWithTransitionDependencies() throws NamingException {
+        this.createSecondTeam();
+        // rm.setPlayer(player.getId());  //uncomment to make the test fail ...
+        // Create a number
+        String numberVarName = "testNumber";
+        Script triggerEvent = new Script("Variable.find(gameModel, \"" + numberVarName + "\").getValue() >= 0.9");
+        Script postTriggerEvent = new Script("Variable.find(gameModel, \"" + numberVarName + "\").getValue() = 2;");
+        Script trueCondition = new Script("true");
+
+        NumberDescriptor number = new NumberDescriptor();
+        number.setName(numberVarName);
+        number.setDefaultInstance(new NumberInstance(0));
+        variableDescriptorFacade.create(scenario.getId(), number);
+
+        // Create a trigger
+        TriggerDescriptor trigger = new TriggerDescriptor();
+        trigger.setDefaultInstance(new StateMachineInstance());
+        trigger.setTriggerEvent(triggerEvent);
+        trigger.setPostTriggerEvent(postTriggerEvent);
+        variableDescriptorFacade.create(scenario.getId(), trigger);
+
+        // empty caches to enforce loading from the database
+        jpaCacheHelper.clearCacheLocal("all");
+
+        // Fetch a fresh copy from DB
+        TriggerDescriptor reloaded = (TriggerDescriptor) variableDescriptorFacade.find(trigger.getId());
+
+        // Check state machine creation
+        Map<Long, TriggerState> states = reloaded.getStates();
+        assertEquals(2, states.size());
+
+        TriggerState initialState = states.get(1L);
+        assertNotNull(initialState);
+        assertNull(initialState.getOnEnterEvent());
+        List<Transition> transitions = initialState.getTransitions();
+        assertEquals(1, transitions.size());
+
+        Transition transition = transitions.get(0);
+        assertEquals(triggerEvent.getContent(), transition.getTriggerCondition().getContent());
+        assertEquals(Long.valueOf(2L), transition.getNextStateId());
+
+        // Check transition dependencies
+        Set<TransitionDependency> dependencies = transition.getDependencies();
+        assertEquals(1, dependencies.size());
+        TransitionDependency td = dependencies.iterator().next();
+        assertEquals(numberVarName, td.getVariableName());
+
+        TriggerState finalState = states.get(2L);
+        assertNotNull(finalState.getOnEnterEvent());
+        assertEquals(postTriggerEvent.getContent(), finalState.getOnEnterEvent().getContent());
+
+        transitions = finalState.getTransitions();
+        assertEquals(1, transitions.size());
+
+        transition = transitions.get(0);
+        assertEquals(trueCondition.getContent(), transition.getTriggerCondition().getContent());
+        assertEquals(Long.valueOf(1L), transition.getNextStateId());
+
+        // Check transition dependencies
+        dependencies = transition.getDependencies();
+        assertEquals(0, dependencies.size());
     }
 
 
