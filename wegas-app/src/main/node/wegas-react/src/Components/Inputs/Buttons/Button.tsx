@@ -47,6 +47,7 @@ export const loadingStyle = cx(
 );
 
 export const buttonStyle = css({
+  position: 'relative',
   display: 'flex',
   alignItems: 'center',
   backgroundColor: themeVar.colors.PrimaryColor,
