@@ -42,8 +42,14 @@ type ServerGlobalMethodRegister = (
   schema: {
     label: string;
     returns?: string;
-    parameters: ({ type: string; required: boolean } & AnyValuesObject)[];
-  },
+    parameters: {
+      type: string;
+      required: boolean;
+      view?: object;
+      value?: any;
+      items?: object;
+    }[];
+  }
 ) => void;
 
 interface ServerVariableMethod {
