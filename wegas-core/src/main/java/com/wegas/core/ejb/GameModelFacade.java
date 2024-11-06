@@ -71,6 +71,9 @@ import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.core.tools.FindAndReplacePayload;
 import com.wegas.core.tools.FindAndReplaceVisitor;
 import com.wegas.core.tools.RegexExtractorVisitor;
+import com.wegas.resourceManagement.persistence.TaskDescriptor;
+import com.wegas.resourceManagement.persistence.TaskInstance;
+import com.wegas.resourceManagement.persistence.WRequirement;
 import jakarta.ejb.Asynchronous;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -920,6 +923,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
                     // Sort all transitiondependencies to avoid diffs in github updateFromZip.sh
                     sortTransitionDependenciesUsingTree(gameModel.getItems());
+                    // Sort WRequirement to avoid diffs when exporting the data
+                    sortWRequirements(gameModel.getItems());
 
                     ZipEntry gameModelEntry = new ZipEntry(GM_DOT_JSON_NAME);
                     zipOutputStream.putNextEntry(gameModelEntry);
@@ -968,6 +973,21 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                         transition.setDependencies(treeset);
                     });
                 });
+            }
+        });
+    }
+
+    private void sortWRequirements(List<VariableDescriptor> items){
+        Comparator<WRequirement> wRequirementsComparator = Comparator.comparing(WRequirement::getName);
+
+        items.forEach(item -> {
+            if (item instanceof ListDescriptor){
+                sortWRequirements(((ListDescriptor) item).getItems());
+            }
+            else if (item instanceof TaskDescriptor){
+                List<WRequirement> sortedRequirements = ((TaskDescriptor) item).getDefaultInstance().getRequirements();
+                sortedRequirements.sort(wRequirementsComparator);
+                ((TaskDescriptor) item).getDefaultInstance().setRequirements(sortedRequirements);
             }
         });
     }
