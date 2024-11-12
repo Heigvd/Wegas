@@ -348,7 +348,9 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
         }
 
         Transition transition = this.getStates().get(1L).getInternalTransitions().get(0);
-        transition.setDependsOnStrategy(this.dependsOnStrategy == null ? DependsOnStrategy.AUTO : this.dependsOnStrategy);
+        if(this.dependsOnStrategy != null) {
+            transition.setDependsOnStrategy(this.dependsOnStrategy);
+        }
         //transition.setDependencies(this.dependencies == null ? new HashSet() : this.dependencies);
         transition.setDependencies(this.getDependencies());
         this.dependsOnStrategy = null;
