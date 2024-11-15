@@ -22,8 +22,13 @@ export function editorLabel(vd?: {
   label?: ITranslatableContent;
   editorTag?: string | null;
   name?: string;
+  index?: string;
 }) {
-  const label = translate(vd?.label);
+  let label = translate(vd?.label);
+  if (!!(vd?.index)) {
+    label = `${vd?.index}. ${label}`;
+  }
+
   // if (!showTag && label) {
   //   return label;
   // }
@@ -33,12 +38,16 @@ export function editorLabel(vd?: {
   return (vd && (vd.editorTag || label || vd.name)) || '';
 }
 
-export function editorTitle({label, editorTag, name}: {
+export function editorTitle({label, editorTag, name, index}: {
   label?: ITranslatableContent;
   editorTag?: string | null;
   name?: string;
+  index?: string;
 }) {
-  const trLabel = translate(label);
+  let trLabel = translate(label);
+  if (!!index) {
+    trLabel = `${index}. ${trLabel}`;
+  }
   return [editorTag, trLabel, name].filter(s => s).join(' - ');
 }
 
