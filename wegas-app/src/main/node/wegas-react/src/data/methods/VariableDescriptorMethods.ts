@@ -25,7 +25,7 @@ export function editorLabel(vd?: {
   index?: string;
 }) {
   let label = translate(vd?.label);
-  if (!!(vd?.index)) {
+  if (vd?.index) {
     label = `${vd?.index}. ${label}`;
   }
 
@@ -45,7 +45,7 @@ export function editorTitle({label, editorTag, name, index}: {
   index?: string;
 }) {
   let trLabel = translate(label);
-  if (!!index) {
+  if (index) {
     trLabel = `${index}. ${trLabel}`;
   }
   return [editorTag, trLabel, name].filter(s => s).join(' - ');
