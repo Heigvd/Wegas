@@ -71,9 +71,7 @@ import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.core.tools.FindAndReplacePayload;
 import com.wegas.core.tools.FindAndReplaceVisitor;
 import com.wegas.core.tools.RegexExtractorVisitor;
-import com.wegas.resourceManagement.persistence.TaskDescriptor;
-import com.wegas.resourceManagement.persistence.TaskInstance;
-import com.wegas.resourceManagement.persistence.WRequirement;
+import com.wegas.resourceManagement.persistence.*;
 import jakarta.ejb.Asynchronous;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -957,6 +955,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     private void sortVariables(List<VariableDescriptor> variableDescriptors) {
         Comparator<TransitionDependency> transitionDepsComparator = Comparator.comparing(TransitionDependency::getVariableName);
         Comparator<WRequirement> wRequirementsComparator = Comparator.comparing(WRequirement::getName);
+        Comparator<Occupation> occupationsComparator = Comparator.comparing(Occupation::getTime);
 
         variableDescriptors.forEach(variableDescriptor -> {
             if (variableDescriptor instanceof ListDescriptor){
@@ -983,6 +982,12 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 List<WRequirement> sortedRequirements = ((TaskDescriptor) variableDescriptor).getDefaultInstance().getRequirements();
                 sortedRequirements.sort(wRequirementsComparator);
                 ((TaskDescriptor) variableDescriptor).getDefaultInstance().setRequirements(sortedRequirements);
+            }
+            else if (variableDescriptor instanceof ResourceDescriptor){
+                // Sort resource occupations
+                List<Occupation> sortedOccupations = ((ResourceDescriptor) variableDescriptor).getDefaultInstance().getOccupations();
+                sortedOccupations.sort(occupationsComparator);
+                ((ResourceDescriptor) variableDescriptor).getDefaultInstance().setOccupations(sortedOccupations);
             }
         });
     }
