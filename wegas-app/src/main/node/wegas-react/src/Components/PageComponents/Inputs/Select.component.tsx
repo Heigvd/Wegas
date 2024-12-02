@@ -36,6 +36,7 @@ interface PlayerSelectInputProps extends WegasComponentProps {
    * choices - the allowed choices
    */
   choices?: Choice[] | IScript;
+  placeholder?: IScript;
   onVariableChange?: OnVariableChange;
 }
 
@@ -50,6 +51,7 @@ function PlayerSelectInput({
   onVariableChange,
   pageId,
   path,
+  placeholder,
 }: PlayerSelectInputProps) {
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const descriptor = useScript<SStringDescriptor | SNumberDescriptor | string>(
@@ -71,6 +73,7 @@ function PlayerSelectInput({
 
   const { lang } = React.useContext(languagesCTX);
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
+  const placeholderText = useScript<string>(placeholder, context);
 
   if (descriptor == null) {
     return (
@@ -106,6 +109,7 @@ function PlayerSelectInput({
       id={id}
       value={String(value)}
       choices={computedChoices}
+      placeholder={placeholderText}
       onChange={v => {
         const newValue = v;
         if (handleOnChange) {
@@ -164,6 +168,10 @@ registerComponent(
           }),
         },
       },
+      placeholder: schemaProps.scriptString({
+        label: 'Placeholder',
+        richText: false,
+      }),
       onVariableChange: onVariableChangeSchema('On text change action'),
       ...classStyleIdSchema,
     },

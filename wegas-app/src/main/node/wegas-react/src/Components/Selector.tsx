@@ -18,6 +18,7 @@ export interface Choice {
   };
   children?: Choice[];
 }
+
 export type Choices = (string | Choice)[];
 
 const selectStyle = css({
@@ -30,6 +31,11 @@ const selectStyle = css({
   },
   minWidth: '100px',
   background: 'none',
+});
+
+const placeholderStyle = css({
+  color: themeVar.colors.DarkTextColor,
+  opacity: '0.3',
 });
 
 export const selectArrowStyle = css({
@@ -151,6 +157,7 @@ interface SelectorProps<
     DisabledReadonly {
   choices: Choices;
   value: string | undefined;
+  placeholder?: string | undefined;
   onChange?: (value: R) => void;
   allowUndefined?: T;
   allowAnyValue?: boolean;
@@ -163,6 +170,7 @@ export function Selector<T extends true | false>({
   className,
   /*style,*/
   value,
+  placeholder,
   onChange,
   allowUndefined,
   clearable,
@@ -171,7 +179,7 @@ export function Selector<T extends true | false>({
   disabled,
 }: SelectorProps<T>): JSX.Element {
   const i18nValues = useInternalTranslate(commonTranslations);
-  const placeholder = i18nValues.plzChooseValue;
+  const selectPlaceholder = placeholder ?? i18nValues.plzChooseValue;
 
   const options = buildOptions(choices);
 
@@ -201,10 +209,12 @@ export function Selector<T extends true | false>({
       id={id}
       isDisabled={readOnly || disabled}
       className={selectStyle + classNameOrEmpty(className)}
+      classNamePrefix={'wegas-select'}
       isClearable={clearable}
       options={options}
-      placeholder={placeholder}
-      value={currentOption}
+      placeholder={<div className={placeholderStyle}>{selectPlaceholder}</div>}
+      // Providing an empty object overrides the placeholder
+      value={currentOption.value?.length === 0 ? null : currentOption}
       onChange={onChangeCb}
       styles={selectStyles}
       menuPosition="fixed"
