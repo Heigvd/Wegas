@@ -33,6 +33,7 @@ import {
   makeMenuFromClass,
 } from './QuestionList';
 import { RepliesDisplay } from './Reply';
+import { groupBy } from 'lodash-es';
 
 interface AddChoiceMenuProps {
   questionD: IQuestionDescriptor;
@@ -150,7 +151,9 @@ export function SimpleQuestionDisplay({
   editMode,
   ...options
 }: SimpleQuestionDisplayProps) {
-  const validatedReplies = replies.filter(r => r.validated);
+  const validatedRepliesCount = replies.filter(r => r.validated).length;
+
+  const repliesMap = groupBy(replies, r => r.parentId);
 
   const onChoiceValidate = React.useCallback(
     (choice: IChoiceDescriptor) => {
@@ -166,7 +169,7 @@ export function SimpleQuestionDisplay({
   const canReply =
     !questionI.validated &&
     (questionD.maxReplies == null ||
-      validatedReplies.length < questionD.maxReplies) &&
+      validatedRepliesCount < questionD.maxReplies) &&
     isActionAllowed(options);
 
   return (
@@ -181,19 +184,23 @@ export function SimpleQuestionDisplay({
         if (choiceI == null) {
           return <span key={choiceD.id} />;
         }
+        const replySet = choiceI.id && repliesMap[choiceI.id] ? repliesMap[choiceI.id] : []
         return (
-          <SimpleChoiceDisplay
-            key={`${choiceD.id}${i}`}
-            onValidate={onChoiceValidate}
-            choiceD={choiceD}
-            choiceI={choiceI}
-            replyAllowed={canReply}
-            editMode={editMode}
-          />
+          <>
+            <SimpleChoiceDisplay
+              key={`${choiceD.id}${i}`}
+              onValidate={onChoiceValidate}
+              choiceD={choiceD}
+              choiceI={choiceI}
+              replyAllowed={canReply}
+              editMode={editMode}
+            />
+            <RepliesDisplay replies={replySet} />
+          </>
         );
       })}
       {editMode && <AddChoiceButton question={questionD} />}
-      <RepliesDisplay replies={replies} />
     </div>
   );
 }
+

@@ -13,7 +13,7 @@ import {
 
 const repliesContainer = css({
   marginTop: '5px',
-  borderTop: '1px solid ' + themeVar.colors.DisabledColor,
+  borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
   fontSize: themeVar.others.TextFont2,
 });
 const replyStyle = css({
@@ -80,7 +80,6 @@ export function RepliesDisplay({ replies }: RepliesDisplayProps) {
     .filter(r => !r.ignored)
     .filter(r => r.validated)
     .sort((a, b) => b.createdTime - a.createdTime);
-
   if (nonIgnoredValidatedReplies.length === 0) {
     return null;
   }
