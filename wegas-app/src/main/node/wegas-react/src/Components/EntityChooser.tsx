@@ -106,7 +106,7 @@ export const activeEntityChooserLabel = css(
   /*
         borderLeft: `20px solid ${themeVar.colors.ActiveColor}`,
     */
-);
+) + ' active';
 
 interface LabelGeneratorProps<E extends IAbstractEntity> {
   entity: E;
@@ -269,11 +269,11 @@ export function EntityChooser<E extends IAbstractEntity>({
           cx(flex, flexRow, entityChooser, {
             [halfOpacity]: disabled,
           }) + classNameOrEmpty(className)
-        }
+        + ' wegas-entity-chooser'}
         style={style}
         ref={setRef}
       >
-        <div className={cx(flex, flexColumn, labelList)}>
+        <div className={cx(flex, flexColumn, labelList) + ' wegas-entity-chooser-choices-list'}>
           {entities.map(e => (
             <LabelGenerator
               key={e.id}
@@ -286,11 +286,11 @@ export function EntityChooser<E extends IAbstractEntity>({
           {addComponent}
         </div>
         {entity != null ? (
-          <div className={cx(flex, entityContainer, justifyStart)}>
+          <div className={cx(flex, entityContainer, justifyStart) + ' wegas-entity-chooser-selection-content'}>
             {children({ entity, disabled, readOnly })}
           </div>
         ) : (
-          <div className={cx(flex, entityContainer, justifyCenter)}>
+          <div className={cx(flex, entityContainer, justifyCenter) + ' wegas-entity-chooser-no-selection'}>
             {noSelectionMessage}
           </div>
         )}
@@ -337,7 +337,7 @@ export function DefaultEntityChooserLabel<T extends IAbstractEntity>({
           {
             [activeEntityChooserLabel]: selected,
           },
-        )}
+        ) + ' wegas-entity-chooser-choice'}
       >
         {children}
       </div>

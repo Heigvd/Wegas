@@ -55,11 +55,11 @@ const readLabelStyle = css({
   '&:hover': {
     boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.4)`,
   },
-});
+}) + ' read';
 
 const unreadLabelStyle = css({
   fontWeight: 'bold',
-});
+}) + ' unread';
 
 const labelTitleStyle = css({
   flexShrink: 1,
@@ -82,15 +82,15 @@ function MessageLabel({ message }: MessageLabelProps) {
 
   return (
     <div className={cx(flex, itemCenter, messageLabel)}>
-      <div className={cx(flex, flexColumn, expandWidth)}>
-        <div className={cx(flex, flexRow, flexBetween)}>
-          <div className={cx(labelTitleStyle)}>{translatedLabel}</div>
+      <div className={cx(flex, flexColumn, expandWidth) + ' wegas-inbox-message-label'}>
+        <div className={cx(flex, flexRow, flexBetween) + ' wegas-inbox-message-label-line'}>
+          <div className={cx(labelTitleStyle) + ' wegas-inbox-message-label-subject'}>{translatedLabel}</div>
           {translatedDate && (
-            <div className={css({ flexShrink: 0 })}>&nbsp;{translatedDate}</div>
+            <div className={css({ flexShrink: 0 }) + ' wegas-inbox-message-label-date'}>&nbsp;{translatedDate}</div>
           )}
         </div>
         {translatedFrom && (
-          <div className={cx(flex, defaultMarginTop)}>{translatedFrom}</div>
+          <div className={cx(flex, defaultMarginTop) + ' wegas-inbox-message-label-from'}>{translatedFrom}</div>
         )}
       </div>
     </div>
@@ -113,7 +113,7 @@ function MessageChooser(props: EntityChooserLabelProps<IMessage>) {
   return (
     <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
       <div
-        className={cx(flex, flexRow, itemCenter)}
+        className={cx(flex, flexRow, itemCenter) + ' wegas-inbox-message'}
         onClick={() => editingStore.dispatch(readMessage(message))}
       >
         {props.mobile && (
@@ -138,9 +138,9 @@ function AttachmentsDisplay({ attachments }: AttachmentsDisplayProps) {
   const files = attachments.map(attachment => translate(attachment.file, lang, availableLang));
 
   return (
-    <div className={attachmentDisplay}>
+    <div className={attachmentDisplay + ' wegas-inbox-attachments-list'}>
       {files.map((file, index) => (
-        <span className={css({ marginLeft: '5px' })} key={index}>
+        <span className={css({ marginLeft: '5px' }) + ' wegas-inbox-attachment'} key={index}>
           <a href={fileURL(file)} target="_blank" rel="noreferrer">
             {file.slice(1)}
           </a>
@@ -164,29 +164,29 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
   const attachments = entity.attachments;
 
   return (
-    <div className={defaultEntityDisplay}>
-      <div className={cx(toolboxHeaderStyle)}>
+    <div className={cx(defaultEntityDisplay) + ' wegas-inbox-message-display'}>
+      <div className={cx(toolboxHeaderStyle) + ' wegas-inbox-message-display-header'}>
         {subject && (
-          <div className={cx(bolder, defaultMarginBottom)}>{subject}</div>
+          <div className={cx(bolder, defaultMarginBottom) + ' wegas-inbox-message-display-subject'}>{subject}</div>
         )}
         {date && (
-          <div>
+          <div className='wegas-inbox-message-display-date'>
             {i18nComponentValues.inbox.date}: {date}
           </div>
         )}
         {from && (
-          <div>
+          <div className='wegas-inbox-message-display-from'>
             {i18nComponentValues.inbox.sender}: {from}
           </div>
         )}
         {attachments.length > 0 && (
-          <div className={cx(flex, flexRow, css({whiteSpace: 'nowrap'}))}>
+          <div className={cx(flex, flexRow, css({whiteSpace: 'nowrap'})) + ' wegas-inbox-message-display-attachments'}>
             {i18nComponentValues.inbox.attachments}:
             <AttachmentsDisplay attachments={attachments}/>
           </div>
         )}
       </div>
-      <TranslatableText content={entity.body} />
+      <TranslatableText content={entity.body} className='wegas-inbox-message-display-body'/>
     </div>
   );
 }
@@ -222,7 +222,7 @@ export function InboxDisplay({
       readOnly={readOnly}
       noSelectionMessage={i18nComponentValues.inbox.noSelectionMessage}
       mobileDisplay={mobileDisplay}
-      className={className}
+      className={className + ' wegas-inbox'}
       style={style}
     >
       {props => <MessageDisplay {...props} />}
