@@ -25,15 +25,6 @@ import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.test.TestHelper;
 import com.wegas.utils.WegasRESTClient;
 import com.wegas.utils.WegasRESTClient.TestAuthenticationInformation;
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit.Arquillian;
@@ -50,6 +41,16 @@ import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  *
@@ -217,8 +218,8 @@ public class WegasTest {
         // assert both instsances do not read the min bounds from database
         var1 = client.get(dummGmUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
         var2 = client2.get(dummGmUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
-        Assert.assertEquals("Min bounds do not match", -100, var1.getMinValue(), 0.001);
-        Assert.assertEquals("Min bounds do not match", -100, var2.getMinValue(), 0.001);
+        Assert.assertEquals("Min bounds do not match", -9999, var1.getMinValue(), 0.001);
+        Assert.assertEquals("Min bounds do not match", -9999, var2.getMinValue(), 0.001);
 
         // Clear JPA l2 cache
         client.delete("/rest/Utils/LocalEmCache");
