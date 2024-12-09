@@ -29,14 +29,17 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.view.StringView;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Transient;
+import org.eclipse.persistence.annotations.Cache;
+import org.eclipse.persistence.annotations.CacheCoordinationType;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Transient;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -56,11 +59,12 @@ import org.slf4j.LoggerFactory;
  * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for some
  * object (eg ChoiceDescriptor and result). INVALIDATE_CHANGED_OBJECTS must be set to fix this
  * problem. 2018-04-05: revert to default since it seems the buggy behaviour no longer occurs
+ * 2024-12-04: Setting INVALIDATE_CHANGED_OBJECTS as problem occurs again (triggers conditions not evaluated correctly wrt questions replied in conditions)
  * <p>
  * INVALIDATE OBJECT FIX DirectCollectionMapping NPE -> fixed since eclipselink 2.7.1
  */
 @MappedSuperclass
-//@Cache(coordinationType = CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)
+@Cache(coordinationType = CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)
 public abstract class AbstractEntity implements Serializable, Mergeable, WithPermission, WithId {
 
     private static final long serialVersionUID = -2538440276749623728L;
