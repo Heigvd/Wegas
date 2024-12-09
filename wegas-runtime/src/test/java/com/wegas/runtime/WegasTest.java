@@ -218,8 +218,8 @@ public class WegasTest {
         // assert both instsances do not read the min bounds from database
         var1 = client.get(dummGmUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
         var2 = client2.get(dummGmUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
-        Assert.assertEquals("Min bounds do not match", -9999, var1.getMinValue(), 0.001);
-        Assert.assertEquals("Min bounds do not match", -9999, var2.getMinValue(), 0.001);
+        Assert.assertEquals("Min bounds do not match", -100, var1.getMinValue(), 0.001); //client has value set l.204
+        Assert.assertEquals("Min bounds do not match", -9999, var2.getMinValue(), 0.001); //client2 has no value, with INVALIDATE_CHANGED_OBJECTS, data is loaded from DB, with SEND_OBJECT_CHANGES(default) value is sent from first instance
 
         // Clear JPA l2 cache
         client.delete("/rest/Utils/LocalEmCache");
