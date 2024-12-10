@@ -273,7 +273,7 @@ export function EntityChooser<E extends IAbstractEntity>({
         style={style}
         ref={setRef}
       >
-        <div className={cx(flex, flexColumn, labelList) + ' wegas-entity-chooser-choices-list'}>
+        <div className={cx(flex, flexColumn, labelList) + ' wegas-entity-chooser__list'}>
           {entities.map(e => (
             <LabelGenerator
               key={e.id}
@@ -286,11 +286,11 @@ export function EntityChooser<E extends IAbstractEntity>({
           {addComponent}
         </div>
         {entity != null ? (
-          <div className={cx(flex, entityContainer, justifyStart) + ' wegas-entity-chooser-selection-content'}>
+          <div className={cx(flex, entityContainer, justifyStart) + ' wegas-entity-chooser__display'}>
             {children({ entity, disabled, readOnly })}
           </div>
         ) : (
-          <div className={cx(flex, entityContainer, justifyCenter) + ' wegas-entity-chooser-no-selection'}>
+          <div className={cx(flex, entityContainer, justifyCenter) + ' wegas-entity-chooser__no-selection'}>
             {noSelectionMessage}
           </div>
         )}
@@ -337,7 +337,7 @@ export function DefaultEntityChooserLabel<T extends IAbstractEntity>({
           {
             [activeEntityChooserLabel]: selected,
           },
-        ) + ' wegas-entity-chooser-choice'}
+        ) + ' wegas-entity-chooser__choice'}
       >
         {children}
       </div>
