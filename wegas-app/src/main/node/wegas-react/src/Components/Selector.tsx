@@ -158,6 +158,7 @@ interface SelectorProps<
   choices: Choices;
   value: string | undefined;
   placeholder?: string | undefined;
+  noOptionsMessage?: string | undefined;
   onChange?: (value: R) => void;
   allowUndefined?: T;
   allowAnyValue?: boolean;
@@ -171,6 +172,7 @@ export function Selector<T extends true | false>({
   /*style,*/
   value,
   placeholder,
+  noOptionsMessage,
   onChange,
   allowUndefined,
   clearable,
@@ -213,6 +215,7 @@ export function Selector<T extends true | false>({
       isClearable={clearable}
       options={options}
       placeholder={<div className={placeholderStyle}>{selectPlaceholder}</div>}
+      noOptionsMessage={() => noOptionsMessage ?? 'No options'}
       // Providing an empty object overrides the placeholder
       value={currentOption.value?.length === 0 ? null : currentOption}
       onChange={onChangeCb}

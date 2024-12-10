@@ -37,6 +37,7 @@ interface PlayerSelectInputProps extends WegasComponentProps {
    */
   choices?: Choice[] | IScript;
   placeholder?: IScript;
+  noOptionsMessage?: IScript;
   onVariableChange?: OnVariableChange;
 }
 
@@ -52,6 +53,7 @@ function PlayerSelectInput({
   pageId,
   path,
   placeholder,
+  noOptionsMessage,
 }: PlayerSelectInputProps) {
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const descriptor = useScript<SStringDescriptor | SNumberDescriptor | string>(
@@ -74,6 +76,7 @@ function PlayerSelectInput({
   const { lang } = React.useContext(languagesCTX);
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
   const placeholderText = useScript<string>(placeholder, context);
+  const noOptionsMessageText = useScript<string>(noOptionsMessage, context);
 
   if (descriptor == null) {
     return (
@@ -110,6 +113,7 @@ function PlayerSelectInput({
       value={String(value)}
       choices={computedChoices}
       placeholder={placeholderText}
+      noOptionsMessage={noOptionsMessageText}
       onChange={v => {
         const newValue = v;
         if (handleOnChange) {
@@ -170,6 +174,10 @@ registerComponent(
       },
       placeholder: schemaProps.scriptString({
         label: 'Placeholder',
+        richText: false,
+      }),
+      noOptionsMessage: schemaProps.scriptString({
+        label: 'No options message',
         richText: false,
       }),
       onVariableChange: onVariableChangeSchema('On text change action'),
