@@ -55,11 +55,11 @@ const readLabelStyle = css({
   '&:hover': {
     boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.4)`,
   },
-}) + ' read';
+}) + ' wegas-inbox__read';
 
 const unreadLabelStyle = css({
   fontWeight: 'bold',
-}) + ' unread';
+}) + ' wegas-inbox__unread';
 
 const labelTitleStyle = css({
   flexShrink: 1,

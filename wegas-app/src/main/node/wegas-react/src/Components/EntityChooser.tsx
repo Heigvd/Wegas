@@ -106,7 +106,7 @@ export const activeEntityChooserLabel = css(
   /*
         borderLeft: `20px solid ${themeVar.colors.ActiveColor}`,
     */
-) + ' active';
+) + ' wegas-entity-chooser__active';
 
 interface LabelGeneratorProps<E extends IAbstractEntity> {
   entity: E;
