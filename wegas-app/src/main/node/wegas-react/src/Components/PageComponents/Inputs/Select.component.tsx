@@ -63,10 +63,12 @@ function PlayerSelectInput({
   );
 
   const value = useStore(
-    () =>
-      (descriptor != null && typeof descriptor === 'object'
+    () => {
+      const v = (descriptor != null && typeof descriptor === 'object'
         ? descriptor.getValue(Player.self())
-        : descriptor) || '',
+        : descriptor);
+      return v == undefined ? '' : v;
+    }
   );
 
   const { lang } = React.useContext(languagesCTX);
