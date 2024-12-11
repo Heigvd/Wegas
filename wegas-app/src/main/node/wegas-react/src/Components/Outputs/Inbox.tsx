@@ -83,6 +83,10 @@ const labelDateStyle = css({
   whiteSpace: 'nowrap',
 });
 
+const displayDateStyle = css({
+  alignSelf: 'flex-end',
+});
+
 const attachmentDisplay = cx(
   flex,
   flexRow,
@@ -180,13 +184,13 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
 
   return (
     <div className={cx(defaultEntityDisplay, 'wegas-inbox__display')}>
-      <div className={cx(toolboxHeaderStyle, 'wegas-inbox__header')}>
+      <div className={cx(flex, flexColumn, toolboxHeaderStyle, 'wegas-inbox__header')}>
         {subject && (
           <div className={cx(bolder, defaultMarginBottom, 'wegas-inbox__display-subject')}>{subject}</div>
         )}
         {date && (
-          <div className='wegas-inbox__display-date'>
-            {i18nComponentValues.inbox.date}: {date}
+          <div className={cx(displayDateStyle, 'wegas-inbox__display-date')}>
+            {date}
           </div>
         )}
         {from && (
