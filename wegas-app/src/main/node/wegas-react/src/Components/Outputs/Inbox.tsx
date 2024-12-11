@@ -15,6 +15,7 @@ import {
   flexWrap,
   itemCenter,
   toolboxHeaderStyle,
+  unreadSignalStyle,
 } from '../../css/classes';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { readMessage } from '../../data/Reducer/VariableInstanceReducer';
@@ -63,6 +64,7 @@ const unreadLabelStyle = cx(
   css({
     fontWeight: 'bold',
   }),
+  unreadSignalStyle,
   'wegas-inbox--unread');
 
 const labelTitleStyle = css({
