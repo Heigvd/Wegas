@@ -48,18 +48,22 @@ const messageLabel = css({
   overflow: 'hidden',
 });
 
-const readLabelStyle = css({
-  fontWeight: 'normal',
-  backgroundColor: themeVar.colors.HeaderColor,
-  color: themeVar.colors.DarkTextColor,
-  '&:hover': {
-    boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.4)`,
-  },
-}) + ' wegas-inbox__read';
+const readLabelStyle = cx(
+  css({
+    fontWeight: 'normal',
+    backgroundColor: themeVar.colors.HeaderColor,
+    color: themeVar.colors.DarkTextColor,
+    '&:hover': {
+      boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.4)`,
+    },
+  }),
+  'wegas-inbox--read');
 
-const unreadLabelStyle = css({
-  fontWeight: 'bold',
-}) + ' wegas-inbox__unread';
+const unreadLabelStyle = cx(
+  css({
+    fontWeight: 'bold',
+  }),
+  'wegas-inbox--unread');
 
 const labelTitleStyle = css({
   flexShrink: 1,
@@ -84,13 +88,13 @@ function MessageLabel({ message }: MessageLabelProps) {
     <div className={cx(flex, itemCenter, messageLabel)}>
       <div className={cx(flex, flexColumn, expandWidth)}>
         <div className={cx(flex, flexRow, flexBetween)}>
-          <div className={cx(labelTitleStyle) + ' wegas-inbox__label-subject'}>{translatedLabel}</div>
+          <div className={cx(labelTitleStyle, 'wegas-inbox__label-subject')}>{translatedLabel}</div>
           {translatedDate && (
-            <div className={css({ flexShrink: 0 }) + ' wegas-inbox__label-date'}>&nbsp;{translatedDate}</div>
+            <div className={cx(css({ flexShrink: 0 }), 'wegas-inbox__label-date')}>&nbsp;{translatedDate}</div>
           )}
         </div>
         {translatedFrom && (
-          <div className={cx(flex, defaultMarginTop) + ' wegas-inbox__label-from'}>{translatedFrom}</div>
+          <div className={cx(flex, defaultMarginTop, 'wegas-inbox__label-from')}>{translatedFrom}</div>
         )}
       </div>
     </div>
@@ -113,7 +117,7 @@ function MessageChooser(props: EntityChooserLabelProps<IMessage>) {
   return (
     <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
       <div
-        className={cx(flex, flexRow, itemCenter) + ' wegas-inbox__choice'}
+        className={cx(flex, flexRow, itemCenter, 'wegas-inbox__choice')}
         onClick={() => editingStore.dispatch(readMessage(message))}
       >
         {props.mobile && (
@@ -138,9 +142,9 @@ function AttachmentsDisplay({ attachments }: AttachmentsDisplayProps) {
   const files = attachments.map(attachment => translate(attachment.file, lang, availableLang));
 
   return (
-    <div className={attachmentDisplay + ' wegas-inbox__attachments-list'}>
+    <div className={cx(attachmentDisplay, 'wegas-inbox__attachments-list')}>
       {files.map((file, index) => (
-        <span className={css({ marginLeft: '5px' }) + ' wegas-inbox__attachment'} key={index}>
+        <span className={cx(css({ marginLeft: '5px' }), 'wegas-inbox__attachment')} key={index}>
           <a href={fileURL(file)} target="_blank" rel="noreferrer">
             {file.slice(1)}
           </a>
@@ -164,10 +168,10 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
   const attachments = entity.attachments;
 
   return (
-    <div className={cx(defaultEntityDisplay) + ' wegas-inbox__display'}>
-      <div className={cx(toolboxHeaderStyle) + ' wegas-inbox__header'}>
+    <div className={cx(defaultEntityDisplay, 'wegas-inbox__display')}>
+      <div className={cx(toolboxHeaderStyle, 'wegas-inbox__header')}>
         {subject && (
-          <div className={cx(bolder, defaultMarginBottom) + ' wegas-inbox__display-subject'}>{subject}</div>
+          <div className={cx(bolder, defaultMarginBottom, 'wegas-inbox__display-subject')}>{subject}</div>
         )}
         {date && (
           <div className='wegas-inbox__display-date'>
@@ -222,7 +226,7 @@ export function InboxDisplay({
       readOnly={readOnly}
       noSelectionMessage={i18nComponentValues.inbox.noSelectionMessage}
       mobileDisplay={mobileDisplay}
-      className={className + ' wegas-inbox'}
+      className={cx(className, 'wegas-inbox')}
       style={style}
     >
       {props => <MessageDisplay {...props} />}
