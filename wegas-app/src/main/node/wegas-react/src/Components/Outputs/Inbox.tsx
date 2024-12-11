@@ -66,9 +66,20 @@ const unreadLabelStyle = cx(
   'wegas-inbox--unread');
 
 const labelTitleStyle = css({
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+});
+
+const labelSenderStyle = css({
   flexShrink: 1,
   overflow: 'hidden',
   textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+});
+
+const labelDateStyle = css({
+  flexShrink: 0,
   whiteSpace: 'nowrap',
 });
 
@@ -85,17 +96,17 @@ function MessageLabel({ message }: MessageLabelProps) {
   const translatedDate = useTranslate(message.date);
 
   return (
-    <div className={cx(flex, itemCenter, messageLabel)}>
+    <div className={cx(flex, expandWidth, itemCenter, messageLabel)}>
       <div className={cx(flex, flexColumn, expandWidth)}>
+        <div className={cx(labelTitleStyle, 'wegas-inbox__label-subject')}>{translatedLabel}</div>
         <div className={cx(flex, flexRow, flexBetween)}>
-          <div className={cx(labelTitleStyle, 'wegas-inbox__label-subject')}>{translatedLabel}</div>
+          {translatedFrom && (
+            <div className={cx(defaultMarginTop, labelSenderStyle, 'wegas-inbox__label-from')}>{translatedFrom}</div>
+          )}
           {translatedDate && (
-            <div className={cx(css({ flexShrink: 0 }), 'wegas-inbox__label-date')}>&nbsp;{translatedDate}</div>
+            <div className={cx(defaultMarginTop, labelDateStyle, 'wegas-inbox__label-date')}>&nbsp;{translatedDate}</div>
           )}
         </div>
-        {translatedFrom && (
-          <div className={cx(flex, defaultMarginTop, 'wegas-inbox__label-from')}>{translatedFrom}</div>
-        )}
       </div>
     </div>
   );
