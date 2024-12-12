@@ -1,8 +1,6 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { IChoiceDescriptor, IReply } from 'wegas-ts-api';
-import { VariableDescriptor } from '../../../data/selectors';
-import { StoreConsumer } from '../../../data/Stores/store';
+import { IReply } from 'wegas-ts-api';
 import { themeVar } from '../../Theme/ThemeVars';
 import { TranslatableText } from '../HTMLText';
 import {
@@ -10,21 +8,26 @@ import {
   choiceDescriptionStyle,
   choiceLabelStyle,
 } from './ChoiceContainer';
+import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
+import { componentsTranslations } from '../../../i18n/components/components';
 
-const repliesContainer = css({
+const repliesContainer = cx(css({
   marginTop: '5px',
   borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
   fontSize: themeVar.others.TextFont2,
-});
-const replyStyle = css({
+}), 'wegas-question__reply-container');
+
+const replyStyle = cx(css({
   fontWeight: 'bold',
   choiceLabelStyle,
   width: '100%',
   padding: '15px',
-});
+}), 'wegas-question__reply-label');
+
 const replyContainerStyle = css({
   backgroundColor: themeVar.colors.HoverColor,
 });
+
 const earlierReplyContainerStyle = css({
   color: themeVar.colors.DisabledColor,
 })
@@ -45,24 +48,9 @@ function ReplyDisplay({ reply, isEarlierReply }: ReplyDisplayProps) {
         replyContainerStyle,
         isEarlierReply ? earlierReplyContainerStyle : '',
         css({ flexDirection: 'column', alignItems: 'left' }),
+        'wegas-question__reply-element', isEarlierReply ? 'wegas-question__reply-element--earlier-reply' : ''
       )}
     >
-      <StoreConsumer
-        selector={() =>
-          VariableDescriptor.firstMatch<IChoiceDescriptor>({
-            name: reply.choiceName,
-          })
-        }
-      >
-        {({ state }) =>
-          state != null ? (
-            <TranslatableText className={replyStyle} content={state.label} />
-          ) : (
-            <div className={choiceLabelStyle}>'Unknown choice'</div>
-          )
-        }
-      </StoreConsumer>
-
       <TranslatableText
         className={choiceDescriptionStyle}
         content={reply.ignored ? ignorationAnswer : answer}
@@ -76,6 +64,7 @@ interface RepliesDisplayProps {
 }
 
 export function RepliesDisplay({ replies }: RepliesDisplayProps) {
+  const i18nValues = useInternalPlayerLangTranslate(componentsTranslations).question;
   const nonIgnoredValidatedReplies = replies
     .filter(r => !r.ignored)
     .filter(r => r.validated)
@@ -83,10 +72,15 @@ export function RepliesDisplay({ replies }: RepliesDisplayProps) {
   if (nonIgnoredValidatedReplies.length === 0) {
     return null;
   }
+
+  const resultLabel = nonIgnoredValidatedReplies.length > 1 ? i18nValues.results : i18nValues.result;
   return (
     <div className={repliesContainer}>
-      {nonIgnoredValidatedReplies.map((r,i) => (
-        <ReplyDisplay key={r.id} reply={r} isEarlierReply={i !== 0}/>
+      <div className={replyStyle}>
+        {resultLabel}
+      </div>
+      {nonIgnoredValidatedReplies.map((r, i) => (
+        <ReplyDisplay key={r.id} reply={r} isEarlierReply={i !== 0} />
       ))}
     </div>
   );

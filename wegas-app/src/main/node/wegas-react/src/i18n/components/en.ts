@@ -10,5 +10,7 @@ export const EN: ComponentsTranslations = {
   },
   question: {
     validate: 'Validate',
+    result: 'Result',
+    results: 'Results'
   },
 };

@@ -8,5 +8,7 @@ export interface ComponentsTranslations {
   };
   question: {
     validate: string;
+    result: string;
+    results: string;
   };
 }

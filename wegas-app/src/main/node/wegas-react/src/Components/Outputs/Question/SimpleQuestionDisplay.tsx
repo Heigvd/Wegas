@@ -3,7 +3,7 @@ import * as React from 'react';
 import {
   IChoiceDescriptor,
   IChoiceInstance,
-  IQuestionDescriptor,
+  IQuestionDescriptor, IReply,
 } from 'wegas-ts-api';
 import {
   flex,
@@ -101,6 +101,7 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
 interface SimpleChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
   choiceI: IChoiceInstance;
+  replies: Readonly<IReply[]>;
   onValidate: (choice: IChoiceDescriptor) => Promise<unknown>;
   replyAllowed: boolean;
   editMode?: boolean;
@@ -125,14 +126,17 @@ function SimpleChoiceDisplay({
   }
 
   return (
-    <ChoiceContainer
-      active={active}
-      descriptor={choiceD}
-      canReply={canReply}
-      onClick={() => onValidate(choiceD)}
-      hasBeenSelected={hasBeenValidated}
-      editMode={editMode}
-    />
+    <>
+      <ChoiceContainer
+        active={active}
+        descriptor={choiceD}
+        canReply={canReply}
+        onClick={() => onValidate(choiceD)}
+        hasBeenSelected={hasBeenValidated}
+        editMode={editMode}
+      />
+      <RepliesDisplay replies={replies} />
+    </>
   );
 }
 
@@ -184,7 +188,7 @@ export function SimpleQuestionDisplay({
         if (choiceI == null) {
           return <span key={choiceD.id} />;
         }
-        const replySet = choiceI.id && repliesMap[choiceI.id] ? repliesMap[choiceI.id] : []
+        const replySubset = choiceI.id && repliesMap[choiceI.id] ? repliesMap[choiceI.id] : []
         return (
           <>
             <SimpleChoiceDisplay
@@ -194,8 +198,8 @@ export function SimpleQuestionDisplay({
               choiceI={choiceI}
               replyAllowed={canReply}
               editMode={editMode}
+              replies={replySubset}
             />
-            <RepliesDisplay replies={replySet} />
           </>
         );
       })}
