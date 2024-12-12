@@ -156,12 +156,13 @@ registerComponent(
           label: 'Choices',
           scriptProps: {
             language: 'TypeScript',
-            returnType: ['{label:string, value: string}[]'],
+            returnType: ['{label:string, value: string, disabled?: boolean}[]'],
           },
           literalSchema: schemaProps.array({
             itemSchema: {
               label: schemaProps.string({ label: 'Label' }),
               value: schemaProps.string({ label: 'Value' }),
+              disabled: schemaProps.boolean({ label: 'Disabled' }),
             },
           }),
         },
