@@ -9,4 +9,8 @@ export interface ComponentsTranslations {
   question: {
     validate: string;
   };
+  select: {
+    plzChooseValue: string;
+    noChoiceInfo: string;
+  };
 }

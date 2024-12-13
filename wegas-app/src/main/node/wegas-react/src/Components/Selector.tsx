@@ -3,7 +3,7 @@ import * as React from 'react';
 import Select from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 import { classNameOrEmpty } from '../Helper/className';
-import { commonTranslations } from '../i18n/common/common';
+import { componentsTranslations } from '../i18n/components/components';
 import { useInternalTranslate } from '../i18n/internalTranslator';
 import { inputStyleCSS } from './Inputs/SimpleInput';
 import { themeVar } from './Theme/ThemeVars';
@@ -182,8 +182,7 @@ export function Selector<T extends true | false>({
   readOnly,
   disabled,
 }: SelectorProps<T>): JSX.Element {
-  const i18nValues = useInternalTranslate(commonTranslations);
-  const selectPlaceholder = placeholder ?? i18nValues.plzChooseValue;
+  const i18nValues = useInternalTranslate(componentsTranslations).select;
 
   const options = buildOptions(choices);
 
@@ -216,8 +215,8 @@ export function Selector<T extends true | false>({
       classNamePrefix={'wegas-select'}
       isClearable={clearable}
       options={options}
-      placeholder={selectPlaceholder}
-      noOptionsMessage={() => noOptionsMessage ?? 'No choice is available'}
+      placeholder={placeholder ?? i18nValues.plzChooseValue}
+      noOptionsMessage={() => noOptionsMessage ?? i18nValues.noChoiceInfo}
       // Providing an empty object overrides the placeholder
       value={currentOption.value?.length === 0 ? null : currentOption}
       onChange={onChangeCb}

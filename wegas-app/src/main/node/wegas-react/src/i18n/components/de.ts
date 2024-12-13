@@ -11,4 +11,8 @@ export const DE: ComponentsTranslations = {
   question: {
     validate: 'Bestätigen',
   },
+  select: {
+    plzChooseValue: 'Bitte wählen Sie',
+    noChoiceInfo: 'Es ist keine Auswahl verfügbar',
+  }
 };

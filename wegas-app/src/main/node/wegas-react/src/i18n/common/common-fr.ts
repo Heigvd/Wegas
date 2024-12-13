@@ -1,7 +1,6 @@
 import { CommonTranslations } from './definitions';
 
 export const commonTranslationsFR: CommonTranslations = {
-  plzChooseValue: 'Faites un choix',
   newChanges: 'Nouveaux changements!',
   changesNotSaved: 'Changements non sauvegardés!',
   changesSaved: 'Changement sauvegardés',
