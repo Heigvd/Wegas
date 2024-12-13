@@ -36,7 +36,13 @@ interface PlayerSelectInputProps extends WegasComponentProps {
    * choices - the allowed choices
    */
   choices?: Choice[] | IScript;
+  /**
+   * placeholder - the grey text inside the box when nothing is selected
+   */
   placeholder?: IScript;
+  /**
+   * noOptionsMessage - the text to inform that there is no available choice
+   */
   noOptionsMessage?: IScript;
   onVariableChange?: OnVariableChange;
 }

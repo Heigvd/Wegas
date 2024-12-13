@@ -33,11 +33,6 @@ const selectStyle = css({
   background: 'none',
 });
 
-const placeholderStyle = css({
-  color: themeVar.colors.DarkTextColor,
-  opacity: '0.3',
-});
-
 export const selectArrowStyle = css({
   select: {
     appearance: 'none',
@@ -140,6 +135,13 @@ export const selectStyles: SelectProps['styles'] = {
       return { ...provided };
     }
   },
+  placeholder: (provided) => {
+    return {
+      ...provided,
+      color: themeVar.colors.DarkTextColor,
+      opacity: '0.3',
+    }
+  }
 };
 
 // interface SelectorProps extends ClassStyleId, DisabledReadonly {
@@ -214,8 +216,8 @@ export function Selector<T extends true | false>({
       classNamePrefix={'wegas-select'}
       isClearable={clearable}
       options={options}
-      placeholder={<div className={placeholderStyle}>{selectPlaceholder}</div>}
-      noOptionsMessage={() => noOptionsMessage ?? 'No options'}
+      placeholder={selectPlaceholder}
+      noOptionsMessage={() => noOptionsMessage ?? 'No choice is available'}
       // Providing an empty object overrides the placeholder
       value={currentOption.value?.length === 0 ? null : currentOption}
       onChange={onChangeCb}
