@@ -11,4 +11,8 @@ export const EN: ComponentsTranslations = {
   question: {
     validate: 'Validate',
   },
+  select: {
+    plzChooseValue: 'Make a choice',
+    noChoiceInfo: 'There is no available choice',
+  }
 };
