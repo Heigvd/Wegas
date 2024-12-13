@@ -81,8 +81,9 @@ function PlayerSelectInput({
 
   const { lang } = React.useContext(languagesCTX);
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
-  const placeholderText = useScript<string>(placeholder, context);
-  const noOptionsMessageText = useScript<string>(noOptionsMessage, context);
+  const placeholderText = useScript<string>(placeholder, context) || undefined;
+  const noOptionsMessageText =
+    useScript<string>(noOptionsMessage, context) || undefined;
 
   if (descriptor == null) {
     return (
