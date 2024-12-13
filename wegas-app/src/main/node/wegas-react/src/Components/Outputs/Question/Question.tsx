@@ -5,7 +5,6 @@ import {
   IChoiceInstance,
   IQuestionDescriptor,
   IQuestionInstance,
-  IReply,
   IWhQuestionDescriptor,
 } from 'wegas-ts-api';
 import { entityIs } from '../../../data/entities';
@@ -25,13 +24,12 @@ export interface QuestionInfo {
   questionI?: Readonly<IQuestionInstance> | undefined;
   choicesD: Readonly<IChoiceDescriptor>[];
   choicesI: (Readonly<IChoiceInstance> | undefined)[];
-  replies: Readonly<IReply[]>;
 }
 
-export const questionStyle = css({
+export const questionStyle = cx(css({
   marginRight: 'auto',
   marginLeft: 'auto',
-});
+}), 'wegas-question');
 
 /**
  * Query subtree / instance about a QuestionDescriptor
@@ -54,14 +52,6 @@ export function questionInfo(question: IQuestionDescriptor) {
       questionI: getInstance(question),
       choicesD: choicesD || [],
       choicesI,
-      replies: (choicesI || [])
-        .reduce<IReply[]>((c, i) => {
-          if (i == null) {
-            return c;
-          }
-          return c.concat(i.replies);
-        }, [])
-        .sort((a, b) => a.createdTime - b.createdTime),
     };
   };
 }

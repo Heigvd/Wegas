@@ -19,11 +19,11 @@ import {
   toolboxHeaderStyle,
 } from '../../../css/classes';
 
-const descriptionStyle = css({
+const descriptionStyle = cx(css({
   position: 'relative',
   display: 'flex',
   alignItems: 'center',
-});
+}), 'wegas-question__header');
 
 const clickableDescriptionStyle = css({
   cursor: 'pointer',
@@ -104,8 +104,8 @@ export function QuestionDescription({
     >
       <div className={cx(toolboxHeaderStyle, expandWidth)}>
         <div className={cx(flex, flexColumn)}>
-          {labelValue && <div className={cx(bolder)}>{labelValue}</div>}
-          <HTMLText text={descriptionValue} />
+          {labelValue && <div className={cx(bolder, 'wegas-question__label')}>{labelValue}</div>}
+          <HTMLText text={descriptionValue} className='wegas-question__description'/>
         </div>
       </div>
 

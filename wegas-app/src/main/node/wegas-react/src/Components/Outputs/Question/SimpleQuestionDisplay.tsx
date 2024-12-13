@@ -3,7 +3,7 @@ import * as React from 'react';
 import {
   IChoiceDescriptor,
   IChoiceInstance,
-  IQuestionDescriptor, IReply,
+  IQuestionDescriptor,
 } from 'wegas-ts-api';
 import {
   flex,
@@ -33,7 +33,6 @@ import {
   makeMenuFromClass,
 } from './QuestionList';
 import { RepliesDisplay } from './Reply';
-import { groupBy } from 'lodash-es';
 
 interface AddChoiceMenuProps {
   questionD: IQuestionDescriptor;
@@ -101,7 +100,7 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
 interface SimpleChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
   choiceI: IChoiceInstance;
-  replies: Readonly<IReply[]>;
+  //replies: Readonly<IReply[]>;
   onValidate: (choice: IChoiceDescriptor) => Promise<unknown>;
   replyAllowed: boolean;
   editMode?: boolean;
@@ -151,13 +150,15 @@ export function SimpleQuestionDisplay({
   questionI,
   choicesD,
   choicesI,
-  replies,
   editMode,
   ...options
 }: SimpleQuestionDisplayProps) {
-  const validatedRepliesCount = replies.filter(r => r.validated).length;
-
-  const repliesMap = groupBy(replies, r => r.parentId);
+  const validatedRepliesCount = choicesI?.reduce((acc, c) => {
+    if(c?.replies){
+      acc += c.replies.filter(r => r?.validated).length
+    }
+    return acc;
+  }, 0)
 
   const onChoiceValidate = React.useCallback(
     (choice: IChoiceDescriptor) => {
@@ -188,7 +189,6 @@ export function SimpleQuestionDisplay({
         if (choiceI == null) {
           return <span key={choiceD.id} />;
         }
-        const replySubset = choiceI.id && repliesMap[choiceI.id] ? repliesMap[choiceI.id] : []
         return (
           <>
             <SimpleChoiceDisplay
@@ -198,7 +198,6 @@ export function SimpleQuestionDisplay({
               choiceI={choiceI}
               replyAllowed={canReply}
               editMode={editMode}
-              replies={replySubset}
             />
           </>
         );

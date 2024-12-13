@@ -18,7 +18,7 @@ import { IWhChoiceDescriptor } from '../../../data/scriptable/impl/QuestionDescr
 import { editingStore } from '../../../data/Stores/editingStore';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { componentsTranslations } from '../../../i18n/components/components';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { useTranslate } from '../../Hooks/useTranslate';
 import HTMLEditor from '../../HTML/HTMLEditor';
@@ -131,7 +131,7 @@ export function ChoiceContainer({
   editMode,
   validateButton = true,
 }: React.PropsWithChildren<ChoiceContainerProps>) {
-  const i18nValues = useInternalTranslate(componentsTranslations);
+  const i18nValues = useInternalPlayerLangTranslate(componentsTranslations);
   const { label } = descriptor;
 
   const description = entityIs(descriptor, 'ChoiceDescriptor', true)
