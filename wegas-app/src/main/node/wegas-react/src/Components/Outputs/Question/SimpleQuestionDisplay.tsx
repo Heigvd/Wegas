@@ -74,7 +74,7 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
   const { lang } = React.useContext(languagesCTX);
 
   return (
-    <div className={cx(flex, justifyCenter, itemCenter)}>
+    <div className={cx(flex, justifyCenter, itemCenter, 'wegas-question__choice-button')}>
       <Plus
         className={cx(editButtonStyle, editButtonBorder)}
         onClick={() => {
@@ -100,7 +100,6 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
 interface SimpleChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
   choiceI: IChoiceInstance;
-  //replies: Readonly<IReply[]>;
   onValidate: (choice: IChoiceDescriptor) => Promise<unknown>;
   replyAllowed: boolean;
   editMode?: boolean;
@@ -123,7 +122,7 @@ function SimpleChoiceDisplay({
   if (!active) {
     return null;
   }
-
+  const replyCount = (maxReplies || Infinity) > 1 ? choiceI?.replies?.length : undefined;
   return (
     <>
       <ChoiceContainer
@@ -133,6 +132,8 @@ function SimpleChoiceDisplay({
         onClick={() => onValidate(choiceD)}
         hasBeenSelected={hasBeenValidated}
         editMode={editMode}
+        replyCount={replyCount}
+        className={cx('wegas-question__choice')}
       />
       <RepliesDisplay replies={replies} />
     </>
@@ -154,10 +155,7 @@ export function SimpleQuestionDisplay({
   ...options
 }: SimpleQuestionDisplayProps) {
   const validatedRepliesCount = choicesI?.reduce((acc, c) => {
-    if(c?.replies){
-      acc += c.replies.filter(r => r?.validated).length
-    }
-    return acc;
+    return acc + (c?.replies ? c.replies.filter(r => r?.validated).length : 0);
   }, 0)
 
   const onChoiceValidate = React.useCallback(
@@ -190,16 +188,14 @@ export function SimpleQuestionDisplay({
           return <span key={choiceD.id} />;
         }
         return (
-          <>
-            <SimpleChoiceDisplay
-              key={`${choiceD.id}${i}`}
-              onValidate={onChoiceValidate}
-              choiceD={choiceD}
-              choiceI={choiceI}
-              replyAllowed={canReply}
-              editMode={editMode}
-            />
-          </>
+          <SimpleChoiceDisplay
+            key={`${choiceD.id}${i}`}
+            onValidate={onChoiceValidate}
+            choiceD={choiceD}
+            choiceI={choiceI}
+            replyAllowed={canReply}
+            editMode={editMode}
+          />
         );
       })}
       {editMode && <AddChoiceButton question={questionD} />}

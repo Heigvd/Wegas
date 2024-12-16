@@ -66,7 +66,7 @@ export const choiceContainerStyle = css({
     },
   },
 });
-export const choiceLabelStyle = css({
+export const choiceLabelStyle = cx(css({
   fontWeight: 'bold',
   padding: '15px',
   backgroundColor: themeVar.colors.HoverColor,
@@ -76,21 +76,24 @@ export const choiceLabelStyle = css({
     color: themeVar.colors.LightTextColor,
     backgroundColor: themeVar.colors.PrimaryColor,
   },
-});
-export const choiceDescriptionStyle = css({
+}), 'wegas-question__choice-label');
+export const choiceDescriptionStyle = cx(css({
   width: '100%',
   padding: '10px 15px 10px 15px',
-});
-export const choiceButtonStyle = css({
+}), 'wegas-question__choice-description');
+export const choiceButtonStyle = cx(css({
   padding: '0px 15px 15px 15px',
   float: 'right',
-});
-export const choiceInputStyle = css({
+  flexDirection: 'row',
+  display: 'flex',
+  justifyContent: 'end'
+}), 'wegas-question__choice-button');
+export const choiceInputStyle = cx(css({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
   padding: '5px',
-});
+}), 'wegas-question__choice-input');
 const editButtonsContainer = css({
   margin: '5px',
 });
@@ -116,6 +119,7 @@ interface ChoiceContainerProps {
   onClick?: () => Promise<unknown>;
   hasBeenSelected: boolean;
   editMode?: boolean;
+  replyCount?: number | undefined;
   validateButton?: boolean;
 }
 
@@ -129,6 +133,7 @@ export function ChoiceContainer({
   onClick,
   hasBeenSelected,
   editMode,
+  replyCount = undefined,
   validateButton = true,
 }: React.PropsWithChildren<ChoiceContainerProps>) {
   const i18nValues = useInternalPlayerLangTranslate(componentsTranslations);
@@ -311,6 +316,7 @@ export function ChoiceContainer({
                   choiceLabelStyle,
                   stretch,
                   hasBeenSelected && !canReply ? ' selected' : '',
+
                 )}
                 text={labelText}
               />
@@ -321,8 +327,10 @@ export function ChoiceContainer({
                 text={descriptionText}
               />
             )}
-            {canReply && validateButton && (
+
               <div className={choiceButtonStyle}>
+                {replyCount !== undefined && <p className={css({opacity: 0.5, marginRight: 8})}>{replyCount}x</p>}
+                {canReply && validateButton && (
                 <Button
                   style={{ float: 'right' }}
                   onClick={async () => {
@@ -335,8 +343,8 @@ export function ChoiceContainer({
                 >
                   {i18nValues.question.validate}
                 </Button>
+                )}
               </div>
-            )}
           </div>
           {children && (
             <div

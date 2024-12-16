@@ -41,6 +41,7 @@ const cbxContainerStyle = css({
     borderLeft: '1px solid ' + themeVar.colors.ActiveColor,
   },
 });
+
 const cbxStyle = css({
   '&.wegas.wegas-btn': {
     color: themeVar.colors.LightTextColor,

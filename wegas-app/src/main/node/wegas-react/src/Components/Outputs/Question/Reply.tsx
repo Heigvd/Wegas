@@ -63,25 +63,32 @@ interface RepliesDisplayProps {
   replies: Readonly<IReply[]>;
 }
 
+function hasContentToDisplay(reply: IReply): boolean {
+  if(reply.answer && reply.answer.translations){
+    return Object.values(reply.answer.translations).some(t => t.translation?.trim().length > 0);
+  }
+  return false;
+}
+
 export function RepliesDisplay({ replies }: RepliesDisplayProps) {
   const i18nValues = useInternalPlayerLangTranslate(componentsTranslations).question;
-  const nonIgnoredValidatedReplies = replies
-    .filter(r => !r.ignored)
+  const validatedReplies = replies
     .filter(r => r.validated)
+    .filter(r => hasContentToDisplay(r))
     .sort((a, b) => b.createdTime - a.createdTime);
-  if (nonIgnoredValidatedReplies.length === 0) {
+  if (validatedReplies.length === 0) {
     return null;
   }
 
-  const resultLabel = nonIgnoredValidatedReplies.length > 1 ? i18nValues.results : i18nValues.result;
-  return (
+  const resultLabel = validatedReplies.length > 1 ? i18nValues.results : i18nValues.result;
+  return validatedReplies?.length > 0 ? (
     <div className={repliesContainer}>
       <div className={replyStyle}>
         {resultLabel}
       </div>
-      {nonIgnoredValidatedReplies.map((r, i) => (
+      {validatedReplies.map((r, i) => (
         <ReplyDisplay key={r.id} reply={r} isEarlierReply={i !== 0} />
       ))}
     </div>
-  );
+  ) : null;
 }

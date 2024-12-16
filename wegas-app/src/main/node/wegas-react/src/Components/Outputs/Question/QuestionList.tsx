@@ -248,7 +248,7 @@ function QuestionChooser(
 ) {
   return (
     <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
-      <div className={cx(flex, flexRow, itemCenter)}>
+      <div className={cx(flex, flexRow, itemCenter, 'wegas-question__item')}>
         {props.mobile && (
           <FontAwesomeIcon
             className={css({ marginRight: '5px' })}
