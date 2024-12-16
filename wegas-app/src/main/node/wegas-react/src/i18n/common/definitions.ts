@@ -1,7 +1,6 @@
 import { AuthorizationData } from '../../Components/Contexts/AuthorizationsProvider';
 
 export interface CommonTranslations {
-  plzChooseValue: string;
   newChanges: string;
   changesNotSaved: string;
   changesSaved: string;
