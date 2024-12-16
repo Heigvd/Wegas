@@ -72,14 +72,13 @@ function PlayerSelectInput({
     context,
   );
 
-  const value = useStore(
-    () => {
-      const v = (descriptor != null && typeof descriptor === 'object'
+  const value = useStore(() => {
+    const v =
+      descriptor != null && typeof descriptor === 'object'
         ? descriptor.getValue(Player.self())
-        : descriptor);
-      return v == undefined ? '' : v;
-    }
-  );
+        : descriptor;
+    return v == undefined ? '' : v;
+  });
 
   const { lang } = React.useContext(languagesCTX);
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
@@ -171,12 +170,15 @@ registerComponent(
           label: 'Choices',
           scriptProps: {
             language: 'TypeScript',
-            returnType: ['{label:string, value: string}[]'],
+            returnType: [
+              '{label:string, value: string, disabled?: boolean}[] | undefined',
+            ],
           },
           literalSchema: schemaProps.array({
             itemSchema: {
               label: schemaProps.string({ label: 'Label' }),
               value: schemaProps.string({ label: 'Value' }),
+              disabled: schemaProps.boolean({ label: 'Disabled' }),
             },
           }),
         },
