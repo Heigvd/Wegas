@@ -98,11 +98,12 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
 }
 
 interface SimpleChoiceDisplayProps {
-  choiceD: IChoiceDescriptor;
-  choiceI: IChoiceInstance;
-  onValidate: (choice: IChoiceDescriptor) => Promise<unknown>;
-  replyAllowed: boolean;
-  editMode?: boolean;
+  choiceD: IChoiceDescriptor,
+  choiceI: IChoiceInstance,
+  onValidate: (choice: IChoiceDescriptor) => Promise<unknown>,
+  replyAllowed: boolean,
+  editMode?: boolean,
+  questionMaxReplies?: number | null | undefined
 }
 
 function SimpleChoiceDisplay({
@@ -111,6 +112,7 @@ function SimpleChoiceDisplay({
   onValidate,
   replyAllowed,
   editMode,
+  questionMaxReplies,
 }: SimpleChoiceDisplayProps) {
   const { active, replies } = choiceI;
   const { maxReplies } = choiceD;
@@ -122,7 +124,7 @@ function SimpleChoiceDisplay({
   if (!active) {
     return null;
   }
-  const replyCount = (maxReplies || Infinity) > 1 ? choiceI?.replies?.length : undefined;
+  const replyCount = (questionMaxReplies === 1 || maxReplies === 1) ? undefined : choiceI?.replies?.length;
   return (
     <>
       <ChoiceContainer
@@ -156,7 +158,7 @@ export function SimpleQuestionDisplay({
 }: SimpleQuestionDisplayProps) {
   const validatedRepliesCount = choicesI?.reduce((acc, c) => {
     return acc + (c?.replies ? c.replies.filter(r => r?.validated).length : 0);
-  }, 0)
+  }, 0);
 
   const onChoiceValidate = React.useCallback(
     (choice: IChoiceDescriptor) => {
@@ -195,6 +197,7 @@ export function SimpleQuestionDisplay({
             choiceI={choiceI}
             replyAllowed={canReply}
             editMode={editMode}
+            questionMaxReplies={questionD.maxReplies}
           />
         );
       })}
