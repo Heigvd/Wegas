@@ -71,6 +71,7 @@ import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.core.tools.FindAndReplacePayload;
 import com.wegas.core.tools.FindAndReplaceVisitor;
 import com.wegas.core.tools.RegexExtractorVisitor;
+import com.wegas.resourceManagement.persistence.*;
 import jakarta.ejb.Asynchronous;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -876,7 +877,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                             //  library meta are kept in the gameModel JSON structure
                         }
                     }
-                    // sort libs before serialization. (to simplify comparision aka git coflict)
+                    // sort libs before serialization. (to simplify comparison aka git conflict)
                     List<GameModelContent> libsList = gameModel.getLibraries();
                     Collator collator = Collator.getInstance();
                     libsList.sort((GameModelContent libA, GameModelContent libB) -> {
@@ -918,8 +919,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     // clear pages so they won't be serialized again
                     gameModel.setPages(new HashMap());
 
-                    // Sort all transitiondependencies to avoid diffs in github updateFromZip.sh
-                    sortTransitionDependenciesUsingTree(gameModel.getItems());
+                    // sort the variables before serialization. (to simplify comparison aka git conflict)
+                    sortVariables(gameModel.getRawItems());
 
                     ZipEntry gameModelEntry = new ZipEntry(GM_DOT_JSON_NAME);
                     zipOutputStream.putNextEntry(gameModelEntry);
@@ -948,26 +949,45 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         return out;
     }
 
-    private void sortTransitionDependenciesUsingTree(List<VariableDescriptor> items){
+    /**
+     * Sort the variables recursively. Most variables are already sorted.
+     */
+    private void sortVariables(List<VariableDescriptor> variableDescriptors) {
         Comparator<TransitionDependency> transitionDepsComparator = Comparator.comparing(TransitionDependency::getVariableName);
+        Comparator<WRequirement> wRequirementsComparator = Comparator.comparing(WRequirement::getName);
+        Comparator<Occupation> occupationsComparator = Comparator.comparing(Occupation::getTime);
 
-        items.forEach(item -> {
-            if (item instanceof ListDescriptor){
-                sortTransitionDependenciesUsingTree(((ListDescriptor) item).getItems());
+        variableDescriptors.forEach(variableDescriptor -> {
+            if (variableDescriptor instanceof ListDescriptor){
+                sortVariables(((ListDescriptor) variableDescriptor).getRawItems());
             }
-            else if (item instanceof TriggerDescriptor){
+            else if (variableDescriptor instanceof TriggerDescriptor){
+                // Sort all transition dependencies
                 TreeSet<TransitionDependency> treeset = new TreeSet<>(transitionDepsComparator);
-                treeset.addAll(((TriggerDescriptor) item).getDependencies());
-                ((TriggerDescriptor) item).setDependencies(treeset);
+                treeset.addAll(((TriggerDescriptor) variableDescriptor).getDependencies());
+                ((TriggerDescriptor) variableDescriptor).setDependencies(treeset);
             }
-            else if (item instanceof StateMachineDescriptor){
-                ((StateMachineDescriptor) item).getStates().forEach((id, state) -> {
+            else if (variableDescriptor instanceof StateMachineDescriptor){
+                // Sort all transition dependencies
+                ((StateMachineDescriptor) variableDescriptor).getStates().forEach((id, state) -> {
                     state.getTransitions().forEach(transition -> {
                         TreeSet<TransitionDependency> treeset = new TreeSet<>(transitionDepsComparator);
                         treeset.addAll(transition.getDependencies());
                         transition.setDependencies(treeset);
                     });
                 });
+            }
+            else if (variableDescriptor instanceof TaskDescriptor){
+                // Sort task requirements
+                List<WRequirement> sortedRequirements = ((TaskDescriptor) variableDescriptor).getDefaultInstance().getRequirements();
+                sortedRequirements.sort(wRequirementsComparator);
+                ((TaskDescriptor) variableDescriptor).getDefaultInstance().setRequirements(sortedRequirements);
+            }
+            else if (variableDescriptor instanceof ResourceDescriptor){
+                // Sort resource occupations
+                List<Occupation> sortedOccupations = ((ResourceDescriptor) variableDescriptor).getDefaultInstance().getOccupations();
+                sortedOccupations.sort(occupationsComparator);
+                ((ResourceDescriptor) variableDescriptor).getDefaultInstance().setOccupations(sortedOccupations);
             }
         });
     }

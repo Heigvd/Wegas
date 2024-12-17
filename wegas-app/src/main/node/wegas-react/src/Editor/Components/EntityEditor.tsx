@@ -248,6 +248,9 @@ export function WindowedEditor<T extends IMergeable>({
               ? (entity as { editorTag?: string }).editorTag
               : undefined,
             name: getClassLabel(pathEntity),
+            index: entity
+              ? (entity as { index?: string }).index
+              : undefined,
           })}
         </>
       }

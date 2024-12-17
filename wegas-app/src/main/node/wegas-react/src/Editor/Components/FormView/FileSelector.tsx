@@ -42,14 +42,16 @@ export function CustomFileSelector<T extends keyof AllowedTypes>({
   inputId,
   labelNode,
 }: CustomFileSelectProps<T>) {
-  const [currentPath, setCurrentPath] = React.useState<string | undefined>(
-    value
+  const [currentPath, setCurrentPath] = React.useState<string | undefined>(undefined);
+  const [showBrowser, setShowBrowser] = React.useState(false);
+
+  React.useEffect(() => {
+    setCurrentPath(value
       ? valueType === 'string'
         ? (value as string)
         : generateAbsolutePath(value as IAbstractContentDescriptor)
-      : undefined,
-  );
-  const [showBrowser, setShowBrowser] = React.useState(false);
+      : undefined);
+  }, [value, valueType]);
 
   return (
     <>
