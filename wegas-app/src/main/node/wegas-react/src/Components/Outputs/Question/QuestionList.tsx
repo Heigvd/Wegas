@@ -34,7 +34,7 @@ import {
 } from '../../../Editor/Components/Views/FontAwesome';
 import { getClassLabel, getIcon } from '../../../Editor/editionConfig';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { wwarn } from '../../../Helper/wegaslog';
+import { wlog, wwarn } from '../../../Helper/wegaslog';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import {
   activeEntityChooserLabel,
@@ -49,7 +49,9 @@ import { useTranslate } from '../../Hooks/useTranslate';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { Validate } from '../../Inputs/Validate';
 import { themeVar } from '../../Theme/ThemeVars';
-import { ConnectedQuestionDisplay } from './Question';
+import { ConnectedQuestionDisplay, QuestionInfo, questionInfo } from './Question';
+import { entityIs } from '../../../data/entities';
+import { deepDifferent } from '../../Hooks/storeHookFactory';
 
 const labelStyle = css({
   fontWeight: 'bold',
@@ -178,6 +180,28 @@ export function QuestionLabel({
   useOnClickOutside(label, () => onFinishEditing && onFinishEditing());
 
   const questionDLabel = useTranslate(questionD.label);
+  let question : QuestionInfo | undefined = undefined;
+  if(entityIs(questionD, 'QuestionDescriptor')){
+    question = useStore(questionInfo(questionD), deepDifferent);
+  }
+  let answer : string | number = "nothing";
+  if(question && question.choicesI.some(c => (c?.replies || []).length > 0)){
+    if(question.questionD?.maxReplies === 1){
+      const choice = question.choicesI.find(c =>(c?.replies || []).length > 0);
+      wlog(choice);
+      const choiceD = question.choicesD.find(cd => cd.id == choice?.parentId);
+      wlog(question.choicesD.map(cd => cd.id));
+      if(choiceD){
+        wlog('found it')
+        answer = useTranslate(choiceD.description) + ' yess';
+      }
+    }else {
+      answer = question.choicesI.reduce((acc, c) => {
+        return acc + (c?.replies || []).length;
+      },0) + 'x';
+    }
+  }
+  //const x = questionI.choicesD;
 
   const onValidate = React.useCallback(
     (value: string) => {
@@ -205,7 +229,7 @@ export function QuestionLabel({
       className={cx(
         flex,
         itemCenter,
-        //{ [questionLabelEditingStyle]: editing }
+        css({justifyContent: 'space-between'})
       )}
       onClick={() => {
         !disabled &&
@@ -237,7 +261,10 @@ export function QuestionLabel({
           )}
         </Validate>
       ) : (
-        <div className={flex}>{questionDLabel}</div>
+        <>
+          <div className={flex}>{questionDLabel}</div>
+          <div className={css({ opacity: 0.5})}> {answer}</div>
+        </>
       )}
     </div>
   );
