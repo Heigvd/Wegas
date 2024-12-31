@@ -122,14 +122,18 @@ const availableLayoutTabs: LinearLayoutComponents = [
   {
     tabId: 'Languages',
     content: <Languages />,
-  },
-  {
-    tabId: 'Client Console',
-    content: <PlayLocal />,
-  },
-  {
-    tabId: 'Server Console',
-    content: <PlayServer />,
+  }, {
+    tabId: 'Consoles',
+    items: [
+      {
+        tabId: 'Client Console',
+        content: <PlayLocal />,
+      },
+      {
+        tabId: 'Server Console',
+        content: <PlayServer />,
+      },
+    ],
   },
   {
     tabId: 'Theme Editor',
@@ -229,8 +233,14 @@ export default function Layout() {
 
   const layoutPages = [
     ...availableLayoutTabs,
-    ...scenaristPages,
-    ...peerReviewTabs,
+    {
+      tabId: 'Scenarist pages',
+      items: [...scenaristPages]
+    },
+    {
+      tabId: 'Peer reviews',
+      items: [...peerReviewTabs]
+    },
   ].filter(
     ({ tabId }) => allowedPages === true || allowedPages.includes(tabId),
   );
