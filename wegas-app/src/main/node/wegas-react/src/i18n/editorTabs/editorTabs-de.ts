@@ -16,7 +16,7 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
     Client: 'Client',
     Server: 'Server',
     AllLibs: 'Alles Libraries',
-    Languages: 'Sprachen',
+    Consoles: 'Konsolen',
     'Client Console': 'Client-Konsole',
     'Server Console': 'Server-Konsole',
     'Instances Editor': 'Instanzen-Editor',
@@ -30,8 +30,11 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
     'Pages Layout': 'Seitenlayout',
     'Source Editor': 'Quell-Editor',
     'Component Properties': 'Eigenschaften Komponente',
+    Languages: 'Sprachen',
     'Language editor': 'Spracheditor',
     'Translation manager': 'Übersetzungsmanager',
+    'Scenarist pages': 'Scenarist Seiten',
+    'Peer reviews': 'Peer reviews',
   },
   stateMachine: {
     selectVariable:
