@@ -93,6 +93,10 @@ export function Script({
   const { mode, label, description } = view;
   const splitter = isScriptCondition(mode) ? operator : ';';
 
+  function getCurrentOrDefaultOperator(currentValue: string): Operator {
+    return currentValue && currentValue.indexOf(operators[1]) !== -1 ? operators[1]: operators[0];
+  }
+
   const testScript = React.useCallback(
     (value: string | IScript) => {
       try {
@@ -137,19 +141,6 @@ export function Script({
     [mode, onCodeChange, splitter],
   );
 
-  const onSelectOperator = React.useCallback(
-    (operator: Operator) => {
-      setOperator(operator);
-      if (!error && !srcMode) {
-        // TODO : Something could be done when in src mode
-        if (statements !== null) {
-          onStatementsChange(statements);
-        }
-      }
-    },
-    [error, onStatementsChange, srcMode, statements],
-  );
-
   React.useEffect(() => {
     setError(errorMessage);
   }, [errorMessage]);
@@ -165,6 +156,7 @@ export function Script({
       value == null ? '' : typeof value === 'string' ? value : value.content;
     if (script.current !== newValue) {
       script.current = newValue;
+      setOperator(getCurrentOrDefaultOperator(script.current));
     }
   }, [value]);
 
@@ -189,6 +181,15 @@ export function Script({
       setError([handleError(e)]);
     }
   }, [mode, value]);
+
+  React.useEffect(() => {
+    if (!error && !srcMode) {
+      // TODO : Something could be done when in src mode
+      if (statements !== null) {
+        onStatementsChange(statements);
+      }
+    }
+  }, [operator]);
 
   return (
     <CommonViewContainer view={view} errorMessage={error}>
@@ -216,7 +217,7 @@ export function Script({
                   <DropMenu
                     label={operator}
                     items={operators.map(o => ({ label: o, value: o }))}
-                    onSelect={({ label }) => onSelectOperator(label)}
+                    onSelect={({ label }) => setOperator(label)}
                     buttonClassName={secondaryButtonStyle}
                   />
                 )}
