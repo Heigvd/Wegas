@@ -34,7 +34,7 @@ import {
 } from '../../../Editor/Components/Views/FontAwesome';
 import { getClassLabel, getIcon } from '../../../Editor/editionConfig';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { wlog, wwarn } from '../../../Helper/wegaslog';
+import { wwarn } from '../../../Helper/wegaslog';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import {
   activeEntityChooserLabel,
@@ -180,28 +180,7 @@ export function QuestionLabel({
   useOnClickOutside(label, () => onFinishEditing && onFinishEditing());
 
   const questionDLabel = useTranslate(questionD.label);
-  let question : QuestionInfo | undefined = undefined;
-  if(entityIs(questionD, 'QuestionDescriptor')){
-    question = useStore(questionInfo(questionD), deepDifferent);
-  }
-  let answer : string | number = "nothing";
-  if(question && question.choicesI.some(c => (c?.replies || []).length > 0)){
-    if(question.questionD?.maxReplies === 1){
-      const choice = question.choicesI.find(c =>(c?.replies || []).length > 0);
-      wlog(choice);
-      const choiceD = question.choicesD.find(cd => cd.id == choice?.parentId);
-      wlog(question.choicesD.map(cd => cd.id));
-      if(choiceD){
-        wlog('found it')
-        answer = useTranslate(choiceD.description) + ' yess';
-      }
-    }else {
-      answer = question.choicesI.reduce((acc, c) => {
-        return acc + (c?.replies || []).length;
-      },0) + 'x';
-    }
-  }
-  //const x = questionI.choicesD;
+  const isQuestionDescriptor = entityIs(questionD, 'QuestionDescriptor');
 
   const onValidate = React.useCallback(
     (value: string) => {
@@ -263,11 +242,36 @@ export function QuestionLabel({
       ) : (
         <>
           <div className={flex}>{questionDLabel}</div>
-          <div className={css({ opacity: 0.5})}> {answer}</div>
+          {isQuestionDescriptor && <QuestionLabelAnswerIndicator questionD={questionD}/> }
         </>
       )}
     </div>
   );
+}
+
+function QuestionLabelAnswerIndicator({
+  questionD
+} : {questionD: IQuestionDescriptor}){
+
+  const question : QuestionInfo = useStore(questionInfo(questionD), deepDifferent);
+  const hasReplies = question.choicesI?.some(c => (c?.replies || []).length > 0);
+  if(!hasReplies){
+    return null;
+  }
+  const firstReply = question.choicesI.find(c =>(c?.replies || []).length > 0);
+  const firstChoice = question.choicesD.find(cd => cd.id == firstReply?.parentId);
+  const firstAnswerTranslation = useTranslate(firstChoice?.label) + ' (label)';
+
+  let answer = "";
+  if(question.questionD?.maxReplies === 1){
+    answer = firstAnswerTranslation;
+  }else{
+    const count = question.choicesI.reduce((acc, c) => {
+      return acc + (c?.replies || []).length;
+    }, 0);
+    answer = count + 'x';
+  }
+  return (<div className={css({ opacity: 0.5 }, {flex})}>{answer}</div>)
 }
 
 function QuestionChooser(
