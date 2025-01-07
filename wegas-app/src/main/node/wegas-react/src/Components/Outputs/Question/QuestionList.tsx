@@ -255,13 +255,14 @@ function QuestionLabelAnswerIndicator({
 } : {questionD: IQuestionDescriptor}){
 
   const question : QuestionInfo = useStore(questionInfo(questionD), deepDifferent);
-  const hasReplies = question.choicesI?.some(c => (c?.replies || []).length > 0);
-  if(!hasReplies){
-    return null;
-  }
+
   const firstReply = question.choicesI.find(c =>(c?.replies || []).length > 0);
   const firstChoice = question.choicesD.find(cd => cd.id == firstReply?.parentId);
   const firstAnswerTranslation = useTranslate(firstChoice?.label);
+
+  if(!firstReply){
+    return null;
+  }
 
   let answer = "";
   if(question.questionD?.maxReplies === 1){
