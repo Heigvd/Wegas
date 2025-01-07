@@ -208,7 +208,8 @@ export function QuestionLabel({
       className={cx(
         flex,
         itemCenter,
-        css({justifyContent: 'space-between'})
+        css({justifyContent: 'space-between', width:'100%'}),
+        'wegas-question__item'
       )}
       onClick={() => {
         !disabled &&
@@ -260,7 +261,7 @@ function QuestionLabelAnswerIndicator({
   }
   const firstReply = question.choicesI.find(c =>(c?.replies || []).length > 0);
   const firstChoice = question.choicesD.find(cd => cd.id == firstReply?.parentId);
-  const firstAnswerTranslation = useTranslate(firstChoice?.label) + ' (label)';
+  const firstAnswerTranslation = useTranslate(firstChoice?.label);
 
   let answer = "";
   if(question.questionD?.maxReplies === 1){
@@ -271,7 +272,7 @@ function QuestionLabelAnswerIndicator({
     }, 0);
     answer = count + 'x';
   }
-  return (<div className={css({ opacity: 0.5 }, {flex})}>{answer}</div>)
+  return (<div className={css({ opacity: 0.5, textAlign: 'end', marginLeft:'4px'})}>{answer}</div>)
 }
 
 function QuestionChooser(
@@ -279,7 +280,7 @@ function QuestionChooser(
 ) {
   return (
     <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
-      <div className={cx(flex, flexRow, itemCenter, 'wegas-question__item')}>
+      <div className={cx(flex, flexRow, itemCenter)}>
         {props.mobile && (
           <FontAwesomeIcon
             className={css({ marginRight: '5px' })}
