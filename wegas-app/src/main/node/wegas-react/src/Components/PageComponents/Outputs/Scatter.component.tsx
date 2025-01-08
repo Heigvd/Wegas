@@ -157,8 +157,11 @@ function useScales(
 export interface PlayerScatterChartProps extends WegasComponentProps {
   height?: number;
   series: IScript;
+  legendPosition: 'top' | 'right' | 'bottom' | 'left';
+  legendAlign: 'start' | 'center' | 'end';
   showLine: boolean;
   allowZoom: boolean;
+  responsive: boolean;
   allowDoubleClick: boolean;
   onDblClickCallback?: ScriptCallback;
   allowDrag?: boolean;
@@ -172,7 +175,10 @@ function PlayerScatterChart({
   height,
   showLine,
   allowZoom,
+  responsive,
   series,
+  legendPosition,
+  legendAlign,
   allowDoubleClick,
   onDblClickCallback,
   allowDrag,
@@ -222,10 +228,15 @@ function PlayerScatterChart({
   };
 
   const chartOptions: ChartOptionsWithPlugins = {
-    responsive: false,
+    responsive: responsive,
     showLine: showLine,
     animation: false,
-    plugins: {},
+    plugins: {
+      legend: {
+        position: legendPosition,
+        align: legendAlign,
+      },
+    },
     scales: scales,
   };
 
@@ -326,6 +337,18 @@ registerComponent(
           ],
         },
       },
+      legendPosition: schemaProps.select({
+        label: 'Legend Position',
+        value: 'top',
+        values: ['top', 'right', 'bottom', 'left'],
+        required: false,
+      }),
+      legendAlign: schemaProps.select({
+        label: 'Legend Alignment',
+        value: 'center',
+        values: ['start', 'center', 'end'],
+        required: false,
+      }),
       allowDoubleClick: {
         type: 'boolean',
         value: false,
@@ -442,6 +465,10 @@ registerComponent(
       }),
       allowZoom: schemaProps.boolean({
         label: 'Allow zoom',
+        value: false,
+      }),
+      responsive: schemaProps.boolean({
+        label: 'Responsive',
         value: false,
       }),
       scales: {
