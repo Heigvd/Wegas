@@ -50,6 +50,7 @@ const cbxStyle = css({
     },
   },
 });
+
 interface CbxChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
   choiceI: IChoiceInstance;

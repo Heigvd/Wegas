@@ -1,4 +1,4 @@
-import {css, cx} from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import {
   IChoiceDescriptor,
@@ -17,7 +17,7 @@ import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { CbxQuestionDisplay } from './CbxQuestion';
 import { SimpleQuestionDisplay } from './SimpleQuestionDisplay';
 import { WhQuestionDisplay, whQuestionInfo } from './WhQuestionDisplay';
-import {defaultEntityDisplay} from "../../EntityChooser";
+import { defaultEntityDisplay } from '../../EntityChooser';
 
 export interface QuestionInfo {
   questionD?: Readonly<IQuestionDescriptor>;
@@ -26,10 +26,13 @@ export interface QuestionInfo {
   choicesI: (Readonly<IChoiceInstance> | undefined)[];
 }
 
-export const questionStyle = cx(css({
-  marginRight: 'auto',
-  marginLeft: 'auto',
-}), 'wegas-question');
+export const questionStyle = cx(
+  css({
+    marginRight: 'auto',
+    marginLeft: 'auto',
+  }),
+  'wegas-question',
+);
 
 /**
  * Query subtree / instance about a QuestionDescriptor
@@ -119,22 +122,22 @@ export function ConnectedQuestionDisplay({
   editMode,
 }: ConnectedQuestionDisplayProps) {
   return (
-      <div className={cx(defaultEntityDisplay)}>
-        {entityIs(entity, 'QuestionDescriptor') ? (
-            <ConnectedSimpleQuestionDisplay
-                entity={entity}
-                disabled={disabled}
-                readOnly={readOnly}
-                editMode={editMode}
-            />
-        ) : (
-            <ConnectedWhQuestionDisplay
-                entity={entity}
-                disabled={disabled}
-                readOnly={readOnly}
-                editMode={editMode}
-            />
-        )}
-      </div>
-  )
+    <div className={cx(defaultEntityDisplay)}>
+      {entityIs(entity, 'QuestionDescriptor') ? (
+        <ConnectedSimpleQuestionDisplay
+          entity={entity}
+          disabled={disabled}
+          readOnly={readOnly}
+          editMode={editMode}
+        />
+      ) : (
+        <ConnectedWhQuestionDisplay
+          entity={entity}
+          disabled={disabled}
+          readOnly={readOnly}
+          editMode={editMode}
+        />
+      )}
+    </div>
+  );
 }

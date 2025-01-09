@@ -49,7 +49,11 @@ import { useTranslate } from '../../Hooks/useTranslate';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { Validate } from '../../Inputs/Validate';
 import { themeVar } from '../../Theme/ThemeVars';
-import { ConnectedQuestionDisplay, QuestionInfo, questionInfo } from './Question';
+import {
+  ConnectedQuestionDisplay,
+  QuestionInfo,
+  questionInfo,
+} from './Question';
 import { entityIs } from '../../../data/entities';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 
@@ -208,8 +212,8 @@ export function QuestionLabel({
       className={cx(
         flex,
         itemCenter,
-        css({justifyContent: 'space-between', width:'100%'}),
-        'wegas-question__item'
+        css({ justifyContent: 'space-between', width: '100%' }),
+        'wegas-question__item',
       )}
       onClick={() => {
         !disabled &&
@@ -243,7 +247,9 @@ export function QuestionLabel({
       ) : (
         <>
           <div className={flex}>{questionDLabel}</div>
-          {isQuestionDescriptor && <QuestionLabelAnswerIndicator questionD={questionD}/> }
+          {isQuestionDescriptor && (
+            <QuestionLabelAnswerIndicator questionD={questionD} />
+          )}
         </>
       )}
     </div>
@@ -251,29 +257,39 @@ export function QuestionLabel({
 }
 
 function QuestionLabelAnswerIndicator({
-  questionD
-} : {questionD: IQuestionDescriptor}){
+  questionD,
+}: {
+  questionD: IQuestionDescriptor;
+}) {
+  const question: QuestionInfo = useStore(
+    questionInfo(questionD),
+    deepDifferent,
+  );
 
-  const question : QuestionInfo = useStore(questionInfo(questionD), deepDifferent);
-
-  const firstReply = question.choicesI.find(c =>(c?.replies || []).length > 0);
-  const firstChoice = question.choicesD.find(cd => cd.id == firstReply?.parentId);
+  const firstReply = question.choicesI.find(c => (c?.replies || []).length > 0);
+  const firstChoice = question.choicesD.find(
+    cd => cd.id == firstReply?.parentId,
+  );
   const firstAnswerTranslation = useTranslate(firstChoice?.label);
 
-  if(!firstReply){
+  if (!firstReply) {
     return null;
   }
 
-  let answer = "";
-  if(question.questionD?.maxReplies === 1){
+  let answer: string;
+  if (question.questionD?.maxReplies === 1) {
     answer = firstAnswerTranslation;
-  }else{
+  } else {
     const count = question.choicesI.reduce((acc, c) => {
       return acc + (c?.replies || []).length;
     }, 0);
     answer = count + 'x';
   }
-  return (<div className={css({ opacity: 0.5, textAlign: 'end', marginLeft:'4px'})}>{answer}</div>)
+  return (
+    <div className={css({ opacity: 0.5, textAlign: 'end', marginLeft: '4px' })}>
+      {answer}
+    </div>
+  );
 }
 
 function QuestionChooser(
@@ -327,6 +343,7 @@ export function buttonFactory(icon: Icons) {
     );
   };
 }
+
 const Edit = buttonFactory('edit');
 const Copy = buttonFactory('copy');
 const Trash = buttonFactory('trash');

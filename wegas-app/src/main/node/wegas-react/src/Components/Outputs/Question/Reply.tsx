@@ -11,18 +11,24 @@ import {
 import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
 import { componentsTranslations } from '../../../i18n/components/components';
 
-const repliesContainer = cx(css({
-  marginTop: '5px',
-  borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
-  fontSize: themeVar.others.TextFont2,
-}), 'wegas-question__reply-container');
+const repliesContainer = cx(
+  css({
+    marginTop: '5px',
+    borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
+    fontSize: themeVar.others.TextFont2,
+  }),
+  'wegas-question__reply-container',
+);
 
-const replyStyle = cx(css({
-  fontWeight: 'bold',
-  choiceLabelStyle,
-  width: '100%',
-  padding: '15px',
-}), 'wegas-question__reply-label');
+const replyStyle = cx(
+  css({
+    fontWeight: 'bold',
+    choiceLabelStyle,
+    width: '100%',
+    padding: '15px',
+  }),
+  'wegas-question__reply-label',
+);
 
 const replyContainerStyle = css({
   backgroundColor: themeVar.colors.HoverColor,
@@ -30,7 +36,7 @@ const replyContainerStyle = css({
 
 const earlierReplyContainerStyle = css({
   color: themeVar.colors.DisabledColor,
-})
+});
 
 interface ReplyDisplayProps {
   reply: IReply;
@@ -48,7 +54,8 @@ function ReplyDisplay({ reply, isEarlierReply }: ReplyDisplayProps) {
         replyContainerStyle,
         isEarlierReply ? earlierReplyContainerStyle : '',
         css({ flexDirection: 'column', alignItems: 'left' }),
-        'wegas-question__reply-element', isEarlierReply ? 'wegas-question__reply-element--earlier-reply' : ''
+        'wegas-question__reply-element',
+        isEarlierReply ? 'wegas-question__reply-element--earlier-reply' : '',
       )}
     >
       <TranslatableText
@@ -64,14 +71,18 @@ interface RepliesDisplayProps {
 }
 
 function hasContentToDisplay(reply: IReply): boolean {
-  if(reply.answer && reply.answer.translations){
-    return Object.values(reply.answer.translations).some(t => t.translation?.trim().length > 0);
+  if (reply.answer && reply.answer.translations) {
+    return Object.values(reply.answer.translations).some(
+      t => t.translation?.trim().length > 0,
+    );
   }
   return false;
 }
 
 export function RepliesDisplay({ replies }: RepliesDisplayProps) {
-  const i18nValues = useInternalPlayerLangTranslate(componentsTranslations).question;
+  const i18nValues = useInternalPlayerLangTranslate(
+    componentsTranslations,
+  ).question;
   const validatedReplies = replies
     .filter(r => r.validated)
     .filter(r => hasContentToDisplay(r))
@@ -80,12 +91,11 @@ export function RepliesDisplay({ replies }: RepliesDisplayProps) {
     return null;
   }
 
-  const resultLabel = validatedReplies.length > 1 ? i18nValues.results : i18nValues.result;
+  const resultLabel =
+    validatedReplies.length > 1 ? i18nValues.results : i18nValues.result;
   return validatedReplies?.length > 0 ? (
     <div className={repliesContainer}>
-      <div className={replyStyle}>
-        {resultLabel}
-      </div>
+      <div className={replyStyle}>{resultLabel}</div>
       {validatedReplies.map((r, i) => (
         <ReplyDisplay key={r.id} reply={r} isEarlierReply={i !== 0} />
       ))}

@@ -74,7 +74,14 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
   const { lang } = React.useContext(languagesCTX);
 
   return (
-    <div className={cx(flex, justifyCenter, itemCenter, 'wegas-question__choice-button')}>
+    <div
+      className={cx(
+        flex,
+        justifyCenter,
+        itemCenter,
+        'wegas-question__choice-button',
+      )}
+    >
       <Plus
         className={cx(editButtonStyle, editButtonBorder)}
         onClick={() => {
@@ -98,12 +105,12 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
 }
 
 interface SimpleChoiceDisplayProps {
-  choiceD: IChoiceDescriptor,
-  choiceI: IChoiceInstance,
-  onValidate: (choice: IChoiceDescriptor) => Promise<unknown>,
-  replyAllowed: boolean,
-  editMode?: boolean,
-  questionMaxReplies?: number | null | undefined
+  choiceD: IChoiceDescriptor;
+  choiceI: IChoiceInstance;
+  onValidate: (choice: IChoiceDescriptor) => Promise<unknown>;
+  replyAllowed: boolean;
+  editMode?: boolean;
+  questionMaxReplies?: number | null | undefined;
 }
 
 function SimpleChoiceDisplay({
@@ -124,7 +131,10 @@ function SimpleChoiceDisplay({
   if (!active) {
     return null;
   }
-  const replyCount = (questionMaxReplies === 1 || maxReplies === 1) ? undefined : choiceI?.replies?.length;
+  const replyCount =
+    questionMaxReplies === 1 || maxReplies === 1
+      ? undefined
+      : choiceI?.replies?.length;
   return (
     <>
       <ChoiceContainer
@@ -205,4 +215,3 @@ export function SimpleQuestionDisplay({
     </div>
   );
 }
-
