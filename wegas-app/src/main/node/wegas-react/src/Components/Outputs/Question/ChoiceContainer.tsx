@@ -66,46 +66,34 @@ export const choiceContainerStyle = css({
     },
   },
 });
-export const choiceLabelStyle = cx(
-  css({
-    fontWeight: 'bold',
-    padding: '15px',
-    backgroundColor: themeVar.colors.HoverColor,
-    borderTopRightRadius: themeVar.dimensions.BorderRadius,
-    borderTopLeftRadius: themeVar.dimensions.BorderRadius,
-    '&.selected': {
-      color: themeVar.colors.LightTextColor,
-      backgroundColor: themeVar.colors.PrimaryColor,
-    },
-  }),
-  'wegas-question__choice-label',
-);
-export const choiceDescriptionStyle = cx(
-  css({
-    width: '100%',
-    padding: '10px 15px 10px 15px',
-  }),
-  'wegas-question__choice-description',
-);
-export const choiceButtonStyle = cx(
-  css({
-    padding: '15px',
-    float: 'right',
-    flexDirection: 'row',
-    display: 'flex',
-    justifyContent: 'end',
-  }),
-  'wegas-question__choice-button',
-);
-export const choiceInputStyle = cx(
-  css({
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    padding: '5px',
-  }),
-  'wegas-question__choice-input',
-);
+export const choiceHeaderStyle = css({
+  fontWeight: 'bold',
+  padding: '15px',
+  backgroundColor: themeVar.colors.HoverColor,
+  borderTopRightRadius: themeVar.dimensions.BorderRadius,
+  borderTopLeftRadius: themeVar.dimensions.BorderRadius,
+  '&.selected': {
+    color: themeVar.colors.LightTextColor,
+    backgroundColor: themeVar.colors.PrimaryColor,
+  },
+});
+export const choiceDescriptionStyle = css({
+  width: '100%',
+  padding: '10px 15px 10px 15px',
+});
+export const choiceButtonStyle = css({
+  padding: '15px',
+  float: 'right',
+  flexDirection: 'row',
+  display: 'flex',
+  justifyContent: 'end',
+});
+export const choiceInputStyle = css({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  padding: '5px',
+});
 const editButtonsContainer = css({
   margin: '5px',
 });
@@ -266,7 +254,7 @@ export function ChoiceContainer({
       {isEditing ? (
         <div className={cx(flex, flexColumn, css({ padding: '15px' }))}>
           <div className={cx(flex, flexColumn, defaultMarginBottom)}>
-            <div className={choiceLabelStyle}>Label</div>
+            <div className={cx(choiceHeaderStyle, 'wegas-question__choice-header')}>Label</div>
             <SimpleInput
               value={values.label}
               onChange={value =>
@@ -277,18 +265,17 @@ export function ChoiceContainer({
           {entityIs(descriptor, 'ChoiceDescriptor', true) && (
             <>
               <div className={cx(flex, flexColumn, defaultMarginBottom)}>
-                <div className={choiceLabelStyle}>Description</div>
+                <div className={cx(choiceHeaderStyle, 'wegas-question__choice-header')}>Description</div>
                 <HTMLEditor
                   value={values.description}
                   onChange={value =>
                     setValues(o => ({ ...o, description: value }))
                   }
                   toolbarLayout="player"
-                  // customToolbar="bold italic underline bullist"
                 />
               </div>
               <div className={cx(flex, flexColumn, defaultMarginBottom)}>
-                <div className={choiceLabelStyle}>Feedback</div>
+                <div className={cx(choiceHeaderStyle, 'wegas-question__choice-header')}>Feedback</div>
                 <HTMLEditor
                   value={values.feedback}
                   onChange={value =>
@@ -326,21 +313,22 @@ export function ChoiceContainer({
             {label && labelText !== '' && (
               <HTMLText
                 className={cx(
-                  choiceLabelStyle,
+                  choiceHeaderStyle,
                   stretch,
                   hasBeenSelected && !canReply ? ' selected' : '',
+                  'wegas-question__choice-label'
                 )}
                 text={labelText}
               />
             )}
             {description && descriptionText !== '' && (
               <HTMLText
-                className={choiceDescriptionStyle}
+                className={cx(choiceDescriptionStyle, 'wegas-question__choice-description')}
                 text={descriptionText}
               />
             )}
 
-            <div className={choiceButtonStyle}>
+            <div className={cx(choiceButtonStyle, 'wegas-question__choice-button')}>
               {replyCount !== undefined && (
                 <p className={css({ opacity: 0.5, marginRight: 8 })}>
                   {replyCount}x

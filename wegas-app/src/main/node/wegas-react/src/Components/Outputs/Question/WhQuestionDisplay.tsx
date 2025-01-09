@@ -252,14 +252,14 @@ export function WhQuestionDisplay({
         );
       })}
       {editMode && <AddChoiceMenu questionD={questionD} />}
-      <div className={cx(choiceInputStyle)}>
+      <div className={cx(choiceInputStyle, 'wegas-question__choice-input')}>
         <Button
           className={autoMargin}
           label={questionI.validated ? 'Validated' : 'Validate'}
           onClick={() => {
             dispatch(validateQuestion(questionD));
             choicesValues.forEach(
-              choiceI => choiceI != null && dispatch(updateInstance(choiceI)),
+              choiceI => choiceI && dispatch(updateInstance(choiceI)),
             );
           }}
           disabled={questionI.validated || disabled}

@@ -110,7 +110,7 @@ interface SimpleChoiceDisplayProps {
   onValidate: (choice: IChoiceDescriptor) => Promise<unknown>;
   replyAllowed: boolean;
   editMode?: boolean;
-  questionMaxReplies?: number | null | undefined;
+  questionMaxReplies?: number | null;
 }
 
 function SimpleChoiceDisplay({
@@ -145,7 +145,7 @@ function SimpleChoiceDisplay({
         hasBeenSelected={hasBeenValidated}
         editMode={editMode}
         replyCount={replyCount}
-        className={cx('wegas-question__choice')}
+        className='wegas-question__choice'
       />
       <RepliesDisplay replies={replies} />
     </>

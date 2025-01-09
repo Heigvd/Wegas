@@ -20,14 +20,11 @@ import {
   toolboxHeaderStyle,
 } from '../../../css/classes';
 
-const descriptionStyle = cx(
-  css({
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-  }),
-  'wegas-question__header',
-);
+const descriptionStyle = css({
+  position: 'relative',
+  display: 'flex',
+  alignItems: 'center',
+});
 
 const clickableDescriptionStyle = css({
   cursor: 'pointer',
@@ -103,7 +100,7 @@ export function QuestionDescription({
     <div
       className={cx(descriptionStyle, {
         [clickableDescriptionStyle]: editMode,
-      })}
+      }, 'wegas-question__header')}
       onClick={() => setEditing(true)}
     >
       <div className={cx(toolboxHeaderStyle, expandWidth)}>

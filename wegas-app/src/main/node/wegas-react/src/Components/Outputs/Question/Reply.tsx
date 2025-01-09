@@ -6,29 +6,23 @@ import { TranslatableText } from '../HTMLText';
 import {
   choiceContainerStyle,
   choiceDescriptionStyle,
-  choiceLabelStyle,
+  choiceHeaderStyle,
 } from './ChoiceContainer';
 import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
 import { componentsTranslations } from '../../../i18n/components/components';
 
-const repliesContainer = cx(
-  css({
-    marginTop: '5px',
-    borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
-    fontSize: themeVar.others.TextFont2,
-  }),
-  'wegas-question__reply-container',
-);
+const repliesContainer = css({
+  marginTop: '5px',
+  borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
+  fontSize: themeVar.others.TextFont2,
+});
 
-const replyStyle = cx(
-  css({
-    fontWeight: 'bold',
-    choiceLabelStyle,
-    width: '100%',
-    padding: '15px',
-  }),
-  'wegas-question__reply-label',
-);
+const replyStyle = css({
+  fontWeight: 'bold',
+  choiceLabelStyle: choiceHeaderStyle,
+  width: '100%',
+  padding: '15px',
+});
 
 const replyContainerStyle = css({
   backgroundColor: themeVar.colors.HoverColor,
@@ -59,7 +53,7 @@ function ReplyDisplay({ reply, isEarlierReply }: ReplyDisplayProps) {
       )}
     >
       <TranslatableText
-        className={choiceDescriptionStyle}
+        className={cx(choiceDescriptionStyle, 'wegas-question__reply-description')}
         content={reply.ignored ? ignorationAnswer : answer}
       />
     </div>
@@ -93,12 +87,12 @@ export function RepliesDisplay({ replies }: RepliesDisplayProps) {
 
   const resultLabel =
     validatedReplies.length > 1 ? i18nValues.results : i18nValues.result;
-  return validatedReplies?.length > 0 ? (
-    <div className={repliesContainer}>
-      <div className={replyStyle}>{resultLabel}</div>
+  return (
+    <div className={cx(repliesContainer, 'wegas-question__reply-container')}>
+      <div className={cx(replyStyle, 'wegas-question__reply-label')}>{resultLabel}</div>
       {validatedReplies.map((r, i) => (
         <ReplyDisplay key={r.id} reply={r} isEarlierReply={i !== 0} />
       ))}
     </div>
-  ) : null;
+  );
 }

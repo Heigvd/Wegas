@@ -184,7 +184,7 @@ export function CbxQuestionDisplay({
       })}
       {editMode && <AddChoiceMenu questionD={questionD} />}
       {!questionI.validated && (
-        <div className={cx(choiceInputStyle)}>
+        <div className={cx(choiceInputStyle, 'wegas-question__choice-warning')}>
           {remainingChoices > 0 && (
             <MessageString
               type="warning"
