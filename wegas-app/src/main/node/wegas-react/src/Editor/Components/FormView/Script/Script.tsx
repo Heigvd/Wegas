@@ -96,6 +96,9 @@ export function Script({
   function getCurrentOrDefaultOperator(currentValue: string): Operator {
     return currentValue && currentValue.indexOf(operators[1]) !== -1 ? operators[1]: operators[0];
   }
+  function isSingleOperatorUsed(newValue: string) {
+    return newValue && !(newValue.indexOf(operators[1]) !== -1 && newValue.indexOf(operators[0]) !== -1)
+  }
 
   const testScript = React.useCallback(
     (value: string | IScript) => {
@@ -168,15 +171,20 @@ export function Script({
         setStatements([]);
       } else {
         const newStatements = parseCodeIntoExpressions(newValue, mode);
-        setStatements(oldStatements => {
-          if (isEqual(oldStatements, newStatements)) {
-            return oldStatements;
-          } else {
-            return newStatements;
-          }
-        });
+        if(isSingleOperatorUsed(newValue)) {
+          setStatements(oldStatements => {
+            if (isEqual(oldStatements, newStatements)) {
+              return oldStatements;
+            } else {
+              return newStatements;
+            }
+          });
+          setError(undefined);
+        }
+        else {
+          setSrcMode(true);
+        }
       }
-      setError(undefined);
     } catch (e) {
       setError([handleError(e)]);
     }
@@ -188,8 +196,11 @@ export function Script({
       if (statements !== null) {
         onStatementsChange(statements);
       }
+      else {
+        setSrcMode(true);
+      }
     }
-  }, [operator]);
+  }, [operator, error, srcMode]);
 
   return (
     <CommonViewContainer view={view} errorMessage={error}>
