@@ -48,7 +48,7 @@ export const choiceContainerStyle = css({
       color: themeVar.colors.DarkTextColor,
     },
   },
-  '&.disabled': {
+  '&.disabled, &.loading': {
     backgroundColor: themeVar.colors.BackgroundColor,
     opacity: '0.7',
     cursor: 'cursor',
@@ -249,7 +249,8 @@ export function ChoiceContainer({
       className={
         cx(choiceContainerStyle, classNameOrEmpty(className)) +
         (hasBeenSelected && !canReply ? ' selected' : '') +
-        (canReply && !clicked ? '' : ' disabled') +
+        (canReply ? '' : ' disabled') +
+        (clicked ? ' loading' : '') +
         (isEditing ? ' editing' : '') +
         (label && labelText !== '' ? '' : ' no-label') +
         (description && descriptionText !== '' ? '' : ' no-desc')
