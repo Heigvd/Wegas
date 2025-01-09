@@ -97,7 +97,7 @@ export function Script({
     return currentValue && currentValue.indexOf(operators[1]) !== -1 ? operators[1]: operators[0];
   }
   function isSingleOperatorUsed(newValue: string) {
-    return newValue && !(newValue.indexOf(operators[1]) !== -1 && newValue.indexOf(operators[0]) !== -1)
+    return newValue && newValue.indexOf(operators[0]) === -1 || newValue.indexOf(operators[1]) === -1;
   }
 
   const testScript = React.useCallback(
