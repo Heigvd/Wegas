@@ -25,7 +25,7 @@ import { editingStore } from '../../data/Stores/editingStore';
 import { useStore } from '../../data/Stores/store';
 import { wwarn } from '../../Helper/wegaslog';
 import { componentsTranslations } from '../../i18n/components/components';
-import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { useInternalPlayerLangTranslate } from '../../i18n/internalTranslator';
 import {
   DefaultEntityChooserLabel,
   defaultEntityDisplay,
@@ -177,7 +177,7 @@ interface MessageDisplayProps {
 }
 
 function MessageDisplay({ entity }: MessageDisplayProps) {
-  const i18nComponentValues = useInternalTranslate(componentsTranslations);
+  const i18nComponentValues = useInternalPlayerLangTranslate(componentsTranslations);
 
   const subject = useTranslate(entity.subject);
   const date = useTranslate(entity.date);
@@ -233,7 +233,7 @@ export function InboxDisplay({
   }, [inbox]);
 
   const messages = useStore(messagesSelector);
-  const i18nComponentValues = useInternalTranslate(componentsTranslations);
+  const i18nComponentValues = useInternalPlayerLangTranslate(componentsTranslations);
 
   return (
     <EntityChooser
