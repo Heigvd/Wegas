@@ -49,7 +49,13 @@ import { useTranslate } from '../../Hooks/useTranslate';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { Validate } from '../../Inputs/Validate';
 import { themeVar } from '../../Theme/ThemeVars';
-import { ConnectedQuestionDisplay } from './Question';
+import {
+  ConnectedQuestionDisplay,
+  QuestionInfo,
+  questionInfo,
+} from './Question';
+import { entityIs } from '../../../data/entities';
+import { deepDifferent } from '../../Hooks/storeHookFactory';
 
 const labelStyle = css({
   fontWeight: 'bold',
@@ -178,6 +184,7 @@ export function QuestionLabel({
   useOnClickOutside(label, () => onFinishEditing && onFinishEditing());
 
   const questionDLabel = useTranslate(questionD.label);
+  const isQuestionDescriptor = entityIs(questionD, 'QuestionDescriptor');
 
   const onValidate = React.useCallback(
     (value: string) => {
@@ -205,7 +212,8 @@ export function QuestionLabel({
       className={cx(
         flex,
         itemCenter,
-        //{ [questionLabelEditingStyle]: editing }
+        css({ justifyContent: 'space-between', width: '100%' }),
+        'wegas-question__item',
       )}
       onClick={() => {
         !disabled &&
@@ -237,8 +245,49 @@ export function QuestionLabel({
           )}
         </Validate>
       ) : (
-        <div className={flex}>{questionDLabel}</div>
+        <>
+          <div className={flex}>{questionDLabel}</div>
+          {isQuestionDescriptor && (
+            <QuestionLabelAnswerIndicator questionD={questionD} />
+          )}
+        </>
       )}
+    </div>
+  );
+}
+
+function QuestionLabelAnswerIndicator({
+  questionD,
+}: {
+  questionD: IQuestionDescriptor;
+}) {
+  const question: QuestionInfo = useStore(
+    questionInfo(questionD),
+    deepDifferent,
+  );
+
+  const firstReply = question.choicesI.find(c => (c?.replies || []).length > 0);
+  const firstChoice = question.choicesD.find(
+    cd => cd.id == firstReply?.parentId,
+  );
+  const firstAnswerTranslation = useTranslate(firstChoice?.label);
+
+  if (!firstReply) {
+    return null;
+  }
+
+  let answer: string;
+  if (question.questionD?.maxReplies === 1) {
+    answer = firstAnswerTranslation;
+  } else {
+    const count = question.choicesI.reduce((acc, c) => {
+      return acc + (c?.replies || []).length;
+    }, 0);
+    answer = count + 'x';
+  }
+  return (
+    <div className={css({ opacity: 0.5, textAlign: 'end', marginLeft: '4px' })}>
+      {answer}
     </div>
   );
 }
@@ -294,6 +343,7 @@ export function buttonFactory(icon: Icons) {
     );
   };
 }
+
 const Edit = buttonFactory('edit');
 const Copy = buttonFactory('copy');
 const Trash = buttonFactory('trash');

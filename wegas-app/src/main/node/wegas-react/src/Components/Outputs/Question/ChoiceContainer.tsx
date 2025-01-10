@@ -18,7 +18,7 @@ import { IWhChoiceDescriptor } from '../../../data/scriptable/impl/QuestionDescr
 import { editingStore } from '../../../data/Stores/editingStore';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { componentsTranslations } from '../../../i18n/components/components';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { useTranslate } from '../../Hooks/useTranslate';
 import HTMLEditor from '../../HTML/HTMLEditor';
@@ -48,7 +48,7 @@ export const choiceContainerStyle = css({
       color: themeVar.colors.DarkTextColor,
     },
   },
-  '&.disabled': {
+  '&.disabled, &.loading': {
     backgroundColor: themeVar.colors.BackgroundColor,
     opacity: '0.7',
     cursor: 'cursor',
@@ -66,7 +66,7 @@ export const choiceContainerStyle = css({
     },
   },
 });
-export const choiceLabelStyle = css({
+export const choiceHeaderStyle = css({
   fontWeight: 'bold',
   padding: '15px',
   backgroundColor: themeVar.colors.HoverColor,
@@ -82,8 +82,11 @@ export const choiceDescriptionStyle = css({
   padding: '10px 15px 10px 15px',
 });
 export const choiceButtonStyle = css({
-  padding: '0px 15px 15px 15px',
+  padding: '15px',
   float: 'right',
+  flexDirection: 'row',
+  display: 'flex',
+  justifyContent: 'end',
 });
 export const choiceInputStyle = css({
   display: 'flex',
@@ -116,6 +119,7 @@ interface ChoiceContainerProps {
   onClick?: () => Promise<unknown>;
   hasBeenSelected: boolean;
   editMode?: boolean;
+  replyCount?: number;
   validateButton?: boolean;
 }
 
@@ -129,9 +133,10 @@ export function ChoiceContainer({
   onClick,
   hasBeenSelected,
   editMode,
+  replyCount = undefined,
   validateButton = true,
 }: React.PropsWithChildren<ChoiceContainerProps>) {
-  const i18nValues = useInternalTranslate(componentsTranslations);
+  const i18nValues = useInternalPlayerLangTranslate(componentsTranslations);
   const { label } = descriptor;
 
   const description = entityIs(descriptor, 'ChoiceDescriptor', true)
@@ -232,7 +237,8 @@ export function ChoiceContainer({
       className={
         cx(choiceContainerStyle, classNameOrEmpty(className)) +
         (hasBeenSelected && !canReply ? ' selected' : '') +
-        (canReply && !clicked ? '' : ' disabled') +
+        (canReply ? '' : ' disabled') +
+        (clicked ? ' loading' : '') +
         (isEditing ? ' editing' : '') +
         (label && labelText !== '' ? '' : ' no-label') +
         (description && descriptionText !== '' ? '' : ' no-desc')
@@ -248,7 +254,7 @@ export function ChoiceContainer({
       {isEditing ? (
         <div className={cx(flex, flexColumn, css({ padding: '15px' }))}>
           <div className={cx(flex, flexColumn, defaultMarginBottom)}>
-            <div className={choiceLabelStyle}>Label</div>
+            <div className={cx(choiceHeaderStyle, 'wegas-question__choice-header')}>Label</div>
             <SimpleInput
               value={values.label}
               onChange={value =>
@@ -259,18 +265,17 @@ export function ChoiceContainer({
           {entityIs(descriptor, 'ChoiceDescriptor', true) && (
             <>
               <div className={cx(flex, flexColumn, defaultMarginBottom)}>
-                <div className={choiceLabelStyle}>Description</div>
+                <div className={cx(choiceHeaderStyle, 'wegas-question__choice-header')}>Description</div>
                 <HTMLEditor
                   value={values.description}
                   onChange={value =>
                     setValues(o => ({ ...o, description: value }))
                   }
                   toolbarLayout="player"
-                  // customToolbar="bold italic underline bullist"
                 />
               </div>
               <div className={cx(flex, flexColumn, defaultMarginBottom)}>
-                <div className={choiceLabelStyle}>Feedback</div>
+                <div className={cx(choiceHeaderStyle, 'wegas-question__choice-header')}>Feedback</div>
                 <HTMLEditor
                   value={values.feedback}
                   onChange={value =>
@@ -308,21 +313,28 @@ export function ChoiceContainer({
             {label && labelText !== '' && (
               <HTMLText
                 className={cx(
-                  choiceLabelStyle,
+                  choiceHeaderStyle,
                   stretch,
                   hasBeenSelected && !canReply ? ' selected' : '',
+                  'wegas-question__choice-label'
                 )}
                 text={labelText}
               />
             )}
             {description && descriptionText !== '' && (
               <HTMLText
-                className={choiceDescriptionStyle}
+                className={cx(choiceDescriptionStyle, 'wegas-question__choice-description')}
                 text={descriptionText}
               />
             )}
-            {canReply && validateButton && (
-              <div className={choiceButtonStyle}>
+
+            <div className={cx(choiceButtonStyle, 'wegas-question__choice-button')}>
+              {replyCount !== undefined && (
+                <p className={css({ opacity: 0.5, marginRight: 8 })}>
+                  {replyCount}x
+                </p>
+              )}
+              {canReply && validateButton && (
                 <Button
                   style={{ float: 'right' }}
                   onClick={async () => {
@@ -335,8 +347,8 @@ export function ChoiceContainer({
                 >
                   {i18nValues.question.validate}
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
           {children && (
             <div

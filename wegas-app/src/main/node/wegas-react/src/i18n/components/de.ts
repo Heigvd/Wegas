@@ -10,6 +10,8 @@ export const DE: ComponentsTranslations = {
   },
   question: {
     validate: 'Bestätigen',
+    result: 'Ergebnis',
+    results: 'Ergebnisse'
   },
   select: {
     plzChooseValue: 'Bitte wählen Sie',
