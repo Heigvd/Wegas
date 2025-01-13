@@ -128,19 +128,21 @@ export default function LanguageEditor() {
   const schema =
     selectedLanguage.id == null ? createLanguageSchema : editLanguageSchema;
 
-  if (
-    Array.isArray(translatableLanguages) &&
-    schema.properties != null &&
-    schema.properties['code'] != null &&
-    schema.properties['code']['view'] != null
-  ) {
-    schema.properties.code.view.type = 'select';
-    (schema.properties.code as ISelectProps).view.choices =
-      translatableLanguages.filter(
-        code => !languages.map(lang => lang.code).includes(code),
-      );
-    (schema.properties.code as ISelectProps).view.allowAnyValue = true;
-  }
+  React.useEffect(() => {
+    if (Array.isArray(translatableLanguages) &&
+      translatableLanguages.length > 0 &&
+      createLanguageSchema.properties != null &&
+      createLanguageSchema.properties['code'] != null &&
+      createLanguageSchema.properties['code']['view'] != null
+    ) {
+      createLanguageSchema.properties.code.view.type = 'select';
+      (createLanguageSchema.properties.code as ISelectProps).view.choices =
+        translatableLanguages.filter(
+          code => !languages.map(lang => lang.code).includes(code),
+        );
+      (createLanguageSchema.properties.code as ISelectProps).view.allowAnyValue = true;
+    }
+  }, [translatableLanguages, languages, createLanguageSchema]);
 
   return (
     <div className={cx(flex, flexRow, grow)}>
