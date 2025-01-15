@@ -256,7 +256,7 @@ export function WhQuestionDisplay({
         );
       })}
       {editMode && <AddChoiceMenu questionD={questionD} />}
-      <div className={cx(choiceInputStyle, 'wegas-question__choice-input')}>
+      <div className={cx(choiceInputStyle, 'wegas-question__choice-button')}>
         <Button
           className={autoMargin}
           label={questionI.validated ? 'Validated' : 'Validate'}
