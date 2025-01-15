@@ -246,7 +246,9 @@ export function QuestionLabel({
         </Validate>
       ) : (
         <>
-          <div className={flex}>{questionDLabel}</div>
+          <div className={cx(flex, 'wegas-question__item-label')}>
+            {questionDLabel}
+          </div>
           {isQuestionDescriptor && (
             <QuestionLabelAnswerIndicator questionD={questionD} />
           )}
@@ -286,7 +288,12 @@ function QuestionLabelAnswerIndicator({
     answer = count + 'x';
   }
   return (
-    <div className={css({ opacity: 0.5, textAlign: 'end', marginLeft: '4px' })}>
+    <div
+      className={cx(
+        css({ opacity: 0.5, textAlign: 'end', marginLeft: '4px' }),
+        'wegas-question__item-answer',
+      )}
+    >
       {answer}
     </div>
   );
