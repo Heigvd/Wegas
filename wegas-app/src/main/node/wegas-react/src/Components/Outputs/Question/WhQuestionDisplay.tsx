@@ -123,6 +123,7 @@ function WhChoiceDisplay({
       hasBeenSelected={false}
       editMode={editMode}
       validateButton={false}
+      className="wegas-question__choice"
     >
       {choiceD['@class'] === 'BooleanDescriptor' ? (
         <CheckBox
