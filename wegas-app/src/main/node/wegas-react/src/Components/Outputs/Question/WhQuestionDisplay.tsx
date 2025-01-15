@@ -1,4 +1,4 @@
-import { cx } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { cloneDeep } from 'lodash-es';
 import * as React from 'react';
 import {
@@ -105,6 +105,7 @@ interface WhChoiceDisplayProps extends DisabledReadonly {
   onChange: (choiceI: IWhChoiceInstance) => void;
   editMode?: boolean;
 }
+
 function WhChoiceDisplay({
   choiceD,
   choiceI,
@@ -123,72 +124,74 @@ function WhChoiceDisplay({
       hasBeenSelected={false}
       editMode={editMode}
       validateButton={false}
-      className="wegas-question__choice"
+      className={'wegas-question__choice'}
     >
-      {choiceD['@class'] === 'BooleanDescriptor' ? (
-        <CheckBox
-          value={(choiceI as IBooleanInstance).value}
-          onChange={v => {
-            const newChoiceI = cloneDeep(choiceI as IBooleanInstance);
-            newChoiceI.value = v;
-            onChange(newChoiceI);
-          }}
-          disabled={questionI.validated || disabled}
-          readOnly={readOnly}
-        />
-      ) : choiceD['@class'] === 'NumberDescriptor' ? (
-        <NumberSlider
-          value={(choiceI as INumberInstance).value}
-          min={
-            (choiceD as INumberDescriptor).minValue ||
-            Math.min(0, (choiceI as INumberInstance).value)
-          }
-          max={
-            (choiceD as INumberDescriptor).maxValue ||
-            Math.max(100, (choiceI as INumberInstance).value)
-          }
-          onChange={v => {
-            const newChoiceI = cloneDeep(choiceI as INumberInstance);
-            newChoiceI.value = v;
-            onChange(newChoiceI);
-          }}
-          disabled={questionI.validated || disabled}
-          readOnly={readOnly}
-          displayValues="NumberInput"
-        />
-      ) : choiceD['@class'] === 'StringDescriptor' ? (
-        <SimpleInput
-          value={translate((choiceI as IStringInstance).trValue, lang)}
-          onChange={v => {
-            const newChoiceI = cloneDeep(choiceI as IStringInstance);
-            newChoiceI.trValue = createTranslatableContent(
-              lang,
-              String(v),
-              newChoiceI.trValue,
-            );
+      <div className={css({ padding: '15px' })}>
+        {choiceD['@class'] === 'BooleanDescriptor' ? (
+          <CheckBox
+            value={(choiceI as IBooleanInstance).value}
+            onChange={v => {
+              const newChoiceI = cloneDeep(choiceI as IBooleanInstance);
+              newChoiceI.value = v;
+              onChange(newChoiceI);
+            }}
+            disabled={questionI.validated || disabled}
+            readOnly={readOnly}
+          />
+        ) : choiceD['@class'] === 'NumberDescriptor' ? (
+          <NumberSlider
+            value={(choiceI as INumberInstance).value}
+            min={
+              (choiceD as INumberDescriptor).minValue ||
+              Math.min(0, (choiceI as INumberInstance).value)
+            }
+            max={
+              (choiceD as INumberDescriptor).maxValue ||
+              Math.max(100, (choiceI as INumberInstance).value)
+            }
+            onChange={v => {
+              const newChoiceI = cloneDeep(choiceI as INumberInstance);
+              newChoiceI.value = v;
+              onChange(newChoiceI);
+            }}
+            disabled={questionI.validated || disabled}
+            readOnly={readOnly}
+            displayValues="NumberInput"
+          />
+        ) : choiceD['@class'] === 'StringDescriptor' ? (
+          <SimpleInput
+            value={translate((choiceI as IStringInstance).trValue, lang)}
+            onChange={v => {
+              const newChoiceI = cloneDeep(choiceI as IStringInstance);
+              newChoiceI.trValue = createTranslatableContent(
+                lang,
+                String(v),
+                newChoiceI.trValue,
+              );
 
-            onChange(newChoiceI);
-          }}
-          disabled={questionI.validated || disabled}
-          readOnly={readOnly}
-        />
-      ) : (
-        <HTMLEditor
-          value={translate((choiceI as IStringInstance).trValue, lang)}
-          onChange={v => {
-            const newChoiceI = cloneDeep(choiceI as IStringInstance);
-            newChoiceI.trValue = createTranslatableContent(
-              lang,
-              String(v),
-              newChoiceI.trValue,
-            );
+              onChange(newChoiceI);
+            }}
+            disabled={questionI.validated || disabled}
+            readOnly={readOnly}
+          />
+        ) : (
+          <HTMLEditor
+            value={translate((choiceI as IStringInstance).trValue, lang)}
+            onChange={v => {
+              const newChoiceI = cloneDeep(choiceI as IStringInstance);
+              newChoiceI.trValue = createTranslatableContent(
+                lang,
+                String(v),
+                newChoiceI.trValue,
+              );
 
-            onChange(newChoiceI);
-          }}
-          disabled={questionI.validated || disabled}
-          readOnly={readOnly}
-        />
-      )}
+              onChange(newChoiceI);
+            }}
+            disabled={questionI.validated || disabled}
+            readOnly={readOnly}
+          />
+        )}
+      </div>
     </ChoiceContainer>
   );
 }
