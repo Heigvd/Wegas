@@ -17,6 +17,7 @@ import {
   grow,
   itemCenter,
   justifyCenter,
+  unreadSignalStyle,
 } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { createTranslatableContent } from '../../../data/i18n';
@@ -173,12 +174,12 @@ export function QuestionLabel({
   editing,
   onFinishEditing,
 }: QuestionLabelProps) {
-  // const unreadSelector = React.useCallback(() => {
-  //   return {
-  //     isUnread: instantiate(questionD).getInstance(Player.self()).isUnread(),
-  //   };
-  // }, [questionD]);
-  // const { isUnread } = useStore(unreadSelector);
+  const unreadSelector = React.useCallback(() => {
+    return {
+      isUnread: instantiate(questionD).getInstance(Player.self()).isUnread(),
+    };
+  }, [questionD]);
+  const { isUnread } = useStore(unreadSelector);
   const label = React.useRef<HTMLDivElement>(null);
   const { lang } = React.useContext(languagesCTX);
   useOnClickOutside(label, () => onFinishEditing && onFinishEditing());
@@ -214,6 +215,7 @@ export function QuestionLabel({
         itemCenter,
         css({ justifyContent: 'space-between', width: '100%' }),
         'wegas-question__item',
+        isUnread && cx(unreadSignalStyle, 'wegas-question__item-unread'),
       )}
       onClick={() => {
         !disabled &&
@@ -221,11 +223,7 @@ export function QuestionLabel({
           editingStore.dispatch(read(instantiate(questionD).getEntity()));
       }}
     >
-      {/* {isUnread ? (
-        <div className={cx(unreadSpaceStyle, unreadSignalStyle)} />
-      ) : (
-        <div />
-      )} */}
+      {/*{isUnread && <div className={cx(unreadSpaceStyle, unreadSignalStyle)} />}*/}
       {editing ? (
         <Validate
           value={questionDLabel}
