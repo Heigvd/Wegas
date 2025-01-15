@@ -61,10 +61,13 @@ import { deepDifferent } from '../../Hooks/storeHookFactory';
 const labelStyle = css({
   fontWeight: 'bold',
 });
-const repliedLabelStyle = css({
-  backgroundColor: themeVar.colors.HeaderColor,
-  color: themeVar.colors.DarkTextColor,
-});
+const repliedLabelStyle = cx(
+  css({
+    backgroundColor: themeVar.colors.HeaderColor,
+    color: themeVar.colors.DarkTextColor,
+  }),
+  'wegas-entity-chooser__choice-replied',
+);
 
 export const handleStyle = css({
   position: 'absolute',
