@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import produce from 'immer';
 import * as React from 'react';
 import {
+  IAbstractEntity,
   IQuestionDescriptor,
   IQuestionInstance,
   IWhQuestionDescriptor,
@@ -164,16 +165,14 @@ function AddQuestionButton({ questionList }: AddQuestionsMenuProps) {
   );
 }
 
-export interface QuestionLabelProps {
+interface QuestionLabelProps {
   questionD: IQuestionDescriptor | IWhQuestionDescriptor;
-  disabled?: boolean;
   editing?: boolean;
   onFinishEditing?: () => void;
 }
 
 export function QuestionLabel({
   questionD,
-  disabled,
   editing,
   onFinishEditing,
 }: QuestionLabelProps) {
@@ -220,11 +219,6 @@ export function QuestionLabel({
         'wegas-question__item',
         isUnread && cx(unreadSignalStyle, 'wegas-question__item-unread'),
       )}
-      onClick={() => {
-        !disabled &&
-          !editing &&
-          editingStore.dispatch(read(instantiate(questionD).getEntity()));
-      }}
     >
       {/*{isUnread && <div className={cx(unreadSpaceStyle, unreadSignalStyle)} />}*/}
       {editing ? (
@@ -305,7 +299,13 @@ function QuestionChooser(
 ) {
   return (
     <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
-      <div className={cx(flex, flexRow, itemCenter)}>
+      <div
+        className={cx(flex, flexRow, itemCenter, css({padding: '10px'}))}
+        onClick={() => {
+          !props.disabled &&
+          editingStore.dispatch(read(instantiate(props.entity).getEntity()));
+        }}
+      >
         {props.mobile && (
           <FontAwesomeIcon
             className={css({ marginRight: '5px' })}
@@ -313,7 +313,7 @@ function QuestionChooser(
             size="1x"
           />
         )}
-        <QuestionLabel questionD={props.entity} disabled={props.disabled} />
+        <QuestionLabel questionD={props.entity}/>
       </div>
     </DefaultEntityChooserLabel>
   );
@@ -391,7 +391,6 @@ function QuestionChooserEdition({
           <div className={grow}>
             <QuestionLabel
               questionD={entity}
-              disabled={disabled}
               editing={isEditing}
               onFinishEditing={() => setEditing(false)}
             />

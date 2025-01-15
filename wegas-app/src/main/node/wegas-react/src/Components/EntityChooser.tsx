@@ -61,7 +61,6 @@ export const entityChooserLabelStyle = (disabled?: boolean) =>
   cx(
     css({
       position: 'relative',
-      padding: '10px',
       color: themeVar.colors.DarkTextColor,
       borderRadius: themeVar.dimensions.BorderRadius,
       marginTop: '5px',

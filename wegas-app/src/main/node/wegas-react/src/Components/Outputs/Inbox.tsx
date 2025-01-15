@@ -102,7 +102,7 @@ function MessageLabel({ message }: MessageLabelProps) {
   const translatedDate = useTranslate(message.date);
 
   return (
-    <div className={cx(flex, expandWidth, itemCenter, messageLabel)}>
+    <div className={cx(flex, expandWidth, itemCenter, messageLabel, css({padding: '10px'}))}>
       <div className={cx(flex, flexColumn, expandWidth)}>
         <div className={cx(labelTitleStyle, 'wegas-inbox__label-subject')}>{translatedLabel}</div>
         <div className={cx(flex, flexRow, flexBetween)}>
