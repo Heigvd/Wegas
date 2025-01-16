@@ -49,7 +49,6 @@ createLanguageSchema.properties!['active'].view!.type = 'hidden';
 
 const editLanguageSchema = cloneDeep(languageSchema);
 editLanguageSchema.properties!['visibility'].view!.type = 'hidden';
-editLanguageSchema.properties!['visibility'].view!.type = 'hidden';
 (
   editLanguageSchema.properties!['code'].view! as { readOnly: boolean }
 ).readOnly = true;
@@ -129,7 +128,8 @@ export default function LanguageEditor() {
     selectedLanguage.id == null ? createLanguageSchema : editLanguageSchema;
 
   React.useEffect(() => {
-    if (Array.isArray(translatableLanguages) &&
+    if (
+      Array.isArray(translatableLanguages) &&
       translatableLanguages.length > 0 &&
       createLanguageSchema.properties != null &&
       createLanguageSchema.properties['code'] != null &&
@@ -140,7 +140,9 @@ export default function LanguageEditor() {
         translatableLanguages.filter(
           code => !languages.map(lang => lang.code).includes(code),
         );
-      (createLanguageSchema.properties.code as ISelectProps).view.allowAnyValue = true;
+      (
+        createLanguageSchema.properties.code as ISelectProps
+      ).view.allowAnyValue = true;
     }
   }, [translatableLanguages, languages, createLanguageSchema]);
 
