@@ -4,7 +4,7 @@ import Select from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 import { classNameOrEmpty } from '../Helper/className';
 import { componentsTranslations } from '../i18n/components/components';
-import { useInternalTranslate } from '../i18n/internalTranslator';
+import { useInternalPlayerLangTranslate } from '../i18n/internalTranslator';
 import { inputStyleCSS } from './Inputs/SimpleInput';
 import { themeVar } from './Theme/ThemeVars';
 
@@ -182,7 +182,7 @@ export function Selector<T extends true | false>({
   readOnly,
   disabled,
 }: SelectorProps<T>): JSX.Element {
-  const i18nValues = useInternalTranslate(componentsTranslations).select;
+  const i18nValues = useInternalPlayerLangTranslate(componentsTranslations).select;
 
   const options = buildOptions(choices);
 
