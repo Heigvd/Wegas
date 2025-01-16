@@ -31,7 +31,7 @@ import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { store, useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../../i18n/peerReview/peerReview';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
@@ -73,7 +73,7 @@ export default function PeerReviewVariableEditor({
   const lastVal = React.useRef<string | number | undefined>();
   const timer = React.useRef<Timer | null>();
   const { lang } = React.useContext(languagesCTX);
-  const i18nValues = useInternalTranslate(peerReviewTranslations);
+  const i18nValues = useInternalPlayerLangTranslate(peerReviewTranslations);
   const sPR = useScript<SPeerReviewDescriptor | undefined>(peerReview, context);
   const reviewState = useStore(() =>
     sPR?.getInstance(Player.self()).getReviewState(),
@@ -185,7 +185,7 @@ export default function PeerReviewVariableEditor({
       if (reviewState !== 'NOT_STARTED') {
         return (
           <div className={grow}>
-            <h3>Your submission:</h3>
+            <h3>{i18nValues.tabview.toReview}:</h3>
             <HTMLText text={String(value)} className={submissionStyle} />
           </div>
         );

@@ -47,7 +47,7 @@ import * as VariableDescriptorSelector from '../../../data/selectors/VariableDes
 import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
 import { PeerReviewTranslations } from '../../../i18n/peerReview/definitions';
 import { peerReviewTranslations } from '../../../i18n/peerReview/peerReview';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
@@ -141,7 +141,7 @@ const prPhasesJustifyStyle = css({
 const phases = ['edition', 'reviewing', 'commenting', 'completed'];
 
 function PRPHaseComponent({ value, phase }: PhaseComponentProps) {
-  const i18nValues = useInternalTranslate(peerReviewTranslations);
+  const i18nValues = useInternalPlayerLangTranslate(peerReviewTranslations);
   return (
     <div
       className={cx(flex, flexColumn, justifyCenter, prPhaseComponentStyle, {
@@ -377,7 +377,7 @@ function EvalutationsEditor({
   });
   const [waitingState, setWaitingState] = React.useState(false);
 
-  const i18nValues = useInternalTranslate(peerReviewTranslations);
+  const i18nValues = useInternalPlayerLangTranslate(peerReviewTranslations);
   const { showModal, OkCancelModal } = useOkCancelModal();
 
   React.useEffect(() => {
@@ -518,7 +518,7 @@ function ReviewEditor({
   disabled,
   readOnly,
 }: ReviewEditorProps) {
-  const i18nValues = useInternalTranslate(peerReviewTranslations);
+  const i18nValues = useInternalPlayerLangTranslate(peerReviewTranslations);
 
   const rev = useStore(() => {
     const reviewed = peerReview
@@ -669,7 +669,7 @@ export default function PeerReviewTreeViewDisplay({
   id,
   options,
 }: PeerReviewTreeViewDisplayProps) {
-  const i18nValues = useInternalTranslate(peerReviewTranslations);
+  const i18nValues = useInternalPlayerLangTranslate(peerReviewTranslations);
   const sPR = useScript<SPeerReviewDescriptor | undefined>(peerReview, context);
   const sPRinstance = useStore(() => sPR?.getInstance(Player.self()));
 
