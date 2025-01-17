@@ -254,7 +254,11 @@ export function ChoiceContainer({
       {isEditing ? (
         <div className={cx(flex, flexColumn, css({ padding: '15px' }))}>
           <div className={cx(flex, flexColumn, defaultMarginBottom)}>
-            <div className={cx(choiceHeaderStyle, 'wegas-question__choice-header')}>Label</div>
+            <div
+              className={cx(choiceHeaderStyle, 'wegas-question__choice-header')}
+            >
+              Label
+            </div>
             <SimpleInput
               value={values.label}
               onChange={value =>
@@ -265,7 +269,14 @@ export function ChoiceContainer({
           {entityIs(descriptor, 'ChoiceDescriptor', true) && (
             <>
               <div className={cx(flex, flexColumn, defaultMarginBottom)}>
-                <div className={cx(choiceHeaderStyle, 'wegas-question__choice-header')}>Description</div>
+                <div
+                  className={cx(
+                    choiceHeaderStyle,
+                    'wegas-question__choice-header',
+                  )}
+                >
+                  Description
+                </div>
                 <HTMLEditor
                   value={values.description}
                   onChange={value =>
@@ -275,7 +286,14 @@ export function ChoiceContainer({
                 />
               </div>
               <div className={cx(flex, flexColumn, defaultMarginBottom)}>
-                <div className={cx(choiceHeaderStyle, 'wegas-question__choice-header')}>Feedback</div>
+                <div
+                  className={cx(
+                    choiceHeaderStyle,
+                    'wegas-question__choice-header',
+                  )}
+                >
+                  Feedback
+                </div>
                 <HTMLEditor
                   value={values.feedback}
                   onChange={value =>
@@ -316,25 +334,33 @@ export function ChoiceContainer({
                   choiceHeaderStyle,
                   stretch,
                   hasBeenSelected && !canReply ? ' selected' : '',
-                  'wegas-question__choice-label'
+                  'wegas-question__choice-label',
                 )}
                 text={labelText}
               />
             )}
             {description && descriptionText !== '' && (
               <HTMLText
-                className={cx(choiceDescriptionStyle, 'wegas-question__choice-description')}
+                className={cx(
+                  choiceDescriptionStyle,
+                  'wegas-question__choice-description',
+                )}
                 text={descriptionText}
               />
             )}
 
-            <div className={cx(choiceButtonStyle, 'wegas-question__choice-button')}>
-              {replyCount !== undefined && (
-                <p className={css({ opacity: 0.5, marginRight: 8 })}>
-                  {replyCount}x
-                </p>
-              )}
-              {canReply && validateButton && (
+            {canReply && validateButton && (
+              <div
+                className={cx(
+                  choiceButtonStyle,
+                  'wegas-question__choice-button',
+                )}
+              >
+                {replyCount !== undefined && (
+                  <p className={css({ opacity: 0.5, marginRight: 8 })}>
+                    {replyCount}x
+                  </p>
+                )}
                 <Button
                   style={{ float: 'right' }}
                   onClick={async () => {
@@ -347,8 +373,8 @@ export function ChoiceContainer({
                 >
                   {i18nValues.question.validate}
                 </Button>
-              )}
-            </div>
+              </div>
+            )}
           </div>
           {children && (
             <div

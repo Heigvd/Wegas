@@ -6,7 +6,7 @@ import { IAttachment, IInboxDescriptor, IMessage } from 'wegas-ts-api';
 import {
   bolder,
   defaultMarginBottom,
-  defaultMarginTop,
+  defaultMarginTop, defaultPadding,
   expandWidth,
   flex,
   flexBetween,
@@ -102,7 +102,7 @@ function MessageLabel({ message }: MessageLabelProps) {
   const translatedDate = useTranslate(message.date);
 
   return (
-    <div className={cx(flex, expandWidth, itemCenter, messageLabel)}>
+    <div className={cx(flex, expandWidth, itemCenter, messageLabel, defaultPadding)}>
       <div className={cx(flex, flexColumn, expandWidth)}>
         <div className={cx(labelTitleStyle, 'wegas-inbox__label-subject')}>{translatedLabel}</div>
         <div className={cx(flex, flexRow, flexBetween)}>

@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import produce from 'immer';
 import * as React from 'react';
 import {
+  IAbstractEntity,
   IQuestionDescriptor,
   IQuestionInstance,
   IWhQuestionDescriptor,
@@ -11,12 +12,14 @@ import {
   SListDescriptor,
 } from 'wegas-ts-api';
 import {
+  defaultPadding,
   flex,
   flexColumn,
   flexRow,
   grow,
   itemCenter,
   justifyCenter,
+  unreadSignalStyle,
 } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { createTranslatableContent } from '../../../data/i18n';
@@ -60,10 +63,13 @@ import { deepDifferent } from '../../Hooks/storeHookFactory';
 const labelStyle = css({
   fontWeight: 'bold',
 });
-const repliedLabelStyle = css({
-  backgroundColor: themeVar.colors.HeaderColor,
-  color: themeVar.colors.DarkTextColor,
-});
+const repliedLabelStyle = cx(
+  css({
+    backgroundColor: themeVar.colors.HeaderColor,
+    color: themeVar.colors.DarkTextColor,
+  }),
+  'wegas-entity-chooser__choice-replied',
+);
 
 export const handleStyle = css({
   position: 'absolute',
@@ -160,25 +166,23 @@ function AddQuestionButton({ questionList }: AddQuestionsMenuProps) {
   );
 }
 
-export interface QuestionLabelProps {
+interface QuestionLabelProps {
   questionD: IQuestionDescriptor | IWhQuestionDescriptor;
-  disabled?: boolean;
   editing?: boolean;
   onFinishEditing?: () => void;
 }
 
 export function QuestionLabel({
   questionD,
-  disabled,
   editing,
   onFinishEditing,
 }: QuestionLabelProps) {
-  // const unreadSelector = React.useCallback(() => {
-  //   return {
-  //     isUnread: instantiate(questionD).getInstance(Player.self()).isUnread(),
-  //   };
-  // }, [questionD]);
-  // const { isUnread } = useStore(unreadSelector);
+  const unreadSelector = React.useCallback(() => {
+    return {
+      isUnread: instantiate(questionD).getInstance(Player.self()).isUnread(),
+    };
+  }, [questionD]);
+  const { isUnread } = useStore(unreadSelector);
   const label = React.useRef<HTMLDivElement>(null);
   const { lang } = React.useContext(languagesCTX);
   useOnClickOutside(label, () => onFinishEditing && onFinishEditing());
@@ -214,18 +218,10 @@ export function QuestionLabel({
         itemCenter,
         css({ justifyContent: 'space-between', width: '100%' }),
         'wegas-question__item',
+        isUnread && cx(unreadSignalStyle, 'wegas-question__item-unread'),
       )}
-      onClick={() => {
-        !disabled &&
-          !editing &&
-          editingStore.dispatch(read(instantiate(questionD).getEntity()));
-      }}
     >
-      {/* {isUnread ? (
-        <div className={cx(unreadSpaceStyle, unreadSignalStyle)} />
-      ) : (
-        <div />
-      )} */}
+      {/*{isUnread && <div className={cx(unreadSpaceStyle, unreadSignalStyle)} />}*/}
       {editing ? (
         <Validate
           value={questionDLabel}
@@ -246,7 +242,9 @@ export function QuestionLabel({
         </Validate>
       ) : (
         <>
-          <div className={flex}>{questionDLabel}</div>
+          <div className={cx(flex, 'wegas-question__item-label')}>
+            {questionDLabel}
+          </div>
           {isQuestionDescriptor && (
             <QuestionLabelAnswerIndicator questionD={questionD} />
           )}
@@ -286,7 +284,12 @@ function QuestionLabelAnswerIndicator({
     answer = count + 'x';
   }
   return (
-    <div className={css({ opacity: 0.5, textAlign: 'end', marginLeft: '4px' })}>
+    <div
+      className={cx(
+        css({ opacity: 0.5, textAlign: 'end', marginLeft: '4px' }),
+        'wegas-question__item-answer',
+      )}
+    >
       {answer}
     </div>
   );
@@ -297,7 +300,13 @@ function QuestionChooser(
 ) {
   return (
     <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
-      <div className={cx(flex, flexRow, itemCenter)}>
+      <div
+        className={cx(flex, flexRow, itemCenter, defaultPadding)}
+        onClick={() => {
+          !props.disabled &&
+          editingStore.dispatch(read(instantiate(props.entity).getEntity()));
+        }}
+      >
         {props.mobile && (
           <FontAwesomeIcon
             className={css({ marginRight: '5px' })}
@@ -305,7 +314,7 @@ function QuestionChooser(
             size="1x"
           />
         )}
-        <QuestionLabel questionD={props.entity} disabled={props.disabled} />
+        <QuestionLabel questionD={props.entity}/>
       </div>
     </DefaultEntityChooserLabel>
   );
@@ -383,7 +392,6 @@ function QuestionChooserEdition({
           <div className={grow}>
             <QuestionLabel
               questionD={entity}
-              disabled={disabled}
               editing={isEditing}
               onFinishEditing={() => setEditing(false)}
             />
