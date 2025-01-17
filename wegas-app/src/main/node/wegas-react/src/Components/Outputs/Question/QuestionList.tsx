@@ -12,6 +12,7 @@ import {
   SListDescriptor,
 } from 'wegas-ts-api';
 import {
+  defaultPadding,
   flex,
   flexColumn,
   flexRow,
@@ -300,7 +301,7 @@ function QuestionChooser(
   return (
     <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
       <div
-        className={cx(flex, flexRow, itemCenter, css({padding: '10px'}))}
+        className={cx(flex, flexRow, itemCenter, defaultPadding)}
         onClick={() => {
           !props.disabled &&
           editingStore.dispatch(read(instantiate(props.entity).getEntity()));
