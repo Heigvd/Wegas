@@ -68,7 +68,7 @@ const repliedLabelStyle = cx(
     backgroundColor: themeVar.colors.HeaderColor,
     color: themeVar.colors.DarkTextColor,
   }),
-  'wegas-entity-chooser__choice-replied',
+  'wegas-question__item-replied',
 );
 
 export const handleStyle = css({
