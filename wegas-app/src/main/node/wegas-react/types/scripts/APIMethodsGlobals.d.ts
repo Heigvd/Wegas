@@ -38,4 +38,10 @@ interface APIMethodsClass {
     context: Record<string, unknown>,
   ) => Promise<IManagedResponse>;
   getServerTime: () => Promise<number>;
+  wegasRestRequest: (
+    url: string,
+    options: RequestInit,
+    contentType: 'application/json',
+    view?: View | false,
+  ) => Promise<void | IManagedResponse>;
 }

@@ -12,7 +12,7 @@ import {
 import { instantiate } from '../data/scriptable';
 import { editingStore } from '../data/Stores/editingStore';
 import { store } from '../data/Stores/store';
-import { IManagedResponse } from './rest';
+import { IManagedResponse, managedModeRequest } from './rest';
 import { UtilsAPI } from './utils.api';
 import { VariableDescriptorAPI } from './variableDescriptor.api';
 
@@ -88,5 +88,15 @@ export const APIScriptMethods: APIMethodsClass = {
     return result;
   },
 
-  getServerTime: () => UtilsAPI.getServerTime(),
+  getServerTime: async () => UtilsAPI.getServerTime(),
+  wegasRestRequest: (
+    url: string,
+    options: RequestInit = {},
+    contentType: 'application/json',
+    view?: View | false,
+  ): Promise<void | IManagedResponse> => {
+    return managedModeRequest(url, options, view, contentType).then(res => {
+      dispatch(manageResponseHandler(res));
+    });
+  },
 };
