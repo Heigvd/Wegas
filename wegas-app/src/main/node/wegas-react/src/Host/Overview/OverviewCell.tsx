@@ -86,6 +86,7 @@ export function OverviewCell({
             </div>
             {showPopup && (
               <div
+                className='wegas-dashboard-inbox-popup'
                 style={{
                   position: 'fixed',
                   backgroundColor: themeVar.colors.BackgroundColor,
