@@ -12,7 +12,6 @@ on:
     branches:
       - master
       - dev
-      - WEG-135
     tags:
       - "v*"
 
