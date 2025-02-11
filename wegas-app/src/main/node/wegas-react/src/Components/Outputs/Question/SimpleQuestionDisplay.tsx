@@ -74,7 +74,14 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
   const { lang } = React.useContext(languagesCTX);
 
   return (
-    <div className={cx(flex, justifyCenter, itemCenter)}>
+    <div
+      className={cx(
+        flex,
+        justifyCenter,
+        itemCenter,
+        'wegas-question__choice-button',
+      )}
+    >
       <Plus
         className={cx(editButtonStyle, editButtonBorder)}
         onClick={() => {
@@ -103,6 +110,7 @@ interface SimpleChoiceDisplayProps {
   onValidate: (choice: IChoiceDescriptor) => Promise<unknown>;
   replyAllowed: boolean;
   editMode?: boolean;
+  questionMaxReplies?: number | null;
 }
 
 function SimpleChoiceDisplay({
@@ -111,6 +119,7 @@ function SimpleChoiceDisplay({
   onValidate,
   replyAllowed,
   editMode,
+  questionMaxReplies,
 }: SimpleChoiceDisplayProps) {
   const { active, replies } = choiceI;
   const { maxReplies } = choiceD;
@@ -122,16 +131,24 @@ function SimpleChoiceDisplay({
   if (!active) {
     return null;
   }
-
+  const replyCount =
+    questionMaxReplies === 1 || maxReplies === 1
+      ? undefined
+      : choiceI?.replies?.length;
   return (
-    <ChoiceContainer
-      active={active}
-      descriptor={choiceD}
-      canReply={canReply}
-      onClick={() => onValidate(choiceD)}
-      hasBeenSelected={hasBeenValidated}
-      editMode={editMode}
-    />
+    <>
+      <ChoiceContainer
+        active={active}
+        descriptor={choiceD}
+        canReply={canReply}
+        onClick={() => onValidate(choiceD)}
+        hasBeenSelected={hasBeenValidated}
+        editMode={editMode}
+        replyCount={replyCount}
+        className='wegas-question__choice'
+      />
+      <RepliesDisplay replies={replies} />
+    </>
   );
 }
 
@@ -146,11 +163,12 @@ export function SimpleQuestionDisplay({
   questionI,
   choicesD,
   choicesI,
-  replies,
   editMode,
   ...options
 }: SimpleQuestionDisplayProps) {
-  const validatedReplies = replies.filter(r => r.validated);
+  const validatedRepliesCount = choicesI?.reduce((acc, c) => {
+    return acc + (c?.replies ? c.replies.filter(r => r?.validated).length : 0);
+  }, 0);
 
   const onChoiceValidate = React.useCallback(
     (choice: IChoiceDescriptor) => {
@@ -166,7 +184,7 @@ export function SimpleQuestionDisplay({
   const canReply =
     !questionI.validated &&
     (questionD.maxReplies == null ||
-      validatedReplies.length < questionD.maxReplies) &&
+      validatedRepliesCount < questionD.maxReplies) &&
     isActionAllowed(options);
 
   return (
@@ -189,11 +207,11 @@ export function SimpleQuestionDisplay({
             choiceI={choiceI}
             replyAllowed={canReply}
             editMode={editMode}
+            questionMaxReplies={questionD.maxReplies}
           />
         );
       })}
       {editMode && <AddChoiceButton question={questionD} />}
-      <RepliesDisplay replies={replies} />
     </div>
   );
 }

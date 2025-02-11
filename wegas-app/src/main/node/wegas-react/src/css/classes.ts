@@ -355,12 +355,18 @@ export const dropZoneStyle = css({
 
 export const unreadSignalStyle = css({
   '::before': {
-    content: '"New"',
-    transform: 'rotate(-90deg)',
+    content: '""',
     position: 'absolute',
-    fontSize: '10pt',
-    fontWeight: 'bold',
-    color: 'orange',
+    top: '50%',
+    left: '0.5rem',
+    width: '0.5rem',
+    height: '0.5rem',
+    transform: 'translateY(-50%)',
+    backgroundColor: themeVar.colors.PrimaryColor,
+    borderRadius: '100%',
+  },
+  '&> div': {
+    marginLeft: '1rem',
   },
 });
 

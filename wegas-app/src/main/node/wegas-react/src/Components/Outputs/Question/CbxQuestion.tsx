@@ -41,6 +41,7 @@ const cbxContainerStyle = css({
     borderLeft: '1px solid ' + themeVar.colors.ActiveColor,
   },
 });
+
 const cbxStyle = css({
   '&.wegas.wegas-btn': {
     color: themeVar.colors.LightTextColor,
@@ -49,6 +50,7 @@ const cbxStyle = css({
     },
   },
 });
+
 interface CbxChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
   choiceI: IChoiceInstance;
@@ -79,36 +81,39 @@ function CbxChoiceDisplay({
   }
 
   return (
-    <ChoiceContainer
-      active={active}
-      descriptor={choiceD}
-      canReply={!disabled}
-      hasBeenSelected={questionChoosed}
-      className={cbxChoiceContainerStyle}
-      inputClassName={cbxContainerStyle}
-      onClick={async () => {
-        if (enableValidate) {
-          return onValidate(choiceD);
+    <>
+      <ChoiceContainer
+        active={active}
+        descriptor={choiceD}
+        canReply={!disabled}
+        hasBeenSelected={questionChoosed}
+        className={cbxChoiceContainerStyle}
+        inputClassName={cbxContainerStyle}
+        onClick={async () => {
+          if (enableValidate) {
+            return onValidate(choiceD);
+          }
+        }}
+        editMode={editMode}
+        validateButton={false}
+      >
+        {
+          <CheckBox
+            className={autoMargin}
+            value={questionChoosed}
+            onChange={() => {
+              if (enableValidate) {
+                onValidate(choiceD);
+              }
+            }}
+            disabled={disabled}
+            radio={radioButton}
+            checkBoxClassName={cbxStyle}
+          />
         }
-      }}
-      editMode={editMode}
-      validateButton={false}
-    >
-      {
-        <CheckBox
-          className={autoMargin}
-          value={questionChoosed}
-          onChange={() => {
-            if (enableValidate) {
-              onValidate(choiceD);
-            }
-          }}
-          disabled={disabled}
-          radio={radioButton}
-          checkBoxClassName={cbxStyle}
-        />
-      }
-    </ChoiceContainer>
+      </ChoiceContainer>
+      <RepliesDisplay replies={replies} />
+    </>
   );
 }
 
@@ -123,16 +128,18 @@ export function CbxQuestionDisplay({
   questionI,
   choicesD,
   choicesI,
-  replies,
   editMode,
   ...options
 }: CbxQuestionDisplayProps) {
   const { maxReplies, minReplies } = questionD || {};
 
+  const replyCount = choicesI.reduce((acc, c) => {
+    return acc + (c?.replies ? c?.replies.length : 0);
+  }, 0);
   const canReply =
     questionI != null && !questionI.validated && isActionAllowed(options);
-  const maxReplyReached = maxReplies != null && replies.length >= maxReplies;
-  const remainingChoices = minReplies == null ? 0 : minReplies - replies.length;
+  const maxReplyReached = maxReplies != null && replyCount >= maxReplies;
+  const remainingChoices = minReplies == null ? 0 : minReplies - replyCount;
   const radio = maxReplies === 1 && minReplies === 1;
 
   const onChoiceValidate = React.useCallback(
@@ -177,7 +184,7 @@ export function CbxQuestionDisplay({
       })}
       {editMode && <AddChoiceMenu questionD={questionD} />}
       {!questionI.validated && (
-        <div className={cx(choiceInputStyle)}>
+        <div className={cx(choiceInputStyle, 'wegas-question__choice-warning')}>
           {remainingChoices > 0 && (
             <MessageString
               type="warning"
@@ -195,7 +202,6 @@ export function CbxQuestionDisplay({
           />
         </div>
       )}
-      <RepliesDisplay replies={replies} />
     </div>
   );
 }

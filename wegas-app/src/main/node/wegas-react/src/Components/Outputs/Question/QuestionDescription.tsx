@@ -13,7 +13,8 @@ import { HTMLText } from '../HTMLText';
 import { buttonFactory } from './QuestionList';
 import { useTranslate } from '../../Hooks/useTranslate';
 import {
-  bolder, expandWidth,
+  bolder,
+  expandWidth,
   flex,
   flexColumn,
   toolboxHeaderStyle,
@@ -99,13 +100,20 @@ export function QuestionDescription({
     <div
       className={cx(descriptionStyle, {
         [clickableDescriptionStyle]: editMode,
-      })}
+      }, 'wegas-question__header')}
       onClick={() => setEditing(true)}
     >
       <div className={cx(toolboxHeaderStyle, expandWidth)}>
         <div className={cx(flex, flexColumn)}>
-          {labelValue && <div className={cx(bolder)}>{labelValue}</div>}
-          <HTMLText text={descriptionValue} />
+          {labelValue && (
+            <div className={cx(bolder, 'wegas-question__label')}>
+              {labelValue}
+            </div>
+          )}
+          <HTMLText
+            text={descriptionValue}
+            className="wegas-question__description"
+          />
         </div>
       </div>
 
