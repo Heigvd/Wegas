@@ -18,7 +18,7 @@ import { mainLayoutId } from '../layouts';
 import Header from './Header';
 import {
   DndLinearLayout,
-  LinearLayoutComponents,
+  LinearLayoutComponents
 } from './LinearTabLayout/LinearLayout';
 import {
   defaultPageCTX,
@@ -231,19 +231,20 @@ export default function Layout() {
     return role == null || role.availableTabs;
   });
 
-  const layoutPages = [
-    ...availableLayoutTabs,
-    {
-      tabId: 'Scenarist pages',
-      items: [...scenaristPages]
-    },
-    {
-      tabId: 'Peer reviews',
-      items: [...peerReviewTabs]
-    },
-  ].filter(
-    ({ tabId }) => allowedPages === true || allowedPages.includes(tabId),
-  );
+  const layoutPages = (allowedPages === true) ?
+    [
+      ...availableLayoutTabs,
+      {
+        tabId: 'Scenarist pages',
+        items: [...scenaristPages]
+      },
+      {
+        tabId: 'Peer reviews',
+        items: [...peerReviewTabs]
+      },
+    ]
+  : scenaristPages.filter(({tabId}) => allowedPages.includes(tabId))
+  
 
   const initTabs =
     currentRole === DEFAULT_ROLES.SCENARIO_EDITOR.id
