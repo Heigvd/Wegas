@@ -17,8 +17,8 @@ import PeerReviewPage from '../../Host/PeerReview/PeerReviewPage';
 import { mainLayoutId } from '../layouts';
 import Header from './Header';
 import {
-  DndLinearLayout,
-  LinearLayoutComponents
+  DndLinearLayout, isLinearLayoutItemComponent,
+  LinearLayoutComponents, LinearLayoutItemComponent,
 } from './LinearTabLayout/LinearLayout';
 import {
   defaultPageCTX,
@@ -194,6 +194,21 @@ function scenaristPagesSelector(s: State) {
     : [];
 }
 
+
+function filterAndFlatten(components: LinearLayoutComponents, allowed: string[]): LinearLayoutItemComponent[] {
+  const result : LinearLayoutItemComponent[] = [];
+  components.forEach(comp => {
+    if(isLinearLayoutItemComponent(comp)) {
+      if(allowed.includes(comp.tabId)) {
+        result.push(comp);
+      }
+    }else {
+      result.push(...filterAndFlatten(comp.items, allowed));
+    }
+  });
+  return result;
+}
+
 export default function Layout() {
   const timer = React.useRef<ReturnType<typeof setTimeout>>();
   const { lang } = React.useContext(languagesCTX);
@@ -231,7 +246,7 @@ export default function Layout() {
     return role == null || role.availableTabs;
   });
 
-  const layoutPages = (allowedPages === true) ?
+  const allLayoutPages =
     [
       ...availableLayoutTabs,
       {
@@ -242,9 +257,10 @@ export default function Layout() {
         tabId: 'Peer reviews',
         items: [...peerReviewTabs]
       },
-    ]
-  : scenaristPages.filter(({tabId}) => allowedPages.includes(tabId))
-  
+    ];
+
+  const layoutPages = (allowedPages === true) ?
+    allLayoutPages : filterAndFlatten(allLayoutPages, allowedPages);
 
   const initTabs =
     currentRole === DEFAULT_ROLES.SCENARIO_EDITOR.id
